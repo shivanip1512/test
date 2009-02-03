@@ -122,9 +122,7 @@
     <property name="dbPersistentDao" ref="dbPersistentDao"/>
     <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
   </bean>
-  <bean id="standaloneRoleDao" class="com.cannontech.core.dao.impl.StandaloneRoleDaoImpl" >
-  	<property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
-  </bean>
+  <bean id="standaloneRoleDao" class="com.cannontech.core.dao.impl.StandaloneRoleDaoImpl" />
    <bean id="simplePointAccessDao" class="com.cannontech.core.dao.impl.SimplePointAccessDaoImpl" >
     <property name="dynamicDataSource" ref="dynamicDataSource"/>
   </bean>

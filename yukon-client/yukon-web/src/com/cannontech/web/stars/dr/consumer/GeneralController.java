@@ -8,16 +8,14 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.cannontech.roles.consumer.ResidentialCustomerRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.displayable.model.DisplayableProgram;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
-@CheckRole(ResidentialCustomerRole.ROLEID)
-@CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_ACCOUNT_GENERAL)
+@CheckRoleProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_ACCOUNT_GENERAL)
 @Controller
 @RequestMapping("/consumer/general")
 public class GeneralController extends AbstractConsumerController {

@@ -9,15 +9,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.core.dao.GraphDao;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.graph.GraphBean;
-import com.cannontech.roles.application.TrendingRole;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.stars.dr.consumer.model.GraphViewType;
 
-@CheckRole(TrendingRole.ROLEID)
+@CheckRole(YukonRole.TRENDING)
 @Controller
 public class TrendingController extends AbstractConsumerController {
 

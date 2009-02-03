@@ -2,7 +2,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ page language="java" %>
 
-<cti:verifyRolesAndProperties value="DirectLoadcontrolRole.THREE_TIER_DIRECT"/>
+<cti:verifyRolesAndProperties value="THREE_TIER_DIRECT"/>
 
 <%@ include file="js/lm_funcs.js" %>
 <%@ include file="js/configwin.js" %>

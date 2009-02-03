@@ -9,7 +9,7 @@ import com.cannontech.user.checker.UserChecker;
 public abstract class BaseAlert implements Alert {
 
     private Date date;
-    private UserChecker userChecker = new NullUserChecker();
+    private UserChecker userChecker = NullUserChecker.getInstance();
     private ResolvableTemplate message;
 
     public BaseAlert(Date date, ResolvableTemplate message) {

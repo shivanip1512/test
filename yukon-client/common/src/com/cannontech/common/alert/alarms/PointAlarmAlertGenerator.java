@@ -17,6 +17,7 @@ import com.cannontech.roles.application.WebClientRole;
 import com.cannontech.user.checker.RolePropertyUserCheckerFactory;
 import com.cannontech.user.checker.UserChecker;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.clientutils.CTILogger;
 
 public class PointAlarmAlertGenerator implements SignalListener {
@@ -58,7 +59,7 @@ public class PointAlarmAlertGenerator implements SignalListener {
         	alarmAlert.setCondition(signal.getCondition());
         	boolean isUnacknowledgedAlarm = TagUtils.isAlarmUnacked(signal.getTags());
         	alarmAlert.setUnacknowledgedAlarm(isUnacknowledgedAlarm);
-        	UserChecker userChecker = userCheckerFactory.createPropertyChecker(WebClientRole.VIEW_ALARMS_AS_ALERTS);
+        	UserChecker userChecker = userCheckerFactory.createPropertyChecker(YukonRoleProperty.VIEW_ALARMS_AS_ALERTS);
         	alarmAlert.setUserChecker(userChecker);
         
         	alertService.add(alarmAlert);

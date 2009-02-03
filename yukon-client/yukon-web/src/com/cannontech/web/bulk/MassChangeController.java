@@ -16,12 +16,10 @@ import com.cannontech.common.bulk.field.BulkFieldService;
 import com.cannontech.common.bulk.service.BulkOperationCallbackResults;
 import com.cannontech.common.bulk.service.MassChangeFileInfo;
 import com.cannontech.common.util.RecentResultsCache;
-import com.cannontech.roles.operator.DeviceActionsRole;
-import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
-@CheckRole(DeviceActionsRole.ROLEID)
-@CheckRoleProperty(DeviceActionsRole.MASS_CHANGE)
+@CheckRoleProperty(YukonRoleProperty.MASS_CHANGE)
 public class MassChangeController extends BulkControllerBase {
 
     private BulkFieldService bulkFieldService = null;

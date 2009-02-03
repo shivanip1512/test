@@ -9,12 +9,12 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.cannontech.roles.consumer.ResidentialCustomerRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.web.login.ChangeLoginController;
 import com.cannontech.web.login.ChangeLoginError;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
-@CheckRoleProperty({ResidentialCustomerRole.CONSUMER_INFO_CHANGE_LOGIN_USERNAME, ResidentialCustomerRole.CONSUMER_INFO_CHANGE_LOGIN_PASSWORD})
+@CheckRoleProperty({YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_USERNAME, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_PASSWORD})
 @Controller
 @RequestMapping("/consumer/changelogin")
 public class ConsumerChangeLoginController extends AbstractConsumerController {

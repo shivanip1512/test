@@ -11,11 +11,12 @@ import org.apache.commons.lang.Validate;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 
-import com.cannontech.user.checker.AggregateUserChecker;
+import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
+import com.cannontech.user.checker.AggregateAndUserChecker;
 import com.cannontech.user.checker.NullUserChecker;
-import com.cannontech.user.checker.RolePropertyUserCheckerFactory;
 import com.cannontech.user.checker.UserChecker;
 import com.cannontech.web.menu.option.MenuOption;
 import com.cannontech.web.menu.option.SimpleMenuOptionAction;
@@ -33,7 +34,7 @@ import com.cannontech.web.menu.option.producer.StaticMenuOptionProducer;
  * ever need to understand the module_config.xml file.
  */
 public class CommonModuleBuilder implements ModuleBuilder {
-    private RolePropertyUserCheckerFactory userCheckerFactory;
+    private RoleAndPropertyDescriptionService roleAndPropertyDescriptionService;
     private Map<String, ModuleBase> moduleMap = new TreeMap<String, ModuleBase>();
     private MenuBase portalLinksBase = null;
     private List<String> portalJavaScriptIncludes = new ArrayList<String>(3);
@@ -197,7 +198,7 @@ public class CommonModuleBuilder implements ModuleBuilder {
             UserChecker checker  = null;
             String prop = child.getAttributeValue("value");
             if (child.getName().equals("requireRoleProperty")) {
-                checker = userCheckerFactory.createRoleAndPropertyDescriptionChecker(prop);
+                checker = roleAndPropertyDescriptionService.compile(prop);
             }
             
             if (checker != null) {
@@ -205,12 +206,12 @@ public class CommonModuleBuilder implements ModuleBuilder {
             }
         }
         if (checkers.isEmpty()) {
-            return new NullUserChecker();
+            return NullUserChecker.getInstance();
         } else if (checkers.size() == 1){
             // not needed, but saves a little memory and processing time
             return checkers.get(0);
         } else {
-            return new AggregateUserChecker(checkers);
+            return new AggregateAndUserChecker(checkers);
         }
     }
     
@@ -220,14 +221,15 @@ public class CommonModuleBuilder implements ModuleBuilder {
         return moduleBase;
     }
 
-    public void setUserCheckerFactory(
-            RolePropertyUserCheckerFactory userCheckerFactory) {
-        this.userCheckerFactory = userCheckerFactory;
-    }
-    
     public void setMenuOptionProducerFactory(
             MenuOptionProducerFactory menuOptionProducerFactory) {
         this.menuOptionProducerFactory = menuOptionProducerFactory;
+    }
+    
+    @Autowired
+    public void setRoleAndPropertyDescriptionService(
+            RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
+        this.roleAndPropertyDescriptionService = roleAndPropertyDescriptionService;
     }
     
 }

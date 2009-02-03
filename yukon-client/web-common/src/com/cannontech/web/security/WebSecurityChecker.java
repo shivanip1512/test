@@ -4,29 +4,31 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestBindingException;
 
 import com.cannontech.common.exception.NotAuthorizedException;
-import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.util.SpringWebUtil;
 
 public class WebSecurityChecker {
-    private AuthDao authDao;
+    private RolePropertyDao rolePropertyDao;
     
-    public void checkRole(int... roleIds) {
+    public void checkRole(YukonRole... roles) {
         final LiteYukonUser user = getYukonUser();
         
-        for (final int roleId : roleIds) {
-            boolean hasRole = authDao.checkRole(user, roleId);
+        for (final YukonRole role : roles) {
+            boolean hasRole = rolePropertyDao.checkRole(role, user);
             if (hasRole) return;
         }
         
         throw new NotAuthorizedException("User " + user + " is not authorized to access this page.");
     }
     
-    public void checkRoleProperty(int... rolePropertyIds) {
+    public void checkRoleProperty(YukonRoleProperty... rolePropertyIds) {
         final LiteYukonUser user = getYukonUser();
         
-        for (final int propertId : rolePropertyIds) {
-            boolean hasRoleProperty = authDao.checkRoleProperty(user, propertId);
+        for (final YukonRoleProperty property : rolePropertyIds) {
+            boolean hasRoleProperty = rolePropertyDao.checkProperty(property, user);
             if (hasRoleProperty) return;
         }
         
@@ -43,8 +45,8 @@ public class WebSecurityChecker {
     }
     
     @Autowired
-    public void setAuthDao(AuthDao authDao) {
-        this.authDao = authDao;
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
     }
     
 }

@@ -4,7 +4,7 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib prefix="ct" tagdir="/WEB-INF/tags" %>
 
-<cti:verifyRolesAndProperties value="ConsumerInfoRole"/>
+<cti:verifyRolesAndProperties value="CONSUMER_INFO"/>
     
 <cti:standardPage module="dr" page="optOutAdmin">
     <cti:standardMenu />

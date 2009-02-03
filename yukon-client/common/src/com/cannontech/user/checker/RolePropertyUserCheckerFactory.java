@@ -1,11 +1,11 @@
 package com.cannontech.user.checker;
 
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
-import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleCategory;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 /**
@@ -16,81 +16,75 @@ import com.cannontech.database.data.lite.LiteYukonUser;
  * and to check the value of a boolean role property).
  */
 public class RolePropertyUserCheckerFactory {
-    private static final UserCheckerBase nullChecker = new NullUserChecker();
-    private AuthDao authDao;
-    private RoleAndPropertyDescriptionService descriptionService;
+    private RolePropertyDao rolePropertyDao;
     
-    /**
-     * @see RoleAndPropertyDescriptionService.checkIfAtLeaseOneExists()
-     * @param descriptions of RoleID's and RoleProperty's
-     *        to base the UserChecker on
-     * @return an UserChecker
-     */
-    public UserChecker createRoleAndPropertyDescriptionChecker(final String descriptions) {
-        
-        if (StringUtils.isBlank(descriptions)) {
-            return nullChecker;
-        }
-        
-        UserChecker checker = new UserCheckerBase() {
-            @Override
-            public boolean check(LiteYukonUser user) {
-                if (user == null) return false;
-
-                boolean isValidCheck = 
-                    descriptionService.checkIfAtLeaseOneExists(descriptions, user);
-                return isValidCheck;
-            }
-            
-            @Override
-            public String toString() {
-                return descriptions + " checker";
-            }
-        };
-        return checker;
-    }
-    
-    /**
-     * Create an OptionPropertyChecker that will return true if the
-     * user has the indicated role property and it is set to true.
-     * @param property to base the OptionPropertyChecker on
-     * @return an OptionPropertyChecker
-     */
-    public UserChecker createPropertyChecker(final int propertyId) {
+    public UserChecker createPropertyChecker(final YukonRoleProperty property) {
         
         UserCheckerBase checker = new UserCheckerBase() {
             @Override
             public boolean check(LiteYukonUser user) {
-                return getBooleanForRoleProperty(propertyId, user);
+                return rolePropertyDao.checkProperty(property, user);
             };
             
             @Override
             public String toString() {
-                return "property id " + propertyId + " checker";
+                return property + " checker";
             }
         };
         return checker;
     }
     
-    private boolean getBooleanForRoleProperty(final int propertyId, LiteYukonUser user) {
-        if (user == null) {
-            return false;
-        }
+    public UserChecker createFalsePropertyChecker(final YukonRoleProperty property) {
         
-        String val = authDao.getRolePropertyValue(user,
-                                                    propertyId );
-        return BooleanUtils.toBoolean(val);
+        UserCheckerBase checker = new UserCheckerBase() {
+            @Override
+            public boolean check(LiteYukonUser user) {
+                return rolePropertyDao.checkFalseProperty(property, user);
+            };
+            
+            @Override
+            public String toString() {
+                return property + " false checker";
+            }
+        };
+        return checker;
     }
-
-    @Required
-    public void setAuthDao(AuthDao authDao) {
-        this.authDao = authDao;
+    
+    public UserChecker createRoleChecker(final YukonRole role) {
+        
+        UserCheckerBase checker = new UserCheckerBase() {
+            @Override
+            public boolean check(LiteYukonUser user) {
+                return rolePropertyDao.checkRole(role, user);
+            };
+            
+            @Override
+            public String toString() {
+                return role + " checker";
+            }
+        };
+        return checker;
     }
-
-    @Required
-    public void setDescriptionService(
-            RoleAndPropertyDescriptionService descriptionService) {
-        this.descriptionService = descriptionService;
+    
+    public UserChecker createCategoryChecker(final YukonRoleCategory category) {
+        
+        UserCheckerBase checker = new UserCheckerBase() {
+            @Override
+            public boolean check(LiteYukonUser user) {
+                return rolePropertyDao.checkCategory(category, user);
+            };
+            
+            @Override
+            public String toString() {
+                return category + " checker";
+            }
+        };
+        return checker;
+    }
+    
+    @Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
     }
 
 }

@@ -13,19 +13,17 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
-import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 /**
  * Controller for Consumer-side Thermostat operations
  */
-@CheckRole(ResidentialCustomerRole.ROLEID)
-@CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_THERMOSTATS_ALL)
+@CheckRoleProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_THERMOSTATS_ALL)
 @Controller
 public class ThermostatController extends AbstractThermostatController {
 

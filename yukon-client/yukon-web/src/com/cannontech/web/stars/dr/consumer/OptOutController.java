@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -40,12 +41,10 @@ import com.cannontech.stars.dr.optout.service.OptOutRequest;
 import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.stars.dr.optout.service.OptOutStatusService;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.OptOutCountDto;
 
-@CheckRole(ResidentialCustomerRole.ROLEID)
-@CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT)
+@CheckRoleProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_OPT_OUT)
 @Controller
 public class OptOutController extends AbstractConsumerController {
 	

@@ -21,7 +21,7 @@ public class PermissionRoleAuthorizationBase<T> implements Authorization<T> {
         }
         
     };
-    UserChecker roleChecker = new NullUserChecker();
+    UserChecker roleChecker = NullUserChecker.getInstance();
     Permission permission = null;
 
     public PermissionRoleAuthorizationBase() {

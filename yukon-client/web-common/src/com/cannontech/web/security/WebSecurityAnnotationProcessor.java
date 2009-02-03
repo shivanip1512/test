@@ -4,6 +4,8 @@ import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationUtils;
 
+import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.widget.support.WidgetMultiActionController;
@@ -41,13 +43,13 @@ public class WebSecurityAnnotationProcessor {
     }
     
     private void doHasCheckRole(CheckRole checkRole) throws Exception {
-        int[] roleIds = checkRole.value();
+        YukonRole[] roleIds = checkRole.value();
         webSecurityChecker.checkRole(roleIds);
     }
 
     private void doHasCheckRoleProperty(CheckRoleProperty checkRoleProperty) throws Exception {
-        int[] rolePropertyIds = checkRoleProperty.value();
-        webSecurityChecker.checkRoleProperty(rolePropertyIds);
+        YukonRoleProperty[] roleProperties = checkRoleProperty.value();
+        webSecurityChecker.checkRoleProperty(roleProperties);
     }
     
     private CheckRole getCheckRole(Class<?> clazz) {

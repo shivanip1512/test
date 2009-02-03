@@ -4,6 +4,11 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 
 public class NullUserChecker extends UserCheckerBase {
 
+    private static final NullUserChecker instance = new NullUserChecker();
+    
+    private NullUserChecker() {
+    }
+
     public boolean check(LiteYukonUser user) {
         return true;
     }
@@ -11,6 +16,10 @@ public class NullUserChecker extends UserCheckerBase {
     @Override
     public String toString() {
         return "any user checker";
+    }
+    
+    public static NullUserChecker getInstance() {
+        return instance;
     }
 
 }

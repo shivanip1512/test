@@ -94,8 +94,7 @@ public class LoginFilter implements Filter {
         if (loggedIn) {
             attachYukonUserContext(request);
             
-            boolean hasUrlAccess = urlAccessChecker.hasUrlAccess(request);
-            if (!hasUrlAccess) handleInvalidUrlAccess();
+            verifyPathAccess(request);
             
             chain.doFilter(req, resp);
             return;
@@ -109,8 +108,7 @@ public class LoginFilter implements Filter {
             log.debug("Proceeding with request after successful handler login");
             attachYukonUserContext(request);
             
-            boolean hasUrlAccess = urlAccessChecker.hasUrlAccess(request);
-            if (!hasUrlAccess) handleInvalidUrlAccess();
+            verifyPathAccess(request);
             
             // FilterChain.doFilter() cannot be in a try/catch, it would break the ErrorHelperFilter
             chain.doFilter(req, resp);
@@ -128,6 +126,13 @@ public class LoginFilter implements Filter {
             sendLoginRedirect(request, response);
         }
         return;
+    }
+
+    private void verifyPathAccess(final HttpServletRequest request) {
+        boolean hasUrlAccess = urlAccessChecker.hasUrlAccess(request);
+        if (!hasUrlAccess) {
+            throw new NotAuthorizedException("Invalid path access for user: " + urlPathHelper.getPathWithinApplication(request));
+        }
     }
 
     private boolean isExcludedRequest(HttpServletRequest request, String... patterns) {
@@ -155,10 +160,6 @@ public class LoginFilter implements Filter {
         return encodedNavUrl;
     }
 
-    private  void handleInvalidUrlAccess() {
-        throw new NotAuthorizedException("Invalid page access for user.");
-    }
-    
     private void sendLoginRedirect(HttpServletRequest request, HttpServletResponse response) throws IOException{
         String navUrl = getRedirectedFrom(request);
         String redirectURL = LoginController.LOGIN_URL + "?" + LoginController.REDIRECTED_FROM + "=" + navUrl;

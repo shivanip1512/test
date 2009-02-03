@@ -8,6 +8,7 @@ import java.util.TimeZone;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.CTILogger;
@@ -22,6 +23,9 @@ import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.UnknownRolePropertyException;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
@@ -45,6 +49,7 @@ public class AuthDaoImpl implements AuthDao {
     private IDatabaseCache databaseCache;
     private AuthenticationService authenticationService;
     private SystemDateFormattingService systemDateFormattingService;
+    private RolePropertyDao rolePropertyDao;
     
 	public LiteYukonUser login(String username, String password) {
         try {
@@ -68,17 +73,25 @@ public class AuthDaoImpl implements AuthDao {
 	}
     
     public boolean checkRole(LiteYukonUser user, int roleId) {
-        return getRole(user, roleId) != null;
+        return rolePropertyDao.checkRole(YukonRole.getForId(roleId), user);
     }
 	
 	
 	public boolean checkRoleProperty(LiteYukonUser user, int rolePropertyID) {
-		return !CtiUtilities.isFalse(getRolePropertyValue(user, rolePropertyID));
+	    YukonRoleProperty property = YukonRoleProperty.getForId(rolePropertyID);
+	    try {
+            return rolePropertyDao.checkProperty(property, user);
+        } catch (IllegalArgumentException e) {
+            // uh oh, the property must not be Boolean
+            // print a complaint in the log and try the old code
+            CTILogger.warn("Property " + property + " improperly accessed with a check method: " + e.getMessage());
+            return !CtiUtilities.isFalse(getRolePropertyValue(user, rolePropertyID));
+        }
 	}
     
     public boolean checkRoleProperty(int userID, int rolePropertyID) {
         LiteYukonUser user = yukonUserDao.getLiteYukonUser(userID);
-        return !CtiUtilities.isFalse(getRolePropertyValue(user, rolePropertyID));
+        return checkRoleProperty(user, rolePropertyID);
     }   
     
     public String getRolePropertyValueEx(LiteYukonUser user, int rolePropertyID) throws UnknownRolePropertyException {
@@ -95,10 +108,7 @@ public class AuthDaoImpl implements AuthDao {
 	 */
 	public String getRolePropertyValue(LiteYukonUser user, int rolePropertyID) 
 	{
-		synchronized(databaseCache) 
-		{
-			return databaseCache.getARolePropertyValue(user, rolePropertyID);
-		}
+		return rolePropertyDao.getPropertyStringValue(YukonRoleProperty.getForId(rolePropertyID), user);
 	}
     
     public String getRolePropertyValue(int userID, int rolePropertyID) {
@@ -265,18 +275,12 @@ public class AuthDaoImpl implements AuthDao {
     
 	public void verifyFalseProperty(LiteYukonUser user, int rolePropertyId)
 	throws NotAuthorizedException {
-	    boolean b = checkRoleProperty(user, rolePropertyId);
-	    if (b) {
-	        throw NotAuthorizedException.falseProperty(user, rolePropertyId);
-	    }
+	    rolePropertyDao.verifyFalseProperty(YukonRoleProperty.getForId(rolePropertyId), user);
 	}
 
 	public void verifyRole(LiteYukonUser user, int roleId)
 	throws NotAuthorizedException {
-	    boolean b = checkRole(user, roleId);
-	    if (!b) {
-	        throw NotAuthorizedException.falseProperty(user, roleId);
-	    }
+	    rolePropertyDao.verifyRole(YukonRole.getForId(roleId), user);
 	}
 
 	public void verifyTrueProperty(LiteYukonUser user, int ... rolePropertyIds)
@@ -288,7 +292,11 @@ public class AuthDaoImpl implements AuthDao {
                 return;
             }
         }
-        throw NotAuthorizedException.trueProperty(user, rolePropertyIds);
+	    if (rolePropertyIds.length == 1) {
+	        throw NotAuthorizedException.trueProperty(user, YukonRoleProperty.getForId(rolePropertyIds[0]));
+	    } else {
+	        throw NotAuthorizedException.trueProperty(user, rolePropertyIds);
+	    }
 	}  
 	
     public void verifyAdmin(LiteYukonUser user) throws NotAuthorizedException {
@@ -320,9 +328,7 @@ public class AuthDaoImpl implements AuthDao {
     }
 
     public <E extends Enum<E>> E getRolePropertyValue(Class<E> class1, LiteYukonUser user, int rolePropertyID) {
-        String rolePropertyValue = this.getRolePropertyValue(user, rolePropertyID);
-        E enumValue = Enum.valueOf(class1, rolePropertyValue);
-        return enumValue;
+        return rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.getForId(rolePropertyID), class1, user);
     }
     
     @Required
@@ -347,5 +353,10 @@ public class AuthDaoImpl implements AuthDao {
     @Required
     public void setSystemDateFormattingService(SystemDateFormattingService systemDateFormattingService) {
         this.systemDateFormattingService = systemDateFormattingService;
+    }
+    
+    @Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
     }
 }

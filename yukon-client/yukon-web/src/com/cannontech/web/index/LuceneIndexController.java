@@ -8,11 +8,11 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.common.search.index.IndexBuilder;
 import com.cannontech.common.search.index.IndexManager;
-import com.cannontech.roles.operator.AdministratorRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.JsonView;
 
-@CheckRoleProperty(AdministratorRole.ADMIN_MANAGE_INDEXES)
+@CheckRoleProperty(YukonRoleProperty.ADMIN_MANAGE_INDEXES)
 public class LuceneIndexController extends MultiActionController {
 
     IndexBuilder indexBuilder = null;

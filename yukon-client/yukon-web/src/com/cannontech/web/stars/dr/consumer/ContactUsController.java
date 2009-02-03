@@ -5,13 +5,11 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.cannontech.roles.consumer.ResidentialCustomerRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
-import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
-@CheckRole(ResidentialCustomerRole.ROLEID)
-@CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_UTIL)
+@CheckRoleProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_QUESTIONS_UTIL)
 @Controller
 @RequestMapping("/consumer/contactus")
 public class ContactUsController extends AbstractConsumerController {

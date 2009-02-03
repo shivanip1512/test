@@ -45,27 +45,25 @@ import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.CommandDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.roles.application.CommanderRole;
-import com.cannontech.roles.operator.DeviceActionsRole;
 import com.cannontech.simplereport.SimpleReportOutputter;
 import com.cannontech.simplereport.SimpleYukonReportDefinition;
 import com.cannontech.tools.email.DefaultEmailAttachmentMessage;
 import com.cannontech.tools.email.EmailService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.JsonView;
 
 @Controller
 @RequestMapping("/commander/*")
-@CheckRole(DeviceActionsRole.ROLEID)
-@CheckRoleProperty(DeviceActionsRole.GROUP_COMMANDER)
+@CheckRoleProperty(YukonRoleProperty.GROUP_COMMANDER)
 public class GroupCommanderController implements InitializingBean {
 
     private Logger log = YukonLogManager.getLogger(GroupCommanderController.class);

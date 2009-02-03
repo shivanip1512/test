@@ -1,6 +1,6 @@
 package com.cannontech.web.menu.option.producer;
 
-import com.cannontech.user.checker.AggregateUserChecker;
+import com.cannontech.user.checker.AggregateAndUserChecker;
 import com.cannontech.user.checker.UserChecker;
 
 /**
@@ -14,7 +14,7 @@ public abstract class DynamicMenuOptionProducer implements MenuOptionProducer {
         if (userChecker == null) {
             userChecker = newUserChecker;
         } else {
-            userChecker = new AggregateUserChecker(userChecker, newUserChecker);
+            userChecker = new AggregateAndUserChecker(userChecker, newUserChecker);
         }
         
     }

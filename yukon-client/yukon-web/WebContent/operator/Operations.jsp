@@ -10,20 +10,20 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:verifyRolesAndProperties value="
-    ConsumerInfoRole, 
-    operator.MeteringRole,
-    application.BillingRole,
-    TrendingRole,
-    WebClientRole.JAVA_WEB_START_LAUNCHER_ENABLED,
-    loadcontrol.DirectLoadcontrolRole,
-    OddsForControlRole,
-    CICurtailmentRole,
-    CBCSettingsRole,
-    InventoryRole,
-    WorkOrderRole,
-    ReportingRole, 
-    CommanderRole,
-    operator.AdministratorRole"/>
+    CONSUMER_INFO, 
+    METERING,
+    APPLICATION_BILLING,
+    TRENDING,
+    JAVA_WEB_START_LAUNCHER_ENABLED,
+    LM_DIRECT_LOADCONTROL,
+    ODDS_FOR_CONTROL,
+    CI_CURTAILMENT,
+    CBC_SETTINGS,
+    INVENTORY,
+    WORK_ORDER,
+    REPORTING, 
+    COMMANDER,
+    OPERATOR_ADMINISTRATOR"/>
 
 <cti:standardPage title="Energy Services Operations Center" module="operations">
 <cti:standardMenu/>

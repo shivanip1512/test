@@ -92,7 +92,7 @@ public class ThermostatMenuOptionProducer extends DynamicMenuOptionProducer {
         String menuTextKey = "yukon.web.menu.config.consumer.thermostat." + labelKey;
         SimpleMenuOptionLink menuOption = new SimpleMenuOptionLink(labelKey, menuTextKey);
         menuOption.setLinkUrl(link);
-        StaticMenuOptionProducer menuOptionProducer = new StaticMenuOptionProducer(menuOption, new NullUserChecker());
+        StaticMenuOptionProducer menuOptionProducer = new StaticMenuOptionProducer(menuOption, NullUserChecker.getInstance());
 
         return menuOptionProducer;
     }

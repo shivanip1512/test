@@ -36,12 +36,12 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
-import com.cannontech.roles.operator.DeviceActionsRole;
+import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
-@CheckRole(DeviceActionsRole.ROLEID)
-@CheckRoleProperty(DeviceActionsRole.MASS_CHANGE)
+@CheckRoleProperty(YukonRoleProperty.MASS_CHANGE)
 public class ChangeDeviceTypeController extends BulkControllerBase {
 
     private RecentResultsCache<BulkOperationCallbackResults<?>> recentBulkOperationResultsCache = null;

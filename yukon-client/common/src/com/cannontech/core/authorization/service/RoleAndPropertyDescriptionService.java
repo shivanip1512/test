@@ -1,58 +1,79 @@
 package com.cannontech.core.authorization.service;
 
-import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
-import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.util.ReflectivePropertySearcher;
+import java.util.List;
 
-public abstract class RoleAndPropertyDescriptionService {
-    private static final String ROLEID_SUFFIX = ".ROLEID";
-    private final ReflectivePropertySearcher propertySearcher = ReflectivePropertySearcher.getRoleProperty();
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleCategory;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.checker.AggregateOrUserChecker;
+import com.cannontech.user.checker.NotUserChecker;
+import com.cannontech.user.checker.NullUserChecker;
+import com.cannontech.user.checker.RolePropertyUserCheckerFactory;
+import com.cannontech.user.checker.UserChecker;
+import com.google.common.collect.Lists;
+
+public class RoleAndPropertyDescriptionService {
+    private RolePropertyUserCheckerFactory userCheckerFactory;
 
     /**
-     * This will check that the user has the given roles
+     * This will check that the user has the given roles, categories,
      * or has a true value for the given role properties.
-     * Roles and properties are specified as a comma-separated
-     * list of partially qualified class and field names. 
-     * Roles can be specified as simply the name of the class
-     * or the class name followed by a ".ROLEID". Properties
-     * will always be specified in a "ClassName.FIELD_CONSTANT"
-     * manner. "Partially qualified" refers to the fact that
-     * the leading part of the fully qualified class name
-     * may be dropped as described in the ReflectivePropertySearcher.
+     * Categories, roles and properties are specified as a comma-separated
+     * list of enum names. 
      * 
      * This works in an OR fashion. If the user passes any
      * of the role or property checks a boolean value of
      * true is returned.
+     * 
+     * Specific categories or roles can be not'd by prepending a !. Properties
+     * can be checked with the False Checks by prepending a !.
      */
     public boolean checkIfAtLeaseOneExists(final String rolePropDescription, 
             final LiteYukonUser user) {
-        
-        if (rolePropDescription.equals("*")) return true; // Match All
+        return compile(rolePropDescription).check(user);
+    }
+    
+    public UserChecker compile(final String rolePropDescription) {
+        if (rolePropDescription.equals("*")) return NullUserChecker.getInstance();
 
+        List<UserChecker> checkers = Lists.newArrayListWithExpectedSize(5);
         // split value
         String[] valueArray = rolePropDescription.split("[\\s,\\n]+");
-        for (String classOrFieldName : valueArray) {
-            classOrFieldName = classOrFieldName.trim();
-            if (classOrFieldName.isEmpty()) continue;
+        for (String someEnumName : valueArray) {
+            someEnumName = someEnumName.trim();
+            if (someEnumName.isEmpty()) continue;
 
             // check if it is inverted
             boolean inverted = false;
-            if (classOrFieldName.startsWith("!")) {
-                classOrFieldName = classOrFieldName.substring(1);
+            if (someEnumName.startsWith("!")) {
+                someEnumName = someEnumName.substring(1);
                 inverted = true;
             }
+            // see if it is a category
+            try {
+                YukonRoleCategory category = YukonRoleCategory.valueOf(someEnumName);
+                UserChecker categoryChecker = userCheckerFactory.createCategoryChecker(category);
+                if (inverted) {
+                    categoryChecker = new NotUserChecker(categoryChecker);
+                }
+                checkers.add(categoryChecker);
+                continue;
+                
+            } catch (IllegalArgumentException e) {
+            }
+            
+            
             // see if it is a role
             try {
-                String roleIdFqn = classOrFieldName;
-                if (!classOrFieldName.endsWith(ROLEID_SUFFIX)) {
-                    roleIdFqn += ROLEID_SUFFIX;
+                YukonRole role = YukonRole.valueOf(someEnumName);
+                UserChecker roleChecker = userCheckerFactory.createRoleChecker(role);
+                if (inverted) {
+                    roleChecker = new NotUserChecker(roleChecker);
                 }
-                int intForFQN = propertySearcher.getIntForName(roleIdFqn);
-                boolean hasRole = checkRole(user, intForFQN);
-                if (hasRole != inverted) {
-                    return true;
-                }
-
+                checkers.add(roleChecker);
                 continue;
 
             } catch (IllegalArgumentException e) {
@@ -60,26 +81,30 @@ public abstract class RoleAndPropertyDescriptionService {
 
             // not a role, check if it is a property
             try {
-                String propertyIdFqn = classOrFieldName;
-                int intForFQN = propertySearcher.getIntForName(propertyIdFqn);
-                boolean hasProperty = checkRoleProperty(user, intForFQN);
-                if (hasProperty != inverted) {
-                    return true;
+                YukonRoleProperty property = YukonRoleProperty.valueOf(someEnumName);
+                UserChecker propertyChecker;
+                if (inverted) {
+                    propertyChecker = userCheckerFactory.createFalsePropertyChecker(property);
+                } else {
+                    propertyChecker = userCheckerFactory.createPropertyChecker(property);
                 }
-
+                checkers.add(propertyChecker);
                 continue;
 
             } catch (IllegalArgumentException ignore) { }
 
             // if we get here, we must not have a valid role or property
-            throw new IllegalArgumentException("Can't recognize: " + classOrFieldName);
+            throw new IllegalArgumentException("Can't recognize: " + someEnumName);
         }
         // if we get here, nothing matched
-        return false;  
+        AggregateOrUserChecker userChecker = new AggregateOrUserChecker(checkers);
+        return userChecker;  
     }
-
-    protected abstract boolean checkRoleProperty(final LiteYukonUser user, int intForFQN);
-
-    protected abstract boolean checkRole(final LiteYukonUser user, int intForFQN);
+        
+    @Autowired
+    public void setUserCheckerFactory(
+            RolePropertyUserCheckerFactory userCheckerFactory) {
+        this.userCheckerFactory = userCheckerFactory;
+    }
 
 }

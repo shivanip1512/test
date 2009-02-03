@@ -63,15 +63,6 @@ public class ClientSession {
 	}
 	
 	/**
-	 * Checks if the current user has the give roleproperty id
-	 * @param rolePropertyID
-	 * @return
-	 */
-	public boolean checkRoleProperty(int rolePropertyID) {
-		return DaoFactory.getAuthDao().checkRoleProperty(getUser(), rolePropertyID);
-	}
-	
-	/**
 	 * Returns the value of the given role property for the current user.
 	 * Checks if the current user has the give roleproperty id
 	 * @param rolePropertyID

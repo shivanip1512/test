@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -28,7 +30,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.WebSecurityChecker;
 import com.cannontech.web.security.annotation.CheckRole;
 
-@CheckRole(ResidentialCustomerRole.ROLEID)
+@CheckRole(YukonRole.RESIDENTIAL_CUSTOMER)
 @Controller
 public class EnrollmentController extends AbstractConsumerController {
     private static final String KEY_PROGRAMID = "programId";
@@ -41,7 +43,7 @@ public class EnrollmentController extends AbstractConsumerController {
     @RequestMapping(value = "/consumer/enrollment", method = RequestMethod.GET)
     public String view(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
             YukonUserContext yukonUserContext, ModelMap map) {
-        webSecurityChecker.checkRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_ENROLLMENT);
+        webSecurityChecker.checkRoleProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_ENROLLMENT);
         
         List<DisplayableEnrollment> enrollments = 
             displayableEnrollmentDao.getDisplayableEnrollments(customerAccount, yukonUserContext);
@@ -53,7 +55,7 @@ public class EnrollmentController extends AbstractConsumerController {
     @RequestMapping(value = "/consumer/enrollmentDetail", method = RequestMethod.GET)
     public String viewDetail(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
     		YukonUserContext yukonUserContext, ModelMap map) {
-    	webSecurityChecker.checkRoleProperty(ResidentialCustomerRole.ENROLLMENT_PER_DEVICE);
+    	webSecurityChecker.checkRoleProperty(YukonRoleProperty.RESIDENTIAL_ENROLLMENT_PER_DEVICE);
         
     	List<DisplayableEnrollment> enrollments = 
     		displayableEnrollmentDao.getDisplayableEnrollments(customerAccount, yukonUserContext);
@@ -66,8 +68,8 @@ public class EnrollmentController extends AbstractConsumerController {
     public String update(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
             String json, String enrollPage, YukonUserContext yukonUserContext, HttpSession session, 
             ModelMap map) {
-        webSecurityChecker.checkRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_ENROLLMENT,
-                                             ResidentialCustomerRole.ENROLLMENT_PER_DEVICE);
+        webSecurityChecker.checkRoleProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_ENROLLMENT,
+                                             YukonRoleProperty.RESIDENTIAL_ENROLLMENT_PER_DEVICE);
         
         final LiteYukonUser user = yukonUserContext.getYukonUser();
         

@@ -12,9 +12,9 @@
      or a shortend version if the class is under com.cannontech.roles 
      (e.g. CBCSettingsRole.ACCESS).
      
-     Multiple values can be specified in the tag and they will be evaluted with OR semantics. The
+     Multiple values can be specified in the tag and they will be evaluated with OR semantics. The
      tag accepts any combination of both Roles and Properties. 
-     (e.g. MeteringRole.ROLEID,MeteringRole.IMPORTER_ENABLED)
+     (e.g. METERING,MeteringRole.IMPORTER_ENABLED)
      
      Role and properties can be checked for a false value by prefixing the role or property name
      with a "!".
@@ -34,15 +34,15 @@
     <links>
     <!-- Consumer Account Information -->
     <option id="consumerAccountInformation">
-      <requireRoleProperty value="ConsumerInfoRole.ROLEID" />
+      <requireRoleProperty value="CONSUMER_INFO" />
 
       <links>  
         <option id="newAccount">
-          <requireRoleProperty value="ConsumerInfoRole.NEW_ACCOUNT_WIZARD"/>
+          <requireRoleProperty value="OPERATOR_NEW_ACCOUNT_WIZARD"/>
           <link>Consumer/New.jsp?Init=true&amp;Wizard=true</link>
         </option>
         <option id="newAccount">
-          <requireRoleProperty value="!ConsumerInfoRole.NEW_ACCOUNT_WIZARD"/>
+          <requireRoleProperty value="!OPERATOR_NEW_ACCOUNT_WIZARD"/>
           <link>Consumer/New.jsp?Init=true</link>
         </option>
         <option id="optOutAdmin">
@@ -53,28 +53,28 @@
 
     <!-- Metering -->
     <option id="metering">
-      <requireRoleProperty value="MeteringRole.ROLEID,application.BillingRole.ROLEID,TrendingRole.ROLEID,DeviceActionsRole.ROLEID" />
+      <requireRoleProperty value="METERING,APPLICATION_BILLING,TRENDING,DEVICE_ACTIONS" />
 
       <links>
         <option id="allTrends">
           <link>/operator/Metering/Metering.jsp</link>
-          <requireRoleProperty value="TrendingRole.ROLEID"/>
+          <requireRoleProperty value="TRENDING"/>
         </option>
 
         <option id="bulkImporter">
           <link>/spring/amr/bulkimporter/home</link>
-          <requireRoleProperty value="MeteringRole.ROLEID" />
-          <requireRoleProperty value="MeteringRole.IMPORTER_ENABLED" />
+          <requireRoleProperty value="METERING" />
+          <requireRoleProperty value="IMPORTER_ENABLED" />
         </option>
 
         <option id="metering">
           <link>/spring/meter/search</link>
-          <requireRoleProperty value="MeteringRole.ROLEID,application.BillingRole.ROLEID,SchedulerRole.ROLEID,CommanderRole.ROLEID" />
+          <requireRoleProperty value="METERING,APPLICATION_BILLING,SCHEDULER,COMMANDER" />
         </option>
         
         <option id="bulkOperations">
           <link>/spring/bulk/bulkHome</link>
-          <requireRoleProperty value="DeviceActionsRole.ROLEID"/>
+          <requireRoleProperty value="DEVICE_ACTIONS"/>
         </option>
       </links>
     </option>
@@ -95,7 +95,7 @@
         </option>
 
         <option id="trending">
-          <requireRoleProperty value="TrendingRole.ROLEID" />
+          <requireRoleProperty value="TRENDING" />
           <script>jwsLaunch('/jws/trending.jnlp')</script>
         </option>
         
@@ -105,7 +105,7 @@
         </option>
         
         <option id="commander">
-          <requireRoleProperty value="CommanderRole.ROLEID" />
+          <requireRoleProperty value="COMMANDER" />
           <script>jwsLaunch('/jws/commander.jnlp')</script>
         </option>
         
@@ -114,29 +114,29 @@
     -->
     <!-- Load Response -->
     <option id="loadResponse">
-      <requireRoleProperty value="loadcontrol.DirectLoadcontrolRole.ROLEID"/>
+      <requireRoleProperty value="LM_DIRECT_LOADCONTROL"/>
       
       <links>
         <option id="direct">
           <link>/operator/LoadControl/oper_direct.jsp</link>
-          <requireRoleProperty value="loadcontrol.DirectLoadcontrolRole.ROLEID"/>
-          <requireRoleProperty value="loadcontrol.DirectLoadcontrolRole.DIRECT_CONTROL"/>
+          <requireRoleProperty value="LM_DIRECT_LOADCONTROL"/>
+          <requireRoleProperty value="DIRECT_CONTROL"/>
         </option>
 
         <option id="ciCurtailment">
           <link>/cc/programSelect.jsf</link>
-          <requireRoleProperty value="CICurtailmentRole.ROLEID" />
+          <requireRoleProperty value="CI_CURTAILMENT" />
         </option>
 
         <option id="oddsForControl">
           <link>/operator/Consumer/Odds.jsp</link>
-          <requireRoleProperty value="OddsForControlRole.ROLEID" />
+          <requireRoleProperty value="ODDS_FOR_CONTROL" />
         </option>
         
         <option id="threeTierDirect">
           <link>/loadmgmt/controlareas.jsp</link>
-          <requireRoleProperty value="loadcontrol.DirectLoadcontrolRole.ROLEID"/>
-          <requireRoleProperty value="loadcontrol.DirectLoadcontrolRole.THREE_TIER_DIRECT"/>
+          <requireRoleProperty value="LM_DIRECT_LOADCONTROL"/>
+          <requireRoleProperty value="THREE_TIER_DIRECT"/>
         </option>
         
       </links>
@@ -144,7 +144,7 @@
 
     <!-- Capacitor Control -->
     <option id="capacitorControl">
-      <requireRoleProperty value="CBCSettingsRole.ROLEID" />
+      <requireRoleProperty value="CBC_SETTINGS" />
 
       <links>
         <option id="capControl">
@@ -156,17 +156,17 @@
 
     <!-- Hardware Inventory -->
     <option id="hardwareInventory">
-      <requireRoleProperty value="InventoryRole.ROLEID" />
+      <requireRoleProperty value="INVENTORY" />
       
       <links>
         <option id="inventory">
           <link>/operator/Hardware/Filter.jsp</link>
-          <requireRoleProperty value="InventoryRole.INVENTORY_SHOW_ALL" />
+          <requireRoleProperty value="INVENTORY_SHOW_ALL" />
         </option>
 
         <option id="purchasing">
           <link>/operator/Hardware/PurchaseTrack.jsp</link>
-          <requireRoleProperty value="InventoryRole.PURCHASING_ACCESS" />
+          <requireRoleProperty value="PURCHASING_ACCESS" />
         </option>
       
       </links>
@@ -178,12 +178,12 @@
       <links>
         <option id="reporting">
           <link>/analysis/Reports.jsp</link>
-          <requireRoleProperty value="ReportingRole.ROLEID"/>
+          <requireRoleProperty value="REPORTING"/>
         </option>
 
         <option id="commander">
           <link>/apps/SelectDevice.jsp</link>
-          <requireRoleProperty value="CommanderRole.ROLEID" />
+          <requireRoleProperty value="COMMANDER" />
         </option>
 
       </links>
@@ -191,22 +191,22 @@
     
     <!-- Administration -->
     <option id="administration">
-      <requireRoleProperty value="operator.AdministratorRole.ROLEID" />
+      <requireRoleProperty value="OPERATOR_ADMINISTRATOR" />
 
       <links>
         <option id="configEnergyCompany">
           <link>/operator/Admin/ConfigEnergyCompany.jsp</link>
-          <requireRoleProperty value="operator.AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY"/>
+          <requireRoleProperty value="ADMIN_CONFIG_ENERGY_COMPANY"/>
         </option>
 
         <option id="memberManagement">
           <link>/operator/Admin/ManageMembers.jsp</link>
-          <requireRoleProperty value="operator.AdministratorRole.ADMIN_MANAGE_MEMBERS"/>
+          <requireRoleProperty value="ADMIN_MANAGE_MEMBERS"/>
         </option>
 
         <option id="newEnergyCompany">
           <link>/operator/Admin/NewEnergyCompany.jsp</link>
-          <requireRoleProperty value="operator.AdministratorRole.ADMIN_CREATE_ENERGY_COMPANY"/>
+          <requireRoleProperty value="ADMIN_CREATE_ENERGY_COMPANY"/>
         </option>
 
 <!--         
@@ -217,37 +217,37 @@
  -->
         <option id="viewBatchCommands">
           <link>/operator/Admin/SwitchCommands.jsp</link>
-          <requireRoleProperty value="operator.AdministratorRole.ADMIN_VIEW_BATCH_COMMANDS"/>
+          <requireRoleProperty value="ADMIN_VIEW_BATCH_COMMANDS"/>
         </option>
 
         <option id="viewScheduledOptOutEvents">
           <link>/operator/Admin/OptOutEvents.jsp</link>
-          <requireRoleProperty value="operator.AdministratorRole.ADMIN_VIEW_OPT_OUT_EVENTS"/>
+          <requireRoleProperty value="ADMIN_VIEW_OPT_OUT_EVENTS"/>
         </option>
 
         <option id="multispeakSetup">
           <link>/msp_setup.jsp</link>
-          <requireRoleProperty value="operator.AdministratorRole.ADMIN_MULTISPEAK_SETUP"/>
+          <requireRoleProperty value="ADMIN_MULTISPEAK_SETUP"/>
         </option>
 
         <option id="userGroupEditor">
           <link>/spring/editor/userGroupSelector</link>
-          <requireRoleProperty value="AdministratorRole.ADMIN_LM_USER_ASSIGN"/>
+          <requireRoleProperty value="ADMIN_LM_USER_ASSIGN"/>
         </option>
 
         <option id="viewLogs">
           <link>/logging/</link>
-          <requireRoleProperty value="AdministratorRole.ADMIN_VIEW_LOGS"/>
+          <requireRoleProperty value="ADMIN_VIEW_LOGS"/>
         </option>
 
         <option id="manageIndexes">
           <link>/index/manage</link>
-          <requireRoleProperty value="AdministratorRole.ADMIN_MANAGE_INDEXES"/>
+          <requireRoleProperty value="ADMIN_MANAGE_INDEXES"/>
         </option>
         
         <option id="deviceConfiguration">
           <link>/spring/deviceConfiguration?home</link>
-          <requireRoleProperty value="AdministratorRole.ADMIN_VIEW_CONFIG"/>
+          <requireRoleProperty value="ADMIN_VIEW_CONFIG"/>
         </option>
 
       </links>
@@ -264,19 +264,19 @@
    		   <link>/spring/meter/search</link>	
    		</option>
    		<option id="billing">
-   		  <requireRoleProperty value="application.BillingRole.ROLEID"/>
+   		  <requireRoleProperty value="APPLICATION_BILLING"/>
    		  <links>
 	          <option id="generation">
 	   		    <link>/operator/Metering/Billing.jsp</link>
 	          </option>
 	          <option id="setup">
-	          	<requireRoleProperty value="application.BillingRole.DYNAMIC_BILLING_FILE_SETUP"/>
+	          	<requireRoleProperty value="DYNAMIC_BILLING_FILE_SETUP"/>
 	            <link>/spring/dynamicBilling/overview</link>
 	          </option>
           </links>	
    		</option>
 		<option id="scheduler">
-		   <requireRoleProperty value="SchedulerRole.ROLEID"/>
+		   <requireRoleProperty value="SCHEDULER"/>
    		   <link>/spring/macsscheduler/schedules/view</link>	
    		</option>
 		<option id="devicegroups">
@@ -286,8 +286,8 @@
             </option>
 		    <option id="commander">
               <link>/spring/group/commander/groupProcessing</link>
-              <requireRoleProperty value="DeviceActionsRole.ROLEID"/>
-              <requireRoleProperty value="DeviceActionsRole.GROUP_COMMANDER"/>
+              <requireRoleProperty value="DEVICE_ACTIONS"/>
+              <requireRoleProperty value="GROUP_COMMANDER"/>
             </option>
           </links>
 	    </option>
@@ -298,19 +298,19 @@
     <skin name="leftSideMenu"/>
    	<links>
    		<option id="account">
-   		   <requireRoleProperty value="ResidentialCustomerRole.CONSUMER_INFO_ACCOUNT_GENERAL" />
+   		   <requireRoleProperty value="RESIDENTIAL_CONSUMER_INFO_ACCOUNT_GENERAL" />
    		   <links>
 	          <option id="general">
 	   		    <link>/spring/stars/consumer/general</link>
 	          </option>
 	          <option id="contacts">
-	            <requireRoleProperty value="ResidentialCustomerRole.CONTACTS_ACCESS" />
+	            <requireRoleProperty value="RESIDENTIAL_CONTACTS_ACCESS" />
                 <link>/spring/stars/consumer/contacts</link>
 	          </option>
           </links>	
    		</option>
    		<option id="thermostat">
-		   <requireRoleProperty value="ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT" />
+		   <requireRoleProperty value="RESIDENTIAL_CONSUMER_INFO_HARDWARES_THERMOSTAT" />
 		   <links>
 		       <dynamicOptions bean="themostatMenuOption"/>
 		   </links>
@@ -318,41 +318,41 @@
 		<option id="programs">
 		  <links>
 		    <option id="controlHistory">
-			  <requireRoleProperty value="ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY" />
+			  <requireRoleProperty value="RESIDENTIAL_CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY" />
               <link>/spring/stars/consumer/controlhistory</link>
             </option>
 		    <option id="enrollment">
-			  <requireRoleProperty value="ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_ENROLLMENT" />
+			  <requireRoleProperty value="RESIDENTIAL_CONSUMER_INFO_PROGRAMS_ENROLLMENT" />
               <link>/spring/stars/consumer/enrollment</link>
             </option>
             <dynamicOptions bean="optOutMenuOption">
-			  <requireRoleProperty value="ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT" />
+			  <requireRoleProperty value="RESIDENTIAL_CONSUMER_INFO_PROGRAMS_OPT_OUT" />
             </dynamicOptions>
           </links>
 	    </option>
 		<option id="trending">
-		  <requireRoleProperty value="TrendingRole.ROLEID" />
+		  <requireRoleProperty value="TRENDING" />
 		  <links>
 			<dynamicOptions bean="trendingMenuOption">
-		  	  <requireRoleProperty value="TrendingRole.ROLEID" />
+		  	  <requireRoleProperty value="TRENDING" />
 	    	</dynamicOptions>
           </links>
 	    </option>
 		<option id="questions">
-		  <requireRoleProperty value="ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_UTIL" />
-		  <requireRoleProperty value="ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_FAQ" />
+		  <requireRoleProperty value="RESIDENTIAL_CONSUMER_INFO_QUESTIONS_UTIL" />
+		  <requireRoleProperty value="RESIDENTIAL_CONSUMER_INFO_QUESTIONS_FAQ" />
 		  <links>
 		    <option id="contactUs">
-			  <requireRoleProperty value="ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_UTIL" />
+			  <requireRoleProperty value="RESIDENTIAL_CONSUMER_INFO_QUESTIONS_UTIL" />
               <link>/spring/stars/consumer/contactus</link>
             </option>
 		    <dynamicOptions id="faq" bean="consumerFAQMenuOption">
-			  <requireRoleProperty value="ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_FAQ" />
+			  <requireRoleProperty value="RESIDENTIAL_CONSUMER_INFO_QUESTIONS_FAQ" />
             </dynamicOptions>
           </links>
 	    </option>
 		<option id="administration">
-		  <requireRoleProperty value="ResidentialCustomerRole.CONSUMER_INFO_CHANGE_LOGIN_USERNAME, ResidentialCustomerRole.CONSUMER_INFO_CHANGE_LOGIN_PASSWORD" />
+		  <requireRoleProperty value="RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_USERNAME, RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_PASSWORD" />
           <links>
 		    <option id="changeLogin">
               <link>/spring/stars/consumer/changelogin</link>
@@ -366,7 +366,7 @@
   <module name="capcontrol">
     <links>
       <option id="create">
-        <requireRoleProperty value="capcontrol.CBCSettingsRole.CBC_DATABASE_EDIT"/>
+        <requireRoleProperty value="CBC_DATABASE_EDIT"/>
         <links>
           <option id="area">
             <link>/editor/cbcWizBase.jsf?type=4002</link>
@@ -398,22 +398,22 @@
         </links>
       </option>
       <option id="analysis">
-        <requireRoleProperty value="!capcontrol.CBCSettingsRole.HIDE_REPORTS"/>
+        <requireRoleProperty value="!HIDE_REPORTS"/>
         <links>
           <option id="todaykvarperwatt">
-	        <requireRoleProperty value="!capcontrol.CBCSettingsRole.HIDE_GRAPHS"/>
+	        <requireRoleProperty value="!HIDE_GRAPHS"/>
             <script>loadPointChartGreyBox('Today kVAR/Watt', '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=VW&amp;period=DAY')</script>
           </option>
           <option id="todaypf">
-	        <requireRoleProperty value="!capcontrol.CBCSettingsRole.HIDE_GRAPHS"/>
+	        <requireRoleProperty value="!HIDE_GRAPHS"/>
             <script>loadPointChartGreyBox('Today PF', '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=PF&amp;period=DAY')</script>
           </option>
           <option id="30daykvarperwatt">
-	        <requireRoleProperty value="!capcontrol.CBCSettingsRole.HIDE_GRAPHS"/>
+	        <requireRoleProperty value="!HIDE_GRAPHS"/>
             <script>loadPointChartGreyBox('30 Day kVAR/Watt', '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=VW&amp;period=MONTH')</script>
           </option>
           <option id="30daypf">
-	        <requireRoleProperty value="!capcontrol.CBCSettingsRole.HIDE_GRAPHS"/>
+	        <requireRoleProperty value="!HIDE_GRAPHS"/>
             <script>loadPointChartGreyBox('30 Day PF', '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=PF&amp;period=MONTH')</script>
           </option>
         </links>
@@ -430,7 +430,7 @@
             <script>post('/editor/strategyList.jsf')</script>
           </option>
           <option id="oneline">
-	        <requireRoleProperty value="!capcontrol.CBCSettingsRole.HIDE_ONELINE"/>
+	        <requireRoleProperty value="!HIDE_ONELINE"/>
             <script>showOneLine()</script>
           </option>
           <option id="recentcontrols">
@@ -523,39 +523,39 @@
         <links>
           <option id="administrator">
             <link>/analysis/Reports.jsp?groupType=ADMINISTRATIVE</link>
-            <requireRoleProperty value="ReportingRole.ADMIN_REPORTS_GROUP"/>
+            <requireRoleProperty value="ADMIN_REPORTS_GROUP"/>
           </option>
           <option id="metering">
             <link>/analysis/Reports.jsp?groupType=METERING</link>
-            <requireRoleProperty value="ReportingRole.AMR_REPORTS_GROUP"/>
+            <requireRoleProperty value="AMR_REPORTS_GROUP"/>
           </option>
           <option id="capcontrol">
             <link>/analysis/Reports.jsp?groupType=CAP_CONTROL</link>
-            <requireRoleProperty value="ReportingRole.CAP_CONTROL_REPORTS_GROUP"/>
+            <requireRoleProperty value="CAP_CONTROL_REPORTS_GROUP"/>
           </option>
           <option id="statistical">
             <link>/analysis/Reports.jsp?groupType=STATISTICAL</link>
-            <requireRoleProperty value="ReportingRole.STATISTICAL_REPORTS_GROUP"/>
+            <requireRoleProperty value="STATISTICAL_REPORTS_GROUP"/>
           </option>
           <option id="database">
             <link>/analysis/Reports.jsp?groupType=DATABASE</link>
-            <requireRoleProperty value="ReportingRole.DATABASE_REPORTS_GROUP"/>
+            <requireRoleProperty value="DATABASE_REPORTS_GROUP"/>
           </option>
           <option id="management">
             <link>/analysis/Reports.jsp?groupType=LOAD_MANAGEMENT</link>
-            <requireRoleProperty value="ReportingRole.LOAD_MANAGEMENT_REPORTS_GROUP"/>
+            <requireRoleProperty value="LOAD_MANAGEMENT_REPORTS_GROUP"/>
           </option>
           <option id="stars">
             <link>/analysis/Reports.jsp?groupType=STARS</link>
-            <requireRoleProperty value="ReportingRole.STARS_REPORTS_GROUP"/>
+            <requireRoleProperty value="STARS_REPORTS_GROUP"/>
           </option>
           <option id="settlement">
             <link>/analysis/Reports.jsp?groupType=SETTLEMENT</link>
-            <requireRoleProperty value="ReportingRole.SETTLEMENT_REPORTS_GROUP"/>
+            <requireRoleProperty value="SETTLEMENT_REPORTS_GROUP"/>
           </option>
           <option id="cni">
             <link>/analysis/Reports.jsp?groupType=CCURT</link>
-            <requireRoleProperty value="ReportingRole.CI_CURTAILMENT_REPORTS_GROUP"/>
+            <requireRoleProperty value="CI_CURTAILMENT_REPORTS_GROUP"/>
           </option>
         </links>
       </option>
@@ -595,7 +595,7 @@
     	  </option>
     	  <option id="lm_mappings">
     		<link>/spring/multispeak/setup/lmMappings/home</link>
-    		<requireRoleProperty value="MultispeakRole.MSP_LM_MAPPING_SETUP"/>
+    		<requireRoleProperty value="MSP_LM_MAPPING_SETUP"/>
     	  </option>
     	</links>
       </option>
@@ -703,19 +703,19 @@
           </option>
           <option id="xcom">
             <link>CommandDevice.jsp?deviceID=-1&amp;manual&amp;xcom</link>
-            <requireRoleProperty value="CommanderRole.EXPRESSCOM_SERIAL_MODEL"/>
+            <requireRoleProperty value="EXPRESSCOM_SERIAL_MODEL"/>
           </option>
           <option id="vcom">
             <link>CommandDevice.jsp?deviceID=-1&amp;manual&amp;vcom</link>
-            <requireRoleProperty value="CommanderRole.VERSACOM_SERIAL_MODEL"/>
+            <requireRoleProperty value="VERSACOM_SERIAL_MODEL"/>
           </option>
           <option id="205serial">
             <link>CommandDevice.jsp?deviceID=-1&amp;manual&amp;sa205</link>
-            <requireRoleProperty value="CommanderRole.DCU_SA205_SERIAL_MODEL"/>
+            <requireRoleProperty value="DCU_SA205_SERIAL_MODEL"/>
           </option>
           <option id="305serial">
             <link>CommandDevice.jsp?deviceID=-1&amp;manual&amp;sa305</link>
-            <requireRoleProperty value="CommanderRole.DCU_SA305_SERIAL_MODEL"/>
+            <requireRoleProperty value="DCU_SA305_SERIAL_MODEL"/>
           </option>
         </links>
       </option>

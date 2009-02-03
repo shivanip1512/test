@@ -23,10 +23,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.CustomerDao;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
@@ -47,7 +47,7 @@ import com.cannontech.web.security.annotation.CheckRole;
 /**
  * Controller for Operator-side Thermostat schedule operations
  */
-@CheckRole(ConsumerInfoRole.ROLEID)
+@CheckRole(YukonRole.CONSUMER_INFO)
 @Controller
 public class ThermostatOperatorScheduleController extends AbstractThermostatOperatorController {
 

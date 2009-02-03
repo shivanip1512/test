@@ -14,6 +14,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -27,7 +28,7 @@ import com.cannontech.web.security.annotation.CheckRole;
 /**
  * Controller for Manual thermostat operations
  */
-@CheckRole(ConsumerInfoRole.ROLEID)
+@CheckRole(YukonRole.CONSUMER_INFO)
 @Controller
 public class OptOutAdminController {
 

@@ -29,6 +29,7 @@ public interface AuthDao {
      * @param roleID
      * @return LiteYukonRole
      */
+    @Deprecated
     public LiteYukonRole getRole(LiteYukonUser user, int roleID);
 
 
@@ -38,6 +39,7 @@ public interface AuthDao {
      * @param rolePropertyID
      * @return boolean
      */
+    @Deprecated
     public boolean checkRole(LiteYukonUser user, int roleId);
     
     /**
@@ -46,8 +48,10 @@ public interface AuthDao {
      * @param rolePropertyID
      * @return boolean
      */
+    @Deprecated
     public boolean checkRoleProperty(LiteYukonUser user, int rolePropertyID);
 
+    @Deprecated
     public boolean checkRoleProperty(int userID, int rolePropertyID);
 
     /**
@@ -57,6 +61,7 @@ public interface AuthDao {
      * @return String
      * @throws UnknownRolePropertyException If RoleProperty doesn't exist. 
      */
+    @Deprecated
     public String getRolePropertyValueEx(LiteYukonUser user, int rolePropertyID)
             throws UnknownRolePropertyException;
 
@@ -67,6 +72,7 @@ public interface AuthDao {
      * @param roleProperty
      * @return String
      */
+    @Deprecated
     public String getRolePropertyValue(LiteYukonUser user, int rolePropertyID);
 
     /**
@@ -77,6 +83,7 @@ public interface AuthDao {
      * @return the value of the property
      * @throws IllegalArgumentException if a valid user cannot be found for userID
      */
+    @Deprecated
     public String getRolePropertyValue(int userID, int rolePropertyID);
 
     /**
@@ -84,6 +91,7 @@ public interface AuthDao {
      * @param category
      * @return List
      */
+    @Deprecated
     public List getRoles(String category);
 
     /**
@@ -91,6 +99,7 @@ public interface AuthDao {
      * @param roleid
      * @return
      */
+    @Deprecated
     public LiteYukonRole getRole(int roleid);
 
     /**
@@ -153,6 +162,7 @@ public interface AuthDao {
      */
     public boolean hasPAOAccess(LiteYukonUser user);
     
+    @Deprecated
     public void verifyRole(LiteYukonUser user, int roleId) throws NotAuthorizedException;
     
     /**
@@ -163,9 +173,9 @@ public interface AuthDao {
      * @param rolePropertyIds
      * @throws NotAuthorizedException
      */
-    public void verifyTrueProperty(LiteYukonUser user, int ... rolePropertyIds) throws NotAuthorizedException;
-    public void verifyFalseProperty(LiteYukonUser user, int rolePropertyId) throws NotAuthorizedException;
-    public void verifyAdmin(LiteYukonUser user) throws NotAuthorizedException;
+    @Deprecated public void verifyTrueProperty(LiteYukonUser user, int ... rolePropertyIds) throws NotAuthorizedException;
+    @Deprecated public void verifyFalseProperty(LiteYukonUser user, int rolePropertyId) throws NotAuthorizedException;
+    @Deprecated public void verifyAdmin(LiteYukonUser user) throws NotAuthorizedException;
 
     /**
      * This method returns the TimeZone for the given user.  
@@ -179,5 +189,6 @@ public interface AuthDao {
      */
     public TimeZone getUserTimeZone(LiteYukonUser user) throws BadConfigurationException, IllegalArgumentException;
 
+    @Deprecated
     public <E extends Enum<E>> E getRolePropertyValue(Class<E> class1, LiteYukonUser user, int rolePropertyID);
 }

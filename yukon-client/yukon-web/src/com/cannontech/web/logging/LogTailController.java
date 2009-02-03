@@ -15,6 +15,7 @@ import org.springframework.web.util.HtmlUtils;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.FileUtil;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.servlet.YukonUserContextUtils;
@@ -31,7 +32,7 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
  * @see view for this controller is logTail.jsp
  * @author dharrington
  */
-@CheckRoleProperty(AdministratorRole.ADMIN_VIEW_LOGS)
+@CheckRoleProperty(YukonRoleProperty.ADMIN_VIEW_LOGS)
 public class LogTailController extends LogController {
     
     //logger for this class

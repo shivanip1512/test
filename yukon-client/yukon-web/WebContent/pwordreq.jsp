@@ -2,7 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <%@ page import="com.cannontech.common.version.VersionTools" %>
-<cti:verifyGlobalRolesAndProperties value="AuthenticationRole.ENABLE_PASSWORD_RECOVERY"/>
+<cti:verifyGlobalRolesAndProperties value="ENABLE_PASSWORD_RECOVERY"/>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>

@@ -9,11 +9,11 @@ public interface ReportingRole {
 	public static final int ROLEID = ApplicationRoleDefs.REPORTING_ROLEID;
 
 	//Label for the header
-	public static final int HEADER_LABEL = ApplicationRoleDefs.ANALYSIS_PROPERTYID_BASE;
+	public static final int HEADER_LABEL = ApplicationRoleDefs.REPORTING_PROPERTYID_BASE;
  	
-	public static final int DOWNLOAD_REPORTS_ENABLE = ApplicationRoleDefs.ANALYSIS_PROPERTYID_BASE - 1;
+	public static final int DOWNLOAD_REPORTS_ENABLE = ApplicationRoleDefs.REPORTING_PROPERTYID_BASE - 1;
 	//A default file name when downloads are done
-	public static final int DOWNLOAD_DEFAULT_FILENAME = ApplicationRoleDefs.ANALYSIS_PROPERTYID_BASE - 2;
+	public static final int DOWNLOAD_DEFAULT_FILENAME = ApplicationRoleDefs.REPORTING_PROPERTYID_BASE - 2;
 
 	//Access to groups of reports.  SEE RoleTypes to create actual report type group
 	public static final int ADMIN_REPORTS_GROUP = ApplicationRoleDefs.REPORTING_PROPERTYID_BASE - 3;

@@ -77,6 +77,9 @@
         <property name="configFile" value="classpath:com/cannontech/database/incrementer/table_sequences.xml" />
     </bean>
     
+    <bean id="rolePropertyDao" class="com.cannontech.core.roleproperties.dao.impl.RolePropertyDaoImpl"/>
+    <bean class="com.cannontech.core.roleproperties.dao.impl.RolePropertyChangeHelper"/>
+    
     <bean id="globalTimer" class="java.util.Timer" destroy-method="cancel" lazy-init="true">
        <constructor-arg value="true"/> <!--  create as daemon  -->
     </bean>

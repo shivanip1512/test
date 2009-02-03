@@ -5,10 +5,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CheckRoleProperty {
 
-    int[] value() default {};
+    YukonRoleProperty[] value() default {};
     
 }

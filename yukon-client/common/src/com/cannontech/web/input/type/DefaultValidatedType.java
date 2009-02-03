@@ -9,5 +9,10 @@ public abstract class DefaultValidatedType<T> implements InputType<T> {
     public InputValidator<T> getValidator() {
         return DefaultValidator.getInstance();
     }
+    
+    @Override
+    public String toString() {
+        return getClass().getSimpleName();
+    }
 
 }

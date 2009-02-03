@@ -45,6 +45,7 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.LoadProfileService;
 import com.cannontech.core.service.impl.LoadProfileServiceEmailCompletionCallbackImpl;
@@ -52,17 +53,14 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.roles.operator.MeteringRole;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.simplereport.SimpleReportService;
 import com.cannontech.tools.email.EmailService;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.JsonView;
 
-@CheckRole(MeteringRole.ROLEID)
-@CheckRoleProperty(MeteringRole.HIGH_BILL_COMPLAINT)
+@CheckRoleProperty(YukonRoleProperty.HIGH_BILL_COMPLAINT)
 public class HighBillController extends MultiActionController {
 
     private DeviceDao deviceDao = null;

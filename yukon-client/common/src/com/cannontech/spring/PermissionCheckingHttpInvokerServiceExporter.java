@@ -16,7 +16,7 @@ import com.cannontech.util.ServletUtil;
 public class PermissionCheckingHttpInvokerServiceExporter extends
 HttpInvokerServiceExporter {
 
-    UserChecker permissionChecker = new NullUserChecker();
+    UserChecker permissionChecker = NullUserChecker.getInstance();
 
     public void setPermissionChecker(UserChecker permissionChecker) {
         this.permissionChecker = permissionChecker;

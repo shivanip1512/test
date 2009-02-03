@@ -33,12 +33,10 @@ import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.dao.DeviceDao;
-import com.cannontech.roles.operator.DeviceActionsRole;
-import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
-@CheckRole(DeviceActionsRole.ROLEID)
-@CheckRoleProperty(DeviceActionsRole.MASS_DELETE)
+@CheckRoleProperty(YukonRoleProperty.MASS_DELETE)
 public class MassDeleteController extends BulkControllerBase {
 
     private DeviceDao deviceDao = null;

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.authorization.support.AllowDeny;
 import com.cannontech.user.checker.RolePropertyUserCheckerFactory;
 import com.cannontech.user.checker.UserChecker;
@@ -17,7 +18,7 @@ public class UrlAccessDescriptionParser {
     private static final int INDEX_URLPATH = 1;
     private static final int INDEX_ROLEIDS = 2;
 
-    private RolePropertyUserCheckerFactory rolePropertyUserCheckerFactory;
+    private RoleAndPropertyDescriptionService roleAndPropertyDescriptionService;
     
     public List<UrlAccess> parse(String[] descriptions) {
         final List<UrlAccess> descriptionList = new LinkedList<UrlAccess>();
@@ -61,8 +62,7 @@ public class UrlAccessDescriptionParser {
     
     private UserChecker getRoleIdChecker(String[] split) {
         String roleIdDescriptions = split[INDEX_ROLEIDS].trim();
-        UserChecker checker = 
-            rolePropertyUserCheckerFactory.createRoleAndPropertyDescriptionChecker(roleIdDescriptions);
+        UserChecker checker = roleAndPropertyDescriptionService.compile(roleIdDescriptions);
         return checker;
     }
     
@@ -73,9 +73,9 @@ public class UrlAccessDescriptionParser {
     }
     
     @Autowired
-    public void setRolePropertyUserCheckerFactory(
-            RolePropertyUserCheckerFactory rolePropertyUserCheckerFactory) {
-        this.rolePropertyUserCheckerFactory = rolePropertyUserCheckerFactory;
+    public void setRoleAndPropertyDescriptionService(
+            RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
+        this.roleAndPropertyDescriptionService = roleAndPropertyDescriptionService;
     }
     
 }

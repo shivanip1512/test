@@ -3,6 +3,9 @@ package com.cannontech.common.exception;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
+import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleCategory;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 public class NotAuthorizedException extends YukonSecurityException {
@@ -11,17 +14,23 @@ public class NotAuthorizedException extends YukonSecurityException {
     }
 
 
-    public static NotAuthorizedException role(LiteYukonUser user, int roleId) {
-        return new NotAuthorizedException("User " + user + " requires false property for roleId=" + roleId);
+    public static NotAuthorizedException role(LiteYukonUser user, YukonRole role) {
+        return new NotAuthorizedException("User " + user + " requires role " + role);
+    }
+    public static NotAuthorizedException trueProperty(LiteYukonUser user, YukonRoleProperty roleProperty) {
+        return new NotAuthorizedException("User " + user + " requires true property for roleProperty " + roleProperty);
     }
     public static NotAuthorizedException trueProperty(LiteYukonUser user, int ... rolePropertyIds) {
         Integer[] intObjs = ArrayUtils.toObject(rolePropertyIds);
         return new NotAuthorizedException("User " + user + " requires true property for at least one of rolePropertyId=" + StringUtils.join(intObjs, ","));
     }
-    public static NotAuthorizedException falseProperty(LiteYukonUser user, int rolePropertyId) {
-        return new NotAuthorizedException("User " + user + " requires false property for rolePropertyId=" + rolePropertyId);
+    public static NotAuthorizedException falseProperty(LiteYukonUser user, YukonRoleProperty roleProperty) {
+        return new NotAuthorizedException("User " + user + " requires false property for roleProperty " + roleProperty);
     }
     public static NotAuthorizedException adminUser(LiteYukonUser user) {
         return new NotAuthorizedException("User " + user + " is not an administrator");
+    }
+    public static NotAuthorizedException category(LiteYukonUser user, YukonRoleCategory roleCategory) {
+        return new NotAuthorizedException("User " + user + " requires a role in category " + roleCategory);
     }
 }

@@ -19,13 +19,13 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.FileUtil;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
-@CheckRoleProperty(AdministratorRole.ADMIN_VIEW_LOGS)
+@CheckRoleProperty(YukonRoleProperty.ADMIN_VIEW_LOGS)
 public class LogTailUpdaterController extends LogController {
 	
     private Logger logger = YukonLogManager.getLogger(LogTailController.class);

@@ -65,7 +65,6 @@
     
     <bean id="menuBuilder" class="com.cannontech.web.menu.CommonModuleBuilder" init-method="processConfigFile">
         <constructor-arg value="/WEB-INF/module_config.xml"/>
-        <property name="userCheckerFactory" ref="rolePropertyUserCheckerFactory"/>
         <property name="menuOptionProducerFactory">
             <bean class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean">
                 <property name="serviceLocatorInterface" 
@@ -610,15 +609,15 @@
     </bean>
     
     <bean id="verifyRolesAndPropertiesTagPrototype" class="com.cannontech.web.util.VerifyRolesAndPropertiesTag">
-        <property name="descriptionService" ref="userRoleAndPropertyDescriptionService"/>
+        <property name="descriptionService" ref="roleAndPropertyDescriptionService"/>
     </bean>
     
     <bean id="verifyGlobalRolesAndPropertiesTagPrototype" class="com.cannontech.web.util.VerifyGlobalRolesAndPropertiesTag">
-        <property name="descriptionService" ref="globalRoleAndPropertyDescriptionService"/>
+        <property name="descriptionService" ref="roleAndPropertyDescriptionService"/>
     </bean>
     
     <bean id="checkGlobalRolesAndPropertiesTagPrototype" class="com.cannontech.web.taglib.CheckGlobalRolesAndPropertiesTag">
-        <property name="descriptionService" ref="globalRoleAndPropertyDescriptionService"/>
+        <property name="descriptionService" ref="roleAndPropertyDescriptionService"/>
     </bean>
     
     <bean id="trendWidgetCachingParameterGrabber" abstract="true">
@@ -800,24 +799,24 @@
         <property name="urlAccessDescriptions">
             <list>
                 <!-- DO NOT REMOVE -->
-                <value>ALLOW|/remote/**|DBEditorRole,TDCRole,CommanderRole,EsubEditorRole,TrendingRole</value>
+                <value>ALLOW|/remote/**|DATABASE_EDITOR,TABULAR_DISPLAY_CONSOLE,COMMANDER,APPLICATION_ESUBSTATION_EDITOR,TRENDING</value>
 
-                <value>ALLOW|/spring/stars/consumer/**|ResidentialCustomerRole</value>
-                <value>ALLOW|/spring/login/changelogin/updateusername|ResidentialCustomerRole</value>
-                <value>ALLOW|/spring/login/changelogin/updatepassword|ResidentialCustomerRole</value>                                
+                <value>ALLOW|/spring/stars/consumer/**|RESIDENTIAL_CUSTOMER</value>
+                <value>ALLOW|/spring/login/changelogin/updateusername|RESIDENTIAL_CUSTOMER</value>
+                <value>ALLOW|/spring/login/changelogin/updatepassword|RESIDENTIAL_CUSTOMER</value>                                
                 <!-- Allow for Trending -->
-                <value>ALLOW|/servlet/GraphGenerator|ResidentialCustomerRole</value>
-                <value>ALLOW|/servlet/Download|ResidentialCustomerRole</value>
-                <value>ALLOW|/include/trending_print.jsp|ResidentialCustomerRole</value>
-                <value>ALLOW|/include/options_popup.jsp|ResidentialCustomerRole</value>
+                <value>ALLOW|/servlet/GraphGenerator|RESIDENTIAL_CUSTOMER</value>
+                <value>ALLOW|/servlet/Download|RESIDENTIAL_CUSTOMER</value>
+                <value>ALLOW|/include/trending_print.jsp|RESIDENTIAL_CUSTOMER</value>
+                <value>ALLOW|/include/options_popup.jsp|RESIDENTIAL_CUSTOMER</value>
                                
-                <value>DENY|/**|ResidentialCustomerRole</value>
+                <value>DENY|/**|RESIDENTIAL_CUSTOMER</value>
                 
                 <!-- Deny Capacitor Control to all except CBCSettingsRole role -->
-                <value>DENY|/spring/capcontrol/**|!CBCSettingsRole</value>            
-                <value>DENY|/capcontrol/**|!CBCSettingsRole</value>
+                <value>DENY|/spring/capcontrol/**|!CBC_SETTINGS</value>            
+                <value>DENY|/capcontrol/**|!CBC_SETTINGS</value>
                 
-                <value>ALLOW|/**|WebClientRole</value>
+                <value>ALLOW|/**|WEB_CLIENT</value>
                 <value>DENY|/**|*</value>
                 <!-- DO NOT REMOVE -->
             </list>

@@ -36,6 +36,8 @@ import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.LoadProfileService;
 import com.cannontech.core.service.impl.LoadProfileServiceEmailCompletionCallbackImpl;
@@ -58,8 +60,8 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
 /**
  * Widget used to display point data in a trend
  */
-@CheckRole(MeteringRole.ROLEID)
-@CheckRoleProperty({MeteringRole.PROFILE_COLLECTION, MeteringRole.PROFILE_COLLECTION_SCANNING})
+@CheckRole(YukonRole.METERING)
+@CheckRoleProperty({YukonRoleProperty.PROFILE_COLLECTION, YukonRoleProperty.PROFILE_COLLECTION_SCANNING})
 public class ProfileWidget extends WidgetControllerBase {
 
 //    private LoadProfileService.EmailCompletionCallback emailCompletionCallback = null;

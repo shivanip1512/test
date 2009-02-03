@@ -23,7 +23,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
-<cti:verifyRolesAndProperties value="application.ReportingRole"/>
+<cti:verifyRolesAndProperties value="REPORTING"/>
 
 <%
 	LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);

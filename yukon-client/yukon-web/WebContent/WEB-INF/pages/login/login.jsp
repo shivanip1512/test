@@ -110,7 +110,7 @@
                                 </td>
                             </tr>
                         </table>
-                        <cti:checkGlobalProperty value="AuthenticationRole.ENABLE_PASSWORD_RECOVERY">
+                        <cti:checkGlobalProperty value="ENABLE_PASSWORD_RECOVERY">
 	                        <cti:isStarsExist>
 	                            <div class="loginHelp">
 	                                <a href="<cti:url value="/pwordreq.jsp"/>">

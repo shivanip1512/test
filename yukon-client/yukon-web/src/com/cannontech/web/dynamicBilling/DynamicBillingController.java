@@ -34,13 +34,11 @@ import com.cannontech.common.dynamicBilling.dao.DynamicBillingFileDao;
 import com.cannontech.common.dynamicBilling.model.BillableField;
 import com.cannontech.common.dynamicBilling.model.DynamicBillingField;
 import com.cannontech.common.dynamicBilling.model.DynamicFormat;
-import com.cannontech.roles.application.BillingRole;
-import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.TextView;
 
-@CheckRole(BillingRole.ROLEID)
-@CheckRoleProperty(BillingRole.DYNAMIC_BILLING_FILE_SETUP)
+@CheckRoleProperty(YukonRoleProperty.DYNAMIC_BILLING_FILE_SETUP)
 public class DynamicBillingController extends MultiActionController {
 
 	private DynamicBillingFormatter dynamicFormatter = null;

@@ -10,6 +10,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
@@ -29,14 +30,20 @@ import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RoleDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.service.CachingPointFormattingService;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.operator.MeteringRole;
 import com.cannontech.roles.yukon.ConfigurationRole;
 import com.cannontech.roles.yukon.MultispeakRole;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.bulk.model.collection.DeviceFilterCollectionHelper;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.updater.point.PointUpdateBackingService;
 
 /**
  * Spring controller class
@@ -48,35 +55,61 @@ public class MeterController extends MultiActionController {
     private MeterSearchService meterSearchService = null;
     private AttributeService attributeService = null;
     private DeviceDao deviceDao = null;
+    private PointDao pointDao = null;
     private DeviceFilterCollectionHelper filterCollectionHelper = null;
+    private CachingPointFormattingService cachingPointFormattingService = null;
+    private PointUpdateBackingService pointUpdateBackingService = null;
 
     public MeterController() {
         super();
     }
     
+    @Autowired
     public void setMeterSearchService(MeterSearchService meterSearchService) {
         this.meterSearchService = meterSearchService;
     }
     
+    @Autowired
     public void setAuthDao(AuthDao authDao) {
         this.authDao = authDao;
     }
 
+    @Autowired
     public void setRoleDao(RoleDao roleDao) {
         this.roleDao = roleDao;
     }
 
+    @Autowired
     public void setAttributeService(AttributeService attributeService) {
         this.attributeService = attributeService;
     }
 
+    @Autowired
     public void setDeviceDao(DeviceDao deviceDao) {
         this.deviceDao = deviceDao;
     }
     
+    @Autowired
+    public void setPointDao(PointDao pointDao) {
+		this.pointDao = pointDao;
+	}
+    
+    @Autowired
     public void setFilterCollectionHelper(DeviceFilterCollectionHelper filterCollectionHelper) {
         this.filterCollectionHelper = filterCollectionHelper;
     }
+    
+    @Autowired
+    public void setCachingPointFormattingService(
+			CachingPointFormattingService cachingPointFormattingService) {
+		this.cachingPointFormattingService = cachingPointFormattingService;
+	}
+    
+    @Autowired
+    public void setPointUpdateBackingService(
+			PointUpdateBackingService pointUpdateBackingService) {
+		this.pointUpdateBackingService = pointUpdateBackingService;
+	}
 
     public ModelAndView search(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
@@ -200,9 +233,15 @@ public class MeterController extends MultiActionController {
         int deviceId = ServletRequestUtils.getIntParameter(request, "deviceId");
 
         YukonDevice device = deviceDao.getYukonDevice(deviceId);
+        mav.addObject("deviceId", deviceId);
+        
+        // do some hinting to speed loading
+        List<LitePoint> litePoints = pointDao.getLitePointsByPaObjectId(deviceId);
+        cachingPointFormattingService.addLitePointsToCache(litePoints);
+        pointUpdateBackingService.notifyOfImminentPoints(litePoints);
+        
         boolean highBillSupported = DeviceTypesFuncs.isMCT410(device.getType());
 
-        mav.addObject("deviceId", deviceId);
         mav.addObject("highBillSupported", highBillSupported);
 
         Set<Attribute> availableAttributes = attributeService.getAvailableAttributes(device);

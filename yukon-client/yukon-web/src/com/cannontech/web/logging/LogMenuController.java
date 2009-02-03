@@ -19,6 +19,7 @@ import org.springframework.web.util.HtmlUtils;
 
 import com.cannontech.common.util.LogSortUtil;
 import com.cannontech.common.version.VersionTools;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.PoolManager;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.util.ServletUtil;
@@ -31,7 +32,7 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
  * @author dharrington
  */
 
-@CheckRoleProperty(AdministratorRole.ADMIN_VIEW_LOGS)
+@CheckRoleProperty(YukonRoleProperty.ADMIN_VIEW_LOGS)
 public class LogMenuController extends LogController {
 
     private PoolManager poolManager;

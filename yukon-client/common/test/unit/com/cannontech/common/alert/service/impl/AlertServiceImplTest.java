@@ -70,9 +70,9 @@ public class AlertServiceImplTest {
         alertService.setMaxAge(50); // shorter than our 100ms fast forward
         
         AlarmAlert alert1 = new AlarmAlert(new Date(), new ResolvableTemplate("a"));
-        alert1.setUserChecker(new NullUserChecker());
+        alert1.setUserChecker(NullUserChecker.getInstance());
         AlarmAlert alert2 = new AlarmAlert(new Date(), new ResolvableTemplate("b"));
-        alert2.setUserChecker(new NullUserChecker());
+        alert2.setUserChecker(NullUserChecker.getInstance());
         alertService.add(alert1);
         int countForUser = alertService.getCountForUser(null);
         assertEquals(1, countForUser);

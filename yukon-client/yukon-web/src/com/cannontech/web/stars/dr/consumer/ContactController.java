@@ -26,6 +26,7 @@ import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -49,12 +50,10 @@ import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.user.UserUtils;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.consumer.model.ContactNotificationOption;
 
-@CheckRole(ResidentialCustomerRole.ROLEID)
-@CheckRoleProperty(ResidentialCustomerRole.CONTACTS_ACCESS)
+@CheckRoleProperty(YukonRoleProperty.RESIDENTIAL_CONTACTS_ACCESS)
 @Controller
 public class ContactController extends AbstractConsumerController {
     private ContactDao contactDao;
