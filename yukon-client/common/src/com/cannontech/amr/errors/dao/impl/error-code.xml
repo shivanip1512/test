@@ -688,7 +688,7 @@
 </error>
 <error code="267">
 	<category>Data Validation</category> 
-	<porter>Invalid day/month returned by daily read.</porter>
+	<porter>Invalid timestamp returned.</porter>
     <description>The setup validation data returned by the meter did not match the expected value.  The device did not hear the setup command.</description>
     <troubleshooting>
       The meter did not receive the setup command for the read.  Attempt the read again. 
@@ -699,7 +699,7 @@
 </error>
 <error code="268">
 	<category>Data Validation</category> 
-	<porter>Invalid channel returned by daily read.</porter>
+	<porter>Invalid channel returned.</porter>
     <description>The setup validation data returned by the meter did not match the expected value.  The device did not hear the setup command.</description>
     <troubleshooting>
       The meter did not receive the setup command for the read.  Attempt the read again.
