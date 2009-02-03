@@ -163,7 +163,10 @@ void CtiANSIApplication::terminateSession( void )
     setRetries (MAXRETRIES);
     setTableComplete (false);
     memset( _currentTable, NULL, sizeof( *_currentTable ) );
-    //memset( _lpTempBigTable, NULL, sizeof( *_lpTempBigTable ) );
+    if (_lpMode == true)
+    {
+        memset(_lpTempBigTable, NULL, sizeof( *_lpTempBigTable ) );
+    }
     _totalBytesInTable = 0;
 }
 //=========================================================================================================================================
@@ -605,91 +608,105 @@ bool CtiANSIApplication::analyzePacket()
              }
              case request:
              {
+                 if ( !getDatalinkLayer().compareToggleBits() )
+                 {
+                     retFlag = false;
+                     break;
+                 }
                  if (_lpMode)
                  {
+                     int overHeadByteCount = 0;
+                     int headerOffset = 0;
                      if (getDatalinkLayer().getPacketPart())
                      {
                          if (getDatalinkLayer().getPacketFirst())
                          {
-                             memcpy (_lpTempBigTable+_totalBytesInTable,
-                                 getDatalinkLayer().getCurrentPacket()+9,
-                                 getDatalinkLayer().getPacketBytesReceived()-11); //header(6),crc(2),length(2),response(1)
-
-                             _totalBytesInTable += getDatalinkLayer().getPacketBytesReceived()-11;
-
+                             if (getDatalinkLayer().getPacketBytesReceived() >= 11)
+                             {
+                                 overHeadByteCount = 11; //header(6),crc(2),length(2),response(1)
+                                 headerOffset = 9;
                             if (getDatalinkLayer().getSequence() %2 !=0) //if odd, set toggle bit
                             {
                                  getDatalinkLayer().toggleToggle();
                             }
                          }
-
+                         }
                         else if (getDatalinkLayer().getSequence() == 0)
                          {
                               // move the data into storage
-                             memcpy (_lpTempBigTable+_totalBytesInTable,
-                                getDatalinkLayer().getCurrentPacket()+6,
-                                getDatalinkLayer().getPacketBytesReceived()-9); //header(6),crc(2),cksm(1)
-
-                             _totalBytesInTable += getDatalinkLayer().getPacketBytesReceived()-9;
-
+                             if (getDatalinkLayer().getPacketBytesReceived() >= 9)
+                             {
+                                 overHeadByteCount = 9;//header(6),crc(2),cksm(1)
+                                 headerOffset = 6;
+                             }
                          }
                          else
                          {
                               // move the data into storage
-                             memcpy (_lpTempBigTable+_totalBytesInTable,
-                                getDatalinkLayer().getCurrentPacket()+6,
-                                getDatalinkLayer().getPacketBytesReceived()-8); //header(6),crc(2)
-
-                             _totalBytesInTable += getDatalinkLayer().getPacketBytesReceived()-8;
-
+                             if (getDatalinkLayer().getPacketBytesReceived() >= 8)
+                             { 
+                                 overHeadByteCount = 8;//header(6),crc(2)
+                                 headerOffset = 6;
+                             }
                          }
                      }
                      else
                      {
-                         // move the data into storage
-                         memcpy (_lpTempBigTable+_totalBytesInTable,
-                            getDatalinkLayer().getCurrentPacket()+9,
-                            getDatalinkLayer().getPacketBytesReceived()-12); //header(6),crc(2),length(2),checksum(1),response(1)
-
-                         _totalBytesInTable += getDatalinkLayer().getPacketBytesReceived()-12;
+                         if (getDatalinkLayer().getPacketBytesReceived() >= 12)
+                         {
+                             overHeadByteCount = 12;
+                             headerOffset = 9;
+                         }
                      }
+                         memcpy (_lpTempBigTable+_totalBytesInTable,
+                         getDatalinkLayer().getCurrentPacket()+headerOffset,
+                         getDatalinkLayer().getPacketBytesReceived()-overHeadByteCount); //header(6),crc(2),length(2),response(1)
+
+                     _totalBytesInTable += getDatalinkLayer().getPacketBytesReceived()-overHeadByteCount;
+
                  }
                  else if (getDatalinkLayer().getPacketPart())
                  {
-                     if (getDatalinkLayer().getPacketFirst())
-                     {
-                         // move the data into storage
-                         memcpy (_currentTable+_totalBytesInTable,
-                            getDatalinkLayer().getCurrentPacket()+9,
-                            getDatalinkLayer().getPacketBytesReceived()-11); //header(6),crc(2),length(2),response(1)
+                     int overHeadByteCount = 0;
+                     int headerOffset = 0;
 
-                         _totalBytesInTable += getDatalinkLayer().getPacketBytesReceived()-11;
-
-                         if (getDatalinkLayer().getSequence() %2 !=0) //if odd, set toggle bit
+                     
+                        if (getDatalinkLayer().getPacketFirst())
+                        {
+                            // move the data into storage
+                         if (getDatalinkLayer().getPacketBytesReceived() >= 11)
                          {
-                              getDatalinkLayer().toggleToggle();
+                             overHeadByteCount = 11; //header(6),crc(2),length(2),response(1)
+                             headerOffset = 9;
                          }
-
+                            if (getDatalinkLayer().getSequence() %2 !=0) //if odd, set toggle bit
+                            {
+                                 getDatalinkLayer().toggleToggle();
+                            }
+                        
+                        }
+                        else if (getDatalinkLayer().getSequence() == 0)
+                        {
+                             // move the data into storage
+                         if (getDatalinkLayer().getPacketBytesReceived() >= 9)
+                         {
+                             overHeadByteCount = 9;//header(6),crc(2),cksm(1)
+                             headerOffset = 6;
+                         }
+                        }
+                        else
+                        {
+                             // move the data into storage
+                         if (getDatalinkLayer().getPacketBytesReceived() >= 8)
+                         {   
+                             overHeadByteCount = 8;//header(6),crc(2)
+                             headerOffset = 6;
+                        }
                      }
-                     else if (getDatalinkLayer().getSequence() == 0)
-                     {
-                          // move the data into storage
-                         memcpy (_currentTable+_totalBytesInTable,
-                            getDatalinkLayer().getCurrentPacket()+6,
-                            getDatalinkLayer().getPacketBytesReceived()-9); //header(6),crc(2),cksm(1)
-
-                         _totalBytesInTable += getDatalinkLayer().getPacketBytesReceived()-9;
-
-                     }
-                     else
-                     {
-                          // move the data into storage
-                         memcpy (_currentTable+_totalBytesInTable,
-                            getDatalinkLayer().getCurrentPacket()+6,
-                            getDatalinkLayer().getPacketBytesReceived()-8); //header(6),crc(2)
-
-                         _totalBytesInTable += getDatalinkLayer().getPacketBytesReceived()-8;
-                     }
+                     memcpy (_currentTable+_totalBytesInTable,
+                         getDatalinkLayer().getCurrentPacket()+headerOffset,
+                         getDatalinkLayer().getPacketBytesReceived()-overHeadByteCount); //header(6),crc(2),length(2),response(1)
+                     _totalBytesInTable += getDatalinkLayer().getPacketBytesReceived()-overHeadByteCount;
                  }
                  else if (_currentTableID == 7 || _currentTableID == 2049)
                  {
@@ -699,12 +716,15 @@ bool CtiANSIApplication::analyzePacket()
                  }
                  else
                  {
+                     if (getDatalinkLayer().getPacketBytesReceived() >= 12)
+                     {
                      // move the data into storage
                      memcpy (_currentTable+_totalBytesInTable,
                          getDatalinkLayer().getCurrentPacket()+9,
                          getDatalinkLayer().getPacketBytesReceived()-12); //header(6),crc(2),length(2),checksum(1),response(1)
 
                      _totalBytesInTable += getDatalinkLayer().getPacketBytesReceived()-12;
+                     }
                  }
 
                  // are there more pieces to this table
@@ -767,10 +787,14 @@ bool CtiANSIApplication::analyzePacket()
             case loggedOn:
             case secured:
             case authenticated:
-
+            {
                  _currentState = getNextState (_requestedState);
+                break;
+            }
              default:
+            {
                       break;
+            }
             }
     }
     else if (_currentTableID == 7 || _currentTableID == 2049)

@@ -144,6 +144,8 @@ class IM_EX_PROT CtiANSIDatalink
       void setIdentityByte(BYTE identityByte);
       BYTE getIdentityByte(void);
 
+      bool compareToggleBits();
+
    protected:
 
    private:

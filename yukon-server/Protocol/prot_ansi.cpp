@@ -418,9 +418,17 @@ void CtiProtocolANSI::reinitialize( void )
        _lpNbrFullBlocks = 0;
        _lpLastBlockSize = 0;
 
-       _stdTblsAvailable.clear();
-       _stdTblsAvailable.push_back(0);
-       _mfgTblsAvailable.clear();
+       _ansiAbortOperation = FALSE;
+
+       if (!_stdTblsAvailable.empty())
+       {
+           _stdTblsAvailable.clear();
+           _stdTblsAvailable.push_back(0);
+       }
+       if (!_mfgTblsAvailable.empty())
+       {
+           _mfgTblsAvailable.clear();
+       }
 
     }
     catch(...)
@@ -605,7 +613,7 @@ bool CtiProtocolANSI::decode( CtiXfer &xfer, int status )
                     return true;
                 }
 
-                if (_scanOperation == demandReset && _tables[_index].tableID == 1) //1 = demand reset
+                if (_scanOperation == CtiProtocolANSI::demandReset && _tables[_index].tableID == 1) //1 = demand reset
                 {
                      int i = proc09RemoteReset(1);
                      if (i)
@@ -632,6 +640,8 @@ bool CtiProtocolANSI::decode( CtiXfer &xfer, int status )
                    }
                }
 
+            try
+            {
                if (_tables[_index].tableID == 63  && _table63 != NULL)
                {
                    _lpNbrIntvlsLastBlock = _table63->getNbrValidIntvls(1);
@@ -702,6 +712,17 @@ bool CtiProtocolANSI::decode( CtiXfer &xfer, int status )
                        _lpNbrFullBlocks = _lpLastBlockIndex - _lpStartBlockIndex;
                        _lpOffset = _lpStartBlockIndex * _lpBlockSize;
                    }
+                   }
+               }
+               catch( ... )
+               {
+                   CtiLockGuard<CtiLogger> logger_guard(dout);
+                   dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+
+                   _ansiAbortOperation = TRUE;
+                   _index = _header->numTablesRequested - 1;
+                   getApplicationLayer().terminateSession();
+                   return true;
                }
            }
            // anything else to do
@@ -814,6 +835,11 @@ bool CtiProtocolANSI::decode( CtiXfer &xfer, int status )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+
+        _ansiAbortOperation = TRUE;
+        _index = _header->numTablesRequested - 1;
+        getApplicationLayer().terminateSession();
+
     }
     return false;
 
@@ -859,7 +885,7 @@ void CtiProtocolANSI::convertToTable(  )
                            _table00 = NULL;
                        }
                       _table00 = new CtiAnsiTable00( getApplicationLayer().getCurrentTable() );
-                      if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )//DEBUGLEVEL_LUDICROUS )
+                      if( _table00 != NULL && getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )//DEBUGLEVEL_LUDICROUS )
                       {
                           _table00->printResult(getAnsiDeviceName());
                       }
@@ -897,36 +923,44 @@ void CtiProtocolANSI::convertToTable(  )
                            delete _table08;
                            _table08 = NULL;
                        }
-                      _table08 = new CtiAnsiTable08( getApplicationLayer().getCurrentTable());
-                      if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )//DEBUGLEVEL_LUDICROUS )
-                      {
-                          _table08->printResult(getAnsiDeviceName());
-                      }
-
-
-                      if (_scanOperation == demandReset)
-                      {
-                          getApplicationLayer().setWriteSeqNbr( 0 );
-                      }
-                      else
-                      {
-                          _lpStartBlockIndex = _table08->getLPOffset();
-                          _lpNbrFullBlocks = _lpLastBlockIndex - _lpStartBlockIndex;
-                          if( _table63 != NULL &&
-                              _lpStartBlockIndex >= 255)
-                          {
-                              _lpStartBlockIndex = 0;
-                              _lpOffset = 0;
-                              if( _table63->getNbrValidIntvls(1) < _table63->getNbrValidBlocks(1) )
-                                  _lpNbrFullBlocks = _table63->getNbrValidBlocks(1) -1;
-                              else
-                                  _lpNbrFullBlocks = _table63->getNbrValidBlocks(1);
-                          }
-                          else
-                              _lpOffset = _lpStartBlockIndex * _lpBlockSize;
-
-                      }
-
+                       _table08 = new CtiAnsiTable08( getApplicationLayer().getCurrentTable());
+                       if( _table08 != NULL )
+                       {
+                           if(  _table08 != NULL && getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )//DEBUGLEVEL_LUDICROUS )
+                           {
+                               _table08->printResult(getAnsiDeviceName());
+                           }
+                      
+                      
+                           if (_scanOperation == CtiProtocolANSI::demandReset)
+                           {
+                               getApplicationLayer().setWriteSeqNbr( 0 );
+                           }
+                           else
+                           {
+                               _lpStartBlockIndex = _table08->getLPOffset();
+                               _lpNbrFullBlocks = _lpLastBlockIndex - _lpStartBlockIndex;
+                               if( _table63 != NULL &&
+                                   _lpStartBlockIndex >= 255)
+                               {
+                                   _lpStartBlockIndex = 0;
+                                   _lpOffset = 0;
+                                   if( _table63->getNbrValidIntvls(1) < _table63->getNbrValidBlocks(1) )
+                                   {    
+                                       _lpNbrFullBlocks = _table63->getNbrValidBlocks(1) -1;
+                                   }
+                                   else
+                                   {    
+                                       _lpNbrFullBlocks = _table63->getNbrValidBlocks(1);
+                                   }
+                               }
+                               else
+                               {    
+                                   _lpOffset = _lpStartBlockIndex * _lpBlockSize;
+                               }
+                           
+                           }
+                       }
                    }
                    break;
 
@@ -938,7 +972,6 @@ void CtiProtocolANSI::convertToTable(  )
                            _table10 = NULL;
                        }
                       _table10 = new CtiAnsiTable10( getApplicationLayer().getCurrentTable() );
-                     // _table10->printResult(getAnsiDeviceName());
                    }
                    break;
 
@@ -949,13 +982,13 @@ void CtiProtocolANSI::convertToTable(  )
                            delete _table11;
                            _table11 = NULL;
                        }
-                      _table11 = new CtiAnsiTable11( getApplicationLayer().getCurrentTable() );
-                      if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )//DEBUGLEVEL_LUDICROUS )
-                      {
-                          _table11->printResult(getAnsiDeviceName());
-                      }
+                       _table11 = new CtiAnsiTable11( getApplicationLayer().getCurrentTable() );
+                       if(  _table11 != NULL && getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )//DEBUGLEVEL_LUDICROUS )
+                       {
+                           _table11->printResult(getAnsiDeviceName());
+                       }
                    }
-                     break;
+                   break;
 
                 case 12:
                    {
@@ -964,12 +997,12 @@ void CtiProtocolANSI::convertToTable(  )
                            delete _table12;
                            _table12 = NULL;
                        }
-                      _table12 = new CtiAnsiTable12( getApplicationLayer().getCurrentTable(),
+                       _table12 = new CtiAnsiTable12( getApplicationLayer().getCurrentTable(),
                                                              _table11->getNumberUOMEntries() );
-                      if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )//DEBUGLEVEL_LUDICROUS )
-                      {
-                          _table12->printResult(getAnsiDeviceName());
-                      }
+                       if( _table12 != NULL &&  getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )//DEBUGLEVEL_LUDICROUS )
+                       {
+                           _table12->printResult(getAnsiDeviceName());
+                       }
                    }
                    break;
 
@@ -980,15 +1013,18 @@ void CtiProtocolANSI::convertToTable(  )
                            delete _table13;
                            _table13 = NULL;
                        }
-                      _table13 = new CtiAnsiTable13( getApplicationLayer().getCurrentTable(),
-                                                                 _table11->getNumberDemandControlEntries(),
-                                                                 _table11->getRawPFExcludeFlag(),
-                                                                         _table11->getRawSlidingDemandFlag(),
-                                                                         _table11->getRawResetExcludeFlag() );
-                      if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
-                      {
-                          _table13->printResult(getAnsiDeviceName());
-                      }
+                       if( _table11 != NULL )
+                       {
+                           _table13 = new CtiAnsiTable13( getApplicationLayer().getCurrentTable(),
+                                                                  _table11->getNumberDemandControlEntries(),
+                                                                  _table11->getRawPFExcludeFlag(),
+                                                                          _table11->getRawSlidingDemandFlag(),
+                                                                          _table11->getRawResetExcludeFlag() );
+                           if( _table13 != NULL &&  getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
+                           {
+                               _table13->printResult(getAnsiDeviceName());
+                           }
+                       }
                    }
                    break;
 
@@ -999,13 +1035,16 @@ void CtiProtocolANSI::convertToTable(  )
                            delete _table14;
                            _table14 = NULL;
                        }
-                      _table14 = new CtiAnsiTable14( getApplicationLayer().getCurrentTable(),
+                       if( _table11 != NULL )
+                       { 
+                           _table14 = new CtiAnsiTable14( getApplicationLayer().getCurrentTable(),
                                                                _table11->getDataControlLength(),
                                                                _table11->getNumberDataControlEntries());
-                      if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
-                      {
-                          _table14->printResult(getAnsiDeviceName());
-                      }
+                           if( _table14 != NULL && getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
+                           {
+                               _table14->printResult(getAnsiDeviceName());
+                           }
+                       }
                    }
                    break;
 
@@ -1016,7 +1055,9 @@ void CtiProtocolANSI::convertToTable(  )
                            delete _table15;
                            _table15 = NULL;
                        }
-                      _table15 = new CtiAnsiTable15( getApplicationLayer().getCurrentTable(),
+                       if( _table11 != NULL && _table00 != NULL )
+                       {
+                           _table15 = new CtiAnsiTable15( getApplicationLayer().getCurrentTable(),
                                                                _table11->getRawConstantsSelector(),
                                                                _table11->getNumberConstantsEntries(),
                                                                _table11->getRawNoOffsetFlag(),
@@ -1025,11 +1066,12 @@ void CtiProtocolANSI::convertToTable(  )
                                                                _table00->getRawNIFormat1(),
                                                                _table00->getRawNIFormat2() );
 
-                      getApplicationLayer().setLPDataMode( false, 0 );
-                      if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
-                      {
-                          _table15->printResult(getAnsiDeviceName());
-                      }
+                           getApplicationLayer().setLPDataMode( false, 0 );
+                           if( _table15 != NULL && getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
+                           {
+                               _table15->printResult(getAnsiDeviceName());
+                           }
+                       }
                    }
                    break;
 
@@ -1040,12 +1082,15 @@ void CtiProtocolANSI::convertToTable(  )
                            delete _table16;
                            _table16 = NULL;
                        }
-                      _table16 = new CtiAnsiTable16( getApplicationLayer().getCurrentTable(),
+                       if( _table11 != NULL )
+                       {    
+                           _table16 = new CtiAnsiTable16( getApplicationLayer().getCurrentTable(),
                                                              _table11->getNumberSources() );
-                      if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
-                      {
-                          _table16->printResult(getAnsiDeviceName());
-                      }
+                           if( _table16 != NULL && getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
+                           {
+                               _table16->printResult(getAnsiDeviceName());
+                           }
+                       }
                    }
                    break;
 
@@ -1057,7 +1102,7 @@ void CtiProtocolANSI::convertToTable(  )
                            _table21 = NULL;
                        }
                       _table21 = new CtiAnsiTable21( getApplicationLayer().getCurrentTable() );
-                      if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
+                      if( _table21 != NULL && getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
                       {
                           _table21->printResult(getAnsiDeviceName());
                       }
@@ -1071,14 +1116,17 @@ void CtiProtocolANSI::convertToTable(  )
                            delete _table22;
                            _table22 = NULL;
                        }
-                      _table22 = new CtiAnsiTable22( getApplicationLayer().getCurrentTable(),
+                       if( _table21 != NULL)
+                       {    
+                            _table22 = new CtiAnsiTable22( getApplicationLayer().getCurrentTable(),
                                                              _table21->getNumberSummations(),
                                                              _table21->getNumberDemands(),
                                                              _table21->getCoinValues() );
-                      if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
-                      {
-                          _table22->printResult(getAnsiDeviceName());
-                      }
+                            if( _table22 != NULL && getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
+                            {
+                                _table22->printResult(getAnsiDeviceName());
+                            }
+                       }
                    }
                    break;
 
@@ -1089,7 +1137,9 @@ void CtiProtocolANSI::convertToTable(  )
                            delete _table23;
                            _table23 = NULL;
                        }
-                       _table23 = new CtiAnsiTable23( getApplicationLayer().getCurrentTable(),
+                       if ( _table21 != NULL && _table00 != NULL)
+                       {    
+                           _table23 = new CtiAnsiTable23( getApplicationLayer().getCurrentTable(),
                                                                  _table21->getOccur(),
                                                                  _table21->getNumberSummations(),
                                                                  _table21->getNumberDemands(),
@@ -1104,10 +1154,11 @@ void CtiProtocolANSI::convertToTable(  )
                                                                  _table00->getRawTimeFormat(),
                                                                   23 );
 
-                       getApplicationLayer().setLPDataMode( false, 0 );
-                       if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
-                       {
-                           _table23->printResult(getAnsiDeviceName());
+                           getApplicationLayer().setLPDataMode( false, 0 );
+                           if( _table23 != NULL && getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
+                           {
+                               _table23->printResult(getAnsiDeviceName());
+                           }
                        }
                    }
                    break;
@@ -1119,17 +1170,9 @@ void CtiProtocolANSI::convertToTable(  )
                            _frozenRegTable = NULL;
                         }
 
-                        /*if (_table21->getTimeDateFieldFlag())
+                        if ( _table21 != NULL && _table00 != NULL)
                         {
-                            memcpy( (void *)&_frozenEndDateTime, getApplicationLayer().getCurrentTable(), sizeOfSTimeDate());
-                            getApplicationLayer().getCurrentTable() += sizeOfSTimeDate();
-                        }
-                        if (_table21->getSeasonInfoFieldFlag())
-                        {
-                            memcpy( (void *)&_frozenSeason, getApplicationLayer().getCurrentTable(), sizeof(unsigned char));
-                            getApplicationLayer().getCurrentTable() += sizeof (unsigned char);
-                        }  */
-                        _frozenRegTable = new CtiAnsiTable25 (  getApplicationLayer().getCurrentTable(),
+                            _frozenRegTable = new CtiAnsiTable25 (  getApplicationLayer().getCurrentTable(),
                                                                           _table21->getOccur(),
                                                                           _table21->getNumberSummations(),
                                                                           _table21->getNumberDemands(),
@@ -1143,10 +1186,11 @@ void CtiProtocolANSI::convertToTable(  )
                                                                           _table00->getRawNIFormat2(),
                                                                           _table00->getRawTimeFormat(),
                                                                           _table21->getSeasonInfoFieldFlag() );
-                        getApplicationLayer().setLPDataMode( false, 0 );
-                        if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
-                        {
-                            _frozenRegTable->printResult(getAnsiDeviceName());
+                            getApplicationLayer().setLPDataMode( false, 0 );
+                            if( _frozenRegTable != NULL && getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
+                            {
+                                _frozenRegTable->printResult(getAnsiDeviceName());
+                            }
                         }
                     }
                     break;
@@ -1157,13 +1201,16 @@ void CtiProtocolANSI::convertToTable(  )
                            delete _table27;
                            _table27 = NULL;
                        }
+                       if ( _table21 != NULL )
+                       {
                        _table27 = new CtiAnsiTable27( getApplicationLayer().getCurrentTable(),
                                                                  _table21->getNbrPresentDemands(),
                                                                  _table21->getNbrPresentValues());
-                       if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
+                           if( _table27 != NULL && getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
                       {
                            _table27->printResult(getAnsiDeviceName());
                       }
+                       }
                    }
                    break;
                 case 28:
@@ -1173,6 +1220,8 @@ void CtiProtocolANSI::convertToTable(  )
                            delete _table28;
                            _table28 = NULL;
                        }
+                       if ( _table21 != NULL && _table00 != NULL)
+                       {
                        _table28 = new CtiAnsiTable28( getApplicationLayer().getCurrentTable(),
                                                                  _table21->getNbrPresentDemands(),
                                                                  _table21->getNbrPresentValues(),
@@ -1181,10 +1230,11 @@ void CtiProtocolANSI::convertToTable(  )
                                                                  _table00->getRawNIFormat2(),
                                                                  _table00->getRawTimeFormat() );
 
-                       if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
+                           if( _table28 != NULL && getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
                       {
                            _table28->printResult(getAnsiDeviceName());
                       }
+                       }
                    }
                    break;
                    case 31:
@@ -1196,7 +1246,7 @@ void CtiProtocolANSI::convertToTable(  )
                        }
                        _table31 = new CtiAnsiTable31( getApplicationLayer().getCurrentTable());
 
-                       if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
+                       if( _table31 != NULL && getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
                       {
                             _table31->printResult(getAnsiDeviceName());
                       }
@@ -1209,14 +1259,17 @@ void CtiProtocolANSI::convertToTable(  )
                            delete _table32;
                            _table32 = NULL;
                        }
-                       _table32 = new CtiAnsiTable32( getApplicationLayer().getCurrentTable(),
+                       if( _table31 != NULL )
+                       {
+                           _table32 = new CtiAnsiTable32( getApplicationLayer().getCurrentTable(),
                                                                  _table31->getNbrDispSources(),
                                                                   _table31->getWidthDispSources() );
 
-                       if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
-                      {
-                           _table32->printResult(getAnsiDeviceName());
-                      }
+                           if( _table32 != NULL && getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
+                           {
+                                _table32->printResult(getAnsiDeviceName());
+                           }
+                       }
                    }
                    break;
                    case 33:
@@ -1226,14 +1279,17 @@ void CtiProtocolANSI::convertToTable(  )
                            delete _table33;
                            _table33 = NULL;
                        }
-                       _table33 = new CtiAnsiTable33( getApplicationLayer().getCurrentTable(),
+                       if( _table31 != NULL )
+                       {
+                           _table33 = new CtiAnsiTable33( getApplicationLayer().getCurrentTable(),
                                                                   _table31->getNbrPriDispLists(),
                                                                       _table31->getNbrPriDispListItems());
 
-                      if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
-                      {
-
-                          _table33->printResult(getAnsiDeviceName());
+                           if( _table33 != NULL && getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
+                           {
+                           
+                               _table33->printResult(getAnsiDeviceName());
+                           }
                       }
                    }
                    break;
@@ -1244,11 +1300,11 @@ void CtiProtocolANSI::convertToTable(  )
                            delete _table51;
                            _table51 = NULL;
                        }
-                      _table51 = new CtiAnsiTable51( getApplicationLayer().getCurrentTable() );
-                      if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
-                      {
-                          _table51->printResult(getAnsiDeviceName());
-                      }
+                       _table51 = new CtiAnsiTable51( getApplicationLayer().getCurrentTable() );
+                       if( _table51 != NULL && getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
+                       {
+                           _table51->printResult(getAnsiDeviceName());
+                       }
                    }
                    break;
                 case 52:
@@ -1259,24 +1315,16 @@ void CtiProtocolANSI::convertToTable(  )
                            _table52 = NULL;
                        }
 
-                      _table52 = new CtiAnsiTable52( getApplicationLayer().getCurrentTable(), _table00->getRawTimeFormat() );
-                      if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
-                      {
-                          _table52->printResult(getAnsiDeviceName());
-                      }
+                       if( _table00 != NULL )
+                       {
+                           _table52 = new CtiAnsiTable52( getApplicationLayer().getCurrentTable(), _table00->getRawTimeFormat() );
+                           if( _table52 != NULL && getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
+                           {
+                               _table52->printResult(getAnsiDeviceName());
+                           }
+                       }
                    }
                    break;
-
-                /*case 55:
-                   {
-                      _table55 = new CtiAnsiTable55( getApplicationLayer().getCurrentTable() );
-                  if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )//DEBUGLEVEL_LUDICROUS )
-                      {
-                          _table55->printResult(getAnsiDeviceName());
-                      }
-                   }
-
-                   break; */
                 case 61:
                    {
                        if (_table61 != NULL)
@@ -1284,31 +1332,37 @@ void CtiProtocolANSI::convertToTable(  )
                            delete _table61;
                            _table61 = NULL;
                        }
+                       if( _table00 != NULL )
+                       {
+                           _table61 = new CtiAnsiTable61( getApplicationLayer().getCurrentTable(), _table00->getStdTblsUsed(), _table00->getDimStdTblsUsed() );
+                           if( _table61 != NULL )
+                           {    
+                              if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
+                              {
+                                  _table61->printResult(getAnsiDeviceName());
+                              }
 
-                      _table61 = new CtiAnsiTable61( getApplicationLayer().getCurrentTable(), _table00->getStdTblsUsed(), _table00->getDimStdTblsUsed() );
-                      if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
-                      {
-                          _table61->printResult(getAnsiDeviceName());
-                      }
-
-                      _lpNbrLoadProfileChannels = _table61->getNbrChansSet(1);
-
+                              _lpNbrLoadProfileChannels = _table61->getNbrChansSet(1);
+                           }
+                       }
                    }
-
                    break;
                 case 62:
                    {
                       if (_table62 != NULL)
-                       {
-                           delete _table62;
-                           _table62 = NULL;
-                       }
-                      _table62 = new CtiAnsiTable62( getApplicationLayer().getCurrentTable(), _table61->getLPDataSetUsedFlags(), _table61->getLPDataSetInfo(),
+                      {
+                          delete _table62;
+                          _table62 = NULL;
+                      }
+                      if( _table00 != NULL && _table61 != NULL )
+                      {
+                          _table62 = new CtiAnsiTable62( getApplicationLayer().getCurrentTable(), _table61->getLPDataSetUsedFlags(), _table61->getLPDataSetInfo(),
                                                              _table61->getLPScalarDivisorFlag(1), _table61->getLPScalarDivisorFlag(2), _table61->getLPScalarDivisorFlag(3),
                                                              _table61->getLPScalarDivisorFlag(4),  _table00->getRawStdRevisionNo() );
-                      if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
-                      {
-                          _table62->printResult(getAnsiDeviceName());
+                          if( _table62 != NULL && getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
+                          {
+                              _table62->printResult(getAnsiDeviceName());
+                          }
                       }
                    }
 
@@ -1320,11 +1374,15 @@ void CtiProtocolANSI::convertToTable(  )
                            delete _table63;
                            _table63 = NULL;
                        }
-                      _table63 = new CtiAnsiTable63( getApplicationLayer().getCurrentTable(), _table61->getLPDataSetUsedFlags());
-                      if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
+                      if( _table61 != NULL )
                       {
-                          _table63->printResult(getAnsiDeviceName());
+                          _table63 = new CtiAnsiTable63( getApplicationLayer().getCurrentTable(), _table61->getLPDataSetUsedFlags());
+                          if( _table63 != NULL && getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
+                          {
+                              _table63->printResult(getAnsiDeviceName());
+                          }
                       }
+                      
                    }
                    break;
                 case 64:
@@ -1334,28 +1392,26 @@ void CtiProtocolANSI::convertToTable(  )
                         delete _table64;
                         _table64 = NULL;
                     }
-
-                    UINT16 validIntvls = _table63->getNbrValidIntvls(1);
-                    if (getApplicationLayer().getPartialProcessLPDataFlag())
+                    UINT16 validIntvls = 0;
+                    if( _table63 != NULL )
                     {
-
-                        _lpNbrFullBlocks = (getApplicationLayer().getLPByteCount() % _lpBlockSize) - 1;
+                    
+                        validIntvls = _table63->getNbrValidIntvls(1);
+                        if (getApplicationLayer().getPartialProcessLPDataFlag())
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " ####### LP Byte Count = " <<getApplicationLayer().getLPByteCount() << endl;
-                            dout << CtiTime() << " ####### LP Block Size = " <<_lpBlockSize << endl;
+                            _lpNbrFullBlocks = (getApplicationLayer().getLPByteCount() / _lpBlockSize) - 1;
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " ####### LP Byte Count = " <<getApplicationLayer().getLPByteCount() << endl;
+                                dout << CtiTime() << " ####### LP Block Size = " <<_lpBlockSize << endl;
+                                dout << CtiTime() << " ####### LP Nbr Full Blocks = " <<_lpNbrFullBlocks << endl;
+                            }
+                            _lpNbrIntvlsLastBlock = 0;//_table61->getNbrBlkIntsSet(1);
+                            validIntvls = _lpNbrIntvlsLastBlock;
+                            getApplicationLayer().setPartialProcessLPDataFlag(false);
+                            if (_lpNbrFullBlocks > 0)
+                                _forceProcessDispatchMsg = true;
                         }
-
-                        _lpNbrFullBlocks = (getApplicationLayer().getLPByteCount() / _lpBlockSize) - 1;
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " ####### LP Nbr Full Blocks = " <<_lpNbrFullBlocks << endl;
-                        }
-                        _lpNbrIntvlsLastBlock = 0;//_table61->getNbrBlkIntsSet(1);
-                        validIntvls = _lpNbrIntvlsLastBlock;
-                        getApplicationLayer().setPartialProcessLPDataFlag(false);
-                        if (_lpNbrFullBlocks > 0)
-                            _forceProcessDispatchMsg = true;
                     }
 
                     int meterHour = 0;
@@ -1364,20 +1420,23 @@ void CtiProtocolANSI::convertToTable(  )
                         meterHour = _table52->getClkCldrHour();
                     }
 
-                    _table64 = new CtiAnsiTable64( getApplicationLayer().getCurrentTable(), _lpNbrFullBlocks + 1,
-                                                           _table61->getNbrChansSet(1), _table61->getClosureStatusFlag(),
-                                                           _table61->getSimpleIntStatusFlag(), _table61->getNbrBlkIntsSet(1),
-                                                           _table61->getBlkEndReadFlag(), _table61->getBlkEndPulseFlag(),
-                                                           _table61->getExtendedIntStatusFlag(), _table61->getMaxIntTimeSet(1),
-                                                           _table62->getIntervalFmtCde(1), validIntvls,
-                                                           _table00->getRawNIFormat1(), _table00->getRawNIFormat2(),
-                                                           _table00->getRawTimeFormat(), meterHour );
-
-                    getApplicationLayer().setLPDataMode( false, 0 );
-
-                    if (_invalidLastLoadProfileTime)
+                    if( _table00 != NULL && _table62 != NULL && _table61 != NULL )
                     {
-                        _header->lastLoadProfileTime = _table64->getLPDemandTime(0,0);
+                        _table64 = new CtiAnsiTable64( getApplicationLayer().getCurrentTable(), _lpNbrFullBlocks + 1,
+                                                               _table61->getNbrChansSet(1), _table61->getClosureStatusFlag(),
+                                                               _table61->getSimpleIntStatusFlag(), _table61->getNbrBlkIntsSet(1),
+                                                               _table61->getBlkEndReadFlag(), _table61->getBlkEndPulseFlag(),
+                                                               _table61->getExtendedIntStatusFlag(), _table61->getMaxIntTimeSet(1),
+                                                               _table62->getIntervalFmtCde(1), validIntvls,
+                                                               _table00->getRawNIFormat1(), _table00->getRawNIFormat2(),
+                                                               _table00->getRawTimeFormat(), meterHour );
+                       
+                        getApplicationLayer().setLPDataMode( false, 0 );
+
+                        if (_invalidLastLoadProfileTime && _table64 != NULL)
+                        {
+                            _header->lastLoadProfileTime = _table64->getLPDemandTime(0,0);
+                        }
                     }
                 }
 
@@ -1386,16 +1445,17 @@ void CtiProtocolANSI::convertToTable(  )
                     break;
                 }
             }
-            else
-            {
-
-            }
+            
         }
     }
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+
+        _ansiAbortOperation = TRUE;
+        _index = _header->numTablesRequested - 1;
+        getApplicationLayer().terminateSession();
     }
     return;
 }
@@ -1792,6 +1852,7 @@ void CtiProtocolANSI::updateBytesExpected( )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        _ansiAbortOperation = TRUE;
     }
 
 }
@@ -1990,6 +2051,10 @@ bool CtiProtocolANSI::retreiveDemand( int offset, double *value, double *time )
     {
 
         bool success = false;
+        if( _ansiAbortOperation )
+        {
+            return success;
+        }
         unsigned char * demandSelect;
         int ansiOffset;
         int ansiTOURate;
@@ -2129,6 +2194,10 @@ bool CtiProtocolANSI::retreiveSummation( int offset, double *value )
     try
     {
         bool success = false;
+        if( _ansiAbortOperation )
+        {
+            return success;
+        }
         unsigned char* summationSelect;
         int ansiOffset;
         int ansiTOURate;
@@ -2234,6 +2303,10 @@ bool CtiProtocolANSI::retreiveSummation( int offset, double *value )
 bool CtiProtocolANSI::retreiveFrozenDemand( int offset, double *value, double *time )
 {
     bool success = false;
+    if( _ansiAbortOperation )
+    {
+        return success;
+    }
 
     try
     {
@@ -2386,6 +2459,11 @@ bool CtiProtocolANSI::retreiveFrozenDemand( int offset, double *value, double *t
 bool CtiProtocolANSI::retreiveFrozenSummation( int offset, double *value, double *time)
 {
     bool success = false;
+    if( _ansiAbortOperation )
+    {
+        return success;
+    }
+
     unsigned char* summationSelect;
     int ansiOffset;
     int ansiTOURate;
@@ -2498,6 +2576,10 @@ bool CtiProtocolANSI::retreiveFrozenSummation( int offset, double *value, double
 bool CtiProtocolANSI::retreivePresentValue( int offset, double *value )
 {
     bool success = false;
+    if( _ansiAbortOperation )
+    {
+        return success;
+    }
     unsigned char* presentValueSelect;
     int ansiOffset;
     int ansiDeviceType = (int) getApplicationLayer().getAnsiDeviceType();
@@ -2597,6 +2679,10 @@ bool CtiProtocolANSI::retreivePresentValue( int offset, double *value )
 bool CtiProtocolANSI::retreivePresentDemand( int offset, double *value )
 {
     bool success = false;
+    if( _ansiAbortOperation )
+    {
+        return success;
+    }
     unsigned char* presentDemandSelect;
     int ansiOffset;
     int ansiQuadrant;
@@ -2713,6 +2799,10 @@ bool CtiProtocolANSI::retreiveBatteryLife( int offset, double *value )
     {
         return success;
     }
+    else if( _ansiAbortOperation )
+    {
+        return success;
+    }
     else
     {
         try
@@ -2747,6 +2837,11 @@ bool CtiProtocolANSI::retreiveBatteryLife( int offset, double *value )
 bool CtiProtocolANSI::retreiveMeterTimeDiffStatus( int offset, double *status )
 {
     bool success = false;
+    if( _ansiAbortOperation )
+    {
+        return success;
+    }
+
     ULONG value;
 
     string   str;
@@ -2791,6 +2886,11 @@ bool CtiProtocolANSI::retreiveMeterTimeDiffStatus( int offset, double *status )
 bool CtiProtocolANSI::retreiveLPDemand( int offset, int dataSet )
 {
     bool success = false;
+    if( _ansiAbortOperation )
+    {
+        return success;
+    }
+
     UINT8* lpDemandSelect = NULL;
     int ansiOffset;
 

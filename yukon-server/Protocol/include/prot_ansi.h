@@ -496,6 +496,7 @@ class IM_EX_PROT CtiProtocolANSI
      int _lpNbrFullBlocks;
      int _lpLastBlockSize;
 
+     BOOL _ansiAbortOperation;
      list < short > _stdTblsAvailable;
      list < short > _mfgTblsAvailable;
 

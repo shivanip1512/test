@@ -1101,3 +1101,15 @@ BYTE CtiANSIDatalink::getIdentityByte( void )
 }
 
 
+bool CtiANSIDatalink::compareToggleBits()
+{
+    bool retVal = false;
+    BYTE compareValue = (getCurrentPacket()[2] & 0x20);
+    if ((getToggle() && compareValue == 0x00) ||
+        !getToggle() && compareValue == 0x20)
+    {
+       retVal = true; 
+    }
+    return retVal;
+}
+
