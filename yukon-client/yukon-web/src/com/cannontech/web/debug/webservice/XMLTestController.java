@@ -17,9 +17,9 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
@@ -55,7 +55,10 @@ public class XMLTestController extends MultiActionController {
     public ModelAndView xmlTemplateChange(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         
     	int xmlTemplateIdx = ServletRequestUtils.getRequiredIntParameter(request, "xmlTemplateIdx");
-    	String exampleXml = FileUtils.readFileToString(exampleRequestXmls[xmlTemplateIdx - 1].getFile());
+    	
+    	Resource fileResource = exampleRequestXmls[xmlTemplateIdx - 1];
+    	byte[] fileByteArray = FileCopyUtils.copyToByteArray(fileResource.getInputStream());
+		String exampleXml = new String(fileByteArray);
     	
         ModelAndView mav = new ModelAndView(new JsonView());
         mav.addObject("exampleXml", exampleXml);
