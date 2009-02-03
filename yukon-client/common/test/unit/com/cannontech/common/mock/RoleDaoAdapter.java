@@ -65,8 +65,4 @@ public class RoleDaoAdapter implements RoleDao {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public boolean checkRole(int roleId) {
-        throw new UnsupportedOperationException();
-    }
 }
