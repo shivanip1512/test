@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/30/2009 1:06:47 PM                         */
+/* Created on:     2/3/2009 2:30:01 PM                          */
 /*==============================================================*/
 
 
@@ -5418,6 +5418,8 @@ create table JOB  (
    constraint PK_JOB primary key (JobID)
 );
 
+INSERT INTO Job VALUES(1, 'optOutSchedulerJob', 'N', -1, 'en_US', ' ', ' ');
+
 /*==============================================================*/
 /* Table: JOBPROPERTY                                           */
 /*==============================================================*/
@@ -5446,6 +5448,8 @@ create table JOBSCHEDULEDREPEATING  (
    CronString           VARCHAR2(100)                   not null,
    constraint PK_JobScheduledRepeating primary key (JobID)
 );
+
+INSERT INTO JobScheduledRepeating VALUES(1, '0 0/5 * * * ?');
 
 /*==============================================================*/
 /* Table: JOBSTATUS                                             */

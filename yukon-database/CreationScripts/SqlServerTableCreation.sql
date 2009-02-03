@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/30/2009 1:09:39 PM                         */
+/* Created on:     2/3/2009 2:28:33 PM                          */
 /*==============================================================*/
 
 
@@ -8032,6 +8032,8 @@ create table JOB (
 )
 go
 
+INSERT INTO Job VALUES(1, 'optOutSchedulerJob', 'N', -1, 'en_US', ' ', ' ');
+
 /*==============================================================*/
 /* Table: JOBPROPERTY                                           */
 /*==============================================================*/
@@ -8063,6 +8065,8 @@ create table JOBSCHEDULEDREPEATING (
    constraint PK_JobScheduledRepeating primary key (JobID)
 )
 go
+
+INSERT INTO JobScheduledRepeating VALUES(1, '0 0/5 * * * ?');
 
 /*==============================================================*/
 /* Table: JOBSTATUS                                             */
