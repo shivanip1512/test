@@ -23,6 +23,7 @@ public interface RoleDao {
      * @param LiteYukonRole
      * @return String
      */
+    @Deprecated
     public String getGlobalPropertyValue(int rolePropertyID_);
 
     /**
@@ -48,6 +49,7 @@ public interface RoleDao {
      * @param roleProperty
      * @return String
      */
+    @Deprecated
     public String getRolePropValueGroup(LiteYukonGroup group_,
             int rolePropertyID, String defaultValue);
 
@@ -58,6 +60,7 @@ public interface RoleDao {
      * @param roleProperty
      * @return String
      */
+    @Deprecated
     public String getRolePropValueGroup(int groupId,
                                         int rolePropertyId, String defaultValue);
 
@@ -93,6 +96,7 @@ public interface RoleDao {
         throws CommandExecutionException, 
                TransactionException;
     
+    @Deprecated
     public <E extends Enum<E>> E getGlobalRolePropertyValue(Class<E> class1, int rolePropertyID);
 
     /**
@@ -100,13 +104,7 @@ public interface RoleDao {
      * @param rolePropertyID
      * @return
      */
+    @Deprecated
     public boolean checkGlobalRoleProperty(int rolePropertyID);
     
-    /**
-     * Returns true if the role exists, false otherwise.
-     * @param roleId
-     * @return
-     */
-    public boolean checkRole(int roleId);
-
 }

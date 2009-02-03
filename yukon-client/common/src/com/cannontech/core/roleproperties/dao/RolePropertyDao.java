@@ -102,6 +102,20 @@ public interface RolePropertyDao {
     public <E extends Enum<E>> E getPropertyEnumValue(YukonRoleProperty property, Class<E> enumClass, LiteYukonUser user) throws UserNotInRoleException;
     
     /**
+     * This method returns true if it is valid to call checkProperty, checkFalseProperty,
+     * checkAllProperties, checkAnyProperties, verifyProperty, or verifyFalseProperty 
+     * with the supplied property.
+     * 
+     * This essentially checks if the property's type has a return type 
+     * that can be cast to Boolean.
+     * 
+     * @param property any property with a Boolean return type
+     * @param user a valid user, may be null when accessing System properties
+     * @return  the value of the property or false if undefined
+     */
+    public boolean isCheckPropertyCompatible(YukonRoleProperty property);
+    
+    /**
      * This method returns the value of a boolean property. Unlike getPropertyBooleanValue,
      * this method will never throw a UserNotInRoleException, if the user is not
      * in the property's role, this method will simply return false.

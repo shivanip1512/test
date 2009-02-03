@@ -1,5 +1,6 @@
 package com.cannontech.user.checker;
 
+import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.core.roleproperties.YukonRole;
@@ -19,7 +20,8 @@ public class RolePropertyUserCheckerFactory {
     private RolePropertyDao rolePropertyDao;
     
     public UserChecker createPropertyChecker(final YukonRoleProperty property) {
-        
+        Validate.isTrue(rolePropertyDao.isCheckPropertyCompatible(property), "Property must return a Boolean: " + property);
+
         UserCheckerBase checker = new UserCheckerBase() {
             @Override
             public boolean check(LiteYukonUser user) {
@@ -35,6 +37,7 @@ public class RolePropertyUserCheckerFactory {
     }
     
     public UserChecker createFalsePropertyChecker(final YukonRoleProperty property) {
+        Validate.isTrue(rolePropertyDao.isCheckPropertyCompatible(property), "Property must return a Boolean: " + property);
         
         UserCheckerBase checker = new UserCheckerBase() {
             @Override

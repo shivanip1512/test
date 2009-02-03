@@ -9,15 +9,19 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.Validate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.RoleDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteYukonGroup;
@@ -25,18 +29,17 @@ import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.db.user.YukonGroupRole;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.roles.YukonGroupRoleDefs;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * A collection of methods to handle Roles and property lookups for Groups and Users
- * @author rneuharth
  */
 public class RoleDaoImpl implements RoleDao
 {
     private IDatabaseCache databaseCache;
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private DBPersistentDao dbPersistentDao;
+    private RolePropertyDao rolePropertyDao;
 
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.RoleDao#getRoleProperties(int)
@@ -58,23 +61,23 @@ public class RoleDaoImpl implements RoleDao
         return list.toArray(retVal);
     }
 
-	public String getGlobalPropertyValue( int rolePropertyID_ )
-	{
-		LiteYukonRoleProperty p = getRoleProperty( rolePropertyID_ );
-
-		String val = null;
-		if( p != null )
-			val = getRolePropValueGroup(
-				getGroup(YukonGroupRoleDefs.GRP_YUKON),
-				p.getRolePropertyID(),
-				p.getDefaultValue() );
-
-		return val;
+	@Deprecated
+	public String getGlobalPropertyValue( int rolePropertyID_ ) {
+	    String value = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.getForId(rolePropertyID_), null);
+	    return value;
 	}
 	
 	@Override
 	public boolean checkGlobalRoleProperty(int rolePropertyID) {
-        return !CtiUtilities.isFalse(getGlobalPropertyValue(rolePropertyID));
+        YukonRoleProperty property = YukonRoleProperty.getForId(rolePropertyID);
+        try {
+            return rolePropertyDao.checkProperty(property, null);
+        } catch (IllegalArgumentException e) {
+            // uh oh, the property must not be Boolean
+            // print a complaint in the log and try the old code
+            CTILogger.warn("Property " + property + " improperly accessed with a check method: " + e.getMessage());
+            return !CtiUtilities.isFalse(getGlobalPropertyValue(rolePropertyID));
+        }
     }
 
 	public LiteYukonRoleProperty getRoleProperty(int propid) {
@@ -109,6 +112,7 @@ public class RoleDaoImpl implements RoleDao
         throw new NotFoundException("Role ID Could not be found");
     }
 
+    @Deprecated
     public String getRolePropValueGroup(LiteYukonGroup group, int rolePropertyID, String defaultValue) {
         synchronized (databaseCache) {
             LiteYukonRoleProperty roleProperty = getRoleProperty(rolePropertyID);
@@ -131,6 +135,7 @@ public class RoleDaoImpl implements RoleDao
         return defaultValue;
     }
 
+    @Deprecated
     public String getRolePropValueGroup(int groupId, int rolePropertyId, String defaultValue) {
         LiteYukonGroup liteYukonGroup = getGroup(groupId);
         Validate.notNull(liteYukonGroup, "Could not find a valid LiteYukonGroup for groupId=" + groupId);
@@ -199,9 +204,9 @@ public class RoleDaoImpl implements RoleDao
         return groupRole;
     }
     
+    @Deprecated
     public <E extends Enum<E>> E getGlobalRolePropertyValue(Class<E> class1, int rolePropertyID) {
-        String rolePropertyValue = this.getGlobalPropertyValue(rolePropertyID);
-        E enumValue = Enum.valueOf(class1, rolePropertyValue);
+        E enumValue = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.getForId(rolePropertyID), class1, null);
         return enumValue;
     }
 
@@ -231,10 +236,10 @@ public class RoleDaoImpl implements RoleDao
     public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
-
-    @Override
-    public boolean checkRole(int roleId) {
-        return getLiteRole(roleId) != null;
-    }
     
+    @Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
+    }
+
 }

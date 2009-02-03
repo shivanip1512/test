@@ -94,7 +94,7 @@ public class RoleAndPropertyDescriptionService {
             } catch (IllegalArgumentException ignore) { }
 
             // if we get here, we must not have a valid role or property
-            throw new IllegalArgumentException("Can't recognize: " + someEnumName);
+            throw new IllegalArgumentException("Can't use '" + someEnumName + "', check that it is a valid role, category, or boolean property");
         }
         // if we get here, nothing matched
         AggregateOrUserChecker userChecker = new AggregateOrUserChecker(checkers);

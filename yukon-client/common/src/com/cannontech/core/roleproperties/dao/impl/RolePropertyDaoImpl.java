@@ -152,6 +152,12 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
     }
     
     @Override
+    public boolean isCheckPropertyCompatible(YukonRoleProperty property) {
+        boolean assignableFrom = Boolean.class.isAssignableFrom(property.getType().getTypeClass());
+        return assignableFrom;
+    }
+    
+    @Override
     public boolean checkAllProperties(LiteYukonUser user,
             YukonRoleProperty firstProperty,
             YukonRoleProperty... otherProperties) {
