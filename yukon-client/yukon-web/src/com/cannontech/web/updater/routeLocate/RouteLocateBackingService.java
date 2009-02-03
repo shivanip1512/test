@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.common.device.routeLocate.RouteLocateResult;
 import com.cannontech.common.util.RecentResultsCache;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.RecentResultUpdateBackingService;
 
 public class RouteLocateBackingService extends RecentResultUpdateBackingService {
@@ -20,6 +21,12 @@ public class RouteLocateBackingService extends RecentResultUpdateBackingService 
        }
        RouteLocateTypeEnum routeLocateTypeEnum = RouteLocateTypeEnum.valueOf(resultTypeStr);
        return routeLocateTypeEnum.getValue(routeLocateResult);
+    }
+    
+    @Override
+    public boolean isValueAvailableImmediately(String fullIdentifier,
+    		long afterDate, YukonUserContext userContext) {
+    	return true;
     }
 
     @Required

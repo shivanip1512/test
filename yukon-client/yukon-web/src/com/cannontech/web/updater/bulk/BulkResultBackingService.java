@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.common.bulk.service.BulkOperationCallbackResults;
 import com.cannontech.common.util.RecentResultsCache;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.RecentResultUpdateBackingService;
 
 public class BulkResultBackingService extends RecentResultUpdateBackingService {
@@ -20,6 +21,12 @@ public class BulkResultBackingService extends RecentResultUpdateBackingService {
        }
        BulkResultTypeEnum bulkResultTypeEnum = BulkResultTypeEnum.valueOf(resultTypeStr);
        return bulkResultTypeEnum.getValue(bulkOperationCallbackResults);
+    }
+    
+    @Override
+    public boolean isValueAvailableImmediately(String fullIdentifier,
+    		long afterDate, YukonUserContext userContext) {
+    	return true;
     }
     
 

@@ -11,4 +11,7 @@ public interface UpdateBackingService {
      * @return null if unchanged
      */
     public String getLatestValue(String identifier, long afterDate, YukonUserContext userContext);
+
+	public boolean isValueAvailableImmediately(String fullIdentifier,
+			long afterDate, YukonUserContext userContext);
 }

@@ -25,7 +25,7 @@ public interface PointFormattingService {
         RAWVALUE,
         VALUE;
         
-        private final static String keyPrefix = "yukon.common.pointFormatting.";
+        private final static String keyPrefix = "yukon.common.pointFormatting.formats.";
 
         public String getFormatKey() {
             return keyPrefix + name();
@@ -55,7 +55,7 @@ public interface PointFormattingService {
      *                for other types, a Double with the current value
      *   decimals   - the number of decimal digits the point is configured for
      *   default    - for status points, same as 'value';
-     *                for other types, the current value formatted as a string with the
+     *                for other types, the current value formatted as a String with the
      *                number of decimal places taken from PointUnit
      *   status     - a Boolean that is true for status points and false for all others
      *   state      - the state text or "" if not applicable
@@ -63,6 +63,7 @@ public interface PointFormattingService {
      *                may be "" if the point doesn't have an attached unit of measure
      *   time       - a Date with the PointValueHolder's timestamp 
 	 *   stateColor - HTML-style color for the current status state  
+	 *   rawValue   - the original Double from the PointValueHolder
 	 *           
      * The format string is scanned for instances of the above key's before the DAO calls to
      * retrieve the information are made.
@@ -75,6 +76,6 @@ public interface PointFormattingService {
      */
     public String getValueString(PointValueHolder value, String format, YukonUserContext userContext);
     
-    public PointFormattingService getCachedInstance();
+    public CachingPointFormattingService getCachedInstance();
 
 }

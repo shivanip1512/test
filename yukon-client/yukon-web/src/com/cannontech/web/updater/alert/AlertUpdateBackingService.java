@@ -41,6 +41,12 @@ public class AlertUpdateBackingService implements UpdateBackingService {
         String latestValue = singleUpdateService.getLatestValue(afterDate, userContext);
         return latestValue;
     }
+    
+    @Override
+    public boolean isValueAvailableImmediately(String fullIdentifier,
+    		long afterDate, YukonUserContext userContext) {
+    	return true;
+    }
 
     public void setAlertService(AlertService alertService) {
         this.alertService = alertService;

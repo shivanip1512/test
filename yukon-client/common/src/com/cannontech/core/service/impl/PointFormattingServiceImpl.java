@@ -2,6 +2,7 @@ package com.cannontech.core.service.impl;
 
 import java.awt.Color;
 import java.text.NumberFormat;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,13 +15,13 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.FormattingTemplateProcessor;
-import com.cannontech.common.util.MethodNotImplementedException;
 import com.cannontech.common.util.TemplateProcessorFactory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.core.service.CachingPointFormattingService;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointUnit;
@@ -66,8 +67,8 @@ public class PointFormattingServiceImpl implements PointFormattingService {
     }
     
     @Override
-    public PointFormattingService getCachedInstance() {
-        PointFormattingService impl = new PointFormattingService() {
+    public CachingPointFormattingService getCachedInstance() {
+    	CachingPointFormattingService impl = new CachingPointFormattingService() {
             
             private Map<Integer, LitePoint> litePointCache = new HashMap<Integer, LitePoint>();
             private Map<Integer, LiteUnitMeasure> unitCache = new HashMap<Integer, LiteUnitMeasure>();
@@ -160,9 +161,15 @@ public class PointFormattingServiceImpl implements PointFormattingService {
                 String result = getValueString(value, message, userContext);
                 return result;
             }
+            
+            public void addLitePointsToCache(Iterable<LitePoint> litePoints) {
+            	for (LitePoint litePoint : litePoints) {
+            		litePointCache.put(litePoint.getPointID(), litePoint);
+				}
+            }
 
             @Override
-            public PointFormattingService getCachedInstance() {
+            public CachingPointFormattingService getCachedInstance() {
                 return this;
             }
         };

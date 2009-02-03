@@ -9,6 +9,7 @@ import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.DynamicAttributes;
 
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.web.util.JavaScriptUtils;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.taglib.YukonTagSupport;
@@ -27,7 +28,9 @@ public class DataUpdaterCallbackTag extends YukonTagSupport implements DynamicAt
         Map<String,String> identifierValues = new HashMap<String, String>();
         for(String identifierName : identifierAttributes.keySet()) {
             UpdateValue identifierValue = dataUpdaterService.getFirstValue((String)identifierAttributes.get(identifierName), getUserContext());
-            identifierValues.put(identifierName, identifierValue.getValue());
+            if (!identifierValue.isUnavailable()) {
+                identifierValues.put(identifierName, identifierValue.getValue());
+            }
         }
         
         JspWriter out = getJspContext().getOut();
@@ -52,12 +55,21 @@ public class DataUpdaterCallbackTag extends YukonTagSupport implements DynamicAt
 
             firstId = true;
             for(String identifierName : identifierAttributes.keySet()) {
-
-                if(!firstId) {
-                    out.print(",");
+                if (identifierValues.containsKey(identifierName)) {
+                    if(!firstId) {
+                        out.print(",");
+                    }
+                    String value = identifierValues.get(identifierName);
+                    if (value == null) {
+                        value = "";
+                    }
+                    out.print("'");
+                    out.print(identifierName);
+                    out.print("':'");
+                    out.print(JavaScriptUtils.javaScriptEscape(value));
+                    out.print("'");
+                    firstId = false;
                 }
-                out.print("'" + identifierName + "':'" + identifierValues.get(identifierName) + "'");
-                firstId = false;
             }
             out.print("});");
         }

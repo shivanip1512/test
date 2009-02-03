@@ -1,13 +1,10 @@
 package com.cannontech.core.dynamic.impl;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.annotation.PostConstruct;
 
@@ -34,10 +31,13 @@ import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
 import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.IServerConnection;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Multimaps;
+import com.google.common.collect.SetMultimap;
+import com.google.common.collect.Sets;
 
 /**
  * Implementation of AsyncDynamicDataSource
- * @author alauinger
  */
 public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, MessageListener  {
     
@@ -46,25 +46,19 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     private IDatabaseCache databaseCache;
     private DynamicDataSource dynamicDataSource;
     
-    private Map<Integer, LinkedHashSet<PointDataListener>> pointIdPointDataListeners =
-        new HashMap<Integer, LinkedHashSet<PointDataListener>>();
+    private SetMultimap<Integer, PointDataListener> pointIdPointDataListeners_unsync = Multimaps.newLinkedHashMultimap();
+    private SetMultimap<Integer, PointDataListener> pointIdPointDataListeners = 
+        Multimaps.synchronizedSetMultimap(pointIdPointDataListeners_unsync);
+    
+    private SetMultimap<Integer, SignalListener> pointIdSignalListeners_unsync = Multimaps.newLinkedHashMultimap();
+    private SetMultimap<Integer, SignalListener> pointIdSignalListeners = 
+        Multimaps.synchronizedSetMultimap(pointIdSignalListeners_unsync);
+    
+    private List<SignalListener> alarmSignalListeners = new CopyOnWriteArrayList<SignalListener>();
 
-    private Map<Integer, LinkedHashSet<SignalListener>> pointIdSignalListeners = 
-            new HashMap<Integer, LinkedHashSet<SignalListener>>();
+    private Set<DBChangeListener> dbChangeListeners = new CopyOnWriteArraySet<DBChangeListener>();
     
-    private Map<PointDataListener, HashSet<Integer>> pointDataListenerPointIds =
-            new HashMap<PointDataListener, HashSet<Integer>>();
-    
-    private Map<SignalListener, HashSet<Integer>> signalListenerPointIds = 
-            new HashMap<SignalListener, HashSet<Integer>>();
-    
-    private List<SignalListener> alarmSignalListeners = new ArrayList<SignalListener>();
-
-    private Set<DBChangeListener> dbChangeListeners = 
-        new HashSet<DBChangeListener>();
-    
-    private Set<DBChangeLiteListener> dbChangeLiteListeners = 
-        new HashSet<DBChangeLiteListener>();
+    private Set<DBChangeLiteListener> dbChangeLiteListeners = new CopyOnWriteArraySet<DBChangeLiteListener>();
     
     @PostConstruct
     public void initialize() {
@@ -72,29 +66,17 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     }
 
     public void registerForPointData(PointDataListener l, Set<Integer> pointIds) {
+        // find points we aren't already registered for
+        Set<Integer> unregisteredPointIds = Sets.difference(pointIds, getAllRegisteredPoints()).immutableCopy();
+        
+        for (Integer id : pointIds) {
+            pointIdPointDataListeners.put(id, l);
+        }
 
-        //First register with dispatch point ids as necessary
-        //If it throws then we won't have changed any of our state
         try{
-        	dispatchProxy.registerForPointIds(pointIds);
+        	dispatchProxy.registerForPointIds(unregisteredPointIds);
         } catch (DispatchNotConnectedException e) {
         	CTILogger.info("Registration failed temporarily because Dispatch wasn't connected");
-        }
-        //Associate the point ids with the listener
-        // and associate the listener with each of the points ids
-        HashSet<Integer> listenerPointIds = pointDataListenerPointIds.get(l);
-        if(listenerPointIds == null) {
-            listenerPointIds = new HashSet<Integer>();
-            pointDataListenerPointIds.put(l, listenerPointIds);
-        }
-        for (Integer id : pointIds) {
-            listenerPointIds.add(id);
-            LinkedHashSet<PointDataListener> listeners = pointIdPointDataListeners.get(id);
-            if(listeners == null) {
-                listeners = new LinkedHashSet<PointDataListener>();
-                pointIdPointDataListeners.put(id, listeners);
-            }
-            listeners.add(l);
         }
     }
     
@@ -104,57 +86,28 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     }
 
     public void unRegisterForPointData(PointDataListener l, Set<Integer> pointIds) {
-        Set<Integer> listenerPointIds = pointDataListenerPointIds.get(l); 
-            if(listenerPointIds != null) {
-            for (Integer id : pointIds) {
-                Set<PointDataListener> listeners = pointIdPointDataListeners.get(id);
-                if(listeners != null) {
-                    listeners.remove(l);
-                    if(listeners.size() == 0) {
-                        pointIdPointDataListeners.remove(id);
-                    }
-                }
-                listenerPointIds.remove(id);
-            }
-            if(listenerPointIds.size() == 0) {
-                pointDataListenerPointIds.remove(l);
-            }               
+        for (Integer id : pointIds) {
+            pointIdPointDataListeners.remove(id, l);
         }
     }
 
     public void unRegisterForPointData(PointDataListener l) {
-        Set<Integer> pointIds = pointDataListenerPointIds.get(l);
-        if(pointIds != null) {
-        	Set<Integer> copyPointIds = new HashSet<Integer>(pointIds);
-            unRegisterForPointData(l, copyPointIds);
-        }
+        pointIdPointDataListeners.values().removeAll(ImmutableSet.of(l));
     }
 
     public void registerForSignals(SignalListener l, Set<Integer> pointIds) {
+        // find points we aren't already registered for
+        Set<Integer> unregisteredPointIds = Sets.difference(pointIds, getAllRegisteredPoints()).immutableCopy();
+        
+        for (Integer id : pointIds) {
+            pointIdSignalListeners.put(id, l);
+        }        
 
-        //First register with dispatch point ids as necessary
-        //If it throws then we won't have changed any of our state
         try{
-	    	dispatchProxy.registerForPointIds(pointIds);
+	    	dispatchProxy.registerForPointIds(unregisteredPointIds);
 	    } catch (DispatchNotConnectedException e) {
 	    	CTILogger.info("Registration failed temporarily because Dispatch wasn't connected");
 	    } 
-        //Associate the point ids with the listener
-        // and associate the listener with each of the points ids
-        HashSet<Integer> listenerPointIds = signalListenerPointIds.get(l);
-        if(listenerPointIds == null) {
-            listenerPointIds = new HashSet<Integer>();
-            signalListenerPointIds.put(l, listenerPointIds);
-        }
-        for (Integer id : pointIds) {
-            listenerPointIds.add(id);
-            LinkedHashSet<SignalListener> listeners = pointIdSignalListeners.get(id);
-            if(listeners == null) {
-                listeners = new LinkedHashSet<SignalListener>();
-                pointIdSignalListeners.put(id, listeners);
-            }
-            listeners.add(l);
-        }        
 
     }
     
@@ -165,29 +118,13 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     }
 
     public void unRegisterForSignals(SignalListener l, Set<Integer> pointIds) {
-        Set<Integer> listenerPointIds = signalListenerPointIds.get(l);
-        if(listenerPointIds != null) {
-            for (Integer id : pointIds) {
-                Set<SignalListener> listeners = pointIdSignalListeners.get(id);
-                if(listeners != null) {
-                    listeners.remove(l);
-                    if(listeners.size() == 0) {
-                        pointIdSignalListeners.remove(id);
-                    }
-                }
-                listenerPointIds.remove(id);
-            }
-            if(listenerPointIds.size() == 0) {
-                signalListenerPointIds.remove(l);
-            }          
+        for (Integer id : pointIds) {
+            pointIdSignalListeners.remove(id, l);
         }
     }
 
     public void unRegisterForSignals(SignalListener l) {
-        Set<Integer> pointIds = new HashSet<Integer>(signalListenerPointIds.get(l));
-        if(pointIds != null) {
-            unRegisterForSignals(l, pointIds);
-        }
+        pointIdSignalListeners.values().removeAll(ImmutableSet.of(l));
     }
 
     public void addDBChangeListener(DBChangeListener l) {
@@ -239,22 +176,30 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     }
     
     public void handlePointData(PointData pointData) {
-        Set<PointDataListener> listeners = pointIdPointDataListeners.get(pointData.getId());
-        if(listeners != null) {
-            for (PointDataListener listener : listeners) {
-                listener.pointDataReceived(pointData);
-            }
+        Set<PointDataListener> listeners;
+        // lock pointIdPointDataListeners (the object is the lock used internally)
+        synchronized (pointIdPointDataListeners) {
+            listeners = pointIdPointDataListeners.get(pointData.getId());
+            listeners = ImmutableSet.copyOf(listeners);
+        }
+        // make sure we release the lock before calling the listeners
+        for (PointDataListener listener : listeners) {
+            listener.pointDataReceived(pointData);
         }
     }
     
     public void handleSignal(Signal signal) {
-        Set<SignalListener> listeners = pointIdSignalListeners.get(signal.getPointID());
-        if(listeners != null) {                   
-            for (SignalListener listener : listeners) {
-                listener.signalReceived(signal);
-            }
+        Set<SignalListener> listeners;
+        // lock pointIdSignalListeners (the object is the lock used internally)
+        synchronized (pointIdSignalListeners) {
+            listeners = pointIdSignalListeners.get(signal.getPointID());
+            listeners = ImmutableSet.copyOf(listeners);
         }
-        
+        // make sure we release the lock before calling the listeners
+        for (SignalListener listener : listeners) {
+            listener.signalReceived(signal);
+        }
+
         final int tags = signal.getTags(); 
         boolean isAlarmSignal = TagUtils.isAnyAlarm(tags);
         boolean isNewAlarm = TagUtils.isNewAlarm(tags);
@@ -294,12 +239,13 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
      * Useful for when the connection goes down then up again
      */
     private void reRegisterForEverything() {
-        int numIds = pointIdPointDataListeners.size()+pointIdSignalListeners.size();
-        Set<Integer> pointIdsToRegisterFor = new HashSet<Integer>((int)(numIds/0.75f)+1);
-        pointIdsToRegisterFor.addAll(pointIdPointDataListeners.keySet());
-        pointIdsToRegisterFor.addAll(pointIdSignalListeners.keySet());
+        Set<Integer> union = getAllRegisteredPoints();
 
-        dispatchProxy.registerForPointIds(pointIdsToRegisterFor);
+        dispatchProxy.registerForPointIds(union);
+    }
+
+    private Set<Integer> getAllRegisteredPoints() {
+        return Sets.union(pointIdPointDataListeners.keySet(), pointIdSignalListeners.keySet());
     }
     
     public void setDispatchProxy(DispatchProxy dispatchProxy) {
@@ -314,35 +260,13 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
         this.databaseCache = databaseCache;
     }
     
-    public Set<Integer> getPointIds(PointDataListener l) {
-        Set<Integer> ids = pointDataListenerPointIds.get(l);
-        if(ids == null) {
-            return Collections.emptySet();
-        }        
-        return ids;
-    }
-    
-    public Set<Integer> getPointIds(SignalListener l) {
-        Set<Integer> ids = signalListenerPointIds.get(l);
-        if(ids == null) {
-            return Collections.emptySet();
-        }
-        return ids;
-    }
-    
     public Set<PointDataListener> getPointDataListeners(int pointId) {
         Set<PointDataListener> listeners = pointIdPointDataListeners.get(pointId);
-        if(listeners == null) {
-            return Collections.emptySet();
-        }
         return listeners;
     }
     
     public Set<SignalListener> getSignalListeners(int pointId) {
         Set<SignalListener> listeners = pointIdSignalListeners.get(pointId);
-        if(listeners == null) {
-            return Collections.emptySet();
-        }
         return listeners;
     }    
     

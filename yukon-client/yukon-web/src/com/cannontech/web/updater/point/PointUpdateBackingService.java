@@ -18,8 +18,10 @@ import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.UpdateBackingService;
+import com.google.common.collect.Sets;
 
 public class PointUpdateBackingService implements UpdateBackingService, PointDataListener {
     private TimeSource timeSource;
@@ -32,25 +34,45 @@ public class PointUpdateBackingService implements UpdateBackingService, PointDat
     private Pattern idSplitter = Pattern.compile("^([^/]+)/(.+)$");
 
     public String getLatestValue(String identifier, long afterDate, YukonUserContext userContext) {
+        PointIdentifier pointIdentifier = getPointIdentifier(identifier);
+        
+        PointValueHolder latestValue = doGetLatestValue(pointIdentifier.pointId, afterDate);
+        if (latestValue == null) return null;
+        String valueString;
+        try {
+            Format formatEnum = Format.valueOf(pointIdentifier.format);
+            valueString = pointFormattingService.getValueString(latestValue, formatEnum, userContext);
+        } catch (IllegalArgumentException e) {
+            valueString = pointFormattingService.getValueString(latestValue, pointIdentifier.format, userContext);
+        }
+
+        return valueString;
+    }
+    
+    public PointIdentifier getPointIdentifier(String identifier) {
         Matcher m = idSplitter.matcher(identifier);
-        if (m.matches() && m.groupCount() != 2) {
+        if (!m.matches() || m.groupCount() != 2) {
             throw new RuntimeException("identifier string isn't well formed: " + identifier);
         }
         String idStr = m.group(1);
         String format = m.group(2);
 
         int pointId = Integer.parseInt(idStr);
-        PointValueHolder latestValue = doGetLatestValue(pointId, afterDate);
-        if (latestValue == null) return null;
-        String valueString;
-        try {
-            Format formatEnum = Format.valueOf(format);
-            valueString = pointFormattingService.getValueString(latestValue, formatEnum, userContext);
-        } catch (IllegalArgumentException e) {
-            valueString = pointFormattingService.getValueString(latestValue, format, userContext);
-        }
-
-        return valueString;
+        
+        PointIdentifier pointIdentifier = new PointIdentifier();
+        pointIdentifier.pointId = pointId;
+        pointIdentifier.format = format;
+        
+        return pointIdentifier;
+    }
+    
+    @Override
+    public boolean isValueAvailableImmediately(String identifier,
+    		long afterDate, YukonUserContext userContext) {
+        PointIdentifier pointIdentifier = getPointIdentifier(identifier);
+        boolean containsKey = cache.containsKey(pointIdentifier.pointId);
+        
+    	return containsKey;
     }
 
     private PointValueHolder doGetLatestValue(int pointId, long afterDate) {
@@ -68,7 +90,15 @@ public class PointUpdateBackingService implements UpdateBackingService, PointDat
         return value.value;
     }
     
-    private DatedPointValue createWrapper(PointValueHolder pointData) {
+	public void notifyOfImminentPoints(Iterable<LitePoint> litePoints) {
+		Set<Integer> pointIds = Sets.newHashSetWithExpectedSize(30);
+		for (LitePoint litePoint : litePoints) {
+			pointIds.add(litePoint.getPointID());
+		}
+		asyncDataSource.registerForPointData(this, pointIds);
+	}
+
+	private DatedPointValue createWrapper(PointValueHolder pointData) {
         DatedPointValue result = new DatedPointValue();
         result.receivedTime = timeSource.getCurrentMillis();
         result.value = pointData;
@@ -90,8 +120,13 @@ public class PointUpdateBackingService implements UpdateBackingService, PointDat
     }
     
     private class DatedPointValue {
-        PointValueHolder value;
-        long receivedTime;
+    	PointValueHolder value;
+    	long receivedTime;
+    }
+    
+    private class PointIdentifier {
+        int pointId;
+        String format;
     }
 
     public void pointDataReceived(PointValueQualityHolder pointData) {
@@ -123,5 +158,6 @@ public class PointUpdateBackingService implements UpdateBackingService, PointDat
             PointFormattingService pointFormattingService) {
         this.pointFormattingService = pointFormattingService;
     }
+
     
 }

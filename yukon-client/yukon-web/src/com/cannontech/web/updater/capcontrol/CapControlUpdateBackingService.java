@@ -58,6 +58,12 @@ public class CapControlUpdateBackingService implements UpdateBackingService {
         return null;    
     }
     
+    @Override
+    public boolean isValueAvailableImmediately(String fullIdentifier,
+    		long afterDate, YukonUserContext userContext) {
+    	return true;
+    }
+    
     private boolean updatedInCache(int areaId, long afterDate) {
         WebUpdatedDAO<Integer> updatedObjMap = capControlCache.getUpdatedObjMap();
         List<Integer> updatedIds = updatedObjMap.getUpdatedIdsSince(new Date(afterDate), areaId);

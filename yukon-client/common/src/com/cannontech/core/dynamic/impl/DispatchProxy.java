@@ -126,6 +126,7 @@ class DispatchProxy {
      * @param pointIds
      */
     public void registerForPointIds(Set<Integer> pointIds) throws DispatchNotConnectedException{
+        if (pointIds.isEmpty()) return;
         validateDispatchConnection();
         PointRegistration pReg = new PointRegistration();
         pReg.setRegFlags(PointRegistration.REG_ADD_POINTS);

@@ -35,9 +35,6 @@
         <property name="cacheSeconds">
             <value type="int">0</value>
         </property>
-        <property name="validators">
-            <null />
-        </property>
         <property name="methodNameResolver">
            <bean class="org.springframework.web.servlet.mvc.multiaction.InternalPathMethodNameResolver"/>
         </property>
@@ -47,12 +44,6 @@
         <property name="synchronizeOnSession">
             <value type="boolean">true</value>
         </property>
-		<property name="deviceDao" ref="deviceDao"/>
-		<property name="authDao" ref="authDao"/>
-		<property name="roleDao" ref="roleDao"/>
-		<property name="meterSearchService" ref="meterSearchService"/>
-		<property name="attributeService" ref="attributeService" />
-		<property name="filterCollectionHelper" ref="deviceFilterCollectionProducer" />
     </bean>
     
     <bean id="MoveInMoveOutController" class="com.cannontech.web.moveInMoveOut.MoveInMoveOutController" >

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.device.commands.GroupCommandExecutor;
 import com.cannontech.common.device.commands.GroupCommandResult;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.RecentResultUpdateBackingService;
 
 public class GroupCommandResultBackingService extends RecentResultUpdateBackingService {
@@ -20,6 +21,12 @@ public class GroupCommandResultBackingService extends RecentResultUpdateBackingS
        }
        GroupCommandResultFieldEnum groupCommandResultFieldEnum = GroupCommandResultFieldEnum.valueOf(resultTypeStr);
        return groupCommandResultFieldEnum.getValue(groupCommandResult);
+    }
+    
+    @Override
+    public boolean isValueAvailableImmediately(String fullIdentifier,
+    		long afterDate, YukonUserContext userContext) {
+    	return true;
     }
     
     @Autowired

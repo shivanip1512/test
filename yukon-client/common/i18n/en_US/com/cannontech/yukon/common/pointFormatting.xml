@@ -6,10 +6,11 @@
          com.cannontech.common.util.FormattingTemplateProcessor
          java.text.SimpleDateFormat
 -->
-<entry key="yukon.common.pointFormatting.FULL">{default} {status||{unit}} {time|BOTH}</entry>
-<entry key="yukon.common.pointFormatting.SHORT">{default} {status||{unit}}</entry>
-<entry key="yukon.common.pointFormatting.SHORTDATE">{default} {status||{unit}} {time|MM/dd/yyyy}</entry>
-<entry key="yukon.common.pointFormatting.DATE">{time|MM/dd/yyyy HH:mm:ss Z}</entry>
-<entry key="yukon.common.pointFormatting.RAWVALUE">{rawValue}</entry>
-<entry key="yukon.common.pointFormatting.VALUE">{default}</entry>
+<entry key="yukon.common.pointFormatting.unavailablePlaceholder">loading...</entry>
+<entry key="yukon.common.pointFormatting.formats.FULL">{default} {status||{unit}} {time|BOTH}</entry>
+<entry key="yukon.common.pointFormatting.formats.SHORT">{default} {status||{unit}}</entry>
+<entry key="yukon.common.pointFormatting.formats.SHORTDATE">{default} {status||{unit}} {time|MM/dd/yyyy}</entry>
+<entry key="yukon.common.pointFormatting.formats.DATE">{time|MM/dd/yyyy HH:mm:ss Z}</entry>
+<entry key="yukon.common.pointFormatting.formats.RAWVALUE">{rawValue}</entry>
+<entry key="yukon.common.pointFormatting.formats.VALUE">{default}</entry>
 </properties>

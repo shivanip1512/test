@@ -1,16 +1,24 @@
 package com.cannontech.web.updater;
 
 public class UpdateValue {
-    private String fullIdentifier;
+	private String fullIdentifier;
     private String value;
-    
+    private boolean unavailable = false;
     
     public UpdateValue(String identifier, String value) {
         this.fullIdentifier = identifier;
         this.value = value;
     }
     
+    public UpdateValue(String identifier) {
+    	this.fullIdentifier = identifier;
+    	this.unavailable = true;
+    }
+    
     public String getValue() {
+    	if (unavailable) {
+    		throw new IllegalStateException("Can't call getValue if unavailable");
+    	}
         return value;
     }
     public void setValue(String value) {
@@ -22,6 +30,10 @@ public class UpdateValue {
     public void setFullIdentifier(String identifier) {
         this.fullIdentifier = identifier;
     }
+    
+    public boolean isUnavailable() {
+		return unavailable;
+	}
 
     // Eclipse generated...
     @Override

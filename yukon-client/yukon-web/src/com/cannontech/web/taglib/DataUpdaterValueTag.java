@@ -15,6 +15,7 @@ public class DataUpdaterValueTag extends YukonTagSupport {
     private DataUpdaterService dataUpdaterService;
     private String type;
     private String identifier;
+    private String initialValue = " ... ";
     private String styleClass = "";
     
     @Override
@@ -23,7 +24,7 @@ public class DataUpdaterValueTag extends YukonTagSupport {
         
         JspWriter out = getJspContext().getOut();
         out.print("<span cannonUpdater=\"" + value.getFullIdentifier() + "\" class=\"" + styleClass + "\" >");
-        out.print(value.getValue());
+        out.print(value.isUnavailable() ? initialValue : value.getValue());
         out.print("</span>");
     }
 

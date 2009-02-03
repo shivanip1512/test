@@ -41,8 +41,6 @@
     </c:forEach>
 </ct:nameValueContainer>
 
-
-
 <script type="text/javascript">
 <%--
   The following sets up a global variable (with a unique name) to hold the current usage value.
@@ -53,9 +51,9 @@
 --%>
 var ${widgetParameters.widgetId}_currentUsage = null;
 function ${widgetParameters.widgetId}_usageSelection() {
-  ${widgetParameters.widgetId}_updatePrevious(${widgetParameters.widgetId}_currentUsage);
+  ${widgetParameters.widgetId}_updateDifference();
 }
-function ${widgetParameters.widgetId}_usageUpdate(allIdentifierValues) {
+function ${widgetParameters.widgetId}_prependPrevious(allIdentifierValues) {
 
     // get formatted results
     var valueIdentifier = allIdentifierValues['valueIdentifier'];
@@ -64,27 +62,40 @@ function ${widgetParameters.widgetId}_usageUpdate(allIdentifierValues) {
     // adjust the drop down (won't add duplicates)
     yukonGeneral_addOtpionToTopOfSelect($('${widgetParameters.widgetId}'+'_prevSelect'),valueIdentifier,fullIdentifier);
 
-    // reset current usage
-    ${widgetParameters.widgetId}_currentUsage = valueIdentifier;
-
-    // update previous
-    ${widgetParameters.widgetId}_updatePrevious(${widgetParameters.widgetId}_currentUsage);
+    // update difference
+    ${widgetParameters.widgetId}_updateDifference();
 }
 
-function ${widgetParameters.widgetId}_updatePrevious(currentUsage) {
+function ${widgetParameters.widgetId}_updateCurrent(allIdentifierValues) {
+    ${widgetParameters.widgetId}_currentUsage = allIdentifierValues['valueIdentifier'];
+    // update difference
+    ${widgetParameters.widgetId}_updateDifference();
+}
+
+function ${widgetParameters.widgetId}_updateDifference() {
+  var currentUsage = ${widgetParameters.widgetId}_currentUsage;
+  if (currentUsage == null) return;
   var previousVal = $('${widgetParameters.widgetId}_prevSelect').value;
   var totalUsage = currentUsage - previousVal;
   
   $('${widgetParameters.widgetId}_totalConsumption').innerHTML = totalUsage.toFixed(3);
 }
+${widgetParameters.widgetId}_updateDifference();
 </script>
+
 <cti:attributeResolver device="${device}" attributeName="USAGE"
         var="pointId" />
+        
 <cti:dataUpdaterCallback
-    function="${widgetParameters.widgetId}_usageUpdate"
-    initialize="true"
+    function="${widgetParameters.widgetId}_prependPrevious"
+    initialize="false"
     valueIdentifier="POINT/${pointId}/{value}"
     fullIdentifier="POINT/${pointId}/FULL" />
+
+<cti:dataUpdaterCallback
+    function="${widgetParameters.widgetId}_updateCurrent"
+    initialize="true"
+    valueIdentifier="POINT/${pointId}/{value}"/>
 
 <br>
 <div id="${widgetParameters.widgetId}_results"></div>
