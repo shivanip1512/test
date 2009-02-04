@@ -119,7 +119,7 @@ public:
 
     void     apply(void (*applyFun)(const long, ptr_type, void*), void* d);
 
-    virtual ptr_type getPoint(LONG Pt);
+    virtual ptr_type getPoint(LONG Pt, LONG pao = 0);
     ptr_type getControlOffsetEqual(LONG pao, INT Offset);
     ptr_type getOffsetTypeEqual(LONG pao, INT Offset, CtiPointType_t Type);
     ptr_type getEqualByName(LONG pao, string pname);

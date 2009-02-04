@@ -102,7 +102,7 @@ public:
    void updatePoints(LONG pntID, LONG paoID, CtiPointType_t pntType = InvalidPointType);
    void loadAllStaticData();
 
-   virtual Inherited::ptr_type getPoint(LONG Pt);
+   virtual Inherited::ptr_type getPoint(LONG Pt, LONG pao = 0);
    Inherited::ptr_type         getCachedPoint(LONG Pt);
    bool                        isPointLoaded(LONG Pt);
    CtiPointManager::ptr_type   getOffsetTypeEqual(LONG pao, INT offset, CtiPointType_t type);

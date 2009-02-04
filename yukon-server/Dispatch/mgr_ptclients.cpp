@@ -1225,7 +1225,7 @@ CtiPointManager::ptr_type CtiPointClientManager::getCachedPoint(LONG Pt)
 }
 
 // This must never be called by refreshList!
-CtiPointManager::ptr_type CtiPointClientManager::getPoint(LONG Pt)
+CtiPointManager::ptr_type CtiPointClientManager::getPoint(LONG Pt, LONG pao)
 {
     Inherited::ptr_type retVal = Inherited::getPoint(Pt);
 

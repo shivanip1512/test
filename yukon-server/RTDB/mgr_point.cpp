@@ -681,8 +681,22 @@ void CtiPointManager::addPoint( CtiPointBase *point )
     }
 }
 
-CtiPointManager::ptr_type CtiPointManager::getPoint (LONG Pt)
+CtiPointManager::ptr_type CtiPointManager::getPoint (LONG Pt, LONG pao)
 {
+    bool loadPAO = false;
+
+    if(pao != 0)
+    {
+        coll_type::reader_lock_guard_t guard(getLock());
+
+        loadPAO = !_all_paoids_loaded && (_paoids_loaded.find(pao) == _paoids_loaded.end());
+    }
+
+    if( loadPAO )
+    {
+        refreshList(0, pao);
+    }
+
     CtiPointManager::ptr_type retVal = _smartMap.find(Pt);
 
     if(retVal)
