@@ -2440,6 +2440,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                             currentSubstationBus->setPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentSubstationBus->getCurrentVarLoadPointValue(),currentSubstationBus->getCurrentWattLoadPointValue()));
                             currentSubstationBus->setEstimatedPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentSubstationBus->getEstimatedVarLoadPointValue(),currentSubstationBus->getCurrentWattLoadPointValue()));
                             store->calculateParentPowerFactor(currentSubstationBus->getPAOId());
+                            currentSubstationBus->setBusUpdatedFlag(TRUE);
                             if( currentSubstationBus->getPowerFactorPointId() > 0 )
                             {
                                 sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getPowerFactorPointId(),convertPowerFactorToSend(currentSubstationBus->getPowerFactorValue()),NormalQuality,AnalogPointType));
@@ -2488,7 +2489,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                             currentSubstationBus->setPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentSubstationBus->getCurrentVarLoadPointValue(),currentSubstationBus->getCurrentWattLoadPointValue()));
                             currentSubstationBus->setEstimatedPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentSubstationBus->getEstimatedVarLoadPointValue(),currentSubstationBus->getCurrentWattLoadPointValue()));
                             store->calculateParentPowerFactor(currentSubstationBus->getPAOId());
-                        
+                            currentSubstationBus->setBusUpdatedFlag(TRUE);
                             if( currentSubstationBus->getPowerFactorPointId() > 0 )
                             {
                                 sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getPowerFactorPointId(),convertPowerFactorToSend(currentSubstationBus->getPowerFactorValue()),NormalQuality,AnalogPointType));

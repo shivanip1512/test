@@ -198,7 +198,7 @@ CtiCCArea& CtiCCArea::operator=(const CtiCCArea& right)
 
         _operationStats = right._operationStats;
         _confirmationStats = right._confirmationStats;
-        
+
         _areaUpdatedFlag = right._areaUpdatedFlag;
         
     }
@@ -1077,12 +1077,24 @@ CtiCCArea& CtiCCArea::setIntegratePeriod(LONG period)
 
 CtiCCArea& CtiCCArea::setPFactor(DOUBLE pfactor)
 {
+    
+    if(_pfactor != pfactor)
+    {    
+        _dirty = TRUE;
+        setAreaUpdatedFlag(TRUE);
+    }
     _pfactor = pfactor;
+
     return *this;
 }
 
 CtiCCArea& CtiCCArea::setEstPFactor(DOUBLE estPfactor)
 {
+    if(_estPfactor != estPfactor)
+    {    
+        _dirty = TRUE;
+        setAreaUpdatedFlag(TRUE);
+    }
     _estPfactor = estPfactor;
     return *this;
 }

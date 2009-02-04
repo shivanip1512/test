@@ -763,7 +763,12 @@ CtiCCSubstation& CtiCCSubstation::setDisplayOrder(LONG displayOrder)
 CtiCCSubstation& CtiCCSubstation::setPFactor(DOUBLE pfactor)
 {
 
-    _pfactor = pfactor;
+    if (_pfactor != pfactor)
+    {
+        setStationUpdatedFlag(TRUE);
+        _dirty = TRUE;
+        _pfactor = pfactor;
+    }
     return *this;
 }
 
@@ -774,7 +779,13 @@ CtiCCSubstation& CtiCCSubstation::setPFactor(DOUBLE pfactor)
 ---------------------------------------------------------------------------*/
 CtiCCSubstation& CtiCCSubstation::setEstPFactor(DOUBLE estpfactor)
 {
-    _estPfactor = estpfactor;
+    
+    if (_estPfactor != estpfactor)
+    {
+        setStationUpdatedFlag(TRUE);
+        _dirty = TRUE;
+        _estPfactor = estpfactor;
+    }
     return *this;
 }
 
