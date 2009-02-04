@@ -592,7 +592,7 @@ for( int i = 0; i < capBanks.size(); i++ ) {
                             '/spring/capcontrol/oneline/popupmenu?menu=pointTimestamp&cbcID=<%=obj.getLiteID()%>',
                              500, 600)" >
                             <img class="rAlign magnifierImg" 
-                                src="images\magnifier.gif" 
+                                src="images/magnifier.gif" 
                                 onmouseover="statusMsg(this,'Click here to see the timestamp information for the cap bank controller device.');" />
                        </a>
                     <% } %>
@@ -633,7 +633,7 @@ for( int i = 0; i < capBanks.size(); i++ ) {
 					<cti:checkProperty property="CBCSettingsRole.SHOW_CB_ADDINFO">
 					   <a href="#" onclick="return GB_show('<center> Cap Bank Additional Information </center>', 
 					       '/spring/capcontrol/capAddInfo?paoID=${thisCapBankId}', 500, 600)" >
-					       <img class="rAlign magnifierImg" src="images\magnifier.gif" 
+					       <img class="rAlign magnifierImg" src="images/magnifier.gif" 
 					           onmouseover="statusMsg(this, 'Click to see additional information for the cap bank.');" />
 					   </a>
 					</cti:checkProperty>
