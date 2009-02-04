@@ -28,6 +28,7 @@ public interface AuthDao {
      * @param LiteYukonUser
      * @param roleID
      * @return LiteYukonRole
+     * @deprecated not equivalent, LiteYukonRole shouldn't be used
      */
     @Deprecated
     public LiteYukonRole getRole(LiteYukonUser user, int roleID);
@@ -38,6 +39,7 @@ public interface AuthDao {
      * @param user
      * @param rolePropertyID
      * @return boolean
+     * @deprecated use RolePropertyDao.checkRole()
      */
     @Deprecated
     public boolean checkRole(LiteYukonUser user, int roleId);
@@ -47,10 +49,14 @@ public interface AuthDao {
      * @param user
      * @param rolePropertyID
      * @return boolean
+     * @deprecated use RolePropertyDao.checkProperty()
      */
     @Deprecated
     public boolean checkRoleProperty(LiteYukonUser user, int rolePropertyID);
 
+    /**
+     * @deprecated use RolePropertyDao.checkProperty()
+     */
     @Deprecated
     public boolean checkRoleProperty(int userID, int rolePropertyID);
 
@@ -60,6 +66,7 @@ public interface AuthDao {
      * @param rolePropertyID
      * @return String
      * @throws UnknownRolePropertyException If RoleProperty doesn't exist. 
+     * @deprecated use RolePropertyDao.getPropertyStringValue()
      */
     @Deprecated
     public String getRolePropertyValueEx(LiteYukonUser user, int rolePropertyID)
@@ -71,6 +78,7 @@ public interface AuthDao {
      * @param user
      * @param roleProperty
      * @return String
+     * @deprecated use RolePropertyDao.getPropertyStringValue()
      */
     @Deprecated
     public String getRolePropertyValue(LiteYukonUser user, int rolePropertyID);
@@ -82,6 +90,7 @@ public interface AuthDao {
      * @param rolePropertyID the rolePropertyID to retrieve
      * @return the value of the property
      * @throws IllegalArgumentException if a valid user cannot be found for userID
+     * @deprecated use RolePropertyDao.getPropertyStringValue()
      */
     @Deprecated
     public String getRolePropertyValue(int userID, int rolePropertyID);
@@ -90,6 +99,7 @@ public interface AuthDao {
      * Returns a list of roles that are in the given category.
      * @param category
      * @return List
+     * @deprecated use RolePropertyDao.getRolesForUser()
      */
     @Deprecated
     public List getRoles(String category);
@@ -98,6 +108,7 @@ public interface AuthDao {
      * Return a particular lite yukon role given a role id.
      * @param roleid
      * @return
+     * @deprecated no equivalent, LiteYukonRoles should be used
      */
     @Deprecated
     public LiteYukonRole getRole(int roleid);
@@ -162,6 +173,9 @@ public interface AuthDao {
      */
     public boolean hasPAOAccess(LiteYukonUser user);
     
+    /**
+     * @deprecated use RolePropertyDao.verifyRole()
+     */
     @Deprecated
     public void verifyRole(LiteYukonUser user, int roleId) throws NotAuthorizedException;
     
@@ -172,10 +186,23 @@ public interface AuthDao {
      * @param user
      * @param rolePropertyIds
      * @throws NotAuthorizedException
+     * @deprecated use RolePropertyDao.verifyProperty()
      */
     @Deprecated public void verifyTrueProperty(LiteYukonUser user, int ... rolePropertyIds) throws NotAuthorizedException;
+    
+    /**
+     * @param user
+     * @param rolePropertyId
+     * @throws NotAuthorizedException
+     * @deprecated use RolePropertyDao.verifyFalseProperty()
+     */
     @Deprecated public void verifyFalseProperty(LiteYukonUser user, int rolePropertyId) throws NotAuthorizedException;
-    @Deprecated public void verifyAdmin(LiteYukonUser user) throws NotAuthorizedException;
+    
+    /**
+     * @param user
+     * @throws NotAuthorizedException
+     */
+    public void verifyAdmin(LiteYukonUser user) throws NotAuthorizedException;
 
     /**
      * This method returns the TimeZone for the given user.  
@@ -189,6 +216,9 @@ public interface AuthDao {
      */
     public TimeZone getUserTimeZone(LiteYukonUser user) throws BadConfigurationException, IllegalArgumentException;
 
+    /**
+     * @pdeprecated use RolePropertyDao.getPropertyEnumValue()
+     */
     @Deprecated
     public <E extends Enum<E>> E getRolePropertyValue(Class<E> class1, LiteYukonUser user, int rolePropertyID);
 }
