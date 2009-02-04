@@ -919,7 +919,7 @@ int DNPSlaveInterface::slaveGenerate( CtiXfer &xfer )
 
                         if( ip.type == AnalogInputType )
                         {
-                            ain = CTIDBG_new DNP::AnalogInput( DNP::AnalogInput::AI_16BitNoFlag );
+                            ain = CTIDBG_new DNP::AnalogInput( DNP::AnalogInput::AI_32BitNoFlag );
                         
                             ain->setValue(ip.ain.value);
                             ain->setOnlineFlag(ip.onLine);
@@ -943,10 +943,9 @@ int DNPSlaveInterface::slaveGenerate( CtiXfer &xfer )
                         }
                     }
 
-
-                    getApplicationLayer().addObjectBlock(dob1);
-                    getApplicationLayer().addObjectBlock(dob2);
-                    getApplicationLayer().addObjectBlock(dob3);
+                    addObjectBlock(dob1);
+                    addObjectBlock(dob2);
+                    addObjectBlock(dob3);
                 
                 break;
             }
@@ -1019,6 +1018,17 @@ bool DNPSlaveInterface::setSlaveCommand( Command command, input_point &point )
     return setSlaveCommand(command);
 }
 
+void DNPSlaveInterface::addObjectBlock(DNP::ObjectBlock *objBlock)
+{
+    if( !objBlock->empty() )
+    {
+        getApplicationLayer().addObjectBlock(objBlock);
+    }
+    else
+    {
+        delete objBlock;
+    }
+}
 
 const char * const DNPInterface::ControlResultStr_RequestAccepted      = "Request accepted";
 const char * const DNPInterface::ControlResultStr_ArmTimeout           = "Operate received after select timeout";

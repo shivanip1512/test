@@ -350,17 +350,17 @@ int CtiFDRDnpSlave::processScanSlaveRequest (CtiFDRClientServerConnection& conne
             if (dnpId.PointType == StatusPointType )
             {
                 iPoint.din.trip_close = (fdrPoint->getValue() == 0)?(DNP::BinaryOutputControl::Trip):(DNP::BinaryOutputControl::Close); 
-                iPoint.type = Cti::Protocol::DNPSlaveInterface::InputPointType::DigitalInput;
+                iPoint.type = Cti::Protocol::DNPSlaveInterface::DigitalInput;
             }
             else if (dnpId.PointType == AnalogPointType )
             {
-                iPoint.ain.value =  fdrPoint->getValue();
-                iPoint.type = Cti::Protocol::DNPSlaveInterface::InputPointType::AnalogInputType;
+                iPoint.ain.value =  (fdrPoint->getValue() * fdrPoint->getMultiplier());
+                iPoint.type = Cti::Protocol::DNPSlaveInterface::AnalogInputType;
             }
             else if (dnpId.PointType == PulseAccumulatorPointType )
             {
-                iPoint.counterin.value =  fdrPoint->getValue();
-                iPoint.type = Cti::Protocol::DNPSlaveInterface::InputPointType::Counters;
+                iPoint.counterin.value =  (fdrPoint->getValue() * fdrPoint->getMultiplier());
+                iPoint.type = Cti::Protocol::DNPSlaveInterface::Counters;
             }
             else 
             {

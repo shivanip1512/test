@@ -207,6 +207,7 @@ class IM_EX_PROT DNPSlaveInterface : public DNPInterface, boost::noncopyable
 private:
 
     vector<input_point> _input_point_list;
+    void addObjectBlock(DNP::ObjectBlock *objBlock);
 
 protected:
 
