@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.cannontech.analysis.tablemodel.BareReportModel;
 import com.cannontech.analysis.tablemodel.CapControlScheduleDetailModel;
+import com.cannontech.simplereport.SimpleYukonReport;
 
 public class CapControlScheduleDetailReport extends SimpleYukonReportBase {
     
@@ -13,8 +14,8 @@ public class CapControlScheduleDetailReport extends SimpleYukonReportBase {
         new ColumnLayoutData("Substation Bus", "subName", 100),
         new ColumnLayoutData("Feeder", "feederName", 100),
         new ColumnLayoutData("Outgoing Command", "outgoingCommand", 120),
-        new ColumnLayoutData("Last Run Time", "lastRunTime", 120),
-        new ColumnLayoutData("Next Run Time", "nextRunTime", 120),
+        new ColumnLayoutData("Last Run Time", "lastRunTime", 120, columnDateFormat),
+        new ColumnLayoutData("Next Run Time", "nextRunTime", 120, columnDateFormat),
         new ColumnLayoutData("Interval", "interval", 40) 
     };
 

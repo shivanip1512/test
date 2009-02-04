@@ -36,7 +36,7 @@ public class CapBankMaxOpsExceededModel extends BareDatedReportModelBase<CapBank
     	public String subBusName;
     	public String feederName;
         public String capBankName;
-        public String dateTime;
+        public Date dateTime;
     }
     
     @Override
@@ -73,9 +73,7 @@ public class CapBankMaxOpsExceededModel extends BareDatedReportModelBase<CapBank
                 row.subBusName = rs.getString("subBus");
                 row.feederName = rs.getString("feederName");
                 row.capBankName = rs.getString("capBankName");
-                
-                Date date = rs.getTimestamp("datetime");
-                row.dateTime = getColumnTimeFormat().format(date);
+                row.dateTime = rs.getTimestamp("datetime");
                 
                 data.add(row);
             }

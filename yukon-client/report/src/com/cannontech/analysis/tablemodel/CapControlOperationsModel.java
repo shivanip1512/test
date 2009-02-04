@@ -34,9 +34,9 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
     static public class ModelRow {
         public String cbcName;
         public String bankName;
-        public String opTime;
+        public Date opTime;
         public String operation;
-        public String confTime;
+        public Date confTime;
         public String confStatus;
         public String bankStatusQuality;
         public String feederName;
@@ -75,12 +75,8 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
                 
                 CapControlOperationsModel.ModelRow row = new CapControlOperationsModel.ModelRow();
 
-                Date opTime =  rs.getTimestamp("opTime");
-                Date confTime = rs.getTimestamp("confTime");
-
-                row.opTime = getColumnTimeFormat().format(opTime);
-                row.confTime = getColumnTimeFormat().format(confTime);
-                
+                row.opTime =  rs.getTimestamp("opTime");
+                row.confTime = rs.getTimestamp("confTime");
                 row.cbcName = rs.getString("cbcName");
                 row.bankName = rs.getString("bankName");
                 row.operation = rs.getString("operation");

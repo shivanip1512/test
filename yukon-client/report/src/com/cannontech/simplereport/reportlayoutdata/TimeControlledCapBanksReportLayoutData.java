@@ -1,6 +1,7 @@
 package com.cannontech.simplereport.reportlayoutdata;
 
 import com.cannontech.analysis.report.ColumnLayoutData;
+import com.cannontech.analysis.report.SimpleYukonReportBase;
 
 public class TimeControlledCapBanksReportLayoutData implements ReportLayoutData{
 
@@ -14,7 +15,7 @@ public class TimeControlledCapBanksReportLayoutData implements ReportLayoutData{
             new ColumnLayoutData("Substation Bus", "substationbus", 100),
             new ColumnLayoutData("Strategy", "strategyName", 100),
             new ColumnLayoutData("Control Method", "controlMethod", 100),
-            new ColumnLayoutData("Start Time", "startTimeSeconds", 100),
+            new ColumnLayoutData("Start Time", "startTimeSeconds", 100, SimpleYukonReportBase.columnDateFormat),
             new ColumnLayoutData("Percent of Banks to Close", "percentOfBanksToClose", 130)
         };
         

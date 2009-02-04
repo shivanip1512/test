@@ -68,8 +68,8 @@ public class CapControlScheduleDetailModel extends BareDatedReportModelBase<CapC
         public String subName;
         public String feederName;
         public String outgoingCommand;
-        public String lastRunTime;
-        public String nextRunTime;
+        public Date lastRunTime;
+        public Date nextRunTime;
         public String interval;
     }
     
@@ -105,11 +105,8 @@ public class CapControlScheduleDetailModel extends BareDatedReportModelBase<CapC
                 row.subName = rs.getString("substationbus");
                 row.feederName = rs.getString("feeder");
                 row.outgoingCommand = rs.getString("outgoingcommand");
-                
-                Date last = rs.getTimestamp("lastruntime");
-                Date next = rs.getTimestamp("nextruntime");
-                row.lastRunTime = getColumnTimeFormat().format(last);
-                row.nextRunTime = getColumnTimeFormat().format(next);
+                row.lastRunTime = rs.getTimestamp("lastruntime");
+                row.nextRunTime = rs.getTimestamp("nextruntime");
                 
                 int seconds = rs.getInt("interval");
                 String interval = TIME_INTERVAL.get(seconds);

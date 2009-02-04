@@ -10,6 +10,7 @@ import javax.servlet.http.HttpSession;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.capcontrol.CapControlStatusData;
+import com.cannontech.analysis.report.SimpleYukonReportBase;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.util.CtiUtilities;
@@ -374,7 +375,7 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 				new ColumnProperties(120, 1, 120, null),
 				new ColumnProperties(240, 1, 120, null),
 				new ColumnProperties(360, 1, 100, null),
-				new ColumnProperties(460, 1, 120, columnDateTimeFormat),
+				new ColumnProperties(460, 1, 120, SimpleYukonReportBase.columnDateFormat),
                 new ColumnProperties(580, 1, 80, null),
                 new ColumnProperties(660, 1, 50, null)
 			};

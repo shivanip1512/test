@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.capcontrol.CapControlActivityData;
+import com.cannontech.analysis.report.SimpleYukonReportBase;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
@@ -314,7 +315,7 @@ public class CapControlNewActivityModel extends ReportModelBase {
 				//posX, posY, width, height, numberFormatString
 				new ColumnProperties(0, 1, 200, null),
 				new ColumnProperties(0, 1, 180, null),
-				new ColumnProperties(0, 1, 100, columnDateTimeFormat),
+				new ColumnProperties(0, 1, 100, SimpleYukonReportBase.columnDateFormat),
 				new ColumnProperties(100, 1, 80, null),
 				new ColumnProperties(180, 1, 80, null),
 				new ColumnProperties(260, 1, 100, null),

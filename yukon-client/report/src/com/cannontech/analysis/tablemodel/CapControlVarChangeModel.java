@@ -36,7 +36,7 @@ public class CapControlVarChangeModel extends BareDatedReportModelBase<CapContro
         public Integer bankSize;
         public Integer kvarChange;
         public Double percentChange;
-        public String dateTime;
+        public Date dateTime;
         public String area;
         public String substation;
         public String subbus;
@@ -77,8 +77,7 @@ public class CapControlVarChangeModel extends BareDatedReportModelBase<CapContro
                 row.kvarChange = rs.getInt("kvarChange");
                 row.percentChange = rs.getDouble("percentChange");
                 
-                Date date = rs.getTimestamp("dateTime");
-                row.dateTime = getColumnTimeFormat().format(date);
+                row.dateTime = rs.getTimestamp("dateTime");
                 
                 row.area = rs.getString("area");
                 row.substation = rs.getString("substation");

@@ -36,7 +36,7 @@ public class VarImbalanceOnExecutionReport extends SimpleYukonReportBase {
         new ColumnLayoutData("Feeder", "feeder", 135),
         new ColumnLayoutData("Cap Bank", "capbank", 90),
         new ColumnLayoutData("Cap Bank State", "capbankstate", 90),
-        new ColumnLayoutData("Operation Time", "opTime", 105),
+        new ColumnLayoutData("Operation Time", "opTime", 105, columnDateFormat),
         new ColumnLayoutData("Operation", "operation", 195),
         new ColumnLayoutData("A Var", "avar", 45),
         new ColumnLayoutData("B Var", "bvar", 45),

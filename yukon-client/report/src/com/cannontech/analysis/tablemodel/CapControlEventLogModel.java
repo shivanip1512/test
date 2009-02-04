@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.capcontrol.CapControlStatusData;
+import com.cannontech.analysis.report.SimpleYukonReportBase;
 import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
@@ -384,7 +385,7 @@ public class CapControlEventLogModel extends ReportModelBase
 				new ColumnProperties(0, 1, 160, null),
 				new ColumnProperties(0, 1, 130, null),
 				new ColumnProperties(130, 1, 130, null),
-				new ColumnProperties(260, 1, 100, columnDateTimeFormat),
+				new ColumnProperties(260, 1, 100, SimpleYukonReportBase.columnDateFormat),
 				new ColumnProperties(360, 1, 90, null),
 				new ColumnProperties(450, 1, 260, null)
 			};

@@ -14,7 +14,7 @@ public class CapBankMaxOpsExceededReport extends SimpleYukonReportBase {
         new ColumnLayoutData("Substation Bus", "subBusName", 120),
         new ColumnLayoutData("Feeder", "feederName", 120),
     	new ColumnLayoutData("Cap Bank", "capBankName", 120),
-        new ColumnLayoutData("Date/Time", "dateTime", 120)
+        new ColumnLayoutData("Date/Time", "dateTime", 120, columnDateFormat)
     };
 
     public CapBankMaxOpsExceededReport(BareReportModel bareModel) {

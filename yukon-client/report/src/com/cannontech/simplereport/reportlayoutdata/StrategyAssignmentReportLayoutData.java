@@ -1,6 +1,7 @@
 package com.cannontech.simplereport.reportlayoutdata;
 
 import com.cannontech.analysis.report.ColumnLayoutData;
+import com.cannontech.analysis.report.SimpleYukonReportBase;
 
 public class StrategyAssignmentReportLayoutData implements ReportLayoutData{
 
@@ -13,8 +14,8 @@ public class StrategyAssignmentReportLayoutData implements ReportLayoutData{
             new ColumnLayoutData("Type", "type", 100),
             new ColumnLayoutData("Control Method", "controlMethod", 100),
             new ColumnLayoutData("Season", "seasonName", 100),
-            new ColumnLayoutData("Start Date", "seasonStartDate", 100),
-            new ColumnLayoutData("End Date", "seasonEndDate", 100)
+            new ColumnLayoutData("Start Date", "seasonStartDate", 100, SimpleYukonReportBase.columnDateFormat),
+            new ColumnLayoutData("End Date", "seasonEndDate", 100, SimpleYukonReportBase.columnDateFormat)
         };
         
     }

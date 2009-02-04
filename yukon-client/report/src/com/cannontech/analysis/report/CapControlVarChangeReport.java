@@ -13,7 +13,7 @@ public class CapControlVarChangeReport extends SimpleYukonReportBase {
         new ColumnLayoutData("CBC", "cbcName", 80),
         new ColumnLayoutData("kVAR Change", "kvarChange", 70),
         new ColumnLayoutData("Percent Change", "percentChange", 80),
-        new ColumnLayoutData("Date/Time", "dateTime", 110),
+        new ColumnLayoutData("Date/Time", "dateTime", 110, columnDateFormat),
         new ColumnLayoutData("Area", "area", 80),
         new ColumnLayoutData("Substation", "substation", 80),
         new ColumnLayoutData("Substation Bus", "subbus", 80),

@@ -43,7 +43,7 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
         public String deviceName;
         public String deviceType;
         public String deviceParent;
-        public String dateTime;
+        public Date dateTime;
         public String user;
         public String comment;
     }
@@ -117,16 +117,7 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
                     }
                     row.deviceParent = parent;
                     
-                    Date date = rs.getTimestamp("commenttime"); 
-                    
-                    String time;
-                    
-                    if (date == null) {
-                        time = "---";
-                    } else {
-                    	time  = getColumnTimeFormat().format(date);
-                    }
-                    row.dateTime = time;
+                    row.dateTime = rs.getTimestamp("commenttime"); 
                     
                     String user = rs.getString("username");
                     if(user == null || user.length() < 1) {

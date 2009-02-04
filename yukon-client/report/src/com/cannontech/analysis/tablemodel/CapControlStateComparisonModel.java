@@ -37,8 +37,8 @@ public class CapControlStateComparisonModel extends BareReportModelBase<CapContr
         public String cbcName;
         public String capBankStatus;
         public String cbcStatus;
-        public String cbcChangeTime;
-        public String capBankChangeTime;
+        public Date cbcChangeTime;
+        public Date capBankChangeTime;
     }
     
     @Override
@@ -73,12 +73,8 @@ public class CapControlStateComparisonModel extends BareReportModelBase<CapContr
                     row.cbcName = rs.getString("cbcName");
                     row.capBankStatus = rs.getString("capBankStatus");
                     row.cbcStatus = rs.getString("cbcStatus");
-                    
-                    Date capDate = rs.getTimestamp("capBankChangeTime");
-                    Date cbcDate = rs.getTimestamp("cbcChangeTime");
-                    
-                    row.cbcChangeTime = getColumnTimeFormat().format(cbcDate);
-                    row.capBankChangeTime = getColumnTimeFormat().format(capDate);
+                    row.capBankChangeTime = rs.getTimestamp("capBankChangeTime");
+                    row.cbcChangeTime = rs.getTimestamp("cbcChangeTime");
                     
                     data.add(row);
             }

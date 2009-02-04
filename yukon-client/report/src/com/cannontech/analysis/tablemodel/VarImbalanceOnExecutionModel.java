@@ -49,7 +49,7 @@ public class VarImbalanceOnExecutionModel extends BareReportModelBase<VarImbalan
         public String feeder;
         public String capbank;
         public String capbankstate;
-        public String opTime;
+        public Date opTime;
         public String operation;
         public String avar;
         public String bvar;
@@ -90,10 +90,7 @@ public class VarImbalanceOnExecutionModel extends BareReportModelBase<VarImbalan
                 row.feeder = rs.getString("feeder");
                 row.capbank = rs.getString("capbank");
                 row.capbankstate = rs.getString("capbankstateinfo");
-                
-                Date opTime = rs.getTimestamp("opTime");
-                row.opTime = getColumnTimeFormat().format(opTime);
-                
+                row.opTime = rs.getTimestamp("opTime");
                 row.operation = rs.getString("operation");
                 row.avar = rs.getString("aVarAtExecution");
                 row.bvar = rs.getString("bVarAtExecution");

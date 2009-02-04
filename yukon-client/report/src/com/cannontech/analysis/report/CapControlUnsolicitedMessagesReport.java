@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.cannontech.analysis.tablemodel.BareReportModel;
 import com.cannontech.analysis.tablemodel.CapControlUnsolicitedMessagesModel;
+import com.cannontech.simplereport.SimpleYukonReport;
 
 public class CapControlUnsolicitedMessagesReport  extends SimpleYukonReportBase {
     private static final ColumnLayoutData bodyColumns[] = new ColumnLayoutData[] {
@@ -13,7 +14,7 @@ public class CapControlUnsolicitedMessagesReport  extends SimpleYukonReportBase 
         new ColumnLayoutData("Feeder", "feeder", 80),
         new ColumnLayoutData("Cap Bank", "capbank", 80),
         new ColumnLayoutData("CBC", "cbc", 80),
-        new ColumnLayoutData("Date/Time", "datetime", 110),
+        new ColumnLayoutData("Date/Time", "datetime", 110, columnDateFormat),
         new ColumnLayoutData("Reason", "reason", 70),
         new ColumnLayoutData("State", "state", 70),
         new ColumnLayoutData("Ip Address", "address", 70)
