@@ -37,8 +37,6 @@ public interface MspLMInterfaceMappingDao {
      */
     public Integer findIdForStrategyAndSubstation(String strategyName, String substationName);
 			
-    public List<MspLMInterfaceMapping> getForStrategy(String strategyName) throws NotFoundException;
-    
     public List<MspLMInterfaceMapping> getAllMappings();
 
 }

@@ -307,7 +307,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
             throw new RemoteException(message);
         }
 
-        errorObjects = multispeakMeterService.MeterReadEvent(vendor, meterNos, transactionID);
+        errorObjects = multispeakMeterService.meterReadEvent(vendor, meterNos, transactionID);
 
         multispeakFuncs.logErrorObjects(MultispeakDefines.MR_CB_STR, "initiateMeterReadByMeterNumberRequest", errorObjects);
         return errorObjects;
@@ -572,7 +572,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         FormattedBlockService<Block> formattedBlockServ = 
             mspValidationService.isValidBlockReadingType(readingTypesMap, readingType);
         
-        errorObjects = multispeakMeterService.BlockMeterReadEvent(vendor, meterNo, 
+        errorObjects = multispeakMeterService.blockMeterReadEvent(vendor, meterNo, 
                                                       formattedBlockServ, transactionID);
 
         multispeakFuncs.logErrorObjects(MultispeakDefines.MR_CB_STR, "initiateMeterReadByMeterNumberRequest", errorObjects);

@@ -26,13 +26,6 @@ import com.cannontech.multispeak.deploy.service.ServiceLocation;
  */
 public interface MultispeakMeterService {
 	
-    /**
-     * Get the static instance of Multispeak (this) object.
-     * Adds a message listener to the pil connection instance. 
-     * @return
-     */
-    public void initialize() throws Exception;
-
     /** 
      * Returns the LoadActionCode (or connected status) for meter
      * @param mspVendor
@@ -62,7 +55,7 @@ public interface MultispeakMeterService {
 	 * @param meterNumbers
 	 * @return ErrorObject [] Array of errorObjects for meters that cannot be found, etc.
 	 */
-	public ErrorObject[] ODEvent(MultispeakVendor vendor, 
+	public ErrorObject[] odEvent(MultispeakVendor vendor, 
 	        String[] meterNumbers,
 	        String transactionID) throws RemoteException;
 	
@@ -71,7 +64,7 @@ public interface MultispeakMeterService {
      * @param meterNumbers
      * @return ErrorObject [] Array of errorObjects for meters that cannot be found, etc.
      */
-    public ErrorObject[] MeterReadEvent(MultispeakVendor vendor, 
+    public ErrorObject[] meterReadEvent(MultispeakVendor vendor, 
             String[] meterNumbers,
             String transactionID);
 
@@ -80,7 +73,7 @@ public interface MultispeakMeterService {
      * @param meterNumbers
      * @return ErrorObject [] Array of errorObjects for meters that cannot be found, etc.
      */
-    public ErrorObject[] BlockMeterReadEvent(MultispeakVendor vendor, 
+    public ErrorObject[] blockMeterReadEvent(MultispeakVendor vendor, 
             String meterNumber, FormattedBlockService block, String transactionID);
 
     /**
@@ -88,7 +81,7 @@ public interface MultispeakMeterService {
      * @param meterNumbers
      * @return ErrorObject [] Array of errorObjects for meters that cannot be found, etc.
      */
-    public ErrorObject[] CDEvent(MultispeakVendor vendor, 
+    public ErrorObject[] cdEvent(MultispeakVendor vendor, 
             ConnectDisconnectEvent [] cdEvents,
             String transactionID) throws RemoteException;
 

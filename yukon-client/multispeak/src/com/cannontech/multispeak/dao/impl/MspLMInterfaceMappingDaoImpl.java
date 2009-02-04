@@ -103,19 +103,6 @@ public class MspLMInterfaceMappingDaoImpl implements MspLMInterfaceMappingDao {
 	}
 
 	@Override
-	public List<MspLMInterfaceMapping> getForStrategy(String strategyName) throws NotFoundException {
-		try {
-            String sql = "SELECT MspLmInterfaceMappingId, StrategyName, SubstationName, PaobjectId " +
-                         " FROM " + TABLENAME +
-                         " WHERE StrategyName = ? ";
-			
-            return template.query(sql, mspLMInterfaceMappingRowMapper, new Object[] { strategyName});            
-		} catch (IncorrectResultSizeDataAccessException e) {
-			throw new NotFoundException("No MSP LM Interace(s) with StrategyName = " + strategyName + " can be found.");
-		}
-	}
-	
-	@Override
 	public List<MspLMInterfaceMapping> getAllMappings() {
         String sql = "SELECT MspLmInterfaceMappingId, StrategyName, SubstationName, PaobjectId " +
                      " FROM " + TABLENAME;

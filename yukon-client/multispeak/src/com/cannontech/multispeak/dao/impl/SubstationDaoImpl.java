@@ -4,10 +4,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.multispeak.dao.SubstationDao;
 import com.cannontech.multispeak.db.Substation;
@@ -88,11 +90,19 @@ public class SubstationDaoImpl implements SubstationDao {
     }
     
     public Substation getByName(final String name) {
-        return template.queryForObject(selectByNameSql.toString(), rowMapper, name);
+    	try {
+    		return template.queryForObject(selectByNameSql.toString(), rowMapper, name);
+    	} catch (DataAccessException e) {
+            throw new NotFoundException("A Substation with name " + name + " cannot be found.");
+        }
     }
     
     public Substation getById(final int id) {
-        return template.queryForObject(selectByIdSql.toString(), rowMapper, id);
+    	try {
+    		return template.queryForObject(selectByIdSql.toString(), rowMapper, id);
+    	} catch (DataAccessException e) {
+            throw new NotFoundException("A Substation with id " + id + " cannot be found.");
+        }
     }
 
     public List<Substation> getAll() {

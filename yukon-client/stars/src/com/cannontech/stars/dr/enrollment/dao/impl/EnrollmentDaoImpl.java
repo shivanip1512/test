@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
@@ -199,18 +200,16 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 		sql.append("		) )");
 		sql.append(" GROUP BY pdg.DeviceId");
 		
-		List<Pair<Integer,Integer>> programIdCountList = simpleJdbcTemplate.query(sql.toString(), new ParameterizedRowMapper<Pair<Integer, Integer>>() {
-		    @Override
-		    public Pair<Integer,Integer> mapRow(ResultSet rs, int rowNum) throws SQLException {
+		final Map<Integer, Integer> programIdCountMap = new HashMap<Integer, Integer>();
+		simpleJdbcTemplate.getJdbcOperations().query(sql.toString(), sql.getArguments(), new RowCallbackHandler() {
+		
+			@Override
+			public void processRow(ResultSet rs) throws SQLException {
 		        Integer inventoryCount = new Integer(rs.getInt(1));
 		        Integer programId = new Integer(rs.getInt(2));
-		        return new Pair<Integer, Integer>(programId, inventoryCount);
-		    }
-		}, sql.getArguments());
-		Map<Integer, Integer> programIdCountMap = new HashMap<Integer, Integer>();
-		for (Pair<Integer, Integer> pair : programIdCountList) {
-			programIdCountMap.put(pair.first, pair.second);
-		}
+		        programIdCountMap.put(programId, inventoryCount);
+			}
+		});
 		return programIdCountMap;
 	}
     

@@ -96,7 +96,7 @@ public class OD_ServerImpl implements OD_ServerSoap_PortType
         
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
 
-        errorObjects = multispeakMeterService.ODEvent(vendor, meterNos, transactionID);
+        errorObjects = multispeakMeterService.odEvent(vendor, meterNos, transactionID);
         multispeakFuncs.logErrorObjects(MultispeakDefines.OD_OA_STR, "initiateOutageDetectionEventRequest", errorObjects);
         return errorObjects;
     }

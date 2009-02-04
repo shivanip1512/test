@@ -18,9 +18,9 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
@@ -28,6 +28,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
@@ -115,9 +116,12 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 	private static long messageID = 1;
 
 	/** A map of Long(userMessageID) to MultispeakEvent values */
-	private static Map<Long,MultispeakEvent> eventsMap = new HashMap<Long,MultispeakEvent>();
-    
-    @Override
+	private static Map<Long,MultispeakEvent> eventsMap = Collections.synchronizedMap(new HashMap<Long,MultispeakEvent>());
+
+    /**
+     * Get the static instance of Multispeak (this) object.
+     * Adds a message listener to the pil connection instance. 
+     */
     public void initialize() throws Exception {
         CTILogger.info("New MSP instance created");
         porterConnection.addMessageListener(this);
@@ -145,12 +149,13 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 			
 			if(event != null) {
 			    
+				final Logger eLogger = YukonLogManager.getLogger(MultispeakMeterServiceImpl.class); 
     			Runnable eventRunner = new Runnable() {
     			
     			    @Override
     			    public void run() {
                         
-                        CTILogger.info("Message Received [ID:"+ returnMsg.getUserMessageID() + 
+                        eLogger.info("Message Received [ID:"+ returnMsg.getUserMessageID() + 
                                         " DevID:" + returnMsg.getDeviceID() + 
                                         " Command:" + returnMsg.getCommandString() +
                                         " Result:" + returnMsg.getResultString() + 
@@ -159,7 +164,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         
                         if(returnMsg.getExpectMore() == 0) {
                             
-        					CTILogger.info("Received Message From ID:" + returnMsg.getDeviceID() + " - " + returnMsg.getResultString());
+        					eLogger.info("Received Message From ID:" + returnMsg.getDeviceID() + " - " + returnMsg.getResultString());
         
                             boolean doneProcessing = event.messageReceived(returnMsg);
                             if (doneProcessing)
@@ -247,7 +252,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     }
     
     @Override
-	public synchronized ErrorObject[] ODEvent(MultispeakVendor vendor, 
+	public synchronized ErrorObject[] odEvent(MultispeakVendor vendor, 
 	        String[] meterNumbers,
 	        String transactionID) throws RemoteException
 	{
@@ -281,7 +286,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 
 	
     @Override
-    public synchronized ErrorObject[] MeterReadEvent(MultispeakVendor vendor, 
+    public synchronized ErrorObject[] meterReadEvent(MultispeakVendor vendor, 
             String[] meterNumbers,
             String transactionID)
     {
@@ -321,7 +326,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     }
     
     @Override
-    public synchronized ErrorObject[] BlockMeterReadEvent(MultispeakVendor vendor, 
+    public synchronized ErrorObject[] blockMeterReadEvent(MultispeakVendor vendor, 
             String meterNumber, FormattedBlockService block, String transactionID)
     {
         Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
@@ -380,7 +385,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     }
     
     @Override
-    public synchronized ErrorObject[] CDEvent(MultispeakVendor vendor, 
+    public synchronized ErrorObject[] cdEvent(MultispeakVendor vendor, 
             ConnectDisconnectEvent [] cdEvents,
             String transactionID) throws RemoteException
     {
@@ -480,8 +485,8 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         while (!event.isPopulated() && millisTimeOut < timeout)  //quit after timeout
         {
             try {
-                Thread.sleep(1000);
-                millisTimeOut += 1000;
+                Thread.sleep(10);
+                millisTimeOut += 10;
             } catch (InterruptedException e) {
                 CTILogger.error(e);
             }
@@ -530,96 +535,19 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 transactionTemplate.execute(new TransactionCallbackWithoutResult(){
                     @Override
                     protected void doInTransactionWithoutResult(TransactionStatus status){
-                        String meterNo;
-                        String mspAddress;
-                        
-                        ErrorObject invalidMeterError = isValidMeter(mspMeter, mspVendor, "meterAddNotification");
-                        if( invalidMeterError == null) {
-                            meterNo = mspMeter.getMeterNo().trim();
-                            mspAddress = mspMeter.getNameplate().getTransponderID().trim();
-                            try {
-                                com.cannontech.amr.meter.model.Meter meter = meterDao.getForMeterNumber(meterNo);
-                                if( meter != null) {    //Meter exists in Yukon
-                                    
-                                    String address = meter.getAddress();
-                                    if( address.equalsIgnoreCase(mspAddress)) { //Same MeterNumber and Address
-                                        ErrorObject err = isMeterDisabled(meter, mspVendor);
-                                        if (err != null) {
-                                            errorObjects.add(err);
-                                        } else { //Disabled Meter found
-                                            addExistingMeter(mspMeter, meter, mspVendor, paoAlias);
-                                        }
-                                    } else {    //Same Meter, Address is different!
-                                        ErrorObject err = isMeterDisabled(meter, mspVendor);
-                                        if (err != null) { //Meter is currently enabled in Yukon
-                                            errorObjects.add(err);
-                                        } else { //Disabled Meter found
-                                            //Lookup meter by mspAddress
-                                            List<LiteYukonPAObject> liteYukonPaoByAddressList = paoDao.getLiteYukonPaobjectsByAddress(new Integer(mspAddress).intValue());
-                                            
-                                            if (liteYukonPaoByAddressList.isEmpty()) {  //Address not in Yukon, update existing Meter
-                                                addExistingMeter(mspMeter, meter, mspVendor, paoAlias);
-
-                                            } else {    //Meter Number and Address both exist...on different objects! 
-                                                LiteYukonPAObject liteYukonPaoByAddress = liteYukonPaoByAddressList.get(0);
-                                                com.cannontech.amr.meter.model.Meter meterByAddress = meterDao.getForId(liteYukonPaoByAddress.getYukonID());
-
-                                                ErrorObject err2 = isMeterDisabled(meterByAddress, mspVendor);
-                                                if (err2 != null) { //Address is already active
-                                                    errorObjects.add(err2);
-                                                } else {  //Address object is disabled, so we can update and activate the Meter Number object
-                                                    addExistingMeter(mspMeter, meter, mspVendor, paoAlias);              
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            } 
-                            catch (NotFoundException e) {
-                                //Meter Number not currently found in Yukon
-                                //Lookup meter by mspAddress
-                                List<LiteYukonPAObject> liteYukonPaoByAddressList = paoDao.getLiteYukonPaobjectsByAddress(new Integer(mspAddress).intValue());
-                                if (liteYukonPaoByAddressList.isEmpty()) {  //Not found in Yukon
-                                    
-                                    //Lookup meter by PaoName
-                                    String paoName = getPaoNameFromMspMeter(mspMeter, paoAlias, null);
-                                    if (paoName != null) {
-                                        
-                                        // check if meter with this name already exists
-                                        try {
-                                            com.cannontech.amr.meter.model.Meter meterByDeviceName = meterDao.getForPaoName(paoName);
-                                            
-                                            //We have a meter with the same deviceName as the meter being added.
-                                            ErrorObject err = isMeterDisabled(meterByDeviceName, mspVendor);
-                                            if (err != null) {
-                                                errorObjects.add(err);
-                                            } else { //Disabled Meter found
-                                                addExistingMeter(mspMeter, meterByDeviceName, mspVendor, paoAlias);
-                                            }
-                                        } // doesn't exist, Add New Hardware
-                                        catch (NotFoundException ex) {
-                                            
-                                            List<ErrorObject> addMeterErrors = addNewMeter(mspMeter, mspVendor);
-                                            errorObjects.addAll(addMeterErrors);
-                                        }
-                                    } else { //Add New Hardware
-                                        List<ErrorObject> addMeterErrors = addNewMeter(mspMeter, mspVendor);
-                                        errorObjects.addAll(addMeterErrors);
-                                    }
-                                    
-                                } else { // mspAddress already exists in Yukon 
-                                    LiteYukonPAObject liteYukonPaoByAddress = liteYukonPaoByAddressList.get(0);
-                                    com.cannontech.amr.meter.model.Meter meterByAddress = meterDao.getForId(liteYukonPaoByAddress.getYukonID());
-                                    ErrorObject err = isMeterDisabled(meterByAddress, mspVendor);
-                                    if (err != null) { //Address is already active
-                                        errorObjects.add(err);
-                                    } else { //Address object is disabled, so we can update and activate the Address object
-                                        addExistingMeter(mspMeter, meterByAddress, mspVendor, paoAlias);
-                                    }
-                                }
+                       
+                        ErrorObject errorObject = isValidMeter(mspMeter, mspVendor, "meterAddNotification");
+                        if( errorObject == null) {
+                        	com.cannontech.amr.meter.model.Meter meterToAdd = getMeterToAdd(mspMeter, paoAlias);
+                            if (meterToAdd == null) {	//and NEW meter
+                                List<ErrorObject> addMeterErrors = addNewMeter(mspMeter, mspVendor);
+                                errorObjects.addAll(addMeterErrors);
+                            } else { //have existing meter to "update"
+                            	errorObject = addExistingMeter(mspMeter, meterToAdd, mspVendor, paoAlias);
                             }
-                        } else {
-                            errorObjects.add(invalidMeterError);
+                        } 
+                        if (errorObject != null) { 
+                            errorObjects.add(errorObject);
                         }
                     };
                 });
@@ -641,6 +569,42 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         }//end for
 
         return mspObjectDao.toErrorObject(errorObjects);
+    }
+    
+    /**
+     * Helper method to return the Meter object to "add" to Yukon.
+     * Returns null when no existing meter is found in Yukon relating to mspMeter.
+     * Returns Meter when mspMeter is found in Yukon by MeterNumber, else by Physical Address, else by PaoName.
+     * @param mspMeter
+     * @param paoAlias
+     * @return
+     */
+    private com.cannontech.amr.meter.model.Meter getMeterToAdd (Meter mspMeter, int paoAlias) {
+
+    	com.cannontech.amr.meter.model.Meter meter = null;
+    	try { //Lookup by MeterNo
+    		String mspMeterNo = mspMeter.getMeterNo().trim();
+    		meter = meterDao.getForMeterNumber(mspMeterNo);
+    	} catch (NotFoundException e) {	//Doesn't exist by MeterNumber
+	    	
+    		try { //Lookup by Address
+    			String mspAddress = mspMeter.getNameplate().getTransponderID().trim();
+    			meter = meterDao.getForPhysicalAddress(mspAddress);
+    		} catch (NotFoundException e2){ //Doesn't exist by Address
+    			
+            	try { //Lookup meter by PaoName
+            		String paoName = getPaoNameFromMspMeter(mspMeter, paoAlias, null);
+            		if (paoName != null) {
+            			meter = meterDao.getForPaoName(paoName);
+            		}
+                } // doesn't exist by PaoName
+                catch (NotFoundException e3) {
+                	return null;
+                }
+	        }
+    	}
+    	return meter;
+    
     }
     
     @Override
@@ -843,12 +807,12 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         
         // CREATE DEVICE - new device is automatically added to template's device groups
         YukonDevice newDevice = deviceCreationService.createDeviceByTemplate(templatePaoName, paoName, true);
-        mspObjectDao.logMSPActivity("MeterAddNotification", "MeterNumber(" + meterNumber + ") - Meter created.", mspVendor.getCompanyName());
+        mspObjectDao.logMSPActivity("MeterAddNotification", "DeviceName(" + paoName + ") - Meter created.", mspVendor.getCompanyName());
         
         // UPDATE DEVICE METERNUMBER, ADDRESS
         deviceUpdateService.changeAddress(newDevice, Integer.valueOf(address));
         deviceUpdateService.changeMeterNumber(newDevice, meterNumber);
-        mspObjectDao.logMSPActivity("MeterAddNotification", "MeterNumber(" + meterNumber + ") - Set Meter number (" + meterNumber + ") and Address (" + meterNumber + ").", mspVendor.getCompanyName());
+        mspObjectDao.logMSPActivity("MeterAddNotification", "DeviceName(" + paoName+ ") - Set Meter number (" + meterNumber + ") and Address (" + address + ").", mspVendor.getCompanyName());
         
         // UPDATE BILLING GROUP
         ServiceLocation mspServiceLocation = mspObjectDao.getMspServiceLocation(meterNumber, mspVendor);
@@ -885,13 +849,8 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             }
             
         // bad sub name
-        } catch(DataAccessException e) {
-            
-            String noSubReason = "No SubstationName found";
-            if (!StringUtils.isBlank(substationName)) {
-                noSubReason = "Invalid SubstationName (" + substationName + ")";
-            }
-            mspObjectDao.logMSPActivity("MeterAddNotification", "MeterNumber(" + meterNumber + ") - " + noSubReason + ", using route from template device.", mspVendor.getCompanyName());
+        } catch(NotFoundException e) {
+            mspObjectDao.logMSPActivity("MeterAddNotification", "MeterNumber(" + meterNumber + ") - " + e.getMessage() + ", using route from template device.", mspVendor.getCompanyName());
         }
     }
     
@@ -1174,7 +1133,8 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 } catch (RemoteException e) {
                     CTILogger.error("TargetService: " + endpointURL + " - updateServiceLocation (" + mspVendor.getCompanyName() + ") for ServLoc: " + mspServiceLocation.getObjectID());
                     CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
-                } 
+                }
+                return null;
             }
             default:
                 return defaultValue;
@@ -1238,8 +1198,8 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 errorReason = "No RouteMappings found in Yukon";
             }
             
-        } catch (DataAccessException e) {
-            errorReason = "Invalid SubstationName";
+        } catch (NotFoundException e) {
+            errorReason = e.getMessage();
         }
         
         if (errorReason != null) {
@@ -1333,12 +1293,37 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
      * Remove meter from Inventory Group.
      * Update it's billingCycle
      * Updates PaoName and enables meter.
+     * Returns an ErrorObject if meter is "active" (not disabled).  
+     * Returns an ErrorObject if meter's address is not the same as mspMeter's address and the device in Yukon 
+     *  for the mspMeter's address is not disabled
      */
-    private void addExistingMeter(Meter mspMeter, 
+    private ErrorObject addExistingMeter(Meter mspMeter, 
             com.cannontech.amr.meter.model.Meter meter, 
             MultispeakVendor mspVendor,
             int paoAlias) {
         
+    	//Verify the meter to "update" is disabled.
+        ErrorObject err = isMeterDisabled(meter, mspVendor);
+        if (err != null) {
+            return err;
+        }
+        
+        //Verify the meter to "update" does not have the same address as another enabled meter.
+        String mspAddress = mspMeter.getNameplate().getTransponderID().trim();
+        String address = meter.getAddress();
+        if( !address.equalsIgnoreCase(mspAddress)) { //Same MeterNumber, Different Address
+
+        	try { //Lookup meter by mspAddress
+        		com.cannontech.amr.meter.model.Meter meterByAddress = meterDao.getForPhysicalAddress(mspAddress);
+        		err = isMeterDisabled(meterByAddress, mspVendor);
+        		if (err != null) { //Address is already active
+                    return err;
+                }
+        	} catch (NotFoundException e) {
+        		//Ignore Exception...this is what we want, for the address to NOT already exist in Yukon
+        	}
+        }
+
         final String paoAliasStr = MultispeakVendor.paoNameAliasStrings[paoAlias];
         //Load the CIS serviceLocation.
         ServiceLocation mspServiceLocation = mspObjectDao.getMspServiceLocation(meter.getMeterNumber(), mspVendor);
@@ -1398,6 +1383,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 
         changeDeviceType(mspMeter, meter, mspVendor, "MeterAddNotification");
         //TODO Read the Meter.
+        return null;
     }
 
     /** Helper method to update meter based on the mspMeter.
@@ -1501,9 +1487,10 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
      * @return 
      */
     private String getNewPaoName(String newPaoName) {
-        int maxRetries = 10;
+
         int retryCount = 0;
         String tempPaoName = newPaoName;
+        boolean found = false;
         do {
             try {
                 if (retryCount > 0) {
@@ -1514,9 +1501,9 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 retryCount++;
             } catch (NotFoundException e) {
                 //this is good!
-                retryCount = maxRetries; //DONE!
+                found = true;
             }
-        } while (retryCount < maxRetries);
+        } while (!found);
 
         return tempPaoName;
     }
