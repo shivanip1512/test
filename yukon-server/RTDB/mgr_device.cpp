@@ -1288,7 +1288,11 @@ void CtiDeviceManager::refreshDeviceParameters(id_range_t &paoids, int type)
             id_range_t::const_iterator itr = paoids.begin();
             for ( itr = paoids.begin(); itr != paoids.end(); itr++)
             {
-                getDeviceByID(*itr)->clearParameters();
+                CtiDeviceSPtr device = getDeviceByID(*itr);
+                if (device)
+                {
+                    device->clearParameters();
+                }
             }
         }
         else
