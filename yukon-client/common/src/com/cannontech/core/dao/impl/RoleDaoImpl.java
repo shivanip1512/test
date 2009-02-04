@@ -69,16 +69,16 @@ public class RoleDaoImpl implements RoleDao
 	
 	@Override
 	public boolean checkGlobalRoleProperty(int rolePropertyID) {
-        YukonRoleProperty property = YukonRoleProperty.getForId(rolePropertyID);
-        try {
-            return rolePropertyDao.checkProperty(property, null);
-        } catch (IllegalArgumentException e) {
-            // uh oh, the property must not be Boolean
-            // print a complaint in the log and try the old code
-            CTILogger.warn("Property " + property + " improperly accessed with a check method: " + e.getMessage());
-            return !CtiUtilities.isFalse(getGlobalPropertyValue(rolePropertyID));
-        }
-    }
+	    YukonRoleProperty property = YukonRoleProperty.getForId(rolePropertyID);
+	    if (rolePropertyDao.isCheckPropertyCompatible(property)) {
+	        return rolePropertyDao.checkProperty(property, null);
+	    } else {
+	        // uh oh, the property must not be Boolean
+	        // print a complaint in the log and try the old code
+	        CTILogger.warn("Property " + property + " improperly accessed with a check method");
+	        return !CtiUtilities.isFalse(getGlobalPropertyValue(rolePropertyID));
+	    }
+	}
 
 	public LiteYukonRoleProperty getRoleProperty(int propid) {
         

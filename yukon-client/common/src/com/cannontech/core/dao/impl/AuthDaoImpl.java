@@ -79,14 +79,14 @@ public class AuthDaoImpl implements AuthDao {
 	
 	public boolean checkRoleProperty(LiteYukonUser user, int rolePropertyID) {
 	    YukonRoleProperty property = YukonRoleProperty.getForId(rolePropertyID);
-	    try {
-            return rolePropertyDao.checkProperty(property, user);
-        } catch (IllegalArgumentException e) {
-            // uh oh, the property must not be Boolean
-            // print a complaint in the log and try the old code
-            CTILogger.warn("Property " + property + " improperly accessed with a check method: " + e.getMessage());
-            return !CtiUtilities.isFalse(getRolePropertyValue(user, rolePropertyID));
-        }
+	    if (rolePropertyDao.isCheckPropertyCompatible(property)) {
+	        return rolePropertyDao.checkProperty(property, user);
+	    } else {
+	        // uh oh, the property must not be Boolean
+	        // print a complaint in the log and try the old code
+	        CTILogger.warn("Property " + property + " improperly accessed with a check method");
+	        return !CtiUtilities.isFalse(getRolePropertyValue(user, rolePropertyID));
+	    }
 	}
     
     public boolean checkRoleProperty(int userID, int rolePropertyID) {

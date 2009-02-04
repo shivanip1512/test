@@ -247,6 +247,7 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         if (log.isDebugEnabled()) {
             log.debug("getting converted value of " + property + " for " + user + " as " + returnType.getSimpleName());
         }
+        Validate.isTrue(returnType.isAssignableFrom(property.getType().getTypeClass()), "can't convert " + property + " to " + returnType);
         // create user/property key
         UserPropertyTuple key = new UserPropertyTuple(user, property);
         // check cache (using a special value to allow get to be used to check containsValue)
@@ -258,7 +259,6 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
             log.debug("cache hit, returning: " + cachedValue);
             return returnType.cast(cachedValue);
         }
-        Validate.isTrue(returnType.isAssignableFrom(property.getType().getTypeClass()), "can't convert " + property + " to " + returnType);
         String stringValue = getPropertyValue(property, user);
         Object convertedValue = convertPropertyValue(property, stringValue);
         if (convertedValue == null) {
