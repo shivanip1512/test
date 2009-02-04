@@ -11,6 +11,7 @@ import com.cannontech.analysis.report.YukonReportBase;
 import com.cannontech.analysis.tablemodel.LMControlSummaryModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
 import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
+import com.cannontech.util.ServletUtil;
 
 public class LMControlSummaryController extends ReportControllerBase {
     
@@ -47,6 +48,7 @@ public class LMControlSummaryController extends ReportControllerBase {
     public void setRequestParameters(HttpServletRequest request) {
         LMControlSummaryModel lmControlSummaryModel = (LMControlSummaryModel) model;
         super.setRequestParameters(request);
+        lmControlSummaryModel.setLiteUser(ServletUtil.getYukonUser(request));
         int filterModelType = ServletRequestUtils.getIntParameter(request, ReportModelBase.ATT_FILTER_MODEL_TYPE, -1);
         if (filterModelType == ReportFilter.PROGRAM.ordinal()) {
             if (filterModelType == ReportFilter.PROGRAM.ordinal()) {

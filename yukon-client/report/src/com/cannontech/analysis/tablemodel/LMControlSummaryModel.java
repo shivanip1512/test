@@ -10,6 +10,10 @@ import java.util.Set;
 import org.apache.commons.lang.Validate;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.core.authorization.dao.PaoPermissionDao;
+import com.cannontech.core.authorization.support.AuthorizationResponse;
+import com.cannontech.core.authorization.support.Permission;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.dr.account.dao.ApplianceAndProgramDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
@@ -24,6 +28,7 @@ import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
 public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSummaryModel.ModelRow> {
     private int energyCompanyId;
     private Set<Integer> programIds;
+    private LiteYukonUser liteUser;
     
     private final int ENROLLED_CUSTOMERS = 0;
     private final int TOTAL_CONTROL_HOURS = 1;
@@ -36,6 +41,8 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
     private ApplianceAndProgramDao applianceAndProgramDao = (ApplianceAndProgramDao) YukonSpringHook.getBean("applianceAndProgramDao");
     private static DecimalFormat decFormat = new java.text.DecimalFormat("0.#");
     private ProgramDao programDao = (ProgramDao)YukonSpringHook.getBean("starsProgramDao");
+    @SuppressWarnings("unchecked") PaoPermissionDao<LiteYukonUser> paoPermissionDao =
+        YukonSpringHook.getBean("userPaoPermissionDao", PaoPermissionDao.class);
     
     private List<ModelRow> data = Collections.emptyList();
     
@@ -108,9 +115,11 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
                     /*lots of for loops, but this one will not normally be more than one iteration*/
                     for(ProgramLoadGroup currentGroupProgram : groupPrograms) {
                         //Check filter: program
-                        if(programIds != null && programIds.size() > 0 && ! programIds.contains(currentGroupProgram.getPaobjectId())) 
+                        if(programIds != null && programIds.size() > 0 && ! programIds.contains(currentGroupProgram.getPaobjectId())) { 
                             continue;
-                        else {
+                        } else if (!paoPermissionDao.hasPermissionForPao(liteUser.getUserID(), currentGroupProgram.getProgramId(), Permission.LM_VISIBLE).equals(AuthorizationResponse.AUTHORIZED)) {
+                            continue; 
+                        } else {
                             Double[] totals = programTotals.get(currentGroupProgram.getPaobjectId());
                             if(totals == null) {
                                 totals = new Double[5];
@@ -205,6 +214,13 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
 
     public void setProgramIds(Set<Integer> programIds) {
         this.programIds = programIds;
+    }
+    
+    public LiteYukonUser getLiteUser() {
+        return liteUser;
+    }
+    public void setLiteUser(LiteYukonUser liteUser) {
+        this.liteUser = liteUser;
     }
     
 }

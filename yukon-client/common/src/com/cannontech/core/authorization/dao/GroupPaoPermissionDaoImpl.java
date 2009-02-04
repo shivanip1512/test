@@ -210,4 +210,12 @@ public class GroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonGrou
             return gpp;
         }
     }
+
+    @Override
+    public AuthorizationResponse hasPermissionForPao(int id, int paoId, Permission permission) {
+        List<Integer> idList = new ArrayList<Integer>();
+        idList.add(id);
+
+        return this.isHasPermissionForPao(idList, paoId, permission);
+    }
 }

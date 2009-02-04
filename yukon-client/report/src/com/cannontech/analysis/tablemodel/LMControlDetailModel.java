@@ -9,9 +9,11 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.Validate;
-import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.core.authorization.dao.PaoPermissionDao;
+import com.cannontech.core.authorization.support.AuthorizationResponse;
+import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
@@ -37,6 +39,8 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
     private ApplianceAndProgramDao applianceAndProgramDao = (ApplianceAndProgramDao) YukonSpringHook.getBean("applianceAndProgramDao");
     private static DecimalFormat decFormat = new java.text.DecimalFormat("0.#");
     private ProgramDao programDao = (ProgramDao)YukonSpringHook.getBean("starsProgramDao");
+    @SuppressWarnings("unchecked") PaoPermissionDao<LiteYukonUser> paoPermissionDao =
+        YukonSpringHook.getBean("userPaoPermissionDao", PaoPermissionDao.class);
     private List<ModelRow> data = Collections.emptyList();
     
     public LMControlDetailModel() {
@@ -120,9 +124,11 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
                     /*lots of for loops, but this one will not normally be more than one iteration*/
                     for(ProgramLoadGroup currentGroupProgram : groupPrograms) {
                         //Check filter: program
-                        if(programIds != null && programIds.size() > 0 && ! programIds.contains(currentGroupProgram.getPaobjectId())) 
+                        if(programIds != null && programIds.size() > 0 && ! programIds.contains(currentGroupProgram.getPaobjectId())) {
                             continue;
-                        else {
+                        } else if (!paoPermissionDao.hasPermissionForPao(liteUser.getUserID(), currentGroupProgram.getProgramId(), Permission.LM_VISIBLE).equals(AuthorizationResponse.AUTHORIZED)){
+                            continue; // skip if user does not have permission to view this program
+                        }else {
                             row.program = currentGroupProgram.getProgramName();
                             
                             StarsLMControlHistory allControlEventsForAGroup = groupIdToSTARSControlHistory.get(groupId);
@@ -162,8 +168,6 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
         //----------------------------------------------------------------------------------
     }
 
-    
-    
     public void setEnergyCompanyId(int energyCompanyId) {
         this.energyCompanyId = energyCompanyId;
     }

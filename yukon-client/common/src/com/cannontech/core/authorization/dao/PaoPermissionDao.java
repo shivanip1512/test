@@ -59,6 +59,15 @@ public interface PaoPermissionDao<T> {
      * @return True if the thing has the permission for the pao
      */
     public AuthorizationResponse hasPermissionForPao(T it, LiteYukonPAObject pao, Permission permission);
+    
+    /**
+     * Method to determine if a thing has permission for a pao
+     * @param id 
+     * @param paoId
+     * @param permission
+     * @return
+     */
+    public AuthorizationResponse hasPermissionForPao(int id, int paoId, Permission permission);
 
     /**
      * Method to determine if any of the things in the list have a given

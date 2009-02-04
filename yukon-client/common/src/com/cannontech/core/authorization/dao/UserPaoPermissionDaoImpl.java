@@ -43,7 +43,7 @@ public class UserPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonUser>
 
     public AuthorizationResponse hasPermissionForPao(LiteYukonUser user, LiteYukonPAObject pao,
             Permission permission) {
-        return this.isHasPermissionForPao(user.getUserID(), pao.getYukonID(), permission);
+        return this.hasPermissionForPao(user.getUserID(), pao.getYukonID(), permission);
     }
 
     public void addPermission(LiteYukonUser user, LiteYukonPAObject pao, Permission permission, boolean allow) {
@@ -100,11 +100,12 @@ public class UserPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonUser>
         throw new UnsupportedOperationException("Not implemented for users");
     }
 
-    private AuthorizationResponse isHasPermissionForPao(int userId, int paoId, Permission permission) {
+    @SuppressWarnings("unchecked")
+    public AuthorizationResponse hasPermissionForPao(int userId, int paoId, Permission permission) {
         String sql;
         sql = "select allow from UserPaoPermission where userid = ? and paoid = ? " + "and permission = ?";
 
-        List allowList = jdbcTemplate.queryForList(sql, new Object[] { userId, paoId,
+        List<String> allowList = jdbcTemplate.queryForList(sql, new Object[] { userId, paoId,
                 permission.name() }, String.class);
         
         if (allowList.size() == 0) {
