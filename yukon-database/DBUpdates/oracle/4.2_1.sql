@@ -21,11 +21,11 @@ OR RolePropertyId = -20016;
 /* End YUK-6518 */
 
 /* Start YUK-6897 */
-INSERT INTO Job (JobId, BeanName, Disabled, UserId, Locale, TimeZone, ThemeName)
+INSERT INTO Job
 SELECT MAX(JobId)+1, 'optOutSchedulerJob', 'N', -1, 'en_US', ' ', ' '
 FROM Job;
 COMMIT;
-INSERT INTO JobScheduledRepeating (JobId, CronString)
+INSERT INTO JobScheduledRepeating
 SELECT MAX(JobId), '0 0/5 * * * ?'
 FROM Job;
 /* End YUK-6897 */
