@@ -692,7 +692,7 @@
             <link>SelectDevice.jsp?SortBy=1000</link>
           </option>
           <option id="group">
-            <link>/spring/group/groupProcessing</link>
+            <link>/spring/group/commander/groupProcessing</link>
           </option>
         </links>
       </option>
