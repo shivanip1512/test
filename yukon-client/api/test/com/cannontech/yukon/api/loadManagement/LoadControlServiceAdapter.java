@@ -42,7 +42,7 @@ public class LoadControlServiceAdapter implements LoadControlService {
 
     @Override
     public ProgramStatus startControlByProgramName(String programName,
-            Date startTime, Date stopTime, int gearNumber, boolean forceStart,
+            Date startTime, Date stopTime, String gearName, boolean forceStart,
             boolean observeConstraintsAndExecute, LiteYukonUser user) throws NotFoundException,
             TimeoutException, NotAuthorizedException {
         throw new UnsupportedOperationException("Not Implemented");

@@ -18,6 +18,7 @@ public class LoadManagementTestUtils {
                                               String nameModeValue,
                                               String startDateTimeStr,
                                               String stopDateTimeStr,
+                                              String gearName,
                                               String version,
                                               Resource requestSchemaResource) {
         
@@ -39,6 +40,11 @@ public class LoadManagementTestUtils {
         
         if (stopDateTimeStr != null) {
             tmpElement = XmlUtils.createStringElement("stopDateTime", ns, stopDateTimeStr);
+            requestElement.addContent(tmpElement);
+        }
+        
+        if (gearName != null) {
+            tmpElement = XmlUtils.createStringElement("gearName", ns, gearName);
             requestElement.addContent(tmpElement);
         }
         

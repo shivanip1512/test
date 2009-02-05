@@ -13,6 +13,7 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
+import com.cannontech.core.dao.GearNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.loadcontrol.dao.LMProgramGearHistory;
 import com.cannontech.loadcontrol.dao.LMProgramGearHistoryMapper;
@@ -188,6 +189,21 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
         return new ArrayList<ProgramControlHistory>(histMap.values());
     }
     
+    public int getGearNumberForGearName(int programId, String gearName) throws GearNotFoundException {
+    	
+    	try {
+    		String sql = "SELECT lmpdg.GEARNUMBER" +
+	        " FROM LMPROGRAMDIRECTGEAR lmpdg" +
+	        " INNER JOIN LMPROGRAM lmp ON (lmp.DEVICEID = lmpdg.DEVICEID)" +
+	        " WHERE lmpdg.GEARNAME = ?" +
+	        " AND lmp.DEVICEID = ?";
+    		
+    		return simpleJdbcTemplate.queryForInt(sql, gearName, programId);
+    	
+    	} catch (IncorrectResultSizeDataAccessException e) {
+    		throw new GearNotFoundException("Gear not found (programId = " + programId + ", geanName = " + gearName + ")");
+    	}
+    }
     
     @Autowired
     public void setSimpleJdbcTemplate(SimpleJdbcOperations simpleJdbcTemplate) {

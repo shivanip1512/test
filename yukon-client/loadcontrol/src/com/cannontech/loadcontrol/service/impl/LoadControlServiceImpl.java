@@ -11,6 +11,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
+import com.cannontech.core.dao.GearNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -86,11 +87,13 @@ public class LoadControlServiceImpl implements LoadControlService {
     
     // START CONTROL BY PROGRAM NAME
 	public ProgramStatus startControlByProgramName(String programName,
-			Date startTime, Date stopTime, int gearNumber, boolean forceStart,
+			Date startTime, Date stopTime, String gearName, boolean forceStart,
 			boolean observeConstraintsAndExecute, LiteYukonUser user)
-			throws NotFoundException, TimeoutException, NotAuthorizedException {
+			throws NotFoundException, GearNotFoundException, TimeoutException, NotAuthorizedException {
         
-        int programId = loadControlProgramDao.getProgramIdByProgramName(programName);
+		int programId = loadControlProgramDao.getProgramIdByProgramName(programName);
+		int gearNumber = loadControlProgramDao.getGearNumberForGearName(programId, gearName);
+        
         validateProgramIsVisibleToUser(programName, programId, user);
         
         LMProgramBase program = loadControlClientConnection.getProgram(programId);

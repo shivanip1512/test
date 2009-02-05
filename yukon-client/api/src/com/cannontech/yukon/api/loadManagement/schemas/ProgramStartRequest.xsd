@@ -27,6 +27,7 @@
                             <xsd:documentation>stopDateTime is optional. If omitted, control will not be schedule to stop</xsd:documentation>
                         </xsd:annotation>
                     </xsd:element>
+                    <xsd:element name="gearName" type="xsd:string" minOccurs="0"/>
         		</xsd:sequence>
             </xsd:extension>
         </xsd:complexContent>

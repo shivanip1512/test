@@ -13,6 +13,7 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.core.dao.GearNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.service.LoadControlService;
@@ -32,6 +33,7 @@ public class ProgramStartRequestEndpoint {
     private String programNameExpressionStr = "/y:programStartRequest/y:programName";
     private String startTimeExpressionStr = "/y:programStartRequest/y:startDateTime";
     private String stopTimeExpressionStr = "/y:programStartRequest/y:stopDateTime";
+    private String gearNameExpressionStr = "/y:programStartRequest/y:gearName";
     
     @PostConstruct
     public void initialize() throws JDOMException {
@@ -48,7 +50,8 @@ public class ProgramStartRequestEndpoint {
         String programName = requestTemplate.evaluateAsString(programNameExpressionStr);
         Date startTime = requestTemplate.evaluateAsDate(startTimeExpressionStr);
         Date stopTime = requestTemplate.evaluateAsDate(stopTimeExpressionStr);
-
+        String gearName = requestTemplate.evaluateAsString(gearNameExpressionStr);
+        		
         // init response
         Element resp = new Element("programStartResponse", ns);
         Attribute versionAttribute = new Attribute("version", "1.0");
@@ -56,9 +59,22 @@ public class ProgramStartRequestEndpoint {
         
         // run service
         try {
-            loadControlService.startControlByProgramName(programName, startTime, stopTime, false, true, user);
+        	
+        	if (gearName == null) {
+        		loadControlService.startControlByProgramName(programName, startTime, stopTime, false, true, user);
+        	} else {
+        		loadControlService.startControlByProgramName(programName, startTime, stopTime, gearName, false, true, user);
+        	}
+            
         } catch (NotFoundException e) {
-            Element fe = XMLFailureGenerator.generateFailure(programStartRequest, e, "InvalidProgramName", "No program named: " + programName);
+        	
+        	String errorCode = "InvalidProgramName";
+        	String errorDescription = "No program named: " + programName;
+        	if (e instanceof GearNotFoundException) {
+        		errorCode = "InvalidGearName";
+        		errorDescription = "No gear named: " + gearName;
+        	}
+            Element fe = XMLFailureGenerator.generateFailure(programStartRequest, e, errorCode, errorDescription);
             resp.addContent(fe);
             return resp;
         } catch (TimeoutException e) {

@@ -118,11 +118,11 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
         String programName = ServletRequestUtils.getRequiredStringParameter(request, "programName");
         Date startTime = parseDateTime(request, "start", userContext);
         Date stopTime = parseDateTime(request, "stop", userContext);
-        int gearNumber = ServletRequestUtils.getRequiredIntParameter(request, "gearNumber");
+        String gearName = ServletRequestUtils.getRequiredStringParameter(request, "gearName");
         boolean force = ServletRequestUtils.getBooleanParameter(request, "force", false);
         boolean observeConstraintsAndExecute = ServletRequestUtils.getBooleanParameter(request, "observeConstraintsAndExecute", false);
         
-        ProgramStatus programStatus = loadControlService.startControlByProgramName(programName, startTime, stopTime, gearNumber, force, observeConstraintsAndExecute, userContext.getYukonUser());
+        ProgramStatus programStatus = loadControlService.startControlByProgramName(programName, startTime, stopTime, gearName, force, observeConstraintsAndExecute, userContext.getYukonUser());
         results.add(programStatus.toString());
         
         if (programStatus.getConstraintViolations().size() > 0) {

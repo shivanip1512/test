@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.core.dao.GearNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.service.data.ProgramControlHistory;
@@ -43,7 +44,7 @@ public interface LoadControlService {
      * @param programName
      * @param startTime
      * @param stopTime
-     * @param gearNumber
+     * @param gearName
      * @param forceStart should normally always be set to false, set to true only if
      * @param user will be checked against user/group pao permission tables to validate access to program,
      * a program is visible to the user either because it is directly visible, or belongs to a control area that is visible.
@@ -59,15 +60,15 @@ public interface LoadControlService {
      * to them
      */
     public ProgramStatus startControlByProgramName(String programName,
-            Date startTime, Date stopTime, int gearNumber, boolean forceStart, boolean observeConstraintsAndExecute, LiteYukonUser user)
-            throws NotFoundException, TimeoutException, NotAuthorizedException;
+            Date startTime, Date stopTime, String gearName, boolean forceStart, boolean observeConstraintsAndExecute, LiteYukonUser user)
+            throws NotFoundException, GearNotFoundException, TimeoutException, NotAuthorizedException;
     
     /**
      * Starts control of program of given programName. Returns a ProgramStatus
      * object containing the updated program status info if successful, if
      * program has constraint violations will contain current program status
      * info and the list of violations in the ProgramStatus.
-     * Does not take a gearNumber parameter, uses program's current gear always.
+     * Does not take a gearName parameter, uses program's current gear always.
      * @param programName
      * @param startTime
      * @param stopTime

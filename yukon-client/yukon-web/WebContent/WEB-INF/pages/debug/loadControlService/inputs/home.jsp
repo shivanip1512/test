@@ -141,8 +141,8 @@
                             <input type="text" name="stopTime" value="${stopTime}">(HH:MM)
                         </tags:nameValue>
                         
-                        <tags:nameValue name="Gear Number">
-                            <input type="text" name="gearNumber" value="${gearNumber}" size="2">
+                        <tags:nameValue name="Gear Name">
+                            <input type="text" name="gearName" value="${gearName}" size="2">
                         </tags:nameValue>
                         
                         <tags:nameValue name="Force Execute">
