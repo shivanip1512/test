@@ -4,6 +4,10 @@ package com.cannontech.dbeditor.wizard.contact;
  * Creation date: (11/21/00 4:08:38 PM)
  * @author: 
  */
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Vector;
 
 import javax.swing.DefaultCellEditor;
@@ -11,6 +15,8 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.table.TableColumn;
+
+import org.apache.commons.lang.builder.CompareToBuilder;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionListDefs;
@@ -408,29 +414,27 @@ private javax.swing.JComboBox getJComboBoxLoginUser() {
 	return ivjJComboBoxLoginUser;
 }
 
-/**
- * Return the JComboBox1 property value.
- * @return javax.swing.JComboBox
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JComboBox getJComboBoxNotifyType() {
 	if (ivjJComboBoxNotifyType == null) {
 		try {
 			ivjJComboBoxNotifyType = new javax.swing.JComboBox();
 			ivjJComboBoxNotifyType.setName("JComboBoxNotifyType");
 			ivjJComboBoxNotifyType.setToolTipText("Set the way this contact is to be notified");
-			// user code begin {1}
 
-			//since the HashTable holding the ListEntries returns in
-			// reverse order, we must walk backwards through it in
-			// a for loop
-			Object[] entrs = DaoFactory.getYukonListDao().getYukonListEntries().values().toArray();
-			for( int i = (entrs.length-1); i >= 0; i-- )
-			{
-				YukonListEntry entry = (YukonListEntry)entrs[i];
+			Collection<YukonListEntry> collectionOfEntries = DaoFactory.getYukonListDao().getYukonListEntries().values();
+			ArrayList<YukonListEntry> listOfEntries = new ArrayList<YukonListEntry>(collectionOfEntries);
+			Collections.sort(listOfEntries, new Comparator<YukonListEntry>() {
+                @Override
+                public int compare(YukonListEntry o1, YukonListEntry o2) {
+                    return new CompareToBuilder().append(o1.getEntryOrder(), o2.getEntryOrder()).append(o1.getEntryID(), o2.getEntryID()).toComparison();
+                }
+			    
+			});
+			for(YukonListEntry entry : listOfEntries ) {
 				
-				if( entry.getListID() == YukonSelectionListDefs.YUK_LIST_ID_CONTACT_TYPE )
-					ivjJComboBoxNotifyType.addItem( entry );
+				if (entry.getListID() == YukonSelectionListDefs.YUK_LIST_ID_CONTACT_TYPE ) {
+                    ivjJComboBoxNotifyType.addItem( entry );
+                }
 			}
 			
 			// user code end
