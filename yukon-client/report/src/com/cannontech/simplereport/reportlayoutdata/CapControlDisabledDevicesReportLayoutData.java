@@ -4,11 +4,11 @@ import com.cannontech.analysis.report.ColumnLayoutData;
 import com.cannontech.analysis.report.SimpleYukonReportBase;
 
 
-public class CapControlDisasbledDevicesReportLayoutData implements ReportLayoutData{
+public class CapControlDisabledDevicesReportLayoutData implements ReportLayoutData{
 
     private ColumnLayoutData[] bodyColumns;
     
-    public CapControlDisasbledDevicesReportLayoutData() {
+    public CapControlDisabledDevicesReportLayoutData() {
         
         this.bodyColumns = new ColumnLayoutData[] {
             new ColumnLayoutData("Device Name", "deviceName", 100),
