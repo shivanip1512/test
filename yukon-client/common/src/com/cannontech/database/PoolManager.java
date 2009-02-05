@@ -101,8 +101,7 @@ public class PoolManager {
         primaryUser = configSource.getRequiredString("DB_USERNAME");
         log.info("DB username=" + primaryUser);
         String password = configSource.getRequiredString("DB_PASSWORD");
-        log.info("DB password=" + password);
-
+        
         String maxConns = configSource.getString("DB_JAVA_MAXCONS");
         int max = 6;
         if (StringUtils.isNotBlank(maxConns)) {
