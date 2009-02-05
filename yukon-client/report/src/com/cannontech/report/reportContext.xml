@@ -117,7 +117,7 @@
           </bean>
         </property>
         <property name="reportLayoutData">
-           <bean class="com.cannontech.simplereport.reportlayoutdata.CapControlDisasbledDevicesReportLayoutData"/>
+           <bean class="com.cannontech.simplereport.reportlayoutdata.CapControlDisabledDevicesReportLayoutData"/>
         </property>
     </bean>
     
