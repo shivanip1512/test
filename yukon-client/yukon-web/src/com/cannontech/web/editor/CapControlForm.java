@@ -1536,11 +1536,10 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         List<CCFeederBankList> childList = currFdr.getChildList();
         for (Iterator iter = childList.iterator(); iter.hasNext();) {
             CCFeederBankList assign = (CCFeederBankList) iter.next();
-            assign.setTripOrder(childList.size() + 1 - assign.getControlOrder());
+            assign.setTripOrder(maxDispOrderOnList(childList) + 1 - assign.getControlOrder());
         }
     }
 
-    @SuppressWarnings("unchecked")
     private void reorderList(List<? extends DBPersistent> childList) {
 		for (int i = 0; i < childList.size(); i++) {
 			Object element = childList.get(i);
@@ -1554,11 +1553,40 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 				CCFeederBankList capBank = (CCFeederBankList) element;
 				capBank.setControlOrder(new Float ( i  + 1));
                 capBank.setCloseOrder(new Float ( i + 1));
-                capBank.setTripOrder(new Float ( i + 1));
+                capBank.setTripOrder(new Float ( childList.size() - i));
 			} else {
 				return;
             }
 		}		
+	}
+    
+    private void reorderBankList(List<CCFeederBankList> childList, float removeDispOrder, float removeCloseOrder, float removeTripOrder) {
+    	if (removeDispOrder >= 1  && removeCloseOrder >= 1 && removeTripOrder >= 1){
+    		float prevAdjControlOrder = 0;
+    		float prevAdjCloseOrder = 0;
+    		float prevAdjTripOrder = childList.size();
+    		for (int i = 0; i < childList.size(); i++) {
+    			CCFeederBankList capBank = childList.get(i);
+
+    			if(capBank.getControlOrder() > removeDispOrder && (capBank.getControlOrder() - 1) > prevAdjControlOrder){
+    				capBank.setControlOrder(new Float ( capBank.getControlOrder() - 1));
+    			}
+    			if(capBank.getCloseOrder() > removeCloseOrder && (capBank.getCloseOrder() - 1) > prevAdjCloseOrder){
+    				capBank.setCloseOrder(new Float ( capBank.getCloseOrder() - 1));
+    			}
+    			if((capBank.getTripOrder()-1) >= removeTripOrder  && (capBank.getTripOrder() - 1) < prevAdjTripOrder){
+    				capBank.setTripOrder(new Float ( capBank.getTripOrder() - 1));
+    			}
+				prevAdjControlOrder = capBank.getControlOrder();
+				prevAdjCloseOrder = capBank.getCloseOrder();
+				prevAdjTripOrder = capBank.getTripOrder();
+
+    		}
+		}	
+    	else {
+    		reorderList(childList);
+    	}
+    		
 	}
 
     //Warning: instanceof CCFeederSubAssignment is putting an int into a float.
@@ -1601,11 +1629,15 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 				CCFeederBankList listItem = currFdr.getChildList().get(i);
 				if (elemID == listItem.getDeviceID().intValue()) {
 					// remove the mapping for the given CapBank id to this Feeder
+					float dispO = listItem.getControlOrder();
+					float closeO = listItem.getCloseOrder();
+					float tripO = listItem.getTripOrder();
+					
 					currFdr.getChildList().remove(i);
 					unassignedBanks.add(paoDao.getLiteYukonPAO(elemID));
 					// keep our order
 					Collections.sort(unassignedBanks, LiteComparators.liteStringComparator);
-					reorderList (currFdr.getChildList());
+					reorderBankList (currFdr.getChildList(), dispO, closeO, tripO);
 					break;
 				}
 			}
