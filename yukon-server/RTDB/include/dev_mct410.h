@@ -41,10 +41,10 @@ private:
 
     struct daily_read_info_t
     {
-        unsigned long single_day;
+        CtiDate single_day;
 
-        unsigned long multi_day_start;
-        unsigned long multi_day_end;
+        CtiDate multi_day_start;
+        CtiDate multi_day_end;
 
         unsigned channel;
 

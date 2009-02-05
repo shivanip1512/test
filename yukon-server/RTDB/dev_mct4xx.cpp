@@ -58,6 +58,8 @@ const CtiDeviceMCT4xx::ConfigPartsList CtiDeviceMCT4xx::_config_parts = initConf
 
 const CtiDeviceMCT4xx::error_set       CtiDeviceMCT4xx::_mct_error_info = initErrorInfo();
 
+const CtiDate                          CtiDeviceMCT4xx::DawnOfTime_Date = CtiDate(CtiTime(CtiDeviceMCT4xx::DawnOfTime_UtcSeconds));
+
 CtiDeviceMCT4xx::CtiDeviceMCT4xx()
 {
     _llpInterest.time        = 0;
@@ -178,7 +180,7 @@ string CtiDeviceMCT4xx::printable_time(unsigned long seconds)
 {
     string retval;
 
-    if( seconds > DawnOfTime )
+    if( seconds > DawnOfTime_UtcSeconds )
     {
         retval = CtiTime(seconds).asString();
     }
@@ -191,11 +193,28 @@ string CtiDeviceMCT4xx::printable_time(unsigned long seconds)
 }
 
 
+string CtiDeviceMCT4xx::printable_date(const CtiDate &dt)
+{
+    string retval;
+
+    if( dt > DawnOfTime_Date )
+    {
+        retval = dt.asStringUSFormat();
+    }
+    else
+    {
+        retval = "[invalid date (" + dt.asString() + ")]";
+    }
+
+    return retval;
+}
+
+
 string CtiDeviceMCT4xx::printable_date(unsigned long seconds)
 {
     string retval;
 
-    if( seconds > DawnOfTime )
+    if( seconds > DawnOfTime_UtcSeconds )
     {
         CtiDate date_to_print;
 
@@ -223,7 +242,7 @@ bool CtiDeviceMCT4xx::is_valid_time( const CtiTime time )
     bool retval = false;
 
     //  between 2000-jan-01 and tomorrow
-    retval = (time > DawnOfTime) &&
+    retval = (time > DawnOfTime_UtcSeconds) &&
              (time < (CtiTime::now() + 86400));
 
     return retval;
@@ -465,7 +484,7 @@ string CtiDeviceMCT4xx::valueReport(const CtiPointSPtr p, const point_info &pi, 
         report += "(invalid data)";
     }
 
-    if( t > DawnOfTime && t < YUKONEOT )
+    if( t > DawnOfTime_UtcSeconds && t < YUKONEOT )
     {
         report += " @ ";
         report += t.asString();
@@ -497,7 +516,7 @@ string CtiDeviceMCT4xx::valueReport(const string &pointname, const point_info &p
         report += "(invalid data)";
     }
 
-    if( t > DawnOfTime && t < YUKONEOT )
+    if( t > DawnOfTime_UtcSeconds && t < YUKONEOT )
     {
         report += " @ ";
         report += t.asString();

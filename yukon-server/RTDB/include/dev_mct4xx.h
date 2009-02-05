@@ -23,6 +23,7 @@
 #include <vector>
 #include "config_device.h"
 #include "config_data_mct.h"
+#include "ctidate.h"
 
 class IM_EX_DEVDB CtiDeviceMCT4xx : public CtiDeviceMCT
 {
@@ -49,6 +50,7 @@ protected:
 
     static string printable_time(unsigned long seconds);
     static string printable_date(unsigned long seconds);
+    static string printable_date(const CtiDate &dt);
 
     static bool is_valid_time(const CtiTime);
 
@@ -173,13 +175,15 @@ protected:
         FuncRead_TOUSwitchSchedule34Len =   13,
     };
 
+    static const CtiDate DawnOfTime_Date;
+
     enum
     {
         LPChannels       =    4,
         LPRetries        =    3,
         LPRecentBlocks   =   16,
 
-        DawnOfTime       = 0x386d4380,  //  jan 1, 2000, in UTC seconds
+        DawnOfTime_UtcSeconds   = 0x386d4380,  //  jan 1, 2000, in UTC seconds
 
         PointOffset_RateOffset  =  20,   //  gets added for rate B, C, D
 
@@ -281,7 +285,7 @@ protected:
     INT decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList);
     INT decodeScanLoadProfile    (INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList);
 
-    virtual INT decodeGetStatusFreeze( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList ) = 0; // pure virtual, hence this is an abstract class 
+    virtual INT decodeGetStatusFreeze( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList ) = 0; // pure virtual, hence this is an abstract class
 
     static const char *PutConfigPart_basic;
     static const char *PutConfigPart_all;

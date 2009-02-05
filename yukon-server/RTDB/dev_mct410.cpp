@@ -53,9 +53,9 @@ CtiDeviceMCT410::CtiDeviceMCT410( ) :
     _daily_read_info.in_progress = false;
     _daily_read_info.failed      = false;
     _daily_read_info.retry       = false;
-    _daily_read_info.single_day = 0;
-    _daily_read_info.multi_day_start = 0;
-    _daily_read_info.multi_day_end   = 0;
+    _daily_read_info.single_day      = DawnOfTime_Date;
+    _daily_read_info.multi_day_start = DawnOfTime_Date;
+    _daily_read_info.multi_day_end   = DawnOfTime_Date;
 }
 
 CtiDeviceMCT410::CtiDeviceMCT410( const CtiDeviceMCT410 &aRef )
@@ -1382,13 +1382,13 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
 
             temp += "Channel " + CtiNumStr(channel) + ", ";
 
-            if( _daily_read_info.single_day )
+            if( _daily_read_info.request_type == daily_read_info_t::Request_MultiDay )
             {
-                temp += printable_date(_daily_read_info.single_day) + "\n";
+                temp += printable_date(_daily_read_info.multi_day_start + 1) + " - " + printable_date(_daily_read_info.multi_day_end) + "\n";
             }
             else
             {
-                temp += printable_date(_daily_read_info.multi_day_start) + " - " + printable_date(_daily_read_info.multi_day_end) + "\n";
+                temp += printable_date(_daily_read_info.single_day) + "\n";
             }
 
             returnErrorMessage(NOTNORMAL, OutMessage, retList, temp);
@@ -1397,8 +1397,11 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
         {
             int day, month, year;
             int channel;
-            CtiTime time_begin = CtiTime(86400),
-                    time_end   = CtiTime(86400);
+            CtiDate date_begin = DawnOfTime_Date,
+                    date_end   = DawnOfTime_Date;
+
+            const CtiDate Today     = CtiDate(),
+                          Yesterday = Today - 1;
 
             //  grab the beginning date
             if( parse.isKeyValid("daily_read_date_begin") )
@@ -1411,14 +1414,14 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
 
                 if( year < 100 )  year += 2000;  //  this will need to change in 2100
 
-                time_begin = CtiTime(CtiDate(day, month, year));
+                //  naive date construction - no range checking, so we count
+                //    on CtiDate() resetting itself to 1/1/1970
+                date_begin = CtiDate(day, month, year);
             }
             else
             {
                 // If the date is not specified, we use yesterday (last full day)
-                CtiDate readDate; // Today
-                --readDate;
-                time_begin = CtiTime(readDate);
+                date_begin = Yesterday;
             }
 
             //  grab the end date
@@ -1432,7 +1435,9 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
 
                 if( year < 100 )  year += 2000;  //  this will need to change in 2100
 
-                time_end = CtiTime(CtiDate(day, month, year));
+                //  naive date construction - no range checking, so we count
+                //    on CtiDate() resetting itself to 1/1/1970
+                date_end = CtiDate(day, month, year);
             }
 
             function = Emetcon::GetValue_DailyRead;
@@ -1446,7 +1451,10 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
             {
                 returnErrorMessage(NoMethod, OutMessage, retList, getName() + " / Daily read requires SSPEC rev 2.1 or higher, MCT reports " + CtiNumStr(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) / 10.0, 1));
             }
-            else if( !time_begin.isValid() || !time_end.isValid() )
+            else if( !date_begin.isValid() ||
+                     !date_end.isValid()   ||
+                     date_begin < DawnOfTime_Date ||
+                     date_end   < DawnOfTime_Date )
             {
                 nRet  = BADPARAM;
 
@@ -1470,20 +1478,15 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
             else if( !parse.isKeyValid("channel") )
             {
                 //  single-day read for channel 1
-                if( time_begin < (CtiTime::now() - 86400 * 8) ||   //  must be less than 8 days ago
-                    time_begin >  CtiTime::now() - 86400 )         //  must begin on or before yesterday midnight
+                if( date_begin < Today - 8 ||  //  must be no more than 8 days ago
+                    date_begin > Yesterday )   //  must begin on or before yesterday
                 {
                     returnErrorMessage(NoMethod, OutMessage, retList,
                                        getName() + " / Invalid date for daily read request (" + parse.getsValue("daily_read_date_begin")  + ") - must be less than 8 days ago");
                 }
                 else
                 {
-                    unsigned long day_offset;
-
-                    day_offset = (CtiTime::now().seconds() - time_begin.seconds()) / 86400;
-
-                    // should always be at least 1, since we're always yesterday midnight or before
-                    day_offset--;
+                    unsigned long day_offset = Yesterday.daysFrom1970() - date_begin.daysFrom1970();
 
                     //  make sure the date we're requesting is aligned to a read boundary
                     OutMessage->Buffer.BSt.Function = FuncRead_Channel1SingleDayBasePos + day_offset;
@@ -1503,8 +1506,8 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
                     returnErrorMessage(NoMethod, OutMessage, retList,
                                        getName() + " / Invalid channel for daily read request (" + CtiNumStr(channel) + ")");
                 }
-                else if( time_begin < (CtiTime::now() - 86400 * 93) ||   //  must be less than 93 days ago
-                         time_begin >  CtiTime::now() )                  //  must begin on or before yesterday midnight
+                else if( date_begin < Today - 92 ||  //  must be less than 92 days ago
+                         date_begin > Yesterday )    //  must begin on or before yesterday
                 {
                     nRet  = BADPARAM;
 
@@ -1516,8 +1519,9 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
 
                     returnErrorMessage(NoMethod, OutMessage, retList, error_string);
                 }
-                else if( time_end  > 86400 && (time_end <= time_begin ||         //  make sure it ends after it starts
-                                               time_end >  CtiTime::now()) )     //  must end on or before yesterday midnight
+                else if( date_end  > DawnOfTime_Date
+                         && (date_end <= date_begin ||  //  make sure it ends after it starts
+                             date_end >  Yesterday) )    //  must end on or before yesterday
                 {
                     nRet  = BADPARAM;
 
@@ -1534,8 +1538,8 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
                     //  if the channel doesn't match and it's a multi-day request,
                     //    and/or if this is a single-day request and our time doesn't match,
                     //    we must send the time and channel of interest
-                    if( (time_end.seconds() >  86400 && _daily_read_info.channel    != channel) ||
-                        (time_end.seconds() <= 86400 && _daily_read_info.single_day != time_begin.seconds()) )
+                    if( (date_end >  DawnOfTime_Date && _daily_read_info.channel    != channel) ||
+                        (date_end == DawnOfTime_Date && _daily_read_info.single_day != date_begin) )
                     {
                         //  we need to set it to the requested interval
                         CtiOutMessage *interest_om = new CtiOutMessage(*OutMessage);
@@ -1549,14 +1553,14 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
 
                         interest_om->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
 
-                        if( time_end.seconds() <= 86400 )
+                        if( date_end == DawnOfTime_Date )
                         {
                             //  single-day request - send the time of interest
                             interest_om->Buffer.BSt.Message[1] = 0;
-                            interest_om->Buffer.BSt.Message[2] = time_begin.date().dayOfMonth();
-                            interest_om->Buffer.BSt.Message[3] = time_begin.date().month();
+                            interest_om->Buffer.BSt.Message[2] = date_begin.dayOfMonth();
+                            interest_om->Buffer.BSt.Message[3] = date_begin.month();
 
-                            _daily_read_info.single_day = time_begin.seconds();
+                            _daily_read_info.single_day = date_begin;
                         }
                         else
                         {
@@ -1572,25 +1576,18 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
                         interest_om = 0;
                     }
 
-                    if( time_end.seconds() > 86400 )
+                    if( date_end > DawnOfTime_Date )
                     {
                         //  multi-day read
 
-                        unsigned long day_offset;
-
-                        day_offset = ((CtiTime::now().seconds() - time_begin.seconds()) / 86400) + 1;
-
-                        //  multi-day read
-                        _daily_read_info.multi_day_start  = time_begin.seconds();
-                        _daily_read_info.multi_day_end    = time_end.seconds();
+                        //  translate days-past to the block offset
+                        unsigned long block_offset = (Today.daysFrom1970() - date_begin.daysFrom1970()) / 6;
 
                         //  make sure the date we're requesting is aligned to a read boundary
-                        if( day_offset % 6 )
-                        {
-                            _daily_read_info.multi_day_start -= (6 - (day_offset % 6)) * 86400;
-                        }
+                        _daily_read_info.multi_day_start  = Today - ((block_offset + 1) * 6);
+                        _daily_read_info.multi_day_end    = date_end;
 
-                        OutMessage->Buffer.BSt.Function = FuncRead_MultiDayDailyReportingBasePos + ((day_offset - 1) / 6);
+                        OutMessage->Buffer.BSt.Function = FuncRead_MultiDayDailyReportingBasePos + block_offset;
                         OutMessage->Buffer.BSt.Length   = FuncRead_MultiDayDailyReportingLen;
 
                         _daily_read_info.request_type = daily_read_info_t::Request_MultiDay;
@@ -1630,8 +1627,6 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
                         }
                     }
                 }
-
-                nRet = NoError;
             }
 
             if( !found )
@@ -3012,7 +3007,7 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
 
     int function = InMessage->Return.ProtocolInfo.Emetcon.Function;
 
-    unsigned long start_time = 0;
+    CtiDate start_date;
 
     CtiReturnMsg    *ReturnMsg = NULL;  // Message sent to VanGogh, inherits from Multi
 
@@ -3054,16 +3049,16 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
         //  then figure out the time this read started...
         switch( _daily_read_info.request_type )
         {
-            case daily_read_info_t::Request_MultiDay:       start_time = _daily_read_info.multi_day_start;  break;
+            case daily_read_info_t::Request_MultiDay:       start_date = _daily_read_info.multi_day_start;  break;
 
             case daily_read_info_t::Request_SingleDayCh1:
             case daily_read_info_t::Request_SingleDayCh2:
-            case daily_read_info_t::Request_SingleDayCh3:   start_time = _daily_read_info.single_day;       break;
+            case daily_read_info_t::Request_SingleDayCh3:   start_date = _daily_read_info.single_day;       break;
 
             case daily_read_info_t::Request_RecentCh1:
             {
-                //  today's midnight minus however many days back we requested
-                start_time = CtiTime(CtiDate()).seconds() - ((function + 1 - FuncRead_Channel1SingleDayBasePos) * 86400);
+                //  today minus however many days back we requested
+                start_date = CtiDate() - (function + 1 - FuncRead_Channel1SingleDayBasePos);
 
                 break;
             }
@@ -3156,19 +3151,21 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
                 }
                 else
                 {
-                    for( day = 0; day < 6; day++ )
+                    while( !days.empty() )
                     {
                         insertPointDataReport(PulseAccumulatorPointType, _daily_read_info.channel, ReturnMsg,
-                                              days.back(), consumption_pointname, _daily_read_info.multi_day_start + (day * 86400));
+                                              days.back(), consumption_pointname, CtiTime(_daily_read_info.multi_day_start + 1));  //  add on 24 hours - end of day
+
+                        ++_daily_read_info.multi_day_start;
 
                         days.pop_back();
                     }
 
-                    if( (_daily_read_info.multi_day_start + (6 * 86400)) < _daily_read_info.multi_day_end )
+                    if( _daily_read_info.multi_day_start < _daily_read_info.multi_day_end )
                     {
                         string request_str = "getvalue daily read ";
 
-                        request_str += "channel " + CtiNumStr(_daily_read_info.channel) + " " + printable_date(_daily_read_info.multi_day_start + 6 * 86400)
+                        request_str += "channel " + CtiNumStr(_daily_read_info.channel) + " " + printable_date(_daily_read_info.multi_day_start + 1)
                                                                                               + " " + printable_date(_daily_read_info.multi_day_end);
 
                         if( strstr(InMessage->Return.CommandStr, " noqueue") )  request_str += " noqueue";
@@ -3196,8 +3193,8 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
                     {
                         resultString += "Multi-day daily read request complete\n";
 
-                        _daily_read_info.multi_day_start = 0;
-                        _daily_read_info.multi_day_end   = 0;
+                        _daily_read_info.multi_day_start = DawnOfTime_Date;
+                        _daily_read_info.multi_day_end   = DawnOfTime_Date;
 
                         //  reset the "in progress" flag
                         _daily_read_info.request_type = daily_read_info_t::Request_None;
@@ -3220,7 +3217,7 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
                     resultString  = getName() + " / Invalid day/month returned by daily read ";
                     resultString += "(" + CtiNumStr(day) + "/" + CtiNumStr(month + 1) + ", expecting " + CtiNumStr(d.dayOfMonth()) + "/" + CtiNumStr(((d.month() - 1) % 4) + 1) + ")";
 
-                    _daily_read_info.single_day = 86400;  //  reset it - it doesn't match what the MCT has
+                    _daily_read_info.single_day = DawnOfTime_Date;  //  reset it - it doesn't match what the MCT has
 
                     status = ErrorInvalidTimestamp;
                 }
@@ -3229,7 +3226,7 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
                     reading = CtiDeviceMCT4xx::getData(DSt->Message + 0, 3, ValueType_Accumulator);
 
                     insertPointDataReport(PulseAccumulatorPointType, 1, ReturnMsg,
-                                          reading, consumption_pointname,  _daily_read_info.single_day + 86400);  //  add on 24 hours - end of day
+                                          reading, consumption_pointname,  CtiTime(_daily_read_info.single_day + 1));  //  add on 24 hours - end of day
 
                     peak    = getData(DSt->Message + 3, 2, ValueType_DynamicDemand);
 
@@ -3248,7 +3245,7 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
                                        ((DSt->Message[12] & 0xff) <<  0);   //  8 bits
 
                     insertPointDataReport(DemandAccumulatorPointType, 1, ReturnMsg,
-                                          peak, demand_pointname,  _daily_read_info.single_day + (time_peak * 60));
+                                          peak, demand_pointname,  CtiTime(_daily_read_info.single_day) + (time_peak * 60));
 
                     voltage_min  = DSt->Message[7] | ((DSt->Message[6] & 0x0f) << 8);
 
@@ -3267,7 +3264,7 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
                     }
 
                     insertPointDataReport(DemandAccumulatorPointType, PointOffset_VoltageMin, ReturnMsg,
-                                          pi, "Minimum Voltage", _daily_read_info.single_day + (time_voltage_min * 60), 0.1);
+                                          pi, "Minimum Voltage", CtiTime(_daily_read_info.single_day) + (time_voltage_min * 60), 0.1);
 
                     if( voltage_max == 0x7fa )
                     {
@@ -3282,7 +3279,7 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
                     }
 
                     insertPointDataReport(DemandAccumulatorPointType, PointOffset_VoltageMax, ReturnMsg,
-                                          pi, "Maximum Voltage", _daily_read_info.single_day + (time_voltage_max * 60), 0.1);
+                                          pi, "Maximum Voltage", CtiTime(_daily_read_info.single_day) + (time_voltage_max * 60), 0.1);
                 }
 
                 //  reset the "in progress" flag
@@ -3300,8 +3297,6 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
                 month   =  DSt->Message[10] & 0x0f;
                 channel = (DSt->Message[10] & 0x30) >> 4;
 
-                CtiTime t = CtiTime(start_time);
-                CtiDate d = CtiDate(t);
                 channel++;  //  change to 1-based
 
                 if( channel != expected_channel )
@@ -3311,15 +3306,15 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
 
                     status = ErrorInvalidChannel;
                 }
-                else if( day != d.dayOfMonth() || (month % 4) != ((d.month() - 1) % 4) )
+                else if( day != start_date.dayOfMonth() || (month % 4) != ((start_date.month() - 1) % 4) )
                 {
                     resultString  = getName() + " / Invalid day/month returned by daily read ";
-                    resultString += "(" + CtiNumStr(day) + "/" + CtiNumStr(month + 1) + ", expecting " + CtiNumStr(d.dayOfMonth()) + "/" + CtiNumStr(((d.month() - 1) % 4) + 1) + ")";
+                    resultString += "(" + CtiNumStr(day) + "/" + CtiNumStr(month + 1) + ", expecting " + CtiNumStr(start_date.dayOfMonth()) + "/" + CtiNumStr(((start_date.month() - 1) % 4) + 1) + ")";
 
                     if( _daily_read_info.request_type == daily_read_info_t::Request_SingleDayCh2 ||
                         _daily_read_info.request_type == daily_read_info_t::Request_SingleDayCh3 )
                     {
-                        _daily_read_info.single_day = 86400;  //  reset it - it doesn't match what the MCT has
+                        _daily_read_info.single_day = DawnOfTime_Date;  //  reset it - it doesn't match what the MCT has
                     }
 
                     status = ErrorInvalidTimestamp;
@@ -3344,10 +3339,10 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
                     else
                     {
                         insertPointDataReport(PulseAccumulatorPointType, channel, ReturnMsg,
-                                              reading, consumption_pointname,  start_time + 86400);  //  add on 24 hours - end of day
+                                              reading, consumption_pointname,  CtiTime(start_date + 1));  //  add on 24 hours - end of day
 
                         insertPointDataReport(DemandAccumulatorPointType, channel, ReturnMsg,
-                                              peak, demand_pointname,  start_time + (time_peak * 60));
+                                              peak, demand_pointname,  CtiTime(start_date) + (time_peak * 60));
                     }
 
                     outage_count = (DSt->Message[7] << 8) | DSt->Message[8];
@@ -3356,7 +3351,7 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
                     pi.quality = NormalQuality;
 
                     insertPointDataReport(PulseAccumulatorPointType, PointOffset_Accumulator_Powerfail, ReturnMsg,
-                                          pi, "Blink Counter",  start_time + 86400);  //  add on 24 hours - end of day
+                                          pi, "Blink Counter",  CtiTime(start_date + 1));  //  add on 24 hours - end of day
                 }
 
                 //  reset the "in progress" flag
@@ -3400,7 +3395,7 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
 
             string request_str = "getvalue daily read ";
 
-            request_str += "channel " + CtiNumStr(_daily_read_info.channel) + " " + printable_date(_daily_read_info.multi_day_start)
+            request_str += "channel " + CtiNumStr(_daily_read_info.channel) + " " + printable_date(_daily_read_info.multi_day_start + 1)
                                                                             + " " + printable_date(_daily_read_info.multi_day_end);
 
             if( strstr(InMessage->Return.CommandStr, " noqueue") )      request_str += " noqueue";
