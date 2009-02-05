@@ -2,6 +2,7 @@ package com.cannontech.yukon.api.account;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.jdom.Element;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
@@ -15,7 +16,9 @@ import org.w3c.dom.Node;
 
 import com.cannontech.common.bulk.field.impl.UpdatableAccount;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.stars.dr.account.exception.AccountNumberUnavailableException;
 import com.cannontech.stars.dr.account.exception.InvalidAccountNumberException;
+import com.cannontech.stars.dr.account.exception.UserNameUnavailableException;
 import com.cannontech.stars.dr.account.service.AccountServiceHelper;
 import com.cannontech.yukon.api.account.endpoint.UpdateAccountsRequestEndpoint;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
@@ -35,6 +38,23 @@ public class UpdateAccountsRequestEndpointTest {
             public void updateAccount(UpdatableAccount updatableAccount, LiteYukonUser user) throws InvalidAccountNumberException {
                 if(updatableAccount.getAccountNumber().equalsIgnoreCase("INVALID ACCOUNT #")) {
                     throw new InvalidAccountNumberException("INVALID ACCOUNT #");
+                }
+                
+                if(updatableAccount.getAccountNumber().equalsIgnoreCase("INVALID ACCOUNT # TRY ADD")) {
+                    throw new InvalidAccountNumberException("INVALID ACCOUNT # TRY ADD");
+                }
+            }
+            
+            @Override
+            public void addAccount(UpdatableAccount updatableAccount, LiteYukonUser operator) throws AccountNumberUnavailableException, UserNameUnavailableException {
+                if(updatableAccount.getAccountNumber().equalsIgnoreCase("INVALID ACCOUNT #")) {
+                    throw new AccountNumberUnavailableException("INVALID ACCOUNT #");
+                }
+                String userName = updatableAccount.getAccountDto().getUserName();
+                if(StringUtils.isNotBlank(userName)){
+                    if(userName.equalsIgnoreCase("DUPLICATE USERNAME")) {
+                        throw new UserNameUnavailableException("DUPLICATE USERNAME");
+                    }
                 }
             }
         });
