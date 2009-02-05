@@ -14,7 +14,7 @@
 	<cti:breadCrumbs>
 	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
 	    <cti:crumbLink url="/msp_setup.jsp" title="MultiSpeak"  />
-	    &gt; ${pageTitle}
+	    <cti:crumbLink title="${pageTitle}" />
 	</cti:breadCrumbs>
 	
 	<h2>${pageTitle}</h2>
@@ -62,7 +62,7 @@
 					    					finalTriggerAction="setMappedNameId">
 	                        	</cti:paoPicker>
 	                        	
-					    		<input type="button" id="searchButton" value="Search" onclick="doSearch();">
+					    		<input type="button" id="searchButton" value="Search" onclick="doLmMappingNameSearch();">
 					    		<input type="button" id="addButton" value="Set New Mapping" onclick="paoPicker.showPicker();">
 					    		<img src="<cti:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" style="display:none;" id="waitImg">
 	                        

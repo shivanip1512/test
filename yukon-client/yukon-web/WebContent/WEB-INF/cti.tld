@@ -718,6 +718,11 @@
     <tag-class>com.cannontech.web.amr.taglib.DeviceNameTag</tag-class>
     <body-content>empty</body-content>
     <attribute>
+      <name>var</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
       <name>deviceId</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
@@ -725,22 +730,6 @@
     <attribute>
       <name>device</name>
       <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-  </tag>
-  
-  <tag>
-    <name>paoName</name>
-    <tag-class>com.cannontech.web.taglib.PaoNameTag</tag-class>
-    <body-content>empty</body-content>
-    <attribute>
-      <name>var</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>paoId</name>
-      <required>true</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
   </tag>

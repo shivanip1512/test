@@ -9,51 +9,52 @@ var setMappedNameId = function() {
 		return null;
 	}
 	
-	toggleWait(true, $('addButton'));
+	toggleLmMappingsWaitIndicators(true, $('addButton'));
 	if ($('mappedNameId').value.strip() == '') {
 		alert('Select a Program/Scenario name.');
 		return;
 	}
 
-	var mappedName = getMappedName();
-	var overwrite = true;
-	if (mappedName != null) {
-		overwrite = confirm('Strategy/Substation ' + $('strategyName').value + '/' + $('substationName').value + ' is already mapped to "' + mappedName + '", are you want to overwrite it with "' + $('mappedName').innerHTML + '"?');
-	} 
-
-	if (overwrite) {
-
-		var url = '/spring/multispeak/setup/lmMappings/addOrUpdateMapping';
-		var params = $H();
-		params['strategyName'] = $('strategyName').value;
-		params['substationName'] = $('substationName').value;
-		params['mappedNameId'] = $('mappedNameId').value;
-    
-		new Ajax.Request(url, {
-			'parameters': params,
-			'evalScripts': true,
-			'onSuccess': function(transport, json) {
-				$('mappedNameDisplay').innerHTML = $('mappedName').innerHTML;
-				
-				toggleWait(false, $('addButton'));
-				new Effect.Highlight($('mappedNameDisplay'), {'duration': highlightDuration, 'startcolor': '#FFE900'});
-				reloadAllMappingsTable(null, false);
-			},
-			'onException': function(e) {
-				
-				toggleWait(false, $('addButton'));
-				alert('Error adding mapping: ' + e.responseText);
-			}
-		});
-	} else {
-		toggleWait(false, $('addButton'));
-	}
+	getMappedName(function(mappedName) {
+	
+		var overwrite = true;
+		if (mappedName != null && mappedName != $('mappedName').innerHTML) {
+			overwrite = confirm('Strategy/Substation ' + $('strategyName').value + '/' + $('substationName').value + ' is already mapped to "' + mappedName + '", are you want to overwrite it with "' + $('mappedName').innerHTML + '"?');
+		} 
+	
+		if (overwrite) {
+	
+			var url = '/spring/multispeak/setup/lmMappings/addOrUpdateMapping';
+			var params = $H();
+			params['strategyName'] = $('strategyName').value;
+			params['substationName'] = $('substationName').value;
+			params['mappedNameId'] = $('mappedNameId').value;
+	    
+			new Ajax.Request(url, {
+				'parameters': params,
+				'evalScripts': true,
+				'onSuccess': function(transport, json) {
+					$('mappedNameDisplay').innerHTML = $('mappedName').innerHTML;
+					
+					toggleLmMappingsWaitIndicators(false, $('addButton'));
+					new Effect.Highlight($('mappedNameDisplay'), {'duration': highlightDuration, 'startcolor': '#FFE900'});
+					reloadAllMappingsTable(null, false);
+				},
+				'onException': function(e) {
+					
+					toggleLmMappingsWaitIndicators(false, $('addButton'));
+					alert('Error adding mapping: ' + e.responseText);
+				}
+			});
+		} else {
+			toggleLmMappingsWaitIndicators(false, $('addButton'));
+		}
+	
+	});
 }
 
-function getMappedName() {
+function getMappedName(callback) {
 
-	var mappedName = null;
-	
 	var url = '/spring/multispeak/setup/lmMappings/findMapping';
 	var params = $H();
 	params['strategyName'] = $('strategyName').value;
@@ -61,33 +62,35 @@ function getMappedName() {
 	
 	 new Ajax.Request(url, {
 	   'parameters': params,
-	   'evalScripts': true,
 	   'asynchronous': false,
 	   'onSuccess': function(transport, json) {
-			mappedName = json['mappedName'];
+		 	var mappedName = json['mappedName'];
+			callback(mappedName);
 	   },
 	   'onException': function(e) {
-			alert('Error searching for Program/Scenario: ' + e.responseText);
+			alert('Error searching for Strategy/Substation: ' + e.responseText);
 		   }
 		 });
 
-		 return mappedName;
-	}
+}
   
 
-function doSearch(){
+function doLmMappingNameSearch(){
 	
-	toggleWait(true, $('searchButton'));
+	toggleLmMappingsWaitIndicators(true, $('searchButton'));
 
-	var mappedName = getMappedName();
-	if (mappedName != null) {
-		$('mappedNameDisplay').innerHTML = mappedName;
-	} else {
-		$('mappedNameDisplay').innerHTML = 'Not Found';
-	}
+	getMappedName(function(mappedName) {
 	
-	toggleWait(false, $('searchButton'));
-	new Effect.Highlight($('mappedNameDisplay'), {'duration': highlightDuration, 'startcolor': '#FFE900'});
+		if (mappedName != null) {
+			$('mappedNameDisplay').innerHTML = mappedName;
+		} else {
+			$('mappedNameDisplay').innerHTML = 'Not Found';
+		}
+		
+		toggleLmMappingsWaitIndicators(false, $('searchButton'));
+		new Effect.Highlight($('mappedNameDisplay'), {'duration': highlightDuration, 'startcolor': '#FFE900'});
+	
+	});
 }
 
 function reloadAllMappingsTable(col, isReorder) {
@@ -118,7 +121,7 @@ function reloadAllMappingsTable(col, isReorder) {
 }
 
 
-function removeMapping(mspLMInterfaceMappingId) {
+function removeLmMapping(mspLMInterfaceMappingId) {
 	
 	if (!confirm('Are you sure you want to remove this mappping?')) {
 		return;
@@ -141,7 +144,7 @@ function removeMapping(mspLMInterfaceMappingId) {
 
 }
 
-function toggleWait(isWaiting, buttonEl) {
+function toggleLmMappingsWaitIndicators(isWaiting, buttonEl) {
 	
 	if (isWaiting) {
 		$('waitImg').show();

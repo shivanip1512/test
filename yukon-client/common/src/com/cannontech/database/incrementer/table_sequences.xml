@@ -180,8 +180,9 @@
       <sequence name="LMProgramHistoryID">
         <table name="LMProgramHistory" identitycolumn="LMProgramHistoryId" initsequence="true"/>
       </sequence>
-      <sequence name="MSPLMIFaceMapping">
-        <table name="MSPLMINTERFACEMAPPING" identitycolumn="MSPLMINTERFACEMAPPINGID" initsequence="true"/>
-      </sequence>
+      <sequence name="MSP">
+        <table name="MSPVendor" identitycolumn="VENDORID" initsequence="true"/>
+        <table name="MSPLMInterfaceMapping" identitycolumn="MspLMInterfaceMappingId" initsequence="true"/>
+      </sequence> 
   </sequencetable>
 </sequencetables>

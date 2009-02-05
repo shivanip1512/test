@@ -29,14 +29,14 @@
 	
 	<c:forEach var="mapping" items="${allMappings}">
 	
-		<cti:paoName var="paoName" paoId="${mapping.paobjectId}"/>
+		<cti:deviceName var="paoName" deviceId="${mapping.paobjectId}"/>
 	
 		<tr>
 			<td><spring:escapeBody htmlEscape="true">${mapping.strategyName}</spring:escapeBody></td>
 			<td><spring:escapeBody htmlEscape="true">${mapping.substationName}</spring:escapeBody></td>
 			<td><spring:escapeBody htmlEscape="true">${paoName}</spring:escapeBody></td>
 			<td style="text-align:center;">
-				<img class="cssicon" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/close.gif"/>" onclick="removeMapping(${mapping.mspLMInterfaceMappingId});">
+				<img class="cssicon" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/close.gif"/>" onclick="removeLmMapping(${mapping.mspLMInterfaceMappingId});">
 			</td>
 		</tr>
 	</c:forEach>

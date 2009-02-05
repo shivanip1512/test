@@ -2,6 +2,7 @@ package com.cannontech.web.amr.taglib;
 
 import java.io.IOException;
 
+import javax.servlet.jsp.JspContext;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 
@@ -16,6 +17,7 @@ import com.cannontech.web.taglib.YukonTagSupport;
 @Configurable("deviceNameTagPrototype")
 public class DeviceNameTag extends YukonTagSupport {
     
+	private String var = null;
     private DeviceDao deviceDao; 
     private int deviceId = 0;
     private boolean deviceIdSet = false;
@@ -45,13 +47,25 @@ public class DeviceNameTag extends YukonTagSupport {
         } catch (NotFoundException e) {
             throw new JspException("deviceId: " + deviceId + " is not a valid deviceId", e);
         }
-
-        JspWriter out = getJspContext().getOut();
-        out.print("<span class=\"deviceNameTagSpan\" title=\"deviceId: " + deviceId + "\">");
-        out.print(formattedName);
-        out.print("</span>");
+        
+        JspContext jspContext = getJspContext();
+        if (var == null) {
+        	JspWriter out = jspContext.getOut();
+        	out.print("<span class=\"deviceNameTagSpan\" title=\"deviceId: " + deviceId + "\">");
+            out.print(formattedName);
+            out.print("</span>");
+        } else {
+        	jspContext.setAttribute(var, formattedName);
+        }
     }
     
+    
+    public String getVar() {
+		return var;
+	}
+    public void setVar(String var) {
+		this.var = var;
+	}
     public int getDeviceId() {
         return deviceId;
     }
