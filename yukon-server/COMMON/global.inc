@@ -172,8 +172,6 @@ DLLFLAGS= /nologo /Zc:wchar_t- /Zi /O2 /Oy- /EHa /LD /MD /Zm200 /FD $(VERSION) $
 #LINKFLAGS = /link /VERBOSE:LIB  
 !ENDIF
 
-# Use third party TCL and Xerxes non-debug libraries.
-#   note: the debug libs were built with vc6, introducing a dependency on the vc6 version of msvcrtd.dll
 TCL_LIB = tcl81
 XERCES_LIB = xerces-c_1
 XERCES_DLL = xerces-c_1_7_0
