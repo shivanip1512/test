@@ -1,5 +1,7 @@
 package com.cannontech.database.data.lite;
 
+import java.sql.Blob;
+
 /**
  * @author rneuharth
  * Aug 1, 2002 at 3:04:49 PM
@@ -67,7 +69,8 @@ public class LiteYukonImage extends LiteBase
    
          setImageCategory( s.getRow(0)[0].toString() );
          setImageName( s.getRow(0)[1].toString() );
-         setImageValue( (byte[])s.getRow(0)[2] );
+         Blob tempBlob = (Blob) s.getRow(0)[2];
+         setImageValue( tempBlob.getBytes(1, (int)tempBlob.length()) );
       }
       catch( Exception e )
       {
