@@ -31,13 +31,13 @@ set rw=
 set rwbuildlevel=15
 
 rem Process the command line arguments.  It will accept the following:
-rem     /exit
+rem     --exit
 rem             exits the script after completion and returns the build.exe return value.
-rem     /release
+rem     --release
 rem             build in release mode.  debug mode is the default.
-rem     /basedir directory    
-rem             sets the base directory to directory
-rem     /labels build-version build-version-details
+rem     --basedir directory    
+rem             sets the base directory to the supplied directory
+rem     --labels build-version build-version-details
 rem             set the corresponding build information labels
 
 set debug=true
@@ -58,6 +58,7 @@ if "%~1" == "" goto Done_Processing
     
     if /i "%~1" == "--release" (
         set debug=
+        set rwbuildlevel=12
         shift
         goto Process_Args
     )
@@ -79,6 +80,7 @@ if "%~1" == "" goto Done_Processing
             echo Missing Argument to --labels:  --labels build-version build-version-details
             goto failed
         ) else (
+rem The following preserves any special characters that may be passed in on the command line. eg: ()
             for /f "tokens=*" %%s in (%2) do set build_version=%%~s
             for /f "tokens=*" %%s in (%3) do set build_version_details=%%~s
             shift

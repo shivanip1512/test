@@ -162,21 +162,21 @@ DLLFLAGS= /nologo /Zc:wchar_t- /Zi /Od /EHa /LD /MDd /Zm200 /FD /D_DEBUG  $(D_VE
 #LINKFLAGS = /link
 #LINKFLAGS = /link /FORCE /NODEFAULTLIB:MSVCRT.lib 
 #LINKFLAGS = /link /VERBOSE:LIB 
-TCL_LIB = tcl81
-XERCES_LIB = xerces-c_1
-XERCES_DLL = xerces-c_1_7_0
 !ELSE
 #This part is the non-debug section a/k/a release or retail build
 #echo non-debug build used 
-CFLAGS  = /nologo /Zc:wchar_t- /Zi /O2 /Oy- /EHa      /MD /Zm200 /FD $(VERSION) $(VERSION_DETAILS) $(BOOST_ENABLE_ASSERT_HANDLER)
+CFLAGS  = /nologo /Zc:wchar_t- /Zi /O2 /Oy- /EHa     /MD /Zm200 /FD $(VERSION) $(VERSION_DETAILS) $(BOOST_ENABLE_ASSERT_HANDLER)
 DLLFLAGS= /nologo /Zc:wchar_t- /Zi /O2 /Oy- /EHa /LD /MD /Zm200 /FD $(VERSION) $(VERSION_DETAILS) $(BOOST_ENABLE_ASSERT_HANDLER)
 #LINKFLAGS = /link /NODEFAULTLIB:MSVCRTD.lib 
 #LINKFLAGS = /link /FORCE /NODEFAULTLIB:MSVCRTD.lib 
 #LINKFLAGS = /link /VERBOSE:LIB  
+!ENDIF
+
+# Use third party TCL and Xerxes non-debug libraries.
+#   note: the debug libs were built with vc6, introducing a dependency on the vc6 version of msvcrtd.dll
 TCL_LIB = tcl81
 XERCES_LIB = xerces-c_1
 XERCES_DLL = xerces-c_1_7_0
-!ENDIF
 
 PCHFLAGS = /Yu"yukon.h" /Fp"$(BIN)\yukon.pch"
 

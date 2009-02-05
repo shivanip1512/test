@@ -214,6 +214,8 @@ clean:
        -del *.obj *.dll *.ilk *.pdb *.lib *.exp
         @%cd $(COMPILEBASE)\bin
        -del *.dll *.lib *.exe *.xml *.tcl
+        @%cd $(COMPILEBASE)\bin\unittests
+       -del *.xml
         @%cd $(CWD)
 
 deps:
