@@ -1,6 +1,4 @@
 @echo off
-rem title %cd%
-
 
 rem  This logic for this script is based from these assumptions:
 rem
@@ -11,14 +9,98 @@ rem  3)  The buildable subdirectories contain a Makefile.
 rem  4)  Other subdirectories exist that contain no Makefiles - if this script is invoked inside them,
 rem        it should check the parent directory only
 
+setlocal
+
 set cwd=%cd%
+
+rem Make Visual Studio 2008 toolset available.
+
+if exist "C:\Program Files\Microsoft Visual Studio 9.0\VC\bin\vcvars32.bat" (
+        call "C:\Program Files\Microsoft Visual Studio 9.0\VC\bin\vcvars32.bat"
+) else (
+        if exist "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\bin\vcvars32.bat" (
+                call "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\bin\vcvars32.bat"
+        ) else (
+                echo Couldn't locate Visual Studio 2008 toolset.
+        )
+)
+
+rem Roguewave configuration settings.
+
+set rw=
+set rwbuildlevel=15
+
+rem Process the command line arguments.  It will accept the following:
+rem     /exit
+rem             exits the script after completion and returns the build.exe return value.
+rem     /release
+rem             build in release mode.  debug mode is the default.
+rem     /basedir directory    
+rem             sets the base directory to directory
+rem     /labels build-version build-version-details
+rem             set the corresponding build information labels
+
+set debug=true
+set build_version=
+set build_version_details=
+set exit=
+set _build_args=
+
+:Process_Args
+
+if "%~1" == "" goto Done_Processing
+
+    if /i "%~1" == "--exit" (
+        set exit=true
+        shift
+        goto Process_Args
+    )
+    
+    if /i "%~1" == "--release" (
+        set debug=
+        shift
+        goto Process_Args
+    )
+    
+    if /i "%~1" == "--basedir" (
+        if "%~2" == "" (
+            echo Missing Argument to --basedir:  --basedir directory
+            goto failed
+        ) else (
+            cd "%~2\yukon-server"
+            shift
+            shift
+        )
+        goto Process_Args
+    )
+    
+    if /i "%~1" == "--labels" (
+        if "%~3" == "" (
+            echo Missing Argument to --labels:  --labels build-version build-version-details
+            goto failed
+        ) else (
+            for /f "tokens=*" %%s in (%2) do set build_version=%%~s
+            for /f "tokens=*" %%s in (%3) do set build_version_details=%%~s
+            shift
+            shift
+            shift
+        )
+        goto Process_Args
+    )
+    
+    set _build_args=%_build_args% %~1
+    shift
+    goto Process_Args
+
+:Done_Processing
+
 echo.
 echo +---------------------------------------
 echo ^|
 
 rem ---- look for Makefile in the current directory - if found, we can build here
 
-if     exist Makefile   ( goto makefile_found )
+if exist Makefile       ( goto makefile_found )
 
 rem ---- didn't find a Makefile - maybe we're in an subdirectory (/bin or /include, for example)
 rem ----   or maybe we're in SQL or one of those others without a Makefile, in which case we want to build in the parent anyway
@@ -29,15 +111,14 @@ echo ^| Checking parent directory.
 
 cd .. > nul 2<&1
 
-if %cwd%==%cd%          ( echo ^| Cannot change to parent directory.
+if "%cwd%" == "%cd%"    ( echo ^| Cannot change to parent directory.
                           goto failed )
 
-if     exist Makefile   ( goto makefile_found )
+if exist Makefile       ( goto makefile_found )
 
 echo ^| Makefile not found in %cd%.
 
 goto failed
-
 
 
 :makefile_found
@@ -51,8 +132,8 @@ echo ^| Checking if this is a subdirectory off the project root.
 
 cd ..
 
-if %cd%==%build_directory%      ( echo ^| Cannot change to parent directory.
-                                  goto build )
+if "%cd%" == "%build_directory%"    ( echo ^| Cannot change to parent directory.
+                                      goto build )
 
 if     exist Makefile   ( echo ^| Makefile found in %cd%.
                           goto build )
@@ -60,48 +141,66 @@ if not exist Makefile   ( echo ^| Makefile not found in %cd%.
                           cd %build_directory%
                           goto build )
 
-
-
-
 :build
 rem ---- do the build
 
 set datetime=%date% %time%
 echo ^|
-echo +----------
+echo +---------------------------------------
 echo ^|
 echo ^| Project root is %cd%.
+echo ^|
 
 set compilebase=%cd%
 set yukonoutput=%cd%\bin
+
+rem -- build_version and build_version_details track each other - if one is set they
+rem     both are.  if one is unset they both are unset, so just check build_version.
+
+if not defined build_version (
+
+    for /f "tokens=1* delims== " %%p in (%cd%\..\yukon-build\build_version.properties) do (
+
+        if "%%p" == "external" (
+            set build_version=%%q
+        )
+        if "%%p" == "internal" (
+            set build_version_details=%%q
+        )
+    )
+)
+
+echo +---------------------------------------
+echo ^|
+echo ^| Build version: %build_version%
+echo ^| Build details: %build_version_details%
+echo ^|
+
 if not exist %yukonoutput% md %yukonoutput%
-cd ..
-set sourcebase=%cd%
 cd %build_directory%
 
+echo ^|
 echo ^| Building in %build_directory%.
 echo ^|
 echo +---------------------------------------
 echo.
 
-build
-rem cd /d %compilebase%
-rem title %cd%
-echo. 
+build  %_build_args%
+
+SET _ERRORLEVEL=%ERRORLEVEL%
+
+echo.
 echo.
 echo Began: %datetime%
 echo Ended: %date% %time%.
 goto cleanup
 
 
-
-
-
 :failed
 rem ---- we've failed, reset the environment
 
 echo ^|
-echo +----------
+echo +---------------------------------------
 echo ^|
 echo ^| Build failed.
 echo ^|
@@ -110,10 +209,13 @@ echo +---------------------------------------
 goto cleanup
 
 
-
-
 :cleanup
 rem ---- put any other cleanup tasks here
 
 cd %cwd%
 set cwd=
+
+if "%exit%" neq "" (
+    if "%_ERRORLEVEL%" neq "0" exit %_ERRORLEVEL%
+)
+

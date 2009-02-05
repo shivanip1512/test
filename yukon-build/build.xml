@@ -146,13 +146,30 @@
         <mkdir dir="${log.dir}" />
 
         <!-- clean out the old object files, etc -->
-        <exec failonerror="false" dir="${basedir}/yukon-server/" executable="cmd.exe" error="${log.dir}/server-error.log" output="${log.dir}/server-output.log" resultproperty="errorcode">
-            <arg line='/c ${basedir}\yukon-server\b.cmd clean' />
+        <exec failonerror="false"
+              dir="${basedir}/yukon-server/"
+              error="${log.dir}/server-error.log" output="${log.dir}/server-output.log" 
+              resultproperty="errorcode"
+              executable="cmd.exe" >
+            <arg value="/c" />
+            <arg value="${basedir}\yukon-server\b.cmd" />
+            <arg value="clean" />
         </exec>
 
         <!-- build it -->
-        <exec failonerror="false" dir="${basedir}/yukon-server/" executable="cmd.exe" error="${log.dir}/server-error.log" output="${log.dir}/server-output.log" resultproperty="errorcode">
-            <arg line='/c ${basedir}\yukon-build\buildhere.cmd /exit /basedir "${basedir}" /labels "${yukon.build.label}" "${yukon.build.details}"' />
+        <exec failonerror="false" 
+              dir="${basedir}/yukon-server/"
+              append="true" error="${log.dir}/server-error.log" output="${log.dir}/server-output.log" 
+              resultproperty="errorcode"
+              executable="cmd.exe" >
+            <arg value="/c" />
+            <arg value="${basedir}\yukon-server\b.cmd" />
+            <arg value="--exit" />
+            <arg value="--basedir" />
+            <arg value="${basedir}" />
+            <arg value="--labels" />
+            <arg value="${yukon.build.label}" />
+            <arg value="${yukon.build.details}" />
         </exec>
 
         <loadfile property="errormessage" srcFile="${log.dir}/server-error.log" />
@@ -170,20 +187,22 @@
             </condition>
         </fail>
 
-        <!-- C++ Unit Tests -->
+        <antcall target="server-unit-tests"/>
+    </target>
+
+    <target name="server-unit-tests">
         <mkdir dir="${basedir}/yukon-server/bin/unittests"/>
         <taskdef name="customexec" 
                  classname="com.cannontech.customtasks.ExecServerUnitTests">
             <classpath>
                 <fileset dir="yukon-build/lib">
-                	<include name="**/*.jar"/>
+                        <include name="**/*.jar"/>
                 </fileset>
                 <fileset file="yukon-build/build/dist/customtasks.jar"/>
             </classpath>
         </taskdef>
-  
+
         <customexec failonerror="true" dir="${basedir}/yukon-server/bin" todir="${basedir}/yukon-server/bin/unittests"/>
-        
     </target>
 
     <target name="build-install">

@@ -162,9 +162,9 @@ DLLFLAGS= /nologo /Zc:wchar_t- /Zi /Od /EHa /LD /MDd /Zm200 /FD /D_DEBUG  $(D_VE
 #LINKFLAGS = /link
 #LINKFLAGS = /link /FORCE /NODEFAULTLIB:MSVCRT.lib 
 #LINKFLAGS = /link /VERBOSE:LIB 
-TCL_LIB = tcl81d
-XERCES_LIB = xerces-c_1D
-XERCES_DLL = xerces-c_1_7_0D
+TCL_LIB = tcl81
+XERCES_LIB = xerces-c_1
+XERCES_DLL = xerces-c_1_7_0
 !ELSE
 #This part is the non-debug section a/k/a release or retail build
 #echo non-debug build used 

@@ -130,6 +130,8 @@ deps:
 clean:
         -del \
 *.pdb \
+*.idb \
+*.obj \
 $(OBJ)\*.obj \
 $(BIN)\*.pdb \
 $(BIN)\*.pch \
@@ -137,6 +139,8 @@ $(BIN)\*.ilk \
 $(BIN)\*.exp \
 $(BIN)\*.lib \
 $(BIN)\*.dll \
+$(BIN)\*.map \
+$(BIN)\*.manifest \
 $(BIN)\*.exe
 
 
