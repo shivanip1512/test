@@ -1,5 +1,7 @@
 package com.cannontech.stars.dr.optout.model;
 
+import com.cannontech.stars.dr.optout.service.OptOutService;
+
 /**
  * Model object used to hold counts related to Opt Outs
  */
@@ -34,6 +36,6 @@ public class OptOutCountHolder {
 	}
 	
 	public boolean hasOptOutsRemaining() {
-		return remainingOptOuts > 0;
+		return remainingOptOuts > 0 || remainingOptOuts == OptOutService.NO_OPT_OUT_LIMIT;
 	}
 }
