@@ -1561,7 +1561,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	}
     
     private void reorderBankList(List<CCFeederBankList> childList, float removeDispOrder, float removeCloseOrder, float removeTripOrder) {
-    	if (removeDispOrder >= 1  && removeCloseOrder >= 1 && removeTripOrder >= 1){
+    	if (childList.size() > 0 && removeDispOrder >= 1  && removeCloseOrder >= 1 && removeTripOrder >= 1){
     		CCFeederBankList capBank = childList.get(0);
     		float prevAdjControlOrder = 0;
     		float prevAdjCloseOrder = 0;
