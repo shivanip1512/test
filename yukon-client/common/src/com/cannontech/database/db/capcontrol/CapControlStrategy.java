@@ -504,6 +504,42 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 		return list;
 	}
 
+	public static List<LiteCapControlStrategy> getAllLiteCapControlStrategy() {
+		java.sql.Connection conn = null;
+		java.sql.PreparedStatement pstmt = null;
+		java.sql.ResultSet rset = null;
+		List<LiteCapControlStrategy> list = new ArrayList<LiteCapControlStrategy>();
+
+	    //Get all the data from the database                
+	    String sql = "select StrategyID, StrategyName from " + TABLE_NAME + " order by StrategyName";
+
+		try {		
+			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+
+			if( conn == null ) {
+				throw new IllegalStateException("Error getting database connection.");
+			} else {
+				pstmt = conn.prepareStatement(sql.toString());			
+				rset = pstmt.executeQuery();
+	
+				while( rset.next() ) {
+					LiteCapControlStrategy cbcStrat = new LiteCapControlStrategy();
+					cbcStrat.setStrategyId( new Integer(rset.getInt(1)) );
+					cbcStrat.setStrategyName( rset.getString(2) );
+                    list.add( cbcStrat );				
+				}
+			}		
+		}
+		catch( java.sql.SQLException e ) {
+			CTILogger.error( e.getMessage(), e );
+		}
+		finally {
+			SqlUtils.close(rset, pstmt, conn );
+		}
+		return list;
+	}
+
+	
 	/**
 	 * This method returns all CapControlStrategy currently
 	 * in the database with all their attributes populated

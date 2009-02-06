@@ -161,18 +161,22 @@ public class CapControlVarChangeModel extends BareDatedReportModelBase<CapContro
         return sql;
     }
 
+    @Override
     public void setCapBankIdsFilter(Set<Integer> capBankIds) {
         this.capBankIds = capBankIds;
     }
 
+    @Override
     public void setFeederIdsFilter(Set<Integer> feederIds) {
         this.feederIds = feederIds;
     }
     
+    @Override
     public void setSubbusIdsFilter(Set<Integer> subbusIds) {
         this.subbusIds = subbusIds;
     }
     
+    @Override
     public void setAreaIdsFilter(Set<Integer> areaIds) {
         this.areaIds = areaIds;
     }
@@ -181,8 +185,14 @@ public class CapControlVarChangeModel extends BareDatedReportModelBase<CapContro
         this.queryPercent = queryPercent;
     }
 
+    @Override
     public void setSubstationIdsFilter(Set<Integer> substationIds) {
         this.substationIds = substationIds;
     }
+	
+    @Override
+	public void setStrategyIdsFilter(Set<Integer> strategyIds) {
+		//Not used
+	}
 }
 

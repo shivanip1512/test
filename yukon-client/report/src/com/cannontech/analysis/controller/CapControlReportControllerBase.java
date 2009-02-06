@@ -53,6 +53,8 @@ public abstract class CapControlReportControllerBase extends ReportControllerBas
             filterableModel.setSubbusIdsFilter(null);
             filterableModel.setSubstationIdsFilter(null);
             filterableModel.setAreaIdsFilter(idsSet);
+        } else if (filterModelType == ReportFilter.STRATEGY.ordinal()) {
+        	filterableModel.setStrategyIdsFilter(idsSet);
         }
     }
     

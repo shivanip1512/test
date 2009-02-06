@@ -50,9 +50,17 @@
 						title="Returns to the last module page that was used to enter this editor">
 						<f:actionListener type="com.cannontech.web.editor.CtiNavActionListener" />
 					</x:commandButton>
+					
 					<x:htmlTag value="br"/>
 					<x:htmlTag value="hr"/>
+					
 					<x:htmlTag value="br"/>
+					
+					<h:outputLink value="/analysis/Reports.jsp"><h:outputText value="Reports"/></h:outputLink>
+					
+					<x:htmlTag value="br"/>
+					<x:htmlTag value="br"/>
+					
 					<x:messages id="messageList" showSummary="true" showDetail="true"
 						styleClass="smallResults" errorClass="errorResults" layout="table" />
 

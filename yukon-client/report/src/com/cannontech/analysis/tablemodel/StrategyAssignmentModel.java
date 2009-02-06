@@ -18,19 +18,13 @@ public class StrategyAssignmentModel extends BareReportModelBase<StrategyAssignm
     // dependencies
     private JdbcOperations jdbcOps;
     
-    // inputs
-    @SuppressWarnings("unused")
-    private Set<Integer> capBankIds;
-    private Set<Integer> feederIds;
-    private Set<Integer> subbusIds;
-    @SuppressWarnings("unused")
-    private Set<Integer> substationIds;
-    @SuppressWarnings("unused")
-    private Set<Integer> areaIds;
-    private String[] deviceTypes;
+    //inputs
+    private String selectedStrategy;
     
     // member variables
     private List<ModelRow> data = new ArrayList<ModelRow>();
+
+	private List<Integer> strategyIds;
     
     public StrategyAssignmentModel() {
     }
@@ -120,38 +114,65 @@ public class StrategyAssignmentModel extends BareReportModelBase<StrategyAssignm
         query += "                  + cast(dos.seasonendday as varchar(2)) + '/' ";
         query += "                  + cast(datepart(year,getdate()) as varchar(4))) > getdate() ";
         query += "and strat.strategyid <> 0  ";
+        
+        //Filter here by Selected Strategy
+        if( strategyIds.size() > 0) {
+        	query += "and (";
+        	
+        	for (int i = 0 ; i < strategyIds.size(); i++) {
+        		query += " strat.strategyid = " + strategyIds.get(i);
+        		if (i < strategyIds.size()-1) {
+        			query += " OR ";
+        		}
+        	}
+        	query += " ) ";
+        }
+        
         query += "order by strategyname, paoname ";
         
         return query;
     }
 
-    public void setCapBankIdsFilter(Set<Integer> capBankIds) {
-        this.capBankIds = capBankIds;
-    }
-
-    public void setFeederIdsFilter(Set<Integer> feederIds) {
-        this.feederIds = feederIds;
-    }
-    
-    public void setSubbusIdsFilter(Set<Integer> subbusIds) {
-        this.subbusIds = subbusIds;
-    }
-    
-    public void setSubstationIdsFilter(Set<Integer> substationIds) {
-        this.substationIds = substationIds;
-    }
-    
-    public void setAreaIdsFilter(Set<Integer> areaIds) {
-        this.areaIds = areaIds;
-    }
-    
     @Required
     public void setJdbcOps(JdbcOperations jdbcOps) {
         this.jdbcOps = jdbcOps;
     }
+
+	public String getSelectedStrategy() {
+		return selectedStrategy;
+	}
+
+	public void setSelectedStrategy(String selectedStrategy) {
+		this.selectedStrategy = selectedStrategy;
+	}
     
-    public void setDeviceTypes(String[] deviceTypes) {
-        this.deviceTypes = deviceTypes;
-    }
-    
+	@Override
+	public void setAreaIdsFilter(Set<Integer> areaIds) {
+		//No filter used.
+	}
+
+	@Override
+	public void setCapBankIdsFilter(Set<Integer> capBankIds) {
+		//No filter used.
+	}
+
+	@Override
+	public void setFeederIdsFilter(Set<Integer> feederIds) {
+		//No filter used.
+	}
+
+	@Override
+	public void setSubbusIdsFilter(Set<Integer> subbusIds) {
+		//No filter used.
+	}
+
+	@Override
+	public void setSubstationIdsFilter(Set<Integer> substationIds) {
+		//No filter used.
+	}
+	
+    @Override
+	public void setStrategyIdsFilter(Set<Integer> strategyIds) {
+		this.strategyIds = new ArrayList<Integer>(strategyIds);
+	}
 }

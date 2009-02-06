@@ -1,5 +1,6 @@
 package com.cannontech.analysis.tablemodel;
 
+import java.util.List;
 import java.util.Set;
 
 public interface CapControlFilterable {
@@ -13,5 +14,7 @@ public interface CapControlFilterable {
     public abstract void setSubstationIdsFilter(Set<Integer> substationIds);
     
     public abstract void setAreaIdsFilter(Set<Integer> areaIds);
+    
+    public abstract void setStrategyIdsFilter(Set<Integer> strategyIds);
 
 }

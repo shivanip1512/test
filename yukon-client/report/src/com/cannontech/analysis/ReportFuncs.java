@@ -109,6 +109,8 @@ import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.db.capcontrol.CapControlStrategy;
+import com.cannontech.database.db.capcontrol.LiteCapControlStrategy;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 import com.keypoint.PngEncoder;
@@ -386,6 +388,13 @@ public class ReportFuncs
                 }
             }
             return programs;   
+        } else if (filter.equals(ReportFilter.STRATEGY)) {
+        	List<LiteCapControlStrategy> strategyList = CapControlStrategy.getAllLiteCapControlStrategy(); 
+        	
+        	//Remove "(none)" from the list
+        	strategyList.remove(0);
+        	
+        	return strategyList;
         }
         else {
             return new ArrayList<Object>(0);    //and empty list of nothing objects. 

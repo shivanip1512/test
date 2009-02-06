@@ -8,6 +8,7 @@
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject"%>
 <%@ page import="com.cannontech.database.data.lite.LiteDeviceMeterNumber"%>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
+<%@ page import="com.cannontech.database.db.capcontrol.LiteCapControlStrategy" %>
 <%@ page import="com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter"%>
 <%@ page import="com.cannontech.roles.application.CommanderRole" %>
 <%@ page import="com.cannontech.roles.application.WebClientRole" %>
@@ -392,6 +393,8 @@ function checkDates(){
                                     	<option value='<c:out value="<%=((LiteDeviceMeterNumber)object).getDeviceID()%>" />'><c:out value="<%=((LiteDeviceMeterNumber)object).getMeterNumber()%>" /></option>
                         			<%}else if (object instanceof DeviceReadJobLog){%>
                                     	<option value='<c:out value="<%=((DeviceReadJobLog)object).getDeviceReadJobLogID()%>" />'><c:out value="<%=((DeviceReadJobLog)object).toString()%>" /></option>
+                                   	<%}else if (object instanceof LiteCapControlStrategy){%>
+                                   		<option value='<c:out value="<%=((LiteCapControlStrategy)object).getStrategyId()%>" />'><c:out value="<%=((LiteCapControlStrategy)object).getStrategyName()%>" /></option>
                         		<%}
                     			}
                 			}%>

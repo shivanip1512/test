@@ -420,5 +420,10 @@ public class AbnormalTelemetryDataModel extends BareReportModelBase<AbnormalTele
     public void setCapControlCache(CapControlCache capControlCache) {
         this.capControlCache = capControlCache;
     }
+
+	@Override
+	public void setStrategyIdsFilter(Set<Integer> strategyIds) {
+		//Not used
+	}
     
 }

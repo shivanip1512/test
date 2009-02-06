@@ -195,4 +195,8 @@ public class CapBankMaxOpsExceededModel extends BareDatedReportModelBase<CapBank
         this.orderBy = order_;
     }
     
+	@Override
+	public void setStrategyIdsFilter(Set<Integer> strategyIds) {
+		//Not used
+	}   
 }
