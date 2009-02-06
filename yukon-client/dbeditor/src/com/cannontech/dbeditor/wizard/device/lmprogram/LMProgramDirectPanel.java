@@ -423,12 +423,11 @@ private void initialize() {
 
 		java.awt.GridBagConstraints constraintsDirectModifyGearPanel = new java.awt.GridBagConstraints();
 		constraintsDirectModifyGearPanel.gridx = 1; constraintsDirectModifyGearPanel.gridy = 2;
-		constraintsDirectModifyGearPanel.fill = java.awt.GridBagConstraints.HORIZONTAL;
+		constraintsDirectModifyGearPanel.fill = java.awt.GridBagConstraints.BOTH;
 		constraintsDirectModifyGearPanel.anchor = java.awt.GridBagConstraints.WEST;
 		constraintsDirectModifyGearPanel.weightx = 1.0;
 		constraintsDirectModifyGearPanel.weighty = 1.0;
-		constraintsDirectModifyGearPanel.ipadx = 336;
-		constraintsDirectModifyGearPanel.ipady = 266;
+		constraintsDirectModifyGearPanel.ipady = 100;
 		constraintsDirectModifyGearPanel.insets = new java.awt.Insets(2, 5, 2, 4);
 		add(getDirectModifyGearPanel(), constraintsDirectModifyGearPanel);
 		initConnections();
