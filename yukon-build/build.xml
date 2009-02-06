@@ -307,6 +307,8 @@
 
         <!-- NOT YET <delete dir="${install.lib}"/> NOT YET -->
 
+        <antcall target="symstore" />
+
         <loadfile property="errormessage" srcFile="${log.dir}/install-error.log" />
         <loadfile property="erroroutput" srcFile="${log.dir}/install-output.log" />
 
