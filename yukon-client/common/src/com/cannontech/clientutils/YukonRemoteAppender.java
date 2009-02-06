@@ -7,9 +7,9 @@ import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.LoggingEvent;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.remoting.httpinvoker.HttpInvokerClientInterceptor;
+import org.springframework.remoting.httpinvoker.SimpleHttpInvokerRequestExecutor;
 
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.spring.SimpleSessionHttpInvokerRequestExecutor;
 
 /**
  * YukonRemoteAppender is a custom appender used for
@@ -22,7 +22,6 @@ import com.cannontech.spring.SimpleSessionHttpInvokerRequestExecutor;
 public class YukonRemoteAppender extends AppenderSkeleton {
     private static RemoteLogger remoteLogger;
     private static String hostName;
-    private static String sessionId;
     private static String applicationName;
     private static String clientId;
     
@@ -62,8 +61,7 @@ public class YukonRemoteAppender extends AppenderSkeleton {
     public static void configureLogger() {
         try {
             HttpInvokerClientInterceptor interceptor = new HttpInvokerClientInterceptor();
-            SimpleSessionHttpInvokerRequestExecutor requestExecutor = new SimpleSessionHttpInvokerRequestExecutor();
-            requestExecutor.setSessionId(sessionId);
+            SimpleHttpInvokerRequestExecutor requestExecutor = new SimpleHttpInvokerRequestExecutor();
             interceptor.setHttpInvokerRequestExecutor(requestExecutor);
             interceptor.setServiceUrl(hostName + "/remote/RemoteLogger" + "?" + "USERNAME=" + URLEncoder.encode(userName, "UTF-8") + "&PASSWORD=" + URLEncoder.encode(password, "UTF-8") + "&noLoginRedirect=true");
             remoteLogger = (RemoteLogger) ProxyFactory.getProxy(RemoteLogger.class, interceptor);

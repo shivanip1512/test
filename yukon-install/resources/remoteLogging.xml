@@ -35,6 +35,12 @@
   	<level value="warn"/>
   </logger>
   
+  <logger name="org.springframework.remoting.httpinvoker.SimpleHttpInvokerRequestExecutor">
+    <!-- This logger must be kept off when using the YukonRemoteAppender. Turning it on
+         will cause logging of the logging which creates infinite recursion. -->
+  	<level value="off"/>
+  </logger>
+  
   <logger name="org.apache.myfaces">
   	<level value="warn"/>
   </logger>
