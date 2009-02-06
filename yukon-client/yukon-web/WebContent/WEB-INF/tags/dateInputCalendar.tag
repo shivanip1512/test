@@ -30,12 +30,12 @@
 <c:choose>
     <c:when test="${not disabled}">
         <span id="calSpanOn_${uniqueId}" onclick="javascript:showCalendarControl($('${uniqueId}'), '${months}', '${days}', '${clear}', '${close}');" style="cursor:pointer;">
-            <img src="${calImgUrl}" width="20" height="15" border="0" />
+            <img id="calImg_${uniqueId}" src="${calImgUrl}" width="20" height="15" border="0" />
         </span>
     </c:when>
     <c:otherwise>
         <span id="calSpanOff_${uniqueId}">
-            <img src="${calImgUrl}" width="20" height="15" border="0" />
+            <img id="calImg_${uniqueId}" src="${calImgUrl}" width="20" height="15" border="0" />
         </span>
     </c:otherwise>
 </c:choose>

@@ -124,6 +124,20 @@ function loadTarget(form)
 	}
 }
 
+function enableDates(value)
+{
+	if(value) {
+		$('calImg_startCal').show();
+		$('calImg_stopCal').show();
+	} else {
+		$('calImg_startCal').hide();
+		$('calImg_stopCal').hide();
+	}
+
+	$('startCal').disabled = !value;
+	$('stopCal').disabled = !value;
+}
+
 function checkDates(){
 	var good = false;
 	var startDate = $F('startCal');
