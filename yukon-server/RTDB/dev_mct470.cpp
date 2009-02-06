@@ -4008,7 +4008,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
             }
             else if( parse.isKeyValid("dnp_crc") )
             {
-				setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_RealTime1CRC, InMessage->Buffer.DSt.Message[0]);
+                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_RealTime1CRC, InMessage->Buffer.DSt.Message[0]);
                 resultString += "CRCs Returned: " + CtiNumStr(InMessage->Buffer.DSt.Message[0]);
 
                 setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_RealTime2CRC, InMessage->Buffer.DSt.Message[1]);
@@ -4232,6 +4232,14 @@ INT CtiDeviceMCT470::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, lis
                         }
 
                         case IED_Type_Alpha_A3:
+                        {
+                            rate = DSt->Message[4] & 0x07;
+
+                            resultString += getName() + " / current TOU rate: " + string(1, 'A' + rate) + "\n";
+
+                            break;
+                        }
+
                         case IED_Type_Alpha_PP:
                         {
                             rate = (DSt->Message[4] >> 2) & 0x03;
@@ -5031,7 +5039,7 @@ void CtiDeviceMCT470::decodeDNPRealTimeRead(BYTE *buffer, int readNumber, string
             }
         }
 
-		int i;
+        int i;
         for( i = 0; i < 8; i++ )
         {
             if( !errorFlagSet )
@@ -5052,7 +5060,7 @@ void CtiDeviceMCT470::decodeDNPRealTimeRead(BYTE *buffer, int readNumber, string
         }
 
 
-		for( i = 0; i < 3; i++ )
+        for( i = 0; i < 3; i++ )
         {
             if( !errorFlagSet )
             {
