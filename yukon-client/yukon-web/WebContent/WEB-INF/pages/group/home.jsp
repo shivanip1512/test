@@ -399,7 +399,7 @@
                             </cti:checkProperty>
                             
                             <cti:checkProperty property="operator.DeviceActionsRole.MASS_DELETE">
-                            <cti:link href="/spring/bulk/massChange/massDelete" key="yukon.web.deviceGroups.editor.operationsContainer.massDelete">
+                            <cti:link href="/spring/bulk/massDelete/massDelete" key="yukon.web.deviceGroups.editor.operationsContainer.massDelete">
                                 <cti:mapParam value="${deviceCollection.collectionParameters}"/>
                             </cti:link>
                             <br>
