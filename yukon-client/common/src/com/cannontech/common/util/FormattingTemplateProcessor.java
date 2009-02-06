@@ -71,7 +71,7 @@ public class FormattingTemplateProcessor extends SimpleTemplateProcessor {
             Color color = (Color) value;
             result = String.format(extra, color.getRed(), color.getGreen(), color.getBlue());
         } else {
-            result = super.formatValue(value, extra);
+            result = super.formatByType(value, extra);
         }
         return result;
     }
