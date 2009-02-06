@@ -1562,11 +1562,17 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     
     private void reorderBankList(List<CCFeederBankList> childList, float removeDispOrder, float removeCloseOrder, float removeTripOrder) {
     	if (removeDispOrder >= 1  && removeCloseOrder >= 1 && removeTripOrder >= 1){
+    		CCFeederBankList capBank = childList.get(0);
     		float prevAdjControlOrder = 0;
     		float prevAdjCloseOrder = 0;
-    		float prevAdjTripOrder = childList.size();
+    		float prevAdjTripOrder = 0;
+    		boolean tripOrderDesc = false;
+    		if (capBank.getTripOrder() == childList.size()){
+    			tripOrderDesc = true;
+    			prevAdjTripOrder = childList.size();
+    		} 
     		for (int i = 0; i < childList.size(); i++) {
-    			CCFeederBankList capBank = childList.get(i);
+    			capBank = childList.get(i);
 
     			if(capBank.getControlOrder() > removeDispOrder && (capBank.getControlOrder() - 1) > prevAdjControlOrder){
     				capBank.setControlOrder(new Float ( capBank.getControlOrder() - 1));
@@ -1574,10 +1580,12 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     			if(capBank.getCloseOrder() > removeCloseOrder && (capBank.getCloseOrder() - 1) > prevAdjCloseOrder){
     				capBank.setCloseOrder(new Float ( capBank.getCloseOrder() - 1));
     			}
-    			if((capBank.getTripOrder()-1) >= removeTripOrder  && (capBank.getTripOrder() - 1) < prevAdjTripOrder){
-    				capBank.setTripOrder(new Float ( capBank.getTripOrder() - 1));
-    			}
-				prevAdjControlOrder = capBank.getControlOrder();
+				if (capBank.getTripOrder() > removeTripOrder && 
+    			    ((tripOrderDesc && (capBank.getTripOrder() - 1) < prevAdjTripOrder)) ||
+    			    (!tripOrderDesc && (capBank.getTripOrder() - 1) > prevAdjTripOrder)){
+    					capBank.setTripOrder(new Float ( capBank.getTripOrder() - 1));
+        		} 
+ 				prevAdjControlOrder = capBank.getControlOrder();
 				prevAdjCloseOrder = capBank.getCloseOrder();
 				prevAdjTripOrder = capBank.getTripOrder();
 
