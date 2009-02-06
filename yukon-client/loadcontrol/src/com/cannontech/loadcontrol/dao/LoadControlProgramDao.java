@@ -3,7 +3,6 @@ package com.cannontech.loadcontrol.dao;
 import java.util.Date;
 import java.util.List;
 
-import com.cannontech.core.dao.GearNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.loadcontrol.service.data.ProgramControlHistory;
 import com.cannontech.loadcontrol.service.data.ProgramStartingGear;
@@ -81,6 +80,6 @@ public interface LoadControlProgramDao {
      * @return
      * @throws NotFoundException
      */
-    public int getGearNumberForGearName(int programId, String gearName) throws GearNotFoundException;
+    public int getGearNumberForGearName(int programId, String gearName) throws NotFoundException;
     
 }

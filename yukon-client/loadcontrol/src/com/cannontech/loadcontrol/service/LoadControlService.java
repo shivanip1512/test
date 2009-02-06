@@ -6,6 +6,7 @@ import java.util.List;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.GearNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.service.data.ProgramControlHistory;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
@@ -53,7 +54,8 @@ public interface LoadControlService {
      * If true, allow the server to alter our request to abide by the constraints and execute (i.e. "Observe") 
      * Note: This value only matters when using forceStart=false. 
      * @return
-     * @throws NotFoundException if no program exists for given programName
+     * @throws ProgramNotFoundException if no program exists for given programName
+     * @throws GearNotFoundException if no gear exists for given gearName, belonging to the program
      * @throws TimeoutException if server fails to send an update response for the control start
      * @throws NotAuthorizedException if neither the user (nor any groups user belongs to) have neither the program (nor any of
      * the control areas the program belongs to) made visible to them.
@@ -61,7 +63,7 @@ public interface LoadControlService {
      */
     public ProgramStatus startControlByProgramName(String programName,
             Date startTime, Date stopTime, String gearName, boolean forceStart, boolean observeConstraintsAndExecute, LiteYukonUser user)
-            throws NotFoundException, GearNotFoundException, TimeoutException, NotAuthorizedException;
+            throws ProgramNotFoundException, GearNotFoundException, TimeoutException, NotAuthorizedException;
     
     /**
      * Starts control of program of given programName. Returns a ProgramStatus

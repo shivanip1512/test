@@ -15,6 +15,7 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.GearNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.service.LoadControlService;
 import com.cannontech.message.util.TimeoutException;
@@ -65,16 +66,18 @@ public class ProgramStartRequestEndpoint {
         	} else {
         		loadControlService.startControlByProgramName(programName, startTime, stopTime, gearName, false, true, user);
         	}
-            
+        }
+    	catch (ProgramNotFoundException e) {
+        	Element fe = XMLFailureGenerator.generateFailure(programStartRequest, e, "InvalidProgramName", "No program named: " + programName);
+            resp.addContent(fe);
+            return resp;
+        } catch (GearNotFoundException e) {
+        	Element fe = XMLFailureGenerator.generateFailure(programStartRequest, e, "InvalidGearName", "No gear named: " + gearName);
+            resp.addContent(fe);
+            return resp;
         } catch (NotFoundException e) {
-        	
-        	String errorCode = "InvalidProgramName";
-        	String errorDescription = "No program named: " + programName;
-        	if (e instanceof GearNotFoundException) {
-        		errorCode = "InvalidGearName";
-        		errorDescription = "No gear named: " + gearName;
-        	}
-            Element fe = XMLFailureGenerator.generateFailure(programStartRequest, e, errorCode, errorDescription);
+        	// the startControlByProgramName() without gearName simply throws a NotFoundException when program is not found
+        	Element fe = XMLFailureGenerator.generateFailure(programStartRequest, e, "InvalidProgramName", "No program named: " + programName);
             resp.addContent(fe);
             return resp;
         } catch (TimeoutException e) {
