@@ -7,6 +7,8 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.cannontech.billing.device.base.BillableDevice;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.dynamicBilling.Channel;
@@ -180,7 +182,7 @@ public class CADPRecordFormatter extends BillingFormatterBase {
 
         String coopId = DaoFactory.getRoleDao().getGlobalPropertyValue(BillingRole.COOP_ID_CADP_ONLY);
 
-        if (coopId == null) {
+        if (StringUtils.isBlank(coopId)) {
             CTILogger.info(" Missing 'coop_id' in config.properties.");
 
             String value = JOptionPane.showInputDialog(null,

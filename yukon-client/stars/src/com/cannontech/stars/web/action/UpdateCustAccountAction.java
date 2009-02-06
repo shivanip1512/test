@@ -4,6 +4,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
@@ -322,7 +324,7 @@ public class UpdateCustAccountAction implements ActionBase {
              */
             String comparableDigitProperty = DaoFactory.getAuthDao().getRolePropertyValue(DaoFactory.getYukonUserDao().getLiteYukonUser(energyCompany.getUserID()), ConsumerInfoRole.ACCOUNT_NUMBER_LENGTH);
             String rotationDigitProperty = DaoFactory.getAuthDao().getRolePropertyValue(DaoFactory.getYukonUserDao().getLiteYukonUser(energyCompany.getUserID()), ConsumerInfoRole.ROTATION_DIGIT_LENGTH);
-            if(rotationDigitProperty != null && rotationDigitProperty.compareTo(CtiUtilities.STRING_NONE) != 0 && Integer.parseInt(rotationDigitProperty) > 0)
+            if(StringUtils.isNotBlank(rotationDigitProperty) && Integer.parseInt(rotationDigitProperty) > 0)
             {
                 if(comparableAcctNum.length() >= Integer.parseInt(rotationDigitProperty))
                     comparableAcctNum = comparableAcctNum.substring(0, comparableAcctNum.length() - Integer.parseInt(rotationDigitProperty));
@@ -330,7 +332,7 @@ public class UpdateCustAccountAction implements ActionBase {
                     && existingAcctNum.length() > comparableAcctNum.length())
                     existingAcctNum = existingAcctNum.substring(0, existingAcctNum.length() - Integer.parseInt(rotationDigitProperty));
             }
-            if(comparableDigitProperty != null && comparableDigitProperty.compareTo(CtiUtilities.STRING_NONE) != 0 && Integer.parseInt(comparableDigitProperty) > 0)
+            if(StringUtils.isNotBlank(comparableDigitProperty) && Integer.parseInt(comparableDigitProperty) > 0)
             { 
                 if(comparableAcctNum.length() >= Integer.parseInt(comparableDigitProperty))
                     comparableAcctNum = comparableAcctNum.substring(0, Integer.parseInt(comparableDigitProperty));

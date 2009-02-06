@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.clientutils.CTILogger;
@@ -1318,14 +1319,14 @@ public class LiteStarsEnergyCompany extends LiteBase {
         String rotationDigitProperty = DaoFactory.getAuthDao().getRolePropertyValue(DaoFactory.getYukonUserDao().getLiteYukonUser(getUserID()), ConsumerInfoRole.ROTATION_DIGIT_LENGTH);
         int accountNumSansRotationDigitsIndex = accountNo.length();
         boolean adjustForRotationDigits = false, adjustForAccountLength = false;
-        if(rotationDigitProperty != null && rotationDigitProperty.compareTo(CtiUtilities.STRING_NONE) != 0 && Integer.parseInt(rotationDigitProperty) > 0
+        if(StringUtils.isNotBlank(rotationDigitProperty) && Integer.parseInt(rotationDigitProperty) > 0
                 && Integer.parseInt(rotationDigitProperty) < accountNo.length())
         {
             accountNumSansRotationDigitsIndex = accountNo.length() - Integer.parseInt(rotationDigitProperty);
             accountNo = accountNo.substring(0, accountNumSansRotationDigitsIndex);
             adjustForRotationDigits = true;
         }
-        if(comparableDigitProperty != null && comparableDigitProperty.compareTo(CtiUtilities.STRING_NONE) != 0 && Integer.parseInt(comparableDigitProperty) > 0)
+        if(StringUtils.isNotBlank(comparableDigitProperty) && Integer.parseInt(comparableDigitProperty) > 0)
         {
             comparableDigitEndIndex = Integer.parseInt(comparableDigitProperty);
             if(accountNo.length() >= comparableDigitEndIndex)

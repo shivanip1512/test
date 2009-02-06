@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.text.NumberFormat;
 import java.util.StringTokenizer;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.CommonUtils;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
@@ -142,7 +144,7 @@ public class CBCDisplay {
         if (capBank == null) return "";
 
         String fixedCapbankLabel = DaoFactory.getAuthDao().getRolePropertyValue(user, CBCOnelineSettingsRole.CAP_BANK_FIXED_TEXT);
-        if (fixedCapbankLabel == null) fixedCapbankLabel = "Fixed";
+        if (StringUtils.isBlank(fixedCapbankLabel)) fixedCapbankLabel = "Fixed";
 
         Integer controlDeviceID = capBank.getControlDeviceID();
         String controllerName = (controlDeviceID != 0) ? DaoFactory.getPaoDao().getYukonPAOName(controlDeviceID) : DASH_LINE;

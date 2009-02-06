@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.clientutils.ActivityLogger;
@@ -225,7 +226,7 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public LiteYukonUser internalLogin(HttpServletRequest request, HttpSession session, String username, boolean saveCurrentUser) {
         LiteYukonUser user = yukonUserDao.getLiteYukonUser(username);
-        if (user == null || authDao.getRolePropertyValue(user,WebClientRole.HOME_URL) == null)
+        if (user == null || StringUtils.isBlank(authDao.getRolePropertyValue(user,WebClientRole.HOME_URL)))
             return null;
         
         Properties oldContext = null;
