@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
@@ -26,11 +27,12 @@ import com.cannontech.cbc.web.CapControlType;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.CapControlDao;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.service.CachingPointFormattingService;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.point.CBCPointTimestampParams;
 import com.cannontech.database.db.capcontrol.CapBankAdditional;
+import com.cannontech.web.updater.point.PointUpdateBackingService;
 import com.cannontech.yukon.cbc.CapControlCommand;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
@@ -43,6 +45,9 @@ public class OnelinePopupMenuController extends MultiActionController {
     private DataSource dataSource;
     private PaoDao paoDao;
     private CapControlDao cbcDao = null;
+    
+    private CachingPointFormattingService cachingPointFormattingService = null;
+    private PointUpdateBackingService pointUpdateBackingService = null;
     
     static {
         allowedOperationStates  = new CapBankOperationalState[] {
@@ -414,6 +419,15 @@ public class OnelinePopupMenuController extends MultiActionController {
         Map<String, List<LitePoint>> pointTimestamps = cbcDao.getSortedCBCPointTimeStamps(cbcId);
         mav.addObject("pointMap", pointTimestamps);
         
+        List<LitePoint> pointList = new ArrayList<LitePoint>();
+        for(List<LitePoint> list : pointTimestamps.values()) {
+        	pointList.addAll(list);
+        }
+        
+        // Get some pre work done to speed things up on the page load.
+        cachingPointFormattingService.addLitePointsToCache(pointList);
+        pointUpdateBackingService.notifyOfImminentPoints(pointList);
+        
         // Hack to change jsp content for oneline popup
         boolean isOneline = ServletRequestUtils.getBooleanParameter(request, "oneline", false);
         mav.addObject("isOneline", isOneline);
@@ -621,5 +635,17 @@ public class OnelinePopupMenuController extends MultiActionController {
     public void setCbcDao(CapControlDao cbcDao) {
         this.cbcDao = cbcDao;
     }
+
+	@Autowired
+	public void setCachingPointFormattingService(
+			CachingPointFormattingService cachingPointFormattingService) {
+		this.cachingPointFormattingService = cachingPointFormattingService;
+	}
+		
+	@Autowired
+	public void setPointUpdateBackingService(
+			PointUpdateBackingService pointUpdateBackingService) {
+		this.pointUpdateBackingService = pointUpdateBackingService;
+	}
     
 }

@@ -169,12 +169,8 @@ public class CapControlDaoImpl  implements CapControlDao{
         return returnMap;
     }
 	
-	static public String convertNeutralCurrent(String strValue) {
-        //Grab the number before the decimal
-		int index = strValue.indexOf(".");
-        String val = strValue.substring(0,index);
-        
-		Integer pvalue = Integer.valueOf(val);
+	static public String convertNeutralCurrent(Double value) {        
+		Integer pvalue = value.intValue();
         String neutralCurrent = "No";
         
         if ((pvalue & 0x08) == 0x08){
@@ -184,12 +180,9 @@ public class CapControlDaoImpl  implements CapControlDao{
         return neutralCurrent;
 	}
 	
-    static public String convertToOctalIp(String strValue) {
+    static public String convertToOctalIp(Double value) {
     	
-    	//remove commas
-    	strValue = strValue.replace(",","");
-    	Double d = Double.valueOf(strValue);
-    	Long ipvalue = new Long(d.longValue());
+    	Long ipvalue = new Long(value.longValue());
 
         StringBuilder sb = new StringBuilder();
         int temp = (int) ((ipvalue >> 24) & 0xFF);

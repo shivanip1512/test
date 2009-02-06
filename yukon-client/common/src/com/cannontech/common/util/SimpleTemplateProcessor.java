@@ -135,9 +135,7 @@ public class SimpleTemplateProcessor {
         return result;
     }
     
-    protected CharSequence formatValue(Object value, String extra) {
-        CharSequence result;
-        
+    final protected CharSequence formatValue(Object value, String extra) {
         try {
             // see if custom format method exists
             // split extra on last "."
@@ -147,14 +145,20 @@ public class SimpleTemplateProcessor {
             String methodName = extra.substring(endIndex+1);
             Method method = theClassPart.getMethod(methodName, value.getClass());
             Object formattedOuput = method.invoke(null, value);
-            result = formattedOuput.toString();
+            CharSequence result = formattedOuput.toString();
             
             return result;
         } catch (Exception e) {
             //Not a valid method name, fall through to type-based formatters
         }
         
-        if (value instanceof Boolean) {
+        CharSequence result = formatByType(value, extra);
+        return result;
+    }
+
+	protected CharSequence formatByType(Object value, String extra) {
+		CharSequence result;
+		if (value instanceof Boolean) {
             boolean showFirst = (Boolean) value;
             // split extra on the | character
             String[] strings = extra.split("\\|", 2);
@@ -169,8 +173,8 @@ public class SimpleTemplateProcessor {
         } else {
             result = null;
         }
-        return result;
-    }
+		return result;
+	}
 
 
     public boolean contains(CharSequence template, String key) {

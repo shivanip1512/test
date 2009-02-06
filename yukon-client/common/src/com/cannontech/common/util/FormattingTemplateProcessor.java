@@ -47,7 +47,7 @@ public class FormattingTemplateProcessor extends SimpleTemplateProcessor {
     }
 
     @Override
-    protected CharSequence formatValue(Object value, String extra) {
+    protected CharSequence formatByType(Object value, String extra) {
         CharSequence result;
         if (value instanceof Number) {
             NumberFormat format;

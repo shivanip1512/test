@@ -140,5 +140,5 @@
         </table>
         <br>
     </div>  
-
+<tags:dataUpdateEnabler/>
 </cti:standardPage>
