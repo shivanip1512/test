@@ -1580,12 +1580,11 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     			if(capBank.getCloseOrder() > removeCloseOrder && (capBank.getCloseOrder() - 1) > prevAdjCloseOrder){
     				capBank.setCloseOrder(new Float ( capBank.getCloseOrder() - 1));
     			}
-				if (capBank.getTripOrder() > removeTripOrder && 
-    			    ((tripOrderDesc && (capBank.getTripOrder() - 1) < prevAdjTripOrder)) ||
-    			    (!tripOrderDesc && (capBank.getTripOrder() - 1) > prevAdjTripOrder)){
-    					capBank.setTripOrder(new Float ( capBank.getTripOrder() - 1));
-        		} 
- 				prevAdjControlOrder = capBank.getControlOrder();
+    			if ( (capBank.getTripOrder() > removeTripOrder && (!tripOrderDesc && (capBank.getTripOrder() - 1) > prevAdjTripOrder)) || 
+       			     ((capBank.getTripOrder()-1) >= removeTripOrder && (tripOrderDesc && (capBank.getTripOrder() - 1) < prevAdjTripOrder))) {
+       					capBank.setTripOrder(new Float ( capBank.getTripOrder() - 1));
+           		} 
+    			prevAdjControlOrder = capBank.getControlOrder();
 				prevAdjCloseOrder = capBank.getCloseOrder();
 				prevAdjTripOrder = capBank.getTripOrder();
 
