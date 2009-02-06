@@ -11,10 +11,10 @@ import java.util.Set;
 import org.apache.commons.lang.Validate;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.authorization.dao.PaoPermissionDao;
-import com.cannontech.core.authorization.support.AuthorizationResponse;
+import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.dr.account.dao.ApplianceAndProgramDao;
@@ -39,8 +39,6 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
     private ApplianceAndProgramDao applianceAndProgramDao = (ApplianceAndProgramDao) YukonSpringHook.getBean("applianceAndProgramDao");
     private static DecimalFormat decFormat = new java.text.DecimalFormat("0.#");
     private ProgramDao programDao = (ProgramDao)YukonSpringHook.getBean("starsProgramDao");
-    @SuppressWarnings("unchecked") PaoPermissionDao<LiteYukonUser> paoPermissionDao =
-        YukonSpringHook.getBean("userPaoPermissionDao", PaoPermissionDao.class);
     private List<ModelRow> data = Collections.emptyList();
     
     public LMControlDetailModel() {
@@ -121,12 +119,14 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
                         groupIdToProgram.put(groupId, groupPrograms);
                     }
                     
+                    PaoAuthorizationService paoAuthorizationService = (PaoAuthorizationService)YukonSpringHook.getBean("paoAuthorizationService");
+                    PaoDao paoDao = (PaoDao)YukonSpringHook.getBean("paoDao");
                     /*lots of for loops, but this one will not normally be more than one iteration*/
                     for(ProgramLoadGroup currentGroupProgram : groupPrograms) {
                         //Check filter: program
                         if(programIds != null && programIds.size() > 0 && ! programIds.contains(currentGroupProgram.getPaobjectId())) {
                             continue;
-                        } else if (!paoPermissionDao.hasPermissionForPao(liteUser.getUserID(), currentGroupProgram.getProgramId(), Permission.LM_VISIBLE).equals(AuthorizationResponse.AUTHORIZED)){
+                        } else if (!paoAuthorizationService.isAuthorized(liteUser, Permission.LM_VISIBLE, paoDao.getLiteYukonPAO(currentGroupProgram.getPaobjectId()))){
                             continue; // skip if user does not have permission to view this program
                         }else {
                             row.program = currentGroupProgram.getProgramName();
@@ -167,7 +167,6 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
         }
         //----------------------------------------------------------------------------------
     }
-
     public void setEnergyCompanyId(int energyCompanyId) {
         this.energyCompanyId = energyCompanyId;
     }
