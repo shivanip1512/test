@@ -52,7 +52,7 @@ public class CBCPointFactory {
             new StatusPointParams(3, "Control Mode"),
             new StatusPointParams(4, "Auto Volt Control"),
             new StatusPointParams(5, "Last Control - Local"),
-            new StatusPointParams(6, "Last Control -Remote"),
+            new StatusPointParams(6, "Last Control - Remote"),
             new StatusPointParams(7, "Last Control - OVUV"),
             new StatusPointParams(8, "Last Control - Neutral Fault"),
             new StatusPointParams(9, "Last Control - Scheduled"),
