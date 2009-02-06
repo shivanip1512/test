@@ -27,6 +27,8 @@
 #include "porter.h"
 #include "utility.h"
 
+CtiMutex CtiDeviceBase::_configMux;
+
 CtiDeviceBase::~CtiDeviceBase()
 {
 }
