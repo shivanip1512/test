@@ -28,10 +28,11 @@
                         </xsd:complexType>
                     </xsd:element>
                 </xsd:sequence>
+                <xsd:attribute name="addOnFail" type="xsd:string" use="optional"/>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
-    
+
     <xsd:element name="updateAccountsRequest" type="yukon:UpdateAccountsRequest"/>
     
 </xsd:schema>
