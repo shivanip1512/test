@@ -10504,29 +10504,29 @@
     </device>
     <device>
         <type value="1043" javaConstant="LM_GROUP_EXPRESSCOMM" changeGroup="lm"/>
-        <displayName value="VERSACOM GROUP"/>
+        <displayName value="EXPRESSCOM GROUP"/>
     </device>
     <device>
         <type value="1042" javaConstant="LM_GROUP_VERSACOM" changeGroup="lm"/>
-        <displayName value="EXPRESSCOM GROUP"/>
+        <displayName value="VERSACOM GROUP"/>
     </device>
     
     <!-- CBCs -->
     <device>
-        <type value="1051" javaConstant="CAPBANKCONTROLLER" changeGroup="lm"/>
+        <type value="1051" javaConstant="CAPBANKCONTROLLER" changeGroup="cap"/>
         <displayName value="CBC Versacom"/>
     </device>
     <device>
-        <type value="1082" javaConstant="CBC_7010" changeGroup="lm"/>
+        <type value="1082" javaConstant="CBC_7010" changeGroup="cap"/>
         <displayName value="CBC 7010"/>
     </device>
     <device>
-        <type value="1077" javaConstant="CBC_EXPRESSCOM" changeGroup="lm"/>
+        <type value="1077" javaConstant="CBC_EXPRESSCOM" changeGroup="cap"/>
         <displayName value="CBC Expresscom"/>
     </device>
 
     <device>
-        <type value="1083" javaConstant="CBC_7020" changeGroup="lm"/>
+        <type value="1083" javaConstant="CBC_7020" changeGroup="cap2"/>
         <displayName value="CBC 7020"/>
         <points>
         	<point init="true" type="PulseAccumulator">
@@ -10812,7 +10812,7 @@
     </device>
 
     <device>
-        <type value="1088" javaConstant="CBC_7022" changeGroup="lm"/>
+        <type value="1088" javaConstant="CBC_7022" changeGroup="cap2"/>
         <displayName value="CBC 7022"/>
         <points>
         	<point init="true" type="PulseAccumulator">
@@ -11098,7 +11098,7 @@
     </device>
 
     <device>
-        <type value="1089" javaConstant="CBC_7023" changeGroup="lm"/>
+        <type value="1089" javaConstant="CBC_7023" changeGroup="cap2"/>
         <displayName value="CBC 7023"/>
         <points>
         	<point init="true" type="PulseAccumulator">
@@ -11384,7 +11384,7 @@
     </device>
 
     <device>
-        <type value="1090" javaConstant="CBC_7024" changeGroup="lm"/>
+        <type value="1090" javaConstant="CBC_7024" changeGroup="cap2"/>
         <displayName value="CBC 7024"/>
         <points>
         	<point init="true" type="PulseAccumulator">
