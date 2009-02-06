@@ -748,7 +748,11 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 			int eventId = rs.getInt("OptOutEventId");
 			int userId = getFirstEventUser(eventId);
 			LiteYukonUser liteYukonUser = yukonUserDao.getLiteYukonUser(userId);
-			history.setUserName(liteYukonUser.getUsername());
+			if(liteYukonUser != null) {
+				history.setUserName(liteYukonUser.getUsername());
+			} else {
+				history.setUserName("User no longer exists");
+			}
 			
 			return history;
 
