@@ -34,8 +34,15 @@ PointPicker.prototype = Object.extend(new ItemPicker(), {
    //over-ride onPickerShown to allow attachment of event handler
    onPickerShown: function(transport, json) {
 	    $('itemPicker_query').focus();
-	    this.sameParentItem();
-	    this.triggerPickerShown();
+	    
+	    // If the field does not have a value, or lastItemId == -1. 
+	    // We want to show all instead of 'No Results Found'
+	    if (($(this.destItemIdFieldId).value == 0 || $(this.destItemIdFieldId).value == '') && lastItemId == -1) {
+	    	this.showAll();
+	    } else {
+	    	this.sameParentItem();
+	    	this.triggerPickerShown();
+	    }
 	},
 	
 	
