@@ -115,6 +115,11 @@
         <property name="required" value="true"/>
     </bean>
 
+    <bean id="meterSearchWidget"
+    	class="com.cannontech.web.widget.MeterSearchWidget">
+    	<property name="title" value="Meter Search" />
+    </bean>
+
     <bean id="accountInformationWidget"
     	class="com.cannontech.web.widget.AccountInformationWidget">
     	<property name="identityPath" value="common/deviceIdentity.jsp" />

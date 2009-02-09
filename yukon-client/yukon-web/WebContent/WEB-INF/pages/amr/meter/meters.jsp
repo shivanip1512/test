@@ -7,7 +7,8 @@
 <cti:standardMenu menuSelection="meters"/>
 <cti:breadCrumbs>
     <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
-    &gt; Meters
+    <cti:crumbLink url="/spring/meter/start" title="Metering"  />
+    <cti:crumbLink title="Search"  />
 </cti:breadCrumbs>
 
 <cti:url value="/spring/meter/home" var="meterHomeUrl"/>

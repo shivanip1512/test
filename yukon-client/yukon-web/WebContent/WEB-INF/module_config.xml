@@ -68,7 +68,7 @@
         </option>
 
         <option id="metering">
-          <link>/spring/meter/search</link>
+          <link>/spring/meter/start</link>
           <requireRoleProperty value="METERING,APPLICATION_BILLING,SCHEDULER,COMMANDER" />
         </option>
         
@@ -261,10 +261,11 @@
     <skin name="standard"/>
    	<links>
    		<option id="meters">
-   		   <link>/spring/meter/search</link>	
+   		   <link>/spring/meter/start</link>	
    		</option>
    		<option id="billing">
    		  <requireRoleProperty value="APPLICATION_BILLING"/>
+          <link>/operator/Metering/Billing.jsp</link>
    		  <links>
 	          <option id="generation">
 	   		    <link>/operator/Metering/Billing.jsp</link>
@@ -292,6 +293,7 @@
           </links>
 	    </option>
   	</links>  
+    <search action="/spring/meter/search" method="post" fieldname="Quick Search"/>
   </module>
 
   <module name="consumer">

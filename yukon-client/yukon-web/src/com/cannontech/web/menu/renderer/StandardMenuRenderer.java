@@ -22,9 +22,7 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.roles.application.WebClientRole;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
@@ -55,6 +53,7 @@ public class StandardMenuRenderer implements MenuRenderer {
     private List<SubMenuOption> subMenuParents = new ArrayList<SubMenuOption>(4);
     private String SEPERATOR = "  ";
     private String breadCrumbs;
+    private String homeUrl;
     private final HttpServletRequest httpServletRequest;
     private YukonUserContext userContext;
     private MenuFeatureSet features = new MenuFeatureSet();
@@ -139,27 +138,35 @@ public class StandardMenuRenderer implements MenuRenderer {
                 link = createLink(option, "yukon.web.menu.simpleMenuDefaultTitle");
                 SimpleMenuOption simpleOption = (SimpleMenuOption) option;
                 link.setHref(buildUrl(simpleOption.getUrl()));
-
-                link.setClass("stdhdr_menuLink" + ((isOptionSelected(option, 0))? " selected":""));
-                leftDiv.addElement(link);
             } else if (option instanceof SubMenuOption) {
-                link = createLink(option, "yukon.web.menu.subMenuDefaultTitle");
                 SubMenuOption subOption = (SubMenuOption)option;
-                subMenuParents.add(subOption);
-                // determine index in list of this option
-                int optionIndex = subMenuParents.size() - 1;
-                String jsId = generateIdForString(optionIndex);
-                
-                link.setHref("#");
-                link.setOnClick(e("ctiMenu.show(this, '" + jsId + "'); return false;"));
+                List<MenuOption> menuOptions = subOption.getMenuOptions(userContext);
 
-                if(!subOption.getMenuOptions(userContext).isEmpty() || !subOption.isCollapseIfEmpty()) {
-	                link.setClass("stdhdr_menuLink" + ((isOptionSelected(option, 0))? " selected":""));
-	                leftDiv.addElement(link);
+                link = createLink(option, "yukon.web.menu.subMenuDefaultTitle");
+                
+                boolean collapse = menuOptions.isEmpty() && subOption.isCollapseIfEmpty();
+                if (collapse) continue;
+                
+                // add sub menu if this isn't a link and isn't collapsed
+                if (!subOption.hasLink() || isOptionSelected(option, 0)) {
+                    subMenuParents.add(subOption);
+                }
+                
+                if (subOption.hasLink()) {
+                    link.setHref(buildUrl(subOption.getUrl()));
+                } else {
+                    // determine index in list of this option
+                    int optionIndex = subMenuParents.size() - 1;
+                    String jsId = generateIdForString(optionIndex);
+                    
+                    link.setHref("#");
+                    link.setOnClick(e("ctiMenu.show(this, '" + jsId + "'); return false;"));
                 }
             } else {
                 throw new CommonMenuException("Unknown MenuOption type encountered: " + option.getClass());
             }
+            link.setClass("stdhdr_menuLink" + ((isOptionSelected(option, 0))? " selected":""));
+            leftDiv.addElement(link);
         }
         return leftDiv;
     }
@@ -241,7 +248,6 @@ public class StandardMenuRenderer implements MenuRenderer {
 
     private Div buildTopRightSide() {
         
-        String homeurl = DaoFactory.getAuthDao().getRolePropertyValue(userContext.getYukonUser(), WebClientRole.HOME_URL);
         Div right = new Div();
         right.setPrettyPrint(true);
         right.setClass("stdhdr_rightSide");
@@ -306,7 +312,7 @@ public class StandardMenuRenderer implements MenuRenderer {
 
         right.addElement("&nbsp;&nbsp;");
         A homeLink = createLink("yukon.web.menu.home", "");
-        homeLink.setHref(homeurl);
+        homeLink.setHref(homeUrl);
         homeLink.setClass("stdhdr_menuLink");
         right.addElement(homeLink);
         right.addElement(" ");
@@ -399,6 +405,10 @@ public class StandardMenuRenderer implements MenuRenderer {
     
     public MenuFeatureSet getFeatures() {
         return features;
+    }
+    
+    public void setHomeUrl(String homeUrl) {
+        this.homeUrl = homeUrl;
     }
 
     public void setMenuSelection(String menuSelection) {

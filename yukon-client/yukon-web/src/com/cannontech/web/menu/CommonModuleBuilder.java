@@ -110,8 +110,6 @@ public class CommonModuleBuilder implements ModuleBuilder {
             Element scriptElement = (Element) iter.next();
             moduleBase.addScriptFiles(scriptElement.getAttributeValue("file"));
         }
-        UserChecker checkerForElement = getCheckerForElement(moduleElement);
-        moduleBase.setModuleChecker(checkerForElement);
         
         moduleMap.put(moduleBase.getModuleName(), moduleBase);
     }
@@ -167,7 +165,7 @@ public class CommonModuleBuilder implements ModuleBuilder {
             SimpleMenuOptionAction actionMenuOption = new SimpleMenuOptionAction(optionId, key);
             actionMenuOption.setScript(topAction.getTextTrim());
             menuOption = actionMenuOption;
-        } else if (topLink != null) {
+        } else if (topLink != null && subLinks == null) {
             SimpleMenuOptionLink linkMenuOption = new SimpleMenuOptionLink(optionId, key);
             linkMenuOption.setLinkUrl(topLink.getTextTrim());
             menuOption = linkMenuOption;
@@ -182,6 +180,9 @@ public class CommonModuleBuilder implements ModuleBuilder {
             }
             SubMenuOption subMenuOption = new SubMenuOption(optionId, key, collapseIfEmpty);
             subMenuOption.setSubOptions(subLinkOptions);
+            if (topLink != null) {
+                subMenuOption.setLinkUrl(topLink.getTextTrim());
+            }
             menuOption = subMenuOption;
         }
         

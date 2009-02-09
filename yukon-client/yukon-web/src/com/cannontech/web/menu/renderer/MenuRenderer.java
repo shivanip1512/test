@@ -23,5 +23,7 @@ public interface MenuRenderer {
     public MenuFeatureSet getFeatures();
     
     public void setMenuSelection(String menuSelection);
+    
+    public void setHomeUrl(String homeUrl);
 
 }

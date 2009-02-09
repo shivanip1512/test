@@ -32,7 +32,6 @@ import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RoleDao;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.CachingPointFormattingService;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LitePoint;
@@ -42,7 +41,6 @@ import com.cannontech.roles.yukon.ConfigurationRole;
 import com.cannontech.roles.yukon.MultispeakRole;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.bulk.model.collection.DeviceFilterCollectionHelper;
-import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.updater.point.PointUpdateBackingService;
 
 /**
@@ -110,6 +108,10 @@ public class MeterController extends MultiActionController {
 			PointUpdateBackingService pointUpdateBackingService) {
 		this.pointUpdateBackingService = pointUpdateBackingService;
 	}
+    
+    public ModelAndView start(HttpServletRequest request, HttpServletResponse response) {
+        return new ModelAndView("start.jsp");
+    }
 
     public ModelAndView search(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
@@ -130,11 +132,14 @@ public class MeterController extends MultiActionController {
 
         // Get the search result count
         int count = ServletRequestUtils.getIntParameter(request, "count", 25);
+        
+        boolean isQuickSearch = request.getParameter("Quick Search") != null;
+        MeterSearchField defaultField = isQuickSearch ? MeterSearchField.METERNUMBER : MeterSearchField.PAONAME;
 
         // Get the order by field
         String orderByField = ServletRequestUtils.getStringParameter(request,
                                                                      "orderBy",
-                                                                     MeterSearchField.PAONAME.toString());
+                                                                     defaultField.toString());
         OrderBy orderBy = new OrderBy(orderByField,
                                       ServletRequestUtils.getBooleanParameter(request,
                                                                               "descending",

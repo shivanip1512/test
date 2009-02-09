@@ -35,7 +35,6 @@ public class LeftSideMenuRenderer implements MenuRenderer {
     private final MessageSourceAccessor messageSource;
     private YukonUserContext userContext;
     private MenuFeatureSet features = new MenuFeatureSet();
-    private String breadCrumbs;
     private String[] selections = new String[2];
 
     // This renderer only supports 3 levels of menu depth
@@ -205,7 +204,7 @@ public class LeftSideMenuRenderer implements MenuRenderer {
 
     @Override
     public void setBreadCrumb(String breadCrumbs) {
-        this.breadCrumbs = breadCrumbs;
+        // not used by this renderer
     }
 
     @Override
@@ -218,6 +217,11 @@ public class LeftSideMenuRenderer implements MenuRenderer {
         if (menuSelection != null) {
             this.selections = menuSelection.split("\\|");
         }
+    }
+    
+    @Override
+    public void setHomeUrl(String homeUrl) {
+        // not used by this renderer
     }
 
 }

@@ -7,8 +7,9 @@
 	<cti:standardMenu menuSelection="meters" />
 	<cti:breadCrumbs>
 		<cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-		<cti:crumbLink url="/spring/meter/search" title="Meters" />
-    	&gt; <cti:deviceName deviceId="${deviceId}"></cti:deviceName>
+		<cti:crumbLink url="/spring/meter/start" title="Metering" />
+		<cti:crumbLink url="/spring/meter/search" title="Search" />
+    	<cti:crumbLink><cti:deviceName deviceId="${deviceId}"></cti:deviceName></cti:crumbLink>
 </cti:breadCrumbs>
 
 	<table class="widgetColumns">
@@ -20,14 +21,6 @@
 			</td>
 			<td  class="widgetColumnCell" align="right">
 				<amr:searchResultsLink></amr:searchResultsLink>
-				<div style="margin-top: 5px;">
-					<form name="quickSearchForm" action="/spring/meter/search">
-						<input type="hidden" name="orderBy" value="METERNUMBER" />
-						Quick Search:
-						<input type="text" id="Quick Search" name="Quick Search" />
-						<input type="submit" value="Search" />
-					</form>
-				</div>
 			</td>
 		</tr>
 	</table>

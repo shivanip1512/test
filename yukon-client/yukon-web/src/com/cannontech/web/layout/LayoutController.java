@@ -25,12 +25,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.version.VersionTools;
-import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.MessageCodeGenerator;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.roles.application.WebClientRole;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
@@ -45,7 +45,7 @@ import com.cannontech.web.taglib.Writable;
 
 @Controller
 public class LayoutController {
-    private AuthDao authDao;
+    private RolePropertyDao rolePropertyDao;
     private CommonModuleBuilder moduleBuilder;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
 
@@ -120,7 +120,7 @@ public class LayoutController {
         map.addAttribute("innerContentCss", innerContentCssList);
         
         LiteYukonUser user = ServletUtil.getYukonUser(request);
-        String cssLocations = authDao.getRolePropertyValue(user, WebClientRole.STD_PAGE_STYLE_SHEET);
+        String cssLocations = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.STD_PAGE_STYLE_SHEET, user);
         cssLocations = StringUtils.defaultString(cssLocations,"");
         String[] cssLocationArray = cssLocations.split("\\s*,\\s*");
         List<String> loginGroupCssList = new ArrayList<String>(Arrays.asList(cssLocationArray));
@@ -148,6 +148,8 @@ public class LayoutController {
             }
             menuRenderer.setMenuSelection(info.getMenuSelection());
             menuRenderer.setBreadCrumb(info.getBreadCrumbs());
+            String homeUrl = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, user);
+            menuRenderer.setHomeUrl(homeUrl);
             map.addAttribute("menuRenderer", new Writable() {
                 public void write(Writer out) throws IOException {
                     menuRenderer.renderMenu(out);
@@ -194,13 +196,13 @@ public class LayoutController {
     }
     
     @Autowired
-    public void setAuthDao(AuthDao authDao) {
-        this.authDao = authDao;
+    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
+        this.messageSourceResolver = messageSourceResolver;
     }
     
     @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
     }
 
 }

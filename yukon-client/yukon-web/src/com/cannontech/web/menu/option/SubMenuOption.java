@@ -13,6 +13,7 @@ import com.cannontech.web.menu.option.producer.MenuOptionProducer;
  */
 public class SubMenuOption extends BaseMenuOption implements MenuOptionProducer {
     private MenuBase menuBase = new MenuBase();
+    private String linkUrl = null;
     
     private boolean collapseIfEmpty = false;
 
@@ -38,4 +39,16 @@ public class SubMenuOption extends BaseMenuOption implements MenuOptionProducer 
     public boolean isCollapseIfEmpty() {
 		return collapseIfEmpty;
 	}
+    
+    public boolean hasLink() {
+        return linkUrl != null;
+    }
+
+    public String getUrl() {
+        return linkUrl;
+    }
+
+    public void setLinkUrl(String linkUrl) {
+        this.linkUrl = linkUrl;
+    }
 }

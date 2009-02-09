@@ -1,15 +1,7 @@
 package com.cannontech.web.menu;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-
-import org.apache.commons.collections.iterators.FilterIterator;
-
-import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.user.YukonUserContext;
-import com.cannontech.user.checker.UserChecker;
-import com.cannontech.web.menu.option.producer.MenuOptionProducer;
 
 /**
  * Represents the logical base of the menu for a given module. The main components are
@@ -28,7 +20,6 @@ public class ModuleBase {
     private List<String> scriptFiles = new ArrayList<String>(2);
     private String skin;
     private MenuBase menuBase;
-    private UserChecker authorizationChecker;
     
     public ModuleBase(String moduleName) {
         this.moduleName = moduleName;
@@ -58,10 +49,6 @@ public class ModuleBase {
         return portalLinks;
     }
     
-    public boolean isUserAuthorized(LiteYukonUser user) {
-        return authorizationChecker.check(user);
-    }
-
     public MenuBase getMenuBase() {
         return menuBase;
     }
@@ -108,9 +95,5 @@ public class ModuleBase {
     
     public void addScriptFiles(String scriptFile) {
         scriptFiles.add(scriptFile);
-    }
-
-    public void setModuleChecker(UserChecker authorizationChecker) {
-        this.authorizationChecker = authorizationChecker;
     }
 }
