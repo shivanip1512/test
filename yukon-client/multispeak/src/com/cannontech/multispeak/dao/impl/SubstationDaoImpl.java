@@ -4,7 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.springframework.dao.DataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
@@ -92,7 +92,7 @@ public class SubstationDaoImpl implements SubstationDao {
     public Substation getByName(final String name) {
     	try {
     		return template.queryForObject(selectByNameSql.toString(), rowMapper, name);
-    	} catch (DataAccessException e) {
+    	} catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("A Substation with name " + name + " cannot be found.");
         }
     }
@@ -100,7 +100,7 @@ public class SubstationDaoImpl implements SubstationDao {
     public Substation getById(final int id) {
     	try {
     		return template.queryForObject(selectByIdSql.toString(), rowMapper, id);
-    	} catch (DataAccessException e) {
+    	} catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("A Substation with id " + id + " cannot be found.");
         }
     }
