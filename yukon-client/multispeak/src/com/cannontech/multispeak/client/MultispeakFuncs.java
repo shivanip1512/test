@@ -162,8 +162,8 @@ public class MultispeakFuncs
             String username = getAtributeFromSOAPHeader("userID");
             String password = getAtributeFromSOAPHeader("pwd");
             //TEMPORARY FOR TESTING
-            username = "yukon";
-            password = "yukon";
+//            username = "yukon";
+//            password = "yukon";
         	return authenticationService.login(username, password);
         } catch(BadAuthenticationException e) {
         	throw new RemoteException(e.getMessage());

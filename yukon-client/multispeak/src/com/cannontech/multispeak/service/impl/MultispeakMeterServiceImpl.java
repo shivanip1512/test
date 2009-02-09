@@ -49,6 +49,7 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.database.db.device.DeviceMeterGroup;
@@ -84,7 +85,7 @@ import com.cannontech.multispeak.event.MeterReadEvent;
 import com.cannontech.multispeak.event.MultispeakEvent;
 import com.cannontech.multispeak.event.ODEvent;
 import com.cannontech.multispeak.service.MultispeakMeterService;
-import com.cannontech.user.SystemUserContext;
+import com.cannontech.user.UserUtils;
 import com.cannontech.yukon.BasicServerConnection;
 
 /**
@@ -834,8 +835,8 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 mspObjectDao.logMSPActivity("MeterAddNotification", "MeterNumber(" + meterNumber + ") - Route initially set to that of template device, will run route discovery.", mspVendor.getCompanyName());
             
                 // run route discovery
-                SystemUserContext systemUserConext = new SystemUserContext();
-                deviceUpdateService.routeDiscovery(newDevice, routeIds, systemUserConext);
+                LiteYukonUser liteYukonUser = UserUtils.getYukonUser(); 
+                deviceUpdateService.routeDiscovery(newDevice, routeIds, liteYukonUser);
                 
                 List<String> routeNames = new ArrayList<String>(routeIds.size());
                 for (int routeId : routeIds) {
@@ -1461,23 +1462,26 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     private void changeDeviceType(Meter mspMeter, com.cannontech.amr.meter.model.Meter meter, MultispeakVendor mspVendor, String method) {
         
         String templateName = getMeterTemplate(mspMeter, mspVendor.getTemplateNameDefault());
+        com.cannontech.amr.meter.model.Meter templateMeter;
         try {
-            com.cannontech.amr.meter.model.Meter templateMeter = meterDao.getForPaoName(templateName);
-            String existingType = meter.getTypeStr();
-            if( templateMeter.getType() != meter.getType()) {   //different types of meters...change type
-                try {
-                    DeviceDefinition deviceDefinition = deviceDefinitionDao.getDeviceDefinition(templateMeter.getType());
-                    deviceDefinitionService.changeDeviceType(meter, deviceDefinition);
-                    mspObjectDao.logMSPActivity(method, "MeterNumber (" + meter.getMeterNumber() + ") - Changed DeviceType from:" + existingType + " to:" + templateMeter.getTypeStr() + ").", mspVendor.getCompanyName());
-                } catch (DataRetrievalFailureException e) {
-                    CTILogger.warn(e);
-                } catch (PersistenceException e) {
-                    CTILogger.warn(e);
-                }
-            }
+            templateMeter = meterDao.getForPaoName(templateName);
         } catch (NotFoundException e) {
             //No template found to compare to
             CTILogger.warn(e.getMessage() + "No TemplateName found in Yukon for ChangeDeviceType method, Device Type not checked.");
+            return;
+        }
+
+        String existingType = meter.getTypeStr();
+        if( templateMeter.getType() != meter.getType()) {   //different types of meters...change type
+            try {
+                DeviceDefinition deviceDefinition = deviceDefinitionDao.getDeviceDefinition(templateMeter.getType());
+                deviceDefinitionService.changeDeviceType(meter, deviceDefinition);
+                mspObjectDao.logMSPActivity(method, "MeterNumber (" + meter.getMeterNumber() + ") - Changed DeviceType from:" + existingType + " to:" + templateMeter.getTypeStr() + ").", mspVendor.getCompanyName());
+            } catch (DataRetrievalFailureException e) {
+                CTILogger.warn(e);
+            } catch (PersistenceException e) {
+                CTILogger.warn(e);
+            }
         }
     }
     /**

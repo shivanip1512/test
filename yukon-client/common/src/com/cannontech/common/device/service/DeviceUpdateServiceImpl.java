@@ -14,8 +14,8 @@ import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.device.range.DeviceAddressRange;
-import com.cannontech.user.YukonUserContext;
 
 public class DeviceUpdateServiceImpl implements DeviceUpdateService {
 
@@ -62,7 +62,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         deviceDao.changeMeterNumber(device, newMeterNumber);
     }
     
-    public void routeDiscovery(final YukonDevice device, List<Integer> routeIds, final YukonUserContext userContext) {
+    public void routeDiscovery(final YukonDevice device, List<Integer> routeIds, final LiteYukonUser liteYukonUser) {
         
         // callback to set routeId and do putconfig when route is discovered
         SimpleCallback<Integer> routeFoundCallback = new SimpleCallback<Integer> () {
@@ -86,14 +86,14 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
                         configCmd.setDevice(device);
                         configCmd.setCommand("putconfig emetcon intervals");
 
-                        commandRequestDeviceExecutor.execute(configCmd, userContext.getYukonUser());
+                        commandRequestDeviceExecutor.execute(configCmd, liteYukonUser);
                     }
                 }
             }
         };
         
         // start route discovery
-        routeDiscoveryService.routeDiscovery(device, routeIds, routeFoundCallback, userContext.getYukonUser());
+        routeDiscoveryService.routeDiscovery(device, routeIds, routeFoundCallback, liteYukonUser);
     }
     
     @Autowired
