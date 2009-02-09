@@ -19,7 +19,6 @@ interface RoleDefs {
 	static final int OPERATOR_ROLEID_BASE = -200;
 	static final int CICUSTOMER_ROLEID_BASE = -300;
 	static final int CONSUMER_ROLEID_BASE = -400;	
-	static final int ANALYSIS_ROLEID_BASE = -600;
 	static final int CBC_ROLEID_BASE = -700;
 	static final int NOTIFICATIONS_ROLEID_BASE = -800;
 	static final int LM_ROLEID_BASE = -900;
@@ -35,7 +34,6 @@ interface RoleDefs {
 	static final int CICUSTOMER_PROPERTYID_BASE = -30000;
 	static final int CONSUMER_PROPERTYID_BASE = -40000;
 	
-	static final int ANALYSIS_PROPERTYID_BASE = -60000;
 	static final int CBC_PROPERTYID_BASE = -70000;
 	static final int NOTIFICATIONS_PROPERTYID_BASE = -80000;
 	static final int LM_PROPERTYID_BASE = -90000;

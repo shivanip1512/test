@@ -31,6 +31,4 @@ public interface CommanderRole {
 
     public static final int EXECUTE_UNKNOWN_COMMAND = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE - 16;
     public static final int EXECUTE_MANUAL_COMMAND = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE - 17;
-	
-//	public static final int LOG_LEVEL = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE;
 }

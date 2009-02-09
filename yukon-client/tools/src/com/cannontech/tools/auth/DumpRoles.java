@@ -20,7 +20,6 @@ import com.cannontech.roles.application.TDCRole;
 import com.cannontech.roles.application.TrendingRole;
 import com.cannontech.roles.application.WebClientRole;
 import com.cannontech.roles.application.WebGraphRole;
-import com.cannontech.roles.cicustomer.DirectLoadcontrolRole;
 import com.cannontech.roles.cicustomer.EsubDrawingsRole;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.roles.operator.AdministratorRole;
@@ -55,7 +54,6 @@ public class DumpRoles {
 		WebClientRole.class,
 		WebGraphRole.class,
 
-		DirectLoadcontrolRole.class,
 		EsubDrawingsRole.class,
 		
 		ResidentialCustomerRole.class,
