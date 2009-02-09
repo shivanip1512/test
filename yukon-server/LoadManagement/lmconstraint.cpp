@@ -611,7 +611,7 @@ bool CtiLMProgramConstraintChecker::checkMasterActive()
         {
             string result = "The program cannot start since its master program, ";
             result += (*master_iter)->getPAOName();
-            result += " is active";
+            result += ", is active";
             _results.push_back(result);
 
             master_active = true;
