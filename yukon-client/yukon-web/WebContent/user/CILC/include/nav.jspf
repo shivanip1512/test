@@ -16,7 +16,7 @@ function dispStatusMsg(msgStr)
 	int IMG = 0;
 	int HTML = 1;
 	// Table of (link, page name, dir location) pairs
-	String linkPairs[][] = {{"user_direct.jsp", DaoFactory.getAuthDao().getRolePropertyValue(liteYukonUser, DirectLoadcontrolRole.LOADCONTROL_LABEL), "/user/CILC/"},
+	String linkPairs[][] = {{"user_direct.jsp", "Direct Control", "/user/CILC/"},
 						  {"user_trending.jsp", "Trending", "/user/CILC/"},
   						  {"user_reporting.jsp", "Reporting", "/user/CILC/"},
   						  {"user_get_data_now.jsp", "Get Data Now", "/user/CILC/"},
