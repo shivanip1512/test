@@ -47,7 +47,6 @@ public class UrlTag extends YukonTagSupport implements ParamParent {
 
         // get the baseUrl
         String baseUrl = ServletUtil.createSafeUrl(getRequest(), value);
-        baseUrl = StringEscapeUtils.escapeHtml(baseUrl);
         
         //process the params in the body of the tag
         StringWriter bodyWriter = new StringWriter();
@@ -80,7 +79,7 @@ public class UrlTag extends YukonTagSupport implements ParamParent {
         String result = baseUrl;
 
         // build query string
-        String queryString = ServletUtil.buildQueryStringFromMap(encodedParameters);
+        String queryString = ServletUtil.buildQueryStringFromMap(encodedParameters, false);
 
         // insert these parameters into the URL as appropriate
         if (queryString.length() > 0) {

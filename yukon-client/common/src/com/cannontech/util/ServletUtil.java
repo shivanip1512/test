@@ -1202,10 +1202,10 @@ public static Date roundToMinute(Date toRound) {
      * Does NOT encode parameters, assumes parameters will be appropriately encoded already by caller.
      * 
      * @param propertiesMap
-     * @param htmlOutput
-     * @return
+     * @param escapeHtml
+     * @return queryString
      */
-    public static String buildQueryStringFromMap(Map<String,String> encodedParameters) {
+    public static String buildQueryStringFromMap(Map<String,String> encodedParameters, boolean escapeHtml) {
         
         List<String> parameterPairs = new ArrayList<String>(encodedParameters.size()); 
         for (Map.Entry<String, String> entry : encodedParameters.entrySet()) {
@@ -1214,9 +1214,22 @@ public static Date roundToMinute(Date toRound) {
         }
 
         String queryString = StringUtils.join(parameterPairs, "&");
-        queryString = StringEscapeUtils.escapeHtml(queryString);
+        if (escapeHtml) {
+            queryString = StringEscapeUtils.escapeHtml(queryString);
+        }
         
         return queryString;
+    }
+    
+    /**
+     * Using a <String, String> Map, build a name1=value1&name2=value2 style URL query string.
+     * Does NOT encode parameters, assumes parameters will be appropriately encoded already by caller.
+     * The result queryString is escaped for html.
+     * @param propertiesMap
+     * @return queryString
+     */    
+    public static String buildQueryStringFromMap(Map<String,String> encodedParameters) {
+        return buildQueryStringFromMap(encodedParameters, true);
     }
     
     /**
