@@ -11,7 +11,7 @@ import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.LoginController;
-import com.cannontech.common.exception.AuthenticationTimeoutException;
+import com.cannontech.common.exception.AuthenticationThrottleException;
 import com.cannontech.web.login.AbstractLoginRequestHandler;
 
 public class DefaultParamLoginRequestHandler extends AbstractLoginRequestHandler {
@@ -33,8 +33,8 @@ public class DefaultParamLoginRequestHandler extends AbstractLoginRequestHandler
                 log.info("Proceeding with request after successful Param login");
                 return true;
             }
-        } catch (AuthenticationTimeoutException e) {
-            log.error("AuthenticationTimeout: " + e.getTimeoutSeconds(), e);
+        } catch (AuthenticationThrottleException e) {
+            log.error("AuthenticationThrottleException: " + e.getThrottleSeconds(), e);
         }         
         return false;
     }

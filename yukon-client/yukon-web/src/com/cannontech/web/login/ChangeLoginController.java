@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.constants.LoginController;
-import com.cannontech.common.exception.AuthenticationTimeoutException;
+import com.cannontech.common.exception.AuthenticationThrottleException;
 import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.authentication.service.AuthType;
@@ -56,11 +56,11 @@ public class ChangeLoginController {
         authDao.verifyTrueProperty(user, ResidentialCustomerRole.CONSUMER_INFO_CHANGE_LOGIN_PASSWORD);
         
         boolean isValidPassword = false;
-        long timeoutSeconds = 0;
+        long retrySeconds = 0;
         try {
             isValidPassword = isValidPassword(user.getUsername(), oldPassword);
-        } catch (AuthenticationTimeoutException e){
-            timeoutSeconds = e.getTimeoutSeconds();
+        } catch (AuthenticationThrottleException e){
+            retrySeconds = e.getThrottleSeconds();
         }
         boolean supportsPasswordChange = authenticationService.supportsPasswordChange(type);
         boolean hasRequiredFields = hasRequiredFields(oldPassword, newPassword, confirm);
@@ -84,7 +84,7 @@ public class ChangeLoginController {
             loginError = ChangeLoginError.NONE;
         }
         
-        return sendRedirect(request, redirectUrl, loginError, timeoutSeconds);
+        return sendRedirect(request, redirectUrl, loginError, retrySeconds);
     }
     
     @RequestMapping(value = "/changelogin/updateusername", method = RequestMethod.POST)
@@ -96,11 +96,11 @@ public class ChangeLoginController {
         authDao.verifyTrueProperty(user, ResidentialCustomerRole.CONSUMER_INFO_CHANGE_LOGIN_USERNAME);
         
         boolean isValidPassword = false;
-        long timeoutSeconds = 0;
+        long retrySeconds = 0;
         try {
             isValidPassword = isValidPassword(user.getUsername(), oldPassword);
-        } catch (AuthenticationTimeoutException e){
-            timeoutSeconds = e.getTimeoutSeconds();
+        } catch (AuthenticationThrottleException e){
+            retrySeconds = e.getThrottleSeconds();
         }        
         final boolean hasRequiredFields = hasRequiredFields(username, oldPassword);
         
@@ -121,7 +121,7 @@ public class ChangeLoginController {
             }
         }
         
-        return sendRedirect(request, redirectUrl, loginError, timeoutSeconds);
+        return sendRedirect(request, redirectUrl, loginError, retrySeconds);
     }
     
     private boolean hasRequiredFields(String... fields) {
@@ -132,11 +132,11 @@ public class ChangeLoginController {
     }
     
     private boolean isValidPassword(String username, String password) 
-        throws AuthenticationTimeoutException {
+        throws AuthenticationThrottleException {
         try {
             authenticationService.login(username, password);
             return true;
-        } catch (AuthenticationTimeoutException e) {
+        } catch (AuthenticationThrottleException e) {
             throw e;
         } catch (BadAuthenticationException e) {
             return false;
@@ -154,18 +154,18 @@ public class ChangeLoginController {
     }
     
     private String sendRedirect(HttpServletRequest request, String redirectUrl, ChangeLoginError loginError,
-            long timeoutSeconds) {
+            long retrySeconds) {
         String safeRedirectUrl = ServletUtil.createSafeRedirectUrl(request, redirectUrl);
         if (loginError != null) {
             StringBuilder errorParams = new StringBuilder().append("?")
                                                           .append(LOGIN_ERROR_PARAM)
                                                           .append("=")
                                                           .append(loginError.name());
-            if (timeoutSeconds > 0) {
+            if (retrySeconds > 0) {
                 errorParams.append("&")
-                          .append(LoginController.AUTH_TIMEOUT_SECONDS_PARAM)
+                          .append(LoginController.AUTH_RETRY_SECONDS_PARAM)
                           .append("=")
-                          .append(timeoutSeconds);
+                          .append(retrySeconds);
             }
             
             safeRedirectUrl += errorParams.toString();

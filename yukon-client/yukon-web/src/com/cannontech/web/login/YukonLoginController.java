@@ -8,7 +8,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.common.constants.LoginController;
-import com.cannontech.common.exception.AuthenticationTimeoutException;
+import com.cannontech.common.exception.AuthenticationThrottleException;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.application.WebClientRole;
@@ -36,11 +36,11 @@ public class YukonLoginController extends MultiActionController {
         String redirect;
 
         boolean success = false;
-        long timeoutSeconds = 0;
+        long retrySeconds = 0;
         try {
             success = loginService.login(request, username, password);
-        } catch (AuthenticationTimeoutException e) {
-            timeoutSeconds = e.getTimeoutSeconds();
+        } catch (AuthenticationThrottleException e) {
+            retrySeconds = e.getThrottleSeconds();
         }
         if (success) {
             LiteYukonUser user = ServletUtil.getYukonUser(request);
@@ -68,22 +68,22 @@ public class YukonLoginController extends MultiActionController {
             referer = (referer != null) ? referer : LoginController.LOGIN_URL;
             
             redirect = ServletUtil.createSafeRedirectUrl(request, referer);
-            redirect = appendParams(redirect, timeoutSeconds);
+            redirect = appendParams(redirect, retrySeconds);
         }
         return new ModelAndView("redirect:" + redirect);
     }
 
     // appends params to the baseUrl provided
-    private String appendParams(String baseUrl, long timeoutSeconds) {
+    private String appendParams(String baseUrl, long retrySeconds) {
         String result = baseUrl;
 
         // build query string
         StringBuilder queryParams = new StringBuilder(LoginController.FAILED_LOGIN_PARAM);
-        if (timeoutSeconds > 0) {
+        if (retrySeconds > 0) {
             queryParams.append("&")
-                       .append(LoginController.AUTH_TIMEOUT_SECONDS_PARAM)
+                       .append(LoginController.AUTH_RETRY_SECONDS_PARAM)
                        .append("=")
-                       .append(timeoutSeconds);
+                       .append(retrySeconds);
         }
 
         // insert these parameters into the URL as appropriate

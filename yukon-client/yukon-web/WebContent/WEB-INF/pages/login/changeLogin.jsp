@@ -94,9 +94,9 @@
         <br>
         <div id="changeLoginErrorDiv">
             <cti:msg key="${loginError}"/>
-            <c:if test="${!empty param.authTimeoutSeconds}">
+            <c:if test="${!empty param.retrySeconds}">
                 <br/>
-                <cti:msg key="yukon.web.changelogin.error.AUTH_TIMEOUT" argument="${param.authTimeoutSeconds}"></cti:msg>
+                <cti:msg key="yukon.web.changelogin.error.RETRY" argument="${param.retrySeconds}"></cti:msg>
             </c:if>            
         </div>
     </c:if>

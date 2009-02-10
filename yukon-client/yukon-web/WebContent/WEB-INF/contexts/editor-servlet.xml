@@ -35,6 +35,7 @@
             <value type="boolean">true</value>
         </property>
         <property name="yukonUserDao" ref="yukonUserDao"/>
+        <property name="authenticationService" ref="authenticationService"/>
     </bean>
     
     <bean id="GroupEditorController" class="com.cannontech.web.editor.group.GroupEditorController" >

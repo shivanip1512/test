@@ -74,4 +74,19 @@ public interface AuthenticationService {
      * @return the user's password.
      */
     public String recoverPassword(LiteYukonUser user);
+    
+    /**
+     * Get AuthenticationThrottleDto data for the username.
+     * @param username
+     * @return AuthenticationThrottleDto data
+     */
+    public AuthenticationThrottleDto getAuthenticationThrottleData(
+            String username);
+
+    /**
+     * Remove AuthenticationThrottle for the username, upon manual override by
+     * an operator
+     * @param username
+     */
+    public void removeAuthenticationThrottle(String username);
 }

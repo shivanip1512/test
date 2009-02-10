@@ -6,13 +6,14 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.exception.AuthenticationTimeoutException;
+import com.cannontech.common.exception.AuthenticationThrottleException;
 import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.authentication.service.AuthenticationProvider;
 import com.cannontech.core.authentication.service.AuthenticationService;
-import com.cannontech.core.authentication.service.AuthenticationTimeoutHelper;
+import com.cannontech.core.authentication.service.AuthenticationThrottleDto;
+import com.cannontech.core.authentication.service.AuthenticationThrottleHelper;
 import com.cannontech.core.authentication.service.PasswordChangeProvider;
 import com.cannontech.core.authentication.service.PasswordRecoveryProvider;
 import com.cannontech.core.authentication.service.PasswordSetProvider;
@@ -23,47 +24,38 @@ public class AuthenticationServiceImpl implements AuthenticationService  {
     private static Logger log = YukonLogManager.getLogger(AuthenticationServiceImpl.class);
     private Map<AuthType, AuthenticationProvider> providerMap;
     private YukonUserDao yukonUserDao;
-    private AuthenticationTimeoutHelper authenticationTimeoutHelper;
+    private AuthenticationThrottleHelper authenticationThrottleHelper;
 
     public LiteYukonUser login(String username, String password) throws BadAuthenticationException {
-        // see if user is in timeout
-        long timeoutSeconds = authenticationTimeoutHelper.getAuthenticationTimeoutDuration(username);
-        if (timeoutSeconds > 0) {
-            throw new AuthenticationTimeoutException(timeoutSeconds);
-        }
+        // track login attempt and get the auth throttle duration seconds
+        long throttleSeconds = authenticationThrottleHelper.loginAttempted(username);
 
         // find user in database
         LiteYukonUser liteYukonUser = yukonUserDao.getLiteYukonUser(username);
         if (liteYukonUser == null) {
             log.info("Authentication failed (unknown user): username=" + username);
-            throw new BadAuthenticationException();
+            throw new AuthenticationThrottleException(throttleSeconds);
         }
-        
-        // ensuer that user is enabled
+
+        // ensure that user is enabled
         if (CtiUtilities.isDisabled(liteYukonUser.getStatus())) {
             log.info("Authentication failed (disabled): username=" + username + ", id=" + 
                      liteYukonUser.getUserID() + ", status=" + liteYukonUser.getStatus());
-            throw new BadAuthenticationException();
+            throw new AuthenticationThrottleException(throttleSeconds);
         }
-        
+
         AuthenticationProvider provider = getProvder(liteYukonUser);
-        
-        // attempt login; remove timeout if login successful
+
+        // attempt login; remove auth throttle if login successful
         if (provider.login(liteYukonUser, password)) {
             log.debug("Authentication succeeded: username=" + username);
-            authenticationTimeoutHelper.removeAuthenticationTimeout(username);
+            authenticationThrottleHelper.loginSucceeded(username);
             return liteYukonUser;
-        }
-        
-        // login must have failed
-        log.info("Authentication failed (auth failed): username=" + username + ", id=" +
-                 liteYukonUser.getUserID());
-        // add Authentication timeout and return timeout duration
-        timeoutSeconds = authenticationTimeoutHelper.addAuthenticationTimeout(username);
-        if (timeoutSeconds > 0) {
-            throw new AuthenticationTimeoutException(timeoutSeconds);
         } else {
-            throw new BadAuthenticationException();
+            // login must have failed
+            log.info("Authentication failed (auth failed): username=" + username + ", id=" +
+                     liteYukonUser.getUserID());
+            throw new AuthenticationThrottleException(throttleSeconds);            
         }
     }
 
@@ -120,6 +112,16 @@ public class AuthenticationServiceImpl implements AuthenticationService  {
         return provider instanceof PasswordSetProvider;
     }
 
+    public AuthenticationThrottleDto getAuthenticationThrottleData(
+            String username) {
+        AuthenticationThrottleDto authThrottleDto = authenticationThrottleHelper.getAuthenticationThrottleData(username);
+        return authThrottleDto;
+    }
+
+    public void removeAuthenticationThrottle(String username) {
+        authenticationThrottleHelper.removeAuthenticationThrottle(username);
+    }
+    
     @Required
     public void setProviderMap(Map<AuthType, AuthenticationProvider> providerMap) {
         this.providerMap = providerMap;
@@ -131,14 +133,9 @@ public class AuthenticationServiceImpl implements AuthenticationService  {
     }
 
     @Required
-    public void setAuthenticationTimeoutHelper(
-            AuthenticationTimeoutHelper authenticationTimeoutHelper) {
-        this.authenticationTimeoutHelper = authenticationTimeoutHelper;
-    }
-
-    //provides access to helper for cleanup/reset etc
-    public AuthenticationTimeoutHelper getAuthenticationTimeoutHelper() {
-        return authenticationTimeoutHelper;
+    public void setAuthenticationThrottleHelper(
+            AuthenticationThrottleHelper authenticationThrottleHelper) {
+        this.authenticationThrottleHelper = authenticationThrottleHelper;
     }
 }
 

@@ -4,12 +4,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.cannontech.common.exception.AuthenticationTimeoutException;
+import com.cannontech.common.exception.AuthenticationThrottleException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface LoginService {
 
-    public boolean login(HttpServletRequest request, String username, String password) throws AuthenticationTimeoutException;
+    public boolean login(HttpServletRequest request, String username, String password) throws AuthenticationThrottleException;
     
     public void logout(HttpServletRequest request, HttpServletResponse response) throws Exception;
     
