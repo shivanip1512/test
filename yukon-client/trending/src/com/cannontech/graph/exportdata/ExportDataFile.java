@@ -183,25 +183,6 @@ public class ExportDataFile implements com.cannontech.graph.GraphDefines
 		}
 		*/
 	}
-	public void createGIFFormat( )
-	{
-		/****   This has not been fully tested.  
-		 * It causes 'too many for a gif' error.
-		
-		java.io.OutputStream out = null;
-		try
-		{
-			com.jrefinery.chart.JFreeChart fChart = (com.jrefinery.chart.JFreeChart)exportObject;
-			Acme.JPM.Encoders.GifEncoder encoder = new Acme.JPM.Encoders.GifEncoder(fChart.createBufferedImage(700, 500), out);
-			encoder.encode();
-		}
-		catch (java.io.IOException ioe)
-		{
-			ioe.printStackTrace();
-		}
-		*/
-	}//end encodeJPEGFormat()
-
 
 	public char[] createHTMLFormat() 
 	{

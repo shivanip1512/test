@@ -31,7 +31,6 @@
         <webClassPathEntry>/tdc/resource</webClassPathEntry>
         <webClassPathEntry>/third-party</webClassPathEntry>
         <webClassPathEntry>/third-party/SqlServer.jar</webClassPathEntry>
-        <webClassPathEntry>/third-party/acme.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/activation.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/antlr-2.7.6rc1.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/asm-attrs.jar</webClassPathEntry>

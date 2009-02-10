@@ -274,16 +274,12 @@ public class GraphBean extends Graph
 	
 	public void encode(java.io.OutputStream out, String format) throws IOException
 	{
-		if( format.equalsIgnoreCase("gif") )								
-			encodeGif(out);
-		else if( format.equalsIgnoreCase("png") )
+		if( format.equalsIgnoreCase("png") )
 			encodePng(out);
 		else if( format.equalsIgnoreCase("jpg") )
 			encodeJpeg(out);
 		else if( format.equalsIgnoreCase("svg") )
 			encodeSVG(out);
-//		else if( format.equalsIgnoreCase("csv") )
-//			encodeCSV(out);
 		else	//default to png
 			encodePng(out);
 	}

@@ -155,47 +155,6 @@ public void encodeCSV(java.io.OutputStream out) throws java.io.IOException
  * Creation date: (10/12/00 2:54:13 PM)
  * @param out java.io.OutputStream
  */
-public void encodeGif(java.io.OutputStream out) throws java.io.IOException
-{
-	// SN 7.17.02
-	// GIF does not work.  
-	// An error of " too many colors for a gif" is returned.
-	synchronized(Graph.class)
-	{
-		YukonChartPanel cp = new YukonChartPanel(freeChart);
-//		update();
-
-		// FIXFIX
-		// Should be able to get rid of this temporary jframe,
-		// but i had trouble with memory leaking when i reused a static
-		// jframe 
-		// 11/00 -acl
-		javax.swing.JFrame encFrame = new javax.swing.JFrame();
-
-		encFrame.setSize(getWidth(),getHeight() );
-		cp.setSize(getWidth(),getHeight());
-		encFrame.getContentPane().add( cp, "Center");
-		
-		//make sure to create its peer
-		encFrame.addNotify();
-
-		// FIXFIX			
-		// Should make this encoder static and instantiate it lazily
-		// 11/00 -acl
-		Acme.JPM.Encoders.GifEncoder encoder = new Acme.JPM.Encoders.GifEncoder(freeChart.createBufferedImage(500, 500), out);
-		encoder.encode();
-
-		encFrame.getContentPane().removeAll();
-		encFrame.dispose();		
-	}
-}
-
-/**
- * Encodes a gif on the given stream.  This method is used heavily
- * by the readmeter server and really should be as quick as possible.
- * Creation date: (10/12/00 2:54:13 PM)
- * @param out java.io.OutputStream
- */
 public void encodeJpeg(java.io.OutputStream out) throws java.io.IOException
 {
 	synchronized(Graph.class)

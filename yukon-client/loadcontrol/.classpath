@@ -12,7 +12,6 @@
 	<classpathentry kind="lib" path="/third-party/jfreechart.jar"/>
 	<classpathentry kind="lib" path="/third-party/jcommon.jar"/>
 	<classpathentry kind="lib" path="/third-party/jtds.jar"/>
-	<classpathentry kind="lib" path="/third-party/acme.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/tdc"/>
 	<classpathentry kind="lib" path="/third-party/servlet-api.jar"/>
 	<classpathentry kind="output" path="bin"/>
