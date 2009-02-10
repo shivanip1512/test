@@ -127,7 +127,7 @@ private void init() {
 	
 	    _listData.addElement("JRE Version     : " + System.getProperty("java.version") );
 	    _listData.addElement("DB URL          : " + PoolManager.getInstance().getPrimaryUrl() );
-	    _listData.addElement("DB USser        : " + PoolManager.getInstance().getPrimaryUser() );
+	    _listData.addElement("DB User        : " + PoolManager.getInstance().getPrimaryUser() );
 
 		/* ALWAYS leave this as the last thing */
 		com.cannontech.database.db.version.CTIDatabase db = com.cannontech.common.version.VersionTools.getDatabaseVersion();
