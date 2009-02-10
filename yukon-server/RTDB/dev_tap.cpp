@@ -56,7 +56,7 @@ INT CtiDeviceTapPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPa
     {
     case PutValueRequest:
         {
-            if( parse.isKeyValid("asciiraw") )
+            if( parse.isKeyValid("asciiraw") && gConfigParms.isTrue("ALLOW_RAW_PAGE_MESSAGES") )
             {
                 string outputValue = parse.getsValue("asciirawvalue");
                 strcpy_s(OutMessage->Buffer.TAPSt.Message, 256, outputValue.c_str());

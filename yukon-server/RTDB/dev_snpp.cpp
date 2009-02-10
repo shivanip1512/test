@@ -521,7 +521,7 @@ INT CtiDeviceSnppPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandP
     {
     case PutValueRequest:
         {
-            if( parse.isKeyValid("asciiraw") )
+            if( parse.isKeyValid("asciiraw") && gConfigParms.isTrue("ALLOW_RAW_PAGE_MESSAGES") )
             {
                 string outputValue = parse.getsValue("asciirawvalue");
                 strcpy_s((char *)OutMessage->Buffer.OutMessage, 300, outputValue.c_str());
