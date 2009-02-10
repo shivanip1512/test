@@ -2,6 +2,7 @@ package com.cannontech.stars.dr.thermostat.dao;
 
 import java.util.List;
 
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.hardware.model.HardwareType;
 import com.cannontech.stars.dr.thermostat.model.ScheduleDropDownItem;
 import com.cannontech.stars.dr.thermostat.model.ThermostatSchedule;
@@ -20,6 +21,28 @@ public interface ThermostatScheduleDao {
      */
     public ThermostatSchedule getEnergyCompanyDefaultSchedule(int accountId,
             HardwareType type);
+
+    /**
+     * Method to get the default thermostat schedule for an energy company and thermostat type. This
+     * method will create a new default schedule for the energy company/type if one does not already
+     * exist
+     * @param energyCompany - Energy company to get default schedule for
+     * @param type - Type of thermostat to get schedule for
+     * @return Default schedule
+     */
+    public ThermostatSchedule getEnergyCompanyDefaultSchedule(LiteStarsEnergyCompany energyCompany,
+    		HardwareType type);
+
+    /**
+     * Method to get a copy of the energy company default schedule for the given company and
+     * hardware type
+     * @param energyCompany - Energy company to get default for
+     * @param type - Hardware type to get default for
+     * @return A copy of the energy company's default schedule for the hardware type
+     */
+    public ThermostatSchedule getCopyOfEnergyCompanyDefaultSchedule(
+    		LiteStarsEnergyCompany energyCompany,
+    		HardwareType type);
 
     /**
      * Method to get the thermostat schedule for a piece of inventory
@@ -56,8 +79,17 @@ public interface ThermostatScheduleDao {
     /**
      * Method to save a thermostat schedule
      * @param schedule - Schedule to save
+     * @param energyCompany - Energy company for schedule
      */
-    public void save(ThermostatSchedule schedule);
+    public void save(ThermostatSchedule schedule, LiteStarsEnergyCompany energyCompany);
+
+    /**
+     * Method to save an energy company default thermostat schedule
+     * @param schedule - Schedule to save
+     * @param energyCompany - Energy company for schedule
+     */
+    public void saveDefaultSchedule(
+    		ThermostatSchedule schedule, LiteStarsEnergyCompany energyCompany);
     
     /**
      * Method to delete a thermostat schedule

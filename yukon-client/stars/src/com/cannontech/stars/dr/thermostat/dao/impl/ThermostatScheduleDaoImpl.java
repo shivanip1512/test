@@ -22,9 +22,6 @@ import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.IntegerRowMapper;
-import com.cannontech.database.data.lite.stars.LiteLMThermostatSchedule;
-import com.cannontech.database.data.lite.stars.LiteLMThermostatSeason;
-import com.cannontech.database.data.lite.stars.LiteLMThermostatSeasonEntry;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.core.dao.ECMappingDao;
@@ -32,6 +29,7 @@ import com.cannontech.stars.dr.event.dao.LMCustomerEventBaseDao;
 import com.cannontech.stars.dr.hardware.model.HardwareType;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.model.ScheduleDropDownItem;
+import com.cannontech.stars.dr.thermostat.model.ThermostatMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.ThermostatSeason;
 import com.cannontech.stars.dr.thermostat.model.ThermostatSeasonEntry;
@@ -79,78 +77,77 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao, Initial
     public ThermostatSchedule getEnergyCompanyDefaultSchedule(int accountId,
             HardwareType type) {
 
-        ThermostatSchedule schedule = new ThermostatSchedule();
-        schedule.setThermostatType(type);
-
         LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(accountId);
+        return this.getEnergyCompanyDefaultSchedule(energyCompany, type);
 
-        // Convert default LiteLMThermostatSchedule into new ThermostatSchedule
-        // model object
-        int typeDefinitionId = type.getDefinitionId();
-        LiteLMThermostatSchedule defaultSchedule = energyCompany.getDefaultThermostatSchedule(typeDefinitionId);
+        
+    }
+    
+    @Override
+    @Transactional
+    public ThermostatSchedule getEnergyCompanyDefaultSchedule(
+    		LiteStarsEnergyCompany energyCompany, HardwareType type) {
 
-        ThermostatSeason season = new ThermostatSeason();
+    	Integer energyCompanyID = energyCompany.getEnergyCompanyID();
 
-        List<LiteLMThermostatSeason> defaultSeasonList = defaultSchedule.getThermostatSeasons();
-        for (LiteLMThermostatSeason defaultSeason : defaultSeasonList) {
+    	int typeEntryId = YukonListEntryHelper.getListEntryId(
+    			energyCompany, 
+    			YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE, 
+    			type.getDefinitionId());
+    	
+    	// Get the id of the default thermostat schedule for the hardware type (if one exists) 
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+    	sql.append("SELECT lmts.ScheduleId");
+    	sql.append("FROM LMThermostatSchedule lmts");
+    	sql.append("	JOIN ECToGenericMapping ectgm ON ectgm.ItemId = lmts.ScheduleId");
+		sql.append("WHERE ectgm.EnergyCompanyId = ").appendArgument(energyCompanyID);
+    	sql.append("	AND ectgm.MappingCategory = ").appendArgument("LMThermostatSchedule");
+    	sql.append("	AND lmts.ThermostatTypeId = ").appendArgument(typeEntryId);
+    	
+    	try {
+	    	Integer scheduleId = simpleJdbcTemplate.queryForInt(sql.getSql(), sql.getArguments());
+	    	
+	    	// Load and return the schedule if one exists
+	    	return this.getThermostatScheduleById(scheduleId, energyCompany);
+	    	
+    	} catch(EmptyResultDataAccessException e) {
+    		// No default schedule for the given type exists - create one and return it
+    	}
 
-        	int webConfigurationID = defaultSeason.getWebConfigurationID();
-
-        	long coolStartDate = defaultSeason.getCoolStartDate();
-        	long heatStartDate = defaultSeason.getHeatStartDate();
-        	season.setCoolStartDate(new Date(coolStartDate));
-        	season.setHeatStartDate(new Date(heatStartDate));
-
-            season.setWebConfigurationId(webConfigurationID);
-
-            List<LiteLMThermostatSeasonEntry> defaultEntryList = defaultSeason.getSeasonEntries();
-            for (LiteLMThermostatSeasonEntry defaultEntry : defaultEntryList) {
-
-                ThermostatSeasonEntry entry = new ThermostatSeasonEntry();
-
-				// Start time is seconds from midnight in DB
-                Integer startTime = defaultEntry.getStartTime();
-                entry.setStartTime(startTime / 60);
-
-            	entry.setCoolTemperature(defaultEntry.getCoolTemperature());
-            	entry.setHeatTemperature(defaultEntry.getHeatTemperature());
-
-                int timeOfWeekId = defaultEntry.getTimeOfWeekID();
-                int timeOfWeekDefinitionId = YukonListEntryHelper.getYukonDefinitionId(energyCompany,
-                                                                                       YukonSelectionListDefs.YUK_LIST_NAME_TIME_OF_WEEK,
-                                                                                       timeOfWeekId);
-                TimeOfWeek timeOfWeek = TimeOfWeek.valueOf(timeOfWeekDefinitionId);
-                entry.setTimeOfWeek(timeOfWeek);
-
-                season.addSeasonEntry(entry);
-            }
-
-            schedule.setSeason(season);
-        }
-
-        return schedule;
+    	// Create and save a new default schedule for the given hardware type
+    	ThermostatSchedule defaultSchedule = this.createDefaultSchedule(type);
+    	this.saveDefaultSchedule(defaultSchedule, energyCompany);
+    	
+    	return defaultSchedule;
+    	
+    }
+    
+    @Override
+    @Transactional
+    public ThermostatSchedule getCopyOfEnergyCompanyDefaultSchedule(
+    		LiteStarsEnergyCompany energyCompany, HardwareType type) {
+    	
+    	ThermostatSchedule defaultSchedule = 
+    		this.getEnergyCompanyDefaultSchedule(energyCompany, type);
+    	
+    	// Null out all of the ids so this is a 'copy' of the default
+    	defaultSchedule.setId(null);
+    	ThermostatSeason season = defaultSchedule.getSeason();
+    	season.setId(null);
+    	for(ThermostatSeasonEntry entry : season.getAllSeasonEntries()) {
+    		entry.setId(null);
+    	}
+    	
+    	return defaultSchedule;
+    	
     }
 
     @Override
-    public ThermostatSchedule getThermostatScheduleById(int scheduleId,
-            int accountId) {
-
+    public ThermostatSchedule getThermostatScheduleById(int scheduleId, int accountId) {
         LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(accountId);
-
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT * from LMThermostatSchedule");
-        sql.append("WHERE ScheduleId = ?");
-
-        ThermostatSchedule schedule = simpleJdbcTemplate.queryForObject(sql.toString(),
-                                                                        new ThermostatScheduleMapper(energyCompany),
-                                                                        scheduleId);
-
-        ThermostatSeason season = this.getSeason(schedule.getId(), energyCompany);
-        schedule.setSeason(season);
-
-        return schedule;
+        return this.getThermostatScheduleById(scheduleId, energyCompany);
     }
-
+    
     @Override
     public ThermostatSchedule getThermostatScheduleByInventoryId(int inventoryId) {
 
@@ -219,32 +216,56 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao, Initial
     	
     	return items;
     }
+    
+    @Override
+    @Transactional
+    public void saveDefaultSchedule(ThermostatSchedule schedule,
+    		LiteStarsEnergyCompany energyCompany) {
+
+    	// Set AccountId and InventoryId to default values
+    	schedule.setAccountId(0);
+    	schedule.setInventoryId(0);
+    	this.save(schedule, energyCompany);
+    	
+    	// Insert a row into ECToGenericMapping to tie this new default schedule
+    	// to the energy company
+    	SqlStatementBuilder ecToGenericSql = new SqlStatementBuilder();
+    	ecToGenericSql.append("INSERT INTO ECToGenericMapping");
+    	ecToGenericSql.append("(EnergyCompanyId, ItemId, MappingCategory)");
+    	ecToGenericSql.append("VALUES (?, ?, ?)");
+    	
+    	simpleJdbcTemplate.update(ecToGenericSql.getSql(), 
+    			energyCompany.getEnergyCompanyID(),
+    			schedule.getId(),
+    			"LMThermostatSchedule");
+    	
+    	
+    	
+    }
 
     @Override
     @Transactional
-    public void save(ThermostatSchedule schedule) {
+    public void save(ThermostatSchedule schedule, LiteStarsEnergyCompany energyCompany) {
 
         Integer scheduleId = schedule.getId();
         SqlStatementBuilder scheduleSql = new SqlStatementBuilder();
 
-        // Update, or Insert if null id
-        if (scheduleId == null) {
-            scheduleId = nextValueHelper.getNextValue("LMThermostatSchedule");
-            schedule.setId(scheduleId);
-
-            scheduleSql.append("INSERT INTO LMThermostatSchedule");
-            scheduleSql.append("(ScheduleName, ThermostatTypeId, AccountId, InventoryId, ScheduleId)");
-            scheduleSql.append("VALUES (?,?,?,?,?)");
-        } else {
-            scheduleSql.append("UPDATE LMThermostatSchedule");
-            scheduleSql.append("SET ScheduleName = ?, ThermostatTypeId = ?, AccountId = ?, InventoryId = ?");
-            scheduleSql.append("WHERE ScheduleId = ?");
+        // Updates are done by delete and then insert
+        if(scheduleId != null) {
+        	this.delete(scheduleId);
         }
+
+        // Get new id for schedule
+        scheduleId = nextValueHelper.getNextValue("LMThermostatSchedule");
+        schedule.setId(scheduleId);
+
+        scheduleSql.append("INSERT INTO LMThermostatSchedule");
+        scheduleSql.append("(ScheduleName, ThermostatTypeId, AccountId, InventoryId, ScheduleId)");
+        scheduleSql.append("VALUES (?,?,?,?,?)");
 
         Integer inventoryId = schedule.getInventoryId();
 
         Integer accountId = schedule.getAccountId();
-        LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(accountId);
 
         HardwareType thermostatType = schedule.getThermostatType();
         int thermostatTypeId = YukonListEntryHelper.getListEntryId(energyCompany,
@@ -259,8 +280,6 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao, Initial
                                   scheduleId);
 
         ThermostatSeason season = schedule.getSeason();
-
-        // Save cool season
         season.setScheduleId(scheduleId);
 
         // Cool season is hard-coded to June 15th
@@ -281,7 +300,7 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao, Initial
 	@Transactional
 	public void delete(int scheduleId) {
 
-		// Delete SeasonEntrys
+		// Delete SeasonEntries
 		SqlStatementBuilder deleteSeasonEntrySql = new SqlStatementBuilder();
 		deleteSeasonEntrySql.append("DELETE FROM ");
 		deleteSeasonEntrySql.append("	LMThermostatSeasonEntry");
@@ -306,6 +325,15 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao, Initial
 		
 		simpleJdbcTemplate.update(deleteScheduleSql.toString(), scheduleId);
 		
+		// Delete Schedule mapping for energy company default schedules
+		SqlStatementBuilder deleteMappingSql = new SqlStatementBuilder();
+		deleteMappingSql.append("DELETE FROM ");
+		deleteMappingSql.append("	ECToGenericMapping");
+		deleteMappingSql.append("WHERE ItemId = ").appendArgument(scheduleId);
+		deleteMappingSql.append("	AND MappingCategory = ").appendArgument("LMThermostatSchedule");
+		
+		simpleJdbcTemplate.update(deleteMappingSql.getSql(), deleteMappingSql.getArguments());
+		
 	}
 	
 	@Override
@@ -328,6 +356,30 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao, Initial
 		
 		return inventoryIds;
 	}
+	
+	/**
+	 * Helper method to get a schedule by id and energy company
+	 * @param scheduleId - Id of schedule to load
+	 * @param energyCompany - Schedule's energy company
+	 * @return Schedule
+	 */
+	private ThermostatSchedule getThermostatScheduleById(
+    		int scheduleId, LiteStarsEnergyCompany energyCompany) {
+    	
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+    	sql.append("SELECT * from LMThermostatSchedule");
+    	sql.append("WHERE ScheduleId = ?");
+    	
+    	ThermostatSchedule schedule = simpleJdbcTemplate.queryForObject(sql.toString(),
+    			new ThermostatScheduleMapper(energyCompany),
+    			scheduleId);
+    	
+    	ThermostatSeason season = this.getSeason(schedule.getId(), energyCompany);
+    	schedule.setSeason(season);
+    	
+    	return schedule;
+    	
+    }
 
     /**
      * Helper method to get a list of thermostat seasons for a given schedule
@@ -381,30 +433,21 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao, Initial
     }
 
     /**
-     * Helper method to save a thermostat season
+     * Helper method to save a thermostat season - always does insert
      * @param season - Season to save
      * @param energyCompany - Current energy company
      */
     private void saveSeason(ThermostatSeason season, LiteStarsEnergyCompany energyCompany) {
 
-        Integer seasonId = season.getId();
         SqlStatementBuilder seasonSql = new SqlStatementBuilder();
 
-        // Update, or Insert if null id
-        if (seasonId == null) {
-            seasonId = nextValueHelper.getNextValue("LMThermostatSeason");
-            season.setId(seasonId);
+    	Integer seasonId = nextValueHelper.getNextValue("LMThermostatSeason");
+        season.setId(seasonId);
 
-            seasonSql.append("INSERT INTO LMThermostatSeason");
-            seasonSql.append("(ScheduleId, WebConfigurationId");
-            seasonSql.append(", CoolStartDate, HeatStartDate, SeasonId)");
-            seasonSql.append("VALUES (?,?,?,?,?)");
-        } else {
-            seasonSql.append("UPDATE LMThermostatSeason");
-            seasonSql.append("SET ScheduleId = ?, WebConfigurationId = ?");
-            seasonSql.append(", CoolStartDate = ?, HeatStartDate = ?");
-            seasonSql.append("WHERE SeasonId = ?");
-        }
+        seasonSql.append("INSERT INTO LMThermostatSeason");
+        seasonSql.append("(ScheduleId, WebConfigurationId");
+        seasonSql.append(", CoolStartDate, HeatStartDate, SeasonId)");
+        seasonSql.append("VALUES (?,?,?,?,?)");
 
         simpleJdbcTemplate.update(seasonSql.toString(),
                                   season.getScheduleId(),
@@ -418,26 +461,14 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao, Initial
         List<ThermostatSeasonEntry> seasonEntries = season.getAllSeasonEntries();
         for (ThermostatSeasonEntry entry : seasonEntries) {
 
-            Integer entryId = entry.getId();
             SqlStatementBuilder entrySql = new SqlStatementBuilder();
+            entrySql.append("INSERT INTO LMThermostatSeasonEntry");
+            entrySql.append("(SeasonId, TimeOfWeekId, StartTime");
+            entrySql.append(", CoolTemperature, HeatTemperature, EntryId)");
+            entrySql.append("VALUES (?,?,?,?,?,?)");
 
-            // Update, or Insert if null id
-            if (entryId == null) {
-                entryId = nextValueHelper.getNextValue("LMThermostatSeasonEntry");
-                entry.setId(entryId);
-
-                entrySql.append("INSERT INTO LMThermostatSeasonEntry");
-                entrySql.append("(SeasonId, TimeOfWeekId, StartTime");
-                entrySql.append(", CoolTemperature, HeatTemperature, EntryId)");
-                entrySql.append("VALUES (?,?,?,?,?,?)");
-
-            } else {
-                entrySql.append("UPDATE LMThermostatSeasonEntry");
-                entrySql.append("SET SeasonId = ?, TimeOfWeekId = ?, StartTime = ?");
-                entrySql.append(", CoolTemperature = ?, HeatTemperature = ?");
-                entrySql.append("WHERE EntryId = ?");
-            }
-
+            Integer entryId = nextValueHelper.getNextValue("LMThermostatSeasonEntry");
+            entry.setId(entryId);
             entry.setSeasonId(seasonId);
 
             TimeOfWeek timeOfWeek = entry.getTimeOfWeek();
@@ -458,6 +489,56 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao, Initial
 
         }
 
+    }
+    
+    /**
+     * Helper method to get a default thermostat schedule with 4 season entries each
+     * for Weekday, Saturday and Sunday time of weeks.
+     * @param type - Type of hardware to get schedule for
+     * @return Default Schedule
+     */
+    private ThermostatSchedule createDefaultSchedule(HardwareType type) {
+    	
+    	ThermostatSchedule schedule = new ThermostatSchedule();
+    	schedule.setThermostatType(type);
+    	
+    	// Add season
+    	ThermostatSeason season = new ThermostatSeason();
+    	season.setThermostatMode(ThermostatMode.COOL);
+    	
+    	List<TimeOfWeek> timeOfWeekList = new ArrayList<TimeOfWeek>();
+    	timeOfWeekList.add(TimeOfWeek.WEEKDAY);
+    	timeOfWeekList.add(TimeOfWeek.SATURDAY);
+    	timeOfWeekList.add(TimeOfWeek.SUNDAY);
+    	
+    	List<Integer> timeOfDayList = new ArrayList<Integer>();
+    	// 6:00 am
+    	timeOfDayList.add(360);
+    	// 8:30 am
+    	timeOfDayList.add(510);
+    	// 5:00 pm
+    	timeOfDayList.add(1020);
+    	// 9:00 pm
+    	timeOfDayList.add(1260);
+    	
+    	// Add season entries for each time of week
+    	for(TimeOfWeek timeOfWeek : timeOfWeekList) {
+    		// Add season entries for each time of day
+    		for(Integer minutesFromMidnight : timeOfDayList) {
+
+    			ThermostatSeasonEntry entry = new ThermostatSeasonEntry();
+    			entry.setTimeOfWeek(timeOfWeek);
+    			entry.setStartTime(minutesFromMidnight);
+    			entry.setCoolTemperature(72);
+    			entry.setHeatTemperature(72);
+    			season.addSeasonEntry(entry);
+    		}
+    	}
+    	
+    	schedule.setSeason(season);
+
+        return schedule;
+    	
     }
 
     /**

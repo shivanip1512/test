@@ -230,7 +230,7 @@ public enum YukonRoleProperty {
     OPERATOR_CONSUMER_INFO_APPLIANCES_CREATE(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.CONSUMER_INFO_APPLIANCES_CREATE, booleanType()),
     OPERATOR_CONSUMER_INFO_HARDWARES(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.CONSUMER_INFO_HARDWARES, booleanType()),
     OPERATOR_CONSUMER_INFO_HARDWARES_CREATE(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.CONSUMER_INFO_HARDWARES_CREATE, booleanType()),
-    OPERATOR_CONSUMER_INFO_HARDWARES_THERMOSTAT(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.CONSUMER_INFO_HARDWARES_THERMOSTAT, stringType()),
+    OPERATOR_CONSUMER_INFO_HARDWARES_THERMOSTAT(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.CONSUMER_INFO_HARDWARES_THERMOSTAT, booleanType()),
     OPERATOR_CONSUMER_INFO_WORK_ORDERS(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.CONSUMER_INFO_WORK_ORDERS, booleanType()),
     OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_USERNAME(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN_USERNAME, booleanType()),
     OPERATOR_CONSUMER_INFO_ADMIN_FAQ(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.CONSUMER_INFO_ADMIN_FAQ, stringType()),

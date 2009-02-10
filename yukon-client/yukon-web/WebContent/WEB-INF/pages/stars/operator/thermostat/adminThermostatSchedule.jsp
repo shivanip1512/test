@@ -26,11 +26,6 @@
     // Set global variable in thermostat2.js
     tempUnit = '${temperatureUnit}';
     
-    function setToDefault() {
-        schedules = $H('${defaultScheduleJSONString}'.evalJSON());
-        setCurrentSchedule(currentTimePeriod);
-    }
-    
     var schedules = null;
 
     function init() {
@@ -45,19 +40,10 @@
     
     function saveSchedule(action) {
     
-        var scheduleName = $('scheduleName');
-        if(scheduleName != null && $F(scheduleName) == ''){
-            alert('${noScheduleName}');
-            $('scheduleName').focus();
-        } else {
-            
-            // Save the current settings before submitting form
-            getCurrentSchedule(currentTimePeriod);
-            
-            $('saveAction').value = action;
-            
-            $('scheduleForm').submit();
-        }
+        // Save the current settings before submitting form
+	    getCurrentSchedule(currentTimePeriod);
+	   
+	    $('scheduleForm').submit();
         
     }
     
@@ -90,7 +76,6 @@
 
     <h3>
         <cti:msg key="yukon.dr.operator.thermostatSchedule.header" /><br>
-        <cti:msg key="${thermostatLabel}" htmlEscape="true"/><br>
     </h3>
     
     <br>
@@ -123,13 +108,13 @@
     
     <div align="center">
     
-        <form id="scheduleForm" name="scheduleForm" method="POST" action="/spring/stars/operator/thermostat/schedule/save">
-            <input id="thermostatId" type="hidden" name="thermostatIds" value="${thermostatIds}">
+        <form id="scheduleForm" name="scheduleForm" method="POST" action="/spring/stars/admin/thermostat/schedule/save">
 
             <input id="temperatureUnit" type="hidden" name="temperatureUnit" value="${temperatureUnit}">
             <input id="schedules" type="hidden" name="schedules">
+            <input id="type" type="hidden" name="type" value="${thermostatType}">
+            <input id="scheduleId" type="hidden" name="scheduleId" value="${schedule.id}">
             <input id="timeOfWeek" type="hidden" name="timeOfWeek" value="WEEKDAY">
-            <input id="saveAction" type="hidden" name="saveAction">
             
 
             <input type="hidden" name="ConfirmOnMessagePage">
@@ -144,15 +129,6 @@
             <input type="hidden" name="tempH4" id="tempH4">
 
 
-            <c:set var="multipleThermostatsSelected" value="${fn:length(fn:split(thermostatIds, ',')) > 1}"></c:set>
-            <c:if test="${multipleThermostatsSelected}">
-                <cti:url var="allUrl" value="/spring/stars/operator/thermostat/view/all">
-                    <cti:param name="thermostatIds" value="${thermostatIds}"></cti:param>
-                </cti:url>
-                <a href="${allUrl}"><cti:msg key="yukon.dr.operator.thermostatSchedule.changeSelected" /></a><br><br>
-            </c:if>
-            
-
             <table width="80%" border="1" cellspacing="0" cellpadding="2">
                 <tr> 
                     <td align="center" valign="bottom" class="Background"> 
@@ -163,14 +139,6 @@
                                     <label class="timePeriodText" for="allRadio">
                                         <cti:msg key="yukon.dr.operator.thermostatSchedule.scheduleModeAll" />
                                     </label><br>
-                                    <c:if test="${thermostatType == 'UTILITY_PRO'}">
-	                                    <cti:checkProperty property="ConsumerInfoRole.THERMOSTAT_SCHEDULE_5_2">
-		                                    <input id="WEEKDAY_WEEKEND" type="radio" name="scheduleMode" value="WEEKDAY_WEEKEND" onclick="changeScheduleMode()" ${scheduleMode == 'WEEKDAY_WEEKEND' ? 'checked' : '' } />
-		                                    <label class="timePeriodText" for="52Radio">
-		                                        <cti:msg key="yukon.dr.operator.thermostatSchedule.scheduleMode52" />
-		                                    </label><br>
-		                                </cti:checkProperty>
-		                            </c:if>
                                     <input id="WEEKDAY_SAT_SUN" type="radio" name="scheduleMode" value="WEEKDAY_SAT_SUN" onclick="changeScheduleMode()" ${scheduleMode == 'WEEKDAY_SAT_SUN' ? 'checked' : '' } />
                                     <label class="timePeriodText" for="511Radio">
                                         <cti:msg key="yukon.dr.operator.thermostatSchedule.scheduleMode511" />
@@ -202,14 +170,6 @@
                                 </td>
                                 <td class="TableCell"  style="width: 50%; text-align: left; vertical-align: top; padding-top: 11px;"> 
                                     &nbsp;
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="TableCell" style="width: 50%; text-align: center; vertical-align: top;"> 
-                                    <cti:msg key="yukon.dr.operator.thermostatSchedule.hints" arguments="/operator/Consumer/ThermostatScheduleHints.jsp?thermostatIds=${thermostatIds}" />
-                                </td>
-                                <td class="TableCell"  style="width: 50%; text-align: center; vertical-align: top;"> 
-                                    <cti:msg key="yukon.dr.operator.thermostatSchedule.temporaryAdjustments" arguments="/operator/Consumer/Thermostat.jsp?InvNo=${inventoryNumber}" />
                                 </td>
                             </tr>
                         </table>
@@ -622,33 +582,12 @@
             
             <table width="80%" border="0" cellpadding="5">
                 <tr>
-                    <td style="text-align: center; font-size: .9em;"> 
-                        <c:if test="${!multipleThermostatsSelected}">
-                            <cti:msg key="yukon.dr.operator.thermostatSchedule.name"></cti:msg>
-                            <input type="text" id="scheduleName" name="scheduleName" value="<spring:escapeBody htmlEscape="true">${schedule.name}</spring:escapeBody>" ></input>
-                        </c:if>
-                        <input type="hidden" name="scheduleId" value="${schedule.id}" ></input>
-                    </td>
-                </tr>
-                <tr>
                     <td style="text-align: center;"> 
-                        <cti:msg var="saveApply" key="yukon.dr.operator.thermostatSchedule.saveApply"></cti:msg>
-                        <input type="button" name="saveApply" value="${saveApply}" onclick="saveSchedule('saveApply')"></input>
-                        <c:if test="${!multipleThermostatsSelected}">
-                            <cti:msg var="save" key="yukon.dr.operator.thermostatSchedule.save"></cti:msg>
-                            <input type="button" name="save" value="${save}" onclick="saveSchedule('save');"></input>
-                        </c:if>
-                        <cti:msg var="recommend" key="yukon.dr.operator.thermostatSchedule.recommend"></cti:msg>
-                        <input type="button" id="Default" value="${recommend}" onclick="setToDefault();"></input>
+                        <cti:msg var="save" key="yukon.dr.operator.thermostatSchedule.save"></cti:msg>
+                        <input type="button" name="save" value="${save}" onclick="saveSchedule('save');"></input>
                     </td>
                 </tr>
-                <c:if test="${thermostatType == 'UTILITY_PRO'}">
-	                <tr>
-	                    <td>
-	                        <cti:msg key="yukon.dr.operator.thermostatSchedule.periodMessage"></cti:msg>
-	                    </td>
-	                </tr>
-                </c:if>
+                
             </table>
         </form>
     </div>

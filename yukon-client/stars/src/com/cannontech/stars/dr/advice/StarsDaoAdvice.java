@@ -49,18 +49,19 @@ public class StarsDaoAdvice {
 
     }
 
-    @After("bean(thermostatScheduleDao) && saveMethodNamePointCut() && args(schedule)")
-    public void doThermostatScheduleAction(ThermostatSchedule schedule)
-            throws Throwable {
+    @After("bean(thermostatScheduleDao) && saveMethodNamePointCut() && args(schedule, energyCompany)")
+    public void doThermostatScheduleAction(ThermostatSchedule schedule, 
+    		LiteStarsEnergyCompany energyCompany)
+    	throws Throwable {
 
         Integer accountId = schedule.getAccountId();
-        LiteStarsEnergyCompany energyCompany = mappingDao.getCustomerAccountEC(accountId);
-
-        // Clear and reload account info cache entry
-        LiteStarsCustAccountInformation custAccountInformation = energyCompany.getCustAccountInformation(accountId,
-                                                                                                         false);
-        energyCompany.deleteCustAccountInformation(custAccountInformation);
-
+        if(accountId != null) {
+	
+	        // Clear and reload account info cache entry
+	        LiteStarsCustAccountInformation custAccountInformation = energyCompany.getCustAccountInformation(accountId,
+	                                                                                                         false);
+	        energyCompany.deleteCustAccountInformation(custAccountInformation);
+        }
 
     }
 

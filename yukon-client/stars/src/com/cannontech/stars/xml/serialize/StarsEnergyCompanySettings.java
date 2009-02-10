@@ -11,7 +11,6 @@ public class StarsEnergyCompanySettings {
     private StarsServiceCompanies _starsServiceCompanies;
     private StarsSubstations _starsSubstations;
     private StarsExitInterviewQuestions _starsExitInterviewQuestions;
-    private StarsDefaultThermostatSchedules _starsDefaultThermostatSchedules;
 
     public StarsEnergyCompanySettings() {
         
@@ -36,11 +35,6 @@ public class StarsEnergyCompanySettings {
     {
         return this._starsCustomerSelectionLists;
     } 
-
-    public StarsDefaultThermostatSchedules getStarsDefaultThermostatSchedules()
-    {
-        return this._starsDefaultThermostatSchedules;
-    }
 
     public StarsEnergyCompany getStarsEnergyCompany()
     {
@@ -91,11 +85,6 @@ public class StarsEnergyCompanySettings {
     public void setStarsCustomerSelectionLists(StarsCustomerSelectionLists starsCustomerSelectionLists)
     {
         this._starsCustomerSelectionLists = starsCustomerSelectionLists;
-    } 
-
-    public void setStarsDefaultThermostatSchedules(StarsDefaultThermostatSchedules starsDefaultThermostatSchedules)
-    {
-        this._starsDefaultThermostatSchedules = starsDefaultThermostatSchedules;
     } 
 
     public void setStarsEnergyCompany(StarsEnergyCompany starsEnergyCompany)

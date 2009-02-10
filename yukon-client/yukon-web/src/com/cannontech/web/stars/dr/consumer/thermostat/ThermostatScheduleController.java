@@ -110,8 +110,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
             YukonMessageSourceResolvable resolvable = new YukonMessageSourceResolvable("yukon.dr.consumer.thermostatSchedule.multipleLabel");
             map.addAttribute("thermostatLabel", resolvable);
             if (schedule == null) {
-                schedule = thermostatScheduleDao.getEnergyCompanyDefaultSchedule(accountId,
-                                                                                 thermostatType);
+                schedule = thermostatService.getThermostatSchedule(thermostat, account);
             }
 
             defaultSchedule = thermostatScheduleDao.getEnergyCompanyDefaultSchedule(accountId,
@@ -181,6 +180,16 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         boolean failed = false;
         for (Integer thermostatId : thermostatIds) {
 
+        	ThermostatSchedule thermostatSchedule = 
+        		thermostatScheduleDao.getThermostatScheduleByInventoryId(thermostatId);
+        	if(thermostatSchedule != null) {
+        		// Set id so schedule gets updated
+        		schedule.setId(thermostatSchedule.getId());
+        	} else {
+        		// Set id so schedule gets created
+        		schedule.setId(null);
+        	}
+        	
             Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
 
             HardwareType type = thermostat.getType();
@@ -220,7 +229,6 @@ public class ThermostatScheduleController extends AbstractThermostatController {
                 // Update the schedule if it exists already or create a new
                 // schedule
 
-                schedule.setId(scheduleId);
                 schedule.setInventoryId(thermostatId);
 
                 // Save changes to schedule
@@ -232,6 +240,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
 
                 message = ThermostatScheduleUpdateResult.CONSUMER_SAVE_SCHEDULE_SUCCESS;
             }
+			
         }
 
         // If there was a failure and we are processing multiple

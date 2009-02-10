@@ -10,30 +10,28 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
-import com.cannontech.database.data.lite.stars.LiteLMThermostatSchedule;
-import com.cannontech.database.data.lite.stars.LiteLMThermostatSeason;
-import com.cannontech.database.data.lite.stars.LiteLMThermostatSeasonEntry;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.database.data.stars.hardware.LMThermostatSeason;
-import com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry;
 import com.cannontech.database.db.stars.hardware.StaticLoadGroupMapping;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
-import com.cannontech.stars.util.ECUtils;
+import com.cannontech.stars.dr.hardware.model.HardwareType;
+import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
+import com.cannontech.stars.dr.thermostat.model.ThermostatSchedule;
+import com.cannontech.stars.dr.util.YukonListEntryHelper;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
@@ -195,97 +193,6 @@ public class CreateLMHardwareAction implements ActionBase {
 		return operation;
 	}
 	
-	private static LiteLMThermostatSchedule initThermostatSchedule(int hwTypeID, int accountID, int invID, LiteStarsEnergyCompany energyCompany) 
-		throws TransactionException
-	{
-		com.cannontech.database.data.stars.hardware.LMThermostatSchedule schedule =
-				new com.cannontech.database.data.stars.hardware.LMThermostatSchedule();
-		com.cannontech.database.db.stars.hardware.LMThermostatSchedule scheduleDB = schedule.getLmThermostatSchedule();
-		
-		scheduleDB.setThermostatTypeID( new Integer(hwTypeID) );
-		scheduleDB.setAccountID( new Integer(accountID) );
-		scheduleDB.setInventoryID( new Integer(invID) );
-		
-		int weekdayID = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_WEEKDAY).getEntryID();
-		int[] weekdayIDs = new int[] {
-				energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_MONDAY).getEntryID(),
-				energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_TUESDAY).getEntryID(),
-				energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_WEDNESDAY).getEntryID(),
-				energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_THURSDAY).getEntryID(),
-				energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_FRIDAY).getEntryID()
-		};
-		
-		// If we are creating the default commercial thermostat schedule
-		int hwTypeDefID = DaoFactory.getYukonListDao().getYukonListEntry( hwTypeID ).getYukonDefID();
-		boolean isDftCommTstat = (hwTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT)
-				&& ECUtils.isDefaultEnergyCompany( energyCompany );
-		
-		List<LiteLMThermostatSeason> liteSeasons = energyCompany.getDefaultThermostatSchedule(hwTypeDefID).getThermostatSeasons();
-		for (int i = 0; i < liteSeasons.size(); i++) {
-			LiteLMThermostatSeason liteSeason = liteSeasons.get(i);
-			
-			LMThermostatSeason season = new LMThermostatSeason();
-			StarsLiteFactory.setLMThermostatSeason( season.getLMThermostatSeason(), liteSeason );
-			season.getLMThermostatSeason().setSeasonID( null );
-			
-			List<LMThermostatSeasonEntry> entries = season.getLMThermostatSeasonEntries();
-			
-			for (int j = 0; j < liteSeason.getSeasonEntries().size(); j++) {
-				LiteLMThermostatSeasonEntry liteEntry = liteSeason.getSeasonEntries().get(j);
-				
-				if (hwTypeDefID != YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ENERGYPRO || liteEntry.getTimeOfWeekID() != weekdayID)
-				{
-					LMThermostatSeasonEntry entry = new LMThermostatSeasonEntry();
-					StarsLiteFactory.setLMThermostatSeasonEntry( entry, liteEntry );
-					entry.setEntryID( null );
-					
-					if (isDftCommTstat && (j % 4 == 1 || j % 4 == 2)) {
-						entry.setCoolTemperature( new Integer(-1) );
-						entry.setHeatTemperature( new Integer(-1) );
-					}
-					entries.add( entry );
-				}
-				else {
-					for (int k= 0; k < weekdayIDs.length; k++) {
-						LMThermostatSeasonEntry entry = new LMThermostatSeasonEntry();
-						StarsLiteFactory.setLMThermostatSeasonEntry( entry, liteEntry );
-						entry.setEntryID( null );
-						entry.setTimeOfWeekID( new Integer(weekdayIDs[k]) );
-						
-						entries.add( entry );
-					}
-				}
-			}
-			
-			schedule.getThermostatSeasons().add( season );
-		}
-		
-		schedule = Transaction.createTransaction( Transaction.INSERT, schedule ).execute();
-		
-		return StarsLiteFactory.createLiteLMThermostatSchedule( schedule );
-	}
-	
-	/**
-	 * Used to create the default thermostat schedule for an energy company
-	 * @throws TransactionException
-	 */
-	public static LiteLMThermostatSchedule initThermostatSchedule(int hwTypeDefID) throws TransactionException
-	{
-		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getDefaultEnergyCompany();
-		int hwTypeID = energyCompany.getYukonListEntry( hwTypeDefID ).getEntryID();
-		return initThermostatSchedule( hwTypeID, 0, 0, energyCompany );
-	}
-	
-	/**
-	 * Used to create the thermostat schedule for a given LM hardware (thermostat)
-	 * @throws TransactionException
-	 */
-	public static LiteLMThermostatSchedule initThermostatSchedule(LiteStarsLMHardware liteHw, LiteStarsEnergyCompany energyCompany)
-		throws TransactionException
-	{
-		return initThermostatSchedule( liteHw.getLmHardwareTypeID(), liteHw.getAccountID(), liteHw.getInventoryID(), energyCompany );
-	}
-	
 	/**
 	 * Add a hardware to a customer account or inventory.
 	 * To add to a customer account: if the hardware doesn't exist before,
@@ -348,9 +255,30 @@ public class CreateLMHardwareAction implements ActionBase {
 					LiteStarsLMHardware liteHw = new LiteStarsLMHardware();
 					StarsLiteFactory.setLiteStarsLMHardware( liteHw, hw );
 					
-					if (liteHw.isThermostat())
-						initThermostatSchedule( liteHw, energyCompany );
-	            	
+					if (liteHw.isThermostat()) {
+						// Get the energy company default schedule and save a copy for this
+						// thermostat
+						
+						ThermostatScheduleDao thermostatScheduleDao = 
+							YukonSpringHook.getBean(
+									"thermostatScheduleDao", ThermostatScheduleDao.class);
+						
+						int lmHardwareTypeID = liteHw.getLmHardwareTypeID();
+						int typeDefinitionId = YukonListEntryHelper.getYukonDefinitionId(
+													energyCompany, 
+													YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE, 
+													lmHardwareTypeID);
+						HardwareType hardwareType = HardwareType.valueOf(typeDefinitionId);
+						ThermostatSchedule schedule = 
+							thermostatScheduleDao.getCopyOfEnergyCompanyDefaultSchedule(
+								energyCompany, hardwareType);
+						
+						schedule.setAccountId(liteHw.getAccountID());
+						schedule.setInventoryId(liteHw.getInventoryID());
+						
+						thermostatScheduleDao.save(schedule, energyCompany);
+						
+					}
 					liteInv = liteHw;
 				}
 				else {

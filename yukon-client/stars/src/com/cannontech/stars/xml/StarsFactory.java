@@ -33,7 +33,6 @@ import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsInv;
 import com.cannontech.stars.xml.serialize.StarsSiteInformation;
 import com.cannontech.stars.xml.serialize.StarsSrvReq;
-import com.cannontech.stars.xml.serialize.StarsThermostatSchedule;
 import com.cannontech.stars.xml.serialize.StarsUsr;
 import com.cannontech.stars.xml.serialize.StarsWebConfig;
 import com.cannontech.stars.xml.serialize.StreetAddress;
@@ -588,29 +587,6 @@ public class StarsFactory {
 		if (order.getActionTaken() != null)
 			workOrderBase.getWorkOrderBase().setActionTaken( order.getActionTaken() );
 	}
-	
-	
-	/* StarsThermostatSchedule factory methods */
-
-	public static StarsThermostatSchedule newStarsThermostatSchedule(StarsThermostatSchedule sched) {
-		StarsThermostatSchedule newSched = new StarsThermostatSchedule();
-		newSched.setDay( sched.getDay() );
-		newSched.setTime1( sched.getTime1() );
-		newSched.setCoolTemperature1( sched.getCoolTemperature1() );
-		newSched.setHeatTemperature1( sched.getHeatTemperature1() );
-		newSched.setTime2( sched.getTime2() );
-		newSched.setCoolTemperature2( sched.getCoolTemperature2() );
-		newSched.setHeatTemperature2( sched.getHeatTemperature2() );
-		newSched.setTime3( sched.getTime3() );
-		newSched.setCoolTemperature3( sched.getCoolTemperature3() );
-		newSched.setHeatTemperature3( sched.getHeatTemperature3() );
-		newSched.setTime4( sched.getTime4() );
-		newSched.setCoolTemperature4( sched.getCoolTemperature4() );
-		newSched.setHeatTemperature4( sched.getHeatTemperature4() );
-		
-		return newSched;
-	}
-	
 	
 	/* StarsWebConfig factory methods */
 

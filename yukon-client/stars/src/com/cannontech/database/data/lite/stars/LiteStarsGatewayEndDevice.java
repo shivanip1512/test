@@ -1,6 +1,7 @@
 package com.cannontech.database.data.lite.stars;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteBase;
@@ -34,7 +35,7 @@ public class LiteStarsGatewayEndDevice extends LiteBase {
 	private int heatRuntime = 0;
 	private String battery = null;
 	
-	private ArrayList infoStrings = null;
+	private List<String> infoStrings = null;
 	
 	public LiteStarsGatewayEndDevice() {
 		super();
@@ -91,9 +92,9 @@ public class LiteStarsGatewayEndDevice extends LiteBase {
 	 * Returns the infoStrings.
 	 * @return ArrayList
 	 */
-	public ArrayList getInfoStrings() {
+	public List<String> getInfoStrings() {
 		if (infoStrings == null)
-			infoStrings = new ArrayList();
+			infoStrings = new ArrayList<String>();
 		return infoStrings;
 	}
 
@@ -189,7 +190,7 @@ public class LiteStarsGatewayEndDevice extends LiteBase {
 	 * Sets the infoStrings.
 	 * @param infoStrings The infoStrings to set
 	 */
-	public void setInfoStrings(ArrayList infoStrings) {
+	public void setInfoStrings(List<String> infoStrings) {
 		this.infoStrings = infoStrings;
 	}
 

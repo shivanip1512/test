@@ -174,7 +174,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
             schedule.setInventoryId(lmHw.getInventoryID());
 
             // save the default thermostat schedule on the account
-            thermostatScheduleDao.save(schedule);
+            thermostatScheduleDao.save(schedule, energyCompany);
         }
     }
 

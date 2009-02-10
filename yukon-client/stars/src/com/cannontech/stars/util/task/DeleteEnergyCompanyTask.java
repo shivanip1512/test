@@ -18,7 +18,6 @@ import com.cannontech.database.SqlStatement;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteContact;
-import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteInterviewQuestion;
 import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
@@ -29,6 +28,8 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.db.stars.ECToGenericMapping;
 import com.cannontech.database.db.stars.customer.CustomerAccount;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.web.action.DeleteCustAccountAction;
 import com.cannontech.stars.web.util.StarsAdminUtil;
@@ -218,14 +219,13 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 			currentAction = "Deleting default thermostat schedules";
 			
 			ECToGenericMapping[] schedules = ECToGenericMapping.getAllMappingItems(
-					energyCompany.getEnergyCompanyID(), com.cannontech.database.db.stars.hardware.LMThermostatSchedule.TABLE_NAME );
+					energyCompany.getEnergyCompanyID(), "LMThermostatSchedule");
 			if (schedules != null) {
+				ThermostatScheduleDao thermostatScheduleDao = 
+		    		YukonSpringHook.getBean("thermostatScheduleDao", ThermostatScheduleDao.class);
 				for (int i = 0; i < schedules.length; i++) {
-					com.cannontech.database.data.stars.hardware.LMThermostatSchedule schedule =
-							new com.cannontech.database.data.stars.hardware.LMThermostatSchedule();
-					schedule.setScheduleID( schedules[i].getItemID() );
-					
-					Transaction.createTransaction( Transaction.DELETE, schedule ).execute();
+					int scheduleId = schedules[i].getItemID();
+					thermostatScheduleDao.delete(scheduleId);
 				}
 			}
 			

@@ -10,6 +10,8 @@ import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.customer.Customer;
 import com.cannontech.database.data.stars.event.EventAccount;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
 
 
 /**
@@ -114,8 +116,9 @@ public class CustomerAccount extends DBPersistent {
     			getCustomerAccount().getAccountID() );
         
         // Delete thermostat schedules
-        com.cannontech.database.data.stars.hardware.LMThermostatSchedule.deleteAllThermostatSchedules(
-        		getCustomerAccount().getAccountID().intValue() );
+    	ThermostatScheduleDao thermostatScheduleDao = 
+    		YukonSpringHook.getBean("thermostatScheduleDao", ThermostatScheduleDao.class);
+    	thermostatScheduleDao.deleteSchedulesForAccount(getCustomerAccount().getAccountID());
         
 		// delete from the mapping table
 		delete( "ECToAccountMapping", "AccountID", getCustomerAccount().getAccountID() );

@@ -50,8 +50,7 @@ public abstract class AbstractThermostatOperatorController {
 
         // If thermostatIds exists, split and create Integer list
         if (!StringUtils.isBlank(thermostatIds)) {
-        	List<Integer> tempIdList = ServletUtil.getIntegerListFromString(thermostatIds);
-        	idList.addAll(tempIdList);
+        	idList = ServletUtil.getIntegerListFromString(thermostatIds);
         }
 
         return idList;

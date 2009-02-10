@@ -4,6 +4,8 @@
 <%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.roles.consumer.ResidentialCustomerRole" %>
 <%@ page import="com.cannontech.web.navigation.CtiNavObject" %>
+<%@ page import="com.cannontech.stars.dr.hardware.model.HardwareType" %>
+
 <jsp:useBean id="wareAdmin" scope="page" class="com.cannontech.stars.web.bean.WarehouseAdminBean" />
 <%	if (!DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY)
 		|| ecSettings == null) {
@@ -685,27 +687,18 @@ function deleteWarehouse(form, warehouseId) {
                           <tr> 
                             <td> 
                               <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
-                                <%
-		for (int i = 0; i < dftThermoSchedules.getStarsThermostatProgramCount(); i++) {
-			StarsThermostatTypes type = dftThermoSchedules.getStarsThermostatProgram(i).getThermostatType();
-			
-			String typeName = "";
-			if (type.getType() == StarsThermostatTypes.EXPRESSSTAT_TYPE)
-				typeName = "ExpressStat";
-			else if (type.getType() == StarsThermostatTypes.COMMERCIAL_TYPE)
-				typeName = "Commercial ExpressStat";
-			else if (type.getType() == StarsThermostatTypes.ENERGYPRO_TYPE)
-				typeName = "EnergyPro";
-			else if (type.getType() == StarsThermostatTypes.EXPRESSSTAT_HEATPUMP_TYPE)
-				typeName = "ExpressStat Heat Pump";
-            else if (type.getType() == StarsThermostatTypes.UTILITYPRO_TYPE)
-                typeName = "UtilityPRO";
+<%
+        List<HardwareType> hardwareTypeList = liteEC.getAvailableThermostatTypes();
+		for (HardwareType hardwareType : hardwareTypeList) {
+
 %>
                                 <tr> 
                                   <td width="5%">&nbsp;</td>
-                                  <td width="70%"><%= typeName %></td>
+                                  <td width="70%">
+                                    <cti:msg key="<%= hardwareType.getDisplayKey() %>"></cti:msg>
+                                  </td>
                                   <td width="25%"> 
-                                    <input type="button" name="Edit2" value="Edit" onclick="location.href = 'ThermSchedule.jsp?type=<%= type.toString() %>'">
+                                    <input type="button" name="Edit2" value="Edit" onclick="location.href = 'ThermSchedule.jsp?type=<%= hardwareType.toString() %>'">
                                   </td>
                                 </tr>
                                 <%

@@ -3,11 +3,10 @@ package com.cannontech.web.stars.dr.operator.thermostat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
-import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -21,13 +20,17 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.HardwareType;
@@ -37,11 +40,14 @@ import com.cannontech.stars.dr.thermostat.model.ScheduleDropDownItem;
 import com.cannontech.stars.dr.thermostat.model.ThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleUpdateResult;
-import com.cannontech.stars.dr.thermostat.model.ThermostatSeason;
-import com.cannontech.stars.dr.thermostat.model.ThermostatSeasonEntry;
 import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
 import com.cannontech.stars.dr.thermostat.service.ThermostatService;
+import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
+import com.cannontech.stars.xml.serialize.StarsInventories;
+import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRole;
 
 /**
@@ -49,12 +55,96 @@ import com.cannontech.web.security.annotation.CheckRole;
  */
 @CheckRole(YukonRole.CONSUMER_INFO)
 @Controller
-public class ThermostatOperatorScheduleController extends AbstractThermostatOperatorController {
+public class ThermostatOperatorScheduleController 
+	extends AbtractThermostatOperatorScheduleController {
 
     private InventoryDao inventoryDao;
     private ThermostatScheduleDao thermostatScheduleDao;
     private CustomerDao customerDao;
     private ThermostatService thermostatService;
+    
+    private CustomerAccountDao customerAccountDao;
+	private StarsInventoryBaseDao starsInventoryBaseDao;
+    
+    @ModelAttribute("thermostatIds")
+    public List<Integer> getThermostatIds(HttpServletRequest request)
+            throws ServletRequestBindingException {
+
+        String thermostatIds = ServletRequestUtils.getStringParameter(request,
+                                                                      "thermostatIds");
+
+        // Override the toString method to get a comma separated list with no
+        // leading or trailing brackets
+        List<Integer> idList = new ArrayList<Integer>() {
+            @Override
+            public String toString() {
+                return super.toString().replaceAll("[\\[|\\]]", "");
+            }
+
+        };
+
+        // If thermostatIds exists, split and create Integer list
+        if (!StringUtils.isBlank(thermostatIds)) {
+        	List<Integer> tempIdList = ServletUtil.getIntegerListFromString(thermostatIds);
+        	idList.addAll(tempIdList);
+        }
+
+        return idList;
+    }
+    
+    @ModelAttribute("customerAccount")
+    public CustomerAccount getCustomerAccount(HttpServletRequest request) {
+    	
+    	// Get the account info from the session
+    	HttpSession session = request.getSession();
+    	StarsCustAccountInformation accountInfo = 
+            (StarsCustAccountInformation) session.getAttribute(ServletUtils.TRANSIENT_ATT_CUSTOMER_ACCOUNT_INFO);
+    	
+        int accountId = accountInfo.getStarsCustomerAccount().getAccountID();
+		CustomerAccount account = customerAccountDao.getById(accountId);
+        return account;
+    }
+    
+    /**
+     * Helper method to get the legacy 'inventory number' for use with leagcy stars operator
+     * urls
+     * @param request - Current request
+     * @param thermostatId - Id to get number for
+     * @return Inventory number
+     */
+    protected int getInventoryNumber(HttpServletRequest request, int thermostatId) {
+    	
+    	StarsCustAccountInformation accountInfo = 
+            (StarsCustAccountInformation) request.getSession().getAttribute(
+            		ServletUtils.TRANSIENT_ATT_CUSTOMER_ACCOUNT_INFO);
+        StarsInventories inventories = accountInfo.getStarsInventories();
+        StarsInventory[] starsInventory = inventories.getStarsInventory();
+        int count = 0;
+        for(StarsInventory inventory : starsInventory) {
+        	if(thermostatId == inventory.getInventoryID()) {
+        		break;
+        	}
+        	count++;
+        }
+        
+        return count;
+    }
+    
+    /**
+     * Helper method to make sure the inventory being used belongs to the current account 
+     */
+    public void checkInventoryAgainstAccount(List<Integer> inventoryIdList, CustomerAccount customerAccount){
+    	
+    	for(Integer inventoryId : inventoryIdList) {
+    	
+	    	LiteInventoryBase inventory = starsInventoryBaseDao.getById(inventoryId);
+	    	int accountId = customerAccount.getAccountId();
+			if(inventory.getAccountID() != accountId) {
+	    		throw new NotAuthorizedException("The Inventory with id: " + inventoryId + 
+	    				" does not belong to the current customer account with id: " + accountId);
+	    	}
+    	}
+    }
 
     @RequestMapping(value = "/operator/thermostat/schedule/view", method = RequestMethod.GET)
     public String view(@ModelAttribute("customerAccount") CustomerAccount account, 
@@ -109,8 +199,7 @@ public class ThermostatOperatorScheduleController extends AbstractThermostatOper
             YukonMessageSourceResolvable resolvable = new YukonMessageSourceResolvable("yukon.dr.operator.thermostatSchedule.multipleLabel");
             map.addAttribute("thermostatLabel", resolvable);
             if (schedule == null) {
-                schedule = thermostatScheduleDao.getEnergyCompanyDefaultSchedule(accountId,
-                                                                                 thermostatType);
+                schedule = thermostatService.getThermostatSchedule(thermostat, account);
             }
 
             defaultSchedule = thermostatScheduleDao.getEnergyCompanyDefaultSchedule(accountId,
@@ -181,6 +270,16 @@ public class ThermostatOperatorScheduleController extends AbstractThermostatOper
         boolean failed = false;
         for (Integer thermostatId : thermostatIds) {
 
+        	ThermostatSchedule thermostatSchedule = 
+        		thermostatScheduleDao.getThermostatScheduleByInventoryId(thermostatId);
+        	if(thermostatSchedule != null) {
+        		// Set id so schedule gets updated
+        		schedule.setId(thermostatSchedule.getId());
+        	} else {
+        		// Set id so schedule gets created
+        		schedule.setId(null);
+        	}
+        	
             Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
 
             HardwareType type = thermostat.getType();
@@ -220,7 +319,6 @@ public class ThermostatOperatorScheduleController extends AbstractThermostatOper
                 // Update the schedule if it exists already or create a new
                 // schedule
 
-                schedule.setId(scheduleId);
                 schedule.setInventoryId(thermostatId);
 
                 // Save changes to schedule
@@ -353,189 +451,6 @@ public class ThermostatOperatorScheduleController extends AbstractThermostatOper
     	return "redirect:/operator/Consumer/ThermSchedule.jsp?InvNo=" + inventoryNumber;
     }
 
-    /**
-     * Helper method to default the 2nd and 3rd time/temp values for a two
-     * time/temp schedule
-     * @param schedule - Schedule to default
-     */
-    private void setToTwoTimeTemps(ThermostatSchedule schedule) {
-
-        ThermostatSeason season = schedule.getSeason();
-        if(season != null) {
-	        Map<TimeOfWeek, List<ThermostatSeasonEntry>> seasonEntryMap = season.getSeasonEntryMap();
-	        for (Map.Entry<TimeOfWeek, List<ThermostatSeasonEntry>> entry : seasonEntryMap.entrySet()) {
-	
-	            TimeOfWeek key = entry.getKey();
-	            List<ThermostatSeasonEntry> entryList = entry.getValue();
-	
-	            // There should always be 4 season entries per season
-	            if (entryList.size() != 4) {
-	                throw new IllegalArgumentException("There should be 4 season entries in the " + 
-	                		season.getThermostatMode() + ", " + key.toString() + " season entry list.");
-	            }
-	
-	            // Default the time to 0 seconds past midnight and the temp to
-	            // -1
-	            ThermostatSeasonEntry firstEntry = entryList.get(1);
-	            firstEntry.setStartTime(0);
-	            firstEntry.setCoolTemperature(-1);
-	            firstEntry.setHeatTemperature(-1);
-	            ThermostatSeasonEntry lastEntry = entryList.get(2);
-	            lastEntry.setStartTime(0);
-	            lastEntry.setCoolTemperature(-1);
-	            lastEntry.setHeatTemperature(-1);
-	        }
-        }
-    }
-
-    /**
-     * Helper method to get a JSON object representation of a thermostat
-     * schedule
-     * @param schedule - Schedule to get object for
-     * @param isFahrenheit - True if temp should be fahrenheit
-     * @return JSON object
-     */
-    private JSONObject getJSONForSchedule(ThermostatSchedule schedule, boolean isFahrenheit) {
-
-        ThermostatSeason season = schedule.getSeason();
-
-        JSONObject scheduleObject = new JSONObject();
-
-        JSONObject seasonObject = this.getJSONForSeason(season, isFahrenheit);
-
-        scheduleObject.put("season", seasonObject);
-
-
-        return scheduleObject;
-    }
-
-    /**
-     * Helper method to get a JSON object representation of a thermostat season
-     * @param season - Season to get object for
-     * @param isFahrenheit - True if temp should be fahrenheit
-     * @return JSON object
-     */
-    private JSONObject getJSONForSeason(ThermostatSeason season, boolean isFahrenheit) {
-
-        JSONObject object = new JSONObject();
-        Map<TimeOfWeek, List<ThermostatSeasonEntry>> seasonEntryMap = season.getSeasonEntryMap();
-        for (TimeOfWeek timeOfWeek : seasonEntryMap.keySet()) {
-
-            List<ThermostatSeasonEntry> entryList = seasonEntryMap.get(timeOfWeek);
-
-            for (ThermostatSeasonEntry entry : entryList) {
-                Integer time = entry.getStartTime();
-                Integer coolTemperature = entry.getCoolTemperature();
-                Integer heatTemperature = entry.getHeatTemperature();
-
-                JSONObject timeTemp = new JSONObject();
-                timeTemp.put("time", time);
-                
-                if(!isFahrenheit) {
-                	if(coolTemperature != null) {
-	                	coolTemperature = 
-	                		(int) CtiUtilities.convertTemperature(
-	                			coolTemperature,
-								CtiUtilities.FAHRENHEIT_CHARACTER,
-								CtiUtilities.CELSIUS_CHARACTER);
-                	}
-                	if(heatTemperature != null) {
-	                	heatTemperature = 
-	                		(int) CtiUtilities.convertTemperature(
-	                			heatTemperature,
-	                			CtiUtilities.FAHRENHEIT_CHARACTER,
-	                			CtiUtilities.CELSIUS_CHARACTER);
-                	}
-                }
-                
-                // Set temp to default farenheit if null
-                if(coolTemperature == null) {
-                	coolTemperature = (isFahrenheit)?72:22;
-                }
-                if(heatTemperature == null) {
-                	heatTemperature = (isFahrenheit)?72:22;
-                }
-
-                timeTemp.put("coolTemp", coolTemperature);
-                timeTemp.put("heatTemp", heatTemperature);
-
-                object.accumulate(timeOfWeek.toString(), timeTemp);
-            }
-        }
-
-        return object;
-    }
-
-    /**
-     * Helper method to get a thermostat schedule from a JSON string
-     * @param jsonString - String which contains the schedule
-     * @return Schedule
-     */
-    private ThermostatSchedule getScheduleForJSON(String jsonString,
-            boolean isFahrenheit) {
-
-        ThermostatSchedule schedule = new ThermostatSchedule();
-        JSONObject object = new JSONObject(jsonString);
-
-        JSONObject seasonObject = object.getJSONObject("season");
-        ThermostatSeason season = this.getSeasonForJSON(seasonObject, isFahrenheit);
-        schedule.setSeason(season);
-
-        return schedule;
-    }
-
-    /**
-     * Helper method to get a thermostat season from a JSON string
-     * @param seasonObject - String which contains the season
-     * @return Season
-     */
-    private ThermostatSeason getSeasonForJSON(JSONObject seasonObject,
-            boolean isFahrenheit) {
-
-        ThermostatSeason season = new ThermostatSeason();
-
-        List<TimeOfWeek> timeOfWeekList = new ArrayList<TimeOfWeek>();
-        timeOfWeekList.add(TimeOfWeek.WEEKDAY);
-        timeOfWeekList.add(TimeOfWeek.SATURDAY);
-        timeOfWeekList.add(TimeOfWeek.SUNDAY);
-
-        // Add the season entries (time/value pairs) for each of the
-        // TimeOfWeeks
-        for (TimeOfWeek timeOfWeek : timeOfWeekList) {
-
-            JSONArray timeOfWeekArray = seasonObject.getJSONArray(timeOfWeek.toString());
-
-            for (Object object : timeOfWeekArray.toArray()) {
-                JSONObject jsonObject = (JSONObject) object;
-
-                Integer time = jsonObject.getInt("time");
-                Integer coolTemperature = jsonObject.getInt("coolTemp");
-                Integer heatTemperature = jsonObject.getInt("heatTemp");
-
-                // Convert celsius temp to fahrenheit if needed
-                if (!isFahrenheit) {
-                    coolTemperature = (int) CtiUtilities.convertTemperature(coolTemperature,
-                                                                        CtiUtilities.CELSIUS_CHARACTER,
-                                                                        CtiUtilities.FAHRENHEIT_CHARACTER);
-                    heatTemperature = (int) CtiUtilities.convertTemperature(heatTemperature,
-                    		CtiUtilities.CELSIUS_CHARACTER,
-                    		CtiUtilities.FAHRENHEIT_CHARACTER);
-                }
-
-                ThermostatSeasonEntry entry = new ThermostatSeasonEntry();
-                entry.setStartTime(time);
-                entry.setCoolTemperature(coolTemperature);
-                entry.setHeatTemperature(heatTemperature);
-                entry.setTimeOfWeek(timeOfWeek);
-
-                season.addSeasonEntry(entry);
-            }
-        }
-
-        return season;
-
-    }
-
     @Autowired
     public void setInventoryDao(InventoryDao inventoryDao) {
         this.inventoryDao = inventoryDao;
@@ -556,5 +471,16 @@ public class ThermostatOperatorScheduleController extends AbstractThermostatOper
     public void setThermostatService(ThermostatService thermostatService) {
         this.thermostatService = thermostatService;
     }
+    
+    @Autowired
+    public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
+		this.customerAccountDao = customerAccountDao;
+	}
+    
+    @Autowired
+    public void setStarsInventoryBaseDao(
+			StarsInventoryBaseDao starsInventoryBaseDao) {
+		this.starsInventoryBaseDao = starsInventoryBaseDao;
+	}
     
 }

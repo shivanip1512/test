@@ -81,7 +81,6 @@
     StarsServiceCompanies companies = null;
     StarsSubstations substations = null;
     StarsExitInterviewQuestions exitQuestions = null;
-    StarsDefaultThermostatSchedules dftThermoSchedules = null;
     Map<String,StarsCustSelectionList> selectionListTable = null;
     
     StarsCustomerAccount account = null;
@@ -97,7 +96,6 @@
     StarsLMProgramHistory programHistory = null;
     StarsCallReportHistory callHist = null;
     StarsServiceRequestHistory serviceHist = null;
-    StarsSavedThermostatSchedules thermSchedules = null;
     StarsUser userLogin = null;
     
     Vector<GraphCustomerList> custGraphs = null;
@@ -145,7 +143,6 @@
 	    	companies = ecSettings.getStarsServiceCompanies();
 	    	substations = ecSettings.getStarsSubstations();
 	    	exitQuestions = ecSettings.getStarsExitInterviewQuestions();
-	    	dftThermoSchedules = ecSettings.getStarsDefaultThermostatSchedules();
 	        
 	        TimeZone tz = TimeZone.getTimeZone(energyCompany.getTimeZone());
 	        datePart.setTimeZone(tz);
@@ -214,7 +211,6 @@
 		    		programHistory = programs.getStarsLMProgramHistory();
 		    		callHist = accountInfo.getStarsCallReportHistory();
 		    		serviceHist = accountInfo.getStarsServiceRequestHistory();
-		    		thermSchedules = accountInfo.getStarsSavedThermostatSchedules();
 		    		userLogin = accountInfo.getStarsUser();
 		            
 		    		try{

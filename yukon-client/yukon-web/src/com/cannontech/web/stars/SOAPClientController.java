@@ -13,7 +13,6 @@ import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.ActionBase;
-import com.cannontech.stars.web.action.ApplyThermostatScheduleAction;
 import com.cannontech.stars.web.action.CreateApplianceAction;
 import com.cannontech.stars.web.action.CreateCallAction;
 import com.cannontech.stars.web.action.CreateLMHardwareAction;
@@ -23,12 +22,10 @@ import com.cannontech.stars.web.action.DeleteCallReportAction;
 import com.cannontech.stars.web.action.DeleteCustAccountAction;
 import com.cannontech.stars.web.action.DeleteLMHardwareAction;
 import com.cannontech.stars.web.action.DeleteServiceRequestAction;
-import com.cannontech.stars.web.action.DeleteThermostatScheduleAction;
 import com.cannontech.stars.web.action.GetCustAccountAction;
 import com.cannontech.stars.web.action.MultiAction;
 import com.cannontech.stars.web.action.NewCustAccountAction;
 import com.cannontech.stars.web.action.ProgramSignUpAction;
-import com.cannontech.stars.web.action.SaveThermostatScheduleAction;
 import com.cannontech.stars.web.action.SearchCustAccountAction;
 import com.cannontech.stars.web.action.SendOddsForControlAction;
 import com.cannontech.stars.web.action.UpdateApplianceAction;
@@ -42,7 +39,6 @@ import com.cannontech.stars.web.action.UpdateLoginAction;
 import com.cannontech.stars.web.action.UpdateResidenceInfoAction;
 import com.cannontech.stars.web.action.UpdateServiceRequestAction;
 import com.cannontech.stars.web.action.UpdateThermostatManualOptionAction;
-import com.cannontech.stars.web.action.UpdateThermostatScheduleAction;
 import com.cannontech.stars.web.action.YukonSwitchCommandAction;
 import com.cannontech.stars.xml.util.StarsConstants;
 import com.cannontech.util.ServletUtil;
@@ -345,21 +341,8 @@ public class SOAPClientController implements Controller {
             }
             return null;
         }
-        else if (action.equalsIgnoreCase("UpdateThermostatSchedule")) {
-            clientAction = new UpdateThermostatScheduleAction();
-        }
         else if (action.equalsIgnoreCase("UpdateThermostatOption")) {
             clientAction = new UpdateThermostatManualOptionAction();
-        }
-        else if (action.equalsIgnoreCase("SaveThermostatSchedule")) {
-            clientAction = new SaveThermostatScheduleAction();
-            if (errorURL == null) errorURL = referer;
-        }
-        else if (action.equalsIgnoreCase("ApplyThermostatSchedule")) {
-            clientAction = new ApplyThermostatScheduleAction();
-        }
-        else if (action.equalsIgnoreCase("DeleteThermostatSchedule")) {
-            clientAction = new DeleteThermostatScheduleAction();
         }
         else if (action.equalsIgnoreCase("SendControlOdds")) {
             clientAction = new SendOddsForControlAction();

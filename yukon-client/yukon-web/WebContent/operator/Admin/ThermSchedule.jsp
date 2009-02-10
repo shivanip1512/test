@@ -1,27 +1,15 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
-<%
-	StarsThermostatTypes thermoType = StarsThermostatTypes.valueOf(request.getParameter("type"));
-	
-	StarsThermostatProgram thermoProgram = null;
-	for (int i = 0; i < dftThermoSchedules.getStarsThermostatProgramCount(); i++) {
-		if (dftThermoSchedules.getStarsThermostatProgram(i).getThermostatType().getType() == thermoType.getType()) {
-			thermoProgram = dftThermoSchedules.getStarsThermostatProgram(i);
-			break;
-		}
-	}
-	
-	StarsThermostatDynamicData curSettings = null;
-	int invID = -1;
-	int[] invIDs = new int[0];
-	boolean allTherm = false;
-	String thermNoStr = "";
-%>
+
+
 <html>
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
-<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
+      <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
+      <link rel="stylesheet" href="../../WebConfig/yukon/styles/YukonGeneralStyles.css" type="text/css">
+      <link rel="stylesheet" href="../../WebConfig/yukon/styles/StandardStyles.css" type="text/css">
+      <link rel="stylesheet" href="../../WebConfig/yukon/styles/StarsConsumerStyles.css" type="text/css">
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0" onload="init()">
@@ -49,33 +37,11 @@
               <span class="TitleHeader">ADMINISTRATION - DEFAULT THERMOSTAT SCHEDULE</span><br>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
-<%
-	if (thermoType.getType() == StarsThermostatTypes.EXPRESSSTAT_TYPE) {
-%>
-			  <%@ include file="../../include/therm_schedule.jspf" %>
-<%
-	}
-	else if (thermoType.getType() == StarsThermostatTypes.COMMERCIAL_TYPE) {
-%>
-			  <%@ include file="../../include/therm_schedule1.jspf" %>
-<%
-	}
-	else if (thermoType.getType() == StarsThermostatTypes.ENERGYPRO_TYPE) {
-%>
-			  <%@ include file="../../include/therm_schedule2.jspf" %>
-<%
-	}
-	else if (thermoType.getType() == StarsThermostatTypes.EXPRESSSTAT_HEATPUMP_TYPE) {
-%>
-			  <%@ include file="../../include/therm_schedule3.jspf" %>
-<%
-    }
-    else if (thermoType.getType() == StarsThermostatTypes.UTILITYPRO_TYPE) {
-%>
-              <%@ include file="../../include/therm_schedule4.jspf" %>
-<%
-	}
-%>
+
+              <!--  'type' parameter is passed through automatically to include request -->
+              <cti:url var="scheduleUrl" value="/spring/stars/admin/thermostat/schedule/view" />
+              <jsp:include page="${scheduleUrl}" />
+
 			  <p align="center" class="MainText">
 			    <%@ include file="../../include/copyright.jsp" %>
 			  </p>

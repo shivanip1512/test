@@ -161,6 +161,8 @@ public class ThermostatServiceImpl implements ThermostatService {
             HardwareType type = thermostat.getType();
             schedule = thermostatScheduleDao.getEnergyCompanyDefaultSchedule(account.getAccountId(),
                                                                              type);
+            // Null out the id so we don't try to update the default schedule
+            schedule.setId(null);
         }
 
         return schedule;
@@ -184,7 +186,9 @@ public class ThermostatServiceImpl implements ThermostatService {
                                                                    schedule,
                                                                    timeOfWeek,
                                                                    applyToAll);
-        thermostatScheduleDao.save(scheduleToSave);
+        
+        LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(account);
+        thermostatScheduleDao.save(scheduleToSave, energyCompany);
 
     }
 

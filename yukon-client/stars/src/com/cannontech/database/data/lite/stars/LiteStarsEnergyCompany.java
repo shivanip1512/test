@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +45,6 @@ import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.stars.hardware.LMThermostatSchedule;
 import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.customer.Customer;
 import com.cannontech.database.db.macro.MacroTypes;
@@ -62,16 +60,14 @@ import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
+import com.cannontech.stars.dr.hardware.model.HardwareType;
 import com.cannontech.stars.util.ECUtils;
-import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.action.CreateLMHardwareAction;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
 import com.cannontech.stars.xml.serialize.StarsCustomerSelectionLists;
-import com.cannontech.stars.xml.serialize.StarsDefaultThermostatSchedules;
 import com.cannontech.stars.xml.serialize.StarsEnergyCompany;
 import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
 import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
@@ -81,7 +77,6 @@ import com.cannontech.stars.xml.serialize.StarsServiceCompanies;
 import com.cannontech.stars.xml.serialize.StarsServiceCompany;
 import com.cannontech.stars.xml.serialize.StarsSubstation;
 import com.cannontech.stars.xml.serialize.StarsSubstations;
-import com.cannontech.stars.xml.serialize.StarsThermostatProgram;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.PrimitiveArrays;
 
@@ -174,8 +169,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
     private List<LiteInterviewQuestion> interviewQuestions = null;
     
     private List<Integer> routeIDs = null;
-    
-    private Map<Integer,LiteLMThermostatSchedule> dftThermSchedules = null;
     
     private long nextCallNo = 0;
     private long nextOrderNo = 0;
@@ -375,7 +368,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
         interviewQuestions = null;
         
         routeIDs = null;
-        dftThermSchedules = null;
         
         nextCallNo = 0;
         nextOrderNo = 0;
@@ -555,6 +547,28 @@ public class LiteStarsEnergyCompany extends LiteBase {
     
     public YukonSelectionList getYukonSelectionList(String listName) {
         return getYukonSelectionList(listName, true, true);
+    }
+    
+    public List<HardwareType> getAvailableThermostatTypes() {
+    	List<HardwareType> typeList = new ArrayList<HardwareType>();
+    	
+    	YukonSelectionList selectionList = 
+    		this.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE);
+    	for(YukonListEntry entry : selectionList.getYukonListEntries()) {
+    		int definitionId = entry.getYukonDefID();
+    		if(definitionId == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT ||
+				definitionId == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT ||
+				definitionId == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT_HEATPUMP ||
+				definitionId == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_UTILITYPRO || 
+	            definitionId == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ENERGYPRO) 
+    		{
+    			HardwareType type = HardwareType.valueOf(definitionId);
+	    		typeList.add(type);
+    		}
+    	}
+    	
+    	return typeList;
+    	
     }
     
     public YukonSelectionList addYukonSelectionList(String listName, YukonSelectionList dftList, boolean populateDefault) {
@@ -852,57 +866,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
         return routeIDs;
     }
     
-    public synchronized LiteLMThermostatSchedule getDefaultThermostatSchedule(int hwTypeDefID) {
-        // For default energy company, the same settings is returned for any hardware types
-        if (ECUtils.isDefaultEnergyCompany( this ))
-            hwTypeDefID = 0;
-        
-        try {
-            if (dftThermSchedules == null) {
-                dftThermSchedules = new Hashtable<Integer,LiteLMThermostatSchedule>();
-                ECToGenericMapping[] items = ECToGenericMapping.getAllMappingItems(
-                        getEnergyCompanyID(), com.cannontech.database.db.stars.hardware.LMThermostatSchedule.TABLE_NAME );
-                
-                for (int i = 0; i < items.length; i++) {
-                    LMThermostatSchedule schedule = new LMThermostatSchedule();
-                    schedule.setScheduleID( items[i].getItemID() );
-                    schedule = Transaction.createTransaction( Transaction.RETRIEVE, schedule ).execute();
-                    
-                    LiteLMThermostatSchedule liteSchedule = StarsLiteFactory.createLiteLMThermostatSchedule( schedule );
-                    
-                    int defID = DaoFactory.getYukonListDao().getYukonListEntry( liteSchedule.getThermostatTypeID() ).getYukonDefID();
-                    dftThermSchedules.put( new Integer(defID), liteSchedule );
-                }
-            }
-            
-            LiteLMThermostatSchedule dftThermSchedule = dftThermSchedules.get( new Integer(hwTypeDefID) );
-            if (dftThermSchedule != null) return dftThermSchedule;
-            
-            if (ECUtils.isDefaultEnergyCompany( this )) {
-                CTILogger.info("No default thermostat settings found for yukondefid = " + hwTypeDefID);
-                return null;
-            }
-            
-            dftThermSchedule = CreateLMHardwareAction.initThermostatSchedule( hwTypeDefID );
-            
-            ECToGenericMapping mapping = new ECToGenericMapping();
-            mapping.setEnergyCompanyID( getEnergyCompanyID() );
-            mapping.setItemID( new Integer(dftThermSchedule.getScheduleID()) );
-            mapping.setMappingCategory( com.cannontech.database.db.stars.hardware.LMThermostatSchedule.TABLE_NAME );
-            Transaction.createTransaction( Transaction.INSERT, mapping ).execute();
-            
-            dftThermSchedules.put( new Integer(hwTypeDefID), dftThermSchedule );
-            
-            CTILogger.info( "Default LM hardware loaded for energy company #" + getEnergyCompanyID() );
-            return dftThermSchedule;
-        }
-        catch (Exception e) {
-            CTILogger.error( e.getMessage(), e );
-        }
-        
-        return null;
-    }
-    
     public synchronized List<LiteInterviewQuestion> getAllInterviewQuestions() {
         if (interviewQuestions == null) {
             interviewQuestions = new ArrayList<LiteInterviewQuestion>();
@@ -1176,33 +1139,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
             LiteStarsThermostatSettings settings = new LiteStarsThermostatSettings();
             settings.setInventoryID( liteHw.getInventoryID() );
             
-            // Check to see if thermostat schedule is valid, if not, recreate the schedule
-            LiteLMThermostatSchedule liteSched = null;
-            com.cannontech.database.data.stars.hardware.LMThermostatSchedule schedule = null;
-            
-            com.cannontech.database.db.stars.hardware.LMThermostatSchedule scheduleDB =
-                    com.cannontech.database.db.stars.hardware.LMThermostatSchedule.getThermostatSchedule( liteHw.getInventoryID() );
-            
-            if (scheduleDB != null) {
-                schedule = new com.cannontech.database.data.stars.hardware.LMThermostatSchedule();
-                schedule.setScheduleID( scheduleDB.getScheduleID() );
-                schedule = Transaction.createTransaction( Transaction.RETRIEVE, schedule ).execute();
-                
-                liteSched = StarsLiteFactory.createLiteLMThermostatSchedule( schedule );
-            }
-            
-            if (!InventoryUtils.isValidThermostatSchedule( liteSched )) {
-                if (schedule != null)
-                    Transaction.createTransaction( Transaction.DELETE, schedule ).execute();
-                
-                if (liteHw.getInventoryID() >= 0)
-                    settings.setThermostatSchedule( CreateLMHardwareAction.initThermostatSchedule(liteHw, this) );
-                else
-                    settings.setThermostatSchedule( CreateLMHardwareAction.initThermostatSchedule(liteHw, StarsDatabaseCache.getInstance().getDefaultEnergyCompany()) );
-            }
-            else
-                settings.setThermostatSchedule( liteSched );
-            
             com.cannontech.database.data.stars.event.LMThermostatManualEvent[] events =
                     com.cannontech.database.data.stars.event.LMThermostatManualEvent.getAllLMThermostatManualEvents( liteHw.getInventoryID() );
             if (events != null) {
@@ -1294,9 +1230,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 
     public void deleteCustAccountInformation(LiteStarsCustAccountInformation liteAcctInfo) {
         if (liteAcctInfo == null) return;
-        
-        // Remove from opt out event queue
-        // OptOutEventQueue.getInstance().removeEvents( liteAcctInfo.getAccountID() );
         
         // Remove customer from the cache
         ServerUtils.handleDBChange( liteAcctInfo.getCustomer(), DBChangeMsg.CHANGE_TYPE_DELETE );
@@ -1675,7 +1608,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
             starsOperECSettings.setStarsServiceCompanies( getStarsServiceCompanies() );
             starsOperECSettings.setStarsSubstations( getStarsSubstations() );
             starsOperECSettings.setStarsExitInterviewQuestions( getStarsExitInterviewQuestions() );
-            starsOperECSettings.setStarsDefaultThermostatSchedules( getStarsDefaultThermostatSchedules() );
             return starsOperECSettings;
         }
         else if (StarsUtils.isResidentialCustomer(user.getYukonUser())) {
@@ -1685,7 +1617,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
             starsCustECSettings.setStarsEnrollmentPrograms( getStarsEnrollmentPrograms() );
             starsCustECSettings.setStarsCustomerSelectionLists( getStarsCustomerSelectionLists(user) );
             starsCustECSettings.setStarsExitInterviewQuestions( getStarsExitInterviewQuestions() );
-            starsCustECSettings.setStarsDefaultThermostatSchedules( getStarsDefaultThermostatSchedules() );
             return starsCustECSettings;
         }
         
@@ -1791,59 +1722,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
         }
 
         return starsExitQuestions;
-    }
-    
-    public synchronized StarsDefaultThermostatSchedules getStarsDefaultThermostatSchedules() {
-        boolean hasBasic = false;
-        boolean hasEpro = false;
-        boolean hasComm = false;
-        boolean hasPump = false;
-        boolean hasUPro = false;
-        
-        YukonSelectionList devTypeList = getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE);
-        for (int i = 0; i < devTypeList.getYukonListEntries().size(); i++) {
-            YukonListEntry entry = devTypeList.getYukonListEntries().get(i);
-            if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT)
-                hasBasic = true;
-            else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ENERGYPRO)
-                hasEpro = true;
-            else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT)
-                hasComm = true;
-            else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT_HEATPUMP)
-                hasPump = true;
-            else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_UTILITYPRO)
-                hasUPro = true;
-        }
-        
-        StarsDefaultThermostatSchedules starsDftThermSchedules = new StarsDefaultThermostatSchedules();
-        
-        if (hasBasic) {
-            StarsThermostatProgram starsThermProg = StarsLiteFactory.createStarsThermostatProgram(
-                    getDefaultThermostatSchedule(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT), this );
-            starsDftThermSchedules.addStarsThermostatProgram( starsThermProg );
-        }
-        if (hasEpro) {
-            StarsThermostatProgram starsThermProg = StarsLiteFactory.createStarsThermostatProgram(
-                    getDefaultThermostatSchedule(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ENERGYPRO), this );
-            starsDftThermSchedules.addStarsThermostatProgram( starsThermProg );
-        }
-        if (hasComm) {
-            StarsThermostatProgram starsThermProg = StarsLiteFactory.createStarsThermostatProgram(
-                    getDefaultThermostatSchedule(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT), this );
-            starsDftThermSchedules.addStarsThermostatProgram( starsThermProg );
-        }
-        if (hasPump) {
-            StarsThermostatProgram starsThermProg = StarsLiteFactory.createStarsThermostatProgram(
-                    getDefaultThermostatSchedule(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT_HEATPUMP), this );
-            starsDftThermSchedules.addStarsThermostatProgram( starsThermProg );
-        }
-        if (hasUPro) {
-            StarsThermostatProgram starsThermProg = StarsLiteFactory.createStarsThermostatProgram(
-                    getDefaultThermostatSchedule(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_UTILITYPRO), this );
-            starsDftThermSchedules.addStarsThermostatProgram( starsThermProg );
-        }
-        
-        return starsDftThermSchedules;
     }
     
     public StarsCustAccountInformation getStarsCustAccountInformation(LiteStarsCustAccountInformation liteAcctInfo) {

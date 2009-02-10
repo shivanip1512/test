@@ -431,6 +431,12 @@ function changeScheduleMode() {
     
     currentScheduleMode = mode;
 
+    if(currentScheduleMode == 'ALL') {
+    	getCurrentSchedule('WEEKEND');
+    	getCurrentSchedule('SATURDAY');
+    	getCurrentSchedule('SUNDAY');
+    }
+    
     // Always default to weekday selected when mode changes
     changeTimePeriod('WEEKDAY');
     

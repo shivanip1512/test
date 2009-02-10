@@ -5,10 +5,8 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteBase;
-import com.cannontech.stars.util.StarsMsgUtils;
 
 /**
  * @author yao
@@ -24,7 +22,6 @@ public class LiteStarsThermostatSettings extends LiteBase {
 			new java.text.SimpleDateFormat( "yyyy/MM/dd HH:mm:ss z" );
 	private static final String UNKNOWN_STRING = "(UNKNOWN)";
 	
-	private LiteLMThermostatSchedule thermostatSchedule = null;
 	private List<LiteLMThermostatManualEvent> thermostatManualEvents = null;	// List of LMThermostatManualEvent
 	private LiteStarsGatewayEndDevice dynamicData = null;
 	
@@ -52,14 +49,7 @@ public class LiteStarsThermostatSettings extends LiteBase {
 				liteHw.getManufacturerSerialNumber(), new Integer(hwTypeDefID) );
 		if (data == null || data.length == 0) return;
 		
-		/* Thermostat schedules
-		 * First dimension: monday, tuesday, ..., sunday
-		 * Second dimension: wake, leave, return, sleep
-		 * Third dimension: hour, minute, cool setpoint, heat setpoint
-		 */
-		int[][][] schedules = new int[7][4][4];
-		
-		ArrayList infoStrings = getDynamicData().getInfoStrings();
+		List<String> infoStrings = getDynamicData().getInfoStrings();
 		infoStrings.clear();
 		
 		int fanStateDftID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_FAN_STAT_DEFAULT ).getEntryID();
@@ -111,230 +101,6 @@ public class LiteStarsThermostatSettings extends LiteBase {
 					dynamicData.setDisplayedTemperature( Integer.parseInt(st.nextToken()) );
 					dynamicData.setDisplayedTempUnit( st.nextToken() );
 				}
-				else if (dataType == YukonListEntryTypes.YUK_DEF_ID_GED_SCHEDULE_MON_WAKE) {
-					StringTokenizer st = new StringTokenizer( dataValue, "," );
-					String fan = st.nextToken();
-					schedules[0][0][0] = Integer.parseInt( st.nextToken() );
-					schedules[0][0][1] = Integer.parseInt( st.nextToken() );
-					schedules[0][0][2] = Integer.parseInt( st.nextToken() );
-					schedules[0][0][3] = Integer.parseInt( st.nextToken() );
-				}
-				else if (dataType == YukonListEntryTypes.YUK_DEF_ID_GED_SCHEDULE_MON_LEAVE) {
-					StringTokenizer st = new StringTokenizer( dataValue, "," );
-					String fan = st.nextToken();
-					schedules[0][1][0] = Integer.parseInt( st.nextToken() );
-					schedules[0][1][1] = Integer.parseInt( st.nextToken() );
-					schedules[0][1][2] = Integer.parseInt( st.nextToken() );
-					schedules[0][1][3] = Integer.parseInt( st.nextToken() );
-				}
-				else if (dataType == YukonListEntryTypes.YUK_DEF_ID_GED_SCHEDULE_MON_RETURN) {
-					StringTokenizer st = new StringTokenizer( dataValue, "," );
-					String fan = st.nextToken();
-					schedules[0][2][0] = Integer.parseInt( st.nextToken() );
-					schedules[0][2][1] = Integer.parseInt( st.nextToken() );
-					schedules[0][2][2] = Integer.parseInt( st.nextToken() );
-					schedules[0][2][3] = Integer.parseInt( st.nextToken() );
-				}
-				else if (dataType == YukonListEntryTypes.YUK_DEF_ID_GED_SCHEDULE_MON_SLEEP) {
-					StringTokenizer st = new StringTokenizer( dataValue, "," );
-					String fan = st.nextToken();
-					schedules[0][3][0] = Integer.parseInt( st.nextToken() );
-					schedules[0][3][1] = Integer.parseInt( st.nextToken() );
-					schedules[0][3][2] = Integer.parseInt( st.nextToken() );
-					schedules[0][3][3] = Integer.parseInt( st.nextToken() );
-				}
-				else if (dataType == YukonListEntryTypes.YUK_DEF_ID_GED_SCHEDULE_TUE_WAKE) {
-					StringTokenizer st = new StringTokenizer( dataValue, "," );
-					String fan = st.nextToken();
-					schedules[1][0][0] = Integer.parseInt( st.nextToken() );
-					schedules[1][0][1] = Integer.parseInt( st.nextToken() );
-					schedules[1][0][2] = Integer.parseInt( st.nextToken() );
-					schedules[1][0][3] = Integer.parseInt( st.nextToken() );
-				}
-				else if (dataType == YukonListEntryTypes.YUK_DEF_ID_GED_SCHEDULE_TUE_LEAVE) {
-					StringTokenizer st = new StringTokenizer( dataValue, "," );
-					String fan = st.nextToken();
-					schedules[1][1][0] = Integer.parseInt( st.nextToken() );
-					schedules[1][1][1] = Integer.parseInt( st.nextToken() );
-					schedules[1][1][2] = Integer.parseInt( st.nextToken() );
-					schedules[1][1][3] = Integer.parseInt( st.nextToken() );
-				}
-				else if (dataType == YukonListEntryTypes.YUK_DEF_ID_GED_SCHEDULE_TUE_RETURN) {
-					StringTokenizer st = new StringTokenizer( dataValue, "," );
-					String fan = st.nextToken();
-					schedules[1][2][0] = Integer.parseInt( st.nextToken() );
-					schedules[1][2][1] = Integer.parseInt( st.nextToken() );
-					schedules[1][2][2] = Integer.parseInt( st.nextToken() );
-					schedules[1][2][3] = Integer.parseInt( st.nextToken() );
-				}
-				else if (dataType == YukonListEntryTypes.YUK_DEF_ID_GED_SCHEDULE_TUE_SLEEP) {
-					StringTokenizer st = new StringTokenizer( dataValue, "," );
-					String fan = st.nextToken();
-					schedules[1][3][0] = Integer.parseInt( st.nextToken() );
-					schedules[1][3][1] = Integer.parseInt( st.nextToken() );
-					schedules[1][3][2] = Integer.parseInt( st.nextToken() );
-					schedules[1][3][3] = Integer.parseInt( st.nextToken() );
-				}
-				else if (dataType == YukonListEntryTypes.YUK_DEF_ID_GED_SCHEDULE_WED_WAKE) {
-					StringTokenizer st = new StringTokenizer( dataValue, "," );
-					String fan = st.nextToken();
-					schedules[2][0][0] = Integer.parseInt( st.nextToken() );
-					schedules[2][0][1] = Integer.parseInt( st.nextToken() );
-					schedules[2][0][2] = Integer.parseInt( st.nextToken() );
-					schedules[2][0][3] = Integer.parseInt( st.nextToken() );
-				}
-				else if (dataType == YukonListEntryTypes.YUK_DEF_ID_GED_SCHEDULE_WED_LEAVE) {
-					StringTokenizer st = new StringTokenizer( dataValue, "," );
-					String fan = st.nextToken();
-					schedules[2][1][0] = Integer.parseInt( st.nextToken() );
-					schedules[2][1][1] = Integer.parseInt( st.nextToken() );
-					schedules[2][1][2] = Integer.parseInt( st.nextToken() );
-					schedules[2][1][3] = Integer.parseInt( st.nextToken() );
-				}
-				else if (dataType == YukonListEntryTypes.YUK_DEF_ID_GED_SCHEDULE_WED_RETURN) {
-					StringTokenizer st = new StringTokenizer( dataValue, "," );
-					String fan = st.nextToken();
-					schedules[2][2][0] = Integer.parseInt( st.nextToken() );
-					schedules[2][2][1] = Integer.parseInt( st.nextToken() );
-					schedules[2][2][2] = Integer.parseInt( st.nextToken() );
-					schedules[2][2][3] = Integer.parseInt( st.nextToken() );
-				}
-				else if (dataType == YukonListEntryTypes.YUK_DEF_ID_GED_SCHEDULE_WED_SLEEP) {
-					StringTokenizer st = new StringTokenizer( dataValue, "," );
-					String fan = st.nextToken();
-					schedules[2][3][0] = Integer.parseInt( st.nextToken() );
-					schedules[2][3][1] = Integer.parseInt( st.nextToken() );
-					schedules[2][3][2] = Integer.parseInt( st.nextToken() );
-					schedules[2][3][3] = Integer.parseInt( st.nextToken() );
-				}
-				else if (dataType == YukonListEntryTypes.YUK_DEF_ID_GED_SCHEDULE_THU_WAKE) {
-					StringTokenizer st = new StringTokenizer( dataValue, "," );
-					String fan = st.nextToken();
-					schedules[3][0][0] = Integer.parseInt( st.nextToken() );
-					schedules[3][0][1] = Integer.parseInt( st.nextToken() );
-					schedules[3][0][2] = Integer.parseInt( st.nextToken() );
-					schedules[3][0][3] = Integer.parseInt( st.nextToken() );
-				}
-				else if (dataType == YukonListEntryTypes.YUK_DEF_ID_GED_SCHEDULE_THU_LEAVE) {
-					StringTokenizer st = new StringTokenizer( dataValue, "," );
-					String fan = st.nextToken();
-					schedules[3][1][0] = Integer.parseInt( st.nextToken() );
-					schedules[3][1][1] = Integer.parseInt( st.nextToken() );
-					schedules[3][1][2] = Integer.parseInt( st.nextToken() );
-					schedules[3][1][3] = Integer.parseInt( st.nextToken() );
-				}
-				else if (dataType == YukonListEntryTypes.YUK_DEF_ID_GED_SCHEDULE_THU_RETURN) {
-					StringTokenizer st = new StringTokenizer( dataValue, "," );
-					String fan = st.nextToken();
-					schedules[3][2][0] = Integer.parseInt( st.nextToken() );
-					schedules[3][2][1] = Integer.parseInt( st.nextToken() );
-					schedules[3][2][2] = Integer.parseInt( st.nextToken() );
-					schedules[3][2][3] = Integer.parseInt( st.nextToken() );
-				}
-				else if (dataType == YukonListEntryTypes.YUK_DEF_ID_GED_SCHEDULE_THU_SLEEP) {
-					StringTokenizer st = new StringTokenizer( dataValue, "," );
-					String fan = st.nextToken();
-					schedules[3][3][0] = Integer.parseInt( st.nextToken() );
-					schedules[3][3][1] = Integer.parseInt( st.nextToken() );
-					schedules[3][3][2] = Integer.parseInt( st.nextToken() );
-					schedules[3][3][3] = Integer.parseInt( st.nextToken() );
-				}
-				else if (dataType == YukonListEntryTypes.YUK_DEF_ID_GED_SCHEDULE_FRI_WAKE) {
-					StringTokenizer st = new StringTokenizer( dataValue, "," );
-					String fan = st.nextToken();
-					schedules[4][0][0] = Integer.parseInt( st.nextToken() );
-					schedules[4][0][1] = Integer.parseInt( st.nextToken() );
-					schedules[4][0][2] = Integer.parseInt( st.nextToken() );
-					schedules[4][0][3] = Integer.parseInt( st.nextToken() );
-				}
-				else if (dataType == YukonListEntryTypes.YUK_DEF_ID_GED_SCHEDULE_FRI_LEAVE) {
-					StringTokenizer st = new StringTokenizer( dataValue, "," );
-					String fan = st.nextToken();
-					schedules[4][1][0] = Integer.parseInt( st.nextToken() );
-					schedules[4][1][1] = Integer.parseInt( st.nextToken() );
-					schedules[4][1][2] = Integer.parseInt( st.nextToken() );
-					schedules[4][1][3] = Integer.parseInt( st.nextToken() );
-				}
-				else if (dataType == YukonListEntryTypes.YUK_DEF_ID_GED_SCHEDULE_FRI_RETURN) {
-					StringTokenizer st = new StringTokenizer( dataValue, "," );
-					String fan = st.nextToken();
-					schedules[4][2][0] = Integer.parseInt( st.nextToken() );
-					schedules[4][2][1] = Integer.parseInt( st.nextToken() );
-					schedules[4][2][2] = Integer.parseInt( st.nextToken() );
-					schedules[4][2][3] = Integer.parseInt( st.nextToken() );
-				}
-				else if (dataType == YukonListEntryTypes.YUK_DEF_ID_GED_SCHEDULE_FRI_SLEEP) {
-					StringTokenizer st = new StringTokenizer( dataValue, "," );
-					String fan = st.nextToken();
-					schedules[4][3][0] = Integer.parseInt( st.nextToken() );
-					schedules[4][3][1] = Integer.parseInt( st.nextToken() );
-					schedules[4][3][2] = Integer.parseInt( st.nextToken() );
-					schedules[4][3][3] = Integer.parseInt( st.nextToken() );
-				}
-				else if (dataType == YukonListEntryTypes.YUK_DEF_ID_GED_SCHEDULE_SAT_WAKE) {
-					StringTokenizer st = new StringTokenizer( dataValue, "," );
-					String fan = st.nextToken();
-					schedules[5][0][0] = Integer.parseInt( st.nextToken() );
-					schedules[5][0][1] = Integer.parseInt( st.nextToken() );
-					schedules[5][0][2] = Integer.parseInt( st.nextToken() );
-					schedules[5][0][3] = Integer.parseInt( st.nextToken() );
-				}
-				else if (dataType == YukonListEntryTypes.YUK_DEF_ID_GED_SCHEDULE_SAT_LEAVE) {
-					StringTokenizer st = new StringTokenizer( dataValue, "," );
-					String fan = st.nextToken();
-					schedules[5][1][0] = Integer.parseInt( st.nextToken() );
-					schedules[5][1][1] = Integer.parseInt( st.nextToken() );
-					schedules[5][1][2] = Integer.parseInt( st.nextToken() );
-					schedules[5][1][3] = Integer.parseInt( st.nextToken() );
-				}
-				else if (dataType == YukonListEntryTypes.YUK_DEF_ID_GED_SCHEDULE_SAT_RETURN) {
-					StringTokenizer st = new StringTokenizer( dataValue, "," );
-					String fan = st.nextToken();
-					schedules[5][2][0] = Integer.parseInt( st.nextToken() );
-					schedules[5][2][1] = Integer.parseInt( st.nextToken() );
-					schedules[5][2][2] = Integer.parseInt( st.nextToken() );
-					schedules[5][2][3] = Integer.parseInt( st.nextToken() );
-				}
-				else if (dataType == YukonListEntryTypes.YUK_DEF_ID_GED_SCHEDULE_SAT_SLEEP) {
-					StringTokenizer st = new StringTokenizer( dataValue, "," );
-					String fan = st.nextToken();
-					schedules[5][3][0] = Integer.parseInt( st.nextToken() );
-					schedules[5][3][1] = Integer.parseInt( st.nextToken() );
-					schedules[5][3][2] = Integer.parseInt( st.nextToken() );
-					schedules[5][3][3] = Integer.parseInt( st.nextToken() );
-				}
-				else if (dataType == YukonListEntryTypes.YUK_DEF_ID_GED_SCHEDULE_SUN_WAKE) {
-					StringTokenizer st = new StringTokenizer( dataValue, "," );
-					String fan = st.nextToken();
-					schedules[6][0][0] = Integer.parseInt( st.nextToken() );
-					schedules[6][0][1] = Integer.parseInt( st.nextToken() );
-					schedules[6][0][2] = Integer.parseInt( st.nextToken() );
-					schedules[6][0][3] = Integer.parseInt( st.nextToken() );
-				}
-				else if (dataType == YukonListEntryTypes.YUK_DEF_ID_GED_SCHEDULE_SUN_LEAVE) {
-					StringTokenizer st = new StringTokenizer( dataValue, "," );
-					String fan = st.nextToken();
-					schedules[6][1][0] = Integer.parseInt( st.nextToken() );
-					schedules[6][1][1] = Integer.parseInt( st.nextToken() );
-					schedules[6][1][2] = Integer.parseInt( st.nextToken() );
-					schedules[6][1][3] = Integer.parseInt( st.nextToken() );
-				}
-				else if (dataType == YukonListEntryTypes.YUK_DEF_ID_GED_SCHEDULE_SUN_RETURN) {
-					StringTokenizer st = new StringTokenizer( dataValue, "," );
-					String fan = st.nextToken();
-					schedules[6][2][0] = Integer.parseInt( st.nextToken() );
-					schedules[6][2][1] = Integer.parseInt( st.nextToken() );
-					schedules[6][2][2] = Integer.parseInt( st.nextToken() );
-					schedules[6][2][3] = Integer.parseInt( st.nextToken() );
-				}
-				else if (dataType == YukonListEntryTypes.YUK_DEF_ID_GED_SCHEDULE_SUN_SLEEP) {
-					StringTokenizer st = new StringTokenizer( dataValue, "," );
-					String fan = st.nextToken();
-					schedules[6][3][0] = Integer.parseInt( st.nextToken() );
-					schedules[6][3][1] = Integer.parseInt( st.nextToken() );
-					schedules[6][3][2] = Integer.parseInt( st.nextToken() );
-					schedules[6][3][3] = Integer.parseInt( st.nextToken() );
-				}
 				else if (dataType == YukonListEntryTypes.YUK_DEF_ID_GED_OUTDOOR_TEMP) {
 					dynamicData.setOutdoorTemperature( Integer.parseInt(dataValue) );
 				}
@@ -365,71 +131,6 @@ public class LiteStarsThermostatSettings extends LiteBase {
 			}
 		}
 		
-		// Set the schedule name to "(none)", so that the schedule will be considered "unnamed" and get updated
-		getThermostatSchedule().setScheduleName( CtiUtilities.STRING_NONE);
-		
-		int mondayID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_TOW_MONDAY ).getEntryID();
-		int tuesdayID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_TOW_TUESDAY ).getEntryID();
-		int wednesdayID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_TOW_WEDNESDAY ).getEntryID();
-		int thursdayID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_TOW_THURSDAY ).getEntryID();
-		int fridayID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_TOW_FRIDAY ).getEntryID();
-		int saturdayID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_TOW_SATURDAY ).getEntryID();
-		int sundayID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_TOW_SUNDAY ).getEntryID();
-		
-		List seasons = getThermostatSchedule().getThermostatSeasons();
-		for (int i = 0; i < seasons.size(); i++) {
-			LiteLMThermostatSeason season = (LiteLMThermostatSeason) seasons.get(i);
-			
-			int dim3 = (season.getWebConfigurationID() == StarsMsgUtils.YUK_WEB_CONFIG_ID_COOL) ? 2 : 3;
-			int[] towCnt = { 0, 0, 0, 0, 0, 0, 0 };
-			
-			for (int j = 0; j < season.getSeasonEntries().size(); j++) {
-				LiteLMThermostatSeasonEntry entry = (LiteLMThermostatSeasonEntry) season.getSeasonEntries().get(j);
-				int dim1 = 0, dim2 = 0;
-				if (entry.getTimeOfWeekID() == mondayID) {
-					dim1 = 0;
-					dim2 = towCnt[0]++;
-				}
-				else if (entry.getTimeOfWeekID() == tuesdayID) {
-					dim1 = 1;
-					dim2 = towCnt[1]++;
-				}
-				else if (entry.getTimeOfWeekID() == wednesdayID) {
-					dim1 = 2;
-					dim2 = towCnt[2]++;
-				}
-				else if (entry.getTimeOfWeekID() == thursdayID) {
-					dim1 = 3;
-					dim2 = towCnt[3]++;
-				}
-				else if (entry.getTimeOfWeekID() == fridayID) {
-					dim1 = 4;
-					dim2 = towCnt[4]++;
-				}
-				else if (entry.getTimeOfWeekID() == saturdayID) {
-					dim1 = 5;
-					dim2 = towCnt[5]++;
-				}
-				else if (entry.getTimeOfWeekID() == sundayID) {
-					dim1 = 6;
-					dim2 = towCnt[6]++;
-				}
-				
-				int hour = schedules[dim1][dim2][0];
-				int minute = schedules[dim1][dim2][1];
-				int coolTemp = schedules[dim1][dim2][2];
-				int heatTemp = schedules[dim1][dim2][3];
-				if (hour == -1) {
-					hour = minute = 0;
-					coolTemp = -1;
-					heatTemp = -1;
-				}
-				
-				entry.setStartTime( hour * 3600 + minute * 60 );
-				entry.setCoolTemperature( coolTemp );
-				entry.setHeatTemperature( heatTemp );
-			}
-		}
 	}
 
 	/**
@@ -464,20 +165,6 @@ public class LiteStarsThermostatSettings extends LiteBase {
 	 */
 	public void setDynamicData(LiteStarsGatewayEndDevice dynamicData) {
 		this.dynamicData = dynamicData;
-	}
-
-	/**
-	 * @return
-	 */
-	public LiteLMThermostatSchedule getThermostatSchedule() {
-		return thermostatSchedule;
-	}
-
-	/**
-	 * @param schedule
-	 */
-	public void setThermostatSchedule(LiteLMThermostatSchedule schedule) {
-		thermostatSchedule = schedule;
 	}
 
 }

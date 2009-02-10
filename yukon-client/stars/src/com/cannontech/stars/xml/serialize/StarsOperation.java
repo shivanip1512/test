@@ -49,8 +49,6 @@ public final class StarsOperation {
     private StarsDeleteLMHardware starsDeleteLMHardware;
     private StarsUpdateLogin starsUpdateLogin;
     private StarsUpdateLoginResponse starsUpdateLoginResponse;
-    private StarsUpdateThermostatSchedule starsUpdateThermostatSchedule;
-    private StarsUpdateThermostatScheduleResponse starsUpdateThermostatScheduleResponse;
     private StarsUpdateThermostatManualOption starsUpdateThermostatManualOption;
     private StarsUpdateThermostatManualOptionResponse starsUpdateThermostatManualOptionResponse;
     private StarsSendOptOutNotification starsSendOptOutNotification;
@@ -61,10 +59,7 @@ public final class StarsOperation {
     private StarsUpdateResidenceInformation starsUpdateResidenceInformation;
     private StarsUpdateLMHardwareConfig starsUpdateLMHardwareConfig;
     private StarsUpdateLMHardwareConfigResponse starsUpdateLMHardwareConfigResponse;
-    private StarsSaveThermostatSchedule starsSaveThermostatSchedule;
-    private StarsSaveThermostatScheduleResponse starsSaveThermostatScheduleResponse;
     private StarsApplyThermostatSchedule starsApplyThermostatSchedule;
-    private StarsApplyThermostatScheduleResponse starsApplyThermostatScheduleResponse;
     private StarsDeleteThermostatSchedule starsDeleteThermostatSchedule;
 
     public StarsOperation() {
@@ -484,24 +479,6 @@ public final class StarsOperation {
         this.starsUpdateLoginResponse = starsUpdateLoginResponse;
     }
 
-    public StarsUpdateThermostatSchedule getStarsUpdateThermostatSchedule() {
-        return starsUpdateThermostatSchedule;
-    }
-
-    public void setStarsUpdateThermostatSchedule(
-            StarsUpdateThermostatSchedule starsUpdateThermostatSchedule) {
-        this.starsUpdateThermostatSchedule = starsUpdateThermostatSchedule;
-    }
-
-    public StarsUpdateThermostatScheduleResponse getStarsUpdateThermostatScheduleResponse() {
-        return starsUpdateThermostatScheduleResponse;
-    }
-
-    public void setStarsUpdateThermostatScheduleResponse(
-            StarsUpdateThermostatScheduleResponse starsUpdateThermostatScheduleResponse) {
-        this.starsUpdateThermostatScheduleResponse = starsUpdateThermostatScheduleResponse;
-    }
-
     public StarsUpdateThermostatManualOption getStarsUpdateThermostatManualOption() {
         return starsUpdateThermostatManualOption;
     }
@@ -592,24 +569,6 @@ public final class StarsOperation {
         this.starsUpdateLMHardwareConfigResponse = starsUpdateLMHardwareConfigResponse;
     }
 
-    public StarsSaveThermostatSchedule getStarsSaveThermostatSchedule() {
-        return starsSaveThermostatSchedule;
-    }
-
-    public void setStarsSaveThermostatSchedule(
-            StarsSaveThermostatSchedule starsSaveThermostatSchedule) {
-        this.starsSaveThermostatSchedule = starsSaveThermostatSchedule;
-    }
-
-    public StarsSaveThermostatScheduleResponse getStarsSaveThermostatScheduleResponse() {
-        return starsSaveThermostatScheduleResponse;
-    }
-
-    public void setStarsSaveThermostatScheduleResponse(
-            StarsSaveThermostatScheduleResponse starsSaveThermostatScheduleResponse) {
-        this.starsSaveThermostatScheduleResponse = starsSaveThermostatScheduleResponse;
-    }
-
     public StarsApplyThermostatSchedule getStarsApplyThermostatSchedule() {
         return starsApplyThermostatSchedule;
     }
@@ -617,15 +576,6 @@ public final class StarsOperation {
     public void setStarsApplyThermostatSchedule(
             StarsApplyThermostatSchedule starsApplyThermostatSchedule) {
         this.starsApplyThermostatSchedule = starsApplyThermostatSchedule;
-    }
-
-    public StarsApplyThermostatScheduleResponse getStarsApplyThermostatScheduleResponse() {
-        return starsApplyThermostatScheduleResponse;
-    }
-
-    public void setStarsApplyThermostatScheduleResponse(
-            StarsApplyThermostatScheduleResponse starsApplyThermostatScheduleResponse) {
-        this.starsApplyThermostatScheduleResponse = starsApplyThermostatScheduleResponse;
     }
 
     public StarsDeleteThermostatSchedule getStarsDeleteThermostatSchedule() {

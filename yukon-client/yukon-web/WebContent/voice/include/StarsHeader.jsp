@@ -104,7 +104,6 @@
 	StarsEnrollmentPrograms categories = ecSettings.getStarsEnrollmentPrograms();
 	StarsCustomerFAQs customerFAQs = ecSettings.getStarsCustomerFAQs();
 	StarsExitInterviewQuestions exitQuestions = ecSettings.getStarsExitInterviewQuestions();
-	StarsDefaultThermostatSchedules dftThermoSchedules = ecSettings.getStarsDefaultThermostatSchedules();
 	
 	Hashtable selectionListTable = new Hashtable();
 	if (ecSettings.getStarsCustomerSelectionLists() != null) {
@@ -126,7 +125,6 @@
 	StarsLMProgramHistory programHistory = null;
 	StarsInventories thermostats = null;
 	StarsInventories optOutChoices = null;
-	StarsSavedThermostatSchedules thermSchedules = null;
 	StarsAppliances appliances = null;
 	StarsUser userLogin = null;
 	LiteStarsCustAccountInformation liteAcctInfo = null;
@@ -156,7 +154,6 @@
 			if (inventory.getLMHardware() != null && inventory.getLMHardware().getStarsThermostatSettings() != null)
 				thermostats.addStarsInventory( inventory );
 		}
-		thermSchedules = accountInfo.getStarsSavedThermostatSchedules();
 		
 		appliances = accountInfo.getStarsAppliances();
 	}

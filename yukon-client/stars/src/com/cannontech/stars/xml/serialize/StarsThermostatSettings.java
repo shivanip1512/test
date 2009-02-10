@@ -25,8 +25,6 @@ public class StarsThermostatSettings {
      //- Class/Member Variables -/
     //--------------------------/
 
-    private StarsThermostatProgram _starsThermostatProgram;
-
     private java.util.Vector _starsThermostatManualEventList;
 
     private StarsThermostatDynamicData _starsThermostatDynamicData;
@@ -122,16 +120,6 @@ public class StarsThermostatSettings {
     } //-- int getStarsThermostatManualEventCount() 
 
     /**
-     * Returns the value of field 'starsThermostatProgram'.
-     * 
-     * @return the value of field 'starsThermostatProgram'.
-    **/
-    public StarsThermostatProgram getStarsThermostatProgram()
-    {
-        return this._starsThermostatProgram;
-    } //-- StarsThermostatProgram getStarsThermostatProgram() 
-
-    /**
     **/
     public void removeAllStarsThermostatManualEvent()
     {
@@ -190,16 +178,5 @@ public class StarsThermostatSettings {
             _starsThermostatManualEventList.addElement(starsThermostatManualEventArray[i]);
         }
     } //-- void setStarsThermostatManualEvent(StarsThermostatManualEvent) 
-
-    /**
-     * Sets the value of field 'starsThermostatProgram'.
-     * 
-     * @param starsThermostatProgram the value of field
-     * 'starsThermostatProgram'.
-    **/
-    public void setStarsThermostatProgram(StarsThermostatProgram starsThermostatProgram)
-    {
-        this._starsThermostatProgram = starsThermostatProgram;
-    } //-- void setStarsThermostatProgram(StarsThermostatProgram) 
 
 }

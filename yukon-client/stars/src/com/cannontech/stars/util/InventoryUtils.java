@@ -18,7 +18,6 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.JdbcTemplateHelper;
-import com.cannontech.database.data.lite.stars.LiteLMThermostatSchedule;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.spring.YukonSpringHook;
@@ -134,30 +133,6 @@ public class InventoryUtils {
 		return (devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA205
 			|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA305
 			|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA_SIMPLE);
-	}
-	
-	/**
-	 * Check to see if the thermostat schedule is vaild
-	 */
-	public static boolean isValidThermostatSchedule(LiteLMThermostatSchedule liteSched) {
-		if (liteSched == null || liteSched.getThermostatSeasons().size() != 2)
-			return false;
-		
-		int thermTypeDefID = DaoFactory.getYukonListDao().getYukonListEntry( liteSched.getThermostatTypeID() ).getYukonDefID();
-		for (int i = 0; i < liteSched.getThermostatSeasons().size(); i++) {
-			int numSeasonEntries = liteSched.getThermostatSeasons().get(i).getSeasonEntries().size();
-			if ((thermTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT
-					|| thermTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT
-                    || thermTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT_HEATPUMP)
-					&& numSeasonEntries != 12
-				|| thermTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ENERGYPRO
-					&& numSeasonEntries != 28)
-			{
-				return false;
-			}
-		}
-		
-		return true;
 	}
 	
 	public static List<LiteStarsLMHardware> getLMHardwareInRange(LiteStarsEnergyCompany energyCompany, int devTypeDefID, Integer snFrom, Integer snTo) {

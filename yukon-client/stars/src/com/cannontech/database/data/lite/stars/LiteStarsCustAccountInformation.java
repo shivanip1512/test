@@ -4,15 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dao.CustomerDao;
-import com.cannontech.database.Transaction;
-import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteTypes;
-import com.cannontech.database.data.stars.hardware.LMThermostatSchedule;
 import com.cannontech.database.db.customer.CICustomerBase;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.LMProgramWebPublishingDao;
@@ -40,7 +36,6 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	private List<LiteLMProgramEvent> programHistory = null;	// List of LiteLMProgramEvent
 	private List<StarsCallReport> callReportHistory = null;	// List of StarsCallReport
 	private List<Integer> serviceRequestHistory = null;	// List of IDs of LiteWorkOrderBase
-	private List<LiteLMThermostatSchedule> thermostatSchedules = null;	// List of LiteLMThermostatSchedule
 	
 	public LiteStarsCustAccountInformation(int accountID, int energyCompanyId) {
 		setAccountID( accountID );
@@ -311,38 +306,4 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 		programHistory = list;
 	}
 
-	/**
-	 * @return
-	 */
-	public synchronized List<LiteLMThermostatSchedule> getThermostatSchedules() {
-		if (thermostatSchedules == null) {
-			thermostatSchedules = new ArrayList<LiteLMThermostatSchedule>();
-            com.cannontech.database.db.stars.hardware.LMThermostatSchedule[] schedules =
-                com.cannontech.database.db.stars.hardware.LMThermostatSchedule.getAllThermostatSchedules(getAccountID());
-            if (schedules != null) {
-                for (int i = 0; i < schedules.length; i++) {
-                    if (schedules[i].getInventoryID().intValue() == 0) {
-                        try {
-                            LMThermostatSchedule schedule = new LMThermostatSchedule();
-                            schedule.setScheduleID( schedules[i].getScheduleID() );
-                            schedule = Transaction.createTransaction( Transaction.RETRIEVE, schedule ).execute();
-
-                            LiteLMThermostatSchedule liteSchedule = StarsLiteFactory.createLiteLMThermostatSchedule( schedule );
-                            thermostatSchedules.add( liteSchedule );
-                        } catch (TransactionException e) {
-                            YukonLogManager.getLogger(getClass()).error(e);
-                        }
-                    }
-                }
-            }
-		}	
-		return thermostatSchedules;
-	}
-
-	/**
-	 * @param list
-	 */
-	public void setThermostatSchedules(ArrayList<LiteLMThermostatSchedule> list) {
-		thermostatSchedules = list;
-	}
 }
