@@ -523,7 +523,7 @@ INT CtiDeviceSnppPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandP
         {
             if( parse.isKeyValid("asciiraw") && gConfigParms.isTrue("ALLOW_RAW_PAGE_MESSAGES") )
             {
-                string outputValue = parse.getsValue("asciirawvalue");
+                string outputValue = parse.getsValue("asciiraw");
                 strcpy_s((char *)OutMessage->Buffer.OutMessage, 300, outputValue.c_str());
                 OutMessage->OutLength = outputValue.size();
                 OutMessage->DeviceID    = getID();

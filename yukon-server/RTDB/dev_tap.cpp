@@ -58,7 +58,7 @@ INT CtiDeviceTapPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPa
         {
             if( parse.isKeyValid("asciiraw") && gConfigParms.isTrue("ALLOW_RAW_PAGE_MESSAGES") )
             {
-                string outputValue = parse.getsValue("asciirawvalue");
+                string outputValue = parse.getsValue("asciiraw");
                 strcpy_s(OutMessage->Buffer.TAPSt.Message, 256, outputValue.c_str());
                 OutMessage->OutLength = outputValue.size();
                 OutMessage->Buffer.TAPSt.Length = outputValue.size();

@@ -1329,9 +1329,6 @@ void  CtiCommandParser::doParsePutValue(const string &_CmdStr)
         }
         if(CmdStr.contains(" asciiraw"))
         {
-            _cmd["asciiraw"] = CtiParseValue(true);
-
-            //  if a point offset has been specified
             if(!(token = CmdStr.match(re_asciiraw)).empty())
             {
                 size_t nstart;
@@ -1342,7 +1339,7 @@ void  CtiCommandParser::doParsePutValue(const string &_CmdStr)
 
                 if(!(token = token.match((const boost::regex)str_quoted_token, nstop)).empty())   // get the value
                 {
-                    _cmd["asciirawvalue"] = CtiParseValue(token.substr(1, token.length() - 2), -1 );
+                    _cmd["asciiraw"] = CtiParseValue(token.substr(1, token.length() - 2), -1 );
                 }
             }
         }
