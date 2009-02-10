@@ -217,7 +217,7 @@ public interface AuthDao {
     public TimeZone getUserTimeZone(LiteYukonUser user) throws BadConfigurationException, IllegalArgumentException;
 
     /**
-     * @pdeprecated use RolePropertyDao.getPropertyEnumValue()
+     * @deprecated use RolePropertyDao.getPropertyEnumValue()
      */
     @Deprecated
     public <E extends Enum<E>> E getRolePropertyValue(Class<E> class1, LiteYukonUser user, int rolePropertyID);
