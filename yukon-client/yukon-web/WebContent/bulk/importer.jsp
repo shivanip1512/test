@@ -12,7 +12,7 @@
     <br>
     <tags:boxContainer title="${pageTitle}" id="container" hideEnabled="false">
 
-		<c:url var="redirectUrl" value="/spring/amr/bulkimporter/home"/>
+		<cti:url var="redirectUrl" value="/spring/amr/bulkimporter/home"/>
 
 		<br>
 		${pageTitle} <u><a href="${redirectUrl}">Click here</a></u> to be redirected.
