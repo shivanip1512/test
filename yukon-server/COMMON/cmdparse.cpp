@@ -1265,6 +1265,7 @@ void  CtiCommandParser::doParsePutValue(const string &_CmdStr)
     static const boost::regex   re_reading(CtiString("reading ") + str_floatnum);
     static const boost::regex   re_kyzoffset(CtiString("kyz *") + str_num);   //  if there's a kyz offset specified
     static const boost::regex   re_analog(CtiString("analog ") + str_num + CtiString(" -?") + str_num);
+    static const boost::regex   re_asciiraw(CtiString("asciiraw ") + str_quoted_token);
 
 
     CtiTokenizer   tok(CmdStr);
@@ -1325,6 +1326,25 @@ void  CtiCommandParser::doParsePutValue(const string &_CmdStr)
         if(CmdStr.contains(" power"))
         {
             _cmd["power"] = CtiParseValue(true);
+        }
+        if(CmdStr.contains(" asciiraw"))
+        {
+            _cmd["asciiraw"] = CtiParseValue(true);
+
+            //  if a point offset has been specified
+            if(!(token = CmdStr.match(re_asciiraw)).empty())
+            {
+                size_t nstart;
+                size_t nstop;
+                nstart = token.index("asciiraw ", &nstop);
+    
+                nstop += nstart;
+
+                if(!(token = token.match((const boost::regex)str_quoted_token, nstop)).empty())   // get the value
+                {
+                    _cmd["asciirawvalue"] = CtiParseValue(token.substr(1, token.length() - 2), -1 );
+                }
+            }
         }
 
         setFlags(flag);

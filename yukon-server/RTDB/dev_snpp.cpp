@@ -418,7 +418,7 @@ INT CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
             }
         case StateSendData:
             {
-                strncpy((char *)xfer.getOutBuffer(),reinterpret_cast<char *>(_outMessage.Buffer.OutMessage),500);//send whole message!
+                strncpy((char *)xfer.getOutBuffer(),reinterpret_cast<char *>(_outMessage.Buffer.OutMessage),300);//send whole message!
                 strncat((char *)xfer.getOutBuffer(),_char_cr_lf,2);
                 strncat((char *)xfer.getOutBuffer(),".",2);
                 strncat((char *)xfer.getOutBuffer(),_char_cr_lf,2);
@@ -519,6 +519,25 @@ INT CtiDeviceSnppPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandP
 
     switch(parse.getCommand())
     {
+    case PutValueRequest:
+        {
+            if( parse.isKeyValid("asciiraw") )
+            {
+                string outputValue = parse.getsValue("asciirawvalue");
+                strcpy_s((char *)OutMessage->Buffer.OutMessage, 300, outputValue.c_str());
+                OutMessage->OutLength = outputValue.size();
+                OutMessage->DeviceID    = getID();
+                OutMessage->TargetID    = getID();
+                OutMessage->Port        = getPortID();
+                OutMessage->InLength    = 0;
+                OutMessage->Source      = 0;
+                OutMessage->Retry       = 2;
+                outList.push_back(OutMessage);
+                OutMessage = NULL;
+                break;
+            }
+            //else fall through!
+        }
     case ControlRequest:
         {
             {
@@ -529,7 +548,6 @@ INT CtiDeviceSnppPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandP
     case GetStatusRequest:
     case LoopbackRequest:
     case GetValueRequest:
-    case PutValueRequest:
     case PutStatusRequest:
     case GetConfigRequest:
     case PutConfigRequest:

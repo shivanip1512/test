@@ -167,6 +167,26 @@ INT CtiDeviceWctpTerminal::ExecuteRequest(CtiRequestMsg                  *pReq,
 
     switch(parse.getCommand())
     {
+    case PutValueRequest:
+        {
+            if( parse.isKeyValid("asciiraw") )
+            {
+                string outputValue = parse.getsValue("asciirawvalue");
+                strcpy_s(OutMessage->Buffer.TAPSt.Message, 256, outputValue.c_str());
+                OutMessage->OutLength = outputValue.size();
+                OutMessage->Buffer.TAPSt.Length = outputValue.size();
+                OutMessage->DeviceID    = getID();
+                OutMessage->TargetID    = getID();
+                OutMessage->Port        = getPortID();
+                OutMessage->InLength    = 0;
+                OutMessage->Source      = 0;
+                OutMessage->Retry       = 2;
+                outList.push_back(OutMessage);
+                OutMessage = NULL;
+                break;
+            }
+            //else fall through!
+        }
     case ControlRequest:
         {
             {
@@ -177,7 +197,6 @@ INT CtiDeviceWctpTerminal::ExecuteRequest(CtiRequestMsg                  *pReq,
     case GetStatusRequest:
     case LoopbackRequest:
     case GetValueRequest:
-    case PutValueRequest:
     case PutStatusRequest:
     case GetConfigRequest:
     case PutConfigRequest:
