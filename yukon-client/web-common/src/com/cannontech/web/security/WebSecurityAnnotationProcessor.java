@@ -43,8 +43,8 @@ public class WebSecurityAnnotationProcessor {
     }
     
     private void doHasCheckRole(CheckRole checkRole) throws Exception {
-        YukonRole[] roleIds = checkRole.value();
-        webSecurityChecker.checkRole(roleIds);
+        YukonRole[] roles = checkRole.value();
+        webSecurityChecker.checkRole(roles);
     }
 
     private void doHasCheckRoleProperty(CheckRoleProperty checkRoleProperty) throws Exception {
