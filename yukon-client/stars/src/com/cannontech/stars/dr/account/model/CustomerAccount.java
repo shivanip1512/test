@@ -97,11 +97,6 @@ public class CustomerAccount {
         final CustomerAccount other = (CustomerAccount) obj;
         if (accountId != other.accountId)
             return false;
-        if (accountNotes == null) {
-            if (other.accountNotes != null)
-                return false;
-        } else if (!accountNotes.equals(other.accountNotes))
-            return false;
         if (accountNumber == null) {
             if (other.accountNumber != null)
                 return false;

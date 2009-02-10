@@ -22,9 +22,10 @@ import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.customer.CustomerTypes;
@@ -71,7 +72,7 @@ public class AccountServiceImpl implements AccountService {
     private Logger log = YukonLogManager.getLogger(AccountServiceImpl.class);
     
     private YukonUserDao yukonUserDao;
-    private RoleDao roleDao;
+    private RolePropertyDao rolePropertyDao;
     private AuthDao authDao;
     private YukonGroupDao yukonGroupDao;
     private AddressDao addressDao;
@@ -139,7 +140,7 @@ public class AccountServiceImpl implements AccountService {
             user = new LiteYukonUser(); 
             user.setUsername(accountDto.getUserName());
             user.setStatus(UserUtils.STATUS_ENABLED);
-            AuthType defaultAuthType = roleDao.getGlobalRolePropertyValue(AuthType.class, AuthenticationRole.DEFAULT_AUTH_TYPE);
+            AuthType defaultAuthType = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.getForId(AuthenticationRole.DEFAULT_AUTH_TYPE), AuthType.class, user);
             user.setAuthType(defaultAuthType);
             List<LiteYukonGroup> groups = new ArrayList<LiteYukonGroup>();
             LiteYukonGroup defaultYukonGroup = yukonGroupDao.getLiteYukonGroup(YukonGroup.YUKON_GROUP_ID);
@@ -846,11 +847,6 @@ public class AccountServiceImpl implements AccountService {
     }
     
     @Autowired
-    public void setRoleDao(RoleDao roleDao) {
-        this.roleDao = roleDao;
-    }
-    
-    @Autowired
     public void setAuthDao(AuthDao authDao) {
         this.authDao = authDao;
     }
@@ -956,8 +952,12 @@ public class AccountServiceImpl implements AccountService {
     }
     
     @Autowired
-    public void setSystemDateFormattingService(
-			SystemDateFormattingService systemDateFormattingService) {
+    public void setSystemDateFormattingService(SystemDateFormattingService systemDateFormattingService) {
 		this.systemDateFormattingService = systemDateFormattingService;
 	}
+    
+    @Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
+    }
 }

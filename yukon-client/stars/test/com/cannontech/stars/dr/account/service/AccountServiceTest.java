@@ -24,9 +24,10 @@ import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.DBPersistentDao;
-import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteContact;
@@ -69,7 +70,7 @@ public class AccountServiceTest {
     
     // collobarators to be mocked...and ridiculed
     private YukonUserDao yukonUserDaoMock;
-    private RoleDao roleDaoMock;
+    private RolePropertyDao rolePropertyDaoMock;
     private AuthDao authDaoMock;
     private YukonGroupDao yukonGroupDaoMock;
     private AddressDao addressDaoMock;
@@ -95,7 +96,7 @@ public class AccountServiceTest {
     @Before
     public void setUp() {
         yukonUserDaoMock = createNiceMock(YukonUserDao.class);
-        roleDaoMock = createMock(RoleDao.class);
+        rolePropertyDaoMock = createMock(RolePropertyDao.class);
         authDaoMock = createMock(AuthDao.class);
         yukonGroupDaoMock = createMock(YukonGroupDao.class);
         addressDaoMock = createMock(AddressDao.class);
@@ -120,7 +121,7 @@ public class AccountServiceTest {
         accountService = new AccountServiceImpl();
         
         accountService.setYukonUserDao(yukonUserDaoMock);
-        accountService.setRoleDao(roleDaoMock);
+        accountService.setRolePropertyDao(rolePropertyDaoMock);
         accountService.setAuthDao(authDaoMock);
         accountService.setYukonGroupDao(yukonGroupDaoMock);
         accountService.setAddressDao(addressDaoMock);
@@ -157,7 +158,7 @@ public class AccountServiceTest {
     @Test
     public void testEmptyAddAccount() {
         replay(yukonUserDaoMock);
-        replay(roleDaoMock);
+        replay(rolePropertyDaoMock);
         replay(authDaoMock);
         replay(yukonGroupDaoMock);
         replay(addressDaoMock);
@@ -238,7 +239,7 @@ public class AccountServiceTest {
          * Record what should happen
          */
         expect(yukonUserDaoMock.getLiteYukonUser(dto.getUserName())).andReturn(null);
-        expect(roleDaoMock.getGlobalRolePropertyValue(AuthType.class, AuthenticationRole.DEFAULT_AUTH_TYPE)).andReturn(AuthType.NONE);
+        expect(rolePropertyDaoMock.getPropertyEnumValue(YukonRoleProperty.getForId(AuthenticationRole.DEFAULT_AUTH_TYPE), AuthType.class, user)).andReturn(AuthType.NONE);
         expect(yukonGroupDaoMock.getLiteYukonGroup(YukonGroup.YUKON_GROUP_ID)).andReturn(new LiteYukonGroup());
         expect(yukonGroupDaoMock.getLiteYukonGroupByName(dto.getLoginGroup())).andReturn(new LiteYukonGroup());
         List<LiteYukonGroup> list = new ArrayList<LiteYukonGroup>();
@@ -289,7 +290,7 @@ public class AccountServiceTest {
          * Set Mocks to replay mode
          */
         replay(yukonUserDaoMock);
-        replay(roleDaoMock);
+        replay(rolePropertyDaoMock);
         replay(authDaoMock);
         replay(yukonGroupDaoMock);
         replay(addressDaoMock);

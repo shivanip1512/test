@@ -114,26 +114,20 @@ public class LiteContact extends LiteBase
 	/**
 	 * This method was created by Cannon Technologies Inc.
 	 */
-	public String toString() 
-	{
-	    if(getContLastName().equalsIgnoreCase("") && getContFirstName().equalsIgnoreCase("")) {
+	public String toString() {
+	    if( (getContLastName() == null && getContFirstName() == null) || (getContLastName().equalsIgnoreCase("") && getContFirstName().equalsIgnoreCase("")) ) {
 	        return CtiUtilities.STRING_NONE + "," + CtiUtilities.STRING_NONE;
 	    }
-		if( getContLastName() == null )
-		{
-			if( getContFirstName() == null )
-				return super.toString();
-			else
+		
+	    if( getContLastName() == null ) {
 				return getContFirstName();
-		}		
-		else
-		{
-			if( getContFirstName() == null )
+		} else {
+			if( getContFirstName() == null ) {
 				return getContLastName();
-			else
+			}else {
 				return getContLastName() + ", " + getContFirstName();
+			}
 		}
-
 	}
 
 	/**

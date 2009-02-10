@@ -6,6 +6,7 @@ import static com.cannontech.core.roleproperties.InputTypeFactory.*;
 import org.apache.commons.lang.Validate;
 
 import com.cannontech.amr.meter.dao.impl.MeterDisplayFieldEnum;
+import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.web.input.type.InputType;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
@@ -360,7 +361,7 @@ public enum YukonRoleProperty {
     AUTH_METHOD(AUTHENTICATION, com.cannontech.roles.yukon.AuthenticationRole.AUTH_METHOD, stringType()),
     AUTHENTICATION_MODE(AUTHENTICATION, com.cannontech.roles.yukon.AuthenticationRole.AUTHENTICATION_MODE, stringType()),
     AUTH_TIMEOUT(AUTHENTICATION, com.cannontech.roles.yukon.AuthenticationRole.AUTH_TIMEOUT, stringType()),
-    DEFAULT_AUTH_TYPE(AUTHENTICATION, com.cannontech.roles.yukon.AuthenticationRole.DEFAULT_AUTH_TYPE, stringType()),
+    DEFAULT_AUTH_TYPE(AUTHENTICATION, com.cannontech.roles.yukon.AuthenticationRole.DEFAULT_AUTH_TYPE, InputTypeFactory.enumType(AuthType.class)),
     LDAP_DN(AUTHENTICATION, com.cannontech.roles.yukon.AuthenticationRole.LDAP_DN, stringType()),
     LDAP_USER_SUFFIX(AUTHENTICATION, com.cannontech.roles.yukon.AuthenticationRole.LDAP_USER_SUFFIX, stringType()),
     LDAP_USER_PREFIX(AUTHENTICATION, com.cannontech.roles.yukon.AuthenticationRole.LDAP_USER_PREFIX, stringType()),
