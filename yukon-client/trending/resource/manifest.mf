@@ -9,7 +9,6 @@ Class-Path: ./
  loadcontrol.jar 
  jcpagelayout450K.jar 
  rwav.jar 
- acme.jar 
  batik.jar 
  junit.jar 
  jtds.jar 

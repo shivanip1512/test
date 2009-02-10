@@ -18,7 +18,6 @@
     </target>
 	
 	<fileset dir="${yukon.lib}" id="yukon.lib.files">
-		<include name="acme.jar"/>
 		<include name="activation.jar"/>
 		<include name="api.jar"/>
 		<include name="asm-attrs.jar"/>
