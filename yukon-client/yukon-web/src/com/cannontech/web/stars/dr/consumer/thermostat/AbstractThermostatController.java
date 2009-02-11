@@ -28,6 +28,7 @@ public abstract class AbstractThermostatController extends
 
         // Override the toString method to get a comma separated list with no
         // leading or trailing brackets
+        @SuppressWarnings("serial")
         List<Integer> idList = new ArrayList<Integer>() {
             @Override
             public String toString() {

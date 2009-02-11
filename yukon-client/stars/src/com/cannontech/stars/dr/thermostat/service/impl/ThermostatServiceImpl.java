@@ -247,7 +247,10 @@ public class ThermostatServiceImpl implements ThermostatService {
         	} catch (CommandCompletionException e) {
         		logger.error("Failed to update thermostat schedule mode.", e);
         		return ThermostatScheduleUpdateResult.CONSUMER_UPDATE_SCHEDULE_ERROR;
-        	}
+        	} catch (ConnectionException e) {
+                logger.error("Thermostat manual event failed.", e);
+                return ThermostatScheduleUpdateResult.CONSUMER_UPDATE_SCHEDULE_ERROR;
+            }
         	
         }
         

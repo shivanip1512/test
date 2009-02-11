@@ -1,6 +1,7 @@
 package com.cannontech.web.stars.dr.consumer.thermostat;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -13,6 +14,7 @@ import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestBindingException;
@@ -24,6 +26,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -55,6 +59,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     private ThermostatScheduleDao thermostatScheduleDao;
     private CustomerDao customerDao;
     private ThermostatService thermostatService;
+    private DateFormattingService dateFormattingService;
 
     @RequestMapping(value = "/consumer/thermostat/schedule/view", method = RequestMethod.GET)
     public String view(@ModelAttribute("customerAccount") CustomerAccount account, 
@@ -77,7 +82,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
 
         HardwareType thermostatType = null;
         if (thermostatIds.size() == 1) {
-            // single thermsotat selected
+            // single thermostat selected
 
             int thermostatId = thermostatIds.get(0);
 
@@ -133,7 +138,6 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         map.addAttribute("defaultScheduleJSONString",
                          defaultScheduleJSON.toString());
 
-
         Locale locale = yukonUserContext.getLocale();
         map.addAttribute("localeString", locale.toString());
 
@@ -142,12 +146,92 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         return "consumer/thermostatSchedule.jsp";
     }
 
-    @RequestMapping(value = "/consumer/thermostat/schedule/save", method = RequestMethod.POST)
-    public String save(@ModelAttribute("customerAccount") CustomerAccount account,
+    @RequestMapping(value = "/consumer/thermostat/schedule/confirm", method = RequestMethod.POST)
+    public String confirm(@ModelAttribute("customerAccount") CustomerAccount account,
             @ModelAttribute("thermostatIds") List<Integer> thermostatIds,
             String timeOfWeek, String scheduleMode, String temperatureUnit, Integer scheduleId,
-            String scheduleName, YukonUserContext yukonUserContext, 
+            String scheduleName, String saveAction, YukonUserContext yukonUserContext, 
             HttpServletRequest request, ModelMap map) throws ServletRequestBindingException {
+    	
+    	boolean sendAndSave = "saveApply".equals(saveAction);
+    	if(!sendAndSave) {
+    		// Don't show confirm page if this is just a save not a save/send
+    		return "forward:/spring/stars/consumer/thermostat/schedule/save";
+    	}
+    	map.addAttribute("saveAction", saveAction);
+    	
+    	// Create the confirm schedule text
+    	String scheduleString = ServletRequestUtils.getRequiredStringParameter(request, "schedules");
+    	boolean isFahrenheit = CtiUtilities.FAHRENHEIT_CHARACTER.equalsIgnoreCase(temperatureUnit);
+    	ThermostatSchedule schedule = this.getScheduleForJSON(scheduleString, isFahrenheit);
+    	
+    	MessageSource messageSource = messageSourceResolver.getMessageSource(yukonUserContext);
+    	TimeOfWeek scheduleTimeOfWeek = TimeOfWeek.valueOf(timeOfWeek);
+    	YukonMessageSourceResolvable timeOfWeekString = 
+    		new YukonMessageSourceResolvable(scheduleTimeOfWeek.getDisplayKey());
+    	
+    	List<Object> argumentList = new ArrayList<Object>();
+    	argumentList.add(timeOfWeekString);
+    	
+    	// Add the thermostat label to the model
+    	Thermostat thermostat = null;
+        int thermostatId = thermostatIds.get(0);
+
+		thermostat = inventoryDao.getThermostatById(thermostatId);
+        YukonMessageSourceResolvable resolvable = 
+        	new YukonMessageSourceResolvable("yukon.dr.consumer.thermostatSchedule.label",
+        									 thermostat.getLabel());
+        map.addAttribute("thermostatLabel", resolvable);
+    	
+        String scheduleConfirmKey = "yukon.dr.consumer.thermostatScheduleConfirm.scheduleText";
+    	if (HardwareType.COMMERCIAL_EXPRESSSTAT.equals(thermostat.getType())) {
+    		this.setToTwoTimeTemps(schedule);
+    		scheduleConfirmKey = 
+    			"yukon.dr.consumer.thermostatScheduleConfirm.scheduleTextTwoTimeTemp";
+    	}
+
+    	List<ThermostatSeasonEntry> seasonEntries = 
+    		schedule.getSeason().getSeasonEntries(scheduleTimeOfWeek);
+    	
+    	for(ThermostatSeasonEntry entry : seasonEntries) {
+    		Date startDate = entry.getStartDate();
+    		Integer coolTemperature = entry.getCoolTemperature();
+    		Integer heatTemperature = entry.getHeatTemperature();
+    		
+    		String startDateString = 
+    			dateFormattingService.formatDate(startDate, DateFormatEnum.TIME, yukonUserContext);
+
+    		// Temperatures are only -1 if this is a 2 time temp thermostat type - ignore if -1
+    		if(coolTemperature != -1 && heatTemperature != -1) {
+	    		argumentList.add(startDateString);
+	    		argumentList.add(coolTemperature);
+	    		argumentList.add(heatTemperature);
+    		}
+    	}
+    	
+    	String scheduleConfirm = messageSource.getMessage(
+						    			scheduleConfirmKey, 
+						    			argumentList.toArray(), 
+						    			yukonUserContext.getLocale());
+    	map.addAttribute("scheduleConfirm", scheduleConfirm);
+    	
+    	// Pass all of the parameters through to confirm page
+    	map.addAttribute("schedules", scheduleString);
+    	map.addAttribute("timeOfWeek", timeOfWeek);
+    	map.addAttribute("scheduleMode", scheduleMode);
+    	map.addAttribute("temperatureUnit", temperatureUnit);
+    	map.addAttribute("scheduleId", scheduleId);
+    	map.addAttribute("scheduleName", scheduleName);
+    	
+    	return "consumer/thermostatScheduleConfirm.jsp";
+    }    	
+
+    @RequestMapping(value = "/consumer/thermostat/schedule/save", method = RequestMethod.POST)
+	public String save(@ModelAttribute("customerAccount") CustomerAccount account,
+			@ModelAttribute("thermostatIds") List<Integer> thermostatIds,
+			String timeOfWeek, String scheduleMode, String temperatureUnit, Integer scheduleId,
+			String scheduleName, String saveAction, YukonUserContext yukonUserContext, 
+			HttpServletRequest request, ModelMap map) throws ServletRequestBindingException {
 
         LiteYukonUser user = yukonUserContext.getYukonUser();
         accountCheckerService.checkThermostatSchedule(user, scheduleId);
@@ -155,7 +239,6 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         
         String scheduleString = ServletRequestUtils.getRequiredStringParameter(request, "schedules");
 
-        String saveAction = ServletRequestUtils.getStringParameter(request, "saveAction", null);
         boolean sendAndSave = "saveApply".equals(saveAction);
 
         boolean isFahrenheit = CtiUtilities.FAHRENHEIT_CHARACTER.equalsIgnoreCase(temperatureUnit);
@@ -538,4 +621,11 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     public void setThermostatService(ThermostatService thermostatService) {
         this.thermostatService = thermostatService;
     }
+    
+    @Autowired
+    public void setDateFormattingService(
+			DateFormattingService dateFormattingService) {
+		this.dateFormattingService = dateFormattingService;
+	}
+
 }
