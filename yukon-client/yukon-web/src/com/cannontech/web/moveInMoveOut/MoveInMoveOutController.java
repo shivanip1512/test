@@ -2,7 +2,6 @@ package com.cannontech.web.moveInMoveOut;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -10,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -119,21 +117,9 @@ public class MoveInMoveOutController extends MultiActionController {
             return mav;
         }
 
-        Date currentDate = DateUtils.truncate(new Date(), Calendar.DATE);
         MoveInResult moveInResult = null;
-        if (!currentDate.before(moveInDate)) {
-            moveInResult = moveInMoveOutService.moveIn(moveInForm);
-            if (moveInResult.getErrors().isEmpty() && StringUtils.isBlank(moveInResult.getErrorMessage())) {
-                mav.addObject("endDate",
-                              dateFormattingService.formatDate(moveInResult.getCurrentReading()
-                                                                           .getPointDataTimeStamp(),
-                                                               DateFormatEnum.BOTH,
-                                                               userContext));
-            }
-        } else {
-            moveInResult = moveInMoveOutService.scheduleMoveIn(moveInForm);
-            moveInResult.setMoveInDate(moveInDate);
-        }
+        moveInResult = moveInMoveOutService.scheduleMoveIn(moveInForm);
+        moveInResult.setMoveInDate(moveInDate);
         moveInMoveOutEmailService.createMoveInEmail(moveInResult, userContext);
 
         mav.addObject("currentReading", moveInResult.getCurrentReading());
@@ -223,40 +209,12 @@ public class MoveInMoveOutController extends MultiActionController {
         }
 
         MoveOutResult moveOutResult = null;
-        if ((new Date()).after(moveOutDate)) {
-            moveOutResult = moveInMoveOutService.moveOut(moveOutForm);
-            if (moveOutResult == null) {
-                mav.addObject("validationErrors",
-                              "Move out must have previous readings to process!");
-                return mav;
-            }
-
-            if (moveOutResult.getErrors().isEmpty() && StringUtils.isBlank(moveOutResult.getErrorMessage()) ) {
-                Date currentReadingDate = moveOutResult.getCurrentReading()
-                                                       .getPointDataTimeStamp();
-                Date calcReadingDate = new Date(moveOutResult.getCalculatedReading()
-                                                             .getPointDataTimeStamp()
-                                                             .getTime());
-
-                mav.addObject("beginDate",
-                              dateFormattingService.formatDate(calcReadingDate,
-                                                               DateFormatEnum.BOTH,
-                                                               userContext));
-
-                mav.addObject("endDate",
-                              dateFormattingService.formatDate(currentReadingDate,
-                                                               DateFormatEnum.BOTH,
-                                                               userContext));
-
-            }
-        } else {
-            moveOutResult = moveInMoveOutService.scheduleMoveOut(moveOutForm);
-            moveOutResult.setMoveOutDate(moveOutDate);
-            mav.addObject("endDate",
-                          dateFormattingService.formatDate(new Date(moveOutDate.getTime()),
+        moveOutResult = moveInMoveOutService.scheduleMoveOut(moveOutForm);
+        moveOutResult.setMoveOutDate(moveOutDate);
+        mav.addObject("endDate",
+                      dateFormattingService.formatDate(new Date(moveOutDate.getTime()),
                                                            DateFormatEnum.BOTH,
                                                            userContext));
-        }
         moveInMoveOutEmailService.createMoveOutEmail(moveOutResult,
                                                      userContext);
 

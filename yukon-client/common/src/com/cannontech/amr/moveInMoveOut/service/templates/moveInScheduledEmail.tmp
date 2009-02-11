@@ -1,1 +1,1 @@
-A meter reading for {prevMeterName} is scheduled for {startDate|BOTH}.
+A meter reading for {prevMeterName} is scheduled to be retrieved for {startDate|BOTH}.

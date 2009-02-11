@@ -18,6 +18,7 @@ import com.cannontech.common.device.peakReport.model.PeakReportPeakType;
 import com.cannontech.common.device.peakReport.model.PeakReportResult;
 import com.cannontech.common.device.peakReport.model.PeakReportRunType;
 import com.cannontech.common.device.peakReport.service.PeakReportService;
+import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.impl.SimplePointValue;
 import com.cannontech.database.data.lite.LitePoint;
@@ -71,7 +72,7 @@ public class CalculatedPointServiceImpl implements CalculatedPointService {
 		logger.info("Starting peak report request for " + meter.toString());
 		PeakReportResult peakReportResults = peakReportService
 				.requestPeakReport(meter.getDeviceId(), PeakReportPeakType.DAY,
-						PeakReportRunType.PRE, 1, beginDate, new Date(), false,
+						PeakReportRunType.PRE, 1, beginDate, TimeUtil.addDays(new Date(),-1), false,
 						userContext);
 
 		double calculatedDifferenceUsage = 0;

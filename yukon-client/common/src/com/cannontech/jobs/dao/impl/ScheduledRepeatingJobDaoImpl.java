@@ -66,9 +66,9 @@ public class ScheduledRepeatingJobDaoImpl extends JobDaoBase implements Schedule
 
     public Set<ScheduledRepeatingJob> getAll() {
         String sql = 
-            "select * " +
-            "from JobScheduledRepeating jsr " +
-            "join Job on Job.jobId = jsr.jobId";
+            "SELECT * " +
+            "FROM JobScheduledRepeating JSR " +
+            "JOIN Job J on J.JobId = JSR.JobId";
         
         List<ScheduledRepeatingJob> jobList = jdbcTemplate.query(sql, jobRowMapper);
         Set<ScheduledRepeatingJob> jobSet = new HashSet<ScheduledRepeatingJob>(jobList);

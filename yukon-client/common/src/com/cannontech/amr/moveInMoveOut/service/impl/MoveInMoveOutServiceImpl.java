@@ -5,14 +5,18 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import com.cannontech.amr.deviceread.CalculatedPointResults;
 import com.cannontech.amr.deviceread.dao.CalculatedPointService;
+import com.cannontech.amr.deviceread.dao.MeterReadService;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.amr.moveInMoveOut.bean.MoveInForm;
@@ -25,6 +29,9 @@ import com.cannontech.amr.moveInMoveOut.tasks.MoveOutTask;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceEventEnum;
+import com.cannontech.common.device.attribute.model.BuiltInAttribute;
+import com.cannontech.common.device.attribute.service.AttributeService;
+import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
@@ -33,11 +40,14 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.exception.MeterReadRequestException;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.core.dynamic.impl.SimplePointValue;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.jobs.service.JobManager;
@@ -48,17 +58,20 @@ import com.cannontech.roles.operator.MeteringRole;
 public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
 
     private Logger logger = YukonLogManager.getLogger(MoveInMoveOutServiceImpl.class);
+    private final int NEW_DAY_BUFFER_HRS = 2; // 2 hours
 
     private JobManager jobManager = null;
     private YukonJobDefinition<MoveInTask> moveInDefinition = null;
     private YukonJobDefinition<MoveOutTask> moveOutDefinition = null;
     private AuthDao authDao;
+    private AttributeService attributeService;
     private CalculatedPointService calculatedPointService;
     private DeviceGroupEditorDao deviceGroupEditorDao;
     private DeviceGroupProviderDao deviceGroupDao;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     private DynamicDataSource dynamicDataSource;
     private MeterDao meterDao;
+    private MeterReadService meterReadService;
     private SimpleJdbcOperations jdbcTemplate = null;
     private NextValueHelper nextValueHelper = null;
     private PaoCommandAuthorizationService paoCommandAuthorizationService = null;
@@ -71,44 +84,92 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
         moveInResult.setPreviousMeter(moveInFormObj.getPreviousMeter());
         moveInResult.setMoveInDate(moveInFormObj.getMoveInDate());
         moveInResult.setSubmissionType("moveIn");
-
-        try {
-            CalculatedPointResults resultHolder = calculatedPointService.calculatePoint(moveInResult.getPreviousMeter(),
-                                                                                        moveInFormObj.getMoveInDate(),
-                                                                                        moveInFormObj.getUserContext());
-    
-            if (!resultHolder.getErrors().isEmpty()) {
-                logger.info("Move in for " + moveInResult.getPreviousMeter()
-                                                            .toString() + " failed. " + moveInResult.getErrors());
-                moveInResult.setErrors(resultHolder.getErrors());
-                return moveInResult;
-            }
-            
-            moveInResult.setCurrentReading(resultHolder.getCurrentPVH());
-            moveInResult.setCalculatedDifference(resultHolder.getDifferencePVH());
-            moveInResult.setCalculatedPreviousReading(resultHolder.getCalculatedPVH());
+        CalculatedPointResults resultHolder;
         
-            // Adds this point to rawPointHistory since it is calculated
-            insertDataPoint(moveInResult.getCurrentReading(),
-                            moveInResult.getCalculatedPreviousReading()
-                                           .getValue(),
-                            moveInFormObj.getMoveInDate());
+        Date currentDate = DateUtils.truncate(new Date(), Calendar.DATE);
+        Date currentDateWithBuffer = TimeUtil.addHours(currentDate, NEW_DAY_BUFFER_HRS);
+        Date moveInDate = moveInFormObj.getMoveInDate();
+        
+        if(moveInDate.before(currentDateWithBuffer)) {
+            // The move in is within a reasonable range to just read the meter.
+            if (!moveInDate.before(currentDate)){
     
-            archiveDataMoveIn(moveInResult, moveInFormObj.getUserContext().getYukonUser());
-            updateMeter(moveInFormObj.getPreviousMeter(),
-                        moveInResult.getNewMeter());
-            removeServiceDeviceGroups(moveInResult);
-            logger.info("Move in for " + moveInResult.getPreviousMeter()
-                                                        .toString() + " successful.");
-        } catch (NotFoundException e) {
-            logger.info("Move in for " + moveInResult.getPreviousMeter().toString() + " failed.");
-            moveInResult.setErrorMessage("Meter and/or point was not found.\n" + e.toString());
-            CTILogger.info(e);
-        } catch (MeterReadRequestException e) {
-            logger.info("Move in for " + moveInResult.getPreviousMeter().toString() + " failed.");
-            moveInResult.setErrorMessage("Meter is not able to be read.  The Meter may not be responding or the connection to Port Control Service may be down.\n" + e.toString());
-            CTILogger.info(e);
+                resultHolder = new CalculatedPointResults();
+                
+                // Makes a call to the meter to find the usage,
+                // which we use to calculate the point
+                Meter meter = moveInResult.getPreviousMeter();
+                logger.info("Starting meter read for " + meter.toString());
+                CommandResultHolder meterReadResults = meterReadService.readMeter(meter, 
+                                                                                  Collections.singleton(BuiltInAttribute.USAGE),
+                                                                                  moveInFormObj.getUserContext().getYukonUser());
+                
+                if (meterReadResults.isErrorsExist()) {
+                    logger.info("Move in for " + moveInResult.getPreviousMeter()
+                                .toString() + " failed. " + moveInResult.getErrors());
+                    resultHolder.setErrors(meterReadResults.getErrors());
+                    return moveInResult;
+                }   
+                    
+                PointValueHolder currentPVH = null;
+                LitePoint lp = attributeService.getPointForAttribute(meter,
+                                                                     BuiltInAttribute.USAGE);
+    
+                for (PointValueHolder pvh : meterReadResults.getValues()) {
+                     if (pvh.getId() == lp.getLiteID()) {
+                         currentPVH = pvh;
+                     }
+                }
+    
+                moveInResult.setCurrentReading(currentPVH);
+                moveInResult.setCalculatedDifference(new SimplePointValue(currentPVH.getId(), 
+                                                                          currentPVH.getPointDataTimeStamp(), 
+                                                                          currentPVH.getType(), 
+                                                                          0.0));
+                moveInResult.setCalculatedPreviousReading(currentPVH);
+            } else {
+                try {
+                    resultHolder = calculatedPointService.calculatePoint(moveInResult.getPreviousMeter(),
+                                                                         moveInFormObj.getMoveInDate(),
+                                                                         moveInFormObj.getUserContext());
+            
+                    if (!resultHolder.getErrors().isEmpty()) {
+                        logger.info("Move in for " + moveInResult.getPreviousMeter()
+                                                                    .toString() + " failed. " + moveInResult.getErrors());
+                        moveInResult.setErrors(resultHolder.getErrors());
+                        return moveInResult;
+                    }
+                    
+                    moveInResult.setCurrentReading(resultHolder.getCurrentPVH());
+                    moveInResult.setCalculatedDifference(resultHolder.getDifferencePVH());
+                    moveInResult.setCalculatedPreviousReading(resultHolder.getCalculatedPVH());
+                
+                    // Adds this point to rawPointHistory since it is calculated
+                    insertDataPoint(moveInResult.getCurrentReading(),
+                                    moveInResult.getCalculatedPreviousReading()
+                                                   .getValue(),
+                                    moveInFormObj.getMoveInDate());
+    
+                    archiveDataMoveIn(moveInResult, moveInFormObj.getUserContext().getYukonUser());
+                    updateMeter(moveInFormObj.getPreviousMeter(),
+                                moveInResult.getNewMeter());
+                    removeServiceDeviceGroups(moveInResult);
+                    logger.info("Move in for " + moveInResult.getPreviousMeter()
+                                                                .toString() + " successful.");
+                } catch (NotFoundException e) {
+                    logger.info("Move in for " + moveInResult.getPreviousMeter().toString() + " failed.");
+                    moveInResult.setErrorMessage("Meter and/or point was not found.\n" + e.toString());
+                    CTILogger.info(e);
+                } catch (MeterReadRequestException e) {
+                    logger.info("Move in for " + moveInResult.getPreviousMeter().toString() + " failed.");
+                    moveInResult.setErrorMessage("Meter is not able to be read.  The Meter may not be responding or the connection to Port Control Service may be down.\n" + e.toString());
+                    CTILogger.info(e);
+                }
+            }
+        } else {
+            throw new IllegalArgumentException("The move in date is in the future.  Please check the scheduled date. ");
         }
+
         return moveInResult;
     }
 
@@ -125,10 +186,20 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
         moveInTask.setNewMeterName(moveInFormObj.getMeterName());
         moveInTask.setNewMeterNumber(moveInFormObj.getMeterNumber());
 
-        jobManager.scheduleJob(moveInDefinition,
-                               moveInTask,
-                               moveInFormObj.getMoveInDate(),
-                               moveInFormObj.getUserContext());
+
+        Date currentDate = DateUtils.truncate(new Date(), Calendar.DATE);
+        Date tomorrowDate = TimeUtil.addDays(currentDate,1);
+        if (moveInFormObj.getMoveInDate().before(tomorrowDate)){
+            jobManager.scheduleJob(moveInDefinition,
+                                   moveInTask,
+                                   tomorrowDate,
+                                   moveInFormObj.getUserContext());
+        } else { 
+            jobManager.scheduleJob(moveInDefinition,
+                                   moveInTask,
+                                   moveInFormObj.getMoveInDate(),
+                                   moveInFormObj.getUserContext());
+        }
 
         logger.info("Move in for " + moveInResultObj.getPreviousMeter()
                                                     .toString() + " scheduled.");
@@ -144,41 +215,92 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
         moveOutResult.setMoveOutDate(moveOutFormObj.getMoveOutDate());
         moveOutResult.setSubmissionType("moveOut");
 
-        try {
-            CalculatedPointResults resultHolder = calculatedPointService.calculatePoint(moveOutResult.getPreviousMeter(),
-                                                                                        moveOutFormObj.getMoveOutDate(),
-                                                                                        moveOutFormObj.getUserContext());
-            if (!resultHolder.getErrors().isEmpty()) {
-                logger.info("Move out for " + moveOutResult.getPreviousMeter()
-                                                              .toString() + " failed. " + moveOutResult.getErrors());
-                moveOutResult.setErrors(resultHolder.getErrors());
-                return moveOutResult;
+        Date currentDate = DateUtils.truncate(new Date(), Calendar.DATE);
+        Date currentDateWithBuffer = TimeUtil.addHours(currentDate, NEW_DAY_BUFFER_HRS);
+        Date moveOutDate = moveOutFormObj.getMoveOutDate();
+        CalculatedPointResults resultHolder;
+        
+        if(moveOutDate.before(currentDateWithBuffer)) {
+            
+            // The move in is within a reasonable range to just read the meter.
+            if (!moveOutDate.before(currentDate)){
+    
+                resultHolder = new CalculatedPointResults();
+                
+                // Makes a call to the meter to find the usage,
+                // which we use to calculate the point
+                Meter meter = moveOutResult.getPreviousMeter();
+                logger.info("Starting meter read for " + meter.toString());
+                CommandResultHolder meterReadResults = meterReadService.readMeter(meter, 
+                                                                                  Collections.singleton(BuiltInAttribute.USAGE),
+                                                                                  moveOutFormObj.getUserContext().getYukonUser());
+    
+                
+                if (meterReadResults.isErrorsExist()) {
+                    logger.info("Move out for " + moveOutResult.getPreviousMeter()
+                                .toString() + " failed. " + moveOutResult.getErrors());
+                    moveOutResult.setErrors(resultHolder.getErrors());
+                    return moveOutResult;
+                } else {
+                    
+                    PointValueHolder currentPVH = null;
+    
+                    LitePoint lp = attributeService.getPointForAttribute(meter,
+                                                                         BuiltInAttribute.USAGE);
+                    for (PointValueHolder pvh : meterReadResults.getValues()) {
+                         if (pvh.getId() == lp.getLiteID()) {
+                             currentPVH = pvh;
+                         }
+                    }
+    
+                    moveOutResult.setCurrentReading(currentPVH);
+                    moveOutResult.setCalculatedDifference(new SimplePointValue(currentPVH.getId(), 
+                                                                               currentPVH.getPointDataTimeStamp(), 
+                                                                               currentPVH.getType(), 
+                                                                               0.0));
+                    moveOutResult.setCalculatedReading(currentPVH);
+                }
+            } else {
+                try {
+                    resultHolder = calculatedPointService.calculatePoint(moveOutResult.getPreviousMeter(),
+                                                                         moveOutFormObj.getMoveOutDate(),
+                                                                         moveOutFormObj.getUserContext());
+                    if (!resultHolder.getErrors().isEmpty()) {
+                        logger.info("Move out for " + moveOutResult.getPreviousMeter()
+                                                                      .toString() + " failed. " + moveOutResult.getErrors());
+                        moveOutResult.setErrors(resultHolder.getErrors());
+                        return moveOutResult;
+                    }
+            
+                    moveOutResult.setCurrentReading(resultHolder.getCurrentPVH());
+                    moveOutResult.setCalculatedDifference(resultHolder.getDifferencePVH());
+                    moveOutResult.setCalculatedReading(resultHolder.getCalculatedPVH());
+            
+                    // if (moveOutResultObj.getErrors().isEmpty()) {
+                    // Adds this point to rawPointHistory since it is calculated
+                    insertDataPoint(moveOutResult.getCurrentReading(),
+                                    moveOutResult.getCalculatedReading().getValue(),
+                                    moveOutFormObj.getMoveOutDate());
+    
+                    archiveDataMoveOut(moveOutResult, moveOutFormObj.getUserContext().getYukonUser());
+    
+                    addServiceDeviceGroups(moveOutResult);
+                    logger.info("Move out for " + moveOutResult.getPreviousMeter()
+                                                                  .toString() + " successful.");
+                } catch (NotFoundException e) {
+                    logger.info("Move in for " + moveOutResult.getPreviousMeter().toString() + " failed.");
+                    moveOutResult.setErrorMessage("Meter and/or point was not found.\n" + e.toString());
+                    CTILogger.info(e);
+                } catch (MeterReadRequestException e) {
+                    logger.info("Move in for " + moveOutResult.getPreviousMeter().toString() + " failed.");
+                    moveOutResult.setErrorMessage("Meter is not able to be read.  The Meter may not be responding or the connection to Port Control Service may be down.\n" + e.toString());
+                    CTILogger.info(e);
+                }
             }
-    
-            moveOutResult.setCurrentReading(resultHolder.getCurrentPVH());
-            moveOutResult.setCalculatedDifference(resultHolder.getDifferencePVH());
-            moveOutResult.setCalculatedReading(resultHolder.getCalculatedPVH());
-    
-            // if (moveOutResultObj.getErrors().isEmpty()) {
-            // Adds this point to rawPointHistory since it is calculated
-            insertDataPoint(moveOutResult.getCurrentReading(),
-                            moveOutResult.getCalculatedReading().getValue(),
-                            moveOutFormObj.getMoveOutDate());
-    
-            archiveDataMoveOut(moveOutResult, moveOutFormObj.getUserContext().getYukonUser());
-    
-            addServiceDeviceGroups(moveOutResult);
-            logger.info("Move out for " + moveOutResult.getPreviousMeter()
-                                                          .toString() + " successful.");
-        } catch (NotFoundException e) {
-            logger.info("Move in for " + moveOutResult.getPreviousMeter().toString() + " failed.");
-            moveOutResult.setErrorMessage("Meter and/or point was not found.\n" + e.toString());
-            CTILogger.info(e);
-        } catch (MeterReadRequestException e) {
-            logger.info("Move in for " + moveOutResult.getPreviousMeter().toString() + " failed.");
-            moveOutResult.setErrorMessage("Meter is not able to be read.  The Meter may not be responding or the connection to Port Control Service may be down.\n" + e.toString());
-            CTILogger.info(e);
+        } else {
+            throw new IllegalArgumentException("The move out date is in the future.  Please check the scheduled date. ");
         }
+        
         return moveOutResult;
 
     }
@@ -195,11 +317,20 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
         moveOutTask.setMoveOutDate(moveOutFormObj.getMoveOutDate());
         moveOutTask.setMeter(moveOutFormObj.getMeter());
 
-        jobManager.scheduleJob(moveOutDefinition,
-                               moveOutTask,
-                               moveOutFormObj.getMoveOutDate(),
-                               moveOutFormObj.getUserContext());
-
+        Date currentDate = DateUtils.truncate(new Date(), Calendar.DATE);
+        Date tomorrowDate = TimeUtil.addDays(currentDate,1);
+        if (moveOutFormObj.getMoveOutDate().before(tomorrowDate)){
+            jobManager.scheduleJob(moveOutDefinition,
+                                   moveOutTask,
+                                   tomorrowDate,
+                                   moveOutFormObj.getUserContext());
+        } else { 
+            jobManager.scheduleJob(moveOutDefinition,
+                                   moveOutTask,
+                                   moveOutFormObj.getMoveOutDate(),
+                                   moveOutFormObj.getUserContext());
+        }
+        
         logger.info("Move out for " + moveOutResultObj.getPreviousMeter()
                                                       .toString() + " scheduled.");
 
@@ -445,4 +576,14 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
 			PaoCommandAuthorizationService paoCommandAuthorizationService) {
 		this.paoCommandAuthorizationService = paoCommandAuthorizationService;
 	}
+
+    @Required
+    public void setMeterReadService(MeterReadService meterReadService) {
+        this.meterReadService = meterReadService;
+    }
+    
+    @Required
+    public void setAttributeService(AttributeService attributeService) {
+        this.attributeService = attributeService;
+    }
 }

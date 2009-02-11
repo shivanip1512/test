@@ -43,6 +43,8 @@
         <property name="meterDao" ref="meterDao" />
         <property name="nextValueHelper" ref="nextValueHelper"/>
         <property name="paoCommandAuthorizationService" ref="paoCommandAuthorizationService" />
+        <property name="meterReadService" ref="meterReadService" />
+        <property name="attributeService" ref="attributeService" />
     </bean>
 
     <!-- Moving JobDefinitions -->

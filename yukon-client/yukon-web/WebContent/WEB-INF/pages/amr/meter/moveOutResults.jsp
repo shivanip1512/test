@@ -7,7 +7,7 @@
     
         <c:choose>
             <c:when test="${scheduled}">
-                <span class="internalSectionHeader"> A meter reading for ${meter.name} is scheduled for ${endDate} </span>
+                <span class="internalSectionHeader"> A meter reading for ${meter.name} is scheduled to be retrieved for ${endDate}. </span>
             </c:when>
 
             <c:otherwise>

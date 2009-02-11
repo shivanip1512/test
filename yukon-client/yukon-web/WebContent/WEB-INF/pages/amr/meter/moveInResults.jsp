@@ -7,9 +7,8 @@
 
         <c:choose>
             <c:when test="${scheduled}">
-                <span class="internalSectionHeader"> A meter
-                    reading for ${newMeter.name} is scheduled for
-                    ${beginDate} </span><br /><br />
+                <span class="internalSectionHeader"> A meter reading for ${newMeter.name} is scheduled to be retrieved for ${beginDate}.
+                </span><br /><br />
 
                 <c:if test="${prevMeter.name != newMeter.name}">
                     <span class="internalSectionHeader"> Device
