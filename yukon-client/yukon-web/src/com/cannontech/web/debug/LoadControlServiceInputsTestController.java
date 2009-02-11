@@ -91,8 +91,9 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
         Date stopTime = parseDateTime(request, "stop", userContext);
         boolean force = ServletRequestUtils.getBooleanParameter(request, "force", false);
         boolean observeConstraintsAndExecute = ServletRequestUtils.getBooleanParameter(request, "observeConstraintsAndExecute", false);
+        boolean waitForResponse = true;
         
-        ScenarioStatus scenarioStatus = loadControlService.startControlByScenarioName(scenarioName, startTime, stopTime, force, observeConstraintsAndExecute, userContext.getYukonUser());
+        ScenarioStatus scenarioStatus = loadControlService.startControlByScenarioName(scenarioName, startTime, stopTime, waitForResponse, force, observeConstraintsAndExecute, userContext.getYukonUser());
         
         for (ProgramStatus programStatus : scenarioStatus.getProgramStatuses()) {
             
@@ -145,8 +146,9 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
         Date stopTime = parseDateTime(request, "stop", userContext);
         boolean force = ServletRequestUtils.getBooleanParameter(request, "force", false);
         boolean observeConstraintsAndExecute = ServletRequestUtils.getBooleanParameter(request, "observeConstraintsAndExecute", false);
+        boolean waitForResponse = true;
         
-        ScenarioStatus scenarioStatus = loadControlService.stopControlByScenarioName(scenarioName, stopTime, force, observeConstraintsAndExecute, userContext.getYukonUser());
+        ScenarioStatus scenarioStatus = loadControlService.stopControlByScenarioName(scenarioName, stopTime, waitForResponse, force, observeConstraintsAndExecute, userContext.getYukonUser());
         
         for (ProgramStatus programStatus : scenarioStatus.getProgramStatuses()) {
             

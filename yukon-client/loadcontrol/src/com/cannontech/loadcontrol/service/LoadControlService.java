@@ -127,6 +127,7 @@ public interface LoadControlService {
      * @param scenarioName
      * @param startTime
      * @param stopTime
+     * @param waitForResponses if false, the program starts will run in a separate thread, and null will be returned.
      * @param forceStart Should normally always be set to false, set to true only if
      * you're sure you really need want to ignore constraint violations.
      * @param observeConstraintsAndExecute If false, do not execute if there are constraint violations.
@@ -139,7 +140,7 @@ public interface LoadControlService {
      * @throws NotAuthorizedException if neither the user (nor any groups user belongs to) have the scenario made visible to them.
      */
     public ScenarioStatus startControlByScenarioName(String scenarioName,
-            Date startTime, Date stopTime, boolean forceStart, boolean observeConstraintsAndExecute, LiteYukonUser user)
+            Date startTime, Date stopTime, boolean waitForResponses, boolean forceStart, boolean observeConstraintsAndExecute, LiteYukonUser user)
             throws NotFoundException, TimeoutException, NotAuthorizedException;
 
     /**
@@ -152,6 +153,7 @@ public interface LoadControlService {
      * ProgramStatus.
      * @param scenarioName
      * @param stopTime
+     * @param waitForResponses if false, the program stops will run in a separate thread, and null will be returned.
      * @param forceStop Should normally always be set to false, set to true only if
      * you're sure you really need want to ignore constraint violations.
      * @param observeConstraintsAndExecute If false, do not execute if there are constraint violations.
@@ -164,7 +166,7 @@ public interface LoadControlService {
      * @throws NotAuthorizedException if neither the user (nor any groups user belongs to) have the scenario made visible to them.
      */
     public ScenarioStatus stopControlByScenarioName(String scenarioName,
-            Date stopTime, boolean forceStop, boolean observeConstraintsAndExecute, LiteYukonUser user) throws NotFoundException,
+            Date stopTime, boolean waitForResponses, boolean forceStop, boolean observeConstraintsAndExecute, LiteYukonUser user) throws NotFoundException,
             TimeoutException, NotAuthorizedException;
 
     

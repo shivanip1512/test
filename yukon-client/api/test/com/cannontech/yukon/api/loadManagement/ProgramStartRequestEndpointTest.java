@@ -41,7 +41,6 @@ public class ProgramStartRequestEndpointTest {
         private String programName;
         private Date startTime;
         private Date stopTime;
-        private String gearName;
         
         @Override
         public ProgramStatus startControlByProgramName(String programName, Date startTime, Date stopTime, String gearName, boolean forceStart, boolean observeConstraintsAndExecute, LiteYukonUser user) throws NotFoundException, TimeoutException {
@@ -93,7 +92,7 @@ public class ProgramStartRequestEndpointTest {
         
         // no start time, no stop time
         //==========================================================================================
-        requestElement = LoadManagementTestUtils.createStartStopRequestElement("programStartRequest", "programName", "Program1", null, null, null, "1.0", requestSchemaResource);
+        requestElement = LoadManagementTestUtils.createStartStopRequestElement("programStartRequest", "programName", "Program1", null, null, null, "1.0", false, requestSchemaResource);
         
         responseElement = impl.invoke(requestElement, null);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
@@ -108,7 +107,7 @@ public class ProgramStartRequestEndpointTest {
         
         // start time, no stop time
         //==========================================================================================
-        requestElement = LoadManagementTestUtils.createStartStopRequestElement("programStartRequest", "programName", "Program2", "2008-10-13T12:30:00Z", null, null, "1.0", requestSchemaResource);
+        requestElement = LoadManagementTestUtils.createStartStopRequestElement("programStartRequest", "programName", "Program2", "2008-10-13T12:30:00Z", null, null, "1.0", false, requestSchemaResource);
         
         responseElement = impl.invoke(requestElement, null);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
@@ -124,7 +123,7 @@ public class ProgramStartRequestEndpointTest {
         
         // start time, stop time
         //==========================================================================================
-        requestElement = LoadManagementTestUtils.createStartStopRequestElement("programStartRequest", "programName", "Program3", "2008-10-13T12:30:00Z", "2008-10-13T21:49:01Z", null, "1.0", requestSchemaResource);
+        requestElement = LoadManagementTestUtils.createStartStopRequestElement("programStartRequest", "programName", "Program3", "2008-10-13T12:30:00Z", "2008-10-13T21:49:01Z", null, "1.0", false, requestSchemaResource);
         
         responseElement = impl.invoke(requestElement, null);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
@@ -139,7 +138,7 @@ public class ProgramStartRequestEndpointTest {
         
         // not found
         //==========================================================================================
-        requestElement = LoadManagementTestUtils.createStartStopRequestElement("programStartRequest", "programName", "NOT_FOUND", null, null, null, "1.0", requestSchemaResource);
+        requestElement = LoadManagementTestUtils.createStartStopRequestElement("programStartRequest", "programName", "NOT_FOUND", null, null, null, "1.0", false, requestSchemaResource);
         
         responseElement = impl.invoke(requestElement, null);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
@@ -150,7 +149,7 @@ public class ProgramStartRequestEndpointTest {
         
         //gear  not found
         //==========================================================================================
-        requestElement = LoadManagementTestUtils.createStartStopRequestElement("programStartRequest", "programName", "NOT_FOUND", null, null, "BAD_GEAR", "1.0", requestSchemaResource);
+        requestElement = LoadManagementTestUtils.createStartStopRequestElement("programStartRequest", "programName", "NOT_FOUND", null, null, "BAD_GEAR", "1.0", false, requestSchemaResource);
         
         responseElement = impl.invoke(requestElement, null);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
@@ -161,7 +160,7 @@ public class ProgramStartRequestEndpointTest {
         
         // timeout
         //==========================================================================================
-        requestElement = LoadManagementTestUtils.createStartStopRequestElement("programStartRequest", "programName", "TIMEOUT", null, null, null, "1.0", requestSchemaResource);
+        requestElement = LoadManagementTestUtils.createStartStopRequestElement("programStartRequest", "programName", "TIMEOUT", null, null, null, "1.0", false, requestSchemaResource);
         
         responseElement = impl.invoke(requestElement, null);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
@@ -172,7 +171,7 @@ public class ProgramStartRequestEndpointTest {
         
         // not auth
         //==========================================================================================
-        requestElement = LoadManagementTestUtils.createStartStopRequestElement("programStartRequest", "programName", "NOT_AUTH", null, null, null, "1.0", requestSchemaResource);
+        requestElement = LoadManagementTestUtils.createStartStopRequestElement("programStartRequest", "programName", "NOT_AUTH", null, null, null, "1.0", false, requestSchemaResource);
         
         responseElement = impl.invoke(requestElement, null);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);

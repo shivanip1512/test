@@ -32,6 +32,7 @@ public class ScenarioStartRequestEndpoint {
     private String scenarioNameExpressionStr = "/y:scenarioStartRequest/y:scenarioName";
     private String startTimeExpressionStr = "/y:scenarioStartRequest/y:startDateTime";
     private String stopTimeExpressionStr = "/y:scenarioStartRequest/y:stopDateTime";
+    private String waitForResponseExpressionStr = "/y:scenarioStartRequest/y:waitForResponse";
     
     @PostConstruct
     public void initialize() throws JDOMException {
@@ -48,6 +49,7 @@ public class ScenarioStartRequestEndpoint {
         String scenarioName = requestTemplate.evaluateAsString(scenarioNameExpressionStr);
         Date startTime = requestTemplate.evaluateAsDate(startTimeExpressionStr);
         Date stopTime = requestTemplate.evaluateAsDate(stopTimeExpressionStr);
+        Boolean waitForResponse = requestTemplate.evaluateAsBooleanWithDefault(waitForResponseExpressionStr, false);
 
         // init response
         Element resp = new Element("scenarioStartResponse", ns);
@@ -56,7 +58,7 @@ public class ScenarioStartRequestEndpoint {
         
         // run service
         try {
-            loadControlService.startControlByScenarioName(scenarioName, startTime, stopTime, false, true, user);
+            loadControlService.startControlByScenarioName(scenarioName, startTime, stopTime, waitForResponse, false, true, user);
         } catch (NotFoundException e) {
             Element fe = XMLFailureGenerator.generateFailure(scenarioStartRequest, e, "InvalidScenarioName", "No scenario named: " + scenarioName);
             resp.addContent(fe);

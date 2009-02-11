@@ -31,6 +31,7 @@ public class ScenarioStopRequestEndpoint {
     private Namespace ns = YukonXml.getYukonNamespace();
     private String scenarioNameExpressionStr = "/y:scenarioStopRequest/y:scenarioName";
     private String stopTimeExpressionStr = "/y:scenarioStopRequest/y:stopDateTime";
+    private String waitForResponseExpressionStr = "/y:scenarioStopRequest/y:waitForResponse";
     
     @PostConstruct
     public void initialize() throws JDOMException {
@@ -46,6 +47,7 @@ public class ScenarioStopRequestEndpoint {
         
         String scenarioName = requestTemplate.evaluateAsString(scenarioNameExpressionStr);
         Date stopTime = requestTemplate.evaluateAsDate(stopTimeExpressionStr);
+        Boolean waitForResponse = requestTemplate.evaluateAsBooleanWithDefault(waitForResponseExpressionStr, false);
 
         // init response
         Element resp = new Element("scenarioStopResponse", ns);
@@ -54,7 +56,7 @@ public class ScenarioStopRequestEndpoint {
         
         // run service
         try {
-            loadControlService.stopControlByScenarioName(scenarioName, stopTime, false, true, user);
+            loadControlService.stopControlByScenarioName(scenarioName, stopTime, waitForResponse, false, true, user);
         } catch (NotFoundException e) {
             Element fe = XMLFailureGenerator.generateFailure(scenarioStopRequest, e, "InvalidScenarioName", "No scenario named: " + scenarioName);
             resp.addContent(fe);

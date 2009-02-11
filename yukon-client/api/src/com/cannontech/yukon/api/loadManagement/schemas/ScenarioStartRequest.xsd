@@ -28,6 +28,12 @@
                             <xsd:documentation>stopDateTime is optional. If omitted, control will not be scheduled to stop for each program</xsd:documentation>
                         </xsd:annotation>
                     </xsd:element>
+                    <xsd:element name="waitForResponse" type="xsd:boolean" minOccurs="0">
+                    	<xsd:annotation>
+                            <xsd:documentation>waitForResponse is optional. It will default to "false" meaning that the request will respond immediately while the scenario's programs are scheduled to start as a background process.
+                            If the node is included and "true" is used as its value, the request will not respond until all of the scenario's programs have been scheduled to start.</xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
                 </xsd:sequence>
             </xsd:extension>
         </xsd:complexContent>

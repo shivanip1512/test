@@ -58,7 +58,7 @@ public class LoadControlServiceAdapter implements LoadControlService {
 
     @Override
     public ScenarioStatus startControlByScenarioName(String scenarioName,
-            Date startTime, Date stopTime, boolean forceStart,
+            Date startTime, Date stopTime, boolean waitForResponse, boolean forceStart,
             boolean observeConstraintsAndExecute, LiteYukonUser user) throws NotFoundException,
             TimeoutException, NotAuthorizedException {
         throw new UnsupportedOperationException("Not Implemented");
@@ -74,7 +74,7 @@ public class LoadControlServiceAdapter implements LoadControlService {
 
     @Override
     public ScenarioStatus stopControlByScenarioName(String scenarioName,
-            Date stopTime, boolean forceStop,
+            Date stopTime, boolean waitForResponse, boolean forceStop,
             boolean observeConstraintsAndExecute, LiteYukonUser user) throws NotFoundException,
             TimeoutException, NotAuthorizedException {
         throw new UnsupportedOperationException("Not Implemented");

@@ -3,12 +3,14 @@ package com.cannontech.loadcontrol.service.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.GearNotFoundException;
@@ -42,6 +44,7 @@ public class LoadControlServiceImpl implements LoadControlService {
     private LoadControlCommandService loadControlCommandService;
     private PaoDao paoDao;
     private PaoAuthorizationService paoAuthorizationService;
+    private ScheduledExecutor scheduledExecutor;
     
     private LoadControlClientConnection loadControlClientConnection;
     
@@ -155,17 +158,38 @@ public class LoadControlServiceImpl implements LoadControlService {
     }
     
     // START CONTROL BY SCENAIO NAME
-	public ScenarioStatus startControlByScenarioName(String scenarioName,
-			Date startTime, Date stopTime, boolean forceStart,
-			boolean observeConstraintsAndExecute, LiteYukonUser user)
+	public ScenarioStatus startControlByScenarioName(final String scenarioName,
+			final Date startTime, final Date stopTime, boolean waitForResponses, final boolean forceStart,
+			final boolean observeConstraintsAndExecute, final LiteYukonUser user)
 			throws NotFoundException, TimeoutException, NotAuthorizedException {
 
-        int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
+        final int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
         validateScenarioIsVisibleToUser(scenarioName, scenarioId, user);
         
-        List<Integer> programIds = loadControlProgramDao.getProgramIdsByScenarioId(scenarioId);
+        final List<Integer> programIds = loadControlProgramDao.getProgramIdsByScenarioId(scenarioId);
         
-        List<ProgramStatus> programStatuses = new ArrayList<ProgramStatus>();
+        if (waitForResponses) {
+        
+        	return doStartProgramsInScenario(programIds, scenarioId, scenarioName, startTime, stopTime, forceStart, observeConstraintsAndExecute, user);
+        
+        } else {
+        
+        	scheduledExecutor.schedule(new Runnable() {
+        		public void run() {
+        			try {
+        				doStartProgramsInScenario(programIds, scenarioId, scenarioName, startTime, stopTime, forceStart, observeConstraintsAndExecute, user);
+        			} catch (TimeoutException e) {
+        			}
+        		}
+        	}, 0, TimeUnit.MILLISECONDS);
+        	
+        	return null;
+        }
+    }
+	
+	private ScenarioStatus doStartProgramsInScenario(List<Integer> programIds, int scenarioId, String scenarioName, Date startTime, Date stopTime, boolean forceStart, boolean observeConstraintsAndExecute, LiteYukonUser user) throws TimeoutException {
+		
+		List<ProgramStatus> programStatuses = new ArrayList<ProgramStatus>();
         List<LMProgramBase> programs = loadControlClientConnection.getProgramsForProgramIds(programIds);
         for (LMProgramBase program : programs) {
                 
@@ -176,20 +200,41 @@ public class LoadControlServiceImpl implements LoadControlService {
         }
         
         return new ScenarioStatus(scenarioName, programStatuses);
-    }
+	}
     
     // STOP CONTROL BY SCENAIO NAME
-	public ScenarioStatus stopControlByScenarioName(String scenarioName,
-			Date stopTime, boolean forceStop,
-			boolean observeConstraintsAndExecute, LiteYukonUser user)
+	public ScenarioStatus stopControlByScenarioName(final String scenarioName,
+			final Date stopTime, boolean waitForResponses, final boolean forceStop,
+			final boolean observeConstraintsAndExecute, final LiteYukonUser user)
 			throws NotFoundException, TimeoutException, NotAuthorizedException {
 
-        int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
+        final int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
         validateScenarioIsVisibleToUser(scenarioName, scenarioId, user);
         
-        List<Integer> programIds = loadControlProgramDao.getProgramIdsByScenarioId(scenarioId);
+        final List<Integer> programIds = loadControlProgramDao.getProgramIdsByScenarioId(scenarioId);
         
-        List<ProgramStatus> programStatuses = new ArrayList<ProgramStatus>();
+        if (waitForResponses) {
+        	
+        	return doStopProgramsInScenario(programIds, scenarioId, scenarioName, stopTime, forceStop, observeConstraintsAndExecute, user);
+        
+        } else {
+        	
+        	scheduledExecutor.schedule(new Runnable() {
+        		public void run() {
+        			try {
+        				doStopProgramsInScenario(programIds, scenarioId, scenarioName, stopTime, forceStop, observeConstraintsAndExecute, user);
+        			} catch (TimeoutException e) {
+        			}
+        		}
+        	}, 0, TimeUnit.MILLISECONDS);
+        	
+        	return null;
+        }
+    }
+	
+	private ScenarioStatus doStopProgramsInScenario(List<Integer> programIds, int scenarioId, String scenarioName, Date stopTime, boolean forceStop, boolean observeConstraintsAndExecute, LiteYukonUser user) throws TimeoutException {
+		
+		List<ProgramStatus> programStatuses = new ArrayList<ProgramStatus>();
         List<LMProgramBase> programs = loadControlClientConnection.getProgramsForProgramIds(programIds);
         for (LMProgramBase program : programs) {
             
@@ -200,7 +245,7 @@ public class LoadControlServiceImpl implements LoadControlService {
         }
         
         return new ScenarioStatus(scenarioName, programStatuses);
-    }
+	}
     
     // PROGRAM STARTING GEARS BY SCENARIO NAME
     public ScenarioProgramStartingGears getScenarioProgramStartingGearsByScenarioName(String scenarioName, LiteYukonUser user) throws NotFoundException, NotAuthorizedException {
@@ -406,5 +451,10 @@ public class LoadControlServiceImpl implements LoadControlService {
     public void setPaoAuthorizationService(
 			PaoAuthorizationService paoAuthorizationService) {
 		this.paoAuthorizationService = paoAuthorizationService;
+	}
+    
+    @Autowired
+    public void setScheduledExecutor(ScheduledExecutor scheduledExecutor) {
+		this.scheduledExecutor = scheduledExecutor;
 	}
 }

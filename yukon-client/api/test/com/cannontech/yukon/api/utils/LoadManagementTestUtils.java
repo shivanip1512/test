@@ -20,6 +20,7 @@ public class LoadManagementTestUtils {
                                               String stopDateTimeStr,
                                               String gearName,
                                               String version,
+                                              boolean scenarioWaitForResponse,
                                               Resource requestSchemaResource) {
         
         Element requestElement = null;
@@ -45,6 +46,11 @@ public class LoadManagementTestUtils {
         
         if (gearName != null) {
             tmpElement = XmlUtils.createStringElement("gearName", ns, gearName);
+            requestElement.addContent(tmpElement);
+        }
+        
+        if (nameModeValue.equals("scenarioStartRequest") && scenarioWaitForResponse) {
+        	tmpElement = XmlUtils.createStringElement("waitForResponse", ns, "true");
             requestElement.addContent(tmpElement);
         }
         
