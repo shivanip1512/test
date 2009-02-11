@@ -12,11 +12,9 @@ import com.cannontech.common.gui.panel.ManualChangeJPanel;
 import com.cannontech.common.gui.util.OkCancelDialog;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMControlArea;
-import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
 import com.cannontech.loadcontrol.data.LMGroupBase;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.datamodels.ControlAreaTableModel;
@@ -41,7 +39,6 @@ import com.cannontech.loadcontrol.popup.ControlAreaPopUpMenu;
 import com.cannontech.loadcontrol.popup.GroupPopUpMenu;
 import com.cannontech.loadcontrol.popup.ProgramPopUpMenu;
 import com.cannontech.roles.application.TDCRole;
-import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.tdc.observe.ObservableJPopupMenu;
 
 public class LoadControlMainPanel extends javax.swing.JPanel implements ButtonBarPanelListener, 
@@ -1140,22 +1137,7 @@ private void handleException(java.lang.Throwable exception)
  */
 private void initClientConnection()
 {
-	int port = 1920;
-
-	//figure out where the LoadControl server is
-	String host = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.LOADCONTROL_MACHINE );
-
-	try
-	{
-		port = Integer.parseInt(
-			DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.LOADCONTROL_PORT ) );
-	}
-	catch (Exception e)
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	}
-
-	//hex value representing the privelages of the user on this machine
+	//hex value representing the privileges of the user on this machine
 	try {
         userRightsInt = Integer.parseInt(ClientSession.getInstance()
             .getRolePropertyValue(TDCRole.LOADCONTROL_EDIT, "0"), 16);
@@ -1164,19 +1146,6 @@ private void initClientConnection()
                        "must be valid hex integer (less than 8 characters).", e);
         userRightsInt = 0;
     }
-
-
-   LoadControlClientConnection.getInstance().setHost(host);
-   LoadControlClientConnection.getInstance().setPort(port);
-   LoadControlClientConnection.getInstance().setAutoReconnect(true);
-
-   //lock the connection down and try to connect if we arent connected already
-   synchronized( LoadControlClientConnection.getInstance() )
-   {
-	   if( !LoadControlClientConnection.getInstance().isMonitorThreadAlive() /*.isValid()*/ )
-  			LoadControlClientConnection.getInstance().connectWithoutWait();
-   }
-   
 }
 /**
  * Initializes connections

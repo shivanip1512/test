@@ -182,6 +182,10 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
         return triggers;
     }
     
+    /**
+     * @return an already connected clientConnection
+     * @deprecated code should use Spring injection, or if absolutely necessary, YukonSpringHook directly
+     */
     @Deprecated
     public static LoadControlClientConnection getInstance() {
     	LoadControlClientConnection clientConnection = YukonSpringHook.getBean("loadControlClientConnection", LoadControlClientConnection.class);
