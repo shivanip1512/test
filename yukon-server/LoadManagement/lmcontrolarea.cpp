@@ -1382,6 +1382,7 @@ void CtiLMControlArea::reduceControlAreaControl(ULONG secondsFrom1901, CtiMultiM
             if( lm_program->getPAOType() == TYPE_LMPROGRAM_DIRECT )
             {
                 CtiLMProgramDirectSPtr lm_program_direct = boost::static_pointer_cast< CtiLMProgramDirect >(lm_program);
+                lm_program_direct->setChangeReason("Reducing Control");
                 if( lm_program_direct->stopProgramControl(multiPilMsg, multiDispatchMsg, multiNotifMsg, secondsFrom1901) == FALSE ) //the program didn't refused to stop (maybe a constraint was violated like a groups min activate time?)
                 {
                     //so count this program as still active
@@ -1870,7 +1871,8 @@ BOOL CtiLMControlArea::stopProgramsBelowThreshold(ULONG secondsFrom1901, CtiMult
                     CtiLockGuard<CtiLogger> dout_guard(dout);
                     dout << CtiTime() << " " <<  text << " - " << additional << endl;
                 }
-
+                
+                lm_program_direct->setChangeReason("Threshold Stop");
                 if( !(lm_program_direct->stopProgramControl(multiPilMsg, multiDispatchMsg, multiNotifMsg, secondsFrom1901) == FALSE) )
                 {
                     stopped_program = true;
@@ -2012,6 +2014,7 @@ BOOL CtiLMControlArea::stopAllControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* mul
               currentLMProgram->getProgramState() == CtiLMProgramBase::FullyActiveState ||
               currentLMProgram->getProgramState() == CtiLMProgramBase::NonControllingState ) )// HACK: == "Enabled" part above should be removed as soon as the editor is fixed
         {
+            boost::static_pointer_cast< CtiLMProgramDirect >(currentLMProgram)->setChangeReason("Control Area Stop");
             if( boost::static_pointer_cast< CtiLMProgramDirect >(currentLMProgram)->stopProgramControl(multiPilMsg, multiDispatchMsg, multiNotifMsg, secondsFrom1901 ) )
             {
                 returnBOOL = TRUE;

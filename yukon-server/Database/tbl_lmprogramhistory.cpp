@@ -70,6 +70,8 @@ RWDBStatus CtiTableLMProgramHistory::Insert()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
+    validateData();
+
     if( _action == Start )
     {
         RWDBTable table = getDatabase().table( "LMProgramHistory" );
@@ -106,6 +108,7 @@ RWDBStatus CtiTableLMProgramHistory::Insert()
     return inserter.status();
 }
 
+// Note the action field is a varchar(50)
 string CtiTableLMProgramHistory::getStrFromAction(long action)
 {
     switch( action )
@@ -118,5 +121,45 @@ string CtiTableLMProgramHistory::getStrFromAction(long action)
             return "Gear Change";
         default:
             return "Unknown";
+    }
+}
+
+// This ensures that all strings have something in them 
+// and that their sizes are not larger than the database can handle.
+void CtiTableLMProgramHistory::validateData()
+{
+    //Inserting a blank name causes problems in oracle.
+    if( _programName.size() == 0 )
+    {
+        _programName = "(none)";
+    }
+    if( _reason.size() == 0 )
+    {
+        _reason = "(none)";
+    }
+    if( _user.size() == 0 )
+    {
+        _user = "(none)";
+    }
+    if( _gearName.size() == 0 )
+    {
+        _gearName = "(none)";
+    }
+
+    if( _programName.size() > 60 )
+    {
+        _programName.resize(60);
+    }
+    if( _reason.size() > 50 )
+    {
+        _reason.resize(50);
+    }
+    if( _user.size() > 64 )
+    {
+        _user.resize(64);
+    }
+    if( _gearName.size() > 30 )
+    {
+        _gearName.resize(30);
     }
 }

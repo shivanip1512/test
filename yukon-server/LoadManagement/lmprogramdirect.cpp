@@ -2534,6 +2534,7 @@ BOOL CtiLMProgramDirect::maintainProgramControl(LONG currentPriority, vector<Cti
             CtiLockGuard<CtiLogger> dout_guard(dout);
             dout << CtiTime() << " - LM Program: " << getPAOName() << " is no longer in a valid control window, stopping program control" << endl;
         }
+        setChangeReason("Control Window Stop");
         if( stopProgramControl(multiPilMsg, multiDispatchMsg, multiNotifMsg, secondsFrom1901) != FALSE )
         {
             // Let the world know we just auto stopped?
@@ -4797,6 +4798,7 @@ BOOL CtiLMProgramDirect::handleTimedControl(ULONG secondsFrom1901, LONG secondsF
                     dout << CtiTime() << " - " << text << ", " << additional << endl;
                 }
 
+                setChangeReason("Timed Stop");
                 stopProgramControl(multiPilMsg,multiDispatchMsg, multiNotifMsg, secondsFrom1901);
 
                 setReductionTotal(0.0); //is this resetting dynamic info?

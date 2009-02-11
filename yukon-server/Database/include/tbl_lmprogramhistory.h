@@ -36,6 +36,11 @@ private:
     string  _gearName;
     CtiTime _time;
 
+    CtiTableLMProgramHistory() {};
+
+    void validateData();
+
+    string getStrFromAction(long action);
 public:
 
     enum LMHistoryActions
@@ -48,15 +53,12 @@ public:
     CtiTableLMProgramHistory(long progHistID, long gearHistID, long program, long gear, LMHistoryActions action,
                              string programName, string reason, string user, string gearName,
                              CtiTime time);
-    CtiTableLMProgramHistory() {};
+    
     CtiTableLMProgramHistory(const CtiTableLMProgramHistory &aRef);
 
     CtiTableLMProgramHistory& operator=(const CtiTableLMProgramHistory &aRef);
 
     RWDBStatus Insert();
-
-    string getStrFromAction(long action);
-
 };
 
 #endif
