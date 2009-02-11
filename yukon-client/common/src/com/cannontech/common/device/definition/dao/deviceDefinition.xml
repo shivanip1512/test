@@ -1564,6 +1564,303 @@
         </attributes>
     </device>
     <device>
+        <type value="1107" javaConstant="MCT430A3" changeGroup="mct" />
+        <displayName value="MCT-430A3"/>
+        <displayGroup value="MCT"/>
+        <points>
+            <point init="true" type="Analog">
+                <name>Total kWh</name>
+                <offset value="1"/>
+                <multiplier value="0.0001"/>
+                <unitofmeasure value="kWH"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Peak kW (Rate A kW)</name>
+                <offset value="2"/>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Rate A kWh</name>
+                <offset value="3"/>
+                <multiplier value="0.0001"/>
+                <unitofmeasure value="kWH"/>
+            </point>
+            <point type="Analog">
+                <name>Peak kW (Rate B kW)</name>
+                <offset value="4"/>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point type="Analog">
+                <name>Rate B kWh</name>
+                <offset value="5"/>
+                <multiplier value="0.0001"/>
+                <unitofmeasure value="kWH"/>
+            </point>
+            <point type="Analog">
+                <name>Peak kW (Rate C kW)</name>
+                <offset value="6"/>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point type="Analog">
+                <name>Rate C kWh</name>
+                <offset value="7"/>
+                <multiplier value="0.0001"/>
+                <unitofmeasure value="kWH"/>
+            </point>
+            <point type="Analog">
+                <name>Peak kW (Rate D kW)</name>
+                <offset value="8"/>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point type="Analog">
+                <name>Rate D kWh</name>
+                <offset value="9"/>
+                <multiplier value="0.0001"/>
+                <unitofmeasure value="kWH"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Last Interval kW</name>
+                <offset value="10"/>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>kVArh</name>
+                <offset value="11"/>
+                <multiplier value="0.0001"/>
+                <unitofmeasure value="kVArh"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Peak kVAr (Rate A kVAr)</name>
+                <offset value="12"/>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kVAr"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Rate A kVArh</name>
+                <offset value="13"/>
+                <multiplier value="0.0001"/>
+                <unitofmeasure value="kVArh"/>
+            </point>
+            <point type="Analog">
+                <name>Peak kVAr (Rate B kVAr)</name>
+                <offset value="14"/>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kVAr"/>
+            </point>
+            <point type="Analog">
+                <name>Rate B kVArh</name>
+                <offset value="15"/>
+                <multiplier value="0.0001"/>
+                <unitofmeasure value="kVArh"/>
+            </point>
+            <point type="Analog">
+                <name>Peak kVAr (Rate C kVAr)</name>
+                <offset value="16"/>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kVAr"/>
+            </point>
+            <point type="Analog">
+                <name>Rate C kVArh</name>
+                <offset value="17"/>
+                <multiplier value="0.0001"/>
+                <unitofmeasure value="kVArh"/>
+            </point>
+            <point type="Analog">
+                <name>Peak kVAr (Rate D kVAr)</name>
+                <offset value="18"/>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kVAr"/>
+            </point>
+            <point type="Analog">
+                <name>Rate D kVArh</name>
+                <offset value="19"/>
+                <multiplier value="0.0001"/>
+                <unitofmeasure value="kVArh"/>
+            </point>
+            <point type="Analog">
+                <name>Last Interval kVAr</name>
+                <offset value="20"/>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kVAr"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>IED Blink Count</name>
+                <offset value="40"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+            </point>
+            <point init="true" type="DemandAccumulator">
+                <name>kW-LP</name>
+                <offset value="101"/>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point type="DemandAccumulator">
+                <name>kW-LP (Channel 2)</name>
+                <offset value="102"/>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point type="DemandAccumulator">
+                <name>kW-LP (Channel 3)</name>
+                <offset value="103"/>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point type="DemandAccumulator">
+                <name>Voltage Profile</name>
+                <offset value="104"/>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="Volts"/>
+            </point>
+            <point init="true" type="PulseAccumulator">
+                <name>Blink Count</name>
+                <offset value="20"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+            </point>
+        </points>
+  		<commands>
+			<command name="Read Profile Data Channel 1">
+        		<cmd text="getvalue lp channel 1 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
+        		<pointRef name="kW-LP"/>
+        	</command>
+			<command name="Read Profile Data Channel 2">
+        		<cmd text="getvalue lp channel 2 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
+        		<pointRef name="kW-LP (Channel 2)"/>
+        	</command>
+			<command name="Read Profile Data Channel 3">
+        		<cmd text="getvalue lp channel 3 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
+        		<pointRef name="kW-LP (Channel 3)"/>
+        	</command>
+			<command name="Read Profile Data Channel 4">
+        		<cmd text="getvalue lp channel 4 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
+        		<pointRef name="Voltage Profile"/>
+        	</command>
+			<command name="Read Blink Count">
+        		<cmd text="getvalue powerfail"/>
+        		<pointRef name="Blink Count"/>
+        	</command>
+        	
+			<command name="Read Total kWh">
+				<cmd text="getvalue ied kwht"/>
+				<pointRef name="Total kWh"/>
+			</command>
+			<command name="Read Current Rate A kWh/Peak kW">
+				<cmd text="getvalue ied current kwha"/>
+				<pointRef name="Peak kW (Rate A kW)"/>
+				<pointRef name="Rate A kWh"/>
+			</command>
+			<command name="Read Current Rate B kWh/Peak kW">
+				<cmd text="getvalue ied current kwhb"/>
+				<pointRef name="Peak kW (Rate B kW)"/>
+				<pointRef name="Rate B kWh"/>
+			</command>
+			<command name="Read Current Rate C kWh/Peak kW">
+				<cmd text="getvalue ied current kwhc"/>
+				<pointRef name="Peak kW (Rate C kW)"/>
+				<pointRef name="Rate C kWh"/>
+			</command>
+			<command name="Read Current Rate D kWh/Peak kW">
+				<cmd text="getvalue ied current kwhd"/>
+				<pointRef name="Peak kW (Rate D kW)"/>
+				<pointRef name="Rate D kWh"/>
+			</command>
+<!-- 
+			<command name="Read Frozen Rate A kWh/Peak kW">
+				<cmd text="getvalue ied frozen kwha"/>
+				<pointRef name="Peak kW (Rate A kW)"/>
+				<pointRef name="Rate A kWh"/>
+			</command>
+			<command name="Read Frozen Rate B kWh/Peak kW">
+				<cmd text="getvalue ied frozen kwhb"/>
+				<pointRef name="Peak kW (Rate B kW)"/>
+				<pointRef name="Rate B kWh"/>
+			</command>
+			<command name="Read Frozen Rate C kWh/Peak kW">
+				<cmd text="getvalue ied frozen kwhc"/>
+				<pointRef name="Peak kW (Rate C kW)"/>
+				<pointRef name="Rate C kWh"/>
+			</command>
+			<command name="Read Frozen Rate D kWh/Peak kW">
+				<cmd text="getvalue ied frozen kwhd"/>
+				<pointRef name="Peak kW (Rate D kW)"/>
+				<pointRef name="Rate D kWh"/>
+			</command>
+ -->			
+			<command name="Read IED Last Interval Demands">
+				<cmd text="getvalue ied demand"/>
+				<pointRef name="Last Interval kW"/>
+			</command>
+			
+			<command name="Read LP Request Status">
+        		<cmd text="getvalue lp status"/>
+        	</command>
+			<command name="Cancel LP Request">
+        		<cmd text="getvalue lp cancel"/>
+        	</command>
+			<command name="Read rates for Demand, LP, Volt Demand, and Volt Profile">
+        		<cmd text="getconfig intervals"/>
+        	</command>
+            <command name="Read IED Blink Count">
+                <cmd text="getvalue ied outage"/>
+                <pointRef name="IED Blink Count"/>
+            </command>
+        </commands>
+		<attributes>
+        	<attribute name="USAGE">
+        		<basicLookup point="Total kWh"/>
+        	</attribute>
+        	<attribute name="PEAK_DEMAND">
+         		<basicLookup point="Peak kW (Rate A kW)"/>
+        	</attribute>
+        	<attribute name="DEMAND">
+        		<basicLookup point="Last Interval kW" />
+        	</attribute>
+        	<attribute name="KVAR">
+        		<basicLookup point="Peak kVAr (Rate A kVAr)" />
+        	</attribute>
+        	<attribute name="KVARH">
+        		<basicLookup point="Rate A kVArh" />
+        	</attribute>
+        	<attribute name="LOAD_PROFILE">
+        		<basicLookup point="kW-LP" />
+        	</attribute>
+        	<attribute name="BLINK_COUNT">
+        		<basicLookup point="IED Blink Count" />
+        	</attribute>
+			<attribute name="TOU_RATE_A_USAGE">
+        		<basicLookup point="Rate A kWh" />
+        	</attribute>
+        	<attribute name="TOU_RATE_B_USAGE">
+        		<basicLookup point="Rate B kWh" />
+        	</attribute>
+        	<attribute name="TOU_RATE_C_USAGE">
+        		<basicLookup point="Rate C kWh" />
+        	</attribute>
+        	<attribute name="TOU_RATE_D_USAGE">
+        		<basicLookup point="Rate D kWh" />
+        	</attribute>
+        	<attribute name="TOU_RATE_A_PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate A kW)" />
+        	</attribute>
+        	<attribute name="TOU_RATE_B_PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate B kW)" />
+        	</attribute>
+        	<attribute name="TOU_RATE_C_PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate C kW)" />
+        	</attribute>
+        	<attribute name="TOU_RATE_D_PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate D kW)" />
+        	</attribute>
+        </attributes>
+    </device>
+    <device>
         <type value="1065" javaConstant="MCT410IL" changeGroup="mct"/>
         <displayName value="MCT-410IL"/>
         <displayGroup value="MCT"/>

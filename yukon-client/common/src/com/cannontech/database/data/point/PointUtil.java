@@ -17,10 +17,14 @@ import com.cannontech.database.data.device.MCT310IDL;
 import com.cannontech.database.data.device.MCT310IL;
 import com.cannontech.database.data.device.MCT400SeriesBase;
 import com.cannontech.database.data.device.MCT410CL;
+import com.cannontech.database.data.device.MCT410FL;
+import com.cannontech.database.data.device.MCT410GL;
 import com.cannontech.database.data.device.MCT410IL;
 import com.cannontech.database.data.device.MCT410_KWH_Only;
 import com.cannontech.database.data.device.MCT430A;
+import com.cannontech.database.data.device.MCT430A3;
 import com.cannontech.database.data.device.MCT430S4;
+import com.cannontech.database.data.device.MCT430SL;
 import com.cannontech.database.data.device.MCT470;
 import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.pao.TypeBase;
@@ -37,7 +41,10 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 public class PointUtil {
 
     public static DBPersistent generatePointsForMCT(Object val) {
-        if (val instanceof MCT310 || val instanceof MCT310IL || val instanceof MCT310ID || val instanceof MCT310IDL || val instanceof MCT410IL || val instanceof MCT470 || val instanceof MCT410_KWH_Only || val instanceof MCT410CL || val instanceof MCT430A || val instanceof MCT430S4) {
+        if (val instanceof MCT310 || val instanceof MCT310IL || val instanceof MCT310ID || val instanceof MCT310IDL || 
+        		val instanceof MCT410IL || val instanceof MCT410_KWH_Only || val instanceof MCT410CL || val instanceof MCT410GL || val instanceof MCT410FL || 
+        		val instanceof MCT430A || val instanceof MCT430S4 || val instanceof MCT430SL || val instanceof MCT430A3 ||
+        		val instanceof MCT470 ) {
             if (val instanceof MCT400SeriesBase) {
                 // sloppy way of setting a 400 series load profile default...
                 // improve this later
@@ -203,7 +210,8 @@ public class PointUtil {
             }
             
             // analog points for 470s and 430s
-            if (val instanceof MCT470 || val instanceof MCT430A || val instanceof MCT430S4) 
+            if (val instanceof MCT470 || 
+            		val instanceof MCT430A || val instanceof MCT430S4 || val instanceof MCT430SL || val instanceof MCT430A3 ) 
             {
                 newVal.getDBPersistentVector()
                     .add(PointFactory.createAnalogPoint("Total KWh",

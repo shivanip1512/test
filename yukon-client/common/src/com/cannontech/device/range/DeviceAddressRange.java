@@ -23,6 +23,9 @@ public class DeviceAddressRange
 
     private static final RangeBase RANGE_MCT430SL = 
         new RangeBase( 100000, 2796201, DeviceTypes.MCT430SL);
+
+    private static final RangeBase RANGE_MCT430A3 = 
+        new RangeBase( 100000, 2796201, DeviceTypes.MCT430A3);
    	
 	private static final RangeBase RANGE_MCT410CL = 
 		new RangeBase( 0, 2796201, DeviceTypes.MCT410CL); 
@@ -103,7 +106,10 @@ public class DeviceAddressRange
             
             case DeviceTypes.MCT430SL:
                 return RANGE_MCT430SL;    
-        
+
+            case DeviceTypes.MCT430A3:
+                return RANGE_MCT430A3;    
+
             case DeviceTypes.MCT410CL:
                 return RANGE_MCT410CL;
 		

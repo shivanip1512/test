@@ -50,6 +50,7 @@ import com.cannontech.database.data.device.MCT410FL;
 import com.cannontech.database.data.device.MCT410GL;
 import com.cannontech.database.data.device.MCT410IL;
 import com.cannontech.database.data.device.MCT430A;
+import com.cannontech.database.data.device.MCT430A3;
 import com.cannontech.database.data.device.MCT430S4;
 import com.cannontech.database.data.device.MCT430SL;
 import com.cannontech.database.data.device.MCT470;
@@ -380,6 +381,11 @@ public void runImport(List<ImportData> imps) {
         }
         else if(template400SeriesBase instanceof MCT430SL && !DeviceAddressRange.isValidRange(DeviceTypes.MCT430SL, Long.parseLong(address))) {
             String error = "Has an incorrect MCT430SL address ("+address+").  ";
+            log.error(logMsgPrefix + error);
+            errorMsg.add(error);
+        }
+        else if(template400SeriesBase instanceof MCT430A3 && !DeviceAddressRange.isValidRange(DeviceTypes.MCT430A3, Long.parseLong(address))) {
+            String error = "Has an incorrect MCT430A3 address ("+address+").  ";
             log.error(logMsgPrefix + error);
             errorMsg.add(error);
         }

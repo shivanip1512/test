@@ -137,8 +137,10 @@ public interface DeviceTypes extends TypeBase
     public final static int LM_GROUP_XML	  = DEVICE_OFFSET + 105;
     public final static int XML_TRANSMITTER               = DEVICE_OFFSET + 106;
     
+    public final static int MCT430A3                  = DEVICE_OFFSET + 107;
+    
     //***IMPORTANT ** If you add a deviceType, please update the total device type count!
-	public final static int DEVICE_TYPES_COUNT = 105;
+	public final static int DEVICE_TYPES_COUNT = 107;
 	
     public static final int[] CBC_TWOWAY = new int[]{DNP_CBC_6510,CBC_7020,CBC_7022,CBC_7023,CBC_7024,CBC_DNP};
 
@@ -180,6 +182,7 @@ public interface DeviceTypes extends TypeBase
     public static final String[] STRING_MCT_430A = {"MCT-430A"};
     public static final String[] STRING_MCT_430S4 = {"MCT-430S4"};
     public static final String[] STRING_MCT_430SL = {"MCT-430SL"};
+    public static final String[] STRING_MCT_430A3 = {"MCT-430A3"};
 	public static final String[] STRING_MCT_318 = {"MCT-318", "MCT318"};
 	public static final String[] STRING_MCT_360 = {"MCT-360", "MCT360"};
 	public static final String[] STRING_MCT_370 = {"MCT-370", "MCT370"};
