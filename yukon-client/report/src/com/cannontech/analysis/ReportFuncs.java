@@ -392,7 +392,13 @@ public class ReportFuncs
         	List<LiteCapControlStrategy> strategyList = CapControlStrategy.getAllLiteCapControlStrategy(); 
         	
         	//Remove "(none)" from the list
-        	strategyList.remove(0);
+        	for( LiteCapControlStrategy strategy : strategyList) {
+        		String name = strategy.getStrategyName();
+        		if("(none)".equals(name)) {
+        			strategyList.remove(strategy);
+        			break;
+        		}
+        	}
         	
         	return strategyList;
         }
