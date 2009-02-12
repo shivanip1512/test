@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
@@ -232,7 +233,7 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
     public String getDisplayName(InventoryBase inventory) {
         String displayName;
         String deviceLabel = inventory.getDeviceLabel();
-        if (!deviceLabel.matches("^\\s*$")) {
+        if (!StringUtils.isBlank(deviceLabel)) {
             displayName = deviceLabel;
         } else {
             LMHardwareBase hardware = lmHardwareBaseDao.getById(inventory.getInventoryId());
