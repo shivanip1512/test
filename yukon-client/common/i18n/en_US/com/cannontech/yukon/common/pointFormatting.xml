@@ -13,4 +13,5 @@
 <entry key="yukon.common.pointFormatting.formats.DATE">{time|MM/dd/yyyy HH:mm:ss Z}</entry>
 <entry key="yukon.common.pointFormatting.formats.RAWVALUE">{rawValue}</entry>
 <entry key="yukon.common.pointFormatting.formats.VALUE">{default}</entry>
+<entry key="yukon.common.pointFormatting.formats.QUALITY">{quality}</entry>
 </properties>

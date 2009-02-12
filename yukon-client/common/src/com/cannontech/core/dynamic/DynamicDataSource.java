@@ -38,8 +38,8 @@ public interface DynamicDataSource {
     @Deprecated
     public Set<PointData> getPointData(Set<Integer> pointIds) throws DynamicDataAccessException;
     
-    public PointValueHolder getPointValue(int pointId) throws DynamicDataAccessException;
-    public Set<? extends PointValueHolder> getPointValue(Set<Integer> pointIds) throws DynamicDataAccessException;
+    public PointValueQualityHolder getPointValue(int pointId) throws DynamicDataAccessException;
+    public Set<? extends PointValueQualityHolder> getPointValue(Set<Integer> pointIds) throws DynamicDataAccessException;
     
     public Set<Signal> getSignals(int pointId) throws DynamicDataAccessException;
     public Map<Integer, Set<Signal>> getSignals(Set<Integer> pointIds) throws DynamicDataAccessException;

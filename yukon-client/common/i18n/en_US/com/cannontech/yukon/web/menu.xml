@@ -57,6 +57,7 @@
 <entry key="yukon.web.menu.portal.analysis">Analysis</entry>
 <entry key="yukon.web.menu.portal.analysis.reporting">Reporting</entry>
 <entry key="yukon.web.menu.portal.analysis.commander">Commander</entry>
+<entry key="yukon.web.menu.portal.analysis.visualDisplays">Power Supplier Loads</entry>
 
 <!-- Administration -->
 <entry key="yukon.web.menu.portal.administration">Administration</entry>
@@ -211,5 +212,8 @@
 <entry key="yukon.web.menu.config.consumer.administration">Administration</entry>
 <entry key="yukon.web.menu.config.consumer.administration.changeLogin">Change Login</entry>
 
+<!-- Visual Displays Module -->
+<entry key="yukon.web.menu.config.visualDisplays.loadManagement">Load Management</entry>
+<entry key="yukon.web.menu.config.visualDisplays.probabilityForPeakLoad">Probability For Peak Load</entry>
 
 </properties>

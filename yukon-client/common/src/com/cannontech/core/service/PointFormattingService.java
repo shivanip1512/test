@@ -23,7 +23,8 @@ public interface PointFormattingService {
         SHORTDATE,
         DATE,
         RAWVALUE,
-        VALUE;
+        VALUE,
+        QUALITY;
         
         private final static String keyPrefix = "yukon.common.pointFormatting.formats.";
 
@@ -61,9 +62,10 @@ public interface PointFormattingService {
      *   state      - the state text or "" if not applicable
      *   unit       - the value returned from getUnitMeasureName() for the points unit of measure,
      *                may be "" if the point doesn't have an attached unit of measure
-     *   time       - a Date with the PointValueHolder's timestamp 
+     *   time       - a Date with the PointValueQualityHolder's timestamp 
 	 *   stateColor - HTML-style color for the current status state  
 	 *   rawValue   - the original Double from the PointValueHolder
+	 *   quality	- the PointValueQualityHolder's PointQuality enum value 
 	 *           
      * The format string is scanned for instances of the above key's before the DAO calls to
      * retrieve the information are made.

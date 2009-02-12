@@ -2,7 +2,6 @@ package com.cannontech.core.service.impl;
 
 import java.awt.Color;
 import java.text.NumberFormat;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,6 +13,7 @@ import org.springframework.beans.factory.annotation.Required;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.FormattingTemplateProcessor;
 import com.cannontech.common.util.TemplateProcessorFactory;
 import com.cannontech.core.dao.NotFoundException;
@@ -21,12 +21,12 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.service.CachingPointFormattingService;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteState;
-import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -84,6 +84,12 @@ public class PointFormattingServiceImpl implements PointFormattingService {
                 Color stateColor = null;
                 Integer decimalDigits = 4;
                 Boolean statusPoint = (data.getType() == PointTypes.STATUS_POINT || data.getType() == PointTypes.CALCULATED_STATUS_POINT);
+                
+                PointQuality quality = null;
+                if (data instanceof PointValueQualityHolder) {
+                	quality = ((PointValueQualityHolder)data).getPointQuality();
+                }
+                
                 if (statusPoint) {
                     
                     //LitePoint
@@ -151,6 +157,7 @@ public class PointFormattingServiceImpl implements PointFormattingService {
                 params.put("unit", unitString);
                 Date pointDataTimeStamp = data.getPointDataTimeStamp();
                 params.put("time", pointDataTimeStamp);
+                params.put("quality", quality);
                 String result = templateProcessor.process(format, params);
                 return result;
             }

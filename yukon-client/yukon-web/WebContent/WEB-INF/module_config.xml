@@ -185,6 +185,10 @@
           <link>/apps/SelectDevice.jsp</link>
           <requireRoleProperty value="COMMANDER" />
         </option>
+        
+        <option id="visualDisplays">
+          <link>/spring/visualDisplays/home</link>
+        </option>
 
       </links>
     </option>
@@ -728,6 +732,21 @@
           </option>
         </links>
       </option>
+    </links>
+  </module>
+  
+  <module name="visualDisplays">
+    <skin name="standard"/>
+    <css file="/WebConfig/yukon/Base.css"/>
+
+    <links>
+	    <option id="loadManagement">
+	    	<link>/spring/visualDisplays/loadManagement/home</link>
+	    </option>
+    
+    	<option id="probabilityForPeakLoad">
+	    	<link>/spring/visualDisplays/probabilityForPeakLoad/home</link>
+	    </option>
     </links>
   </module>
 </mainmenu>

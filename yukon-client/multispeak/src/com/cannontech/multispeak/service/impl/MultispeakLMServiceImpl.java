@@ -297,6 +297,29 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
         }
         return new SubstationLoadControlStatus[0];
 	}
+	
+	public static QualityDescription getQualityDescription(PointQuality pointQuality) {
+		
+		if (pointQuality.equals(PointQuality.Normal)) {
+			return QualityDescription.Measured;
+		} else if (pointQuality.equals(PointQuality.Manual)) {
+			return QualityDescription.Estimated;
+		} else if (pointQuality.equals(PointQuality.NonUpdated)) {
+			return QualityDescription.Failed;
+		} else if (pointQuality.equals(PointQuality.InitDefault)) {
+			return QualityDescription.Initial;
+		} else if (pointQuality.equals(PointQuality.Estimated)) {
+			return QualityDescription.Calculated;
+		} else if (pointQuality.equals(PointQuality.InitLastKnown)) {
+			return QualityDescription.Last;
+		} else {
+			return QualityDescription.Default;
+		}
+	}
+	
+	public static String getPointQualityLetter(PointQuality pointQuality) {
+		return getQualityDescription(pointQuality).getValue().substring(0, 1);
+	}
 
 	/**
 	 * Builds a SubstationLaodControlStatusControlledItemsControlItem for the strategyName and program information provided.

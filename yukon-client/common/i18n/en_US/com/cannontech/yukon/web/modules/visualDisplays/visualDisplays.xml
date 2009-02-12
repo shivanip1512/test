@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+	<!-- loadManagement.jsp -->
+    <entry key="yukon.web.modules.visualDisplays.loadManagement.pageTitle">Load Management</entry>
+    
+    <!-- probabilityForPeakLoad.jsp -->
+    <entry key="yukon.web.modules.visualDisplays.probabilityForPeakLoad.pageTitle">Probability For Peak Load</entry>
+
+</properties>

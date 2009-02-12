@@ -15,7 +15,7 @@ import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointDataListener;
-import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.dynamic.SignalListener;
 import com.cannontech.core.dynamic.exception.DispatchNotConnectedException;
 import com.cannontech.database.cache.DBChangeListener;
@@ -80,7 +80,7 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
         }
     }
     
-    public PointValueHolder getAndRegisterForPointData(PointDataListener l, int pointId) {
+    public PointValueQualityHolder getAndRegisterForPointData(PointDataListener l, int pointId) {
         registerForPointData(l, Collections.singleton(pointId));
         return dynamicDataSource.getPointValue(pointId);
     }

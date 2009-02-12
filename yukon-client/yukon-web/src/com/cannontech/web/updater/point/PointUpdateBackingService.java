@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Required;
 import com.cannontech.common.util.TimeSource;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointDataListener;
-import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
@@ -36,7 +35,7 @@ public class PointUpdateBackingService implements UpdateBackingService, PointDat
     public String getLatestValue(String identifier, long afterDate, YukonUserContext userContext) {
         PointIdentifier pointIdentifier = getPointIdentifier(identifier);
         
-        PointValueHolder latestValue = doGetLatestValue(pointIdentifier.pointId, afterDate);
+        PointValueQualityHolder latestValue = doGetLatestValue(pointIdentifier.pointId, afterDate);
         if (latestValue == null) return null;
         String valueString;
         try {
@@ -75,10 +74,10 @@ public class PointUpdateBackingService implements UpdateBackingService, PointDat
     	return containsKey;
     }
 
-    private PointValueHolder doGetLatestValue(int pointId, long afterDate) {
+    private PointValueQualityHolder doGetLatestValue(int pointId, long afterDate) {
         DatedPointValue value = cache.get(pointId);
         if (value == null) {
-            PointValueHolder pointData = asyncDataSource.getAndRegisterForPointData(this, pointId);
+        	PointValueQualityHolder pointData = asyncDataSource.getAndRegisterForPointData(this, pointId);
             value = createWrapper(pointData);
             cache.put(pointData.getId(), value);
         }
@@ -98,7 +97,7 @@ public class PointUpdateBackingService implements UpdateBackingService, PointDat
 		asyncDataSource.registerForPointData(this, pointIds);
 	}
 
-	private DatedPointValue createWrapper(PointValueHolder pointData) {
+	private DatedPointValue createWrapper(PointValueQualityHolder pointData) {
         DatedPointValue result = new DatedPointValue();
         result.receivedTime = timeSource.getCurrentMillis();
         result.value = pointData;
@@ -120,7 +119,7 @@ public class PointUpdateBackingService implements UpdateBackingService, PointDat
     }
     
     private class DatedPointValue {
-    	PointValueHolder value;
+    	PointValueQualityHolder value;
     	long receivedTime;
     }
     

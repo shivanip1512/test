@@ -23,7 +23,7 @@ public interface AsyncDynamicDataSource {
      * @param l         the listener to add
      * @param pointId   the pointId the listener will receive events for
      */
-    public PointValueHolder getAndRegisterForPointData(PointDataListener l, int pointId);
+    public PointValueQualityHolder getAndRegisterForPointData(PointDataListener l, int pointId);
     
     /**
      * Registers a listener to receive PointData events for the given

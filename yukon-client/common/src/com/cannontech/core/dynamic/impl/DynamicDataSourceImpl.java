@@ -4,7 +4,7 @@ import java.util.*;
 
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
-import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Signal;
@@ -135,11 +135,11 @@ public class DynamicDataSourceImpl implements DynamicDataSource {
         this.pointDao = pointDao;
     }
 
-    public PointValueHolder getPointValue(int pointId) throws DynamicDataAccessException {
+    public PointValueQualityHolder getPointValue(int pointId) throws DynamicDataAccessException {
         return getPointData(pointId);
     }
 
-    public Set<? extends PointValueHolder> getPointValue(Set<Integer> pointIds) throws DynamicDataAccessException {
+    public Set<? extends PointValueQualityHolder> getPointValue(Set<Integer> pointIds) throws DynamicDataAccessException {
         return getPointData(pointIds);
     }
 }

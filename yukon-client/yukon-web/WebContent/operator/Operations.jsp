@@ -253,7 +253,7 @@
 </cti:checkRole> 
 
 <!-- Analysis section -->
-<cti:checkMultiRole roles="ReportingRole.ROLEID, CommanderRole.ROLEID">
+<cti:checkMultiRole roles="ReportingRole.ROLEID, CommanderRole.ROLEID, MultispeakRole.ROLEID">
 
 	<tags:operationSection sectionName="Analysis" sectionImageName="AnalysisLogo">
         <cti:checkRole role="ReportingRole.ROLEID">
@@ -266,6 +266,11 @@
             	<a href="../apps/SelectDevice.jsp">Commander</a>
             </tags:sectionLink>
         </cti:checkRole>
+        <cti:checkProperty property="MultispeakRole.MSP_LM_MAPPING_SETUP">
+            <tags:sectionLink>
+            	<a href="/spring/visualDisplays/loadManagement/home"><cti:msg key="yukon.web.menu.portal.analysis.visualDisplays" /></a>
+            </tags:sectionLink>
+        </cti:checkProperty>
 	</tags:operationSection>
 
 </cti:checkMultiRole>
