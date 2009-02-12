@@ -10688,18 +10688,18 @@ void CtiCCSubstationBusStore::reCalculateAllStats( )
                     feederMonthlyOpTotal += currentCapBank->getOperationStats().calculateSuccessPercent(capcontrol::MONTHLY_CCSTATS);
         
                 }
-                setConfirmationSuccessPercents(currentFeeder, (feederUserDefTotal / numOfBanks), (feederDailyTotal / numOfBanks), 
+                setConfirmationSuccessPercents(currentFeeder, numOfBanks, (feederUserDefTotal / numOfBanks), (feederDailyTotal / numOfBanks), 
                                                (feederWeeklyTotal / numOfBanks), (feederMonthlyTotal / numOfBanks)); 
-                setOperationSuccessPercents(currentFeeder, (feederUserDefOpTotal / numOfBanks), (feederDailyOpTotal / numOfBanks), 
+                setOperationSuccessPercents(currentFeeder, numOfBanks, (feederUserDefOpTotal / numOfBanks), (feederDailyOpTotal / numOfBanks), 
                                             (feederWeeklyOpTotal / numOfBanks), (feederMonthlyOpTotal / numOfBanks)); 
         
                 incrementConfirmationPercentTotals(currentFeeder, subBusUserDefTotal, subBusDailyTotal, subBusWeeklyTotal, subBusMonthlyTotal);
                 incrementOperationPercentTotals(currentFeeder, subBusUserDefOpTotal, subBusDailyOpTotal, subBusWeeklyOpTotal, subBusMonthlyOpTotal);
                 
             }
-            setConfirmationSuccessPercents(currentSubstationBus, (subBusUserDefTotal / numOfFdrs), (subBusDailyTotal / numOfFdrs), 
+            setConfirmationSuccessPercents(currentSubstationBus, numOfFdrs, (subBusUserDefTotal / numOfFdrs), (subBusDailyTotal / numOfFdrs), 
                                                (subBusWeeklyTotal / numOfFdrs), (subBusMonthlyTotal / numOfFdrs)); 
-            setOperationSuccessPercents(currentSubstationBus, (subBusUserDefOpTotal / numOfFdrs), (subBusDailyOpTotal / numOfFdrs), 
+            setOperationSuccessPercents(currentSubstationBus, numOfFdrs, (subBusUserDefOpTotal / numOfFdrs), (subBusDailyOpTotal / numOfFdrs), 
                                             (subBusWeeklyOpTotal / numOfFdrs), (subBusMonthlyOpTotal / numOfFdrs)); 
         
         
@@ -10723,9 +10723,9 @@ void CtiCCSubstationBusStore::reCalculateAllStats( )
         
                 }
             }
-            setConfirmationSuccessPercents(currentStation, (subUserDefTotal / numOfBuses), (subDailyTotal / numOfBuses), 
+            setConfirmationSuccessPercents(currentStation, numOfBuses, (subUserDefTotal / numOfBuses), (subDailyTotal / numOfBuses), 
                                                (subWeeklyTotal / numOfBuses), (subMonthlyTotal / numOfBuses)); 
-            setOperationSuccessPercents(currentStation, (subUserDefOpTotal / numOfBuses), (subDailyOpTotal / numOfBuses), 
+            setOperationSuccessPercents(currentStation, numOfBuses, (subUserDefOpTotal / numOfBuses), (subDailyOpTotal / numOfBuses), 
                                             (subWeeklyOpTotal / numOfBuses), (subMonthlyOpTotal /numOfBuses)); 
         
         }
@@ -10748,9 +10748,9 @@ void CtiCCSubstationBusStore::reCalculateAllStats( )
         
                }
            }
-           setConfirmationSuccessPercents(currentArea, (areaUserDefTotal / numOfSubs), (areaDailyTotal / numOfSubs), 
+           setConfirmationSuccessPercents(currentArea, numOfSubs, (areaUserDefTotal / numOfSubs), (areaDailyTotal / numOfSubs), 
                                               (areaWeeklyTotal / numOfSubs), (areaMonthlyTotal / numOfSubs)); 
-           setOperationSuccessPercents(currentArea, (areaUserDefOpTotal / numOfSubs), (areaDailyOpTotal / numOfSubs), 
+           setOperationSuccessPercents(currentArea, numOfSubs, (areaUserDefOpTotal / numOfSubs), (areaDailyOpTotal / numOfSubs), 
                                            (areaWeeklyOpTotal / numOfSubs), (areaMonthlyOpTotal /numOfSubs)); 
         
         }
@@ -10774,9 +10774,9 @@ void CtiCCSubstationBusStore::reCalculateAllStats( )
         
                 }
            }
-           setConfirmationSuccessPercents(currentSpArea, (areaUserDefTotal / numOfSubs), (areaDailyTotal / numOfSubs), 
+           setConfirmationSuccessPercents(currentSpArea, numOfSubs, (areaUserDefTotal / numOfSubs), (areaDailyTotal / numOfSubs), 
                                               (areaWeeklyTotal / numOfSubs), (areaMonthlyTotal / numOfSubs)); 
-           setOperationSuccessPercents(currentSpArea, (areaUserDefOpTotal / numOfSubs), (areaDailyOpTotal / numOfSubs), 
+           setOperationSuccessPercents(currentSpArea, numOfSubs, (areaUserDefOpTotal / numOfSubs), (areaDailyOpTotal / numOfSubs), 
                                            (areaWeeklyOpTotal / numOfSubs), (areaMonthlyOpTotal /numOfSubs)); 
         }
     }
