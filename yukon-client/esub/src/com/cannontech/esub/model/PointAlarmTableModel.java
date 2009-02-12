@@ -125,7 +125,8 @@ public class PointAlarmTableModel extends AbstractTableModel {
 	}
 	
 	/**
-	 * Fill up with fresh data!	 * 
+	 * Fill up with fresh data!
+	 * This only loads alarms, not conditions!  * 
 	 */
 	public void refresh() {
         // Since a given signal can be for a device, point, and alarm category
@@ -154,7 +155,10 @@ public class PointAlarmTableModel extends AbstractTableModel {
 		Iterator<Signal> iter = allSignals.iterator();
         while(iter.hasNext()) {
             Signal signal = iter.next();
-            addSignal(signal);
+            if( TagUtils.isAnyAlarm(signal.getTags()) )
+            {
+                addSignal(signal);
+            }
         }
         
 		sortRows();
