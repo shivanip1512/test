@@ -1364,6 +1364,66 @@ public static Date roundToMinute(Date toRound) {
     }
     
     /**
+     * Returns a URL that points to the same request URL passed in, but has newParameter and newValue
+     * either appended to the end or replaced. For example, if you requested the page 
+     *    /dir/script.jsp?color=red&flavor=tart
+     * and then called 
+     *    tweakRequestURI(request, "flavor", "salty")
+     * the String returned would be
+     *    /dir/script.jsp?color=red&flavor=salty
+     * 
+     * Alternatively can be used to remove a parameter from a URI.
+     * If newValue is null then newParameter will be removed from the
+     * generated request string.
+     * 
+     * @param requestUrl url of the request along with query string params
+     * @param newParameter the name of the parameter to add or replace
+     * @param newValue the value of the new parameter
+     * @return a full path with query string
+     */
+    @SuppressWarnings("unchecked")
+    public static String tweakRequestURL(String requestUrl, String newParameter, String newValue) {
+        StringBuffer result = new StringBuffer();
+        result.append(getBaseUrl(requestUrl));
+        result.append("?");
+        Map<String, String[]> parameterMap = getQueryStringParams(requestUrl);
+        if(newValue == null) {
+            parameterMap.remove(newParameter);
+        }
+        else {              
+            parameterMap.put(newParameter, new String[] {newValue});
+        }
+        String queryString = buildQueryStringParameters(parameterMap);
+        result.append(queryString);
+        return result.toString();
+    }
+    
+    private static String getBaseUrl(String requestUrl) {
+        String baseUrl = requestUrl;
+        int questionMark = requestUrl.indexOf('?');
+        if (questionMark > 0) {
+            baseUrl = requestUrl.substring(0, questionMark);
+        }
+        return baseUrl;
+    }
+    
+    private static Map<String, String[]> getQueryStringParams(String requestUrl) {
+        Map<String, String[]> paramMap = new HashMap<String, String[]>();
+
+        int questionMark = requestUrl.indexOf('?');
+        if (questionMark > 0) {
+            String queryString = requestUrl.substring(questionMark + 1);
+            String[] params = StringUtils.split(queryString, "&");
+            for (String param : params) {
+                String[] nameValue = StringUtils.split(param, "=");
+                paramMap.put(nameValue[0], new String[] { nameValue[1] });
+            }
+        }
+
+        return paramMap;
+    }
+    
+    /**
      * Prints out the stack trace of the Throwable. HTML characters are escaped.
      * Certain lines will be printed as bold and red. Which lines are determined
      * within this function, but is currently configured to be methods in any

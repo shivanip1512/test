@@ -23,36 +23,35 @@ public class AuthenticationThrottleHelperImpl implements
     // map of username and AuthenticationThrottle data
     private Map<String, AuthenticationThrottle> authThrottleMap = new HashMap<String, AuthenticationThrottle>();
 
-    // authThrottleBase, used to ramp up throttle duration slowly or rapidly
-    private double authThrottleBase = AuthenticationThrottleHelper.AUTH_THROTTLE_BASE;
+    // authThrottle Exponential Base, used to ramp up throttle duration slowly or rapidly
+    private double authThrottleExpBase = AuthenticationThrottleHelper.AUTH_THROTTLE_EXP_BASE;
+    
+    // authThrottle static Delta, used to ramp up throttle duration slowly or rapidly
+    private double authThrottleDelta = AuthenticationThrottleHelper.AUTH_THROTTLE_DELTA;    
 
     // Cleanup any abandoned AuthenticationThrottle data that is older than X
     // days
     private int abandonedAuthThrottleDays = AuthenticationThrottleHelper.ABANDONED_AUTH_THROTTLE_DAYS;
 
     @Override
-    public synchronized long loginAttempted(String username) throws AuthenticationThrottleException {
-        long waitSecondsBefore = 0;
-        long waitSecondsAfter = 0;
-        // see if the previous wait time elapsed
+    public synchronized void loginAttempted(String username) throws AuthenticationThrottleException {
+        long waitSeconds = 0;
+        // get the remaining throttle wait time
         AuthenticationThrottle authThrottle = authThrottleMap.get(username);
-        if (authThrottle == null) {
-            authThrottle = new AuthenticationThrottle();
-            authThrottleMap.put(username, authThrottle);
+        if (authThrottle != null) {
+            waitSeconds = authThrottle.getThrottleDurationSeconds();
+        }
+       
+        // if login attempted before the wait time elapsed, throw an exception
+        if (waitSeconds > 0) {
+            throw new AuthenticationThrottleException(waitSeconds);
         } else {
-            waitSecondsBefore = authThrottle.getThrottleDurationSeconds();
-            authThrottle.updateAuthThrottle();
-        }
-        // get the new wait time
-        waitSecondsAfter = authThrottle.getThrottleDurationSeconds();
-        
-        // if login attempted before the wait time elapsed, throw an exception with new wait time
-        if (waitSecondsBefore > 0) {
-            throw new AuthenticationThrottleException(waitSecondsAfter);
-        }
-        else {
-            // normal case, return the next wait time to use if login fails            
-            return waitSecondsAfter;    
+            if (authThrottle == null) {
+                authThrottle = new AuthenticationThrottle();
+                authThrottleMap.put(username, authThrottle);
+            } else {
+                authThrottle.updateAuthThrottle();
+            }            
         }
     }
 
@@ -101,10 +100,15 @@ public class AuthenticationThrottleHelperImpl implements
     }
 
     @Override
-    public synchronized void setAuthThrottleBase(double authThrottleBase) {
-        this.authThrottleBase = authThrottleBase;
+    public synchronized void setAuthThrottleExpBase(double authThrottleExpBase) {
+        this.authThrottleExpBase = authThrottleExpBase;
     }
 
+    @Override
+    public void setAuthThrottleDelta(double authThrottleDelta){
+        this.authThrottleDelta = authThrottleDelta;
+    }
+    
     @Override
     public synchronized void setAbandonedAuthThrottleDays(
             int abandonedAuthThrottleDays) {
@@ -135,8 +139,8 @@ public class AuthenticationThrottleHelperImpl implements
         }
 
         public long getThrottleEndtime() {
-            return lastFailedLoginTime + (Math.round(Math.pow(authThrottleBase,
-                                                              retryCount)) * 1000);
+            return lastFailedLoginTime + (Math.round(Math.pow(authThrottleExpBase,
+                                                              retryCount) + authThrottleDelta) * 1000);
         }
 
         public long getThrottleDurationSeconds() {

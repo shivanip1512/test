@@ -17,13 +17,15 @@ public class AuthenticationThrottleHelperImplTest {
     @Before
     public void setUp() throws Exception {
         helper = new AuthenticationThrottleHelperImpl();
+        helper.setAuthThrottleExpBase(Math.E/2);
+        helper.setAuthThrottleDelta(0.0);
         helper.resetAll();
     }
 
     @Test (expected=AuthenticationThrottleException.class)
     public void testLoginAttemptedTooSoon() throws Exception {
         for (int i = 0; i < 10; i++) {
-            long throttleSeconds = helper.loginAttempted(testUser1);
+            helper.loginAttempted(testUser1);
             AuthenticationThrottleDto throttleData = helper.getAuthenticationThrottleData(testUser1);
             assertTrue("Throttle duration incorrect",
                        throttleData.getActualThrottleDuration() > 0);
@@ -33,26 +35,28 @@ public class AuthenticationThrottleHelperImplTest {
     @Test
     public void testLoginAttempted() throws Exception {
         
-        long throttleSeconds1 = helper.loginAttempted(testUser1);
+        helper.loginAttempted(testUser1);
         AuthenticationThrottleDto throttleData1 = helper.getAuthenticationThrottleData(testUser1);
         assertTrue("Throttle duration incorrect",
                    throttleData1.getActualThrottleDuration() > 0);
-        try {
-            long throttleSeconds2 = helper.loginAttempted(testUser1);
-        } catch (AuthenticationThrottleException e){
-            //do nothing, continue
+        for (int i = 0; i < 10; i++) {
+            try {
+                helper.loginAttempted(testUser1);
+            } catch (AuthenticationThrottleException e){
+                //do nothing, continue
+            }
         }
         AuthenticationThrottleDto throttleData2 = helper.getAuthenticationThrottleData(testUser1);
         assertTrue("Throttle duration incorrect",
                    throttleData2.getActualThrottleDuration() > 0);
 
         //later login attempts have increasing wait times
-        assertTrue("Throttle duration incorrect", throttleData2.compareTo(throttleData1) > 0);
+        assertTrue("Throttle duration incorrect", throttleData2.compareTo(throttleData1) >= 0);
     }    
 
     @Test
     public void testLoginSucceeded() throws Exception {
-        long throttle1 = helper.loginAttempted(testUser1);
+        helper.loginAttempted(testUser1);
         AuthenticationThrottleDto throttleData1 = helper.getAuthenticationThrottleData(testUser1);        
         assertTrue("Throttle duration incorrect",
                    throttleData1.getActualThrottleDuration() > 0);
@@ -64,23 +68,25 @@ public class AuthenticationThrottleHelperImplTest {
 
     @Test
     public void testGetAuthenticationThrottleData() throws Exception {
-        long throttleSeconds1 = helper.loginAttempted(testUser1);
+        helper.loginAttempted(testUser1);
         AuthenticationThrottleDto throttleData1 = helper.getAuthenticationThrottleData(testUser1);
         assertTrue("Throttle duration incorrect",
                    throttleData1.getActualThrottleDuration() > 0);
         long throttleSeconds2 = 0;
-        try {
-            throttleSeconds2 = helper.loginAttempted(testUser1);
-        } catch (AuthenticationThrottleException e){
-            //new wait time is on the exception, in case of early login attempts
-            throttleSeconds2 = e.getThrottleSeconds();
+        for (int i = 0; i < 10; i++) {
+            try {
+                helper.loginAttempted(testUser1);
+            } catch (AuthenticationThrottleException e){
+                //new wait time is on the exception, in case of early login attempts
+                throttleSeconds2 = e.getThrottleSeconds();
+            }
         }
         AuthenticationThrottleDto throttleData2 = helper.getAuthenticationThrottleData(testUser1);
         assertTrue("Throttle duration incorrect",
                    throttleData2.getActualThrottleDuration() > 0);
 
         //later login attempts have increasing wait times
-        assertTrue("Throttle duration incorrect", throttleData2.compareTo(throttleData1) > 0);
+        assertTrue("Throttle duration incorrect", throttleData2.compareTo(throttleData1) >= 0);
 
         //as time elapses, wait seconds reduce
         AuthenticationThrottleDto throttleData3 = helper.getAuthenticationThrottleData(testUser1);
@@ -92,7 +98,7 @@ public class AuthenticationThrottleHelperImplTest {
 
     @Test
     public void testRemoveAuthenticationThrottle() throws Exception {
-        long throttle1 = helper.loginAttempted(testUser1);
+        helper.loginAttempted(testUser1);
         AuthenticationThrottleDto throttleData1 = helper.getAuthenticationThrottleData(testUser1);
         assertTrue("Throttle duration incorrect",
                    throttleData1.getActualThrottleDuration() > 0);
@@ -106,7 +112,7 @@ public class AuthenticationThrottleHelperImplTest {
     public void testCleanupAuthenticationThrottle() throws Exception {
         for (int i = 0; i < 10; i++) {
             try {
-              long throttle1 = helper.loginAttempted(testUser1);
+              helper.loginAttempted(testUser1);
             } catch (AuthenticationThrottleException e) {
                 // do nothing, continue
             }
@@ -116,7 +122,7 @@ public class AuthenticationThrottleHelperImplTest {
         }
         for (int i = 0; i < 10; i++) {
             try {
-              long throttle2 = helper.loginAttempted(testUser2);
+              helper.loginAttempted(testUser2);
             } catch (AuthenticationThrottleException e) {
                 // do nothing, continue
             }

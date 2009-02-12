@@ -3,6 +3,7 @@ package com.cannontech.web.login;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
@@ -66,36 +67,28 @@ public class YukonLoginController extends MultiActionController {
 
             String referer = request.getHeader("Referer");
             referer = (referer != null) ? referer : LoginController.LOGIN_URL;
-            
+
             redirect = ServletUtil.createSafeRedirectUrl(request, referer);
-            redirect = appendParams(redirect, retrySeconds);
+            redirect = appendParams(redirect, retrySeconds, redirectedFrom);
         }
         return new ModelAndView("redirect:" + redirect);
     }
 
-    // appends params to the baseUrl provided
-    private String appendParams(String baseUrl, long retrySeconds) {
-        String result = baseUrl;
-
-        // build query string
-        StringBuilder queryParams = new StringBuilder(LoginController.FAILED_LOGIN_PARAM);
+    // appends params to the redirect url provided
+    private String appendParams(String redirect, long retrySeconds, String redirectedFrom) {
+        String result = redirect;
+        //user sees either invalid login OR retry after xx seconds message
         if (retrySeconds > 0) {
-            queryParams.append("&")
-                       .append(LoginController.AUTH_RETRY_SECONDS_PARAM)
-                       .append("=")
-                       .append(retrySeconds);
+            result = ServletUtil.tweakRequestURL(result, LoginController.AUTH_RETRY_SECONDS_PARAM, Long.toString(retrySeconds));
+            result = ServletUtil.tweakRequestURL(result, LoginController.AUTH_FAILED_PARAM, null);
+        } else {
+            result = ServletUtil.tweakRequestURL(result, LoginController.AUTH_FAILED_PARAM, "true");
+            result = ServletUtil.tweakRequestURL(result, LoginController.AUTH_RETRY_SECONDS_PARAM, null);
         }
-
-        // insert these parameters into the URL as appropriate
-        if (queryParams.length() > 0) {
-            int questionMark = baseUrl.indexOf('?');
-            if (questionMark == -1) {
-                result = (baseUrl + "?" + queryParams);
-            } else {
-                StringBuffer workingUrl = new StringBuffer(baseUrl);
-                workingUrl.insert(questionMark + 1, (queryParams + "&"));
-                result = workingUrl.toString();
-            }
+        if (!StringUtils.isBlank(redirectedFrom)) {
+            result = ServletUtil.tweakRequestURL(result, LoginController.REDIRECTED_FROM, redirectedFrom);
+        } else {
+            result = ServletUtil.tweakRequestURL(result, LoginController.REDIRECTED_FROM, null);
         }
         return result;
     }

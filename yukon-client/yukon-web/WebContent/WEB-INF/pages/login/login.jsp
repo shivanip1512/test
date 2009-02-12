@@ -65,13 +65,15 @@
                     <c:if test="${!empty param.failed}">
                         <div class="loginErrorMsg">
                            <cti:msg key="yukon.web.login.invalidLogin"></cti:msg>
-		                   <c:if test="${!empty param.retrySeconds}">
-		                      <br/>
-	                          <cti:msg key="yukon.web.login.retry" argument="${param.retrySeconds}"></cti:msg>
-		                   </c:if>
                         </div>
                     </c:if>
 
+                    <c:if test="${!empty param.retrySeconds}">
+                        <div class="loginErrorMsg">
+                           <cti:msg key="yukon.web.login.retry" argument="${param.retrySeconds}"></cti:msg>
+                        </div>
+                    </c:if>
+                    
                     <c:if test="${!empty param.invalid}">
                         <div class="loginErrorMsg">
                            <cti:msg key="yukon.web.login.invalidUrlAccess"></cti:msg>

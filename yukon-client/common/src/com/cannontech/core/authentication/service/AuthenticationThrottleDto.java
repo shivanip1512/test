@@ -62,12 +62,12 @@ public class AuthenticationThrottleDto implements Comparable<AuthenticationThrot
         int compareResult = 0;
 
         if (this.retryCount > anotherThrottle.retryCount 
-                && this.throttleEndtime.compareTo(anotherThrottle.getThrottleEndtime()) > 0 
-                && this.getActualThrottleDuration() > anotherThrottle.getActualThrottleDuration()) {
+                || this.throttleEndtime.compareTo(anotherThrottle.getThrottleEndtime()) > 0 
+                || this.getActualThrottleDuration() > anotherThrottle.getActualThrottleDuration()) {
             compareResult = 1;
         } else if (this.retryCount < anotherThrottle.retryCount 
-                && this.throttleEndtime.compareTo(anotherThrottle.getThrottleEndtime()) < 0 
-                && this.getActualThrottleDuration() < anotherThrottle.getActualThrottleDuration()) {
+                || this.throttleEndtime.compareTo(anotherThrottle.getThrottleEndtime()) < 0 
+                || this.getActualThrottleDuration() < anotherThrottle.getActualThrottleDuration()) {
             compareResult = -1;
         }// otherwise they are equal
 
