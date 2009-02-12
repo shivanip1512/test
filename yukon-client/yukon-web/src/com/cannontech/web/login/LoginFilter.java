@@ -85,14 +85,14 @@ public class LoginFilter implements Filter {
         boolean excludedRequest = isExcludedRequest(request, excludedFilePaths);
         if (excludedRequest) {
             log.debug("Proceeding with request that passes exclusion filter");
-            attachYukonUserContext(request); //try to attach, but may not be logged in.
+            attachYukonUserContext(request, false); //try to attach, but may not be logged in.
             chain.doFilter(req, resp);
             return;
         }
         
         boolean loggedIn = isLoggedIn(request);
         if (loggedIn) {
-            attachYukonUserContext(request);
+            attachYukonUserContext(request, true);
             
             verifyPathAccess(request);
             
@@ -106,7 +106,7 @@ public class LoginFilter implements Filter {
             if (!success) continue;
 
             log.debug("Proceeding with request after successful handler login");
-            attachYukonUserContext(request);
+            attachYukonUserContext(request, true);
             
             verifyPathAccess(request);
             
@@ -175,13 +175,17 @@ public class LoginFilter implements Filter {
         }
     }
     
-    private void attachYukonUserContext(HttpServletRequest request) {
+    private void attachYukonUserContext(HttpServletRequest request, boolean isFailureAnError) {
         try {
             YukonUserContext resolveContext = userContextResolver.resolveContext(request);
             request.setAttribute(YukonUserContextUtils.userContextAttrName, resolveContext);
         } catch(RuntimeException e) {
             request.setAttribute(YukonUserContextUtils.userContextAttrName, e);
-            log.debug("Unable to attach YukonUserContext to request", e);
+            if (isFailureAnError) {
+                log.info("Unable to attach YukonUserContext to request", e);
+            } else {
+                log.debug("Unable to attach YukonUserContext to request");
+            }
         }
     }
 
