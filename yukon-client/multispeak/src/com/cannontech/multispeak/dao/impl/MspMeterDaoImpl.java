@@ -20,6 +20,7 @@ import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.dao.MspMeterDao;
 import com.cannontech.multispeak.deploy.service.Meter;
+import com.cannontech.multispeak.deploy.service.Module;
 import com.cannontech.multispeak.deploy.service.Nameplate;
 import com.cannontech.multispeak.deploy.service.UtilityInfo;
 
@@ -32,12 +33,6 @@ public final class MspMeterDaoImpl implements MspMeterDao
             return createMspMeter(rs);
         };
     };
-    
-    private static final RowMapper mspCDMeterRowMapper = new RowMapper() {
-        public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return createMspCDMeter(rs);
-        };
-    };
 
     public void setJdbcOps(JdbcOperations jdbcOps) {
         this.jdbcOps = jdbcOps;
@@ -48,11 +43,11 @@ public final class MspMeterDaoImpl implements MspMeterDao
             if( lastReceived == null)
             	lastReceived = "";
 
-            String sql = "SELECT METERNUMBER, PAOBJECTID, ADDRESS, TYPE " +
+            String sql = "SELECT METERNUMBER, PAOBJECTID, ADDRESS, TYPE, DISCONNECTADDRESS " +
                          " FROM " + DeviceMeterGroup.TABLE_NAME + " dmg, " + 
-                         YukonPAObject.TABLE_NAME + " pao, " +
-                         DeviceCarrierSettings.TABLE_NAME + " dcs " +
-                         " WHERE DMG.DEVICEID = PAO.PAOBJECTID" + 
+                         DeviceCarrierSettings.TABLE_NAME + " dcs, " +
+            			 YukonPAObject.TABLE_NAME + " pao left outer join " + DeviceMCT400Series.TABLE_NAME + " mct on pao.paobjectid = mct.deviceid " +
+                         " WHERE DMG.DEVICEID = PAO.PAOBJECTID " + 
                          " AND PAO.PAOBJECTID = DCS.DEVICEID " +
                          " AND METERNUMBER > ? ORDER BY METERNUMBER"; 
             List<Meter> mspMeters = new ArrayList<Meter>();
@@ -82,7 +77,7 @@ public final class MspMeterDaoImpl implements MspMeterDao
                          " AND METERNUMBER > ? ORDER BY METERNUMBER"; 
           
             List<Meter> mspMeters = new ArrayList<Meter>();
-            ListRowCallbackHandler lrcHandler = new ListRowCallbackHandler(mspMeters, mspCDMeterRowMapper);
+            ListRowCallbackHandler lrcHandler = new ListRowCallbackHandler(mspMeters, mspMeterRowMapper);
             jdbcOps.query(sql, new Object[]{lastReceived}, new MaxRowCalbackHandlerRse(lrcHandler, maxRecords));
             return mspMeters;
         } catch (IncorrectResultSizeDataAccessException e) {
@@ -105,12 +100,10 @@ public final class MspMeterDaoImpl implements MspMeterDao
                        " AND ( PAO.TYPE in ('" + DeviceTypes.STRING_MCT_213[0] + "', " +
                        					   "'" + DeviceTypes.STRING_MCT_310ID[0] + "', " +
                        					   "'" + DeviceTypes.STRING_MCT_310IDL[0] + "') " +
-                       		 " OR ( PAO.TYPE in ('" + DeviceTypes.STRING_MCT_410CL[0] + "', " +
-                       		 					"'" + DeviceTypes.STRING_MCT_410IL[0] + "') " +
-                       		 					" AND DISCONNECTADDRESS IS NOT NULL) ) " +
+                       		 " OR DISCONNECTADDRESS IS NOT NULL ) " +
                        " AND METERNUMBER = ?";
 
-          List<Meter> cdMeters = jdbcOps.query(sql, new Object[] { meterNumber}, mspCDMeterRowMapper);
+          List<Meter> cdMeters = jdbcOps.query(sql, new Object[] { meterNumber}, mspMeterRowMapper);
           return !cdMeters.isEmpty();
       } catch (IncorrectResultSizeDataAccessException e) {
     	  //No results simply mean that the meterNumber is not a CD supported meter 
@@ -126,35 +119,19 @@ public final class MspMeterDaoImpl implements MspMeterDao
         int paobjectID = rset.getInt(2);
         String address = rset.getString(3).trim();
         String paoType = rset.getString(4).trim();
-
-        Meter mspMeter = createMeter(meterNumber, paoType, address);
-        return mspMeter;
-    }
-    
-    private static Meter createMspCDMeter( ResultSet rset) throws SQLException {
-
-        String meterNumber = rset.getString(1).trim();
-        int paobjectID = rset.getInt(2);
-        String address = rset.getString(3).trim();
-        String paoType = rset.getString(4).trim();
         String discAddress = rset.getString(5);
-        
-        if( (paoType.equalsIgnoreCase(DeviceTypes.STRING_MCT_410CL[0]) ||
-            paoType.equalsIgnoreCase(DeviceTypes.STRING_MCT_410IL[0]) ) &&
-            discAddress == null)
-            return null;
-        
-        Meter mspMeter = createMeter(meterNumber, paoType, address);
+
+        Meter mspMeter = createMeter(meterNumber, paoType, address, discAddress);
         return mspMeter;
     }
-    
+
     /**
      * Creates a new (MSP) Meter object.
      * @param meterNumber The Multispeak objectID.
      * @param address The meter's transponderID (Physical Address)
      * @return
      */
-    public static Meter createMeter(String meterNumber, String paoType, String address)
+    public static Meter createMeter(String meterNumber, String paoType, String address, String discAddress)
     {
         Meter meter = new Meter();
         meter.setObjectID(meterNumber);
@@ -173,6 +150,13 @@ public final class MspMeterDaoImpl implements MspMeterDao
         meter.setNameplate(getNameplate(meterNumber, address));
 //        meter.setSealNumberList(null);  //List of seals applied to this meter.
 //        meter.setUtilityInfo(null);     //This information relates the meter to the account with which it is associated
+        
+        //Add Module for Disconnect information
+        if( discAddress != null) {
+	        Module discModule = new Module();
+	        discModule.setObjectID(discAddress);
+	        meter.setModuleList(new Module[]{discModule}); 
+        }
         
         //MSPDevice
 //        meter.setDeviceClass(null); //A high-level description of this type of object (e.g., "kWh meter", "demand meter", etc.).
