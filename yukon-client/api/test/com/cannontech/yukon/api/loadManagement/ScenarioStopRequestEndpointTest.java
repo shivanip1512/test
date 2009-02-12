@@ -37,12 +37,14 @@ public class ScenarioStopRequestEndpointTest {
     
     private class MockLoadControlService extends LoadControlServiceAdapter {
         
+    	private boolean isAsync;
         private String scenarioName;
         private Date stopTime;
         
         @Override
         public ScenarioStatus stopControlByScenarioName(String scenarioName, Date stopTime, boolean forceStop, boolean observeConstraintsAndExecute, LiteYukonUser user) throws NotFoundException, TimeoutException, NotAuthorizedException {
 
+        	this.isAsync = false;
             this.scenarioName = scenarioName;
             this.stopTime = stopTime;
 
@@ -60,6 +62,7 @@ public class ScenarioStopRequestEndpointTest {
         @Override
         public void asynchStopControlByScenarioName(String scenarioName, Date stopTime, boolean forceStop, boolean observeConstraintsAndExecute, LiteYukonUser user) throws NotFoundException, NotAuthorizedException {
 
+        	this.isAsync = true;
             this.scenarioName = scenarioName;
             this.stopTime = stopTime;
             
@@ -76,6 +79,9 @@ public class ScenarioStopRequestEndpointTest {
         public Date getStopTime() {
             return stopTime;
         }
+        public boolean isAsync() {
+			return isAsync;
+		}
     }
    
     @Test
@@ -151,6 +157,39 @@ public class ScenarioStopRequestEndpointTest {
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
         TestUtils.runFailureAssertions(outputTemplate, "scenarioStopResponse", "UserNotAuthorized");
+        
+        // test synchronous method is called
+        //==========================================================================================
+        requestElement = LoadManagementTestUtils.createStartStopRequestElement("scenarioStopRequest", "scenarioName", "SyncTest", null, null, null, "1.0", true, requestSchemaResource);
+        
+        responseElement = impl.invoke(requestElement, null);
+        TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
+        
+        outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
+        
+        Assert.assertEquals("Synchronous method should have been called", false, mockService.isAsync());
+        
+        // test asynchronous method is called
+        //==========================================================================================
+        requestElement = LoadManagementTestUtils.createStartStopRequestElement("scenarioStopRequest", "scenarioName", "AsyncTest", null, null, null, "1.0", false, requestSchemaResource);
+        
+        responseElement = impl.invoke(requestElement, null);
+        TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
+        
+        outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
+        
+        Assert.assertEquals("Synchronous method should have been called", true, mockService.isAsync());
+        
+        // test asynchronous method is called (invoked due to not including the waitForResponse tag at all)
+        //==========================================================================================
+        requestElement = LoadManagementTestUtils.createStartStopRequestElement("scenarioStopRequest", "scenarioName", "AsyncTest", null, null, null, "1.0", null, requestSchemaResource);
+        
+        responseElement = impl.invoke(requestElement, null);
+        TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
+        
+        outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
+        
+        Assert.assertEquals("Synchronous method should have been called", true, mockService.isAsync());
     }
 
 }

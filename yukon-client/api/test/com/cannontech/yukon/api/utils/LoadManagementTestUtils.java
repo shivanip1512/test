@@ -20,7 +20,7 @@ public class LoadManagementTestUtils {
                                               String stopDateTimeStr,
                                               String gearName,
                                               String version,
-                                              boolean scenarioWaitForResponse,
+                                              Boolean scenarioWaitForResponse,
                                               Resource requestSchemaResource) {
         
         Element requestElement = null;
@@ -49,9 +49,16 @@ public class LoadManagementTestUtils {
             requestElement.addContent(tmpElement);
         }
         
-        if ((serviceRequestName.equals("scenarioStartRequest") || serviceRequestName.equals("scenarioStopRequest")) && scenarioWaitForResponse) {
-        	tmpElement = XmlUtils.createStringElement("waitForResponse", ns, "true");
-            requestElement.addContent(tmpElement);
+        if (serviceRequestName.equals("scenarioStartRequest") || serviceRequestName.equals("scenarioStopRequest")) {
+        	if (scenarioWaitForResponse == null) {
+        		// don't include tag at all, should be consider a false in endpoint
+        	} else if (scenarioWaitForResponse.booleanValue() == true) {
+        		tmpElement = XmlUtils.createStringElement("waitForResponse", ns, "true");
+                requestElement.addContent(tmpElement);
+        	} else if (scenarioWaitForResponse.booleanValue() == false) {
+        		tmpElement = XmlUtils.createStringElement("waitForResponse", ns, "false");
+                requestElement.addContent(tmpElement);
+        	}
         }
         
         // validate request
