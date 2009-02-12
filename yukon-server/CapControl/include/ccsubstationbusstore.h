@@ -264,9 +264,16 @@ public:
 
 
     template<class T> 
-    void setOperationSuccessPercents(const T &object, DOUBLE userDefOpPercent, DOUBLE dailyOpPercent,
+    void setOperationSuccessPercents(const T &object, LONG numOfChildren, DOUBLE userDefOpPercent, DOUBLE dailyOpPercent,
                                                               DOUBLE weeklyOpPercent, DOUBLE monthlyOpPercent)
     {
+        if (numOfChildren <= 0) 
+        {
+            userDefOpPercent = 100;
+            dailyOpPercent   = 100;
+            weeklyOpPercent  = 100;
+            monthlyOpPercent = 100;
+        }
         object->getOperationStats().setUserDefOpSuccessPercent( userDefOpPercent );
         object->getOperationStats().setDailyOpSuccessPercent(  dailyOpPercent );
         object->getOperationStats().setWeeklyOpSuccessPercent( weeklyOpPercent );
@@ -274,9 +281,16 @@ public:
     };
     
     template<class T> 
-    void setConfirmationSuccessPercents(const T &object, DOUBLE userDefConfPercent, DOUBLE dailyConfPercent,
+    void setConfirmationSuccessPercents(const T &object, LONG numOfChildren, DOUBLE userDefConfPercent, DOUBLE dailyConfPercent,
                                                           DOUBLE weeklyConfPercent, DOUBLE monthlyConfPercent)
     {
+        if (numOfChildren <= 0) 
+        {
+            userDefConfPercent = 100;
+            dailyConfPercent = 100;
+            weeklyConfPercent = 100;
+            monthlyConfPercent = 100;
+        }
         object->getConfirmationStats().setUserDefCommSuccessPercent( userDefConfPercent );
         object->getConfirmationStats().setDailyCommSuccessPercent(  dailyConfPercent );
         object->getConfirmationStats().setWeeklyCommSuccessPercent( weeklyConfPercent );
