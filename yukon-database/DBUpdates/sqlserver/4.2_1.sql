@@ -30,6 +30,18 @@ SELECT MAX(JobId), '0 0/5 * * * ?'
 FROM Job;
 /* End YUK-6897 */
 
+/* Start YUK-6933 */
+ALTER TABLE OptOutEvent 
+    ADD CONSTRAINT FK_OptOutEvent_InvBase FOREIGN KEY(InventoryId) 
+        REFERENCES InventoryBase (InventoryId) 
+            ON DELETE CASCADE;
+
+ALTER TABLE OptOutEvent 
+    ADD CONSTRAINT FK_OptOutEvent_CustAcct FOREIGN KEY(CustomerAccountId) 
+        REFERENCES CustomerAccount (AccountId) 
+            ON DELETE CASCADE;
+/* End YUK-6933 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

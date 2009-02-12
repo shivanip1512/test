@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/3/2009 2:30:01 PM                          */
+/* Created on:     2/12/2009 2:37:30 PM                         */
 /*==============================================================*/
 
 
@@ -11886,6 +11886,16 @@ alter table OperatorLoginGraphList
 alter table OperatorLoginGraphList
    add constraint FK_OpLgOpLgGrLs2 foreign key (OperatorLoginID)
       references YukonUser (UserID);
+
+alter table OptOutEvent
+   add constraint FK_OptOutEvent_CustAcct foreign key (CustomerAccountId)
+      references CustomerAccount (AccountID)
+      on delete cascade;
+
+alter table OptOutEvent
+   add constraint FK_OptOutEvent_InvBase foreign key (InventoryId)
+      references InventoryBase (InventoryID)
+      on delete cascade;
 
 alter table OptOutEventLog
    add constraint FK_OptOutEvent_OptOutEventLog foreign key (OptOutEventId)

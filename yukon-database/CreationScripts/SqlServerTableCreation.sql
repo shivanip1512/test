@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     2/3/2009 2:28:33 PM                          */
+/* Created on:     2/12/2009 2:39:58 PM                         */
 /*==============================================================*/
 
 
@@ -15166,6 +15166,18 @@ go
 alter table OperatorLoginGraphList
    add constraint FK_OpLgOpLgGrLs2 foreign key (OperatorLoginID)
       references YukonUser (UserID)
+go
+
+alter table OptOutEvent
+   add constraint FK_OptOutEvent_CustAcct foreign key (CustomerAccountId)
+      references CustomerAccount (AccountID)
+         on delete cascade
+go
+
+alter table OptOutEvent
+   add constraint FK_OptOutEvent_InvBase foreign key (InventoryId)
+      references InventoryBase (InventoryID)
+         on delete cascade
 go
 
 alter table OptOutEventLog
