@@ -191,8 +191,8 @@ public class LoadControlServiceImpl implements LoadControlService {
 					doStartProgramsInScenario(programIds, scenarioId,
 							scenarioName, startTime, stopTime, forceStart,
 							observeConstraintsAndExecute, user);
-				} catch (TimeoutException e) {
-					log.debug("Timeout while running scenario start asynchronously. scenarioId = " + scenarioId + ", programIds = " + programIds, e);
+				} catch (Exception e) {
+					log.debug("Error while running scenario start asynchronously. scenarioId = " + scenarioId + ", programIds = " + programIds, e);
 				}
 			}
 		});
@@ -243,8 +243,8 @@ public class LoadControlServiceImpl implements LoadControlService {
     		public void run() {
     			try {
     				doStopProgramsInScenario(programIds, scenarioId, scenarioName, stopTime, forceStop, observeConstraintsAndExecute, user);
-    			} catch (TimeoutException e) {
-    				log.debug("Timeout while running scenario stop asynchronously. scenarioId = " + scenarioId + ", programIds = " + programIds, e);
+    			} catch (Exception e) {
+    				log.debug("Error while running scenario stop asynchronously. scenarioId = " + scenarioId + ", programIds = " + programIds, e);
     			}
     		}
     	});
