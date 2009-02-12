@@ -21,6 +21,7 @@ Class-Path: ./
  ejb3-persistence.jar 
  lucene-core-2.3.2.jar 
  log4j-1.2.14.jar 
+ google-collections-0.8.jar 
  castor-xml.jar 
  rwav.jar 
  SqlServer.jar 
