@@ -42,6 +42,13 @@ ALTER TABLE OptOutEvent
             ON DELETE CASCADE;
 /* End YUK-6933 */
 
+/* Start YUK-6947 */
+CREATE TABLE YukonImage2 (ImageId NUMBER, ImageCategory VARCHAR2(20), ImageName VARCHAR2(80), ImageValue BLOB);
+INSERT INTO YukonImage2 SELECT ImageId, ImageCategory, ImageName, TO_LOB(ImageValue) FROM YukonImage;
+DROP TABLE YukonImage;
+RENAME YukonImage2 TO YukonImage; 
+/* Start YUK-6947 */
+                        
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

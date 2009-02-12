@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/12/2009 2:37:30 PM                         */
+/* Created on:     2/12/2009 4:35:29 PM                         */
 /*==============================================================*/
 
 
@@ -8334,7 +8334,7 @@ create table YukonImage  (
    ImageID              NUMBER                          not null,
    ImageCategory        VARCHAR2(20)                    not null,
    ImageName            VARCHAR2(80)                    not null,
-   ImageValue           LONG RAW,
+   ImageValue           BLOB,
    constraint PK_YUKONIMAGE primary key (ImageID)
 );
 
