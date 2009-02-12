@@ -3,7 +3,7 @@ package com.cannontech.loadcontrol.service.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Executor;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +44,7 @@ public class LoadControlServiceImpl implements LoadControlService {
     private LoadControlCommandService loadControlCommandService;
     private PaoDao paoDao;
     private PaoAuthorizationService paoAuthorizationService;
-    private ScheduledExecutor scheduledExecutor;
+    private Executor executor;
     
     private LoadControlClientConnection loadControlClientConnection;
     
@@ -158,34 +158,45 @@ public class LoadControlServiceImpl implements LoadControlService {
     }
     
     // START CONTROL BY SCENAIO NAME
-	public ScenarioStatus startControlByScenarioName(final String scenarioName,
-			final Date startTime, final Date stopTime, boolean waitForResponses, final boolean forceStart,
-			final boolean observeConstraintsAndExecute, final LiteYukonUser user)
-			throws NotFoundException, TimeoutException, NotAuthorizedException {
+	public ScenarioStatus startControlByScenarioName(String scenarioName,
+													Date startTime, 
+													Date stopTime, 
+													boolean forceStart,
+													boolean observeConstraintsAndExecute, 
+													LiteYukonUser user)
+													throws NotFoundException, TimeoutException, NotAuthorizedException {
 
-        final int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
-        validateScenarioIsVisibleToUser(scenarioName, scenarioId, user);
-        
-        final List<Integer> programIds = loadControlProgramDao.getProgramIdsByScenarioId(scenarioId);
-        
-        if (waitForResponses) {
-        
-        	return doStartProgramsInScenario(programIds, scenarioId, scenarioName, startTime, stopTime, forceStart, observeConstraintsAndExecute, user);
-        
-        } else {
-        
-        	scheduledExecutor.schedule(new Runnable() {
-        		public void run() {
-        			try {
-        				doStartProgramsInScenario(programIds, scenarioId, scenarioName, startTime, stopTime, forceStart, observeConstraintsAndExecute, user);
-        			} catch (TimeoutException e) {
-        			}
-        		}
-        	}, 0, TimeUnit.MILLISECONDS);
-        	
-        	return null;
-        }
-    }
+		int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
+		validateScenarioIsVisibleToUser(scenarioName, scenarioId, user);
+		List<Integer> programIds = loadControlProgramDao.getProgramIdsByScenarioId(scenarioId);
+
+		return doStartProgramsInScenario(programIds, scenarioId, scenarioName, startTime, stopTime, forceStart, observeConstraintsAndExecute, user);
+	}
+	
+	public void asynchStartControlByScenarioName(final String scenarioName,
+												final Date startTime, 
+												final Date stopTime,
+												final boolean forceStart,
+												final boolean observeConstraintsAndExecute, 
+												final LiteYukonUser user)
+												throws NotFoundException, NotAuthorizedException {
+
+		final int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
+		validateScenarioIsVisibleToUser(scenarioName, scenarioId, user);
+		final List<Integer> programIds = loadControlProgramDao.getProgramIdsByScenarioId(scenarioId);
+
+		executor.execute(new Runnable() {
+			public void run() {
+				try {
+					doStartProgramsInScenario(programIds, scenarioId,
+							scenarioName, startTime, stopTime, forceStart,
+							observeConstraintsAndExecute, user);
+				} catch (TimeoutException e) {
+					log.debug("Timeout while running scenario start asynchronously. scenarioId = " + scenarioId + ", programIds = " + programIds, e);
+				}
+			}
+		});
+	}
 	
 	private ScenarioStatus doStartProgramsInScenario(List<Integer> programIds, int scenarioId, String scenarioName, Date startTime, Date stopTime, boolean forceStart, boolean observeConstraintsAndExecute, LiteYukonUser user) throws TimeoutException {
 		
@@ -203,33 +214,40 @@ public class LoadControlServiceImpl implements LoadControlService {
 	}
     
     // STOP CONTROL BY SCENAIO NAME
-	public ScenarioStatus stopControlByScenarioName(final String scenarioName,
-			final Date stopTime, boolean waitForResponses, final boolean forceStop,
-			final boolean observeConstraintsAndExecute, final LiteYukonUser user)
-			throws NotFoundException, TimeoutException, NotAuthorizedException {
+	public ScenarioStatus stopControlByScenarioName(String scenarioName,
+													Date stopTime, 
+													boolean forceStop,
+													boolean observeConstraintsAndExecute, 
+													LiteYukonUser user)
+													throws NotFoundException, TimeoutException, NotAuthorizedException {
+
+        int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
+        validateScenarioIsVisibleToUser(scenarioName, scenarioId, user);
+        List<Integer> programIds = loadControlProgramDao.getProgramIdsByScenarioId(scenarioId);
+        
+        return doStopProgramsInScenario(programIds, scenarioId, scenarioName, stopTime, forceStop, observeConstraintsAndExecute, user);
+    }
+	
+	public void asynchStopControlByScenarioName(final String scenarioName,
+												final Date stopTime, 
+												final boolean forceStop,
+												final boolean observeConstraintsAndExecute, 
+												final LiteYukonUser user)
+												throws NotFoundException, NotAuthorizedException {
 
         final int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
         validateScenarioIsVisibleToUser(scenarioName, scenarioId, user);
-        
         final List<Integer> programIds = loadControlProgramDao.getProgramIdsByScenarioId(scenarioId);
         
-        if (waitForResponses) {
-        	
-        	return doStopProgramsInScenario(programIds, scenarioId, scenarioName, stopTime, forceStop, observeConstraintsAndExecute, user);
-        
-        } else {
-        	
-        	scheduledExecutor.schedule(new Runnable() {
-        		public void run() {
-        			try {
-        				doStopProgramsInScenario(programIds, scenarioId, scenarioName, stopTime, forceStop, observeConstraintsAndExecute, user);
-        			} catch (TimeoutException e) {
-        			}
-        		}
-        	}, 0, TimeUnit.MILLISECONDS);
-        	
-        	return null;
-        }
+        executor.execute(new Runnable() {
+    		public void run() {
+    			try {
+    				doStopProgramsInScenario(programIds, scenarioId, scenarioName, stopTime, forceStop, observeConstraintsAndExecute, user);
+    			} catch (TimeoutException e) {
+    				log.debug("Timeout while running scenario stop asynchronously. scenarioId = " + scenarioId + ", programIds = " + programIds, e);
+    			}
+    		}
+    	});
     }
 	
 	private ScenarioStatus doStopProgramsInScenario(List<Integer> programIds, int scenarioId, String scenarioName, Date stopTime, boolean forceStop, boolean observeConstraintsAndExecute, LiteYukonUser user) throws TimeoutException {
@@ -454,7 +472,7 @@ public class LoadControlServiceImpl implements LoadControlService {
 	}
     
     @Autowired
-    public void setScheduledExecutor(ScheduledExecutor scheduledExecutor) {
-		this.scheduledExecutor = scheduledExecutor;
+    public void setExecutor(ScheduledExecutor executor) {
+		this.executor = executor;
 	}
 }

@@ -127,7 +127,6 @@ public interface LoadControlService {
      * @param scenarioName
      * @param startTime
      * @param stopTime
-     * @param waitForResponses if false, the program starts will run in a separate thread, and null will be returned.
      * @param forceStart Should normally always be set to false, set to true only if
      * you're sure you really need want to ignore constraint violations.
      * @param observeConstraintsAndExecute If false, do not execute if there are constraint violations.
@@ -140,8 +139,29 @@ public interface LoadControlService {
      * @throws NotAuthorizedException if neither the user (nor any groups user belongs to) have the scenario made visible to them.
      */
     public ScenarioStatus startControlByScenarioName(String scenarioName,
-            Date startTime, Date stopTime, boolean waitForResponses, boolean forceStart, boolean observeConstraintsAndExecute, LiteYukonUser user)
+            Date startTime, Date stopTime, boolean forceStart, boolean observeConstraintsAndExecute, LiteYukonUser user)
             throws NotFoundException, TimeoutException, NotAuthorizedException;
+    
+    /**
+     * Starts control for all programs belonging to a given scenario. 
+     * Only checks for valid scenario name and user permission, then starts each program in the scenario as a
+     * background process and returns immediately.
+     * @param scenarioName
+     * @param startTime
+     * @param stopTime
+     * @param forceStart Should normally always be set to false, set to true only if
+     * you're sure you really need want to ignore constraint violations.
+     * @param observeConstraintsAndExecute If false, do not execute if there are constraint violations.
+     * If true, allow the server to alter our request to abide by the constraints and execute (i.e. "Observe") 
+     * Note: This value only matters when using forceStart=false.
+     * @param user will be checked against user/group pao permission tables to validate visibility of a scenario.
+     * @return
+     * @throws NotFoundException if no scenario exists for given scenarioName.
+     * @throws NotAuthorizedException if neither the user (nor any groups user belongs to) have the scenario made visible to them.
+     */
+    public void asynchStartControlByScenarioName(String scenarioName,
+            Date startTime, Date stopTime, boolean forceStart, boolean observeConstraintsAndExecute, LiteYukonUser user)
+            throws NotFoundException, NotAuthorizedException;
 
     /**
      * Stop control for all programs belonging to a given scenario. Returns a
@@ -153,7 +173,6 @@ public interface LoadControlService {
      * ProgramStatus.
      * @param scenarioName
      * @param stopTime
-     * @param waitForResponses if false, the program stops will run in a separate thread, and null will be returned.
      * @param forceStop Should normally always be set to false, set to true only if
      * you're sure you really need want to ignore constraint violations.
      * @param observeConstraintsAndExecute If false, do not execute if there are constraint violations.
@@ -166,8 +185,27 @@ public interface LoadControlService {
      * @throws NotAuthorizedException if neither the user (nor any groups user belongs to) have the scenario made visible to them.
      */
     public ScenarioStatus stopControlByScenarioName(String scenarioName,
-            Date stopTime, boolean waitForResponses, boolean forceStop, boolean observeConstraintsAndExecute, LiteYukonUser user) throws NotFoundException,
+            Date stopTime, boolean forceStop, boolean observeConstraintsAndExecute, LiteYukonUser user) throws NotFoundException,
             TimeoutException, NotAuthorizedException;
+    
+    /**
+     * Stop control for all programs belonging to a given scenario.
+     * Only checks for valid scenario name and user permission, then stops each program in the scenario as a
+     * background process and returns immediately.
+     * @param scenarioName
+     * @param stopTime
+     * @param forceStop Should normally always be set to false, set to true only if
+     * you're sure you really need want to ignore constraint violations.
+     * @param observeConstraintsAndExecute If false, do not execute if there are constraint violations.
+     * If true, allow the server to alter our request to abide by the constraints and execute (i.e. "Observe") 
+     * Note: This value only matters when using forceStop=false.
+     * @param user will be checked against user/group pao permission tables to validate visibility of a scenario.
+     * @return
+     * @throws NotFoundException if no scenario exists for given scenarioName.
+     * @throws NotAuthorizedException if neither the user (nor any groups user belongs to) have the scenario made visible to them.
+     */
+    public void asynchStopControlByScenarioName(String scenarioName,
+            Date stopTime, boolean forceStop, boolean observeConstraintsAndExecute, LiteYukonUser user) throws NotFoundException, NotAuthorizedException;
 
     
     /**

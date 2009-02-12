@@ -58,7 +58,11 @@ public class ScenarioStartRequestEndpoint {
         
         // run service
         try {
-            loadControlService.startControlByScenarioName(scenarioName, startTime, stopTime, waitForResponse, false, true, user);
+        	if (waitForResponse) {
+        		loadControlService.startControlByScenarioName(scenarioName, startTime, stopTime, false, true, user);
+        	} else {
+        		loadControlService.asynchStartControlByScenarioName(scenarioName, startTime, stopTime, false, true, user);
+        	}
         } catch (NotFoundException e) {
             Element fe = XMLFailureGenerator.generateFailure(scenarioStartRequest, e, "InvalidScenarioName", "No scenario named: " + scenarioName);
             resp.addContent(fe);

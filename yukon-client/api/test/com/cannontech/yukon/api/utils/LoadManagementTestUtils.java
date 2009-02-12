@@ -49,7 +49,7 @@ public class LoadManagementTestUtils {
             requestElement.addContent(tmpElement);
         }
         
-        if (nameModeValue.equals("scenarioStartRequest") && scenarioWaitForResponse) {
+        if ((serviceRequestName.equals("scenarioStartRequest") || serviceRequestName.equals("scenarioStopRequest")) && scenarioWaitForResponse) {
         	tmpElement = XmlUtils.createStringElement("waitForResponse", ns, "true");
             requestElement.addContent(tmpElement);
         }

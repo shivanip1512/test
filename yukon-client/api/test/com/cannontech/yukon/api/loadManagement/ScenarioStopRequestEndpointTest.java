@@ -41,7 +41,7 @@ public class ScenarioStopRequestEndpointTest {
         private Date stopTime;
         
         @Override
-        public ScenarioStatus stopControlByScenarioName(String scenarioName, Date stopTime, boolean waitForResponse, boolean forceStop, boolean observeConstraintsAndExecute, LiteYukonUser user) throws NotFoundException, TimeoutException {
+        public ScenarioStatus stopControlByScenarioName(String scenarioName, Date stopTime, boolean forceStop, boolean observeConstraintsAndExecute, LiteYukonUser user) throws NotFoundException, TimeoutException, NotAuthorizedException {
 
             this.scenarioName = scenarioName;
             this.stopTime = stopTime;
@@ -55,6 +55,19 @@ public class ScenarioStopRequestEndpointTest {
             }
             
             return null;
+        }
+        
+        @Override
+        public void asynchStopControlByScenarioName(String scenarioName, Date stopTime, boolean forceStop, boolean observeConstraintsAndExecute, LiteYukonUser user) throws NotFoundException, NotAuthorizedException {
+
+            this.scenarioName = scenarioName;
+            this.stopTime = stopTime;
+            
+            if (scenarioName.equals("NOT_FOUND")) {
+                throw new NotFoundException("");
+            } else if (scenarioName.equals("NOT_AUTH")) {
+                throw new NotAuthorizedException("");
+            }
         }
         
         public String getScenarioName() {
@@ -77,7 +90,7 @@ public class ScenarioStopRequestEndpointTest {
         
         // stop time
         //==========================================================================================
-        requestElement = LoadManagementTestUtils.createStartStopRequestElement("scenarioStopRequest", "scenarioName", "Scenario1", null, "2008-10-13T21:49:01Z", null, "1.0", true, requestSchemaResource);
+        requestElement = LoadManagementTestUtils.createStartStopRequestElement("scenarioStopRequest", "scenarioName", "Scenario1", null, "2008-10-13T21:49:01Z", null, "1.0", false, requestSchemaResource);
         
         responseElement = impl.invoke(requestElement, null);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
@@ -91,7 +104,7 @@ public class ScenarioStopRequestEndpointTest {
         
         // no stop time
         //==========================================================================================
-        requestElement = LoadManagementTestUtils.createStartStopRequestElement("scenarioStopRequest", "scenarioName", "Scenario2", null, null, null, "1.0", true, requestSchemaResource);
+        requestElement = LoadManagementTestUtils.createStartStopRequestElement("scenarioStopRequest", "scenarioName", "Scenario2", null, null, null, "1.0", false, requestSchemaResource);
         
         responseElement = impl.invoke(requestElement, null);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
@@ -105,18 +118,21 @@ public class ScenarioStopRequestEndpointTest {
         
         // not found
         //==========================================================================================
-        requestElement = LoadManagementTestUtils.createStartStopRequestElement("scenarioStopRequest", "scenarioName", "NOT_FOUND", null, null, null, "1.0", false, requestSchemaResource);
+        requestElement = LoadManagementTestUtils.createStartStopRequestElement("scenarioStopRequest", "scenarioName", "NOT_FOUND", null, null, null, "1.0", true, requestSchemaResource);
+        XmlUtils.printElement(requestElement, "requestElement");
         
         responseElement = impl.invoke(requestElement, null);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
         
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
+        XmlUtils.printElement(responseElement, "responseElement");
+        
         TestUtils.runFailureAssertions(outputTemplate, "scenarioStopResponse", "InvalidScenarioName");
         
         // timeout
         //==========================================================================================
-        requestElement = LoadManagementTestUtils.createStartStopRequestElement("scenarioStopRequest", "scenarioName", "TIMEOUT", null, null, null, "1.0", false, requestSchemaResource);
+        requestElement = LoadManagementTestUtils.createStartStopRequestElement("scenarioStopRequest", "scenarioName", "TIMEOUT", null, null, null, "1.0", true, requestSchemaResource);
         
         responseElement = impl.invoke(requestElement, null);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
@@ -127,7 +143,7 @@ public class ScenarioStopRequestEndpointTest {
         
         // not auth
         //==========================================================================================
-        requestElement = LoadManagementTestUtils.createStartStopRequestElement("scenarioStopRequest", "scenarioName", "NOT_AUTH", null, null, null, "1.0", false, requestSchemaResource);
+        requestElement = LoadManagementTestUtils.createStartStopRequestElement("scenarioStopRequest", "scenarioName", "NOT_AUTH", null, null, null, "1.0", true, requestSchemaResource);
         
         responseElement = impl.invoke(requestElement, null);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
