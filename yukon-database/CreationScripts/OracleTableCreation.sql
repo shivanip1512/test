@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/12/2009 4:35:29 PM                         */
+/* Created on:     2/12/2009 5:14:50 PM                         */
 /*==============================================================*/
 
 
@@ -6442,12 +6442,9 @@ create table MSPInterface  (
    constraint PK_MSPINTERFACE primary key (VendorID, Interface, Endpoint)
 );
 
-
-insert into MSPInterface values (1, 'MR_CB', 'MR_CBSoap');
-insert into MSPInterface values (1, 'MR_EA', 'MR_EASoap');
-insert into MSPInterface values (1, 'OD_OA', 'OD_OASoap');
-insert into MSPInterface values (1, 'CD_CB', 'CD_CBSoap');
-
+INSERT INTO MSPInterface VALUES (1, 'MR_Server', 'MR_ServerSoap');
+INSERT INTO MSPInterface VALUES (1, 'OD_Server', 'OD_ServerSoap');
+INSERT INTO MSPInterface VALUES (1, 'CD_Server', 'CD_ServerSoap');
 
 /*==============================================================*/
 /* Table: MSPVendor                                             */

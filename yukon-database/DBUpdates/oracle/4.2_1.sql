@@ -48,7 +48,28 @@ INSERT INTO YukonImage2 SELECT ImageId, ImageCategory, ImageName, TO_LOB(ImageVa
 DROP TABLE YukonImage;
 RENAME YukonImage2 TO YukonImage; 
 /* Start YUK-6947 */
-                        
+          
+/* Start YUK-6942 */
+UPDATE MspInterface
+SET Interface = 'MR_Server', Endpoint = 'MR_ServerSoap'
+WHERE VendorId = 1
+AND Interface = 'MR_CB';
+
+UPDATE MspInterface
+SET Interface = 'OD_Server', Endpoint = 'OD_ServerSoap'
+WHERE VendorId = 1
+AND Interface = 'OD_OA';
+
+UPDATE MspInterface
+SET Interface = 'CD_Server', Endpoint = 'CD_ServerSoap'
+WHERE VendorId = 1
+AND Interface = 'CD_CB';
+
+DELETE MspInterface 
+WHERE VendorId = 1 
+AND Interface = 'MR_EA'; 
+/* Start YUK-6942 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
