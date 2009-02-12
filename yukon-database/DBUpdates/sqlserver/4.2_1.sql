@@ -61,7 +61,7 @@ AND Interface = 'CD_CB';
 DELETE MspInterface 
 WHERE VendorId = 1 
 AND Interface = 'MR_EA'; 
-/* Start YUK-6942 */
+/* End YUK-6942 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
