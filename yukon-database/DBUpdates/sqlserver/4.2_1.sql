@@ -21,13 +21,21 @@ OR RolePropertyId = -20016;
 /* End YUK-6518 */
 
 /* Start YUK-6897 */
+/* @start-block */
+DECLARE @jobIdValue INT; 
+SET @jobIdValue = CAST((SELECT CASE  
+                            WHEN (MAX(JobId) IS NULL)
+                                THEN 1 
+                            ELSE 
+                                MAX(JobId)+1 
+                            END 
+                        FROM JOB) as INT);
+
 INSERT INTO Job
-SELECT MAX(JobId)+1, 'optOutSchedulerJob', 'N', -1, 'en_US', ' ', ' '
-FROM Job;
-go
+VALUES (@jobIdValue, 'optOutSchedulerJob', 'N', -1, 'en_US', ' ', ' ');
 INSERT INTO JobScheduledRepeating
-SELECT MAX(JobId), '0 0/5 * * * ?'
-FROM Job;
+VALUES (@jobIdValue, '0 0/5 * * * ?');
+/* @end-block */
 /* End YUK-6897 */
 
 /* Start YUK-6933 */

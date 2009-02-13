@@ -21,13 +21,26 @@ OR RolePropertyId = -20016;
 /* End YUK-6518 */
 
 /* Start YUK-6897 */
-INSERT INTO Job
-SELECT MAX(JobId)+1, 'optOutSchedulerJob', 'N', -1, 'en_US', ' ', ' '
-FROM Job;
-COMMIT;
-INSERT INTO JobScheduledRepeating
-SELECT MAX(JobId), '0 0/5 * * * ?'
-FROM Job;
+/* @start-block */
+DECLARE
+    jobCount int;
+    jobIdValue int;
+BEGIN
+    SELECT COUNT(*) INTO jobCount 
+    FROM Job;
+    IF jobCount = 0 THEN
+        jobIdValue := 1;
+    ELSE
+    	SELECT MAX(JobId)+1 INTO jobIdValue
+    	FROM Job;
+    END IF;
+   	INSERT INTO Job
+	VALUES (jobIdValue, 'optOutSchedulerJob', 'N', -1, 'en_US', ' ', ' ');
+	INSERT INTO JobScheduledRepeating
+	VALUES (jobIdValue, '0 0/5 * * * ?');
+END;
+/
+/* @end-block */
 /* End YUK-6897 */
 
 /* Start YUK-6933 */
@@ -45,8 +58,10 @@ ALTER TABLE OptOutEvent
 /* Start YUK-6947 */
 CREATE TABLE YukonImage2 (ImageId NUMBER, ImageCategory VARCHAR2(20), ImageName VARCHAR2(80), ImageValue BLOB);
 INSERT INTO YukonImage2 SELECT ImageId, ImageCategory, ImageName, TO_LOB(ImageValue) FROM YukonImage;
-DROP TABLE YukonImage;
-RENAME YukonImage2 TO YukonImage; 
+DROP TABLE YukonImage CASCADE CONSTRAINTS;
+RENAME YukonImage2 TO YukonImage;
+ALTER TABLE YukonImage
+    ADD CONSTRAINT PK_YukonImage PRIMARY KEY(ImageId);
 /* End YUK-6947 */
           
 /* Start YUK-6942 */
