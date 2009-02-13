@@ -46,13 +46,17 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     private IDatabaseCache databaseCache;
     private DynamicDataSource dynamicDataSource;
     
-    private SetMultimap<Integer, PointDataListener> pointIdPointDataListeners_unsync = Multimaps.newLinkedHashMultimap();
-    private SetMultimap<Integer, PointDataListener> pointIdPointDataListeners = 
-        Multimaps.synchronizedSetMultimap(pointIdPointDataListeners_unsync);
+    private SetMultimap<Integer, PointDataListener> pointIdPointDataListeners;
+    private SetMultimap<Integer, SignalListener> pointIdSignalListeners;
+
+    {
+        SetMultimap<Integer, PointDataListener> pointIdPointDataListenersUnsynchronized = Multimaps.newLinkedHashMultimap();
+        pointIdPointDataListeners = Multimaps.synchronizedSetMultimap(pointIdPointDataListenersUnsynchronized);
+        
+        SetMultimap<Integer, SignalListener> pointIdSignalListenersUnsynchronized = Multimaps.newLinkedHashMultimap();
+        pointIdSignalListeners =Multimaps.synchronizedSetMultimap(pointIdSignalListenersUnsynchronized);
+    }
     
-    private SetMultimap<Integer, SignalListener> pointIdSignalListeners_unsync = Multimaps.newLinkedHashMultimap();
-    private SetMultimap<Integer, SignalListener> pointIdSignalListeners = 
-        Multimaps.synchronizedSetMultimap(pointIdSignalListeners_unsync);
     
     private List<SignalListener> alarmSignalListeners = new CopyOnWriteArrayList<SignalListener>();
 
