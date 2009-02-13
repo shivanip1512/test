@@ -7,9 +7,16 @@ import java.util.List;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.io.Reader;
+import java.io.Writer;
+
+import org.apache.log4j.Logger;
+import org.springframework.util.Assert;
+
+import com.cannontech.clientutils.YukonLogManager;
 
 public final class FileUtil {
-	
+	private static Logger log = YukonLogManager.getLogger(FileUtil.class);
 	
     /**
      * FileUtil constructor comment.
@@ -109,5 +116,36 @@ public final class FileUtil {
        	}
     	return results;
     }
+    
+    /**
+     * Like FileCopyUtils.copy(Reader,Writer), but without flushing or closing the out.
+     * @param in will be closed
+     * @param out will not be closed
+     * @return bytes copied
+     * @throws IOException
+     */
+    public static int copyNoFlush(Reader in, Writer out) throws IOException {
+        Assert.notNull(in, "No Reader specified");
+        Assert.notNull(out, "No Writer specified");
+        try {
+            int byteCount = 0;
+            char[] buffer = new char[4096];
+            int bytesRead = -1;
+            while ((bytesRead = in.read(buffer)) != -1) {
+                out.write(buffer, 0, bytesRead);
+                byteCount += bytesRead;
+            }
+            return byteCount;
+        }
+        finally {
+            try {
+                in.close();
+            }
+            catch (IOException ex) {
+                log.warn("Could not close Reader", ex);
+            }
+        }
+    }
+
 
 }

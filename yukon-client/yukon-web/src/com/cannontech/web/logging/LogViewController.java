@@ -17,6 +17,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.HtmlUtils;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.util.FileUtil;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.servlet.YukonUserContextUtils;
@@ -76,7 +77,7 @@ public class LogViewController extends LogController {
             mav.addObject("file", HtmlUtils.htmlEscape(getFileNameParameter(request)));
             mav.addObject("logContents", new Writable() {
                 public void write(Writer out) throws IOException {
-                    FileCopyUtils.copy(fr, out);
+                    FileUtil.copyNoFlush(fr, out);
                 }
             });
         } 
