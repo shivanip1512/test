@@ -13,6 +13,8 @@ import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -24,7 +26,6 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.operator.ConsumerInfoRole;
-import com.cannontech.roles.yukon.AuthenticationRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ServerUtils;
@@ -204,8 +205,8 @@ public class UpdateLoginAction implements ActionBase {
 	public static LiteYukonUser createLogin(StarsUpdateLogin login, LiteContact liteContact, LiteStarsEnergyCompany energyCompany, boolean authTypeChange)
 		throws TransactionException
 	{
-	    String defaultAuthTypeStr = DaoFactory.getRoleDao().getGlobalPropertyValue(AuthenticationRole.DEFAULT_AUTH_TYPE);
-	    AuthType defaultAuthType = AuthType.valueOf(defaultAuthTypeStr);
+	    RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
+	    AuthType defaultAuthType = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.DEFAULT_AUTH_TYPE, AuthType.class, DaoFactory.getYukonUserDao().getLiteYukonUser(energyCompany.getUserID()));
         
 		com.cannontech.database.data.user.YukonUser dataUser = new com.cannontech.database.data.user.YukonUser();
 		com.cannontech.database.db.user.YukonUser dbUser = dataUser.getYukonUser();

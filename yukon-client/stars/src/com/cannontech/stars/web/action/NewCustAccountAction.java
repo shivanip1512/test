@@ -13,6 +13,7 @@ import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.StarsDatabaseCache;
+import com.cannontech.database.data.customer.Contact;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
@@ -21,7 +22,6 @@ import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
@@ -190,8 +190,7 @@ public class NewCustAccountAction implements ActionBase {
                             login.getYukonGroups().addElement(((com.cannontech.database.data.user.YukonGroup)LiteFactory.convertLiteToDBPers(custGroups[0])).getYukonGroup());
     					login.getYukonUser().setStatus(UserUtils.STATUS_ENABLED);
     					//login.setEnergyCompany()
-    					login = (YukonUser)
-    							Transaction.createTransaction(Transaction.INSERT, login).execute();
+    					login = Transaction.createTransaction(Transaction.INSERT, login).execute();
     					LiteYukonUser liteUser = new LiteYukonUser( login.getUserID().intValue() );
     					ServerUtils.handleDBChange(liteUser, DBChangeMsg.CHANGE_TYPE_ADD);		
     					contact.setLoginID(login.getUserID().intValue());
@@ -352,7 +351,6 @@ public class NewCustAccountAction implements ActionBase {
 	public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {
 		try {
 			StarsOperation respOper = SOAPUtil.parseSOAPMsgForOperation( respMsg );
-			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
 			
 			StarsFailure failure = respOper.getStarsFailure();
 			if (failure != null) {
@@ -402,16 +400,14 @@ public class NewCustAccountAction implements ActionBase {
 			com.cannontech.database.data.customer.Contact primContact = new com.cannontech.database.data.customer.Contact();
 			StarsFactory.setCustomerContact( primContact, starsAccount.getPrimaryContact() );
 			primContact.getContact().setLogInID( new Integer(userID) );
-			primContact = (com.cannontech.database.data.customer.Contact)
-					Transaction.createTransaction(Transaction.INSERT, primContact).execute();
+			primContact = Transaction.createTransaction(Transaction.INSERT, primContact).execute();
         	
-			ArrayList addContacts = new ArrayList();
+			ArrayList<Contact> addContacts = new ArrayList<Contact>();
 			for (int i = 0; i < starsAccount.getAdditionalContactCount(); i++) {
-				com.cannontech.database.data.customer.Contact contact =
+				Contact contact =
 						new com.cannontech.database.data.customer.Contact();
 				StarsFactory.setCustomerContact( contact, starsAccount.getAdditionalContact(i) );
-				contact = (com.cannontech.database.data.customer.Contact)
-						Transaction.createTransaction(Transaction.INSERT, contact).execute();
+				contact = Transaction.createTransaction(Transaction.INSERT, contact).execute();
 				addContacts.add( contact );
 			}
         	
@@ -449,8 +445,7 @@ public class NewCustAccountAction implements ActionBase {
         	
 			String timeZone = starsAccount.getTimeZone();
 			if (timeZone == null) {
-	            LiteYukonUser liteYukonUser = DaoFactory.getYukonUserDao().getLiteYukonUser( userID );
-				timeZone = DaoFactory.getAuthDao().getUserTimeZone(liteYukonUser).getID();
+	            timeZone = energyCompany.getDefaultTimeZone().getID();
 			}
 			if (timeZone == null)
 				timeZone = "(none)";
@@ -459,7 +454,7 @@ public class NewCustAccountAction implements ActionBase {
 			int[] contactIDs = new int[ addContacts.size() ];
 			for (int i = 0; i < addContacts.size(); i++) {
 				com.cannontech.database.data.customer.Contact contact =
-						(com.cannontech.database.data.customer.Contact) addContacts.get(i);
+						addContacts.get(i);
 				contactIDs[i] = contact.getContact().getContactID().intValue();
 			}
 			customer.setCustomerContactIDs( contactIDs );
@@ -503,8 +498,7 @@ public class NewCustAccountAction implements ActionBase {
 			account.setCustomer( customer );
 			account.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
         	
-			account = (com.cannontech.database.data.stars.customer.CustomerAccount)
-					Transaction.createTransaction( Transaction.INSERT, account ).execute();
+			account = Transaction.createTransaction( Transaction.INSERT, account ).execute();
         	
 			/* Create lite objects */
 			LiteContact liteContact = new LiteContact( primContact.getContact().getContactID().intValue() );
@@ -512,7 +506,7 @@ public class NewCustAccountAction implements ActionBase {
 			
 			for (int i = 0; i < addContacts.size(); i++) {
 				com.cannontech.database.data.customer.Contact contact =
-						(com.cannontech.database.data.customer.Contact) addContacts.get(i);
+						addContacts.get(i);
 				liteContact = new LiteContact( contact.getContact().getContactID().intValue() );
 				ServerUtils.handleDBChange(liteContact, DBChangeMsg.CHANGE_TYPE_ADD);
 			}
