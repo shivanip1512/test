@@ -30,6 +30,10 @@ rem Roguewave configuration settings.
 set rw=
 set rwbuildlevel=15
 
+rem Preset the exit code to failure.  This will only be set to 0 on a successful compilation.
+
+set _ERRORLEVEL=1
+
 rem Process the command line arguments.  It will accept the following:
 rem     --exit
 rem             exits the script after completion and returns the build.exe return value.
@@ -43,7 +47,7 @@ rem             set the corresponding build information labels
 set debug=true
 set build_version=
 set build_version_details=
-set exit=
+set exit=0
 set _build_args=
 
 :Process_Args
@@ -51,7 +55,7 @@ set _build_args=
 if "%~1" == "" goto Done_Processing
 
     if /i "%~1" == "--exit" (
-        set exit=true
+        set exit=1
         shift
         goto Process_Args
     )
@@ -191,15 +195,20 @@ build  %_build_args%
 
 SET _ERRORLEVEL=%ERRORLEVEL%
 
-echo.
-echo.
-echo Began: %datetime%
-echo Ended: %date% %time%.
+
+if %_ERRORLEVEL% neq 0 goto failed
+
+echo ^|
+echo +---------------------------------------
+echo ^|
+echo ^| Build succeeded.
+echo ^|
+echo +---------------------------------------
+
 goto cleanup
 
 
 :failed
-rem ---- we've failed, reset the environment
 
 echo ^|
 echo +---------------------------------------
@@ -208,16 +217,22 @@ echo ^| Build failed.
 echo ^|
 echo +---------------------------------------
 
-goto cleanup
-
-
-:cleanup
 rem ---- put any other cleanup tasks here
+:cleanup
+
+echo.
+echo Began: %datetime%
+echo Ended: %date% %time%.
+echo.
 
 cd %cwd%
 set cwd=
 
-if "%exit%" neq "" (
-    if "%_ERRORLEVEL%" neq "0" exit %_ERRORLEVEL%
+if %exit% equ 1 (
+    if %_ERRORLEVEL% neq 0 exit %_ERRORLEVEL%
 )
+
+rem -- Return a real exit code without closing the shell.
+
+exit /b %_ERRORLEVEL%
 
