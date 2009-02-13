@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     2/12/2009 5:12:24 PM                         */
+/* Created on:     2/13/2009 2:09:27 PM                         */
 /*==============================================================*/
 
 
@@ -15175,11 +15175,6 @@ alter table OptOutEvent
    add constraint FK_OptOutEvent_InvBase foreign key (InventoryId)
       references InventoryBase (InventoryID)
          on delete cascade
-go
-
-alter table OptOutEventLog
-   add constraint FK_OptOutEvent_OptOutEventLog foreign key (OptOutEventId)
-      references OptOutEvent (OptOutEventId)
 go
 
 alter table PAOExclusion

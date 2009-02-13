@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/12/2009 5:14:50 PM                         */
+/* Created on:     2/13/2009 1:56:37 PM                         */
 /*==============================================================*/
 
 
@@ -11893,10 +11893,6 @@ alter table OptOutEvent
    add constraint FK_OptOutEvent_InvBase foreign key (InventoryId)
       references InventoryBase (InventoryID)
       on delete cascade;
-
-alter table OptOutEventLog
-   add constraint FK_OptOutEvent_OptOutEventLog foreign key (OptOutEventId)
-      references OptOutEvent (OptOutEventId);
 
 alter table PAOExclusion
    add constraint FK_PAOEx_Pt foreign key (PointID)

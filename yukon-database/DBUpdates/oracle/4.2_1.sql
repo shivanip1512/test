@@ -85,6 +85,11 @@ WHERE VendorId = 1
 AND Interface = 'MR_EA'; 
 /* End YUK-6942 */
 
+/* Start YUK-6966 */
+ALTER TABLE OptOutEventLog
+   DROP CONSTRAINT FK_OptOutEvent_OptOutEventLog;
+/* End YUK-6966 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
