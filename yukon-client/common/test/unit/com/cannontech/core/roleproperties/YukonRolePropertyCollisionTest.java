@@ -11,7 +11,7 @@ public class YukonRolePropertyCollisionTest {
 
     
     @Test
-    public void checkForCollisions() {
+    public void checkNameForCollisions() {
         HashSet<String> enumText = Sets.newHashSet();
         
         addAll(enumText, YukonRoleProperty.class);
@@ -27,5 +27,31 @@ public class YukonRolePropertyCollisionTest {
             if (!add) throw new RuntimeException(t + " is a duplicate");
         }
     }
-
+    
+    @Test
+    public void checkPropertyIdForCollisions() {
+        // the current implementation of YukonRoleProperty prevents this, but just in case
+        HashSet<Integer> propertyIds = Sets.newHashSet();
+        
+        YukonRoleProperty[] values = YukonRoleProperty.values();
+        for (YukonRoleProperty yukonRoleProperty : values) {
+            boolean add = propertyIds.add(yukonRoleProperty.getPropertyId());
+            if (!add) throw new RuntimeException(yukonRoleProperty + " has a duplicate id");
+        }
+        
+    }
+    
+    @Test
+    public void checkRoleIdForCollisions() {
+        // the current implementation of YukonRole prevents this, but just in case
+        HashSet<Integer> roleIds = Sets.newHashSet();
+        
+        YukonRole[] values = YukonRole.values();
+        for (YukonRole yukonRole : values) {
+            boolean add = roleIds.add(yukonRole.getRoleId());
+            if (!add) throw new RuntimeException(yukonRole + " has a duplicate id");
+        }
+        
+    }
+    
 }

@@ -14,7 +14,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
@@ -30,10 +30,11 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleCategory;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.database.EnumSetResultSetExtractor;
+import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.YukonGroupRoleDefs;
 import com.cannontech.web.input.type.InputType;
+import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
@@ -109,14 +110,6 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
     private final Object NULL_CACHE_VALUE = new Object();
     private LeastRecentlyUsedCacheMap<Integer, Set<YukonRole>> userRoleCache = new LeastRecentlyUsedCacheMap<Integer, Set<YukonRole>>(1000);
     
-    private static final ParameterizedRowMapper<YukonRole> yukonRoleMapper = new ParameterizedRowMapper<YukonRole>() {
-        public YukonRole mapRow(ResultSet rs, int rowNum) throws SQLException {
-            int roleId = rs.getInt(1);
-            YukonRole yukonRole = YukonRole.getForId(roleId);
-            return yukonRole;
-        };
-    };
-
     private static final ParameterizedRowMapper<UserGroupPropertyValue> userGroupPropertyValue = new ParameterizedRowMapper<UserGroupPropertyValue>() {
         public UserGroupPropertyValue mapRow(ResultSet rs, int rowNum) throws SQLException {
             int isUser = rs.getInt("isUser");
@@ -127,6 +120,61 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
             return propertyValue;
         };
     };
+    
+    private class IsCheckPropertyCompatiblePredicate implements Predicate<YukonRoleProperty> {
+        @Override
+        public boolean apply(YukonRoleProperty property) {
+            return isCheckPropertyCompatible(property);
+        }
+    }
+
+    
+    @PostConstruct
+    public void initialize() {
+        final Builder<YukonRoleProperty, Object> builder = ImmutableMap.builder();
+        
+        final EnumSet<YukonRoleProperty> unseenProperties = EnumSet.allOf(YukonRoleProperty.class);
+        
+        String sql = "select rolepropertyid, roleid, defaultvalue from yukonroleproperty";
+        simpleJdbcTemplate.getJdbcOperations().query(sql, new RowCallbackHandler() {
+            public void processRow(ResultSet rs) throws SQLException {
+                int rolePropertyId = rs.getInt("RolePropertyId");
+                int roleId = rs.getInt("RoleId");
+                String defaultValue = rs.getString("DefaultValue");
+                
+                try {
+                    YukonRoleProperty roleProperty = YukonRoleProperty.getForId(rolePropertyId);
+                    unseenProperties.remove(roleProperty);
+                    try {
+                        YukonRole role = YukonRole.getForId(roleId);
+                        if (role != roleProperty.getRole()) {
+                            log.warn("Property " + roleProperty + " is incorrectly mapped to " + role + " (should be " + roleProperty.getRole() + ")");
+                        }
+                    } catch (IllegalArgumentException e1) {
+                        log.warn("Database contains an unknown role: " + roleId);
+                    }
+                    try {
+                        Object convertPropertyValue = convertPropertyValue(roleProperty, defaultValue);
+                        if (convertPropertyValue != null) {
+                            builder.put(roleProperty, convertPropertyValue);
+                        }
+                    } catch (BadConfigurationException e) {
+                        log.error("Database contains an illegal default value for " + roleProperty + " (will be treated as null): " + defaultValue);
+                    }
+                } catch (IllegalArgumentException e) {
+                    log.warn("Database contains an unknown role property: " + rolePropertyId);
+                }
+            }
+            
+        });
+        
+        defaultValueLookup = builder.build();
+        
+        // let's see what we missed
+        for (YukonRoleProperty property : unseenProperties) {
+            log.error("Database is missing a role property: " + property);
+        }
+    }
     
     public void clearCache() {
         log.debug("Removing about " +  convertedValueCache.size() + " values from convertedValueCache");
@@ -162,7 +210,8 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
             YukonRoleProperty firstProperty,
             YukonRoleProperty... otherProperties) {
         Iterable<YukonRoleProperty> properties = Iterables.concat(ImmutableList.of(firstProperty), ImmutableList.of(otherProperties));
-        Iterables.all(properties, new IsCheckPropertyCompatiblePredicate());
+        boolean allAreCompatible = Iterables.all(properties, new IsCheckPropertyCompatiblePredicate());
+        Validate.isTrue(allAreCompatible, "at least one of " + properties + " is not compatible with a check method");
         
         for (YukonRoleProperty property : properties) {
             if (!checkProperty(property, user)) return false;
@@ -174,7 +223,8 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
     @Override
     public boolean checkAnyProperties(LiteYukonUser user, YukonRoleProperty firstProperty, YukonRoleProperty... otherProperties) {
         Iterable<YukonRoleProperty> properties = Iterables.concat(ImmutableList.of(firstProperty), ImmutableList.of(otherProperties));
-        Iterables.all(properties, new IsCheckPropertyCompatiblePredicate());
+        boolean allAreCompatible = Iterables.all(properties, new IsCheckPropertyCompatiblePredicate());
+        Validate.isTrue(allAreCompatible, "at least one of " + properties + " is not compatible with a check method");
         
         for (YukonRoleProperty property : properties) {
             if (checkProperty(property, user)) return true;
@@ -287,7 +337,7 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         String value = null;
         try {
             value = simpleJdbcTemplate.queryForObject(sql.getSql(), String.class, sql.getArguments());
-        } catch (IncorrectResultSizeDataAccessException e) {
+        } catch (EmptyResultDataAccessException e) {
             value = null;
             log.debug("got zero rows for global property");
         }
@@ -471,51 +521,22 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         sql.append("  join YukonUserGroup yug on ygr.GroupId = yug.GroupId");
         sql.append("where yug.UserId = ").appendArgument(user.getUserID());
         
-        EnumSetResultSetExtractor<YukonRole> resultSetExtractor = new EnumSetResultSetExtractor<YukonRole>(YukonRole.class, yukonRoleMapper);
-        simpleJdbcTemplate.getJdbcOperations().query(sql.getSql(), sql.getArguments(), resultSetExtractor);
+        List<Integer> roleIdList = simpleJdbcTemplate.query(sql.getSql(), new IntegerRowMapper(), sql.getArguments());
         
-        Set<YukonRole> result = resultSetExtractor.getResult();
-        return result;
+        EnumSet<YukonRole> result = EnumSet.noneOf(YukonRole.class);
+        
+        for (Integer roleId : roleIdList) {
+            try {
+                YukonRole role = YukonRole.getForId(roleId);
+                result.add(role);
+            } catch (IllegalArgumentException e) {
+                log.warn("Database contains an unknown role: " + roleId);
+            }
+        }
+        
+        return Collections.unmodifiableSet(result);
     }
 
-    @PostConstruct
-    public void initialize() {
-        final Builder<YukonRoleProperty, Object> builder = ImmutableMap.builder();
-        
-        final EnumSet<YukonRoleProperty> unseenProperties = EnumSet.allOf(YukonRoleProperty.class);
-        
-        String sql = "select rolepropertyid, defaultvalue from yukonroleproperty";
-        simpleJdbcTemplate.getJdbcOperations().query(sql, new RowCallbackHandler() {
-            public void processRow(ResultSet rs) throws SQLException {
-                int rolePropertyId = rs.getInt("RolePropertyId");
-                String defaultValue = rs.getString("DefaultValue");
-                
-                try {
-                    YukonRoleProperty roleProperty = YukonRoleProperty.getForId(rolePropertyId);
-                    unseenProperties.remove(roleProperty);
-                    try {
-                        Object convertPropertyValue = convertPropertyValue(roleProperty, defaultValue);
-                        if (convertPropertyValue != null) {
-                            builder.put(roleProperty, convertPropertyValue);
-                        }
-                    } catch (BadConfigurationException e) {
-                        log.error("Database contains an illegal default value for " + roleProperty + " (will be treated as null): " + defaultValue);
-                    }
-                } catch (IllegalArgumentException e) {
-                    log.warn("Database contains an unknown role: " + rolePropertyId);
-                }
-            }
-            
-        });
-        
-        defaultValueLookup = builder.build();
-        
-        // let's see what we missed
-        for (YukonRoleProperty property : unseenProperties) {
-            log.error("Database is missing a role property: " + property);
-        }
-    }
-    
     @Override
     public void verifyCategory(YukonRoleCategory category, LiteYukonUser user)
             throws NotAuthorizedException {

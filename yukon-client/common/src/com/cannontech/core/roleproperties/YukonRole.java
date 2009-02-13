@@ -78,10 +78,14 @@ public enum YukonRole {
         lookup = builder.build();
     }
     
-    public static YukonRole getForId(int roleId) {
+    public static YukonRole getForId(int roleId) throws IllegalArgumentException {
         YukonRole yukonRole = lookup.get(roleId);
         Validate.notNull(yukonRole);
         return yukonRole;
+    }
+    
+    public int getRoleId() {
+        return roleId;
     }
 
 }
