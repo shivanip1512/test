@@ -98,7 +98,7 @@
         <property name="appIcon" value="/WebConfig/yukon/Icons/GraphTrending64.gif" />
         <property name="userChecker">
           <bean factory-bean="rolePropertyUserCheckerFactory" factory-method="createRoleChecker">
-            <constructor-arg value="TABULAR_DISPLAY_CONSOLE"/>
+            <constructor-arg value="TRENDING"/>
           </bean>
         </property>
     </bean>
