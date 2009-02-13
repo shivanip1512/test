@@ -179,6 +179,8 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
     public void clearCache() {
         log.debug("Removing about " +  convertedValueCache.size() + " values from convertedValueCache");
         convertedValueCache.clear();
+        log.debug("Removing about " +  userRoleCache.size() + " values from userRoleCache");
+        userRoleCache.clear();
     }
 
     @Override
