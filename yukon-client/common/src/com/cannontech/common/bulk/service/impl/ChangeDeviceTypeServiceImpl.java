@@ -11,6 +11,7 @@ import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService;
+import com.cannontech.common.device.service.DeviceUpdateService;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -22,6 +23,7 @@ public class ChangeDeviceTypeServiceImpl implements ChangeDeviceTypeService {
     private PaoGroupsWrapper paoGroupsWrapper;
     private PaoDao paoDao;
     private DeviceDefinitionService deviceDefinitionService;
+    private DeviceUpdateService deviceUpdateService;
     
     public YukonDevice changeDeviceType(YukonDevice device, int newDeviceType ) {
 
@@ -45,7 +47,7 @@ public class ChangeDeviceTypeServiceImpl implements ChangeDeviceTypeService {
                 throw new ProcessingException(errorMsg);
             }
             else {
-                return deviceDefinitionService.changeDeviceType(device, selectedDeviceDefinition);
+                return deviceUpdateService.changeDeviceType(device, selectedDeviceDefinition);
             }
 
         }
@@ -79,5 +81,10 @@ public class ChangeDeviceTypeServiceImpl implements ChangeDeviceTypeService {
             DeviceDefinitionService deviceDefinitionService) {
         this.deviceDefinitionService = deviceDefinitionService;
     }
+    
+    @Autowired
+    public void setDeviceUpdateService(DeviceUpdateService deviceUpdateService) {
+		this.deviceUpdateService = deviceUpdateService;
+	}
 
 }

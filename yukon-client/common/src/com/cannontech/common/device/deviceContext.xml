@@ -43,9 +43,6 @@
     </bean>
     
     <bean id="deviceUpdateService" class="com.cannontech.common.device.service.DeviceUpdateServiceImpl" scope="singleton">
-        <property name="deviceDao" ref="deviceDao" />
-        <property name="paoDao" ref="paoDao" />
-        <property name="routeDiscoveryService" ref="routeDiscoveryService"/>
     </bean>
     
     <bean id="routeDiscoveryService" class="com.cannontech.common.device.service.RouteDiscoveryServiceImpl" scope="singleton">
@@ -62,11 +59,6 @@
     </bean>
     
     <bean id="deviceService" class="com.cannontech.common.device.definition.service.DeviceDefinitionServiceImpl" scope="singleton">
-        <property name="simpleDeviceDefinitionService" ref="simpleDeviceService" />
-        <property name="pointService" ref="devicePointService" />
-        <property name="attributeService" ref="attributeService" />
-        <property name="paoGroupsWrapper" ref="paoGroupsWrapper" />
-        <property name="dbPersistentDao" ref="dbPersistentDao" />
     </bean>
     
 	<bean id="deviceDefinitionDao" class="com.cannontech.common.device.definition.dao.DeviceDefinitionDaoImpl" scope="singleton" init-method="initialize">

@@ -106,22 +106,7 @@ public interface DeviceDefinitionService {
      */
     public abstract Set<PointTemplate> getNewPointTemplatesForTransfer(DeviceBase device,
             DeviceDefinition deviceDefinition);
+    
+    public abstract YukonDevice getYukonDeviceForDevice(DeviceBase oldDevice);
 
-    /**
-     * Method to change a device's type. Note: the returned device must be saved
-     * to complete the change
-     * @param currentDevice - Device to change
-     * @param newDefinition - Definition of type to change to
-     * @return The changed device
-     */
-    public abstract DeviceBase changeDeviceType(DeviceBase currentDevice,
-            DeviceDefinition newDefinition);
-
-    /**
-     * Method to change a device's type
-     * @param currentDevice - Device to change
-     * @param newDefinition - Definition of type to change to
-     */
-    public YukonDevice changeDeviceType(YukonDevice currentDevice,
-            DeviceDefinition newDefinition);
 }

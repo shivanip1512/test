@@ -1475,7 +1475,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         if( templateMeter.getType() != meter.getType()) {   //different types of meters...change type
             try {
                 DeviceDefinition deviceDefinition = deviceDefinitionDao.getDeviceDefinition(templateMeter.getType());
-                deviceDefinitionService.changeDeviceType(meter, deviceDefinition);
+                deviceUpdateService.changeDeviceType(meter, deviceDefinition);
                 mspObjectDao.logMSPActivity(method, "MeterNumber (" + meter.getMeterNumber() + ") - Changed DeviceType from:" + existingType + " to:" + templateMeter.getTypeStr() + ").", mspVendor.getCompanyName());
             } catch (DataRetrievalFailureException e) {
                 CTILogger.warn(e);

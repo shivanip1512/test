@@ -25,6 +25,7 @@ import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService;
+import com.cannontech.common.device.service.DeviceUpdateService;
 import com.cannontech.common.device.service.PointService;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.TitleBorder;
@@ -44,6 +45,7 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
     private DeviceBase currentDevice = null;
 
     private DeviceDefinitionService deviceDefinitionService = (DeviceDefinitionService) YukonSpringHook.getBean("deviceService");
+    private DeviceUpdateService deviceUpdateService = (DeviceUpdateService) YukonSpringHook.getBean("deviceUpdateService");
     private PointService pointService = (PointService) YukonSpringHook.getBean("devicePointService");
 
     private JList deviceJList = null;
@@ -92,7 +94,7 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
             return newDefinition.getType();
         }
 
-        return deviceDefinitionService.changeDeviceType(currentDevice, newDefinition);
+        return deviceUpdateService.changeDeviceType(currentDevice, newDefinition);
     }
 
     public void setValue(Object val) {
