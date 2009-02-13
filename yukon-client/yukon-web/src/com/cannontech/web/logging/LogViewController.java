@@ -2,6 +2,8 @@ package com.cannontech.web.logging;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,11 +19,10 @@ import org.springframework.web.util.HtmlUtils;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.taglib.Writable;
 
 /**
  * LogViewController handles the retrieving of
@@ -49,7 +50,6 @@ public class LogViewController extends LogController {
     * @return ModelAndView mav
     */
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        authDao.verifyRole(ServletUtil.getYukonUser(request), AdministratorRole.ROLEID);
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         
         ModelAndView mav = new ModelAndView("logView.jsp");
@@ -58,13 +58,9 @@ public class LogViewController extends LogController {
         File logFile = getLogFile(request);
         Validate.isTrue(logFile.isFile());
         
-        FileReader fr = null;
-        fr = new FileReader(logFile);   
+        final FileReader fr = new FileReader(logFile);   
             
         if (fr != null) {
-            //copy the contents of the log file into a string
-            String logContents = FileCopyUtils.copyToString(fr);
-
             // Sets up the last modified and file length to be shown
             long lastModL = logFile.lastModified();
             String lastMod = dateFormattingService.formatDate(new Date(lastModL), DateFormattingService.DateFormatEnum.BOTH, userContext);
@@ -78,7 +74,11 @@ public class LogViewController extends LogController {
             String fileName = ServletRequestUtils.getRequiredStringParameter(request, "file");
             mav.addObject("logFilePath", fileName);
             mav.addObject("file", HtmlUtils.htmlEscape(getFileNameParameter(request)));
-            mav.addObject("logContents", logContents);
+            mav.addObject("logContents", new Writable() {
+                public void write(Writer out) throws IOException {
+                    FileCopyUtils.copy(fr, out);
+                }
+            });
         } 
         return mav;
     }   

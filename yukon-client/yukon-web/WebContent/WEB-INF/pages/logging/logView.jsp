@@ -22,7 +22,7 @@
 
 <!-- logView.jsp shows the contents of a requested log file -->
 <pre>
-${logContents} 
+<cti:outputContent writable="${logContents}"/>
 </pre>
 
 </cti:standardPage>
