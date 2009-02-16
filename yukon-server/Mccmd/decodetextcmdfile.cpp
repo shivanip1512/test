@@ -1135,7 +1135,7 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, RWCollectableStrin
                     case 5:
                     {
                         /****************************
-                        * line is a configuration command specifing section,class,division
+                        * line is a configuration command specifing target amps
                         * format:  5,serial #,Amps (decimal A)
                         *
                         * function is only valid for expresscom so it works with only
