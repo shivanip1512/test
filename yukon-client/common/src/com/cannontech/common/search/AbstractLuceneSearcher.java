@@ -76,12 +76,16 @@ public abstract class AbstractLuceneSearcher<E> {
             cleanList.add(s);
         }
 
-        if (cleanList.size() == 0) return new MatchAllDocsQuery();
+        Query query;
+        if (cleanList.isEmpty()) {
+            query = new MatchAllDocsQuery();
+        } else {
+            String newQueryString = StringUtils.join(cleanList.toArray(), " ");
+            QueryParser parser = new QueryParser("all", analyzer);
+            parser.setDefaultOperator(QueryParser.AND_OPERATOR);
+            query = parser.parse(newQueryString);
+        }
         
-        String newQueryString = StringUtils.join(cleanList.toArray(), " ");
-        QueryParser parser = new QueryParser("all", analyzer);
-        parser.setDefaultOperator(QueryParser.AND_OPERATOR);
-        Query query = parser.parse(newQueryString);
         return compileAndCombine(query, criteria);
     }
 
