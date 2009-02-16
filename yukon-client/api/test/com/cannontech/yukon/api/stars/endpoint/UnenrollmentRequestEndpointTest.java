@@ -172,7 +172,7 @@ public class UnenrollmentRequestEndpointTest {
 
         Element enrollmentListElement = new Element("enrollmentList", ns); 
         requestElement.addContent(enrollmentListElement);
-        EnrollmentEndpointTestUtil.buildEnrollmentRequest(ns,
+        EnrollmentEndpointTestUtil.buildUnenrollmentRequest(ns,
                                                           enrollmentListElement, 
                                                           enrollmentHelper);
 
@@ -189,7 +189,7 @@ public class UnenrollmentRequestEndpointTest {
 
         Element enrollmentListElement = new Element("enrollmentList", ns); 
         requestElement.addContent(enrollmentListElement);
-        EnrollmentEndpointTestUtil.buildEnrollmentRequest(ns,
+        EnrollmentEndpointTestUtil.buildUnenrollmentRequest(ns,
                                                           enrollmentListElement, 
                                                           enrollmentHelper);
         return requestElement;
@@ -207,11 +207,11 @@ public class UnenrollmentRequestEndpointTest {
 
         Element enrollmentListElement = new Element("enrollmentList", ns); 
         requestElement.addContent(enrollmentListElement);
-        EnrollmentEndpointTestUtil.buildEnrollmentRequest(ns,
+        EnrollmentEndpointTestUtil.buildUnenrollmentRequest(ns,
                                                           enrollmentListElement, 
                                                           enrollmentHelper1);
         
-        EnrollmentEndpointTestUtil.buildEnrollmentRequest(ns,
+        EnrollmentEndpointTestUtil.buildUnenrollmentRequest(ns,
                                                           enrollmentListElement, 
                                                           enrollmentHelper2);
 
@@ -230,7 +230,7 @@ public class UnenrollmentRequestEndpointTest {
 
         Element enrollmentListElement = new Element("enrollmentList", ns); 
         requestElement.addContent(enrollmentListElement);
-        EnrollmentEndpointTestUtil.buildEnrollmentRequest(ns,
+        EnrollmentEndpointTestUtil.buildUnenrollmentRequest(ns,
                                                           enrollmentListElement, 
                                                           enrollmentHelper);
         

@@ -6,7 +6,7 @@
             elementFormDefault="qualified" version="1.0">
 
     <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
-    <xsd:include schemaLocation="./ProgramEnrollment.xsd"/>
+    <xsd:include schemaLocation="./ProgramUnenrollment.xsd"/>
 	
     <xsd:annotation>
      	<xsd:documentation xml:lang="en">
@@ -22,7 +22,7 @@
                     <xsd:element name="enrollmentList">
                         <xsd:complexType>
                             <xsd:sequence>
-                                <xsd:element name="programEnrollment" type="yukon:ProgramEnrollment" maxOccurs="unbounded"/>
+                                <xsd:element name="programUnenrollment" type="yukon:ProgramUnenrollment" maxOccurs="unbounded"/>
                             </xsd:sequence>
                         </xsd:complexType>
                     </xsd:element>

@@ -35,7 +35,7 @@ public class UnenrollmentRequestEndpoint {
         Namespace ns = YukonXml.getYukonNamespaceForDefault();
         SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(enrollmentRequest);
         List<EnrollmentHelper> programEnrollments = 
-            template.evaluate("//y:enrollmentList/y:programEnrollment", 
+            template.evaluate("//y:enrollmentList/y:programUnenrollment", 
                               new NodeToElementMapperWrapper<EnrollmentHelper>(new ProgramEnrollmentElementRequestMapper()));
 
         Element enrollmentResponseBase = new Element("unenrollmentResponse", ns);

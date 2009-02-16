@@ -236,8 +236,8 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
         
         EnrollmentHelper enrollmentHelper = new EnrollmentHelper();
         enrollmentHelper.setAccountNumber(ServletRequestUtils.getRequiredStringParameter(request, "accountNumber"));
-        enrollmentHelper.setLoadGroupName(ServletRequestUtils.getRequiredStringParameter(request, "loadGroupName"));
-        enrollmentHelper.setProgramName(ServletRequestUtils.getRequiredStringParameter(request, "programName"));
+        enrollmentHelper.setLoadGroupName(ServletRequestUtils.getStringParameter(request, "loadGroupName"));
+        enrollmentHelper.setProgramName(ServletRequestUtils.getStringParameter(request, "programName"));
         enrollmentHelper.setSerialNumber(ServletRequestUtils.getRequiredStringParameter(request, "serialNumber"));
         enrollmentHelper.setRelay(ServletRequestUtils.getStringParameter(request, "relay"));
         enrollmentHelper.setApplianceKW(ServletRequestUtils.getFloatParameter(request, "applianceKW", 0));

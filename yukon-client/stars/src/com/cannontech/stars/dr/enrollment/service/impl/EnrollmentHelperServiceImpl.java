@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.common.exception.DuplicateEnrollmentException;
 import com.cannontech.core.dao.AuthDao;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
@@ -58,7 +57,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         List<ProgramEnrollment> enrollmentData = 
             enrollmentDao.getActiveEnrollmentsByAccountId(customerAccount.getAccountId());
 
-        ProgramEnrollment programEnrollment = buildProgrameEnrollment(enrollmentHelper, customerAccount, user);
+        ProgramEnrollment programEnrollment = buildProgrameEnrollment(enrollmentHelper, customerAccount, user, enrollmentEnum);
         
         if (enrollmentEnum == EnrollmentEnum.ENROLL) {
             addProgramEnrollment(enrollmentData, programEnrollment, enrollmentHelper.isSeasonalLoad());
@@ -96,7 +95,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         }
     }
 
-    private ProgramEnrollment buildProgrameEnrollment(EnrollmentHelper enrollmentHelper, CustomerAccount account, LiteYukonUser user){
+    private ProgramEnrollment buildProgrameEnrollment(EnrollmentHelper enrollmentHelper, CustomerAccount account, LiteYukonUser user, EnrollmentEnum enrollmentEnum){
 
         //get the energyCompany for the user
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
@@ -130,39 +129,52 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         }
         
         /*
-         * Gets the program, appliance category, and load group information.  These 
-         * methods also take care of the validation for these three types and
-         * includes checking to see if they belong to one another.
+         *  This handles an unenrollment with no program given.  In this case we
+         *  we just want to unenroll the device from every program it is enrolled.
          */
-        Program program = programDao.getByProgramName(enrollmentHelper.getProgramName(),
-                                                      energyCompanyIds);
-        ApplianceCategory applianceCategory = getApplianceCategoryByName(enrollmentHelper.getApplianceCategoryName(), 
-                                                                         program,
-                                                                         energyCompanyIds);
-        LoadGroup loadGroup = getLoadGroupByName(enrollmentHelper.getLoadGroupName(), program);
-        
-        /* Builds up the program enrollment object that will be 
-         * used later on to enroll or unenroll.
-         */
-        ProgramEnrollment programEnrollment = new ProgramEnrollment();
-        programEnrollment.setInventoryId(liteInv.getInventoryID());
-        programEnrollment.setProgramId(program.getProgramId());
-        if (enrollmentHelper.getApplianceKW() != null) {
-            programEnrollment.setApplianceKW(enrollmentHelper.getApplianceKW());
-        }
-        if (applianceCategory != null) {
-            programEnrollment.setApplianceCategoryId(applianceCategory.getApplianceCategoryId());
+        if(enrollmentEnum == EnrollmentEnum.UNENROLL &&
+           StringUtils.isEmpty(enrollmentHelper.getProgramName())) {
+        	ProgramEnrollment programEnrollment = new ProgramEnrollment();
+	        programEnrollment.setInventoryId(liteInv.getInventoryID());
+	        programEnrollment.setProgramId(0);
+	        return programEnrollment;
         } else {
-            programEnrollment.setApplianceCategoryId(program.getApplianceCategoryId());
-        }
-        if (loadGroup != null) {
-            programEnrollment.setLmGroupId(loadGroup.getLoadGroupId());
-        }
-        if (!StringUtils.isBlank(enrollmentHelper.getRelay())) {
-            programEnrollment.setRelay(enrollmentHelper.getRelay());
+	        /*
+	         * Gets the program, appliance category, and load group information.  These 
+	         * methods also take care of the validation for these three types and
+	         * includes checking to see if they belong to one another.
+	         */
+	        Program program = programDao.getByProgramName(enrollmentHelper.getProgramName(),
+	                                                      energyCompanyIds);
+	        ApplianceCategory applianceCategory = getApplianceCategoryByName(enrollmentHelper.getApplianceCategoryName(), 
+	                                                                         program,
+	                                                                         energyCompanyIds);
+	        LoadGroup loadGroup = getLoadGroupByName(enrollmentHelper.getLoadGroupName(), program);
+
+	        /* Builds up the program enrollment object that will be 
+	         * used later on to enroll or unenroll.
+	         */
+	        ProgramEnrollment programEnrollment = new ProgramEnrollment();
+	        programEnrollment.setInventoryId(liteInv.getInventoryID());
+	        programEnrollment.setProgramId(program.getProgramId());
+	        if (enrollmentHelper.getApplianceKW() != null) {
+	        	programEnrollment.setApplianceKW(enrollmentHelper.getApplianceKW());
+	        }
+	        if (applianceCategory != null) {
+	        	programEnrollment.setApplianceCategoryId(applianceCategory.getApplianceCategoryId());
+	        } else {
+	        	programEnrollment.setApplianceCategoryId(program.getApplianceCategoryId());
+	        }
+	        if (loadGroup != null) {
+	        	programEnrollment.setLmGroupId(loadGroup.getLoadGroupId());
+	        }
+	        if (!StringUtils.isBlank(enrollmentHelper.getRelay())) {
+	        	programEnrollment.setRelay(enrollmentHelper.getRelay());
+	        }
+	        
+	        return programEnrollment;
         }
         
-        return programEnrollment;
     }
     
     protected void addProgramEnrollment(List<ProgramEnrollment> programEnrollments,
@@ -212,22 +224,25 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     protected void removeProgramEnrollment(List<ProgramEnrollment> programEnrollments,
                                            ProgramEnrollment removedProgramEnrollment){
         
-        int i;
-        removedProgramEnrollment.setEnroll(true);
-        for (i = 0;i < programEnrollments.size();i++) {
-            ProgramEnrollment programEnrollment = programEnrollments.get(i);
-            
-            if (removedProgramEnrollment.equivalent(programEnrollment)) {
-                break;
-            }
-        }
+    	removedProgramEnrollment.setEnroll(true);
+
+    	List<ProgramEnrollment> programEnrollmentResults = new ArrayList<ProgramEnrollment>();
+    	programEnrollmentResults.addAll(programEnrollments);
+    	
+    	for (int i = 0;i < programEnrollments.size();i++) {
+    		ProgramEnrollment programEnrollment = programEnrollments.get(i);
+    		if (removedProgramEnrollment.getProgramId() == 0){
+    			if(removedProgramEnrollment.getInventoryId() == programEnrollment.getInventoryId()){
+    				programEnrollmentResults.remove(programEnrollment);
+    			}
+    		}
+    			
+    		if (removedProgramEnrollment.equivalent(programEnrollment)) {
+    			programEnrollmentResults.remove(programEnrollment);
+    		}
+    	}
         
-        if (i < programEnrollments.size()){
-            programEnrollments.remove(i);
-        } else {
-            throw new NotFoundException("The given program enrollment was not found in the current system.");
-        }
-        
+    	programEnrollments.retainAll(programEnrollmentResults);
     }           
 
     private ApplianceCategory getApplianceCategoryByName(String applianceCategoryName, Program program, List<Integer> energyCompanyIds){
