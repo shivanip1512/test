@@ -100,6 +100,7 @@ public:
         cfgEmetconSilverAddress           = 0x0E,
         cfgThermostatConfig               = 0x24,
         cfgColdLoad                       = 0x30,
+        cfgTargetLoadAmps                 = 0x4D,
         cfgDisplayMessages                = 0x5D,
         cfgUtilityInformation             = 0x5F
 
@@ -236,6 +237,7 @@ private:
     INT configureLCRMode(CtiCommandParser &parse);
     INT configureEmetconGoldAddress(CtiCommandParser &parse);
     INT configureEmetconSilverAddress(CtiCommandParser &parse);
+    INT configureTargetLoadAmps(CtiCommandParser &parse);
     INT priority(BYTE priority);
     unsigned short addCRC(unsigned short crc, unsigned char data);
     void calcCRC(std::vector< BYTE >::iterator data, unsigned char len);

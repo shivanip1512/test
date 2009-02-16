@@ -1132,6 +1132,49 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, RWCollectableStrin
                         }
                         break;
                     }
+                    case 5:
+                    {
+                        /****************************
+                        * line is a configuration command specifing section,class,division
+                        * format:  5,serial #,Amps (decimal A)
+                        *
+                        * function is only valid for expresscom so it works with only
+                        * expresscom or no protocol specified flags
+                        *****************************
+                        */
+                        if ((aProtocolFlag == TEXT_CMD_FILE_SPECIFY_NO_PROTOCOL) ||
+                            (aProtocolFlag == TEXT_CMD_FILE_SPECIFY_EXPRESSCOM))
+                        {
+                            string amps;
+                            if (++tok_iter != cmdLine.end())
+                            {
+                                serialNum = *tok_iter;
+    
+                                if (++tok_iter != cmdLine.end())
+                                {
+                                    amps = *tok_iter;
+    
+                                    *programming = "set MessagePriority 5 ; PutConfig xcom serial ";
+                                    *programming += serialNum.c_str();
+                                    *programming += " targetloadamps ";
+                                    *programming += amps.c_str();
+                                }
+                                else
+                                {
+                                    retCode = false;
+                                }
+                            }
+                            else
+                            {
+                                retCode = false;
+                            }
+                        }
+                        else
+                        {
+                            retCode = false;
+                        }
+                        break;
+                    }
 
                 default:
                     {

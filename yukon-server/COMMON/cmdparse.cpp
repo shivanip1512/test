@@ -5150,6 +5150,17 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
             _cmd["silver"] = CtiParseValue(atoi(tok().c_str()));
         }
     }
+    else if(CmdStr.contains(" targetloadamps"))
+    {
+        if(!(token = CmdStr.match(CtiString("targetloadamps ") + str_floatnum)).empty())
+        {
+            CtiTokenizer tok( token );
+
+            tok();   // Get us past "targetloadamps"
+
+            _cmd["xctargetloadamps"] = CtiParseValue(atof(tok().c_str()));
+        }
+    }
 }
 
 void  CtiCommandParser::doParsePutStatusExpresscom(const string &_CmdStr)

@@ -1447,6 +1447,10 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse, CtiOutMess
     {
         status = configureEmetconSilverAddress(parse);
     }
+    else if(parse.isKeyValid("xctargetloadamps"))
+    {
+        status = configureTargetLoadAmps(parse);
+    }
 
     if(parse.isKeyValid("ovuv"))
     {
@@ -2072,6 +2076,21 @@ INT CtiProtocolExpresscom::configureEmetconSilverAddress(CtiCommandParser &parse
                                 &config );
     }
     return status;
+}
+
+INT CtiProtocolExpresscom::configureTargetLoadAmps(CtiCommandParser &parse)
+{
+    BYTE config[2];
+    DOUBLE amps;
+    short tenthsOfAmps; // This is configured in amps*10. 20.1 amps = 201
+
+    amps = parse.getdValue("xctargetloadamps");
+    tenthsOfAmps = (amps * 10);
+
+    config[0] = tenthsOfAmps >> 8;
+    config[1] = tenthsOfAmps;
+
+    return configuration( cfgTargetLoadAmps, 2, config);
 }
 
 INT CtiProtocolExpresscom::priority(BYTE priority)
