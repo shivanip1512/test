@@ -9,6 +9,7 @@
 		<project>loadcontrol</project>
 		<project>stars</project>
 		<project>common</project>
+		<project>commander</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

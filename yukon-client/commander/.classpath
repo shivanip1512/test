@@ -15,5 +15,6 @@
 	<classpathentry kind="lib" path="resource"/>
 	<classpathentry kind="lib" path="/common/resource"/>
 	<classpathentry kind="lib" path="/third-party/servlet-api.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
