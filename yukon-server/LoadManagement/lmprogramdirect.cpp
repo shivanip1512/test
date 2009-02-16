@@ -4623,6 +4623,7 @@ BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg*
                     dout << CtiTime() << " - " << text << ", " << additional << endl;
                 }
             }
+            setChangeReason("Manual Stop Time Reached");
             stopProgramControl(multiPilMsg,multiDispatchMsg, multiNotifMsg, secondsFrom1901);
             setReductionTotal(0.0);
             setStartedControlling(gInvalidCtiTime);
@@ -4677,6 +4678,7 @@ BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg*
                     dout << CtiTime() << " - " << text << ", " << additional << endl;
                 }
             } //NOTE: SHOULD WE BE SETTING THE STATE HERE?  COULD MESS UP RAMPOUT
+            setChangeReason("Manual Stop Time Reached");
             setProgramState(CtiLMProgramBase::StoppingState);
             stopProgramControl(multiPilMsg,multiDispatchMsg, multiNotifMsg, secondsFrom1901);
             setManualControlReceivedFlag(FALSE);
@@ -4883,6 +4885,7 @@ bool CtiLMProgramDirect::startTimedProgram(unsigned long secondsFrom1901, long s
             dout << CtiTime() << " - " << text << ", " << additional << endl;
         }
         manualReduceProgramLoad(secondsFrom1901, multiPilMsg,multiDispatchMsg);
+        setChangeReason("Timed Start");
         setProgramState(CtiLMProgramBase::TimedActiveState);
 
         setDirectStartTime(startTime);
