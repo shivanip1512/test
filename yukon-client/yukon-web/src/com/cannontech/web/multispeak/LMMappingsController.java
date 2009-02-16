@@ -34,7 +34,7 @@ public class LMMappingsController extends  MultiActionController {
     public ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws Exception {
        
     	ModelAndView mav = new ModelAndView();
-        mav.setViewName("lmMappings/home.jsp");
+        mav.setViewName("setup/lmMappings/home.jsp");
         
         // add all mappings
     	addAllMapppingToMav(mav, defaultOrderedColumn, defaultAscending);
@@ -78,7 +78,7 @@ public class LMMappingsController extends  MultiActionController {
     public ModelAndView reloadAllMappingsTable(HttpServletRequest request, HttpServletResponse response) throws Exception {
     	
     	ModelAndView mav = new ModelAndView();
-        mav.setViewName("lmMappings/allMappingsTable.jsp");
+        mav.setViewName("setup/lmMappings/allMappingsTable.jsp");
         
         String col = ServletRequestUtils.getStringParameter(request, "col", MspLmInterfaceMappingColumnEnum.STRATEGY.toString());
     	boolean ascending = ServletRequestUtils.getBooleanParameter(request, "ascending", true);

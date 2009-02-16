@@ -28,7 +28,7 @@ public class RouteActionController extends  MultiActionController {
         final List avList = (id != null) ? 
                 strmDao.getAvailableRoutesBySubstationId(id) : strmDao.getAll();
 
-        mav.setViewName("routemapping/routeView.jsp");
+        mav.setViewName("setup/routemapping/routeView.jsp");
         mav.addObject("list", routeList);
         mav.addObject("avlist", avList);
         return mav;

@@ -71,7 +71,7 @@ public class SubstationActionController extends  MultiActionController {
     public ModelAndView view(HttpServletRequest request, HttpServletResponse response) {
         final ModelAndView mav = new ModelAndView();
         final List<Substation> list = substationDao.getAll();
-        mav.setViewName("routemapping/substationView.jsp");
+        mav.setViewName("setup/routemapping/substationView.jsp");
         mav.addObject("list", list);
         return mav;
     }

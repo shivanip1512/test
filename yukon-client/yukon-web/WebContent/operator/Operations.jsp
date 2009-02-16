@@ -268,7 +268,7 @@
         </cti:checkRole>
         <cti:checkProperty property="MultispeakRole.MSP_LM_MAPPING_SETUP">
             <tags:sectionLink>
-            	<a href="/spring/visualDisplays/loadManagement/home"><cti:msg key="yukon.web.menu.portal.analysis.visualDisplays" /></a>
+            	<a href="/spring/multispeak/visualDisplays/loadManagement/home"><cti:msg key="yukon.web.menu.portal.analysis.visualDisplays" /></a>
             </tags:sectionLink>
         </cti:checkProperty>
 	</tags:operationSection>

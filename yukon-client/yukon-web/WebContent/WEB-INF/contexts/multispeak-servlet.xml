@@ -16,13 +16,15 @@
 				<prop key="/setup/routemapping/route">routeController</prop>
 				<prop key="/setup/routemapping/mappings">mappings</prop>
 				<prop key="/setup/lmMappings/*">lmMappingsController</prop>
+				<prop key="/visualDisplays/loadManagement/*">visualDisplaysLoadManagementController</prop>
+                <prop key="/visualDisplays/probabilityForPeak/*">visualDisplaysProbabilityForPeakLoadController</prop>
 			</props>
 		</property>
 	</bean>
 
 	<bean id="mappings"
 		class="org.springframework.web.servlet.mvc.ParameterizableViewController">
-		<property name="viewName" value="routemapping/mappings.jsp" />
+		<property name="viewName" value="setup/routemapping/mappings.jsp" />
 	</bean>
 
 	<bean id="viewResolver"
@@ -30,7 +32,7 @@
 		<property name="viewClass"
 			value="org.springframework.web.servlet.view.JstlView" />
 		<property name="prefix"
-			value="/WEB-INF/pages/multispeak/setup/" />
+			value="/WEB-INF/pages/multispeak/" />
 	</bean>
 
 	<bean id="substationController"
@@ -70,5 +72,23 @@
 			</list>
 		</property>
 	</bean>
+	
+	<!--  VISUAL DISPLAYS -->
+    
+	<!-- LOAD MANAGEMENT CONTROLLER -->
+	<bean id="visualDisplaysLoadManagementController" class="com.cannontech.web.multispeak.visualDisplays.VisualDisplaysLoadManagementController" >
+    </bean>
+    
+    <!-- PROBABILITY FOR PEAK LOAD CONTROLLER -->
+	<bean id="visualDisplaysProbabilityForPeakLoadController" class="com.cannontech.web.multispeak.visualDisplays.VisualDisplaysProbabilityForPeakLoadController" >
+    </bean>
+    
+    <!-- VISUAL DISPLAYS SERVICE -->
+    <bean id="visualDisplaysService" class="com.cannontech.web.multispeak.visualDisplays.service.impl.VisualDisplaysServiceImpl" >
+    </bean>
+    
+    <!-- POWER SUPPLIER FACTORY -->
+    <bean id="powerSupplierFactory" class="com.cannontech.web.multispeak.visualDisplays.service.PowerSupplierFactory" >
+    </bean>
 
 </beans>
