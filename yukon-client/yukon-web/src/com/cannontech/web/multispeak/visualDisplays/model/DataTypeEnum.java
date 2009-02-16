@@ -1,20 +1,19 @@
 package com.cannontech.web.multispeak.visualDisplays.model;
 
-public enum DataTypeEnum {
-	
-	CURRENT_LOAD("Current Load"),
-	CURRENT_IH("Current IH"),
-	LOAD_TO_PEAK("Load To Peak"),
-	PEAK_IH_LOAD("Peak IH Load"),
-	PEAK_DAY_TIMESTAMP("Peak Day Timestamp");
-	
-	private String description;
-	
-	DataTypeEnum(String description) {
-		this.description = description;
-	}
+import com.cannontech.common.i18n.DisplayableEnum;
 
-	public String getDescription() {
-		return description;
-	}
+public enum DataTypeEnum implements DisplayableEnum {
+	
+	CURRENT_LOAD,
+	CURRENT_IH,
+	LOAD_TO_PEAK,
+	PEAK_IH_LOAD,
+	PEAK_DAY_TIMESTAMP;
+	
+	private final String keyPrefix = "yukon.web.modules.visualDisplays.dataTypeEnum.";
+	
+	@Override
+    public String getFormatKey() {
+        return keyPrefix + name();
+    }
 }

@@ -25,10 +25,10 @@
 		<%-- header row --%>
 		<tr>
 			<th>Power Supplier</th>
-			<th colspan="2">Current Load</th>
-			<th colspan="2">Current IH</th>
-			<th colspan="2">Load To Peak</th>
-			<th colspan="2">Peak IH Load</th>
+			<th colspan="2"><cti:msg key="yukon.web.modules.visualDisplays.dataTypeEnum.CURRENT_LOAD"/></th>
+			<th colspan="2"><cti:msg key="yukon.web.modules.visualDisplays.dataTypeEnum.CURRENT_IH"/></th>
+			<th colspan="2"><cti:msg key="yukon.web.modules.visualDisplays.dataTypeEnum.LOAD_TO_PEAK"/></th>
+			<th colspan="2"><cti:msg key="yukon.web.modules.visualDisplays.dataTypeEnum.PEAK_IH_LOAD"/></th>
 		</tr>
 		
 		<%-- power supplier rows --%>
@@ -53,7 +53,7 @@
 
 		<%-- header row (hr + power supplier names) --%>
 		<tr>
-			<th style="width:${hourNumberCellWidth}px" nowrap>HR End</th>
+			<th style="width:${hourNumberCellWidth}px" nowrap><cti:msg key="yukon.web.modules.visualDisplays.loadManagement.hrEndLabel"/></th>
 			<c:forEach var="powerSupplier" items="${powerSuppliers}">
 				<th colspan="4">${powerSupplier.powerSupplierType.description}</th>
 			</c:forEach>	  
@@ -68,19 +68,19 @@
 			<c:forEach var="powerSupplier" items="${powerSuppliers}">
 		
 				<td colspan="2" align="center" nowrap>
-					<span style="font-weight:bold;">Current Day</span>
+					<span style="font-weight:bold;"><cti:msg key="yukon.web.modules.visualDisplays.loadManagement.currentDayLabel"/></span>
 					<br>
 					<cti:formatDate type="DATE" value="${now}"/>
 					<br>
-					HR <cti:formatDate type="HOUR" value="${now}"/>
+					<cti:msg key="yukon.web.modules.visualDisplays.loadManagement.hrLabel"/> <cti:formatDate type="HOUR" value="${now}"/>
 				</td>
 				
 				<td colspan="2" align="center" nowrap>
-					<span style="font-weight:bold;">Peak Day</span>
+					<span style="font-weight:bold;"><cti:msg key="yukon.web.modules.visualDisplays.loadManagement.peakDayLabel"/></span>
 					<br>
 					<cti:pointValue format="{time|MM/dd/yyyy}" pointId="${peakIhLoadPointId}"/>
 					<br>
-					HR <cti:pointValue format="{time|HH zz}" pointId="${peakIhLoadPointId}"/>
+					<cti:msg key="yukon.web.modules.visualDisplays.loadManagement.hrLabel"/> <cti:pointValue format="{time|HH zz}" pointId="${peakIhLoadPointId}"/>
 				</td>
 		
 			</c:forEach>	  

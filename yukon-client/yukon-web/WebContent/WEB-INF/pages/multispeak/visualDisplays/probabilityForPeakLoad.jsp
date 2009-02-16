@@ -41,13 +41,13 @@
 			<c:forEach var="powerSupplier" items="${powerSuppliers}">
 			
 				<td align="center" nowrap>
-					<span style="font-weight:bold;">Today</span>
+					<span style="font-weight:bold;"><cti:msg key="yukon.web.modules.visualDisplays.probabilityForPeakLoad.todayLabel"/></span>
 					<br>
 					<cti:pointValue format="{time|MM/dd/yyyy}" pointId="${powerSupplier.todayLoadControlPredictionPointIdList[0]}"/>
 				</td>
 				
 				<td align="center" nowrap>
-					<span style="font-weight:bold;">Tomorrow</span>
+					<span style="font-weight:bold;"><cti:msg key="yukon.web.modules.visualDisplays.probabilityForPeakLoad.tomorrowLabel"/></span>
 					<br>
 					<cti:pointValue format="{time|MM/dd/yyyy}" pointId="${powerSupplier.tomorrowLoadControlPredictionPointIdList[0]}"/>
 				</td>

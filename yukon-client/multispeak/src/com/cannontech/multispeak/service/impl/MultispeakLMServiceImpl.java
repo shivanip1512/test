@@ -300,17 +300,17 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 	
 	public static QualityDescription getQualityDescription(PointQuality pointQuality) {
 		
-		if (pointQuality.equals(PointQuality.Normal)) {
+		if (PointQuality.Normal.equals(pointQuality)) {
 			return QualityDescription.Measured;
-		} else if (pointQuality.equals(PointQuality.Manual)) {
+		} else if (PointQuality.Manual.equals(pointQuality)) {
 			return QualityDescription.Estimated;
-		} else if (pointQuality.equals(PointQuality.NonUpdated)) {
+		} else if (PointQuality.NonUpdated.equals(pointQuality)) {
 			return QualityDescription.Failed;
-		} else if (pointQuality.equals(PointQuality.InitDefault)) {
+		} else if (PointQuality.InitDefault.equals(pointQuality)) {
 			return QualityDescription.Initial;
-		} else if (pointQuality.equals(PointQuality.Estimated)) {
+		} else if (PointQuality.Estimated.equals(pointQuality)) {
 			return QualityDescription.Calculated;
-		} else if (pointQuality.equals(PointQuality.InitLastKnown)) {
+		} else if (PointQuality.InitLastKnown.equals(pointQuality)) {
 			return QualityDescription.Last;
 		} else {
 			return QualityDescription.Default;
