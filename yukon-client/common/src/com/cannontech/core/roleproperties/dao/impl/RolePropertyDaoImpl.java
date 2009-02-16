@@ -20,6 +20,7 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.CtiUtilities;
@@ -103,12 +104,14 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         public YukonRoleProperty property;
     }
     private SimpleJdbcTemplate simpleJdbcTemplate;
+    private ConfigurationSource configurationSource;
     private Logger log = YukonLogManager.getLogger(RolePropertyDaoImpl.class);
     
     private ImmutableMap<YukonRoleProperty, Object> defaultValueLookup;
     private LeastRecentlyUsedCacheMap<UserPropertyTuple, Object> convertedValueCache = new LeastRecentlyUsedCacheMap<UserPropertyTuple, Object>(1000);
     private final Object NULL_CACHE_VALUE = new Object();
     private LeastRecentlyUsedCacheMap<Integer, Set<YukonRole>> userRoleCache = new LeastRecentlyUsedCacheMap<Integer, Set<YukonRole>>(1000);
+    private Set<YukonRoleProperty> propertyExceptions = EnumSet.noneOf(YukonRoleProperty.class);
     
     private static final ParameterizedRowMapper<UserGroupPropertyValue> userGroupPropertyValue = new ParameterizedRowMapper<UserGroupPropertyValue>() {
         public UserGroupPropertyValue mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -173,6 +176,18 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         // let's see what we missed
         for (YukonRoleProperty property : unseenProperties) {
             log.error("Database is missing a role property: " + property);
+        }
+        
+        // build up exception list
+        String exceptionList = configurationSource.getString("ROLE_PROPERTY_EXCEPTION_LIST", "");
+        String[] exceptionArray = exceptionList.split("\\s*,\\s*");
+        for (String propertyStr : exceptionArray) {
+            try {
+                YukonRoleProperty property = YukonRoleProperty.valueOf(propertyStr);
+                propertyExceptions.add(property);
+            } catch (IllegalArgumentException e) {
+                log.warn("master.cfg contains an unknown role property: " + propertyStr);
+            }
         }
     }
     
@@ -439,7 +454,13 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
             List<UserGroupPropertyValue> values, LiteYukonUser user) {
         if (values.isEmpty()) {
             if (!checkRole(property.getRole(), user)) {
-                throw new UserNotInRoleException(property);
+                // let's see if this is in the exception list
+                if (propertyExceptions.contains(property)) {
+                    // must be a special case
+                    return null;
+                } else {
+                    throw new UserNotInRoleException(property);
+                }
             }
             // if we got here, we know the user has this property's role
             // but nothing has ever inserted a row, this usually happens
@@ -568,5 +589,8 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
 
-
+    @Autowired
+    public void setConfigurationSource(ConfigurationSource configurationSource) {
+        this.configurationSource = configurationSource;
+    }
 }
