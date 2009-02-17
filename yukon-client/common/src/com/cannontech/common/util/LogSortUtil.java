@@ -2,10 +2,12 @@ package com.cannontech.common.util;
 
 import java.io.File;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -141,7 +143,6 @@ public final class LogSortUtil {
             }else{
                 logName += '/';
             }
-                
             
             if(sortResults.get(key) == null){
                 List<String> tempArray = new ArrayList<String>();
@@ -157,4 +158,29 @@ public final class LogSortUtil {
         
         return sortResults;
     }
+    
+	public static SortedMap<Date, List<String>> sortSearchMapByDate(SortedMap<String, List<String>> sortResults){
+    	SortedMap<Date, List<String>> sortResultsByDate = new TreeMap<Date, List<String>>(Collections.reverseOrder());
+        
+        Iterator<String> iterator = sortResults.keySet().iterator();
+        while(iterator.hasNext()) {
+        	String key = iterator.next();
+        	System.out.println("key: " + key);
+        	DateFormat df = DateFormat.getDateInstance();
+        	
+        	Date date;
+			try {
+				date = df.parse(key);
+				System.out.println("Date: " + date);
+				if(sortResultsByDate.get(date) == null){
+	                sortResultsByDate.put(date, sortResults.get(key));
+	            }
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+        }
+        
+        return sortResultsByDate;
+    }
+    
 }

@@ -2,6 +2,7 @@ package com.cannontech.web.logging;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -68,7 +69,8 @@ public class LogMenuController extends LogController {
         // "reverse", false);
         List<File> localLogList = new ArrayList<File>();
         List<String> dirSet = null;
-        SortedMap<String, List<String>> resultSet = new TreeMap<String, List<String>>();
+        SortedMap<String, List<String>> resultSetAlphabet = new TreeMap<String, List<String>>();;
+        SortedMap<Date, List<String>> resultSetDate = new TreeMap<Date, List<String>>();;
 
         // lists to hold log file names
         localLogList = populateFileList(logDir);
@@ -76,16 +78,16 @@ public class LogMenuController extends LogController {
         if (!localLogList.isEmpty()) {
             // Checks to see how the user wants the information setup
             if (sortType.equalsIgnoreCase("date")) {
-                resultSet = this.sortByDate(localLogList);
+                resultSetDate = this.sortByDate(localLogList);
             } else {
-                resultSet = this.sortByAlphabet(localLogList);
+                resultSetAlphabet = this.sortByAlphabet(localLogList);
+                
+                // Separates the directories from the logFiles
+                if (resultSetAlphabet.containsKey("Directories")) {
+                    dirSet = new ArrayList<String>(resultSetAlphabet.get("Directories"));
+                    resultSetAlphabet.remove("Directories");
+                }
             }
-        }
-
-        // Separates the directories from the logFiles
-        if (resultSet.containsKey("Directories")) {
-            dirSet = new ArrayList<String>(resultSet.get("Directories"));
-            resultSet.remove("Directories");
         }
 
         // add local list to model
@@ -93,7 +95,12 @@ public class LogMenuController extends LogController {
         mav.addObject("dirFile", logDir);
         mav.addObject("file", HtmlUtils.htmlEscape(getFileNameParameter(request)));
         mav.addObject("dirList", dirSet);
-        mav.addObject("localLogList", resultSet);
+        
+        if (sortType.equalsIgnoreCase("date")) {
+        	mav.addObject("localLogList", resultSetDate);
+        } else {
+        	mav.addObject("localLogList", resultSetAlphabet);
+        }
 
         return mav;
     }
@@ -138,12 +145,14 @@ public class LogMenuController extends LogController {
      * @return
      * @throws Exception
      */
-    private SortedMap<String, List<String>> sortByDate(List<File> localLogList)
+    private SortedMap<Date, List<String>> sortByDate(List<File> localLogList)
             throws Exception {
 
-        Map<String, String> searchMap = LogSortUtil.returnSearchMap(localLogList);
+    	Map<String, String> searchMap = LogSortUtil.returnSearchMap(localLogList);
         SortedMap<String, List<String>> sortResults = LogSortUtil.sortSearchMap(searchMap);
-        return sortResults;
+        SortedMap<Date, List<String>> sortResultsByDate = LogSortUtil.sortSearchMapByDate(sortResults);
+        
+        return sortResultsByDate;
     }
 
     /**

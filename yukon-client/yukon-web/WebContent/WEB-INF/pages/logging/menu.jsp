@@ -1,6 +1,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <cti:standardPage title="Log File Menu" module="blank">
 <cti:standardMenu/>
 <cti:breadCrumbs>
@@ -26,7 +27,14 @@
 
 <!-- Display and link to the local log files -->
 <c:forEach var="logSection" items="${localLogList}">
-	<b id="logLable" class="logLable">${logSection.key}</b><br/>
+	<c:choose>
+		<c:when test="${oldStateSort == 'date'}">
+			<b id="logLable" class="logLable"><fmt:formatDate value="${logSection.key}" type="date"/></b><br/> 
+		</c:when>
+		<c:otherwise>
+			<b id="logLable" class="logLable">${logSection.key}</b><br/>
+		</c:otherwise>
+	</c:choose>
 	<c:forEach var="fileName" items="${logSection.value}">
 		&nbsp&nbsp&nbsp<a href="tail?file=${file}${fileName}" >${fileName}</a><br/>
 	</c:forEach>
