@@ -177,7 +177,7 @@ public enum YukonRoleProperty {
     RESIDENTIAL_WEB_LABEL_THERM_MANUAL(RESIDENTIAL_CUSTOMER, com.cannontech.roles.consumer.ResidentialCustomerRole.WEB_LABEL_THERM_MANUAL, stringType()),
     RESIDENTIAL_WEB_DESC_ENROLLMENT(RESIDENTIAL_CUSTOMER, com.cannontech.roles.consumer.ResidentialCustomerRole.WEB_DESC_ENROLLMENT, stringType()),
     RESIDENTIAL_CONTACTS_ACCESS(RESIDENTIAL_CUSTOMER, com.cannontech.roles.consumer.ResidentialCustomerRole.CONTACTS_ACCESS, booleanType()),
-    RESIDENTIAL_SIGN_OUT_ENABLED(RESIDENTIAL_CUSTOMER, com.cannontech.roles.consumer.ResidentialCustomerRole.SIGN_OUT_ENABLED, stringType()),
+    RESIDENTIAL_SIGN_OUT_ENABLED(RESIDENTIAL_CUSTOMER, com.cannontech.roles.consumer.ResidentialCustomerRole.SIGN_OUT_ENABLED, booleanType()),
     RESIDENTIAL_CREATE_LOGIN_FOR_ACCOUNT(RESIDENTIAL_CUSTOMER, com.cannontech.roles.consumer.ResidentialCustomerRole.CREATE_LOGIN_FOR_ACCOUNT, stringType()),
     RESIDENTIAL_OPT_OUT_DEVICE_SELECTION(RESIDENTIAL_CUSTOMER, com.cannontech.roles.consumer.ResidentialCustomerRole.OPT_OUT_DEVICE_SELECTION, booleanType()),
     RESIDENTIAL_ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY(RESIDENTIAL_CUSTOMER, com.cannontech.roles.consumer.ResidentialCustomerRole.ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY, stringType()),
