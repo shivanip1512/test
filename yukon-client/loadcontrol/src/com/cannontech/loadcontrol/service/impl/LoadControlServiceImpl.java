@@ -276,7 +276,7 @@ public class LoadControlServiceImpl implements LoadControlService {
     }
     
     // CONTROL HISTORY BY PROGRAM NAME
-    public List<ProgramControlHistory> getControlHistoryByProgramName(String programName, Date fromTime, Date throughTime, LiteYukonUser user) throws NotFoundException {
+    public List<ProgramControlHistory> getControlHistoryByProgramName(String programName, Date fromTime, Date throughTime, LiteYukonUser user) throws NotFoundException, NotAuthorizedException {
         
     	int programId = loadControlProgramDao.getProgramIdByProgramName(programName);
     	validateProgramIsVisibleToUser(programName, programId, user);

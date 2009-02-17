@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.service.LoadControlService;
@@ -56,6 +57,10 @@ public class ListScenarioProgramsRequestEndpoint {
             scenarioProgramStartingGears = loadControlService.getScenarioProgramStartingGearsByScenarioName(scenarioName, user);
         } catch (NotFoundException e) {
             Element fe = XMLFailureGenerator.generateFailure(listScenarioProgramsRequest, e, "InvalidScenarioName", "No scenario named: " + scenarioName);
+            resp.addContent(fe);
+            return resp;
+        } catch (NotAuthorizedException e) {
+            Element fe = XMLFailureGenerator.generateFailure(listScenarioProgramsRequest, e, "UserNotAuthorized", "The scenario is not visible to the user.");
             resp.addContent(fe);
             return resp;
         }
