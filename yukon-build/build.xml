@@ -38,7 +38,7 @@
         </exec>
     </target>
 
-        <target name="init" depends="check-setupcustomtasks,setupcustomtasks,loadpropertiesfile,cleanlabels">
+    <target name="init" depends="check-setupcustomtasks,setupcustomtasks,loadpropertiesfile,cleanlabels">
 	
 	    <condition property="internal.label" value="${internal}-${label}" else="${internal}">
     	    <isset property="label"/>
@@ -46,6 +46,10 @@
     
     	<property name="yukon.build.label" value="${external}"/>
     	<property name="yukon.build.details" value="BUILD ${internal.label} ${currenttime} ${env.COMPUTERNAME}"/>
+		
+		<exec failonerror="false" dir="${basedir}/yukon-client/build" executable="cmd.exe">
+            <arg line="/c set" />
+        </exec>
 
 	</target>
     
