@@ -21,6 +21,7 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.CtiUtilities;
@@ -33,7 +34,6 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -62,7 +62,7 @@ import com.cannontech.web.security.annotation.CheckRole;
 @CheckRole(YukonRole.CONSUMER_INFO)
 @Controller
 public class ThermostatOperatorScheduleController 
-	extends AbtractThermostatOperatorScheduleController {
+	extends AbstractThermostatOperatorScheduleController {
 
     private InventoryDao inventoryDao;
     private ThermostatScheduleDao thermostatScheduleDao;
@@ -81,20 +81,12 @@ public class ThermostatOperatorScheduleController
         String thermostatIds = ServletRequestUtils.getStringParameter(request,
                                                                       "thermostatIds");
 
-        // Override the toString method to get a comma separated list with no
-        // leading or trailing brackets
-        @SuppressWarnings("serial")
-        List<Integer> idList = new ArrayList<Integer>() {
-            @Override
-            public String toString() {
-                return super.toString().replaceAll("[\\[|\\]]", "");
-            }
+        List<Integer> idList = new ArrayList<Integer>();
 
-        };
-
-        // If thermostatIds exists, split and create Integer list
+        // If thermostatIds exists, remove brackets, split and create Integer list
+        thermostatIds = thermostatIds.replaceAll("[\\[|\\]]", "");
         if (!StringUtils.isBlank(thermostatIds)) {
-        	List<Integer> tempIdList = ServletUtil.getIntegerListFromString(thermostatIds);
+			List<Integer> tempIdList = ServletUtil.getIntegerListFromString(thermostatIds);
         	idList.addAll(tempIdList);
         }
 
@@ -248,6 +240,7 @@ public class ThermostatOperatorScheduleController
     		@ModelAttribute("thermostatIds") List<Integer> thermostatIds,
     		String timeOfWeek, String scheduleMode, String temperatureUnit, Integer scheduleId,
     		String scheduleName, String saveAction, YukonUserContext yukonUserContext, 
+    		@RequestParam(value="schedules", required=true) String scheduleString,
     		HttpServletRequest request, ModelMap map) throws ServletRequestBindingException {
     	
     	this.checkInventoryAgainstAccount(thermostatIds, account);
@@ -258,10 +251,7 @@ public class ThermostatOperatorScheduleController
     	}
     	map.addAttribute("saveAction", saveAction);
     	map.addAttribute("scheduleId", scheduleId);
-    	
-    	String scheduleString = ServletRequestUtils.getRequiredStringParameter(request, "schedules");
     	map.addAttribute("schedules", scheduleString);
-    	
     	map.addAttribute("timeOfWeek", timeOfWeek);
     	map.addAttribute("scheduleMode", scheduleMode);
     	map.addAttribute("temperatureUnit", temperatureUnit);
@@ -271,8 +261,9 @@ public class ThermostatOperatorScheduleController
     	// There is only 1 thermostat on this page
         int thermostatId = thermostatIds.get(0);
     	int inventoryNumber = this.getInventoryNumber(request, thermostatId);
+    	map.addAttribute("InvNo", inventoryNumber);
     	
-    	return "redirect:/operator/Consumer/ThermostatScheduleConfirm.jsp?InvNo=" + inventoryNumber;
+    	return "redirect:/operator/Consumer/ThermostatScheduleConfirm.jsp";
     	
     }
     
@@ -281,11 +272,11 @@ public class ThermostatOperatorScheduleController
             @ModelAttribute("thermostatIds") List<Integer> thermostatIds,
             String timeOfWeek, String scheduleMode, String temperatureUnit, Integer scheduleId,
             String scheduleName, String saveAction, YukonUserContext yukonUserContext, 
-            HttpServletRequest request, ModelMap map) throws ServletRequestBindingException {
+            @RequestParam(value="schedules", required=true) String scheduleString,
+            ModelMap map) throws ServletRequestBindingException {
     	
     	
     	// Create the confirm schedule text
-    	String scheduleString = ServletRequestUtils.getRequiredStringParameter(request, "schedules");
     	boolean isFahrenheit = CtiUtilities.FAHRENHEIT_CHARACTER.equalsIgnoreCase(temperatureUnit);
     	ThermostatSchedule schedule = this.getScheduleForJSON(scheduleString, isFahrenheit);
     	
@@ -355,13 +346,12 @@ public class ThermostatOperatorScheduleController
     public String save(@ModelAttribute("customerAccount") CustomerAccount account,
             @ModelAttribute("thermostatIds") List<Integer> thermostatIds,
             String timeOfWeek, String scheduleMode, String temperatureUnit, Integer scheduleId,
-            String scheduleName, String saveAction, YukonUserContext yukonUserContext, 
+            String scheduleName, String saveAction, YukonUserContext yukonUserContext,
+            @RequestParam(value="schedules", required=true) String scheduleString,
             HttpServletRequest request, ModelMap map) throws ServletRequestBindingException {
 
     	this.checkInventoryAgainstAccount(thermostatIds, account);
         
-        String scheduleString = ServletRequestUtils.getRequiredStringParameter(request, "schedules");
-
         boolean sendAndSave = "saveApply".equals(saveAction);
 
         boolean isFahrenheit = CtiUtilities.FAHRENHEIT_CHARACTER.equalsIgnoreCase(temperatureUnit);
@@ -378,8 +368,6 @@ public class ThermostatOperatorScheduleController
 
         TimeOfWeek scheduleTimeOfWeek = TimeOfWeek.valueOf(timeOfWeek);
         ThermostatScheduleMode thermostatScheduleMode = ThermostatScheduleMode.valueOf(scheduleMode);
-
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 
         ThermostatScheduleUpdateResult message = null;
 
@@ -418,14 +406,14 @@ public class ThermostatOperatorScheduleController
                                                          scheduleTimeOfWeek,
                                                          thermostatScheduleMode,
                                                          applyToAll,
-                                                         userContext);
+                                                         yukonUserContext);
 
                 // Save changes to schedule
                 thermostatService.updateSchedule(account,
                                                  schedule,
                                                  scheduleTimeOfWeek,
                                                  applyToAll ,
-                                                 userContext);
+                                                 yukonUserContext);
                 // If there are multiple thermostats to send schedule to and any
                 // of the save/sends fail, the whole thing is failed
                 if (message.isFailed()) {
@@ -442,7 +430,7 @@ public class ThermostatOperatorScheduleController
                                                  schedule,
                                                  scheduleTimeOfWeek,
                                                  applyToAll,
-                                                 userContext);
+                                                 yukonUserContext);
 
                 message = ThermostatScheduleUpdateResult.CONSUMER_SAVE_SCHEDULE_SUCCESS;
             }
@@ -547,9 +535,10 @@ public class ThermostatOperatorScheduleController
     	// There is only 1 thermostat on this page
     	int thermostatId = thermostatIds.get(0);
     	int inventoryNumber = this.getInventoryNumber(request, thermostatId);
+    	map.addAttribute("InvNo", inventoryNumber);
     	
     	map.addAttribute("scheduleId", scheduleId);
-    	return "redirect:/operator/Consumer/SavedSchedules.jsp?InvNo=" + inventoryNumber;
+    	return "redirect:/operator/Consumer/SavedSchedules.jsp";
     }
     
     @RequestMapping(value = "/operator/thermostat/schedule/saved", method = RequestMethod.POST, params = "view")
@@ -562,9 +551,10 @@ public class ThermostatOperatorScheduleController
     	// There is only 1 thermostat on this page
     	int thermostatId = thermostatIds.get(0);
     	int inventoryNumber = this.getInventoryNumber(request, thermostatId);
+    	map.addAttribute("InvNo", inventoryNumber);
     	
     	map.addAttribute("scheduleId", scheduleId);
-    	return "redirect:/operator/Consumer/ThermSchedule.jsp?InvNo=" + inventoryNumber;
+    	return "redirect:/operator/Consumer/ThermSchedule.jsp";
     }
 
     @Autowired

@@ -18,10 +18,10 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestBindingException;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.CustomerDao;
@@ -31,7 +31,6 @@ import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.HardwareType;
@@ -151,7 +150,8 @@ public class ThermostatScheduleController extends AbstractThermostatController {
             @ModelAttribute("thermostatIds") List<Integer> thermostatIds,
             String timeOfWeek, String scheduleMode, String temperatureUnit, Integer scheduleId,
             String scheduleName, String saveAction, YukonUserContext yukonUserContext, 
-            HttpServletRequest request, ModelMap map) throws ServletRequestBindingException {
+            @RequestParam(value="schedules", required=true) String scheduleString,
+            ModelMap map) throws ServletRequestBindingException {
     	
     	boolean sendAndSave = "saveApply".equals(saveAction);
     	if(!sendAndSave) {
@@ -161,7 +161,6 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     	map.addAttribute("saveAction", saveAction);
     	
     	// Create the confirm schedule text
-    	String scheduleString = ServletRequestUtils.getRequiredStringParameter(request, "schedules");
     	boolean isFahrenheit = CtiUtilities.FAHRENHEIT_CHARACTER.equalsIgnoreCase(temperatureUnit);
     	ThermostatSchedule schedule = this.getScheduleForJSON(scheduleString, isFahrenheit);
     	
@@ -231,14 +230,13 @@ public class ThermostatScheduleController extends AbstractThermostatController {
 			@ModelAttribute("thermostatIds") List<Integer> thermostatIds,
 			String timeOfWeek, String scheduleMode, String temperatureUnit, Integer scheduleId,
 			String scheduleName, String saveAction, YukonUserContext yukonUserContext, 
-			HttpServletRequest request, ModelMap map) throws ServletRequestBindingException {
+			@RequestParam(value="schedules", required=true) String scheduleString,
+			ModelMap map) throws ServletRequestBindingException {
 
         LiteYukonUser user = yukonUserContext.getYukonUser();
         accountCheckerService.checkThermostatSchedule(user, scheduleId);
         accountCheckerService.checkInventory(user, thermostatIds.toArray(new Integer[thermostatIds.size()]));
         
-        String scheduleString = ServletRequestUtils.getRequiredStringParameter(request, "schedules");
-
         boolean sendAndSave = "saveApply".equals(saveAction);
 
         boolean isFahrenheit = CtiUtilities.FAHRENHEIT_CHARACTER.equalsIgnoreCase(temperatureUnit);
@@ -255,8 +253,6 @@ public class ThermostatScheduleController extends AbstractThermostatController {
 
         TimeOfWeek scheduleTimeOfWeek = TimeOfWeek.valueOf(timeOfWeek);
         ThermostatScheduleMode thermostatScheduleMode = ThermostatScheduleMode.valueOf(scheduleMode);
-
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 
         ThermostatScheduleUpdateResult message = null;
 
@@ -295,14 +291,14 @@ public class ThermostatScheduleController extends AbstractThermostatController {
                                                          scheduleTimeOfWeek,
                                                          thermostatScheduleMode,
                                                          applyToAll,
-                                                         userContext);
+                                                         yukonUserContext);
 
                 // Save changes to schedule
                 thermostatService.updateSchedule(account,
                                                  schedule,
                                                  scheduleTimeOfWeek,
                                                  applyToAll ,
-                                                 userContext);
+                                                 yukonUserContext);
                 // If there are multiple thermostats to send schedule to and any
                 // of the save/sends fail, the whole thing is failed
                 if (message.isFailed()) {
@@ -319,7 +315,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
                                                  schedule,
                                                  scheduleTimeOfWeek,
                                                  applyToAll,
-                                                 userContext);
+                                                 yukonUserContext);
 
                 message = ThermostatScheduleUpdateResult.CONSUMER_SAVE_SCHEDULE_SUCCESS;
             }
@@ -496,30 +492,20 @@ public class ThermostatScheduleController extends AbstractThermostatController {
                 JSONObject timeTemp = new JSONObject();
                 timeTemp.put("time", time);
                 
-                if(!isFahrenheit) {
-                	if(coolTemperature != null) {
-	                	coolTemperature = 
-	                		(int) CtiUtilities.convertTemperature(
-	                			coolTemperature,
-								CtiUtilities.FAHRENHEIT_CHARACTER,
-								CtiUtilities.CELSIUS_CHARACTER);
-                	}
-                	if(heatTemperature != null) {
-	                	heatTemperature = 
-	                		(int) CtiUtilities.convertTemperature(
-	                			heatTemperature,
-	                			CtiUtilities.FAHRENHEIT_CHARACTER,
-	                			CtiUtilities.CELSIUS_CHARACTER);
-                	}
-                }
-                
-                // Set temp to default farenheit if null
                 if(coolTemperature == null) {
-                	coolTemperature = (isFahrenheit)?72:22;
+                	coolTemperature = 72;
                 }
                 if(heatTemperature == null) {
-                	heatTemperature = (isFahrenheit)?72:22;;
+                	heatTemperature = 72;
                 }
+                
+                String tempUnit = (isFahrenheit) ? CtiUtilities.FAHRENHEIT_CHARACTER : 
+                								   CtiUtilities.CELSIUS_CHARACTER;
+                
+                coolTemperature = (int) CtiUtilities.convertTemperature(
+                		coolTemperature, CtiUtilities.FAHRENHEIT_CHARACTER, tempUnit);
+                heatTemperature = (int) CtiUtilities.convertTemperature(
+                		heatTemperature, CtiUtilities.FAHRENHEIT_CHARACTER, tempUnit);
 
                 timeTemp.put("coolTemp", coolTemperature);
                 timeTemp.put("heatTemp", heatTemperature);

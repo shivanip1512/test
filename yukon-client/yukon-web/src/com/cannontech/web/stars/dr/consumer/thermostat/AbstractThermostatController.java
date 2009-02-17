@@ -28,16 +28,10 @@ public abstract class AbstractThermostatController extends
 
         // Override the toString method to get a comma separated list with no
         // leading or trailing brackets
-        @SuppressWarnings("serial")
-        List<Integer> idList = new ArrayList<Integer>() {
-            @Override
-            public String toString() {
-                return super.toString().replaceAll("[\\[|\\]]", "");
-            }
+        List<Integer> idList = new ArrayList<Integer>();
 
-        };
-
-        // If thermostatIds exists, split and create Integer list
+        // If thermostatIds exists, remove brackets, split and create Integer list
+        thermostatIds = thermostatIds.replaceAll("[\\[|\\]]", "");
         if (!StringUtils.isBlank(thermostatIds)) {
         	List<Integer> tempIdList = ServletUtil.getIntegerListFromString(thermostatIds);
         	idList.addAll(tempIdList);

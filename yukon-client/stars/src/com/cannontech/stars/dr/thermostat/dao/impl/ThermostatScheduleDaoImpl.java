@@ -74,12 +74,12 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao, Initial
     }
 
     @Override
+    @Transactional
     public ThermostatSchedule getEnergyCompanyDefaultSchedule(int accountId,
             HardwareType type) {
 
         LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(accountId);
-        return this.getEnergyCompanyDefaultSchedule(energyCompany, type);
-
+        return this.getCopyOfEnergyCompanyDefaultSchedule(energyCompany, type);
         
     }
     

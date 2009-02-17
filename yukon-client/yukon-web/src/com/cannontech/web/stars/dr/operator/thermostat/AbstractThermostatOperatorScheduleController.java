@@ -22,7 +22,7 @@ import com.cannontech.web.security.annotation.CheckRole;
  */
 @CheckRole(YukonRole.CONSUMER_INFO)
 @Controller
-public class AbtractThermostatOperatorScheduleController {
+public class AbstractThermostatOperatorScheduleController {
 
 
     /**
@@ -103,31 +103,21 @@ public class AbtractThermostatOperatorScheduleController {
                 JSONObject timeTemp = new JSONObject();
                 timeTemp.put("time", time);
                 
-                if(!isFahrenheit) {
-                	if(coolTemperature != null) {
-	                	coolTemperature = 
-	                		(int) CtiUtilities.convertTemperature(
-	                			coolTemperature,
-								CtiUtilities.FAHRENHEIT_CHARACTER,
-								CtiUtilities.CELSIUS_CHARACTER);
-                	}
-                	if(heatTemperature != null) {
-	                	heatTemperature = 
-	                		(int) CtiUtilities.convertTemperature(
-	                			heatTemperature,
-	                			CtiUtilities.FAHRENHEIT_CHARACTER,
-	                			CtiUtilities.CELSIUS_CHARACTER);
-                	}
-                }
-                
-                // Set temp to default farenheit if null
                 if(coolTemperature == null) {
-                	coolTemperature = (isFahrenheit)?72:22;
+                	coolTemperature = 72;
                 }
                 if(heatTemperature == null) {
-                	heatTemperature = (isFahrenheit)?72:22;
+                	heatTemperature = 72;
                 }
-
+                
+                String tempUnit = (isFahrenheit) ? CtiUtilities.FAHRENHEIT_CHARACTER : 
+                								   CtiUtilities.CELSIUS_CHARACTER;
+                
+                coolTemperature = (int) CtiUtilities.convertTemperature(
+                		coolTemperature, CtiUtilities.FAHRENHEIT_CHARACTER, tempUnit);
+                heatTemperature = (int) CtiUtilities.convertTemperature(
+                		heatTemperature, CtiUtilities.FAHRENHEIT_CHARACTER, tempUnit);
+                
                 timeTemp.put("coolTemp", coolTemperature);
                 timeTemp.put("heatTemp", heatTemperature);
 

@@ -2,17 +2,15 @@ package com.cannontech.web.stars.dr.operator.thermostat;
 
 import java.util.Locale;
 
-import javax.servlet.http.HttpServletRequest;
-
 import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestBindingException;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -32,14 +30,13 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 @CheckRole(YukonRole.CONSUMER_INFO)
 @CheckRoleProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES_THERMOSTAT)
 @Controller
-public class ThermostatAdminScheduleController extends AbtractThermostatOperatorScheduleController {
+public class ThermostatAdminScheduleController extends AbstractThermostatOperatorScheduleController {
 
     private ThermostatScheduleDao thermostatScheduleDao;
     private StarsDatabaseCache starsDatabaseCache;
 
     @RequestMapping(value = "/admin/thermostat/schedule/view", method = RequestMethod.GET)
-    public String view(String type, YukonUserContext yukonUserContext, ModelMap map, 
-            HttpServletRequest request) {
+    public String view(String type, YukonUserContext yukonUserContext, ModelMap map) {
 
     	LiteStarsEnergyCompany energyCompany = 
     		starsDatabaseCache.getEnergyCompanyByUser(yukonUserContext.getYukonUser());
@@ -68,15 +65,14 @@ public class ThermostatAdminScheduleController extends AbtractThermostatOperator
 
     @RequestMapping(value = "/admin/thermostat/schedule/save", method = RequestMethod.POST)
     public String save(String type, String timeOfWeek, String scheduleMode, String temperatureUnit, 
-    		Integer scheduleId, YukonUserContext yukonUserContext, HttpServletRequest request, 
-    		ModelMap map) 
+    		Integer scheduleId, 
+    		@RequestParam(value="schedules", required=true) String scheduleString,
+    		YukonUserContext yukonUserContext, ModelMap map) 
     	throws ServletRequestBindingException {
 
     	LiteStarsEnergyCompany energyCompany = 
     		starsDatabaseCache.getEnergyCompanyByUser(yukonUserContext.getYukonUser());
         
-        String scheduleString = ServletRequestUtils.getRequiredStringParameter(request, "schedules");
-
         boolean isFahrenheit = CtiUtilities.FAHRENHEIT_CHARACTER.equalsIgnoreCase(temperatureUnit);
 
         // Create schedule from submitted JSON string
@@ -94,7 +90,8 @@ public class ThermostatAdminScheduleController extends AbtractThermostatOperator
         // Save changes to schedule
         thermostatScheduleDao.saveDefaultSchedule(newSchedule, energyCompany);
 
-        return "redirect:/operator/Admin/ThermSchedule.jsp?type=" + type;
+        map.addAttribute("type", type);
+        return "redirect:/operator/Admin/ThermSchedule.jsp";
     }
     
     @Autowired
