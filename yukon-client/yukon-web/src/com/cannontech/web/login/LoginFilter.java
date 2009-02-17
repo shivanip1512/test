@@ -81,6 +81,8 @@ public class LoginFilter implements Filter {
 
         final HttpServletRequest request = (HttpServletRequest) req;
         final HttpServletResponse response = (HttpServletResponse) resp;
+        //to support accented chars in request params
+        req.setCharacterEncoding("UTF-8");
         
         boolean excludedRequest = isExcludedRequest(request, excludedFilePaths);
         if (excludedRequest) {
