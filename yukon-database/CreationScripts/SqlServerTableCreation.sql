@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     2/13/2009 2:09:27 PM                         */
+/* Created on:     2/18/2009 4:24:31 PM                         */
 /*==============================================================*/
 
 
@@ -11958,19 +11958,20 @@ INSERT INTO YukonRoleProperty VALUES(-20118,-201,'Create Trend','false','Control
 INSERT INTO YukonRoleProperty VALUES(-20119,-201,'Admin Change Login Password','true','Controls access to change a customer login password'); 
 
 /* Operator Consumer Info Role Properties */
-insert into YukonRoleProperty values(-20151,-201,'New Account Wizard','true','Controls whether to enable the new account wizard');
-insert into YukonRoleProperty values(-20152,-201,'Import Customer Account','(none)','Controls whether to enable the customer account importing feature');
-insert into YukonRoleProperty values(-20153,-201,'Inventory Checking','true','Controls when to perform inventory checking while creating or updating hardware information');
-insert into YukonRoleProperty values(-20154,-201,'Automatic Configuration','false','Controls whether to automatically send out config command when creating hardware or changing program enrollment');
-insert into YukonRoleProperty values(-20155,-201,'Order Number Auto Generation','false','Controls whether the order number is automatically generated or entered by user');
-insert into YukonRoleProperty values(-20156,-201,'Call Number Auto Generation','false','Controls whether the call number is automatically generated or entered by user');
-insert into YukonRoleProperty values(-20157,-201,'Opt Out Rules','(none)','Defines the rules for opting out.');
-insert into YukonRoleProperty values(-20158,-201,'Disable Switch Sending','false','Disables the ability to send configs and connects/disconnects to switches.');
-insert into YukonRoleProperty values(-20159,-201,'Switches to Meter','(none)','Allow switches to be assigned under meters for an account.');
-insert into YukonRoleProperty values(-20160,-201,'Create Login With Account','false','Require that a login is created with every new customer account.');
-insert into YukonRoleProperty values(-20161,-201,'Account Number Length','(none)','Specifies the number of account number characters to consider for comparison purposes during the customer account import process.');
-insert into YukonRoleProperty values(-20162,-201,'Rotation Digit Length','(none)','Specifies the number of rotation digit characters to ignore during the customer account import process.');
-insert into YukonRoleProperty values(-20163,-201,'Allow Account Editing','true','Can be used to disable the ability to edit and delete customer account information.');
+INSERT INTO YukonRoleProperty VALUES(-20151,-201,'New Account Wizard','true','Controls whether to enable the new account wizard');
+INSERT INTO YukonRoleProperty VALUES(-20152,-201,'Import Customer Account','(none)','Controls whether to enable the customer account importing feature');
+INSERT INTO YukonRoleProperty VALUES(-20153,-201,'Inventory Checking','true','Controls when to perform inventory checking while creating or updating hardware information');
+INSERT INTO YukonRoleProperty VALUES(-20154,-201,'Automatic Configuration','false','Controls whether to automatically send out config command when creating hardware or changing program enrollment');
+INSERT INTO YukonRoleProperty VALUES(-20155,-201,'Order Number Auto Generation','false','Controls whether the order number is automatically generated or entered by user');
+INSERT INTO YukonRoleProperty VALUES(-20156,-201,'Call Number Auto Generation','false','Controls whether the call number is automatically generated or entered by user');
+INSERT INTO YukonRoleProperty VALUES(-20157,-201,'Opt Out Rules','(none)','Defines the rules for opting out.');
+INSERT INTO YukonRoleProperty VALUES(-20158,-201,'Disable Switch Sending','false','Disables the ability to send configs and connects/disconnects to switches.');
+INSERT INTO YukonRoleProperty VALUES(-20159,-201,'Switches to Meter','(none)','Allow switches to be assigned under meters for an account.');
+INSERT INTO YukonRoleProperty VALUES(-20160,-201,'Create Login With Account','false','Require that a login is created with every new customer account.');
+INSERT INTO YukonRoleProperty VALUES(-20161,-201,'Account Number Length','(none)','Specifies the number of account number characters to consider for comparison purposes during the customer account import process.');
+INSERT INTO YukonRoleProperty VALUES(-20162,-201,'Rotation Digit Length','(none)','Specifies the number of rotation digit characters to ignore during the customer account import process.');
+INSERT INTO YukonRoleProperty VALUES(-20163,-201,'Allow Account Editing','true','Can be used to disable the ability to edit and delete customer account information.');
+INSERT INTO YukonRoleProperty VALUES(-20164,-201,'Enroll Multiple Programs per Category','false','Enables you to enroll in multiple programs within an appliance category.');
 
 /* Operator Administrator Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-20000,-200,'Config Energy Company','false','Controls whether to allow configuring the energy company');

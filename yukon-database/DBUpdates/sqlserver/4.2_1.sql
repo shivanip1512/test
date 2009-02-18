@@ -76,6 +76,10 @@ ALTER TABLE OptOutEventLog
    DROP CONSTRAINT FK_OptOutEvent_OptOutEventLog;
 /* End YUK-6966 */
 
+/* Start YUK-6993 */
+INSERT INTO YukonRoleProperty VALUES(-20164,-201,'Enroll Multiple Programs per Category','false','Enables you to enroll in multiple programs within an appliance category.');
+/* End YUK-6993 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
