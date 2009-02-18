@@ -2,12 +2,11 @@ package com.cannontech.common.util;
 
 import java.io.File;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -47,7 +46,7 @@ public final class LogSortUtil {
                 mapResults.put(file.getName(), "Directories");
             }else{
             
-                /* Uses a Pattern object to extract the wanted piece of the File Object's Name
+                /* Uses a Pattern String to extract the wanted piece of the File String's Name
                  * that will be used later on as the log groups header.
                  */
                 String logFile = file.getName();
@@ -105,18 +104,6 @@ public final class LogSortUtil {
     }
     
     /**
-     * Overloaded function of SortedMap
-     * 
-     * @param searchMap
-     * @return
-     * 
-     * This function takes in a searchMap and returns a sorted list 
-     */
-    public static SortedMap<String, List<String>> sortSearchMap(Map<String, String> searchMap){
-       return sortSearchMap(searchMap, 0);
-    }
-    
-    /**
      * This function is used to take a Map<nameOfString, sortKey> 
      * and return the strings in sorted order with a sortKey as a header
      * 
@@ -124,8 +111,8 @@ public final class LogSortUtil {
      * @param charTruncate
      * @return
      */
-    public static SortedMap<String, List<String>> sortSearchMap(Map<String, String> searchMap, int charTruncate){
-        SortedMap<String, List<String>> sortResults = new TreeMap<String, List<String>>();
+    public static SortedMap<String, List<String>> sortSearchMap(Map<String, String> searchMap, int charTruncate, Comparator<String> comparator){
+    	SortedMap<String, List<String>> sortResults = new TreeMap<String, List<String>>(comparator);
         List<Map.Entry<String, String>> sortedList = new ArrayList<Map.Entry<String, String>>(searchMap.entrySet());
 
         for(Map.Entry<String, String> entry : sortedList){
@@ -158,29 +145,4 @@ public final class LogSortUtil {
         
         return sortResults;
     }
-    
-	public static SortedMap<Date, List<String>> sortSearchMapByDate(SortedMap<String, List<String>> sortResults){
-    	SortedMap<Date, List<String>> sortResultsByDate = new TreeMap<Date, List<String>>(Collections.reverseOrder());
-        
-        Iterator<String> iterator = sortResults.keySet().iterator();
-        while(iterator.hasNext()) {
-        	String key = iterator.next();
-        	System.out.println("key: " + key);
-        	DateFormat df = DateFormat.getDateInstance();
-        	
-        	Date date;
-			try {
-				date = df.parse(key);
-				System.out.println("Date: " + date);
-				if(sortResultsByDate.get(date) == null){
-	                sortResultsByDate.put(date, sortResults.get(key));
-	            }
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
-        }
-        
-        return sortResultsByDate;
-    }
-    
 }

@@ -1,23 +1,28 @@
 package com.cannontech.web.logging;
 
 import java.io.File;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.Validate;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.HtmlUtils;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.LogSortUtil;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -37,6 +42,7 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 public class LogMenuController extends LogController {
 
     private PoolManager poolManager;
+    private static final Logger log = YukonLogManager.getLogger(LogMenuController.class);
 
     /**
      * Stores all log filenames from local and remote directories in two lists
@@ -69,8 +75,7 @@ public class LogMenuController extends LogController {
         // "reverse", false);
         List<File> localLogList = new ArrayList<File>();
         List<String> dirSet = null;
-        SortedMap<String, List<String>> resultSetAlphabet = new TreeMap<String, List<String>>();;
-        SortedMap<Date, List<String>> resultSetDate = new TreeMap<Date, List<String>>();;
+        Map<String, List<String>> resultSet = Collections.emptyMap();
 
         // lists to hold log file names
         localLogList = populateFileList(logDir);
@@ -78,14 +83,14 @@ public class LogMenuController extends LogController {
         if (!localLogList.isEmpty()) {
             // Checks to see how the user wants the information setup
             if (sortType.equalsIgnoreCase("date")) {
-                resultSetDate = this.sortByDate(localLogList);
+            	resultSet = this.sortByDate(localLogList);
             } else {
-                resultSetAlphabet = this.sortByAlphabet(localLogList);
-                
+            	resultSet = this.sortByAlphabet(localLogList);
+            	
                 // Separates the directories from the logFiles
-                if (resultSetAlphabet.containsKey("Directories")) {
-                    dirSet = new ArrayList<String>(resultSetAlphabet.get("Directories"));
-                    resultSetAlphabet.remove("Directories");
+            	if (resultSet.containsKey("Directories")) {
+                    dirSet = new ArrayList<String>(resultSet.get("Directories"));
+                    resultSet.remove("Directories");
                 }
             }
         }
@@ -95,12 +100,7 @@ public class LogMenuController extends LogController {
         mav.addObject("dirFile", logDir);
         mav.addObject("file", HtmlUtils.htmlEscape(getFileNameParameter(request)));
         mav.addObject("dirList", dirSet);
-        
-        if (sortType.equalsIgnoreCase("date")) {
-        	mav.addObject("localLogList", resultSetDate);
-        } else {
-        	mav.addObject("localLogList", resultSetAlphabet);
-        }
+        mav.addObject("localLogList", resultSet);
 
         return mav;
     }
@@ -136,7 +136,7 @@ public class LogMenuController extends LogController {
     private SortedMap<String, List<String>> sortByAlphabet(List<File> localLogList) throws Exception {
         Pattern logPattern = Pattern.compile("^(.*)\\.log$");
         Map<String, String> searchMap = LogSortUtil.returnSearchMap(localLogList,logPattern);
-        SortedMap<String, List<String>> sortResults = LogSortUtil.sortSearchMap(searchMap, 2);
+        SortedMap<String, List<String>> sortResults = LogSortUtil.sortSearchMap(searchMap, 2, null);
         return sortResults;
     }
 
@@ -145,14 +145,25 @@ public class LogMenuController extends LogController {
      * @return
      * @throws Exception
      */
-    private SortedMap<Date, List<String>> sortByDate(List<File> localLogList)
+    private SortedMap<String, List<String>> sortByDate(List<File> localLogList)
             throws Exception {
-
     	Map<String, String> searchMap = LogSortUtil.returnSearchMap(localLogList);
-        SortedMap<String, List<String>> sortResults = LogSortUtil.sortSearchMap(searchMap);
-        SortedMap<Date, List<String>> sortResultsByDate = LogSortUtil.sortSearchMapByDate(sortResults);
-        
-        return sortResultsByDate;
+    	SortedMap<String, List<String>> sortResults = LogSortUtil.sortSearchMap(searchMap, 0, 
+    			new Comparator<String>() {
+
+    		@Override
+    		public int compare(String o1, String o2) {
+    			try {
+    				DateFormat df = DateFormat.getDateInstance();
+    				Date d1 = df.parse(o1);
+    				Date d2 = df.parse(o2);
+    				return d2.compareTo(d1);
+    			} catch (ParseException e) {
+    				log.error("Error in parsing the string to a date.", e );
+    				return 0;
+    			}
+    		}});
+    		return sortResults;
     }
 
     /**
