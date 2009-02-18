@@ -89,16 +89,7 @@ public class ReferrerPageFilter implements Filter {
             String urlParams = request.getQueryString();
             String navUrl = url + ((urlParams != null) ? "?" + urlParams : "");
             
-            
-            String back = request.getParameter("back");
-            if (back != null) {
-                Stack<String> stack = navigator.getHistory();
-                if(!stack.empty()) {
-                    navigator.setNavigationBack(navUrl);
-                }
-            }else {
-                navigator.setNavigation(navUrl);
-            }
+            navigator.setNavigation(navUrl);
             
             session.setAttribute(ServletUtil.NAVIGATE, navigator);
         }

@@ -13,7 +13,8 @@ public class CBCNavigationUtil {
 													"tempmove.jsp",
 													"moved.jsp",
 													"capcontrolcomments.jsp",
-													"cbcPointTimestamps.jsp"
+													"cbcPointTimestamps.jsp",
+													"cbcWizBase.jsf"
 													};
     public CBCNavigationUtil() {
         super();
@@ -42,10 +43,21 @@ public class CBCNavigationUtil {
     
     public static String goBack(HttpSession session) {        
         CtiNavObject navObject = (CtiNavObject) session.getAttribute(ServletUtil.NAVIGATE);        
-        if (navObject.getHistory().size() >= 1)
-            return parseRedirect( navObject.getHistory().pop(), session);
-        else
-            return "";  
+        String str = null;
+        
+        int size = navObject.getHistory().size();
+        for (int i = 0; i < size; ++i) {
+        	str = parseRedirect( navObject.getHistory().pop(), session);
+        	if (str != null) {
+            	break;
+            }
+        }
+        
+        if (str == null) {
+        	str = "";
+        }
+        
+        return str;
     }
 
 	/*
@@ -59,7 +71,7 @@ public class CBCNavigationUtil {
     	for (int i = 0; i < PAGES_TO_SKIP.length; i++) {
 			String pageToSkip = PAGES_TO_SKIP[i];
 			if (string.indexOf(pageToSkip) != -1) {
-				return navObject.getModuleExitPage();
+				return null;
 			}
 		}    		
 		return string;

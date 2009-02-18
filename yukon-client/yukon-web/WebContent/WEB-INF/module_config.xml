@@ -427,20 +427,17 @@
       <option id="view">
         <links>
           <option id="schedules">
-            <script>post('/editor/paoSchedListBase.jsf')</script>
+            <link>/editor/paoSchedListBase.jsf</link>
           </option>
+          <option id="strategies">
+            <link>/editor/strategyList.jsf</link>
+          </option>
+          
           <option id="scheduleassignment">
             <link>/spring/capcontrol/scheduleAssignments/schedule</link>
           </option>
-          <option id="strategies">
-            <script>post('/editor/strategyList.jsf')</script>
-          </option>
-          <option id="oneline">
-	        <requireRoleProperty value="!HIDE_ONELINE"/>
-            <script>showOneLine()</script>
-          </option>
           <option id="recentcontrols">
-            <script>showRecentCmds('tabledata.jsp?type=RC')</script>
+            <link>/capcontrol/tabledata.jsp?type=RC'</link>
           </option>
           <option id="recentcapbankmoves">
        		<link>/capcontrol/movedCapBanks.jsp</link>  
@@ -448,24 +445,25 @@
        	  <option id="specialareas">
        		<link>/capcontrol/specialSubAreas.jsp</link>  
        	  </option>
+
         </links>
       </option>
       <option id="orphans">
         <links>
         <option id="orphanedsubstations">
-            <script>resultsPost('cbc_lastSearch=__cti_oSubstations__')</script>
+            <link>/capcontrol/results.jsp?cbc_lastSearch=__cti_oSubstations__</link>
           </option>
          <option id="orphanedsubstationbuses">
-            <script>resultsPost('cbc_lastSearch=__cti_oSubBuses__')</script>
+            <link>/capcontrol/results.jsp?cbc_lastSearch=__cti_oSubBuses__</link>
           </option>
           <option id="orphanedfeeders">
-            <script>resultsPost('cbc_lastSearch=__cti_oFeeders__')</script>
+            <link>/capcontrol/results.jsp?cbc_lastSearch=__cti_oFeeders__</link>
           </option>
           <option id="orphanedcapbanks">
-            <script>resultsPost('cbc_lastSearch=__cti_oBanks__')</script>
+            <link>/capcontrol/results.jsp?cbc_lastSearch=__cti_oBanks__</link>
           </option>
           <option id="orphanedcbcs">
-            <script>resultsPost('cbc_lastSearch=__cti_oCBCs__')</script>
+            <link>/capcontrol/results.jsp?cbc_lastSearch=__cti_oCBCs__</link>
           </option>
         </links>
       </option>

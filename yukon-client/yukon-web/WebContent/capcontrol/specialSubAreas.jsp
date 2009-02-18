@@ -25,11 +25,11 @@
 <!-- necessary DIV element for the OverLIB popup library -->
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
 
-<cti:standardMenu/>
+<cti:standardMenu menuSelection="view|specialareas"/>
 
 <cti:breadCrumbs>
     <cti:crumbLink url="subareas.jsp" title="Home"/>
-    <cti:crumbLink url="specialSubAreas.jsp" title="Special Substation Areas"/>
+    <cti:crumbLink title="Special Substation Areas"/>
 </cti:breadCrumbs>
 
 <%
@@ -83,10 +83,15 @@ if (allowCtlVal!=null) {
                         <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
                     </a>
                 </cti:checkProperty>
-                <a href="javascript:postMany('areaForm', '<%=CCSessionInfo.STR_CC_AREAID%>', '${thisAreaId}');" class="<%=css%>">
-				<%=area.getPaoName()%></a>
-				</td>
                 
+      			<c:set var="areaIdParamName" value="<%=CCSessionInfo.STR_CC_AREAID%>"/>
+			    <cti:url value="substations.jsp" var="stationLink">
+			       <cti:param name="${areaIdParamName}" value="${thisAreaId}"/>
+			    </cti:url>
+				<a href="${stationLink}" class="<%=css%>">
+					<%=area.getPaoName()%>
+				</a>
+				</td>
                 <td>
                     <capTags:warningImg paoId="${thisAreaId}" type="CBCSPECIALAREA"/>
                 </td>

@@ -38,7 +38,7 @@ function loadPointChartGreyBox(title, url) {
 
 <cti:breadCrumbs>
     <cti:crumbLink url="subareas.jsp" title="Home"/>
-    <cti:crumbLink url="subareas.jsp" title="Substation Areas"/>
+    <cti:crumbLink title="Substation Areas"/>
 </cti:breadCrumbs>
 
 <%
@@ -51,7 +51,7 @@ if (allowCtlVal!=null) {
 }%>    
 
 <cti:titledContainer title="Substation Areas" id="last_titled_container">
-	<form id="areaForm" action="substations.jsp" method="post">
+	<form id="areaForm" action="" method="get">
 		<input type="hidden" name="<%=CCSessionInfo.STR_CC_AREA%>" />
 		<input type="hidden" name="<%=CCSessionInfo.STR_CC_AREAID%>" />
         <div>
@@ -91,8 +91,14 @@ if (allowCtlVal!=null) {
                             <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
                         </a>
                     </cti:checkProperty>
-					<a href="javascript:postMany('areaForm', '<%=CCSessionInfo.STR_CC_AREAID%>', '${thisAreaId}');" class="<%=css%>">
-					<%=area.getPaoName()%></a>
+					
+					<c:set var="areaIdParamName" value="<%=CCSessionInfo.STR_CC_AREAID%>"/>
+				    <cti:url value="substations.jsp" var="stationLink">
+				       <cti:param name="${areaIdParamName}" value="${thisAreaId}"/>
+				    </cti:url>
+					<a href="${stationLink}" class="<%=css%>">
+						<%=area.getPaoName()%>
+					</a>
 				</td>
                 
                 <td>

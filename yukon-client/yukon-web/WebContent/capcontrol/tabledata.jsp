@@ -19,7 +19,7 @@
 <jsp:directive.page
 	import="com.cannontech.database.db.capcontrol.RecentControls" />
 <cti:standardPage title="Results" module="capcontrol">
-	<cti:standardMenu />
+	<cti:standardMenu menuSelection="view|recentcontrols"/>
 	<%@include file="cbc_inc.jspf"%>
 
 
@@ -88,7 +88,7 @@
 %>
     <cti:breadCrumbs>
 	   <cti:crumbLink url="subareas.jsp" title="Home" /> 
-	   <cti:crumbLink url="<%=ServletUtil.getFullURL(request)%>" title="Events" />
+	   <cti:crumbLink title="Events" />
 	</cti:breadCrumbs>
 
 	<div align="left">
@@ -207,6 +207,5 @@ while(paoIDs.hasMoreElements()){
 } 
 
 %>
-	<input type="button" value="Back" onclick="javascript:location.href='<%=returnURL%>'">
 
 </cti:standardPage>

@@ -11,34 +11,13 @@
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
 <%@ page import="com.cannontech.cbc.util.CBCUtils" %>
 <%@ page import="com.cannontech.clientutils.CTILogger" %>
-
+<%@ page import="java.net.URLEncoder" %>
 <%@page import="org.springframework.web.bind.ServletRequestUtils"%>
-<cti:url var="onelineCBCServlet" value="/capcontrol/oneline/OnelineCBCServlet"/>
 
-<cti:standardPage title="Feeders" module="capcontrol">
-
-<%@include file="cbc_inc.jspf"%>
-	
 <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value=""/>
 
-<script type="text/javascript" language="JavaScript">
-    Event.observe(window, 'load', checkPageExpire);
-
-    // These two functions are neccessary since IE does not support css :hover
-    function highLightRow(row) {
-        row = $(row);
-        row.addClassName('hover');
-    }
-    
-    function unHighLightRow(row){
-        row = $(row);
-        row.removeClassName('hover');
-    }
-
-</script> 
-
 <!-- necessary DIV element for the OverLIB popup library -->
-<div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
+
 
 <%
     PaoDao paoDao = YukonSpringHook.getBean("paoDao", PaoDao.class);
@@ -49,9 +28,16 @@
     
     LiteYukonUser user = ServletUtil.getYukonUser(request);
     CapControlCache filterCapControlCache = cacheFactory.createUserAccessFilteredCache(user);
+    
     String currentPageURL = request.getRequestURL().toString();
-	
-    Integer subStationId = ServletRequestUtils.getIntParameter(request, "id", ccSession.getLastSubID());
+    
+    String url = request.getRequestURL().toString();
+    String urlParams = request.getQueryString();
+    String fullURL = url + ((urlParams != null) ? "?" + urlParams : "");
+    
+    fullURL = ServletUtil.urlEncode(fullURL);
+    
+    Integer subStationId = ServletRequestUtils.getIntParameter(request, CCSessionInfo.STR_SUBID);
     if (subStationId == null || subStationId.intValue() <= 0) {
         String location = ServletUtil.createSafeUrl(request, "/capcontrol/subareas.jsp");
         response.sendRedirect(location);
@@ -77,11 +63,15 @@
 		special = true;
 	}
 	Integer areaId;
-    if(!special) {
+	StreamableCapObject area = null;
+	if(!special) {
     	areaId = substation.getParentID();
+    	area = filterCapControlCache.getArea(areaId);
     } else {
     	areaId = substation.getSpecialAreaId();
+    	area = filterCapControlCache.getArea(areaId);
     }
+
 	
     List<SubBus> subBuses = capControlCache.getSubBusesBySubStation(substation);
     Collections.sort(subBuses, CBCUtils.SUB_DISPLAY_COMPARATOR);
@@ -95,8 +85,14 @@
 	boolean hasFeederControl = CBCWebUtils.hasFeederControlRights(session);
 	boolean hasCapbankControl = CBCWebUtils.hasCapbankControlRights(session);
 	
+	String mainTitle = substation.getCcName() + " - Feeders";
+	String substationAddess = "substations.jsp?" + CCSessionInfo.STR_CC_AREAID + "=" + areaId;
 %>
 
+<cti:url var="onelineCBCServlet" value="/capcontrol/oneline/OnelineCBCServlet"/>
+<cti:standardPage title="<%=mainTitle %>" module="capcontrol">
+<div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
+<%@include file="cbc_inc.jspf"%>
 <c:set var="hasSubstationControl" value="<%=CBCWebUtils.hasSubstationControlRights(session)%>"/>
 <c:set var="hasSubstationBusControl" value="<%=CBCWebUtils.hasSubstationBusControlRights(session)%>"/>
 <c:set var="hasSubstationFeederControl" value="<%=CBCWebUtils.hasFeederControlRights(session)%>"/>
@@ -106,23 +102,36 @@
 
 <cti:standardMenu/>
 
+<c:set var="substationAddress" value="<%=substationAddess %>"/>
+
 <cti:breadCrumbs>
 <% if (special){ %>
   	<cti:crumbLink url="subareas.jsp" title="Home" />
   	<cti:crumbLink url="specialSubAreas.jsp" title="Special Substation Areas" />
-    <cti:crumbLink url="substations.jsp?id=${areaId}" title="Substations" />
-    <cti:crumbLink url="feeders.jsp?id=${subStationId}&specialArea=true" title="Feeders" />
+    <cti:crumbLink url="${substationAddress}" title="<%=area.getCcName()%>" />
+    <cti:crumbLink title="<%=substation.getCcName()%>" />
 <% } else{ %>
 	<cti:crumbLink url="subareas.jsp" title="Home" />
 	<cti:crumbLink url="subareas.jsp" title="Substation Areas" />
-    <cti:crumbLink url="substations.jsp?id=${areaId}" title="Substations" />
-    <cti:crumbLink url="feeders.jsp?id=${subStationId}" title="Feeders" />	
+    <cti:crumbLink url="${substationAddress}" title="<%=area.getCcName()%>" />
+    <cti:crumbLink title="<%=substation.getCcName()%>" />	
 <% } %>
-
 </cti:breadCrumbs>
 
 <script type="text/javascript">
    	Event.observe(window, 'load', function () {highlightLast();});
+    Event.observe(window, 'load', checkPageExpire);
+
+    // These two functions are neccessary since IE does not support css :hover
+    function highLightRow(row) {
+        row = $(row);
+        row.addClassName('hover');
+    }
+    
+    function unHighLightRow(row){
+        row = $(row);
+        row.removeClassName('hover');
+    }   
     
     GreyBox.preloadGreyBoxImages();
 
@@ -196,7 +205,7 @@ String css = "tableCell";
 
 	<cti:titledContainer title="Substation">
 		<table id="substationTable" width="100%" cellspacing="0" cellpadding="0">
-			<tr class="columnHeader lAlign">
+			<tr style="columnHeader lAlign">
 				<th>Substation Name</th>
                 <th width="2%"></th>
 				<th>State</th>
@@ -296,7 +305,7 @@ for( SubBus subBus: subBuses ) {
                 <td>
                     <a
                         <% if (!hideOneLine) { %>
-				            href="${onelineCBCServlet}?id=${thisSubBusId}&redirectURL=<%=currentPageURL %>" title="Click to view One-Line"
+				            href="${onelineCBCServlet}?id=${thisSubBusId}&redirectURL=<%=fullURL %>" title="Click to view One-Line"
                         <% } %> ><%=subBus.getCcName()%></a>
                     <capTags:verificationImg paoId="${thisSubBusId}" type="SUBBUS"/>
 				</td>

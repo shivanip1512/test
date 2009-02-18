@@ -9,14 +9,7 @@
 <%@ page import="com.cannontech.core.dao.PaoDao" %>
 
 <%@page import="org.springframework.web.bind.ServletRequestUtils"%>
-<cti:standardPage title="Substations" module="capcontrol">
 
-<%@include file="cbc_inc.jspf"%>
-
-<jsp:setProperty name="CtiNavObject" property="moduleExitPage" value=""/>
-
-<!-- necessary DIV element for the OverLIB popup library -->
-<div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
 
 <%
     PaoDao paoDao = YukonSpringHook.getBean("paoDao", PaoDao.class);
@@ -27,7 +20,7 @@
     String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
 	if (popupEvent == null) popupEvent = "onmouseover"; 
     
-	Integer areaId = ServletRequestUtils.getIntParameter(request, "id", ccSession.getLastAreaId());
+	Integer areaId = ServletRequestUtils.getIntParameter(request, CCSessionInfo.STR_CC_AREAID);
     if (areaId == null || areaId.intValue() <= 0) {
         String location = ServletUtil.createSafeUrl(request, "/capcontrol/subareas.jsp");
         response.sendRedirect(location);
@@ -51,8 +44,17 @@
 	}
     boolean hasSubstationControl = CBCWebUtils.hasSubstationControlRights(session);
     
-    String pageTitle = "Substation In Area:  " + areaName; 
+    String containerTitle = "Substation In Area:  " + areaName;
+    String mainTitle = areaName + " - Substations";
 %>
+
+<cti:standardPage title="<%= mainTitle %>" module="capcontrol">
+<%@include file="cbc_inc.jspf"%>
+
+<jsp:setProperty name="CtiNavObject" property="moduleExitPage" value=""/>
+<!-- necessary DIV element for the OverLIB popup library -->
+<div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
+
 
 <c:set var="areaId" value="<%=areaId%>"/>
 
@@ -71,7 +73,7 @@ if(special){
   <%
   }
   %>
-  <cti:crumbLink url="substations.jsp?id=${areaId}" title="Substations" />
+  <cti:crumbLink  title="<%= areaName %>" />
 </cti:breadCrumbs>
   
 <script type="text/javascript">
@@ -82,13 +84,13 @@ if(special){
 	}
 </script>
 
-<cti:titledContainer title="<%= pageTitle %>" id="last_titled_container">
+<cti:titledContainer title="<%= containerTitle %>" id="last_titled_container">
           
 <%
 if (areaSubs.size() > 0) {
 %>
 	          
-<form id="subForm" action="feeders.jsp" method="post">
+<form id="subForm" action="feeders.jsp" method="get">
 <input type="hidden" name="<%=CCSessionInfo.STR_SUBID%>" />
 <input type="hidden" name="specialArea" />
 
@@ -128,19 +130,17 @@ for( int i = 0; i < areaSubs.size(); i++ ) {
                             <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
                         </a>
                     </cti:checkProperty>
-				    <%if(special) { %>
-				    <a href="javascript:postMany('subForm', '<%=CCSessionInfo.STR_SUBID%>', ${thisSubStationId},'specialArea','true');" 
+                    <c:set var="isSpecial" value="<%=special%>"/>
+				    <c:set var="lastSubId" value="<%=CCSessionInfo.STR_SUBID%>"/>
+				    <cti:url value="feeders.jsp" var="myLink">
+				       <cti:param name="${lastSubId}" value="${thisSubStationId}"/>
+				       <cti:param name="specialArea" value="${isSpecial}"/>
+				    </cti:url>
+				    <a href="${myLink}" 
                        class="<%=css%>" 
                        id="anc_${thisSubStationId}">
 				        <%=substation.getCcName()%>
 				    </a>
-				    <% } else {%>
-				    <a href="javascript:postMany('subForm', '<%=CCSessionInfo.STR_SUBID%>', ${thisSubStationId},'specialArea','false');" 
-                       class="<%=css%>" 
-                       id="anc_${thisSubStationId}">
-				        <%=substation.getCcName()%>
-				    </a>
-				    <% } %>
 				    <font color="red">
                         <cti:capControlValue paoId="${thisSubStationId}" type="SUBSTATION" format="SA_ENABLED" />
                     </font>

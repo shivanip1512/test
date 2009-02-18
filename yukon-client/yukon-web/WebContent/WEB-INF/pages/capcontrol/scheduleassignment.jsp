@@ -2,6 +2,8 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
+<jsp:setProperty name="CtiNavObject" property="moduleExitPage" value=""/>
+
 <cti:includeScript link="/JavaScript/itemPicker.js" />
 <cti:includeScript link="/JavaScript/tableCreation.js" />
 <cti:includeScript link="/JavaScript/paoPicker.js" />
@@ -14,7 +16,7 @@
 
 <script type="text/javascript" src="/capcontrol/js/cbc_funcs.js"></script>
 
-<cti:standardMenu/>
+<cti:standardMenu menuSelection="view|scheduleassignment"/>
 <cti:breadCrumbs>
 	<cti:crumbLink url="/capcontrol/subareas.jsp" title="Home" />
 </cti:breadCrumbs>

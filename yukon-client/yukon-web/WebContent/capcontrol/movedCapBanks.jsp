@@ -24,7 +24,7 @@
 <!-- necessary DIV element for the OverLIB popup library -->
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
 
-<cti:standardMenu/>
+<cti:standardMenu menuSelection="view|recentcapbankmoves"/>
 
 <cti:breadCrumbs>
 	<cti:crumbLink url="subareas.jsp" title="Home" />
@@ -35,25 +35,25 @@ String nd = "\"return nd();\"";
 CapControlCache capControlCache = YukonSpringHook.getBean("cbcCache", CapControlCache.class);
 LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);
 
-CtiNavObject nav = (CtiNavObject) request.getSession(false).getAttribute(ServletUtil.NAVIGATE);
-String returnURL = nav.getPreviousPage();
 HashMap<String, String[]> parameters = new HashMap<String, String[]>();
-returnURL = ServletUtil.addParameters(returnURL, "back", "true");
 
 final CBCDisplay cbcDisplay = new CBCDisplay(user);
+
 String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
-if (popupEvent == null) popupEvent = "onmouseover";
-List areas = capControlCache.getCbcAreas();
-List movedCaps = new ArrayList(10);   
-   for (Iterator iter = areas.iterator(); iter.hasNext();) {
-    CCArea area = (CCArea) iter.next();
+if (popupEvent == null) {
+	popupEvent = "onmouseover";
+}
+
+List<CCArea> areas = capControlCache.getCbcAreas();
+List<CapBankDevice> movedCaps = new ArrayList<CapBankDevice>(10);   
+for (CCArea area : areas) {
 	List<CapBankDevice> capBanks = capControlCache.getCapBanksByArea(area.getPaoID());
 	for (CapBankDevice capBank : capBanks) {
-		if (capBank.isBankMoved())
+		if (capBank.isBankMoved()) {
 			movedCaps.add(capBank);
 		}
 	}
-
+}
 
 %>
 
@@ -107,7 +107,5 @@ Event.observe(window, 'load', function() {
 
 </script>		
 </cti:titledContainer>
-
-<input type="button" value="Back" onclick="javascript:location.href='<%=returnURL%>'">
 
 </cti:standardPage>

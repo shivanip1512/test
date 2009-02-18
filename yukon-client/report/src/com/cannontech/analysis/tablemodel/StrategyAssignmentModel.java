@@ -50,7 +50,7 @@ public class StrategyAssignmentModel extends BareReportModelBase<StrategyAssignm
     }
     
     public String getTitle() {
-        return "Stategy Assignment Report";
+        return "Strategy Assignment Report";
     }
 
     public int getRowCount() {

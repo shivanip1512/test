@@ -20,8 +20,6 @@
 	String srchCriteria = ParamUtil.getString(request, CCSessionInfo.STR_LAST_SEARCH, null);
 	ParentStringPrinter psp = printerFactory.createParentStringPrinter(request);
 	CtiNavObject nav = (CtiNavObject) request.getSession(false).getAttribute(ServletUtil.NAVIGATE);
-	String returnURL = nav.getPreviousPage();
-	returnURL = ServletUtil.addParameters(returnURL, "back", "true");
 	
 	if( srchCriteria == null )
 		srchCriteria = ccSession.getLastSearchCriteria();
@@ -57,12 +55,11 @@
 	}
 %>
 
-<cti:standardMenu/>
+<cti:standardMenu menuSelection="orphans"/>
 
 <cti:breadCrumbs>
   <cti:crumbLink url="subareas.jsp" title="Home" />
-  <cti:crumbLink url="subareas.jsp" title="Substation Areas"/>
-  <cti:crumbLink url="results.jsp" title="Results"/>
+  <cti:crumbLink title="Results"/>
 </cti:breadCrumbs>
 
 <cti:titledContainer title='<%="Search Results For: " + label + "   (" + items.length + " found)"%>'>
@@ -131,13 +128,7 @@ for( int i = 0; i < items.length; i++ )
 
             </table>
         </div>
-<br/>        
-
-<%	if( returnURL.contains("results.jsp") || returnURL.contains(".jsf")) { %>
-<input id="BackButton" type="button" value="Back" disabled>
-<%} else {%>
-<input id="BackButton" type="button" value="Back" onclick="javascript:location.href='<%=returnURL %>'">
-<% } %>
+<br/>
 
 </form>
 <script type="text/javascript">
