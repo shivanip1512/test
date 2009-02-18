@@ -1,5 +1,7 @@
 package com.cannontech.customer.wpsc;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import com.cannontech.database.SqlUtils;
 
 /**
@@ -190,7 +192,10 @@ public java.lang.String getFileName() {
  */
 public String getGroupAddress(String name) {
 
+	name = StringEscapeUtils.escapeSql(name);
+	
 	String sql = "SELECT UtilityAddress,ClassAddress,DivisionAddress FROM LMGroupVersacom,YukonPaobject WHERE LMGroupVersacom.DeviceID=YukonPaobject.PAObjectID AND YukonPaobject.PAOName='" + name + "'";
+	
 	String retVal = null;
 	
 	java.sql.Connection conn = null;
