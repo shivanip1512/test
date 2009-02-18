@@ -16,6 +16,8 @@ import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteYukonGroup;
@@ -935,8 +937,8 @@ public class ImportManagerUtil {
 	    
 		List<LiteStarsLMHardware> hwsToConfig = ProgramSignUpAction.updateProgramEnrollment( progSignUp, liteAcctInfo, liteInv, energyCompany, currentUser );
         
-        /*TODO: revisit this post-BGE short-term.  This should never make it past the 4.0 branch!*/
-        if(isValidLocationForImport(energyCompany, true)) {
+		RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
+		if(rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_AUTOMATIC_CONFIGURATION, currentUser)){
             //Send out the config/disable command
             for (int i = 0; i < hwsToConfig.size(); i++) {
                 LiteStarsLMHardware liteHw = hwsToConfig.get(i);
@@ -945,7 +947,7 @@ public class ImportManagerUtil {
                 if (toConfig) {
                     // Send the reenable command if hardware status is unavailable,
                     // whether to send the config command is controlled by the AUTOMATIC_CONFIGURATION role property
-                        YukonSwitchCommandAction.sendConfigCommand( energyCompany, liteHw, true, null );
+                    YukonSwitchCommandAction.sendConfigCommand( energyCompany, liteHw, true, null );
                 }
                 else {
                     // Send disable command to hardware
