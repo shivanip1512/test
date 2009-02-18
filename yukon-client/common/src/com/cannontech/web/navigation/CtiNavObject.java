@@ -1,7 +1,6 @@
 package com.cannontech.web.navigation;
 
 import java.io.Serializable;
-import java.util.Iterator;
 import java.util.Stack;
 
 /**
@@ -67,29 +66,10 @@ public class CtiNavObject implements Serializable{
 	 */
 	public void setNavigation(String page)
 	{
-	    if(page.indexOf("?") != -1) {
-	        String url = page.substring(0, page.indexOf("?"));
-	        if(!currentPage.contains(url)) {
-	            if(previousPage != null && !previousPage.isEmpty()) {
-	                getHistory().push(previousPage);
-	            }
-	            previousPage = currentPage;
-	            currentPage = page;
-	        }
-	    } else if (!currentPage.contains(page)) {
-	        if(previousPage != null && !previousPage.isEmpty()) {
-                getHistory().push(previousPage);
-            }
+		if (!currentPage.contains(page)) {
 	        previousPage = currentPage;
 	        currentPage = page;
 	    }
-	}
-	
-	public void setNavigationBack(String page) {
-	    String prev = previousPage;
-	    String newPrevious = getHistory().pop();
-	    previousPage = newPrevious;
-	    currentPage = prev;
 	}
 	
 	public void setMemberECAdmin(boolean isManaging)
