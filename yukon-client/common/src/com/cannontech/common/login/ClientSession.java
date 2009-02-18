@@ -105,12 +105,15 @@ public class ClientSession {
         
         boolean isJws = StringUtils.isNotBlank(System.getProperty("yukon.jws.host"));
         CTILogger.info("Java Web Start property found: " + isJws);
-		if (!isJws && MasterConfigHelper.isLocalConfigAvailable()) {
+        // "getBoolean" has to be the oddest Java method ever, but it is exactly what I want
+        boolean forceRemoteLogin = Boolean.getBoolean("com.cannontech.yukon.forceRemoteLogin");
+		boolean useLocalConfig = MasterConfigHelper.isLocalConfigAvailable() && !forceRemoteLogin;
+        if (!isJws && useLocalConfig) {
 		    CTILogger.info("Attempting local load of database properties...");
 			success = doLocalLogin(parent, MasterConfigHelper.getLocalConfiguration());
 		}
 		else {
-		    if (isJws) {
+		    if (isJws && !forceRemoteLogin) {
 		        CTILogger.info("Attempting JWS load of database properties...");
 		        success = doJwsLogin(parent);
 		    } else {

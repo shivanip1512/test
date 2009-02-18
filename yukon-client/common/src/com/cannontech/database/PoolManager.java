@@ -102,18 +102,32 @@ public class PoolManager {
         log.info("DB username=" + primaryUser);
         String password = configSource.getRequiredString("DB_PASSWORD");
         
-        String maxConns = configSource.getString("DB_JAVA_MAXCONS");
-        int max = 6;
-        if (StringUtils.isNotBlank(maxConns)) {
-            max = Integer.valueOf(maxConns);
-            log.info("DB maxconns=" + max);
+        String maxActiveConns = configSource.getString("DB_JAVA_MAXCONS");
+        int maxActive = 6;
+        if (StringUtils.isNotBlank(maxActiveConns)) {
+            maxActive = Integer.valueOf(maxActiveConns);
+            log.info("DB maxActive=" + maxActive);
         }
 
+        String maxIdleConns = configSource.getString("DB_JAVA_MAXIDLECONS");
+        int maxIdle = maxActive;
+        if (StringUtils.isNotBlank(maxIdleConns)) {
+            maxIdle = Integer.valueOf(maxIdleConns);
+            log.info("DB maxIdle=" + maxIdle);
+        }
+        
+        String minIdleConns = configSource.getString("DB_JAVA_MINIDLECONS");
+        int minIdle = 0;
+        if (StringUtils.isNotBlank(minIdleConns)) {
+            minIdle = Integer.valueOf(minIdleConns);
+            log.info("DB minIdle=" + minIdle);
+        }
+        
         String initConns = configSource.getString("DB_JAVA_INITCONS");
         int init = 0;
         if (StringUtils.isNotBlank(initConns)) {
             init = Integer.valueOf(initConns);
-            log.info("DB initconns=" + init);
+            log.info("DB initialSize=" + init);
         }
         
         BasicDataSource bds = new BasicDataSource();
@@ -121,7 +135,9 @@ public class PoolManager {
         bds.setUsername(primaryUser);
         bds.setPassword(password);
         bds.setInitialSize(init);
-        bds.setMaxActive(max);
+        bds.setMaxActive(maxActive);
+        bds.setMaxIdle(maxIdle);
+        bds.setMinIdle(minIdle);
         log.debug("Created BasicDataSource:" + bds);
 
         DataSource actualDs = bds;
