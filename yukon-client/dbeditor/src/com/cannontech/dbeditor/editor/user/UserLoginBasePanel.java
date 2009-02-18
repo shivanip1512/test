@@ -18,7 +18,8 @@ import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.authentication.service.AuthenticationService;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
@@ -27,7 +28,6 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.web.EnergyCompanyOperatorLoginList;
-import com.cannontech.roles.yukon.AuthenticationRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.UserUtils;
 import com.cannontech.yukon.IDatabaseCache;
@@ -564,7 +564,7 @@ public void jCheckBoxEnableEC_ActionPerformed(java.awt.event.ActionEvent actionE
 		{
 			//weed out the default energy company
 			if(((LiteEnergyCompany)companies.get(j)).getEnergyCompanyID() != -1)
-				getJComboBoxEnergyCompany().addItem((LiteEnergyCompany)companies.get(j));
+				getJComboBoxEnergyCompany().addItem(companies.get(j));
 		}
 		
 	}
@@ -624,8 +624,9 @@ public static void main(java.lang.String[] args) {
 public void setValue(Object o) 
 {
 	if (o == null) {
-        String defaultAuthTypeStr = DaoFactory.getRoleDao().getGlobalPropertyValue(AuthenticationRole.DEFAULT_AUTH_TYPE);
-        initialAuthType = AuthType.valueOf(defaultAuthTypeStr);
+        RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
+        initialAuthType = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.DEFAULT_AUTH_TYPE, AuthType.class, null );
+        
         getJListAuthType().setSelectedItem(initialAuthType);
         boolean supportsPasswordSet = authenticationService.supportsPasswordSet(initialAuthType);
         passwordRequiresChanging = supportsPasswordSet;

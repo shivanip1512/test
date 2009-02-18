@@ -27,6 +27,8 @@ import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.authorization.service.PaoPermissionService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.SqlUtils;
@@ -1034,8 +1036,8 @@ public class StarsAdminUtil {
 	public static LiteYukonUser createOperatorLogin(String username, String password, String status, LiteYukonGroup[] operGroups,
 		LiteStarsEnergyCompany energyCompany) throws Exception
 	{
-	    String defaultAuthTypeStr = DaoFactory.getRoleDao().getGlobalPropertyValue(AuthenticationRole.DEFAULT_AUTH_TYPE);
-	    AuthType defaultAuthType = AuthType.valueOf(defaultAuthTypeStr);
+	    RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
+	    AuthType defaultAuthType = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.DEFAULT_AUTH_TYPE, AuthType.class, null );
 		if (username.length() == 0)
 			throw new WebClientException( "Username cannot be empty" );
 		if (password.length() == 0)
