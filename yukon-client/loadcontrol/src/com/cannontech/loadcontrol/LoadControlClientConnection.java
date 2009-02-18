@@ -236,8 +236,9 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
     	CTILogger.debug( " ---> Received a control area named " + controlArea.getYukonName() );
     
         //could use some of the new concurrency code here to be fancy, but for now...
+    	boolean newInsert;
     	synchronized ( getControlAreas() ) {
-    		boolean newInsert = getControlAreas().get(controlArea.getYukonID()) == null;
+			newInsert = getControlAreas().get(controlArea.getYukonID()) == null;
             
             getControlAreas().put( controlArea.getYukonID(), controlArea );
     		
@@ -262,11 +263,11 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
                 getTriggers().put(((LMControlAreaTrigger)controlArea.getTriggerVector().get(k)).getYukonID(), (LMControlAreaTrigger)controlArea.getTriggerVector().get(k));
             }
             
-    		// tell all listeners that we received an updated LMControlArea
-    		setChanged();
-    		notifyObservers( new LCChangeEvent(	this, (newInsert ? LCChangeEvent.INSERT : LCChangeEvent.UPDATE), controlArea) );				
-    		return;
     	}
+    	// tell all listeners that we received an updated LMControlArea
+    	setChanged();
+    	notifyObservers( new LCChangeEvent(	this, (newInsert ? LCChangeEvent.INSERT : LCChangeEvent.UPDATE), controlArea) );				
+    	return;
     }
     
     /**
@@ -324,8 +325,10 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
     }
     
     private synchronized void handleLMControlAreaChange(LMControlAreaChanged changedArea) {
-        synchronized ( getControlAreas() ) {
-            LMControlArea currentArea = getControlAreas().get( changedArea.getPaoID());
+        
+    	LMControlArea currentArea;
+    	synchronized ( getControlAreas() ) {
+            currentArea = getControlAreas().get( changedArea.getPaoID());
             
             currentArea.setDisableFlag(changedArea.getDisableFlag());
             currentArea.setNextCheckTime(changedArea.getNextCheckTime());
@@ -337,17 +340,19 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
             for(LMTriggerChanged changedTrigger : changedArea.getTriggers()) {
                 handleLMTriggerChange(changedTrigger);
             }
-            
-            // tell all listeners that we received an updated LMControlArea
-            setChanged();
-            notifyObservers( new LCChangeEvent( this, LCChangeEvent.UPDATE, currentArea) );                
-            return;
         }
+        
+        // tell all listeners that we received an updated LMControlArea
+        setChanged();
+        notifyObservers( new LCChangeEvent( this, LCChangeEvent.UPDATE, currentArea) );                
+        return;
     }
     
     private synchronized void handleLMProgramChange(LMProgramChanged changedProgram) {
-        synchronized ( getPrograms() ) {
-            LMProgramBase currentProgram = getPrograms().get( changedProgram.getPaoID());
+        
+    	LMProgramBase currentProgram;
+    	synchronized ( getPrograms() ) {
+            currentProgram = getPrograms().get( changedProgram.getPaoID());
             
             currentProgram.setDisableFlag(changedProgram.getDisableFlag());
             if(currentProgram instanceof LMProgramDirect) {
@@ -361,17 +366,20 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
                 ((LMProgramDirect)currentProgram).setNotifyInactiveTime(changedProgram.getNotifyInactiveTime());
                 ((LMProgramDirect)currentProgram).setStartedRampingOut(changedProgram.getStartedRampingOutTime());
             }
-            // tell all listeners that we had an update
-            setChanged();
-            //TODO: should this be the program passed in or the control area on the update event?
-            notifyObservers( new LCChangeEvent( this, LCChangeEvent.UPDATE, currentProgram) );                
-            return;
         }
+        
+        // tell all listeners that we had an update
+        setChanged();
+        //TODO: should this be the program passed in or the control area on the update event?
+        notifyObservers( new LCChangeEvent( this, LCChangeEvent.UPDATE, currentProgram) );                
+        return;
     }
     
     private synchronized void handleLMGroupChange(LMGroupChanged changedGroup) {
-        synchronized ( getGroups() ) {
-            LMGroupBase currentGroup = getGroups().get( changedGroup.getPaoID());
+        
+    	LMGroupBase currentGroup;
+    	synchronized ( getGroups() ) {
+            currentGroup = getGroups().get( changedGroup.getPaoID());
             
             if(currentGroup instanceof LMDirectGroupBase) {
                 ((LMDirectGroupBase)currentGroup).setDisableFlag(changedGroup.getDisableFlag());
@@ -387,17 +395,20 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
                 ((LMDirectGroupBase)currentGroup).setInternalState(changedGroup.getInternalState());
                 ((LMDirectGroupBase)currentGroup).setDailyOps(changedGroup.getDailyOps());
             }
-            // tell all listeners that we received an update
-            setChanged();
-            //TODO: should this be the group passed in or the control area on the update event?
-            notifyObservers( new LCChangeEvent( this, LCChangeEvent.UPDATE, currentGroup) );                
-            return;
         }
+        
+        // tell all listeners that we received an update
+        setChanged();
+        //TODO: should this be the group passed in or the control area on the update event?
+        notifyObservers( new LCChangeEvent( this, LCChangeEvent.UPDATE, currentGroup) );                
+        return;
     }
     
     private synchronized void handleLMTriggerChange(LMTriggerChanged changedTrigger) {
-        synchronized ( getTriggers() ) {
-            LMControlAreaTrigger currentTrigger = getTriggers().get( changedTrigger.getPaoID());
+        
+    	LMControlAreaTrigger currentTrigger;
+    	synchronized ( getTriggers() ) {
+            currentTrigger = getTriggers().get( changedTrigger.getPaoID());
             
             if(currentTrigger != null) {
                 currentTrigger.setTriggerNumber(changedTrigger.getTriggerNumber());
@@ -408,12 +419,14 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
                 currentTrigger.setPeakPointValue(changedTrigger.getPeakPointValue());
                 currentTrigger.setLastPeakPointValueTimeStamp(changedTrigger.getLastPeakPointValueTimestamp().getTime());
                 currentTrigger.setProjectedPointValue(changedTrigger.getProjectedPointValue());
-                // tell all listeners that we received an update
-                setChanged();
-                //TODO: should this be the trigger passed in or the control area on the update event?
-                notifyObservers( new LCChangeEvent( this, LCChangeEvent.UPDATE, currentTrigger) );   
+                
             }
-            return;
         }
+        
+        // tell all listeners that we received an update
+        setChanged();
+        //TODO: should this be the trigger passed in or the control area on the update event?
+        notifyObservers( new LCChangeEvent( this, LCChangeEvent.UPDATE, currentTrigger) ); 
+        return;
     }
 }
