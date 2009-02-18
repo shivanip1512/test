@@ -27,6 +27,7 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -60,6 +61,7 @@ public class ContactController extends AbstractConsumerController {
     private CustomerDao customerDao;
     private YukonListDao yukonListDao;
     private YukonUserDao yukonUserDao;
+    private RolePropertyDao rolePropertyDao;
 
     @RequestMapping(value = "/consumer/contacts", method = RequestMethod.GET)
     public String view(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
@@ -144,9 +146,10 @@ public class ContactController extends AbstractConsumerController {
             this.addNewNotification(request, contactId, notificationList);
     
             contact.setNotifications(notificationList);
+
             
-            if(DaoFactory.getAuthDao().checkRoleProperty(user.getUserID(), ConsumerInfoRole.CREATE_LOGIN_FOR_ACCOUNT) || 
-                    DaoFactory.getAuthDao().checkRoleProperty(user.getUserID(), ResidentialCustomerRole.CREATE_LOGIN_FOR_ACCOUNT)) {
+            if(rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_CREATE_LOGIN_FOR_ACCOUNT, user) || 
+                    rolePropertyDao.checkProperty(YukonRoleProperty.RESIDENTIAL_CREATE_LOGIN_FOR_ACCOUNT, user)) {
             
                 StarsYukonUser starsUser = (StarsYukonUser) request.getSession().getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
                 // If not primary contact and no login exists, create it.
@@ -274,5 +277,10 @@ public class ContactController extends AbstractConsumerController {
     @Autowired
     public void setYukonUserDao(YukonUserDao yukonUserDao) {
         this.yukonUserDao = yukonUserDao;
+    }
+    
+    @Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
     }
 }
