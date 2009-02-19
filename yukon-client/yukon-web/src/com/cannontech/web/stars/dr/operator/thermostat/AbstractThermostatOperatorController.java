@@ -38,19 +38,13 @@ public abstract class AbstractThermostatOperatorController {
         String thermostatIds = ServletRequestUtils.getStringParameter(request,
                                                                       "thermostatIds");
 
-        // Override the toString method to get a comma separated list with no
-        // leading or trailing brackets
-        List<Integer> idList = new ArrayList<Integer>() {
-            @Override
-            public String toString() {
-                return super.toString().replaceAll("[\\[|\\]]", "");
-            }
+        List<Integer> idList = new ArrayList<Integer>();
 
-        };
-
-        // If thermostatIds exists, split and create Integer list
+        // If thermostatIds exists, remove brackets, split and create Integer list
+        thermostatIds = thermostatIds.replaceAll("[\\[|\\]]", "");
         if (!StringUtils.isBlank(thermostatIds)) {
-        	idList = ServletUtil.getIntegerListFromString(thermostatIds);
+			List<Integer> tempIdList = ServletUtil.getIntegerListFromString(thermostatIds);
+        	idList.addAll(tempIdList);
         }
 
         return idList;

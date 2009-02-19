@@ -26,8 +26,6 @@ public abstract class AbstractThermostatController extends
         String thermostatIds = ServletRequestUtils.getStringParameter(request,
                                                                       "thermostatIds");
 
-        // Override the toString method to get a comma separated list with no
-        // leading or trailing brackets
         List<Integer> idList = new ArrayList<Integer>();
 
         // If thermostatIds exists, remove brackets, split and create Integer list
