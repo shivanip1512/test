@@ -28,6 +28,8 @@ import com.cannontech.core.authorization.service.PaoPermissionService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
@@ -497,7 +499,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
      */
     public synchronized List<LiteApplianceCategory> getAllApplianceCategories() {
         List<LiteApplianceCategory> appCats = new ArrayList<LiteApplianceCategory>( getApplianceCategories() );
-        boolean inheritCats = getEnergyCompanySetting( EnergyCompanyRole.INHERIT_PARENT_APP_CATS ).equalsIgnoreCase("true");
+        RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);        
+        boolean inheritCats = rolePropertyDao.checkProperty(YukonRoleProperty.INHERIT_PARENT_APP_CATS, DaoFactory.getYukonUserDao().getLiteYukonUser(getUserID()));
         if (getParent() != null && inheritCats)
             appCats.addAll( 0, getParent().getAllApplianceCategories() );
         

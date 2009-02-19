@@ -342,8 +342,8 @@ public enum YukonRoleProperty {
     
     IMPORTER_ENABLED(METERING, com.cannontech.roles.operator.MeteringRole.IMPORTER_ENABLED, booleanType()),
     PROFILE_COLLECTION(METERING, com.cannontech.roles.operator.MeteringRole.PROFILE_COLLECTION, booleanType()),
-    MOVE_IN_MOVE_OUT_AUTO_ARCHIVING(METERING, com.cannontech.roles.operator.MeteringRole.MOVE_IN_MOVE_OUT_AUTO_ARCHIVING, stringType()),
-    MOVE_IN_MOVE_OUT(METERING, com.cannontech.roles.operator.MeteringRole.MOVE_IN_MOVE_OUT, stringType()),
+    MOVE_IN_MOVE_OUT_AUTO_ARCHIVING(METERING, com.cannontech.roles.operator.MeteringRole.MOVE_IN_MOVE_OUT_AUTO_ARCHIVING, booleanType()),
+    MOVE_IN_MOVE_OUT(METERING, com.cannontech.roles.operator.MeteringRole.MOVE_IN_MOVE_OUT, booleanType()),
     PROFILE_COLLECTION_SCANNING(METERING, com.cannontech.roles.operator.MeteringRole.PROFILE_COLLECTION_SCANNING, booleanType()),
     HIGH_BILL_COMPLAINT(METERING, com.cannontech.roles.operator.MeteringRole.HIGH_BILL_COMPLAINT, booleanType()),
     

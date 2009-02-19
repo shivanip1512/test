@@ -102,7 +102,7 @@
 </cti:checkRole>
 
 <!-- Metering section -->
-<cti:checkMultiRole roles="operator.MeteringRole.ROLEID,application.BillingRole.ROLEID,TrendingRole.ROLEID,operator.DeviceActionsRole.ROLEID,SchedulerRole.ROLEID,CommanderRole.ROLEID">
+<cti:checkMultiRole roles="operator.MeteringRole.ROLEID,application.BillingRole.ROLEID,TrendingRole.ROLEID,operator.DeviceActionsRole.ROLEID,SchedulerRole.ROLEID">
 	<tags:operationSection sectionName="Metering" sectionImageName="MeteringLogo">
 		<cti:checkRole role="TrendingRole.ROLEID">
 			<tags:sectionLink>
@@ -116,7 +116,7 @@
 		        </tags:sectionLink>
 	        </cti:checkProperty>
         </cti:checkRole>
-        <cti:checkMultiRole roles="operator.MeteringRole.ROLEID,application.BillingRole.ROLEID,SchedulerRole.ROLEID,CommanderRole.ROLEID">
+        <cti:checkMultiRole roles="operator.MeteringRole.ROLEID,application.BillingRole.ROLEID,SchedulerRole.ROLEID">
 			<tags:sectionLink>
     	    	<a href="<cti:url value="/spring/meter/start"/>">Metering</a>
 	        </tags:sectionLink>

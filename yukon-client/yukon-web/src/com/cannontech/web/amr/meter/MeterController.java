@@ -28,17 +28,14 @@ import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.search.SearchResult;
-import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.dao.RoleDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.CachingPointFormattingService;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.roles.operator.MeteringRole;
-import com.cannontech.roles.yukon.ConfigurationRole;
-import com.cannontech.roles.yukon.MultispeakRole;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.bulk.model.collection.DeviceFilterCollectionHelper;
 import com.cannontech.web.updater.point.PointUpdateBackingService;
@@ -48,8 +45,6 @@ import com.cannontech.web.updater.point.PointUpdateBackingService;
  */
 public class MeterController extends MultiActionController {
 
-    private AuthDao authDao = null;
-    private RoleDao roleDao = null;
     private MeterSearchService meterSearchService = null;
     private AttributeService attributeService = null;
     private DeviceDao deviceDao = null;
@@ -57,6 +52,7 @@ public class MeterController extends MultiActionController {
     private DeviceFilterCollectionHelper filterCollectionHelper = null;
     private CachingPointFormattingService cachingPointFormattingService = null;
     private PointUpdateBackingService pointUpdateBackingService = null;
+    private RolePropertyDao rolePropertyDao = null;
 
     public MeterController() {
         super();
@@ -65,16 +61,6 @@ public class MeterController extends MultiActionController {
     @Autowired
     public void setMeterSearchService(MeterSearchService meterSearchService) {
         this.meterSearchService = meterSearchService;
-    }
-    
-    @Autowired
-    public void setAuthDao(AuthDao authDao) {
-        this.authDao = authDao;
-    }
-
-    @Autowired
-    public void setRoleDao(RoleDao roleDao) {
-        this.roleDao = roleDao;
     }
 
     @Autowired
@@ -107,6 +93,11 @@ public class MeterController extends MultiActionController {
     public void setPointUpdateBackingService(
 			PointUpdateBackingService pointUpdateBackingService) {
 		this.pointUpdateBackingService = pointUpdateBackingService;
+	}
+    
+    @Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+		this.rolePropertyDao = rolePropertyDao;
 	}
     
     public ModelAndView start(HttpServletRequest request, HttpServletResponse response) {
@@ -216,8 +207,7 @@ public class MeterController extends MultiActionController {
         List<MeterDisplayFieldEnum> newOrder = new ArrayList<MeterDisplayFieldEnum>();
         
         try {
-            MeterDisplayFieldEnum roleDispFieldEnumVal = authDao.getRolePropertyValue(MeterDisplayFieldEnum.class, user,
-                                                                                          ConfigurationRole.DEVICE_DISPLAY_TEMPLATE);
+            MeterDisplayFieldEnum roleDispFieldEnumVal = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.DEVICE_DISPLAY_TEMPLATE, MeterDisplayFieldEnum.class, user);
             
             newOrder.addAll(defaultColumnOrder);
             newOrder.remove(roleDispFieldEnumVal); // remove if present
@@ -244,6 +234,8 @@ public class MeterController extends MultiActionController {
         List<LitePoint> litePoints = pointDao.getLitePointsByPaObjectId(deviceId);
         cachingPointFormattingService.addLitePointsToCache(litePoints);
         pointUpdateBackingService.notifyOfImminentPoints(litePoints);
+
+        LiteYukonUser user = ServletUtil.getYukonUser(request);
         
         boolean highBillSupported = DeviceTypesFuncs.isMCT410(device.getType());
 
@@ -255,26 +247,23 @@ public class MeterController extends MultiActionController {
         mav.addObject("outageSupported", outageSupported);
 
         mav.addObject("mspSupported",
-                      Integer.valueOf(roleDao.getGlobalPropertyValue(MultispeakRole.MSP_PRIMARY_CB_VENDORID))
-                             .intValue() > 0);
+                      Integer.valueOf(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.MSP_PRIMARY_CB_VENDORID, user)).intValue() > 0);
 
         boolean disconnectSupported = DeviceTypesFuncs.isDisconnectMCTOrHasCollar(device);
         mav.addObject("disconnectSupported", disconnectSupported);
-
-        LiteYukonUser user = ServletUtil.getYukonUser(request);
 
         boolean touSupported = DeviceTypesFuncs.isTouMCT(device.getType());
         mav.addObject("touSupported", touSupported);
 
         boolean moveSupported = DeviceTypesFuncs.isMCT410(device.getType());
-        boolean moveEnabled = Boolean.parseBoolean(authDao.getRolePropertyValue(user, MeteringRole.MOVE_IN_MOVE_OUT));
+        boolean moveEnabled = rolePropertyDao.checkProperty(YukonRoleProperty.MOVE_IN_MOVE_OUT, user);
         mav.addObject("moveSupported", (moveSupported && moveEnabled));
 
         boolean lpSupported = DeviceTypesFuncs.isLoadProfile4Channel(device.getType());
         mav.addObject("lpSupported", lpSupported);
 
-        boolean profileCollection = Boolean.parseBoolean(authDao.getRolePropertyValue(user, MeteringRole.PROFILE_COLLECTION));
-        boolean profileCollectionScanning = Boolean.parseBoolean(authDao.getRolePropertyValue(user, MeteringRole.PROFILE_COLLECTION_SCANNING));
+        boolean profileCollection = rolePropertyDao.checkProperty(YukonRoleProperty.PROFILE_COLLECTION, user);
+        boolean profileCollectionScanning = rolePropertyDao.checkProperty(YukonRoleProperty.PROFILE_COLLECTION_SCANNING, user);
         mav.addObject("profileCollection", profileCollection);
         mav.addObject("profileCollectionScanning", profileCollectionScanning);
         

@@ -697,6 +697,7 @@
           </option>
           <option id="group">
             <link>/spring/group/commander/groupProcessing</link>
+			<requireRoleProperty value="GROUP_COMMANDER"/>
           </option>
         </links>
       </option>
