@@ -24,7 +24,7 @@ public class CapControlCommand extends com.cannontech.yukon.cbc.CapControlMessag
 
 	public static final int WAIVE_SUB = 13;
 	public static final int UNWAIVE_SUB = 14;
-	public static final int WAIVE_FEEDER = 15;
+	public static final int CONFIRM_FEEDER = 15;
 	public static final int UNWAIVE_FEEDER = 16;
 
 	public static final int BANK_ENABLE_OVUV = 17;
@@ -77,7 +77,7 @@ public class CapControlCommand extends com.cannontech.yukon.cbc.CapControlMessag
 		"Update Op Count",
 		"Waive Sub",
 		"Unwaive Sub",
-		"Waive Feeder",  //15
+		"Confirm Feeder",  //15
 		"Unwaive Feeder",
 		"Enalbe OV/UV",
 		"Disable OV/UV",
