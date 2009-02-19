@@ -258,7 +258,7 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
     	return (countObservers() <= 0);
     }
     
-    public synchronized void messageReceived( MessageEvent e ) {
+    public void messageReceived( MessageEvent e ) {
     	Object obj = e.getMessage();
     	if( obj instanceof LMControlArea ) {
     		handleLMControlArea( (LMControlArea)obj );
