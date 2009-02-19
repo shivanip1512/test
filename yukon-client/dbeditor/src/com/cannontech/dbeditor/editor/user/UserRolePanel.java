@@ -35,6 +35,7 @@ import com.cannontech.common.gui.tree.CheckRenderer;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.roleproperties.UserNotInRoleException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteYukonRole;
@@ -659,9 +660,13 @@ private String getRoleValue( int rolePropID_, String defValue_ )
 {
 	if( getRoleContainer() instanceof YukonUser )
 	{
-		return DaoFactory.getAuthDao().getRolePropertyValue(
-				getRoleContainer().getID(),
-				rolePropID_);
+		try {
+            return DaoFactory.getAuthDao().getRolePropertyValue(
+            		getRoleContainer().getID(),
+            		rolePropID_);
+        } catch (UserNotInRoleException e) {
+            return defValue_;
+        }
 	}
 	else if( getRoleContainer() instanceof YukonGroup )
 	{

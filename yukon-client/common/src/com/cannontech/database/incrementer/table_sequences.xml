@@ -42,6 +42,9 @@
         <table name="InterviewQuestion" identitycolumn="QuestionID" initsequence="true"/>
         <table name="LMProgramWebPublishing" identitycolumn="ProgramID" initsequence="true"/>
       </sequence>
+      <sequence name="UsersRolesAndGroups">
+      	<table name="YukonUserRole" identitycolumn="UserRoleId" initsequence="true"/>
+      </sequence>
       <sequence name="paobjectid">
       	<table name="YukonPaObject" identitycolumn="PaObjectId" initsequence="true"/>
       </sequence>

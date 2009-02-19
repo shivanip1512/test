@@ -4,7 +4,6 @@ package com.cannontech.database.db.point;
  * This type was created in VisualAge.
  */
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.point.PointLogicalGroups;
 import com.cannontech.database.data.point.PointTypes;
 
@@ -103,47 +102,7 @@ public String getArchiveType() {
 public String getLogicalGroup() {
 	return logicalGroup;
 }
-/**
- * This method was created in VisualAge.
- * @return java.lang.Integer
- */
-public final static int getNextPointID()
-{
-	int retVal = 0;
-	java.sql.Connection conn = null;
-	java.sql.PreparedStatement pstmt = null;
-	java.sql.ResultSet rset = null;
-		
-	try
-	{		
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection(
-								com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 
-		if( conn == null )
-		{
-			throw new IllegalStateException("Error getting database connection.");
-		}
-		else
-		{
-			pstmt = conn.prepareStatement("select max(pointid) AS maxid from point");
-			rset = pstmt.executeQuery();							
-
-			// Just one please
-			if( rset.next() )
-				retVal = rset.getInt("maxid") + 1;
-		}		
-	}
-	catch( java.sql.SQLException e )
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	}
-	finally
-	{
-		SqlUtils.close(rset, pstmt, conn );
-	}
-
-	return retVal;
-}
 /**
  * Insert the method's description here.
  * Creation date: (9/28/2001 2:10:36 PM)
