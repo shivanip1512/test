@@ -274,6 +274,9 @@ public class OnelinePopupMenuController extends MultiActionController {
         int resetOpCount = CapControlCommand.RESET_OPCOUNT;
         mav.addObject("resetOpCount", resetOpCount);
         
+        int confirmFdr = CapControlCommand.CONFIRM_CLOSE;
+        mav.addObject("confirmFdr", confirmFdr);
+        
         int openAllFdr = CapControlCommand.SEND_ALL_OPEN;
         mav.addObject("openAllFdr", openAllFdr);
         

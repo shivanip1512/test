@@ -297,7 +297,8 @@ public class CapControlCommandController extends MultiActionController {
         	    cmdId == CapControlCommand.SEND_TIMESYNC || 
         	    cmdId == CapControlCommand.CONFIRM_SUBSTATION || 
         	    cmdId == CapControlCommand.CONFIRM_AREA || 
-        	    cmdId == CapControlCommand.CONFIRM_SUB || 
+        	    cmdId == CapControlCommand.CONFIRM_SUB ||
+        	    cmdId == CapControlCommand.CONFIRM_FEEDER ||
         	    cmdId == CapControlCommand.RESET_OPCOUNT) { 
         	action = CommentAction.SEND_ALL_CONTROL; 
         } else if (cmdId == CapControlCommand.OPEN_CAPBANK || 

@@ -7,6 +7,7 @@ public enum CommandHolder {
     CONFIRM_AREA(CapControlCommand.CONFIRM_AREA, "Confirm Area", false),
     CONFIRM_SUBSTATION(CapControlCommand.CONFIRM_SUBSTATION, "Confirm Substation", false),
     CONFIRM_SUBBUS(CapControlCommand.CONFIRM_SUB, "Confirm Subbus", false),
+    CONFIRM_FEEDER(CapControlCommand.CONFIRM_FEEDER, "Confirm Feeder", false),
     
     ENABLE_AREA(CapControlCommand.ENABLE_AREA, "Enable Area", true),
     ENABLE_SUBSTATION(CapControlCommand.ENABLE_AREA, "Enable Substation", true),

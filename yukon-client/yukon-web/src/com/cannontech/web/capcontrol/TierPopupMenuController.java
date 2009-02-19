@@ -195,6 +195,8 @@ public class TierPopupMenuController extends MultiActionController {
         
         final List<CommandHolder> list = new ArrayList<CommandHolder>();
         
+        list.add(CommandHolder.CONFIRM_FEEDER);
+        
         if (isDisabled) {
             list.add(CommandHolder.ENABLE_FEEDER);
         } else {

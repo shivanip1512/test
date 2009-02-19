@@ -145,9 +145,14 @@ public class CapControlCommandExecutor
 	}
 
 	public void executeFeederCommand( int cmdId, int paoId) {
-		executeCommand( 
-			paoId,
-			cmdId );			
+		if (cmdId == CapControlCommand.CONFIRM_CLOSE || cmdId == CapControlCommand.CONFIRM_OPEN ) {
+			executeConfirmFeeder( paoId );
+		}
+		else{
+			executeCommand( 
+					paoId,
+					cmdId );			
+		}
 	}
 
 	public void executeCBCCommand(int paoId, float[] optParams) {
@@ -347,6 +352,16 @@ public class CapControlCommandExecutor
 	private String getUserName() {
 		String username = user.getUsername();
 		return username;
+	}
+
+	private void executeConfirmFeeder(int paoId) {
+		Multi<CapControlCommand> multi = new Multi<CapControlCommand>();
+		CapControlCommand command = new CapControlCommand (CapControlCommand.CONFIRM_FEEDER, paoId);
+		command.setUserName(getUserName());
+		multi.getVector().add(command);
+		if (multi.getVector().size() > 0) {
+			capControlCache.getConnection().write(multi);
+		}	
 	}
 
 	private void executeConfirmSub(int paoId) {

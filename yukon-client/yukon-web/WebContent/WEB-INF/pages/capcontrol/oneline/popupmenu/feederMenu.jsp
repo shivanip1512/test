@@ -28,6 +28,7 @@
             <td>
                 <select id="selectId" style="background-color=gray;">
 				    <option value="" style="color: white"></option>
+				    <option value="${confirmFdr}" style="color:white;">Confirm Feeder</option>
 				    <option value="${openAllFdr}" style="color:white;">Open All CapBanks</option>
 				    <option value="${closeAllFdr}" style="color:white;">Close All CapBanks</option>
                     <cti:checkProperty property="CBCSettingsRole.CBC_ALLOW_OVUV">

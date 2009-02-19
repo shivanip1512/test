@@ -1589,8 +1589,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 				prevAdjTripOrder = capBank.getTripOrder();
 
     		}
-		}	
-    	else {
+		} else {
     		reorderList(childList);
     	}
     		
