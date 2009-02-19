@@ -58,7 +58,10 @@
 <%@page import="com.cannontech.database.Transaction"%>
 <%@page import="com.cannontech.database.TransactionException"%>
 
-<%@page import="com.cannontech.stars.core.dao.StarsCustAccountInformationDao"%><jsp:directive.page import="com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService"/>
+<%@page import="com.cannontech.stars.core.dao.StarsCustAccountInformationDao"%>
+<%@page import="com.cannontech.core.roleproperties.dao.RolePropertyDao"%>
+<%@page import="com.cannontech.core.roleproperties.YukonRoleProperty"%>
+<jsp:directive.page import="com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService"/>
 <jsp:directive.page import="com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation"/>
 <jsp:directive.page import="com.cannontech.database.data.lite.stars.LiteStarsAppliance"/>
 
@@ -69,6 +72,7 @@
     final StarsCustAccountInformationDao starsCustAccountInformationDao = YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
     final DateFormattingService dateFormattingService = YukonSpringHook.getBean("dateFormattingService", DateFormattingService.class);
     final AuthDao authDao = YukonSpringHook.getBean("authDao", AuthDao.class);
+    final RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
     
     StarsCustAccountInformation accountInfo = null;
     
@@ -164,14 +168,15 @@
 	            }
 	            session.setAttribute(ServletUtils.ATT_CUSTOMER_SELECTION_LISTS, selectionListTable);
 	            
-	            String value = authDao.getRolePropertyValue(lYukonUser, AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY);
-	            if ((StarsAdminUtil.FIRST_TIME.equals(value)) &&
+            	boolean initEnergyCompany = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_INITIALIZE_ENERGY_COMPANY, lYukonUser);
+
+	            if (initEnergyCompany &&
 	                 (selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE) != null)) {
 	                
 	                // The default operator login for the first time, edit the device type list first!
 	                com.cannontech.database.data.lite.LiteYukonGroup adminGroup = liteEC.getOperatorAdminGroup();
 	                if (DaoFactory.getRoleDao().updateGroupRoleProperty(
-	                    adminGroup, AdministratorRole.ROLEID, AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY, CtiUtilities.TRUE_STRING))
+	                    adminGroup, AdministratorRole.ROLEID, AdministratorRole.ADMIN_INITIALIZE_ENERGY_COMPANY, CtiUtilities.FALSE_STRING))
 	                {
 	                    com.cannontech.stars.util.ServerUtils.handleDBChange(
 	                        adminGroup, com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE );
