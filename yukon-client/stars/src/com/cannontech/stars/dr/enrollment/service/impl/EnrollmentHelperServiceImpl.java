@@ -132,7 +132,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
          *  This handles an unenrollment with no program given.  In this case we
          *  we just want to unenroll the device from every program it is enrolled.
          */
-        if(enrollmentEnum == EnrollmentEnum.UNENROLL &&
+        if(enrollmentEnum.equals(EnrollmentEnum.UNENROLL) &&
            StringUtils.isEmpty(enrollmentHelper.getProgramName())) {
         	ProgramEnrollment programEnrollment = new ProgramEnrollment();
 	        programEnrollment.setInventoryId(liteInv.getInventoryID());
