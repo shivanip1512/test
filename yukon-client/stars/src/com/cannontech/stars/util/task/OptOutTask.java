@@ -91,6 +91,11 @@ public class OptOutTask implements YukonTask {
         
         	LiteStarsLMHardware inventory = 
         		(LiteStarsLMHardware) starsInventoryBaseDao.getById(inventoryId);
+        	if(inventory == null) {
+        		// There may be leftover opt data in the LMHardwareControlGroup table
+        		// after an inventory is deleted - ignore these 'open' opt outs
+        		continue;
+        	}
         	int accountId = inventory.getAccountID();
 
         	// Check the OptOutEvent table to see if this inventory is REALLY opted out
