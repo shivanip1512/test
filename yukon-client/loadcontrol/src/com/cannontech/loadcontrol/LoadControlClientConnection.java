@@ -109,7 +109,7 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
     
     public LMControlArea[] getAllLMControlAreas() {	
 		ArrayList<LMControlArea> arrayList = new ArrayList<LMControlArea>(getControlAreas().values());
-		return (LMControlArea[])arrayList.toArray();
+		return arrayList.toArray(new LMControlArea[0]);
     }
     
     /**
