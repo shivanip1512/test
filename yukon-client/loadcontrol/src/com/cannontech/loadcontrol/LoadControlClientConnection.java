@@ -7,9 +7,10 @@ package com.cannontech.loadcontrol;
  */
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.loadcontrol.data.LMControlArea;
@@ -32,10 +33,10 @@ import com.roguewave.vsj.CollectableStreamer;
 
 public class LoadControlClientConnection extends com.cannontech.message.util.ClientConnection implements MessageListener {
 	
-	private HashMap<Integer, LMControlArea> controlAreas = null;
-    private HashMap<Integer, LMProgramBase> programs = null;
-    private HashMap<Integer, LMGroupBase> groups = null;
-    private HashMap<Integer, LMControlAreaTrigger> triggers = null;
+	private Map<Integer, LMControlArea> controlAreas = new ConcurrentHashMap<Integer, LMControlArea>();
+    private Map<Integer, LMProgramBase> programs = new ConcurrentHashMap<Integer, LMProgramBase>();
+    private Map<Integer, LMGroupBase> groups = new ConcurrentHashMap<Integer, LMGroupBase>();
+    private Map<Integer, LMControlAreaTrigger> triggers = new ConcurrentHashMap<Integer, LMControlAreaTrigger>();
 
     protected LoadControlClientConnection() {
     	super("LC");
@@ -107,11 +108,8 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
     }
     
     public LMControlArea[] getAllLMControlAreas() {	
-		synchronized( getControlAreas() ) {
-			LMControlArea[] areas = new LMControlArea[ getControlAreas().size() ];
-			getControlAreas().values().toArray( areas );
-			return areas;
-		}
+		ArrayList<LMControlArea> arrayList = new ArrayList<LMControlArea>(getControlAreas().values());
+		return (LMControlArea[])arrayList.toArray();
     }
     
     /**
@@ -139,10 +137,7 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
     	return getControlAreas().size();
     }
     
-    public HashMap<Integer, LMControlArea> getControlAreas() {
-    	if( controlAreas == null )
-    		controlAreas = new HashMap<Integer, LMControlArea>();
-    		
+    public Map<Integer, LMControlArea> getControlAreas() {
     	return controlAreas;
     }
     
@@ -151,10 +146,7 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
 	 *             properly updated when a LM program is deleted. See the note in
 	 *             the handleLMControlArea() method on this class.
 	 */
-    public HashMap<Integer, LMProgramBase> getPrograms() {
-        if( programs == null )
-            programs = new HashMap<Integer, LMProgramBase>();
-            
+    public Map<Integer, LMProgramBase> getPrograms() {
         return programs;
     }
     
@@ -163,10 +155,7 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
      *             properly updated when a LM program or group is deleted. See the 
      *             note in the handleLMControlArea() method on this class.
      */
-    public HashMap<Integer, LMGroupBase> getGroups() {
-        if( groups == null )
-            groups = new HashMap<Integer, LMGroupBase>();
-            
+    public Map<Integer, LMGroupBase> getGroups() {
         return groups;
     }
     
@@ -175,10 +164,7 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
      *             properly updated when a trigger is deleted. See the note in
 	 *             the handleLMControlArea() method on this class.
      */
-    public HashMap<Integer, LMControlAreaTrigger> getTriggers() {
-        if( triggers == null )
-            triggers = new HashMap<Integer, LMControlAreaTrigger>();
-            
+    public Map<Integer, LMControlAreaTrigger> getTriggers() {
         return triggers;
     }
     
@@ -200,22 +186,19 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
      */
     public LMProgramBase getProgram(int programId) 
     {
-    	synchronized( getControlAreas() ) {
-    	    
-    	    LMProgramBase program = null;
-    	    
-    	    Collection<LMControlArea> controlAreas = getControlAreas().values();
-            for (LMControlArea controlArea : controlAreas) {
-            	
-            	Vector<LMProgramBase> programs = controlArea.getLmProgramVector();
-                for(LMProgramBase p : programs) {
-                    if (p.getYukonID() == programId) {
-                        program = p;
-                    }
+	    LMProgramBase program = null;
+	    
+	    Collection<LMControlArea> controlAreas = getControlAreas().values();
+        for (LMControlArea controlArea : controlAreas) {
+        	
+        	Vector<LMProgramBase> programs = controlArea.getLmProgramVector();
+            for(LMProgramBase p : programs) {
+                if (p.getYukonID() == programId) {
+                    program = p;
                 }
             }
-    		return program;
-    	}
+        }
+		return program;
     }
     
     public List<LMProgramBase> getProgramsForProgramIds(List<Integer> programIds) {
@@ -232,38 +215,33 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
     }
 
 
-    private synchronized void handleLMControlArea(LMControlArea controlArea) {
+    private void handleLMControlArea(LMControlArea controlArea) {
     	CTILogger.debug( " ---> Received a control area named " + controlArea.getYukonName() );
     
         //could use some of the new concurrency code here to be fancy, but for now...
-    	boolean newInsert;
-    	synchronized ( getControlAreas() ) {
-			newInsert = getControlAreas().get(controlArea.getYukonID()) == null;
-            
-            getControlAreas().put( controlArea.getYukonID(), controlArea );
-    		
-            /*Build up hashMaps of references for all these different objects, so we don't have
-             *to iterate so much later when the new dynamic update messages come through.
-             *
-             * NOTE: The for loops below do NOT remove deleted items which causes the 
-             * group, program and trigger maps to be potentially out of date. Updates are handled
-             * correctly but deletes are not.  There is no easy fix since we only get the already 
-             * updated controlArea as input to this method so we cannot determine what (if anything) 
-             * has been deleted.  This is why the methods to get those maps have been deprecated.
-    		 */
-            for(int i = 0; i < controlArea.getLmProgramVector().size(); i++) {
-                LMProgramBase currentProgram = (LMProgramBase)controlArea.getLmProgramVector().get(i);
-                for(int j = 0; j < currentProgram.getLoadControlGroupVector().size(); j++) { 
-                    getGroups().put(((LMGroupBase)currentProgram.getLoadControlGroupVector().get(j)).getYukonID(), (LMGroupBase)currentProgram.getLoadControlGroupVector().get(j));
-                }
-                getPrograms().put(currentProgram.getYukonID(), currentProgram);
+		boolean newInsert = getControlAreas().put( controlArea.getYukonID(), controlArea ) == null;
+		
+        /*Build up hashMaps of references for all these different objects, so we don't have
+         *to iterate so much later when the new dynamic update messages come through.
+         *
+         * NOTE: The for loops below do NOT remove deleted items which causes the 
+         * group, program and trigger maps to be potentially out of date. Updates are handled
+         * correctly but deletes are not.  There is no easy fix since we only get the already 
+         * updated controlArea as input to this method so we cannot determine what (if anything) 
+         * has been deleted.  This is why the methods to get those maps have been deprecated.
+		 */
+        for(int i = 0; i < controlArea.getLmProgramVector().size(); i++) {
+            LMProgramBase currentProgram = (LMProgramBase)controlArea.getLmProgramVector().get(i);
+            for(int j = 0; j < currentProgram.getLoadControlGroupVector().size(); j++) { 
+                getGroups().put(((LMGroupBase)currentProgram.getLoadControlGroupVector().get(j)).getYukonID(), (LMGroupBase)currentProgram.getLoadControlGroupVector().get(j));
             }
+            getPrograms().put(currentProgram.getYukonID(), currentProgram);
+        }
+        
+        for(int k = 0; k < controlArea.getTriggerVector().size(); k++) {
+            getTriggers().put(((LMControlAreaTrigger)controlArea.getTriggerVector().get(k)).getYukonID(), (LMControlAreaTrigger)controlArea.getTriggerVector().get(k));
+        }
             
-            for(int k = 0; k < controlArea.getTriggerVector().size(); k++) {
-                getTriggers().put(((LMControlAreaTrigger)controlArea.getTriggerVector().get(k)).getYukonID(), (LMControlAreaTrigger)controlArea.getTriggerVector().get(k));
-            }
-            
-    	}
     	// tell all listeners that we received an updated LMControlArea
     	setChanged();
     	notifyObservers( new LCChangeEvent(	this, (newInsert ? LCChangeEvent.INSERT : LCChangeEvent.UPDATE), controlArea) );				
@@ -324,22 +302,19 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
     		streamer.register( mappings[i] );
     }
     
-    private synchronized void handleLMControlAreaChange(LMControlAreaChanged changedArea) {
+    private void handleLMControlAreaChange(LMControlAreaChanged changedArea) {
         
-    	LMControlArea currentArea;
-    	synchronized ( getControlAreas() ) {
-            currentArea = getControlAreas().get( changedArea.getPaoID());
-            
-            currentArea.setDisableFlag(changedArea.getDisableFlag());
-            currentArea.setNextCheckTime(changedArea.getNextCheckTime());
-            currentArea.setControlAreaState(changedArea.getControlAreaState());
-            currentArea.setCurrentPriority(changedArea.getCurrentPriority());
-            currentArea.setCurrentDailyStartTime(changedArea.getCurrentDailyStartTime());
-            currentArea.setCurrentDailyStopTime(changedArea.getCurrentDailyStopTime());
-            
-            for(LMTriggerChanged changedTrigger : changedArea.getTriggers()) {
-                handleLMTriggerChange(changedTrigger);
-            }
+    	LMControlArea currentArea = getControlAreas().get( changedArea.getPaoID());
+        
+        currentArea.setDisableFlag(changedArea.getDisableFlag());
+        currentArea.setNextCheckTime(changedArea.getNextCheckTime());
+        currentArea.setControlAreaState(changedArea.getControlAreaState());
+        currentArea.setCurrentPriority(changedArea.getCurrentPriority());
+        currentArea.setCurrentDailyStartTime(changedArea.getCurrentDailyStartTime());
+        currentArea.setCurrentDailyStopTime(changedArea.getCurrentDailyStopTime());
+        
+        for(LMTriggerChanged changedTrigger : changedArea.getTriggers()) {
+            handleLMTriggerChange(changedTrigger);
         }
         
         // tell all listeners that we received an updated LMControlArea
@@ -348,24 +323,21 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
         return;
     }
     
-    private synchronized void handleLMProgramChange(LMProgramChanged changedProgram) {
+    private void handleLMProgramChange(LMProgramChanged changedProgram) {
         
-    	LMProgramBase currentProgram;
-    	synchronized ( getPrograms() ) {
-            currentProgram = getPrograms().get( changedProgram.getPaoID());
-            
-            currentProgram.setDisableFlag(changedProgram.getDisableFlag());
-            if(currentProgram instanceof LMProgramDirect) {
-                ((LMProgramDirect)currentProgram).setCurrentGearNumber(changedProgram.getCurrentGearNumber()); 
-                ((LMProgramDirect)currentProgram).setLastGroupControlled(changedProgram.getLastGroupControlled());
-                ((LMProgramDirect)currentProgram).setProgramStatus(changedProgram.getProgramState());
-                ((LMProgramDirect)currentProgram).setReductionTotal(changedProgram.getReductionTotal());
-                ((LMProgramDirect)currentProgram).setDirectStartTime(changedProgram.getDirectStartTime());
-                ((LMProgramDirect)currentProgram).setDirectStopTime(changedProgram.getDirectStopTime());
-                ((LMProgramDirect)currentProgram).setNotifyActiveTime(changedProgram.getNotifyActiveTime());
-                ((LMProgramDirect)currentProgram).setNotifyInactiveTime(changedProgram.getNotifyInactiveTime());
-                ((LMProgramDirect)currentProgram).setStartedRampingOut(changedProgram.getStartedRampingOutTime());
-            }
+    	LMProgramBase currentProgram = getPrograms().get( changedProgram.getPaoID());
+        
+        currentProgram.setDisableFlag(changedProgram.getDisableFlag());
+        if(currentProgram instanceof LMProgramDirect) {
+            ((LMProgramDirect)currentProgram).setCurrentGearNumber(changedProgram.getCurrentGearNumber()); 
+            ((LMProgramDirect)currentProgram).setLastGroupControlled(changedProgram.getLastGroupControlled());
+            ((LMProgramDirect)currentProgram).setProgramStatus(changedProgram.getProgramState());
+            ((LMProgramDirect)currentProgram).setReductionTotal(changedProgram.getReductionTotal());
+            ((LMProgramDirect)currentProgram).setDirectStartTime(changedProgram.getDirectStartTime());
+            ((LMProgramDirect)currentProgram).setDirectStopTime(changedProgram.getDirectStopTime());
+            ((LMProgramDirect)currentProgram).setNotifyActiveTime(changedProgram.getNotifyActiveTime());
+            ((LMProgramDirect)currentProgram).setNotifyInactiveTime(changedProgram.getNotifyInactiveTime());
+            ((LMProgramDirect)currentProgram).setStartedRampingOut(changedProgram.getStartedRampingOutTime());
         }
         
         // tell all listeners that we had an update
@@ -375,26 +347,23 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
         return;
     }
     
-    private synchronized void handleLMGroupChange(LMGroupChanged changedGroup) {
+    private void handleLMGroupChange(LMGroupChanged changedGroup) {
         
-    	LMGroupBase currentGroup;
-    	synchronized ( getGroups() ) {
-            currentGroup = getGroups().get( changedGroup.getPaoID());
+    	LMGroupBase currentGroup = getGroups().get( changedGroup.getPaoID());
             
-            if(currentGroup instanceof LMDirectGroupBase) {
-                ((LMDirectGroupBase)currentGroup).setDisableFlag(changedGroup.getDisableFlag());
-                ((LMDirectGroupBase)currentGroup).setGroupControlState(changedGroup.getGroupControlState());
-                ((LMDirectGroupBase)currentGroup).setCurrentHoursDaily(changedGroup.getCurrentHoursDaily());
-                ((LMDirectGroupBase)currentGroup).setCurrentHoursMonthly(changedGroup.getCurrentHoursMonthly());
-                ((LMDirectGroupBase)currentGroup).setCurrentHoursSeasonal(changedGroup.getCurrentHoursSeasonal());
-                ((LMDirectGroupBase)currentGroup).setCurrentHoursAnnually(changedGroup.getCurrentHoursAnnually());
-                ((LMDirectGroupBase)currentGroup).setLastControlSent(changedGroup.getLastControlSent());
-                ((LMDirectGroupBase)currentGroup).setControlStartTime(changedGroup.getControlStartTime().getTime());
-                ((LMDirectGroupBase)currentGroup).setControlCompleteTime(changedGroup.getControlCompleteTime().getTime());
-                ((LMDirectGroupBase)currentGroup).setNextControlTime(changedGroup.getNextControlTime().getTime());
-                ((LMDirectGroupBase)currentGroup).setInternalState(changedGroup.getInternalState());
-                ((LMDirectGroupBase)currentGroup).setDailyOps(changedGroup.getDailyOps());
-            }
+        if(currentGroup instanceof LMDirectGroupBase) {
+            ((LMDirectGroupBase)currentGroup).setDisableFlag(changedGroup.getDisableFlag());
+            ((LMDirectGroupBase)currentGroup).setGroupControlState(changedGroup.getGroupControlState());
+            ((LMDirectGroupBase)currentGroup).setCurrentHoursDaily(changedGroup.getCurrentHoursDaily());
+            ((LMDirectGroupBase)currentGroup).setCurrentHoursMonthly(changedGroup.getCurrentHoursMonthly());
+            ((LMDirectGroupBase)currentGroup).setCurrentHoursSeasonal(changedGroup.getCurrentHoursSeasonal());
+            ((LMDirectGroupBase)currentGroup).setCurrentHoursAnnually(changedGroup.getCurrentHoursAnnually());
+            ((LMDirectGroupBase)currentGroup).setLastControlSent(changedGroup.getLastControlSent());
+            ((LMDirectGroupBase)currentGroup).setControlStartTime(changedGroup.getControlStartTime().getTime());
+            ((LMDirectGroupBase)currentGroup).setControlCompleteTime(changedGroup.getControlCompleteTime().getTime());
+            ((LMDirectGroupBase)currentGroup).setNextControlTime(changedGroup.getNextControlTime().getTime());
+            ((LMDirectGroupBase)currentGroup).setInternalState(changedGroup.getInternalState());
+            ((LMDirectGroupBase)currentGroup).setDailyOps(changedGroup.getDailyOps());
         }
         
         // tell all listeners that we received an update
@@ -404,23 +373,20 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
         return;
     }
     
-    private synchronized void handleLMTriggerChange(LMTriggerChanged changedTrigger) {
+    private void handleLMTriggerChange(LMTriggerChanged changedTrigger) {
         
-    	LMControlAreaTrigger currentTrigger;
-    	synchronized ( getTriggers() ) {
-            currentTrigger = getTriggers().get( changedTrigger.getPaoID());
+    	LMControlAreaTrigger currentTrigger = getTriggers().get( changedTrigger.getPaoID());
+        
+        if(currentTrigger != null) {
+            currentTrigger.setTriggerNumber(changedTrigger.getTriggerNumber());
+            currentTrigger.setPointValue(changedTrigger.getPointValue());
+            currentTrigger.setLastPointValueTimeStamp(changedTrigger.getLastPointValueTimestamp().getTime());
+            currentTrigger.setNormalState(changedTrigger.getNormalState());
+            currentTrigger.setThreshold(changedTrigger.getThreshold());
+            currentTrigger.setPeakPointValue(changedTrigger.getPeakPointValue());
+            currentTrigger.setLastPeakPointValueTimeStamp(changedTrigger.getLastPeakPointValueTimestamp().getTime());
+            currentTrigger.setProjectedPointValue(changedTrigger.getProjectedPointValue());
             
-            if(currentTrigger != null) {
-                currentTrigger.setTriggerNumber(changedTrigger.getTriggerNumber());
-                currentTrigger.setPointValue(changedTrigger.getPointValue());
-                currentTrigger.setLastPointValueTimeStamp(changedTrigger.getLastPointValueTimestamp().getTime());
-                currentTrigger.setNormalState(changedTrigger.getNormalState());
-                currentTrigger.setThreshold(changedTrigger.getThreshold());
-                currentTrigger.setPeakPointValue(changedTrigger.getPeakPointValue());
-                currentTrigger.setLastPeakPointValueTimeStamp(changedTrigger.getLastPeakPointValueTimestamp().getTime());
-                currentTrigger.setProjectedPointValue(changedTrigger.getProjectedPointValue());
-                
-            }
         }
         
         // tell all listeners that we received an update
