@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/18/2009 4:27:48 PM                         */
+/* Created on:     2/19/2009 4:57:44 PM                         */
 /*==============================================================*/
 
 
@@ -9198,6 +9198,7 @@ INSERT INTO YukonRoleProperty VALUES(-20013,-200,'Edit Device Config','false','C
 INSERT INTO YukonRoleProperty VALUES(-20014,-200,'View Device Config','true','Controls the ability to view existing device configurations');
 INSERT INTO YukonRoleProperty VALUES(-20015,-200,'Manage Indexes','true','Controls access to manually build Lucene indexes.'); 
 INSERT INTO YukonRoleProperty VALUES(-20016,-200,'View Logs','true','Controls access to view or download log files.');
+INSERT INTO YukonRoleProperty VALUES(-20017,-200,'Initialize Energy Company Setup','false','Controls if Energy Company needs to be initialized. Property should not be changed manually, but rather will be controlled by the system.');
 
 /* Operator Metering Role Properties*/
 INSERT INTO YukonRoleProperty VALUES (-20203,-202,'Enable Bulk Importer','true','Allows access to the Bulk Importer');
@@ -9206,7 +9207,6 @@ INSERT INTO YukonRoleProperty VALUES (-20207,-202,'Move In/Move Out Auto Archivi
 INSERT INTO YukonRoleProperty VALUES (-20208,-202,'Move In/Move Out','true','Controls access to process a move in/move out');
 INSERT INTO YukonRoleProperty VALUES (-20209,-202,'Profile Collection Scanning','true','Controls access to start/stop scanning of profile data'); 
 INSERT INTO YukonRoleProperty VALUES (-20210,-202,'High Bill Complaint','true','Controls access to process a high bill complaint'); 
-
 
 /* Operator Esubstation Drawings Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-20600,-206,'View Drawings','true','Controls viewing of Esubstations drawings');
