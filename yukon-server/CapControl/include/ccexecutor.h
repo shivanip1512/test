@@ -73,10 +73,7 @@ private:
     void SendAllData();
     void ReturnCapToOriginalFeeder();
     void ResetDailyOperations();
-    void WaiveSubstationBus();
-    void UnwaiveSubstationBus();
-    void WaiveFeeder();
-    void UnwaiveFeeder();
+    void ConfirmFeeder();
     void EnableOvUv();
     void DisableOvUv();
     void DeleteItem();
