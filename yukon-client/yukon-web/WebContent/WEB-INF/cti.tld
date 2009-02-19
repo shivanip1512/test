@@ -126,9 +126,19 @@
   </tag>
   
   <tag>
-    <name>checkGlobalProperty</name>
+    <name>checkGlobalRolesAndProperties</name>
     <tag-class>com.cannontech.web.taglib.CheckGlobalRolesAndPropertiesTag</tag-class>
     <body-content>scriptless</body-content>
+    <attribute>
+        <name>value</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>    
+  </tag>
+
+  <tag>
+    <name>checkRolesAndProperties</name>
+    <tag-class>com.cannontech.web.taglib.CheckRolesAndPropertiesTag</tag-class>
     <attribute>
         <name>value</name>
         <required>true</required>

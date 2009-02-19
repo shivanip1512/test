@@ -312,7 +312,8 @@ public enum YukonRoleProperty {
     OPERATOR_OPT_OUT_ADMIN_CHANGE_ENABLE(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.OPT_OUT_ADMIN_CHANGE_ENABLE, booleanType()),
     OPERATOR_OPT_OUT_ADMIN_CANCEL_CURRENT(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.OPT_OUT_ADMIN_CANCEL_CURRENT, booleanType()),
     OPERATOR_OPT_OUT_ADMIN_CHANGE_COUNTS(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.OPT_OUT_ADMIN_CHANGE_COUNTS, booleanType()),
-    OPERATOR_THERMOSTAT_SCHEDULE_5_2(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.THERMOSTAT_SCHEDULE_5_2, stringType()),
+    OPERATOR_THERMOSTAT_SCHEDULE_5_2(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.THERMOSTAT_SCHEDULE_5_2, booleanType()),
+    OPERATOR_ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY, booleanType()),
     
     BULK_IMPORT_OPERATION(DEVICE_ACTIONS, com.cannontech.roles.operator.DeviceActionsRole.BULK_IMPORT_OPERATION, booleanType()),
     BULK_UPDATE_OPERATION(DEVICE_ACTIONS, com.cannontech.roles.operator.DeviceActionsRole.BULK_UPDATE_OPERATION, booleanType()),

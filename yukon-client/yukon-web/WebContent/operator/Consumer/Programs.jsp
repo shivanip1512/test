@@ -1,3 +1,6 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+
 <%@ include file="include/StarsHeader.jsp" %>
 <%
 	boolean inWizard = request.getParameter("Wizard") != null;
@@ -68,12 +71,12 @@
 <% } %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
-              <% boolean allowMultiProgramSelect = false; //TODO: ConsumerInfoRole.ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY;
-              if(allowMultiProgramSelect) { %>
-              	<%@ include file="../../include/program_enrollment_multi.jspf" %>
-              <%} else {%>	
-              	<%@ include file="../../include/program_enrollment.jspf" %>	
-              <%}%>
+              <cti:checkRolesAndProperties value="OPERATOR_ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY">
+              	  <%@ include file="../../include/program_enrollment_multi.jspf" %>
+              </cti:checkRolesAndProperties>
+              <cti:checkRolesAndProperties value="!OPERATOR_ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY">
+              	  <%@ include file="../../include/program_enrollment.jspf" %>	
+              </cti:checkRolesAndProperties>
               <div align="center" class="SubtitleHeader">Program History</div>
               <table width="450" border="1" cellspacing="0" align="center" cellpadding="3">
                 <tr> 

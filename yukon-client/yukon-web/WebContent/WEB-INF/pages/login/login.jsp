@@ -116,7 +116,7 @@
                                 </td>
                             </tr>
                         </table>
-                        <cti:checkGlobalProperty value="ENABLE_PASSWORD_RECOVERY">
+                        <cti:checkGlobalRolesAndProperties value="ENABLE_PASSWORD_RECOVERY">
 	                        <cti:isStarsExist>
 	                            <div class="loginHelp">
 	                                <a href="<cti:url value="/pwordreq.jsp"/>">
@@ -124,7 +124,7 @@
 	                                </a>
 	                            </div>
 	                        </cti:isStarsExist>
-                        </cti:checkGlobalProperty>
+                        </cti:checkGlobalRolesAndProperties>
                         <input type="hidden" name="REDIRECTED_FROM" value="${param.REDIRECTED_FROM}">
                         <input type="hidden" name="ACTION" value="LOGIN">
                     </form>

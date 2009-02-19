@@ -10,7 +10,7 @@ import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionServi
 
 
 /**
- * If the property is false then the body of the tag is evaluated, otherwise it is skipped.
+ * If at least one property is true then the body of the tag is evaluated, otherwise it is skipped.
  * @see CheckProperty
  */
 @Configurable("checkGlobalRolesAndPropertiesTagPrototype")

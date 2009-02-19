@@ -8,7 +8,8 @@
 	String inWizardStr = (inWizard)? "&Wizard=true" : "";
 %>
 
-<script language="JavaScript">
+
+<%@page import="com.cannontech.roles.operator.ConsumerInfoRole"%><script language="JavaScript">
 var numEnrolledProg = 0;
 
 function changeCategory(checkBox, index) {
@@ -100,10 +101,8 @@ function confirmCancel() {
     if (isOperator) { %>
                   Select the check boxes and corresponding radio button of the programs this 
                   customer would like to be enrolled in.
-<% } else { %>
-                  <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_DESC_ENROLLMENT %>"/> 
-<% notOperator = true;
-} %>
+<% } %>
+     
                   <br>
                   <br>
                   </span> 
@@ -169,7 +168,7 @@ function confirmCancel() {
 		
 		String checkBoxDisabled = "";
 		String radioBtnDisabled = "";
-        if (!DaoFactory.getAuthDao().checkRoleProperty( lYukonUser, ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_ENROLLMENT )) {
+        if (!DaoFactory.getAuthDao().checkRoleProperty( lYukonUser, ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_ENROLLMENT )) {
 			checkBoxDisabled = "disabled";
 			if (program == null) radioBtnDisabled = "disabled";
 		}
