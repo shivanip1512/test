@@ -23,11 +23,11 @@ public class PowerSupplierFactory {
 		PowerSupplier powerSupplier = new PowerSupplier(powerSupplierType);
 		
 		// SET DATA POINT IDS
-		int currentLoadObjectId = getObjectIdForDataType(powerSupplierType, DataTypeEnum.CURRENT_LOAD);
-		int currentIhObjectId = getObjectIdForDataType(powerSupplierType, DataTypeEnum.CURRENT_IH);
-		int loadToPeakObjectId = getObjectIdForDataType(powerSupplierType, DataTypeEnum.LOAD_TO_PEAK);
-		int peakIhLoadObjectId = getObjectIdForDataType(powerSupplierType, DataTypeEnum.PEAK_IH_LOAD);
-		int peakDayTimestampObjectId = getObjectIdForDataType(powerSupplierType, DataTypeEnum.PEAK_DAY_TIMESTAMP);
+		int currentLoadObjectId = DataTypeEnum.CURRENT_LOAD.getObjectIdForPowerSupplierType(powerSupplierType);
+		int currentIhObjectId = DataTypeEnum.CURRENT_IH.getObjectIdForPowerSupplierType(powerSupplierType);
+		int loadToPeakObjectId = DataTypeEnum.LOAD_TO_PEAK.getObjectIdForPowerSupplierType(powerSupplierType);
+		int peakIhLoadObjectId = DataTypeEnum.PEAK_IH_LOAD.getObjectIdForPowerSupplierType(powerSupplierType);
+		int peakDayTimestampObjectId = DataTypeEnum.PEAK_DAY_TIMESTAMP.getObjectIdForPowerSupplierType(powerSupplierType);
 		
 		powerSupplier.setCurrentLoadPointId(getPointIdForObjectId(currentLoadObjectId));
 		powerSupplier.setCurrentIhPointId(getPointIdForObjectId(currentIhObjectId));
@@ -55,7 +55,7 @@ public class PowerSupplierFactory {
 			// loop per data type
 			for (HourlyDataTypeEnum dataType : HourlyDataTypeEnum.values()) {
 				
-				int objectId = getObjectIdForHourEnd(powerSupplierType, i, dataType);
+				int objectId = dataType.getObjectIdForHourEndForPowerSupplier(i, powerSupplierType);
 				int pointId = getPointIdForObjectId(objectId);
 				
 				// setup objectId to pointId maps
@@ -92,43 +92,6 @@ public class PowerSupplierFactory {
 		}
 		
 		return pointId;
-	}
-	
-	private int getObjectIdForDataType(PowerSuppliersEnum powerSupplierType, DataTypeEnum dataType) {
-		
-		if (dataType.equals(DataTypeEnum.CURRENT_LOAD)) {
-			return powerSupplierType.getCurrentLoadId();
-		} else if (dataType.equals(DataTypeEnum.CURRENT_IH)) {
-			return powerSupplierType.getCurrentIhId();
-		} else if (dataType.equals(DataTypeEnum.LOAD_TO_PEAK)) {
-			return powerSupplierType.getLoadToPeakId();
-		} else if (dataType.equals(DataTypeEnum.PEAK_IH_LOAD)) {
-			return powerSupplierType.getPeakIhLoadId();
-		} else if (dataType.equals(DataTypeEnum.PEAK_DAY_TIMESTAMP)) {
-			return powerSupplierType.getPeakDayTimestampId();
-		} else {
-			throw new IllegalArgumentException("Unsupported DataTypeEnum: " + dataType.toString());
-		}
-		
-	}
-
-	private int getObjectIdForHourEnd(PowerSuppliersEnum powerSupplierType, int hr, HourlyDataTypeEnum dataType) throws IllegalArgumentException {
-
-		int startObjectId;
-		
-		if (dataType.equals(HourlyDataTypeEnum.TODAY_INTEGRATED_HOURLY_DATA)) {
-			startObjectId = powerSupplierType.getTodayIntegratedHourlyIdStart();
-		} else if (dataType.equals(HourlyDataTypeEnum.PEAK_DAY_INTEGRATED_HOURLY_DATA)) {
-			startObjectId = powerSupplierType.getPeakDayIntegratedHourlyIdStart();
-		} else if (dataType.equals(HourlyDataTypeEnum.TODAY_LOAD_CONTROL_PREDICATION_DATA)) {
-			startObjectId = powerSupplierType.getTodayLoadControlPredicationIdStart();
-		} else if (dataType.equals(HourlyDataTypeEnum.TOMORROW_LOAD_CONTROL_PREDICTION_DATA)) {
-			startObjectId = powerSupplierType.getTomorrowLoadControlPredicationIdStart();
-		} else {
-			throw new IllegalArgumentException("Unsupported HourlyDataTypeEnum: " + dataType.toString());
-		}
-		
-		return startObjectId + (hr - 1);
 	}
 	
 	@Autowired
