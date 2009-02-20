@@ -255,7 +255,6 @@ public abstract class BaseNotificationStrategy extends StrategyBase implements N
         return event;
     }
 
-	//THIS METHOD IS INCOMPLETE (AND PROBABLY WRONG), IT HAS BEEN PLACED HERE AS A PLACEHOLDER
     public CurtailmentEvent splitEvent(final CurtailmentRemoveCustomerBuilder builder, final LiteYukonUser user) 
     throws EventModificationException {
         final CurtailmentEvent origEvent = builder.getOriginalEvent();
@@ -330,10 +329,14 @@ public abstract class BaseNotificationStrategy extends StrategyBase implements N
 
         getNotificationProxy().sendCurtailmentNotification(splitEvent.getId(), CurtailmentEventAction.ADJUSTING);
         sendProgramNotifications(splitEvent, curtailmentEventParticipantDao.getForEvent(splitEvent), "split");
-        return origEvent;
+        postSplitEvent(origEvent, splitEvent);
+        return splitEvent;
     }
     
-    @Transactional
+    protected void postSplitEvent(CurtailmentEvent origEvent, CurtailmentEvent splitEvent) {
+	}
+
+	@Transactional
     public void deleteEvent(final CurtailmentEvent event, LiteYukonUser user) {
         if (!canEventBeDeleted(event, user)) {
             throw new RuntimeException("Event can't be deleted right now by this user");

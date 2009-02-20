@@ -23,7 +23,7 @@ public class PointDataRegistrationServiceImpl implements PointDataRegistrationSe
 	    String spanStr = "<span title=\"pointId:" + pointId + "\" cannonUpdater=\"" + 
 	    updateValue.getFullIdentifier() + "\" class=\"pointValueTagSpan\" >";
 	    
-	    spanStr += updateValue.getValue();
+	    spanStr += (updateValue.isUnavailable() ? "..." : updateValue.getValue());
 	    spanStr += "</span>";
 	    return spanStr;
     }

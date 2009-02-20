@@ -66,7 +66,19 @@ public abstract class BaseDirectStrategy extends BaseNotificationStrategy {
         });
         return event;
     }
-    
+
+    @Override
+    protected void postSplitEvent(CurtailmentEvent origEvent, final CurtailmentEvent splitEvent) {
+    	super.postSplitEvent(origEvent, splitEvent);
+        sendMessages(splitEvent, new DoWithId() {
+            public void forProgram(int lmProgramId) {
+                CTILogger.debug("Sending changeProgramStop for event: " + splitEvent);
+                CTILogger.debug("  lmProgramId=" + lmProgramId + ", stopTime=" + splitEvent.getStopTime());
+                loadManagementService.stopProgram(lmProgramId);
+            }
+        });
+    };
+
     @Override
     protected void doBeforeDeleteEvent(final CurtailmentEvent event, LiteYukonUser user) {
         super.doBeforeDeleteEvent(event, user);
