@@ -29,8 +29,7 @@ function copyAddress(form) {
 		form.BCity.value = form.SCity.value;
 		form.BState.value = form.SState.value;
 		form.BZip.value = form.SZip.value;
-	}
-	else {
+	} else {
 		form.BAddr1.value = "";
 		form.BAddr2.value = "";
 		form.BCity.value = "";
@@ -116,6 +115,16 @@ function setCommercial() {
 
 	setContentChanged(true)
 }
+
+function enableBillingFields(form){
+	var checked = false;
+	form.BAddr1.disabled = checked;
+	form.BAddr2.disabled = checked;
+	form.BCity.disabled = checked;
+	form.BState.disabled = checked;
+	form.BZip.disabled = checked;
+}
+
 </script>
 </head>
 
@@ -540,7 +549,7 @@ function setCommercial() {
 	                </cti:checkProperty>
                   	<td width="15%"> 
                     	<div align="center"> 
-                      		<input type="reset" name="Reset" value="Reset" onclick="setContentChanged(false)">
+                      		<input type="reset" name="Reset" value="Reset" onclick="setContentChanged(false);enableBillingFields(this.form);">
                     	</div>
                   	</td>
                   	<cti:checkProperty property="ConsumerInfoRole.ALLOW_ACCOUNT_EDITING">
