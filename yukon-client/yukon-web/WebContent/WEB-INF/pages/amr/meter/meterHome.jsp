@@ -8,7 +8,9 @@
 	<cti:breadCrumbs>
 		<cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
 		<cti:crumbLink url="/spring/meter/start" title="Metering" />
-		<cti:crumbLink url="/spring/meter/search" title="Search" />
+		<c:if test="${searchResults != null}">
+			<cti:crumbLink url="${searchResults}" title="Search" />
+		</c:if>
     	<cti:crumbLink><cti:deviceName deviceId="${deviceId}"></cti:deviceName></cti:crumbLink>
 </cti:breadCrumbs>
 

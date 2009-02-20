@@ -9,9 +9,11 @@
 <cti:standardPage title="Move Out Page" module="amr">
     <cti:standardMenu menuSelection="meters" />
     <cti:breadCrumbs>
-        <cti:crumbLink url="/operator/Operations.jsp"
-            title="Operations Home" />
-        <cti:crumbLink url="/spring/meter/search" title="Meters" />
+		<cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
+		<cti:crumbLink url="/spring/meter/start" title="Metering" />
+		<c:if test="${searchResults != null}">
+			<cti:crumbLink url="${searchResults}" title="Search" />
+		</c:if>
         <cti:crumbLink url="/spring/meter/home?deviceId=${meter.deviceId}">
             <cti:deviceName deviceId="${meter.deviceId}"></cti:deviceName>
         </cti:crumbLink>

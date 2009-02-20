@@ -285,6 +285,7 @@
    		   <link>/spring/macsscheduler/schedules/view</link>	
    		</option>
 		<option id="devicegroups">
+		  <link>/spring/group/editor/home</link>
 		  <links>
 		    <option id="home">
               <link>/spring/group/editor/home</link>
