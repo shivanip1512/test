@@ -318,7 +318,14 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 	}
 	
 	public static String getPointQualityLetter(PointQuality pointQuality) {
-		return getQualityDescription(pointQuality).getValue().substring(0, 1);
+		
+		if (PointQuality.NonUpdated.equals(pointQuality)) {
+			return "F";
+		} else if (PointQuality.Manual.equals(pointQuality)) {
+			return "M";
+		} else {
+			return "";
+		}
 	}
 
 	/**
