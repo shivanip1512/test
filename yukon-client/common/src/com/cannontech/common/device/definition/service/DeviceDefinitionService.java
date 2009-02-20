@@ -107,6 +107,4 @@ public interface DeviceDefinitionService {
     public abstract Set<PointTemplate> getNewPointTemplatesForTransfer(DeviceBase device,
             DeviceDefinition deviceDefinition);
     
-    public abstract YukonDevice getYukonDeviceForDevice(DeviceBase oldDevice);
-
 }

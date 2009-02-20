@@ -261,7 +261,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
 
             boolean loadProfileExists = false;
             try {
-                YukonDevice meter = deviceDefinitionService.getYukonDeviceForDevice(oldDevice);
+                YukonDevice meter = deviceDao.getYukonDeviceForDevice(oldDevice);
                 attributeService.getPointForAttribute(meter, BuiltInAttribute.LOAD_PROFILE);
                 loadProfileExists = true;
             } catch (NotFoundException e) {
@@ -319,7 +319,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
 
         Set<PointTemplate> removeTemplates = deviceDefinitionService.getPointTemplatesToRemove(device, newDefinition);
 
-        YukonDevice meter = deviceDefinitionService.getYukonDeviceForDevice(device);
+        YukonDevice meter = deviceDao.getYukonDeviceForDevice(device);
 
         for (PointTemplate template : removeTemplates) {
             LitePoint litePoint = pointService.getPointForDevice(meter, template.getDevicePointIdentifier());
@@ -365,7 +365,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         Set<PointTemplate> newTemplates = deviceDefinitionService.getNewPointTemplatesForTransfer(device,
                                                                                newDefinition);
 
-        YukonDevice meter = deviceDefinitionService.getYukonDeviceForDevice(device);
+        YukonDevice meter = deviceDao.getYukonDeviceForDevice(device);
 
         for (PointTemplate template : transferTemplates) {
             LitePoint litePoint = pointService.getPointForDevice(meter, template.getDevicePointIdentifier());

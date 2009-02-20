@@ -16,6 +16,7 @@ import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -314,6 +315,15 @@ public String getFormattedName(int deviceId) {
         LiteYukonPAObject paoObj = paoDao.getLiteYukonPAO(deviceId);
         return paoObj.getPaoName();
     }
+}
+
+public YukonDevice getYukonDeviceForDevice(DeviceBase oldDevice) {
+    YukonDevice device = new YukonDevice();
+    device.setDeviceId(oldDevice.getPAObjectID());
+    String typeStr = oldDevice.getPAOType();
+    int deviceType = paoGroupsWrapper.getDeviceType(typeStr);
+    device.setType(deviceType);
+    return device;
 }
 
 private void processDeviceUpdateDBChange(YukonDevice device) {

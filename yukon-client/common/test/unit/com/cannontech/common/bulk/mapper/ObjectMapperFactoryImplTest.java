@@ -13,6 +13,7 @@ import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
@@ -438,6 +439,11 @@ public class ObjectMapperFactoryImplTest extends TestCase {
         @Override
         public String getFormattedName(YukonDevice device) {
             throw new UnsupportedOperationException("Method not implemented");
+        }
+        
+        @Override
+        public YukonDevice getYukonDeviceForDevice(DeviceBase oldDevice) {
+        	throw new UnsupportedOperationException("Method not implemented");
         }
 
     }

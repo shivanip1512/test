@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.definition.service.SimpleDeviceDefinitionService;
+import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
@@ -149,4 +150,6 @@ public interface DeviceDao {
      * @return
      */
     public String getFormattedName(int deviceId);
+    
+    public YukonDevice getYukonDeviceForDevice(DeviceBase oldDevice);
 }
