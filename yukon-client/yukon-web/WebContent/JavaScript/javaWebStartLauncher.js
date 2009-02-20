@@ -15,6 +15,7 @@ function jwsLaunch(url) {
   // add applet to page
   // <APPLET CODE="JavaDetector.class"  codebase="/JavaScript/" NAME="myApplet" HEIGHT=0 WIDTH=0></APPLET>
   var applet = document.createElement("applet");
+  applet.setAttribute("id", "javaDetectorApplet");
   applet.setAttribute("code", "JavaDetector.class");
   applet.setAttribute("codebase", "/JavaScript/");
   applet.setAttribute("name", "myApplet");
@@ -28,7 +29,16 @@ function jwsLaunch(url) {
   setTimeout(function() {
     if (cancelCheckAtStart != jwsCancelCheck) return;
     var thisApplet = document.getElementsByTagName("applet")[0];
-    if (thisApplet.getJavaVersion) {
+    
+    var versionFound = false;
+    var browserName=navigator.appName;
+    if (browserName=="Microsoft Internet Explorer") {
+    	versionFound = ((typeof thisApplet.getJavaVersion != 'undefined') && (thisApplet.getJavaVersion))
+    } else {
+    	versionFound = thisApplet.getJavaVersion
+    }
+    
+    if (versionFound) {
         var javaVersion = thisApplet.getJavaVersion();
         if (javaVersion.indexOf('.') != -1) {
           createCookie("javainstalled", "true");
