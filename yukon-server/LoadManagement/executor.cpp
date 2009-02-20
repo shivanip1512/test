@@ -533,8 +533,8 @@ void CtiLMCommandExecutor::ChangeDailyStartTime()
                     char tempchar[80] = "";
                     string text = ("User Daily Start Change");
                     string additional = ("New Daily Start Time: ");
-                    LONG startTimeHours = newStartTime / 3600;
-                    LONG startTimeMinutes = (newStartTime - (startTimeHours * 3600)) / 60;
+                    LONG startTimeHours = currentLMControlArea->getCurrentDailyStartTime().hour();
+                    LONG startTimeMinutes = currentLMControlArea->getCurrentDailyStartTime().minute();
                     _snprintf(tempchar,80,"%d",startTimeHours);
                     additional += tempchar;
                     additional += ":";
@@ -581,8 +581,8 @@ void CtiLMCommandExecutor::ChangeDailyStopTime()
                     char tempchar[80] = "";
                     string text = ("User Daily Stop Change");
                     string additional = ("New Daily Stop Time: ");
-                    LONG stopTimeHours = newStopTime / 3600;
-                    LONG stopTimeMinutes = (newStopTime - (stopTimeHours * 3600)) / 60;
+                    LONG stopTimeHours = currentLMControlArea->getCurrentDailyStopTime().hour();
+                    LONG stopTimeMinutes = currentLMControlArea->getCurrentDailyStopTime().minute();
                     _snprintf(tempchar,80,"%d",stopTimeHours);
                     additional += tempchar;
                     additional += ":";
@@ -1724,13 +1724,10 @@ void CtiLMManualControlRequestExecutor::StopCurtailmentProgram(CtiLMProgramCurta
  */
 void CtiLMManualControlRequestExecutor::CoerceStartStopTime(CtiLMProgramBaseSPtr program, CtiTime& start, CtiTime& stop, CtiLMControlArea *controlArea)
 {
-    CtiTime beginningOfDay(0,0,0);//This creates a time of today, at 0:00:00.00
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
         dout << CtiTime() << " - before coerce start: " << start.asString() << " stop: " << stop.asString() << endl;
     }
-    LONG startSecondsFromBeginningOfDay = start.seconds() - beginningOfDay.seconds();
-    LONG stopSecondsFromBeginningOfDay = stop.seconds() - beginningOfDay.seconds();
 
     std::vector<CtiLMProgramControlWindow*>& control_windows = program->getLMProgramControlWindows();
 
@@ -1739,13 +1736,13 @@ void CtiLMManualControlRequestExecutor::CoerceStartStopTime(CtiLMProgramBaseSPtr
     {
         // Do the start, stop times fit into this control window?  if not maybe the next one 
         CtiLMProgramControlWindow* cw = (CtiLMProgramControlWindow*) control_windows[i];
-        if( startSecondsFromBeginningOfDay <= cw->getAvailableStopTime() )
+        if( start <= cw->getAvailableStopTime() )
         {
             //Lets pick this control window, figure out the start and stop
-            if( startSecondsFromBeginningOfDay <= cw->getAvailableStartTime() )   // start is before beginning of control window, set the start time to the
+            if( start <= cw->getAvailableStartTime() )   // start is before beginning of control window, set the start time to the
             {
                 // beginning of this control window
-                start += (cw->getAvailableStartTime() - startSecondsFromBeginningOfDay);
+                start = cw->getAvailableStartTime();
                 found_cw = true;
             }
             else
@@ -1754,9 +1751,9 @@ void CtiLMManualControlRequestExecutor::CoerceStartStopTime(CtiLMProgramBaseSPtr
                 found_cw = true;                
             }
 
-            if( stopSecondsFromBeginningOfDay >= cw->getAvailableStopTime() )  // stop time is outside this control window, shorten it up
+            if( stop >= cw->getAvailableStopTime() )  // stop time is outside this control window, shorten it up
             {
-                stop += (-1*(stopSecondsFromBeginningOfDay - cw->getAvailableStopTime()));
+                stop = cw->getAvailableStopTime();
             }
             else
             {
@@ -1781,21 +1778,20 @@ void CtiLMManualControlRequestExecutor::CoerceStartStopTime(CtiLMProgramBaseSPtr
 
     if( controlArea != NULL )
     {
-        startSecondsFromBeginningOfDay = start.seconds() - beginningOfDay.seconds();
-        stopSecondsFromBeginningOfDay = stop.seconds() - beginningOfDay.seconds();
+        CtiTime beginningOfDay(0,0,0);
 
-        if( startSecondsFromBeginningOfDay < controlArea->getCurrentDailyStartTime() )
+        if( start < controlArea->getCurrentDailyStartTime() )
         {
-            start += (controlArea->getCurrentDailyStartTime() - startSecondsFromBeginningOfDay);
+            start = controlArea->getCurrentDailyStartTime();
         }
 
-        if( controlArea->getCurrentDailyStopTime() < controlArea->getCurrentDailyStartTime() && stopSecondsFromBeginningOfDay > (controlArea->getCurrentDailyStopTime() + 24*60*60) )
+        if( controlArea->getCurrentDailyStopTime() < controlArea->getCurrentDailyStartTime() && stop > (controlArea->getCurrentDailyStopTime().addDays(1)) )
         {
-            stop -= (stopSecondsFromBeginningOfDay - (controlArea->getCurrentDailyStopTime() + 24*60*60));
+            stop = controlArea->getCurrentDailyStopTime().addDays(1);
         }
-        else if( controlArea->getCurrentDailyStopTime() > controlArea->getCurrentDailyStartTime() && stopSecondsFromBeginningOfDay > controlArea->getCurrentDailyStopTime() )
+        else if( controlArea->getCurrentDailyStopTime() > controlArea->getCurrentDailyStartTime() && stop > controlArea->getCurrentDailyStopTime() )
         {
-            stop -= (stopSecondsFromBeginningOfDay - controlArea->getCurrentDailyStopTime());
+            stop = controlArea->getCurrentDailyStopTime();
         }
 
     }

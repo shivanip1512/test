@@ -462,9 +462,9 @@ bool CtiLMProgramConstraintChecker::checkControlWindows(ULONG proposed_start_fro
         string result = "The program cannot run outside of its prescribed control windows.  The proposed stop time of ";
         result += CtiTime(proposed_stop_from_1901).asString();
         result += " is outside the control window that runs from ";
-        result += CtiTime(start_ctrl_window->getAvailableStartTime() + startTime.seconds()).asString();
+        result += start_ctrl_window->getAvailableStartTime().asString();
         result += " to ";
-        result += CtiTime(start_ctrl_window->getAvailableStopTime() + startTime.seconds()).asString();
+        result += start_ctrl_window->getAvailableStopTime().asString();
         _results.push_back(result);
 
         return false;
@@ -475,9 +475,9 @@ bool CtiLMProgramConstraintChecker::checkControlWindows(ULONG proposed_start_fro
         string result = "The program cannot run outside of its prescribed control windows.  The proposed start time of ";
         result += CtiTime(proposed_start_from_1901).asString();
         result += " is outside the control window that runs from ";
-        result += CtiTime(stop_ctrl_window->getAvailableStartTime() + startTime.seconds()).asString();
+        result += stop_ctrl_window->getAvailableStartTime().asString();
         result += " to ";
-        result += CtiTime(stop_ctrl_window->getAvailableStopTime() + startTime.seconds()).asString();
+        result += stop_ctrl_window->getAvailableStopTime().asString();
         _results.push_back(result);
 
         return false;
@@ -493,10 +493,8 @@ bool CtiLMProgramConstraintChecker::checkControlWindows(ULONG proposed_start_fro
 bool CtiLMProgramConstraintChecker::checkControlAreaControlWindows(CtiLMControlArea &controlArea, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901)
 {
     bool retVal = true;
-    // We want the seconds at the beginning of the day in which the program is to start
     CtiTime startTime(proposed_start_from_1901);
-    CtiDate startDate(startTime);
-    startTime = CtiTime(startDate);
+    CtiTime stopTime(proposed_stop_from_1901);
 
     // The stop time could be in the infinate future, in that case
     // I guess we want to ignore the problem ... (auto control reduceprogramload does this)
@@ -506,55 +504,53 @@ bool CtiLMProgramConstraintChecker::checkControlAreaControlWindows(CtiLMControlA
         proposed_stop_from_1901 = proposed_start_from_1901;
     }
 
-    LONG startSecondsFromDayBegin = proposed_start_from_1901 - startTime.seconds();
-    LONG stopSecondsFromDayBegin = proposed_stop_from_1901 - startTime.seconds();
-
-    if( controlArea.getCurrentDailyStartTime() == 0 && controlArea.getCurrentDailyStopTime() == 0 )
+    if( controlArea.getCurrentDailyStartTime().is_special() || controlArea.getCurrentDailyStopTime().is_special() ||
+        controlArea.getCurrentDailyStartTime() == controlArea.getCurrentDailyStopTime() )
     {
         retVal = true;
     }
     else if( proposed_start_from_1901 > proposed_stop_from_1901 )
     {
         string result = "The proposed start time of ";
-        result += CtiTime(proposed_start_from_1901).asString();
+        result += startTime.asString();
         result += " is after the stop time of ";
-        result += CtiTime(proposed_stop_from_1901).asString();
+        result += stopTime.asString();
         _results.push_back(result);
 
         retVal = false;
     }
-    else if( startSecondsFromDayBegin < controlArea.getCurrentDailyStartTime() )
+    else if( startTime < controlArea.getCurrentDailyStartTime() )
     {
         string result = "The program cannot run outside of its prescribed control windows.  The proposed start time of ";
-        result += CtiTime(proposed_start_from_1901).asString();
+        result += startTime.asString();
         result += " is outside the CONTROL AREA control window that runs from ";
-        result += CtiTime(controlArea.getCurrentDailyStartTime() + startTime.seconds()).asString();
+        result += controlArea.getCurrentDailyStartTime().asString();
         result += " to ";
-        result += CtiTime(controlArea.getCurrentDailyStopTime() + startTime.seconds()).asString();
+        result += controlArea.getCurrentDailyStopTime().asString();
         _results.push_back(result);
 
         retVal = false;
     }
-    else if( controlArea.getCurrentDailyStopTime() < controlArea.getCurrentDailyStartTime() && stopSecondsFromDayBegin > (controlArea.getCurrentDailyStopTime() + 24*60*60) )
+    else if( controlArea.getCurrentDailyStopTime() < controlArea.getCurrentDailyStartTime() && stopTime > (controlArea.getCurrentDailyStopTime().addDays(1)) )
     {
         string result = "The program cannot run outside of its prescribed control windows.  The proposed stop time of ";
-        result += CtiTime(proposed_stop_from_1901).asString();
+        result += stopTime.asString();
         result += " is outside the CONTROL AREA control window that runs from ";
-        result += CtiTime(controlArea.getCurrentDailyStartTime() + startTime.seconds()).asString();
+        result += controlArea.getCurrentDailyStartTime().asString();
         result += " to ";
-        result += CtiTime(controlArea.getCurrentDailyStopTime() + 24*60*60 + startTime.seconds()).asString();
+        result += controlArea.getCurrentDailyStopTime().addDays(1).asString();
         _results.push_back(result);
 
         retVal = false;
     }
-    else if( controlArea.getCurrentDailyStopTime() > controlArea.getCurrentDailyStartTime() && stopSecondsFromDayBegin > controlArea.getCurrentDailyStopTime() )
+    else if( controlArea.getCurrentDailyStopTime() > controlArea.getCurrentDailyStartTime() && stopTime > controlArea.getCurrentDailyStopTime() )
     {
         string result = "The program cannot run outside of its prescribed control windows.  The proposed stop time of ";
-        result += CtiTime(proposed_stop_from_1901).asString();
+        result += stopTime.asString();
         result += " is outside the CONTROL AREA control window that runs from ";
-        result += CtiTime(controlArea.getCurrentDailyStartTime() + startTime.seconds()).asString();
+        result += controlArea.getCurrentDailyStartTime().asString();
         result += " to ";
-        result += CtiTime(controlArea.getCurrentDailyStopTime() + startTime.seconds()).asString();
+        result += controlArea.getCurrentDailyStopTime().asString();
         _results.push_back(result);
 
         retVal = false;
@@ -880,8 +876,8 @@ bool CtiLMGroupConstraintChecker::checkControlAreaControlWindow(CtiLMControlArea
 
     if( controlArea != NULL )
     {
-        if( (controlArea->getCurrentDailyStartTime() == 0 || controlArea->getCurrentDailyStartTime() == -1) &&
-            (controlArea->getCurrentDailyStopTime() == 0 || controlArea->getCurrentDailyStopTime() == -1) )
+        if( controlArea->getCurrentDailyStartTime().is_special() || controlArea->getCurrentDailyStopTime().is_special() ||
+          ( controlArea->getCurrentDailyStartTime() == controlArea->getCurrentDailyStopTime()) )
         {
             retVal = true;
         }
@@ -892,19 +888,19 @@ bool CtiLMGroupConstraintChecker::checkControlAreaControlWindow(CtiLMControlArea
                 //backwords case
                 CtiDate tomorrow;
                 ++tomorrow;
-                controlAreaStart = CtiTime(todayBegin.seconds() + controlArea->getCurrentDailyStartTime());
-                controlAreaStop = CtiTime(CtiTime(tomorrow).seconds() + controlArea->getCurrentDailyStopTime());
+                controlAreaStart = controlArea->getCurrentDailyStartTime();
+                controlAreaStop = controlArea->getCurrentDailyStopTime().addDays(1);
                 if( controlAreaStart < controlStart )
                 {
                     //We are in the wrong 24 hour period, shift back 1 day
-                    controlAreaStart = CtiTime(yesterdayBegin.seconds() + controlArea->getCurrentDailyStartTime());
-                    controlAreaStop = CtiTime(todayBegin.seconds() + controlArea->getCurrentDailyStopTime());
+                    controlAreaStart = controlArea->getCurrentDailyStartTime().addDays(-1);
+                    controlAreaStop = controlArea->getCurrentDailyStopTime();
                 }
             }
             else
             {
-                controlAreaStart = CtiTime(todayBegin.seconds() + controlArea->getCurrentDailyStartTime());
-                controlAreaStop = CtiTime(todayBegin.seconds() + controlArea->getCurrentDailyStopTime());
+                controlAreaStart = controlArea->getCurrentDailyStartTime();
+                controlAreaStop = controlArea->getCurrentDailyStopTime();
             }
 
             if( controlStart >= controlAreaStart && controlEnd <= controlAreaStop )//were good to go
@@ -961,7 +957,9 @@ bool CtiLMGroupConstraintChecker::checkProgramControlWindow(LONG& control_durati
         else
         {
 
-            int left_in_window = control_window->getAvailableStopTime() - seconds_from_beginning_of_today;
+            CtiTime currentTime(0,0,0);
+            currentTime.addSeconds(seconds_from_beginning_of_today);
+            int left_in_window = control_window->getAvailableStopTime().seconds() - currentTime.seconds();
 
             if( left_in_window > 0 )
             {

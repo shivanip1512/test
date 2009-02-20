@@ -38,8 +38,8 @@ RWDECLARE_COLLECTABLE( CtiLMProgramControlWindow )
 
     LONG getPAOId() const;
     LONG getWindowNumber() const;
-    LONG getAvailableStartTime() const;
-    LONG getAvailableStopTime() const;
+    CtiTime getAvailableStartTime() const;
+    CtiTime getAvailableStopTime() const;
 
     CtiLMProgramControlWindow& setPAOId(LONG paoid);
     CtiLMProgramControlWindow& setWindowNumber(LONG winnum);

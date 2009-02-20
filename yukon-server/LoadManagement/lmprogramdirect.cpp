@@ -4843,7 +4843,7 @@ bool CtiLMProgramDirect::startTimedProgram(unsigned long secondsFrom1901, long s
     assert(controlWindow != NULL); //If we are not in a control window then we shouldn't be starting!
 
     CtiTime startTime(CtiTime((unsigned long)secondsFrom1901));
-    CtiTime endTime(CtiTime( ((unsigned long) secondsFrom1901 - (unsigned long) secondsFromBeginningOfDay)) + controlWindow->getAvailableStopTime());
+    CtiTime endTime(controlWindow->getAvailableStopTime());
     if( !getConstraintOverride() && !con_checker.checkManualProgramConstraints(startTime.seconds(), endTime.seconds()) )
     {
         if( !_announced_program_constraint_violation )

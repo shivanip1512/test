@@ -174,23 +174,40 @@ LONG CtiLMControlArea::getMinResponseTime() const
 /*---------------------------------------------------------------------------
     getDefDailyStartTime
 
-    Returns the default daily start time as the number of seconds after
-    midnight for the control area
+    Returns the default daily start time
 ---------------------------------------------------------------------------*/
-LONG CtiLMControlArea::getDefDailyStartTime() const
+CtiTime CtiLMControlArea::getDefDailyStartTime() const
 {
-    return _defdailystarttime;
+    unsigned int hours   =  _defdailystarttime/3600;
+    unsigned int minutes = (_defdailystarttime%3600)/60;
+    unsigned int seconds = (_defdailystarttime%3600)%60;
+
+    CtiTime retVal(hours, minutes, seconds);
+    if( _defdailystarttime == -1 )
+    {
+        retVal = CtiTime::neg_infin;
+    }
+    return retVal;
 }
 
 /*---------------------------------------------------------------------------
     getDefDailyStopTime
 
-    Returns the default daily stop time as the number of seconds after
-    midnight for the control area
+    Returns the default daily stop time
 ---------------------------------------------------------------------------*/
-LONG CtiLMControlArea::getDefDailyStopTime() const
+CtiTime CtiLMControlArea::getDefDailyStopTime() const
 {
-    return _defdailystoptime;
+    unsigned int hours   =  _defdailystoptime/3600;
+    unsigned int minutes = (_defdailystoptime%3600)/60;
+    unsigned int seconds = (_defdailystoptime%3600)%60;
+
+    CtiTime retVal(hours, minutes, seconds);
+    if( _defdailystoptime == -1 )
+    {
+        retVal = CtiTime::neg_infin;
+    }
+
+    return retVal;
 }
 
 /*---------------------------------------------------------------------------
@@ -338,27 +355,69 @@ int CtiLMControlArea::getCurrentStopPriority()
 }
 
 /*---------------------------------------------------------------------------
+    getCurrentStartSecondsFromDayBegin
+
+    Returns the current daily start time seconds from beginning of day
+    This should not be used for time handling!
+---------------------------------------------------------------------------*/
+LONG CtiLMControlArea::getCurrentStartSecondsFromDayBegin() const
+{
+    return _currentdailystarttime;
+}
+
+/*---------------------------------------------------------------------------
+    getCurrentStopSecondsFromDayBegin
+
+    Returns the current daily start time seconds from beginning of day
+    This should not be used for time handling!
+---------------------------------------------------------------------------*/
+LONG CtiLMControlArea::getCurrentStopSecondsFromDayBegin() const
+{
+    return _currentdailystoptime;
+}
+
+
+/*---------------------------------------------------------------------------
     getCurrentDailyStartTime
 
-    Returns the current daily start time as the number of seconds after
-    midnight for the control area
+    Returns the current daily start time.
+    NOTE: This adjusts automatically for DST!
 ---------------------------------------------------------------------------*/
-LONG CtiLMControlArea::getCurrentDailyStartTime() const
+CtiTime CtiLMControlArea::getCurrentDailyStartTime() const
 {
+    unsigned int hours   =  _currentdailystarttime/3600;
+    unsigned int minutes = (_currentdailystarttime%3600)/60;
+    unsigned int seconds = (_currentdailystarttime%3600)%60;
 
-    return _currentdailystarttime;
+    //This returns today at h:m:s no matter what
+    CtiTime retVal(hours, minutes, seconds);
+    if( _currentdailystarttime == -1 )
+    {
+        retVal = CtiTime::neg_infin;
+    }
+
+    return retVal;
 }
 
 /*---------------------------------------------------------------------------
     getCurrentDailyStopTime
 
-    Returns the default daily stop time as the number of seconds after
-    midnight for the control area
+    Returns the default daily stop time
+    NOTE: This adjusts automatically for DST!
 ---------------------------------------------------------------------------*/
-LONG CtiLMControlArea::getCurrentDailyStopTime() const
+CtiTime CtiLMControlArea::getCurrentDailyStopTime() const
 {
+    unsigned int hours   =  _currentdailystoptime/3600;
+    unsigned int minutes = (_currentdailystoptime%3600)/60;
+    unsigned int seconds = (_currentdailystoptime%3600)%60;
 
-    return _currentdailystoptime;
+    CtiTime retVal(hours, minutes, seconds);
+    if( _currentdailystoptime == -1 )
+    {
+        retVal = CtiTime::neg_infin;
+    }
+
+    return retVal;
 }
 
 /*---------------------------------------------------------------------------
@@ -640,7 +699,7 @@ CtiLMControlArea& CtiLMControlArea::setCurrentStartPriority(LONG currpriority)
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setCurrentDailyStartTime(LONG tempstart)
 {
-    if( _currentdailystoptime != tempstart )
+    if( _currentdailystarttime != tempstart )
     {
         _currentdailystarttime = tempstart;
         setDirty(true);
@@ -659,6 +718,36 @@ CtiLMControlArea& CtiLMControlArea::setCurrentDailyStopTime(LONG tempstop)
     if( _currentdailystoptime != tempstop )
     {
         _currentdailystoptime = tempstop;
+        setDirty(true);
+    }
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    resetCurrentDailyStartTime
+
+    Sets the current daily start time to the default for the control area
+---------------------------------------------------------------------------*/
+CtiLMControlArea& CtiLMControlArea::resetCurrentDailyStartTime()
+{
+    if( _currentdailystarttime != _defdailystarttime )
+    {
+        _currentdailystarttime = _defdailystarttime;
+        setDirty(true);
+    }
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    resetCurrentDailyStopTime
+
+    Sets the current daily stop time to the default for the control area
+---------------------------------------------------------------------------*/
+CtiLMControlArea& CtiLMControlArea::resetCurrentDailyStopTime()
+{
+    if( _currentdailystoptime != _defdailystoptime )
+    {
+        _currentdailystoptime = _defdailystoptime;
         setDirty(true);
     }
     return *this;
@@ -712,21 +801,23 @@ BOOL CtiLMControlArea::isTriggerCheckNeeded(ULONG secondsFrom1901)
 BOOL CtiLMControlArea::isControlTime(LONG secondsFromBeginningOfDay)
 {
 
+    CtiTime nowTime(0, 0, 0);
+    nowTime += secondsFromBeginningOfDay;
 
-    LONG tempCurrentDailyStartTime = getCurrentDailyStartTime();
-    LONG tempCurrentDailyStopTime = getCurrentDailyStopTime();
+    CtiTime tempCurrentDailyStartTime = getCurrentDailyStartTime();
+    CtiTime tempCurrentDailyStopTime  = getCurrentDailyStopTime();
 
-    if( getCurrentDailyStartTime() == -1 )
+    if( getCurrentDailyStartTime().is_special() )
     {
-        tempCurrentDailyStartTime = 0;
+        tempCurrentDailyStartTime = nowTime; //no restrictions here!
     }
-    if( getCurrentDailyStopTime() == -1 )
+    if( getCurrentDailyStopTime().is_special() )
     {
-        tempCurrentDailyStopTime = 86400;
+        tempCurrentDailyStopTime = CtiTime(CtiTime::pos_infin); // crazy far out in the future!
     }
 
 
-    if( tempCurrentDailyStartTime <= secondsFromBeginningOfDay && secondsFromBeginningOfDay <= tempCurrentDailyStopTime )
+    if( tempCurrentDailyStartTime <= nowTime && nowTime <= tempCurrentDailyStopTime )
     {
         return TRUE;
     }
@@ -2410,12 +2501,12 @@ void CtiLMControlArea::updateTimedPrograms(LONG secondsFromBeginningOfDay)
 
             if( cw != 0 )
             {
-                start.addSeconds(cw->getAvailableStartTime());
-                stop.addSeconds(cw->getAvailableStopTime());
+                start = cw->getAvailableStartTime();
+                stop  = cw->getAvailableStopTime();
 
                 //control window could be from earlier in the day, add a day to it to indicate
                 //tomorrow
-                if( cw->getAvailableStopTime() < secondsFromBeginningOfDay )
+                if( cw->getAvailableStopTime() < CtiTime::now() )
                 {
                     start.addDays(1);
                     stop.addDays(1);
@@ -2466,8 +2557,8 @@ void CtiLMControlArea::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDat
             << dynamicLMControlAreaTable["controlareastate"].assign( getControlAreaState() )
             << dynamicLMControlAreaTable["currentpriority"].assign( getCurrentStartPriority() )
             << dynamicLMControlAreaTable["timestamp"].assign(toRWDBDT(currentDateTime))
-            << dynamicLMControlAreaTable["currentdailystarttime"].assign( getCurrentDailyStartTime() )
-            << dynamicLMControlAreaTable["currentdailystoptime"].assign( getCurrentDailyStopTime() );
+            << dynamicLMControlAreaTable["currentdailystarttime"].assign( _currentdailystarttime )
+            << dynamicLMControlAreaTable["currentdailystoptime"].assign( _currentdailystoptime );
 
             updater.where(dynamicLMControlAreaTable["deviceid"]==getPAOId());//will be paobjectid
 
@@ -2495,8 +2586,8 @@ void CtiLMControlArea::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDat
             << getControlAreaState()
             << getCurrentStartPriority()
             << currentDateTime
-            << getCurrentDailyStartTime()
-            << getCurrentDailyStopTime();
+            << _currentdailystarttime
+            << _currentdailystoptime;
 
             if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
             {
@@ -2738,8 +2829,8 @@ void CtiLMControlArea::restore(RWDBReader& rdr)
         setControlAreaState(CtiLMControlArea::InactiveState);
         //current priority set below zero when inactive
         setCurrentStartPriority(-1);
-        setCurrentDailyStartTime(getDefDailyStartTime());
-        setCurrentDailyStopTime(getDefDailyStopTime());
+        resetCurrentDailyStartTime();
+        resetCurrentDailyStopTime();
 
         _insertDynamicDataFlag = TRUE;
         setDirty(true);

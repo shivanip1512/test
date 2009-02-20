@@ -56,8 +56,8 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     const string& getDefOperationalState() const;
     LONG getControlInterval() const;
     LONG getMinResponseTime() const;
-    LONG getDefDailyStartTime() const;
-    LONG getDefDailyStopTime() const;
+    CtiTime getDefDailyStartTime() const;
+    CtiTime getDefDailyStopTime() const;
     BOOL getRequireAllTriggersActiveFlag() const;
     const CtiTime& getNextCheckTime() const;
     BOOL getNewPointDataReceivedFlag() const;
@@ -66,8 +66,10 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     LONG getControlAreaState() const;
     LONG getCurrentStartPriority() const;
     int getCurrentStopPriority();
-    LONG getCurrentDailyStartTime() const;
-    LONG getCurrentDailyStopTime() const;
+    LONG getCurrentStartSecondsFromDayBegin() const;
+    LONG getCurrentStopSecondsFromDayBegin() const;
+    CtiTime getCurrentDailyStartTime() const;
+    CtiTime getCurrentDailyStopTime() const;
     vector<CtiLMControlAreaTrigger*>& getLMControlAreaTriggers();
     CtiLMControlAreaTrigger* getThresholdTrigger() const;
     vector<CtiLMProgramBaseSPtr>& getLMPrograms();
@@ -93,6 +95,8 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     CtiLMControlArea& setCurrentStartPriority(LONG currpriority);
     CtiLMControlArea& setCurrentDailyStartTime(LONG tempstart);
     CtiLMControlArea& setCurrentDailyStopTime(LONG tempstop);
+    CtiLMControlArea& resetCurrentDailyStartTime();
+    CtiLMControlArea& resetCurrentDailyStopTime();
 
     BOOL isTriggerCheckNeeded(ULONG secondsFrom1901);
     BOOL isControlTime(LONG secondsFromBeginningOfDay);

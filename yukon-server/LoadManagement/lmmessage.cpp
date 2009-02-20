@@ -1431,8 +1431,8 @@ CtiLMDynamicControlAreaDataMsg::CtiLMDynamicControlAreaDataMsg(CtiLMControlArea 
         _nextchecktime = controlArea->getNextCheckTime();
         _controlareastate = controlArea->getControlAreaState();
         _currentpriority = controlArea->getCurrentStartPriority();
-        _currentdailystarttime = controlArea->getCurrentDailyStartTime();
-        _currentdailystoptime = controlArea->getCurrentDailyStopTime();
+        _currentdailystarttime = controlArea->getCurrentStartSecondsFromDayBegin();
+        _currentdailystoptime = controlArea->getCurrentStopSecondsFromDayBegin();
 
         vector<CtiLMControlAreaTrigger*>& triggers = controlArea->getLMControlAreaTriggers();
         if( triggers.size() > 0 ) //No one else uses iterators. I still feel dirty though.

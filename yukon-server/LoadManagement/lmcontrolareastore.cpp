@@ -2481,16 +2481,16 @@ bool CtiLMControlAreaStore::checkMidnightDefaultsForReset()
                 string additional = (" Current Daily Start Time not set to Default Start Time.  Control Area: ");
                 additional += currentControlArea->getPAOName();
                 additional += " Daily Start Time was automatically set back to default of ";
-                LONG defStartTimeHours = currentControlArea->getDefDailyStartTime() / 3600;
-                LONG defStartTimeMinutes = (currentControlArea->getDefDailyStartTime() - (defStartTimeHours * 3600)) / 60;
+                LONG defStartTimeHours = currentControlArea->getDefDailyStartTime().hour();
+                LONG defStartTimeMinutes = currentControlArea->getDefDailyStartTime().minute();
                 _snprintf(tempchar,80,"%d",defStartTimeHours);
                 additional += tempchar;
                 additional += ":";
                 _snprintf(tempchar,80,"%d",defStartTimeMinutes);
                 additional += tempchar;
                 additional += " from ";
-                LONG currentStartTimeHours = currentControlArea->getCurrentDailyStartTime() / 3600;
-                LONG currentStartTimeMinutes = (currentControlArea->getCurrentDailyStartTime() - (currentStartTimeHours * 3600)) / 60;
+                LONG currentStartTimeHours = currentControlArea->getCurrentDailyStartTime().hour();
+                LONG currentStartTimeMinutes = currentControlArea->getCurrentDailyStartTime().minute();
                 _snprintf(tempchar,80,"%d",currentStartTimeHours);
                 additional += tempchar;
                 additional += ":";
@@ -2510,16 +2510,16 @@ bool CtiLMControlAreaStore::checkMidnightDefaultsForReset()
                 string additional = (" Current Daily Stop Time not set to Default Stop Time.  Control Area: ");
                 additional += currentControlArea->getPAOName();
                 additional += " Daily Stop Time was automatically set back to default of ";
-                LONG defStopTimeHours = currentControlArea->getDefDailyStopTime() / 3600;
-                LONG defStopTimeMinutes = (currentControlArea->getDefDailyStopTime() - (defStopTimeHours * 3600)) / 60;
+                LONG defStopTimeHours = currentControlArea->getDefDailyStopTime().hour();
+                LONG defStopTimeMinutes = currentControlArea->getDefDailyStopTime().minute();
                 _snprintf(tempchar,80,"%d",defStopTimeHours);
                 additional += tempchar;
                 additional += ":";
                 _snprintf(tempchar,80,"%d",defStopTimeMinutes);
                 additional += tempchar;
                 additional += " from ";
-                LONG currentStopTimeHours = currentControlArea->getCurrentDailyStopTime() / 3600;
-                LONG currentStopTimeMinutes = (currentControlArea->getCurrentDailyStopTime() - (currentStopTimeHours * 3600)) / 60;
+                LONG currentStopTimeHours = currentControlArea->getCurrentDailyStopTime().hour();
+                LONG currentStopTimeMinutes = currentControlArea->getCurrentDailyStopTime().minute();
                 _snprintf(tempchar,80,"%d",currentStopTimeHours);
                 additional += tempchar;
                 additional += ":";
@@ -2532,8 +2532,8 @@ bool CtiLMControlAreaStore::checkMidnightDefaultsForReset()
                     dout << CtiTime() << " - " << text << ", " << additional << endl;
                 }
             }
-            currentControlArea->setCurrentDailyStartTime(currentControlArea->getDefDailyStartTime());
-            currentControlArea->setCurrentDailyStopTime(currentControlArea->getDefDailyStopTime());
+            currentControlArea->resetCurrentDailyStartTime();
+            currentControlArea->resetCurrentDailyStopTime();
             currentControlArea->dumpDynamicData();
             returnBool = true;
         }

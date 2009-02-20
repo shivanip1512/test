@@ -1179,15 +1179,19 @@ void CtiLMProgramBase::restore(RWDBReader& rdr)
 CtiLMProgramControlWindow* CtiLMProgramBase::getControlWindow(LONG secondsFromBeginningOfDay)
 {
     //Control Windows can span midnight, in which case getAvailableStopTime will represent more than 24 hours worth of seconds
-    //So add 24 hours worth of seconds and do an additional test
-    LONG secondsFromBeginningOfYesterday = secondsFromBeginningOfDay + 24 * 60 * 60;
+    //So add 1 day and do another test as well
+    CtiTime currentTime = CtiTime(0,0,0) + secondsFromBeginningOfDay;
+    CtiTime tomorrowTime = currentTime;
+    tomorrowTime.addDays(1);
 
     for( LONG i=0;i<_lmprogramcontrolwindows.size();i++ )
     {
         CtiLMProgramControlWindow* currentControlWindow = (CtiLMProgramControlWindow*)_lmprogramcontrolwindows[i];
 
-        if( currentControlWindow->getAvailableStartTime() <= secondsFromBeginningOfDay && secondsFromBeginningOfDay <= currentControlWindow->getAvailableStopTime() ||
-            currentControlWindow->getAvailableStartTime() <= secondsFromBeginningOfYesterday && secondsFromBeginningOfYesterday <= currentControlWindow->getAvailableStopTime() )
+        if( currentControlWindow->getAvailableStartTime() <= currentTime && currentTime <= currentControlWindow->getAvailableStopTime() ||
+            currentControlWindow->getAvailableStartTime() > currentControlWindow->getAvailableStopTime() && //Do the below check if we span midnight
+           (currentControlWindow->getAvailableStartTime() <= currentTime && currentControlWindow->getAvailableStopTime() < currentTime) ||
+           (currentControlWindow->getAvailableStartTime() > currentTime  && currentControlWindow->getAvailableStopTime() > currentTime) )
         {
             return currentControlWindow;
         }
@@ -1203,6 +1207,9 @@ CtiLMProgramControlWindow* CtiLMProgramBase::getControlWindow(LONG secondsFromBe
 ----------------------------------------------------------------------------*/
 CtiLMProgramControlWindow* CtiLMProgramBase::getNextControlWindow(LONG secondsFromBeginningOfDay)
 {
+    CtiTime currentTime(0,0,0);
+    currentTime.addSeconds(secondsFromBeginningOfDay);
+
     if( _lmprogramcontrolwindows.size() == 0 )
     {
         return 0;
@@ -1222,7 +1229,7 @@ CtiLMProgramControlWindow* CtiLMProgramBase::getNextControlWindow(LONG secondsFr
         for( LONG i=0;i<_lmprogramcontrolwindows.size();i++ )
         {
             cw = (CtiLMProgramControlWindow*)_lmprogramcontrolwindows[i];
-            if( cw->getAvailableStartTime() > secondsFromBeginningOfDay )
+            if( cw->getAvailableStartTime() > currentTime )
             {
                 return cw;
             }
