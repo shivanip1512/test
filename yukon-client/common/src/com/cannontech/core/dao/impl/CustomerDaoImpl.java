@@ -208,22 +208,21 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
     }
 
     public LiteCustomer getLiteCustomer(int customerId) {
-        final SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
-        sqlBuilder.append(" SELECT c.*, ectam.EnergyCompanyId, ci.* ");
-        sqlBuilder.append(" FROM CustomerAccount ca, ECToAccountMapping ectam, "); 
-        sqlBuilder.append("     Customer c LEFT OUTER JOIN CICustomerBase ci ON c.CustomerID = ci.CustomerID ");
-        sqlBuilder.append(" WHERE ectam.AccountId = ca.AccountId ");
-        sqlBuilder.append( "AND ca.CustomerId = c.CustomerId ");
-        sqlBuilder.append(" AND c.CustomerId = ? ");
-        final String sql = sqlBuilder.toString();
-        
-        LiteCustomer customer = simpleJdbcTemplate.queryForObject(sql,
+        final SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT c.*, ectam.EnergyCompanyId, ci.*");
+        sql.append("FROM Customer c");
+        sql.append("LEFT JOIN CustomerAccount ca ON c.CustomerId = ca.CustomerId");
+        sql.append("LEFT JOIN CICustomerBase ci ON c.CustomerID = ci.CustomerID");
+        sql.append("LEFT JOIN ECToAccountMapping ectam ON ca.AccountId = ectam.AccountId");
+        sql.append("WHERE c.CustomerId = ?");
+
+        LiteCustomer customer = simpleJdbcTemplate.queryForObject(sql.getSql(),
                                                                   new CustomerRowMapper(),
                                                                   customerId);
-        
+
         List<LiteContact> additionalContacts = contactDao.getAdditionalContactsForCustomer(customerId);
         customer.setAdditionalContacts(additionalContacts);
-        
+
         return customer;
     }
 
@@ -339,7 +338,11 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
             customer.setRateScheduleID(rs.getInt("RateScheduleId"));
             customer.setTemperatureUnit(rs.getString("TemperatureUnit"));
             customer.setAltTrackingNumber(rs.getString("AltTrackNum"));
-            customer.setEnergyCompanyID(rs.getInt("energyCompanyId"));
+            int energyCompanyId = rs.getInt("energyCompanyId");
+            if (!rs.wasNull())
+            {
+                customer.setEnergyCompanyID(energyCompanyId);
+            }
             
             if (!isCICustomer) return customer;
             
