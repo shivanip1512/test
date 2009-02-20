@@ -240,7 +240,7 @@
         </option>
 
         <option id="viewLogs">
-          <link>/logging/</link>
+          <link>/logging/menu</link>
           <requireRoleProperty value="ADMIN_VIEW_LOGS"/>
         </option>
 
