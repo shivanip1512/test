@@ -229,8 +229,8 @@ function prepareSubmit(form) {
 				for (int k = 0; k < appliances.getStarsApplianceCount(); k++) {
 					StarsAppliance app = appliances.getStarsAppliance(k);
 					if (app.getInventoryID() == hardware.getInventoryID() &&
-						(app.getProgramID() == suProg.getProgramID() || app.getApplianceCategoryID() == suProg.getApplianceCategoryID()))
-					{
+						app.getApplianceCategoryID() == suProg.getApplianceCategoryID() &&
+						app.getProgramID() == suProg.getProgramID()) {
 						checked = true;
 						loadNo = app.getLoadNumber();
 						break;
