@@ -20,7 +20,7 @@ public class PorterRequestCancelServiceImpl implements PorterRequestCancelServic
     private final String commandString = "system message request cancel";
     private final long timeout = 60000;
     
-    public long cancelRequests(int groupMessageId) {
+    public long cancelRequests(int groupMessageId, int priority) {
         
         final int randomId = RandomUtils.nextInt();
         
@@ -28,6 +28,7 @@ public class PorterRequestCancelServiceImpl implements PorterRequestCancelServic
         req.setCommandString(commandString);
         req.setUserMessageID(randomId);
         req.setGroupMessageID(groupMessageId);
+        req.setPriority(priority);
         
         ServerRequestBlocker<RequestCancel> blocker = 
             new ServerRequestBlocker<RequestCancel>(porterConnection, RequestCancel.class, new Checker<RequestCancel>() {

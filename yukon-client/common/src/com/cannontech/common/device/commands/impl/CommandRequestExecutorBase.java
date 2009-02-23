@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeoutException;
 
 import javax.annotation.PostConstruct;
@@ -27,6 +29,7 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
+import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.authorization.support.CommandPermissionConverter;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.service.PorterRequestCancelService;
@@ -54,6 +57,7 @@ public abstract class CommandRequestExecutorBase<T> implements
     private PorterRequestCancelService porterRequestCancelService;
     private Set<Permission> loggableCommandPermissions = new HashSet<Permission>();
     private ConfigurationSource configurationSource;
+    private Executor executor;
     
     private int defaultForegroundPriority = 14;
     private int defaultBackgroundPriority = 8;
@@ -82,6 +86,8 @@ public abstract class CommandRequestExecutorBase<T> implements
         private final CommandCompletionCallback<? super T> callback;
         private Map<Long, T> pendingUserMessageIds;
         private int groupMessageId;
+        private volatile boolean canceled = false;
+        private CountDownLatch commandsAreWritingLatch = new CountDownLatch(1);
 
         private CommandResultMessageListener(List<RequestHolder> requests,
                 CommandCompletionCallback<? super T> callback,
@@ -192,21 +198,23 @@ public abstract class CommandRequestExecutorBase<T> implements
             msgListeners.remove(this.callback);
         }
         
-        public synchronized void cancelCommands(final LiteYukonUser user) {
-
-            // log remaining commands as canceled
-            for (T cmd : pendingUserMessageIds.values()) {
-                log.info("Command canceled by user '" + user.getUsername() + "':" + cmd.toString());
-            }
-            
-            // remove listener
-            removeListener();
+        public void setCanceled() {
+        	this.canceled = true;
+        }
+        
+        public boolean isCanceled() {
+        	return this.canceled;
+        }
+        
+        public CountDownLatch getCommandsAreWritingLatch() {
+        	return commandsAreWritingLatch;
         }
 
         @Override
         public synchronized String toString() {
             ToStringCreator tsc = new ToStringCreator(this);
             tsc.append("groupMessageId", groupMessageId);
+            tsc.append("canceled", canceled);
             tsc.append("callback", callback);
             tsc.append("pendingUserMessageIds", pendingUserMessageIds.keySet());
             return tsc.toString();
@@ -237,8 +245,8 @@ public abstract class CommandRequestExecutorBase<T> implements
 
     }
 
-    public void execute(List<T> commands,
-            final CommandCompletionCallback<? super T> callback, LiteYukonUser user) {
+    public void execute(final List<T> commands,
+            final CommandCompletionCallback<? super T> callback, final LiteYukonUser user) {
 
         log.debug("Executing " + commands.size() + " for " + callback);
 
@@ -247,47 +255,66 @@ public abstract class CommandRequestExecutorBase<T> implements
             callback.complete();
             return;
         }
-
-        // build up a list of command requests
-        final List<RequestHolder> commandRequests = new ArrayList<RequestHolder>(commands.size());
-        int groupMessageId = RandomUtils.nextInt();
-        for (T command : commands) {
-            Request request = buildRequest(command);
-            request.setGroupMessageID(groupMessageId);
-            RequestHolder requestHolder = new RequestHolder();
-            requestHolder.command = command;
-            requestHolder.request = request;
-            commandRequests.add(requestHolder);
-        }
-
-        // create listener
-        CommandResultMessageListener messageListener = new CommandResultMessageListener(commandRequests,
-                                                                                        callback, 
-                                                                                        groupMessageId);
-        msgListeners.put(callback, messageListener);
         
-        log.debug("Addinging porter message listener: " + messageListener);
-        porterConnection.addMessageListener(messageListener);
+        executor.execute(new Runnable() {
+        	
+        	public void run() {
 
-        boolean nothingWritten = true;
-        try {
-            // write requests
-            for (RequestHolder requestHolder : commandRequests) {
-                porterConnection.write(requestHolder.request);
-                if (commandRequiresLogging(requestHolder.request)) {
-                    logCommand(requestHolder.request, user);
-                }
-                if (log.isDebugEnabled()) {
-                    log.debug("Sent request to porter: " + requestHolder.request);
-                }
-                nothingWritten = false;
-            }
-        } finally {
-            if (nothingWritten) {
-                log.debug("Removing porter message listener because nothing was written: " + messageListener);
-                messageListener.removeListener();
-            }
-        }
+		        // build up a list of command requests
+		        final List<RequestHolder> commandRequests = new ArrayList<RequestHolder>(commands.size());
+		        int groupMessageId = RandomUtils.nextInt();
+		        for (T command : commands) {
+		            Request request = buildRequest(command);
+		            request.setGroupMessageID(groupMessageId);
+		            RequestHolder requestHolder = new RequestHolder();
+		            requestHolder.command = command;
+		            requestHolder.request = request;
+		            commandRequests.add(requestHolder);
+		        }
+		
+		        // create listener
+		        CommandResultMessageListener messageListener = new CommandResultMessageListener(commandRequests,
+		                                                                                        callback, 
+		                                                                                        groupMessageId);
+		        msgListeners.put(callback, messageListener);
+		        
+		        log.debug("Addinging porter message listener: " + messageListener);
+		        porterConnection.addMessageListener(messageListener);
+		
+		        boolean nothingWritten = true;
+		        try {
+		            // write requests
+		        	log.debug("Starting commandRequests loop. groupMessageId = " + groupMessageId);
+		            for (RequestHolder requestHolder : commandRequests) {
+		            	
+		            	if (!messageListener.isCanceled()) {
+		            	
+			                porterConnection.write(requestHolder.request);
+			                if (commandRequiresLogging(requestHolder.request)) {
+			                    logCommand(requestHolder.request, user);
+			                }
+			                if (log.isDebugEnabled()) {
+			                    log.debug("Sent request to porter: " + requestHolder.request);
+			                }
+			                nothingWritten = false;
+		            	} else {
+		            		log.debug("Not sending request due to cancel: " + requestHolder.request);
+		            	}
+		            }
+		            log.debug("Finished commandRequests loop. groupMessageId = " + groupMessageId);
+		            
+		            messageListener.getCommandsAreWritingLatch().countDown();
+		            log.debug("Latch counted down. groupMessageId = " + groupMessageId);
+		            
+		        } finally {
+		            if (nothingWritten && !messageListener.isCanceled()) {
+		                log.debug("Removing porter message listener because nothing was written: " + messageListener);
+		                messageListener.removeListener();
+		            }
+		        }
+        	}
+        });
+        
     }
     
     public long cancelExecution(CommandCompletionCallback<? super T> callback, LiteYukonUser user) {
@@ -295,15 +322,31 @@ public abstract class CommandRequestExecutorBase<T> implements
         // get listener
         CommandResultMessageListener messageListener = msgListeners.get(callback);
         
-        // run cancel command
-        long commandsCanceled = porterRequestCancelService.cancelRequests(messageListener.getGroupMessageId());
-        
         // cancel listener
-        log.debug("Removing porter message listener due to cancel: " + messageListener);
-        messageListener.cancelCommands(user);
+        // - settings listener to canceled will cause the commandRequests write loop to stop sending
+        //   commands and log them as unsent instead.
+        messageListener.setCanceled();
+        
+        // wait for the listener latch to countdown, which will happen when it has finished it's commandRequests write loop
+        log.debug("Awaiting latch countdown. groupMessageId = " + messageListener.getGroupMessageId());
+        try {
+        	messageListener.getCommandsAreWritingLatch().await();
+        } catch (InterruptedException e) {
+        	log.error("Latch wait encountered InterruptedException. groupMessageId = " + messageListener.getGroupMessageId(), e);
+        }
+        log.debug("Latch await over, continue with cancelExecution. groupMessageId = " + messageListener.getGroupMessageId());
+        
+        // run cancel command
+        log.debug("Sending cancel request. groupMessageId = " + messageListener.getGroupMessageId());
+        long commandsCanceled = porterRequestCancelService.cancelRequests(messageListener.getGroupMessageId(), defaultBackgroundPriority);
         
         // cancel callback
+        log.debug("Calling callback. groupMessageId = " + messageListener.getGroupMessageId());
         callback.cancel();
+        
+        // remove listener
+        log.debug("Removing porter message listener due to cancel: " + messageListener);
+        messageListener.removeListener();
         
         return commandsCanceled;
     }
@@ -369,6 +412,11 @@ public abstract class CommandRequestExecutorBase<T> implements
     public void setConfigurationSource(ConfigurationSource configurationSource) {
         this.configurationSource = configurationSource;
     }
+    
+    @Autowired
+    public void setExecutor(ScheduledExecutor executor) {
+		this.executor = executor;
+	}
     
     @ManagedAttribute
     public int getBetweenResultsMaxDelay() {
