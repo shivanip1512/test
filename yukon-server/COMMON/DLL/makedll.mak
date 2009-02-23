@@ -14,6 +14,7 @@ copy:
 	       
                -@if not exist $(YUKONOUTPUT)\thr$(BUILDTYPE).dll copy $(RWWORKSPACE)\lib\*.dll $(YUKONOUTPUT)
                -@if not exist $(YUKONOUTPUT)\msvcp90$(MICROSOFTDLL).dll copy $(SOURCEBASE)\yukon-3rdparty\Microsoft\msvc*90$(MICROSOFTDLL).dll $(YUKONOUTPUT)
+               -@if not exist $(YUKONOUTPUT)\ntwdblib.dll copy $(SOURCEBASE)\yukon-3rdparty\Microsoft\ntwdblib.dll $(YUKONOUTPUT)
                
 
 clean:
@@ -22,4 +23,5 @@ $(YUKONOUTPUT)\ClrDump.dll \
 $(YUKONOUTPUT)\dbghelp.dll \
 $(YUKONOUTPUT)\*15d.dll \
 $(YUKONOUTPUT)\*12d.dll \
+$(YUKONOUTPUT)\ntwdblib.dll \
 $(YUKONOUTPUT)\msvcp90*.dll \
