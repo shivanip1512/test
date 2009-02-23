@@ -1,6 +1,6 @@
 package com.cannontech.common.device.definition.model;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.springframework.core.style.ToStringCreator;
 
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.state.StateGroupUtils;
@@ -134,7 +134,11 @@ public class PointTemplate implements Comparable<PointTemplate> {
     
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+        ToStringCreator tsc = new ToStringCreator(this);
+        tsc.append("type", getType());
+        tsc.append("offset", getOffset());
+        tsc.append("name", getName());
+        return tsc.toString();
     }
 
 }

@@ -4,6 +4,7 @@
  */
 package com.cannontech.database.data.point;
 
+import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
@@ -30,6 +31,8 @@ import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.pao.TypeBase;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.point.Point;
+import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.database.db.point.PointStatus;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -379,8 +382,66 @@ public class PointUtil {
 		}
 		return false;
 	}
-    
-        
-        
-}
 
+	/**
+	 * Helper method to change pointBase to the newPointTemplate type.
+	 * If the pointBase type and the newPointTemplate type are the same, pointBase is returned unchanged.
+	 * Else, the pointBase object is returned with the newPointTemplate data set.
+	 * @param pointBase
+	 * @param newPointTemplate
+	 * @return
+	 * @throws TransactionException 
+	 */
+	public static PointBase changePointType(PointBase pointBase, PointTemplate newPointTemplate) throws TransactionException {
+	
+		int oldType = PointTypes.getType(pointBase.getPoint().getPointType());
+		if (oldType == newPointTemplate.getType()) {
+			return pointBase;
+		}
+		
+		pointBase.getPoint().setPointType(PointTypes.getType(newPointTemplate.getType()));
+		PointAlarming savePointAlarming = pointBase.getPointAlarming();
+		Point savePoint = pointBase.getPoint();
+	
+		// Delete partial point data so type can be changed.
+		Transaction<PointBase> t = Transaction.createTransaction(
+				Transaction.DELETE_PARTIAL,
+				pointBase);
+		pointBase = t.execute();
+		
+		
+		//Create a new point for new point type
+		pointBase = PointFactory.createPoint(newPointTemplate.getType());
+	
+		//Set old point data that can transfer over to new point
+		pointBase.setPoint(savePoint);
+		pointBase.setPointAlarming(savePointAlarming);
+		pointBase.setPointID(savePoint.getPointID());
+	
+		//Set new point defaults from tempalte
+		pointBase.getPoint().setStateGroupID(newPointTemplate.getStateGroupId());
+		pointBase.getPoint().setPointOffset(newPointTemplate.getOffset());
+		pointBase.getPoint().setPointType(PointTypes.getType(newPointTemplate.getType()));
+	
+	    if (pointBase instanceof AccumulatorPoint) {
+	        AccumulatorPoint accPoint = (AccumulatorPoint) pointBase;
+	        accPoint.getPointAccumulator().setMultiplier(newPointTemplate.getMultiplier());
+	    } else if (pointBase instanceof AnalogPoint) {
+	        AnalogPoint analogPoint = (AnalogPoint) pointBase;
+	        analogPoint.getPointAnalog().setMultiplier(newPointTemplate.getMultiplier());
+	    }
+	
+		// Add the updated (partial) point information.
+		t = Transaction.createTransaction(
+				Transaction.ADD_PARTIAL,
+				pointBase);
+
+		pointBase = t.execute();
+		
+		//Have to perform the update also to commit the object CHANGES.
+        t = Transaction.createTransaction(Transaction.UPDATE, pointBase);
+        pointBase = t.execute();
+
+        return pointBase;
+	}
+}

@@ -50,6 +50,12 @@ public class DevicePointIdentifier {
         return tsc.toString();
     }
     
+    /**
+     * @param identifier
+     * @return
+     * @deprecated This does the same thing as equals, but in an unsafe way
+     */
+    @Deprecated
     public boolean isComparableTo(DevicePointIdentifier identifier) {
     	if( offset != identifier.getOffset())
     		return false;

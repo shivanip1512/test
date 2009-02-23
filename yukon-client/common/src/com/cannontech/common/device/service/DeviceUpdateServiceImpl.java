@@ -17,8 +17,10 @@ import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
+import com.cannontech.common.device.definition.model.DevicePointIdentifier;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService;
+import com.cannontech.common.device.definition.service.DeviceDefinitionService.PointTemplateTransferPair;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.dao.DBPersistentDao;
@@ -47,9 +49,8 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PAOFactory;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
-import com.cannontech.database.data.point.AccumulatorPoint;
-import com.cannontech.database.data.point.AnalogPoint;
 import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.device.range.DeviceAddressRange;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -146,7 +147,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         
         // Load the device to change
         try {
-            Transaction t = Transaction.createTransaction(Transaction.RETRIEVE,
+            Transaction<?> t = Transaction.createTransaction(Transaction.RETRIEVE,
                                                           yukonPAObject);
 
             yukonPAObject = (DeviceBase) t.execute();
@@ -159,7 +160,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         
         // Save the changes
         try {
-            Transaction t = Transaction.createTransaction(Transaction.UPDATE, changedDevice);
+            Transaction<?> t = Transaction.createTransaction(Transaction.UPDATE, changedDevice);
             t.execute();
         } catch(TransactionException e) {
             throw new PersistenceException("Could not save device type change", e);
@@ -318,15 +319,15 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     throws TransactionException {
 
     	YukonDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
-        Set<PointTemplate> removeTemplates = deviceDefinitionService.getPointTemplatesToRemove(yukonDevice, newDefinition);
+        Set<DevicePointIdentifier> removeTemplates = deviceDefinitionService.getPointTemplatesToRemove(yukonDevice, newDefinition);
 
         YukonDevice meter = deviceDao.getYukonDeviceForDevice(device);
 
-        for (PointTemplate template : removeTemplates) {
-            LitePoint litePoint = pointService.getPointForDevice(meter, template.getDevicePointIdentifier());
+        for (DevicePointIdentifier identifier : removeTemplates) {
+            LitePoint litePoint = pointService.getPointForDevice(meter, identifier);
 
             PointBase point = (PointBase) LiteFactory.convertLiteToDBPers(litePoint);
-            Transaction t = Transaction.createTransaction(Transaction.DELETE, point);
+            Transaction<?> t = Transaction.createTransaction(Transaction.DELETE, point);
             t.execute();
         }
     }
@@ -346,7 +347,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         for (PointTemplate template : addTemplates) {
             PointBase point = pointService.createPoint(device.getDevice().getDeviceID(), template);
 
-            Transaction t = Transaction.createTransaction(Transaction.INSERT, point);
+            Transaction<?> t = Transaction.createTransaction(Transaction.INSERT, point);
             t.execute();
         }
 
@@ -363,61 +364,24 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     throws TransactionException {
 
     	YukonDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
-    	
-        Set<PointTemplate> transferTemplates = deviceDefinitionService.getPointTemplatesToTransfer(yukonDevice,
+        List<PointTemplateTransferPair> transferTemplates = deviceDefinitionService.getPointTemplatesToTransfer(yukonDevice,
                                                                                 newDefinition);
-        Set<PointTemplate> newTemplates = deviceDefinitionService.getNewPointTemplatesForTransfer(yukonDevice,
-                                                                               newDefinition);
 
         YukonDevice meter = deviceDao.getYukonDeviceForDevice(device);
 
-        for (PointTemplate template : transferTemplates) {
-            LitePoint litePoint = pointService.getPointForDevice(meter, template.getDevicePointIdentifier());
+        for (PointTemplateTransferPair pair : transferTemplates) {
+            
+            LitePoint litePoint = pointService.getPointForDevice(meter, pair.oldDefinitionTemplate);
             PointBase point = (PointBase) LiteFactory.convertLiteToDBPers(litePoint);
 
-            Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, point);
-            t.execute();
+            Transaction<PointBase> t = Transaction.createTransaction(Transaction.RETRIEVE, point);
+            point = t.execute();
 
-            PointTemplate newTemplate = this.getTemplateForLitePoint(litePoint,
-                                                                     newTemplates);
-
-            // Update the offset
-            point.getPoint().setPointOffset(newTemplate.getOffset());
-
-            // Update the multiplier
-            double multiplier = newTemplate.getMultiplier();
-            if (point instanceof AccumulatorPoint) {
-                AccumulatorPoint accPoint = (AccumulatorPoint) point;
-                accPoint.getPointAccumulator().setMultiplier(multiplier);
-            } else if (point instanceof AnalogPoint) {
-                AnalogPoint analogPoint = (AnalogPoint) point;
-                analogPoint.getPointAnalog().setMultiplier(multiplier);
-            }
-
-            t = Transaction.createTransaction(Transaction.UPDATE, point);
-            t.execute();
+            point = PointUtil.changePointType(point, pair.newDefinitionTemplate);
         }
 
     }
-    
-    /**
-     * Helper method to get a point template for a given litePoint from a set
-     * @param litePoint - LitePiont to get template for
-     * @param templates - Set of templates
-     * @return PointTemplate that matches the litePoint
-     */
-    private PointTemplate getTemplateForLitePoint(LitePoint litePoint, Set<PointTemplate> templates) {
 
-        for (PointTemplate template : templates) {
-			if (litePoint.getPointOffset() == template.getOffset() &&
-					litePoint.getPointType() == template.getType())
-				return template;
-		}
-
-        throw new NotFoundException("The set of templates does not contain a template with LitePoint: "
-                                    + litePoint.toString());
-    }
-    
     @Autowired
     public void setDeviceDao(DeviceDao deviceDao) {
         this.deviceDao = deviceDao;

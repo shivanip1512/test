@@ -16,7 +16,9 @@ import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDaoImplTest;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.model.DeviceDefinitionImpl;
+import com.cannontech.common.device.definition.model.DevicePointIdentifier;
 import com.cannontech.common.device.definition.model.PointTemplate;
+import com.cannontech.common.device.definition.service.DeviceDefinitionService.PointTemplateTransferPair;
 import com.cannontech.common.device.service.PointServiceImpl;
 import com.cannontech.common.mock.MockPointDao;
 import com.cannontech.core.dao.PointDao;
@@ -248,27 +250,15 @@ public class DeviceDefinitionServiceImplTest {
     public void testGetPointTemplatesToRemove() {
 
         // Test remove points from type 'device1' to type 'device2'
-        Set<PointTemplate> expectedTemplates = new HashSet<PointTemplate>();
+        Set<DevicePointIdentifier> expectedTemplates = new HashSet<DevicePointIdentifier>();
 
-        // Pulse Accumulators
-        expectedTemplates.add(new PointTemplate("pulse1",
-                                                    2,
-                                                    2,
-                                                    1.0,
-                                                    1,
-                                                    0,
-                                                    true));
+        // Pulse Accumulators - "pulse1"
+        expectedTemplates.add(new DevicePointIdentifier(2, 2));
 
-        // Demand Accumulators
-        expectedTemplates.add(new PointTemplate("demand1",
-                                                    3,
-                                                    1,
-                                                    1.0,
-                                                    0,
-                                                    0,
-                                                    true));
+        // Demand Accumulators - "demand1"
+        expectedTemplates.add(new DevicePointIdentifier(3, 1));
 
-        Set<PointTemplate> actualTemplates = service.getPointTemplatesToRemove(device,
+        Set<DevicePointIdentifier> actualTemplates = service.getPointTemplatesToRemove(device,
                                                                                new DeviceDefinitionImpl(1022,
                                                                                                         "Device2",
                                                                                                         "display2",
@@ -303,26 +293,31 @@ public class DeviceDefinitionServiceImplTest {
     public void testGetPointTemplatesToTransfer() {
 
         // Test remove points from type 'device1' to type 'device2'
-        Set<PointTemplate> expectedTemplates = new HashSet<PointTemplate>();
+    	List<PointTemplateTransferPair> expectedTemplates = new ArrayList<PointTemplateTransferPair>();
 
         // Analog
-        expectedTemplates.add(new PointTemplate("analog1",
-                                                    1,
-                                                    1,
-                                                    1.0,
-                                                    1,
-                                                    0,
-                                                    true));
-
-        expectedTemplates.add(new PointTemplate("pulse2",
+        PointTemplateTransferPair pair = new PointTemplateTransferPair();
+        pair.newDefinitionTemplate = new PointTemplate("pulse2",
                 2,
-                4,
-                1.0,
+                3,
+                .1,
                 1,
                 0,
-                false));
-        
-        Set<PointTemplate> actualTemplates = service.getPointTemplatesToTransfer(device,
+                false);
+        pair.oldDefinitionTemplate = new DevicePointIdentifier(2, 4);
+        expectedTemplates.add(pair);
+
+        pair = new PointTemplateTransferPair();
+        pair.newDefinitionTemplate = new PointTemplate("analog1",
+                1,
+                1,
+                .0001,
+                1,
+                0,
+                true);
+        pair.oldDefinitionTemplate = new DevicePointIdentifier(1, 1);
+        expectedTemplates.add(pair);
+        List<PointTemplateTransferPair> actualTemplates = service.getPointTemplatesToTransfer(device,
                                                                                  new DeviceDefinitionImpl(1022,
                                                                                                           "Device2",
                                                                                                           "display2",
@@ -341,58 +336,6 @@ public class DeviceDefinitionServiceImplTest {
 
             device.setType(DeviceTypes.MCT310);
             service.getPointTemplatesToTransfer(device, deviceDefinition);
-            fail("getPointTemplatesToTransfer should've thrown an exception");
-        } catch (IllegalArgumentException e) {
-            // expected exception
-        } catch (Exception e) {
-            fail("Threw wrong type of exception: " + e.getClass());
-        }
-
-    }
-
-    /**
-     * Test getNewPointTemplatesForTransfer()
-     */
-    @Test
-    public void testGetNewPointTemplatesForTransfer() {
-
-        // Test remove points from type 'device1' to type 'device2'
-        Set<PointTemplate> expectedTemplates = new HashSet<PointTemplate>();
-        expectedTemplates.add(new PointTemplate("analog1",
-											        1,
-											        1,
-											        1.0,
-											        1,
-											        0,
-											        false));
-        
-        expectedTemplates.add(new PointTemplate("pulse2",
-                2,
-                3,
-                0.1,
-                1,
-                0,
-                false));
-
-        Set<PointTemplate> actualTemplates = service.getNewPointTemplatesForTransfer(device,
-                                                                                     new DeviceDefinitionImpl(DeviceTypes.MCT370,
-                                                                                                              "Device2",
-                                                                                                              "display2",
-                                                                                                              "MCT370",
-                                                                                                              "change1"));
-
-        assertEquals("New point templates to transfer were not as expected",
-                     expectedTemplates,
-                     actualTemplates);
-
-        // Test transfer points from type 'device1' to type 'device3' (is an
-        // invalid change)
-        try {
-            device.setType(DeviceTypes.MCT318L);
-            DeviceDefinition deviceDefinition = deviceDefinitionDao.getDeviceDefinition(device);
-
-            device.setType(DeviceTypes.MCT310);
-            service.getNewPointTemplatesForTransfer(device, deviceDefinition);
             fail("getPointTemplatesToTransfer should've thrown an exception");
         } catch (IllegalArgumentException e) {
             // expected exception

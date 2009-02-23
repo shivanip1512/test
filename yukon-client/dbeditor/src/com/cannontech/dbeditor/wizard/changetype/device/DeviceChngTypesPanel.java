@@ -23,8 +23,10 @@ import javax.swing.event.ListSelectionListener;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
+import com.cannontech.common.device.definition.model.DevicePointIdentifier;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService;
+import com.cannontech.common.device.definition.service.DeviceDefinitionService.PointTemplateTransferPair;
 import com.cannontech.common.device.service.DeviceUpdateService;
 import com.cannontech.common.device.service.PointService;
 import com.cannontech.common.gui.util.DataInputPanel;
@@ -254,13 +256,13 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
         buffer.append("\n");
 
         // Add text for point deletions
-        Set<PointTemplate> removeTemplates = deviceDefinitionService.getPointTemplatesToRemove(yukonDevice,
+        Set<DevicePointIdentifier> removeTemplates = deviceDefinitionService.getPointTemplatesToRemove(yukonDevice,
                                                                                                deviceDefinition);
         buffer.append("Points to remove:\n");
         buffer.append(this.generateRemoveChangeText(deviceDefinition, removeTemplates));
 
         // Add text for point transfers
-        Set<PointTemplate> transferTemplates = deviceDefinitionService.getNewPointTemplatesForTransfer(yukonDevice,
+        List<PointTemplateTransferPair> transferTemplates = deviceDefinitionService.getPointTemplatesToTransfer(yukonDevice,
                                                                                                        deviceDefinition);
         buffer.append("Points to transfer:\n");
         if (transferTemplates.size() == 0) {
@@ -277,20 +279,20 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
      * the device type is changed
      * @param deviceDefinition - Selected definition to change the current
      *            device to
-     * @param templates - Templates of points to remove
+     * @param removeTemplates - Templates of points to remove
      * @return A String with remove information
      */
     private String generateRemoveChangeText(DeviceDefinition deviceDefinition,
-            Set<PointTemplate> templates) {
+            Set<DevicePointIdentifier> removeTemplates) {
 
         StringBuffer buffer = new StringBuffer();
 
-        if (templates.size() == 0) {
+        if (removeTemplates.size() == 0) {
             buffer.append("--none\n");
         } else {
             LitePoint point = null;
-            for (PointTemplate template : templates) {
-                point = pointService.getPointForDevice(getYukonDeviceForDevice(getCurrentDevice()), template.getDevicePointIdentifier());
+            for (DevicePointIdentifier template : removeTemplates) {
+                point = pointService.getPointForDevice(getYukonDeviceForDevice(getCurrentDevice()), template);
                 buffer.append("-- #" + point.getPointOffset() + " " + point.getPointName() + "\n");
             }
         }
@@ -318,21 +320,21 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
      * @return A String with change information
      */
     private String generatePointTransferChangeText(DeviceDefinition deviceDefinition,
-            Set<PointTemplate> transferTemplates) {
+            List<PointTemplateTransferPair> transferTemplates) {
 
         StringBuffer buffer = new StringBuffer();
 
         YukonDevice device = getYukonDeviceForDevice(getCurrentDevice());
         
-        for (PointTemplate template : transferTemplates) {
-        	LitePoint litePoint = pointService.getPointForDevice(device, template.getDevicePointIdentifier());
+        for (PointTemplateTransferPair pair : transferTemplates) {
+        	LitePoint litePoint = pointService.getPointForDevice(device, pair.oldDefinitionTemplate);
             PointBase point = (PointBase) LiteFactory.createDBPersistent(litePoint);
 
             buffer.append("-- #" + litePoint.getPointOffset() + " " + litePoint.getPointName()
                     + "\n");
 
-            if (template.getOffset() != litePoint.getPointOffset()) {
-                buffer.append("    offset will be updated to: " + template.getOffset() + "\n");
+            if (pair.newDefinitionTemplate.getOffset() != litePoint.getPointOffset()) {
+                buffer.append("    offset will be updated to: " + pair.newDefinitionTemplate.getOffset() + "\n");
             }
 
             Double currentMultiplier = 1.0;
@@ -344,8 +346,8 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
                 currentMultiplier = analogPoint.getPointAnalog().getMultiplier();
             }
 
-            if (template.getMultiplier() != currentMultiplier) {
-                buffer.append("    multiplier will be updated to: " + template.getMultiplier()
+            if (pair.newDefinitionTemplate.getMultiplier() != currentMultiplier) {
+                buffer.append("    multiplier will be updated to: " + pair.newDefinitionTemplate.getMultiplier()
                         + "\n");
             }
         }

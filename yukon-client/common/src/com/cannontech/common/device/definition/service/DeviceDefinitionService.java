@@ -6,6 +6,7 @@ import java.util.Set;
 
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
+import com.cannontech.common.device.definition.model.DevicePointIdentifier;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.database.data.point.PointBase;
 
@@ -14,6 +15,22 @@ import com.cannontech.database.data.point.PointBase;
  * definition
  */
 public interface DeviceDefinitionService {
+
+	public static class PointTemplateTransferPair {
+        public DevicePointIdentifier oldDefinitionTemplate;
+        public PointTemplate newDefinitionTemplate;
+        
+        @Override
+        public boolean equals(Object obj) {
+        	PointTemplateTransferPair other = (PointTemplateTransferPair)obj; 
+        	if (this.oldDefinitionTemplate.equals(other.oldDefinitionTemplate)) {
+        		if (this.newDefinitionTemplate.equals(newDefinitionTemplate)) {
+        			return true;
+        		}
+        	}
+        	return false;
+        }
+    }
 
     /**
      * Method to create all of the default points for the given device. NOTE:
@@ -77,7 +94,7 @@ public interface DeviceDefinitionService {
      * @return Set of points that will be removed from the device (returns a new
      *         copy each time the method is called)
      */
-    public abstract Set<PointTemplate> getPointTemplatesToRemove(YukonDevice device,
+    public abstract Set<DevicePointIdentifier> getPointTemplatesToRemove(YukonDevice device,
             DeviceDefinition deviceDefinition);
     
     /**
@@ -89,18 +106,6 @@ public interface DeviceDefinitionService {
      * @return Set of point templates that will be transfered from the device
      *         (returns a new copy each time the method is called)
      */
-    public abstract Set<PointTemplate> getPointTemplatesToTransfer(YukonDevice device,
-            DeviceDefinition deviceDefinition);
-    
-    /**
-     * Method to get a set of point templates that transferred points will map
-     * to for the device definition that the device will be changed into.
-     * @param device - Device to change type
-     * @param deviceDefinition - Definition of type to change to
-     * @return Set of point templates that existing points on the device map to
-     *         in the new type (returns a new copy each time the method is
-     *         called)
-     */
-    public abstract Set<PointTemplate> getNewPointTemplatesForTransfer(YukonDevice device,
+    public abstract List<PointTemplateTransferPair> getPointTemplatesToTransfer(YukonDevice device,
             DeviceDefinition deviceDefinition);
 }

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
+import com.cannontech.common.device.definition.model.DevicePointIdentifier;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.service.PointService;
 import com.cannontech.core.dao.PointDao;
@@ -89,84 +90,77 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
         return devices;
     }
 
-    public Set<PointTemplate> getNewPointTemplatesForTransfer(YukonDevice meter,
+    public Set<PointTemplate> getPointTemplatesToAdd(YukonDevice device,
+            DeviceDefinition newDefinition) {
+		this.validateChange(device, newDefinition);
+		// points to add are points that are defined for newDefinition minus points being
+		// transfered (i.e. minus new points from getPointTemplatesForTransfer)
+		
+		// for this method, templates are being compared on the new definition and therefore
+		// should be compared by the identifier (although including name won't hurt, because
+		// everything is from the same definition)
+		
+		Set<PointTemplate> existingTemplates = deviceDefinitionDao.getInitPointTemplates(newDefinition);
+		HashSet<PointTemplate> result = new HashSet<PointTemplate>(existingTemplates);
+		
+		List<PointTemplateTransferPair> pointTemplatesToTransfer = getPointTemplatesToTransfer(device, newDefinition);
+		for (PointTemplateTransferPair pointTemplateTransferPair : pointTemplatesToTransfer) {
+			result.remove(pointTemplateTransferPair.newDefinitionTemplate);
+		}
+		
+		return result;
+	}
+
+    public Set<DevicePointIdentifier> getPointTemplatesToRemove(YukonDevice device,
+            DeviceDefinition newDefinition) {
+		this.validateChange(device, newDefinition);
+		// points to remove are points that exist on device (AND are defined) minus points being
+		// transfered (i.e. minus old points from getPointTemplatesForTransfer)
+		
+		// for this method, templates are being compared on the new definition and therefore
+		// should be compared by the identifier (although including name won't hurt, because
+		// everything is from the same definition)
+		
+		HashSet<DevicePointIdentifier> result = new HashSet<DevicePointIdentifier>();
+		Set<PointTemplate> existingPointTemplates = getExistingPointTemplates(device);
+		for (PointTemplate pointTemplate : existingPointTemplates) {
+			result.add(pointTemplate.getDevicePointIdentifier());
+		}
+		
+		List<PointTemplateTransferPair> pointTemplatesToTransfer = getPointTemplatesToTransfer(device, newDefinition);
+		for (PointTemplateTransferPair pointTemplateTransferPair : pointTemplatesToTransfer) {
+			result.remove(pointTemplateTransferPair.oldDefinitionTemplate);
+		}
+		
+		return result;
+	}
+
+    public List<PointTemplateTransferPair> getPointTemplatesToTransfer(YukonDevice device,
             DeviceDefinition newDefinition) {
 
-        this.validateChange(meter, newDefinition);
-
-        Set<PointTemplate> existingTemplates = this.getExistingPointTemplates(meter);
-        Set<PointTemplate> supportedTemplates = deviceDefinitionDao.getAllPointTemplates(newDefinition);
-
-        // Get the set of point templates that exist on the device and are
-        // supported by the new device definition - these points will be
-        // transferred
-        return this.getCommonTemplates(supportedTemplates, existingTemplates);
-    }
-
-    public Set<PointTemplate> getPointTemplatesToAdd(YukonDevice meter,
-                                                     DeviceDefinition newDefinition) {
-
-        this.validateChange(meter, newDefinition);
-
-        Set<PointTemplate> existingTemplates = this.getExistingPointTemplates(meter);
-        Set<PointTemplate> newTemplates = deviceDefinitionDao.getInitPointTemplates(newDefinition);
-
-        // Get the set of templates for the new device definition that do not
-        // already exist on the current device
-		Set<PointTemplate> tempRemoveTemplates = this.getCommonTemplates(newTemplates, existingTemplates);
-
-        // Remove the existing supported points from the set of all new points -
-        // all other new points will be added
-        newTemplates.removeAll(tempRemoveTemplates);
-
-        return newTemplates;
-    }
-
-    public Set<PointTemplate> getPointTemplatesToRemove(YukonDevice device,
-                                                        DeviceDefinition newDefinition) {
-
-        this.validateChange(device, newDefinition);
-
-        Set<PointTemplate> existingTemplates = deviceDefinitionDao.getAllPointTemplates(device);
-
-        // Get rid of any point templates for which a point doesn't exist for
-        // the device
-        Set<PointTemplate> nonExistingPointSet = new HashSet<PointTemplate>();
-        for (PointTemplate template : existingTemplates) {
-            if (!pointService.pointExistsForDevice(device, template.getDevicePointIdentifier())) {
-                nonExistingPointSet.add(template);
-            }
-        }
-        existingTemplates.removeAll(nonExistingPointSet);
-
-        Set<PointTemplate> supportedTemplates = deviceDefinitionDao.getAllPointTemplates(newDefinition);
-
-        // Get the set of point templates that exist on the device and are
-        // supported by the new device definition - these points will not be
-        // removed
-		Set<PointTemplate> templatesToKeep = this.getCommonTemplates(existingTemplates, supportedTemplates);
-
-        // Remove the set of supported existing point templates from the list of
-        // existing points - all other existing points will be removed
-        existingTemplates.removeAll(templatesToKeep);
-
-        return existingTemplates;
-    }
-
-    public Set<PointTemplate> getPointTemplatesToTransfer(YukonDevice device,
-                                                          DeviceDefinition newDefinition) {
-
-        this.validateChange(device, newDefinition);
-
-        Set<PointTemplate> existingTemplates = this.getExistingPointTemplates(device);
-        Set<PointTemplate> supportedTemplates = deviceDefinitionDao.getAllPointTemplates(newDefinition);
-
-        // Get the set of point templates that exist on the device and are
-        // supported by the new device definition - these points will be
-        // transferred
-		return this.getCommonTemplates(existingTemplates, supportedTemplates);
-    }
-
+		this.validateChange(device, newDefinition);
+		
+		Set<PointTemplate> existingTemplates = this.getExistingPointTemplates(device);
+		Set<PointTemplate> supportedTemplates = deviceDefinitionDao.getAllPointTemplates(newDefinition);
+		
+		// Form pairs of points by comparing names
+		List<PointTemplateTransferPair> templates = new ArrayList<PointTemplateTransferPair>();
+		for (PointTemplate oldTemplate : existingTemplates) {
+			for (PointTemplate newTemplate : supportedTemplates) {
+				// here's the big check that determines what points are the same
+				// note we're comparing the names of the names of the templates
+				// so that any changes to the point's name in the DB are ignored
+				if (oldTemplate.getName().equals(newTemplate.getName())) {
+					PointTemplateTransferPair pair = new PointTemplateTransferPair();
+					pair.oldDefinitionTemplate = oldTemplate.getDevicePointIdentifier();
+					pair.newDefinitionTemplate = newTemplate;
+					templates.add(pair);
+				}
+			}
+		}
+		
+		return templates;
+	}
 
     /**
      * Helper method to determine if the device can be changed into the new
@@ -189,28 +183,6 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
     }
 
     /**
-     * Helper method to get a set of point templates 
-     * from set1 that equal a point temlplate in set2
-     * @param set1 - Set of point templates to start with
-     * @param set2 - Set of point templates to compare to
-     * @return The set of point templates with pointTemplates found in both sets
-     *         (returns a new copy each time the method is called)
-     */
-    private Set<PointTemplate> getCommonTemplates(Set<PointTemplate> set1,
-            Set<PointTemplate> set2) {
-
-    	Set<PointTemplate> templates = new HashSet<PointTemplate>();
-        for (PointTemplate template1 : set1) {
-            for (PointTemplate template2 : set2) {
-            	if (template1.getName().equals(template2.getName())) {
-                    templates.add(template1);
-                }
-            }
-        }
-        return templates;
-    }
-
-    /**
      * Helper method to get the list of point templates that correspond to
      * litePoints that exist for the given device
      * @param device - Device to get pointTemplates for
@@ -224,12 +196,16 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
     	Set<PointTemplate> existingTemplates = deviceDefinitionDao.getAllPointTemplates(device);
     	
     	for (LitePoint litePoint : existingPoints) {
+    	    DevicePointIdentifier devicePointIdentifier = getDevicePointIdentifier(litePoint);
 			for (PointTemplate template : existingTemplates) {
-				if (litePoint.getPointOffset() == template.getOffset() &&
-						litePoint.getPointType() == template.getType())
+				if (devicePointIdentifier.equals(template.getDevicePointIdentifier()))
 					templates.add(template);
 			}
 		}
         return templates;
+    }
+    
+    private DevicePointIdentifier getDevicePointIdentifier(LitePoint point) {
+        return new DevicePointIdentifier(point.getPointType(), point.getPointOffset());
     }
 }
