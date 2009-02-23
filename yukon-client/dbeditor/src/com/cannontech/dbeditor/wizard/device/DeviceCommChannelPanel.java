@@ -14,11 +14,13 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.wizard.CancelInsertException;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.device.DeviceBase;
@@ -347,8 +349,10 @@ private SmartMultiDBPersistent createSmartDBPersistent( DeviceBase deviceBase )
 	SmartMultiDBPersistent smartDB = new SmartMultiDBPersistent();
     smartDB.addOwnerDBPersistent(deviceBase);
 
-	DeviceDefinitionService deviceDefinitionService = (DeviceDefinitionService) YukonSpringHook.getBean("deviceService");
-    List<PointBase> defaultPoints = deviceDefinitionService.createDefaultPointsForDevice(deviceBase);
+	DeviceDefinitionService deviceDefinitionService = (DeviceDefinitionService) YukonSpringHook.getBean("deviceDefinitionService");
+	DeviceDao deviceDao = (DeviceDao) YukonSpringHook.getBean("deviceDao");
+	YukonDevice yukonDevice = deviceDao.getYukonDeviceForDevice(deviceBase);
+    List<PointBase> defaultPoints = deviceDefinitionService.createDefaultPointsForDevice(yukonDevice);
 
     for (PointBase point : defaultPoints) {
         smartDB.addDBPersistent(point);

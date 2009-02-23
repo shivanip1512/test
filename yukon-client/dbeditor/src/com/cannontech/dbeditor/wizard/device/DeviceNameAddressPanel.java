@@ -8,11 +8,13 @@ import java.util.List;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 
+import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.gui.unchanging.LongRangeDocument;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.wizard.CancelInsertException;
+import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.device.*;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
@@ -476,8 +478,10 @@ public Object getValue(Object val)
             PaoDao paoDao = (PaoDao) YukonSpringHook.getBean("paoDao");
             device.setDeviceID(paoDao.getNextPaoId());
 
-            DeviceDefinitionService deviceDefinitionService = (DeviceDefinitionService) YukonSpringHook.getBean("deviceService");
-            List<PointBase> defaultPoints = deviceDefinitionService.createDefaultPointsForDevice(device);
+            DeviceDefinitionService deviceDefinitionService = (DeviceDefinitionService) YukonSpringHook.getBean("deviceDefinitionService");
+            DeviceDao deviceDao = (DeviceDao) YukonSpringHook.getBean("deviceDao");
+            YukonDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
+            List<PointBase> defaultPoints = deviceDefinitionService.createDefaultPointsForDevice(yukonDevice);
 
             SmartMultiDBPersistent persistant = new SmartMultiDBPersistent();
             persistant.addOwnerDBPersistent(device);

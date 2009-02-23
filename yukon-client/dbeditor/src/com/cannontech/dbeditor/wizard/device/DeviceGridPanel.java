@@ -8,8 +8,10 @@ package com.cannontech.dbeditor.wizard.device;
 import java.awt.Dimension;
 import java.util.List;
 
+import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.device.GridAdvisorBase;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
@@ -205,8 +207,10 @@ public Object getValue(Object val)
 	
     if (true) {
 
-        DeviceDefinitionService deviceDefinitionService = (DeviceDefinitionService) YukonSpringHook.getBean("deviceService");
-        List<PointBase> defaultPoints = deviceDefinitionService.createDefaultPointsForDevice(device);
+        DeviceDefinitionService deviceDefinitionService = (DeviceDefinitionService) YukonSpringHook.getBean("deviceDefinitionService");
+        DeviceDao deviceDao = (DeviceDao) YukonSpringHook.getBean("deviceDao");
+        YukonDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
+        List<PointBase> defaultPoints = deviceDefinitionService.createDefaultPointsForDevice(yukonDevice);
 
         SmartMultiDBPersistent persistant = new SmartMultiDBPersistent();
         persistant.addOwnerDBPersistent(device);

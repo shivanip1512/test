@@ -317,7 +317,8 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     private void removePoints(DeviceBase device, DeviceDefinition newDefinition)
     throws TransactionException {
 
-        Set<PointTemplate> removeTemplates = deviceDefinitionService.getPointTemplatesToRemove(device, newDefinition);
+    	YukonDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
+        Set<PointTemplate> removeTemplates = deviceDefinitionService.getPointTemplatesToRemove(yukonDevice, newDefinition);
 
         YukonDevice meter = deviceDao.getYukonDeviceForDevice(device);
 
@@ -340,7 +341,8 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     private void addPoints(DeviceBase device, DeviceDefinition newDefinition)
     throws TransactionException {
 
-        Set<PointTemplate> addTemplates = deviceDefinitionService.getPointTemplatesToAdd(device, newDefinition);
+    	YukonDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
+        Set<PointTemplate> addTemplates = deviceDefinitionService.getPointTemplatesToAdd(yukonDevice, newDefinition);
         for (PointTemplate template : addTemplates) {
             PointBase point = pointService.createPoint(device.getDevice().getDeviceID(), template);
 
@@ -360,9 +362,11 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     private void transferPoints(DeviceBase device, DeviceDefinition newDefinition)
     throws TransactionException {
 
-        Set<PointTemplate> transferTemplates = deviceDefinitionService.getPointTemplatesToTransfer(device,
+    	YukonDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
+    	
+        Set<PointTemplate> transferTemplates = deviceDefinitionService.getPointTemplatesToTransfer(yukonDevice,
                                                                                 newDefinition);
-        Set<PointTemplate> newTemplates = deviceDefinitionService.getNewPointTemplatesForTransfer(device,
+        Set<PointTemplate> newTemplates = deviceDefinitionService.getNewPointTemplatesForTransfer(yukonDevice,
                                                                                newDefinition);
 
         YukonDevice meter = deviceDao.getYukonDeviceForDevice(device);

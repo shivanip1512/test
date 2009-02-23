@@ -18,7 +18,7 @@
      <property name="enumeratedType" ref="inputStringType" />
  </bean>
   <bean id="inputDeviceTypeEnumeratedType" class="com.cannontech.web.input.type.DeviceTypeEnumeratedType">
-     <property name="deviceDefinitionService" ref="deviceService" />
+     <property name="deviceDefinitionService" ref="deviceDefinitionService" />
      <property name="enumeratedType" ref="inputIntegerType" />
  </bean>
  

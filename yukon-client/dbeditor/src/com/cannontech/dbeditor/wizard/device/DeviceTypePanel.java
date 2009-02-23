@@ -257,7 +257,7 @@ public class DeviceTypePanel extends DataInputPanel implements ListSelectionList
     private void initialize() {
 
         // Initialize the device type map
-        DeviceDefinitionService deviceDefinitionService = (DeviceDefinitionService) YukonSpringHook.getBean("deviceService");
+        DeviceDefinitionService deviceDefinitionService = (DeviceDefinitionService) YukonSpringHook.getBean("deviceDefinitionService");
         this.deviceDisplayGroupMap = deviceDefinitionService.getDeviceDisplayGroupMap();
 
         try {

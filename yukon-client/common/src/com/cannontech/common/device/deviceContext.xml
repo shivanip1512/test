@@ -52,13 +52,7 @@
         
     </bean>
     
-    <bean id="simpleDeviceService" class="com.cannontech.common.device.definition.service.SimpleDeviceDefinitionServiceImpl" scope="singleton">
-        <property name="deviceDefinitionDao" ref="deviceDefinitionDao" />
-        <property name="pointService" ref="devicePointService" />
-        <property name="pointDao" ref="pointDao" />
-    </bean>
-    
-    <bean id="deviceService" class="com.cannontech.common.device.definition.service.DeviceDefinitionServiceImpl" scope="singleton">
+    <bean id="deviceDefinitionService" class="com.cannontech.common.device.definition.service.DeviceDefinitionServiceImpl" scope="singleton">
     </bean>
     
 	<bean id="deviceDefinitionDao" class="com.cannontech.common.device.definition.dao.DeviceDefinitionDaoImpl" scope="singleton" init-method="initialize">
@@ -203,7 +197,7 @@
         <property name="dbPersistantDao" ref="dbPersistentDao" />
         <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao" />
         <property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao" />
-        <property name="simpleDeviceDefinitionService" ref="simpleDeviceService" />
+        <property name="deviceDefinitionService" ref="deviceDefinitionService" />
     </bean>
     
     <bean id="groupCommandExecutor" class="com.cannontech.common.device.commands.impl.GroupCommandExecutorImpl" lazy-init="true">

@@ -57,6 +57,7 @@ import com.cannontech.common.wizard.WizardPanel;
 import com.cannontech.common.wizard.WizardPanelEvent;
 import com.cannontech.core.dao.DBDeleteResult;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.DatabaseTypes;
 import com.cannontech.database.Transaction;
@@ -262,7 +263,7 @@ public class DatabaseEditor
     
     private static DatabaseEditor editor = null;
     
-    private DeviceDefinitionService deviceDefinitionService = (DeviceDefinitionService) YukonSpringHook.getBean("deviceService");
+    private DeviceDefinitionService deviceDefinitionService = (DeviceDefinitionService) YukonSpringHook.getBean("deviceDefinitionService");
     
 /**
  * DatabaseEditor constructor comment.
@@ -917,8 +918,9 @@ public void executeChangeTypeButton_ActionPerformed(ActionEvent event)
 				MessageEvent.ERROR_MESSAGE));		 
 	  }
 
+	  DeviceDao deviceDao = (DeviceDao) YukonSpringHook.getBean("deviceDao");
       if (userObject instanceof DeviceBase
-              && deviceDefinitionService.isDeviceTypeChangeable((DeviceBase) userObject)) {
+              && deviceDefinitionService.isDeviceTypeChangeable(deviceDao.getYukonDeviceForDevice((DeviceBase) userObject))) {
           showChangeTypeWizardPanel(new DeviceChangeTypeWizardPanel(userObject));
       }
 	  else if (userObject instanceof com.cannontech.database.data.point.PointBase)

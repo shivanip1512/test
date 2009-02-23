@@ -10,9 +10,11 @@ import java.util.Vector;
 import javax.swing.JOptionPane;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
@@ -202,8 +204,10 @@ public class DeviceRoutePanel
             ((DeviceBase) value).setDeviceID(paoDao.getNextPaoId());
 
             // Automatically add default points
-            DeviceDefinitionService deviceDefinitionService = (DeviceDefinitionService) YukonSpringHook.getBean("deviceService");
-            List<PointBase> defaultPoints = deviceDefinitionService.createDefaultPointsForDevice((DeviceBase)value);
+            DeviceDefinitionService deviceDefinitionService = (DeviceDefinitionService) YukonSpringHook.getBean("deviceDefinitionService");
+            DeviceDao deviceDao = (DeviceDao) YukonSpringHook.getBean("deviceDao");
+            YukonDevice yukonDevice = deviceDao.getYukonDeviceForDevice((DeviceBase)value);
+            List<PointBase> defaultPoints = deviceDefinitionService.createDefaultPointsForDevice(yukonDevice);
             for (PointBase point : defaultPoints) {
                 newVal.getDBPersistentVector().add(point);
             }

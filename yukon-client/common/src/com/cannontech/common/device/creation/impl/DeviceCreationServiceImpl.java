@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationService;
-import com.cannontech.common.device.definition.service.SimpleDeviceDefinitionService;
+import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
@@ -45,7 +45,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
     private DBPersistentDao dbPersistentDao = null;
     private DeviceGroupEditorDao deviceGroupEditorDao = null;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-    private SimpleDeviceDefinitionService simpleDeviceDefinitionService = null;
+    private DeviceDefinitionService deviceDefinitionService = null;
     
     @Transactional
     public YukonDevice createDeviceByTemplate(String templateName, String newDeviceName, boolean copyPoints) {
@@ -127,7 +127,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
             
             // CREATE POINTS
             if (createPoints) {
-                List<PointBase> points = simpleDeviceDefinitionService.createDefaultPointsForDevice(yukonDevice);
+                List<PointBase> points = deviceDefinitionService.createDefaultPointsForDevice(yukonDevice);
                 this.applyPoints(newDevice, points);
             }
             
@@ -259,8 +259,8 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
     }
     
     @Required
-    public void setSimpleDeviceDefinitionService(
-            SimpleDeviceDefinitionService simpleDeviceDefinitionService) {
-        this.simpleDeviceDefinitionService = simpleDeviceDefinitionService;
+    public void setDeviceDefinitionService(
+            DeviceDefinitionService deviceDefinitionService) {
+        this.deviceDefinitionService = deviceDefinitionService;
     }
 }

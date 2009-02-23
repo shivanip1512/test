@@ -29,6 +29,7 @@ import com.cannontech.common.device.service.DeviceUpdateService;
 import com.cannontech.common.device.service.PointService;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.TitleBorder;
+import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.MCT310ID;
 import com.cannontech.database.data.lite.LiteFactory;
@@ -44,7 +45,7 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
 
     private DeviceBase currentDevice = null;
 
-    private DeviceDefinitionService deviceDefinitionService = (DeviceDefinitionService) YukonSpringHook.getBean("deviceService");
+    private DeviceDefinitionService deviceDefinitionService = (DeviceDefinitionService) YukonSpringHook.getBean("deviceDefinitionService");
     private DeviceUpdateService deviceUpdateService = (DeviceUpdateService) YukonSpringHook.getBean("deviceUpdateService");
     private PointService pointService = (PointService) YukonSpringHook.getBean("devicePointService");
 
@@ -208,7 +209,9 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
         // Get a list of all of the device definitions that the device can
         // change to and sort the list by device type
         List<DeviceDefinition> deviceList = new ArrayList<DeviceDefinition>();
-        deviceList.addAll(deviceDefinitionService.getChangeableDevices(device));
+        DeviceDao deviceDao = (DeviceDao) YukonSpringHook.getBean("deviceDao");
+        YukonDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
+        deviceList.addAll(deviceDefinitionService.getChangeableDevices(yukonDevice));
         Collections.sort(deviceList);
 
         // Set the JList data
@@ -228,7 +231,9 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
 
         StringBuffer buffer = new StringBuffer();
 
+        DeviceDao deviceDao = (DeviceDao) YukonSpringHook.getBean("deviceDao");
         DeviceBase device = getCurrentDevice();
+        YukonDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
 
         // Add text to explain what type the current device is and what it is
         // changing to
@@ -236,7 +241,7 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
                 + deviceDefinition.getDisplayName() + "\n\n");
 
         // Add text for point additions
-        Set<PointTemplate> addTemplates = deviceDefinitionService.getPointTemplatesToAdd(device,
+        Set<PointTemplate> addTemplates = deviceDefinitionService.getPointTemplatesToAdd(yukonDevice,
                                                                                          deviceDefinition);
         buffer.append("Points to add:\n");
         if (addTemplates.size() == 0) {
@@ -249,13 +254,13 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
         buffer.append("\n");
 
         // Add text for point deletions
-        Set<PointTemplate> removeTemplates = deviceDefinitionService.getPointTemplatesToRemove(device,
+        Set<PointTemplate> removeTemplates = deviceDefinitionService.getPointTemplatesToRemove(yukonDevice,
                                                                                                deviceDefinition);
         buffer.append("Points to remove:\n");
         buffer.append(this.generateRemoveChangeText(deviceDefinition, removeTemplates));
 
         // Add text for point transfers
-        Set<PointTemplate> transferTemplates = deviceDefinitionService.getNewPointTemplatesForTransfer(device,
+        Set<PointTemplate> transferTemplates = deviceDefinitionService.getNewPointTemplatesForTransfer(yukonDevice,
                                                                                                        deviceDefinition);
         buffer.append("Points to transfer:\n");
         if (transferTemplates.size() == 0) {

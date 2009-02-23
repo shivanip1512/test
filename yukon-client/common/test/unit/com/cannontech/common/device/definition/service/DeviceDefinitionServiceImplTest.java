@@ -29,7 +29,7 @@ import com.cannontech.database.incrementer.NextValueHelper;
  */
 public class DeviceDefinitionServiceImplTest {
 
-    private SimpleDeviceDefinitionServiceImpl service = null;
+    private DeviceDefinitionServiceImpl service = null;
     private PointServiceImpl pointService = null;
     private YukonDevice device = null;
     private DeviceDefinitionDao deviceDefinitionDao = null;
@@ -39,7 +39,7 @@ public class DeviceDefinitionServiceImplTest {
     @Before
     public void setUp() throws Exception {
 
-        service = new SimpleDeviceDefinitionServiceImpl();
+        service = new DeviceDefinitionServiceImpl();
         deviceDefinitionDao = DeviceDefinitionDaoImplTest.getTestDeviceDefinitionDao();
         service.setDeviceDefinitionDao(deviceDefinitionDao);
 
