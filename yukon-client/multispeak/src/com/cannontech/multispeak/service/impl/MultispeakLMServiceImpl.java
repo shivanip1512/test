@@ -324,7 +324,7 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 		} else if (PointQuality.Manual.equals(pointQuality)) {
 			return "M";
 		} else {
-			return "";
+			return " ";
 		}
 	}
 

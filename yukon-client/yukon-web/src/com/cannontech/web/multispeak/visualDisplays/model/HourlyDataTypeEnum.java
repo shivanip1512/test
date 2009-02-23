@@ -4,10 +4,26 @@ import com.cannontech.common.i18n.DisplayableEnum;
 
 public enum HourlyDataTypeEnum implements DisplayableEnum {
 
-	TODAY_INTEGRATED_HOURLY_DATA,
-	PEAK_DAY_INTEGRATED_HOURLY_DATA,
-	TODAY_LOAD_CONTROL_PREDICATION_DATA,
-	TOMORROW_LOAD_CONTROL_PREDICTION_DATA;
+	TODAY_INTEGRATED_HOURLY_DATA {
+		public int getObjectIdForHourEndForPowerSupplier(int hr, PowerSuppliersEnum powerSupplierType) {
+			return powerSupplierType.getTodayIntegratedHourlyIdStart() + (hr - 1);
+		}
+	},
+	PEAK_DAY_INTEGRATED_HOURLY_DATA {
+		public int getObjectIdForHourEndForPowerSupplier(int hr, PowerSuppliersEnum powerSupplierType) {
+			return powerSupplierType.getPeakDayIntegratedHourlyIdStart() + (hr - 1);
+		}
+	},
+	TODAY_LOAD_CONTROL_PREDICATION_DATA {
+		public int getObjectIdForHourEndForPowerSupplier(int hr, PowerSuppliersEnum powerSupplierType) {
+			return powerSupplierType.getTodayLoadControlPredicationIdStart() + (hr - 1);
+		}
+	},
+	TOMORROW_LOAD_CONTROL_PREDICTION_DATA {
+		public int getObjectIdForHourEndForPowerSupplier(int hr, PowerSuppliersEnum powerSupplierType) {
+			return powerSupplierType.getTomorrowLoadControlPredicationIdStart() + (hr - 1);
+		}
+	};
 	
 	private final String keyPrefix = "yukon.web.modules.visualDisplays.hourlyDataTypeEnum.";
 	
@@ -16,22 +32,6 @@ public enum HourlyDataTypeEnum implements DisplayableEnum {
         return keyPrefix + name();
     }
 	
-	public int getObjectIdForHourEndForPowerSupplier(int hr, PowerSuppliersEnum powerSupplierType) {
-		
-		int startObjectId;
-		
-		if (this.equals(TODAY_INTEGRATED_HOURLY_DATA)) {
-			startObjectId = powerSupplierType.getTodayIntegratedHourlyIdStart();
-		} else if (this.equals(PEAK_DAY_INTEGRATED_HOURLY_DATA)) {
-			startObjectId = powerSupplierType.getPeakDayIntegratedHourlyIdStart();
-		} else if (this.equals(TODAY_LOAD_CONTROL_PREDICATION_DATA)) {
-			startObjectId = powerSupplierType.getTodayLoadControlPredicationIdStart();
-		} else if (this.equals(TOMORROW_LOAD_CONTROL_PREDICTION_DATA)) {
-			startObjectId = powerSupplierType.getTomorrowLoadControlPredicationIdStart();
-		} else {
-			throw new IllegalArgumentException("Unsupported HourlyDataTypeEnum: " + this.toString());
-		}
-		
-		return startObjectId + (hr - 1);
-	}
+	public abstract int getObjectIdForHourEndForPowerSupplier(int hr, PowerSuppliersEnum powerSupplierType);
+	
 }

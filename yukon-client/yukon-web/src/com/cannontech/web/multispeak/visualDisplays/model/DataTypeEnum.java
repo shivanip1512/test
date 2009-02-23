@@ -4,11 +4,31 @@ import com.cannontech.common.i18n.DisplayableEnum;
 
 public enum DataTypeEnum implements DisplayableEnum {
 	
-	CURRENT_LOAD,
-	CURRENT_IH,
-	LOAD_TO_PEAK,
-	PEAK_IH_LOAD,
-	PEAK_DAY_TIMESTAMP;
+	CURRENT_LOAD {
+		public int getObjectIdForPowerSupplierType(PowerSuppliersEnum powerSupplierType) {
+			return powerSupplierType.getCurrentLoadId();
+		}
+	},
+	CURRENT_IH {
+		public int getObjectIdForPowerSupplierType(PowerSuppliersEnum powerSupplierType) {
+			return powerSupplierType.getCurrentIhId();
+		}
+	},
+	LOAD_TO_PEAK {
+		public int getObjectIdForPowerSupplierType(PowerSuppliersEnum powerSupplierType) {
+			return powerSupplierType.getLoadToPeakId();
+		}
+	},
+	PEAK_IH_LOAD {
+		public int getObjectIdForPowerSupplierType(PowerSuppliersEnum powerSupplierType) {
+			return powerSupplierType.getPeakIhLoadId();
+		}
+	},
+	PEAK_DAY_TIMESTAMP {
+		public int getObjectIdForPowerSupplierType(PowerSuppliersEnum powerSupplierType) {
+			return powerSupplierType.getPeakDayTimestampId();
+		}
+	};
 	
 	private final String keyPrefix = "yukon.web.modules.visualDisplays.dataTypeEnum.";
 	
@@ -17,20 +37,5 @@ public enum DataTypeEnum implements DisplayableEnum {
         return keyPrefix + name();
     }
 
-	public int getObjectIdForPowerSupplierType(PowerSuppliersEnum powerSupplierType) {
-		
-		if (this.equals(CURRENT_LOAD)) {
-			return powerSupplierType.getCurrentLoadId();
-		} else if (this.equals(CURRENT_IH)) {
-			return powerSupplierType.getCurrentIhId();
-		} else if (this.equals(LOAD_TO_PEAK)) {
-			return powerSupplierType.getLoadToPeakId();
-		} else if (this.equals(PEAK_IH_LOAD)) {
-			return powerSupplierType.getPeakIhLoadId();
-		} else if (this.equals(PEAK_DAY_TIMESTAMP)) {
-			return powerSupplierType.getPeakDayTimestampId();
-		} else {
-			throw new IllegalArgumentException("Unsupported DataTypeEnum: " + this.toString());
-		}
-	}
+	public abstract int getObjectIdForPowerSupplierType(PowerSuppliersEnum powerSupplierType);
 }
