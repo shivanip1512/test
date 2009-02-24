@@ -129,7 +129,7 @@ INT CtiDeviceMCT210::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                                  InMessage->Return.UserID,
                                  InMessage->Return.GrpMsgID,
                                  InMessage->Return.RouteID,
-                                 InMessage->Return.MacroOffset,
+                                 selectInitialMacroRouteOffset(InMessage->RouteID),
                                  InMessage->Return.Attempt);
 
             newReq.setConnectionHandle((void *)InMessage->Return.Connection);

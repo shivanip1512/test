@@ -471,7 +471,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
                                                                  InMessage->Return.UserID,
                                                                  InMessage->Return.GrpMsgID,
                                                                  InMessage->Return.RouteID,
-                                                                 InMessage->Return.MacroOffset,
+                                                                 selectInitialMacroRouteOffset(InMessage->RouteID),
                                                                  InMessage->Return.Attempt);
 
                 if( findStringIgnoreCase(commandStr,"duke_issg_start") )
@@ -512,7 +512,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
                                                                              InMessage->Return.UserID,
                                                                              InMessage->Return.GrpMsgID,
                                                                              InMessage->Return.RouteID,
-                                                                             InMessage->Return.MacroOffset,
+                                                                             selectInitialMacroRouteOffset(InMessage->RouteID),
                                                                              InMessage->Return.Attempt);
 
                             newReq->setMessagePriority(MAXPRIORITY);
@@ -540,7 +540,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
                                                                              InMessage->Return.UserID,
                                                                              InMessage->Return.GrpMsgID,
                                                                              InMessage->Return.RouteID,
-                                                                             InMessage->Return.MacroOffset,
+                                                                             selectInitialMacroRouteOffset(InMessage->RouteID),
                                                                              InMessage->Return.Attempt);
 
                             newReq->setMessagePriority(MAXPRIORITY);
@@ -578,7 +578,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
                                                                      InMessage->Return.UserID,
                                                                      InMessage->Return.GrpMsgID,
                                                                      InMessage->Return.RouteID,
-                                                                     InMessage->Return.MacroOffset,
+                                                                     selectInitialMacroRouteOffset(InMessage->RouteID),
                                                                      InMessage->Return.Attempt);
 
                     newReq->setMessagePriority(MAXPRIORITY);
@@ -602,7 +602,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
                                                           InMessage->Return.UserID,
                                                           InMessage->Return.GrpMsgID,
                                                           InMessage->Return.RouteID,
-                                                          InMessage->Return.MacroOffset,
+                                                          selectInitialMacroRouteOffset(InMessage->RouteID),
                                                           InMessage->Return.Attempt);
 
                         newReq->setMessagePriority(MAXPRIORITY);
@@ -621,7 +621,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
                                                       InMessage->Return.UserID,
                                                       InMessage->Return.GrpMsgID,
                                                       InMessage->Return.RouteID,
-                                                      InMessage->Return.MacroOffset,
+                                                      selectInitialMacroRouteOffset(InMessage->RouteID),
                                                       InMessage->Return.Attempt);
 
                     newReq->setMessagePriority(MAXPRIORITY);
@@ -647,7 +647,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
                                                   InMessage->Return.UserID,
                                                   InMessage->Return.GrpMsgID,
                                                   InMessage->Return.RouteID,
-                                                  InMessage->Return.MacroOffset,
+                                                  selectInitialMacroRouteOffset(InMessage->RouteID),
                                                   InMessage->Return.Attempt);
 
                 newReq->setMessagePriority(MAXPRIORITY);
