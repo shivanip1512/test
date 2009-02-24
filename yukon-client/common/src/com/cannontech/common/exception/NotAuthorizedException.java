@@ -24,7 +24,7 @@ public class NotAuthorizedException extends YukonSecurityException {
         Integer[] intObjs = ArrayUtils.toObject(rolePropertyIds);
         return new NotAuthorizedException("User " + user + " requires true property for at least one of rolePropertyId=" + StringUtils.join(intObjs, ","));
     }
-    public static NotAuthorizedException trueProperty(LiteYukonUser user, YukonRoleProperty... roleProperties) {
+    public static NotAuthorizedException atLeastOneTrueProperty(LiteYukonUser user, YukonRoleProperty... roleProperties) {
     	return new NotAuthorizedException("User " + user + " requires true property for at least one of roleProperty: " + StringUtils.join(roleProperties, ","));
     }
     public static NotAuthorizedException falseProperty(LiteYukonUser user, YukonRoleProperty roleProperty) {

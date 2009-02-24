@@ -212,15 +212,14 @@ public interface RolePropertyDao {
     public boolean checkCategory(YukonRoleCategory category, LiteYukonUser user);
     
     /**
-     * Equivalent to calling verifyProperty for each property and returning if any are true, and 
+     * Equivalent to calling checkProperty for each property and returning if any are true, and 
      * throwing a NotAuthorizedException if none are true.
      * 
      * @param user a valid user, may be null when accessing System properties
      * @param properties any properties with a Boolean return type
-     * @return  the OR'd value of each of the properties
      */
-    public void verifyAnyProperty(LiteYukonUser user, YukonRoleProperty... properties) 
-    	throws NotAuthorizedException;
+    public void verifyAnyProperties(LiteYukonUser user, YukonRoleProperty firstProperty,
+    		YukonRoleProperty... otherProperties) throws NotAuthorizedException;
 
     /**
      * Equivalent to calling checkProperty and returning if true, and throwing

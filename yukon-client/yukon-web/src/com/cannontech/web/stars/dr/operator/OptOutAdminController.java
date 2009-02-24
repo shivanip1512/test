@@ -49,7 +49,7 @@ public class OptOutAdminController {
     @RequestMapping(value = "/operator/optOut/admin", method = RequestMethod.GET)
     public String view(LiteYukonUser user, ModelMap map) throws Exception {
         
-    	rolePropertyDao.verifyAnyProperty(user, 
+    	rolePropertyDao.verifyAnyProperties(user, 
         		YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_STATUS,
         		YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_ENABLE,
         		YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_COUNTS,
