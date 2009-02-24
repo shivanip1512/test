@@ -85,6 +85,14 @@ public interface OptOutEventDao {
 	public OptOutEvent getScheduledOptOutEvent(int inventoryId, int customerAccountId);
 	
 	/**
+	 * Method to get a list of all currently scheduled opt out events for all accounts for the
+	 * energy company
+	 * @param energyCompany - Energy company to get opt outs for
+	 * @return List of scheduled opt outs
+	 */
+	public List<OptOutEvent> getAllScheduledOptOutEvents(LiteStarsEnergyCompany energyCompany);
+	
+	/**
 	 * Method to get a list of all currently scheduled opt out events for the account
 	 * @param customerAccountId - Account to get opt outs for
 	 * @return List of scheduled opt outs

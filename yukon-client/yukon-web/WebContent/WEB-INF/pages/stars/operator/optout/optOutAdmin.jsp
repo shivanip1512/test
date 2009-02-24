@@ -121,7 +121,7 @@
 			                </form>
 			            </c:otherwise>
 			        </c:choose>
-			    </div
+			    </div>
 	        </ct:boxContainer>
         </cti:checkProperty>
 	</div>

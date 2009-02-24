@@ -311,7 +311,7 @@
 			</cti:checkProperty>
 			<cti:checkProperty property="operator.AdministratorRole.ADMIN_VIEW_OPT_OUT_EVENTS"> 
 	            <tags:sectionLink>
-	            	<a href="Admin/OptOutEvents.jsp">View Scheduled <cti:getProperty property="ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN" defaultvalue="opt out" format="all_capital"/> Events</a>
+	            	<a href="/spring/stars/operator/optOut/admin/viewScheduled">View Scheduled <cti:getProperty property="ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN" defaultvalue="opt out" format="all_capital"/> Events</a>
 	            </tags:sectionLink>
 			</cti:checkProperty> 
 			<cti:checkProperty property="operator.AdministratorRole.ADMIN_MULTISPEAK_SETUP"> 

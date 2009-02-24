@@ -565,6 +565,25 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
             throws NotAuthorizedException {
         if (!checkCategory(category, user)) throw NotAuthorizedException.category(user, category);
     }
+
+    @Override
+    public void verifyAnyProperty(LiteYukonUser user,
+    		YukonRoleProperty... properties) throws NotAuthorizedException {
+    	
+    	for(YukonRoleProperty property : properties) {
+    		try {
+    			this.verifyProperty(property, user);
+    			// The user is authorized for this property, return
+    			return;
+    		} catch (NotAuthorizedException e) {
+    			// do nothing - not authorized for this property
+    		}
+    	}
+    	
+    	// Not authorized for any of the properties
+    	throw NotAuthorizedException.trueProperty(user, properties);
+    	
+    }
     
     @Override
     public void verifyProperty(YukonRoleProperty property, LiteYukonUser user)

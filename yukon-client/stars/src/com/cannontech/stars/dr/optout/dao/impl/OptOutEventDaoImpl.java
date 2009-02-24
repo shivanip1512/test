@@ -375,7 +375,6 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		
 		return event;
 	}
-	
 
 	@Override
 	public List<OptOutEvent> getAllScheduledOptOutEvents(int customerAccountId) {
@@ -392,6 +391,26 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 															customerAccountId,
 															OptOutEventState.SCHEDULED.toString(), 
 															new Date());
+		return eventList;
+	}
+	
+	@Override
+	public List<OptOutEvent> getAllScheduledOptOutEvents(LiteStarsEnergyCompany energyCompany) {
+		
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		sql.append("SELECT ooe.* ");
+		sql.append("FROM OptOutEvent ooe");
+		sql.append("JOIN ECToAccountMapping ectam ON ectam.AccountId = ooe.CustomerAccountId");
+		sql.append("WHERE ooe.EventState = ").appendArgument(OptOutEventState.SCHEDULED.toString());
+		sql.append("	AND ooe.StartDate > ").appendArgument(new Date());
+		sql.append("	AND ectam.EnergyCompanyId = ").appendArgument(
+																energyCompany.getEnergyCompanyID());
+		
+		List<OptOutEvent> eventList = simpleJdbcTemplate.query(
+				sql.getSql(),
+				new OptOutEventRowMapper(), 
+				sql.getArguments());
+		
 		return eventList;
 	}
 

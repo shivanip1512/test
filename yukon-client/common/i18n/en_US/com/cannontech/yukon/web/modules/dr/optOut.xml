@@ -81,6 +81,14 @@
     <entry key="yukon.dr.operator.optoutconfirm.question.1">Question 1</entry>
     <entry key="yukon.dr.operator.optoutconfirm.question.2">Question 2</entry>
     <entry key="yukon.dr.operator.optoutconfirm.question.3">Question 3</entry>
+
+    <!--  scheduledEvents.jsp -->
+    <entry key="yukon.web.modules.dr.scheduledEvents.title">Scheduled Opt Outs</entry>
+    <entry key="yukon.web.modules.dr.scheduledEvents.startDateTime">Start date</entry>
+    <entry key="yukon.web.modules.dr.scheduledEvents.duration">Duration</entry>
+    <entry key="yukon.web.modules.dr.scheduledEvents.accountNumber">Account Number</entry>
+    <entry key="yukon.web.modules.dr.scheduledEvents.serialNumber">Serial Number</entry>
+    <entry key="yukon.web.modules.dr.scheduledEvents.noScheduledEvents">There are currently no scheduled Opt Outs.</entry>
     
 
 </properties>
