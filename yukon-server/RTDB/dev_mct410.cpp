@@ -874,7 +874,7 @@ INT CtiDeviceMCT410::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                                  InMessage->Return.UserID,
                                  InMessage->Return.GrpMsgID,
                                  InMessage->Return.RouteID,
-                                 selectInitialMacroRouteOffset(InMessage->RouteID),
+                                 selectInitialMacroRouteOffset(InMessage->Return.RouteID),
                                  0,
                                  0,
                                  InMessage->Priority);
@@ -930,7 +930,7 @@ INT CtiDeviceMCT410::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                                      InMessage->Return.UserID,
                                      InMessage->Return.GrpMsgID,
                                      InMessage->Return.RouteID,
-                                     selectInitialMacroRouteOffset(InMessage->RouteID),
+                                     selectInitialMacroRouteOffset(InMessage->Return.RouteID),
                                      0,
                                      0,
                                      InMessage->Priority);
@@ -3176,7 +3176,7 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
                                              InMessage->Return.UserID,
                                              InMessage->Return.GrpMsgID,
                                              InMessage->Return.RouteID,
-                                             selectInitialMacroRouteOffset(InMessage->RouteID),
+                                             selectInitialMacroRouteOffset(InMessage->Return.RouteID),
                                              0,
                                              0,
                                              InMessage->Priority);
@@ -3406,7 +3406,7 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
                                  InMessage->Return.UserID,
                                  InMessage->Return.GrpMsgID,
                                  InMessage->Return.RouteID,
-                                 selectInitialMacroRouteOffset(InMessage->RouteID),
+                                 selectInitialMacroRouteOffset(InMessage->Return.RouteID),
                                  0,
                                  0,
                                  InMessage->Priority);

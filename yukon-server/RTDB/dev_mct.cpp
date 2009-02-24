@@ -3581,7 +3581,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
                     InEchoToOut( InMessage, OutTemplate );
 
                     //  reset the meter
-                    pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putstatus reset", InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, selectInitialMacroRouteOffset(InMessage->RouteID), InMessage->Return.Attempt);
+                    pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putstatus reset", InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, selectInitialMacroRouteOffset(InMessage->Return.RouteID), InMessage->Return.Attempt);
 
                     if( pReq != NULL )
                     {
@@ -3597,7 +3597,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
                     }
 
                     //  enable group addressing
-                    pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon group enable", InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, selectInitialMacroRouteOffset(InMessage->RouteID), InMessage->Return.Attempt);
+                    pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon group enable", InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, selectInitialMacroRouteOffset(InMessage->Return.RouteID), InMessage->Return.Attempt);
 
                     if( pReq != NULL )
                     {
@@ -3615,7 +3615,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
                     //  put the load profile interval if it's a lp device
                     if( isLoadProfile(getType()) )
                     {
-                        pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon interval lp", InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, selectInitialMacroRouteOffset(InMessage->RouteID), InMessage->Return.Attempt);
+                        pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon interval lp", InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, selectInitialMacroRouteOffset(InMessage->Return.RouteID), InMessage->Return.Attempt);
 
                         if( pReq != NULL )
                         {
@@ -3634,7 +3634,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
                     //  put the demand interval
                     if( hasVariableDemandRate(getType(), sspec) )
                     {
-                        pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon interval li", InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, selectInitialMacroRouteOffset(InMessage->RouteID), InMessage->Return.Attempt);
+                        pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon interval li", InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, selectInitialMacroRouteOffset(InMessage->Return.RouteID), InMessage->Return.Attempt);
 
                         if( pReq != NULL )
                         {
@@ -3654,7 +3654,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
                     {
                         if( _mpkh[0] > 0 )
                         {
-                            pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon mult kyz 1 " + CtiNumStr(_mpkh[0]), InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, selectInitialMacroRouteOffset(InMessage->RouteID), InMessage->Return.Attempt);
+                            pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon mult kyz 1 " + CtiNumStr(_mpkh[0]), InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, selectInitialMacroRouteOffset(InMessage->Return.RouteID), InMessage->Return.Attempt);
 
                             if( pReq != NULL )
                             {
@@ -3698,7 +3698,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
                         if( _wireConfig[1] != WireConfigTwoWire )   config_byte |= 0x10;
                         if( _wireConfig[2] != WireConfigTwoWire )   config_byte |= 0x20;
 
-                        pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon raw start=0x03 " + CtiNumStr(config_byte).xhex().zpad(2), InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, selectInitialMacroRouteOffset(InMessage->RouteID), InMessage->Return.Attempt);
+                        pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon raw start=0x03 " + CtiNumStr(config_byte).xhex().zpad(2), InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, selectInitialMacroRouteOffset(InMessage->Return.RouteID), InMessage->Return.Attempt);
 
                         if( pReq != NULL )
                         {
@@ -3716,7 +3716,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
                         {
                             if( _mpkh[i] > 0 )
                             {
-                                pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon mult kyz " + CtiNumStr(i+1) + string(" ") + CtiNumStr(_mpkh[i]), InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, selectInitialMacroRouteOffset(InMessage->RouteID), InMessage->Return.Attempt);
+                                pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon mult kyz " + CtiNumStr(i+1) + string(" ") + CtiNumStr(_mpkh[i]), InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, selectInitialMacroRouteOffset(InMessage->Return.RouteID), InMessage->Return.Attempt);
 
                                 if( pReq != NULL )
                                 {
