@@ -96,7 +96,7 @@
                     <th><cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.operationType"/></th>
                     <th><cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.updateTime"/></th>
                     <th style="text-align:right;"><cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.success"/></th>
-                    <th style="text-align:right;"><cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.processingException"/></th>
+                    <th style="text-align:right;padding-left:10px;"><cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.processingException"/></th>
                     <th></th>
                     <th><cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.fields"/></th>
                     <c:if test="${hasBulkImportRP || hasBulkUpdateRP || hasMassChangeRP}">
