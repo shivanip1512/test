@@ -16,8 +16,14 @@ import com.cannontech.analysis.data.stars.StarsLMSummary;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.authorization.service.PaoAuthorizationService;
+import com.cannontech.core.authorization.support.Permission;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.util.ServletUtil;
 
 /**
  * Created on May 20, 2005
@@ -25,6 +31,7 @@ import com.cannontech.database.SqlUtils;
  */
 public class StarsLMSummaryModel extends ReportModelBase<StarsLMSummary>
 {
+    private LiteYukonUser liteUser;
 	/** Number of columns */
 	protected final int NUMBER_COLUMNS = 6;
 	
@@ -175,7 +182,8 @@ public class StarsLMSummaryModel extends ReportModelBase<StarsLMSummary>
 			{
 				pstmt = conn.prepareStatement(sql.toString());
 				rset = pstmt.executeQuery();
-				
+				PaoAuthorizationService paoAuthorizationService = (PaoAuthorizationService)YukonSpringHook.getBean("paoAuthorizationService");
+                PaoDao paoDao = (PaoDao)YukonSpringHook.getBean("paoDao");
 				while( rset.next())
 				{
 //				    SELECT PAONAME, LMG.KWCAPACITY, SUM(AB.KWCAPACITY), COUNT(DISTINCT MANUFACTURERSERIALNUMBER), PAO.PAOBJECTID 
@@ -184,6 +192,9 @@ public class StarsLMSummaryModel extends ReportModelBase<StarsLMSummary>
 				    Integer receiversCapactiy = new Integer(rset.getInt(3));
 				    Integer numberReceivers = new Integer(rset.getInt(4));
 				    Integer groupID = new Integer(rset.getInt(5));
+				    if (!paoAuthorizationService.isAuthorized(liteUser, Permission.LM_VISIBLE, paoDao.getLiteYukonPAO(groupID))) {
+				        continue; //skip info of programs we aren't allowed to view
+				    }
 				    StarsLMSummary summary = new StarsLMSummary(groupName, groupCapacity, numberReceivers, receiversCapactiy, null, null);
 				    tempDataMap.put(groupID, summary);
 				}
@@ -485,6 +496,7 @@ public class StarsLMSummaryModel extends ReportModelBase<StarsLMSummary>
 			
 			param = req.getParameter(ATT_SHOW_CAPACITY);
 			setShowCapacity(param != null);
+			setLiteUser(ServletUtil.getYukonUser(req));
 		}
 	}
 	
@@ -501,5 +513,12 @@ public class StarsLMSummaryModel extends ReportModelBase<StarsLMSummary>
     public void setShowCapacity(boolean showCapacity)
     {
         this.showCapacity = showCapacity;
+    }
+    
+    public LiteYukonUser getLiteUser() {
+        return liteUser;
+    }
+    public void setLiteUser(LiteYukonUser liteUser) {
+        this.liteUser = liteUser;
     }
 }

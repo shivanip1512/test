@@ -67,7 +67,7 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
     }
     
     public String getTitle() {
-        return "Customer Control Summary Report";
+        return "Customer Control Summary";
     }
 
     public int getRowCount() {

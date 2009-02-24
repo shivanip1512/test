@@ -31,7 +31,8 @@ public class LMControlDetailController extends ReportControllerBase {
                "          <td width=\"110px\">Account Number: </td>\r\n" +
                "          <td><textarea rows=\"5\" name=\"accountNumbers\" ></textarea></td>\r\n" + 
                "        </tr>\r\n" + 
-               "      </table>\r\n";
+               "      </table>\r\n" +
+               " * If account numbers are supplied, programs selected below are ignored.<br>* If no account numbers are supplied, you must select one or more programs below.";
     }
 
     public YukonReportBase getReport() {

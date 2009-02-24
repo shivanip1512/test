@@ -26,7 +26,7 @@ public class LMControlSummaryController extends ReportControllerBase {
     }
 
     public String getHTMLOptionsTable() {
-        return "";
+        return "* Select at least one program below.";
     }
 
     public YukonReportBase getReport() {

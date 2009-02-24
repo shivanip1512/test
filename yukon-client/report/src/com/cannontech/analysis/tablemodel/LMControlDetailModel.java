@@ -13,6 +13,7 @@ import org.apache.commons.lang.Validate;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
+import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -66,7 +67,7 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
     }
     
     public String getTitle() {
-        return "Detailed Customer Control Report";
+        return "Customer Control Detail";
     }
 
     public int getRowCount() {
@@ -190,5 +191,7 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
     }
     public void setLiteUser(LiteYukonUser liteUser) {
         this.liteUser = liteUser;
+        EnergyCompanyDao energyCompanyDao = YukonSpringHook.getBean("energyCompanyDao", EnergyCompanyDao.class);
+        energyCompanyId = energyCompanyDao.getEnergyCompany(liteUser).getEnergyCompanyID();
     }
 }
