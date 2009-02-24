@@ -620,6 +620,18 @@
     </ul>
      </troubleshooting>
 </error>
+<error code="202">
+	<category>Yukon System</category> 
+	<porter>NoMethod or invalid command.</porter>
+    <description>The command is incorrect or not supported by this device type.</description>
+    <troubleshooting>
+      <ul>
+		<li>Verify the command string syntax is valid.</li>
+		<li>The firmware for this device may not support this operation.</li>
+        <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
+      </ul>
+    </troubleshooting>
+</error>
 <error code="261">
 	<category>Data Validation</category> 
 	<porter>The freeze check bit in the frozen reading does not match the last recorded freeze sent to the device.</porter>
