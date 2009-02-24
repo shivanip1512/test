@@ -271,16 +271,16 @@
         Uploading a file will not immediatly make any changes.<br>You will be directed to a page with additional options and/or opportunity to confirm.
     ]]></entry>
     <entry key="yukon.common.device.bulk.updateUpload.instructions"><![CDATA[
-        <li>Files must contain a header row with valid column idenifiers as listed in the table below.</li><br>
-        <li>The first column is always the <i><b>Idendifier Column</b></i>. <br>It will be used to determine which device is to be updated.</li><br>
-        <li>One of the following column idenifiers must be used in the <i><b>Idendifier Column</b></i>: <br><b>ADDRESS</b>, <b>METER_NUMBER</b>, <b>NAME</b>, or <b>DEVICE_ID</b>.</li><br>
+        <li>Files must contain a header row with valid column identifiers as listed in the table below.</li><br>
+        <li>The first column is always the <i><b>Identifier Column</b></i>. <br>It will be used to determine which device is to be updated.</li><br>
+        <li>One of the following column identifiers must be used in the <i><b>Identifier Column</b></i>: <br><b>ADDRESS</b>, <b>METER_NUMBER</b>, <b>NAME</b>, or <b>DEVICE_ID</b>.</li><br>
         <li>Leaving a field blank indicates that the field should not be changed. <br>Chosen columns should be included for each row even if they contain no value.</li><br>
     ]]></entry>
     <entry key="yukon.common.device.bulk.updateUpload.sampleFilesLabel">Sample Files</entry>
     
     <!-- updateUpload.jsp: option labels -->
     <entry key="yukon.common.device.bulk.options.update.ignoreInvalidHeaders">Ignore columns with invalid headers</entry>
-    <entry key="yukon.common.device.bulk.options.update.ignoreInvalidIdentifiers">Ignore invalid identifers</entry>
+    <entry key="yukon.common.device.bulk.options.update.ignoreInvalidIdentifiers">Ignore invalid identifiers</entry>
     
     <!-- updateUpload.jsp: column header instruction table headers -->
     <entry key="yukon.common.device.bulk.columnHeader.tableHeader.update.columnHeader">Column Header</entry>
