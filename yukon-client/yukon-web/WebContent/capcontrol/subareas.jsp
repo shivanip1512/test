@@ -47,6 +47,10 @@ if (allowCtlVal!=null) {
 	boolean allowControl = Boolean.valueOf(allowCtlVal);
 	if (allowControl) {%>
 			<div id="systemCommandLink" align="right" > </div>
+			<div align="right">
+				<a href="javascript:void(0);" id="systemResetOpCountsLink" align="right" onclick="sendResetOpCountCommand()">Reset All Op Counters</a>
+			</div>
+			<br>
 	<%} 
 }%>    
 
@@ -181,7 +185,7 @@ if ($('systemCommandLink')) {
             onFailure: function() { $('cannonUpdaterErrorDiv').show();}
         });
     });
-}    
+}  
 </script>
 
 </cti:titledContainer>

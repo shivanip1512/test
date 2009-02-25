@@ -218,6 +218,16 @@ function sendSystemEnableCommand (systemIsOn) {
 
 }
 
+function sendResetOpCountCommand () {
+	new Ajax.Request("/spring/capcontrol/cbcAjaxController?action=executeSystemCommand", 
+		{
+			method:"post", 
+			parameters:"resetOpCount=true", 
+			asynchronous:true
+			});
+
+}
+
 function submitChangeOpStateMenu() {
 
     var operationalStateChange = false;

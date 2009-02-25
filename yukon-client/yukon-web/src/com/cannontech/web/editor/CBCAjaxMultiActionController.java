@@ -51,8 +51,6 @@ public class CBCAjaxMultiActionController extends MultiActionController {
                 : "id='systemOff'>");
         buf.append((cbcCache.getSystemStatusOn()) ? "Disable System </a>"
                 : " Enable System </a>");
-        buf.append("<br/>");
-        buf.append("<br/>");
         return buf;
     }
 
@@ -63,16 +61,21 @@ public class CBCAjaxMultiActionController extends MultiActionController {
         LiteYukonUser user = (LiteYukonUser) req.getSession(false)
                                                 .getAttribute(LoginController.YUKON_USER);
         CapControlCommandExecutor executor = new CapControlCommandExecutor(cbcCache, user);
-        boolean turnSystemOff = ParamUtil.getBoolean(req, "turnSystemOff");
-        int commandID = (turnSystemOff) ? CapControlCommand.DISABLE_SYSTEM
-                : CapControlCommand.ENABLE_SYSTEM;
+        boolean resetOpCount = ParamUtil.getBoolean(req, "resetOpCount");
+        int commandID = -1;
+        if(resetOpCount == true){
+        	commandID = CapControlCommand.RESET_ALL_OPCOUNTS;
+        	
+        }else{
+	        boolean turnSystemOff = ParamUtil.getBoolean(req, "turnSystemOff");
+	        commandID = (turnSystemOff) ? CapControlCommand.DISABLE_SYSTEM : CapControlCommand.ENABLE_SYSTEM;
+        }
         if (allowSystemWideControl(user)) {
             executor.executeCommand(0, commandID);
         } else {
             CTILogger.info("Unable to execute command - " + commandID + ". Check admin settings");
         }
         return null;
-
     }
 
     private boolean allowSystemWideControl(LiteYukonUser user) {

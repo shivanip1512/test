@@ -25,7 +25,7 @@ public class CapControlCommand extends com.cannontech.yukon.cbc.CapControlMessag
 	public static final int WAIVE_SUB = 13;
 	public static final int UNWAIVE_SUB = 14;
 	public static final int CONFIRM_FEEDER = 15;
-	public static final int UNWAIVE_FEEDER = 16;
+	public static final int RESET_ALL_OPCOUNTS = 16;
 
 	public static final int BANK_ENABLE_OVUV = 17;
 	public static final int BANK_DISABLE_OVUV = 18;
