@@ -117,7 +117,7 @@ DEVICECONFIGURATION = $(COMPILEBASE)\deviceconfiguration
 TCLINC          = $(COMPILEBASE)\tcl\include
 XERCESINC       = $(COMPILEBASE)\xerces\include
 
-BOOST           = $(SOURCEBASE)\yukon-3rdparty\boost
+BOOST           = $(YUKONBASE)\yukon-3rdparty\boost
 
 BOOST_ALL_DYN_LINK = 1
 

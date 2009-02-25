@@ -19,7 +19,7 @@ RWOSFAMILY=PC
 RWOS=WINNT
 RWCOMPILER=MSVC
 
-RWWORKSPACE=$(SOURCEBASE)\yukon-3rdparty\RogueWave\$(BUILDTYPE)
+RWWORKSPACE=$(YUKONBASE)\yukon-3rdparty\RogueWave\$(BUILDTYPE)
 RW = $(RWWORKSPACE)
 
 # Rogue Wave header file include path.

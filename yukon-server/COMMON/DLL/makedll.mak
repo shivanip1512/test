@@ -13,8 +13,8 @@ copy:
                -@if not exist $(COMPILEBASE)\lib\clrdump.lib copy .\DLL\clrdump.lib $(COMPILEBASE)\lib
 	       
                -@if not exist $(YUKONOUTPUT)\thr$(BUILDTYPE).dll copy $(RWWORKSPACE)\lib\*.dll $(YUKONOUTPUT)
-               -@if not exist $(YUKONOUTPUT)\msvcp90$(MICROSOFTDLL).dll copy $(SOURCEBASE)\yukon-3rdparty\Microsoft\msvc*90$(MICROSOFTDLL).dll $(YUKONOUTPUT)
-               -@if not exist $(YUKONOUTPUT)\ntwdblib.dll copy $(SOURCEBASE)\yukon-3rdparty\Microsoft\ntwdblib.dll $(YUKONOUTPUT)
+               -@if not exist $(YUKONOUTPUT)\msvcp90$(MICROSOFTDLL).dll copy $(YUKONBASE)\yukon-3rdparty\Microsoft\msvc*90$(MICROSOFTDLL).dll $(YUKONOUTPUT)
+               -@if not exist $(YUKONOUTPUT)\ntwdblib.dll copy $(YUKONBASE)\yukon-3rdparty\Microsoft\ntwdblib.dll $(YUKONOUTPUT)
                
 
 clean:

@@ -5,16 +5,19 @@ setlocal
 rem Set the path to the directory where the build tools live.
 
 if not exist ..\Makefile (
-        pushd ..\yukon-build\server-build
+        pushd ..
 ) else (
-        pushd ..\..\yukon-build\server-build
+        pushd ..\..
 )
-set path=%cd%;%path%
+
+set YUKONBASE=%cd%
 popd
 
-set compilebase=%cd%
+set PATH=%YUKONBASE%\yukon-build\server-build;%PATH%
+
+set COMPILEBASE=%cd%
 pushd ..
-set sourcebase=%cd%
+set SOURCEBASE=%cd%
 popd
 
 rem Build it.
