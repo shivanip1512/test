@@ -255,6 +255,10 @@ YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(pageCon
 %>
 					  </select>
 					<BR>
+				
+<% 
+					if (scenarios.length >0) {
+%>
 					<span align="right" class="NavText">
 					  <a href="" name="sc_start" 
 					  onClick="itemid=document.getElementById('scen_box').options[document.getElementById('scen_box').selectedIndex].value; showConfirmWin(this); return false;">
@@ -263,6 +267,10 @@ YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(pageCon
 					  onClick="itemid=document.getElementById('scen_box').options[document.getElementById('scen_box').selectedIndex].value; showConfirmWin(this); return false;">
 					  [Stop]</a> 
 					</span>
+<% 
+					}
+%>
+					
 					</div>
 					</td>
 					</tr>
