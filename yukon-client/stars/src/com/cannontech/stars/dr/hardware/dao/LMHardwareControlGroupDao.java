@@ -39,6 +39,8 @@ public interface LMHardwareControlGroupDao {
     
     public List<LMHardwareControlGroup> getCurrentOptOutByGroupIdAndAccountId(int lmGroupId, int accountId);
 
+    public List<LMHardwareControlGroup> getCurrentEnrollmentByInventoryIdAndAccountId(int inventoryId, int accountId);
+    
     public List<LMHardwareControlGroup> getByInventoryIdAndAccountIdAndType(int inventoryId, int accountId, int type);
 
     public List<LMHardwareControlGroup> getByInventoryIdAndGroupIdAndAccountId(int inventoryId, int lmGroupId, int accountId);

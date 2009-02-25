@@ -274,7 +274,6 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         return loadGroup;
     }
 
-    
     @Autowired
     public void setApplianceCategoryDao(ApplianceCategoryDao applianceCategoryDao) {
         this.applianceCategoryDao = applianceCategoryDao;

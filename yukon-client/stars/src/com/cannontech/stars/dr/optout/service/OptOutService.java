@@ -39,6 +39,15 @@ public interface OptOutService {
 
 	/**
 	 * Method to cancel an opt out or a scheduled opt out
+	 * @param eventId - Opt out event ids to cancel
+	 * @param user - User requesting the cancel
+	 * @throws CommandCompletionException - If the cancel command could not be sent to the device
+	 */
+	public void cancelOptOut(int eventId, LiteYukonUser user) 
+		throws CommandCompletionException;
+
+	/**
+	 * Method to cancel an opt out or a scheduled opt out
 	 * @param eventIdList - List of opt out event ids to cancel
 	 * @param user - User requesting the cancel
 	 * @throws CommandCompletionException - If the cancel command could not be sent to the device

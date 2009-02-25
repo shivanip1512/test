@@ -100,6 +100,13 @@ public interface OptOutEventDao {
 	public List<OptOutEvent> getAllScheduledOptOutEvents(int customerAccountId);
 	
 	/**
+	 * Method to get a list of all currently scheduled opt out events for the account and inventory
+	 * @param customerAccountId - Account to get opt outs for, inventoryId - Inventory that belongs to the account
+	 * @return List of scheduled opt outs
+	 */
+	public List<OptOutEvent> getAllScheduledOptOutEvents(int customerAccountId, int inventoryId);
+	
+	/**
 	 * Method to get a list of all currently active and scheduled opt outs for an account
 	 * @param customerAccountId - Account to get opt outs for
 	 * @return List of events

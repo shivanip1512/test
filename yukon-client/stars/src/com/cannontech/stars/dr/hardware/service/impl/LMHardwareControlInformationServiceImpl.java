@@ -7,19 +7,26 @@ import java.util.List;
 
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService;
+import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
+import com.cannontech.stars.dr.optout.model.OptOutEvent;
+import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
        
 public class LMHardwareControlInformationServiceImpl implements LMHardwareControlInformationService {
     
     private Logger logger = YukonLogManager.getLogger(LMHardwareControlInformationServiceImpl.class);
-    private LMHardwareControlGroupDao lmHardwareControlGroupDao;
-    private ProgramDao programDao;
+
+	private LMHardwareControlGroupDao lmHardwareControlGroupDao;
+	private OptOutEventDao optOutEventDao;
+	private OptOutService optOutService;
+	private ProgramDao programDao;
     
     /*@SuppressWarnings("unused")*/
     public boolean startEnrollment(int inventoryId, int loadGroupId, int accountId, int relay, LiteYukonUser currentUser) {
@@ -30,6 +37,12 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
             controlInformationList = lmHardwareControlGroupDao.getByInventoryIdAndAccountIdAndType(inventoryId, accountId, LMHardwareControlGroup.ENROLLMENT_ENTRY);
             Date now = new Date();
 
+            // Clear all the opt outs for the enrolled inventory
+            if (optOutEventDao.isOptedOut(inventoryId, accountId)) {
+            	OptOutEvent findLastEvent = optOutEventDao.findLastEvent(inventoryId, accountId);
+            	optOutService.cancelOptOut(findLastEvent.getEventId(), currentUser);
+            }
+            
             /*If there is an existing enrollment that is using this same device, load group, and potentially, the same relay
              * we need to then stop enrollment for that before starting the existing.
              * We need to allow this method to do stops as well as starts to help migrate from legacy STARS systems and to
@@ -68,6 +81,27 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
         try {
             controlInformationList = lmHardwareControlGroupDao.getByInventoryIdAndGroupIdAndAccountIdAndType(inventoryId, loadGroupId, accountId, LMHardwareControlGroup.ENROLLMENT_ENTRY);
             Date now = new Date();
+            
+            List<LMHardwareControlGroup> lmHardwareControlGroup = 
+            	lmHardwareControlGroupDao.getCurrentEnrollmentByInventoryIdAndAccountId(inventoryId, accountId);
+            
+            // Clean up the opt out for the given inventory.
+            if (optOutEventDao.isOptedOut(inventoryId, accountId)) {
+	            if (lmHardwareControlGroup.size() > 1){
+	            	stopOptOut(inventoryId, loadGroupId, accountId, currentUser, now);
+	            } else {
+            		OptOutEvent findLastEvent = optOutEventDao.findLastEvent(inventoryId, accountId);
+            		optOutService.cancelOptOut(findLastEvent.getEventId(), currentUser);
+            		stopOptOut(inventoryId, loadGroupId, accountId, currentUser, now);
+
+            		// Remove all the scheduled opt outs for this device.
+            		List<OptOutEvent> allScheduledOptOutEvents = optOutEventDao.getAllScheduledOptOutEvents(accountId, inventoryId);
+            		for (OptOutEvent optOutEvent : allScheduledOptOutEvents) {
+                		optOutService.cancelOptOut(optOutEvent.getEventId(), currentUser);
+					}
+            	}
+            }
+
             /*Should be an entry with a start date but no stop date.*/
             if(controlInformationList.size() > 0) {
                 for(LMHardwareControlGroup controlInformation : controlInformationList) {
@@ -173,15 +207,21 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
         return inventoryIds;
     }
     
-    public LMHardwareControlGroupDao getLmHardwareControlGroupDao() {
-        return lmHardwareControlGroupDao;
-    }
-
     public void setLmHardwareControlGroupDao(
             LMHardwareControlGroupDao lmHardwareControlGroupDao) {
         this.lmHardwareControlGroupDao = lmHardwareControlGroupDao;
     }
-    
+
+    @Autowired
+    public void setOptOutEventDao(OptOutEventDao optOutEventDao) {
+    	this.optOutEventDao = optOutEventDao;
+    }
+
+    @Autowired
+    public void setOptOutService(OptOutService optOutService) {
+    	this.optOutService = optOutService;
+    }
+
     public void setProgramDao(ProgramDao programDao) {
         this.programDao = programDao;
     }

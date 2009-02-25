@@ -36,6 +36,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
     private static final String selectByEnrollStopRange;
     private static final String selectByOptOutStartRange;
     private static final String selectByOptOutStopRange;
+    private static final String selectCurrentEnrollmentByInventoryIdAndAccountId;
     private static final String selectCurrentOptOutsByInventoryIdAndGroupIdAndAccountId;
     private static final String selectByInventoryIdAndAccountIdAndType;
     private static final String selectByInventoryIdAndGroupIdAndAccountId;
@@ -80,6 +81,8 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
         selectByOptOutStartRange = selectAllSql + " WHERE OptOutStart > ? AND OptOutStart <= ?";
         
         selectByOptOutStopRange = selectAllSql + " WHERE OptOutStop > ? AND OptOutStop <= ?";
+        
+        selectCurrentEnrollmentByInventoryIdAndAccountId = selectAllSql + " WHERE InventoryId = ? AND AccountId = ? AND GroupEnrollStop IS NULL AND NOT GroupEnrollStart IS NULL";
         
         selectCurrentOptOutsByInventoryIdAndGroupIdAndAccountId = selectAllSql + " WHERE LMGroupId = ? AND AccountId = ? AND OptOutStop IS NULL AND NOT OptOutStart IS NULL";
         
@@ -252,6 +255,15 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
     public List<LMHardwareControlGroup> getByInventoryIdAndGroupIdAndAccountIdAndType(int inventoryId, int lmGroupId, int accountId, int type) {
         try {
             List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectByInventoryIdAndGroupIdAndAccountIdAndType, rowMapper, inventoryId, lmGroupId, accountId, type);
+            return list;
+        } catch (DataAccessException e) {
+            return Collections.emptyList();
+        }
+    }
+
+    public List<LMHardwareControlGroup> getCurrentEnrollmentByInventoryIdAndAccountId(int inventoryId, int accountId) {
+        try {
+            List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectCurrentEnrollmentByInventoryIdAndAccountId, rowMapper, inventoryId, accountId);
             return list;
         } catch (DataAccessException e) {
             return Collections.emptyList();
