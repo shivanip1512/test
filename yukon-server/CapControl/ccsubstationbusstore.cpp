@@ -1138,7 +1138,7 @@ void CtiCCSubstationBusStore::reset()
         for(i=0;i<_ccSubstationBuses->size();i++)
         {
             CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)(*_ccSubstationBuses).at(i);
-
+            calculateParentPowerFactor(currentSubstationBus->getPAOId());
             currentSubstationBus->getMultipleMonitorPoints().clear();
             CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
             for(LONG j=0;j<ccFeeders.size();j++)
@@ -7231,7 +7231,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                                 subbusid = feeder_subbus_map->find(feederid)->second;
                                 capbank_subbus_map->insert(make_pair(deviceid, subbusid));
                             }
-						}
+                        }
 
 
                     }
