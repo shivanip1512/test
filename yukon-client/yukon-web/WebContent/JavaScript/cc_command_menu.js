@@ -219,13 +219,21 @@ function sendSystemEnableCommand (systemIsOn) {
 }
 
 function sendResetOpCountCommand () {
-	new Ajax.Request("/spring/capcontrol/cbcAjaxController?action=executeSystemCommand", 
-		{
-			method:"post", 
-			parameters:"resetOpCount=true", 
-			asynchronous:true
-			});
+	message = 'You are resetting all op counters on the system. Please confirm...';	
 
+	if (confirm (message))
+	{
+	    new Ajax.Request("/spring/capcontrol/cbcAjaxController?action=executeSystemCommand", 
+	    	{
+				method:"post", 
+				parameters:"resetOpCount=true", 
+				asynchronous:true
+	    		});
+	}
+	else
+	{
+		alert ('Command cancelled successfully.');
+	}
 }
 
 function submitChangeOpStateMenu() {
