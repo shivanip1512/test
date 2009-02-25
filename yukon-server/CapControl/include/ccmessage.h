@@ -97,8 +97,8 @@ public:
         //WAIVE_SUBSTATION_BUS, //13  REMOVED
         //UNWAIVE_SUBSTATION_BUS,//14   REMOVED
         CONFIRM_FEEDER = 15,//15
-        //UNWAIVE_FEEDER,//16   REMOVED
-        ENABLE_OVUV = 17,//17 
+        RESET_SYSTEM_OP_COUNTS=16,//16
+        ENABLE_OVUV,//17 
         DISABLE_OVUV,//18
         DELETE_ITEM, //19
         CONFIRM_SUB, //20

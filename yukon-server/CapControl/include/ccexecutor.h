@@ -74,6 +74,7 @@ private:
     void ReturnCapToOriginalFeeder();
     void ResetDailyOperations();
     void ConfirmFeeder();
+    void ResetAllSystemOpCounts();
     void EnableOvUv();
     void DisableOvUv();
     void DeleteItem();

@@ -102,6 +102,10 @@ void CtiCCCommandExecutor::Execute()
         ConfirmFeeder();
         break;
 
+    case CtiCCCommand::RESET_SYSTEM_OP_COUNTS:
+        ResetAllSystemOpCounts();
+        break;
+
     case CtiCCCommand::ENABLE_OVUV:
         EnableOvUv();
         break;
@@ -6507,6 +6511,117 @@ void CtiCCCommandExecutor::ResetDailyOperations()
     }
 }
 
+
+/*---------------------------------------------------------------------------
+    EnableFeeder
+---------------------------------------------------------------------------*/    
+void CtiCCCommandExecutor::ResetAllSystemOpCounts()
+{
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
+    LONG areaId = _command->getId();
+    LONG controlID = 0;
+    BOOL found = FALSE;
+    CtiMultiMsg* multi = new CtiMultiMsg();
+    CtiMultiMsg* eventMulti = new CtiMultiMsg();
+    CtiMultiMsg_vec& pointChanges = multi->getData();
+    CtiMultiMsg_vec& ccEvents = eventMulti->getData();
+
+    string text1 = string("Manual System Reset All Op Counts");
+    string additional1 = string("CapControl SYSTEM RESET OP COUNTS ");
+
+    pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
+    ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, 0, 0, 0, 0, 0, capControlManualCommand, 0, 0, text1, _command->getUser()));
+
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstation_vec& ccStations = *store->getCCSubstations(CtiTime().seconds());
+    CtiCCArea_vec& ccAreas = *store->getCCGeoAreas(CtiTime().seconds());
+    
+    for (int i = 0; i <ccAreas.size(); i++ )
+    {
+        CtiCCAreaPtr currentArea = (CtiCCArea*)ccAreas.at(i);    
+        if (currentArea != NULL && !currentArea->getDisableFlag())
+        {
+            std::list <long>::iterator subIter = currentArea->getSubStationList()->begin();
+        
+            while (subIter != currentArea->getSubStationList()->end())
+            {
+                CtiCCSubstationPtr currentStation = store->findSubstationByPAObjectID(*subIter);
+                subIter++;
+                
+                if (currentStation != NULL)
+                {
+                    list <LONG>::const_iterator iterBus = currentStation->getCCSubIds()->begin();
+                    while (iterBus  != currentStation->getCCSubIds()->end())
+                    { 
+                        LONG busId = *iterBus;
+                        CtiCCSubstationBus* currentSubstationBus = store->findSubBusByPAObjectID(busId);
+                        if (currentSubstationBus != NULL)
+                        {
+                            CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
+                
+                            for(LONG j=0;j<ccFeeders.size();j++)
+                            {
+                                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
+                                CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
+                
+                                for(LONG k=0;k<ccCapBanks.size();k++)
+                                {
+                                    CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
+                                    currentCapBank->setCurrentDailyOperations(0);
+                                    currentCapBank->setTotalOperations(0);
+                                    currentCapBank->setMaxDailyOpsHitFlag(FALSE);
+                                }
+                                currentFeeder->setCurrentDailyOperationsAndSendMsg(0, pointChanges);
+                                currentFeeder->setMaxDailyOpsHitFlag(FALSE);
+                            }
+                            currentSubstationBus->setCurrentDailyOperationsAndSendMsg(0, pointChanges);
+                            INT seqId = CCEventSeqIdGen();
+                            currentSubstationBus->setEventSequence(seqId);
+                            LONG stationId, areaId, spAreaId;
+                            store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId); 
+                            if (currentSubstationBus->getDailyOperationsAnalogPointId() > 0)
+                                ccEvents.push_back(new CtiCCEventLogMsg(0,currentSubstationBus->getDailyOperationsAnalogPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), 0, capControlSetOperationCount, currentSubstationBus->getEventSequence(), currentSubstationBus->getCurrentDailyOperations(), "opCount adjustment", _command->getUser()));
+                            else
+                                ccEvents.push_back(new CtiCCEventLogMsg(0,SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), 0, capControlSetOperationCount, currentSubstationBus->getEventSequence(), currentSubstationBus->getCurrentDailyOperations(), "opCount adjustment", _command->getUser()));
+                
+                            currentSubstationBus->setMaxDailyOpsHitFlag(FALSE);
+                            currentSubstationBus->setBusUpdatedFlag(TRUE);
+                            found = TRUE;
+                        }
+                        iterBus++;
+                    }
+                }
+            }
+        }
+    }
+
+               
+    if (eventMulti->getCount() > 0)
+        CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+    else
+        delete eventMulti;
+    if (multi->getCount() > 0)
+        CtiCapController::getInstance()->sendMessageToDispatch(multi);
+    else
+        delete multi;
+
+    
+   CtiCCExecutorFactory f;
+   CtiCCExecutor *executor = NULL;
+   executor = f.createExecutor(new CtiCCGeoAreasMsg(ccAreas)); 
+   executor->Execute();
+   delete executor;
+      
+   executor = f.createExecutor(new CtiCCSubstationsMsg(ccStations));
+   executor->Execute();
+   delete executor;
+
+   executor = f.createExecutor(new CtiCCSubstationBusMsg(ccSubstationBuses,CtiCCSubstationBusMsg::AllSubBusesSent ));
+   executor->Execute();
+   delete executor;
+}
 
 /*===========================================================================
     CtiCCSubstationVerificationExecutor
