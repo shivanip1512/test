@@ -50,6 +50,24 @@
   </bean>
      
   <bean id="multispeakLMService" class="com.cannontech.multispeak.service.impl.MultispeakLMServiceImpl">
+	<property name="strategyNames">
+	  <list>
+		<value>Water Heaters</value>
+		<value>Voltage control</value>
+		<value>Air conditioners</value>
+		<value>ETS</value>
+		<value>MISC</value>
+		<value>PJM Demand Response</value>
+		<value>All Devices</value>
+		<value>Scram</value>
+	  </list>
+	</property>
+	<property name="strategiesToExcludeInReport">
+	  <list>
+		<value>All Devices</value>
+		<value>Scram</value>
+	  </list>
+	</property>
   </bean>
   
   <bean id="multispeakDao" class="com.cannontech.multispeak.dao.impl.MultispeakDaoImpl">

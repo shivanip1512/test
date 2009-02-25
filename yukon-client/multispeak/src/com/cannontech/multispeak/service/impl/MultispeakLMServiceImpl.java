@@ -10,8 +10,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.fdr.FdrDirection;
 import com.cannontech.common.fdr.FdrInterfaceType;
@@ -61,6 +63,8 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
     public EnrollmentDao enrollmentDao;
     public LoadControlClientConnection loadControlClientConnection;
     public LoadControlProgramDao loadControlProgramDao;
+    private List<? extends String> strategyNames;
+    private List<? extends String> strategiesToExcludeInReport;
 	
 	@Override
 	public MspLoadControl buildMspLoadControl(LoadManagementEvent loadManagementEvent) throws RemoteException {
@@ -84,6 +88,7 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
             stopTime = new Date(scheduleDateTime.getTimeInMillis());
         }
         mspLoadControl.setStopTime(stopTime);
+        CTILogger.info("Start: " + mspLoadControl.getStartTime() + "  -  Stop:" + mspLoadControl.getStopTime());
         
         //Set the control event type
         mspLoadControl.setControlEventType(loadManagementEvent.getControlEventType());
@@ -139,7 +144,8 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 	        			"LoadManagementEvent", "control", liteYukonUser.getUsername());
 	        } catch (TimeoutException e) {
 	        	errorObject = mspObjectDao.getErrorObject(null, 
-	        			mspLMInterfaceMapping.getSubstationName() + "/" + mspLMInterfaceMapping.getStrategyName() + " - " + e.getMessage(),
+	        			mspLMInterfaceMapping.getSubstationName() + "/" + mspLMInterfaceMapping.getStrategyName() + " - " + e.getMessage() + 
+	        			". TimeoutException. Verify the scheduedStartTime (" + mspLoadControl.getStartTime() + ") is not in the past.",
 	        			"LoadManagementEvent", "control", liteYukonUser.getUsername());
 	        } catch (NotAuthorizedException e) {
 	        	errorObject = mspObjectDao.getErrorObject(null, 
@@ -209,7 +215,7 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 		pointData.setValue(scadaAnalog.getValue());
 		pointData.setPointQuality(getPointQuality(scadaAnalog.getQuality()));
 		pointData.setType(PointTypes.ANALOG_POINT);
-		pointData.setStr("MultiSpeak SCADA Server Analog point update.");
+		pointData.setStr("MultiSpeak ScadaAnalog Analog point update.");
 		pointData.setUserName(userName);
 		return pointData;
 	}
@@ -249,35 +255,39 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
         	
         	String substationName = mspLMInterfaceMapping.getSubstationName();
         	
-        	//Build a list of all the programs for the controlable object's device type
-        	List<LMProgramBase> lmProgramBases = new ArrayList<LMProgramBase>();
-        	int paobjectId = mspLMInterfaceMapping.getPaobjectId();
-			LiteYukonPAObject liteYukonPAObject = paoDao.getLiteYukonPAO(paobjectId);
-        	if ( liteYukonPAObject.getType() == DeviceTypes.LM_DIRECT_PROGRAM) {
-				LMProgramBase program = loadControlClientConnection.getProgram(paobjectId);
-				lmProgramBases.add(program);
-        	} else if ( liteYukonPAObject.getType() == DeviceTypes.LM_SCENARIO) {
-        		List<Integer> programIds = loadControlProgramDao.getProgramIdsByScenarioId(paobjectId);
-        		lmProgramBases = loadControlClientConnection.getProgramsForProgramIds(programIds);
+        	//Don't report on excluded strategy names
+        	if (!strategiesToExcludeInReport.contains(mspLMInterfaceMapping.getStrategyName())) {
+	        	
+	        	//Build a list of all the programs for the controllable object's device type
+	        	List<LMProgramBase> lmProgramBases = new ArrayList<LMProgramBase>();
+	        	int paobjectId = mspLMInterfaceMapping.getPaobjectId();
+				LiteYukonPAObject liteYukonPAObject = paoDao.getLiteYukonPAO(paobjectId);
+	        	if ( liteYukonPAObject.getType() == DeviceTypes.LM_DIRECT_PROGRAM) {
+					LMProgramBase program = loadControlClientConnection.getProgram(paobjectId);
+					lmProgramBases.add(program);
+	        	} else if ( liteYukonPAObject.getType() == DeviceTypes.LM_SCENARIO) {
+	        		List<Integer> programIds = loadControlProgramDao.getProgramIdsByScenarioId(paobjectId);
+	        		lmProgramBases = loadControlClientConnection.getProgramsForProgramIds(programIds);
+	        	}
+	
+				//not the first iteration and substation name has changed
+				if( prevSubstationName != null && substationName != prevSubstationName) {
+					//Add the previous object
+					SubstationLoadControlStatus substationLoadControlStatus = 
+						buildSubstationLoadControlStatus(prevSubstationName, controlledItemsList);
+					substationLoadControlStatusList.add(substationLoadControlStatus);
+	
+					//Clear the list and start again.
+					controlledItemsList.clear();
+				}
+	
+				SubstationLoadControlStatusControlledItemsControlItem controlledItem = 
+					buildSubstationLoadControlStatusControlledItemsControlItem(
+							mspLMInterfaceMapping.getStrategyName(), 
+							lmProgramBases, 
+							programCounts);
+				controlledItemsList.add(controlledItem);
         	}
-
-			//not the first iteration and substation name has changed
-			if( prevSubstationName != null && substationName != prevSubstationName) {
-				//Add the previous object
-				SubstationLoadControlStatus substationLoadControlStatus = 
-					buildSubstationLoadControlStatus(prevSubstationName, controlledItemsList);
-				substationLoadControlStatusList.add(substationLoadControlStatus);
-
-				//Clear the list and start again.
-				controlledItemsList.clear();
-			}
-
-			SubstationLoadControlStatusControlledItemsControlItem controlledItem = 
-				buildSubstationLoadControlStatusControlledItemsControlItem(
-						mspLMInterfaceMapping.getStrategyName(), 
-						lmProgramBases, 
-						programCounts);
-			controlledItemsList.add(controlledItem);
 			
 			prevSubstationName = substationName;
 		}
@@ -452,5 +462,14 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
     public void setLoadControlProgramDao(
 			LoadControlProgramDao loadControlProgramDao) {
 		this.loadControlProgramDao = loadControlProgramDao;
+	}
+    @Required
+    public void setStrategyNames(List<? extends String> strategyNames) {
+		this.strategyNames = strategyNames;
+	}
+    @Required
+    public void setStrategiesToExcludeInReport(
+			List<? extends String> strategiesToExcludeInReport) {
+		this.strategiesToExcludeInReport = strategiesToExcludeInReport;
 	}
 }
