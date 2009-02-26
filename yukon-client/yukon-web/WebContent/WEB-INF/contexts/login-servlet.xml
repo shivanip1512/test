@@ -53,7 +53,7 @@
         <property name="methodNameResolver" ref="methodNameResolver" />
         <property name="loginService" ref="loginService"/>
         <property name="loginCookieHelper" ref="loginCookieHelper"/>
-        <property name="authDao" ref="authDao"/>
+        <property name="rolePropertyDao" ref="rolePropertyDao"/>
         <property name="urlAccessChecker" ref="urlAccessChecker"/>
     </bean>
 

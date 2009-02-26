@@ -827,6 +827,11 @@
         <url-pattern>/home</url-pattern>
     </servlet-mapping>
 
+    <servlet-mapping>
+        <servlet-name>login</servlet-name>
+        <url-pattern>/integrationLogin</url-pattern>
+    </servlet-mapping>
+
 	<servlet-mapping>
 		<servlet-name>bulk</servlet-name>
 		<url-pattern>/spring/bulk/*</url-pattern>

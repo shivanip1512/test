@@ -10,18 +10,18 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.exception.AuthenticationThrottleException;
-import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.roles.application.WebClientRole;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.login.access.UrlAccessChecker;
 
 public class YukonLoginController extends MultiActionController {
     private LoginService loginService;
-    private AuthDao authDao;
+    private RolePropertyDao rolePropertyDao;
     private LoginCookieHelper loginCookieHelper;
     private UrlAccessChecker urlAccessChecker;
-    
+
     public ModelAndView view(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
         final ModelAndView mav = new ModelAndView();
         mav.setViewName("login.jsp");
@@ -54,7 +54,7 @@ public class YukonLoginController extends MultiActionController {
             if (redirectedFrom != null && !redirectedFrom.equals("")) {
                 redirect = redirectedFrom;
             } else {
-                String homeUrl = authDao.getRolePropertyValue(user, WebClientRole.HOME_URL);
+                String homeUrl = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, user);
                 redirect = ServletUtil.createSafeUrl(request, homeUrl);
             }
             
@@ -121,12 +121,11 @@ public class YukonLoginController extends MultiActionController {
         this.loginCookieHelper = loginCookieHelper;
     }
 
-    public void setAuthDao(AuthDao authDao) {
-        this.authDao = authDao;
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
     }
 
     public void setUrlAccessChecker(UrlAccessChecker urlAccessChecker) {
         this.urlAccessChecker = urlAccessChecker;
     }
-    
 }

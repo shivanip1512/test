@@ -48,6 +48,7 @@ public class LoginFilter implements Filter {
         // all paths should start with a slash because that's just the way it works
         excludedFilePaths = new String[] {
             LoginController.LOGIN_URL, // aka /login.jsp
+            "/integrationLogin",
             "/servlet/LoginController", 
             "/servlet/LoggingServlet",
             "/voice/login.jsp", 
