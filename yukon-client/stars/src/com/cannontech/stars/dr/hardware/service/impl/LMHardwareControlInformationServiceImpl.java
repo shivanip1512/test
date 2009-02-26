@@ -40,7 +40,8 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
             // Clear all the opt outs for the enrolled inventory
             if (optOutEventDao.isOptedOut(inventoryId, accountId)) {
             	OptOutEvent findLastEvent = optOutEventDao.findLastEvent(inventoryId, accountId);
-            	optOutService.cancelOptOut(findLastEvent.getEventId(), currentUser);
+            	List<Integer> lastEventIdList = Collections.singletonList(findLastEvent.getEventId());
+            	optOutService.cancelOptOut(lastEventIdList, currentUser);
             }
             
             /*If there is an existing enrollment that is using this same device, load group, and potentially, the same relay
@@ -91,13 +92,15 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
 	            	stopOptOut(inventoryId, loadGroupId, accountId, currentUser, now);
 	            } else {
             		OptOutEvent findLastEvent = optOutEventDao.findLastEvent(inventoryId, accountId);
-            		optOutService.cancelOptOut(findLastEvent.getEventId(), currentUser);
+            		List<Integer> lastEventIdList = Collections.singletonList(findLastEvent.getEventId());
+                    optOutService.cancelOptOut(lastEventIdList, currentUser);
             		stopOptOut(inventoryId, loadGroupId, accountId, currentUser, now);
 
             		// Remove all the scheduled opt outs for this device.
             		List<OptOutEvent> allScheduledOptOutEvents = optOutEventDao.getAllScheduledOptOutEvents(accountId, inventoryId);
             		for (OptOutEvent optOutEvent : allScheduledOptOutEvents) {
-                		optOutService.cancelOptOut(optOutEvent.getEventId(), currentUser);
+            		    List<Integer> optOutEventList = Collections.singletonList(optOutEvent.getEventId());
+                        optOutService.cancelOptOut(optOutEventList, currentUser);
 					}
             	}
             }

@@ -282,15 +282,6 @@ public class OptOutServiceImpl implements OptOutService {
 		}
 		
 	}
-
-	@Override
-	@Transactional
-	public void cancelOptOut(int eventId, LiteYukonUser user) 
-		throws CommandCompletionException {
-		List<Integer> eventSingleton = new ArrayList<Integer>();
-		eventSingleton.add(new Integer(eventId));
-		cancelOptOut(eventSingleton, user);
-	}
 	
 	@Override
 	@Transactional
