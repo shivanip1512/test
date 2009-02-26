@@ -47,7 +47,12 @@ public class LM_ServerImpl implements LM_ServerSoap_PortType
     @Override
     public String[] getMethods() throws java.rmi.RemoteException {
         init();
-        String [] methods = new String[]{"pingURL", "getMethods"};
+        String [] methods = new String[]{"pingURL", "getMethods",
+        		"SCADAAnalogChangedNotification",
+        		"getAllSubstationLoadControlStatuses",
+        		"initiateLoadManagementEvent",
+        		"initiateLoadManagementEvents"
+        		};
         return multispeakFuncs.getMethods(MultispeakDefines.LM_Server_STR, methods );
     }
     

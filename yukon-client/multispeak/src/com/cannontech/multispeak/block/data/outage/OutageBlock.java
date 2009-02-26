@@ -1,7 +1,11 @@
 package com.cannontech.multispeak.block.data.outage;
 
-import java.text.SimpleDateFormat;
+import java.io.IOException;
+import java.io.StringReader;
+import java.text.ParseException;
 import java.util.Date;
+
+import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.CTILogger;
@@ -13,6 +17,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.multispeak.block.Block;
 import com.cannontech.multispeak.block.syntax.SyntaxItem;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.tools.csv.CSVReader;
 
 public class OutageBlock implements Block{
 
@@ -20,6 +25,8 @@ public class OutageBlock implements Block{
     public Double blinkCount;
     public Date blinkCountDateTime;
     public boolean hasData = false;
+    
+    private static int FIELD_COUNT = 3;
     
     public OutageBlock() {
         super();
@@ -32,11 +39,8 @@ public class OutageBlock implements Block{
         this.blinkCountDateTime = blinkCountDateTime;
         hasData = true;
     }
-    
-    public void setMeterNumber(String meterNumber) {
-        this.meterNumber = meterNumber;
-    }
 
+    @Override
     public String getField(SyntaxItem syntaxItem) {
         
         if( syntaxItem.equals(SyntaxItem.METER_NUMBER))
@@ -49,8 +53,7 @@ public class OutageBlock implements Block{
             
         else if (syntaxItem.equals(SyntaxItem.BLINK_COUNT_DATETIME)){
             if( blinkCountDateTime != null) {
-                SimpleDateFormat sdf = new SimpleDateFormat(defaultDateFormat);
-                return sdf.format(blinkCountDateTime);
+                return blockDateFormat.format(blinkCountDateTime);
             }
         }
         else {
@@ -60,32 +63,62 @@ public class OutageBlock implements Block{
         return "";
     }
 
-    public void populate(Meter meter) {
-        
-        //TODO - Probably shouldn't set this everytime...need to find a better way.
-        meterNumber = meter.getMeterNumber();
-    }
-
+    @Override
     public void populate(Meter meter, PointValueHolder pointValue) {
         
-        populate(meter);
-        
-        AttributeService attributeService = (AttributeService)YukonSpringHook.getBean("attributeService");
-        try {
-            LitePoint litePoint = 
-                attributeService.getPointForAttribute(meter, BuiltInAttribute.BLINK_COUNT);
-            
-            if( pointValue.getId() == litePoint.getPointID()){
-                blinkCount = pointValue.getValue();
-                blinkCountDateTime = pointValue.getPointDataTimeStamp();
-                hasData = true;
-            }
-        } catch (NotFoundException e) {
-            CTILogger.warn("Point not found for Meter Number " + meter.getMeterNumber() + " for attribute " + BuiltInAttribute.BLINK_COUNT.name());
-        }
+    	meterNumber = meter.getMeterNumber();
+        loadPointValue(meter, pointValue);
+    }
+
+	private void loadPointValue(Meter meter, PointValueHolder pointValue) {
+		
+		if(pointValue == null) {
+			return;
+		}
+		
+		AttributeService attributeService = (AttributeService)YukonSpringHook.getBean("attributeService");
+		try {
+		    LitePoint litePoint = 
+		        attributeService.getPointForAttribute(meter, BuiltInAttribute.BLINK_COUNT);
+		    
+		    if( pointValue.getId() == litePoint.getPointID()){
+		        blinkCount = pointValue.getValue();
+		        blinkCountDateTime = pointValue.getPointDataTimeStamp();
+		        hasData = true;
+		    }
+		} catch (NotFoundException e) {
+		    CTILogger.warn("Point not found for Meter Number " + meter.getMeterNumber() + " for attribute " + BuiltInAttribute.BLINK_COUNT.name());
+		}
+	}
+
+    @Override
+    public void populate(String string, char separator){
+    	
+    	StringReader stringReader = new StringReader(string);
+    	CSVReader reader = new CSVReader(stringReader, separator);
+    	try {
+	    	String [] values = reader.readNext();
+	    	if (values.length == FIELD_COUNT){
+	    		meterNumber = values[0];
+	    		blinkCount = StringUtils.isBlank(values[1]) ? null : Double.valueOf(values[1]);
+	    		blinkCountDateTime = StringUtils.isBlank(values[2]) ? null : blockDateFormat.parse(values[2]);
+	    	}else {
+	    		CTILogger.error("OutageBlock could not be parsed (" + stringReader.toString() + ").  Incorrect number of expected fields.");
+	    	}
+    	} catch (IOException e) {
+    		CTILogger.warn(e);
+    	} catch (ParseException e) {
+    		CTILogger.warn(e);
+    	}
     }
     
+    @Override
     public boolean hasData() {
         return hasData;
+    }
+    
+    @Override
+    public String getObjectId() {
+    	return meterNumber;
     }
 }

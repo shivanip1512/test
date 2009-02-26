@@ -14,18 +14,7 @@ import com.cannontech.multispeak.deploy.service.FormattedBlock;
 
 public class LoadFormattedBlockImpl extends FormattedBlockServiceImpl <LoadBlock> {
 
-    public FormattedBlock getFormattedBlock( Meter meter) {
-        
-        LoadBlock loadBlock = new LoadBlock();
-        
-        try {
-            loadBlock = getBlock(meter);
-        } catch (IllegalArgumentException e) {}
-
-        LoadValList loadValList = new LoadValList(loadBlock);
-        return createMspFormattedBlock(loadValList);
-    }
-    
+	@Override
     public FormattedBlock getFormattedBlock(List<Meter> meters) {
         List<LoadBlock> loadBlockList = new ArrayList<LoadBlock>(meters.size());
 
@@ -39,25 +28,22 @@ public class LoadFormattedBlockImpl extends FormattedBlockServiceImpl <LoadBlock
         LoadValList loadValList = new LoadValList(loadBlockList);
         return createMspFormattedBlock(loadValList);
     }
-    
-    public FormattedBlock createFormattedBlock( LoadBlock loadBlock) {
-        ArrayList<LoadBlock> block = new ArrayList<LoadBlock>();
-        block.add(loadBlock);
-        return createFormattedBlock(block);
-    }
-    
-    public FormattedBlock createFormattedBlock(List<LoadBlock> block) {
-        LoadValList loadValList = new LoadValList(block);
+
+    @Override
+    public FormattedBlock createFormattedBlock(List<LoadBlock> blocks) {
+        LoadValList loadValList = new LoadValList(blocks);
         return createMspFormattedBlock(loadValList);
     }
 
+    @Override
     public LoadBlock getNewBlock() {
         return new LoadBlock();
     }
     
+    @Override
     public LoadBlock getBlock(Meter meter) {
         LoadBlock loadBlock = new LoadBlock();
-        loadBlock.populate(meter);
+        loadBlock.populate(meter, null);
 
         try {
             PointValueHolder loadProfile =

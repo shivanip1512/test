@@ -14,17 +14,7 @@ import com.cannontech.multispeak.deploy.service.FormattedBlock;
 
 public class OutageFormattedBlockImpl extends FormattedBlockServiceImpl <OutageBlock>{
 
-    public FormattedBlock getFormattedBlock( Meter meter) {
-        OutageBlock outageBlock = getNewBlock();
-        
-        try {
-            outageBlock = getBlock(meter);
-        } catch (IllegalArgumentException e){}
-        
-        OutageValList outageValList = new OutageValList(outageBlock);
-        return createMspFormattedBlock(outageValList);
-    }
-    
+	@Override
     public FormattedBlock getFormattedBlock(List<Meter> meters) {
         List<OutageBlock> outageBlockList = new ArrayList<OutageBlock>(meters.size());
 
@@ -35,28 +25,24 @@ public class OutageFormattedBlockImpl extends FormattedBlockServiceImpl <OutageB
             } catch (IllegalArgumentException e) {}
         }
         
-        OutageValList outageValList = new OutageValList(outageBlockList);
-        return createMspFormattedBlock(outageValList);
+        return createFormattedBlock(outageBlockList);
     }
 
-    public FormattedBlock createFormattedBlock( OutageBlock outageBlock) {
-        ArrayList<OutageBlock> block = new ArrayList<OutageBlock>();
-        block.add(outageBlock);
-        return createFormattedBlock(block);
-    }
-    
-    public FormattedBlock createFormattedBlock(List<OutageBlock> block) {
-        OutageValList outageValList = new OutageValList(block);
+	@Override
+    public FormattedBlock createFormattedBlock(List<OutageBlock> blocks) {
+        OutageValList outageValList = new OutageValList(blocks);
         return createMspFormattedBlock(outageValList);
     }
     
+	@Override
     public OutageBlock getNewBlock() {
         return new OutageBlock();
     }
     
+    @Override
     public OutageBlock getBlock(Meter meter) {
         OutageBlock outageBlock = new OutageBlock();
-        outageBlock.populate(meter);
+        outageBlock.populate(meter, null);
 
         try {
             PointValueHolder outage = 

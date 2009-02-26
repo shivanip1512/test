@@ -1,7 +1,11 @@
 package com.cannontech.multispeak.block.data.load;
 
-import java.text.SimpleDateFormat;
+import java.io.IOException;
+import java.io.StringReader;
+import java.text.ParseException;
 import java.util.Date;
+
+import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.CTILogger;
@@ -13,6 +17,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.multispeak.block.Block;
 import com.cannontech.multispeak.block.syntax.SyntaxItem;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.tools.csv.CSVReader;
 
 public class LoadBlock implements Block{
 
@@ -24,6 +29,8 @@ public class LoadBlock implements Block{
     public Double voltage;
     public Date voltageDateTime;
     public boolean hasData = false;
+    
+    private static int FIELD_COUNT = 7;
     
     public LoadBlock() {
         super();
@@ -41,7 +48,8 @@ public class LoadBlock implements Block{
         this.voltageDateTime = voltageDateTime;
         hasData = true;
     }
-    
+
+    @Override
     public String getField(SyntaxItem syntaxItem) {
         
         if( syntaxItem.equals(SyntaxItem.METER_NUMBER))
@@ -54,8 +62,7 @@ public class LoadBlock implements Block{
         
         else if (syntaxItem.equals(SyntaxItem.LOAD_PROFILE_DEMAND_DATETIME)){
             if ( loadProfileDemandDateTime != null){
-                SimpleDateFormat sdf = new SimpleDateFormat(defaultDateFormat);
-                return sdf.format(loadProfileDemandDateTime);
+                return blockDateFormat.format(loadProfileDemandDateTime);
             }
         }
         
@@ -66,8 +73,7 @@ public class LoadBlock implements Block{
         
         else if (syntaxItem.equals(SyntaxItem.KVAR_DATETIME)){
             if (kVArDateTime != null){
-                SimpleDateFormat sdf = new SimpleDateFormat(defaultDateFormat);
-                return sdf.format(kVArDateTime);
+                return blockDateFormat.format(kVArDateTime);
             }
         }
 
@@ -78,8 +84,7 @@ public class LoadBlock implements Block{
         
         else if (syntaxItem.equals(SyntaxItem.VOLTAGE_DATETIME)){
             if( voltageDateTime != null) {
-                SimpleDateFormat sdf = new SimpleDateFormat(defaultDateFormat);
-                return sdf.format(voltageDateTime);
+                return blockDateFormat.format(voltageDateTime);
             }
         }
         
@@ -90,66 +95,106 @@ public class LoadBlock implements Block{
         return "";
     }
     
-    public void populate(Meter meter) {
-        //TODO - Probably shouldn't set this everytime...need to find a better way.
-        meterNumber = meter.getMeterNumber();
-    }
-    
     //TODO - need to clean this up so that only the attribute that the pointValue is coming for is checked.
+    @Override
     public void populate(Meter meter, PointValueHolder pointValue) {
-        populate(meter);
-        
-        AttributeService attributeService = (AttributeService)YukonSpringHook.getBean("attributeService");
-        try {
-            LitePoint litePoint = 
-                attributeService.getPointForAttribute(meter, BuiltInAttribute.LOAD_PROFILE);
-            
-            if( pointValue.getId() == litePoint.getPointID()){
-                loadProfileDemand = pointValue.getValue();
-                loadProfileDemandDateTime = pointValue.getPointDataTimeStamp();
-                hasData = true;
-            }
-        } catch (IllegalArgumentException e) {
-            CTILogger.debug(e);
-        } catch (NotFoundException e){
-            CTILogger.error(e);
-        }
-        
-        if (!hasData) { 
-            try {
-                LitePoint litePoint = 
-                    attributeService.getPointForAttribute(meter, BuiltInAttribute.KVAR);
-                
-                if( pointValue.getId() == litePoint.getPointID()){
-                    kVAr = pointValue.getValue();
-                    kVArDateTime = pointValue.getPointDataTimeStamp();
-                    hasData = true;
-                }
-            } catch (IllegalArgumentException e) {
-                CTILogger.debug(e);
-            } catch (NotFoundException e){
-                CTILogger.error(e);
-            }
-        }
-        if (!hasData) {
-            try {
-                LitePoint litePoint = 
-                    attributeService.getPointForAttribute(meter, BuiltInAttribute.VOLTAGE);
-                
-                if( pointValue.getId() == litePoint.getPointID()){
-                    voltage = pointValue.getValue();
-                    voltageDateTime = pointValue.getPointDataTimeStamp();
-                    hasData = true;
-                }
-            } catch (IllegalArgumentException e) {
-                CTILogger.debug(e);
-            } catch (NotFoundException e){
-                CTILogger.error(e);
-            }
-        }
+    	meterNumber = meter.getMeterNumber();
+        loadPointValue(meter, pointValue);
     }
+
+    /**
+     * Load the pointValue data into LoadBlock
+     * @param meter
+     * @param pointValue
+     */
+	private void loadPointValue(Meter meter, PointValueHolder pointValue) {
+		
+		if (pointValue == null) {
+			return;
+		}
+		
+		AttributeService attributeService = (AttributeService)YukonSpringHook.getBean("attributeService");
+		try {
+		    LitePoint litePoint = 
+		        attributeService.getPointForAttribute(meter, BuiltInAttribute.LOAD_PROFILE);
+		    
+		    if( pointValue.getId() == litePoint.getPointID()){
+		        loadProfileDemand = pointValue.getValue();
+		        loadProfileDemandDateTime = pointValue.getPointDataTimeStamp();
+		        hasData = true;
+		    }
+		} catch (IllegalArgumentException e) {
+		    CTILogger.debug(e);
+		} catch (NotFoundException e){
+		    CTILogger.error(e);
+		}
+		
+		if (!hasData) { 
+		    try {
+		        LitePoint litePoint = 
+		            attributeService.getPointForAttribute(meter, BuiltInAttribute.KVAR);
+		        
+		        if( pointValue.getId() == litePoint.getPointID()){
+		            kVAr = pointValue.getValue();
+		            kVArDateTime = pointValue.getPointDataTimeStamp();
+		            hasData = true;
+		        }
+		    } catch (IllegalArgumentException e) {
+		        CTILogger.debug(e);
+		    } catch (NotFoundException e){
+		        CTILogger.error(e);
+		    }
+		}
+		if (!hasData) {
+		    try {
+		        LitePoint litePoint = 
+		            attributeService.getPointForAttribute(meter, BuiltInAttribute.VOLTAGE);
+		        
+		        if( pointValue.getId() == litePoint.getPointID()){
+		            voltage = pointValue.getValue();
+		            voltageDateTime = pointValue.getPointDataTimeStamp();
+		            hasData = true;
+		        }
+		    } catch (IllegalArgumentException e) {
+		        CTILogger.debug(e);
+		    } catch (NotFoundException e){
+		        CTILogger.error(e);
+		    }
+		}
+	}
     
+    @Override
+    public void populate(String string, char separator){
+    	
+    	StringReader stringReader = new StringReader(string);
+    	CSVReader reader = new CSVReader(stringReader, separator);
+    	try {
+	    	String [] values = reader.readNext();
+	    	if (values.length == FIELD_COUNT){
+	    		meterNumber = values[0];
+	    		loadProfileDemand = StringUtils.isBlank(values[1]) ? null : Double.valueOf(values[1]);
+	    		loadProfileDemandDateTime = StringUtils.isBlank(values[2]) ? null : blockDateFormat.parse(values[2]);
+	    		kVAr = StringUtils.isBlank(values[3]) ? null : Double.valueOf(values[3]);
+	    		kVArDateTime = StringUtils.isBlank(values[4]) ? null : blockDateFormat.parse(values[4]);
+	    		voltage = StringUtils.isBlank(values[5]) ? null : Double.valueOf(values[5]);
+	    		voltageDateTime = StringUtils.isBlank(values[6]) ? null : blockDateFormat.parse(values[6]);
+	    	}else {
+	    		CTILogger.error("LoadBlock could not be parsed (" + stringReader.toString() + ").  Incorrect number of expected fields.");
+	    	}
+    	} catch (IOException e) {
+    		CTILogger.warn(e);
+    	} catch (ParseException e) {
+    		CTILogger.warn(e);
+    	}
+    }
+
+    @Override
     public boolean hasData() {
         return hasData;
+    }
+    
+    @Override
+    public String getObjectId() {
+    	return meterNumber;
     }
 }
