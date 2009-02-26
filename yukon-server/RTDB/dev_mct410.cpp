@@ -1520,8 +1520,8 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
                     returnErrorMessage(NoMethod, OutMessage, retList, error_string);
                 }
                 else if( date_end  > DawnOfTime_Date
-                         && (date_end <= date_begin ||  //  make sure it ends after it starts
-                             date_end >  Yesterday) )    //  must end on or before yesterday
+                         && (date_end < date_begin ||  //  make sure it ends after it starts
+                             date_end > Yesterday) )    //  must end on or before yesterday
                 {
                     nRet  = BADPARAM;
 
