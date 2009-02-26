@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import javax.annotation.PostConstruct;
@@ -303,14 +304,14 @@ public abstract class CommandRequestExecutorBase<T> implements
 		            }
 		            log.debug("Finished commandRequests loop. groupMessageId = " + groupMessageId);
 		            
-		            messageListener.getCommandsAreWritingLatch().countDown();
-		            log.debug("Latch counted down. groupMessageId = " + groupMessageId);
-		            
 		        } finally {
 		            if (nothingWritten && !messageListener.isCanceled()) {
 		                log.debug("Removing porter message listener because nothing was written: " + messageListener);
 		                messageListener.removeListener();
 		            }
+		            
+		            messageListener.getCommandsAreWritingLatch().countDown();
+		            log.debug("Latch counted down. groupMessageId = " + groupMessageId);
 		        }
         	}
         });
@@ -330,12 +331,15 @@ public abstract class CommandRequestExecutorBase<T> implements
         // wait for the listener latch to countdown, which will happen when it has finished it's commandRequests write loop
         log.debug("Awaiting latch countdown. groupMessageId = " + messageListener.getGroupMessageId());
         try {
-        	messageListener.getCommandsAreWritingLatch().await();
+        	if (!messageListener.getCommandsAreWritingLatch().await(5, TimeUnit.MINUTES)) {
+        		log.error("Timeout waiting for latch, continue with cancelExecution anyway. groupMessageId = " + messageListener.getGroupMessageId());
+        	} else {
+        		log.debug("Latch await over, continue with cancelExecution. groupMessageId = " + messageListener.getGroupMessageId());
+        	}
         } catch (InterruptedException e) {
         	log.error("Latch wait encountered InterruptedException. groupMessageId = " + messageListener.getGroupMessageId(), e);
         }
-        log.debug("Latch await over, continue with cancelExecution. groupMessageId = " + messageListener.getGroupMessageId());
-        
+
         // run cancel command
         log.debug("Sending cancel request. groupMessageId = " + messageListener.getGroupMessageId());
         long commandsCanceled = porterRequestCancelService.cancelRequests(messageListener.getGroupMessageId(), defaultBackgroundPriority);
