@@ -12,6 +12,7 @@ import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.util.task.EnrollmentMigrationTask;
 import com.cannontech.stars.util.task.TimeConsumingTask;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.navigation.CtiNavObject;
 import com.cannontech.web.stars.action.StarsImportManagerActionController;
 
@@ -91,14 +92,18 @@ public class MigrateEnrollmentController extends StarsImportManagerActionControl
                 if (t.getStatus() == EnrollmentMigrationTask.STATUS_FINISHED) {
                     session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Migration successful.");
                     ProgressChecker.removeTask(id);
-                    response.sendRedirect(((CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE)).getCurrentPage());
+                    String redirect = ((CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE)).getCurrentPage();
+                    redirect = ServletUtil.createSafeRedirectUrl(request, redirect);
+                    response.sendRedirect(redirect);
                     return;
                 }
                 
                 if (t.getStatus() == EnrollmentMigrationTask.STATUS_ERROR) {
                     session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Migration did not finish correctly.");
                     ProgressChecker.removeTask(id);
-                    response.sendRedirect(((CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE)).getCurrentPage());
+                    String redirect = ((CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE)).getCurrentPage();
+                    redirect = ServletUtil.createSafeRedirectUrl(request, redirect);
+                    response.sendRedirect(redirect);                    
                     return;
                 }
             }
@@ -112,7 +117,9 @@ public class MigrateEnrollmentController extends StarsImportManagerActionControl
         catch (WebClientException e) {
             CTILogger.error( e.getMessage(), e );
             session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, e.getMessage());
-            response.sendRedirect(((CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE)).getCurrentPage());
+            String redirect = ((CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE)).getCurrentPage();
+            redirect = ServletUtil.createSafeRedirectUrl(request, redirect);
+            response.sendRedirect(redirect);            
             return;
         }
         

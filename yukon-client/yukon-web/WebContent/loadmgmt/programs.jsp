@@ -15,21 +15,23 @@
 String strID = request.getParameter("areaID");
 if( strID == null )
 {
+    String redirect = ServletUtil.createSafeRedirectUrl(request, lmSession.DEF_REDIRECT);
 	CTILogger.warn( 
-		"No ControlArea has been selected, redirecting request to: " + lmSession.DEF_REDIRECT ); 
+		"No ControlArea has been selected, redirecting request to: " + redirect); 
 
-	response.sendRedirect( lmSession.DEF_REDIRECT );
+	response.sendRedirect(redirect);
 	return;
 }
 
 LMControlArea lmCntrArea = (LMControlArea)lcCache.getControlArea( new Integer(strID) );
 if( lmCntrArea == null )
 {
+    String redirect = ServletUtil.createSafeRedirectUrl(request, lmSession.DEF_REDIRECT);
 	CTILogger.warn( 
 		"Unable to find selected ControlArea (AreaID = " + strID +
-		"), redirecting request to: " + lmSession.DEF_REDIRECT ); 
+		"), redirecting request to: " + redirect); 
 
-	response.sendRedirect( lmSession.DEF_REDIRECT );
+	response.sendRedirect(redirect);
 	return;
 }
 

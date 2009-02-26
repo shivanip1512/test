@@ -7,6 +7,7 @@ import javax.servlet.http.HttpSession;
 import com.cannontech.stars.util.ProgressChecker;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.task.TimeConsumingTask;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.stars.service.TimeConsumingTaskService;
 
 public class TimeConsumingTaskServiceImpl implements TimeConsumingTaskService {
@@ -31,6 +32,7 @@ public class TimeConsumingTaskServiceImpl implements TimeConsumingTaskService {
 				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, task.getProgressMsg());
 				ProgressChecker.removeTask( id );
 				if (redir != null) redirect = redir;
+				redirect = ServletUtil.createSafeRedirectUrl(request, redirect);
 				return redirect;
 			}
 			

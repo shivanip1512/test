@@ -34,6 +34,7 @@ import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsDeleteLMHardware;
 import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.cannontech.stars.xml.serialize.StarsOperation;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.stars.action.StarsInventoryActionController;
 
 public class CheckInventoryController extends StarsInventoryActionController {
@@ -188,6 +189,7 @@ public class CheckInventoryController extends StarsInventoryActionController {
     
                     // REDIRECT set in the CreateLMHardwareAction.parseResponse() method above
                     String redirect = (String) session.getAttribute( ServletUtils.ATT_REDIRECT );
+                    redirect = ServletUtil.createSafeRedirectUrl(request, redirect);
                     response.sendRedirect(redirect);
                     return;
                 }

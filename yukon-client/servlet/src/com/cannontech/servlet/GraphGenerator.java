@@ -189,8 +189,10 @@ public synchronized void service(HttpServletRequest req, HttpServletResponse res
 					destURL = req.getContextPath() + "/user/Metering/user_get_data_now.jsp";				
 			}		
 		}
-		if(destURL != null)
+		if(destURL != null) {
+		    destURL = ServletUtil.createSafeRedirectUrl(req, destURL);
 			resp.sendRedirect( destURL );
+		}
 	}
 	catch( Throwable t )
 	{

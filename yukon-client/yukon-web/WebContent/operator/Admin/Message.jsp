@@ -6,6 +6,7 @@
 	
 	String nextURL = (String)
 		((errorMsg == null)? session.getAttribute(ServletUtils.ATT_MSG_PAGE_REDIRECT) : session.getAttribute(ServletUtils.ATT_MSG_PAGE_REFERRER));
+	nextURL = ServletUtil.createSafeRedirectUrl(request, nextURL);
 %>
 <html>
 <head>

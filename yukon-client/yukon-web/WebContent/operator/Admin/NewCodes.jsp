@@ -1,6 +1,7 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%
 	String referer = request.getParameter("referer");
+    referer = ServletUtil.createSafeRedirectUrl(request, referer);
 	if (referer == null) {
 		response.sendRedirect("ConfigEnergyCompany.jsp"); return;
 	}

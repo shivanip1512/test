@@ -152,6 +152,7 @@ public void doPost(HttpServletRequest req, HttpServletResponse resp) throws java
 	String redirectURL = req.getParameter("REDIRECT");
 	
 	if( redirectURL != null ) {
+	    redirectURL = ServletUtil.createSafeRedirectUrl(req, redirectURL);
 		resp.sendRedirect(redirectURL + "?sn=" + serialNumber);
 	}
 	else {

@@ -83,8 +83,8 @@ public class CapControlCommandController extends MultiActionController {
 	    
 	    String redirectURL = ServletRequestUtils.getStringParameter(request, "redirectURL");
 	    if (redirectURL != null) {
-	        String location = ServletUtil.createSafeUrl(request, redirectURL);
-	        response.sendRedirect(location);
+	        redirectURL = ServletUtil.createSafeRedirectUrl(request, redirectURL);
+	        response.sendRedirect(redirectURL);
 	        return;
 	    }
 	}

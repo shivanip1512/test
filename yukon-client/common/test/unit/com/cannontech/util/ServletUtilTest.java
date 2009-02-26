@@ -76,6 +76,36 @@ public class ServletUtilTest {
         }
     }
     
+    @Test
+    public void test_unsafeNameUrls_createSafeRedirectUrl() {
+        String[] unSafeUrls = new String[] {
+                "https://www.xyz.com:8443/evil.jsp",
+                "https://www.abc.pqr.xyz.net.edu.org/evil.jsp",
+                "http://www.xyz.com:8080/evil.jsp",
+                "http://www.abc.pqr.xyz.net/evil.jsp",
+                "ftp://www.abc.pqr.xyz.net/evil.jsp"
+        };
+        
+        for (final String unSafeUrl : unSafeUrls) {
+            String expected = "/evil.jsp";
+            String actual = ServletUtil.createSafeRedirectUrl(request, unSafeUrl);
+            Assert.assertEquals(expected, actual);
+        }
+        
+        unSafeUrls = new String[] {
+                "http://www.abc.com:8080/",
+                "http://www.abc.pqr.xyz.net.edu.org:8080",
+                "http://www.abc.com/",
+                "http://www.abc.pqr.xyz.net"
+        };
+        
+        for (final String unSafeUrl : unSafeUrls) {
+            String expected = "/";
+            String actual = ServletUtil.createSafeRedirectUrl(request, unSafeUrl);
+            Assert.assertEquals(expected, actual);
+        }
+    }
+    
     private HttpServletRequest createMockRequest() {
         return new HttpServletRequest() {
 

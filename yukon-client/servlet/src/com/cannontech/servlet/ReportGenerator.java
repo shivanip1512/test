@@ -244,6 +244,7 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
                 bufferedTemp.close();
             } else {
                 if( destURL!= null ) {
+                    destURL = ServletUtil.createSafeRedirectUrl(req, destURL);
                     resp.sendRedirect(destURL);
                 }
             }

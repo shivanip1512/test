@@ -209,6 +209,7 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 
 	//always forward the client to the specified URL
 	if( redirectURL != null ) {
+	    redirectURL = ServletUtil.createSafeRedirectUrl(req, redirectURL);
         resp.sendRedirect( resp.encodeRedirectURL(req.getContextPath() + redirectURL) );
     }
 }

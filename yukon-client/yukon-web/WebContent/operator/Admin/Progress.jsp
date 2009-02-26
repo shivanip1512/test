@@ -41,7 +41,10 @@
 		        response.sendRedirect(redirect);
             }else{
 				String redirect = (String) session.getAttribute(ServletUtils.ATT_REDIRECT);
-				if (redirect != null) response.sendRedirect(redirect);
+				if (redirect != null) {
+				    redirect = ServletUtil.createSafeRedirectUrl(request, redirect);
+				    response.sendRedirect(redirect);
+				}
             }
 		}
 		else if (task.getStatus() == TimeConsumingTask.STATUS_ERROR ||
@@ -66,7 +69,10 @@
 			isStopped = true;
 			
 			String referer = (String) session.getAttribute(ServletUtils.ATT_REFERRER);
-			if (referer != null) response.sendRedirect(referer);
+			if (referer != null) {
+			    referer = ServletUtil.createSafeRedirectUrl(request, referer);
+			    response.sendRedirect(referer);
+			}
 		}
 	}
 %>

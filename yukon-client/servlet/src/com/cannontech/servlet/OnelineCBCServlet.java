@@ -52,6 +52,7 @@ public class OnelineCBCServlet extends HttpServlet {
         //remember the location
         String subOnelineURL = "/capcontrol/oneline/" + busHTML;
         CBCNavigationUtil.redirect(subOnelineURL, req.getSession(false));
+        busHTML = ServletUtil.createSafeRedirectUrl(req, busHTML);
         resp.sendRedirect(busHTML);
     }
 

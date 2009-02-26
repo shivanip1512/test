@@ -345,7 +345,8 @@ public class TierPopupMenuController extends MultiActionController {
     public ModelAndView capBankTempMoveBack(HttpServletRequest request, HttpServletResponse response) throws Exception {
         final ModelAndView mav = new ModelAndView();
         final Integer id = ServletRequestUtils.getRequiredIntParameter(request, "id");
-        final String redirectURL = ServletRequestUtils.getStringParameter(request, "redirectURL", "/capcontrol/feeders.jsp");
+        String redirectURL = ServletRequestUtils.getStringParameter(request, "redirectURL", "/capcontrol/feeders.jsp");
+        redirectURL = ServletUtil.createSafeRedirectUrl(request, redirectURL);
         
         final CapBankDevice capBank = capControlCache.getCapBankDevice(id);
         

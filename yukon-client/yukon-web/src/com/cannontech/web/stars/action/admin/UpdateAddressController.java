@@ -18,6 +18,7 @@ import com.cannontech.stars.web.util.StarsAdminUtil;
 import com.cannontech.stars.xml.serialize.StarsCustomerAddress;
 import com.cannontech.stars.xml.serialize.StarsEnergyCompany;
 import com.cannontech.stars.xml.serialize.StarsServiceCompany;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.stars.action.StarsAdminActionController;
 
 public class UpdateAddressController extends StarsAdminActionController {
@@ -48,6 +49,7 @@ public class UpdateAddressController extends StarsAdminActionController {
         } catch (Exception e) {
             CTILogger.error( e.getMessage(), e );
             session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update address information");
+            referer = ServletUtil.createSafeRedirectUrl(request, referer);
             response.sendRedirect(referer);
             return;
         }

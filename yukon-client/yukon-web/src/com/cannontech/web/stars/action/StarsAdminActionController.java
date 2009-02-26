@@ -6,6 +6,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.navigation.CtiNavObject;
 
 public abstract class StarsAdminActionController extends AbstractBaseActionController {
@@ -17,7 +18,7 @@ public abstract class StarsAdminActionController extends AbstractBaseActionContr
         if (redirect == null) {
             redirect = request.getContextPath() + "/operator/Admin/ConfigEnergyCompany.jsp";
         }
-        
+        redirect = ServletUtil.createSafeRedirectUrl(request, redirect);
         return redirect;
     }
     
@@ -32,7 +33,7 @@ public abstract class StarsAdminActionController extends AbstractBaseActionContr
         if (referer == null) {
             referer = request.getContextPath() + AbstractBaseActionController.LOGIN_URL;
         }
-        
+        referer = ServletUtil.createSafeRedirectUrl(request, referer);
         return referer;
     }
 

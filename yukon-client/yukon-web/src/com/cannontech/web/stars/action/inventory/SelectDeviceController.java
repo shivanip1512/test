@@ -11,6 +11,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.stars.action.StarsInventoryActionController;
 
 public class SelectDeviceController extends StarsInventoryActionController {
@@ -25,6 +26,7 @@ public class SelectDeviceController extends StarsInventoryActionController {
         session.setAttribute(InventoryManagerUtil.DEVICE_SELECTED, litePao);
         
         String redirect = (String) session.getAttribute( ServletUtils.ATT_REDIRECT );
+        redirect = ServletUtil.createSafeRedirectUrl(request, redirect);
         response.sendRedirect(redirect);
     }
     

@@ -1,9 +1,11 @@
 <%@ page import="com.cannontech.database.cache.DefaultDatabaseCache" %>
 <%@ page import="com.cannontech.common.util.CtiUtilities" %>
+<%@ page import="com.cannontech.util.ServletUtil" %>
 
 <%  
     /* Go through the devices and find a matching deviceid */
     String customerIDStr = request.getParameter("customerid");
+    String referer = ServletUtil.createSafeRedirectUrl(request, request.getParameter("REFERRER"));
 
     if( customerIDStr != null )
     {   
@@ -57,7 +59,7 @@
           <%= cust.getAddress().getLocationAddress1() %><br clear="ALL">
           <%= cust.getAddress().getLocationAddress2() %><br clear="ALL">
           <br>
-          <a href="<%= request.getParameter("REFERRER") %>"><font face="Arial, Helvetica, sans-serif">Back</font></a></font> 
+          <a href="<%= referer %>"><font face="Arial, Helvetica, sans-serif">Back</font></a></font> 
       </td>
     </tr>
   </table>

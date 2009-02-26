@@ -6,6 +6,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.navigation.CtiNavObject;
 
 public abstract class StarsWorkorderActionController extends AbstractBaseActionController {
@@ -21,7 +22,7 @@ public abstract class StarsWorkorderActionController extends AbstractBaseActionC
             session.setAttribute( ServletUtils.ATT_MSG_PAGE_REFERRER, buildReferer(request));
             redirect = request.getContextPath() + "/operator/Admin/Message.jsp";
         }
-        
+        redirect = ServletUtil.createSafeRedirectUrl(request, redirect);
         return redirect;
     }
     
@@ -36,7 +37,7 @@ public abstract class StarsWorkorderActionController extends AbstractBaseActionC
             session.setAttribute( ServletUtils.ATT_MSG_PAGE_REFERRER, referer);
             referer = request.getContextPath() + "/operator/Admin/Message.jsp";
         }
-        
+        referer = ServletUtil.createSafeRedirectUrl(request, referer);
         return referer;
     }
     

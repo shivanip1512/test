@@ -13,8 +13,9 @@
             working properly. If you find any problem, please contact 
             your utility company for support.<br>
             <br>
+            <% String referrer = ServletUtil.createSafeRedirectUrl(request, session.getAttribute(ServletUtils.ATT_REFERRER)); %>
             If you want to view the thermostat settings anyway, 
-            please <a href="<%= session.getAttribute(ServletUtils.ATT_REFERRER) %>&OmitTimeout=true">click 
+            please <a href="<%= referrer %>&OmitTimeout=true">click 
             here</a>.
           </td>
         </tr>

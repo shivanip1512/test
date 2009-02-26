@@ -7,6 +7,7 @@
    String referrer = (String) session.getValue("referrer");
    if( referrer == null )
       referrer = request.getRequestURI() + "?" + request.getQueryString();
+   referrer = ServletUtil.createSafeRedirectUrl(request, referrer);
 		  
     if( tab == null )    
         tab = "";

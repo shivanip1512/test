@@ -49,6 +49,7 @@ import com.cannontech.servlet.xml.DynamicUpdate;
 import com.cannontech.servlet.xml.ResultXML;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ParamUtil;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.navigation.CtiNavObject;
 import com.cannontech.yukon.cbc.CCArea;
 import com.cannontech.yukon.cbc.CapControlCommand;
@@ -144,6 +145,7 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
             }
             //always forward the client to the specified URL if present
             if( redirectURL != null ) {
+                redirectURL = ServletUtil.createSafeRedirectUrl(req, redirectURL);
                 resp.sendRedirect( resp.encodeRedirectURL(req.getContextPath() + redirectURL) );
             }
         }
@@ -279,6 +281,7 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
 
         //always forward the client to the specified URL if present
         if( redirectURL != null ) {
+            redirectURL = ServletUtil.createSafeRedirectUrl(req, redirectURL);
             resp.sendRedirect( resp.encodeRedirectURL(req.getContextPath() + redirectURL) );
         }
     }

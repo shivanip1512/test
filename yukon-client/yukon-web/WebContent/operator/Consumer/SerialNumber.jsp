@@ -6,6 +6,7 @@
 <%
 	String action = request.getParameter("action");
 	String referer = (String) session.getAttribute(ServletUtils.ATT_REFERRER);
+	referer = ServletUtil.createSafeRedirectUrl(request, referer);
 	
 	Integer invNo = null;
 	if (request.getParameter("InvNo") != null)
@@ -65,7 +66,7 @@
 			
 			referer = ((CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE)).getPreviousPage();
 		}
-		
+		referer = ServletUtil.createSafeRedirectUrl(request, referer);
 		session.setAttribute(ServletUtils.ATT_REFERRER, referer);
 		session.setAttribute(ServletUtils.ATT_REDIRECT, referer);
 	}

@@ -51,6 +51,7 @@
                     src = "ResultSet";
                 else
                     src = "Inventory";
+                referer = ServletUtil.createSafeRedirectUrl(request, referer);
             } else if (!src.equalsIgnoreCase("SelectInv")) {
                 if (src.equalsIgnoreCase("Search")) {
                     referer = "Inventory.jsp";
@@ -67,7 +68,7 @@
                             referer += "&page=1";
                     }
                 }
-
+                referer = ServletUtil.createSafeRedirectUrl(request, referer);
                 session.setAttribute(ServletUtils.ATT_REFERRER2, referer);
             }
 

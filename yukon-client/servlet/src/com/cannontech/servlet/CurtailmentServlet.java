@@ -141,6 +141,7 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 			Thread.sleep(4000);
 		}
 
+		redirectURI = ServletUtil.createSafeRedirectUrl(req, redirectURI);		
 		resp.sendRedirect(redirectURI);
 		
 	}

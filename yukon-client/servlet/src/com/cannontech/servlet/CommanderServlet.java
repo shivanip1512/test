@@ -305,6 +305,7 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 		}
 		
 		if( redirectURL != null ) {
+		    redirectURL = ServletUtil.createSafeRedirectUrl(req, redirectURL);		    
 			resp.sendRedirect(redirectURL);
 		}
 		else {

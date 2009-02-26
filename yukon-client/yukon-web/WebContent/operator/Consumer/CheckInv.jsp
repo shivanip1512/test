@@ -23,7 +23,7 @@
 	}
 	boolean createNew = DaoFactory.getAuthDao().checkRoleProperty(user.getUserID(), ConsumerInfoRole.INVENTORY_CHECKING_CREATE);
 	String referer = ((CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE)).getPreviousPage();
-    
+	referer = ServletUtil.createSafeRedirectUrl(request, referer);
     String buttonHTML = "";
     if( createNew )
     {

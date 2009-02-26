@@ -10,6 +10,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.navigation.CtiNavObject;
 import com.cannontech.web.stars.service.SwitchContextService;
 
@@ -30,6 +31,7 @@ public class StarsWorkOrderActionController extends StarsActionController {
                 session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, e.getMessage() );
                 String referer = ServletRequestUtils.getStringParameter(request, ServletUtils.ATT_REFERRER);
                 if (referer == null) referer = ((CtiNavObject) session.getAttribute(ServletUtils.NAVIGATE)).getPreviousPage();
+                referer = ServletUtil.createSafeRedirectUrl(request, referer);
                 response.sendRedirect(referer);
                 return null;
             }

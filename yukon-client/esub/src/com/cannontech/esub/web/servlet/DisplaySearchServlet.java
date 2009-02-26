@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.cannontech.esub.util.DisplaySearch;
+import com.cannontech.util.ServletUtil;
 
 /**
  * Takes a search key and redirects the browser to the matching display, if any.
@@ -45,6 +46,7 @@ public class DisplaySearchServlet extends HttpServlet {
             }
         }
         searchUrl += "?search=false";
+        searchUrl = ServletUtil.createSafeRedirectUrl(req, searchUrl);
         resp.sendRedirect(searchUrl);
     }
 

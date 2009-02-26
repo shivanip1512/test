@@ -17,7 +17,10 @@
  	<%pageContext.setAttribute("filterDeviceSerialRangeMax", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MAX).toString());%>
 	<%pageContext.setAttribute("filterDevicePostalCode", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_POSTAL_CODES).toString());%>
 	<%pageContext.setAttribute("filterCICustomerType", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_CUST_TYPE).toString());%>
-	<%pageContext.setAttribute("backOnePage", ((CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE)).getPreviousPage());%>
+	<%
+    String referer = ServletUtil.createSafeRedirectUrl(request, ((CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE)).getPreviousPage());	
+	pageContext.setAttribute("backOnePage", referer);
+	%>
 
 	<cti:includeCss link="/include/PurpleStyles.css"/>
 	<div class="headerbar">

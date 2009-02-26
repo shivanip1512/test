@@ -26,6 +26,7 @@ import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsDeleteLMHardware;
 import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.cannontech.stars.xml.serialize.StarsUpdateLMHardware;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.stars.action.StarsInventoryActionController;
 
 public class InsertInventoryController extends StarsInventoryActionController {
@@ -128,6 +129,7 @@ public class InsertInventoryController extends StarsInventoryActionController {
         }
         
         if (redirect == null) redirect = this.getRedirect(request);
+        redirect = ServletUtil.createSafeRedirectUrl(request, redirect);
         response.sendRedirect(redirect);
     }
 

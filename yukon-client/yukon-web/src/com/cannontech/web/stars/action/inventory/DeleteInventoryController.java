@@ -15,6 +15,7 @@ import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.DeleteLMHardwareAction;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
 import com.cannontech.stars.xml.serialize.StarsOperation;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.navigation.CtiNavObject;
 import com.cannontech.web.stars.action.StarsInventoryActionController;
 
@@ -80,6 +81,7 @@ public class DeleteInventoryController extends StarsInventoryActionController {
         }
         
         if (redirect == null) redirect = this.getRedirect(request);
+        redirect = ServletUtil.createSafeRedirectUrl(request, redirect);
         response.sendRedirect(redirect);
     }
     

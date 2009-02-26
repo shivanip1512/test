@@ -24,6 +24,7 @@
     if( referrer == null )
       referrer = request.getRequestURI() + "?" + request.getQueryString();
       
+    referrer = ServletUtil.createSafeRedirectUrl(request, referrer);
 	String[] programNames = null;
 	String[] programIds = null;
 

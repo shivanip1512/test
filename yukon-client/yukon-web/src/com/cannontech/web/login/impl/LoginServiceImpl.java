@@ -130,6 +130,7 @@ public class LoginServiceImpl implements LoginService {
             redirect = ServletUtil.createSafeUrl(request, LoginController.LOGIN_URL);
         }
 
+        redirect = ServletUtil.createSafeRedirectUrl(request, redirect);
         response.sendRedirect(redirect);
     }
 
@@ -218,6 +219,7 @@ public class LoginServiceImpl implements LoginService {
                 }
             }
             ActivityLogger.logEvent(LOGIN_FAILED_ACTIVITY_LOG, "VOICE Login attempt for contact " + lContact.toString() + " failed from " + request.getRemoteAddr());
+            redirect = ServletUtil.createSafeRedirectUrl(request, redirect);
             response.sendRedirect(redirect);
         }
     }

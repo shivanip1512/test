@@ -27,6 +27,7 @@ import com.cannontech.stars.web.bean.NonYukonMeterBean;
 import com.cannontech.stars.xml.serialize.StarsCreateLMHardware;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsInventory;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.stars.action.StarsInventoryActionController;
 
 public class MeterProfileSaveController extends StarsInventoryActionController {
@@ -180,7 +181,7 @@ public class MeterProfileSaveController extends StarsInventoryActionController {
         } else {
             redirect = request.getContextPath() + "/operator/Hardware/MeterProfile.jsp?MetRef=" + currentMeter.getInventoryBase().getInventoryID().toString();
         }
-        
+        redirect = ServletUtil.createSafeRedirectUrl(request, redirect);
         response.sendRedirect(redirect);
     }
     

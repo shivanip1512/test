@@ -15,9 +15,10 @@ boolean isPageGood = true;
 
 if( cmd == null || itemid == null )
 {
-	CTILogger.warn(
-		"No command or item has been selected, redirecting request to: " + lmSession.DEF_REDIRECT );
-	response.sendRedirect( lmSession.DEF_REDIRECT );
+    String redirect = ServletUtil.createSafeRedirectUrl(request, lmSession.DEF_REDIRECT);
+    CTILogger.warn(
+		"No command or item has been selected, redirecting request to: " + redirect);
+	response.sendRedirect(redirect);
 	return;
 }
 

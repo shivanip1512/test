@@ -60,6 +60,7 @@ public class MultispeakServlet extends HttpServlet
 	{
 		String action = req.getParameter("ACTION");
 		String retPage = handleMSPAction(action, req);
+		retPage = ServletUtil.createSafeRedirectUrl(req, retPage);
 		resp.sendRedirect( retPage);
 		return;
 	}

@@ -9,6 +9,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.navigation.CtiNavObject;
 
 public abstract class StarsImportManagerActionController extends AbstractBaseActionController {
@@ -20,7 +21,7 @@ public abstract class StarsImportManagerActionController extends AbstractBaseAct
 	    if (redirect == null) {
 	    	redirect = this.getReferer(request);
 	    }
-		
+	    redirect = ServletUtil.createSafeRedirectUrl(request, redirect);
 		return redirect;
 	}
 	
@@ -32,7 +33,7 @@ public abstract class StarsImportManagerActionController extends AbstractBaseAct
 			HttpSession session = request.getSession(false);
 			referer = ((CtiNavObject) session.getAttribute(ServletUtils.NAVIGATE)).getPreviousPage();
 		}
-		
+		referer = ServletUtil.createSafeRedirectUrl(request, referer);
 		return referer;
 	}
 	

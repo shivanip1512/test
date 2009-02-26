@@ -2,10 +2,11 @@
 <%
 if( lmSession.getResponseProgs() == null )
 {
-	CTILogger.warn( 
-		"No server response for sync message found, redirecting request to: " + lmSession.DEF_REDIRECT ); 
+    String redirect = ServletUtil.createSafeRedirectUrl(request, lmSession.DEF_REDIRECT);
+    CTILogger.warn( 
+		"No server response for sync message found, redirecting request to: " + redirect); 
 
-	response.sendRedirect( lmSession.DEF_REDIRECT );
+	response.sendRedirect(redirect);
 	return;
 }
 

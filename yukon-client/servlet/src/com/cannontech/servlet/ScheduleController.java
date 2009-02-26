@@ -214,6 +214,7 @@ public void service(javax.servlet.http.HttpServletRequest req, javax.servlet.htt
 		String nextUrl = req.getParameter("URL");
 		nextUrl = java.net.URLDecoder.decode(nextUrl, "UTF-8");
 		nextUrl = resp.encodeRedirectURL(nextUrl);
+		nextUrl = ServletUtil.createSafeRedirectUrl(req, nextUrl);		
 		resp.sendRedirect(nextUrl);
 	}
 	catch(Exception e )
