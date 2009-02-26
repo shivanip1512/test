@@ -36,6 +36,7 @@ import com.cannontech.core.dao.StateDao;
 import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteState;
+import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.db.capcontrol.CCSubAreaAssignment;
 import com.cannontech.database.db.capcontrol.CCSubSpecialAreaAssignment;
 import com.cannontech.database.db.state.StateGroupUtils;
@@ -218,14 +219,14 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     /**
      * @return CapBankDevice[]
      */
-    public CapBankDevice[] getCapBanksByFeeder(int feederId) {
+    public List<CapBankDevice> getCapBanksByFeeder(int feederId) {
         try {
             Feeder feeder = getFeeder(feederId);
             Vector<CapBankDevice> capBanks = feeder.getCcCapBanks();
-            CapBankDevice[] toArray = capBanks.toArray(new CapBankDevice[capBanks.size()]);
+            List<CapBankDevice> toArray = new ArrayList<CapBankDevice>(capBanks);
             return toArray;
         } catch (NotFoundException e) {
-            return new CapBankDevice[0];
+            return new ArrayList<CapBankDevice>();
         }
     }
     
@@ -962,6 +963,29 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         return getSubstationsByArea(areaId);
     }
 
+    public List<CapBankDevice> getCapBanksByTypeAndId(CapControlType type, int id) {
+    	
+    	List<CapBankDevice> deviceList = null;
+    	
+    	switch(type) {
+    		case AREA:
+    			deviceList = getCapBanksByArea(id);
+    			break;
+    		case SUBSTATION:
+    			SubStation station = getSubstation(id);
+    			deviceList = getCapBanksBySubStation(station);
+    			break;
+    		case SUBBUS:
+    			deviceList = getCapBanksBySubBus(id);
+    			break;
+    		case FEEDER:
+    			deviceList = getCapBanksByFeeder(id);
+    			break;    		
+    	}
+    	
+    	return deviceList;
+    }
+    
     private void clearCacheMap(final Map<Integer,?> map) {
         Set<Integer> keySet = map.keySet();
         getUpdatedObjMap().remove(keySet);

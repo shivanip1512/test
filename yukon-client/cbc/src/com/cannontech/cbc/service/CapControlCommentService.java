@@ -3,7 +3,7 @@ package com.cannontech.cbc.service;
 import java.util.List;
 
 import com.cannontech.cbc.dao.CommentAction;
-import com.cannontech.cbc.web.CapControlType;
+import com.cannontech.database.data.pao.CapControlType;
 
 public interface CapControlCommentService {
 

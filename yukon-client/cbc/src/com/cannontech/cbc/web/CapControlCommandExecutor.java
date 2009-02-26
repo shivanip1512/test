@@ -6,6 +6,7 @@ import com.cannontech.capcontrol.CapBankOperationalState;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.PointData;

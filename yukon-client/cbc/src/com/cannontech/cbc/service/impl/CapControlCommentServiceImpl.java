@@ -9,7 +9,7 @@ import com.cannontech.cbc.dao.CapControlCommentDao;
 import com.cannontech.cbc.dao.CommentAction;
 import com.cannontech.cbc.model.CapControlComment;
 import com.cannontech.cbc.service.CapControlCommentService;
-import com.cannontech.cbc.web.CapControlType;
+import com.cannontech.database.data.pao.CapControlType;
 
 public class CapControlCommentServiceImpl implements CapControlCommentService {
     private static final String defaultReason = "";

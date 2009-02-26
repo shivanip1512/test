@@ -10,6 +10,7 @@ import com.cannontech.cbc.web.CBCWebUpdatedObjectMap;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteState;
+import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.web.lite.LiteWrapper;
 import com.cannontech.yukon.cbc.CCArea;
 import com.cannontech.yukon.cbc.CapControlClientConnection;
@@ -103,7 +104,7 @@ public class FilterCapControlCacheImpl implements CapControlCache {
 		return null;
 	}
 
-	public CapBankDevice[] getCapBanksByFeeder(int feederID) {
+	public List<CapBankDevice> getCapBanksByFeeder(int feederID) {
 		int id = cache.getParentAreaID(feederID);
 		StreamableCapObject area = cache.getArea(id);
 		if (filter.valid(area)) return cache.getCapBanksByFeeder(feederID);
@@ -298,6 +299,16 @@ public class FilterCapControlCacheImpl implements CapControlCache {
         return null;
     }
     
+    public List<CapBankDevice> getCapBanksByTypeAndId(CapControlType type, int id) {
+    	
+    	int areaId = getParentAreaID(id);
+    	StreamableCapObject area = cache.getArea(areaId);
+	    if (filter.valid(area))
+	    	return cache.getCapBanksByTypeAndId(type,id);
+    	
+    	return null;
+    }
+    
     public List<SubStation> getSubstationsBySpecialArea(int areaId) {
         CCSpecialArea area = cache.getCBCSpecialArea(areaId);
         if ( filter.valid(area) )
@@ -305,5 +316,4 @@ public class FilterCapControlCacheImpl implements CapControlCache {
         
         return Collections.emptyList();
     }
-
 }

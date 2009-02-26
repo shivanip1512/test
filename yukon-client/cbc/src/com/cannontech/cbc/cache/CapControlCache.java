@@ -5,6 +5,7 @@ import java.util.List;
 import com.cannontech.cbc.web.CBCWebUpdatedObjectMap;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteState;
+import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.web.lite.LiteWrapper;
 import com.cannontech.yukon.cbc.CCArea;
 import com.cannontech.yukon.cbc.CapControlClientConnection;
@@ -80,10 +81,12 @@ public interface CapControlCache {
 
     public String getSubBusNameForFeeder(Feeder fdr);
 	/**
-	 * @return CapBankDevice[]
+	 * @return List<CapBankDevice>
 	 */
-	public CapBankDevice[] getCapBanksByFeeder(int feederID);
+	public List<CapBankDevice> getCapBanksByFeeder(int feederID);
 
+	public List<CapBankDevice> getCapBanksByTypeAndId(CapControlType type, int id);
+	
 	/**
 	 * Instant lookup to check if this paoID is used by a SubBus
 	 * 

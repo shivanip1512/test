@@ -14,11 +14,11 @@ public interface CapControlTypes extends TypeBase
     public final static int CAP_CONTROL_SUBSTATION     = CAPCONTROL_OFFSET + 4;
     public final static int CAP_CONTROL_CAPBANK = DeviceTypes.CAPBANK;
 	
-    public static final String STRING_CAPCONTROL_SUBSTATION = "CCSUBSTATION";
-	public static final String STRING_CAPCONTROL_SUBBUS = "CCSUBBUS";
-	public static final String STRING_CAPCONTROL_FEEDER = "CCFEEDER";
-    public static final String STRING_CAPCONTROL_AREA= "CCAREA";
-    public static final String STRING_CAPCONTROL_SPECIAL_AREA= "CCSPECIALAREA";
+    public static final String STRING_CAPCONTROL_SUBSTATION = CapControlType.SUBSTATION.getDisplayValue();
+	public static final String STRING_CAPCONTROL_SUBBUS = CapControlType.SUBBUS.getDisplayValue();
+	public static final String STRING_CAPCONTROL_FEEDER = CapControlType.FEEDER.getDisplayValue();
+    public static final String STRING_CAPCONTROL_AREA= CapControlType.AREA.getDisplayValue();
+    public static final String STRING_CAPCONTROL_SPECIAL_AREA= CapControlType.SPECIAL_AREA.getDisplayValue();
     public static final String STRING_CAPCONTROL_CAPBANK = DeviceTypes.STRING_CAP_BANK[0];
 
 }

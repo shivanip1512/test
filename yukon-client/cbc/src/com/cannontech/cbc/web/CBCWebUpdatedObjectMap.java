@@ -51,7 +51,7 @@ public class CBCWebUpdatedObjectMap extends WebUpdatedPAObjectMap<Integer>{
 	}
 	
 	public void handleCBCChangeEvent(Feeder feeder) {
-	    CapBankDevice[] capList = capControlCache.getCapBanksByFeeder(feeder.getCcId());
+	    List<CapBankDevice> capList = capControlCache.getCapBanksByFeeder(feeder.getCcId());
 	    for (final CapBankDevice cap : capList) {
 	        handleCBCChangeEvent(cap);
 	    }

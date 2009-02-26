@@ -146,7 +146,9 @@
     </bean>
 
     <bean name="scheduleAssignmentController" class="com.cannontech.web.capcontrol.ScheduleAssignmentController"/>
-
+	
+	<bean name="capBankWebController" class="com.cannontech.web.capcontrol.CapBankWebController"/>
+	
     <bean id="onelinePopupMenuController" class="com.cannontech.web.capcontrol.OnelinePopupMenuController">
         <property name="methodNameResolver" ref="menuMethodNameResolver"/>
         <property name="capControlCache" ref="capControlCache"/>

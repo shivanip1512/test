@@ -105,17 +105,18 @@
 <c:set var="substationAddress" value="<%=substationAddess %>"/>
 
 <cti:breadCrumbs>
+	<cti:crumbLink url="subareas.jsp" title="Home" />
+
 <% if (special){ %>
-  	<cti:crumbLink url="subareas.jsp" title="Home" />
   	<cti:crumbLink url="specialSubAreas.jsp" title="Special Substation Areas" />
     <cti:crumbLink url="${substationAddress}" title="<%=area.getCcName()%>" />
     <cti:crumbLink title="<%=substation.getCcName()%>" />
 <% } else{ %>
-	<cti:crumbLink url="subareas.jsp" title="Home" />
 	<cti:crumbLink url="subareas.jsp" title="Substation Areas" />
     <cti:crumbLink url="${substationAddress}" title="<%=area.getCcName()%>" />
     <cti:crumbLink title="<%=substation.getCcName()%>" />	
 <% } %>
+
 </cti:breadCrumbs>
 
 <script type="text/javascript">
@@ -205,10 +206,10 @@ String css = "tableCell";
 
 	<cti:titledContainer title="Substation">
 		<table id="substationTable" width="100%" cellspacing="0" cellpadding="0">
-			<tr style="columnHeader lAlign">
-				<th>Substation Name</th>
-                <th width="2%"></th>
-				<th>State</th>
+			<tr class="columnHeader">
+				<th class="lAlign">Substation Name</th>
+                <th style="width: 2px"></th>
+				<th class="lAlign">State</th>
 			</tr>
             <% if (substation != null) { %>
                 <c:set var="thisSubStationId" value="<%=substation.getCcId()%>"/>
@@ -217,13 +218,16 @@ String css = "tableCell";
                 <tr class="altTableCell" id="tr_substation_${thisSubStationId}">
                     <td id="anc_${thisSubStationId}">
 		                <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
-	                        <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=<%=substation.getCcId()%>&ignoreBookmark=true">
+	                        <a title="Edit" class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=<%=substation.getCcId()%>&ignoreBookmark=true">
 	                            <img class="rAlign editImg" src="/editor/images/edit_item.gif"/>
 		                    </a>
-		                    <a class="editImg" href="/editor/deleteBasePAO.jsf?value=<%=substation.getCcId()%>">
+		                    <a title="Delete" class="editImg" href="/editor/deleteBasePAO.jsf?value=<%=substation.getCcId()%>">
 		                        <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
 		                    </a>
 	                    </cti:checkProperty>
+                    	<a title="Bank Locations" class="editImg" href="/spring/capcontrol/capbank/capBankLocations?value=<%=substation.getCcId()%>&specialArea=<%=special %>">
+	                        <img class="rAlign editImg" src="/capcontrol/images/compass.gif"/>
+	                    </a>
                         <%=substation.getCcName()%>
                         <font color="red">
                             <cti:capControlValue paoId="${thisSubStationId}" type="SUBSTATION" format="SA_ENABLED" />
@@ -293,14 +297,17 @@ for( SubBus subBus: subBuses ) {
                 
 				<td id="subName">
 				    <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
-					    <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=<%=subBus.getCcId()%>&ignoreBookmark=true">
+					    <a title="Edit" class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=<%=subBus.getCcId()%>&ignoreBookmark=true">
 	                        <img class="rAlign editImg" src="/editor/images/edit_item.gif"/>
 	                    </a>
 	                    
-	                    <a class="editImg" href="/editor/deleteBasePAO.jsf?value=<%=subBus.getCcId()%>">
+	                    <a title="Delete" class="editImg" href="/editor/deleteBasePAO.jsf?value=<%=subBus.getCcId()%>">
 	                        <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
 	                    </a>
                     </cti:checkProperty>
+                   	<a title="Bank Locations" class="editImg" href="/spring/capcontrol/capbank/capBankLocations?value=<%=subBus.getCcId()%>&specialArea=<%=special %>">
+                        <img class="rAlign editImg" src="/capcontrol/images/compass.gif"/>
+                    </a>
                 </td>
                 <td>
                     <a
@@ -462,14 +469,17 @@ for (int i = 0; i < feeders.size(); i++ ) {
 					<td>
 						<input type="checkbox" name="cti_chkbxFdrs" value="${thisFeederId}"/>
 						<cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
-							<a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=<%=feeder.getCcId()%>&ignoreBookmark=true">
+							<a title="Edit" class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=<%=feeder.getCcId()%>&ignoreBookmark=true">
 	                            <img class="rAlign editImg" src="/editor/images/edit_item.gif"/>
 	                        </a>
 	                        
-	                        <a class="editImg" href="/editor/deleteBasePAO.jsf?value=<%=feeder.getCcId()%>">
+	                        <a title="Delete" class="editImg" href="/editor/deleteBasePAO.jsf?value=<%=feeder.getCcId()%>">
 	                            <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
 	                        </a>
                         </cti:checkProperty>
+                    	<a title="Bank Locations" class="editImg" href="/spring/capcontrol/capbank/capBankLocations?value=<%=feeder.getCcId()%>&specialArea=<%=special %>">
+	                        <img class="rAlign editImg" src="/capcontrol/images/compass.gif"/>
+	                    </a>
 						<span><%=feeder.getCcName()%></span>
 					</td>
 					

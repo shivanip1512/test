@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
 import com.cannontech.capcontrol.CBCPointGroup;
+import com.cannontech.capcontrol.LiteCapBankAdditional;
 import com.cannontech.capcontrol.OrphanCBC;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.MapQueue;
@@ -24,6 +25,7 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.pao.YukonPAObject;
 
 public class CapControlDaoImpl  implements CapControlDao{
@@ -247,8 +249,6 @@ public class CapControlDaoImpl  implements CapControlDao{
         return parentID;
     }
 
-
-
     public Integer getParentForPoint(int id) {
         String sql = "select paobjectid from point where pointid = ?";
         Integer parentID = 0;
@@ -260,6 +260,25 @@ public class CapControlDaoImpl  implements CapControlDao{
             CTILogger.debug("Could not find parent for cbc:" + id);
         }
         return parentID;
+    }
+    
+    public CapControlType getCapControlType(int id) {
+        String sql = "SELECT type FROM YukonPAObject WHERE PAObjectID = ?";
+        String typeStr = null;
+        CapControlType type = null;
+        try{
+        	typeStr = (String) jdbcOps.queryForObject(sql, new Integer[] {id}, String.class);
+        }
+        catch (DataAccessException dae)
+        {
+            CTILogger.debug("Could not find parent for cbc:" + id);
+        }
+        
+        if(typeStr != null) {
+        	type = CapControlType.getCapControlType(typeStr);
+        }
+        
+        return type;
     }
     
     public List<OrphanCBC> getOrphanedCBCs(){
@@ -289,5 +308,36 @@ public class CapControlDaoImpl  implements CapControlDao{
         return cbcList;
     }
     
+    public List<LiteCapBankAdditional> getCapBankAdditional(List<Integer> deviceIds) {
+  
+    	final List<LiteCapBankAdditional> capbanks = new ArrayList<LiteCapBankAdditional>();
+    	
+    	if( deviceIds.size() > 0) {
+	    	String sql = "SELECT ca.DeviceID,ca.DriveDirections,cbc.SERIALNUMBER FROM CAPBANKADDITIONAL ca join CAPBANK bank on ca.DeviceID = bank.DEVICEID left outer join DeviceCBC cbc on bank.CONTROLDEVICEID = cbc.deviceid WHERE bank.DeviceID IN ( ";
+	    	for (Integer i: deviceIds) {
+	    		sql += i + ",";
+	    	}
+	    	
+	    	sql = sql.substring(0, sql.length() - 1);
+	    	sql += ")";
+	        jdbcOps.query(sql, new RowCallbackHandler() {
+	            public void processRow(ResultSet rs) throws SQLException {
+	                int deviceId = rs.getInt("DeviceID");
+	                String drivingDirections = rs.getString("DriveDirections");
+	                Integer serialNumber = rs.getInt("SERIALNUMBER");
+	                
+	                LiteCapBankAdditional capBank = new LiteCapBankAdditional();
+	                
+	                capBank.setDeviceId(deviceId);
+	                capBank.setDrivingDirections(drivingDirections);
+	                capBank.setSerialNumber(serialNumber);
+	                
+	                capbanks.add(capBank);
+	            }
+	        });
+    	
+    	}
+    	return capbanks;
+    }
 }
 

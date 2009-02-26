@@ -6,7 +6,7 @@ import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.cannontech.cbc.model.CapControlComment;
-import com.cannontech.cbc.web.CapControlType;
+import com.cannontech.database.data.pao.CapControlType;
 
 public interface CapControlCommentDao {
     
