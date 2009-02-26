@@ -8,6 +8,7 @@
 <%@page import="com.cannontech.cbc.util.*" %>
 <%@page import="com.cannontech.servlet.CBCServlet" %>
 <%@page import="com.cannontech.database.data.lite.*" %>
+<%@page import="com.cannontech.database.data.pao.CapControlType" %>
 <%@page import="com.cannontech.web.lite.*" %>
 <%@page import="com.cannontech.core.dao.*" %>
 

@@ -22,7 +22,7 @@
 	int id = Integer.valueOf(feederid);
 	Feeder feederobj = capControlCache.getFeeder(id);
 	String feederName = feederobj.getCcName();
-	CapBankDevice[] capArray = capControlCache.getCapBanksByFeeder(id);
+	List<CapBankDevice> capArray = capControlCache.getCapBanksByFeeder(id);
 %>
 	
 <cti:titledContainer title="Feeder CapBank Information">
