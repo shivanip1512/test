@@ -45,6 +45,7 @@
 
 #define TYPEDIALUP                           100
 
+#define TYPELCR3102                          120
 
 #define TYPELMT100S                          200
 #define TYPELCR1000                          201

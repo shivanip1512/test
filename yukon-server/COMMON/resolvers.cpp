@@ -323,6 +323,10 @@ INT resolveDeviceType(const string& _rwsTemp)
     {
         nRet = TYPEMCT470;
     }
+    else if(rwsTemp == "lcr-3102")
+    {
+        nRet = TYPELCR3102;
+    }
     else if(rwsTemp == "ccu-711")
     {
         nRet = TYPE_CCU711;
@@ -1210,6 +1214,7 @@ bool resolveIsDeviceTypeSingle(INT Type)
         case TYPEMCT370:
         case TYPEMCT410:
         case TYPEMCT470:
+        case TYPELCR3102:
         case TYPE_MODBUS:
         case TYPELMT2:
         case TYPECBC6510:
