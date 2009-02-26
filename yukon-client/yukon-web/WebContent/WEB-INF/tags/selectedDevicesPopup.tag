@@ -27,6 +27,6 @@
 <img onclick="javascript:showSelectedDevices(this, '${id}', '${id}InnerDiv', '${selectedDevicesTableUrl}', '${mag}', '${magOverDisabled}');" title="${warning}" src="${mag}" onmouseover="javascript:this.src='${magOver}'" onmouseout="javascript:this.src='${mag}'">
 <tags:simplePopup id="${id}" title="${popupTitle}" onClose="closeSelectedDevices('${id}');">
     <div style="height:300px;overflow:auto;">
-    <div class="smallBoldLabel" id="${id}InnerDiv"></div>
+    <div class="smallBoldLabel" id="${id}InnerDiv" style="text-align:left;"></div>
     </div>
 </tags:simplePopup>

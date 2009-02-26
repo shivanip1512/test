@@ -8,7 +8,7 @@
     <br>
 </c:if>
 
-<table class="compactResultsTable" align="left">
+<table class="compactResultsTable">
     
     <c:forEach var="deviceInfoMap" items="${deviceInfoList}" varStatus="status">
     
