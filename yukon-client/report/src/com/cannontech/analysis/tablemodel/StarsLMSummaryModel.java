@@ -7,20 +7,21 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.analysis.ColumnProperties;
+import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.data.stars.StarsLMSummary;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.authorization.service.PaoAuthorizationService;
-import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
@@ -182,19 +183,21 @@ public class StarsLMSummaryModel extends ReportModelBase<StarsLMSummary>
 			{
 				pstmt = conn.prepareStatement(sql.toString());
 				rset = pstmt.executeQuery();
-				PaoAuthorizationService paoAuthorizationService = (PaoAuthorizationService)YukonSpringHook.getBean("paoAuthorizationService");
                 PaoDao paoDao = (PaoDao)YukonSpringHook.getBean("paoDao");
+                List<LiteYukonPAObject> restrictedGroups = ReportFuncs.getRestrictedLMGroups(liteUser);
+                boolean filterList = !restrictedGroups.isEmpty();
 				while( rset.next())
 				{
-//				    SELECT PAONAME, LMG.KWCAPACITY, SUM(AB.KWCAPACITY), COUNT(DISTINCT MANUFACTURERSERIALNUMBER), PAO.PAOBJECTID 
 				    String groupName = rset.getString(1);
 				    Integer groupCapacity = new Integer(rset.getInt(2));
 				    Integer receiversCapactiy = new Integer(rset.getInt(3));
 				    Integer numberReceivers = new Integer(rset.getInt(4));
 				    Integer groupID = new Integer(rset.getInt(5));
-				    if (!paoAuthorizationService.isAuthorized(liteUser, Permission.LM_VISIBLE, paoDao.getLiteYukonPAO(groupID))) {
-				        continue; //skip info of programs we aren't allowed to view
-				    }
+				    if(filterList) {
+                        if(!restrictedGroups.contains(paoDao.getLiteYukonPAO(groupID))) {
+                            continue; // skip rows of groups we aren't allowed to see.
+                        }
+                    }
 				    StarsLMSummary summary = new StarsLMSummary(groupName, groupCapacity, numberReceivers, receiversCapactiy, null, null);
 				    tempDataMap.put(groupID, summary);
 				}

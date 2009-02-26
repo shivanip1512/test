@@ -9,10 +9,11 @@ import java.util.Set;
 
 import org.apache.commons.lang.Validate;
 
+import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.authorization.service.PaoAuthorizationService;
-import com.cannontech.core.authorization.support.Permission;
+import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.dr.account.dao.ApplianceAndProgramDao;
@@ -95,7 +96,8 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
         
         data = new ArrayList<ModelRow>(ecPrograms.size());
         HashMap<Integer, Double[]> programTotals = new HashMap<Integer, Double[]>();
-
+        List<LiteYukonPAObject> restrictedPrograms = ReportFuncs.getRestrictedPrograms(liteUser);
+        boolean filter = !restrictedPrograms.isEmpty();
         for (CustomerAccountWithNames account : accountsFromSQL) {
             try{
                 List<Integer> groupIds = lmHardwareControlGroupDao.getDistinctGroupIdsByAccountId(account.getAccountId());
@@ -110,15 +112,16 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
                         groupIdToProgram.put(groupId, groupPrograms);
                     }
                     
-                    PaoAuthorizationService paoAuthorizationService = (PaoAuthorizationService)YukonSpringHook.getBean("paoAuthorizationService");
-                    PaoDao paoDao = (PaoDao)YukonSpringHook.getBean("paoDao");
+                    
+                    if(filter) {
+                        groupPrograms = filterProgramsByPermission(groupPrograms, restrictedPrograms);
+                    }
+                    
                     /*lots of for loops, but this one will not normally be more than one iteration*/
                     for(ProgramLoadGroup currentGroupProgram : groupPrograms) {
                         //Check filter: program
                         if(programIds != null && programIds.size() > 0 && ! programIds.contains(currentGroupProgram.getPaobjectId())) { 
                             continue;
-                        } else if (!paoAuthorizationService.isAuthorized(liteUser, Permission.LM_VISIBLE, paoDao.getLiteYukonPAO(currentGroupProgram.getPaobjectId()))) {
-                            continue; // skip if user does not have permission to view this program
                         } else {
                             Double[] totals = programTotals.get(currentGroupProgram.getPaobjectId());
                             if(totals == null) {
@@ -155,17 +158,6 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
                                     break;
                                 }
                             }
-                        
-                            /*These are sorted by date.  For reporting purposes, we'll take the first enrollment start date we can find for
-                             * this group, and the last enrollment stop we can find for this group.
-                             */
-                            /*if(enrollments.size() > 0) {
-                                if(enrollments.get(0).getGroupEnrollStart() != null && enrol)
-                                    row.enrollmentStart = enrollments.get(0).getGroupEnrollStart();
-                                if(enrollments.get(enrollments.size() - 1).getGroupEnrollStop() != null)
-                                row.enrollmentStop = enrollments.get(enrollments.size() - 1).getGroupEnrollStop();
-                            }*/
-
                         }
                     }
                 }
@@ -204,6 +196,24 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
         }
     }
     
+    /**
+     * Returns a subset of the ProgramLoadGroup List that the user is allowed to view
+     * @param programAndGroupList
+     * @param restrictedPrograms
+     * @return
+     */
+    public List<ProgramLoadGroup> filterProgramsByPermission(List<ProgramLoadGroup> programAndGroupList, List<LiteYukonPAObject> restrictedPrograms){
+        List<ProgramLoadGroup> filterProgramList = new ArrayList<ProgramLoadGroup>();
+        PaoDao paoDao = YukonSpringHook.getBean("paoDao", PaoDao.class);
+        for(ProgramLoadGroup programLoadGroup : programAndGroupList) {
+            LiteYukonPAObject program = paoDao.getLiteYukonPAO(programLoadGroup.getPaobjectId());
+            if(restrictedPrograms.contains(program)) {
+                filterProgramList.add(programLoadGroup);
+            }
+        }
+        return filterProgramList;
+    }
+    
     public void setEnergyCompanyId(int energyCompanyId) {
         this.energyCompanyId = energyCompanyId;
     }
@@ -221,6 +231,8 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
     }
     public void setLiteUser(LiteYukonUser liteUser) {
         this.liteUser = liteUser;
+        EnergyCompanyDao energyCompanyDao = YukonSpringHook.getBean("energyCompanyDao", EnergyCompanyDao.class);
+        setEnergyCompanyId(energyCompanyDao.getEnergyCompany(liteUser).getEnergyCompanyID());
     }
     
 }

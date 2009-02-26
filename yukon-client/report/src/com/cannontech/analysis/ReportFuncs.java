@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.jfree.report.JFreeReport;
 import org.jfree.report.PageDefinition;
@@ -105,13 +106,18 @@ import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
+import com.cannontech.core.authorization.service.PaoPermissionService;
+import com.cannontech.core.authorization.support.Permission;
+import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.capcontrol.LiteCapControlStrategy;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.user.UserUtils;
 import com.cannontech.yukon.IDatabaseCache;
 import com.keypoint.PngEncoder;
 
@@ -272,8 +278,14 @@ public class ReportFuncs
         dialog.setVisible(true);
     }
     
-    public static List<? extends Object> getObjectsByModelType(ReportFilter filter) {
+    public static List<? extends Object> getObjectsByModelType(ReportFilter filter, int userId) {
         IDatabaseCache cache = (IDatabaseCache) YukonSpringHook.getBean("databaseCache");
+        LiteYukonUser user = null;
+        
+        YukonUserDao yukonUserDao = YukonSpringHook.getBean("yukonUserDao", YukonUserDao.class);
+        if(userId > UserUtils.USER_DEFAULT_ID) {
+            user = yukonUserDao.getLiteYukonUser(userId);
+        }
         
         if( filter.equals(ReportFilter.DEVICE)){
             return cache.getAllDevices();
@@ -378,16 +390,23 @@ public class ReportFuncs
 
         }
         else if( filter.equals(ReportFilter.PROGRAM)) {
-            List <LiteYukonPAObject> allPaos = cache.getAllYukonPAObjects();
-            List <LiteYukonPAObject> programs = new ArrayList<LiteYukonPAObject>();
-            
-            if( allPaos != null) {
-                for (LiteYukonPAObject lPao : allPaos) {
-                    if(lPao.getType() == PAOGroups.LM_DIRECT_PROGRAM )                     
-                        programs.add(lPao);
+            List <LiteYukonPAObject> programs = cache.getAllLMPrograms();
+            /*
+             * Hack: If the user has NO permissions set for programs in LM_VISIBLE, do not restrict visibility of program names.
+             * If the user has ONE OR MORE permissions set for programs in LM_VISIBLE, restrict visibility to those permissions.
+             * This also means there is no way to hide all programs from a user. They will either see their visible subset, or all programs.
+             */
+            if(programs != null && user != null) {
+                List<LiteYukonPAObject> restrictedPrograms = getRestrictedPrograms(user);
+                if(restrictedPrograms.isEmpty()) {
+                    return programs;
+                }else {
+                    return restrictedPrograms;
                 }
+                
+            } else { 
+                return new ArrayList<LiteYukonPAObject>();
             }
-            return programs;   
         } else if (filter.equals(ReportFilter.STRATEGY)) {
         	List<LiteCapControlStrategy> strategyList = CapControlStrategy.getAllLiteCapControlStrategy(); 
         	
@@ -405,5 +424,43 @@ public class ReportFuncs
         else {
             return new ArrayList<Object>(0);    //and empty list of nothing objects. 
         }
+    }
+    
+    /**
+     * Returns the a List<LiteYukonPAObject> of programs that the user or their usergroups is allowed to see. 
+     * @param user
+     * @return
+     */
+    public static List<LiteYukonPAObject> getRestrictedPrograms(LiteYukonUser user){
+        IDatabaseCache cache = (IDatabaseCache) YukonSpringHook.getBean("databaseCache");
+        List<LiteYukonPAObject> programs = cache.getAllLMPrograms();
+        PaoPermissionService paoPermissionService = YukonSpringHook.getBean("paoPermissionService", PaoPermissionService.class);
+        Set<Integer> permittedPaoIDs = paoPermissionService.getPaoIdsForUserPermission(user, Permission.LM_VISIBLE);
+        List <LiteYukonPAObject> restrictedPrograms = new ArrayList<LiteYukonPAObject>();
+        for (LiteYukonPAObject program : programs) {
+            if(permittedPaoIDs.contains(program.getYukonID())) {
+                restrictedPrograms.add(program);
+            }
+        }
+        return restrictedPrograms;
+    }
+    
+    /**
+     * Returns the a List<LiteYukonPAObject> of lm groups that the user or their usergroups is allowed to see. 
+     * @param user
+     * @return
+     */
+    public static List<LiteYukonPAObject> getRestrictedLMGroups(LiteYukonUser user){
+        IDatabaseCache cache = (IDatabaseCache) YukonSpringHook.getBean("databaseCache");
+        List<LiteYukonPAObject> groups = cache.getAllLMGroups();
+        PaoPermissionService paoPermissionService = YukonSpringHook.getBean("paoPermissionService", PaoPermissionService.class);
+        Set<Integer> permittedPaoIDs = paoPermissionService.getPaoIdsForUserPermission(user, Permission.LM_VISIBLE);
+        List <LiteYukonPAObject> restrictedGroups = new ArrayList<LiteYukonPAObject>();
+        for (LiteYukonPAObject group : groups) {
+            if(permittedPaoIDs.contains(group.getYukonID())) {
+                restrictedGroups.add(group);
+            }
+        }
+        return restrictedGroups;
     }
 }

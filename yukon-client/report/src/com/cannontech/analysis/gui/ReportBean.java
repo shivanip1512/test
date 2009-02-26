@@ -190,9 +190,7 @@ public class ReportBean
     }
     
     public LinkedHashMap<ReportFilter,List<? extends Object>> getFilterObjectsMap() {
-       // getModel();
-        return new LinkedHashMap<ReportFilter, List<? extends Object>>(reportController.getFilterObjectsMap());
-
+        return new LinkedHashMap<ReportFilter, List<? extends Object>>(reportController.getFilterObjectsMap(userID));
     }
     
 	/**

@@ -20,13 +20,13 @@ public abstract class ReportControllerBase implements ReportController {
     protected BareReportModel model = null;
     protected YukonReportBase report = null;;
     
-    public LinkedHashMap<ReportFilter,List<? extends Object>> getFilterObjectsMap() {
+    public LinkedHashMap<ReportFilter,List<? extends Object>> getFilterObjectsMap(int userId) {
         LinkedHashMap<ReportFilter, List<? extends Object>> result = new LinkedHashMap<ReportFilter, List<? extends Object>>();
         if (getFilterModelTypes() == null) {
             return result;
         } else {
             for (ReportFilter filter : getFilterModelTypes()) {
-                result.put(filter, ReportFuncs.getObjectsByModelType(filter));
+                result.put(filter, ReportFuncs.getObjectsByModelType(filter, userId));
             }
             return result;
         }

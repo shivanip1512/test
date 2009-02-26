@@ -14,7 +14,7 @@ public interface ReportController {
     public String getHTMLOptionsTable();
     public YukonReportBase getReport();
     
-    public LinkedHashMap<ReportFilter, List<? extends Object>> getFilterObjectsMap();
+    public LinkedHashMap<ReportFilter, List<? extends Object>> getFilterObjectsMap(int userId);
     public void setRequestParameters(HttpServletRequest request);
     
 }

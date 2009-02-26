@@ -40,6 +40,7 @@
 <jsp:setProperty name="REPORT_BEAN" property="stop" param="stopDate"/>
 
 <% 
+    REPORT_BEAN.setUserID(lYukonUser.getUserID());
 	String menuSelection = null;
 	/*
 	switch(REPORT_BEAN.getReportGroup().ordinal()){
