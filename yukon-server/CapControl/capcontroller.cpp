@@ -3678,9 +3678,16 @@ void CtiCapController::handleUnsolicitedMessaging(CtiCCCapBank* currentCapBank, 
     
     ccEvents.push_back( new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, "cap control", 0, 0, 0, currentCapBank->getIpAddress(), actionId, currentCapBank->getControlStatusQualityString()));
     if (ccEvents.size() > 0)
+    {
         getCCEventMsgQueueHandle().write(multiCCEventMsg);
-    else
         multiCCEventMsg = NULL;
+    }
+    else
+    {
+        //This should never happen.
+        delete multiCCEventMsg;
+        multiCCEventMsg = NULL;
+    }
     
     currentCapBank->setUnsolicitedPendingFlag(FALSE);
     currentCapBank->setIgnoreFlag(FALSE);

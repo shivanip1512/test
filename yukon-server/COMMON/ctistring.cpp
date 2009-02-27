@@ -63,46 +63,15 @@ string& CtiString::replace(const boost::regex& re, char* s, scopeType scope){
     append(s1);
     return *this;
 }
-string& CtiString::replace(const boost::regex& re, string str, scopeType scope){
-    string s1 = c_str();
-
-    char *s;
-    const char* tempString;
-    int t;t=strlen(str.c_str()) ;
-    s = new char [t];
-    tempString = str.c_str();
-    for ( int i = 0;i<t;) {
-        s[i] = tempString[i];
-        i++;
-        if ( !(i < t) ) {
-            s[i] = '\0';
-        }
-    }
-
-
-    if(scope == CtiString::one){
-        s1 = boost::regex_replace(s1, re, s, boost::match_default | boost::format_all | boost::format_first_only);
-    } else {
-        s1 = boost::regex_replace(s1, re, s, boost::match_default | boost::format_all);
-    }
-    erase();
-    append(s1);
-    return *this;
-}
 
 string& CtiString::replace(size_t beg, size_t len, const char* str){
     return string::replace(beg, len, str);
 }
 
-
-
-
 string& CtiString::replace(char* e, char* s, scopeType scope){
     boost::regex re(e);
     return replace(re, s, scope);
 }
-
-
 
 string CtiString::strip(stripType scope, char c) {
     if(scope == CtiString::leading){

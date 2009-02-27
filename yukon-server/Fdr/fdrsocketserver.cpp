@@ -203,6 +203,7 @@ bool CtiFDRSocketServer::loadList(string &aDirection,  CtiFDRPointList &aList)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             logNow() << "Error in loadList(), DB read code " << listStatus.errorCode()  << endl;
+            delete pointList;
             return false;
         }
         /* seeing occasional problems where we get empty data sets back

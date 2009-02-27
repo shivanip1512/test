@@ -175,9 +175,9 @@ void CtiPAOScheduleManager::mainLoop()
         }
         CtiTime currentTime;
         CtiTime nextRunTime;// = getNextRunTime()
-        std::list <CtiPAOSchedule*> mySchedules;
-        std::list <CtiPAOSchedule*> updateSchedules;
-        std::list <CtiPAOEvent*> myEvents;
+        std::list <CtiPAOSchedule*> mySchedules; // I dont own these
+        std::list <CtiPAOSchedule*> updateSchedules; // I dont own these
+        std::list <CtiPAOEvent*> myEvents; // I do own these
 
         CtiTime rwnow;
         CtiTime announceTime((unsigned long) 0);
@@ -201,7 +201,6 @@ void CtiPAOScheduleManager::mainLoop()
 
                         while (!mySchedules.empty())
                         {
-                            currentSched = new CtiPAOSchedule();
                             currentSched = mySchedules.front();
                             mySchedules.pop_front();
 
@@ -219,7 +218,6 @@ void CtiPAOScheduleManager::mainLoop()
                                 {
                                     while (!myEvents.empty())
                                     {
-                                        currentEvent = new CtiPAOEvent();
                                         currentEvent = myEvents.front();
                                         myEvents.pop_front();
                                         if( _CC_DEBUG & CC_DEBUG_VERIFICATION )

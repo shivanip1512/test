@@ -6506,6 +6506,9 @@ void CtiCCCommandExecutor::ResetDailyOperations()
     }
     else
     {
+        delete multiDispatchMsg;
+        delete eventMulti;
+
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << "Cannot find PAO Id: " << paoId << " in ResetDailyOperations() in: " << __FILE__ << " at: " << __LINE__ << endl;
     }

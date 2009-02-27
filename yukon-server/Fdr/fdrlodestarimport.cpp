@@ -310,7 +310,6 @@ bool CtiFDR_LodeStarImportBase::fillUpMissingTimeStamps(CtiMultiMsg* multiDispat
         }
 
 
-        pData = new CtiPointDataMsg;
         pData = (CtiPointDataMsg *)currentPointData->replicateMessage();
 
         msgPtr->insert(pData);

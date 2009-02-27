@@ -64,19 +64,12 @@
       Revision 1.4  2005/12/20 17:17:16  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
-<<<<<<< fdrtextexport.h
       Revision 1.2.18.2  2005/08/12 19:53:48  jliu
       Date Time Replaced
 
       Revision 1.2.18.1  2005/07/12 21:08:39  jliu
       rpStringWithoutCmpParser
 
-=======
-      Revision 1.3  2005/12/14 16:04:18  dsutton
-      Added a file format that allows us to integrate to a Survalent SCADA system.
-      Format specification is triggered via a CPARM which defaults to our standard output
-
->>>>>>> 1.3
       Revision 1.2  2003/04/22 20:44:46  dsutton
       Interfaces FDRTextExport and FDRTextImport and all the pieces needed
       to make them compile and work
