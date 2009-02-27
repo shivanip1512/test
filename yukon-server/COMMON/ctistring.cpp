@@ -64,14 +64,23 @@ string& CtiString::replace(const boost::regex& re, char* s, scopeType scope){
     return *this;
 }
 
+string& CtiString::replace(const boost::regex& re, string str, scopeType scope){
+    return replace(re, (char *)str.c_str(), scope);
+}
+
 string& CtiString::replace(size_t beg, size_t len, const char* str){
     return string::replace(beg, len, str);
 }
+
+
+
 
 string& CtiString::replace(char* e, char* s, scopeType scope){
     boost::regex re(e);
     return replace(re, s, scope);
 }
+
+
 
 string CtiString::strip(stripType scope, char c) {
     if(scope == CtiString::leading){

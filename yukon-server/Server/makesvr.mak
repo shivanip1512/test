@@ -143,9 +143,9 @@ exe_reg.obj:	yukon.h precompiled.h ctidbgmem.h message.h collectable.h \
 		executorfactory.h exe_cmd.h msg_cmd.h server_b.h cmdopts.h \
 		argkey.h argval.h critical_Section.h smartmap.h \
 		readers_writer_lock.h
-#id_svr.obj:	yukon.h precompiled.h ctidbgmem.h utility.h ctitime.h \
-#		dlldefs.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
-#		sorted_vector.h id_svr.h id_vinfo.h
+id_svr.obj:	yukon.h precompiled.h ctidbgmem.h utility.h ctitime.h \
+		dlldefs.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
+		sorted_vector.h id_svr.h id_vinfo.h
 precompiled.obj:	yukon.h precompiled.h ctidbgmem.h
 server_b.obj:	yukon.h precompiled.h ctidbgmem.h server_b.h con_mgr.h \
 		connection.h dlldefs.h exchange.h dllbase.h os2_2w32.h \
@@ -156,5 +156,5 @@ server_b.obj:	yukon.h precompiled.h ctidbgmem.h server_b.h con_mgr.h \
 		msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h \
 		queue.h cparms.h configkey.h configval.h ctibase.h ctinexus.h \
 		cmdopts.h argkey.h argval.h critical_Section.h smartmap.h \
-		readers_writer_lock.h executor.h msg_cmd.h
+		readers_writer_lock.h executor.h msg_cmd.h id_svr.h
 #ENDUPDATE#

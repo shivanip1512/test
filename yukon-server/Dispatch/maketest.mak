@@ -130,7 +130,8 @@ test_mgr_ptclients.obj:	yukon.h precompiled.h ctidbgmem.h \
 		queue.h cparms.h configkey.h configval.h ctibase.h ctinexus.h \
 		server_b.h cmdopts.h argkey.h argval.h pt_dyn_dispatch.h \
 		tbl_pt_alarm.h tbl_ptdispatch.h tbl_pt_limit.h rtdb.h \
-		tbl_rawpthistory.h
+		tbl_rawpthistory.h pt_status.h tbl_pt_status.h pt_analog.h \
+		pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_analog.h
 test_signalmanager.obj:	yukon.h precompiled.h ctidbgmem.h \
 		tbl_pt_alarm.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \

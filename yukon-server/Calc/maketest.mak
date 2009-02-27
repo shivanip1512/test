@@ -127,6 +127,5 @@ test_calc.obj:	yukon.h precompiled.h ctidbgmem.h calc.h ctiqueues.h \
 		rtdb.h dllbase.h dsm2.h cticonnect.h netports.h pointdefs.h \
 		regression.h tbl_pt_limit.h dbmemobject.h dbaccess.h sema.h \
 		resolvers.h pointtypes.h db_entry_defines.h desolvers.h
-
 #ENDUPDATE#
 

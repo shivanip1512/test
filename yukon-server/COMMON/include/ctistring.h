@@ -55,6 +55,7 @@ public:
     string match(const char* re, size_t start=0) const;
     string match(const CtiString& s, size_t start = 0) const;
     string& replace(const boost::regex& re, char* s, scopeType scope=CtiString::one);
+    string& replace(const boost::regex& re, string s, scopeType scope=CtiString::one);
     string& replace(char* e, char* s, scopeType scope=CtiString::one);
     string& replace(size_t beg, size_t len, const char* str);
     string strip(stripType scope=CtiString::both, char c = ' ');

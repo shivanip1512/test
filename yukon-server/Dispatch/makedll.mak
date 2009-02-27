@@ -149,8 +149,8 @@ con_mgr_vg.obj:	yukon.h precompiled.h ctidbgmem.h con_mgr_vg.h \
 		configkey.h configval.h ctibase.h ctinexus.h
 ctivangogh.obj:	yukon.h precompiled.h ctidbgmem.h collectable.h \
 		counter.h guard.h numstr.h dlldefs.h clrdump.h mutex.h \
-		monitor.h cparms.h rwutil.h ctitime.h boost_time.h \
-		boostutil.h utility.h queues.h cticalls.h os2_2w32.h types.h \
+		cparms.h rwutil.h ctitime.h boost_time.h boostutil.h \
+		utility.h queues.h cticalls.h os2_2w32.h types.h \
 		sorted_vector.h configkey.h configval.h netports.h queent.h \
 		queue.h logger.h thread.h CtiPCPtrQueue.h con_mgr.h \
 		connection.h exchange.h dllbase.h dsm2.h cticonnect.h \
@@ -167,8 +167,9 @@ ctivangogh.obj:	yukon.h precompiled.h ctidbgmem.h collectable.h \
 		pending_info.h tbl_lm_controlhist.h pt_numeric.h pt_base.h \
 		resolvers.h db_entry_defines.h pt_dyn_base.h tbl_pt_base.h \
 		desolvers.h tbl_pt_property.h tbl_pt_trigger.h tbl_pt_unit.h \
-		tbl_unitmeasure.h signalmanager.h pt_status.h tbl_pt_status.h \
-		pttrigger.h mgr_point.h slctpnt.h tagmanager.h \
+		tbl_unitmeasure.h signalmanager.h pt_dyn_dispatch.h \
+		tbl_pt_alarm.h tbl_ptdispatch.h pt_status.h tbl_pt_status.h \
+		pttrigger.h mgr_point.h fifo_multiset.h tagmanager.h \
 		tbl_dyn_pttag.h tbl_tag.h tbl_taglog.h tbl_state_grp.h \
 		tbl_state.h tbl_alm_ngroup.h tbl_alm_ndest.h \
 		tbl_commerrhist.h tbl_pt_limit.h tbl_rawpthistory.h \
@@ -176,12 +177,11 @@ ctivangogh.obj:	yukon.h precompiled.h ctidbgmem.h collectable.h \
 		hashkey.h hash_functions.h pt_accum.h tbl_pt_accum.h \
 		tbl_pt_accumhistory.h pt_analog.h tbl_pt_analog.h dev_base.h \
 		cmdparse.h ctitokenizer.h parsevalue.h dev_exclusion.h \
-		tbl_paoexclusion.h config_device.h rte_base.h tbl_pao.h \
+		tbl_paoexclusion.h config_device.h rte_base.h tbl_pao_lite.h \
 		tbl_rtcomm.h tbl_base.h tbl_2way.h tbl_stats.h tbl_scanrate.h \
-		tbl_dyn_paoinfo.h tbl_dyn_ptalarming.h tbl_ptdispatch.h \
-		tbl_pt_alarm.h thread_monitor.h thread_register_data.h \
-		mgr_ptclients.h ptconnect.h pt_dyn_dispatch.h dllvg.h \
-		dllyukon.h ctidate.h
+		tbl_dyn_paoinfo.h tbl_dyn_ptalarming.h thread_monitor.h \
+		thread_register_data.h mgr_ptclients.h ptconnect.h slctpnt.h \
+		dllvg.h dllyukon.h ctidate.h debug_timer.h
 dispmain.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h dlldefs.h \
 		dispsvc.h cservice.h dllvg.h CServiceConfig.h dllbase.h \
 		os2_2w32.h types.h cticalls.h dsm2.h mutex.h guard.h numstr.h \
@@ -214,8 +214,9 @@ exe_ptchg.obj:	yukon.h precompiled.h ctidbgmem.h message.h \
 		msg_signal.h tbl_lm_controlhist.h pt_numeric.h pt_base.h \
 		resolvers.h db_entry_defines.h pt_dyn_base.h tbl_pt_base.h \
 		desolvers.h tbl_pt_property.h tbl_pt_trigger.h tbl_pt_unit.h \
-		tbl_unitmeasure.h signalmanager.h pt_status.h tbl_pt_status.h \
-		pttrigger.h mgr_point.h slctpnt.h tagmanager.h \
+		tbl_unitmeasure.h signalmanager.h pt_dyn_dispatch.h \
+		tbl_pt_alarm.h tbl_ptdispatch.h pt_status.h tbl_pt_status.h \
+		pttrigger.h mgr_point.h fifo_multiset.h tagmanager.h \
 		tbl_dyn_pttag.h tbl_tag.h tbl_taglog.h tbl_state_grp.h \
 		tbl_state.h tbl_alm_ngroup.h tbl_alm_ndest.h \
 		tbl_commerrhist.h tbl_pt_limit.h tbl_rawpthistory.h \
@@ -239,8 +240,9 @@ exe_signal.obj:	yukon.h precompiled.h ctidbgmem.h message.h \
 		msg_signal.h tbl_lm_controlhist.h pt_numeric.h pt_base.h \
 		resolvers.h db_entry_defines.h pt_dyn_base.h tbl_pt_base.h \
 		desolvers.h tbl_pt_property.h tbl_pt_trigger.h tbl_pt_unit.h \
-		tbl_unitmeasure.h signalmanager.h pt_status.h tbl_pt_status.h \
-		pttrigger.h mgr_point.h slctpnt.h tagmanager.h \
+		tbl_unitmeasure.h signalmanager.h pt_dyn_dispatch.h \
+		tbl_pt_alarm.h tbl_ptdispatch.h pt_status.h tbl_pt_status.h \
+		pttrigger.h mgr_point.h fifo_multiset.h tagmanager.h \
 		tbl_dyn_pttag.h tbl_tag.h tbl_taglog.h tbl_state_grp.h \
 		tbl_state.h tbl_alm_ngroup.h tbl_alm_ndest.h \
 		tbl_commerrhist.h tbl_pt_limit.h tbl_rawpthistory.h \
@@ -260,27 +262,28 @@ mgr_ptclients.obj:	yukon.h precompiled.h ctidbgmem.h dllvg.h dlldefs.h \
 		clrdump.h cticonnect.h netports.h dbaccess.h sema.h \
 		desolvers.h tbl_pt_property.h tbl_pt_trigger.h logger.h \
 		thread.h CtiPCPtrQueue.h mgr_ptclients.h mgr_point.h \
-		smartmap.h readers_writer_lock.h critical_section.h slctpnt.h \
-		msg_pdata.h message.h collectable.h rwutil.h boost_time.h \
-		ptconnect.h hashkey.h hash_functions.h con_mgr.h connection.h \
-		exchange.h msg_multi.h msg_ptreg.h msg_reg.h queue.h cparms.h \
-		configkey.h configval.h ctibase.h ctinexus.h server_b.h \
-		cmdopts.h argkey.h argval.h pt_dyn_dispatch.h tbl_pt_alarm.h \
-		tbl_ptdispatch.h tbl_pt_limit.h rtdb.h tbl_rawpthistory.h \
-		devicetypes.h msg_pcreturn.h msg_signal.h pt_analog.h \
-		pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_analog.h \
-		pt_accum.h tbl_pt_accum.h tbl_pt_accumhistory.h pt_status.h \
-		tbl_pt_status.h con_mgr_vg.h vgexe_factory.h executor.h \
+		smartmap.h readers_writer_lock.h critical_section.h \
+		fifo_multiset.h msg_pdata.h message.h collectable.h rwutil.h \
+		boost_time.h ptconnect.h hashkey.h hash_functions.h con_mgr.h \
+		connection.h exchange.h msg_multi.h msg_ptreg.h msg_reg.h \
+		queue.h cparms.h configkey.h configval.h ctibase.h ctinexus.h \
+		server_b.h cmdopts.h argkey.h argval.h pt_dyn_dispatch.h \
+		tbl_pt_alarm.h tbl_ptdispatch.h tbl_pt_limit.h rtdb.h \
+		tbl_rawpthistory.h devicetypes.h msg_pcreturn.h msg_signal.h \
+		pt_analog.h pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h \
+		tbl_pt_analog.h pt_accum.h tbl_pt_accum.h \
+		tbl_pt_accumhistory.h pt_status.h tbl_pt_status.h \
+		debug_timer.h con_mgr_vg.h vgexe_factory.h executor.h \
 		exe_ptchg.h executorfactory.h exe_cmd.h exe_reg.h msg_cmd.h
 pcmtest.obj:	yukon.h precompiled.h ctidbgmem.h mgr_ptclients.h \
 		dlldefs.h mgr_point.h smartmap.h boostutil.h utility.h \
 		ctitime.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
 		sorted_vector.h dllbase.h dsm2.h mutex.h guard.h clrdump.h \
 		cticonnect.h netports.h readers_writer_lock.h \
-		critical_section.h pt_base.h dbmemobject.h resolvers.h \
-		pointtypes.h db_entry_defines.h pointdefs.h pt_dyn_base.h \
-		tbl_pt_base.h dbaccess.h sema.h desolvers.h tbl_pt_property.h \
-		tbl_pt_trigger.h slctpnt.h msg_pdata.h message.h \
+		critical_section.h fifo_multiset.h pt_base.h dbmemobject.h \
+		resolvers.h pointtypes.h db_entry_defines.h pointdefs.h \
+		pt_dyn_base.h tbl_pt_base.h dbaccess.h sema.h desolvers.h \
+		tbl_pt_property.h tbl_pt_trigger.h msg_pdata.h message.h \
 		collectable.h rwutil.h boost_time.h ptconnect.h hashkey.h \
 		hash_functions.h con_mgr.h connection.h exchange.h logger.h \
 		thread.h CtiPCPtrQueue.h msg_multi.h msg_ptreg.h msg_reg.h \
@@ -294,18 +297,18 @@ pendingopthread.obj:	yukon.h precompiled.h ctidbgmem.h counter.h \
 		queues.h cticalls.h os2_2w32.h types.h sorted_vector.h \
 		configkey.h configval.h dllvg.h mgr_ptclients.h mgr_point.h \
 		smartmap.h dllbase.h dsm2.h cticonnect.h netports.h \
-		readers_writer_lock.h critical_section.h pt_base.h \
-		dbmemobject.h resolvers.h pointtypes.h db_entry_defines.h \
-		pointdefs.h pt_dyn_base.h tbl_pt_base.h dbaccess.h sema.h \
-		desolvers.h tbl_pt_property.h tbl_pt_trigger.h slctpnt.h \
-		msg_pdata.h message.h collectable.h ptconnect.h hashkey.h \
-		hash_functions.h con_mgr.h connection.h exchange.h logger.h \
-		thread.h CtiPCPtrQueue.h msg_multi.h msg_ptreg.h msg_reg.h \
-		queue.h ctibase.h ctinexus.h server_b.h cmdopts.h argkey.h \
-		argval.h pt_dyn_dispatch.h tbl_pt_alarm.h tbl_ptdispatch.h \
-		tbl_pt_limit.h rtdb.h tbl_rawpthistory.h msg_cmd.h \
-		pendingopthread.h pendable.h pending_info.h msg_signal.h \
-		tbl_lm_controlhist.h pt_numeric.h tbl_pt_unit.h \
+		readers_writer_lock.h critical_section.h fifo_multiset.h \
+		pt_base.h dbmemobject.h resolvers.h pointtypes.h \
+		db_entry_defines.h pointdefs.h pt_dyn_base.h tbl_pt_base.h \
+		dbaccess.h sema.h desolvers.h tbl_pt_property.h \
+		tbl_pt_trigger.h msg_pdata.h message.h collectable.h \
+		ptconnect.h hashkey.h hash_functions.h con_mgr.h connection.h \
+		exchange.h logger.h thread.h CtiPCPtrQueue.h msg_multi.h \
+		msg_ptreg.h msg_reg.h queue.h ctibase.h ctinexus.h server_b.h \
+		cmdopts.h argkey.h argval.h pt_dyn_dispatch.h tbl_pt_alarm.h \
+		tbl_ptdispatch.h tbl_pt_limit.h rtdb.h tbl_rawpthistory.h \
+		msg_cmd.h pendingopthread.h pendable.h pending_info.h \
+		msg_signal.h tbl_lm_controlhist.h pt_numeric.h tbl_pt_unit.h \
 		tbl_unitmeasure.h signalmanager.h
 pending_info.obj:	yukon.h precompiled.h ctidbgmem.h logger.h dlldefs.h \
 		thread.h mutex.h guard.h numstr.h clrdump.h ctitime.h \
@@ -386,14 +389,14 @@ test.obj:	yukon.h precompiled.h ctidbgmem.h thread.h mutex.h dlldefs.h \
 		configval.h logger.h CtiPCPtrQueue.h exchange.h dllbase.h \
 		dsm2.h cticonnect.h netports.h message.h collectable.h \
 		mgr_point.h smartmap.h readers_writer_lock.h \
-		critical_section.h pt_base.h dbmemobject.h resolvers.h \
-		pointtypes.h db_entry_defines.h pointdefs.h pt_dyn_base.h \
-		tbl_pt_base.h dbaccess.h sema.h desolvers.h tbl_pt_property.h \
-		tbl_pt_trigger.h slctpnt.h msg_cmd.h msg_dbchg.h msg_reg.h \
-		msg_pcreturn.h msg_multi.h msg_pdata.h msg_pcrequest.h \
-		msg_signal.h msg_ptreg.h msg_tag.h msg_commerrorhistory.h \
-		msg_lmcontrolhistory.h connection.h counter.h \
-		msg_notif_email.h msg_notif_email_attachment.h \
+		critical_section.h fifo_multiset.h pt_base.h dbmemobject.h \
+		resolvers.h pointtypes.h db_entry_defines.h pointdefs.h \
+		pt_dyn_base.h tbl_pt_base.h dbaccess.h sema.h desolvers.h \
+		tbl_pt_property.h tbl_pt_trigger.h msg_cmd.h msg_dbchg.h \
+		msg_reg.h msg_pcreturn.h msg_multi.h msg_pdata.h \
+		msg_pcrequest.h msg_signal.h msg_ptreg.h msg_tag.h \
+		msg_commerrorhistory.h msg_lmcontrolhistory.h connection.h \
+		counter.h msg_notif_email.h msg_notif_email_attachment.h \
 		thread_monitor.h thread_register_data.h ctidate.h
 test2.obj:	yukon.h precompiled.h ctidbgmem.h queue.h cparms.h rwutil.h \
 		ctitime.h dlldefs.h boost_time.h boostutil.h utility.h \
@@ -403,6 +406,23 @@ test2.obj:	yukon.h precompiled.h ctidbgmem.h queue.h cparms.h rwutil.h \
 		exchange.h dllbase.h dsm2.h cticonnect.h netports.h message.h \
 		collectable.h msg_multi.h msg_pdata.h pointdefs.h \
 		pointtypes.h msg_ptreg.h msg_reg.h msg_cmd.h msg_pcreturn.h
+test_mgr_ptclients.obj:	yukon.h precompiled.h ctidbgmem.h \
+		mgr_ptclients.h dlldefs.h mgr_point.h smartmap.h boostutil.h \
+		utility.h ctitime.h queues.h cticalls.h os2_2w32.h types.h \
+		numstr.h sorted_vector.h dllbase.h dsm2.h mutex.h guard.h \
+		clrdump.h cticonnect.h netports.h readers_writer_lock.h \
+		critical_section.h fifo_multiset.h pt_base.h dbmemobject.h \
+		resolvers.h pointtypes.h db_entry_defines.h pointdefs.h \
+		pt_dyn_base.h tbl_pt_base.h dbaccess.h sema.h desolvers.h \
+		tbl_pt_property.h tbl_pt_trigger.h msg_pdata.h message.h \
+		collectable.h rwutil.h boost_time.h ptconnect.h hashkey.h \
+		hash_functions.h con_mgr.h connection.h exchange.h logger.h \
+		thread.h CtiPCPtrQueue.h msg_multi.h msg_ptreg.h msg_reg.h \
+		queue.h cparms.h configkey.h configval.h ctibase.h ctinexus.h \
+		server_b.h cmdopts.h argkey.h argval.h pt_dyn_dispatch.h \
+		tbl_pt_alarm.h tbl_ptdispatch.h tbl_pt_limit.h rtdb.h \
+		tbl_rawpthistory.h pt_status.h tbl_pt_status.h pt_analog.h \
+		pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_analog.h
 test_signalmanager.obj:	yukon.h precompiled.h ctidbgmem.h \
 		tbl_pt_alarm.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
@@ -429,8 +449,9 @@ vangogh.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h rwutil.h \
 		pending_info.h msg_signal.h tbl_lm_controlhist.h pt_numeric.h \
 		pt_base.h resolvers.h db_entry_defines.h pt_dyn_base.h \
 		tbl_pt_base.h desolvers.h tbl_pt_property.h tbl_pt_trigger.h \
-		tbl_pt_unit.h tbl_unitmeasure.h signalmanager.h pt_status.h \
-		tbl_pt_status.h pttrigger.h mgr_point.h slctpnt.h \
+		tbl_pt_unit.h tbl_unitmeasure.h signalmanager.h \
+		pt_dyn_dispatch.h tbl_pt_alarm.h tbl_ptdispatch.h pt_status.h \
+		tbl_pt_status.h pttrigger.h mgr_point.h fifo_multiset.h \
 		tagmanager.h tbl_dyn_pttag.h tbl_tag.h tbl_taglog.h \
 		tbl_state_grp.h tbl_state.h tbl_alm_ngroup.h tbl_alm_ndest.h \
 		tbl_commerrhist.h tbl_pt_limit.h tbl_rawpthistory.h \
