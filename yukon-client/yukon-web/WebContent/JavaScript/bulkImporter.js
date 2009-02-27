@@ -98,7 +98,7 @@ function setupRefreshStuff(url, refreshPeriod) {
         var failedComm_table = $('failedComm_table');
         
         // FANCY HIGHLIGHTING
-        if (Integer.parseInt(json.importDataCount) != Integer.parseInt($('prevImportDataCount').value)) {
+        if (json.importDataCount != parseInt($('prevImportDataCount').value)) {
         	new Effect.Highlight($('importDataCount'), {'duration': 2, 'startcolor': '#FFE900'});
         }
         $('prevImportDataCount').value = json.importDataCount;
