@@ -11,7 +11,6 @@ import org.apache.commons.lang.Validate;
 
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -26,7 +25,7 @@ import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.util.LMControlHistoryUtil;
 import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
 
-public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSummaryModel.ModelRow> {
+public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSummaryModel.ModelRow> implements EnergyCompanyModelAttributes {
     private int energyCompanyId;
     private Set<Integer> programIds;
     private LiteYukonUser liteUser;
@@ -231,8 +230,6 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
     }
     public void setLiteUser(LiteYukonUser liteUser) {
         this.liteUser = liteUser;
-        EnergyCompanyDao energyCompanyDao = YukonSpringHook.getBean("energyCompanyDao", EnergyCompanyDao.class);
-        setEnergyCompanyId(energyCompanyDao.getEnergyCompany(liteUser).getEnergyCompanyID());
     }
     
 }

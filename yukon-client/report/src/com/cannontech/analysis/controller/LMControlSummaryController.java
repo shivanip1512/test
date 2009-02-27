@@ -8,6 +8,7 @@ import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.analysis.report.LMControlSummaryReport;
 import com.cannontech.analysis.report.YukonReportBase;
+import com.cannontech.analysis.tablemodel.EnergyCompanyModelAttributes;
 import com.cannontech.analysis.tablemodel.LMControlSummaryModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
 import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
@@ -47,6 +48,7 @@ public class LMControlSummaryController extends ReportControllerBase {
     
     public void setRequestParameters(HttpServletRequest request) {
         LMControlSummaryModel lmControlSummaryModel = (LMControlSummaryModel) model;
+        EnergyCompanyModelAttributes ecModel = (EnergyCompanyModelAttributes)model;
         super.setRequestParameters(request);
         lmControlSummaryModel.setLiteUser(ServletUtil.getYukonUser(request));
         int filterModelType = ServletRequestUtils.getIntParameter(request, ReportModelBase.ATT_FILTER_MODEL_TYPE, -1);
@@ -59,6 +61,10 @@ public class LMControlSummaryController extends ReportControllerBase {
                 }
                 lmControlSummaryModel.setProgramIds(programsSet);
             }
+        }
+        String ecParam = request.getParameter("ecID");
+        if (ecParam != null) {
+            ecModel.setEnergyCompanyId(Integer.valueOf(ecParam));
         }
     }
 }

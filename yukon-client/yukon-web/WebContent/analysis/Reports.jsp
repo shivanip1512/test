@@ -209,6 +209,7 @@ function checkDates(){
 	  <!-- THE EXTRA INPUT TYPES ARE MAKING THE DOWNLOAD DIALOG APPEAR TWO TIMES -->
 	  <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>">
 	  <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
+	  <input type="hidden" name="ecID" value="<%=REPORT_BEAN.getEnergyCompanyID() %>">
 	  <input type="hidden" name="ACTION" value="DownloadReport">
       <cti:titledContainer title="Report Selection">
             <table width="100%" border="0" cellspacing="2" cellpadding="0" bordercolor="#FFFFFF" align="center">

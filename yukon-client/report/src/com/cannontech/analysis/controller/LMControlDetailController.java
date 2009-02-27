@@ -8,6 +8,7 @@ import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.analysis.report.LMControlDetailReport;
 import com.cannontech.analysis.report.YukonReportBase;
+import com.cannontech.analysis.tablemodel.EnergyCompanyModelAttributes;
 import com.cannontech.analysis.tablemodel.LMControlDetailModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
 import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
@@ -53,6 +54,7 @@ public class LMControlDetailController extends ReportControllerBase {
     
     public void setRequestParameters(HttpServletRequest request) {
         LMControlDetailModel lmControlDetailModel = (LMControlDetailModel) model;
+        EnergyCompanyModelAttributes ecModel = (EnergyCompanyModelAttributes)model;
         super.setRequestParameters(request);
         lmControlDetailModel.setAccountNumbers(request.getParameter("accountNumbers"));
         lmControlDetailModel.setLiteUser(ServletUtil.getYukonUser(request));
@@ -64,6 +66,10 @@ public class LMControlDetailController extends ReportControllerBase {
                 programsSet.add(id);
             }
             lmControlDetailModel.setProgramIds(programsSet);
+        }
+        String ecParam = request.getParameter("ecID");
+        if (ecParam != null) {
+            ecModel.setEnergyCompanyId(Integer.valueOf(ecParam));
         }
     }
 }

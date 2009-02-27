@@ -12,7 +12,6 @@ import org.apache.commons.lang.Validate;
 
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -29,7 +28,7 @@ import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.util.LMControlHistoryUtil;
 import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
 
-public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDetailModel.ModelRow> {
+public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDetailModel.ModelRow> implements EnergyCompanyModelAttributes {
     private int energyCompanyId;
     private Set<Integer> programIds;
     private String accountNumbers;
@@ -210,7 +209,5 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
     }
     public void setLiteUser(LiteYukonUser liteUser) {
         this.liteUser = liteUser;
-        EnergyCompanyDao energyCompanyDao = YukonSpringHook.getBean("energyCompanyDao", EnergyCompanyDao.class);
-        setEnergyCompanyId(energyCompanyDao.getEnergyCompany(liteUser).getEnergyCompanyID());
     }
 }
