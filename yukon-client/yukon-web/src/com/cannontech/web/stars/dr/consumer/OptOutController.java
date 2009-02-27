@@ -223,22 +223,21 @@ public class OptOutController extends AbstractConsumerController {
         
 	        OptOutRequest optOutRequest = new OptOutRequest();
 	        if (isSameDay) {
-	        	int extraHours = 0;
-	        	// If durationInDays is 1 that means the rest of today only
-	        	if(durationInDays > 1) {
-	        		extraHours = durationInDays * 24;
-	        	}
-	        	optOutRequest.setDurationInHours(hoursRemainingInDay + extraHours);
 	        	optOutRequest.setStartDate(null); // Same day OptOut's have null startDates.
 	        } else {
-		        optOutRequest.setStartDate(startDateObj);
-		        optOutRequest.setDurationInHours(durationInDays * 24);
+	        	optOutRequest.setStartDate(startDateObj);
 	        }
+
+	        int extraHours = 0;
+	        // If durationInDays is 1 that means the rest of today only
+	        if(durationInDays > 1) {
+	        	extraHours = durationInDays * 24;
+	        }
+	        optOutRequest.setDurationInHours(hoursRemainingInDay + extraHours);
 	        optOutRequest.setInventoryIdList(inventoryIds);
 	        optOutRequest.setQuestions(questionList);
 
 	        optOutService.optOut(customerAccount, optOutRequest, user);
-	        
 	        
         }
         
