@@ -32,6 +32,7 @@
 #include "ccid.h"
 #include "ccstate.h"
 #include "ccmessage.h"
+#include "ccstatsobject.h"
 
 
 using std::multimap;
@@ -90,6 +91,8 @@ private:
     long paoid;
     CtiTime timestamp;
 };
+
+
 class CtiCCSubstationBusStore : public RWMonitor< RWRecursiveLock< RWMutexLock > >
 {
 public:   
@@ -264,56 +267,81 @@ public:
 
 
     template<class T> 
-    void setOperationSuccessPercents(const T &object, LONG numOfChildren, DOUBLE userDefOpPercent, DOUBLE dailyOpPercent,
-                                                              DOUBLE weeklyOpPercent, DOUBLE monthlyOpPercent)
+    void setOperationSuccessPercents(const T &object, CCStatsObject userDef, CCStatsObject daily, CCStatsObject weekly, CCStatsObject monthly)
     {
-        if (numOfChildren <= 0) 
-        {
-            userDefOpPercent = 100;
-            dailyOpPercent   = 100;
-            weeklyOpPercent  = 100;
-            monthlyOpPercent = 100;
-        }
-        object->getOperationStats().setUserDefOpSuccessPercent( userDefOpPercent );
-        object->getOperationStats().setDailyOpSuccessPercent(  dailyOpPercent );
-        object->getOperationStats().setWeeklyOpSuccessPercent( weeklyOpPercent );
-        object->getOperationStats().setMonthlyOpSuccessPercent( monthlyOpPercent );
+        object->getOperationStats().setUserDefOpSuccessPercent( userDef.getAverage() ); 
+        object->getOperationStats().setUserDefOpCount( userDef.getOpCount() );
+        object->getOperationStats().setDailyOpSuccessPercent(  daily.getAverage() );
+        object->getOperationStats().setDailyOpCount( daily.getOpCount() );    
+        object->getOperationStats().setWeeklyOpSuccessPercent( weekly.getAverage() );
+        object->getOperationStats().setWeeklyOpCount( weekly.getOpCount() );   
+        object->getOperationStats().setMonthlyOpSuccessPercent( monthly.getAverage() ); 
+        object->getOperationStats().setMonthlyOpCount( monthly.getOpCount() );
     };
     
     template<class T> 
-    void setConfirmationSuccessPercents(const T &object, LONG numOfChildren, DOUBLE userDefConfPercent, DOUBLE dailyConfPercent,
-                                                          DOUBLE weeklyConfPercent, DOUBLE monthlyConfPercent)
+    void setConfirmationSuccessPercents(const T &object, CCStatsObject userDef, CCStatsObject daily, CCStatsObject weekly, CCStatsObject monthly)
     {
-        if (numOfChildren <= 0) 
-        {
-            userDefConfPercent = 100;
-            dailyConfPercent = 100;
-            weeklyConfPercent = 100;
-            monthlyConfPercent = 100;
-        }
-        object->getConfirmationStats().setUserDefCommSuccessPercent( userDefConfPercent );
-        object->getConfirmationStats().setDailyCommSuccessPercent(  dailyConfPercent );
-        object->getConfirmationStats().setWeeklyCommSuccessPercent( weeklyConfPercent );
-        object->getConfirmationStats().setMonthlyCommSuccessPercent( monthlyConfPercent );
+        object->getConfirmationStats().setUserDefCommSuccessPercent( userDef.getAverage() );
+        object->getConfirmationStats().setUserDefCommCount( userDef.getOpCount() );
+        object->getConfirmationStats().setDailyCommSuccessPercent(  daily.getAverage() );
+        object->getConfirmationStats().setDailyCommCount( daily.getOpCount() );
+        object->getConfirmationStats().setWeeklyCommSuccessPercent( weekly.getAverage() );
+        object->getConfirmationStats().setWeeklyCommCount( weekly.getOpCount() );
+        object->getConfirmationStats().setMonthlyCommSuccessPercent( monthly.getAverage() );
+        object->getConfirmationStats().setMonthlyCommCount( monthly.getOpCount() );
+
     };
     template<class T>
-    void incrementConfirmationPercentTotals(const T &object, DOUBLE &userDef, DOUBLE &daily,
-                                                          DOUBLE &weekly, DOUBLE &monthly) 
+    void incrementConfirmationPercentTotals(const T &object, CCStatsObject &userDef, CCStatsObject &daily,
+                                                          CCStatsObject &weekly, CCStatsObject &monthly) 
     {
     
-        userDef += object->getConfirmationStats().getUserDefCommSuccessPercent(); 
-        daily += object->getConfirmationStats().getDailyCommSuccessPercent();
-        weekly += object->getConfirmationStats().getWeeklyCommSuccessPercent();
-        monthly += object->getConfirmationStats().getMonthlyCommSuccessPercent();
+        if (object->getConfirmationStats().getUserDefCommCount() > 0)
+        {
+            userDef.incrementTotal( object->getConfirmationStats().getUserDefCommSuccessPercent()); 
+            userDef.incrementOpCount(1);
+        }
+        if (object->getConfirmationStats().getDailyCommCount() > 0)
+        {
+            daily.incrementTotal(object->getConfirmationStats().getDailyCommSuccessPercent());
+            daily.incrementOpCount(1);
+        }
+        if (object->getConfirmationStats().getWeeklyCommCount() > 0)
+        {
+            weekly.incrementTotal(object->getConfirmationStats().getWeeklyCommSuccessPercent());
+            weekly.incrementOpCount(1);
+        }
+        if (object->getConfirmationStats().getMonthlyCommCount() > 0)
+        {
+            monthly.incrementTotal(object->getConfirmationStats().getMonthlyCommSuccessPercent());
+            monthly.incrementOpCount(1);
+        }
     };
     template<class T>
-    void incrementOperationPercentTotals(const T &object, DOUBLE &userDef, DOUBLE &daily,
-                                                          DOUBLE &weekly, DOUBLE &monthly) 
+    void incrementOperationPercentTotals(const T &object, CCStatsObject &userDef, CCStatsObject &daily,
+                                                          CCStatsObject &weekly, CCStatsObject &monthly) 
     {
-        userDef += object->getOperationStats().getUserDefOpSuccessPercent(); 
-        daily += object->getOperationStats().getDailyOpSuccessPercent();
-        weekly += object->getOperationStats().getWeeklyOpSuccessPercent();
-        monthly += object->getOperationStats().getMonthlyOpSuccessPercent();
+        if (object->getOperationStats().getUserDefOpCount() > 0)
+        {
+            userDef.incrementTotal(object->getOperationStats().getUserDefOpSuccessPercent()); 
+            userDef.incrementOpCount(1);
+        }
+        if (object->getOperationStats().getDailyOpCount() > 0)
+        {
+            daily.incrementTotal(object->getOperationStats().getDailyOpSuccessPercent());
+            daily.incrementOpCount(1);
+        }
+        if (object->getOperationStats().getWeeklyOpCount() > 0)
+        {
+            weekly.incrementTotal(object->getOperationStats().getWeeklyOpSuccessPercent());
+            weekly.incrementOpCount(1);  
+        }
+        if (object->getOperationStats().getMonthlyOpCount() > 0)
+        {
+            monthly.incrementTotal(object->getOperationStats().getMonthlyOpSuccessPercent());
+            monthly.incrementOpCount(1);
+        }
     };
 
     void cascadeStrategySettingsToChildren(LONG spAreaId, LONG areaId, LONG subBusId);
