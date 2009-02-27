@@ -25,8 +25,6 @@
 #include "devicetypes.h"
 #include "ctistring.h"
 #include "numstr.h"
-#include "pt_status.h"   //  for valueReport()'s use of CtiPointStatus
-#include "dllyukon.h"    //  for ResolveStateName()
 #include "config_data_mct.h"
 
 #include "ctidate.h"
@@ -237,18 +235,6 @@ string CtiDeviceMCT4xx::printable_date(unsigned long seconds)
 }
 
 
-bool CtiDeviceMCT4xx::is_valid_time( const CtiTime time )
-{
-    bool retval = false;
-
-    //  between 2000-jan-01 and tomorrow
-    retval = (time > DawnOfTime_UtcSeconds) &&
-             (time < (CtiTime::now() + 86400));
-
-    return retval;
-}
-
-
 bool CtiDeviceMCT4xx::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 {
     bool found = false;
@@ -383,158 +369,6 @@ CtiDeviceMCT4xx::point_info CtiDeviceMCT4xx::getData( unsigned char *buf, int le
     retval.description = description;
 
     return retval;
-}
-
-
-//  timestamp == 0UL means current time
-bool CtiDeviceMCT4xx::insertPointDataReport(CtiPointType_t type, int offset, CtiReturnMsg *rm, point_info pi, const string &default_pointname, const CtiTime &timestamp, double default_multiplier, int tags)
-{
-    bool pointdata_inserted = false;
-    string pointname;
-    CtiPointSPtr p;
-    CtiPointDataMsg *pdm = 0;
-
-    if( p = getDevicePointOffsetTypeEqual(offset, type) )
-    {
-        pointname = p->getName();
-
-        if( p->isNumeric() )
-        {
-            pi.value = boost::static_pointer_cast<CtiPointNumeric>(p)->computeValueForUOM(pi.value);
-        }
-
-        if( pi.quality != InvalidQuality )
-        {
-            pdm = CTIDBG_new CtiPointDataMsg(p->getID(), pi.value, pi.quality, p->getType(), valueReport(p, pi, timestamp).c_str());
-
-            if( is_valid_time(timestamp) )
-            {
-                pdm->setTime(timestamp);
-            }
-            else if( getMCTDebugLevel(DebugLevel_Info) )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - invalid time " << timestamp << " for point " << pointname << " in CtiDeviceMCT4xx::insertPointDataReport() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            pdm->setTags(tags);
-
-            rm->PointData().push_back(pdm);
-
-            pointdata_inserted = true;
-        }
-    }
-    else
-    {
-        pointname = default_pointname;
-    }
-
-    //  if there's no default pointname, we don't insert a message if the point doesn't exist
-    if( !pointdata_inserted && !pointname.empty() )
-    {
-        string result_string = rm->ResultString();
-
-        if( !result_string.empty() )  result_string += "\n";
-
-        if( p )
-        {
-            result_string += valueReport(p->getName().data(), pi, timestamp, false);
-        }
-        else
-        {
-            pi.value *= default_multiplier;
-            result_string += valueReport(pointname, pi, timestamp);
-        }
-
-        rm->setResultString(result_string.c_str());
-    }
-
-    return pointdata_inserted;
-}
-
-
-string CtiDeviceMCT4xx::valueReport(const CtiPointSPtr p, const point_info &pi, const CtiTime &t) const
-{
-    string report;
-
-    report = getName() + " / " + p->getName() + " = ";
-
-    if( pi.quality != InvalidQuality )
-    {
-        if( p->isNumeric() )
-        {
-            report += CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(p)->getPointUnits().getDecimalPlaces());
-        }
-        else if( p->isStatus() )
-        {
-            CtiString state_name = ResolveStateName(boost::static_pointer_cast<CtiPointStatus>(p)->getStateGroupID(), pi.value);
-
-            if( state_name != "" )
-            {
-                report += state_name;
-            }
-            else
-            {
-                report += CtiNumStr(pi.value, 0);
-            }
-        }
-    }
-    else
-    {
-        report += "(invalid data)";
-    }
-
-    if( t > DawnOfTime_UtcSeconds && t < YUKONEOT )
-    {
-        report += " @ ";
-        report += t.asString();
-    }
-
-    if( !pi.description.empty() )
-    {
-        report += " [";
-        report += pi.description;
-        report += "]";
-    }
-
-    return report;
-}
-
-
-string CtiDeviceMCT4xx::valueReport(const string &pointname, const point_info &pi, const CtiTime &t, bool undefined) const
-{
-    string report;
-
-    report = getName() + " / " + pointname.c_str() + " = ";
-
-    if( pi.quality != InvalidQuality )
-    {
-        report += CtiNumStr(pi.value);
-    }
-    else
-    {
-        report += "(invalid data)";
-    }
-
-    if( t > DawnOfTime_UtcSeconds && t < YUKONEOT )
-    {
-        report += " @ ";
-        report += t.asString();
-    }
-
-    if( !pi.description.empty() )
-    {
-        report += " [";
-        report += pi.description;
-        report += "]";
-    }
-
-    if( undefined )
-    {
-        report += " (point not in DB)";
-    }
-
-    return report;
 }
 
 

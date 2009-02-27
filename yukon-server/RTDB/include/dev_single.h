@@ -114,6 +114,27 @@ protected:
 
     bool isDeviceAddressGlobal();
 
+    //  this is more extensible than a pair
+    struct point_info
+    {
+        double         value;
+        PointQuality_t quality;
+        bool           freeze_bit;
+        string         description;
+    };
+
+    enum
+    {
+        DawnOfTime_UtcSeconds   = 0x386d4380,  //  jan 1, 2000, in UTC seconds
+    };
+
+    static bool is_valid_time(const CtiTime);
+
+    string valueReport(const CtiPointSPtr p,    const point_info &pi, const CtiTime &t = YUKONEOT) const;
+    string valueReport(const string &pointname, const point_info &pi, const CtiTime &t = YUKONEOT, bool undefined = true) const;
+
+    bool insertPointDataReport(CtiPointType_t type, int offset, CtiReturnMsg *rm, point_info pi, const string &default_pointname="", const CtiTime &timestamp=0UL, double default_multiplier=1.0, int tags=0);
+
 private:
 
     typedef map< int, bool > ScanFlagsPending_t;

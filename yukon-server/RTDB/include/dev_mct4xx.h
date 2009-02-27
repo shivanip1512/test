@@ -52,8 +52,6 @@ protected:
     static string printable_date(unsigned long seconds);
     static string printable_date(const CtiDate &dt);
 
-    static bool is_valid_time(const CtiTime);
-
     bool getOperation( const UINT &cmd, BSTRUCT &bst ) const;
 
     enum ValueType4xx
@@ -183,8 +181,6 @@ protected:
         LPRetries        =    3,
         LPRecentBlocks   =   16,
 
-        DawnOfTime_UtcSeconds   = 0x386d4380,  //  jan 1, 2000, in UTC seconds
-
         PointOffset_RateOffset  =  20,   //  gets added for rate B, C, D
 
         PointOffset_PeakOffset  =  10,
@@ -222,15 +218,6 @@ protected:
         long in_progress;
     } _llpPeakInterest;
 
-    //  this is more extensible than a pair
-    struct point_info
-    {
-        double         value;
-        PointQuality_t quality;
-        bool           freeze_bit;
-        string         description;
-    };
-
     unsigned char crc8(const unsigned char *buf, unsigned int len) const;
 
     //  force it pure virtual so it must be overridden by the 410 and 470
@@ -240,11 +227,6 @@ protected:
     virtual point_info getDemandData(unsigned char *buf, int len) const = 0;
 
     point_info getData(unsigned char *buf, int len, ValueType4xx vt) const;
-
-    string valueReport(const CtiPointSPtr p,    const point_info &pi, const CtiTime &t = YUKONEOT) const;
-    string valueReport(const string &pointname, const point_info &pi, const CtiTime &t = YUKONEOT, bool undefined = true) const;
-
-    bool insertPointDataReport(CtiPointType_t type, int offset, CtiReturnMsg *rm, point_info pi, const string &default_pointname="", const CtiTime &timestamp=0UL, double default_multiplier=1.0, int tags=0);
 
     virtual long getLoadProfileInterval(unsigned channel) = 0;
     virtual point_info getLoadProfileData(unsigned channel, unsigned char *buf, unsigned len) = 0;
