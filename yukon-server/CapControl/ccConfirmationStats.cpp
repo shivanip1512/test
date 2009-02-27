@@ -39,13 +39,13 @@ CtiCCConfirmationStats::CtiCCConfirmationStats()
 
     init();
     _userDefCommSuccessPercentId  = 0;
-    _userDefCommSuccessPercent    = 0;
+    _userDefCommSuccessPercent    = -1;
     _dailyCommSuccessPercentId    = 0;
-    _dailyCommSuccessPercent      = 0;
+    _dailyCommSuccessPercent      = -1;
     _weeklyCommSuccessPercentId   = 0;
-    _weeklyCommSuccessPercent     = 0;
+    _weeklyCommSuccessPercent     = -1;
     _monthlyCommSuccessPercentId  = 0;
-    _monthlyCommSuccessPercent    = 0;
+    _monthlyCommSuccessPercent    = -1;
 
     return;  
 }
@@ -73,7 +73,7 @@ void CtiCCConfirmationStats::init()
     _userDefCommFail = 0;
     _dailyCommCount = 0;
     _dailyCommFail = 0;
-    _weeklyCommCount = 0;	
+    _weeklyCommCount = 0;   
     _weeklyCommFail = 0;
     _monthlyCommCount = 0;
     _monthlyCommFail = 0;
@@ -383,7 +383,7 @@ DOUBLE CtiCCConfirmationStats::calculateSuccessPercent(ccStatsType type)
         retVal = ((DOUBLE) (opCount - failCount) /(DOUBLE) opCount) * 100;
     }
     else 
-        retVal = 0;
+        retVal = -1;
 
     return retVal;
 }

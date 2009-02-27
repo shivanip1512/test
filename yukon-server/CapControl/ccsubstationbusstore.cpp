@@ -10658,59 +10658,87 @@ void CtiCCSubstationBusStore::reCalculateAllStats( )
         for(i=0;i<_ccSubstationBuses->size();i++)
         {
             CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)_ccSubstationBuses->at(i);
-        
+            
             CtiFeeder_vec &ccFeeders = currentSubstationBus->getCCFeeders();
-            DOUBLE subBusUserDefTotal=0, subBusDailyTotal=0, subBusWeeklyTotal=0, subBusMonthlyTotal= 0;
-            DOUBLE subBusUserDefOpTotal=0, subBusDailyOpTotal=0, subBusWeeklyOpTotal=0, subBusMonthlyOpTotal = 0;
+            CCStatsObject subBusUserDef, subBusDaily, subBusWeekly, subBusMonthly;
+            CCStatsObject subBusUserDefOp, subBusDailyOp, subBusWeeklyOp, subBusMonthlyOp;
             LONG numOfFdrs = ccFeeders.size();
             for(LONG j=0; j < numOfFdrs; j++)
-            {
+            { 
                 CtiCCFeeder* currentFeeder = (CtiCCFeeder*)(ccFeeders.at(j));
-        
+                
                 CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
         
-                LONG numOfBanks = ccCapBanks.size();
-                DOUBLE feederUserDefTotal=0, feederDailyTotal=0, feederWeeklyTotal=0, feederMonthlyTotal = 0;
-                DOUBLE feederUserDefOpTotal=0, feederDailyOpTotal=0, feederWeeklyOpTotal=0, feederMonthlyOpTotal = 0;
-                for(LONG k=0;k<numOfBanks;k++)
+                CCStatsObject feederUserDef, feederDaily, feederWeekly, feederMonthly;
+                CCStatsObject feederUserDefOp, feederDailyOp, feederWeeklyOp, feederMonthlyOp;
+                for(LONG k=0;k<ccCapBanks.size();k++)
                 {
                     CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[k]);
-                    //Confirmation Stats Total
-                    feederUserDefTotal += currentCapBank->getConfirmationStats().calculateSuccessPercent(capcontrol::USER_DEF_CCSTATS);
-                    feederDailyTotal += currentCapBank->getConfirmationStats().calculateSuccessPercent(capcontrol::DAILY_CCSTATS);
-                    feederWeeklyTotal += currentCapBank->getConfirmationStats().calculateSuccessPercent(capcontrol::WEEKLY_CCSTATS);
-                    feederMonthlyTotal += currentCapBank->getConfirmationStats().calculateSuccessPercent(capcontrol::MONTHLY_CCSTATS);
-        
-                    //Operations Stats Total
-                    feederUserDefOpTotal += currentCapBank->getOperationStats().calculateSuccessPercent(capcontrol::USER_DEF_CCSTATS);
-                    feederDailyOpTotal += currentCapBank->getOperationStats().calculateSuccessPercent(capcontrol::DAILY_CCSTATS);
-                    feederWeeklyOpTotal += currentCapBank->getOperationStats().calculateSuccessPercent(capcontrol::WEEKLY_CCSTATS);
-                    feederMonthlyOpTotal += currentCapBank->getOperationStats().calculateSuccessPercent(capcontrol::MONTHLY_CCSTATS);
-        
+                    if(currentCapBank->getControlDeviceId() > 0 && !currentCapBank->getDisableFlag())
+                    { 
+                        //Confirmation Stats Total
+                        if (currentCapBank->getConfirmationStats().getUserDefCommCount() > 0)
+                        {    
+                            feederUserDef.incrementTotal(currentCapBank->getConfirmationStats().calculateSuccessPercent(capcontrol::USER_DEF_CCSTATS));
+                            feederUserDef.incrementOpCount(1);
+                        }
+                        if (currentCapBank->getConfirmationStats().getDailyCommCount() > 0)
+                        {
+                            feederDaily.incrementTotal( currentCapBank->getConfirmationStats().calculateSuccessPercent(capcontrol::DAILY_CCSTATS));
+                            feederDaily.incrementOpCount(1);
+                        }
+                        if (currentCapBank->getConfirmationStats().getWeeklyCommCount() > 0)
+                        {
+                            feederWeekly.incrementTotal( currentCapBank->getConfirmationStats().calculateSuccessPercent(capcontrol::WEEKLY_CCSTATS));
+                            feederWeekly.incrementOpCount(1);
+                        }
+                        if (currentCapBank->getConfirmationStats().getMonthlyCommCount() > 0)
+                        {
+                            feederMonthly.incrementTotal( currentCapBank->getConfirmationStats().calculateSuccessPercent(capcontrol::MONTHLY_CCSTATS));
+                            feederMonthly.incrementOpCount(1);
+                        }
+                       
+                        //Operations Stats Total
+                        if (currentCapBank->getOperationStats().getUserDefOpCount() > 0)
+                        {    
+                            feederUserDefOp.incrementTotal( currentCapBank->getOperationStats().calculateSuccessPercent(capcontrol::USER_DEF_CCSTATS));
+                            feederUserDefOp.incrementOpCount(1);
+                        }
+                        if (currentCapBank->getOperationStats().getDailyOpCount() > 0)
+                        {
+                            feederDailyOp.incrementTotal( currentCapBank->getOperationStats().calculateSuccessPercent(capcontrol::DAILY_CCSTATS));
+                            feederDailyOp.incrementOpCount(1);
+                        }
+                        if (currentCapBank->getOperationStats().getWeeklyOpCount() > 0)
+                        {
+                            feederWeeklyOp.incrementTotal( currentCapBank->getOperationStats().calculateSuccessPercent(capcontrol::WEEKLY_CCSTATS));
+                            feederWeeklyOp.incrementOpCount(1);
+                        }
+                        if (currentCapBank->getOperationStats().getMonthlyOpCount() > 0)
+                        {
+                            feederMonthlyOp.incrementTotal( currentCapBank->getOperationStats().calculateSuccessPercent(capcontrol::MONTHLY_CCSTATS));
+                            feederMonthlyOp.incrementOpCount(1);
+                        }
+                    }
+                   
                 }
-                setConfirmationSuccessPercents(currentFeeder, numOfBanks, (feederUserDefTotal / numOfBanks), (feederDailyTotal / numOfBanks), 
-                                               (feederWeeklyTotal / numOfBanks), (feederMonthlyTotal / numOfBanks)); 
-                setOperationSuccessPercents(currentFeeder, numOfBanks, (feederUserDefOpTotal / numOfBanks), (feederDailyOpTotal / numOfBanks), 
-                                            (feederWeeklyOpTotal / numOfBanks), (feederMonthlyOpTotal / numOfBanks)); 
+                setConfirmationSuccessPercents(currentFeeder, feederUserDef, feederDaily, feederWeekly, feederMonthly); 
+                setOperationSuccessPercents(currentFeeder, feederUserDefOp, feederDailyOp, feederWeeklyOp, feederMonthlyOp); 
         
-                incrementConfirmationPercentTotals(currentFeeder, subBusUserDefTotal, subBusDailyTotal, subBusWeeklyTotal, subBusMonthlyTotal);
-                incrementOperationPercentTotals(currentFeeder, subBusUserDefOpTotal, subBusDailyOpTotal, subBusWeeklyOpTotal, subBusMonthlyOpTotal);
+                incrementConfirmationPercentTotals(currentFeeder, subBusUserDef, subBusDaily, subBusWeekly, subBusMonthly);
+                incrementOperationPercentTotals(currentFeeder, subBusUserDefOp, subBusDailyOp, subBusWeeklyOp, subBusMonthlyOp);
                 
             }
-            setConfirmationSuccessPercents(currentSubstationBus, numOfFdrs, (subBusUserDefTotal / numOfFdrs), (subBusDailyTotal / numOfFdrs), 
-                                               (subBusWeeklyTotal / numOfFdrs), (subBusMonthlyTotal / numOfFdrs)); 
-            setOperationSuccessPercents(currentSubstationBus, numOfFdrs, (subBusUserDefOpTotal / numOfFdrs), (subBusDailyOpTotal / numOfFdrs), 
-                                            (subBusWeeklyOpTotal / numOfFdrs), (subBusMonthlyOpTotal / numOfFdrs)); 
-        
-        
+            setConfirmationSuccessPercents(currentSubstationBus, subBusUserDef, subBusDaily, subBusWeekly, subBusMonthly); 
+            setOperationSuccessPercents(currentSubstationBus, subBusUserDefOp, subBusDailyOp, subBusWeeklyOp, subBusMonthlyOp); 
         }
         
         for(i=0;i<_ccSubstations->size();i++)
         {
             CtiCCSubstation* currentStation = (CtiCCSubstation*)_ccSubstations->at(i);
             std::list <long>::iterator busIter = currentStation->getCCSubIds()->begin();
-            DOUBLE subUserDefTotal=0, subDailyTotal=0, subWeeklyTotal=0, subMonthlyTotal= 0;
-            DOUBLE subUserDefOpTotal=0, subDailyOpTotal=0, subWeeklyOpTotal=0, subMonthlyOpTotal = 0;
+            CCStatsObject subUserDef, subDaily, subWeekly, subMonthly;
+            CCStatsObject subUserDefOp, subDailyOp, subWeeklyOp, subMonthlyOp;
             LONG numOfBuses = currentStation->getCCSubIds()->size(); 
             while (busIter != currentStation->getCCSubIds()->end())
             {
@@ -10718,15 +10746,13 @@ void CtiCCSubstationBusStore::reCalculateAllStats( )
                 busIter++;            
                 if (currentSubstationBus != NULL)
                 {
-                    incrementConfirmationPercentTotals(currentSubstationBus, subUserDefTotal, subDailyTotal, subWeeklyTotal, subMonthlyTotal);
-                    incrementOperationPercentTotals(currentSubstationBus, subUserDefOpTotal, subDailyOpTotal, subWeeklyOpTotal, subMonthlyOpTotal);
+                    incrementConfirmationPercentTotals(currentSubstationBus, subUserDef, subDaily, subWeekly, subMonthly);
+                    incrementOperationPercentTotals(currentSubstationBus, subUserDefOp, subDailyOp, subWeeklyOp, subMonthlyOp);
         
                 }
             }
-            setConfirmationSuccessPercents(currentStation, numOfBuses, (subUserDefTotal / numOfBuses), (subDailyTotal / numOfBuses), 
-                                               (subWeeklyTotal / numOfBuses), (subMonthlyTotal / numOfBuses)); 
-            setOperationSuccessPercents(currentStation, numOfBuses, (subUserDefOpTotal / numOfBuses), (subDailyOpTotal / numOfBuses), 
-                                            (subWeeklyOpTotal / numOfBuses), (subMonthlyOpTotal /numOfBuses)); 
+            setConfirmationSuccessPercents(currentStation, subUserDef, subDaily, subWeekly, subMonthly); 
+            setOperationSuccessPercents(currentStation, subUserDefOp, subDailyOp, subWeeklyOp, subMonthlyOp); 
         
         }
         
@@ -10734,8 +10760,8 @@ void CtiCCSubstationBusStore::reCalculateAllStats( )
         {
             CtiCCArea* currentArea = (CtiCCArea*)_ccGeoAreas->at(i);
             std::list <long>::iterator subIter = currentArea->getSubStationList()->begin();
-            DOUBLE areaUserDefTotal=0, areaDailyTotal=0, areaWeeklyTotal=0, areaMonthlyTotal= 0;
-            DOUBLE areaUserDefOpTotal=0, areaDailyOpTotal=0, areaWeeklyOpTotal=0, areaMonthlyOpTotal = 0;
+            CCStatsObject areaUserDef, areaDaily, areaWeekly, areaMonthly;
+            CCStatsObject areaUserDefOp, areaDailyOp, areaWeeklyOp, areaMonthlyOp;
             LONG numOfSubs = currentArea->getSubStationList()->size();
             while (subIter != currentArea->getSubStationList()->end())
             {
@@ -10743,15 +10769,13 @@ void CtiCCSubstationBusStore::reCalculateAllStats( )
                 subIter++;            
                 if (currentStation != NULL)
                 {
-                   incrementConfirmationPercentTotals(currentStation, areaUserDefTotal, areaDailyTotal, areaWeeklyTotal, areaMonthlyTotal);
-                   incrementOperationPercentTotals(currentStation, areaUserDefOpTotal, areaDailyOpTotal, areaWeeklyOpTotal, areaMonthlyOpTotal);
+                   incrementConfirmationPercentTotals(currentStation, areaUserDef, areaDaily, areaWeekly, areaMonthly);
+                   incrementOperationPercentTotals(currentStation, areaUserDefOp, areaDailyOp, areaWeeklyOp, areaMonthlyOp);
         
                }
            }
-           setConfirmationSuccessPercents(currentArea, numOfSubs, (areaUserDefTotal / numOfSubs), (areaDailyTotal / numOfSubs), 
-                                              (areaWeeklyTotal / numOfSubs), (areaMonthlyTotal / numOfSubs)); 
-           setOperationSuccessPercents(currentArea, numOfSubs, (areaUserDefOpTotal / numOfSubs), (areaDailyOpTotal / numOfSubs), 
-                                           (areaWeeklyOpTotal / numOfSubs), (areaMonthlyOpTotal /numOfSubs)); 
+           setConfirmationSuccessPercents(currentArea, areaUserDef, areaDaily, areaWeekly, areaMonthly); 
+           setOperationSuccessPercents(currentArea, areaUserDefOp, areaDailyOp, areaWeeklyOp, areaMonthlyOp); 
         
         }
         
@@ -10760,8 +10784,8 @@ void CtiCCSubstationBusStore::reCalculateAllStats( )
             CtiCCSpecial* currentSpArea = (CtiCCSpecial*)_ccSpecialAreas->at(i);
             std::list <long>::iterator subIter = currentSpArea->getSubstationIds()->begin();
         
-            DOUBLE areaUserDefTotal=0, areaDailyTotal=0, areaWeeklyTotal=0, areaMonthlyTotal= 0;
-            DOUBLE areaUserDefOpTotal=0, areaDailyOpTotal=0, areaWeeklyOpTotal=0, areaMonthlyOpTotal = 0;
+            CCStatsObject areaUserDef, areaDaily, areaWeekly, areaMonthly;
+            CCStatsObject areaUserDefOp, areaDailyOp, areaWeeklyOp, areaMonthlyOp;
             LONG numOfSubs = currentSpArea->getSubstationIds()->size();
             while (subIter != currentSpArea->getSubstationIds()->end())
             {
@@ -10769,15 +10793,13 @@ void CtiCCSubstationBusStore::reCalculateAllStats( )
                 subIter++;            
                 if (currentStation != NULL)
                 {
-                    incrementConfirmationPercentTotals(currentStation, areaUserDefTotal, areaDailyTotal, areaWeeklyTotal, areaMonthlyTotal);
-                    incrementOperationPercentTotals(currentStation, areaUserDefOpTotal, areaDailyOpTotal, areaWeeklyOpTotal, areaMonthlyOpTotal);
+                    incrementConfirmationPercentTotals(currentStation, areaUserDef, areaDaily, areaWeekly, areaMonthly);
+                    incrementOperationPercentTotals(currentStation, areaUserDefOp, areaDailyOp, areaWeeklyOp, areaMonthlyOp);
         
                 }
            }
-           setConfirmationSuccessPercents(currentSpArea, numOfSubs, (areaUserDefTotal / numOfSubs), (areaDailyTotal / numOfSubs), 
-                                              (areaWeeklyTotal / numOfSubs), (areaMonthlyTotal / numOfSubs)); 
-           setOperationSuccessPercents(currentSpArea, numOfSubs, (areaUserDefOpTotal / numOfSubs), (areaDailyOpTotal / numOfSubs), 
-                                           (areaWeeklyOpTotal / numOfSubs), (areaMonthlyOpTotal /numOfSubs)); 
+           setConfirmationSuccessPercents(currentSpArea, areaUserDef, areaDaily, areaWeekly, areaMonthly); 
+           setOperationSuccessPercents(currentSpArea, areaUserDefOp, areaDailyOp, areaWeeklyOp, areaMonthlyOp); 
         }
     }
 }

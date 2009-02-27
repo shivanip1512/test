@@ -64,7 +64,8 @@ ccarea.obj \
 ccsparea.obj \
 ccsubstation.obj \
 ccoperationstats.obj \
-ccconfirmationstats.obj
+ccconfirmationstats.obj \
+ccstatsobject.obj
 
 
 TARGS = capcontrol.exe
