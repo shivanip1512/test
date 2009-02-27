@@ -64,7 +64,7 @@ DOUBLE CCStatsObject::getAverage()
 {
     if( _opCount > 0 )
     {
-        return _opCount / _total;
+        return _total / _opCount;
     }
     else
     {
