@@ -332,10 +332,8 @@ void CtiMCClientListener::_check()
             rwSleep(1000);
         } while ( !_doquit );
 
-        if( multi != NULL )
-        {
-            delete multi;
-        }
+        delete multi;
+        multi = NULL;
 
         {
             RWMutexLock::LockGuard guard( _connmutex );
