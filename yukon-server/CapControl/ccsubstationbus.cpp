@@ -6220,7 +6220,7 @@ BOOL CtiCCSubstationBus::isAlreadyControlled()
             for(LONG i=0;i<_ccfeeders.size();i++)
             {
                 CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders.at(i);
-                if( currentFeeder->getRecentlyControlledFlag() )
+                if( !currentFeeder->getRecentlyControlledFlag() )
                 {
                     continue;
                 }
