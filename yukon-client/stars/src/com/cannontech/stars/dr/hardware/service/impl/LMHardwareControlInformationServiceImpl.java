@@ -88,7 +88,9 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
 
             // Clean up the opt out for the given inventory.
             if (lmHardwareControlGroup.size() > 1){
-            	stopOptOut(inventoryId, loadGroupId, accountId, currentUser, now);
+                if (optOutEventDao.isOptedOut(inventoryId, accountId)) {
+                    stopOptOut(inventoryId, loadGroupId, accountId, currentUser, now);
+                }
             } else {
                 List<OptOutEventDto> currentOptOuts = optOutEventDao.getCurrentOptOuts(accountId, inventoryId);
                 for (OptOutEventDto optOutEvent : currentOptOuts) {
