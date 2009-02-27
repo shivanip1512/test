@@ -89,4 +89,4 @@ INSERT INTO YukonRoleProperty VALUES(-20017,-200,'Initialize Energy Company Setu
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
 
-/* __YUKON_VERSION__ */
+INSERT INTO CTIDatabase VALUES('4.2', 'Matt K', '19-FEB-2009', 'Latest Update', 1);
