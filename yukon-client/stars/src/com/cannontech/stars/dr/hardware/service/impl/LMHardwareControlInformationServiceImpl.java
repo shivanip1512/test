@@ -16,6 +16,7 @@ import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
+import com.cannontech.stars.dr.optout.model.OptOutEventDto;
 import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
        
@@ -61,7 +62,6 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
                     existingEnrollment.setGroupEnrollStop(now);
                     existingEnrollment.setUserIdSecondAction(currentUser.getUserID());
                     lmHardwareControlGroupDao.update(existingEnrollment);
-                    
                 }
             }
 
@@ -85,24 +85,16 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
             
             List<LMHardwareControlGroup> lmHardwareControlGroup = 
             	lmHardwareControlGroupDao.getCurrentEnrollmentByInventoryIdAndAccountId(inventoryId, accountId);
-            
-            // Clean up the opt out for the given inventory.
-            if (optOutEventDao.isOptedOut(inventoryId, accountId)) {
-	            if (lmHardwareControlGroup.size() > 1){
-	            	stopOptOut(inventoryId, loadGroupId, accountId, currentUser, now);
-	            } else {
-            		OptOutEvent findLastEvent = optOutEventDao.findLastEvent(inventoryId, accountId);
-            		List<Integer> lastEventIdList = Collections.singletonList(findLastEvent.getEventId());
-                    optOutService.cancelOptOut(lastEventIdList, currentUser);
-            		stopOptOut(inventoryId, loadGroupId, accountId, currentUser, now);
 
-            		// Remove all the scheduled opt outs for this device.
-            		List<OptOutEvent> allScheduledOptOutEvents = optOutEventDao.getAllScheduledOptOutEvents(accountId, inventoryId);
-            		for (OptOutEvent optOutEvent : allScheduledOptOutEvents) {
-            		    List<Integer> optOutEventList = Collections.singletonList(optOutEvent.getEventId());
-                        optOutService.cancelOptOut(optOutEventList, currentUser);
-					}
-            	}
+            // Clean up the opt out for the given inventory.
+            if (lmHardwareControlGroup.size() > 1){
+            	stopOptOut(inventoryId, loadGroupId, accountId, currentUser, now);
+            } else {
+                List<OptOutEventDto> currentOptOuts = optOutEventDao.getCurrentOptOuts(accountId, inventoryId);
+                for (OptOutEventDto optOutEvent : currentOptOuts) {
+                    List<Integer> optOutEventList = Collections.singletonList(optOutEvent.getEventId());
+                    optOutService.cancelOptOut(optOutEventList, currentUser);
+				}
             }
 
             /*Should be an entry with a start date but no stop date.*/

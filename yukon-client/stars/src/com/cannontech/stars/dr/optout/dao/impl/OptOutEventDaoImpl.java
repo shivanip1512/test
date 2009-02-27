@@ -377,27 +377,6 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	}
 
 	@Override
-	public List<OptOutEvent> getAllScheduledOptOutEvents(int customerAccountId, int inventoryId) {
-
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-		sql.append("SELECT * ");
-		sql.append("FROM OptOutEvent ");
-		sql.append("WHERE CustomerAccountId = ? ");
-		sql.append("AND InventoryId = ? ");
-		sql.append("AND EventState = ? ");
-		sql.append("AND StartDate > ? ");
-		
-		List<OptOutEvent> eventList = simpleJdbcTemplate.query(sql.toString(),
-															new OptOutEventRowMapper(), 
-															customerAccountId,
-															inventoryId,
-															OptOutEventState.SCHEDULED.toString(), 
-															new Date());
-		return eventList;
-	}
-	
-
-	@Override
 	public List<OptOutEvent> getAllScheduledOptOutEvents(int customerAccountId) {
 
 		SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -435,6 +414,31 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		return eventList;
 	}
 
+	@Override
+	@Transactional
+	public List<OptOutEventDto> getCurrentOptOuts(int customerAccountId, int inventoryId) {
+		
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		sql.append("SELECT OptOutEventId, InventoryId, ScheduledDate, StartDate, StopDate, EventState");
+		sql.append("FROM OptOutEvent");
+		sql.append("WHERE CustomerAccountId = ? ");
+		sql.append("AND InventoryId = ? ");
+		sql.append("AND ((EventState = ? ");
+		sql.append("	  AND StopDate > ?) ");
+		sql.append("	 OR EventState = ?) ");
+
+		List<OptOutEventDto> eventList = simpleJdbcTemplate.query(
+														sql.toString(), 
+														new OptOutEventDtoRowMapper(), 
+														customerAccountId,
+														inventoryId,
+														OptOutEventState.START_OPT_OUT_SENT.toString(),
+														new Date(),
+														OptOutEventState.SCHEDULED.toString());
+		
+		return eventList;
+	}
+	
 	@Override
 	@Transactional
 	public List<OptOutEventDto> getCurrentOptOuts(int customerAccountId) {

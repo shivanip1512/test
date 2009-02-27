@@ -262,12 +262,8 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
     }
 
     public List<LMHardwareControlGroup> getCurrentEnrollmentByInventoryIdAndAccountId(int inventoryId, int accountId) {
-        try {
             List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectCurrentEnrollmentByInventoryIdAndAccountId, rowMapper, inventoryId, accountId);
             return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-        }
     }
     
     public List<LMHardwareControlGroup> getCurrentOptOutByGroupIdAndAccountId(int lmGroupId, int accountId) {
