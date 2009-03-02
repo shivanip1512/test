@@ -37,14 +37,15 @@ public class IsPropertyTrue extends BodyTagSupport
 
 		if( user != null && liteProp != null )
 		{
-			String val = DaoFactory.getAuthDao().getRolePropertyValue(
+			boolean val = DaoFactory.getAuthDao().checkRoleProperty(
 				user,
 				liteProp.getRolePropertyID() );
 			
-			if( Boolean.TRUE.toString().equalsIgnoreCase(val) )
+			if(val) {
 				return EVAL_BODY_INCLUDE;
-			else
+			} else {
 				return SKIP_BODY;
+			}
 		}
 		else
 			return SKIP_BODY;
