@@ -265,20 +265,10 @@ public class CapControlDaoImpl  implements CapControlDao{
     public CapControlType getCapControlType(int id) {
         String sql = "SELECT type FROM YukonPAObject WHERE PAObjectID = ?";
         String typeStr = null;
-        CapControlType type = null;
-        try{
-        	typeStr = (String) jdbcOps.queryForObject(sql, new Integer[] {id}, String.class);
-        }
-        catch (DataAccessException dae)
-        {
-            CTILogger.debug("Could not find parent for cbc:" + id);
-        }
         
-        if(typeStr != null) {
-        	type = CapControlType.getCapControlType(typeStr);
-        }
-        
-        return type;
+    	typeStr = (String) jdbcOps.queryForObject(sql, new Integer[] {id}, String.class);
+    	
+    	return CapControlType.getCapControlType(typeStr);
     }
     
     public List<OrphanCBC> getOrphanedCBCs(){
@@ -311,16 +301,16 @@ public class CapControlDaoImpl  implements CapControlDao{
     public List<LiteCapBankAdditional> getCapBankAdditional(List<Integer> deviceIds) {
   
     	final List<LiteCapBankAdditional> capbanks = new ArrayList<LiteCapBankAdditional>();
+    	SqlStatementBuilder query = new SqlStatementBuilder("SELECT ca.DeviceID,ca.DriveDirections, " 
+    			+ "cbc.SERIALNUMBER FROM CAPBANKADDITIONAL ca join CAPBANK bank on ca.DeviceID " 
+    			+ "= bank.DEVICEID left outer join DeviceCBC cbc on bank.CONTROLDEVICEID = cbc.deviceid ");
     	
     	if( deviceIds.size() > 0) {
-	    	String sql = "SELECT ca.DeviceID,ca.DriveDirections,cbc.SERIALNUMBER FROM CAPBANKADDITIONAL ca join CAPBANK bank on ca.DeviceID = bank.DEVICEID left outer join DeviceCBC cbc on bank.CONTROLDEVICEID = cbc.deviceid WHERE bank.DeviceID IN ( ";
-	    	for (Integer i: deviceIds) {
-	    		sql += i + ",";
-	    	}
-	    	
-	    	sql = sql.substring(0, sql.length() - 1);
-	    	sql += ")";
-	        jdbcOps.query(sql, new RowCallbackHandler() {
+    		query.append(" WHERE bank.DeviceID IN ( ");
+    		query.appendList(deviceIds);
+    	 	query.append(")");
+    	 	
+	        jdbcOps.query(query.getSql(), new RowCallbackHandler() {
 	            public void processRow(ResultSet rs) throws SQLException {
 	                int deviceId = rs.getInt("DeviceID");
 	                String drivingDirections = rs.getString("DriveDirections");

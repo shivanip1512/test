@@ -16,7 +16,7 @@
 <cti:standardMenu/>
 
 <cti:breadCrumbs>
-  	<cti:crumbLink url="subareas.jsp" title="Home" />
+  	<cti:crumbLink url="/capcontrol/subareas.jsp" title="Home" />
   	<cti:crumbLink url="${baseAddress}" title="${baseTitle}" />
     <cti:crumbLink url="${areaAddress}" title="${areaTitle}" />
     <cti:crumbLink url="${stationAddress}" title="${stationTitle}" />
@@ -25,7 +25,7 @@
 
 
 <div id="capBankTable">
-		<table class="resultsTable" id="scheduledTable" width="90%" border="0" cellspacing="0" cellpadding="3" align="center">
+		<table class="resultsTable" align="center">
 		<thead>
 			<tr id="header">
 				<th>Cap Bank Name</th>

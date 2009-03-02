@@ -222,11 +222,9 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     public List<CapBankDevice> getCapBanksByFeeder(int feederId) {
         try {
             Feeder feeder = getFeeder(feederId);
-            Vector<CapBankDevice> capBanks = feeder.getCcCapBanks();
-            List<CapBankDevice> toArray = new ArrayList<CapBankDevice>(capBanks);
-            return toArray;
+            return feeder.getCcCapBanks();
         } catch (NotFoundException e) {
-            return new ArrayList<CapBankDevice>();
+            return Collections.emptyList();
         }
     }
     
