@@ -160,6 +160,7 @@ public class AbstractThermostatOperatorScheduleController {
         timeOfWeekList.add(TimeOfWeek.WEEKDAY);
         timeOfWeekList.add(TimeOfWeek.SATURDAY);
         timeOfWeekList.add(TimeOfWeek.SUNDAY);
+        timeOfWeekList.add(TimeOfWeek.WEEKEND);
 
         // Add the season entries (time/value pairs) for each of the
         // TimeOfWeeks

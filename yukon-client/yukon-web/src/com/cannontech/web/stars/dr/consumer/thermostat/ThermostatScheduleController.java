@@ -1,7 +1,6 @@
 package com.cannontech.web.stars.dr.consumer.thermostat;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -553,6 +552,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         timeOfWeekList.add(TimeOfWeek.WEEKDAY);
         timeOfWeekList.add(TimeOfWeek.SATURDAY);
         timeOfWeekList.add(TimeOfWeek.SUNDAY);
+        timeOfWeekList.add(TimeOfWeek.WEEKEND);
 
         // Add the season entries (time/value pairs) for each of the
         // TimeOfWeeks

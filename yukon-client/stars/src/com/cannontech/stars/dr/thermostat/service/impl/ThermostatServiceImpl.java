@@ -469,7 +469,15 @@ public class ThermostatServiceImpl implements ThermostatService {
         ThermostatSeason season = schedule.getSeason();
         List<ThermostatSeasonEntry> updatedEntries = updatedSeason.getSeasonEntries(timeOfWeek);
         List<ThermostatSeasonEntry> entries = season.getSeasonEntries(timeOfWeek);
-        this.updateScheduleEntries(updatedEntries, entries);
+        if(entries != null) {
+        	// This schedule has entries for the given timeOfWeek - update them
+        	this.updateScheduleEntries(updatedEntries, entries);
+        } else {
+        	// This schedule doesn't have entries for the given timeOfWeek - add them
+        	for(ThermostatSeasonEntry entry : updatedEntries) {
+        		season.addSeasonEntry(entry);
+        	}
+        }
 
         if (applyToWeekend) {
             // Update saturday entries
