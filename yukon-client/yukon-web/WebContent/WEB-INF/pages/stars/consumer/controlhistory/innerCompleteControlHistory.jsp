@@ -27,7 +27,7 @@
                     <tr class="<ct:alternateRow odd='altRow' even=''/>">
                         <td><cti:formatDate  value="${event.startDate}" type="BOTH"/></td>
                         <td><cti:formatDate  value="${event.endDate}" type="BOTH"/></td>
-                        <td><cti:formatDuration type="HM" value="${event.duration}"/></td>
+                        <td><cti:formatDuration type="HM" startDate="${event.startDate}" endDate="${event.endDate}" /></td>
                     </tr>
                 </c:forEach>
                 <tr>

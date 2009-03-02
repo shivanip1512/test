@@ -1,6 +1,7 @@
 package com.cannontech.web.taglib;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import javax.servlet.jsp.JspException;
@@ -24,14 +25,30 @@ public class FormatDurationTag extends YukonTagSupport {
     
     private String type;
     private boolean isTypeSet = false;
+    
+    private Date startDate;
+    private boolean isStartDateSet = false;
+
+    private Date endDate;
+    private boolean isEndDateSet = false;
 
     @Override
     public void doTag() throws JspException, IOException {
-        if (!isValueSet) throw new JspException("value is not set.");
-        if (!isTypeSet) throw new JspException("type is not set.");
+    	boolean areDatesSet = (isStartDateSet && isEndDateSet);
+        if (!isTypeSet) 
+        	throw new JspException("type is not set.");
         
         DurationFormat durationFormat = DurationFormat.valueOf(type);
-        String formattedDuration = durationFormattingService.formatDuration(value, TimeUnit.MILLISECONDS, durationFormat, getUserContext());
+        String formattedDuration;
+        if (areDatesSet){
+        	formattedDuration = durationFormattingService.formatDuration(startDate, endDate, durationFormat, getUserContext());
+        } else {
+            if (isValueSet){
+                formattedDuration = durationFormattingService.formatDuration(value, TimeUnit.MILLISECONDS, durationFormat, getUserContext());
+            } else {
+                throw new JspException("both possible value types were not set");
+            }
+        }
         
         if (isVarSet) {
             getJspContext().setAttribute(var, formattedDuration);
@@ -41,11 +58,21 @@ public class FormatDurationTag extends YukonTagSupport {
         getJspContext().getOut().print(formattedDuration);
     }
     
-    public void setValue(final int value) {
+    public void setValue(int value) {
         this.value = value;
         this.isValueSet = true;
     }
     
+    public void setStartDate(Date startDate) {
+    	this.startDate = startDate;
+    	this.isStartDateSet = true;
+    }
+    
+    public void setEndDate(Date endDate) {
+    	this.endDate = endDate;
+    	this.isEndDateSet = true;
+    }
+
     public void setType(final String type) {
         this.type = type;
         this.isTypeSet = true;
