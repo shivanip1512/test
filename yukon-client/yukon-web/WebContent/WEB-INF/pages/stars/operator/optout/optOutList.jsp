@@ -67,7 +67,6 @@ function createJSON() {
                                             <td align="left">
                                             	<c:choose>
                                             		<c:when test="${alreadyOptedOutItems[inventoryId]}">
-<!--                                             		    <input id="check_${inventoryId}" type="hidden" value="false"></input> -->
                                             		    <input id="unused_${inventoryId}" checked="checked" disabled="disabled" type="checkbox"></input>
                                             		</c:when>
                                             		<c:otherwise>
