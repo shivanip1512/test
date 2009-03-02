@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 
 import org.apache.commons.lang.math.RandomUtils;
 import org.apache.log4j.Logger;
@@ -30,7 +31,6 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
-import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.authorization.support.CommandPermissionConverter;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.service.PorterRequestCancelService;
@@ -417,8 +417,8 @@ public abstract class CommandRequestExecutorBase<T> implements
         this.configurationSource = configurationSource;
     }
     
-    @Autowired
-    public void setExecutor(ScheduledExecutor executor) {
+    @Resource(name="longRunningExecutor")
+    public void setExecutor(Executor executor) {
 		this.executor = executor;
 	}
     
