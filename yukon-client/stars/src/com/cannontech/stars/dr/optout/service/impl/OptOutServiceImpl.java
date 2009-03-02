@@ -24,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.commands.CommandRequestRouteExecutor;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
@@ -58,6 +57,7 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
+import com.cannontech.stars.dr.hardware.service.CommandRequestHardwareExecutor;
 import com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService;
 import com.cannontech.stars.dr.optout.dao.OptOutAdditionalDao;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
@@ -93,7 +93,7 @@ public class OptOutServiceImpl implements OptOutService {
 	private ECMappingDao ecMappingDao;
 	private CustomerAccountDao customerAccountDao;
 	private AuthDao authDao;
-	private CommandRequestRouteExecutor commandRequestRouteExecutor;
+	private CommandRequestHardwareExecutor commandRequestHardwareExecutor;
 	private StarsDatabaseCache starsDatabaseCache;
 	private OptOutStatusService optOutStatusService;
 	private OptOutTemporaryOverrideDao optOutTemporaryOverrideDao;
@@ -880,7 +880,7 @@ public class OptOutServiceImpl implements OptOutService {
 		
 		// Send the command
 		String commandString = cmd.toString();
-		commandRequestRouteExecutor.execute(inventory.getRouteID(), commandString, user);
+		commandRequestHardwareExecutor.execute(inventory, commandString, user);
 		
 	}
 	
@@ -936,7 +936,7 @@ public class OptOutServiceImpl implements OptOutService {
 		
 		// Send the command
 		String commandString = cmd.toString();
-		commandRequestRouteExecutor.execute(inventory.getRouteID(), commandString, user);
+		commandRequestHardwareExecutor.execute(inventory, commandString, user);
 	}
 	
 	@Autowired
@@ -977,9 +977,9 @@ public class OptOutServiceImpl implements OptOutService {
 	}
 	
 	@Autowired
-	public void setCommandRequestRouteExecutor(
-			CommandRequestRouteExecutor commandRequestRouteExecutor) {
-		this.commandRequestRouteExecutor = commandRequestRouteExecutor;
+	public void setCommandRequestHardwareExecutor(
+			CommandRequestHardwareExecutor commandRequestHardwareExecutor) {
+		this.commandRequestHardwareExecutor = commandRequestHardwareExecutor;
 	}
 	
 	@Autowired

@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.commands.CommandRequestRouteExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.database.data.activity.ActivityLogActions;
@@ -25,6 +24,7 @@ import com.cannontech.stars.dr.hardware.model.CustomerAction;
 import com.cannontech.stars.dr.hardware.model.CustomerEventType;
 import com.cannontech.stars.dr.hardware.model.HardwareType;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
+import com.cannontech.stars.dr.hardware.service.CommandRequestHardwareExecutor;
 import com.cannontech.stars.dr.thermostat.dao.CustomerEventDao;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.model.CustomerThermostatEventBase;
@@ -52,7 +52,7 @@ public class ThermostatServiceImpl implements ThermostatService {
     private InventoryDao inventoryDao;
     private ECMappingDao ecMappingDao;
     private ThermostatScheduleDao thermostatScheduleDao;
-    private CommandRequestRouteExecutor commandRequestExecutor;
+    private CommandRequestHardwareExecutor commandRequestHardwareExecutor;
 
     private SimpleDateFormat SCHEDULE_START_TIME_FORMAT = new SimpleDateFormat("HH:mm");
 
@@ -78,10 +78,10 @@ public class ThermostatServiceImpl implements ThermostatService {
     }
 
     @Autowired
-    public void setCommandRequestExecutor(
-            CommandRequestRouteExecutor commandRequestExecutor) {
-        this.commandRequestExecutor = commandRequestExecutor;
-    }
+    public void setCommandRequestHardwareExecutor(
+			CommandRequestHardwareExecutor commandRequestHardwareExecutor) {
+		this.commandRequestHardwareExecutor = commandRequestHardwareExecutor;
+	}
 
     @Override
     @Transactional
@@ -125,8 +125,7 @@ public class ThermostatServiceImpl implements ThermostatService {
         // Send command to thermostat
         CommandResultHolder resultHolder;
         try {
-            int routeId = thermostat.getRouteId();
-			resultHolder = commandRequestExecutor.execute(routeId, command, yukonUser);
+			resultHolder = commandRequestHardwareExecutor.execute(thermostat, command, yukonUser);
         } catch (CommandCompletionException e) {
             logger.error("Thermostat manual event failed.", e);
             return ThermostatManualEventResult.CONSUMER_MANUAL_ERROR;
@@ -229,7 +228,6 @@ public class ThermostatServiceImpl implements ThermostatService {
         }
 
         HardwareType type = thermostat.getType();
-        int routeId = thermostat.getRouteId();
 
         // We have to update the schedule mode for Utility Pro thermostats every
         // time we update the schedule
@@ -238,11 +236,11 @@ public class ThermostatServiceImpl implements ThermostatService {
 	        	if(ThermostatScheduleMode.WEEKDAY_SAT_SUN.equals(scheduleMode) ||
 	        			ThermostatScheduleMode.ALL.equals(scheduleMode)) {
 	        		// Schedule mode ALL is considered 5-1-1 by the stat
-	        		commandRequestExecutor.execute(
-	    					routeId, "putconfig xcom raw 0x2b 0x08 0x03", yukonUser);
+	        		commandRequestHardwareExecutor.execute(
+	        				thermostat, "putconfig xcom raw 0x2b 0x08 0x03", yukonUser);
 	        	} else if(ThermostatScheduleMode.WEEKDAY_WEEKEND.equals(scheduleMode)) {
-	        		commandRequestExecutor.execute(
-	    					routeId, "putconfig xcom raw 0x2b 0x08 0x02", yukonUser);
+	        		commandRequestHardwareExecutor.execute(
+	        				thermostat, "putconfig xcom raw 0x2b 0x08 0x02", yukonUser);
 	        	}
         	} catch (CommandCompletionException e) {
         		logger.error("Failed to update thermostat schedule mode.", e);
@@ -263,8 +261,8 @@ public class ThermostatServiceImpl implements ThermostatService {
         // Send command to thermostat
         CommandResultHolder resultHolder;
         try {
-			resultHolder = commandRequestExecutor.execute(
-					routeId, updateScheduleCommand, yukonUser);
+			resultHolder = commandRequestHardwareExecutor.execute(
+					thermostat, updateScheduleCommand, yukonUser);
         } catch (CommandCompletionException e) {
             logger.error("Failed to update thermostat schedule.", e);
             return ThermostatScheduleUpdateResult.CONSUMER_UPDATE_SCHEDULE_ERROR;
