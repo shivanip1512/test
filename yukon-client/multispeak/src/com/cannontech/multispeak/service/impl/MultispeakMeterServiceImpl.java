@@ -1113,11 +1113,11 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             case MultispeakVendor.DEFAULT_PAONAME:
             { // lookup by meter number
                 //lookup meter by servicelocation
-                String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.CB_MR_STR);
+                String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.CB_Server_STR);
         
                 try {
                     String serviceLocationStr = mspServiceLocation.getObjectID();
-                    CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor, MultispeakDefines.CB_MR_STR);
+                    CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor);
                     if (port != null) {
                         long start = System.currentTimeMillis();
                         CTILogger.debug("Begin call to getMeterByServLoc for ServLoc:" + serviceLocationStr);

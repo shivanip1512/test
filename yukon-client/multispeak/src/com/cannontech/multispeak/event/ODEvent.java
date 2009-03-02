@@ -137,7 +137,7 @@ public class ODEvent extends MultispeakEvent{
      */
     public void eventNotification() {
         
-        String endpointURL = getMspVendor().getEndpointURL(MultispeakDefines.OA_OD_STR);
+        String endpointURL = getMspVendor().getEndpointURL(MultispeakDefines.OA_Server_STR);
         CTILogger.info("Sending ODEventNotification ("+ endpointURL+ "): Meter Number " + getOutageDetectionEvent().getObjectID());
         
         try {

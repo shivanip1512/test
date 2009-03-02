@@ -14,6 +14,9 @@ import com.cannontech.multispeak.deploy.service.CD_ServerSoap_PortType;
 import com.cannontech.multispeak.deploy.service.EA_ServerLocator;
 import com.cannontech.multispeak.deploy.service.EA_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.EA_ServerSoap_PortType;
+import com.cannontech.multispeak.deploy.service.LM_ServerLocator;
+import com.cannontech.multispeak.deploy.service.LM_ServerSoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.LM_ServerSoap_PortType;
 import com.cannontech.multispeak.deploy.service.MR_ServerLocator;
 import com.cannontech.multispeak.deploy.service.MR_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.MR_ServerSoap_PortType;
@@ -32,10 +35,10 @@ public class MultispeakPortFactory {
 	 * @return
 	 * @throws ServiceException
 	 */
-	public static CB_ServerSoap_BindingStub getCB_ServerPort(MultispeakVendor mspVendor, String endpointStr) {
+	public static CB_ServerSoap_BindingStub getCB_ServerPort(MultispeakVendor mspVendor) {
 
 		CB_ServerLocator service = new CB_ServerLocator();
-        service.setCB_ServerSoapEndpointAddress(mspVendor.getEndpointURL(endpointStr));
+        service.setCB_ServerSoapEndpointAddress(mspVendor.getEndpointURL(MultispeakDefines.CB_Server_STR));
         
         CB_ServerSoap_PortType port = null;
         try {
@@ -52,6 +55,38 @@ public class MultispeakPortFactory {
         return (CB_ServerSoap_BindingStub)port;
 	}
 
+	/**
+	 * Returns a new CB_Server port instance. 
+	 * @param mspVendor
+	 * @return
+	 * @throws ServiceException
+	 */
+	public static CB_ServerSoap_BindingStub getCB_CDPort(MultispeakVendor mspVendor) {
+
+		CB_ServerLocator service = new CB_ServerLocator();
+		String endpoint = mspVendor.getEndpointURL(MultispeakDefines.CB_CD_STR);
+		if (endpoint == "") {
+			//Couldn't find an endpoint for CB_CD...lets try the new way!
+			CTILogger.info("CB_CD service is not defined for company(" + mspVendor.getCompanyName()+ ") - Will try CB_Server instead.");
+			endpoint = mspVendor.getEndpointURL(MultispeakDefines.CB_Server_STR);
+		}
+        service.setCB_ServerSoapEndpointAddress(endpoint);
+        
+        CB_ServerSoap_PortType port = null;
+        try {
+            port = service.getCB_ServerSoap();
+//            ((CB_ServerSoap_BindingStub)port).setUsername(mspVendor.getOutUserName());
+//            ((CB_ServerSoap_BindingStub)port).setPassword(mspVendor.getOutPassword());
+            ((CB_ServerSoap_BindingStub)port).setHeader(mspVendor.getHeader());
+            ((CB_ServerSoap_BindingStub)port).setTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
+        } catch (ServiceException e) {
+            CTILogger.error("CB_CD/CB_Server service is not defined for company(" + mspVendor.getCompanyName()+ ") - method failed.");
+            CTILogger.error("ServiceException Detail: " + e);
+        }
+        
+        return (CB_ServerSoap_BindingStub)port;
+	}
+	
     /**
      * Returns a new MR_Server port instance for the endpointStr specified. 
      * @param mspVendor
@@ -59,10 +94,10 @@ public class MultispeakPortFactory {
      * @return
      * @throws ServiceException
      */
-    public static MR_ServerSoap_BindingStub getMR_ServerPort(MultispeakVendor mspVendor, String endpointStr) {
+    public static MR_ServerSoap_BindingStub getMR_ServerPort(MultispeakVendor mspVendor) {
 
         MR_ServerLocator service = new MR_ServerLocator();
-        service.setMR_ServerSoapEndpointAddress(mspVendor.getEndpointURL(endpointStr));
+        service.setMR_ServerSoapEndpointAddress(mspVendor.getEndpointURL(MultispeakDefines.MR_Server_STR));
         
         MR_ServerSoap_PortType port = null;
         try {
@@ -88,7 +123,7 @@ public class MultispeakPortFactory {
 	public static CD_ServerSoap_BindingStub getCD_ServerPort(MultispeakVendor mspVendor) {
 
 		CD_ServerLocator service = new CD_ServerLocator();
-        service.setCD_ServerSoapEndpointAddress(mspVendor.getEndpointURL(MultispeakDefines.CD_CB_STR));
+        service.setCD_ServerSoapEndpointAddress(mspVendor.getEndpointURL(MultispeakDefines.CD_Server_STR));
         
         CD_ServerSoap_PortType port = null;
         try {
@@ -113,7 +148,7 @@ public class MultispeakPortFactory {
 	public static OA_ServerSoap_BindingStub getOA_ServerPort(MultispeakVendor mspVendor) {
 
 		OA_ServerLocator service = new OA_ServerLocator();
-        service.setOA_ServerSoapEndpointAddress(mspVendor.getEndpointURL(MultispeakDefines.OA_OD_STR));
+        service.setOA_ServerSoapEndpointAddress(mspVendor.getEndpointURL(MultispeakDefines.OA_Server_STR));
         
         OA_ServerSoap_PortType port = null;
         try { 
@@ -138,7 +173,7 @@ public class MultispeakPortFactory {
 	public static OD_ServerSoap_BindingStub getOD_ServerPort(MultispeakVendor mspVendor) {
 
 		OD_ServerLocator service = new OD_ServerLocator();
-        service.setOD_ServerSoapEndpointAddress(mspVendor.getEndpointURL(MultispeakDefines.OD_OA_STR));
+        service.setOD_ServerSoapEndpointAddress(mspVendor.getEndpointURL(MultispeakDefines.OD_Server_STR));
         
         OD_ServerSoap_PortType port = null;
         try {
@@ -163,7 +198,7 @@ public class MultispeakPortFactory {
 	public static EA_ServerSoap_BindingStub getEA_ServerPort(MultispeakVendor mspVendor) {
 
 		EA_ServerLocator service = new EA_ServerLocator();
-        service.setEA_ServerSoapEndpointAddress(mspVendor.getEndpointURL(MultispeakDefines.EA_MR_STR));
+        service.setEA_ServerSoapEndpointAddress(mspVendor.getEndpointURL(MultispeakDefines.EA_Server_STR));
         
         EA_ServerSoap_PortType port = null;
         try {
@@ -177,5 +212,30 @@ public class MultispeakPortFactory {
             CTILogger.error("ServiceException Detail: " + e);
         }
         return (EA_ServerSoap_BindingStub)port;
+	}
+	
+	/**
+	 * Returns a new LM_Server port instance. 
+	 * @param mspVendor
+	 * @return
+	 * @throws ServiceException
+	 */
+	public static LM_ServerSoap_BindingStub getLM_ServerPort(MultispeakVendor mspVendor) {
+
+		LM_ServerLocator service = new LM_ServerLocator();
+        service.setLM_ServerSoapEndpointAddress(mspVendor.getEndpointURL(MultispeakDefines.LM_Server_STR));
+        
+        LM_ServerSoap_PortType port = null;
+        try {
+            port = service.getLM_ServerSoap();
+//            ((LM_ServerSoap_BindingStub)port).setUsername(mspVendor.getOutUserName());
+//            ((LM_ServerSoap_BindingStub)port).setPassword(mspVendor.getOutPassword());
+            ((LM_ServerSoap_BindingStub)port).setHeader(mspVendor.getHeader());
+            ((LM_ServerSoap_BindingStub)port).setTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
+        } catch (ServiceException e) {
+            CTILogger.error("LM_Server service is not defined for company(" + mspVendor.getCompanyName()+ ") - method failed.");
+            CTILogger.error("ServiceException Detail: " + e);
+        }
+        return (LM_ServerSoap_BindingStub)port;
 	}
 }

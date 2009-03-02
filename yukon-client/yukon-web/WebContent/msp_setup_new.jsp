@@ -2,6 +2,7 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <jsp:useBean id="multispeakBean" class="com.cannontech.multispeak.client.MultispeakBean" scope="session"/>
@@ -20,7 +21,7 @@
 	    &gt; Create Interface
 	</cti:breadCrumbs>
 
-	<c:set var="arrayLength" value="<%=MultispeakDefines.MSP_INTERFACE_ARRAY.length%>" />
+	<c:set var="interfaceListLength" value="${fn:length(multispeakBean.clientInterfaces)}" />
 	
 	<script language="JavaScript">
 		function enableEndpointValue(selected, interface) { //v1.0
@@ -98,39 +99,61 @@
 				<br style="clear:both">
 				<span class="smallText">* required</span>				
 			
-				<tags:nameValueContainer style="width: 700px;float: left;">
-				  <tr height="40" valign="bottom">
-				    <td colspan="2" style="text-align:center"><u>Interfaces</u>
-				    </td>
-				  </tr>
-				  <tr>
-				    <td colspan="2" style="text-align:center" onMouseOver="dispStatusMsg('Enter the MultiSpeak URL   EX: http://127.0.0.1:80/soap/ ');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">MSP URL</td>
-				    <td>
-				      <input type="text" name="mspURL" size="30" value="http://&lt;server&gt;:&lt;port&gt;/soap/">
-				    </td>
-				  </tr>
+			
+				<br><br>
+				<b><u>Interfaces</u></b>
+				<br><br>
 				
-				  <c:forEach var="mspPossibleInterface" items="${multispeakBean.allInterfaces}" varStatus="status">
-				    <tr>
-				      <td style="text-align:right">
-				        <input id="mspInterface" type="checkbox" name='mspInterface' value='<c:out value="${mspPossibleInterface}"/>' onclick='enableEndpointValue(this.checked, this.value)'>
-				      </td>
-				      <td style="text-align:center"><c:out value="${mspPossibleInterface}"/>
-				      </td>
-				      <td>
-				        <input id="mspEndpoint<c:out value="${mspPossibleInterface}"/>" type="text" name="mspEndpoint" size="30" disabled
-				            value='<c:out value="${mspPossibleInterface}"/>Soap'>
-				      </td>
-				    </tr>
-				  </c:forEach>
-				  <tr> 
-				    <td align="right" colspan="2"></td>
-				    <td align="left">
-				      <input type="submit" name="Submit" value="Save" onclick="document.form1.ACTION.value='Create';">
-				      <input type="button" name="Cancel" value="Cancel" onclick="location.href='msp_setup.jsp?init'">
-				    </td>
-				  </tr>
-				</tags:nameValueContainer>
+				<span onMouseOver="window.status='Enter the MultiSpeak URL   EX: http://127.0.0.1:80/soap/ ';return true;" onMouseOut="window.status='';return true;">
+					MSP URL
+					<input type="text" name="mspURL" size="30" value="http://&lt;server&gt;:&lt;port&gt;/soap/">
+				</span>
+				<br><br>
+				
+				<table cellspacing="4">
+				
+					<%------ INTERFACES ------%>
+				  	<c:forEach var="mspPossibleInterface" items="${multispeakBean.clientInterfaces}" varStatus="status">
+				  	
+				    	<c:set var="interfaceValue" value="${interfacesMap[mspPossibleInterface]}" scope="page" />    
+				    	<c:set var="disabled" value="${interfaceValue == null}" scope="page" />  
+				    	
+				      	<tr>
+				      	
+				      		<%-- checkbox --%>
+				        	<td>
+				          		<input id="mspInterface" type="checkbox" name='mspInterface' value='<c:out value="${mspPossibleInterface}"/>' onclick='enableEndpointValue(this.checked, this.value)'>
+				        		<br><br>
+				        	</td>
+				        
+				        	<%-- interface name --%>
+				        	<td>
+				        		<c:out value="${mspPossibleInterface}"/>
+				        		<br><br>
+				        	</td>
+				        
+				        	<%-- endpoint --%>
+				        	<td>
+				          		<input id="mspEndpoint<c:out value="${mspPossibleInterface}"/>" type="text" name="mspEndpoint" size="30" disabled
+				            		value='<c:out value="${mspPossibleInterface}"/>Soap'>
+				            	<br><br>
+				            </td>
+				        	 
+				      	</tr>
+				      	
+				  	</c:forEach>
+				  
+					  <%------ SAVE/CANCEL BUTTONS ------%>
+					  <tr> 
+					    <td align="right" colspan="3">
+					      <input type="submit" name="Submit" value="Save" onclick="document.form1.ACTION.value='Create';">
+					      <input type="button" name="Cancel" value="Cancel" onclick="location.href='msp_setup.jsp?init'">
+					    </td>
+					  </tr>
+							  
+				</table>
+			
+				
 				<br style="clear:both">
 			</form>
 		</tags:boxContainer>

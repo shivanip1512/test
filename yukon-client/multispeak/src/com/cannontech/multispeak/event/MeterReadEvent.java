@@ -81,14 +81,14 @@ public class MeterReadEvent extends MultispeakEvent{
      */
     public void eventNotification() {
         
-        String endpointURL = getMspVendor().getEndpointURL(MultispeakDefines.CB_MR_STR);
+        String endpointURL = getMspVendor().getEndpointURL(MultispeakDefines.CB_Server_STR);
         CTILogger.info("Sending ReadingChangedNotification ("+ endpointURL+ "): Meter Number " + getDevice().getMeterRead().getObjectID());
         
         try {            
             MeterRead [] meterReads = new MeterRead[1];
             meterReads[0] = getDevice().getMeterRead();
 
-            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(getMspVendor(), MultispeakDefines.CB_MR_STR);
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(getMspVendor());
             if (port != null) {
                 ErrorObject[] errObjects = port.readingChangedNotification(meterReads, getTransactionID());
                 if( errObjects != null)

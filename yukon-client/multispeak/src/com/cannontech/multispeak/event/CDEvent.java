@@ -150,7 +150,7 @@ public class CDEvent extends MultispeakEvent{
 
         try
         {
-            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(getMspVendor(), MultispeakDefines.CB_CD_STR);
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_CDPort(getMspVendor());
             if (port != null) {
                 port.CDStateChangedNotification(getMeterNumber(), getLoadActionCode(), getTransactionID());
             } else {

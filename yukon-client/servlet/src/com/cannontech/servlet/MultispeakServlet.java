@@ -22,7 +22,6 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.user.YukonGroup;
@@ -37,8 +36,8 @@ import com.cannontech.multispeak.deploy.service.CB_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.CD_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.EA_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
+import com.cannontech.multispeak.deploy.service.LM_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.MR_ServerSoap_BindingStub;
-import com.cannontech.multispeak.deploy.service.MspObject;
 import com.cannontech.multispeak.deploy.service.OA_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.OD_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.impl.MultispeakPortFactory;
@@ -67,7 +66,7 @@ public class MultispeakServlet extends HttpServlet
 	
 	private String handleMSPAction(String action, HttpServletRequest req)
 	{
-		java.util.Enumeration enum1 = req.getParameterNames();
+		java.util.Enumeration<?> enum1 = req.getParameterNames();
 		  while (enum1.hasMoreElements()) {
 			String ele = enum1.nextElement().toString();
 			 CTILogger.info(" --" + ele + "  " + req.getParameter(ele));
@@ -266,7 +265,7 @@ public class MultispeakServlet extends HttpServlet
         
         param = req.getParameter("mspURL");
         try {
-            URL url = new URL(param);
+            new URL(param);
         } catch (MalformedURLException e) {
             return "* Invalid URL format.  (Ex. http://127.0.0.1:8080/)";
         }
@@ -296,40 +295,7 @@ public class MultispeakServlet extends HttpServlet
             ((MultispeakDaoImpl)YukonSpringHook.getBean("multispeakDao")).deleteMultispeakVendor(mspVendor.getVendorID().intValue());
     }
 
-    private MspObject handleCB_Server(String command, int deviceID, MultispeakVendor mspVendor, HttpSession session) {
-        MspObject mspObject = null;
-        
-        LiteDeviceMeterNumber liteDevMeterNum = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber(deviceID);
-        if (liteDevMeterNum == null) {
-            session.setAttribute(ServletUtil.ATT_ERROR_MESSAGE, "* MeterNumber not found for Device (ID:" + deviceID + ")");
-            return mspObject;
-        }
-        
-        String meterNumber = liteDevMeterNum.getMeterNumber();
-        MultispeakInterface mspInterface = mspVendor.getMspInterfaceMap().get(MultispeakDefines.CB_MR_STR);
-        String endpointURL = "";
-        if( mspInterface != null)
-            endpointURL = mspVendor.getUrl() + mspInterface.getMspEndpoint();
-        
-        try {
-        	CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor, MultispeakDefines.CB_MR_STR);
-            if( command.equalsIgnoreCase("getServiceLocationByMeterNo")) {
-                mspObject = port.getServiceLocationByMeterNo(meterNumber);
-            } else if ( command.equalsIgnoreCase("getCustomerByMeterNo")) {
-                mspObject = port.getCustomerByMeterNo(meterNumber);
-            }
-            
-//            port.getServiceLocationByAccountNumber()
-                            
-//            ArrayOfMeter mspMeters = port.getMeterByServLoc(serviceLocationStr);
-
-        } catch (RemoteException e) {
-        	CTILogger.error("TargetService: " + endpointURL + " - getXXXByMeterNo (" + mspVendor.getCompanyName() + ")");
-			CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
-            session.setAttribute(ServletUtil.ATT_ERROR_MESSAGE, "CB_Server service is not defined for company name: " + mspVendor.getCompanyName()+ ".  Method cancelled.");
-        }
-        return mspObject;
-    }
+ 
     
     /**
      * Implements the pingURL webservice
@@ -403,37 +369,41 @@ public class MultispeakServlet extends HttpServlet
     public static ErrorObject[] pingURL(MultispeakVendor mspVendor, String service) throws RemoteException
     {
         ErrorObject[] objects = new ErrorObject[]{};
-        if( service.equalsIgnoreCase(MultispeakDefines.OD_OA_STR)) {
+        if(service.equalsIgnoreCase(MultispeakDefines.OD_Server_STR)) {
             OD_ServerSoap_BindingStub port = MultispeakPortFactory.getOD_ServerPort(mspVendor);
             objects = port.pingURL();
         }
-        else if( service.equalsIgnoreCase(MultispeakDefines.OA_OD_STR)) {
+        else if(service.equalsIgnoreCase(MultispeakDefines.OA_Server_STR)) {
             OA_ServerSoap_BindingStub port = MultispeakPortFactory.getOA_ServerPort(mspVendor);
             objects = port.pingURL();
         }
-        else if( service.equalsIgnoreCase(MultispeakDefines.MR_EA_STR)) {
-            MR_ServerSoap_BindingStub port = MultispeakPortFactory.getMR_ServerPort(mspVendor, MultispeakDefines.MR_EA_STR);
+        else if(service.equalsIgnoreCase(MultispeakDefines.MR_Server_STR)) {
+            MR_ServerSoap_BindingStub port = MultispeakPortFactory.getMR_ServerPort(mspVendor);
             objects = port.pingURL();
         }
-        else if( service.equalsIgnoreCase(MultispeakDefines.EA_MR_STR)) {
+        else if(service.equalsIgnoreCase(MultispeakDefines.EA_Server_STR)) {
             EA_ServerSoap_BindingStub port = MultispeakPortFactory.getEA_ServerPort(mspVendor);
             objects = port.pingURL();
         }
-        else if( service.equalsIgnoreCase(MultispeakDefines.MR_CB_STR)) {
-            MR_ServerSoap_BindingStub port = MultispeakPortFactory.getMR_ServerPort(mspVendor, MultispeakDefines.MR_CB_STR);
+        else if(service.equalsIgnoreCase(MultispeakDefines.LM_Server_STR)) {
+        	LM_ServerSoap_BindingStub port = MultispeakPortFactory.getLM_ServerPort(mspVendor);
             objects = port.pingURL();
         }
-        else if( service.equalsIgnoreCase(MultispeakDefines.CB_MR_STR)) {
-        	CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor, MultispeakDefines.CB_MR_STR);
-            objects = port.pingURL();
-        }
-        else if( service.equalsIgnoreCase(MultispeakDefines.CD_CB_STR)) {
+        else if(service.equalsIgnoreCase(MultispeakDefines.CD_Server_STR)) {
             CD_ServerSoap_BindingStub port = MultispeakPortFactory.getCD_ServerPort(mspVendor);
             objects = port.pingURL();
         }
-        else if( service.equalsIgnoreCase(MultispeakDefines.CB_CD_STR)) {
-            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor, MultispeakDefines.CB_CD_STR);
+        else if(service.equalsIgnoreCase(MultispeakDefines.CB_Server_STR)) {
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor);
             objects = port.pingURL();
+        } 
+        else if( service.equalsIgnoreCase(MultispeakDefines.CB_CD_STR)) {
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_CDPort(mspVendor);
+            objects = port.pingURL();
+        }
+        else {
+        	ErrorObject obj = new ErrorObject("-100", "No server for " + service, null, null);
+        	return new ErrorObject[]{obj};
         }
         return objects;
     }
@@ -448,37 +418,40 @@ public class MultispeakServlet extends HttpServlet
     public static String[] getMethods(MultispeakVendor mspVendor, String service) throws RemoteException
     {
         String[] objects = new String[]{};
-        if( service.equalsIgnoreCase(MultispeakDefines.OD_OA_STR)) {
+        if(service.equalsIgnoreCase(MultispeakDefines.OD_Server_STR)) {
             OD_ServerSoap_BindingStub port = MultispeakPortFactory.getOD_ServerPort(mspVendor);
             objects = port.getMethods();
         }
-        else if( service.equalsIgnoreCase(MultispeakDefines.OA_OD_STR)) {
+        else if(service.equalsIgnoreCase(MultispeakDefines.OA_Server_STR)) {
             OA_ServerSoap_BindingStub port = MultispeakPortFactory.getOA_ServerPort(mspVendor);
             objects = port.getMethods();
         }
-        else if( service.equalsIgnoreCase(MultispeakDefines.MR_EA_STR)) {
-            MR_ServerSoap_BindingStub port = MultispeakPortFactory.getMR_ServerPort(mspVendor, MultispeakDefines.MR_EA_STR);
+        else if(service.equalsIgnoreCase(MultispeakDefines.MR_Server_STR)) {
+            MR_ServerSoap_BindingStub port = MultispeakPortFactory.getMR_ServerPort(mspVendor);
             objects = port.getMethods();
         }
-        else if( service.equalsIgnoreCase(MultispeakDefines.EA_MR_STR)) {
+        else if(service.equalsIgnoreCase(MultispeakDefines.EA_Server_STR)) {
             EA_ServerSoap_BindingStub port = MultispeakPortFactory.getEA_ServerPort(mspVendor);
             objects = port.getMethods();
         }
-        else if( service.equalsIgnoreCase(MultispeakDefines.MR_CB_STR)) {
-            MR_ServerSoap_BindingStub port = MultispeakPortFactory.getMR_ServerPort(mspVendor, MultispeakDefines.MR_CB_STR);
+        else if(service.equalsIgnoreCase(MultispeakDefines.LM_Server_STR)) {
+            LM_ServerSoap_BindingStub port = MultispeakPortFactory.getLM_ServerPort(mspVendor);
             objects = port.getMethods();
         }
-        else if( service.equalsIgnoreCase(MultispeakDefines.CB_MR_STR)) {
-        	CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor, MultispeakDefines.CB_MR_STR);
-            objects = port.getMethods();
-        }
-        else if( service.equalsIgnoreCase(MultispeakDefines.CD_CB_STR)) {
+        else if(service.equalsIgnoreCase(MultispeakDefines.CD_Server_STR)) {
             CD_ServerSoap_BindingStub port = MultispeakPortFactory.getCD_ServerPort(mspVendor);
             objects = port.getMethods();
         }
-        else if( service.equalsIgnoreCase(MultispeakDefines.CB_CD_STR)) {
-            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor, MultispeakDefines.CB_CD_STR);
+        else if(service.equalsIgnoreCase(MultispeakDefines.CB_Server_STR)) {
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor);
             objects = port.getMethods();
+        }
+        else if(service.equalsIgnoreCase(MultispeakDefines.CB_CD_STR)) {
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_CDPort(mspVendor);
+            objects = port.getMethods();
+        }
+        else {
+        	return new String[]{"No server for " + service};
         }
         return objects;
     }   

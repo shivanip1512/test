@@ -37,14 +37,14 @@ public class MspObjectDaoImpl implements MspObjectDao {
 
         Customer mspCustomer = new Customer();
         try {    
-            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor, MultispeakDefines.CB_MR_STR);
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor);
             if (port != null) {
                 mspCustomer = port.getCustomerByMeterNo(meterNumber);
             } else {
                 CTILogger.error("Port not found for CB_Server (" + mspVendor.getCompanyName() + ") for MeterNo: " + meterNumber);
             }                
         } catch (RemoteException e) {
-            String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.CB_MR_STR);
+            String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.CB_Server_STR);
             CTILogger.error("TargetService: " + endpointURL + " - getCustomerByMeterNo(" + mspVendor.getCompanyName() + ") for MeterNo: " + meterNumber);
             CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
             CTILogger.info("A default(empty) is being used for Customer");
@@ -59,14 +59,14 @@ public class MspObjectDaoImpl implements MspObjectDao {
     public ServiceLocation getMspServiceLocation(String meterNumber, MultispeakVendor mspVendor) {
         ServiceLocation mspServiceLocation = new ServiceLocation();
         try {
-            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor, MultispeakDefines.CB_MR_STR);
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor);
             if (port != null) {
                 mspServiceLocation =  port.getServiceLocationByMeterNo(meterNumber);
             } else {
                 CTILogger.error("Port not found for CB_MR (" + mspVendor.getCompanyName() + ") for MeterNo: " + meterNumber);
             }
         } catch (RemoteException e) {
-            String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.CB_MR_STR);
+            String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.CB_Server_STR);
             CTILogger.error("TargetService: " + endpointURL + " - getServiceLocationByMeterNo (" + mspVendor.getCompanyName() + ") for MeterNo: " + meterNumber);
             CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
             CTILogger.info("A default(empty) is being used for ServiceLocation");
@@ -81,14 +81,14 @@ public class MspObjectDaoImpl implements MspObjectDao {
     public com.cannontech.multispeak.deploy.service.Meter getMspMeter(String meterNumber, MultispeakVendor mspVendor) {
         com.cannontech.multispeak.deploy.service.Meter mspMeter = new com.cannontech.multispeak.deploy.service.Meter();
         try {
-            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor, MultispeakDefines.CB_MR_STR);
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor);
             if (port != null) {
                 mspMeter =  port.getMeterByMeterNo(meterNumber);
             } else {
                 CTILogger.error("Port not found for CB_MR (" + mspVendor.getCompanyName() + ") for MeterNo: " + meterNumber);
             }
         } catch (RemoteException e) {
-            String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.CB_MR_STR);
+            String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.CB_Server_STR);
             CTILogger.error("TargetService: " + endpointURL + " - getMeterByMeterNo (" + mspVendor.getCompanyName() + ") for MeterNo: " + meterNumber);
             CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
             CTILogger.info("A default(empty) is being used for Meter");

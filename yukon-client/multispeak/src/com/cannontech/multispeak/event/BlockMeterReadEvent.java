@@ -78,7 +78,7 @@ public class BlockMeterReadEvent extends MultispeakEvent {
      */
     public void eventNotification() {
         
-        String endpointURL = getMspVendor().getEndpointURL(MultispeakDefines.EA_MR_STR);
+        String endpointURL = getMspVendor().getEndpointURL(MultispeakDefines.EA_Server_STR);
         CTILogger.info("Sending EA_Server_FormattedBlockNotification ("+ endpointURL+ ")");
         
         try {            

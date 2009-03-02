@@ -49,14 +49,14 @@ public class CD_ServerImpl implements CD_ServerSoap_PortType
         								 "getCDSupportedMeters",
                                          "getCDMeterState",
                                          "initiateConnectDisconnect"};
-        return multispeakFuncs.getMethods(MultispeakDefines.CD_CB_STR, methods );
+        return multispeakFuncs.getMethods(MultispeakDefines.CD_Server_STR, methods );
     }
     
     @Override
     public String[] getDomainNames() throws java.rmi.RemoteException {
         init();
         String [] strings = new String[]{"Method Not Supported"};
-        multispeakFuncs.logStrings(MultispeakDefines.CD_CB_STR, "getDomainNames", strings);
+        multispeakFuncs.logStrings(MultispeakDefines.CD_Server_STR, "getDomainNames", strings);
         return strings;
     }
     
@@ -115,7 +115,7 @@ public class CD_ServerImpl implements CD_ServerSoap_PortType
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         errorObjects = multispeakMeterService.cdEvent(vendor, cdEvents, transactionID);
         
-        multispeakFuncs.logErrorObjects(MultispeakDefines.CD_CB_STR, "initiateConnectDisconnect", errorObjects);
+        multispeakFuncs.logErrorObjects(MultispeakDefines.CD_Server_STR, "initiateConnectDisconnect", errorObjects);
         return errorObjects;
     }
     

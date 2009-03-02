@@ -40,14 +40,14 @@ public class OD_ServerImpl implements OD_ServerSoap_PortType
     public String[] getMethods() throws java.rmi.RemoteException {
         init();
         String [] methods = new String[]{"pingURL", "getMethods", "initiateOutageDetectionEventRequest"};
-        return multispeakFuncs.getMethods(MultispeakDefines.OD_OA_STR, methods );
+        return multispeakFuncs.getMethods(MultispeakDefines.OD_Server_STR, methods );
     }
     
     @Override
     public String[] getDomainNames() throws java.rmi.RemoteException {
         init();
         String [] strings = new String[]{"Method Not Supported"};
-        multispeakFuncs.logStrings(MultispeakDefines.OD_OA_STR, "getDomainNames", strings);
+        multispeakFuncs.logStrings(MultispeakDefines.OD_Server_STR, "getDomainNames", strings);
         return strings;
     }
     
@@ -97,7 +97,7 @@ public class OD_ServerImpl implements OD_ServerSoap_PortType
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
 
         errorObjects = multispeakMeterService.odEvent(vendor, meterNos, transactionID);
-        multispeakFuncs.logErrorObjects(MultispeakDefines.OD_OA_STR, "initiateOutageDetectionEventRequest", errorObjects);
+        multispeakFuncs.logErrorObjects(MultispeakDefines.OD_Server_STR, "initiateOutageDetectionEventRequest", errorObjects);
         return errorObjects;
     }
     
