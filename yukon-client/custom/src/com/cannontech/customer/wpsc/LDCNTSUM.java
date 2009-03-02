@@ -194,19 +194,22 @@ public String getGroupAddress(String name) {
 
 	name = StringEscapeUtils.escapeSql(name);
 	
-	String sql = "SELECT UtilityAddress,ClassAddress,DivisionAddress FROM LMGroupVersacom,YukonPaobject WHERE LMGroupVersacom.DeviceID=YukonPaobject.PAObjectID AND YukonPaobject.PAOName='" + name + "'";
+	String sql = "SELECT UtilityAddress,ClassAddress,DivisionAddress FROM " 
+		       + " LMGroupVersacom,YukonPaobject WHERE LMGroupVersacom.DeviceID = " 
+		       + " YukonPaobject.PAObjectID AND YukonPaobject.PAOName = ?";
 	
 	String retVal = null;
 	
 	java.sql.Connection conn = null;
-	java.sql.Statement stmt = null;
+	java.sql.PreparedStatement stmt = null;
 	java.sql.ResultSet rset = null;
 	
 	try
 	{
 		conn = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
-		stmt = conn.createStatement();
-		rset = stmt.executeQuery(sql);
+		stmt = conn.prepareStatement(sql);
+		stmt.setString(1, name);
+		rset = stmt.executeQuery();
 		
 		if( rset.next() )
 		{
