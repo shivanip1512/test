@@ -318,6 +318,12 @@ public class ObjectMapperFactoryImplTest extends TestCase {
         public String getRouteNameForRouteId(int routeId) {
             throw new UnsupportedOperationException("Method not implemented");
         }
+
+		@Override
+		public LiteYukonPAObject getUnique(String paoName, String category,
+				String paoClass) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
     }
 
     /**

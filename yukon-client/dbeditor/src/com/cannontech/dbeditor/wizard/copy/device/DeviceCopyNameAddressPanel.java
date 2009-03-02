@@ -1,14 +1,20 @@
 package com.cannontech.dbeditor.wizard.copy.device;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.util.List;
+import java.util.Vector;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.wizard.CancelInsertException;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
+import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.capcontrol.*;
 import com.cannontech.database.data.device.CarrierBase;
 import com.cannontech.database.data.device.DNPBase;
@@ -22,14 +28,24 @@ import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.device.RTCBase;
 import com.cannontech.database.data.device.RemoteBase;
 import com.cannontech.database.data.device.Repeater900;
-import com.cannontech.database.data.device.Repeater902;
 import com.cannontech.database.data.device.Repeater921;
 import com.cannontech.database.data.device.Series5Base;
+import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.multi.MultiDBPersistent;
+import com.cannontech.database.data.pao.DeviceClasses;
+import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.pao.RouteTypes;
+import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.data.route.CCURoute;
+import com.cannontech.database.data.route.RouteBase;
+import com.cannontech.database.data.route.RouteFactory;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.dbeditor.DatabaseEditorOptionPane;
+import com.cannontech.device.range.DeviceAddressRange;
 import com.cannontech.yukon.IDatabaseCache;
  
 public class DeviceCopyNameAddressPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ItemListener, javax.swing.event.CaretListener {
@@ -41,8 +57,8 @@ public class DeviceCopyNameAddressPanel extends com.cannontech.common.gui.util.D
 	private javax.swing.JLabel ivjJLabelMeterNumber = null;
 	private javax.swing.JPanel ivjJPanelCopyDevice = null;
 	private javax.swing.JTextField ivjJTextFieldMeterNumber = null;
-   	private int deviceType = 0;
-   	private JLabel jLabelRange = null;
+   	private DeviceBase deviceBase = null;
+   	private JLabel jLabelErrorMessage = null;
 
 	class IvjEventHandler implements java.awt.event.ItemListener, javax.swing.event.CaretListener 
 	{
@@ -346,7 +362,7 @@ private javax.swing.JLabel getJLabelPhoneNumber() {
 	         cpg.fill = java.awt.GridBagConstraints.HORIZONTAL;
 	         cpg.gridwidth = 2;
 	         cpg.insets = new java.awt.Insets(26, 48, 10, 15);
-	         getJPanelCopyDevice().add(getJLabelRange(), cpg);
+	         getJPanelCopyDevice().add(getJLabelErrorMessage(), cpg);
 				
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -525,126 +541,112 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
 	@SuppressWarnings("unchecked")
     public Object getValue(Object val)
 	{
-		DeviceBase device = ((DeviceBase) val);
-		int previousDeviceID = device.getDevice().getDeviceID().intValue();
-		com.cannontech.database.data.route.RouteBase newRoute = null;
+		deviceBase = ((DeviceBase) val);
+		int previousDeviceID = deviceBase.getDevice().getDeviceID().intValue();
+		RouteBase newRoute = null;
 	
         PaoDao paoDao = DaoFactory.getPaoDao();   
-		device.setDeviceID(paoDao.getNextPaoId());
+		deviceBase.setDeviceID(paoDao.getNextPaoId());
 	
 		boolean hasRoute = false;
 		boolean hasPoints = false;
 		boolean isCapBank = false;
 	
 		String nameString = getNameTextField().getText();
-		device.setPAOName(nameString);
+		deviceBase.setPAOName(nameString);
 	
-		com.cannontech.database.data.multi.MultiDBPersistent objectsToAdd = new com.cannontech.database.data.multi.MultiDBPersistent();
-		objectsToAdd.getDBPersistentVector().add(device);
+		MultiDBPersistent objectsToAdd = new MultiDBPersistent();
+		objectsToAdd.getDBPersistentVector().add(deviceBase);
 	
 		//Search for the correct sub-type and set the address
-		if( getAddressTextField().isVisible() )
-		{
+		if( getAddressTextField().isVisible() ) {
 			
-			if (val instanceof IDLCBase)
+			if (val instanceof IDLCBase) {
 				((IDLCBase) val).getDeviceIDLCRemote().setAddress(new Integer(getAddressTextField().getText()));
-			else if (val instanceof DNPBase)
+			}
+			else if (val instanceof DNPBase) {
 				((DNPBase) val).getDeviceAddress().setSlaveAddress(new Integer(getAddressTextField().getText()));
-			else if (val instanceof CarrierBase)
-			{
-				 Integer addressHolder = new Integer(getAddressTextField().getText());
-				 if(val instanceof Repeater900)
+			}
+			else if (val instanceof CarrierBase) {
+				CarrierBase carrierBase = (CarrierBase)val;
+				Integer addressHolder = new Integer(getAddressTextField().getText());
+				if(val instanceof Repeater900) {
 				  	addressHolder = new Integer(addressHolder.intValue() + Repeater900.ADDRESS_OFFSET);
-				 else if(val instanceof Repeater921)
+				} else if(val instanceof Repeater921) {
                      addressHolder = new Integer(addressHolder.intValue() + Repeater921.ADDRESS_OFFSET);
-				 ((CarrierBase) val).getDeviceCarrierSettings().setAddress(addressHolder);
-				 
-				if( DeviceTypesFuncs.isMCT(getDeviceType()) )
-				{
+				}
+				carrierBase.getDeviceCarrierSettings().setAddress(addressHolder);
+
+				int deviceType = PAOGroups.getDeviceType( deviceBase.getPAOType() );
+				if( DeviceTypesFuncs.isMCT(deviceType) ) {
 					checkMCTAddresses( new Integer(getAddressTextField().getText()).intValue() );
                     checkMeterNumber(getJTextFieldMeterNumber().getText());
 				}
 			}
-			else if (val instanceof CapBank)
-			{
+			else if (val instanceof CapBank) {
 				 ((CapBank) val).setLocation(getAddressTextField().getText());
 				 isCapBank = true;
 			}
-			else if (val instanceof ICapBankController )
+			else if (val instanceof ICapBankController ) {
 				 ((ICapBankController) val).setAddress( new Integer(getAddressTextField().getText()) );
-			else if (val instanceof Series5Base)
-				 ((Series5Base) val).getSeries5().setSlaveAddress( new Integer(getAddressTextField().getText()) );			
-			else if (val instanceof RTCBase)
+			} else if (val instanceof Series5Base) {
+				 ((Series5Base) val).getSeries5().setSlaveAddress( new Integer(getAddressTextField().getText()) );
+			} else if (val instanceof RTCBase) {
 				((RTCBase) val).getDeviceRTC().setRTCAddress( new Integer( getAddressTextField().getText()));
-			else //didn't find it
+			} else { //didn't find it
 				throw new Error("Unable to determine device type when attempting to set the address");
+			}
 		}
 	
 		//Search for the correct sub-type and set the meter fields
-		if( getJTextFieldMeterNumber().isVisible() )
-		{
-			if( val instanceof MCTBase )
+		if( getJTextFieldMeterNumber().isVisible() ) {
+			if( val instanceof MCTBase ) {
 				 ((MCTBase ) val).getDeviceMeterGroup().setMeterNumber( getJTextFieldMeterNumber().getText() );
-			else if( val instanceof IEDMeter )
+			} else if( val instanceof IEDMeter ) {
 				 ((IEDMeter) val).getDeviceMeterGroup().setMeterNumber( getJTextFieldMeterNumber().getText() );
-			else //didn't find it
+			} else { //didn't find it
 				throw new Error("Unable to determine device type when attempting to set the Meter Number");
+			}
 		}
 		
-		if (com.cannontech.database.data.pao.DeviceClasses.getClass(device.getPAOClass()) == com.cannontech.database.data.pao.DeviceClasses.TRANSMITTER)
-		{
-			IDatabaseCache cache =
-				com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-			synchronized (cache)
-		{
-				java.util.List routes = cache.getAllRoutes();
+		if (DeviceClasses.getClass(deviceBase.getPAOClass()) == DeviceClasses.TRANSMITTER){
+			IDatabaseCache cache = DefaultDatabaseCache.getInstance();
+			synchronized (cache) {
+				List<LiteYukonPAObject> routes = cache.getAllRoutes();
 				DBPersistent oldRoute = null;
 				String type = null;
 	
-				for (int i = 0; i < routes.size(); i++)
-				{
-					oldRoute = com.cannontech.database.data.lite.LiteFactory.createDBPersistent(((com.cannontech.database.data.lite.LiteYukonPAObject) routes.get(i)));
-					try
-					{
-						com.cannontech.database.Transaction t =
-							com.cannontech.database.Transaction.createTransaction(com.cannontech.database.Transaction.RETRIEVE, oldRoute);
+				for (LiteYukonPAObject route: routes) {
+					oldRoute = LiteFactory.createDBPersistent(route);
+					try {
+						Transaction<?> t = Transaction.createTransaction(Transaction.RETRIEVE, oldRoute);
 						t.execute();
-					}
-					catch (Exception e)
-					{
-						com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+					} catch (Exception e) {
+						CTILogger.error( e.getMessage(), e );
 					}
 					
-					if (oldRoute instanceof com.cannontech.database.data.route.RouteBase)
-					{
-						if (((com.cannontech.database.data.route.RouteBase) oldRoute).getDeviceID().intValue()
-							== previousDeviceID)
-						{
-							type = com.cannontech.database.data.pao.PAOGroups.getPAOTypeString( ((com.cannontech.database.data.lite.LiteYukonPAObject) routes.get(i)).getType() );
-							newRoute = com.cannontech.database.data.route.RouteFactory.createRoute(type);
+					if (oldRoute instanceof RouteBase) {
+						if (((RouteBase) oldRoute).getDeviceID().intValue() == previousDeviceID) {
+							type = PAOGroups.getPAOTypeString( route.getType() );
+							newRoute = RouteFactory.createRoute(type);
 	
 							hasRoute = true;
 							break;
-	
 						}
 					}
 				}
 				
-				if (hasRoute) 
-				{
+				if (hasRoute)  {
 					newRoute.setRouteID(paoDao.getNextPaoId());
 					newRoute.setRouteType( type );
 					newRoute.setRouteName(nameString);
-					newRoute.setDeviceID(
-						((com.cannontech.database.data.route.RouteBase) oldRoute).getDeviceID() );
-					newRoute.setDefaultRoute(
-						((com.cannontech.database.data.route.RouteBase) oldRoute).getDefaultRoute() );
-					newRoute.setDeviceID(device.getDevice().getDeviceID());
+					newRoute.setDeviceID( ((RouteBase) oldRoute).getDeviceID() );
+					newRoute.setDefaultRoute( ((RouteBase) oldRoute).getDefaultRoute() );
+					newRoute.setDeviceID(deviceBase.getDevice().getDeviceID());
 					
-					if( type.equalsIgnoreCase(com.cannontech.database.data.pao.RouteTypes.STRING_CCU) )
-					{
-						((com.cannontech.database.data.route.CCURoute) newRoute).setCarrierRoute(((com.cannontech.database.data.route.CCURoute) oldRoute).getCarrierRoute());
-						((com.cannontech.database.data.route.CCURoute) newRoute).getCarrierRoute().setRouteID(newRoute.getRouteID());
+					if( type.equalsIgnoreCase(RouteTypes.STRING_CCU) ) {
+						((CCURoute) newRoute).setCarrierRoute(((CCURoute) oldRoute).getCarrierRoute());
+						((CCURoute) newRoute).getCarrierRoute().setRouteID(newRoute.getRouteID());
 					}
 	
 					/*//put the route as the second place in our Vector
@@ -654,56 +656,48 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
 	
 		}
 	
-		if (getPointCopyCheckBox().isSelected())
-		{
-			java.util.Vector devicePoints = new java.util.Vector();
+		if (getPointCopyCheckBox().isSelected()) {
+			Vector<PointBase> devicePoints = new Vector();
             
-            com.cannontech.database.data.point.PointBase pointBase = null;
+            PointBase pointBase = null;
             List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(previousDeviceID);
             for (LitePoint point : points) {
-                pointBase = (com.cannontech.database.data.point.PointBase) com.cannontech.database.data.lite.LiteFactory.createDBPersistent(point);
-                try
-                {
-                    com.cannontech.database.Transaction t =
-                        com.cannontech.database.Transaction.createTransaction(com.cannontech.database.Transaction.RETRIEVE, pointBase);
+                pointBase = (PointBase) LiteFactory.createDBPersistent(point);
+                try {
+                    Transaction<?> t = Transaction.createTransaction(Transaction.RETRIEVE, pointBase);
                     t.execute();
                     devicePoints.addElement(pointBase);
-                }
-                catch (com.cannontech.database.TransactionException e)
-                {
-                    com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+                } catch (TransactionException e) {
+                    CTILogger.error( e.getMessage(), e );
                 }
             }	
 			
 			//int startingPointID = DaoFactory.getPointDao().getNextPointId();
-			Integer newDeviceID = device.getDevice().getDeviceID();
+			Integer newDeviceID = deviceBase.getDevice().getDeviceID();
 
-			for (int i = 0; i < devicePoints.size(); i++)
-			{
-				((com.cannontech.database.data.point.PointBase) devicePoints.get(i)).setPointID(DaoFactory.getPointDao().getNextPointId());
-				((com.cannontech.database.data.point.PointBase) devicePoints.get(i)).getPoint().setPaoID(newDeviceID);
-				objectsToAdd.getDBPersistentVector().add((DBPersistent) devicePoints.get(i));
+			for (PointBase devicePoint: devicePoints) {
+				devicePoint.setPointID(DaoFactory.getPointDao().getNextPointId());
+				devicePoint.getPoint().setPaoID(newDeviceID);
+				objectsToAdd.getDBPersistentVector().add(devicePoint);
 			}
 			hasPoints = true;				
 		}
 		
 		//user can input new phone number; otherwise they may later control/scan the wrong device
-		if( val instanceof RemoteBase)
-		{
-			 if(getJTextFieldPhoneNumber().isVisible())
-			 {
+		if( val instanceof RemoteBase) {
+			 if(getJTextFieldPhoneNumber().isVisible()) {
 				  ((RemoteBase)val).getDeviceDialupSettings().setPhoneNumber(getJTextFieldPhoneNumber().getText());
 			 }
 		}
 		
-		if (hasPoints || hasRoute || isCapBank)
-		{
-			if(hasRoute)
+		if (hasPoints || hasRoute || isCapBank) {
+			if(hasRoute) {
 				objectsToAdd.getDBPersistentVector().add(newRoute);
+			}
 			return objectsToAdd;
-		}
-		else
+		} else {
 			return val;
+		}
 	}
 	
 	
@@ -734,19 +728,20 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
 	}
 	
 	
-	private javax.swing.JLabel getJLabelRange()
+	private javax.swing.JLabel getJLabelErrorMessage()
 	{
-	   if( jLabelRange == null )
+	   if( jLabelErrorMessage == null )
 	   {
-	      jLabelRange = new javax.swing.JLabel();
-	      jLabelRange.setFont(new java.awt.Font("dialog.bold", 1, 10));
+		   jLabelErrorMessage = new javax.swing.JLabel();
+		   jLabelErrorMessage.setFont(new java.awt.Font("dialog.bold", 1, 10));
+		   jLabelErrorMessage.setBackground(Color.cyan);
 	      
-	      jLabelRange.setMaximumSize(new java.awt.Dimension(250, 20));
-	      jLabelRange.setPreferredSize(new java.awt.Dimension(220, 20));
-	      jLabelRange.setMinimumSize(new java.awt.Dimension(220, 20));            
+		   jLabelErrorMessage.setMaximumSize(new java.awt.Dimension(250, 60));
+		   jLabelErrorMessage.setPreferredSize(new java.awt.Dimension(220, 60));
+		   jLabelErrorMessage.setMinimumSize(new java.awt.Dimension(220, 60));            
 	   }
 	   
-	   return jLabelRange;
+	   return jLabelErrorMessage;
 	}
 	
 	/**
@@ -795,22 +790,31 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
 			try 
 			{
 		      	long addy = Long.parseLong(getAddressTextField().getText());
-		      	if( !com.cannontech.device.range.DeviceAddressRange.isValidRange( getDeviceType(), addy ) )
-		      	{
-		        	setErrorString( com.cannontech.device.range.DeviceAddressRange.getRangeMessage( getDeviceType() ) );
+		      	int deviceType = PAOGroups.getDeviceType( deviceBase.getPAOType() );
+		      	if( !DeviceAddressRange.isValidRange( deviceType, addy ) ) {
+		        	setErrorString( DeviceAddressRange.getRangeMessage( deviceType ) );
 		
-		         	getJLabelRange().setText( "(" + getErrorString() + ")" );
-		         	getJLabelRange().setToolTipText( "(" + getErrorString() + ")" );
+		         	getJLabelErrorMessage().setText( "(" + getErrorString() + ")" );
+		         	getJLabelErrorMessage().setToolTipText( "(" + getErrorString() + ")" );
 		         	return false;
 		      	}
-		      	else
-		         	getJLabelRange().setText( "" );
 	   		}
 	   		catch( NumberFormatException e )
 	   		{} //if this happens, we assume they know what they are 
 	   	   	// doing and we accept any string as input	      
 		}
 	
+		String deviceName = getNameTextField().getText();
+		if( !isUniquePao(deviceName, deviceBase.getPAOCategory(), deviceBase.getPAOClass())) {
+			setErrorString("Name '" + deviceName + "' is already in use.");
+         	getJLabelErrorMessage().setText( "(" + getErrorString() + ")" );
+         	getJLabelErrorMessage().setToolTipText( "(" + getErrorString() + ")" );
+			return false;
+		} 
+
+		//No errors, clear out
+       	getJLabelErrorMessage().setText( "" );
+       	getJLabelErrorMessage().setToolTipText( "" );
 		return true;
 	}
 	
@@ -856,20 +860,16 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
 	public void setValue(Object val ) 
 	{
 		int deviceClass = -1;
-		
-		if( val instanceof DeviceBase )
-	   {
-			deviceClass = com.cannontech.database.data.pao.DeviceClasses.getClass( ((DeviceBase)val).getPAOClass() );
-	      setDeviceType( com.cannontech.database.data.pao.PAOGroups.getDeviceType( ((DeviceBase)val).getPAOType() ) );
-	   }
+		deviceBase = (DeviceBase)val;
+		deviceClass = DeviceClasses.getClass( deviceBase.getPAOClass() );
 
 		//handle all device Address fields
 		boolean showAddress = 
 				(val instanceof IEDBase)
 				 //|| (val instanceof ICapBankController)
-				 || (deviceClass == com.cannontech.database.data.pao.DeviceClasses.GROUP)
-				 || (deviceClass == com.cannontech.database.data.pao.DeviceClasses.VIRTUAL)
-                 || (deviceClass == com.cannontech.database.data.pao.DeviceClasses.GRID);
+				 || (deviceClass == DeviceClasses.GROUP)
+				 || (deviceClass == DeviceClasses.VIRTUAL)
+                 || (deviceClass == DeviceClasses.GRID);
 	
 		getAddressTextField().setVisible( !showAddress );
 		getPhysicalAddressLabel().setVisible( !showAddress );
@@ -880,17 +880,11 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
 		getJTextFieldMeterNumber().setVisible( showMeterNumber );
 		getJLabelMeterNumber().setVisible( showMeterNumber );
 	
+		setPanelState( deviceBase );
 	
-		setPanelState( (com.cannontech.database.data.device.DeviceBase)val );
-	
-	
-		int deviceDeviceID = ((com.cannontech.database.data.device.DeviceBase)val).getDevice().getDeviceID().intValue();
-	
-		
-		IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-		synchronized(cache)
-		{
-            List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(deviceDeviceID);
+		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		synchronized(cache) {
+            List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(deviceBase.getDevice().getDeviceID());
             if(points.size() > 0) {
                 getPointCopyCheckBox().setEnabled(true);
                 getPointCopyCheckBox().setSelected(true);                
@@ -982,15 +976,6 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
 
 
       getNameTextField().setText( val.getPAOName() + "(copy)" );      
-   }
-   private void setDeviceType( int devType_ )
-   {
-      deviceType = devType_;
-   }
-   
-   private int getDeviceType()
-   {
-      return deviceType;
    }
    
    /**

@@ -8,19 +8,26 @@ import java.util.List;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.gui.unchanging.LongRangeDocument;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.wizard.CancelInsertException;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.device.*;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
+import com.cannontech.database.data.pao.DeviceTypes;
+import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.dbeditor.DatabaseEditorOptionPane;
+import com.cannontech.device.range.DeviceAddressRange;
 import com.cannontech.spring.YukonSpringHook;
 
 /**
@@ -28,12 +35,13 @@ import com.cannontech.spring.YukonSpringHook;
  */
 
 public class DeviceNameAddressPanel extends com.cannontech.common.gui.util.DataInputPanel implements javax.swing.event.CaretListener {
-	private int deviceType = -1;
+	private DeviceBase deviceBase = null;
+//	private int deviceType = PAOGroups.INVALID;
 	private javax.swing.JTextField ivjAddressTextField = null;
 	private javax.swing.JLabel ivjNameLabel = null;
 	private javax.swing.JTextField ivjNameTextField = null;
 	private javax.swing.JLabel ivjPhysicalAddressLabel = null;
-	private javax.swing.JLabel ivjJLabelRange = null;
+	private javax.swing.JLabel ivjJLabelErrorMessage = null;
 	private javax.swing.JPanel ivjJPanelNameAddy = null;
 	private javax.swing.JPanel ivjJPanel1 = null;
     
@@ -136,7 +144,6 @@ public void eitherTextField_CaretUpdate(javax.swing.event.CaretEvent caretEvent)
 	fireInputUpdate();
 }
 
-
 /**
  * Insert the method's description here.
  * Creation date: (7/27/2001 10:04:55 AM)
@@ -175,34 +182,24 @@ private javax.swing.JTextField getAddressTextField() {
 }
 
 /**
- * Insert the method's description here.
- * Creation date: (4/30/2002 10:02:36 AM)
- * @return int
- */
-public int getDeviceType() {
-	return deviceType;
-}
-
-
-/**
  * Return the JLabelRange property value.
  * @return javax.swing.JLabel
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JLabel getJLabelRange() {
-	if (ivjJLabelRange == null) {
+private javax.swing.JLabel getJLabelErrorMessage() {
+	if (ivjJLabelErrorMessage == null) {
 		try {
-			ivjJLabelRange = new javax.swing.JLabel();
-			ivjJLabelRange.setName("JLabelRange");
-			ivjJLabelRange.setOpaque(false);
-			ivjJLabelRange.setText("..RANGE TEXT..");
-			ivjJLabelRange.setVisible(true);
-			ivjJLabelRange.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-			ivjJLabelRange.setFont(new java.awt.Font("Arial", 1, 10));
-			ivjJLabelRange.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+			ivjJLabelErrorMessage = new javax.swing.JLabel();
+			ivjJLabelErrorMessage.setName("JLabelRange");
+			ivjJLabelErrorMessage.setOpaque(false);
+			ivjJLabelErrorMessage.setText("..RANGE TEXT..");
+			ivjJLabelErrorMessage.setVisible(true);
+			ivjJLabelErrorMessage.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+			ivjJLabelErrorMessage.setFont(new java.awt.Font("Arial", 1, 10));
+			ivjJLabelErrorMessage.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 			// user code begin {1}
 
-			ivjJLabelRange.setVisible( false );
+			ivjJLabelErrorMessage.setVisible( false );
 
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -211,7 +208,7 @@ private javax.swing.JLabel getJLabelRange() {
 			handleException(ivjExc);
 		}
 	}
-	return ivjJLabelRange;
+	return ivjJLabelErrorMessage;
 }
 
 /**
@@ -228,7 +225,7 @@ private javax.swing.JPanel getJPanel1() {
 			ivjJPanel1.setLayout(new java.awt.FlowLayout());
 			ivjJPanel1.setMaximumSize(new java.awt.Dimension(342, 27));
 			ivjJPanel1.setMinimumSize(new java.awt.Dimension(342, 27));
-			getJPanel1().add(getJLabelRange(), getJLabelRange().getName());
+			getJPanel1().add(getJLabelErrorMessage(), getJLabelErrorMessage().getName());
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -408,83 +405,68 @@ public Object getValue(Object val)
 	//address but it is tedious to tell what type
 	//of device it is - CommLine, Carrier, Repeater, MCT Broadcast group, etc
 
-	//Cast should be ok
-	DeviceBase device = (DeviceBase)val;
+	deviceBase = (DeviceBase)val;
 	
 	String nameString = getNameTextField().getText();
-	device.setPAOName( nameString );
+	deviceBase.setPAOName( nameString );
 
 	//Search for the correct sub-type and set the address
 
 	Integer address = new Integer( getAddressTextField().getText() );
 	
-   if( val instanceof IDLCBase )
-   {
-		((IDLCBase)device).getDeviceIDLCRemote().setAddress( address );	
-   }
-   else if( val instanceof CCU721 )
-   {
-	   ((CCU721)device).getDeviceAddress().setSlaveAddress( address );
-   }
-   else if( val instanceof Ion7700 )
-   {
-      ((Ion7700)val).getDeviceAddress().setSlaveAddress( address );
-   }
-   else if( val instanceof DNPBase )
-   {
-      ((DNPBase)val).getDeviceAddress().setSlaveAddress( address );
-   }
-   else if( val instanceof RTCBase )
-   {
+	if( val instanceof IDLCBase ) {
+		((IDLCBase)deviceBase).getDeviceIDLCRemote().setAddress( address );	
+	} else if( val instanceof CCU721 ) {
+		((CCU721)deviceBase).getDeviceAddress().setSlaveAddress( address );
+	} else if( val instanceof Ion7700 ) {
+		((Ion7700)val).getDeviceAddress().setSlaveAddress( address );
+	} else if( val instanceof DNPBase ) {
+		((DNPBase)val).getDeviceAddress().setSlaveAddress( address );
+	} else if( val instanceof RTCBase ) {
    		((RTCBase)val).getDeviceRTC().setRTCAddress( address );
-   }
-   else if( val instanceof RTM )
-   {
+   	} else if( val instanceof RTM ) {
    		((RTM)val).getDeviceIED().setSlaveAddress(address.toString());
    		((RTM)val).getDeviceIED().setPassword(CtiUtilities.STRING_NONE);
-   }
-   else if( val instanceof Series5Base )
-   {
-       ((Series5Base)val).getSeries5().setSlaveAddress( address );
-   }
-   else if( val instanceof CarrierBase )
-	{
-		if( val instanceof Repeater900 ) {
+   	} else if( val instanceof Series5Base ) {
+   		((Series5Base)val).getSeries5().setSlaveAddress( address );
+   	} else if( val instanceof CarrierBase ) {
+   		CarrierBase carrierBase = (CarrierBase)val;
+		if( carrierBase instanceof Repeater900 ) {
 			//special case, we must add ADDRESS_OFFSET to every address for Repeater900
-			((CarrierBase)device).getDeviceCarrierSettings().setAddress( 
+			carrierBase.getDeviceCarrierSettings().setAddress( 
                   new Integer(address.intValue() + Repeater900.ADDRESS_OFFSET) );
 		}else if( val instanceof Repeater921 ) {
             //special case, we must add ADDRESS_OFFSET to every address for Repeater921
-            ((CarrierBase)device).getDeviceCarrierSettings().setAddress( 
+            carrierBase.getDeviceCarrierSettings().setAddress( 
                   new Integer(address.intValue() + Repeater921.ADDRESS_OFFSET) );
         }
-		else
-			((CarrierBase)device).getDeviceCarrierSettings().setAddress( address );
-	}
-    else if (val instanceof XmlTransmitter)
-    {
+		else {
+			carrierBase.getDeviceCarrierSettings().setAddress( address );
+		}
+	} else if (val instanceof XmlTransmitter) {
         //This is empty because nothing special needs to be done, 
     	//but we don't want to throw an error since it is valid
-    }
-	else  //didn't find it
+    } else  { //didn't find it
 		throw new Error("Unable to determine device type when attempting to set the address");
+	}
 
-	if (DeviceTypesFuncs.isMCT(getDeviceType()) || DeviceTypesFuncs.isRepeater(getDeviceType())) {
+	int deviceType = PAOGroups.getDeviceType(deviceBase.getPAOType());
+	if (DeviceTypesFuncs.isMCT(deviceType) || DeviceTypesFuncs.isRepeater(deviceType)) {
 
         // Check for unique address
 	    checkPaoAddresses(address.intValue());
         
         if (this.createPointsCheck.isSelected()) {
             PaoDao paoDao = (PaoDao) YukonSpringHook.getBean("paoDao");
-            device.setDeviceID(paoDao.getNextPaoId());
+            deviceBase.setDeviceID(paoDao.getNextPaoId());
 
             DeviceDefinitionService deviceDefinitionService = (DeviceDefinitionService) YukonSpringHook.getBean("deviceDefinitionService");
             DeviceDao deviceDao = (DeviceDao) YukonSpringHook.getBean("deviceDao");
-            YukonDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
+            YukonDevice yukonDevice = deviceDao.getYukonDeviceForDevice(deviceBase);
             List<PointBase> defaultPoints = deviceDefinitionService.createDefaultPointsForDevice(yukonDevice);
 
             SmartMultiDBPersistent persistant = new SmartMultiDBPersistent();
-            persistant.addOwnerDBPersistent(device);
+            persistant.addOwnerDBPersistent(deviceBase);
             for (PointBase point : defaultPoints) {
                 persistant.addDBPersistent(point);
             }
@@ -565,40 +547,38 @@ private void initialize() {
  */
 public boolean isInputValid() 
 {
-	if( getNameTextField().getText() == null
-		 || getNameTextField().getText().length() < 1 )
-	{
+	String deviceName = getNameTextField().getText();
+	if( StringUtils.isBlank(deviceName)) {
 		setErrorString("The Name text field must be filled in");
 		return false;
 	}
 
-	if( getAddressTextField().getText() == null
-		 || getAddressTextField().getText().length() < 1 )
-	{
+	if( StringUtils.isBlank(getAddress())) {
 		setErrorString("The Address text field must be filled in");
 		return false;
 	}
 
-	int address = Integer.parseInt( getAddress() );
+	int address = Integer.parseInt( getAddress());
+	int deviceType = PAOGroups.getDeviceType(deviceBase.getPAOType());
+	if( !DeviceAddressRange.isValidRange( deviceType, address ) ) {
+		setErrorString( DeviceAddressRange.getRangeMessage( deviceType) );
+		getJLabelErrorMessage().setText( "(" + getErrorString() + ")" );
+		getJLabelErrorMessage().setToolTipText( "(" + getErrorString() + ")" );
+		getJLabelErrorMessage().setVisible( true );
+		return false;
+	}
 
-   if( !com.cannontech.device.range.DeviceAddressRange.isValidRange( getDeviceType(), address ) )
-   {
-      setErrorString( com.cannontech.device.range.DeviceAddressRange.getRangeMessage( getDeviceType() ) );
-      getJLabelRange().setText( "(" + getErrorString() + ")" );
-      getJLabelRange().setToolTipText( "(" + getErrorString() + ")" );
-      getJLabelRange().setVisible( true );
-      return false;
-   }
-   else
-      getJLabelRange().setVisible( false );
+	if( !isUniquePao(deviceName, deviceBase.getPAOCategory(), deviceBase.getPAOClass())) {
+		setErrorString("Name '" + deviceName + "' is already in use.");
+     	getJLabelErrorMessage().setText( "(" + getErrorString() + ")" );
+     	getJLabelErrorMessage().setToolTipText( "(" + getErrorString() + ")" );
+     	getJLabelErrorMessage().setVisible( true );
+		return false;
+	}
 
-   //Dont do this, for now
-/*   if( com.cannontech.database.data.device.DeviceTypesFuncs.isMCT(getDeviceType()) )
-      return checkMCTAddresses( address );
-*/
-   
-
-	
+	getJLabelErrorMessage().setText( "" );
+   	getJLabelErrorMessage().setToolTipText( "" );
+    getJLabelErrorMessage().setVisible( false );
 	return true;
 }
 
@@ -627,27 +607,26 @@ public static void main(java.lang.String[] args) {
  * Creation date: (4/30/2002 10:02:36 AM)
  * @param newDeviceType int
  */
-public void setDeviceType(int newDeviceType) 
+public void setDeviceType(int deviceType) 
 {
-	deviceType = newDeviceType;
-
+	deviceBase = DeviceFactory.createDevice(deviceType);
    if( DeviceTypesFuncs.hasMasterAddress(deviceType) )
       getPhysicalAddressLabel().setText("Master Address:");
    else if( DeviceTypesFuncs.hasSlaveAddress(deviceType) )
       getPhysicalAddressLabel().setText("Slave Address:");
-   else if( deviceType == com.cannontech.database.data.pao.DeviceTypes.MCTBROADCAST )
+   else if( deviceType == DeviceTypes.MCTBROADCAST )
       getPhysicalAddressLabel().setText("Lead Meter Address:");
-   else if( deviceType == com.cannontech.database.data.pao.DeviceTypes.SERIES_5_LMI )
+   else if( deviceType == DeviceTypes.SERIES_5_LMI )
 	  getPhysicalAddressLabel().setText("Address:");
    else
       getPhysicalAddressLabel().setText("Physical Address:");
    
-   if( DeviceTypesFuncs.isCCU(getDeviceType()) ) {
+   if( DeviceTypesFuncs.isCCU(deviceType) ) {
        getAddressTextField().setDocument( new LongRangeDocument(0L, 128L) );
    }
    
-   if (DeviceTypesFuncs.isMCT(newDeviceType) || DeviceTypesFuncs.isRepeater(newDeviceType)
-            || DeviceTypesFuncs.isCCU(newDeviceType)) {
+   if (DeviceTypesFuncs.isMCT(deviceType) || DeviceTypesFuncs.isRepeater(deviceType)
+            || DeviceTypesFuncs.isCCU(deviceType)) {
         this.createPointsCheck.setVisible(true);
         this.createPointsCheck.setSelected(true);
     } else {

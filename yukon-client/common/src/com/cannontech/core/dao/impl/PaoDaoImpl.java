@@ -88,6 +88,22 @@ public final class PaoDaoImpl implements PaoDao {
         }
     }
 
+    public LiteYukonPAObject getUnique(final String paoName, final String category, final String paoClass) {
+        
+        try {
+            String sql = litePaoSql + "WHERE y.PAOName = ? AND y.Category = ? AND y.PAOClass = ? ";
+            LiteYukonPAObject pao = 
+                (LiteYukonPAObject) jdbcOps.queryForObject(
+                                                           sql, 
+                                                           new Object[]{paoName, category, paoClass}, 
+                                                           litePaoRowMapper);
+            return pao;
+        } catch (IncorrectResultSizeDataAccessException e) {
+        		//no objects returned is good
+        		return null;
+        }
+    }
+    
     public List<LiteYukonPAObject> getLiteYukonPAObjectByType(int paoType) {
         String typeStr = PAOGroups.getPAOTypeString(paoType);
         String sql = litePaoSql;
