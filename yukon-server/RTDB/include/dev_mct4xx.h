@@ -181,6 +181,8 @@ protected:
         LPRetries        =    3,
         LPRecentBlocks   =   16,
 
+        DawnOfTime_UtcSeconds   = 0x386d4380,  //  jan 1, 2000, in UTC seconds
+
         PointOffset_RateOffset  =  20,   //  gets added for rate B, C, D
 
         PointOffset_PeakOffset  =  10,
@@ -217,6 +219,9 @@ protected:
         int command;
         long in_progress;
     } _llpPeakInterest;
+
+    virtual CtiTime getDeviceDawnOfTime() const      { return DawnOfTime_UtcSeconds; }
+    virtual bool is_valid_time(const CtiTime) const;
 
     unsigned char crc8(const unsigned char *buf, unsigned int len) const;
 

@@ -123,12 +123,8 @@ protected:
         string         description;
     };
 
-    enum
-    {
-        DawnOfTime_UtcSeconds   = 0x386d4380,  //  jan 1, 2000, in UTC seconds
-    };
-
-    static bool is_valid_time(const CtiTime);
+    virtual CtiTime getDeviceDawnOfTime() const       { return CtiTime(CtiTime::neg_infin); }
+    virtual bool is_valid_time(const CtiTime) const   { return false; }
 
     string valueReport(const CtiPointSPtr p,    const point_info &pi, const CtiTime &t = YUKONEOT) const;
     string valueReport(const string &pointname, const point_info &pi, const CtiTime &t = YUKONEOT, bool undefined = true) const;

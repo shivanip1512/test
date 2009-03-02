@@ -3829,3 +3829,15 @@ void CtiDeviceMCT4xx::createTOUDayScheduleString(string &schedule, long (&times)
     schedule += CtiNumStr(rates[5]);
 }
 
+
+bool CtiDeviceMCT4xx::is_valid_time( const CtiTime time ) const
+{
+    bool retval = false;
+
+    //  between 2000-jan-01 and tomorrow
+    retval = (time > DawnOfTime_UtcSeconds) &&
+             (time < (CtiTime::now() + 86400));
+
+    return retval;
+}
+

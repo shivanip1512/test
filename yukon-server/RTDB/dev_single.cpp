@@ -2072,18 +2072,6 @@ bool CtiDeviceSingle::isDeviceAddressGlobal()
 }
 
 
-bool CtiDeviceSingle::is_valid_time( const CtiTime time )
-{
-    bool retval = false;
-
-    //  between 2000-jan-01 and tomorrow
-    retval = (time > DawnOfTime_UtcSeconds) &&
-             (time < (CtiTime::now() + 86400));
-
-    return retval;
-}
-
-
 //  timestamp == 0UL means current time
 bool CtiDeviceSingle::insertPointDataReport(CtiPointType_t type, int offset, CtiReturnMsg *rm, point_info pi, const string &default_pointname, const CtiTime &timestamp, double default_multiplier, int tags)
 {
@@ -2182,7 +2170,7 @@ string CtiDeviceSingle::valueReport(const CtiPointSPtr p, const point_info &pi, 
         report += "(invalid data)";
     }
 
-    if( t > DawnOfTime_UtcSeconds && t < YUKONEOT )
+    if( t > getDeviceDawnOfTime() && t < YUKONEOT )
     {
         report += " @ ";
         report += t.asString();
@@ -2214,7 +2202,7 @@ string CtiDeviceSingle::valueReport(const string &pointname, const point_info &p
         report += "(invalid data)";
     }
 
-    if( t > DawnOfTime_UtcSeconds && t < YUKONEOT )
+    if( t > getDeviceDawnOfTime() && t < YUKONEOT )
     {
         report += " @ ";
         report += t.asString();
