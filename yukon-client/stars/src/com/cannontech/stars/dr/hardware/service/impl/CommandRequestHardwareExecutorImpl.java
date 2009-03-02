@@ -34,7 +34,7 @@ public class CommandRequestHardwareExecutorImpl implements
 		// Use the energy company default route if routeId is 0
 		if(routeId == CtiUtilities.NONE_ZERO_ID) {
 			LiteStarsEnergyCompany energyCompany = 
-				ecMappingDao.getCustomerAccountEC(hardware.getAccountID());
+				ecMappingDao.getInventoryEC(hardware.getInventoryID());
 			routeId = energyCompany.getDefaultRouteID();
 		}
 		
