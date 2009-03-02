@@ -28,8 +28,12 @@ public abstract class AbstractThermostatController extends
 
         List<Integer> idList = new ArrayList<Integer>();
 
-        // If thermostatIds exists, remove brackets, split and create Integer list
-        thermostatIds = thermostatIds.replaceAll("[\\[|\\]]", "");
+        // If thermostatIds exists, remove brackets
+        if (!StringUtils.isBlank(thermostatIds)) {
+        	thermostatIds = thermostatIds.replaceAll("[\\[|\\]]", "");
+        }
+        
+        // If thermostatIds exists, split and create Integer list
         if (!StringUtils.isBlank(thermostatIds)) {
         	List<Integer> tempIdList = ServletUtil.getIntegerListFromString(thermostatIds);
         	idList.addAll(tempIdList);

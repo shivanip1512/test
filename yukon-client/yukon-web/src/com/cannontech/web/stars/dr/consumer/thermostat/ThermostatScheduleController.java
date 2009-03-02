@@ -1,6 +1,7 @@
 package com.cannontech.web.stars.dr.consumer.thermostat;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -271,6 +272,11 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         	
             Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
 
+            // Default the schedule name if none provided
+            if (StringUtils.isBlank(schedule.getName())) {
+            	schedule.setName(thermostat.getLabel());
+            }
+
             HardwareType type = thermostat.getType();
             schedule.setThermostatType(type);
             if (type.equals(HardwareType.COMMERCIAL_EXPRESSSTAT)) {
@@ -348,16 +354,14 @@ public class ThermostatScheduleController extends AbstractThermostatController {
 
         YukonMessageSourceResolvable resolvable;
 
-        if (thermostatIds.size() == 1) {
-            int thermostatId = thermostatIds.get(0);
-            Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
-
-            resolvable = new YukonMessageSourceResolvable(key,
-                                                          thermostat.getLabel());
-
-        } else {
-            resolvable = new YukonMessageSourceResolvable(key);
+        List<String> thermostatLabels = new ArrayList<String>();
+        for(Integer thermostatId : thermostatIds) {
+        	Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
+        	thermostatLabels.add(thermostat.getLabel());
         }
+        
+        String thermostatLabelString = StringUtils.join(thermostatLabels, ", ");
+        resolvable = new YukonMessageSourceResolvable(key, thermostatLabelString);
 
         map.addAttribute("message", resolvable);
 
