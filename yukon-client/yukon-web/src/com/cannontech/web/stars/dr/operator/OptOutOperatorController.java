@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
@@ -137,25 +139,36 @@ public class OptOutOperatorController {
     	return "redirect:/operator/Consumer/OptOut2.jsp?startDate=" + startDate
 				+ "&duration=" + durationInDays;
 	}
-    
+
     @RequestMapping(value = "/operator/optout/view2", method = RequestMethod.GET)
     public String view2(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
             YukonUserContext yukonUserContext, String startDate, 
             int durationInDays, ModelMap map) {
-        
+
     	final LiteYukonUser user = yukonUserContext.getYukonUser();
     	authDao.verifyTrueProperty(user, ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPT_OUT);
-    	
+
         map.addAttribute("durationInDays", durationInDays);
         map.addAttribute("startDate", startDate);
-        
+
         List<DisplayableInventory> displayableInventories =
             displayableInventoryDao.getDisplayableInventory(customerAccount.getAccountId());
-        
+        // It's annoying we have to use a Map here instead of a Set but there
+        // is no easy way in EL (that I know of) to check if something is in
+        // a Set.
+        Map<Integer, Boolean> alreadyOptedOutItems = new HashMap<Integer, Boolean>();
+        for (DisplayableInventory inventoryItem : displayableInventories) {
+            if (optOutEventDao.isOptedOut(inventoryItem.getInventoryId(),
+                                      customerAccount.getAccountId())) {
+                alreadyOptedOutItems.put(inventoryItem.getInventoryId(), true);
+            }
+        }
+
         map.addAttribute("displayableInventories", displayableInventories);
+        map.addAttribute("alreadyOptedOutItems", alreadyOptedOutItems);
         return "operator/optout/optOutList.jsp";
     }
-    
+
     @RequestMapping(value = "/operator/optout/optoutQuestions", method = RequestMethod.POST)
     public String optoutQuestions(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
     		YukonUserContext yukonUserContext, String startDate, 

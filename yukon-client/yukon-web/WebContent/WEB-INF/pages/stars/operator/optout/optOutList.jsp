@@ -40,10 +40,13 @@ function createJSON() {
     
     <div align="center">
         <cti:msg key="yukon.dr.operator.optoutlist.description"/>
-        
+        <c:if test="${!empty alreadyOptedOutItems}">
+            <br><cti:msg key="yukon.dr.operator.optoutlist.someAlreadyOptedOut"/>
+        </c:if>
+
         <br>
         <br>
-        
+
         <form id="form" action="${actionUrl}" method="POST" onsubmit="createJSON();">
             <table width="100%">
                 <tr>
@@ -59,11 +62,19 @@ function createJSON() {
                                     </tr>
                                     <c:forEach var="displayableInventory" items="${displayableInventories}">
                                         <c:set var="inventoryId" value="${displayableInventory.inventoryId}"/>
-                                        <input type="hidden" name="inventoryId" value="${inventoryId}"/>
                                         
-                                        <tr class="<ct:alternateRow odd='altRow' even=''/>">
+                                        <tr class="<ct:alternateRow odd="altRow" even=""/>">
                                             <td align="left">
-                                                <input id="check_${inventoryId}" type="checkbox"></input>
+                                            	<c:choose>
+                                            		<c:when test="${alreadyOptedOutItems[inventoryId]}">
+<!--                                             		    <input id="check_${inventoryId}" type="hidden" value="false"></input> -->
+                                            		    <input id="unused_${inventoryId}" checked="checked" disabled="disabled" type="checkbox"></input>
+                                            		</c:when>
+                                            		<c:otherwise>
+                                                        <input type="hidden" name="inventoryId" value="${inventoryId}"/>
+                                                        <input id="check_${inventoryId}" type="checkbox"></input>
+                                            		</c:otherwise>
+                                            	</c:choose>
                                             </td>
                                             <td align="left" title="${displayableInventory.serialNumber}">
                                                 <spring:escapeBody htmlEscape="true">${displayableInventory.displayName}</spring:escapeBody>

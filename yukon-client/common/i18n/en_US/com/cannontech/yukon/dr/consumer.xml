@@ -375,6 +375,7 @@
     <!-- optOutList.jsp -->
     <entry key="yukon.dr.consumer.optoutlist.header">Programs - Opt Out</entry>
     <entry key="yukon.dr.consumer.optoutlist.description">Please select the hardware you want to opt out of.</entry>
+    <entry key="yukon.dr.consumer.optoutlist.someAlreadyOptedOut">Items already checked have already been opted out.</entry>
     <entry key="yukon.dr.consumer.optoutlist.programOptOutTitle">Program Opt Out</entry>
     <entry key="yukon.dr.consumer.optoutlist.hardware">Hardware</entry>
     <entry key="yukon.dr.consumer.optoutlist.programAssigned">Program Assigned</entry>

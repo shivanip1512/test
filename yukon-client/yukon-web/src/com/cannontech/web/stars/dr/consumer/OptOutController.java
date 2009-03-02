@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
@@ -107,19 +109,29 @@ public class OptOutController extends AbstractConsumerController {
     public String view2(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
             YukonUserContext yukonUserContext, String startDate, 
             int durationInDays, ModelMap map) {
-        
+
     	final LiteYukonUser user = yukonUserContext.getYukonUser();
     	this.checkOptOutsEnabled(user);
-    	
+
         final boolean hasDeviceSelection =
             authDao.checkRoleProperty(user, ResidentialCustomerRole.OPT_OUT_DEVICE_SELECTION);
-        
+
         map.addAttribute("durationInDays", durationInDays);
         map.addAttribute("startDate", startDate);
-        
+
         List<DisplayableInventory> displayableInventories =
             displayableInventoryDao.getDisplayableInventory(customerAccount.getAccountId());
-        
+        // It's annoying we have to use a Map here instead of a Set but there
+        // is no easy way in EL (that I know of) to check if something is in
+        // a Set.
+        Map<Integer, Boolean> alreadyOptedOutItems = new HashMap<Integer, Boolean>();
+        for (DisplayableInventory inventoryItem : displayableInventories) {
+            if (optOutEventDao.isOptedOut(inventoryItem.getInventoryId(),
+                                      customerAccount.getAccountId())) {
+                alreadyOptedOutItems.put(inventoryItem.getInventoryId(), true);
+            }
+        }
+
         List<DisplayableInventory> optOutableInventories = new ArrayList<DisplayableInventory>();
         for(DisplayableInventory inventory : displayableInventories) {
         	// Only add the inventories that have opt outs remaining
@@ -130,7 +142,7 @@ public class OptOutController extends AbstractConsumerController {
         		optOutableInventories.add(inventory);
         	}
         }
-        
+
         boolean blanketDevices = (optOutableInventories.size() < 2 && !hasDeviceSelection);
         if (blanketDevices) {
             final JSONArray jsonArray = new JSONArray();
@@ -138,17 +150,18 @@ public class OptOutController extends AbstractConsumerController {
             for (final DisplayableInventory inventory : optOutableInventories) {
         		jsonArray.put(inventory.getInventoryId());
             }
-            
+
             String jsonInventoryIds = StringEscapeUtils.escapeHtml(jsonArray.toString());
             map.addAttribute("jsonInventoryIds", jsonInventoryIds);
-            
+
             return "redirect:/spring/stars/consumer/optout/confirm";
         }
-        
+
         map.addAttribute("displayableInventories", optOutableInventories);
+        map.addAttribute("alreadyOptedOutItems", alreadyOptedOutItems);
         return "consumer/optout/optOutList.jsp";
     }
-    
+
     @RequestMapping("/consumer/optout/confirm")
     public String confirm(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
             YukonUserContext yukonUserContext, String startDate, int durationInDays,
