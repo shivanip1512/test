@@ -3,6 +3,7 @@ package com.cannontech.database.db.capcontrol;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -18,6 +19,7 @@ import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
+import com.cannontech.database.db.point.calculation.ControlAlgorithm;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.spring.YukonSpringHook;
 
@@ -117,6 +119,11 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 		return controlInterval;
 	}
 	
+	public String getControlIntervalString() {
+		String str = new String();
+		str += controlInterval/60 + "m" + controlInterval%60 + "s";
+		return str;
+	}
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (11/9/2001 1:42:02 PM)
@@ -150,6 +157,12 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 	 */
 	public Integer getFailurePercent() {
 		return failurePercent;
+	}
+	
+	public String getPassFailPercentString() {
+		String str = new String();
+		str +=  minConfirmPercent + "/" + failurePercent + "";
+		return str;
 	}
 	
 	/**
@@ -199,6 +212,11 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 		return minResponseTime;
 	}
 	
+	public String getMinResponseTimeString() {
+		String str = new String();
+		str += minResponseTime/60 + "m" + minResponseTime%60 + "s";
+		return str;
+	}
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (11/13/2001 3:58:59 PM)
@@ -206,6 +224,64 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 	 */
 	public java.lang.Integer getPeakStartTime() {
 		return peakStartTime;
+	}
+
+	public String getPeakSettingsString() {
+		String str = null;
+		
+		ControlAlgorithm algorithm = ControlAlgorithm.getControlAlgorithm(controlUnits);
+		
+		switch(algorithm) {
+		
+			case KVAR:
+				str = getPeakLag() + "<" + "kVar" + "<" + getPeakLead();
+				break;
+			case VOLTS:
+			case MULTIVOLT:
+				str = getPeakLag() + "<" + "V" + "<" + getPeakLead();
+				break;
+			case MULTIVOLTVAR:
+				str =  getPeakLag() + "<" + "Volt" + "<" + getPeakLead();
+				str += " : " + getPkVarLag() + "<" + "kVar" + "<" + getPkVarLead();
+				break;
+			case PFACTORKWKVAR:
+				str =  getPeakLag() + "<" + getPkPFPoint() + "<" + getPeakLead() ;
+				break;				
+			default:
+				str = "Unknown Algorithm";
+				break;
+		}
+		
+		return str;
+	}
+
+	public String getOffPeakSettingsString() {
+		String str = null;
+		
+		ControlAlgorithm algorithm = ControlAlgorithm.getControlAlgorithm(controlUnits);
+		
+		switch(algorithm) {
+		
+			case KVAR:
+				str = getOffPkLag() + "<" + "kVar" + "<" + getOffPkLead();
+				break;
+			case VOLTS:
+			case MULTIVOLT:
+				str = getOffPkLag() + "<" + "V" + "<" + getOffPkLead();
+				break;
+			case MULTIVOLTVAR:
+				str = getOffPkLag() + "<" + "Volt" + "<" + getOffPkLead();
+				str += " : " + getOffpkVarLag() + "<" + "kVar" + "<" + getOffpkVarLead();
+				break;
+			case PFACTORKWKVAR:
+				str =  getOffPkLag() + "<" + getOffPkPFPoint() + "<" + getOffPkLead() ;
+				break;				
+			default:
+				str = "Unknown Algorithm";
+				break;
+		}
+		
+		return str;
 	}
 	
 	/**

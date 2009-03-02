@@ -65,7 +65,7 @@
 							footerClass="scrollerTableHeader"
 							rowClasses="tableRow,altTableRow"
 							value="#{capControlForm.allCBCStrats}"
-							columnClasses="gridCell">
+							columnClasses="scrollerCentered">
 							<h:column>
 								<f:facet name="header">
 									<h:outputText value="Strategy Name" title="Name of the strategy" />
@@ -97,7 +97,64 @@
 								</x:panelGrid>
 								
 							</h:column>
+							
+							<h:column>
+								<f:facet name="header">
+									<h:outputText value="Control Method" />
+								</f:facet>
+								<h:outputText value="#{cbcStrat.controlMethod  }" />
+							</h:column>
+							
+							<h:column>
+								<f:facet name="header">
+									<h:outputText value="Control Algorithm" />
+								</f:facet>
+								<h:outputText value="#{cbcStrat.controlUnits}" />
+							</h:column>		
+							
+							<h:column>
+								<f:facet name="header">
+									<h:outputText value="Start/Stop" />
+								</f:facet>
+								<h:outputText value="#{cbcStrat.peakStartTime}" converter="cti_TimeConverter" />
+								<h:outputText value="/"/>
+								<h:outputText value="#{cbcStrat.peakStopTime}" converter="cti_TimeConverter"/>
+							</h:column>
+							
+							<h:column>
+								<f:facet name="header">
+									<h:outputText value="Interval" />
+								</f:facet>
+								<h:outputText value="#{cbcStrat.controlIntervalString}"/>
+							</h:column>
+							
+							<h:column>
+								<f:facet name="header">
+									<h:outputText value="Confirm Time" />
+								</f:facet>
+								<h:outputText value="#{cbcStrat.minResponseTimeString}"/>
+							</h:column>
+							
+							<h:column>
+								<f:facet name="header">
+									<h:outputText value="Pass/Fail(%)" />
+								</f:facet>
+								<h:outputText value="#{cbcStrat.passFailPercentString}"/>
+							</h:column>
 
+							<h:column>
+								<f:facet name="header">
+									<h:outputText value="Peak Settings" />
+								</f:facet>
+								<h:outputText value="#{cbcStrat.peakSettingsString}" />
+							</h:column>
+							
+							<h:column>
+								<f:facet name="header">
+									<h:outputText value="Off Peak Settings" />
+								</f:facet>
+								<h:outputText value="#{cbcStrat.offPeakSettingsString}" />
+							</h:column>							
 						</h:dataTable>
 
 						<f:facet name="footer">
