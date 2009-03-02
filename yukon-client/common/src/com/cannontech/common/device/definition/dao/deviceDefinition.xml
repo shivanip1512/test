@@ -570,7 +570,7 @@
         </commands>
 		<attributes>
         	<attribute name="USAGE">
-        		<basicLookup point="Total kWh" />
+        		<basicLookup point="Rate A kWh" />
         	</attribute>
         	<attribute name="PEAK_DEMAND">
          		<basicLookup point="Peak kW (Rate A kW)" />
@@ -1514,7 +1514,7 @@
         </commands>
 		<attributes>
         	<attribute name="USAGE">
-        		<basicLookup point="Total kWh"/>
+        		<basicLookup point="Rate A kWh"/>
         	</attribute>
         	<attribute name="PEAK_DEMAND">
          		<basicLookup point="Peak kW (Rate A kW)"/>
@@ -3814,7 +3814,7 @@
        	</commands>
        	<attributes>
         	<attribute name="USAGE">
-        		<basicLookup point="Total kWh" />
+        		<basicLookup point="Rate A kWh" />
         	</attribute>
         	<attribute name="PEAK_DEMAND">
         		<basicLookup point="Peak kW (Rate A kW)" />
@@ -3851,12 +3851,14 @@
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="Analog">
+            	<!--<attribute name="PEAK_DEMAND"/>-->
                 <name>Peak kW (Rate A kW)</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
+            	<!--<attribute name="USAGE"/>-->
                 <name>Rate A kWh</name>
                 <offset value="3"/>
                 <multiplier value="1.0"/>
@@ -4092,7 +4094,7 @@
        	</commands>
        	<attributes>
         	<attribute name="USAGE">
-        		<basicLookup point="Total kWh" />
+        		<basicLookup point="Rate A kWh" />
         	</attribute>
         	<attribute name="PEAK_DEMAND">
         		<basicLookup point="Peak kW (Rate A kW)" />

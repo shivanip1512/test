@@ -6,6 +6,8 @@ package com.cannontech.common.gui.util;
 import java.util.Vector;
 
 import com.cannontech.common.editor.PropertyPanelEvent;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.DBPersistent;
 
 public abstract class DataInputPanel extends javax.swing.JPanel 
@@ -114,4 +116,28 @@ public void postSave(DBPersistent o) {
     // default nothing
 }
 
+/**
+ * Helper method to determine if pao is unique.
+ * If thisPaobjectId is the same as a paobjectId, then still considered unique. 
+ * @param paoName
+ * @param category
+ * @param paoClass
+ * @param thisPaobjectId
+ * @return
+ */
+protected boolean isUniquePao(String paoName, String category, String paoClass, int thisPaobjectId) {
+	LiteYukonPAObject liteYukonPAObject = DaoFactory.getPaoDao().getUnique(paoName, category, paoClass);
+
+	//if one is found, compare it to deviceBase to see if its this.
+	if (liteYukonPAObject != null) {
+		return liteYukonPAObject.getYukonID() == thisPaobjectId;
+	}
+
+	//null returned when unique, or rather when no matching pao found.
+	return (liteYukonPAObject == null);
+}
+
+protected boolean isUniquePao(String paoName, String category, String paoClass) {
+	return isUniquePao(paoName, category, paoClass, -1);
+}
 }
