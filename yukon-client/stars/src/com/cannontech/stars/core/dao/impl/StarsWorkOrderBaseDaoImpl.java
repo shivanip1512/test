@@ -34,7 +34,7 @@ public class StarsWorkOrderBaseDaoImpl implements StarsWorkOrderBaseDao, Initial
 
         selectSql = "SELECT OrderID,OrderNumber,WorkTypeID,CurrentStateID,ServiceCompanyID," +
                     "   DateReported,OrderedBy,Description,DateScheduled,DateCompleted," +
-                    "   ActionTaken,AdditionalOrderNumber,EnergyCompanyID " +
+                    "   ActionTaken,AdditionalOrderNumber,EnergyCompanyID, AccountId " +
                     "FROM WorkOrderBase wb " +
                     "JOIN ECToWorkOrderMapping ectwm ON ectwm.WorkOrderID = wb.OrderID";
         
@@ -109,6 +109,7 @@ public class StarsWorkOrderBaseDaoImpl implements StarsWorkOrderBaseDao, Initial
                 workOrder.setActionTaken(rs.getString("ActionTaken"));
                 workOrder.setAdditionalOrderNumber(rs.getString("AdditionalOrderNumber"));
                 workOrder.setEnergyCompanyID(rs.getInt("EnergyCompanyID"));
+                workOrder.setAccountID(rs.getInt("AccountId"));
                 return workOrder;
             }
         };
