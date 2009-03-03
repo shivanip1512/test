@@ -346,7 +346,7 @@ public class StandardMenuRenderer implements MenuRenderer {
         if (moduleBase.getSearchPath() != null && features.showSearch) {
             Div right = new Div();
             right.setClass("stdhdr_rightSide");
-            Form searchForm = new Form(moduleBase.getSearchPath(), Form.GET);
+            Form searchForm = new Form(moduleBase.getSearchPath(), moduleBase.getSearchMethod());
             searchForm.setAcceptCharset("ISO-8859-1");
             
             Div searchDiv = new Div();

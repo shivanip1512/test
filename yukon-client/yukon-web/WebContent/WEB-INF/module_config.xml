@@ -469,7 +469,7 @@
         </links>
       </option>
     </links>
-    <search action="results.jsp" method="post" fieldname="cbc_lastSearch"/>
+    <search action="results.jsp" method="get" fieldname="cbc_lastSearch"/>
     <skin name="standard"/>
     <css file="css/base.css"/> <!-- normally this should be an absolute path -->
     <css file="/WebConfig/yukon/styles/capcontrollogos.css"/>
