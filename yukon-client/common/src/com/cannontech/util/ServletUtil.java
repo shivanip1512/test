@@ -1419,7 +1419,11 @@ public static Date roundToMinute(Date toRound) {
                 String[] params = StringUtils.split(queryString, "&");
                 for (String param : params) {
                     String[] nameValue = StringUtils.split(param, "=");
-                    paramMap.put(nameValue[0], new String[] { URLDecoder.decode(nameValue[1], urlDecoding) });
+                    if (nameValue.length == 2) {
+                        paramMap.put(nameValue[0], new String[] {URLDecoder.decode(nameValue[1], urlDecoding)});
+                    } else {
+                        paramMap.put(nameValue[0], new String[] {""});
+                    }
                 }
             }
         } catch (UnsupportedEncodingException e) {

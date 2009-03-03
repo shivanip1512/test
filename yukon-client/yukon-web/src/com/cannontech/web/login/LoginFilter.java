@@ -12,6 +12,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
@@ -165,7 +166,10 @@ public class LoginFilter implements Filter {
 
     private void sendLoginRedirect(HttpServletRequest request, HttpServletResponse response) throws IOException{
         String navUrl = getRedirectedFrom(request);
-        String redirectURL = LoginController.LOGIN_URL + "?" + LoginController.REDIRECTED_FROM + "=" + navUrl;
+        String redirectURL = LoginController.LOGIN_URL;
+        if (!StringUtils.isBlank(navUrl)) {
+            redirectURL += "?" + LoginController.REDIRECTED_FROM + "=" + navUrl;
+        }
         response.sendRedirect(redirectURL);
     }
 
