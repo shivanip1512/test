@@ -113,6 +113,7 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
     private final Object NULL_CACHE_VALUE = new Object();
     private LeastRecentlyUsedCacheMap<Integer, Set<YukonRole>> userRoleCache = new LeastRecentlyUsedCacheMap<Integer, Set<YukonRole>>(1000);
     private Set<YukonRoleProperty> propertyExceptions = EnumSet.noneOf(YukonRoleProperty.class);
+    private boolean allowRoleConflicts = false;
     
     private static final ParameterizedRowMapper<UserGroupPropertyValue> userGroupPropertyValue = new ParameterizedRowMapper<UserGroupPropertyValue>() {
         public UserGroupPropertyValue mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -196,6 +197,10 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
             }
             log.info("propertyException list configured for: " + propertyExceptions);
         }
+        
+        // determine of role conflicts are allowed
+        String allowedStr = configurationSource.getString("ROLE_PROPERTY_CONFLICTS_ALLOWED", Boolean.FALSE.toString());
+        allowRoleConflicts = Boolean.parseBoolean(allowedStr.trim());
     }
     
     public void clearCache() {
@@ -441,16 +446,17 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         }
         Validate.notNull(user, "user can only be null when requesting System properties");
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select 1 isUser, value");
+        sql.append("select 1 isUser, value, -99999999 + userroleid"); // 3rd column is a number smaller than any groupid
         sql.append("from YukonUserRole");
         sql.append("where UserId = ").appendArgument(user.getUserID());
         sql.append("  and rolepropertyid = ").appendArgument(property.getPropertyId());
         sql.append("union");
-        sql.append("select 0 isUser, value");
+        sql.append("select 0 isUser, value, ygr.groupid");
         sql.append("from YukonGroupRole ygr");
         sql.append("  join YukonUserGroup yug on ygr.GroupId = yug.GroupId");
         sql.append("where yug.UserId = ").appendArgument(user.getUserID());
         sql.append("  and ygr.RolePropertyId = ").appendArgument(property.getPropertyId());
+        sql.append("order by 3"); // this is to mimic the old behavior
         
         List<UserGroupPropertyValue> values = simpleJdbcTemplate.query(sql.getSql(), userGroupPropertyValue, sql.getArguments());
         
@@ -462,6 +468,7 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         if (values.isEmpty()) {
             if (!checkRole(property.getRole(), user)) {
                 UserNotInRoleException userNotInRoleException = new UserNotInRoleException(property, user);
+                // the following exception should be removed before 4.3 is released
                 // let's see if this is in the exception list
                 if (propertyExceptions.contains(property)) {
                     // must be a special case
@@ -491,26 +498,39 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
             return value;
         } else {
             // the only way this can happen is if the user has exactly one user property
-            // and exactly one group property, any other combination is invalid
+            // and zero or one group property, any other combination is invalid (and the 0 group case is somewhat sketchy)
             int userCount = 0;
             int groupCount = 0;
             UserGroupPropertyValue lastUserValue = null;
-            for (UserGroupPropertyValue userGroupPropertyValues : values) {
-                if (userGroupPropertyValues.isUser) {
-                    lastUserValue = userGroupPropertyValues;
+            UserGroupPropertyValue firstValue = null;
+            for (UserGroupPropertyValue userGroupPropertyValue : values) {
+                if (userGroupPropertyValue.isUser) {
+                    lastUserValue = userGroupPropertyValue;
                     userCount++;
                 } else {
                     groupCount++;
                 }
+                if (firstValue == null) {
+                    firstValue = userGroupPropertyValue;
+                }
             }
-            if (userCount == 1 && groupCount == 1) {
+            if (userCount == 1 && groupCount <= 1) {
                 // if the value happens to be "(none)" or null, it will be handled in the getConvertedValue method
                 if (log.isDebugEnabled()) {
                     log.debug("got two role property values (using user) of " + property + " for " + user + ": " + lastUserValue.value);
                 }
                 return lastUserValue.value;
             } else {
-                throw new BadConfigurationException("Invalid role property combination found of " + property + " for " + user + " (userCount=" + userCount + ", groupCount=" + groupCount + ")");
+                BadConfigurationException configurationException = new BadConfigurationException("Invalid role property combination found of " + property + " for " + user + " (userCount=" + userCount + ", groupCount=" + groupCount + ")");
+                // the following exception should be removed before 4.3 is released
+                if (allowRoleConflicts) {
+                    log.warn("handling role conflict exception because ROLE_PROPERTY_CONFLICTS_ALLOWED is set", configurationException);
+                    if (log.isDebugEnabled()) {
+                        log.debug("got multiple role property values (using user) of " + property + " for " + user + ", returning first value (which happens to be a " + (firstValue.isUser ? "user" : "group") + " value): " + firstValue.value);
+                    }
+                    return firstValue.value;
+                }
+                throw configurationException;
             }
         }
     }
