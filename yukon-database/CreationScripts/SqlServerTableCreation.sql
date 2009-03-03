@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     3/3/2009 4:09:31 PM                          */
+/* Created on:     3/3/2009 5:41:54 PM                          */
 /*==============================================================*/
 
 
@@ -4612,12 +4612,12 @@ insert into command values(-41, 'control shed 60m', 'Shed 60-min', 'Emetcon Grou
 insert into command values(-42, 'control shed ?''NumMins''m', 'Shed x-min', 'Emetcon Group');
 insert into command values(-43, 'control restore', 'Restore', 'Emetcon Group');
 /* Versacom Group */
-insert into command values(-44, 'control cycle 50 period 30 count 4', 'Cycle 50% / 30min', 'Versacom Group');
-insert into command values(-45, 'control cycle terminate', 'Terminate Cycle', 'Versacom Group');
-insert into command values(-46, 'putconfig service out', 'Set to Out-Of-Service', 'Versacom Group');
-insert into command values(-47, 'putconfig service in', 'Set to In-Service', 'Versacom Group');
-insert into command values(-48, 'putstatus reset r1 r2 r3 cl', 'Reset All Counters', 'Versacom Group');
-insert into command values(-49, 'putconfig led yyy', 'Configure LEDS (load, test, report)', 'Versacom Group');
+INSERT INTO Command VALUES(-44, 'control cycle 50 period 30 count 4', 'Cycle 50% / 30min', 'Versacom Group');
+INSERT INTO Command VALUES(-45, 'control cycle terminate', 'Terminate Cycle', 'Versacom Group');
+INSERT INTO Command VALUES(-46, 'putconfig service out', 'Set to Out-Of-Service', 'Versacom Group');
+INSERT INTO Command VALUES(-47, 'putconfig service in', 'Set to In-Service', 'Versacom Group');
+INSERT INTO Command VALUES(-48, 'putconfig reset r1 r2 r3 cl', 'Reset All Counters', 'Versacom Group');
+INSERT INTO Command VALUES(-49, 'putconfig led yyy', 'Configure LEDS (load, test, report)', 'Versacom Group');
 
 /* TCU-BASE*/
 /* insert into command values(-50, 'loop', '1 TCU Loop', 'All TCUs'); */

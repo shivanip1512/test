@@ -73,6 +73,12 @@ INSERT INTO DeviceTypeCommand VALUES (-762, -167, 'LCR-3102', 10, 'Y', -1);
 INSERT INTO YukonListEntry VALUES (1066,1005,-1,'LCR-3102',1315); 
 /* End YUK-6841 */
 
+/* Start YUK-6874 */
+UPDATE Command 
+SET Command = 'putconfig reset r1 r2 r3 cl' 
+WHERE CommandId = -48; 
+/* End YUK-6874 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
