@@ -313,7 +313,7 @@ unsigned char CtiDeviceMCT4xx::crc8( const unsigned char *buf, unsigned int len 
 }
 
 
-CtiDeviceMCT4xx::point_info CtiDeviceMCT4xx::getData( unsigned char *buf, int len, ValueType4xx vt ) const
+CtiDeviceMCT4xx::point_info CtiDeviceMCT4xx::getData( const unsigned char *buf, int len, ValueType4xx vt ) const
 {
     PointQuality_t quality = NormalQuality;
     unsigned long error_code = 0xffffffff,  //  filled with 0xff because some data types are less than 32 bits

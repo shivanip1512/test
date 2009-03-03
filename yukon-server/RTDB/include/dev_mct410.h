@@ -41,27 +41,36 @@ private:
 
     struct daily_read_info_t
     {
-        CtiDate single_day;
-
-        CtiDate multi_day_start;
-        CtiDate multi_day_end;
-
-        unsigned channel;
-
-        volatile long in_progress;
-        bool retry;
-        bool failed;
-
-        enum request_type_t
+        enum RequestType
         {
             Request_None,
-            Request_SingleDayCh1,
-            Request_SingleDayCh2,
-            Request_SingleDayCh3,
+            Request_SingleDay,
             Request_MultiDay,
-            Request_RecentCh1,
+            Request_Recent
+        };
 
-        } request_type;
+        struct
+        {
+            CtiDate begin;
+            CtiDate end;
+
+            unsigned channel;
+
+            volatile long in_progress;
+            int multi_day_retries;
+
+            int user_id;
+
+            RequestType type;
+
+        } request;
+
+        struct
+        {
+            unsigned channel;
+            CtiDate  date;
+
+        } interest;
 
     } _daily_read_info;
 
@@ -299,7 +308,7 @@ protected:
 
     virtual point_info getDemandData(unsigned char *buf, int len) const;
 
-    point_info getData(unsigned char *buf, int len, ValueType410 vt) const;
+    point_info getData(const unsigned char *buf, int len, ValueType410 vt) const;
 
     int makeDynamicDemand(double input) const;
 

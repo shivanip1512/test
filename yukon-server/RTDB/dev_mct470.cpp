@@ -756,7 +756,7 @@ CtiDeviceMCT470::point_info CtiDeviceMCT470::getDemandData(unsigned char *buf, i
     return getData(buf, len, ValueType_PulseDemand);
 }
 
-CtiDeviceMCT470::point_info CtiDeviceMCT470::getData( unsigned char *buf, int len, ValueType470 vt ) const
+CtiDeviceMCT470::point_info CtiDeviceMCT470::getData( const unsigned char *buf, int len, ValueType470 vt ) const
 {
     PointQuality_t quality = NormalQuality;
     unsigned long error_code = 0xffffffff,  //  filled with 0xff because some data types are less than 32 bits

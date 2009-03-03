@@ -431,9 +431,13 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
     //  getvalue lp peak hour channel 3 10-15-2003 15
     static const boost::regex  re_lp_peak(CtiString("lp peak (day|hour|interval) channel ") + str_num + CtiString(" ") + str_date + CtiString(" ") + str_num);
 
+    //  getvalue daily read 12/12/2007
     //  getvalue daily read 12/12/2007 12/27/2007
     //  getvalue daily read channel n 12/12/2007
-    static const boost::regex  re_dailyread(CtiString("daily read (channel ") + str_num + CtiString(" )?") + CtiString("(") + str_daterange + CtiString(")?"));
+    //  getvalue daily read channel n 12/12/2007 12/27/2007
+    //  getvalue daily read detail 12/12/2007
+    //  getvalue daily read detail channel n 12/12/2007
+    static const boost::regex  re_dailyread(CtiString("daily read (detail )?(channel ") + str_num + CtiString(" )?") + CtiString("(") + str_daterange + CtiString(")?"));
 
     static const boost::regex  re_outage(CtiString("outage ") + str_num);
 
@@ -662,14 +666,19 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
         {
             if( !(temp = CmdStr.match(re_dailyread)).empty() )
             {
-                //  getvalue daily read 12/12/2007 12/27/2007
                 //  getvalue daily read 12/12/2007
+                //  getvalue daily read 12/12/2007 12/27/2007
                 //  getvalue daily read channel n 12/12/2007
-                //  getvalue daily read
-                //
-                //  "daily read (channel " + str_num + " )?" + "(" + str_date + " (" + str_date + ")?" + ")?"
+                //  getvalue daily read channel n 12/12/2007 12/27/2007
+                //  getvalue daily read detail 12/12/2007
+                //  getvalue daily read detail channel n 12/12/2007
 
                 _cmd["daily_read"] = true;
+
+                if( !temp.match(" detail ").empty() )
+                {
+                    _cmd["daily_read_detail"] = true;
+                }
 
                 if( !(temp = temp.match(re_daterange)).empty() )
                 {
@@ -955,7 +964,7 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
         {
             flag |= CMD_FLAG_CTL_SHED;
 
-			if(!(token = CmdStr.match( (const boost::regex) (CtiString("shed *") + str_floatnum + CtiString(" *[hms]?( |$)")))).empty())      // Sourcing from CmdStr, which is the entire command string.
+            if(!(token = CmdStr.match( (const boost::regex) (CtiString("shed *") + str_floatnum + CtiString(" *[hms]?( |$)")))).empty())      // Sourcing from CmdStr, which is the entire command string.
             {
                 DOUBLE mult = 60.0;
 
@@ -1334,7 +1343,7 @@ void  CtiCommandParser::doParsePutValue(const string &_CmdStr)
                 size_t nstart;
                 size_t nstop;
                 nstart = token.index("asciiraw ", &nstop);
-    
+
                 nstop += nstart;
 
                 if(!(token = token.match((const boost::regex)str_quoted_token, nstop)).empty())   // get the value
@@ -5602,10 +5611,10 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
 
     if(CmdStr.contains(" tamper"))
     {
-		CtiString to_be_matched_CtiString = (const CtiString &)  "tamper[ a-z_]*" + (const CtiString &)  "( *f[12][ =]*" 
-			                                 + str_num + (const CtiString &)  ")" 
-			                                 + (const CtiString &)  "( *f[12][ =]*" + str_num 
-			                                 + (const CtiString &)  ")?";
+        CtiString to_be_matched_CtiString = (const CtiString &)  "tamper[ a-z_]*" + (const CtiString &)  "( *f[12][ =]*"
+                                             + str_num + (const CtiString &)  ")"
+                                             + (const CtiString &)  "( *f[12][ =]*" + str_num
+                                             + (const CtiString &)  ")?";
 
         if(!(token = CmdStr.match(((const boost::regex)to_be_matched_CtiString))).empty())
         {
@@ -5633,7 +5642,7 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
         }
     }
 
-	temp = CmdStr.match((const boost::regex) ((const CtiString &) " override " + str_num) );
+    temp = CmdStr.match((const boost::regex) ((const CtiString &) " override " + str_num) );
 
     if(!temp.empty())
     {

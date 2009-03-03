@@ -231,7 +231,7 @@ protected:
     //  overridden by the 410 and 470 so they can use the same peak/TOU decode function
     virtual point_info getDemandData(unsigned char *buf, int len) const = 0;
 
-    point_info getData(unsigned char *buf, int len, ValueType4xx vt) const;
+    point_info getData(const unsigned char *buf, int len, ValueType4xx vt) const;
 
     virtual long getLoadProfileInterval(unsigned channel) = 0;
     virtual point_info getLoadProfileData(unsigned channel, unsigned char *buf, unsigned len) = 0;

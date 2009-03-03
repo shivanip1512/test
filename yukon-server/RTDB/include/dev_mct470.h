@@ -150,7 +150,7 @@ protected:
 
     virtual point_info getDemandData(unsigned char *buf, int len) const;
 
-    point_info getData(unsigned char *buf, int len, ValueType470 vt) const;
+    point_info getData(const unsigned char *buf, int len, ValueType470 vt) const;
 
     static const error_set _error_info_old_lp;
     static const error_set _error_info_lgs4;
