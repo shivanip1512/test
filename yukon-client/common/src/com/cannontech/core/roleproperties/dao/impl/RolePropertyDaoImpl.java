@@ -26,6 +26,7 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.LeastRecentlyUsedCacheMap;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.roleproperties.BadPropertyTypeException;
 import com.cannontech.core.roleproperties.UserNotInRoleException;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleCategory;
@@ -161,7 +162,7 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
                         if (convertPropertyValue != null) {
                             builder.put(roleProperty, convertPropertyValue);
                         }
-                    } catch (BadConfigurationException e) {
+                    } catch (BadPropertyTypeException e) {
                         log.error("Database contains an illegal default value for " + roleProperty + " (will be treated as null): " + defaultValue);
                     }
                 } catch (IllegalArgumentException e) {
@@ -300,11 +301,11 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         return result;
     }
     
-    public Object convertPropertyValue(YukonRoleProperty roleProperty, String value) throws BadConfigurationException {
+    public Object convertPropertyValue(YukonRoleProperty roleProperty, String value) throws BadPropertyTypeException {
         try {
             return convertPropertyValue(roleProperty.getType(), value);
         } catch (Exception e) {
-            throw new BadConfigurationException("Unable to convert value of " + roleProperty, e);
+            throw new BadPropertyTypeException(roleProperty, value, e);
         }
     }
 
@@ -316,7 +317,7 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
      * @return the converted value or the default, will only return null if the default was null
      */
     public <T> T getConvertedValue(YukonRoleProperty property,
-            LiteYukonUser user, Class<T> returnType) {
+            LiteYukonUser user, Class<T> returnType) throws BadPropertyTypeException {
         if (log.isDebugEnabled()) {
             log.debug("getting converted value of " + property + " for " + user + " as " + returnType.getSimpleName());
         }
@@ -509,7 +510,7 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
                 }
                 return lastUserValue.value;
             } else {
-                throw new RuntimeException("Invalid role property combination found of " + property + " for " + user + " (userCount=" + userCount + ", groupCount=" + groupCount + ")");
+                throw new BadConfigurationException("Invalid role property combination found of " + property + " for " + user + " (userCount=" + userCount + ", groupCount=" + groupCount + ")");
             }
         }
     }
