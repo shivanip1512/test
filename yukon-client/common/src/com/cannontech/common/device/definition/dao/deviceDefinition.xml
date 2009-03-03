@@ -3954,9 +3954,14 @@
 			<command name="Read IED kWh/kW">
         		<cmd text="getvalue ied kwht"/>
         		<pointRef name="Total kWh"/>
-        	</command>		
+        	</command>
+			<command name="Read Rate A kWh/Peak kW">
+				<cmd text="getvalue ied kwha"/>
+				<pointRef name="Peak kW (Rate A kW)"/>
+				<pointRef name="Rate A kWh"/>
+			</command>
         	<command name="Read IED Last Interval Demand">
-        		<cmd text="getvalue demand"/>
+        		<cmd text="getvalue ied demand"/>
         		<pointRef name="Last Interval kW"/>
         	</command>
        	</commands>
@@ -3999,12 +4004,14 @@
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="Analog">
+            	<!--<attribute name="PEAK_DEMAND"/>-->
                 <name>Peak kW (Rate A kW)</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
+            	<!--<attribute name="USAGE"/>-->
                 <name>Rate A kWh</name>
                 <offset value="3"/>
                 <multiplier value="1.0"/>
@@ -4236,6 +4243,19 @@
 			<command name="Read Current Demand">
         		<cmd text="getvalue demand"/>
         		<pointRef name="kW"/>
+        	</command>
+			<command name="Read IED kWh/kW">
+        		<cmd text="getvalue ied kwht"/>
+        		<pointRef name="Total kWh"/>
+        	</command>
+			<command name="Read Rate A kWh/Peak kW">
+				<cmd text="getvalue ied kwha"/>
+				<pointRef name="Peak kW (Rate A kW)"/>
+				<pointRef name="Rate A kWh"/>
+			</command>
+        	<command name="Read IED Last Interval Demand">
+        		<cmd text="getvalue ied demand"/>
+        		<pointRef name="Last Interval kW"/>
         	</command>
        	</commands>
        	<attributes>
