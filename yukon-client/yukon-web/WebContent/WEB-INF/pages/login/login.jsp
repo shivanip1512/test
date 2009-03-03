@@ -1,5 +1,6 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib prefix="ct" tagdir="/WEB-INF/tags"%>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -125,7 +126,7 @@
 	                            </div>
 	                        </cti:isStarsExist>
                         </cti:checkGlobalRolesAndProperties>
-                        <input type="hidden" name="REDIRECTED_FROM" value="${param.REDIRECTED_FROM}">
+                        <input type="hidden" name="REDIRECTED_FROM" value="<spring:escapeBody htmlEscape="true">${param.REDIRECTED_FROM}</spring:escapeBody>">
                         <input type="hidden" name="ACTION" value="LOGIN">
                     </form>
 

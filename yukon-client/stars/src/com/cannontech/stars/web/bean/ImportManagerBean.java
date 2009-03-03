@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 public class ImportManagerBean {
 	private Collection errorList;
 	private int pageSize;
@@ -99,7 +101,7 @@ public class ImportManagerBean {
 						sb.append("<tr>\n");
 						sb.append("<td class=\'TableCell\'>" + m.group(1) + "</td>\n");
 						sb.append("<td class=\'TableCell\'>" + m.group(2) + "</td>\n");
-						sb.append("<td class=\'TableCell\'>" + value[0] + "</td>\n");
+						sb.append("<td class=\'TableCell\'>" + StringEscapeUtils.escapeHtml(value[0]) + "</td>\n");
 						sb.append("</tr>\n");
 					}
 				}
