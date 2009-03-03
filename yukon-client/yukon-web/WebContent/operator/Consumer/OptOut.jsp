@@ -38,7 +38,7 @@
 
 </head>
 
-<body class="Background" leftmargin="0" topmargin="0" onload="initialize()">
+<body class="Background" leftmargin="0" topmargin="0">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
