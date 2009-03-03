@@ -1148,7 +1148,7 @@ void CtiLMProgramBase::restore(RWDBReader& rdr)
     }
     else
     {
-        setProgramState(InactiveState);
+        _programstate = InactiveState; // Do not use set function here
         setReductionTotal(0.0);
         setStartedControlling(gInvalidCtiTime);
         setLastControlSent(gInvalidCtiTime);
