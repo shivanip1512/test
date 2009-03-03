@@ -133,15 +133,19 @@ public class AccountServiceImpl implements AccountService {
         Address billingAddress = accountDto.getBillingAddress();
         
         /*
-         * Create the user login
+         * Create the user login. If no password is specified set the AuthType
+         * to NONE(No Login) and set the password to a space(done by dao).
+         * If an empty password is specified set the AuthType to the default
+         * AuthType and set the password to a space(done by dao);
          */
         LiteYukonUser user = null;
+        AuthType authType = null; // To be used later when we add AuthType to the xml messaging.
+        String emptyPassword = "";
+        AuthType defaultAuthType = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.getForId(AuthenticationRole.DEFAULT_AUTH_TYPE), AuthType.class, user);
         if(!StringUtils.isBlank(accountDto.getUserName())) {
             user = new LiteYukonUser(); 
             user.setUsername(accountDto.getUserName());
             user.setStatus(UserUtils.STATUS_ENABLED);
-            AuthType defaultAuthType = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.getForId(AuthenticationRole.DEFAULT_AUTH_TYPE), AuthType.class, user);
-            user.setAuthType(defaultAuthType);
             List<LiteYukonGroup> groups = new ArrayList<LiteYukonGroup>();
             LiteYukonGroup defaultYukonGroup = yukonGroupDao.getLiteYukonGroup(YukonGroup.YUKON_GROUP_ID);
             groups.add(defaultYukonGroup);
@@ -153,7 +157,21 @@ public class AccountServiceImpl implements AccountService {
                 log.error("Account " + accountNumber + " could not be added: The provided login group "+ accountDto.getLoginGroup() + " doesn't exists.");
                 throw new InvalidLoginGroupException("The provided login group doesn't "+ accountDto.getLoginGroup() + " exists.");
             }
-            yukonUserDao.addLiteYukonUserWithPassword(user, accountDto.getPassword(), energyCompany.getEnergyCompanyID(), groups);
+            String password = accountDto.getPassword();
+            if(password != null) {
+                if(password.isEmpty()) {
+                    password = emptyPassword;
+                }
+                if(authType == null) {
+                    user.setAuthType(defaultAuthType);
+                }else {
+                    user.setAuthType(authType);
+                }
+            }else {
+                user.setAuthType(AuthType.NONE);
+                password = emptyPassword;
+            }
+            yukonUserDao.addLiteYukonUserWithPassword(user, password, energyCompany.getEnergyCompanyID(), groups);
             dbPersistantDao.processDBChange(new DBChangeMsg(user.getLiteID(),
                 DBChangeMsg.CHANGE_YUKON_USER_DB,
                 DBChangeMsg.CAT_YUKON_USER,
@@ -494,7 +512,11 @@ public class AccountServiceImpl implements AccountService {
     public void updateAccount(UpdatableAccount updatableAccount, LiteStarsEnergyCompany energyCompany) {
         AccountDto accountDto = updatableAccount.getAccountDto();
         String accountNumber = updatableAccount.getAccountNumber();
+        String username = accountDto.getUserName(); 
         
+        /*
+         * Check for account info errors.
+         */
         if(StringUtils.isBlank(accountNumber)) {
             log.error("Account " + accountNumber + " could not be added: The provided account number cannot be empty.");
             throw new InvalidAccountNumberException("The provided account number cannot be empty.");
@@ -514,6 +536,27 @@ public class AccountServiceImpl implements AccountService {
             log.error("Account " + accountNumber + " could not be updated: Unable to find account for account#: " + accountNumber);
             throw new InvalidAccountNumberException("Unable to find account for account#: " + accountNumber, e);
         }        
+        
+        /*
+         * Check for login info errors.
+         */
+        LiteYukonUser tempUser = yukonUserDao.getLiteYukonUser( username ); 
+        if(tempUser != null) {
+            List<LiteContact> tempContacts = contactDao.getContactsByLoginId(tempUser.getUserID());
+            boolean ourUsername = false;
+            for(LiteContact tempContact : tempContacts) {
+                CustomerAccount tempAccount = customerAccountDao.getAccountByContactId(tempContact.getContactID());
+                if(tempAccount.getAccountNumber().equalsIgnoreCase(accountNumber)) {
+                    ourUsername = true;
+                    break;
+                }
+            }
+            if(!ourUsername) {
+                log.error("Account " + accountNumber + " could not be added: The provided username already in use.");
+                throw new UserNameUnavailableException("The provided username already in use.");
+            }
+        }
+        
         LiteCustomer liteCustomer = customerDao.getLiteCustomer(account.getCustomerId());
         AccountSite accountSite = accountSiteDao.getByAccountSiteId(account.getAccountSiteId());
         LiteSiteInformation liteSiteInformation = siteInformationDao.getSiteInfoById(accountSite.getSiteInformationId());
@@ -522,6 +565,83 @@ public class AccountServiceImpl implements AccountService {
         LiteContact primaryContact = customerDao.getPrimaryContact(account.getCustomerId());
         Address streetAddress = accountDto.getStreetAddress();
         Address billingAddress = accountDto.getBillingAddress();
+        
+        /*RULES FOR LOGIN UPDATE/CREATION
+         * LOGIN EXISTS
+         * Update the login, if no password is specified don't change the Authtype or password.
+         * If an empty password is specified, set the AuthType to the default AuthType and 
+         * set the password to a space(done by doa). 
+         * 
+         * LOGIN DOESN'T EXIST
+         * If the account has no login, create one. If no password is specified set the 
+         * AuthType to NONE(No Login) and set the password to a space(done by dao). 
+         * If the password is empty set AuthType to default AuthType and set the password
+         *  to a space(done by dao).
+         */
+        int newLoginId = UserUtils.USER_DEFAULT_ID;
+        AuthType authType = null; // To be used later when we add AuthType to the xml messaging.
+        AuthType defaultAuthType = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.getForId(AuthenticationRole.DEFAULT_AUTH_TYPE), AuthType.class, null);
+        String emptyPassword = ""; // Dao will end up setting this to a space for oracle reasons.
+        if(username != null && StringUtils.isNotBlank(username)) {
+            LiteYukonUser login = yukonUserDao.getLiteYukonUser(primaryContact.getLoginID());
+            if(login != null && login.getUserID() != UserUtils.USER_DEFAULT_ID) {
+                /*
+                 * Update their login info.
+                 */
+                login.setUsername(username);
+                // passwords should be handled better than plain text
+                String password = accountDto.getPassword();
+                if(password != null) {
+                    if(authType == null) {
+                        login.setAuthType(defaultAuthType);
+                    }else {
+                        login.setAuthType(authType);
+                    }
+                    yukonUserDao.updateYukonUserWithPassword(login, password);
+                } else {
+                    yukonUserDao.changeUsername(login.getUserID(), username);
+                }
+            } else {
+                /*
+                 * Create a new login.
+                 */
+                LiteYukonUser user = new LiteYukonUser(); 
+                user.setUsername(accountDto.getUserName());
+                user.setStatus(UserUtils.STATUS_ENABLED);
+                List<LiteYukonGroup> groups = new ArrayList<LiteYukonGroup>();
+                LiteYukonGroup defaultYukonGroup = yukonGroupDao.getLiteYukonGroup(YukonGroup.YUKON_GROUP_ID);
+                groups.add(defaultYukonGroup);
+                LiteYukonGroup loginGroup = null;
+                try {
+                    loginGroup = yukonGroupDao.getLiteYukonGroupByName(accountDto.getLoginGroup());
+                    groups.add(loginGroup);
+                }catch (NotFoundException e) {
+                    log.error("Account " + accountNumber + " could not be added: The provided login group: "+ accountDto.getLoginGroup() + " doesn't exists.");
+                    throw new InvalidLoginGroupException("The provided login group: "+ accountDto.getLoginGroup() + " doesn't exists.");
+                }
+                String password = accountDto.getPassword();
+                if(password != null) {
+                    if(password.isEmpty()) {
+                        password = emptyPassword;
+                    }
+                    if(authType == null) {
+                        user.setAuthType(defaultAuthType);
+                    }else {
+                        user.setAuthType(authType);
+                    }
+                }else {
+                    user.setAuthType(AuthType.NONE);
+                    password = emptyPassword;
+                }
+                yukonUserDao.addLiteYukonUserWithPassword(user, password, energyCompany.getEnergyCompanyID(), groups);
+                newLoginId = user.getUserID();
+                dbPersistantDao.processDBChange(new DBChangeMsg(user.getLiteID(),
+                    DBChangeMsg.CHANGE_YUKON_USER_DB,
+                    DBChangeMsg.CAT_YUKON_USER,
+                    DBChangeMsg.CAT_YUKON_USER,
+                    DBChangeMsg.CHANGE_TYPE_ADD));
+            }
+        }
         
         /*
          * Update the address
@@ -555,6 +675,9 @@ public class AccountServiceImpl implements AccountService {
          */
         primaryContact.setContFirstName(accountDto.getFirstName());
         primaryContact.setContLastName(accountDto.getLastName());
+        if(newLoginId != UserUtils.USER_DEFAULT_ID) {
+            primaryContact.setLoginID(newLoginId);
+        }
         contactDao.saveContact(primaryContact);
         dbPersistantDao.processDBChange(new DBChangeMsg(primaryContact.getLiteID(),
             DBChangeMsg.CHANGE_CONTACT_DB,
@@ -680,6 +803,11 @@ public class AccountServiceImpl implements AccountService {
          * Update mapping
          */
         ecMappingDao.updateECToAccountMapping(account.getAccountId(), energyCompany.getEnergyCompanyID());
+        
+        /*
+         * Update Login
+         */
+        
         
         log.info("Account: " +accountNumber + " updated successfully.");
     }

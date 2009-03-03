@@ -83,6 +83,16 @@ public final class ContactDaoImpl implements ContactDao {
         return contact;
 
     }
+	
+	@Transactional
+	@Override
+    public List<LiteContact> getContactsByLoginId(int loginId) {
+	    StringBuilder sql = new StringBuilder("SELECT *");
+        sql.append(" FROM Contact");
+        sql.append(" WHERE LoginId = ?");
+	    final List<LiteContact> contactList = simpleJdbcTemplate.query(sql.toString(), rowMapper,loginId);
+        return contactList;
+    }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public Map<Integer, LiteContact> getContacts(List<Integer> contactIds) {

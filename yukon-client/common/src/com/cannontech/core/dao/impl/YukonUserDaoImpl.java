@@ -16,6 +16,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.authorization.dao.PaoPermissionDao;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -78,7 +79,7 @@ public final class YukonUserDaoImpl implements YukonUserDao {
 	    user.setUserID(userId);
 	    SqlStatementBuilder sql = new SqlStatementBuilder();
 	    sql.append("INSERT INTO YukonUser VALUES (?,?,?,?,?)");
-	    simpleJdbcTemplate.update(sql.toString(), user.getUserID(), user.getUsername(), password, user.getStatus(), user.getAuthType().name());
+	    simpleJdbcTemplate.update(sql.toString(), user.getUserID(), user.getUsername(), SqlUtils.convertStringToDbValue(password), user.getStatus(), user.getAuthType().name());
 	    
 	    for(LiteYukonGroup group : groups) {
 	        sql = new SqlStatementBuilder();
@@ -101,6 +102,14 @@ public final class YukonUserDaoImpl implements YukonUserDao {
 	        simpleJdbcTemplate.update(sql.toString());
 	    }
 	}
+	
+	@Override
+    @Transactional
+    public void updateYukonUserWithPassword(LiteYukonUser user, String password) throws DataAccessException {
+	    final String sql = "update yukonuser set username = ?, password = ?, status = ?, AuthType = ? where userid = ?";
+	    //final String sql = "UPDATE YukonUser SET UserName = ?, Password = ?, Status = ?, AuthType = ?, WHERE UserID = ?";
+        simpleJdbcTemplate.update(sql, user.getUsername(), SqlUtils.convertStringToDbValue(password), user.getStatus(), user.getAuthType().name(), user.getUserID());
+    }
 
 	public LiteYukonUser getLiteYukonUser(final int userId) {
 	    try {

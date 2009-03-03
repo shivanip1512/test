@@ -215,4 +215,11 @@ public interface ContactDao {
      */
     public void deleteAdditionalContactById(Integer contactId);
 
+    /**
+     * Method to retrieve a list of contacts for a given login id.
+     * @param loginId
+     * @return
+     */
+    public List<LiteContact> getContactsByLoginId(int loginId);
+
 }
