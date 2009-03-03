@@ -95,7 +95,7 @@
 <div id="internalTreeContainer" style="width:${width}px;height:${height + 30}px;">
 
     <div id="expandCollapseAllLinks" style="font-size:9px;text-align:right;padding-left:2px;padding-bottom:5px;">
-        <a href="javascript:void(0);" onclick="toggleExpand(true);"><cti:msg key="yukon.web.deviceGroups.editor.groupsContainer.groupTree.expandAllText"/></a> | 
+<!--  YUK-7060        <a href="javascript:void(0);" onclick="toggleExpand(true);"><cti:msg key="yukon.web.deviceGroups.editor.groupsContainer.groupTree.expandAllText"/></a> |-->  
         <a href="javascript:void(0);" onclick="toggleExpand(false);"><cti:msg key="yukon.web.deviceGroups.editor.groupsContainer.groupTree.collapseAllText"/></a>
     </div>
             
