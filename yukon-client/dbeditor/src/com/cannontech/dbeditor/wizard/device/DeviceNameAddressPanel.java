@@ -618,6 +618,8 @@ public void setDeviceType(int deviceType)
       getPhysicalAddressLabel().setText("Lead Meter Address:");
    else if( deviceType == DeviceTypes.SERIES_5_LMI )
 	  getPhysicalAddressLabel().setText("Address:");
+   else if( deviceType == DeviceTypes.LCR3102 )
+		  getPhysicalAddressLabel().setText("Serial Number:");
    else
       getPhysicalAddressLabel().setText("Physical Address:");
    
