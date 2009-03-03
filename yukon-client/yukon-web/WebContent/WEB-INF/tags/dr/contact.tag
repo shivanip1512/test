@@ -22,11 +22,11 @@
             <td class="contactLeft">
                 <div>
                     <cti:msg key="yukon.dr.consumer.contacts.firstName" />
-                    <input type="text" name="firstName" value="<spring:escapeBody htmlEscape="true">${contact.contFirstName}</spring:escapeBody>"/><br>
+                    <input type="text" name="firstName" maxlength="120" value="<spring:escapeBody htmlEscape="true">${contact.contFirstName}</spring:escapeBody>"/><br>
                 </div>
                 <div>
                     <cti:msg key="yukon.dr.consumer.contacts.lastName" />
-                    <input type="text" name="lastName" value="<spring:escapeBody htmlEscape="true">${contact.contLastName}</spring:escapeBody>" />
+                    <input type="text" name="lastName" maxlength="120" value="<spring:escapeBody htmlEscape="true">${contact.contLastName}</spring:escapeBody>" />
                 </div>
             </td>
             <td class="contactRight">

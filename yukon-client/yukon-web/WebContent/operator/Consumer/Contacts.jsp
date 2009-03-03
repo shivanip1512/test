@@ -64,13 +64,13 @@
                             <tr>
                               <td width="100" align="right">Last Name:</td>
                               <td width="192">
-                                <input type="text" name="LastName" size="24" value="<%= StringEscapeUtils.escapeHtml(primContact.getLastName()) %>" onchange="setContentChanged(true)">
+                                <input type="text" name="LastName" size="24" maxlength="120" value="<%= StringEscapeUtils.escapeHtml(primContact.getLastName()) %>" onchange="setContentChanged(true)">
                               </td>
                             </tr>
                             <tr>
                               <td width="100" align="right">First Name:</td>
                               <td width="192">
-                                <input type="text" name="FirstName" size="24" value="<%= StringEscapeUtils.escapeHtml(primContact.getFirstName()) %>" onchange="setContentChanged(true)">
+                                <input type="text" name="FirstName" size="24" maxlength="120" value="<%= StringEscapeUtils.escapeHtml(primContact.getFirstName()) %>" onchange="setContentChanged(true)">
                               </td>
                             </tr>
                           </table>
@@ -161,13 +161,13 @@
                             <tr>
                               <td width="100" align="right">Last Name:</td>
                               <td width="192">
-                                                                <input type="text" name="LastName" size="24" value="<%= StringEscapeUtils.escapeHtml(contact.getLastName()) %>" onchange="setContentChanged(true)">
+                                 <input type="text" name="LastName" size="24" maxlength="120" value="<%= StringEscapeUtils.escapeHtml(contact.getLastName()) %>" onchange="setContentChanged(true)">
                               </td>
                             </tr>
                             <tr>
                               <td width="100" align="right">First Name:</td>
                               <td width="192">
-                                <input type="text" name="FirstName" size="24" value="<%= StringEscapeUtils.escapeHtml(contact.getFirstName()) %>" onchange="setContentChanged(true)">
+                                <input type="text" name="FirstName" size="24" maxlength="120" value="<%= StringEscapeUtils.escapeHtml(contact.getFirstName()) %>" onchange="setContentChanged(true)">
                               </td>
                             </tr>
                           </table>
@@ -261,13 +261,13 @@ for (LiteContactNotification notif : additionalNotifs) {
 	                            <tr>
 	                              <td width="100" align="right">Last Name:</td>
 	                              <td width="192">
-	                                <input type="text" name="LastName" size="24" onchange="setContentChanged(true)">
+	                                <input type="text" name="LastName" size="24" maxlength="120" onchange="setContentChanged(true)">
 	                              </td>
 	                            </tr>
 	                            <tr>
 	                              <td width="100" align="right">First Name:</td>
 	                              <td width="192">
-	                                <input type="text" name="FirstName" size="24" onchange="setContentChanged(true)">
+	                                <input type="text" name="FirstName" size="24" maxlength="120" onchange="setContentChanged(true)">
 	                              </td>
 	                            </tr>
 	                          </table>
