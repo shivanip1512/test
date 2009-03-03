@@ -526,10 +526,10 @@ function revealLog() {
                 LiteAddress liteAddr = liteEC.getAddress(liteAcctSite.getStreetAddressID());
 
                 String name = StarsUtils.formatName(liteContact);
-                String homePhone = ServletUtils.formatPhoneNumberForDisplay(StarsUtils.getNotification(DaoFactory.getContactDao().getContactNotification(liteContact,
-                                                                                                  YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE)));
-                String workPhone = ServletUtils.formatPhoneNumberForDisplay(StarsUtils.getNotification(DaoFactory.getContactDao().getContactNotification(liteContact,
-                                                                                                  YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE)));
+                String homePhone = StarsUtils.getNotification(DaoFactory.getContactDao().getContactNotification(liteContact,
+                                                                                                  YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE));
+                String workPhone = StarsUtils.getNotification(DaoFactory.getContactDao().getContactNotification(liteContact,
+                                                                                                  YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE));
                 String mapNo = StarsUtils.forceNotNone(liteAcctSite.getSiteNumber());
 
                 StreetAddress starsAddr = new StreetAddress();
@@ -543,10 +543,10 @@ function revealLog() {
                     %><%=name%><br><%}
                 %>
                                   <%if (homePhone.length() > 0) {
-                    %>Home #: <%=homePhone%><br><%}
+                    %>Home #: <cti:formatPhoneNumber value="<%=homePhone%>"/><br><%}
                 %>
                                   <%if (workPhone.length() > 0) {
-                    %>Work #: <%=workPhone%><br><%}
+                    %>Work #: <cti:formatPhoneNumber value="<%=workPhone%>"/><br><%}
                 %>
                                   <%if (address.length() > 0) {
                     %><%=address%><br><%}

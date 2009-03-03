@@ -43,6 +43,7 @@
     <entry key="yukon.dr.consumer.contacts.addNotification">Add notification</entry>
     <entry key="yukon.dr.consumer.contacts.removeNotificationTitle">Remove Notification</entry>
     <entry key="yukon.dr.consumer.contacts.removeImage">/WebConfig/yukon/Icons/clearbits/close.gif</entry>
+    <entry key="yukon.dr.consumer.contacts.invalidNotification">Contact {0} for {1} contains invalid characters</entry>    
     
     <!-- controlHistory.jsp -->
     <entry key="yukon.dr.consumer.controlhistory.header">Programs - Control History</entry>

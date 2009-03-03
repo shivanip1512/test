@@ -16,6 +16,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteContact;
@@ -150,17 +151,16 @@ public class UpdateContactsAction implements ActionBase {
 				int tricksy = 0;
 				if(notifCatIDs.length > notifications.length)
 					tricksy = notifCatIDs.length - notifications.length;
-				
+				YukonListDao yukonListDao = DaoFactory.getYukonListDao();
 				for (int i = tricksy; i < notifCatIDs.length; i++) {
 					int notifCatID = Integer.parseInt( notifCatIDs[i] );
 					if (notifCatID > 0 && notifications[i - tricksy].trim().length() > 0) 
                     {
-						if (notifCatID == YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE || notifCatID == YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE
-							|| notifCatID == YukonListEntryTypes.YUK_ENTRY_ID_CELL_PHONE)
+						if (yukonListDao.isPhoneNumber(notifCatID) || yukonListDao.isFax(notifCatID))
                         {
                             notifications[i - tricksy] = ServletUtils.formatPhoneNumberForStorage( notifications[i - tricksy] );
                         }
-                        else if(notifCatID == YukonListEntryTypes.YUK_ENTRY_ID_PIN || notifCatID == YukonListEntryTypes.YUK_ENTRY_ID_IVR_LOGIN)
+                        else if (yukonListDao.isPIN(notifCatID))
                         {
                             notifications[i - tricksy] = ServletUtils.formatPin( notifications[i - tricksy] );
                         }

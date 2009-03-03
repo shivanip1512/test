@@ -42,9 +42,11 @@ import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.i18n.MessageCodeGenerator;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.stars.dr.account.exception.InvalidNotificationException;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.user.UserUtils;
 import com.cannontech.util.ServletUtil;
@@ -122,67 +124,74 @@ public class ContactController extends AbstractConsumerController {
     public String updateContact(int contactId, String firstName,
             String lastName, LiteYukonUser user, HttpServletRequest request) {
 
-        accountCheckerService.checkContact(user, contactId);
-        
-        LiteContact contact = contactDao.getContact(contactId);
-        contact.setContFirstName(firstName);
-        contact.setContLastName(lastName);
-        
-        // If remove contact button was clicked, remove
-        String remove = ServletRequestUtils.getStringParameter(request, "remove", null);
-        
-        if(remove != null) {
-            contactDao.removeAdditionalContact(contactId);
-            
-        } else {
-            
-            
-            List<LiteContactNotification> notificationList = this.getNotifications(request,
-                                                                                   contactId);
-    
-            this.addNewNotification(request, contactId, notificationList);
-    
-            contact.setNotifications(notificationList);
+        String redirectUrl = "redirect:/spring/stars/consumer/contacts";
+        try {
+            accountCheckerService.checkContact(user, contactId);
 
-            
-            if(rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_CREATE_LOGIN_FOR_ACCOUNT, user) || 
-                    rolePropertyDao.checkProperty(YukonRoleProperty.RESIDENTIAL_CREATE_LOGIN_FOR_ACCOUNT, user)) {
-            
-                StarsYukonUser starsUser = (StarsYukonUser) request.getSession().getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-                // If not primary contact and no login exists, create it.
-                if(!contactDao.isPrimaryContact(contactId) && contact.getLoginID() == -9999) {
-               
-                    YukonUser login = new YukonUser();
-                    LiteStarsEnergyCompany liteEC = StarsDatabaseCache.getInstance().getEnergyCompany( starsUser.getEnergyCompanyID() );
-                    LiteYukonGroup[] custGroups = liteEC.getResidentialCustomerGroups();
-                    String time = new Long(Calendar.getInstance().getTimeInMillis()).toString();
-                    String firstInitial= "";
-                    if(firstName != null) {
-                        firstInitial = firstName.toLowerCase().substring(0,1);
+            LiteContact contact = contactDao.getContact(contactId);
+            contact.setContFirstName(firstName);
+            contact.setContLastName(lastName);
+
+            // If remove contact button was clicked, remove
+            String remove = ServletRequestUtils.getStringParameter(request, "remove", null);
+
+            if(remove != null) {
+                contactDao.removeAdditionalContact(contactId);
+
+            } else {
+
+
+                List<LiteContactNotification> notificationList = this.getNotifications(request,
+                                                                                       contactId);
+
+                this.addNewNotification(request, contactId, notificationList);
+
+                contact.setNotifications(notificationList);
+
+
+                if(rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_CREATE_LOGIN_FOR_ACCOUNT, user) || 
+                        rolePropertyDao.checkProperty(YukonRoleProperty.RESIDENTIAL_CREATE_LOGIN_FOR_ACCOUNT, user)) {
+
+                    StarsYukonUser starsUser = (StarsYukonUser) request.getSession().getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
+                    // If not primary contact and no login exists, create it.
+                    if(!contactDao.isPrimaryContact(contactId) && contact.getLoginID() == -9999) {
+
+                        YukonUser login = new YukonUser();
+                        LiteStarsEnergyCompany liteEC = StarsDatabaseCache.getInstance().getEnergyCompany( starsUser.getEnergyCompanyID() );
+                        LiteYukonGroup[] custGroups = liteEC.getResidentialCustomerGroups();
+                        String time = new Long(Calendar.getInstance().getTimeInMillis()).toString();
+                        String firstInitial= "";
+                        if(firstName != null) {
+                            firstInitial = firstName.toLowerCase().substring(0,1);
+                        }
+                        String newUserName = firstInitial + lastName.toLowerCase();
+                        if (yukonUserDao.getLiteYukonUser( newUserName ) != null) {
+                            newUserName = lastName.toLowerCase() + time.substring(time.length() - 2);
+                        }
+                        login.getYukonUser().setUsername(newUserName);
+                        login.getYukonUser().setAuthType(AuthType.NONE);
+                        login.getYukonGroups().addElement(((YukonGroup)LiteFactory.convertLiteToDBPers(custGroups[0])).getYukonGroup());
+                        login.getYukonUser().setStatus(UserUtils.STATUS_ENABLED);
+                        try {
+                            login = Transaction.createTransaction(Transaction.INSERT, login).execute();
+                        } catch (TransactionException e) {
+                            CTILogger.error(e);
+                        }
+                        LiteYukonUser liteUser = new LiteYukonUser( login.getUserID().intValue() );
+                        ServerUtils.handleDBChange(liteUser, DBChangeMsg.CHANGE_TYPE_ADD);
+                        contact.setLoginID(login.getUserID().intValue());
                     }
-                    String newUserName = firstInitial + lastName.toLowerCase();
-                    if (yukonUserDao.getLiteYukonUser( newUserName ) != null) {
-                        newUserName = lastName.toLowerCase() + time.substring(time.length() - 2);
-                    }
-                    login.getYukonUser().setUsername(newUserName);
-                    login.getYukonUser().setAuthType(AuthType.NONE);
-                    login.getYukonGroups().addElement(((YukonGroup)LiteFactory.convertLiteToDBPers(custGroups[0])).getYukonGroup());
-                    login.getYukonUser().setStatus(UserUtils.STATUS_ENABLED);
-                    try {
-                        login = Transaction.createTransaction(Transaction.INSERT, login).execute();
-                    } catch (TransactionException e) {
-                        CTILogger.error(e);
-                    }
-                    LiteYukonUser liteUser = new LiteYukonUser( login.getUserID().intValue() );
-                    ServerUtils.handleDBChange(liteUser, DBChangeMsg.CHANGE_TYPE_ADD);
-                    contact.setLoginID(login.getUserID().intValue());
                 }
+
+                contactDao.saveContact(contact);
             }
-            
-            contactDao.saveContact(contact);
+        } catch (InvalidNotificationException e) {
+            redirectUrl = ServletUtil.tweakRequestURL(redirectUrl, "failed", "true");
+            redirectUrl = ServletUtil.tweakRequestURL(redirectUrl, "notifCategory", e.getNotifCategory());
+            redirectUrl = ServletUtil.tweakRequestURL(redirectUrl, "notificationText", e.getNotificationText());
         }
         
-        return "redirect:/spring/stars/consumer/contacts";
+        return redirectUrl;
     }
 
     /**
@@ -191,9 +200,10 @@ public class ContactController extends AbstractConsumerController {
      * @param request - Current request
      * @param contactId - Id of current contact
      * @return List of notifications for the contact
+     * @throws InvalidNotificationException 
      */
     private List<LiteContactNotification> getNotifications(
-            HttpServletRequest request, int contactId) {
+            HttpServletRequest request, int contactId) throws InvalidNotificationException {
 
         // Create a map for each of the values in the notifications
         Map<String, Integer> idMap = ServletUtil.getIntegerParameters(request,
@@ -217,13 +227,32 @@ public class ContactController extends AbstractConsumerController {
             String keyY = key + ".y";
 
             if (!removeMap.containsKey(key) && !removeMap.containsKey(keyX) && !removeMap.containsKey(keyY)) {
-                Integer notificationType = typeMap.get(key);
+                Integer notifCatId = typeMap.get(key);
                 String notificationText = textMap.get(key);
+                String disabledFlag = "N";
+                try {
+                    if (yukonListDao.isPhoneNumber(notifCatId) || yukonListDao.isFax(notifCatId)) {
+                        notificationText = ServletUtils.formatPhoneNumberForStorage( notificationText );
+                    } else if(yukonListDao.isPIN(notifCatId)) {
+                        notificationText = ServletUtils.formatPin( notificationText );
+                    } else if(yukonListDao.isEmail(notifCatId)) {
+                        if (contactDao.isPrimaryContact(contactId)) {
+                            LiteContact primContact = contactDao.getContact(contactId);
+                            LiteContactNotification email = contactDao.getContactNotification(primContact, notifCatId);
+                            if (email != null) {
+                                disabledFlag = email.getDisableFlag();
+                            }
+                        }
+                    }
+                } catch (WebClientException e) {
+                    String notifCategory = yukonListDao.getYukonListEntry(notifCatId).getEntryText();
+                    throw new InvalidNotificationException(notifCategory, notificationText);
+                }
 
                 LiteContactNotification notification = new LiteContactNotification(notificationId,
                                                                                    contactId,
-                                                                                   notificationType,
-                                                                                   "N",
+                                                                                   notifCatId,
+                                                                                   disabledFlag,
                                                                                    notificationText);
                 notificationList.add(notification);
             }

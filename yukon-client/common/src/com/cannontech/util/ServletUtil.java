@@ -6,6 +6,7 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.sql.ResultSetMetaData;
 import java.text.DateFormat;
@@ -1409,15 +1410,20 @@ public static Date roundToMinute(Date toRound) {
     
     private static Map<String, String[]> getQueryStringParams(String requestUrl) {
         Map<String, String[]> paramMap = new HashMap<String, String[]>();
+        final String urlDecoding = "UTF-8";
 
-        int questionMark = requestUrl.indexOf('?');
-        if (questionMark > 0) {
-            String queryString = requestUrl.substring(questionMark + 1);
-            String[] params = StringUtils.split(queryString, "&");
-            for (String param : params) {
-                String[] nameValue = StringUtils.split(param, "=");
-                paramMap.put(nameValue[0], new String[] { nameValue[1] });
+        try {
+            int questionMark = requestUrl.indexOf('?');
+            if (questionMark > 0) {
+                String queryString = requestUrl.substring(questionMark + 1);
+                String[] params = StringUtils.split(queryString, "&");
+                for (String param : params) {
+                    String[] nameValue = StringUtils.split(param, "=");
+                    paramMap.put(nameValue[0], new String[] { URLDecoder.decode(nameValue[1], urlDecoding) });
+                }
             }
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
         }
 
         return paramMap;

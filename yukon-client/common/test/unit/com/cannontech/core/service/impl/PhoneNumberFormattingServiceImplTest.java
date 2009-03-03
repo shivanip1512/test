@@ -49,6 +49,20 @@ public class PhoneNumberFormattingServiceImplTest {
     }
     
     @Test
+    public void test_format_LT_7_Digits() {
+        String phoneNumber = "12345";
+        String expectedPhoneNumber = "12345";
+        
+        // unformatted phone number
+        String formattedNumber = formattingService.formatPhoneNumber(phoneNumber, null);
+        Assert.assertEquals(expectedPhoneNumber, formattedNumber);
+        
+        // preformatted phone number
+        formattedNumber = formattingService.formatPhoneNumber(expectedPhoneNumber, null);
+        Assert.assertEquals(expectedPhoneNumber, formattedNumber);
+    }    
+    
+    @Test
     public void test_format_7_Digits() {
         String phoneNumber = "1234567";
         String expectedPhoneNumber = "123-4567";
@@ -89,5 +103,19 @@ public class PhoneNumberFormattingServiceImplTest {
         formattedNumber = formattingService.formatPhoneNumber(expectedPhoneNumber, null);
         Assert.assertEquals(expectedPhoneNumber, formattedNumber);
     }
+    
+    @Test
+    public void test_format_GT_11_Digits() {
+        String phoneNumber = "82(3456)789012343";
+        String expectedPhoneNumber = "82(3456)789012343";
+        
+        // unformatted phone number
+        String formattedNumber = formattingService.formatPhoneNumber(phoneNumber, null);
+        Assert.assertEquals(expectedPhoneNumber, formattedNumber);
+        
+        // preformatted phone number
+        formattedNumber = formattingService.formatPhoneNumber(expectedPhoneNumber, null);
+        Assert.assertEquals(expectedPhoneNumber, formattedNumber);
+    }    
     
 }

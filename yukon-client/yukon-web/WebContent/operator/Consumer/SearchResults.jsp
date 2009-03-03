@@ -7,6 +7,7 @@
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation" %>
 <%@ page import="com.cannontech.database.data.lite.stars.StarsLiteFactory" %>
 <%@ page import="com.cannontech.database.data.customer.CustomerTypes" %>
+<%@ page import="com.cannontech.database.data.lite.LiteContactNotification" %>
 <%
     String pageName = request.getContextPath() + "/operator/Consumer/SearchResults.jsp";
 
@@ -206,21 +207,26 @@ function navPage()
 %>
                     <%= StarsUtils.forceNotNull(liteAcctInfo.getAccountSite().getSiteNumber()) %>
 <%
-				}
-				else {
-					String homePhone = StarsUtils.getNotification(
-							DaoFactory.getContactDao().getContactNotification(contact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE) );
-					String workPhone = StarsUtils.getNotification(
-							DaoFactory.getContactDao().getContactNotification(contact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE) );
-					
-					StringBuffer phoneNo = new StringBuffer();
-					if (homePhone.length() > 0)
-						phoneNo.append( ServletUtils.formatPhoneNumberForDisplay(homePhone) ).append( "(H)" );
-					if (workPhone.length() > 0) {
-						if (phoneNo.length() > 0) phoneNo.append( ", " );
-						phoneNo.append( ServletUtils.formatPhoneNumberForDisplay(workPhone) ).append( "(W)" );
-					}
-					if (phoneNo.length() == 0) phoneNo.append( "(none)" );
+                }
+                else {
+                    LiteContactNotification homeNotif = 
+                            DaoFactory.getContactDao().getContactNotification(contact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
+                    LiteContactNotification workNotif = 
+                            DaoFactory.getContactDao().getContactNotification(contact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE);
+%>
+					<cti:formatNotification var="homePhone" value="<%=homeNotif%>" />
+					<cti:formatNotification var="workPhone" value="<%=workNotif%>" />
+<%                    
+                    StringBuffer phoneNo = new StringBuffer();
+					String homePhone = (String) pageContext.getAttribute("homePhone");
+					String workPhone = (String) pageContext.getAttribute("workPhone");
+                    if (homePhone.length() > 0)
+                        phoneNo.append(homePhone).append( "(H)" );
+                    if (workPhone.length() > 0) {
+                        if (phoneNo.length() > 0) phoneNo.append( ", " );
+                        phoneNo.append(workPhone).append( "(W)" );
+                    }
+                    if (phoneNo.length() == 0) phoneNo.append( "(none)" );
 %>
                     <%= phoneNo.toString() %>
 <%

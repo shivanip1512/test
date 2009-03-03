@@ -2,6 +2,7 @@ package com.cannontech.core.service.impl;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.NoSuchMessageException;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.service.PhoneNumberFormattingService;
@@ -15,6 +16,7 @@ public class PhoneNumberFormattingServiceImpl implements PhoneNumberFormattingSe
     
     @Override
     public String formatPhoneNumber(final String phoneNumber, final YukonUserContext yukonUserContext) {
+        String formattedPhoneNumber = phoneNumber;
         String cleanPhoneNumber = removeNonDigits(phoneNumber);
 
         if (StringUtils.isBlank(cleanPhoneNumber)) return "";
@@ -23,10 +25,12 @@ public class PhoneNumberFormattingServiceImpl implements PhoneNumberFormattingSe
             messageSourceResolver.getMessageSourceAccessor(yukonUserContext);
         
         String code = keyPrefix + cleanPhoneNumber.length();
-        String pattern = messageSourceAccessor.getMessage(code);
-
-        String formattedPhoneNumber = formatToPattern(cleanPhoneNumber, pattern);
-        
+        try {
+            String pattern = messageSourceAccessor.getMessage(code);
+            formattedPhoneNumber = formatToPattern(cleanPhoneNumber, pattern);
+        } catch (NoSuchMessageException e) {
+            // defaults to returning phone number as is, no formatting
+        }
         return formattedPhoneNumber;
     }
     

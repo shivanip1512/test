@@ -396,7 +396,8 @@ function revealLog() {
 <% } else { %>
                                   <%= company.getCompanyName() %><br>
                                   <%= ServletUtils.formatAddress( company.getCompanyAddress() ) %><br>
-                                  <%= ServletUtils.formatPhoneNumberForDisplay(company.getMainPhoneNumber()) %> </td>
+                                  <cti:formatPhoneNumber value="<%=company.getMainPhoneNumber()%>"/>
+                                  </td>
 <% } %>
                               </tr>
                             </table>

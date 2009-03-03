@@ -241,10 +241,11 @@ are present in page, session, etc. as an attribute. -->
                         </td>
 <%
 	ContactNotification homePhone = ServletUtils.getContactNotification(account.getPrimaryContact(), YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
-	String homePhoneNo = (homePhone != null)? ServletUtils.formatPhoneNumberForDisplay(homePhone.getNotification()) : "";
+	String homePhoneNo = (homePhone != null)? homePhone.getNotification() : "";
 %>
+                        <cti:formatPhoneNumber var="homePhoneNoFmt" value="<%=homePhoneNo%>"/>
                         <td width="210"> 
-                          <input type="text" name="HomePhone" maxlength="20" size="20" value="<%= homePhoneNo %>" onchange="setContentChanged(true)">
+                          <input type="text" name="HomePhone" maxlength="20" size="20" value="${homePhoneNoFmt}" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -253,10 +254,11 @@ are present in page, session, etc. as an attribute. -->
                         </td>
 <%
 	ContactNotification workPhone = ServletUtils.getContactNotification(account.getPrimaryContact(), YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE);
-	String workPhoneNo = (workPhone != null)? ServletUtils.formatPhoneNumberForDisplay(workPhone.getNotification()) : "";
+	String workPhoneNo = (workPhone != null)? workPhone.getNotification() : "";
 %>
+                        <cti:formatPhoneNumber var="workPhoneNoFmt" value="<%=workPhoneNo%>"/>
                         <td width="210"> 
-                          <input type="text" name="WorkPhone" maxlength="20" size="20" value="<%= workPhoneNo %>" onchange="setContentChanged(true)">
+                          <input type="text" name="WorkPhone" maxlength="20" size="20" value="${workPhoneNoFmt}" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -318,10 +320,11 @@ are present in page, session, etc. as an attribute. -->
                         </td>
 <%
 	ContactNotification homePhone2 = ServletUtils.getContactNotification(contacts[0], YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
-	String homePhoneNo2 = (homePhone2 != null)? ServletUtils.formatPhoneNumberForDisplay(homePhone2.getNotification()) : "";
+	String homePhoneNo2 = (homePhone2 != null)? homePhone2.getNotification() : "";
 %>
+                        <cti:formatPhoneNumber var="homePhoneNo2Fmt" value="<%=homePhoneNo2%>"/>
                         <td width="210"> 
-                          <input type="text" name="HomePhone2" maxlength="20" size="20" value="<%= homePhoneNo2 %>" onchange="setContentChanged(true)">
+                          <input type="text" name="HomePhone2" maxlength="20" size="20" value="${homePhoneNo2Fmt}" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -330,10 +333,11 @@ are present in page, session, etc. as an attribute. -->
                         </td>
 <%
 	ContactNotification workPhone2 = ServletUtils.getContactNotification(contacts[0], YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE);
-	String workPhoneNo2 = (workPhone2 != null)? ServletUtils.formatPhoneNumberForDisplay(workPhone2.getNotification()) : "";
+	String workPhoneNo2 = (workPhone2 != null)? workPhone2.getNotification() : "";
 %>
+                        <cti:formatPhoneNumber var="workPhoneNo2Fmt" value="<%=workPhoneNo2%>"/>
                         <td width="210"> 
-                          <input type="text" name="WorkPhone2" maxlength="20" size="20" value="<%= workPhoneNo2 %>" onchange="setContentChanged(true)">
+                          <input type="text" name="WorkPhone2" maxlength="20" size="20" value="${workPhoneNo2Fmt}" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -358,10 +362,11 @@ are present in page, session, etc. as an attribute. -->
                         </td>
 <%
 	ContactNotification homePhone3 = ServletUtils.getContactNotification(contacts[1], YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
-	String homePhoneNo3 = (homePhone3 != null)? ServletUtils.formatPhoneNumberForDisplay(homePhone3.getNotification()) : "";
+    String homePhoneNo3 = (homePhone3 != null)? homePhone3.getNotification() : "";
 %>
+                        <cti:formatPhoneNumber var="homePhoneNo3Fmt" value="<%=homePhoneNo3%>"/>
                         <td width="210"> 
-                          <input type="text" name="HomePhone3" maxlength="20" size="20" value="<%= homePhoneNo3 %>" onchange="setContentChanged(true)">
+                          <input type="text" name="HomePhone3" maxlength="20" size="20" value="${homePhoneNo3Fmt}" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -370,10 +375,11 @@ are present in page, session, etc. as an attribute. -->
                         </td>
 <%
 	ContactNotification workPhone3 = ServletUtils.getContactNotification(contacts[1], YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE);
-	String workPhoneNo3 = (workPhone3 != null)? ServletUtils.formatPhoneNumberForDisplay(workPhone3.getNotification()) : "";
+	String workPhoneNo3 = (workPhone3 != null)? workPhone3.getNotification() : "";
 %>
+                        <cti:formatPhoneNumber var="workPhoneNo3Fmt" value="<%=workPhoneNo3%>"/>                        
                         <td width="210"> 
-                          <input type="text" name="WorkPhone3" maxlength="20" size="20" value="<%= workPhoneNo3 %>" onchange="setContentChanged(true)">
+                          <input type="text" name="WorkPhone3" maxlength="20" size="20" value="${workPhoneNo3Fmt}" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -398,10 +404,11 @@ are present in page, session, etc. as an attribute. -->
                         </td>
 <%
 	ContactNotification homePhone4 = ServletUtils.getContactNotification(contacts[2], YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
-	String homePhoneNo4 = (homePhone4 != null)? ServletUtils.formatPhoneNumberForDisplay(homePhone4.getNotification()) : "";
+	String homePhoneNo4 = (homePhone4 != null)? homePhone4.getNotification() : "";
 %>
+                        <cti:formatPhoneNumber var="homePhoneNo4Fmt" value="<%=homePhoneNo4%>"/>
                         <td width="210"> 
-                          <input type="text" name="HomePhone4" maxlength="20" size="20" value="<%= homePhoneNo4 %>" onchange="setContentChanged(true)">
+                          <input type="text" name="HomePhone4" maxlength="20" size="20" value="${homePhoneNo4Fmt}" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -410,10 +417,11 @@ are present in page, session, etc. as an attribute. -->
                         </td>
 <%
 	ContactNotification workPhone4 = ServletUtils.getContactNotification(contacts[2], YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE);
-	String workPhoneNo4 = (workPhone4 != null)? ServletUtils.formatPhoneNumberForDisplay(workPhone4.getNotification()) : "";
+	String workPhoneNo4 = (workPhone4 != null)? workPhone4.getNotification() : "";
 %>
+                        <cti:formatPhoneNumber var="workPhoneNo4Fmt" value="<%=workPhoneNo4%>"/>                        
                         <td width="210"> 
-                          <input type="text" name="WorkPhone4" maxlength="20" size="20" value="<%= workPhoneNo4 %>" onchange="setContentChanged(true)">
+                          <input type="text" name="WorkPhone4" maxlength="20" size="20" value="${workPhoneNo4Fmt}" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                     </table>

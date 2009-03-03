@@ -189,7 +189,8 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
 	         listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_PHONE
 	         || listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE
 	         || listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE
-	         || listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_CELL_PHONE );
+	         || listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_CELL_PHONE
+	         || listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_CALL_BACK_PHONE );
 	}
 
     /* (non-Javadoc)
@@ -217,7 +218,8 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
 	public boolean isPIN( int listEntryID )
 	{
 		return
-			 listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_PIN;
+			 listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_PIN
+			 || listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_IVR_LOGIN;
 	}
 	
 	/* (non-Javadoc)

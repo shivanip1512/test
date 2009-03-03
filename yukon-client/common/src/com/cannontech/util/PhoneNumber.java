@@ -8,36 +8,36 @@ package com.cannontech.util;
 public class PhoneNumber
 {
 
-	/**
-	 * Puts the given phone number string into a readable format.
-	 * 
-	 */
-	public static String format(String phoneNumber)
-	{
-		if (phoneNumber == null) {
-			return "";
-		}
-
-        if(phoneNumber.startsWith("1"))
-            phoneNumber = phoneNumber.replaceFirst("1", "");
-        
-		if (phoneNumber.length() > 10 && phoneNumber.indexOf("-") < 0)
-		{
-			return "(" + phoneNumber.substring(0, 3) + ") " + phoneNumber.substring(3, 6) + "-" + phoneNumber.substring(6, 10) + " x" + phoneNumber.substring(10, phoneNumber.length());
-		}
-		else if (phoneNumber.length() == 10)
-		{
-			return "(" + phoneNumber.substring(0, 3) + ") " + phoneNumber.substring(3, 6) + "-" + phoneNumber.substring(6, 10);
-		}
-		else if (phoneNumber.length() == 7)
-		{
-			return phoneNumber.substring(0, 3) + "-" + phoneNumber.substring(3, 7);
-		}
-		else
-		{
-			return phoneNumber;
-		}
-	}
+//	/**
+//	 * Puts the given phone number string into a readable format.
+//	 * 
+//	 */
+//	public static String format(String phoneNumber)
+//	{
+//		if (phoneNumber == null) {
+//			return "";
+//		}
+//
+//        if(phoneNumber.startsWith("1"))
+//            phoneNumber = phoneNumber.replaceFirst("1", "");
+//        
+//		if (phoneNumber.length() > 10 && phoneNumber.indexOf("-") < 0)
+//		{
+//			return "(" + phoneNumber.substring(0, 3) + ") " + phoneNumber.substring(3, 6) + "-" + phoneNumber.substring(6, 10) + " x" + phoneNumber.substring(10, phoneNumber.length());
+//		}
+//		else if (phoneNumber.length() == 10)
+//		{
+//			return "(" + phoneNumber.substring(0, 3) + ") " + phoneNumber.substring(3, 6) + "-" + phoneNumber.substring(6, 10);
+//		}
+//		else if (phoneNumber.length() == 7)
+//		{
+//			return phoneNumber.substring(0, 3) + "-" + phoneNumber.substring(3, 7);
+//		}
+//		else
+//		{
+//			return phoneNumber;
+//		}
+//	}
 
 	/**
 	 * Returns the given digits from a phone number

@@ -5,8 +5,13 @@
 <cti:standardPage module="consumer" page="contacts">
 <cti:standardMenu/>
 
-    <h3><cti:msg key="yukon.dr.consumer.contacts.header" /></h3>
-    
+   <h3><cti:msg key="yukon.dr.consumer.contacts.header" /></h3>
+
+   <c:if test="${!empty param.failed}">
+       <div class="errorRed">
+          <cti:msg key="yukon.dr.consumer.contacts.invalidNotification" arguments="${param.notificationText},${param.notifCategory}"/>
+       </div>
+   </c:if>
     <!-- Display primary contact and notifications -->
     <dr:contact contact="${primaryContact}" titleKey="yukon.dr.consumer.contacts.primaryContact" options="${notificationOptionList}" primary="true" />
   

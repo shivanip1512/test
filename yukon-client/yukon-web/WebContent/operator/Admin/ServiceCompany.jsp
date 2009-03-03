@@ -148,14 +148,16 @@ function newCode(form) {
                         <td width="25%" align="right" class="TableCell">Main Phone 
                           #:</td>
                         <td width="75%" class="TableCell"> 
-                          <input type="text" name="PhoneNo" value="<%= ServletUtils.formatPhoneNumberForDisplay(sc.getMainPhoneNumber()) %>" onchange="setContentChanged(true)">
+                          <cti:formatPhoneNumber var="scMainPhoneNumber" value="<%=sc.getMainPhoneNumber()%>"/>
+                          <input type="text" name="PhoneNo" value="${scMainPhoneNumber}" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Main Fax 
                           #:</td>
-                        <td width="75%" class="TableCell"> 
-                          <input type="text" name="FaxNo" value="<%= ServletUtils.formatPhoneNumberForDisplay(sc.getMainFaxNumber()) %>" onchange="setContentChanged(true)">
+                        <td width="75%" class="TableCell">
+                          <cti:formatPhoneNumber var="scMainFaxNumber" value="<%=sc.getMainFaxNumber()%>"/> 
+                          <input type="text" name="FaxNo" value="${scMainFaxNumber}" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 

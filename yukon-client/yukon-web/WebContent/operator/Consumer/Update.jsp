@@ -248,10 +248,11 @@ function enableBillingFields(form){
                         </td>
 <%
 	ContactNotification homePhone = ServletUtils.getContactNotification(primContact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
-	String homePhoneNo = (homePhone != null)? ServletUtils.formatPhoneNumberForDisplay(homePhone.getNotification()) : "";
+	String homePhoneNo = (homePhone != null)? homePhone.getNotification() : "";
 %>
+                        <cti:formatPhoneNumber var="homePhoneNoFmt" value="<%=homePhoneNo%>"/>
                         <td width="210"> 
-                          <input type="text" name="HomePhone" maxlength="20" size="20" value="<%= homePhoneNo %>" onchange="setContentChanged(true)">
+                          <input type="text" name="HomePhone" maxlength="20" size="20" value="${homePhoneNoFmt}" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -260,10 +261,11 @@ function enableBillingFields(form){
                         </td>
 <%
 	ContactNotification workPhone = ServletUtils.getContactNotification(primContact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE);
-	String workPhoneNo = (workPhone != null)? ServletUtils.formatPhoneNumberForDisplay(workPhone.getNotification()) : "";
+	String workPhoneNo = (workPhone != null)? workPhone.getNotification() : "";
 %>
+                        <cti:formatPhoneNumber var="workPhoneNoFmt" value="<%=workPhoneNo%>"/>
                         <td width="210"> 
-                          <input type="text" name="WorkPhone" maxlength="20" size="20" value="<%= StringEscapeUtils.escapeHtml(workPhoneNo) %>" onchange="setContentChanged(true)">
+                          <input type="text" name="WorkPhone" maxlength="20" size="20" value="${workPhoneNoFmt}" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 

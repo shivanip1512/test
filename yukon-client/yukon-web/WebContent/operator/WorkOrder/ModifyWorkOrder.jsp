@@ -390,8 +390,8 @@ function sendWorkOrder() {
 		LiteAddress liteAddr = liteEC.getAddress(liteAcctSite.getStreetAddressID());
 		
 		String name = StarsUtils.formatName(liteContact);
-		String homePhone = ServletUtils.formatPhoneNumberForDisplay(StarsUtils.getNotification(DaoFactory.getContactDao().getContactNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE)));
-		String workPhone = ServletUtils.formatPhoneNumberForDisplay(StarsUtils.getNotification(DaoFactory.getContactDao().getContactNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE)));
+		String homePhone = StarsUtils.getNotification(DaoFactory.getContactDao().getContactNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE));
+		String workPhone = StarsUtils.getNotification(DaoFactory.getContactDao().getContactNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE));
 		String mapNo = StarsUtils.forceNotNone(liteAcctSite.getSiteNumber());
 		
 		StreetAddress starsAddr = new StreetAddress();
@@ -408,8 +408,8 @@ function sendWorkOrder() {
                                 <td class="TableCell"><a href="" onclick="if (warnUnsavedChanges()) {document.cusForm.submit();return false;}"> 
                                   Account # <%= liteAccount.getAccountNumber() %></a><br>
                                   <% if (name.length() > 0) { %><%= name %><br><% } %>
-                                  <% if (homePhone.length() > 0) { %>Home #: <%= homePhone %><br><% } %>
-                                  <% if (workPhone.length() > 0) { %>Work #: <%= workPhone %><br><% } %>
+                                  <% if (homePhone.length() > 0) { %>Home #: <cti:formatPhoneNumber value="<%=homePhone%>"/><br><% } %>
+                                  <% if (workPhone.length() > 0) { %>Work #: <cti:formatPhoneNumber value="<%=workPhone%>"/><br><% } %>
                                 </td>
                               </tr>
                             </table>

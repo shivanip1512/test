@@ -165,14 +165,16 @@ function addCustomerGroup(form) {
                         <td width="25%" align="right" class="TableCell">Main Phone 
                           #:</td>
                         <td width="75%" class="TableCell"> 
-                          <input type="text" name="PhoneNo" value="<%= ServletUtils.formatPhoneNumberForDisplay(ec.getMainPhoneNumber()) %>" size="30" onchange="setContentChanged(true)">
+                          <cti:formatPhoneNumber var="ecMainPhoneNumber" value="<%=ec.getMainPhoneNumber()%>"/>
+                          <input type="text" name="PhoneNo" value="${ecMainPhoneNumber}" size="30" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Main Fax 
                           #:</td>
-                        <td width="75%" class="TableCell"> 
-                          <input type="text" name="FaxNo" value="<%= ServletUtils.formatPhoneNumberForDisplay(ec.getMainFaxNumber()) %>" size="30" onchange="setContentChanged(true)">
+                        <td width="75%" class="TableCell">
+                          <cti:formatPhoneNumber var="ecMainFaxNumber" value="<%=ec.getMainFaxNumber()%>"/> 
+                          <input type="text" name="FaxNo" value="${ecMainFaxNumber}" size="30" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 

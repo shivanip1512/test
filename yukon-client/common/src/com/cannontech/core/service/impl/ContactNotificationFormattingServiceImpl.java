@@ -17,7 +17,7 @@ public class ContactNotificationFormattingServiceImpl implements ContactNotifica
     @Override
     public String formatNotification(LiteContactNotification notif, YukonUserContext context) throws IllegalArgumentException {
         if (notif != null) {
-            if(yukonListDao.isPhoneNumber(notif.getNotificationCategoryID())) {
+            if (yukonListDao.isPhoneNumber(notif.getNotificationCategoryID()) || yukonListDao.isFax(notif.getNotificationCategoryID())) {
                 try {
                     return phoneNumberFormattingService.formatPhoneNumber(notif.getNotification(), context);
                 } catch (NoSuchMessageException e) {
@@ -27,7 +27,8 @@ public class ContactNotificationFormattingServiceImpl implements ContactNotifica
                 return notif.getNotification();
             }
         } else {
-            throw new IllegalArgumentException("Contact Notification object is null in ContactNotificationFormattingServiceImpl.formatNotification()");
+            // home and work phone, email etc are optional
+            return "";
         }
     }
     

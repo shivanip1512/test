@@ -331,19 +331,19 @@ public class ServletUtils {
         return PhoneNumber.extractDigits(phoneNo);
     }
     
-    public static String formatPhoneNumberForDisplay(String phoneNo) {
-        phoneNo = phoneNo.trim();
-        if (phoneNo.equals("")) return "";
-        
-        /*//verify no non-digits are present
-        char[] checkDigits = phoneNo.toCharArray();
-        for(char j: checkDigits) {
-            if(!Character.isDigit(j) && j != '-' && j != 'x' && j != '(' && j != ')' && j != ' ')
-                throw new WebClientException("Invalid phone number format '" + phoneNo + "'.  The phone number contains non-digits.");
-        }*/
-        
-        return PhoneNumber.format(phoneNo);
-    }
+//    public static String formatPhoneNumberForDisplay(String phoneNo) {
+//        phoneNo = phoneNo.trim();
+//        if (phoneNo.equals("")) return "";
+//        
+//        /*//verify no non-digits are present
+//        char[] checkDigits = phoneNo.toCharArray();
+//        for(char j: checkDigits) {
+//            if(!Character.isDigit(j) && j != '-' && j != 'x' && j != '(' && j != ')' && j != ' ')
+//                throw new WebClientException("Invalid phone number format '" + phoneNo + "'.  The phone number contains non-digits.");
+//        }*/
+//        
+//        return PhoneNumber.format(phoneNo);
+//    }
     
     public static String formatPin(String pin) throws WebClientException 
     {
