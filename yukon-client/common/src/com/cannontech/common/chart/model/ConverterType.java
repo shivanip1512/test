@@ -3,6 +3,7 @@ package com.cannontech.common.chart.model;
 import com.cannontech.common.chart.service.ChartDataConverter;
 import com.cannontech.common.chart.service.impl.ChartDefaultConverter;
 import com.cannontech.common.chart.service.impl.ChartNormalizedDeltaConverter;
+import com.cannontech.common.chart.service.impl.ChartPowerFactorDataConverter;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
 
 public enum ConverterType {
@@ -24,6 +25,15 @@ public enum ConverterType {
 
         public String getUnits(LiteUnitMeasure unitMeasure) {
             return unitMeasure.getUnitMeasureName() + " / day";
+        }
+    },
+    POWERFACTOR("PowerFactor") {
+        public ChartDataConverter getDataConverter() {
+        	return new ChartPowerFactorDataConverter();
+        }
+
+        public String getUnits(LiteUnitMeasure unitMeasure) {
+            return unitMeasure.getUnitMeasureName();
         }
     };
 

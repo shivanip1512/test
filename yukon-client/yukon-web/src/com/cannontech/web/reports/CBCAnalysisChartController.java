@@ -225,7 +225,15 @@ public class CBCAnalysisChartController extends MultiActionController  {
     	    		}
     	    		graph.put("pointIds", StringUtils.join(pointIdsListForTarget.get(groupLabel), ","));
     	    		graph.put("interval", chartInterval);
-    	    		graph.put("converterType", "RAW");
+    	    		
+    	    		if ("PF".equals(analysisType)) {
+    	    			//if Power Factor, use a different converter
+    	    			graph.put("converterType", "POWERFACTOR");
+    	    		} else {
+    	    			//else use the default
+    	    			graph.put("converterType", "RAW");
+    	    		}
+    	    		
     	    		graph.put("graphType", "LINE");
     	    		graph.put("startDateMillis", startDateMillis);
     	    		graph.put("endDateMillis", endDateMillis);
