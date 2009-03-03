@@ -180,14 +180,20 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         
         // build up exception list
         String exceptionList = configurationSource.getString("ROLE_PROPERTY_EXCEPTION_LIST", "");
-        String[] exceptionArray = exceptionList.split("\\s*,\\s*");
-        for (String propertyStr : exceptionArray) {
-            try {
-                YukonRoleProperty property = YukonRoleProperty.valueOf(propertyStr);
-                propertyExceptions.add(property);
-            } catch (IllegalArgumentException e) {
-                log.warn("master.cfg contains an unknown role property: " + propertyStr);
+        if (exceptionList.contains("*")) {
+            propertyExceptions.addAll(EnumSet.allOf(YukonRoleProperty.class));
+            log.info("propertyException list configured for all role properties");
+        } else {
+            String[] exceptionArray = exceptionList.split("\\s*,\\s*");
+            for (String propertyStr : exceptionArray) {
+                try {
+                    YukonRoleProperty property = YukonRoleProperty.valueOf(propertyStr);
+                    propertyExceptions.add(property);
+                } catch (IllegalArgumentException e) {
+                    log.warn("master.cfg contains an unknown role property: " + propertyStr);
+                }
             }
+            log.info("propertyException list configured for: " + propertyExceptions);
         }
     }
     
@@ -454,12 +460,14 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
             List<UserGroupPropertyValue> values, LiteYukonUser user) {
         if (values.isEmpty()) {
             if (!checkRole(property.getRole(), user)) {
+                UserNotInRoleException userNotInRoleException = new UserNotInRoleException(property, user);
                 // let's see if this is in the exception list
                 if (propertyExceptions.contains(property)) {
                     // must be a special case
+                    log.warn("handling UserNotInRoleException for property on exception list", userNotInRoleException);
                     return null;
                 } else {
-                    throw new UserNotInRoleException(property);
+                    throw userNotInRoleException;
                 }
             }
             // if we got here, we know the user has this property's role
