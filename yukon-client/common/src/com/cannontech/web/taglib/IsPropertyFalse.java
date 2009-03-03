@@ -35,19 +35,21 @@ public class IsPropertyFalse extends BodyTagSupport
 		LiteYukonRoleProperty liteProp =
 			DaoFactory.getRoleDao().getRoleProperty(propertyid);
 
-		if( user != null && liteProp != null )
-		{
-			String val = DaoFactory.getAuthDao().getRolePropertyValue(
-				user,
-				liteProp.getRolePropertyID() );
+		if( user != null && liteProp != null ) {
 			
-			if( Boolean.FALSE.toString().equalsIgnoreCase(val) )
-				return EVAL_BODY_INCLUDE;
-			else
-				return SKIP_BODY;
-		}
-		else
+			boolean val = DaoFactory.getAuthDao().checkRoleProperty(
+					user,
+					liteProp.getRolePropertyID() );
+				
+				if(!val) {
+					return EVAL_BODY_INCLUDE;
+				} else {
+					return SKIP_BODY;
+				}
+			
+		} else {
 			return SKIP_BODY;
+		}
 	}
 	
 	/**
