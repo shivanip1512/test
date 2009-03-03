@@ -85,17 +85,17 @@ public class ExtendedTOURecordFormatter extends BillingFormatterBase {
         // KVAR
         if (device.getData(Channel.ONE, ReadingType.KVAR, BillableField.totalConsumption) != null) {
 
-            addFormattedLine(writeToFile, device, KVAR_CODE, Channel.ONE, ReadingType.KVA);
+            addFormattedLine(writeToFile, device, KVAR_CODE, Channel.ONE, ReadingType.KVAR);
 
         }
         if (device.getData(Channel.TWO, ReadingType.KVAR, BillableField.totalConsumption) != null) {
 
-            addFormattedLine(writeToFile, device, KVAR_CODE, Channel.TWO, ReadingType.KVA);
+            addFormattedLine(writeToFile, device, KVAR_CODE, Channel.TWO, ReadingType.KVAR);
 
         }
         if (device.getData(Channel.THREE, ReadingType.KVAR, BillableField.totalConsumption) != null) {
 
-            addFormattedLine(writeToFile, device, KVAR_CODE, Channel.THREE, ReadingType.KVA);
+            addFormattedLine(writeToFile, device, KVAR_CODE, Channel.THREE, ReadingType.KVAR);
 
         }
 
