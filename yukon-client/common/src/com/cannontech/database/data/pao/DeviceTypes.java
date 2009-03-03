@@ -144,8 +144,6 @@ public interface DeviceTypes extends TypeBase
     //***IMPORTANT ** If you add a deviceType, please update the total device type count!
 	public final static int DEVICE_TYPES_COUNT = 108;
 	
-    public static final int[] CBC_TWOWAY = new int[]{DNP_CBC_6510,CBC_7020,CBC_7022,CBC_7023,CBC_7024,CBC_DNP};
-
 	//all the possible text representation of each device type.
 	//If you want the string of any type, just access the zeroth element, example: STRING_CCU_710[0]
 	public static final String[] STRING_CCU_710 = {"CCU-710A", "CCU710A"};	
