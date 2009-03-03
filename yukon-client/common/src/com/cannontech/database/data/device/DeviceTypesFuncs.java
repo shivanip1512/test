@@ -273,12 +273,27 @@ public final static boolean isCarrier(int deviceType)
 		case DCT_501:
 		case LMT_2:
 		case MCTBROADCAST:
+		case LCR3102:
 			return true;
 	
 		default:
 			return false;
 	}
 }
+
+
+public final static boolean isTwoWayLcr(int deviceType) 
+{
+	switch(deviceType)
+	{
+		case LCR3102:
+			return true;
+	
+		default:
+			return false;
+	}
+}
+
 /**
  * @param deviceType
  * @return

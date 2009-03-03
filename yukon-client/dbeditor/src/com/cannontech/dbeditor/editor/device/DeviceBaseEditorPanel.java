@@ -37,6 +37,7 @@ import com.cannontech.database.data.device.SNPPTerminal;
 import com.cannontech.database.data.device.Schlumberger;
 import com.cannontech.database.data.device.Series5Base;
 import com.cannontech.database.data.device.Sixnet;
+import com.cannontech.database.data.device.TwoWayLCR;
 import com.cannontech.database.data.device.WCTPTerminal;
 import com.cannontech.database.data.lite.LiteConfig;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -2122,6 +2123,8 @@ private void setCarrierBaseValue( CarrierBase cBase )
       
    if( cBase instanceof com.cannontech.database.data.device.MCT_Broadcast )
       getPhysicalAddressLabel().setText("Lead Address:");
+   else if ( cBase instanceof TwoWayLCR)
+	   getPhysicalAddressLabel().setText("Serial Number:");
 		
 	getPhysicalAddressLabel().setVisible(true);
 	getPhysicalAddressTextField().setVisible(true);

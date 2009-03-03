@@ -451,7 +451,7 @@ public Object getValue(Object val)
 	}
 
 	int deviceType = PAOGroups.getDeviceType(deviceBase.getPAOType());
-	if (DeviceTypesFuncs.isMCT(deviceType) || DeviceTypesFuncs.isRepeater(deviceType)) {
+	if (DeviceTypesFuncs.isMCT(deviceType) || DeviceTypesFuncs.isRepeater(deviceType) || DeviceTypesFuncs.isTwoWayLcr(deviceType)) {
 
         // Check for unique address
 	    checkPaoAddresses(address.intValue());
@@ -626,7 +626,7 @@ public void setDeviceType(int deviceType)
    }
    
    if (DeviceTypesFuncs.isMCT(deviceType) || DeviceTypesFuncs.isRepeater(deviceType)
-            || DeviceTypesFuncs.isCCU(deviceType)) {
+            || DeviceTypesFuncs.isCCU(deviceType) || DeviceTypesFuncs.isTwoWayLcr(deviceType)) {
         this.createPointsCheck.setVisible(true);
         this.createPointsCheck.setSelected(true);
     } else {

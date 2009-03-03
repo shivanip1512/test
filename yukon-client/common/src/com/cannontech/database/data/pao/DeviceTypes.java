@@ -139,8 +139,10 @@ public interface DeviceTypes extends TypeBase
     
     public final static int MCT430A3                  = DEVICE_OFFSET + 107;
     
+    public final static int LCR3102                 = DEVICE_OFFSET + 108;
+    
     //***IMPORTANT ** If you add a deviceType, please update the total device type count!
-	public final static int DEVICE_TYPES_COUNT = 107;
+	public final static int DEVICE_TYPES_COUNT = 108;
 	
     public static final int[] CBC_TWOWAY = new int[]{DNP_CBC_6510,CBC_7020,CBC_7022,CBC_7023,CBC_7024,CBC_DNP};
 
@@ -192,6 +194,9 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_MCT_210 = {"MCT-210", "MCT210"};
 	public static final String[] STRING_MCT_213 = {"MCT-213", "MCT213"};
 	public static final String[] STRING_MCT_BROADCAST = {"MCT Broadcast", "MCT-Broadcast", "MCT_Broadcast", "MCT_Broadcast"};
+	
+	public static final String[] STRING_LCR_3102 = {"LCR-3102", "LCR3102"};
+	
 	public static final String[] STRING_REPEATER = {"REPEATER", "REPEATER 900"};   
 	public static final String[] STRING_REPEATER_902 = {"REPEATER 902"};   
 	public static final String[] STRING_RTU_ILEX = {"RTU-ILEX", "RTUILEX"};

@@ -209,6 +209,8 @@ public final static int getDeviceType(String typeString)
 	  return MCT250;
    else if (isStringDevice(compareString, STRING_MCT_210))
 	  return MCT210;
+   else if (isStringDevice(compareString, STRING_LCR_3102))
+	  return LCR3102;
    else if (isStringDevice(compareString, STRING_MCT_BROADCAST))
       return MCTBROADCAST;
    else if (isStringDevice(compareString, STRING_REPEATER))
@@ -501,6 +503,9 @@ public final static String getPAOTypeString(int type)
             return STRING_MCT_430A3[0];
 		case MCT470:
 			return STRING_MCT_470[0];
+			
+		case LCR3102:
+			return STRING_LCR_3102[0];
 		
 		case REPEATER:
 			return STRING_REPEATER[0];

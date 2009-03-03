@@ -26,6 +26,7 @@ import com.cannontech.database.data.device.RepeaterBase;
 import com.cannontech.database.data.device.Series5Base;
 import com.cannontech.database.data.device.TCUBase;
 import com.cannontech.database.data.device.TwoWayDevice;
+import com.cannontech.database.data.device.TwoWayLCR;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.device.DeviceScanRate;
@@ -1586,7 +1587,8 @@ public Object getValue(Object device)
             || (val instanceof CapBankController702x)
             || (val instanceof CapBankControllerDNP)
             || (val instanceof DNPBase)
-            || (val instanceof Series5Base) )
+            || (val instanceof Series5Base)
+            || (val instanceof TwoWayLCR))
 	{
 		if( getPeriodicHealthCheckBox().isSelected() && getPeriodicHealthCheckBox().isVisible() )
 		{
@@ -1848,6 +1850,12 @@ private void setAccumulatorObjectsVisible(boolean value)
 	getJLabelGroupAcc().setVisible(value);
 }
 
+private void setScanWindowObjectsVisible(boolean value) 
+{
+	
+	getJPanelScanWindow().setVisible(value);
+}
+
 private void initComboBoxValues( int type )
 {
    
@@ -1932,9 +1940,15 @@ public void setDeviceType(int type)
 				|| DeviceTypesFuncs.isMCT(type)
 				|| DeviceTypesFuncs.isLCU(type)
             || DeviceTypesFuncs.isCapBankController(type)
-            || (type == PAOGroups.SERIES_5_LMI) )
+            || (type == PAOGroups.SERIES_5_LMI)
+            || DeviceTypesFuncs.isTwoWayLcr(type))
 	{		
-		if( DeviceTypesFuncs.isMCT3xx(type) || DeviceTypesFuncs.isMCT4XX(type)  )
+		
+		if (DeviceTypesFuncs.isTwoWayLcr(type)) {
+			
+			getIntegrityRateCheckBox().setText("Demand & Status Rate");
+		}
+		else if( DeviceTypesFuncs.isMCT3xx(type) || DeviceTypesFuncs.isMCT4XX(type)  )
 		{
 			if(DeviceTypesFuncs.isMCT410(type))
 				getIntegrityRateCheckBox().setText("Demand & Voltage Rate");
@@ -2001,13 +2015,14 @@ public void setDeviceType(int type)
 
       setIntegrityObjectsVisible(
          !(type == PAOGroups.RTUILEX
-          || type == PAOGroups.LCU415 || type == PAOGroups.RTM));
+          || type == PAOGroups.LCU415 || type == PAOGroups.RTM) || true);
 		
       setHealthObjectsVisible( 
             !(type == PAOGroups.DCT_501
               || DeviceTypesFuncs.isMCT3xx(type) || DeviceTypesFuncs.isMCT4XX(type)
 				|| type == PAOGroups.SERIES_5_LMI
-				|| type == PAOGroups.RTU_MODBUS) );
+				|| type == PAOGroups.RTU_MODBUS
+				|| DeviceTypesFuncs.isTwoWayLcr(type)));
       
 		setAccumulatorObjectsVisible( 
 				!(type == PAOGroups.DCT_501 
@@ -2017,7 +2032,10 @@ public void setDeviceType(int type)
 					|| type == PAOGroups.LCU_T3026
 					|| type == PAOGroups.SERIES_5_LMI
 					|| type == PAOGroups.RTM
-					|| type == PAOGroups.RTU_MODBUS) );
+					|| type == PAOGroups.RTU_MODBUS
+					|| DeviceTypesFuncs.isTwoWayLcr(type)));
+		
+		setScanWindowObjectsVisible(!(DeviceTypesFuncs.isTwoWayLcr(type)));
 		
 
 		getAccumulatorRateCheckBox().setSelected(false);
@@ -2127,7 +2145,8 @@ public void setValue(Object val)
             || (val instanceof CapBankController702x)
             || (val instanceof CapBankControllerDNP)
             || (val instanceof DNPBase)
-            || (val instanceof Series5Base) )
+            || (val instanceof Series5Base)
+            || (val instanceof TwoWayLCR))
 	{
 
 		DeviceScanRate statusRate = (DeviceScanRate)scanRateMap.get(DeviceScanRate.TYPE_EXCEPTION);		

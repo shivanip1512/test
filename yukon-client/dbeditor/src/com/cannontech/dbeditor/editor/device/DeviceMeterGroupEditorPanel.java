@@ -24,6 +24,7 @@ import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.IDeviceMeterGroup;
 import com.cannontech.database.data.device.IEDMeter;
 import com.cannontech.database.data.device.MCTBase;
+import com.cannontech.database.data.device.TwoWayLCR;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.YukonPAObject;
@@ -820,7 +821,7 @@ public Object getValue(Object val)
 {
 
 	//The default object is either a MCT or a IEDmeter
-	if( val instanceof MCTBase || val instanceof IEDMeter )
+	if( val instanceof MCTBase || val instanceof IEDMeter || val instanceof TwoWayLCR)
 	{
 		DeviceLoadProfile dlp = null;
 		
@@ -832,7 +833,11 @@ public Object getValue(Object val)
 		{
 			dlp = ((IEDMeter) val).getDeviceLoadProfile();
 		}
-				
+		else if( val instanceof TwoWayLCR )
+		{
+			dlp = ((TwoWayLCR) val).getDeviceLoadProfile();
+		}
+		
 		dlp.setLastIntervalDemandRate(
 		 CtiUtilities.getIntervalComboBoxSecondsValue(getLastIntervalDemandRateComboBox()) );
 
@@ -874,28 +879,30 @@ public Object getValue(Object val)
 	}
 
 	//handle the devicemetergroup data below
-	DeviceMeterGroup dmg = ((IDeviceMeterGroup)val).getDeviceMeterGroup();
-
-	String cycleGroup = (String)getCycleGroupComboBox().getSelectedItem();
-	String alternateGroup = (String)getAlternateGroupComboBox().getSelectedItem();
-	String meterNumber = getMeterNumberTextField().getText();
-	String billingGroup = (String)getJComboBoxBillingGroup().getSelectedItem();
-    
-    LiteYukonPAObject liteYuk = DaoFactory.getPaoDao().getLiteYukonPAO(dmg.getDeviceID());
-    YukonDevice yukonDevice = DaoFactory.getDeviceDao().getYukonDevice(liteYuk);
-    
-    billingGroup = hacker.setGroup(FixedDeviceGroups.BILLINGGROUP, yukonDevice, billingGroup);
-    getJComboBoxBillingGroup().setSelectedItem(billingGroup);
-    
-    cycleGroup = hacker.setGroup(FixedDeviceGroups.COLLECTIONGROUP, yukonDevice, cycleGroup);
-    getCycleGroupComboBox().setSelectedItem(cycleGroup);
-    
-    alternateGroup = hacker.setGroup(FixedDeviceGroups.TESTCOLLECTIONGROUP, yukonDevice, alternateGroup);
-    getAlternateGroupComboBox().setSelectedItem(alternateGroup);
-
-    if( meterNumber != null && meterNumber.length() > 0 ) {
-	    dmg.setMeterNumber( meterNumber );
-    }
+	if (val instanceof IDeviceMeterGroup) {
+		DeviceMeterGroup dmg = ((IDeviceMeterGroup)val).getDeviceMeterGroup();
+	
+		String cycleGroup = (String)getCycleGroupComboBox().getSelectedItem();
+		String alternateGroup = (String)getAlternateGroupComboBox().getSelectedItem();
+		String meterNumber = getMeterNumberTextField().getText();
+		String billingGroup = (String)getJComboBoxBillingGroup().getSelectedItem();
+	    
+	    LiteYukonPAObject liteYuk = DaoFactory.getPaoDao().getLiteYukonPAO(dmg.getDeviceID());
+	    YukonDevice yukonDevice = DaoFactory.getDeviceDao().getYukonDevice(liteYuk);
+	    
+	    billingGroup = hacker.setGroup(FixedDeviceGroups.BILLINGGROUP, yukonDevice, billingGroup);
+	    getJComboBoxBillingGroup().setSelectedItem(billingGroup);
+	    
+	    cycleGroup = hacker.setGroup(FixedDeviceGroups.COLLECTIONGROUP, yukonDevice, cycleGroup);
+	    getCycleGroupComboBox().setSelectedItem(cycleGroup);
+	    
+	    alternateGroup = hacker.setGroup(FixedDeviceGroups.TESTCOLLECTIONGROUP, yukonDevice, alternateGroup);
+	    getAlternateGroupComboBox().setSelectedItem(alternateGroup);
+	
+	    if( meterNumber != null && meterNumber.length() > 0 ) {
+		    dmg.setMeterNumber( meterNumber );
+	    }
+	}
 	
 	return val;
 }
@@ -1012,8 +1019,8 @@ public void setValue(Object val)
 {
 	int deviceType = PAOGroups.getDeviceType( ((DeviceBase)val).getPAOType() );
 
-	getLastIntervalDemandRateLabel().setVisible( val instanceof MCTBase );
-	getLastIntervalDemandRateComboBox().setVisible( val instanceof MCTBase );
+	getLastIntervalDemandRateLabel().setVisible( val instanceof MCTBase);
+	getLastIntervalDemandRateComboBox().setVisible( val instanceof MCTBase);
 	getLoadProfileCollectionPanel().setVisible( val instanceof MCTBase );
 		
 	//are we a voltage channel?
@@ -1149,21 +1156,37 @@ public void setValue(Object val)
 		 getLoadProfileCollectionPanel().removeAll();
 		 getLoadProfileCollectionPanel().setBorder( null );
 	  }
+	} else if (val instanceof TwoWayLCR) {
+		
+		getLastIntervalDemandRateLabel().setVisible(true);
+		getLastIntervalDemandRateComboBox().setVisible(true);
+		
+		DeviceLoadProfile dlp = ((TwoWayLCR)val).getDeviceLoadProfile();
+		
+		CtiUtilities.setIntervalComboBoxSelectedItem(
+				getLastIntervalDemandRateComboBox(), dlp.getLastIntervalDemandRate().intValue() );
 	}
 
 	//handle the DeviceMeterGroup data below
-	DeviceMeterGroup dmg = ((IDeviceMeterGroup)val).getDeviceMeterGroup();
+	if (val instanceof IDeviceMeterGroup) {
+		
+		DeviceMeterGroup dmg = ((IDeviceMeterGroup)val).getDeviceMeterGroup();
+		
+		getMeterNumberTextField().setText( dmg.getMeterNumber() );
+	    
+	    LiteYukonPAObject liteYuk = DaoFactory.getPaoDao().getLiteYukonPAO(dmg.getDeviceID());
+	    YukonDevice yukonDevice = DaoFactory.getDeviceDao().getYukonDevice(liteYuk);
+	    String billingGroup = hacker.getGroupForDevice(FixedDeviceGroups.BILLINGGROUP, yukonDevice);
+	    String alternateGroup = hacker.getGroupForDevice(FixedDeviceGroups.TESTCOLLECTIONGROUP, yukonDevice);
+	    String collectionGroup = hacker.getGroupForDevice(FixedDeviceGroups.COLLECTIONGROUP, yukonDevice);
+		getCycleGroupComboBox().setSelectedItem( collectionGroup );
+		getAlternateGroupComboBox().setSelectedItem( alternateGroup );
+		getJComboBoxBillingGroup().setSelectedItem( billingGroup );
+	} else {
+		
+		getDataCollectionPanel().setVisible(false);
+	}
 	
-	getMeterNumberTextField().setText( dmg.getMeterNumber() );
-    
-    LiteYukonPAObject liteYuk = DaoFactory.getPaoDao().getLiteYukonPAO(dmg.getDeviceID());
-    YukonDevice yukonDevice = DaoFactory.getDeviceDao().getYukonDevice(liteYuk);
-    String billingGroup = hacker.getGroupForDevice(FixedDeviceGroups.BILLINGGROUP, yukonDevice);
-    String alternateGroup = hacker.getGroupForDevice(FixedDeviceGroups.TESTCOLLECTIONGROUP, yukonDevice);
-    String collectionGroup = hacker.getGroupForDevice(FixedDeviceGroups.COLLECTIONGROUP, yukonDevice);
-	getCycleGroupComboBox().setSelectedItem( collectionGroup );
-	getAlternateGroupComboBox().setSelectedItem( alternateGroup );
-	getJComboBoxBillingGroup().setSelectedItem( billingGroup );
 }
 /**
  * Helper method to check meternumber uniqueness

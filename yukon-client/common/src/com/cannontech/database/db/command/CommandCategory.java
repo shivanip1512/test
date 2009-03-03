@@ -37,6 +37,7 @@ public class CommandCategory
 	public static final String STRING_CMD_PING_BASE = "All Ping-able";
 	public static final String STRING_CMD_LCR_BASE = "All LCRs";
 	public static final String STRING_CMD_MCT_4XX_SERIES_BASE = "All MCT-4xx Series";
+	public static final String STRING_CMD_TWO_WAY_LCR_BASE = "All Two Way LCR";
 
 	//Strings that commander uses to decide what "category" it is displaying, these are for specific items
 	// that don't necessarily have a deviceType, or where deviceType doesn't help find the commands.	
@@ -69,7 +70,8 @@ public class CommandCategory
 		STRING_CMD_STATUSINPUT_BASE,
 		STRING_CMD_PING_BASE,
 		STRING_CMD_LCR_BASE,
-		STRING_CMD_MCT_4XX_SERIES_BASE
+		STRING_CMD_MCT_4XX_SERIES_BASE,
+		STRING_CMD_TWO_WAY_LCR_BASE
 //		STRING_CMD_VERSACOM_SERIAL,
 //		STRING_CMD_EXPRESSCOM_SERIAL,
 //		STRING_CMD_SERIALNUMBER
@@ -95,6 +97,7 @@ public class CommandCategory
 	private static ArrayList<String> CAT_PING_BASE_DEVTYPES = null;
 	private static ArrayList<String> CAT_LCR_BASE_DEVTYPES = null;
 	private static ArrayList<String> CAT_MCT_4XX_SERIES_DEVTYPES = null;
+	private static ArrayList<String> CAT_TWO_WAY_LCR_DEVTYPES = null;
 	
 //	private static ArrayList<String> CAT_EXPRESSCOMSERIAL_BASE_DEVTYPES = null;
 //	private static ArrayList<String> CAT_SERIALNUMBER_BASE_DEVTYPES = null;
@@ -199,6 +202,10 @@ public class CommandCategory
 		else if (category.equalsIgnoreCase(STRING_CMD_MCT_4XX_SERIES_BASE) )
 		{
 			return getAllMCT4XXSeriesDevTypes();
+		}
+		else if (category.equalsIgnoreCase(STRING_CMD_TWO_WAY_LCR_BASE) )
+		{
+			return getAllTwoWayLCRDevTypes();
 		}
 //		else if( category.equalsIgnoreCase(STRING_CMD_VERSACOM_SERIAL))
 //		{
@@ -507,6 +514,20 @@ public class CommandCategory
 			}
 		}
 		return CAT_MCT_4XX_SERIES_DEVTYPES;
+	}
+	
+	public final static ArrayList<String> getAllTwoWayLCRDevTypes() 
+	{
+		if( CAT_TWO_WAY_LCR_DEVTYPES == null)
+		{
+			CAT_TWO_WAY_LCR_DEVTYPES = new ArrayList<String>();
+			for (int i = DeviceTypes.DEVICE_OFFSET; i <= DeviceTypes.DEVICE_OFFSET + DeviceTypes.DEVICE_TYPES_COUNT; i++)
+			{
+				if( DeviceTypesFuncs.isTwoWayLcr(i) )
+					CAT_TWO_WAY_LCR_DEVTYPES.add(PAOGroups.getPAOTypeString(i));
+			}
+		}
+		return CAT_TWO_WAY_LCR_DEVTYPES;
 	}
 
 	public final static ArrayList<String> getAllIONDevTypes() 

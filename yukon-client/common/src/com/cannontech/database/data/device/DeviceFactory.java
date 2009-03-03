@@ -363,7 +363,13 @@ public final static DeviceBase createDevice(int deviceType) {
 			returnDevice = new MCT_Broadcast();
 			returnDevice.setDeviceType( PAOGroups.STRING_MCT_BROADCAST[0] );
 			break;
-
+			
+			
+		// Two Way LCR
+      case PAOGroups.LCR3102:
+    	  returnDevice = new TwoWayLCR();
+    	  returnDevice.setDeviceType(PAOGroups.STRING_LCR_3102[0]);
+    	  break;
 			
 		// not a real device	
 		case PAOGroups.VIRTUAL_SYSTEM:

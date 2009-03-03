@@ -14,6 +14,154 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="deviceDefinition.xsd">
     
+    <!-- TWO WAY LCRs -->
+    <device>
+        <type value="1108" javaConstant="LCR3102" />
+        <displayName value="LCR-3102"/>
+        <displayGroup value="Two Way LCR"/>
+        <points>
+            <point init="true" type="DemandAccumulator">
+                <name>Last Interval kW Relay 1</name>
+                <offset value="1"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point init="true" type="DemandAccumulator">
+                <name>Last Interval kW Relay 2</name>
+                <offset value="2"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point init="true" type="DemandAccumulator">
+                <name>Last Interval kW Relay 3</name>
+                <offset value="3"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point init="true" type="DemandAccumulator">
+                <name>Last Interval kW Relay 4</name>
+                <offset value="4"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Runtime Load 1</name>
+                <offset value="5"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Minutes"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Runtime Load 2</name>
+                <offset value="6"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Minutes"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Runtime Load 3</name>
+                <offset value="7"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Minutes"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Runtime Load 4</name>
+                <offset value="8"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Minutes"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Relay 1 Shed Time</name>
+                <offset value="9"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Minutes"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Relay 2 Shed Time</name>
+                <offset value="10"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Minutes"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Relay 3 Shed Time</name>
+                <offset value="11"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Minutes"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Relay 4 Shed Time</name>
+                <offset value="12"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Minutes"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Prop Count</name>
+                <offset value="13"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+            </point>
+            <point init="true" type="Status">
+                <name>Comm Status</name>
+                <offset value="2000"/>
+                <stategroup value="TwoStateStatus"/>
+            </point>
+        </points>
+        <commands>
+        	<command name="Last Interval kW Relay 1">
+        		<cmd text="getvalue interval last relay 1"/>
+        		<pointRef name="Last Interval kW Relay 1"/>
+        	</command>
+        	<command name="Last Interval kW Relay 2">
+        		<cmd text="getvalue interval last relay 2"/>
+        		<pointRef name="Last Interval kW Relay 2"/>
+        	</command>
+        	<command name="Last Interval kW Relay 3">
+        		<cmd text="getvalue interval last relay 3"/>
+        		<pointRef name="Last Interval kW Relay 3"/>
+        	</command>
+        	<command name="Last Interval kW Relay 4">
+        		<cmd text="getvalue interval last relay 4"/>
+        		<pointRef name="Last Interval kW Relay 4"/>
+        	</command>
+        	<command name="Runtime Load 1">
+        		<cmd text="getvalue runtime load 1 previous ?'12 , 24, or 36'"/>
+        		<pointRef name="Runtime Load 1"/>
+        	</command>
+        	<command name="Runtime Load 2">
+        		<cmd text="getvalue runtime load 2 previous ?'12 , 24, or 36'"/>
+        		<pointRef name="Runtime Load 2"/>
+        	</command>
+        	<command name="Runtime Load 3">
+        		<cmd text="getvalue runtime load 3 previous ?'12 , 24, or 36'"/>
+        		<pointRef name="Runtime Load 3"/>
+        	</command>
+        	<command name="Runtime Load 4">
+        		<cmd text="getvalue runtime load 4 previous ?'12 , 24, or 36'"/>
+        		<pointRef name="Runtime Load 4"/>
+        	</command>
+        	<command name="Relay 1 Shed Time">
+        		<cmd text="getvalue shedtime relay 1 previous ?'12 , 24, or 36'"/>
+        		<pointRef name="Runtime Load 1"/>
+        	</command>
+        	<command name="Relay 2 Shed Time">
+        		<cmd text="getvalue shedtime relay 2 previous ?'12 , 24, or 36'"/>
+        		<pointRef name="Runtime Load 2"/>
+        	</command>
+        	<command name="Relay 3 Shed Time">
+        		<cmd text="getvalue shedtime relay 3 previous ?'12 , 24, or 36'"/>
+        		<pointRef name="Runtime Load 3"/>
+        	</command>
+        	<command name="Relay 4 Shed Time">
+        		<cmd text="getvalue shedtime relay 4 previous ?'12 , 24, or 36'"/>
+        		<pointRef name="Runtime Load 4"/>
+        	</command>
+        	<command name="Prop Count">
+        		<cmd text="getvalue propcount"/>
+        		<pointRef name="Prop Count"/>
+        	</command>
+    	</commands>
+    	<attributes>
+        </attributes>
+    </device>
+    
     <!-- MCTs -->
     <device>
         <type value="1080" javaConstant="MCT470" changeGroup="mct" />
@@ -570,7 +718,7 @@
         </commands>
 		<attributes>
         	<attribute name="USAGE">
-        		<basicLookup point="Rate A kWh" />
+        		<basicLookup point="Total kWh" />
         	</attribute>
         	<attribute name="PEAK_DEMAND">
          		<basicLookup point="Peak kW (Rate A kW)" />
@@ -1514,7 +1662,7 @@
         </commands>
 		<attributes>
         	<attribute name="USAGE">
-        		<basicLookup point="Rate A kWh"/>
+        		<basicLookup point="Total kWh"/>
         	</attribute>
         	<attribute name="PEAK_DEMAND">
          		<basicLookup point="Peak kW (Rate A kW)"/>
@@ -3814,7 +3962,7 @@
        	</commands>
        	<attributes>
         	<attribute name="USAGE">
-        		<basicLookup point="Rate A kWh" />
+        		<basicLookup point="Total kWh" />
         	</attribute>
         	<attribute name="PEAK_DEMAND">
         		<basicLookup point="Peak kW (Rate A kW)" />
@@ -3851,14 +3999,12 @@
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="Analog">
-            	<!--<attribute name="PEAK_DEMAND"/>-->
                 <name>Peak kW (Rate A kW)</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
-            	<!--<attribute name="USAGE"/>-->
                 <name>Rate A kWh</name>
                 <offset value="3"/>
                 <multiplier value="1.0"/>
@@ -4094,7 +4240,7 @@
        	</commands>
        	<attributes>
         	<attribute name="USAGE">
-        		<basicLookup point="Rate A kWh" />
+        		<basicLookup point="Total kWh" />
         	</attribute>
         	<attribute name="PEAK_DEMAND">
         		<basicLookup point="Peak kW (Rate A kW)" />
