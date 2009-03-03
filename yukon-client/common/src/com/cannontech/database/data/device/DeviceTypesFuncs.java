@@ -1492,4 +1492,19 @@ public static Object changeType (String newType,
             return DeviceMCT400Series.hasExistingDisconnectAddress(yukonDevice.getDeviceId());
         return false;
     }
+    
+    public static boolean isCBCTwoWay(int deviceType) {
+    	switch (deviceType) {
+	    	case DNP_CBC_6510:
+	    	case CBC_7020:
+	    	case CBC_7022:
+	    	case CBC_7023:
+	    	case CBC_7024:
+	    	case CBC_DNP:
+	    		return true;
+		
+			default:
+				return false;
+		}
+    }
 }

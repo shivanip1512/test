@@ -20,13 +20,13 @@ import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.capcontrol.CapBankController701x;
 import com.cannontech.database.data.capcontrol.CapControlSubBus;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.TwoWayDevice;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOFactory;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointUnits;
@@ -274,11 +274,7 @@ public final class CBCUtils {
     }
 
     public static boolean isTwoWay(int type) {
-        int[] cbcTwoWay = DeviceTypes.CBC_TWOWAY;
-        for (int x = 0; x < cbcTwoWay.length; x++) {
-            if (type == cbcTwoWay[x]) return true;
-        }
-        return false;
+    	return DeviceTypesFuncs.isCBCTwoWay(type);
     }
 
     public static boolean isTwoWay(LiteYukonPAObject obj) {
