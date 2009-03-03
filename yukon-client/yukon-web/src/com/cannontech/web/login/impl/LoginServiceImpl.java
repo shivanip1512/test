@@ -130,7 +130,6 @@ public class LoginServiceImpl implements LoginService {
             redirect = ServletUtil.createSafeUrl(request, LoginController.LOGIN_URL);
         }
 
-        redirect = ServletUtil.createSafeRedirectUrl(request, redirect);
         response.sendRedirect(redirect);
     }
 
