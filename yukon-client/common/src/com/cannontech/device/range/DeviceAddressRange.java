@@ -7,10 +7,14 @@ package com.cannontech.device.range;
  * A undefined generated comment
  */
 import com.cannontech.database.data.pao.DeviceTypes;
+import com.cannontech.database.data.pao.PAOGroups;
 
 public class DeviceAddressRange
 {
-	private static final RangeBase RANGE_DEFAULT = new RangeBase();
+	// Use Integer values for default range.
+	// The address field in DeviceCarrierSettings is an int (and should be positive)
+	private static final RangeBase RANGE_DEFAULT = 
+		new RangeBase(0, Integer.MAX_VALUE, PAOGroups.INVALID);
    
 	private static final RangeBase RANGE_MCT470 = 
 		new RangeBase( 100000, 2796201, DeviceTypes.MCT470);
@@ -92,7 +96,7 @@ public class DeviceAddressRange
 		super();      
 	}
    
-   	private static RangeBase getRangeBase( int deviceType_ )
+   	public static RangeBase getRangeBase( int deviceType_ )
    	{
    	    switch (deviceType_) {
             case DeviceTypes.MCT470:

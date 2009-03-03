@@ -28,6 +28,7 @@ import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.dbeditor.DatabaseEditorOptionPane;
 import com.cannontech.device.range.DeviceAddressRange;
+import com.cannontech.device.range.RangeBase;
 import com.cannontech.spring.YukonSpringHook;
 
 /**
@@ -169,7 +170,7 @@ private javax.swing.JTextField getAddressTextField() {
 			ivjAddressTextField.setColumns(6);
 			// user code begin {1}
 
-			ivjAddressTextField.setDocument( new com.cannontech.common.gui.unchanging.LongRangeDocument(-9999999999L, 9999999999L) );
+			ivjAddressTextField.setDocument( new LongRangeDocument(-999999999L, 999999999L) );
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -623,9 +624,9 @@ public void setDeviceType(int deviceType)
    else
       getPhysicalAddressLabel().setText("Physical Address:");
    
-   if( DeviceTypesFuncs.isCCU(deviceType) ) {
-       getAddressTextField().setDocument( new LongRangeDocument(0L, 128L) );
-   }
+   RangeBase rangeBase = DeviceAddressRange.getRangeBase(deviceType);
+   //Always use 0 as low end range so that data entry can be done.
+   getAddressTextField().setDocument( new LongRangeDocument(0L, rangeBase.getUpperRange()) );
    
    if (DeviceTypesFuncs.isMCT(deviceType) || DeviceTypesFuncs.isRepeater(deviceType)
             || DeviceTypesFuncs.isCCU(deviceType) || DeviceTypesFuncs.isTwoWayLcr(deviceType)) {

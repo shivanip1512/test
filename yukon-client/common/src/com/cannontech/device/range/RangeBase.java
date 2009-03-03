@@ -80,4 +80,12 @@ public class RangeBase implements IValidRange
       
       return false;
    }
+   
+   public long getLowRange() {
+	   return lowRange;
+   }
+   
+   public long getUpperRange() {
+	   return upperRange;
+   }
 }
