@@ -29,13 +29,13 @@ public interface PaoDao {
     /**
      * Helper method to return a paobject that exist for the paoName, category, paoClass.
      * These are the three fields that make up Unique Index Indx_PAO
-     * Returns null if no obect exists.
+     * Returns null if no object exists, otherwise returns the liteYukonPaobject that was found.
      * @param paoName
      * @param category
      * @param paoClass
      * @return true when no object is found for paoName, category, paoClass
      */
-    public LiteYukonPAObject getUnique(final String paoName, final String category, final String paoClass);
+    public LiteYukonPAObject findUnique(final String paoName, final String category, final String paoClass);
     /**
      * Returns a list of lite pao objects by type
      * 

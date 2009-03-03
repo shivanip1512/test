@@ -126,14 +126,14 @@ public void postSave(DBPersistent o) {
  * @return
  */
 protected boolean isUniquePao(String paoName, String category, String paoClass, int thisPaobjectId) {
-	LiteYukonPAObject liteYukonPAObject = DaoFactory.getPaoDao().getUnique(paoName, category, paoClass);
+	LiteYukonPAObject liteYukonPAObject = DaoFactory.getPaoDao().findUnique(paoName, category, paoClass);
 
 	//if one is found, compare it to deviceBase to see if its this.
 	if (liteYukonPAObject != null) {
 		return liteYukonPAObject.getYukonID() == thisPaobjectId;
 	}
 
-	//null returned when unique, or rather when no matching pao found.
+	//liteYukonPaobject will be null if matching object was not found.
 	return (liteYukonPAObject == null);
 }
 

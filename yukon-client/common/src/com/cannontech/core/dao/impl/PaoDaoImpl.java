@@ -88,7 +88,7 @@ public final class PaoDaoImpl implements PaoDao {
         }
     }
 
-    public LiteYukonPAObject getUnique(final String paoName, final String category, final String paoClass) {
+    public LiteYukonPAObject findUnique(final String paoName, final String category, final String paoClass) {
         
         try {
             String sql = litePaoSql + "WHERE y.PAOName = ? AND y.Category = ? AND y.PAOClass = ? ";

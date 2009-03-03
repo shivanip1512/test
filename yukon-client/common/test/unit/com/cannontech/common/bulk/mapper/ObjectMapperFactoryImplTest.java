@@ -320,7 +320,7 @@ public class ObjectMapperFactoryImplTest extends TestCase {
         }
 
 		@Override
-		public LiteYukonPAObject getUnique(String paoName, String category,
+		public LiteYukonPAObject findUnique(String paoName, String category,
 				String paoClass) {
             throw new UnsupportedOperationException("Method not implemented");
         }
