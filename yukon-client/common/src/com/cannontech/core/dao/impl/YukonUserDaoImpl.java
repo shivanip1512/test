@@ -105,11 +105,10 @@ public final class YukonUserDaoImpl implements YukonUserDao {
 	
 	@Override
     @Transactional
-    public void updateYukonUserWithPassword(LiteYukonUser user, String password) throws DataAccessException {
-	    final String sql = "update yukonuser set username = ?, password = ?, status = ?, AuthType = ? where userid = ?";
-	    //final String sql = "UPDATE YukonUser SET UserName = ?, Password = ?, Status = ?, AuthType = ?, WHERE UserID = ?";
-        simpleJdbcTemplate.update(sql, user.getUsername(), SqlUtils.convertStringToDbValue(password), user.getStatus(), user.getAuthType().name(), user.getUserID());
-    }
+	public void update(LiteYukonUser user) {
+	    final String sql = "update yukonuser set username = ?, status = ?, AuthType = ? where userid = ?";
+        simpleJdbcTemplate.update(sql, user.getUsername(), user.getStatus(), user.getAuthType().name(), user.getUserID());
+	}
 
 	public LiteYukonUser getLiteYukonUser(final int userId) {
 	    try {

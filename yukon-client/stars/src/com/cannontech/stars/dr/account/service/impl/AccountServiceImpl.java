@@ -15,6 +15,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.model.Address;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authentication.service.AuthType;
+import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.ContactDao;
@@ -27,6 +28,7 @@ import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.SystemDateFormattingService;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteAddress;
@@ -41,7 +43,6 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.db.user.YukonGroup;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.roles.yukon.AuthenticationRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.core.dao.CallReportDao;
 import com.cannontech.stars.core.dao.ECMappingDao;
@@ -95,7 +96,7 @@ public class AccountServiceImpl implements AccountService {
     private DBPersistentDao dbPersistantDao;
     private StarsDatabaseCache starsDatabaseCache;
     private SystemDateFormattingService systemDateFormattingService;
-
+    private AuthenticationService authenticationService;
     
     // ADD ACCOUNT
     @Override
@@ -135,13 +136,13 @@ public class AccountServiceImpl implements AccountService {
         /*
          * Create the user login. If no password is specified set the AuthType
          * to NONE(No Login) and set the password to a space(done by dao).
-         * If an empty password is specified set the AuthType to the default
-         * AuthType and set the password to a space(done by dao);
+         * If any password is specified set the AuthType to the default
+         * AuthType. If it's empty set the password to a space(done by dao);
          */
         LiteYukonUser user = null;
         AuthType authType = null; // To be used later when we add AuthType to the xml messaging.
         String emptyPassword = "";
-        AuthType defaultAuthType = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.getForId(AuthenticationRole.DEFAULT_AUTH_TYPE), AuthType.class, user);
+        AuthType defaultAuthType = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.DEFAULT_AUTH_TYPE, AuthType.class, user);
         if(!StringUtils.isBlank(accountDto.getUserName())) {
             user = new LiteYukonUser(); 
             user.setUsername(accountDto.getUserName());
@@ -159,9 +160,6 @@ public class AccountServiceImpl implements AccountService {
             }
             String password = accountDto.getPassword();
             if(password != null) {
-                if(password.isEmpty()) {
-                    password = emptyPassword;
-                }
                 if(authType == null) {
                     user.setAuthType(defaultAuthType);
                 }else {
@@ -569,20 +567,20 @@ public class AccountServiceImpl implements AccountService {
         /*RULES FOR LOGIN UPDATE/CREATION
          * LOGIN EXISTS
          * Update the login, if no password is specified don't change the Authtype or password.
-         * If an empty password is specified, set the AuthType to the default AuthType and 
+         * If any password is specified, set the AuthType to the default AuthType. If it was empty
          * set the password to a space(done by doa). 
          * 
          * LOGIN DOESN'T EXIST
          * If the account has no login, create one. If no password is specified set the 
          * AuthType to NONE(No Login) and set the password to a space(done by dao). 
-         * If the password is empty set AuthType to default AuthType and set the password
+         * If any password is specified set AuthType to default AuthType.  If it was empty set it
          *  to a space(done by dao).
          */
         int newLoginId = UserUtils.USER_DEFAULT_ID;
         AuthType authType = null; // To be used later when we add AuthType to the xml messaging.
-        AuthType defaultAuthType = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.getForId(AuthenticationRole.DEFAULT_AUTH_TYPE), AuthType.class, null);
+        AuthType defaultAuthType = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.DEFAULT_AUTH_TYPE, AuthType.class, null);
         String emptyPassword = ""; // Dao will end up setting this to a space for oracle reasons.
-        if(username != null && StringUtils.isNotBlank(username)) {
+        if(StringUtils.isNotBlank(username)) {
             LiteYukonUser login = yukonUserDao.getLiteYukonUser(primaryContact.getLoginID());
             if(login != null && login.getUserID() != UserUtils.USER_DEFAULT_ID) {
                 /*
@@ -597,10 +595,11 @@ public class AccountServiceImpl implements AccountService {
                     }else {
                         login.setAuthType(authType);
                     }
-                    yukonUserDao.updateYukonUserWithPassword(login, password);
-                } else {
-                    yukonUserDao.changeUsername(login.getUserID(), username);
+                    if(authenticationService.supportsPasswordSet(login.getAuthType())) {
+                        authenticationService.setPassword(login, SqlUtils.convertStringToDbValue(password));
+                    }
                 }
+                yukonUserDao.update(login);
             } else {
                 /*
                  * Create a new login.
@@ -621,9 +620,6 @@ public class AccountServiceImpl implements AccountService {
                 }
                 String password = accountDto.getPassword();
                 if(password != null) {
-                    if(password.isEmpty()) {
-                        password = emptyPassword;
-                    }
                     if(authType == null) {
                         user.setAuthType(defaultAuthType);
                     }else {
@@ -871,14 +867,10 @@ public class AccountServiceImpl implements AccountService {
         LiteAddress billingAdress = addressDao.getByAddressId(customerAccount.getBillingAddressId());
         giveAddressFieldsToDTO(billingAdress, retrievedDto.getBillingAddress());
         
-        /*
-         * Don't work with passwords here because they are a special case.
-         */
         int loginId = primaryContact.getLoginID();
         if(loginId > UserUtils.USER_DEFAULT_ID) {
             LiteYukonUser login = yukonUserDao.getLiteYukonUser(loginId);
             retrievedDto.setUserName(login.getUsername());
-            retrievedDto.setPassword("");
             /*
              * Currently these accounts only support users with one login group.
              * This may need to change in the future.
@@ -887,7 +879,6 @@ public class AccountServiceImpl implements AccountService {
             retrievedDto.setLoginGroup(groups.get(0).getGroupName());
         }else {
             retrievedDto.setUserName("");
-            retrievedDto.setPassword("");
             retrievedDto.setLoginGroup("");
         }
         
@@ -1083,6 +1074,11 @@ public class AccountServiceImpl implements AccountService {
     public void setSystemDateFormattingService(SystemDateFormattingService systemDateFormattingService) {
 		this.systemDateFormattingService = systemDateFormattingService;
 	}
+    
+    @Autowired
+    public void setAuthenticationService(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
+    }
     
     @Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {

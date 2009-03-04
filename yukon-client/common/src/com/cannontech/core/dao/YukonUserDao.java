@@ -47,9 +47,8 @@ public interface YukonUserDao {
     /**
      * Updates the YukonUser for a give LiteYukonUser.
      * @param user
-     * @param password
      * @throws DataAccessException
      */
-    public void updateYukonUserWithPassword(LiteYukonUser user, String password) throws DataAccessException;
+    public void update(LiteYukonUser user) throws DataAccessException;
 
 }
