@@ -1431,22 +1431,24 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
 
             if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) )
             {
+                //  TODO: Update this with an appropriate "something else required" error
                 returnErrorMessage(NoMethod, OutMessage, retList,
                                    getName() + " / Daily read requires SSPEC rev 2.1 or higher; execute \"getconfig model\" to verify");
             }
             else if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < SspecRev_DailyRead )
             {
+                //  TODO: Change to "Insufficient firmware" error, not NoMethod (YUK-7067)
                 returnErrorMessage(NoMethod, OutMessage, retList,
                                    getName() + " / Daily read requires SSPEC rev 2.1 or higher; MCT reports " + CtiNumStr(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) / 10.0, 1));
             }
             else if( channel < 1 || channel > 3 )
             {
-                returnErrorMessage(NoMethod, OutMessage, retList,
+                returnErrorMessage(BADPARAM, OutMessage, retList,
                                    getName() + " / Invalid channel for daily read request; must be 1-3 (" + CtiNumStr(channel) + ")");
             }
             else if( date_begin > Yesterday )  //  must begin on or before yesterday
             {
-                returnErrorMessage(NoMethod, OutMessage, retList,
+                returnErrorMessage(BADPARAM, OutMessage, retList,
                                    getName() + " / Invalid date for daily read request; must be before today (" + parse.getsValue("daily_read_date_begin") + ")");
             }
             else if( parse.isKeyValid("daily_read_detail") )
@@ -1459,7 +1461,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
 
                 if( date_begin < Today - 92 )  //  must be no more than 92 days ago
                 {
-                    returnErrorMessage(NoMethod, OutMessage, retList,
+                    returnErrorMessage(BADPARAM, OutMessage, retList,
                                        getName() + " / Date out of range for daily read detail request; must be less than 3 months ago (" + parse.getsValue("daily_read_date_begin") + ")");
                 }
                 else if( channel == 1 )
@@ -1503,17 +1505,17 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
 
                 if( date_begin < Today - 92 )
                 {
-                    returnErrorMessage(NoMethod, OutMessage, retList,
+                    returnErrorMessage(BADPARAM, OutMessage, retList,
                                        getName() + " / Invalid begin date for multi-day daily read request, must be less than 92 days ago (" + parse.getsValue("daily_read_date_begin") + ")");
                 }
                 else if( date_end < date_begin )
                 {
-                    returnErrorMessage(NoMethod, OutMessage, retList,
+                    returnErrorMessage(BADPARAM, OutMessage, retList,
                                        getName() + " / Invalid end date for multi-day daily read request; must be after begin date (" + parse.getsValue("daily_read_date_begin") + ", " + parse.getsValue("daily_read_date_end") + ")");
                 }
                 else if( date_end > Yesterday )    //  must end on or before yesterday
                 {
-                    returnErrorMessage(NoMethod, OutMessage, retList,
+                    returnErrorMessage(BADPARAM, OutMessage, retList,
                                        getName() + " / Invalid end date for multi-day daily read request; must be before today (" + parse.getsValue("daily_read_date_end") + ")");
                 }
                 else
@@ -1542,12 +1544,12 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
             }
             else if( channel != 1 )
             {
-                returnErrorMessage(NoMethod, OutMessage, retList,
+                returnErrorMessage(BADPARAM, OutMessage, retList,
                                    getName() + " / Invalid channel for recent daily read request; only valid for channel 1 (" + CtiNumStr(channel)  + ")");
             }
             else if( date_begin < Today - 8 )  //  must be no more than 8 days ago
             {
-                returnErrorMessage(NoMethod, OutMessage, retList,
+                returnErrorMessage(BADPARAM, OutMessage, retList,
                                    getName() + " / Invalid date for recent daily read request; must be less than 8 days ago (" + parse.getsValue("daily_read_date_begin") + ")");
             }
             else
