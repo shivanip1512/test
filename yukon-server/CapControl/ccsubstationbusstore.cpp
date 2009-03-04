@@ -11012,6 +11012,9 @@ void CtiCCSubstationBusStore::reCalculateConfirmationStatsFromDatabase( )
 
                 RWDBDatabase db = getDatabase();
                 RWDBTable dynamicPaoStatistics = db.table("dynamicpaostatistics");
+                RWDBTable yukonPaObject = db.table("yukonpaobject");
+                CtiDate oneMonthAgo = CtiDate() -  31; //today - 30 days
+                CtiDate yesterday = CtiDate() -  1;
 
                 {
                     RWDBSelector selector = db.selector();
@@ -11023,13 +11026,19 @@ void CtiCCSubstationBusStore::reCalculateConfirmationStatsFromDatabase( )
                              << dynamicPaoStatistics["systemerrors"]
                              << dynamicPaoStatistics["statistictype"]
                              << dynamicPaoStatistics["startdatetime"]
-                             << dynamicPaoStatistics["stopdatetime"];
+                             << dynamicPaoStatistics["stopdatetime"]
+                             << yukonPaObject["paobjectid"]
+                             << yukonPaObject["type"];
 
                     selector.from(dynamicPaoStatistics);
+                    selector.from(yukonPaObject);
 
-                    selector.where(dynamicPaoStatistics["attempts"] > 0 );
-
-
+                    selector.where(dynamicPaoStatistics["paobjectid"] == yukonPaObject["paobjectid"] &&
+                                   dynamicPaoStatistics["attempts"] > 0 &&
+                                   yukonPaObject["type"].like(RWDBExpr("%CBC%")) &&
+                                   dynamicPaoStatistics["startdatetime"]  >= toRWDBDT(oneMonthAgo));
+                    
+                     
                     if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -11064,7 +11073,8 @@ void CtiCCSubstationBusStore::reCalculateConfirmationStatsFromDatabase( )
                         if (capId != NULL)
                             cap = findCapBankByPAObjectID(capId);
                         
-                        if (!stringCompareIgnoreCase(statisticType, "Monthly")  && cap != NULL )
+                        if (!stringCompareIgnoreCase(statisticType, "Monthly")  && cap != NULL && 
+                            start > oneMonthAgo)
                         {
                             cap->getConfirmationStats().setMonthlyCommCount(attempts);
                             cap->getConfirmationStats().setMonthlyCommFail(errorTotal);
@@ -11078,7 +11088,8 @@ void CtiCCSubstationBusStore::reCalculateConfirmationStatsFromDatabase( )
                             successPercent = cap->getConfirmationStats().calculateSuccessPercent(capcontrol::WEEKLY_CCSTATS);
                             cap->getConfirmationStats().setWeeklyCommSuccessPercent(successPercent);
                         }
-                        else if (!stringCompareIgnoreCase(statisticType, "Daily") && cap != NULL )
+                        else if (!stringCompareIgnoreCase(statisticType, "Daily") && cap != NULL &&
+                                 start > yesterday)
                         {
                             cap->getConfirmationStats().setDailyCommCount(attempts);
                             cap->getConfirmationStats().setDailyCommFail(errorTotal);

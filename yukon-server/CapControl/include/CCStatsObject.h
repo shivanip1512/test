@@ -37,6 +37,8 @@ public:
 
     LONG getOpCount();
     void setOpCount(LONG val);
+    LONG getFailCount();
+    void setFailCount(LONG val);
     void incrementOpCount(LONG val);
     DOUBLE getTotal();
     void setTotal(DOUBLE val);
@@ -50,7 +52,8 @@ public:
 private:
 
     LONG _opCount;       
-    DOUBLE _total;    
+    DOUBLE _total;  
+    LONG _failCount;  
 };
 
 

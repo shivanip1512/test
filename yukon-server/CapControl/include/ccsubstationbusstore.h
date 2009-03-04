@@ -271,12 +271,16 @@ public:
     {
         object->getOperationStats().setUserDefOpSuccessPercent( userDef.getAverage() ); 
         object->getOperationStats().setUserDefOpCount( userDef.getOpCount() );
+        object->getOperationStats().setUserDefConfFail( userDef.getFailCount() );
         object->getOperationStats().setDailyOpSuccessPercent(  daily.getAverage() );
         object->getOperationStats().setDailyOpCount( daily.getOpCount() );    
+        object->getOperationStats().setDailyConfFail( daily.getFailCount() );    
         object->getOperationStats().setWeeklyOpSuccessPercent( weekly.getAverage() );
         object->getOperationStats().setWeeklyOpCount( weekly.getOpCount() );   
+        object->getOperationStats().setWeeklyConfFail( weekly.getFailCount() );   
         object->getOperationStats().setMonthlyOpSuccessPercent( monthly.getAverage() ); 
         object->getOperationStats().setMonthlyOpCount( monthly.getOpCount() );
+        object->getOperationStats().setMonthlyConfFail( monthly.getFailCount() );
     };
     
     template<class T> 
@@ -284,12 +288,16 @@ public:
     {
         object->getConfirmationStats().setUserDefCommSuccessPercent( userDef.getAverage() );
         object->getConfirmationStats().setUserDefCommCount( userDef.getOpCount() );
+        object->getConfirmationStats().setUserDefCommFail( userDef.getFailCount() );
         object->getConfirmationStats().setDailyCommSuccessPercent(  daily.getAverage() );
         object->getConfirmationStats().setDailyCommCount( daily.getOpCount() );
+        object->getConfirmationStats().setDailyCommFail( daily.getFailCount() );
         object->getConfirmationStats().setWeeklyCommSuccessPercent( weekly.getAverage() );
         object->getConfirmationStats().setWeeklyCommCount( weekly.getOpCount() );
+        object->getConfirmationStats().setWeeklyCommFail( weekly.getFailCount() );
         object->getConfirmationStats().setMonthlyCommSuccessPercent( monthly.getAverage() );
         object->getConfirmationStats().setMonthlyCommCount( monthly.getOpCount() );
+        object->getConfirmationStats().setMonthlyCommFail( monthly.getFailCount() );
 
     };
     template<class T>
