@@ -217,11 +217,11 @@
                         <table width="478" height="186" background="${thermostatScheduleBackground}" style="background-repeat: no-repeat" border="0" cellspacing="0" cellpadding="0">
                             <tr>
                                 <td width="50">
-                                    <div id="MovingLayer1" class="movingBar" style="z-index:1;" onMouseDown="beginDrag(event,0,0,getRightBound(1),getLeftBound(1),'showTimeWake()','horizontal','MovingLayer1');viewChanged();">
+                                    <div id="MovingLayer1" class="movingBar" style="z-index:1; ${(twoBars)? 'display: none;': ''}" onMouseDown="beginDrag(event,0,0,getRightBound(1),getLeftBound(1),'showTimeWake()','horizontal','MovingLayer1');viewChanged();">
                                         <table class="movingTable">
                                             <tr>
                                                 <td align="center" colspan="2">
-                                                    <img src="${(twoBars)? thermO : thermW}" class="barImage">
+                                                    <img src="${thermW}" class="barImage">
                                                 </td>
                                             </tr>
                                             <tr>
@@ -263,11 +263,11 @@
                                     </div>
                                 </td>
                                 <td width="50">
-                                    <div id="MovingLayer3" class="movingBar" style="z-index:3; ${(twoBars)? 'display: none;': ''}" onMouseDown="beginDrag(event,0,0,getRightBound(3),getLeftBound(3),'showTimeReturn()','horizontal','MovingLayer3');viewChanged();"> 
+                                    <div id="MovingLayer3" class="movingBar" style="z-index:3;" onMouseDown="beginDrag(event,0,0,getRightBound(3),getLeftBound(3),'showTimeReturn()','horizontal','MovingLayer3');viewChanged();">  
                                         <table class="movingTable">
                                             <tr> 
                                                 <td align="center" colspan="2">
-                                                    <img src="${thermR}" class="barImage"> 
+                                                    <img src="${(twoBars)? thermO : thermR}" class="barImage">  
                                                 </td>
                                             </tr>
                                             <tr> 
@@ -329,17 +329,17 @@
                                             <cti:msg key="yukon.dr.operator.thermostatSchedule.start" />
                                         </td>
                                         <td class="timeTempField">  
-                                            <input id="time1" type="text" size="8" name="time1" onchange="timeChange(this,1);viewChanged();">
+                                            <input id="time1" type="hidden" size="8" name="time1" onchange="timeChange(this,1);viewChanged();">
                                             <input id="time1min" type="hidden" size="8" name="time1min">
                                             <input id="time2" type="hidden" size="8" name="time2" onchange="timeChange(this,2);viewChanged();">
                                             <input id="time2min" type="hidden" size="8" name="time2min">
+                                            <input id="time3" type="text" size="8" name="time3" onchange="timeChange(this,3);viewChanged();">
+                                            <input id="time3min" type="hidden" size="8" name="time3min">
                                         </td>
                                         <td class="fieldLabel" width="10%">
                                             <cti:msg key="yukon.dr.operator.thermostatSchedule.start" />
                                         </td>
                                         <td class="timeTempField"> 
-                                            <input id="time3" type="hidden" size="8" name="time3" onchange="timeChange(this,3);viewChanged();">
-                                            <input id="time3min" type="hidden" size="8" name="time3min">
                                             <input id="time4" type="text" size="8" name="time4" onchange="timeChange(this,4);viewChanged();">
                                             <input id="time4min" type="hidden" size="8" name="time4min">
                                         </td>
@@ -349,30 +349,31 @@
                                             <cti:msg key="yukon.dr.operator.thermostatSchedule.coolTemp" />
                                         </td>
                                         <td class="timeTempField">  
-                                            <input id="tempCin1" type="text" size="3" value="" name="tempCin1" onchange="tempChange(1, coolMode);viewChanged();">
-                                            <c:choose>
-                                                <c:when test="${temperatureUnit == 'F'}">
-                                                    <span id="tempCin1F">${degreesFahrenheit}</span><span id="tempCin1C" style="display: none;">${degreesCelsius}</span>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <span id="tempCin1F" style="display: none;">${degreesFahrenheit}</span><span id="tempCin1C">${degreesCelsius}</span>
-                                                </c:otherwise>
-                                            </c:choose>
+                                            <span style="display: none;">
+                                                <input id="tempCin1" type="text" size="3" value="" name="tempCin1" onchange="tempChange(1, coolMode);viewChanged();">
+                                                <span id="tempCin1F"></span>
+                                                <span id="tempCin1C"></span>
+                                             </span>
                                             <span style="display: none;">
                                                 <span id="tempCin2F"></span>
                                                 <span id="tempCin2C"></span>
                                                 <input id="tempCin2" type="hidden" size="3" value="" name="tempCin2" onchange="tempChange(2, coolMode);viewChanged();">
                                             </span>
+
+                                            <input id="tempCin3" type="text" size="3" value="" name="tempCin3" onchange="tempChange(3, coolMode);viewChanged();">
+                                            <c:choose>
+                                                <c:when test="${temperatureUnit == 'F'}">
+                                                    <span id="tempCin3F">${degreesFahrenheit}</span><span id="tempCin3C" style="display: none;">${degreesCelsius}</span>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span id="tempCin3F" style="display: none;">${degreesFahrenheit}</span><span id="tempCin3C">${degreesCelsius}</span>
+                                                </c:otherwise>
+                                            </c:choose>
                                         </td>
                                         <td class="fieldLabel">
                                             <cti:msg key="yukon.dr.operator.thermostatSchedule.coolTemp" />
                                         </td>
                                         <td class="timeTempField"> 
-                                            <span style="display: none;">
-                                                <input id="tempCin3" type="text" size="3" value="" name="tempCin3" onchange="tempChange(3, coolMode);viewChanged();">
-                                                <span id="tempCin3F"></span>
-                                                <span id="tempCin3C"></span>
-                                             </span>
                                             <input id="tempCin4" type="text" size="3" value="" name="tempCin4" onchange="tempChange(4, coolMode);viewChanged();">
                                             <c:choose>
                                                 <c:when test="${temperatureUnit == 'F'}">
@@ -389,30 +390,31 @@
                                             <cti:msg key="yukon.dr.operator.thermostatSchedule.heatTemp" />
                                         </td>
                                         <td class="timeTempField">  
-                                            <input id="tempHin1" type="text" size="3" value="" name="tempHin1" onchange="tempChange(1, heatMode);viewChanged();">
-                                            <c:choose>
-                                                <c:when test="${temperatureUnit == 'F'}">
-                                                    <span id="tempHin1F">${degreesFahrenheit}</span><span id="tempHin1C" style="display: none;">${degreesCelsius}</span>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <span id="tempHin1F" style="display: none;">${degreesFahrenheit}</span><span id="tempHin1C">${degreesCelsius}</span>
-                                                </c:otherwise>
-                                            </c:choose>
+                                            <span style="display: none;">
+                                                <span id="tempHin1F"></span>
+                                                <span id="tempHin1C"></span>
+                                                <input id="tempHin1" type="hidden" size="3" value="" name="tempHin1" onchange="tempChange(1, heatMode);viewChanged();">
+                                            </span>
+                                            
                                             <span style="display: none;">
                                                 <span id="tempHin2F"></span>
                                                 <span id="tempHin2C"></span>
                                                 <input id="tempHin2" type="hidden" size="3" value="" name="tempHin2" onchange="tempChange(2, heatMode);viewChanged();">
                                             </span>
+                                            <input id="tempHin3" type="text" size="3" value="" name="tempHin3" onchange="tempChange(3, heatMode);viewChanged();">
+                                            <c:choose>
+                                                <c:when test="${temperatureUnit == 'F'}">
+                                                    <span id="tempHin3F">${degreesFahrenheit}</span><span id="tempHin3C" style="display: none;">${degreesCelsius}</span>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span id="tempHin3F" style="display: none;">${degreesFahrenheit}</span><span id="tempHin3C">${degreesCelsius}</span>
+                                                </c:otherwise>
+                                            </c:choose>
                                         </td>
                                         <td class="fieldLabel">
                                             <cti:msg key="yukon.dr.operator.thermostatSchedule.heatTemp" />
                                         </td>
                                         <td class="timeTempField"> 
-                                            <span style="display: none;">
-                                                <input id="tempHin3" type="text" size="3" value="" name="tempHin3" onchange="tempChange(3, heatMode);viewChanged();">
-                                                <span id="tempHin3F"></span>
-                                                <span id="tempHin3C"></span>
-                                             </span>
                                             <input id="tempHin4" type="text" size="3" value="" name="tempHin4" onchange="tempChange(4, heatMode);viewChanged();">
                                             <c:choose>
                                                 <c:when test="${temperatureUnit == 'F'}">

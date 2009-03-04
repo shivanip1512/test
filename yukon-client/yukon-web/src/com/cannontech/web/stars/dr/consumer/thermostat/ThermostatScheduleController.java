@@ -431,11 +431,11 @@ public class ThermostatScheduleController extends AbstractThermostatController {
 	
 	            // Default the time to 0 seconds past midnight and the temp to
 	            // -1
-	            ThermostatSeasonEntry firstEntry = entryList.get(1);
+	            ThermostatSeasonEntry firstEntry = entryList.get(0);
 	            firstEntry.setStartTime(0);
 	            firstEntry.setCoolTemperature(-1);
 	            firstEntry.setHeatTemperature(-1);
-	            ThermostatSeasonEntry lastEntry = entryList.get(2);
+	            ThermostatSeasonEntry lastEntry = entryList.get(1);
 	            lastEntry.setStartTime(0);
 	            lastEntry.setCoolTemperature(-1);
 	            lastEntry.setHeatTemperature(-1);
