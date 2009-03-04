@@ -154,14 +154,13 @@ public class ThermostatServiceImpl implements ThermostatService {
             CustomerAccount account) {
 
         Integer thermostatId = thermostat.getId();
-        ThermostatSchedule schedule = thermostatScheduleDao.getThermostatScheduleByInventoryId(thermostatId);
+        ThermostatSchedule schedule = 
+        	thermostatScheduleDao.getThermostatScheduleByInventoryId(thermostatId);
 
         if (schedule == null) {
             HardwareType type = thermostat.getType();
             schedule = thermostatScheduleDao.getEnergyCompanyDefaultSchedule(account.getAccountId(),
                                                                              type);
-            // Null out the id so we don't try to update the default schedule
-            schedule.setId(null);
         }
 
         return schedule;
@@ -172,11 +171,8 @@ public class ThermostatServiceImpl implements ThermostatService {
             ThermostatSchedule schedule, TimeOfWeek timeOfWeek, boolean applyToAll,
             YukonUserContext userContext) {
 
-        Thermostat thermostat = null;
         Integer thermostatId = schedule.getInventoryId();
-        if (thermostatId != 0) {
-            thermostat = inventoryDao.getThermostatById(thermostatId);
-        }
+        Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
 
         // Get the existing (or default in none exists) schedule for the
         // thermostat and save the changes
@@ -433,34 +429,45 @@ public class ThermostatServiceImpl implements ThermostatService {
             Thermostat thermostat, ThermostatSchedule updatedSchedule,
             TimeOfWeek timeOfWeek, boolean applyToWeekend) {
 
-        ThermostatSchedule schedule;
-        HardwareType thermostatType = updatedSchedule.getThermostatType();
-        int accountId = account.getAccountId();
+    	ThermostatSchedule schedule;
+    	String updatedName = updatedSchedule.getName();
+    	HardwareType thermostatType = updatedSchedule.getThermostatType();
+    	int accountId = account.getAccountId();
 
-        Integer scheduleId = updatedSchedule.getId();
-        if (scheduleId != null) {
-            // Get the existing schedule
-            schedule = thermostatScheduleDao.getThermostatScheduleById(scheduleId,
-                                                                       accountId);
-            schedule.setName(updatedSchedule.getName());
-        } else if (thermostat != null) {
-            // Get the current (or default) schedule for the thermostat
-            schedule = this.getThermostatSchedule(thermostat, account);
-            schedule.setInventoryId(thermostat.getId());
-            schedule.setName(updatedSchedule.getName());
-            if(schedule.getName() == null) {
-                schedule.setName(thermostat.getLabel());
-            }
-        } else {
-            // Get the energy company default schedule if no thermostat or
-            // schedule id was supplied
-            schedule = thermostatScheduleDao.getEnergyCompanyDefaultSchedule(accountId,
-                                                                             thermostatType);
-            schedule.setInventoryId(0);
-            schedule.setName(updatedSchedule.getName());
-        }
+    	// Get the existing schedule for the thermostat if it exists
+    	Integer inventoryId = thermostat.getId();
+		ThermostatSchedule existingSchedule = 
+    		thermostatScheduleDao.getThermostatScheduleByInventoryId(inventoryId);
+    	if(existingSchedule != null) {
+    		// A schedule already exists for the thermostat
+    		String existingName = existingSchedule.getName();
+    		
+    		// If the name hasn't changed, update the existing schedule.  Create a new schedule
+    		// if name is updated
+    		if(existingName.equals(updatedName)) {
+    			schedule = existingSchedule;
+    		} else {
+    			// Update existing schedule to not be linked to this thermostat - reset 
+    			// inventoryid to 0
+    			existingSchedule.setInventoryId(0);
+    			LiteStarsEnergyCompany energyCompany = ecMappingDao.getInventoryEC(inventoryId);
+    			thermostatScheduleDao.save(existingSchedule, energyCompany);
+    			
+    			// Get the energy company default schedule to use as base for new schedule
+    			schedule = 
+    				thermostatScheduleDao.getEnergyCompanyDefaultSchedule(accountId, thermostatType);
+    		}
+    	} else {
+    		// No schedule exists for the thermostat - create a new schedule with the energy
+    		// company default as the base
+    		schedule = 
+    			thermostatScheduleDao.getEnergyCompanyDefaultSchedule(accountId, thermostatType);
+    	}
+    	
+    	schedule.setName(updatedName);
+    	schedule.setAccountId(accountId);
+    	schedule.setInventoryId(inventoryId);
         schedule.setThermostatType(thermostatType);
-        schedule.setAccountId(accountId);
 
         // Get the season that is being updated
         ThermostatSeason updatedSeason = updatedSchedule.getSeason();

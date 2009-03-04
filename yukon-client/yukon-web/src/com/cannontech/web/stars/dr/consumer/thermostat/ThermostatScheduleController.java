@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import net.sf.json.JSONArray;
+import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -253,23 +254,14 @@ public class ThermostatScheduleController extends AbstractThermostatController {
 
         TimeOfWeek scheduleTimeOfWeek = TimeOfWeek.valueOf(timeOfWeek);
         ThermostatScheduleMode thermostatScheduleMode = ThermostatScheduleMode.valueOf(scheduleMode);
+        boolean applyToAll = ThermostatScheduleMode.ALL.equals(thermostatScheduleMode);
 
         ThermostatScheduleUpdateResult message = null;
 
         boolean failed = false;
         for (Integer thermostatId : thermostatIds) {
-
-        	ThermostatSchedule thermostatSchedule = 
-        		thermostatScheduleDao.getThermostatScheduleByInventoryId(thermostatId);
-        	if(thermostatSchedule != null) {
-        		// Set id so schedule gets updated
-        		schedule.setId(thermostatSchedule.getId());
-        	} else {
-        		// Set id so schedule gets created
-        		schedule.setId(null);
-        	}
-        	
-            Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
+ 
+        	Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
 
             // Default the schedule name if none provided
             if (StringUtils.isBlank(schedule.getName())) {
@@ -282,7 +274,6 @@ public class ThermostatScheduleController extends AbstractThermostatController {
                 this.setToTwoTimeTemps(schedule);
             }
 
-            boolean applyToAll = ThermostatScheduleMode.ALL.equals(thermostatScheduleMode);
 			if (sendAndSave) {
                 // Send the schedule to the thermsotat(s) and then update the
                 // existing thermostat(s) schedule or create a new schedule for
@@ -558,7 +549,13 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         // TimeOfWeeks
         for (TimeOfWeek timeOfWeek : timeOfWeekList) {
 
-            JSONArray timeOfWeekArray = seasonObject.getJSONArray(timeOfWeek.toString());
+        	JSONArray timeOfWeekArray;
+        	try {
+				timeOfWeekArray = seasonObject.getJSONArray(timeOfWeek.toString());
+        	} catch (JSONException e) {
+        		// this time of week doesn't exist - continue to the next
+        		continue;
+        	}
 
             for (Object object : timeOfWeekArray.toArray()) {
                 JSONObject jsonObject = (JSONObject) object;

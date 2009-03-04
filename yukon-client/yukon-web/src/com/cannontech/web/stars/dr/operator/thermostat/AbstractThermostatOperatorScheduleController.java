@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.json.JSONArray;
+import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
 import org.springframework.stereotype.Controller;
@@ -166,7 +167,13 @@ public class AbstractThermostatOperatorScheduleController {
         // TimeOfWeeks
         for (TimeOfWeek timeOfWeek : timeOfWeekList) {
 
-            JSONArray timeOfWeekArray = seasonObject.getJSONArray(timeOfWeek.toString());
+        	JSONArray timeOfWeekArray;
+        	try {
+				timeOfWeekArray = seasonObject.getJSONArray(timeOfWeek.toString());
+        	} catch (JSONException e) {
+        		// this time of week doesn't exist - continue to the next
+        		continue;
+        	}
 
             for (Object object : timeOfWeekArray.toArray()) {
                 JSONObject jsonObject = (JSONObject) object;
