@@ -104,7 +104,6 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
                                                                             getStopDate());
         }
         List<LiteYukonPAObject> restrictedPrograms = ReportFuncs.getRestrictedPrograms(liteUser);
-        boolean filter = !restrictedPrograms.isEmpty();
         data = new ArrayList<ModelRow>(accounts.size());
         for (CustomerAccountWithNames account : accounts) {
             try {
@@ -119,9 +118,7 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
                         groupIdToProgram.put(groupId, groupPrograms);
                     }
                     
-                    if(filter) {
-                        groupPrograms = filterProgramsByPermission(groupPrograms, restrictedPrograms);
-                    }
+                    groupPrograms = ReportFuncs.filterProgramsByPermission(groupPrograms, restrictedPrograms);
                     
                     /*lots of for loops, but this one will not normally be more than one iteration*/
                     for(ProgramLoadGroup currentGroupProgram : groupPrograms) {
@@ -166,24 +163,6 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
             }
         }
         //----------------------------------------------------------------------------------
-    }
-    
-    /**
-     * Returns a subset of the ProgramLoadGroup List that the user is allowed to view
-     * @param programAndGroupList
-     * @param restrictedPrograms
-     * @return
-     */
-    public List<ProgramLoadGroup> filterProgramsByPermission(List<ProgramLoadGroup> programAndGroupList, List<LiteYukonPAObject> restrictedPrograms){
-        List<ProgramLoadGroup> filterProgramList = new ArrayList<ProgramLoadGroup>();
-        PaoDao paoDao = YukonSpringHook.getBean("paoDao", PaoDao.class);
-        for(ProgramLoadGroup programLoadGroup : programAndGroupList) {
-            LiteYukonPAObject program = paoDao.getLiteYukonPAO(programLoadGroup.getPaobjectId());
-            if(restrictedPrograms.contains(program)) {
-                filterProgramList.add(programLoadGroup);
-            }
-        }
-        return filterProgramList;
     }
     
     public void setEnergyCompanyId(int energyCompanyId) {

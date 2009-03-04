@@ -11,7 +11,6 @@ import org.apache.commons.lang.Validate;
 
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
@@ -96,7 +95,6 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
         data = new ArrayList<ModelRow>(ecPrograms.size());
         HashMap<Integer, Double[]> programTotals = new HashMap<Integer, Double[]>();
         List<LiteYukonPAObject> restrictedPrograms = ReportFuncs.getRestrictedPrograms(liteUser);
-        boolean filter = !restrictedPrograms.isEmpty();
         for (CustomerAccountWithNames account : accountsFromSQL) {
             try{
                 List<Integer> groupIds = lmHardwareControlGroupDao.getDistinctGroupIdsByAccountId(account.getAccountId());
@@ -111,10 +109,7 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
                         groupIdToProgram.put(groupId, groupPrograms);
                     }
                     
-                    
-                    if(filter) {
-                        groupPrograms = filterProgramsByPermission(groupPrograms, restrictedPrograms);
-                    }
+                    groupPrograms = ReportFuncs.filterProgramsByPermission(groupPrograms, restrictedPrograms);
                     
                     /*lots of for loops, but this one will not normally be more than one iteration*/
                     for(ProgramLoadGroup currentGroupProgram : groupPrograms) {
@@ -193,24 +188,6 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
                 }
             }
         }
-    }
-    
-    /**
-     * Returns a subset of the ProgramLoadGroup List that the user is allowed to view
-     * @param programAndGroupList
-     * @param restrictedPrograms
-     * @return
-     */
-    public List<ProgramLoadGroup> filterProgramsByPermission(List<ProgramLoadGroup> programAndGroupList, List<LiteYukonPAObject> restrictedPrograms){
-        List<ProgramLoadGroup> filterProgramList = new ArrayList<ProgramLoadGroup>();
-        PaoDao paoDao = YukonSpringHook.getBean("paoDao", PaoDao.class);
-        for(ProgramLoadGroup programLoadGroup : programAndGroupList) {
-            LiteYukonPAObject program = paoDao.getLiteYukonPAO(programLoadGroup.getPaobjectId());
-            if(restrictedPrograms.contains(program)) {
-                filterProgramList.add(programLoadGroup);
-            }
-        }
-        return filterProgramList;
     }
     
     public void setEnergyCompanyId(int energyCompanyId) {

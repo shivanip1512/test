@@ -96,6 +96,8 @@ public interface IDatabaseCache {
     public List<LiteLMPAOExclusion> getAllLMPAOExclusions();
 
     public List<LiteYukonPAObject> getAllLMPrograms();
+    
+    public List<LiteYukonPAObject> getAllLMDirectPrograms();
 
     public List<LiteYukonPAObject> getAllLMControlAreas();
 

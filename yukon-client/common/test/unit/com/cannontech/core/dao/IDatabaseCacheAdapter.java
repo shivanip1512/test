@@ -234,6 +234,11 @@ public class IDatabaseCacheAdapter implements IDatabaseCache {
 
         throw new UnsupportedOperationException();
     }
+    
+    public List<LiteYukonPAObject> getAllLMDirectPrograms() {
+
+        throw new UnsupportedOperationException();
+    }
 
     public List<LiteLMProgScenario> getAllLMScenarioProgs() {
 

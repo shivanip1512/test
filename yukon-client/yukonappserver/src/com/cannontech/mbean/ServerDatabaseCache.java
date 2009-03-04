@@ -648,6 +648,28 @@ public synchronized List<LiteYukonPAObject> getAllLMPrograms()
 	return allLMPrograms;
 }
 
+/**
+ * Insert the method's description here.
+ * Creation date: (3/14/00 3:19:19 PM)
+ */
+public synchronized List<LiteYukonPAObject> getAllLMDirectPrograms()
+{
+    if( allLMPrograms == null )
+    {
+        //List allDevices = getAllLoadManagement();
+        allLMPrograms = new ArrayList<LiteYukonPAObject>( getAllLoadManagement().size() / 2 );
+
+        for( int i = 0; i < getAllLoadManagement().size(); i++ )
+        {
+            if(getAllLoadManagement().get(i).getType() == PAOGroups.LM_DIRECT_PROGRAM)
+                allLMPrograms.add( getAllLoadManagement().get(i) );             
+        }
+
+        allLMPrograms.trimToSize();
+    }
+    return allLMPrograms;
+}
+
 /* (non-Javadoc)
  * @see com.cannontech.yukon.IDatabaseCache#getAllLMControlAreas()
  */
