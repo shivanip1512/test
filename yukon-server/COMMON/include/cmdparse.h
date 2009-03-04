@@ -164,10 +164,14 @@ public:
 #define CMD_FLAG_GV_PFCOUNT      0x00002000
 #define CMD_FLAG_GV_USAGE        0x00004000     // This is for all channels on a residential meter
 #define CMD_FLAG_GV_TOU          0x00008000
+
+#define CMD_FLAG_GV_PROPCOUNT    0x00010000
+#define CMD_FLAG_GV_RUNTIME      0x00020000
+#define CMD_FLAG_GV_SHEDTIME     0x00040000
 /* Defined below.... be careful
 #define CMD_FLAG_OFFSET          0x10000000     // A specific offset is defined in the next cmd field
 */
-#define CMD_FLAG_GV_ALIASMASK    0x0000FFF0
+#define CMD_FLAG_GV_ALIASMASK    0x000FFFF0
 
 /* GetStatus flags
  *    GetStatus Indicator

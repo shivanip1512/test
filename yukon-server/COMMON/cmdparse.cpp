@@ -450,6 +450,12 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
     static const boost::regex   re_dnp_status("dnp status");
     static const boost::regex   re_dnp_accumulator(CtiString("dnp accumulator ") + str_num);
 
+    // DR 2 way reads
+    static const boost::regex   re_interval_demand(CtiString("interval last"));
+    static const boost::regex   re_load_runtime   (CtiString("runtime( load ")  + str_num + CtiString(")?( previous ") + str_num + CtiString(")?"));
+    static const boost::regex   re_load_shedtime  (CtiString("shedtime( load ") + str_num + CtiString(")?( previous ") + str_num + CtiString(")?"));
+    static const boost::regex   re_propcount      (CtiString("propcount"));
+
     CtiTokenizer   tok(CmdStr);
 
     token = tok(); // Get the first one into the hopper....
@@ -689,6 +695,59 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
                     if( !(temp = cmdtok()).empty() )
                     {
                         _cmd["daily_read_date_end"] = temp;
+                    }
+                }
+            }
+        }
+        else if(!(token = CmdStr.match(re_propcount)).empty())
+        {
+            flag |= CMD_FLAG_GV_PROPCOUNT;
+        }
+        else if(!(token = CmdStr.match(re_interval_demand)).empty())
+        {
+            flag |= CMD_FLAG_GV_DEMAND;
+        }
+        else if(!(token = CmdStr.match(re_load_runtime)).empty() || !(token = CmdStr.match(re_load_shedtime)).empty())
+        {
+            if(!CmdStr.match("runtime").empty())
+            {
+                flag |= CMD_FLAG_GV_RUNTIME;
+            }
+            else
+            {
+                flag |= CMD_FLAG_GV_SHEDTIME;
+            }
+            
+            //beyond this point, runtime and shedtime are identical
+            CtiTokenizer cmdtok(token);
+
+            cmdtok(); // Move past "runtime"
+
+            if(!(temp = cmdtok()).empty())
+            {
+                if(temp.contains("load"))
+                {
+                    _cmd["load"] = atoi(cmdtok().c_str());
+                }
+                else if(temp.contains("previous"))
+                {
+                    _cmd["previous_hours"] = atoi(cmdtok().c_str());
+                }
+                else
+                {
+                    //This shouldnt happen, but oh well?
+                    cmdtok();
+                }
+
+                if(!(temp = cmdtok()).empty())
+                {
+                    if(temp.contains("load"))
+                    {
+                        _cmd["load"] = atoi(cmdtok().c_str());
+                    }
+                    else if(temp.contains("previous"))
+                    {
+                        _cmd["previous_hours"] = atoi(cmdtok().c_str());
                     }
                 }
             }
