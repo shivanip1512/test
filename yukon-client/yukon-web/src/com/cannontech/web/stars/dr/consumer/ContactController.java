@@ -122,9 +122,8 @@ public class ContactController extends AbstractConsumerController {
 
     @RequestMapping(value = "/consumer/contacts/updateContact", method = RequestMethod.POST)
     public String updateContact(int contactId, String firstName,
-            String lastName, LiteYukonUser user, HttpServletRequest request) {
+            String lastName, LiteYukonUser user, HttpServletRequest request, ModelMap map) {
 
-        String redirectUrl = "redirect:/spring/stars/consumer/contacts";
         try {
             accountCheckerService.checkContact(user, contactId);
 
@@ -186,12 +185,12 @@ public class ContactController extends AbstractConsumerController {
                 contactDao.saveContact(contact);
             }
         } catch (InvalidNotificationException e) {
-            redirectUrl = ServletUtil.tweakRequestURL(redirectUrl, "failed", "true");
-            redirectUrl = ServletUtil.tweakRequestURL(redirectUrl, "notifCategory", e.getNotifCategory());
-            redirectUrl = ServletUtil.tweakRequestURL(redirectUrl, "notificationText", e.getNotificationText());
+            map.addAttribute("failed", "true");
+            map.addAttribute("notifCategory", e.getNotifCategory());
+            map.addAttribute("notificationText", e.getNotificationText());
         }
         
-        return redirectUrl;
+        return "redirect:/spring/stars/consumer/contacts";
     }
 
     /**

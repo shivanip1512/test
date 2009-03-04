@@ -4,14 +4,6 @@ public class InvalidNotificationException extends IllegalArgumentException {
     private String notifCategory;
     private String notificationText;
 
-    public InvalidNotificationException(String message) {
-        super(message);
-    }
-
-    public InvalidNotificationException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
     public InvalidNotificationException(String notifCategory,
             String notificationText) {
         this.notifCategory = notifCategory;
