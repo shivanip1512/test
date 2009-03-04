@@ -27,6 +27,7 @@ import com.cannontech.core.dao.SimplePointAccessDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.db.customer.CICustomerPointType;
 import com.cannontech.support.CustomerPointTypeHelper;
+import com.google.common.collect.Comparators;
 
 public class IsocCommonStrategy extends StrategyGroupBase {
     private SimplePointAccessDao pointAccess;
@@ -71,12 +72,15 @@ public class IsocCommonStrategy extends StrategyGroupBase {
     }
 
     public double getTotalEventHours(CICustomerStub customer, Date from, Date to) {
-        List<BaseEvent> allEvents = getBaseEventDao().getAllForCustomer(customer, from, to);
+        List<BaseEvent> allEvents = getBaseEventDao().getAllForCustomerOverlappingDateRange(customer, from, to);
         int totalMinutes = 0;
         for (BaseEvent event : allEvents) {
             
             if (doesEventContributeToAllowedHours(event)) {
-                totalMinutes += event.getDuration();
+                Date computedStart = Comparators.max(from, event.getStartTime());	//use the max startTime
+            	Date computedStop = Comparators.min(to, event.getStopTime());		//use the min stopTime
+                int differenceMinutes = TimeUtil.differenceMinutes(computedStart, computedStop);
+                totalMinutes += differenceMinutes;
             }
         }
         double totalHours = (double)totalMinutes / 60;

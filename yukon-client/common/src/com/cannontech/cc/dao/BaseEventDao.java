@@ -84,25 +84,44 @@ public class BaseEventDao implements CommonEventOperations {
         return allEvents;
     }
 
-    
     /**
      * Get all Events for a given customer between the supplied dates.
+     * Includes all events that have a startTime OR stopTime between the supplied dates.
      * @param customer
      * @param from (inclusive)
      * @param to (inclusive)
      * @return
      */
-    public List<BaseEvent> getAllForCustomer(CICustomerStub customer, Date from, Date to) {
+    public List<BaseEvent> getAllForCustomerOverlappingDateRange(CICustomerStub customer, Date from, Date to) {
         List<BaseEvent> allEvents = getAllForCustomer(customer);
         for (Iterator<BaseEvent> iter = allEvents.iterator(); iter.hasNext();) {
             BaseEvent event = iter.next();
-            if (event.getStartTime().before(from) || event.getStopTime().after(to)) {
-                iter.remove();
+
+            if (event.getStopTime().before(from) || event.getStartTime().after(to)) {
+            	iter.remove();
             }
         }
         return allEvents;  // which have now been filtered
     }
+    /**
+     * Get all Events for a given customer between the supplied dates.
+     * Includes all events that have a stopTime between the supplied dates.  The startTime is ignored.
+     * @param customer
+     * @param from (inclusive)
+     * @param to (inclusive)
+     * @return
+     */
+    public List<BaseEvent> getAllForCustomerOverlappingFromDate(CICustomerStub customer, Date from, Date to) {
+        List<BaseEvent> allEvents = getAllForCustomer(customer);
+        for (Iterator<BaseEvent> iter = allEvents.iterator(); iter.hasNext();) {
+            BaseEvent event = iter.next();
 
+            if (event.getStopTime().before(from) || event.getStopTime().after(to)) {
+            	iter.remove();
+            }
+        }
+        return allEvents;  // which have now been filtered
+    }
     // setters for dependency injection
     
     public void setChildDaos(Set<CommonEventOperations> childDaos) {

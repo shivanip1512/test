@@ -219,7 +219,8 @@ public class CurtailmentEventsItronFormat extends SimpleBillingFormatBase {
         List<CICustomerStub> customersForEC = customerStubDao.getCustomersForEC(liteEnergyCompany.getEnergyCompanyID());
 
         for (CICustomerStub customerStub : customersForEC) {
-            List<BaseEvent> allEvents = baseEventDao.getAllForCustomer(customerStub, getBillingFileDefaults().getEarliestStartDate(), getBillingFileDefaults().getEndDate());
+        	//Allow events with an earlier start(from) date to be included
+            List<BaseEvent> allEvents = baseEventDao.getAllForCustomerOverlappingFromDate(customerStub, getBillingFileDefaults().getEarliestStartDate(), getBillingFileDefaults().getEndDate());
             for (BaseEvent event : allEvents) {
             	String eventDataString = getEventDataString(customerStub, event);
             	eventString += eventDataString;
