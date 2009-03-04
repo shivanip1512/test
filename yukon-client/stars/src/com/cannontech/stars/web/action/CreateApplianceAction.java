@@ -415,17 +415,22 @@ public class CreateApplianceAction implements ActionBase {
 			StarsEnergyCompanySettings ecSettings = (StarsEnergyCompanySettings)
 					session.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 			StarsEnrollmentPrograms categories = ecSettings.getStarsEnrollmentPrograms();
-            
-			StarsAppliances starsApps = accountInfo.getStarsAppliances();
+
+			// Search backwards through the list of appliances to guess where
+			// this will be added to the list so we can create a URL which will
+			// edit the newly created appliance.  YUK-7070 has been written to
+			// remind us to clean this up in the future.
+			StarsAppliances starsApps = accountInfo.getUnassignedStarsAppliances();
 			String appDesc = ServletUtils.getApplianceDescription( categories, app );
 			int idx = -1;
-            
+
 			for (idx = starsApps.getStarsApplianceCount() - 1; idx >= 0; idx--) {
 				String desc = ServletUtils.getApplianceDescription( categories, starsApps.getStarsAppliance(idx) );
 				if (desc.compareTo( appDesc ) <= 0)
 					break;
 			}
-            
+			idx += accountInfo.getStarsAppliances().getStarsApplianceCount();
+
 			starsApps.addStarsAppliance( idx+1, app );
 			session.setAttribute( ServletUtils.ATT_REDIRECT, "/operator/Consumer/Appliance.jsp?AppNo=" + String.valueOf(idx+1) );
 			

@@ -178,13 +178,13 @@
       <div align="left">
 	    <span class="NavHeader"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_HEADING_APPLIANCES %>" defaultvalue="Appliances"/></span><br>
         <table width="100%" border="0" cellspacing="0" cellpadding="0">
-          <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_APPLIANCES %>"> 
+          <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_APPLIANCES %>">
           <%
 	int lastItemType = 0;
 	int itemNo = 1;
-	for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
-        StarsAppliance app = appliances.getStarsAppliance(i);
-		
+	for (int i = 0; i < allAppliances.size(); i++) {
+        StarsAppliance app = allAppliances.get(i);
+
 		String linkUrl = "Appliance.jsp?AppNo=" + i;
 		String linkLabel = ServletUtils.getApplianceDescription(categories, app);
 /*		if (app.getApplianceCategoryID() != lastItemType) {

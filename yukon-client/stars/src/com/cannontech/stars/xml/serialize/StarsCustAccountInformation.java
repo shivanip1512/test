@@ -6,6 +6,7 @@ public class StarsCustAccountInformation {
     private StarsResidenceInformation _starsResidenceInformation;
     private StarsLMPrograms _starsLMPrograms;
     private StarsAppliances _starsAppliances;
+    private StarsAppliances _unassignedStarsAppliances;
     private StarsInventories _starsInventories;
     private StarsCallReportHistory _starsCallReportHistory;
     private StarsServiceRequestHistory _starsServiceRequestHistory;
@@ -21,7 +22,11 @@ public class StarsCustAccountInformation {
 
     public StarsAppliances getStarsAppliances() {
         return this._starsAppliances;
-    } 
+    }
+
+    public StarsAppliances getUnassignedStarsAppliances() {
+        return this._unassignedStarsAppliances;
+    }
 
     public StarsCallReportHistory getStarsCallReportHistory() {
         return this._starsCallReportHistory;
@@ -89,6 +94,16 @@ public class StarsCustAccountInformation {
     {
         this._starsAppliances = starsAppliances;
     } //-- void setStarsAppliances(StarsAppliances) 
+
+    /**
+     * Sets the value of field 'unassignedStarsAppliances'.
+     * 
+     * @param unassignedStarsAppliances the value of field 'unassignedStarsAppliances'.
+    **/
+    public void setUnassignedStarsAppliances(StarsAppliances unassignedStarsAppliances)
+    {
+        this._unassignedStarsAppliances = unassignedStarsAppliances;
+    } //-- void setUnassignedStarsAppliances(StarsAppliances) 
 
     /**
      * Sets the value of field 'starsCallReportHistory'.

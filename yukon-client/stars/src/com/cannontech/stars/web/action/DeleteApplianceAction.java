@@ -108,6 +108,14 @@ public class DeleteApplianceAction implements ActionBase {
 				}
 			}
 			if (liteApp == null) {
+			    for (LiteStarsAppliance lApp : liteAcctInfo.getUnassignedAppliances()) {
+	                if (lApp.getApplianceID() == delApp.getApplianceID()) {
+                        liteApp = lApp;
+                        break;
+                    }
+			    }
+			}
+			if (liteApp == null) {
 				respOper.setStarsFailure( StarsFactory.newStarsFailure(
 						StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find the appliance information") );
 				return SOAPUtil.buildSOAPMessage( respOper );

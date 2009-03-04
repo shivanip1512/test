@@ -95,7 +95,7 @@ public class UpdateApplianceAction implements ActionBase {
 			
 			int appID = Integer.parseInt(req.getParameter("AppID"));
 			StarsAppliance appliance = null;
-			
+
 			StarsAppliances appliances = accountInfo.getStarsAppliances();
 			for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
 				if (appliances.getStarsAppliance(i).getApplianceID() == appID) {
@@ -103,7 +103,16 @@ public class UpdateApplianceAction implements ActionBase {
 					break;
 				}
 			}
-			
+			if (appliance == null) {
+	            appliances = accountInfo.getUnassignedStarsAppliances();
+	            for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
+	                if (appliances.getStarsAppliance(i).getApplianceID() == appID) {
+	                    appliance = appliances.getStarsAppliance(i);
+	                    break;
+	                }
+	            }
+			}
+
 			if (appliance == null) return null;
 			
 			StarsUpdateAppliance updateApp = (StarsUpdateAppliance)
@@ -433,13 +442,24 @@ public class UpdateApplianceAction implements ActionBase {
 			
 			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
 					session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
-			
+
+			boolean done = false;
 			StarsAppliances appliances = accountInfo.getStarsAppliances();
 			for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
 				if (appliances.getStarsAppliance(i).getApplianceID() == appliance.getApplianceID()) {
 					appliances.setStarsAppliance(i, appliance);
+					done = true;
 					break;
 				}
+			}
+			if (!done) {
+	            appliances = accountInfo.getUnassignedStarsAppliances();
+	            for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
+	                if (appliances.getStarsAppliance(i).getApplianceID() == appliance.getApplianceID()) {
+	                    appliances.setStarsAppliance(i, appliance);
+	                    break;
+	                }
+	            }
 			}
 			
 			return 0;
@@ -455,17 +475,24 @@ public class UpdateApplianceAction implements ActionBase {
 		throws WebClientException, CommandExecutionException
 	{
 		LiteStarsAppliance liteApp = null;
-		int appIdx = 0;
 		
 		for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
 			LiteStarsAppliance lApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
 			if (lApp.getApplianceID() == updateApp.getApplianceID()) {
 				liteApp = lApp;
-				appIdx = i;
 				break;
 			}
 		}
-        
+
+		if (liteApp == null) {
+	        for (LiteStarsAppliance lApp : liteAcctInfo.getUnassignedAppliances()) {
+                if (lApp.getApplianceID() == updateApp.getApplianceID()) {
+                    liteApp = lApp;
+                    break;
+                }
+            }
+		}
+
 		if (liteApp == null)
 			throw new WebClientException( "Cannot find the appliance to be updated" );
 		

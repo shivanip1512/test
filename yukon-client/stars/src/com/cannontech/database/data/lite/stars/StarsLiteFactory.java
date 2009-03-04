@@ -1454,8 +1454,9 @@ public class StarsLiteFactory {
 		}
 		
 		if (isOperator) {
-			starsAcctInfo.setStarsAppliances( createStarsAppliances(liteAcctInfo.getAppliances(), energyCompany) );
-			
+            starsAcctInfo.setStarsAppliances( createStarsAppliances(liteAcctInfo.getAppliances(), energyCompany) );
+            starsAcctInfo.setUnassignedStarsAppliances( createStarsAppliances(liteAcctInfo.getUnassignedAppliances(), energyCompany) );
+
             List<StarsCallReport> liteCalls = liteAcctInfo.getCallReportHistory();
 			StarsCallReportHistory starsCalls = new StarsCallReportHistory();
 			starsAcctInfo.setStarsCallReportHistory( starsCalls );

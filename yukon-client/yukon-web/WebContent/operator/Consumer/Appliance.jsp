@@ -1,12 +1,12 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
-	if (appliances.getStarsApplianceCount() == 0) {
+	if (allAppliances.size() == 0) {
 		response.sendRedirect("CreateAppliances.jsp"); return;
 	}
 	
 	int appNo = Integer.parseInt(request.getParameter("AppNo"));
-	StarsAppliance appliance = appliances.getStarsAppliance(appNo);
+	StarsAppliance appliance = allAppliances.get(appNo);
 	
 	String yearMade = "";
 	if (appliance.hasYearManufactured())

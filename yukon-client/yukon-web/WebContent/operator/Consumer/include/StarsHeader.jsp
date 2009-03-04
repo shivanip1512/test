@@ -95,6 +95,12 @@
     
     StarsResidenceInformation residence = null;
     StarsAppliances appliances = null;
+    StarsAppliances unassignedAppliances = null;
+    // This is a a list of all appliances for showing on the left nav bar.
+    // Currently it is simple a combination of "appliances" and
+    // "unassignedAppliances".  For better or worse, there are many pages that
+    // depend on this.  YUK-7070 suggests this be cleaned up.
+    List<StarsAppliance> allAppliances = new ArrayList<StarsAppliance>();
     StarsInventories inventories = null;
     StarsLMPrograms programs = null;
     StarsLMProgramHistory programHistory = null;
@@ -211,6 +217,13 @@
 		    		primContact = account.getPrimaryContact();
 		    		residence = accountInfo.getStarsResidenceInformation();
 		    		appliances = accountInfo.getStarsAppliances();
+		    		unassignedAppliances = accountInfo.getUnassignedStarsAppliances();
+		    		for (StarsAppliance starsAppliance : appliances) {
+		    		    allAppliances.add(starsAppliance);
+		    		}
+		    		for (StarsAppliance starsAppliance : unassignedAppliances) {
+		    		    allAppliances.add(starsAppliance);
+		    		}
 		    		inventories = accountInfo.getStarsInventories();
 		    		programs = accountInfo.getStarsLMPrograms();
 		    		programHistory = programs.getStarsLMProgramHistory();

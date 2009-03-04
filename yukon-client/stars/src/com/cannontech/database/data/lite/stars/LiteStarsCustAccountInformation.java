@@ -24,6 +24,8 @@ import com.cannontech.stars.xml.serialize.StarsCallReport;
  *
  */
 public class LiteStarsCustAccountInformation extends LiteBase {
+    private final static long serialVersionUID = 1L;
+
     private final int energyCompanyId;
 	private LiteCustomerAccount customerAccount = null;
 	private LiteCustomer customer = null;
@@ -31,7 +33,8 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	private LiteSiteInformation siteInformation = null;
 	private LiteCustomerResidence customerResidence = null;
 	private List<LiteStarsLMProgram> programs = null;		// List of LiteStarsLMProgram
-	private List<LiteStarsAppliance> appliances = null;	// List of LiteStarsAppliance
+    private List<LiteStarsAppliance> appliances = null; // List of LiteStarsAppliance
+    private List<LiteStarsAppliance> unassignedAppliances = null;
 	private List<Integer> inventories = null;	// List of IDs of LiteInventoryBase
 	private List<LiteLMProgramEvent> programHistory = null;	// List of LiteLMProgramEvent
 	private List<StarsCallReport> callReportHistory = null;	// List of StarsCallReport
@@ -71,20 +74,34 @@ public class LiteStarsCustAccountInformation extends LiteBase {
     {
         return CICustomerBase.getCompanyNameFromDB(customerID);
     }
-    
-	/**
-	 * Returns the appliances.
-	 * @return ArrayList
-	 */
-	public synchronized List<LiteStarsAppliance> getAppliances() {
-		if (appliances == null) {
+
+    /**
+     * Returns the appliances.
+     * @return ArrayList
+     */
+    public synchronized List<LiteStarsAppliance> getAppliances() {
+        if (appliances == null) {
             if (getCustomerAccount() != null) { //Must already have at least the base objects loaded
                 StarsApplianceDao starsApplianceDao = YukonSpringHook.getBean("starsApplianceDao", StarsApplianceDao.class);
                 appliances = starsApplianceDao.getByAccountId(getAccountID(), energyCompanyId);
             }
         }
-		return appliances;
-	}
+        return appliances;
+    }
+
+    /**
+     * Returns the unassigned appliances.
+     * @return ArrayList
+     */
+    public synchronized List<LiteStarsAppliance> getUnassignedAppliances() {
+        if (unassignedAppliances == null) {
+            if (getCustomerAccount() != null) { //Must already have at least the base objects loaded
+                StarsApplianceDao starsApplianceDao = YukonSpringHook.getBean("starsApplianceDao", StarsApplianceDao.class);
+                unassignedAppliances = starsApplianceDao.getUnassignedAppliances(getAccountID(), energyCompanyId);
+            }
+        }
+        return unassignedAppliances;
+    }
 
 	/**
 	 * Returns the callReportHistory.

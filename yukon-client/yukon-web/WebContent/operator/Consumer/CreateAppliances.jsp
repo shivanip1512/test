@@ -55,7 +55,7 @@ function showAdditionalAppInfo(index)
            
               <form name="MForm" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient">
 			    <input type="hidden" name="action" value="CreateAppliance">
-				<input type="hidden" name="AppNo" value="<%= appliances.getStarsApplianceCount() %>">
+				<input type="hidden" name="AppNo" value="<%= allAppliances.size() %>">
 				<input type="hidden" name="CatID" value="0">
                 <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                   <tr> 

@@ -1,9 +1,10 @@
 package com.cannontech.stars.xml.serialize;
 
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Vector;
 
-public class StarsAppliances {
+public class StarsAppliances implements Iterable<StarsAppliance> {
     private Vector<StarsAppliance> starsApplianceList;
 
     public StarsAppliances() {
@@ -70,4 +71,8 @@ public class StarsAppliances {
         }
     }
 
+    @Override
+    public Iterator<StarsAppliance> iterator() {
+        return starsApplianceList.iterator();
+    }
 }
