@@ -6025,7 +6025,8 @@ bool CtiLMProgramDirect::recordHistory(CtiTableLMProgramHistory::LMHistoryAction
 /*---------------------------------------------------------------------------
     setProgramState
 
-    Sets the current state of the program
+    Sets the current state of the program. Also writes out historical program
+    tables and requires the program to be properly loaded before it is called. 
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramDirect::setProgramState(LONG newState)
 {

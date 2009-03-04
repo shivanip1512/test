@@ -1148,7 +1148,9 @@ void CtiLMProgramBase::restore(RWDBReader& rdr)
     }
     else
     {
-        _programstate = InactiveState; // Do not use set function here
+        // lmprogramdirect->setProgramState cannot be called here as it has side effects
+        // It cannot be called until the program is completely loaded.
+        CtiLMProgramBase::setProgramState(InactiveState);
         setReductionTotal(0.0);
         setStartedControlling(gInvalidCtiTime);
         setLastControlSent(gInvalidCtiTime);
