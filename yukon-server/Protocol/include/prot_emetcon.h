@@ -97,6 +97,10 @@ public:
         GetValue_FrozenTOUkWh,
         GetValue_FreezeCounter,
         GetValue_DailyRead,
+        GetValue_IntervalLast,
+        GetValue_Runtime,
+        GetValue_Shedtime,
+        GetValue_PropCount,
 
         // PutValue Commands
         PutValue_IEDReset,

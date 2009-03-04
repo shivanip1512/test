@@ -64,6 +64,7 @@
 #include "dev_aplus.h"
 #include "dev_a1.h"
 #include "dev_lgs4.h"
+#include "dev_lcr3102.h"
 #include "dev_dr87.h"
 #include "dev_dct501.h"
 #include "dev_mct.h"
@@ -286,6 +287,8 @@ DLLEXPORT CtiDeviceBase *createDeviceType(int type)
         case TYPE_LCU415LG:
         case TYPE_LCU415ER:
         case TYPE_LCUT3026:             NewDevice = CTIDBG_new CtiDeviceLCU(type);      break;
+
+        case TYPELCR3102:               NewDevice = CTIDBG_new Cti::Device::LCR3102;    break;
 
         case TYPEMCTBCAST:              NewDevice = CTIDBG_new CtiDeviceMCTBroadcast;   break;
 

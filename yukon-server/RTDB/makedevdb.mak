@@ -76,6 +76,7 @@ dev_gwstat.obj \
 dev_ilex.obj \
 dev_ion.obj \
 dev_kv2.obj \
+dev_lcr3102.obj \
 dev_lcu.obj \
 dev_lgs4.obj \
 dev_lmi.obj \
