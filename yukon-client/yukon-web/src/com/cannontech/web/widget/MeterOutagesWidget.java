@@ -81,14 +81,14 @@ public class MeterOutagesWidget extends WidgetControllerBase {
     }
 
     public class OutageData {
-        public String timestamp;
+        public PointValueHolder timestamp;
         public String duration;
-        public OutageData(String timestamp, String duration ) {
+        public OutageData(PointValueHolder timestamp, String duration ) {
             super();
             this.timestamp = timestamp;
             this.duration = duration;
         }
-        public String getTimestamp() {
+        public PointValueHolder getTimestamp() {
             return timestamp;
         }
         public String getDuration() {
@@ -194,7 +194,7 @@ public class MeterOutagesWidget extends WidgetControllerBase {
         for (PointValueHolder holder : values) {
             if( holder.getId() == litePoint.getPointID()) {
                 String duration = TimeUtil.convertSecondsToTimeString(holder.getValue());
-                String timestamp = pointFormattingService.getValueString(holder, Format.DATE, userContext);
+                PointValueHolder timestamp = holder;
                 OutageData od = new OutageData(timestamp, duration);
                 outageData.add(od);
             }
