@@ -475,12 +475,25 @@ public class UpdateCustAccountAction implements ActionBase {
 			//wasn't commercial before, so I guess we better add it now that it is
             else if( updateAccount.getIsCommercial())
             {
-                com.cannontech.database.db.customer.CICustomerBase ciDB = new com.cannontech.database.db.customer.CICustomerBase();
-                ciDB.setCustomerID( customerDB.getCustomerID() );
-                ciDB.setCompanyName( updateAccount.getCompany() );
-                ciDB.setCICustType(new Integer(updateAccount.getCICustomerType()));
-                ciDB.setDbConnection( conn );
-                ciDB.add();
+            	com.cannontech.database.data.customer.CICustomerBase ciCustomer = new com.cannontech.database.data.customer.CICustomerBase();
+            	ciCustomer.setDbConnection( conn );
+                
+            	ciCustomer.setCustomerID( customerDB.getCustomerID() );
+                ciCustomer.getCiCustomerBase().setCompanyName( updateAccount.getCompany() );
+                ciCustomer.getCiCustomerBase().setCICustType(new Integer(updateAccount.getCICustomerType()));
+                
+                //Address is needed for the Commercial tables
+                Address custAddr = ciCustomer.getAddress();
+				StarsFactory.setCustomerAddress( custAddr, updateAccount.getStreetAddress() );
+                
+				//EnergyCompany is needed for the Commercial tables
+				com.cannontech.database.db.company.EnergyCompany engCompany = new com.cannontech.database.db.company.EnergyCompany();
+				engCompany.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+				ciCustomer.setEnergyCompany(engCompany);
+				
+				//Only add CI tables. Base customer is already in the database
+                ciCustomer.addCICustomer();                
+                
                 customerDB.setCustomerTypeID(new Integer(CustomerTypes.CUSTOMER_CI));
                 liteCustomer.setCustomerTypeID(CustomerTypes.CUSTOMER_CI);
                                     
@@ -499,13 +512,13 @@ public class UpdateCustAccountAction implements ActionBase {
                 liteCICustomer.setRateScheduleID(liteCustomer.getRateScheduleID());
                 liteCICustomer.setTemperatureUnit(liteCustomer.getTemperatureUnit());
                 liteCICustomer.setTimeZone(liteCustomer.getTimeZone());
-                liteCICustomer.setCICustType(ciDB.getCICustType());
-                liteCICustomer.setCompanyName(ciDB.getCompanyName());
+                liteCICustomer.setCICustType(ciCustomer.getCiCustomerBase().getCICustType());
+                liteCICustomer.setCompanyName(ciCustomer.getCompanyName());
                 liteAcctInfo.setCustomer(liteCICustomer);
                 /*Have I mentioned how much I hate cache and random STARS session variables?*/
                 StarsCustAccountInformation starsCust = energyCompany.getStarsCustAccountInformation(liteAccount.getAccountID(), true);
-                starsCust.getStarsCustomerAccount().setCICustomerType(ciDB.getCICustType());
-                starsCust.getStarsCustomerAccount().setCompany(ciDB.getCompanyName());
+                starsCust.getStarsCustomerAccount().setCICustomerType(ciCustomer.getCiCustomerBase().getCICustType());
+                starsCust.getStarsCustomerAccount().setCompany(ciCustomer.getCompanyName());
                 starsCust.getStarsCustomerAccount().setIsCommercial(true);
             }
 			
