@@ -253,7 +253,7 @@
 </cti:checkRole> 
 
 <!-- Analysis section -->
-<cti:checkMultiRole roles="ReportingRole.ROLEID, CommanderRole.ROLEID, MultispeakRole.ROLEID">
+<cti:checkRolesAndProperties value="REPORTING,COMMANDER,MSP_LM_MAPPING_SETUP">
 
 	<tags:operationSection sectionName="Analysis" sectionImageName="AnalysisLogo">
         <cti:checkRole role="ReportingRole.ROLEID">
@@ -273,7 +273,7 @@
         </cti:checkProperty>
 	</tags:operationSection>
 
-</cti:checkMultiRole>
+</cti:checkRolesAndProperties>
 
 <!-- Administration section -->
 <cti:checkRole role="operator.AdministratorRole.ROLEID">
