@@ -1272,7 +1272,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 		if (colIdx[COL_REMOVE_DATE] >= 0 && colIdx[COL_REMOVE_DATE] < columns.length)
 			fields[ImportManagerUtil.IDX_REMOVE_DATE] = columns[ colIdx[COL_REMOVE_DATE] ];
 		if (colIdx[COL_SERVICE_COMPANY] >= 0 && colIdx[COL_SERVICE_COMPANY] < columns.length && !columns[colIdx[COL_SERVICE_COMPANY]].trim().equals(""))
-			fields[ImportManagerUtil.IDX_SERVICE_COMPANY] = "\"" + columns[ colIdx[COL_SERVICE_COMPANY] ] + "\"";
+			fields[ImportManagerUtil.IDX_SERVICE_COMPANY] = columns[ colIdx[COL_SERVICE_COMPANY] ];
 		if (colIdx[COL_PROGRAM_NAME] >= 0 && colIdx[COL_PROGRAM_NAME] < columns.length)
 			fields[ImportManagerUtil.IDX_PROGRAM_NAME] = columns[ colIdx[COL_PROGRAM_NAME] ];
 		if (colIdx[COL_ADDR_GROUP] >= 0 && colIdx[COL_ADDR_GROUP] < columns.length)
