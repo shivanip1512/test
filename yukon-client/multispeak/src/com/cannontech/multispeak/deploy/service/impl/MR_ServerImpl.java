@@ -512,13 +512,8 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         FormattedBlock formattedBlock = formattedBlockServ.getFormattedBlock(meters);
         FormattedBlock[] formattedBlockArray = new FormattedBlock[]{formattedBlock};
         
-        //The valueList object will be used to set the last sent objectId
-        if (!ArrayUtils.isEmpty(formattedBlock.getValueList()) ) {
-        	String value = formattedBlock.getValueList()[formattedBlock.getValueList().length -1];
-        	Block block = formattedBlockServ.getNewBlock();
-        	block.populate(value, formattedBlock.getSeparator().charAt(0)); //lets hope we never have a longer separator value. :)
-        	multispeakFuncs.getResponseHeader().setLastSent(block.getObjectId());
-        }
+        setObjectsRemaining(vendor.getMaxReturnRecords(), formattedBlock);
+        setLastSent(formattedBlockServ, formattedBlock);
         
         return formattedBlockArray;
     }
@@ -530,19 +525,11 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
             mspValidationService.isValidBlockReadingType(readingTypesMap, readingType);
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         
-        FormattedBlock mspBlock = mspRawPointHistoryDao.retrieveBlock(formattedBlockServ, startDate.getTime(), endDate.getTime(), lastReceived);
-        FormattedBlock[] formattedBlocks = new FormattedBlock[]{mspBlock};
+        FormattedBlock formattedBlock = mspRawPointHistoryDao.retrieveBlock(formattedBlockServ, startDate.getTime(), endDate.getTime(), lastReceived);
+        FormattedBlock[] formattedBlocks = new FormattedBlock[]{formattedBlock};
      
-        int numRemaining = (mspBlock.getValueList().length < vendor.getMaxReturnRecords() ? 0:1); //at least one item remaining.
-        multispeakFuncs.getResponseHeader().setObjectsRemaining(new BigInteger(String.valueOf(numRemaining)));
-        
-        //The valueList object will be used to set the last sent objectId
-        if (!ArrayUtils.isEmpty(mspBlock.getValueList()) ) {
-        	String value = mspBlock.getValueList()[mspBlock.getValueList().length -1];
-        	Block block = formattedBlockServ.getNewBlock();
-        	block.populate(value, mspBlock.getSeparator().charAt(0)); //lets hope we never have a longer separator value. :)
-        	multispeakFuncs.getResponseHeader().setLastSent(block.getObjectId());
-        }
+        setObjectsRemaining(vendor.getMaxReturnRecords(), formattedBlock);
+        setLastSent(formattedBlockServ, formattedBlock);
         
         return formattedBlocks;
     }
@@ -557,21 +544,15 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
             mspValidationService.isValidBlockReadingType(readingTypesMap, readingType);
         
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        FormattedBlock mspBlock = mspRawPointHistoryDao.retrieveBlockByMeterNo(formattedBlockServ, 
+        FormattedBlock formattedBlock = mspRawPointHistoryDao.retrieveBlockByMeterNo(formattedBlockServ, 
                                                                                startDate.getTime(), 
                                                                                endDate.getTime(),
                                                                                meterNo,
                                                                                vendor.getMaxReturnRecords());
+        setObjectsRemaining(vendor.getMaxReturnRecords(), formattedBlock);
+        setLastSent(formattedBlockServ, formattedBlock);
         
-        //The valueList object will be used to set the last sent objectId
-        if (!ArrayUtils.isEmpty(mspBlock.getValueList()) ) {
-        	String value = mspBlock.getValueList()[mspBlock.getValueList().length -1];
-        	Block block = formattedBlockServ.getNewBlock();
-        	block.populate(value, mspBlock.getSeparator().charAt(0)); //lets hope we never have a longer separator value. :)
-        	multispeakFuncs.getResponseHeader().setLastSent(block.getObjectId());
-        }
-        
-        FormattedBlock[] formattedBlocks = new FormattedBlock[]{mspBlock};
+        FormattedBlock[] formattedBlocks = new FormattedBlock[]{formattedBlock};
      
         return formattedBlocks;
     }
@@ -630,6 +611,35 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         return null;
     }
     
+    /**
+     * Sets the responseHeader lastSent field for formattedBlock
+     * The formattedBlock.valueList object will be used to set the last sent objectId 
+     * @param formattedBlockServ
+     * @param formattedBlock
+     * @throws RemoteException
+     */
+	private void setLastSent(FormattedBlockService<Block> formattedBlockServ,
+			FormattedBlock formattedBlock) throws RemoteException {
+		
+		if (!ArrayUtils.isEmpty(formattedBlock.getValueList()) ) {
+	        String value = formattedBlock.getValueList()[formattedBlock.getValueList().length -1];
+	        Block block = formattedBlockServ.getNewBlock();
+	        block.populate(value, formattedBlock.getSeparator().charAt(0));	//lets hope we never have a longer separator value. :)
+	        multispeakFuncs.getResponseHeader().setLastSent(block.getObjectId());
+        }
+	}
+ 
+	/**
+	 * Set the objectsRemaining for formattedBlock
+	 * @param vendor
+	 * @param formattedBlock
+	 * @throws RemoteException
+	 */
+	private void setObjectsRemaining(int maxReturnRecords, FormattedBlock formattedBlock) throws RemoteException {
+		int numRemaining = (formattedBlock.getValueList().length < maxReturnRecords ? 0:1); //at least one item remaining.
+        multispeakFuncs.getResponseHeader().setObjectsRemaining(new BigInteger(String.valueOf(numRemaining)));
+	}
+	
     @Autowired
     public void setMspMeterDao(MspMeterDao mspMeterDao) {
         this.mspMeterDao = mspMeterDao;
