@@ -316,6 +316,7 @@ INT LCR3102::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
 
     int  function = -1;
     bool found    = false;
+    bool multiple_messages = false;
 
     if(parse.getFlags() & CMD_FLAG_GV_DEMAND)
     {
@@ -327,58 +328,71 @@ INT LCR3102::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
         function = Emetcon::GetValue_PropCount;
         found = getOperation(function, OutMessage->Buffer.BSt);
     }
-    else if(parse.getFlags() & CMD_FLAG_GV_RUNTIME)
+    else
     {
-        function = Emetcon::GetValue_PropCount;
-        found = getOperation(function, OutMessage->Buffer.BSt);
-
-        int load = parseLoadValue(parse);
-        int previous = parsePreviousValue(parse);
-
-        if( load == -1 || previous == -1)
+        if(parse.getFlags() & CMD_FLAG_GV_RUNTIME)
         {
-            nRet = BADPARAM;
+            function = Emetcon::GetValue_Runtime;
         }
-        else
+        else if(parse.getFlags() & CMD_FLAG_GV_SHEDTIME)
         {
-            // use load and previous to calculate the actual function number
-            OutMessage->Buffer.BSt.Function += ((previous / 12) - 1) * 4 + (load - 1);
+            function = Emetcon::GetValue_Shedtime;
+        }
+
+        if(function != Emetcon::DLCCmd_Invalid)
+        {
+            found = getOperation(function, OutMessage->Buffer.BSt);
     
-            // if previous is 36 we only get back 4 bytes - not 13
-            if(previous == 36)
-            {
-                OutMessage->Buffer.BSt.Length = 4;
-            }
+            int load = parseLoadValue(parse);
+            int previous = parsePreviousValue(parse);
     
-            // more....
-            
-        }
-    }
-    else if(parse.getFlags() & CMD_FLAG_GV_SHEDTIME)
-    {
-        function = Emetcon::GetValue_PropCount;
-        found = getOperation(function, OutMessage->Buffer.BSt);
-
-        int load = parseLoadValue(parse);
-        int previous = parsePreviousValue(parse);
-
-        if( load == -1 || previous == -1)
-        {
-            nRet = BADPARAM;
-        }
-        else
-        {
-            // use load and previous to calculate the actual function number
-            OutMessage->Buffer.BSt.Function += ((previous / 12) - 1) * 4 + (load - 1);
-
-            // if previous is 36 we only get back 4 bytes - not 13
-            if(previous == 36)
+            if( load == -1 || previous == -1)
             {
-                OutMessage->Buffer.BSt.Length = 4;
+                nRet = BADPARAM;
             }
+            else
+            {
+                // pack relay number into OutMessages Function
+                OutMessage->Buffer.BSt.Function += (load - 1);
+    
+                // packed 6 bit data
+                int total_bits = previous * 6;
+    
+                                                        // round up
+                int total_bytes    = (total_bits / 8) + (total_bits % 8) ? 1 : 0;
+                int total_messages = (total_bytes / 12) + (total_bytes % 12) ? 1 : 0;
+    
+                if(total_messages > 1)  multiple_messages = true;
 
-            // more....
-
+                // for all but the last message - send a full 13 byte request - 12 data bytes and 1 Flags byte
+                for(int i = 0; i < total_messages - 1; i++)
+                {
+                    if( found )
+                    {
+                        OutMessage->DeviceID  = getID();
+                        OutMessage->TargetID  = getID();
+                        OutMessage->Port      = getPortID();
+                        OutMessage->Remote    = getAddress();
+                        OutMessage->TimeOut   = 2;
+                        OutMessage->Sequence  = function;         // Helps us figure it out later!
+                        OutMessage->Retry     = 2;
+                        OutMessage->Request.RouteID   = getRouteID();
+    
+                        strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
+                        outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
+                        incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
+    
+                        // deduct out the data bytes we should get from the above message from our total
+                        total_bytes -= 12;
+    
+                        // go to next function to get next set of data bytes
+                        OutMessage->Buffer.BSt.Function += 4;
+                    }
+                }
+    
+                // setup remaining message for the leftover bytes we need - don't forget the Flags byte
+                OutMessage->Buffer.BSt.Length = total_bytes + 1;
+            }
         }
     }
 
@@ -401,7 +415,11 @@ INT LCR3102::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
     
             OutMessage->Request.RouteID   = getRouteID();
             strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
-    
+            if(multiple_messages)
+            {
+                incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
+            }
+                
             nRet = NoError;
         }
     }
