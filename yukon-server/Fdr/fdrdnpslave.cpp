@@ -284,6 +284,7 @@ int CtiFDRDnpSlave::processMessageFromForeignSystem (CtiFDRClientServerConnectio
                                          char* data, unsigned int size)
 {
     BYTEUSHORT dest, src;
+    BOOL timeFlag = true;
     unsigned long function = getHeaderBytes(data, size);
 
     switch (function)
@@ -293,12 +294,46 @@ int CtiFDRDnpSlave::processMessageFromForeignSystem (CtiFDRClientServerConnectio
             /******************************************************************************************************** 
               here should add something to _dnpData.slaveDecode()  However, for now, this will process any read command
               as a scan1230 request.
-              NOTE:  yukon doesn't send the correct scan integrity dnp message out anyway.  it is a time and date message
+              NOTE:  scan integrity dnp message
                 05 64 17 c4 1e 00 02 00 78 b5 c0 ca 01 32 01 06 3c 02 06 3c 03 06 3c 04 06 3c 9d f5 01 06 75 e1
+             
+                SCAN INTEGRITY:
+                05 64 17 c4 1e 00 01 00 d3 05
+                c0 c3
+                01 - read
+                32 01 - data object 50 variation 1 - TIME AND DATE
+                06 - qualifier - no index, packed.  no range field
+                3c 02 - data object 60 variation 2 - class 1 data
+                06 - qualifier - no index, packed.  no range field
+                3c 03 - data object 60 variation 3 - class 2 data
+                06 - qualifier - no index, packed.  no range field
+                3c 04 - data object 60 variation 4 - class 3 data
+                06 - qualifier - no index, packed.  no range field
+                3c <ce 3c - 16byte CRC> 01 - data object 60 variation 1 - class 0 data
+                06 - qualifier - no index, packed.  no range field
+                75 e1 - CRC
+             
+                SCAN GENERAL
+                05 64 14 c4 1e 00 01 00 83 96
+                c0 c9
+                01
+                32 01 - data object 50 variation 1 - TIME AND DATE
+                06 - qualifier - no index, packed.  no range field
+                3c 02 - data object 60 variation 2 - class 1 data
+                06 - qualifier - no index, packed.  no range field
+                3c 03 - data object 60 variation 3 - class 2 data
+                06 - qualifier - no index, packed.  no range field
+                3c 04 - data object 60 variation 4 - class 3 data
+                06 - qualifier - no index, packed.  no range field
+                1b b5 - CRC
              ********************************************************************************************************/
             if (size > FDR_DNP_HEADER_SIZE)
             {
-                processScanSlaveRequest (connection, data,size);
+                if (isScanIntegrityRequest(data, size))
+                {
+                    timeFlag = false;
+                }
+                processScanSlaveRequest (connection, data, size, timeFlag);
             }
             break;
         }
@@ -319,7 +354,7 @@ int CtiFDRDnpSlave::processMessageFromForeignSystem (CtiFDRClientServerConnectio
 }
 
 int CtiFDRDnpSlave::processScanSlaveRequest (CtiFDRClientServerConnection& connection,
-                                         char* data, unsigned int size)
+                                         char* data, unsigned int size, bool includeTime)
 {
 
     int retVal = 0;
@@ -346,6 +381,8 @@ int CtiFDRDnpSlave::processScanSlaveRequest (CtiFDRClientServerConnection& conne
 
             iPoint.onLine = YukonToForeignQuality(fdrPoint->getQuality());
             iPoint.control_offset = dnpId.Offset;
+            iPoint.includeTime = includeTime;
+            iPoint.timestamp = fdrPoint->getLastTimeStamp();    
 
             if (dnpId.PointType == StatusPointType )
             {
@@ -472,12 +509,12 @@ bool CtiFDRDnpSlave::YukonToForeignQuality(USHORT aQuality)
 unsigned long CtiFDRDnpSlave::getHeaderBytes(const char* data, unsigned int size)
 {
     unsigned long retVal = -1;
-    if (size >= FDR_DNP_HEADER_SIZE)
+    if (size >= FDR_DNP_REQ_FUNC_LOCATION)
     {
         if (data[0] == FDR_DNP_HEADER_BYTE1 &&
             data[1] == FDR_DNP_HEADER_BYTE2 )
         { 
-            long function = (BYTE)* (data + FDR_DNP_HEADER_SIZE);
+            long function = (BYTE)* (data + FDR_DNP_REQ_FUNC_LOCATION);
             retVal = function;
         }
     }
@@ -496,6 +533,46 @@ unsigned int CtiFDRDnpSlave::getMessageSize(const char* data)
         msgSize += 7; //x05 x64 Len(1) headerCRC(2)  finalCRC(2)
     }
     return msgSize;
+}
+
+bool CtiFDRDnpSlave::isScanIntegrityRequest(const char* data, unsigned int size)
+{
+
+    /*    05 64 17 c4 1e 00 01 00 d3 05
+          c0 c3
+          01 - read
+          32 01 - data object 50 variation 1 - TIME AND DATE
+          06 - qualifier - no index, packed.  no range field
+          3c 02 - data object 60 variation 2 - class 1 data
+          06 - qualifier - no index, packed.  no range field
+          3c 03 - data object 60 variation 3 - class 2 data
+          06 - qualifier - no index, packed.  no range field
+          3c 04 - data object 60 variation 4 - class 3 data
+          06 - qualifier - no index, packed.  no range field
+          3c <ce 3c - 16byte CRC> 01 - data object 60 variation 1 - class 0 data
+          06 - qualifier - no index, packed.  no range field
+          75 e1 - CRC
+    */
+    bool retVal = false;
+    if (size > FDR_DNP_HEADER_SIZE && size > FDR_DNP_REQ_FUNC_LOCATION + 17) 
+    {
+       
+        if (data[FDR_DNP_REQ_FUNC_LOCATION + 13] == 0x3c &&
+            data[FDR_DNP_REQ_FUNC_LOCATION + 16] == 0x01 &&
+            data[FDR_DNP_REQ_FUNC_LOCATION + 17] == 0x06 )
+        {    
+            retVal = true;
+        }
+    }
+
+
+    return retVal;
+}
+
+
+unsigned int CtiFDRDnpSlave::getMagicInitialMsgSize()
+{
+    return FDR_DNP_HEADER_SIZE + 2;
 }
 
 

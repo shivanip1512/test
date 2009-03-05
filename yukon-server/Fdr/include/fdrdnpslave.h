@@ -36,7 +36,9 @@
 
 // global defines
 #define DNPSLAVE_PORTNUMBER      2085
-#define FDR_DNP_HEADER_SIZE      12
+#define FDR_DNP_HEADER_SIZE        10
+#define FDR_DNP_REQ_FUNC_LOCATION  12
+#define FDR_DNP_DATA_CRC_MARKER    16
 #define FDR_DNP_HEADER_BYTE1     0x05
 #define FDR_DNP_HEADER_BYTE2     0x64
 
@@ -119,15 +121,16 @@ class IM_EX_FDRDNPSLAVE CtiFDRDnpSlave : public CtiFDRSocketServer
                                            char* data, unsigned int size);
         virtual unsigned long getHeaderBytes(const char* data, unsigned int size);
 
-        virtual unsigned int getMagicInitialMsgSize(){return FDR_DNP_HEADER_SIZE;};
+        virtual unsigned int getMagicInitialMsgSize();
 
 
     private:
         CtiDnpId    ForeignToYukonId(CtiFDRDestination pointDestination);
         bool        YukonToForeignQuality (USHORT aQuality);
         int processScanSlaveRequest (CtiFDRClientServerConnection& connection,
-                                         char* data, unsigned int size);
+                                         char* data, unsigned int size, bool includeTime);
 
+        bool isScanIntegrityRequest(const char* data, unsigned int size);
         DNPSlaveInterface  _dnpData;
 
         // maps ip address -> server name

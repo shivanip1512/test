@@ -182,7 +182,7 @@ void AnalogInput::setValue(long value)
 }
 void AnalogInput::setOnlineFlag(bool online) 
 {
-    _flags.online = online;
+    _flags.online = (online?1:0);
 }
 
 int AnalogInput::getSerializedLen(void) const
@@ -236,12 +236,20 @@ CtiPointDataMsg *AnalogInput::getPoint( const TimeCTO *cto ) const
     CtiPointDataMsg *tmpMsg;
 
     double val;
-    int quality;
+    int quality = NormalQuality;
+
 
     switch(getVariation())
     {
         case AI_32Bit:
         case AI_16Bit:
+        {
+            if (!_flags.online)
+            {    
+                quality = NonUpdatedQuality;
+            }
+
+        }
         case AI_32BitNoFlag:
         case AI_16BitNoFlag:
         {
@@ -293,7 +301,7 @@ CtiPointDataMsg *AnalogInput::getPoint( const TimeCTO *cto ) const
 
     //  the ID will be replaced by the offset by the object block, which will then be used by the
     //    device to figure out the true ID
-    tmpMsg = CTIDBG_new CtiPointDataMsg(0, val, NormalQuality, AnalogPointType);
+    tmpMsg = CTIDBG_new CtiPointDataMsg(0, val, quality, AnalogPointType);
 
     return tmpMsg;
 }
@@ -679,6 +687,12 @@ CtiPointDataMsg *AnalogInputChange::getPoint( const TimeCTO *cto ) const
 
     return tmpMsg;
 }
+
+void AnalogInputChange::setTime(CtiTime timestamp) 
+{
+    _toc.setSeconds(timestamp.seconds());
+}
+
 
 
 //  ---  ANALOG INPUT FROZEN EVENT  ---

@@ -101,6 +101,8 @@ public:
     int serialize(unsigned char *buf) const;
     int getSerializedLen(void) const;
 
+    void setTime(CtiTime timestamp);
+
     CtiPointDataMsg *getPoint( const TimeCTO *cto ) const;
 };
 

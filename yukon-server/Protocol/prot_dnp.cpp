@@ -904,6 +904,9 @@ int DNPSlaveInterface::slaveGenerate( CtiXfer &xfer )
                    ObjectBlock         *dob2;
                    ObjectBlock         *dob3;
 
+                   DNP::AnalogInputChange *ainc;
+                   DNP::BinaryInputChange *binc;
+                   DNP::CounterEvent *counterevent;
                    DNP::AnalogInput *ain;
                    DNP::BinaryInput *bin;
                    DNP::Counter *counterin;
@@ -919,27 +922,57 @@ int DNPSlaveInterface::slaveGenerate( CtiXfer &xfer )
 
                         if( ip.type == AnalogInputType )
                         {
-                            ain = CTIDBG_new DNP::AnalogInput( DNP::AnalogInput::AI_32BitNoFlag );
-                        
-                            ain->setValue(ip.ain.value);
-                            ain->setOnlineFlag(ip.onLine);
-                            dob1->addObjectIndex(ain, ip.control_offset);
+                            if( ip.includeTime)
+                            {
+                                ainc = CTIDBG_new DNP::AnalogInputChange( DNP::AnalogInputChange::AIC_32BitWithTime);
+                                ainc->setTime(ip.timestamp);
+                                ainc->setValue(ip.ain.value);
+                                ainc->setOnlineFlag(ip.onLine);
+                                dob1->addObjectIndex(ainc, ip.control_offset);
+                            }
+                            else
+                            {
+                                ain = CTIDBG_new DNP::AnalogInput( DNP::AnalogInput::AI_32Bit );
+                                ain->setValue(ip.ain.value);
+                                ain->setOnlineFlag(ip.onLine);
+                                dob1->addObjectIndex(ain, ip.control_offset);
+                            }
                         }
                         else if( ip.type == DigitalInput )
                         {
-                            bin = CTIDBG_new DNP::BinaryInput( DNP::BinaryInput::BI_WithStatus);
-                        
-                            bin->setStateValue(ip.din.trip_close);
-                            bin->setOnLineFlag(ip.onLine);
-                            dob2->addObjectIndex(bin, ip.control_offset);
-                        }
+                            if( ip.includeTime)
+                            {
+                                binc = CTIDBG_new DNP::BinaryInputChange( DNP::BinaryInputChange::BIC_WithTime);
+                                binc->setTime(ip.timestamp);
+                                binc->setStateValue(ip.din.trip_close);
+                                binc->setOnLineFlag(ip.onLine);
+                                dob2->addObjectIndex(binc, ip.control_offset);
+                            }
+                            else
+                            {
+                                bin = CTIDBG_new DNP::BinaryInput( DNP::BinaryInput::BI_WithStatus);
+                                bin->setStateValue(ip.din.trip_close);
+                                bin->setOnLineFlag(ip.onLine);
+                                dob2->addObjectIndex(bin, ip.control_offset);
+                            }
+                       }
                         else if( ip.type == Counters )
                         {
-                            counterin = CTIDBG_new DNP::Counter( DNP::Counter::C_Binary32Bit );
-                        
-                            counterin->setValue(ip.counterin.value);
-                            counterin->setOnLineFlag(ip.onLine);
-                            dob3->addObjectIndex(counterin, ip.control_offset);
+                            if( ip.includeTime)
+                            {
+                                counterevent = CTIDBG_new DNP::CounterEvent( DNP::CounterEvent::CE_Delta32BitWithTime);
+                                counterevent->setTime(ip.timestamp);
+                                counterevent->setValue(ip.counterin.value);
+                                counterevent->setOnLineFlag(ip.onLine);
+                                dob3->addObjectIndex(counterevent, ip.control_offset);
+                            }
+                            else
+                            {
+                                counterin = CTIDBG_new DNP::Counter( DNP::Counter::C_Binary32Bit );
+                                counterin->setValue(ip.counterin.value);
+                                counterin->setOnLineFlag(ip.onLine);
+                                dob3->addObjectIndex(counterin, ip.control_offset);
+                            }
                         }
                     }
 

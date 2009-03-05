@@ -47,6 +47,14 @@ int Counter::serialize(unsigned char *buf) const
     return serializeVariation(buf, getVariation());;
 }
 
+unsigned long Counter::getValue() const
+{
+    return _counter;
+}
+unsigned char Counter::getFlag() const
+{
+    return _flag;
+}
 
 void Counter::setValue(long value) 
 {
@@ -55,8 +63,9 @@ void Counter::setValue(long value)
 
 void Counter::setOnLineFlag(bool online) 
 {
-    _flag = (online?0x80:0x00);
+    _flag = (online?0x01:0x00);
 }
+
 
 int Counter::getSerializedLen(void) const
 {
@@ -227,13 +236,18 @@ CtiPointDataMsg *Counter::getPoint( const TimeCTO *cto ) const
     CtiPointDataMsg *tmpMsg;
 
     double val = 0;
-    int quality;
+    int quality = NormalQuality;
 
     //  this used to be chosen or excluded by the variation...  but every
     //    variation returns the same data, so there's no need to differentiate...
     //    at least not for counters
     //  the child classes add to this, but the values concerned are still the same
     val = _counter;
+
+    if (!_flag)
+    {    
+        quality = NonUpdatedQuality;
+    }
 
 /*    UnintializedQuality = 0,
     InitDefaultQuality,
@@ -267,7 +281,7 @@ CtiPointDataMsg *Counter::getPoint( const TimeCTO *cto ) const
 
     //  the ID will be replaced by the offset by the object block, which will then be used by the
     //    device to figure out the true ID
-    tmpMsg = CTIDBG_new CtiPointDataMsg(0, val, NormalQuality, PulseAccumulatorPointType);
+    tmpMsg = CTIDBG_new CtiPointDataMsg(0, val, quality, PulseAccumulatorPointType);
 
     return tmpMsg;
 }
@@ -319,10 +333,69 @@ int CounterEvent::restore(const unsigned char *buf, int len)
     return pos;
 }
 
-
-int CounterEvent::serialize(unsigned char *buf) const
+int  CounterEvent::serialize(unsigned char *buf) const
 {
-    return 0;
+    return serializeVariation(buf, getVariation());;
+}
+
+
+int CounterEvent::serializeVariation(unsigned char *buf, int variation) const
+{
+    int pos = 0;
+    unsigned char flag = getFlag();
+    unsigned long counter = getValue();
+    
+    switch(variation)
+    {
+        case CE_Binary32BitNoTime:
+        case CE_Delta32BitNoTime:
+        {
+            buf[pos++] = flag;
+
+            buf[pos++] =  counter        & 0xff;
+            buf[pos++] = (counter >>  8) & 0xff;
+            buf[pos++] = (counter >> 16) & 0xff;
+            buf[pos++] = (counter >> 24) & 0xff;
+            break;
+        }
+        case CE_Binary16BitNoTime:
+        case CE_Delta16BitNoTime:
+        {
+            buf[pos++] = flag;
+            buf[pos++] =  counter        & 0xff;
+            buf[pos++] = (counter >>  8) & 0xff;
+            break;
+        }
+        case CE_Binary32BitWithTime:
+        case CE_Delta32BitWithTime:
+        {
+            buf[pos++] = flag;
+            buf[pos++] =  counter        & 0xff;
+            buf[pos++] = (counter >>  8) & 0xff;
+            buf[pos++] = (counter >> 16) & 0xff;
+            buf[pos++] = (counter >> 24) & 0xff;
+            pos += _toc.serialize(buf + pos);
+            break;
+        }
+        case CE_Binary16BitWithTime:
+        case CE_Delta16BitWithTime:
+        {
+            buf[pos++] = flag;
+            buf[pos++] =  counter        & 0xff;
+            buf[pos++] = (counter >>  8) & 0xff;
+            pos += _toc.serialize(buf + pos);
+           break;
+        }
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+    }
+    return pos;
 }
 
 
@@ -332,18 +405,44 @@ int CounterEvent::getSerializedLen(void) const
 
     switch(getVariation())
     {
+        case CE_Binary32BitNoTime:
+        case CE_Delta32BitNoTime:
+        {
+            retVal = 5;
+            break;
+        }
+        case CE_Binary16BitNoTime:
+        case CE_Delta16BitNoTime:
+        {
+            retVal = 3;
+            break;
+        }
+        case CE_Binary32BitWithTime:
+        case CE_Delta32BitWithTime:
+        {
+            retVal = 11;
+            break;
+        }
+        case CE_Binary16BitWithTime:
+        case CE_Delta16BitWithTime:
+        {
+            retVal = 9;
+            break;
+        }
+        
         default:
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - in CounterEvent::getSerializedLen(), function unimplemented **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
-
+        
             retVal = 0;
-
+        
             break;
         }
     }
+    
 
     return retVal;
 }
@@ -387,6 +486,12 @@ CtiPointDataMsg *CounterEvent::getPoint( const TimeCTO *cto ) const
 
     return tmpMsg;
 }
+
+void CounterEvent::setTime(CtiTime timestamp) 
+{
+    _toc.setSeconds(timestamp.seconds());
+}
+
 
 
 CounterFrozen::CounterFrozen(int variation) : Counter(Group, variation)

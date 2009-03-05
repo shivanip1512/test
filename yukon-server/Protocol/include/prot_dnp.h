@@ -224,7 +224,6 @@ public:
     int slaveGenerate( CtiXfer &xfer );
     void slaveTransactionComplete();
 
-
     void addInputPoint(const input_point &ip);
 
     enum InputPointType
@@ -264,6 +263,8 @@ public:
         InputPointType type;
         unsigned long expiration;
         bool onLine;
+        bool includeTime;
+        CtiTime timestamp;
     };
    
 };

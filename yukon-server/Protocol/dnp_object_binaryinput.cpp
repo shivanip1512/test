@@ -182,7 +182,7 @@ CtiPointDataMsg *BinaryInput::getPoint( const TimeCTO *cto ) const
     CtiPointDataMsg *tmpMsg;
 
     double val;
-    int quality;
+    int quality = NormalQuality;
 
     val = _bi.flags.state;
 
@@ -208,6 +208,10 @@ CtiPointDataMsg *BinaryInput::getPoint( const TimeCTO *cto ) const
     {
 
     }*/
+    if (!_bi.flags.online)
+    {    
+        quality = NonUpdatedQuality;
+    }
 
     if( gDNPVerbose )
     {
@@ -218,7 +222,7 @@ CtiPointDataMsg *BinaryInput::getPoint( const TimeCTO *cto ) const
 
     //  the ID will be replaced by the offset by the object block, which will then be used by the
     //    device to figure out the true ID
-    tmpMsg = CTIDBG_new CtiPointDataMsg(0, val, NormalQuality, StatusPointType);
+    tmpMsg = CTIDBG_new CtiPointDataMsg(0, val, quality, StatusPointType);
 
     return tmpMsg;
 }
@@ -424,6 +428,13 @@ CtiPointDataMsg *BinaryInputChange::getPoint( const TimeCTO *cto ) const
 
     return tmpMsg;
 }
+
+
+void BinaryInputChange::setTime(CtiTime timestamp) 
+{
+    _time.setSeconds(timestamp.seconds());
+}
+
 
 }
 }

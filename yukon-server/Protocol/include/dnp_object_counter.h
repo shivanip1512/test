@@ -56,13 +56,16 @@ public:
     {
         Group = 20
     };
+    void setValue(long value);
+    void setOnLineFlag(bool online);
+    unsigned long getValue() const;
+    unsigned char getFlag() const;   
 
     virtual int restore(const unsigned char *buf, int len);
     virtual int serialize(unsigned char *buf) const;
     virtual int getSerializedLen(void) const;
     
-    void setValue(long value);
-    void setOnLineFlag(bool online);
+ 
     virtual CtiPointDataMsg *getPoint( const TimeCTO *cto ) const;
 };
 
@@ -112,7 +115,7 @@ public:
 class CounterEvent : public Counter
 {
 protected:
-
+    
     Time _toc;
 
 public:
@@ -138,6 +141,9 @@ public:
     virtual int restore(const unsigned char *buf, int len);
     virtual int serialize(unsigned char *buf) const;
     virtual int getSerializedLen(void) const;
+    virtual int serializeVariation(unsigned char *buf, int variation) const;
+
+    void setTime(CtiTime timestamp);
 
     virtual CtiPointDataMsg *getPoint( const TimeCTO *cto ) const;
 };
