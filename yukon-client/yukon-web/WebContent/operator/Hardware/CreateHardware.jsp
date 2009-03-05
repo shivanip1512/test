@@ -2,6 +2,7 @@
 <%@ page import="com.cannontech.database.data.lite.stars.*" %>
 <%@ page import="com.cannontech.core.dao.NotFoundException" %>
 <%@ page import="com.cannontech.stars.core.dao.StarsInventoryBaseDao" %>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%
 	if (request.getParameter("Init") != null) {
 		// The "Create Hardware" link in the nav is clicked
@@ -56,7 +57,20 @@
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 
+<link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/StandardStyles.css" >
+<link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/YukonGeneralStyles.css" >
+<link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/itemPicker.css" >
+
+<script type="text/javascript" src="/JavaScript/itemPicker.js"></script>
+<script type="text/javascript" src="/JavaScript/paoPicker.js"></script>
+<script type="text/javascript" src="/JavaScript/tableCreation.js"></script>
+
+
 <script language="JavaScript">
+
+
+
+
 function changeMember(form) {
 	form.attributes["action"].value = "CreateHardware.jsp";
 	form.submit();
@@ -74,6 +88,34 @@ function validate(form) {
 	}
 	return true;
 }
+
+Event.observe(window, 'load', function() {
+	twoWayLCRCheck($('DeviceType'));
+});
+
+function twoWayLCRCheck(el) {
+	if(el[el.selectedIndex].innerHTML == 'LCR-3102') {
+		$('lcr3102_td').show();
+
+		if($('choosenYukonDeviceId').value.strip() == '' && $('yukonDeviceName').value.strip() == '') {
+			alert('A Yukon device MUST be setup for this LCR-3102.\n\nUse the "Yukon LCR-3102 Profile" section to create a new Yukon device, or to link to an existing Yukon device.');
+		}
+		
+	} else {
+		$('lcr3102_td').hide();
+	}
+}
+
+var setChoosenYukonDevice = function() {
+	
+	if ($('choosenYukonDeviceId').value.strip() == '') {
+		alert('Select a Yukon device.');
+		return;
+	}
+
+	$('choosenYukonDeviceNameField').value = $('choosenYukonDeviceNameSpan').innerHTML;
+}
+
 </script>
 </head>
 
@@ -141,7 +183,7 @@ function validate(form) {
                                   <div align="right">*Type:</div>
                                 </td>
                                 <td width="210" class="MainText"> 
-                                  <select name="DeviceType" onchange="<% if (configuration != null) { %>changeDeviceType(this.form)<% } else { %>setContentChanged(true)<% } %>">
+                                  <select name="DeviceType" id="DeviceType" onchange="<% if (configuration != null) { %>changeDeviceType(this.form)<% } else { %>setContentChanged(true);twoWayLCRCheck(this);<% } %>">
                                     <%
 	int savedDeviceType = 0;
 	if (savedReq.getProperty("DeviceType") != null)
@@ -298,6 +340,95 @@ function validate(form) {
                       </table>
                     </td>
                   </tr>
+                  
+                  <%-- MCT for LCR-3102--%>
+<% 
+String savedYukonDeviceCreationStyleRadio = "NEW";
+if (savedReq.getProperty("yukonDeviceCreationStyleRadio") != null)
+	savedYukonDeviceCreationStyleRadio = savedReq.getProperty("yukonDeviceCreationStyleRadio");
+%>
+                  
+                  
+                  <tr id="lcr3102_td" style="display:none;">
+                  
+                  	<td colspan="2">
+                  		<table border="0" cellspacing="0" cellpadding="0">
+                        <tr> 
+                          <td valign="top"><span class="SubtitleHeader">Yukon LCR-3102 Profile <b>(REQUIRED)</b></span> 
+                            <hr>
+                            <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
+                              <tr>
+                              	<td colspan="2">
+                              		<input type="radio" name="yukonDeviceCreationStyleRadio" id="newYukDevRadio" value="NEW" <%if(savedYukonDeviceCreationStyleRadio.equals("NEW")){%>checked<%}%>> Create new Yukon device
+                              	</td>
+                              </tr>
+                              <tr> 
+                                <td width="250" class="TableCell"> 
+                                  <div align="right">Device Name: </div>
+                                </td>
+                                <td width="500"> 
+                                  <input type="text" id="yukonDeviceName" name="yukonDeviceName" maxlength="30" size="24" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("yukonDeviceName")) %>" onchange="setContentChanged(true);" onclick="$('newYukDevRadio').checked=true;">
+                                </td>
+                              </tr>
+                              <tr> 
+                                <td width="250" class="TableCell"> 
+                                  <div align="right">Demand Rate Interval: </div>
+                                </td>
+                                <td width="500"> 
+                                
+<%
+int savedYukonDeviceDemandRate = 0;
+if (savedReq.getProperty("yukonDeviceDemandRate") != null)
+	savedYukonDeviceDemandRate = Integer.parseInt(savedReq.getProperty("yukonDeviceDemandRate"));
+
+%>
+                                
+                                  <select name="yukonDeviceDemandRate">
+                                  	<option value="60" <%if(savedYukonDeviceDemandRate == 60){%>selected<%}%>>1 Minute</option>
+                                  	<option value="120" <%if(savedYukonDeviceDemandRate == 120){%>selected<%}%>>2 Minute</option>
+                                  	<option value="180" <%if(savedYukonDeviceDemandRate == 180){%>selected<%}%>>3 Minute</option>
+                                  	<option value="300" <%if(savedYukonDeviceDemandRate == 300){%>selected<%}%>>5 Minute</option>
+                                  	<option value="600" <%if(savedYukonDeviceDemandRate == 600){%>selected<%}%>>10 Minute</option>
+                                  	<option value="900" <%if(savedYukonDeviceDemandRate == 900){%>selected<%}%>>15 Minute</option>
+                                  	<option value="1800" <%if(savedYukonDeviceDemandRate == 1800){%>selected<%}%>>30 Minute</option>
+                                  	<option value="3600" <%if(savedYukonDeviceDemandRate == 3600){%>selected<%}%>>1 Hour</option>
+                                  </select>
+                                </td>
+                              </tr>
+                              <tr>
+                              	<td colspan="2">&nbsp;</td>
+                              </tr>
+                              <tr>
+                              	<td colspan="2">
+                              		<input type="radio" name="yukonDeviceCreationStyleRadio" id="existingYukDevRadio" value="EXISTING" <%if(savedYukonDeviceCreationStyleRadio.equals("EXISTING")){%>checked<%}%>> Link to existing Yukon device
+                              	</td>
+                              </tr>
+                              <tr> 
+                                <td width="250" class="TableCell"> 
+                                  <div align="right">Device Name: </div>
+                                </td>
+                                <td width="500"> 
+                                	<input type="hidden" id="choosenYukonDeviceId" name="choosenYukonDeviceId" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("choosenYukonDeviceId")) %>" style="display:none;">
+                              		<span id="choosenYukonDeviceNameSpan" style="display:none;"></span>
+                              		<cti:paoPicker pickerId="paoPicker" 	
+					    					paoIdField="choosenYukonDeviceId" 
+					    					constraint="com.cannontech.common.search.criteria.LCR3102Criteria" 
+					    					paoNameElement="choosenYukonDeviceNameSpan"
+					    					finalTriggerAction="setChoosenYukonDevice">
+					    			</cti:paoPicker>
+                                  <input type="text" name="choosenYukonDeviceNameField" id="choosenYukonDeviceNameField" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("choosenYukonDeviceNameField")) %>" readonly> 
+                                  <input type="button" value="Choose" onclick="paoPicker.showPicker();$('existingYukDevRadio').checked=true;">
+                                </td>
+                              </tr>
+                           </table>
+                         </td>
+                        </tr>
+                        </table>
+                  	</td>
+                  
+                  </tr>
+                  
+                  
 <%
 	String trackHwAddr = member.getEnergyCompanySetting(EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING);
 	if (trackHwAddr != null && Boolean.valueOf(trackHwAddr).booleanValue() && configuration != null) {

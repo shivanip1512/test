@@ -25,6 +25,14 @@ public interface DeviceDao {
     
     public YukonDevice getYukonDeviceObjectById(int deviceId);
     public YukonDevice getYukonDeviceObjectByName(String name);
+    
+    /**
+     * Search for Yukon device by name.
+     * Return YukonDevice if found, otherwise return null.
+     * @param name
+     * @return
+     */
+    public YukonDevice findYukonDeviceObjectByName(String name);
     public YukonDevice getYukonDeviceObjectByMeterNumber(String meterNumber);
     public YukonDevice getYukonDeviceObjectByAddress(Long address);
     

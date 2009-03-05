@@ -332,7 +332,12 @@ public class ObjectMapperFactoryImplTest extends TestCase {
      */
     private class DeviceDaoAdapter implements DeviceDao {
 
-        @SuppressWarnings("unchecked")
+        @Override
+		public YukonDevice findYukonDeviceObjectByName(String name) {
+        	throw new UnsupportedOperationException("Method not implemented");
+		}
+
+		@SuppressWarnings("unchecked")
         public List getDevicesByDeviceAddress(Integer masterAddress,
                 Integer slaveAddress) {
             throw new UnsupportedOperationException("Method not implemented");

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -120,6 +121,17 @@ public YukonDevice getYukonDeviceObjectByName(String name) {
                  "AND ypo.PAOClass IN ('CARRIER','METER','IED') " +
                  "AND ypo.PAOName = ?";
     YukonDevice device = (YukonDevice)jdbcOps.queryForObject(sql, new Object[] {name}, this.yukonDeviceRowMapper);
+    return device;
+}
+
+public YukonDevice findYukonDeviceObjectByName(String name) {
+    
+	YukonDevice device = null;
+	try {
+		device = getYukonDeviceObjectByName(name);
+	} catch(EmptyResultDataAccessException e) {
+		return null;
+	}
     return device;
 }
 

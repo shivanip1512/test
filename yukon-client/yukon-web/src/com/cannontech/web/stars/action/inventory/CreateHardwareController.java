@@ -1,12 +1,20 @@
 package com.cannontech.web.stars.action.inventory;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.YukonListEntry;
+import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
@@ -25,9 +33,15 @@ import com.cannontech.web.stars.service.SwitchContextService;
 
 public class CreateHardwareController extends StarsInventoryActionController {
     private SwitchContextService switchContextService;
+    private PaoDao paoDao;
     
     public void setSwitchContextService(SwitchContextService switchContextService) {
         this.switchContextService = switchContextService;
+    }
+    
+    @Autowired
+    public void setPaoDao(PaoDao paoDao) {
+    	this.paoDao = paoDao;
     }
 
     @Override
@@ -40,7 +54,8 @@ public class CreateHardwareController extends StarsInventoryActionController {
                 starsDatabaseCache.getEnergyCompany(Integer.valueOf(memberParam)) : energyCompany;
         
         ServletUtils.saveRequest(request, session, new String[] {
-            "Member", "DeviceType", "SerialNo", "DeviceLabel", "AltTrackNo", "ReceiveDate", "Voltage", "ServiceCompany", "Notes", "Route"});
+            "Member", "DeviceType", "SerialNo", "DeviceLabel", "AltTrackNo", "ReceiveDate", "Voltage", "ServiceCompany", "Notes", "Route", 
+            "yukonDeviceDemandRate", "yukonDeviceCreationStyleRadio", "yukonDeviceName", "choosenYukonDeviceId", "choosenYukonDeviceNameField"});
         
         try {
             StarsCreateLMHardware createHw = new StarsCreateLMHardware();
@@ -53,6 +68,18 @@ public class CreateHardwareController extends StarsInventoryActionController {
             }
             catch (ObjectInOtherEnergyCompanyException e) {
                 throw new WebClientException("Cannot create hardware: serial # already exists in the inventory list of <i>" + e.getEnergyCompany().getName() + "</i>.");
+            }
+            
+            YukonListEntry entry = DaoFactory.getYukonListDao().getYukonListEntry(createHw.getDeviceType().getEntryID());
+            boolean isLCR3102 = entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_3102;
+            
+            // need to check deviceCarrierSetting for serial number if this is LCR3102
+            if (isLCR3102) {
+            	
+            	List<LiteYukonPAObject> liteYukonPaobjectsByAddress = paoDao.getLiteYukonPaobjectsByAddress(Integer.parseInt(createHw.getLMHardware().getManufacturerSerialNumber()));
+            	if (liteYukonPaobjectsByAddress.size() > 0) {
+            		throw new WebClientException("Cannot create LCR-3102 hardware: serial # already exists for a Yukon device address.");
+            	}
             }
             
             LiteInventoryBase liteInv = CreateLMHardwareAction.addInventory( createHw, null, member );

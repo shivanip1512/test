@@ -24,9 +24,23 @@
 	String serialNameLabel = "Serial #";
 	String serialNameVar = "SerialNo";
 	
+	boolean isLCR3102 = false;
+	String lcrYukonDeviceName = "";
+    String lctYukonDeviceIdStr = "";
+    
 	if (inventory.getLMHardware() != null) {
 		deviceType = DaoFactory.getYukonListDao().getYukonListEntry(inventory.getDeviceType().getEntryID()).getEntryText();
 		serialName = inventory.getLMHardware().getManufacturerSerialNumber();
+		
+		YukonListEntry yukonListEntry = DaoFactory.getYukonListDao().getYukonListEntry(inventory.getDeviceType().getEntryID());
+        isLCR3102 = yukonListEntry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_3102;
+        if (isLCR3102) {
+        	LiteYukonPAObject litePao = DaoFactory.getPaoDao().getLiteYukonPAO( inventory.getDeviceID() );
+			if (litePao.getYukonID() > 0) {
+				lcrYukonDeviceName = litePao.getPaoName();
+	        	lctYukonDeviceIdStr = Integer.toString(litePao.getYukonID());
+			} 
+        }
 	}
 	else 
     {
@@ -63,6 +77,14 @@
 <link rel="stylesheet" href="../../WebConfig/yukon/styles/calendarControl.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 
+<link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/StandardStyles.css" >
+<link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/YukonGeneralStyles.css" >
+<link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/itemPicker.css" >
+
+<script type="text/javascript" src="/JavaScript/itemPicker.js"></script>
+<script type="text/javascript" src="/JavaScript/paoPicker.js"></script>
+<script type="text/javascript" src="/JavaScript/tableCreation.js"></script>
+
 <script type="text/javascript" src="../../JavaScript/calendarControl.js"></script>
 <script type="text/javascript">
 function deleteHardware(form) {
@@ -96,6 +118,33 @@ function changeSerialNo() {
 
 function revealLog() {
     document.getElementById("stateChangeHistory").style.display = "";
+}
+
+Event.observe(window, 'load', function() {
+	twoWayLCRCheck();
+});
+
+function twoWayLCRCheck() {
+	if(<%=isLCR3102%>) {
+		$('lcr3102_td').show();
+	} else {
+		$('lcr3102_td').hide();
+	}
+
+	if('<%= lctYukonDeviceIdStr %>' == '') {
+		alert('A Yukon device MUST be setup for this LCR-3102.\n\nUse the "Yukon LCR-3102 Profile" section to create a new Yukon device, or to link to an existing Yukon device.');
+	}
+}
+
+var setChoosenYukonDevice = function() {
+	
+	if ($('choosenYukonDeviceId').value.strip() == '') {
+		alert('Select a Yukon device.');
+		return;
+	}
+
+	$('choosenYukonDeviceNameField').value = $('choosenYukonDeviceNameSpan').innerHTML;
+
 }
 </script>
 </head>
@@ -143,7 +192,7 @@ function revealLog() {
 				<input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?InvNo=<%= invNo %>">
 				<input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?InvNo=<%= invNo %>">
                 <table width="610" border="0" cellspacing="0" cellpadding="0" align="center">
-                <tr> 
+                <tr valign="top"> 
                   <td width="300" valign="top" bgcolor="#FFFFFF"> 
                     <table width="300" border="0" cellspacing="0" cellpadding="0">
                       <tr> 
@@ -284,6 +333,82 @@ function revealLog() {
                             </table>
                           </td>
                       </tr>
+                      
+                      
+                      <%-- YUKON DEVICE for LCR-3102--%>
+	                  <tr id="lcr3102_td" style="display:none;">
+	                  
+	                  	<td colspan="2">
+	                  		<table border="0" cellspacing="0" cellpadding="0">
+	                        <tr> 
+	                          <td valign="top"><span class="SubtitleHeader">Yukon LCR-3102 Profile <b>(REQUIRED)</b></span> 
+	                            <hr>
+	                            <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
+	                              <tr>
+	                              	<td colspan="2">
+	                              		<input type="radio" name="yukonDeviceCreationStyleRadio" id="newYukDevRadio" value="NEW"> Create new Yukon device
+	                              	</td>
+	                              </tr>
+	                              <tr> 
+	                                <td width="250" class="TableCell"> 
+	                                  <div align="right">Device Name: </div>
+	                                </td>
+	                                <td width="500"> 
+	                                  <input type="text" name="yukonDeviceName" maxlength="30" size="24" value="" onchange="setContentChanged(true)" onclick="$('newYukDevRadio').checked=true;">
+	                                </td>
+	                              </tr>
+	                              <tr> 
+	                                <td width="250" class="TableCell"> 
+	                                  <div align="right">Demand Rate Interval: </div>
+	                                </td>
+	                                <td width="500"> 
+	                                
+	                                  <select name="yukonDeviceDemandRate">
+	                                  	<option value="60">1 Minute</option>
+	                                  	<option value="120" >2 Minute</option>
+	                                  	<option value="180">3 Minute</option>
+	                                  	<option value="300" selected>5 Minute</option>
+	                                  	<option value="600">10 Minute</option>
+	                                  	<option value="900">15 Minute</option>
+	                                  	<option value="1800">30 Minute</option>
+	                                  	<option value="3600">1 Hour</option>
+	                                  </select>
+	                                </td>
+	                              </tr>
+	                              <tr>
+	                              	<td colspan="2">&nbsp;</td>
+	                              </tr>
+	                              <tr>
+	                              	<td colspan="2">
+	                              		<input type="radio" name="yukonDeviceCreationStyleRadio" id="existingYukDevRadio" value="EXISTING" checked> Link to existing Yukon device
+	                              	</td>
+	                              </tr>
+	                              <tr> 
+	                                <td width="250" class="TableCell"> 
+	                                  <div align="right">Device Name: </div>
+	                                </td>
+	                                <td width="500"> 
+	                                	<input type="hidden" id="choosenYukonDeviceId" name="choosenYukonDeviceId" value="<%= lctYukonDeviceIdStr %>" style="display:none;">
+	                              		<span id="choosenYukonDeviceNameSpan" style="display:none;"></span>
+	                              		<cti:paoPicker pickerId="paoPicker" 	
+						    					paoIdField="choosenYukonDeviceId" 
+						    					constraint="com.cannontech.common.search.criteria.LCR3102Criteria" 
+						    					paoNameElement="choosenYukonDeviceNameSpan"
+						    					finalTriggerAction="setChoosenYukonDevice">
+						    			</cti:paoPicker>
+	                                  <input type="text" name="choosenYukonDeviceNameField" id="choosenYukonDeviceNameField" value="<%= lcrYukonDeviceName %>" readonly> 
+	                                  <input type="button" value="Choose" onclick="paoPicker.showPicker();$('existingYukDevRadio').checked=true;">
+	                                </td>
+	                              </tr>
+	                           </table>
+	                         </td>
+	                        </tr>
+	                        </table>
+	                  	</td>
+	                  
+	                  </tr>
+	                  <%-- END LCR-3102 --%>
+                  
                     </table>
                     
                     <table width="300" border="0" cellspacing="0" cellpadding="0">

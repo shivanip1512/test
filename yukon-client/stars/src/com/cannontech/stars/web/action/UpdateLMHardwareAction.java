@@ -8,6 +8,7 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
@@ -308,6 +309,14 @@ public class UpdateLMHardwareAction implements ActionBase {
 					break;
 				}
 			}
+			
+			// TWO WAY LCR DEVICE ASSIGNMENT
+			YukonListEntry entry = DaoFactory.getYukonListDao().getYukonListEntry(updateHw.getDeviceType().getEntryID());
+            boolean isLCR3102 = entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_3102;
+            if (isLCR3102) {
+            	InventoryManagerUtil.assignTwoWayLcrDevice(updateHw, liteInv, energyCompany);
+            }
+            
 		}
 		catch (TransactionException e) {
 			CTILogger.error( e.getMessage(), e );

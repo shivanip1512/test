@@ -530,6 +530,13 @@ public class CreateLMHardwareAction implements ActionBase {
                 }
 			}
 			
+			// TWO WAY LCR DEVICE ASSIGNMENT
+			YukonListEntry entry = DaoFactory.getYukonListDao().getYukonListEntry(createHw.getDeviceType().getEntryID());
+            boolean isLCR3102 = entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_3102;
+            if (isLCR3102) {
+            	InventoryManagerUtil.assignTwoWayLcrDevice(createHw, liteInv, energyCompany);
+            }
+			
 			return liteInv;
 		}
 		catch (Exception e) {

@@ -24,6 +24,7 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.data.device.CarrierBase;
 import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.lite.LiteFactory;
@@ -110,7 +111,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
 
             // create
             int newDeviceId = paoDao.getNextPaoId();
-            MCTBase newDevice = (MCTBase)DeviceFactory.createDevice(deviceType);
+            CarrierBase newDevice = (CarrierBase)DeviceFactory.createDevice(deviceType);
             newDevice.setDeviceID(newDeviceId);
             newDevice.setPAOName(name);
             newDevice.setAddress(address);
@@ -172,7 +173,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         }
     }
     
-    private void applyPoints(MCTBase device, List<PointBase> points) {
+    private void applyPoints(CarrierBase device, List<PointBase> points) {
         
         int deviceId = device.getPAObjectID();
         
@@ -213,7 +214,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         return points;
     }
 
-    private void processDeviceDbChange(MCTBase newDevice) {
+    private void processDeviceDbChange(CarrierBase newDevice) {
 
         DBChangeMsg msg = new DBChangeMsg(newDevice.getPAObjectID(),
                                           DBChangeMsg.CHANGE_PAO_DB,

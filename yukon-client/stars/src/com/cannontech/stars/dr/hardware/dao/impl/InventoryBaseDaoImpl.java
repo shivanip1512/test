@@ -34,6 +34,7 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
     private static final String selectByAccountIdSql;
     private static final String selectByInstallationCompanyIdSql;
     private static final String selectByCategoryIdSql;
+    private static final String selectByDeviceIdSql;
     private static final ParameterizedRowMapper<InventoryBase> rowMapper;
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private NextValueHelper nextValueHelper;
@@ -62,6 +63,8 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
         selectByInstallationCompanyIdSql = selectAllSql + " WHERE InstallationCompanyID = ?";
         
         selectByCategoryIdSql = selectAllSql + " WHERE CategoryID = ?";
+        
+        selectByDeviceIdSql = selectAllSql + " WHERE DeviceId = ?";
         
         rowMapper = InventoryBaseDaoImpl.createRowMapper();
     }
@@ -240,6 +243,17 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
             displayName = hardware.getManufacturerSerialNumber();
         }
         return displayName;
+    }
+    
+    @Override
+    public List<InventoryBase> getByDeviceId(int deviceId) {
+    	
+    	try {
+            List<InventoryBase> list = simpleJdbcTemplate.query(selectByDeviceIdSql, rowMapper, deviceId);
+            return list;
+        } catch (DataAccessException e) {
+            return Collections.emptyList();
+        }
     }
 
     private static final ParameterizedRowMapper<InventoryBase> createRowMapper() {

@@ -9,26 +9,31 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteLMHardwareEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
+import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.service.StarsInventoryBaseService;
+import com.cannontech.stars.core.service.StarsTwoWayLcrYukonDeviceAssignmentService;
 import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
 import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceAlreadyAssignedException;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
+import com.cannontech.stars.dr.hardware.exception.StarsTwoWayLcrYukonDeviceCreationException;
 import com.cannontech.stars.dr.hardware.model.HardwareType;
 import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
@@ -37,6 +42,7 @@ import com.cannontech.stars.dr.util.YukonListEntryHelper;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.StarsInvalidArgumentException;
+import com.cannontech.stars.xml.serialize.StarsInventory;
 
 public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService {
 
@@ -50,7 +56,9 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
     private LMHardwareEventDao hardwareEventDao;
     private LMHardwareControlGroupDao lmHardwareControlGroupDao;
     private ApplianceDao applianceDao;
-
+    private StarsTwoWayLcrYukonDeviceAssignmentService starsTwoWayLcrYukonDeviceAssignmentService;
+    private YukonListDao yukonListDao;
+    
     @Autowired
     public void setStarsSearchDao(StarsSearchDao starsSearchDao) {
         this.starsSearchDao = starsSearchDao;
@@ -96,10 +104,21 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
         this.applianceDao = applianceDao;
     }
 
+    @Autowired
+    public void setStarsTwoWayLcrYukonDeviceAssignmentService(StarsTwoWayLcrYukonDeviceAssignmentService starsTwoWayLcrYukonDeviceAssignmentService) {
+		this.starsTwoWayLcrYukonDeviceAssignmentService = starsTwoWayLcrYukonDeviceAssignmentService;
+	}
+    
+    @Autowired
+    public void setYukonListDao(YukonListDao yukonListDao) {
+		this.yukonListDao = yukonListDao;
+	}
+    
+    // ADD DEVICE TO ACCOUNT
     @Override
     @Transactional
     public LiteInventoryBase addDeviceToAccount(LiteInventoryBase liteInv,
-            LiteStarsEnergyCompany energyCompany, LiteYukonUser user) {
+            LiteStarsEnergyCompany energyCompany, LiteYukonUser user) throws StarsTwoWayLcrYukonDeviceCreationException {
 
         boolean lmHardware = InventoryUtils.isLMHardware(liteInv.getCategoryID());
         if (liteInv.getLiteID() <= 0) {
@@ -151,6 +170,14 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
             }
 
         }
+        
+        // CREATE ADDITIONAL YUKON DEVICE FOR TWO WAY LCR (LCR-3102)
+        StarsInventory inventory = StarsLiteFactory.createStarsInventory(liteInv, energyCompany);
+        YukonListEntry entry = yukonListDao.getYukonListEntry(inventory.getDeviceType().getEntryID());
+        if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_3102) {
+        	starsTwoWayLcrYukonDeviceAssignmentService.assignNewDeviceToLcr(liteInv, energyCompany, null, null, true);
+        }
+        
         return liteInv;
     }
 
@@ -243,6 +270,8 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
         }
     }
 
+    
+    // UPDATE DEVICE ON ACCOUNT
     @Override
     @Transactional
     public LiteInventoryBase updateDeviceOnAccount(LiteInventoryBase liteInv,
@@ -272,6 +301,17 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
                 // save LMHardware here
                 liteInv = starsInventoryBaseDao.saveLmHardware(lmHw,
                                                                energyCompany.getEnergyCompanyID());
+                
+                // CREATE ADDITIONAL YUKON DEVICE FOR TWO WAY LCR (LCR-3102)
+                // - only if this is a Two Way LCR that does not yet have a Yukon device assigned to it
+                // - updateDeviceOnAccount() does not support updating a Yukon device already assigned
+                StarsInventory inventory = StarsLiteFactory.createStarsInventory(liteInv, energyCompany);
+                YukonListEntry entry = yukonListDao.getYukonListEntry(inventory.getDeviceType().getEntryID());
+                if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_3102) {
+                	if (inventory.getDeviceID() < 1) {
+                		starsTwoWayLcrYukonDeviceAssignmentService.assignNewDeviceToLcr(liteInv, energyCompany, null, null, false);
+                	}
+                }
             }
             // update install event
             updateInstallHardwareEvent(liteInv, energyCompany, user);
@@ -311,6 +351,8 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
         }
     }
 
+    
+    // REMOVE DEVICE FROM ACCOUNT
     @Override
     @Transactional
     public void removeDeviceFromAccount(LiteInventoryBase liteInv,
