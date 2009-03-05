@@ -399,7 +399,16 @@ function confirmCancel() {
                                   <div align="right">Field Receive Date: </div>
                                 </td>
                                 <td width="200"> 
-                                  <input type="text" name="fieldReceiveDate" maxlength="30" size="24" value="<%= (savedRecvDate != null)? savedRecvDate : dateFormattingService.formatDate(inventory.getReceiveDate(), DateFormattingService.DateFormatEnum.DATE, userContext) %>" onchange="setContentChanged(true)">
+                                <%
+                                String fieldReceiveDate = savedRecvDate;
+                                if (fieldReceiveDate == null) {
+                                    fieldReceiveDate = "";
+                                    if (inventory.getReceiveDate() != null) {
+                                        fieldReceiveDate = dateFormattingService.formatDate(inventory.getReceiveDate(), DateFormattingService.DateFormatEnum.DATE, userContext);
+                                    }
+                                }
+                                %>
+                                  <input type="text" name="fieldReceiveDate" maxlength="30" size="24" value="<%= fieldReceiveDate %>" onchange="setContentChanged(true)">
                                 </td>
                               </tr>
                               <tr> 
@@ -407,7 +416,16 @@ function confirmCancel() {
                                   <div align="right">Field Remove Date: </div>
                                 </td>
                                 <td width="200"> 
-                                  <input type="text" name="fieldRemoveDate" maxlength="30" size="24" value="<%= (savedRemvDate != null)? savedRemvDate : dateFormattingService.formatDate(inventory.getRemoveDate(), DateFormattingService.DateFormatEnum.DATE, userContext) %>" onchange="setContentChanged(true)">
+                                <%
+                                String fieldRemoveDate = savedRemvDate;
+                                if (fieldRemoveDate == null) {
+                                    fieldRemoveDate = "";
+                                    if (inventory.getReceiveDate() != null) {
+                                        fieldRemoveDate = dateFormattingService.formatDate(inventory.getRemoveDate(), DateFormattingService.DateFormatEnum.DATE, userContext);
+                                    }
+                                }
+                                %>
+                                  <input type="text" name="fieldRemoveDate" maxlength="30" size="24" value="<%= fieldRemoveDate %>" onchange="setContentChanged(true)">
                                 </td>
                               </tr>
                               <tr> 

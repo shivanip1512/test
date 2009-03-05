@@ -86,7 +86,8 @@ public class CheckInventoryController extends StarsInventoryActionController {
         }    
         else {
             int categoryID = InventoryUtils.getInventoryCategoryID( devTypeID, energyCompany );
-    
+            boolean isMCT = false;
+
             if (invChecking && categoryID > 0) {
                 // Save the request parameters
                 StarsInventory starsInv = (StarsInventory) StarsFactory.newStarsInv(StarsInventory.class);
@@ -102,6 +103,7 @@ public class CheckInventoryController extends StarsInventoryActionController {
                     MCT mct = new MCT();
                     mct.setDeviceName( deviceName );
                     starsInv.setMCT( mct );
+                    isMCT = true;
                 }
     
                 session.setAttribute( InventoryManagerUtil.STARS_INVENTORY_TEMP, starsInv );
@@ -147,23 +149,25 @@ public class CheckInventoryController extends StarsInventoryActionController {
     
                     StarsCreateLMHardware createHw = new StarsCreateLMHardware();
                     InventoryManagerUtil.setStarsInv( createHw, request, energyCompany );
-    
-                    if (liteInv != null) {
-                        if (request.getParameter("CreateMCT") != null) {
-                            session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "The specified device name already exists");
+
+                    if (isMCT) {
+                        if (liteInv != null) {
+                            if (request.getParameter("CreateMCT") != null) {
+                                session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "The specified device name already exists");
+                                String redirect = this.getReferer(request);
+                                response.sendRedirect(redirect);
+                                return;
+                            }
+        
+                            createHw.setInventoryID( liteInv.getInventoryID() );
+                            createHw.setDeviceID( liteInv.getDeviceID() );
+                        }
+                        else if (request.getParameter("CreateMCT") == null) {
+                            session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "The device name is not found. To create a new device, check the \"Create new device\".");
                             String redirect = this.getReferer(request);
                             response.sendRedirect(redirect);
                             return;
                         }
-    
-                        createHw.setInventoryID( liteInv.getInventoryID() );
-                        createHw.setDeviceID( liteInv.getDeviceID() );
-                    }
-                    else if (request.getParameter("CreateMCT") == null) {
-                        session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "The device name is not found. To create a new device, check the \"Create new device\".");
-                        String redirect = this.getReferer(request);
-                        response.sendRedirect(redirect);
-                        return;
                     }
     
                     StarsCustAccountInformation starsAcctInfo = (StarsCustAccountInformation)
