@@ -172,6 +172,72 @@ INT LCR3102::decodeGetValueIntervalLast( INMESS *InMessage, CtiTime &TimeNow, li
 {
     INT status = NOTNORMAL;
 
+    DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
+    CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return MEMORY;
+        }
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+        point_info pi;
+        pi.freeze_bit = false;
+
+        string results = getName() + " / Last Interval kW:";
+
+        int   message_index   = 1;
+        UCHAR relay_info      = DSt->Message[0];
+        UCHAR multiplier_mask = 0xC0;
+        int   relay_number    = 1;
+
+        for( UCHAR relay_mask = 0x01; relay_mask < 0x10; relay_mask <<= 1, relay_number++ )
+        {
+            if( relay_info & relay_mask )
+            {
+                int value = (DSt->Message[message_index] << 8) | DSt->Message[message_index + 1];
+                message_index += 2;
+
+                double multiplier = ( relay_info & multiplier_mask ) ? 1.0 : 0.1;
+                multiplier_mask >>= 2;
+
+                results += "  Relay " + CtiNumStr(relay_number) + ": ";
+
+                if( value == 0xFFFF )
+                {
+                    pi.value   = 0.0;
+                    pi.quality = InvalidQuality;
+                    results    += "Invalid Data";
+                }
+                else
+                {
+                    pi.value   = value * multiplier;
+                    pi.quality = NormalQuality;
+                    results    += CtiNumStr(pi.value);
+                }
+
+                pi.description = "Last Interval kW Relay " + CtiNumStr(relay_number);
+
+                int point_offset = PointOffset_LastIntervalBase + relay_number - 1;
+
+                insertPointDataReport(DemandAccumulatorPointType, point_offset, ReturnMsg,
+                                      pi, "LastIntervalkWRelay" + CtiNumStr(relay_number));
+            }
+        }
+
+        ReturnMsg->setResultString(results);
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
+
     return status;
 }
 
