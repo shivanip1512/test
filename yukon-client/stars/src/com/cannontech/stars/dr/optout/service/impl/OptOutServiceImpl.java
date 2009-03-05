@@ -17,7 +17,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -431,7 +430,6 @@ public class OptOutServiceImpl implements OptOutService {
 		int userId = contact.getLoginID();
 		LiteYukonUser user = yukonUserDao.getLiteYukonUser(userId);
 		TimeZone userTimeZone = authDao.getUserTimeZone(user);
-		DateTimeZone dateTimeZone = DateTimeZone.forTimeZone(userTimeZone);
 		
 		String optOutLimitString = 
 			authDao.getRolePropertyValue(contact.getLoginID(), ResidentialCustomerRole.OPT_OUT_LIMITS);
@@ -439,20 +437,13 @@ public class OptOutServiceImpl implements OptOutService {
 		List<OptOutLimit> optOutLimits = this.parseOptOutLimitString(optOutLimitString);
 		int optOutLimit = OptOutService.NO_OPT_OUT_LIMIT;
 		Date startDate = new Date(0);
-		for(OptOutLimit limit : optOutLimits) {
-			if(limit.getStartMonth() <= currentMonth && limit.getStopMonth() >= currentMonth) {
-				int limitStartMonth = limit.getStartMonth();
-				optOutLimit = limit.getLimit();
-
-				// Get the first day of the start month of the limit at midnight
-				DateTime startDateTime = new DateTime(dateTimeZone);
-				startDateTime = startDateTime.withMonthOfYear(limitStartMonth);
-				startDateTime = startDateTime.withDayOfMonth(1);
-				startDateTime = startDateTime.withTime(0, 0, 0, 0);
-				startDate = startDateTime.toDate();
-				break;
-			}
-		}
+		for (OptOutLimit limit : optOutLimits) {
+            if (limit.isMonthUnderLimit(currentMonth)) {
+                optOutLimit = limit.getLimit();
+                startDate = limit.getOptOutLimitStartDate(currentMonth, userTimeZone);
+                break;
+            }
+        }
 
 		// Get the number of opt outs used from the start of the limit (if there is a limit)
 		// till now
