@@ -428,9 +428,13 @@ public class WorkOrderBean {
 	}
 
 	public void setFilters(List<FilterWrapper> newFilters) {
-		if( newFilters == null || !(newFilters.equals(filters)) )
+		if (newFilters == null || !(newFilters.equals(filters)))
 		{
-			this.filters = newFilters;
+			if (newFilters == null) {
+				this.filters = new ArrayList<FilterWrapper>();
+			} else {
+				this.filters = newFilters;
+			}
 			setPage(1);
 		}
 	}
