@@ -59,6 +59,7 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
 
     private Logger logger = YukonLogManager.getLogger(MoveInMoveOutServiceImpl.class);
     private final int NEW_DAY_BUFFER_HRS = 2; // 2 hours
+    private final int JOB_SCHEDULER_START_BUFFER = 4; // 4 minutes
 
     private JobManager jobManager = null;
     private YukonJobDefinition<MoveInTask> moveInDefinition = null;
@@ -189,17 +190,16 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
 
         Date currentDate = DateUtils.truncate(new Date(), Calendar.DATE);
         Date tomorrowDate = TimeUtil.addDays(currentDate,1);
+        Date scheduledDate = null;
         if (moveInFormObj.getMoveInDate().before(tomorrowDate)){
-            jobManager.scheduleJob(moveInDefinition,
-                                   moveInTask,
-                                   tomorrowDate,
-                                   moveInFormObj.getUserContext());
+        	scheduledDate = TimeUtil.addMinutes(tomorrowDate, JOB_SCHEDULER_START_BUFFER);
         } else { 
-            jobManager.scheduleJob(moveInDefinition,
-                                   moveInTask,
-                                   moveInFormObj.getMoveInDate(),
-                                   moveInFormObj.getUserContext());
+        	scheduledDate = TimeUtil.addMinutes(moveInFormObj.getMoveInDate(), JOB_SCHEDULER_START_BUFFER);
         }
+        jobManager.scheduleJob(moveInDefinition,
+                               moveInTask,
+                               scheduledDate,
+                               moveInFormObj.getUserContext());
 
         logger.info("Move in for " + moveInResultObj.getPreviousMeter()
                                                     .toString() + " scheduled.");
@@ -319,17 +319,16 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
 
         Date currentDate = DateUtils.truncate(new Date(), Calendar.DATE);
         Date tomorrowDate = TimeUtil.addDays(currentDate,1);
+        Date scheduledDate = null;
         if (moveOutFormObj.getMoveOutDate().before(tomorrowDate)){
-            jobManager.scheduleJob(moveOutDefinition,
-                                   moveOutTask,
-                                   tomorrowDate,
-                                   moveOutFormObj.getUserContext());
+        	scheduledDate = TimeUtil.addMinutes(tomorrowDate,JOB_SCHEDULER_START_BUFFER);
         } else { 
-            jobManager.scheduleJob(moveOutDefinition,
-                                   moveOutTask,
-                                   moveOutFormObj.getMoveOutDate(),
-                                   moveOutFormObj.getUserContext());
+        	scheduledDate = TimeUtil.addMinutes(moveOutFormObj.getMoveOutDate(), JOB_SCHEDULER_START_BUFFER);
         }
+        jobManager.scheduleJob(moveOutDefinition,
+                               moveOutTask,
+                               scheduledDate,
+                               moveOutFormObj.getUserContext());
         
         logger.info("Move out for " + moveOutResultObj.getPreviousMeter()
                                                       .toString() + " scheduled.");
