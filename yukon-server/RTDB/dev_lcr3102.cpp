@@ -26,7 +26,11 @@ LCR3102::LCR3102( const LCR3102 &aRef )
     *this = aRef;
 }
 
-LCR3102::~LCR3102( )      {   }
+
+LCR3102::~LCR3102( )
+{
+
+}
 
 
 LCR3102& LCR3102::operator=( const LCR3102 &aRef )
@@ -191,6 +195,37 @@ INT LCR3102::decodeGetValueShedtime( INMESS *InMessage, CtiTime &TimeNow, list< 
 INT LCR3102::decodeGetValuePropCount( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT status = NOTNORMAL;
+
+    DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
+    CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return MEMORY;
+        }
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+        point_info pi;
+
+        pi.value       = DSt->Message[0];
+        pi.quality     = NormalQuality;
+        pi.freeze_bit  = false;
+        pi.description = "Propagation Counter";
+
+        insertPointDataReport(AnalogPointType, PointOffset_PropCount, ReturnMsg, pi, "PropCount");
+
+        ReturnMsg->setResultString(getName() + " / Propagation Counter: " + CtiNumStr(pi.value));
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
 
     return status;
 }

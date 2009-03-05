@@ -37,6 +37,16 @@ protected:
         FuncRead_PropCountLen    = 1
     };
 
+    enum PointOffsets
+    {
+        PointOffset_LastIntervalBase = 1,   // true PointOffset = Base# + (load/relay# - 1)
+        PointOffset_RuntimeBase      = 5,   //      ditto here
+        PointOffset_ShedtimeBase     = 9,   //      and here
+
+        PointOffset_PropCount        = 13,
+        PointOffset_CommStatus       = 2000
+    };
+
     virtual bool getOperation( const UINT &cmdType, BSTRUCT &b ) const;
 
     virtual INT executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
