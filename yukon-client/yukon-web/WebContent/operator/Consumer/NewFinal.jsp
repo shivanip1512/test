@@ -67,7 +67,7 @@
                         <td height="30"> 
                           <div align="center"><span class="MainText">Add hardware to the 
                             account you just created</span><br>
-                            <input type="button" name="AddHardware" value="Add Hardware" onclick="location.href='SerialNumber.jsp?action=New'">
+                            <input type="button" name="AddHardware" value="Add Hardware" onclick="location.href='CreateHardware.jsp'">
                           </div>
                         </td>
                       </tr>
