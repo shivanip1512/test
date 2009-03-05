@@ -303,14 +303,14 @@ private void checkMeterNumber(String meterNumber) {
 
      if (devices.size() > 0) {
 
-         String message = "The meternumber '"
+         String message = "The meter number '"
              + meterNumber
              + "' is already used by the following devices,\n"
              + "are you sure you want to use it again?\n";
          
          int response = DatabaseEditorOptionPane.showAlreadyUsedConfirmDialog(this,
                                                                               message,
-                                                                              "Meternumber Already Used",
+                                                                              "Meter Number Already Used",
                                                                               devices);
          if (response == javax.swing.JOptionPane.NO_OPTION) {
              throw new CancelInsertException("Device was not inserted");
