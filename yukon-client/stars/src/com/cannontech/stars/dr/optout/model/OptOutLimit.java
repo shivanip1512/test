@@ -86,15 +86,12 @@ public class OptOutLimit {
         startDateTime = startDateTime.withDayOfMonth(1);
         startDateTime = startDateTime.withTime(0, 0, 0, 0);
 
+        // See if the OptOutLimit started in the current or last year
         if (startMonth > stopMonth) {
-            if (currentMonth >= startMonth && currentMonth <= 12) {
-                // keep the current year
-            } else if (currentMonth >= 1 && currentMonth <= stopMonth) {
+            if (currentMonth >= 1 && currentMonth <= stopMonth) {
                 // OptOutLimit started last year
                 startDateTime = startDateTime.withYear(startDateTime.getYear() - 1);
             }
-        } else if (currentMonth >= startMonth && currentMonth <= stopMonth) {
-            // keep the current year
         }
         startDate = startDateTime.toDate();
 
