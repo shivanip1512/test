@@ -119,3 +119,5 @@ INSERT INTO DeviceTypeCommand VALUES(-793, -168, 'MCT-430A3', 31, 'Y', -1);
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
+
+INSERT INTO CTIDatabase VALUES('4.2', 'Matt K', '06-MAR-2009', 'Latest Update', 2);
