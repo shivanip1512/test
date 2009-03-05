@@ -108,6 +108,22 @@ INSERT INTO DeviceTypeCommand VALUES(-792, -144, 'MCT-430A3', 30, 'N', -1);
 INSERT INTO DeviceTypeCommand VALUES(-793, -168, 'MCT-430A3', 31, 'Y', -1);
 /* End YUK-6862 */
 
+/* Start YUK-7084 */
+UPDATE YukonRoleProperty 
+SET KeyName = 'Inventory Checking', DefaultValue = 'true' 
+WHERE RolePropertyId = -20153;
+
+UPDATE YukonGroupRole 
+SET Value = '(none)' 
+WHERE Value != 'false' 
+AND RolePropertyId = -20153;
+
+UPDATE YukonUserRole 
+SET Value = '(none)' 
+WHERE Value != 'false' 
+AND RolePropertyId = -20153; 
+/* End YUK-7084 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
