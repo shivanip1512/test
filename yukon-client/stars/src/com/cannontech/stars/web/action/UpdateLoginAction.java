@@ -236,8 +236,6 @@ public class UpdateLoginAction implements ActionBase {
 				);
         liteUser.setAuthType(dbUser.getAuthType());
 
-		ServerUtils.handleDBChange( liteUser, com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_ADD );
-        
         ServerUtils.handleDBChange( liteUser, DBChangeMsg.CHANGE_TYPE_ADD );
         
         if (authenticationService.supportsPasswordSet(defaultAuthType) && !authTypeChange) {
