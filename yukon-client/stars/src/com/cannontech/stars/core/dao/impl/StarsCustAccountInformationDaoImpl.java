@@ -154,7 +154,7 @@ public class StarsCustAccountInformationDaoImpl implements StarsCustAccountInfor
                 liteAcctInfo.setAccountSite(accountSite);
 
                 LiteSiteInformation siteInformation = new LiteSiteInformation();
-                siteInformation.setSiteID( accountSite.getAccountSiteID() );
+                siteInformation.setSiteID( accountSite.getSiteInformationID() );
                 siteInformation.setFeeder( rs.getString(13) );
                 siteInformation.setPole( rs.getString(14));
                 siteInformation.setTransformerSize( rs.getString(15) );
