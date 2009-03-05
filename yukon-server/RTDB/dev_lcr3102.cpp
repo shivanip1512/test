@@ -111,7 +111,7 @@ INT LCR3102::ExecuteRequest ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
             OutMessage = NULL;
         }
 
-        executeOnDLCRoute(pReq, parse, OutMessage, tmpOutList, vgList, retList, outList, twoWay);
+        nRet = executeOnDLCRoute(pReq, parse, OutMessage, tmpOutList, vgList, retList, outList, twoWay);
     }
 
     return nRet;
@@ -131,6 +131,66 @@ INT LCR3102::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage
 {
     INT status = NOTNORMAL;
 
+    switch(InMessage->Sequence)
+    {
+        case Emetcon::GetValue_IntervalLast:
+        {
+            status = decodeGetValueIntervalLast( InMessage, TimeNow, vgList, retList, outList );
+            break;
+        }
+        case Emetcon::GetValue_Runtime:
+        {
+            status = decodeGetValueRuntime( InMessage, TimeNow, vgList, retList, outList );
+            break;
+        }
+        case Emetcon::GetValue_Shedtime:
+        {
+            status = decodeGetValueShedtime( InMessage, TimeNow, vgList, retList, outList );
+            break;
+        }
+        case Emetcon::GetValue_PropCount:
+        {
+            status = decodeGetValuePropCount( InMessage, TimeNow, vgList, retList, outList );
+            break;
+        }
+        default:
+        {
+            // some error reporting goes here...
+
+        }
+    }
+
+    return status;
+}
+
+
+INT LCR3102::decodeGetValueIntervalLast( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+{
+    INT status = NOTNORMAL;
+
+    return status;
+}
+
+
+INT LCR3102::decodeGetValueRuntime( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+{
+    INT status = NOTNORMAL;
+
+    return status;
+}
+
+
+INT LCR3102::decodeGetValueShedtime( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+{
+    INT status = NOTNORMAL;
+
+    return status;
+}
+
+
+INT LCR3102::decodeGetValuePropCount( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+{
+    INT status = NOTNORMAL;
 
     return status;
 }
@@ -140,17 +200,10 @@ LCR3102::CommandSet LCR3102::initCommandStore()
 {
     CommandSet cs;
 
-    cs.insert(CommandStore(Emetcon::GetValue_IntervalLast, Emetcon::IO_Function_Read,
-                           FuncRead_LastIntervalPos, FuncRead_LastIntervalLen));
-
-    cs.insert(CommandStore(Emetcon::GetValue_Runtime, Emetcon::IO_Function_Read,
-                           FuncRead_RuntimePos, FuncRead_RuntimeLen));
-
-    cs.insert(CommandStore(Emetcon::GetValue_Shedtime, Emetcon::IO_Function_Read,
-                           FuncRead_ShedtimePos, FuncRead_ShedtimeLen));
-
-    cs.insert(CommandStore(Emetcon::GetValue_PropCount, Emetcon::IO_Function_Read,
-                           FuncRead_PropCountPos, FuncRead_PropCountLen));
+    cs.insert(CommandStore(Emetcon::GetValue_IntervalLast, Emetcon::IO_Function_Read, FuncRead_LastIntervalPos, FuncRead_LastIntervalLen));
+    cs.insert(CommandStore(Emetcon::GetValue_Runtime,      Emetcon::IO_Function_Read, FuncRead_RuntimePos,      FuncRead_RuntimeLen));
+    cs.insert(CommandStore(Emetcon::GetValue_Shedtime,     Emetcon::IO_Function_Read, FuncRead_ShedtimePos,     FuncRead_ShedtimeLen));
+    cs.insert(CommandStore(Emetcon::GetValue_PropCount,    Emetcon::IO_Function_Read, FuncRead_PropCountPos,    FuncRead_PropCountLen));
 
     return cs;
 }
@@ -181,17 +234,24 @@ INT LCR3102::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
         int load = parseLoadValue(parse);
         int previous = parsePreviousValue(parse);
 
-        // use load and previous to calculate the actual function number
-        OutMessage->Buffer.BSt.Function += ((previous / 12) - 1) * 4 + (load - 1);
-
-        // if previous is 36 we only get back 4 bytes - not 13
-        if(previous == 36)
+        if( load == -1 || previous == -1)
         {
-            OutMessage->Buffer.BSt.Length = 4;
+            nRet = BADPARAM;
         }
-
-        // more....
-        
+        else
+        {
+            // use load and previous to calculate the actual function number
+            OutMessage->Buffer.BSt.Function += ((previous / 12) - 1) * 4 + (load - 1);
+    
+            // if previous is 36 we only get back 4 bytes - not 13
+            if(previous == 36)
+            {
+                OutMessage->Buffer.BSt.Length = 4;
+            }
+    
+            // more....
+            
+        }
     }
     else if(parse.getFlags() & CMD_FLAG_GV_SHEDTIME)
     {
@@ -201,42 +261,48 @@ INT LCR3102::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
         int load = parseLoadValue(parse);
         int previous = parsePreviousValue(parse);
 
-        // use load and previous to calculate the actual function number
-        OutMessage->Buffer.BSt.Function += ((previous / 12) - 1) * 4 + (load - 1);
-
-        // if previous is 36 we only get back 4 bytes - not 13
-        if(previous == 36)
+        if( load == -1 || previous == -1)
         {
-            OutMessage->Buffer.BSt.Length = 4;
+            nRet = BADPARAM;
         }
+        else
+        {
+            // use load and previous to calculate the actual function number
+            OutMessage->Buffer.BSt.Function += ((previous / 12) - 1) * 4 + (load - 1);
 
-        // more....
+            // if previous is 36 we only get back 4 bytes - not 13
+            if(previous == 36)
+            {
+                OutMessage->Buffer.BSt.Length = 4;
+            }
+
+            // more....
+
+        }
     }
-    else
+
+    if(nRet != BADPARAM)
     {
-        // fall through...
-    }
-
-
-    if(!found)
-    {
-        nRet = NoMethod;
-    }
-    else
-    {
-        // Load all the other stuff that is needed
-        OutMessage->DeviceID  = getID();
-        OutMessage->TargetID  = getID();
-        OutMessage->Port      = getPortID();
-        OutMessage->Remote    = getAddress();
-        OutMessage->TimeOut   = 2;
-        OutMessage->Sequence  = function;         // Helps us figure it out later!
-        OutMessage->Retry     = 2;
-
-        OutMessage->Request.RouteID   = getRouteID();
-        strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
-
-        nRet = NoError;
+        if(!found)
+        {
+            nRet = NoMethod;
+        }
+        else
+        {
+            // Load all the other stuff that is needed
+            OutMessage->DeviceID  = getID();
+            OutMessage->TargetID  = getID();
+            OutMessage->Port      = getPortID();
+            OutMessage->Remote    = getAddress();
+            OutMessage->TimeOut   = 2;
+            OutMessage->Sequence  = function;         // Helps us figure it out later!
+            OutMessage->Retry     = 2;
+    
+            OutMessage->Request.RouteID   = getRouteID();
+            strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
+    
+            nRet = NoError;
+        }
     }
 
     return nRet;
@@ -269,50 +335,35 @@ bool LCR3102::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 
 int LCR3102::parseLoadValue(CtiCommandParser &parse)
 {
-    int load = 1;   // default to 1
+    int load = -1;      // signifies BADPARAM
 
     if(parse.isKeyValid("load"))
     {
-        switch(parse.getiValue("load"))
-        {
-            case 4:
-            case 3:
-            case 2:
-            case 1:
-                load = parse.getiValue("load");
-                break;
-
-            default:
-                load = 1;
-                break;
-        }
+        load = parse.getiValue("load");
+    }
+    else
+    {
+        load = 1;       // default if none given
     }
 
-    return load;
+    return (load >= 1 && load <= 4) ? load : -1;
 }
 
 
 int LCR3102::parsePreviousValue(CtiCommandParser &parse)
 {
-    int previous = 12;  // default to 12
+    int previous = -1;  // signifies BADPARAM
 
     if(parse.isKeyValid("previous_hours"))
     {
-        switch(parse.getiValue("previous_hours"))
-        {
-            case 36:
-            case 24:
-            case 12:
-                previous = parse.getiValue("previous_hours");
-                break;
-
-            default:
-                previous = 12;
-                break;
-        }
+        previous = parse.getiValue("previous_hours");
+    }
+    else
+    {
+        previous = 12;  // default if none given
     }
 
-    return previous;
+    return (previous >= 1 && previous <= 36) ? previous : -1;
 }
 
 
