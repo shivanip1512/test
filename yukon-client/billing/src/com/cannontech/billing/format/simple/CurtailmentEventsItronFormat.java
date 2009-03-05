@@ -220,7 +220,7 @@ public class CurtailmentEventsItronFormat extends SimpleBillingFormatBase {
 
         for (CICustomerStub customerStub : customersForEC) {
         	//Allow events with an earlier start(from) date to be included
-            List<BaseEvent> allEvents = baseEventDao.getAllForCustomerOverlappingFromDate(customerStub, getBillingFileDefaults().getEarliestStartDate(), getBillingFileDefaults().getEndDate());
+            List<BaseEvent> allEvents = baseEventDao.getAllForCustomerStopsWithin(customerStub, getBillingFileDefaults().getEarliestStartDate(), getBillingFileDefaults().getEndDate());
             for (BaseEvent event : allEvents) {
             	String eventDataString = getEventDataString(customerStub, event);
             	eventString += eventDataString;

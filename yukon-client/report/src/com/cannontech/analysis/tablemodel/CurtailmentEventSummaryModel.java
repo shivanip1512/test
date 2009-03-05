@@ -69,7 +69,7 @@ public class CurtailmentEventSummaryModel extends BareDatedReportModelBase<Curta
         for (CICustomerStub customerStub : customersForEC) {
             try {
             	//Allow events with an earlier start(from) date to be included
-                List<BaseEvent> allEvents = baseEventDao.getAllForCustomerOverlappingFromDate(customerStub, getStartDate(), getStopDate());
+                List<BaseEvent> allEvents = baseEventDao.getAllForCustomerStopsWithin(customerStub, getStartDate(), getStopDate());
                 for (BaseEvent event : allEvents) {
                     ModelRow row = new ModelRow();
                     row.customerName = customerStub.getCompanyName();

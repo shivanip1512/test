@@ -72,7 +72,7 @@ public class IsocCommonStrategy extends StrategyGroupBase {
     }
 
     public double getTotalEventHours(CICustomerStub customer, Date from, Date to) {
-        List<BaseEvent> allEvents = getBaseEventDao().getAllForCustomerOverlappingDateRange(customer, from, to);
+        List<BaseEvent> allEvents = getBaseEventDao().getAllForCustomerStartsOrStopsWithin(customer, from, to);
         int totalMinutes = 0;
         for (BaseEvent event : allEvents) {
             

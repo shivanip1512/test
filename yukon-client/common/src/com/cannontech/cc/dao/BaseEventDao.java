@@ -92,7 +92,7 @@ public class BaseEventDao implements CommonEventOperations {
      * @param to (inclusive)
      * @return
      */
-    public List<BaseEvent> getAllForCustomerOverlappingDateRange(CICustomerStub customer, Date from, Date to) {
+    public List<BaseEvent> getAllForCustomerStartsOrStopsWithin(CICustomerStub customer, Date from, Date to) {
         List<BaseEvent> allEvents = getAllForCustomer(customer);
         for (Iterator<BaseEvent> iter = allEvents.iterator(); iter.hasNext();) {
             BaseEvent event = iter.next();
@@ -107,16 +107,16 @@ public class BaseEventDao implements CommonEventOperations {
      * Get all Events for a given customer between the supplied dates.
      * Includes all events that have a stopTime between the supplied dates.  The startTime is ignored.
      * @param customer
-     * @param from (inclusive)
-     * @param to (inclusive)
+     * @param from (exclusive for stopTime)
+     * @param to (inclusive for stopTime)
      * @return
      */
-    public List<BaseEvent> getAllForCustomerOverlappingFromDate(CICustomerStub customer, Date from, Date to) {
+    public List<BaseEvent> getAllForCustomerStopsWithin(CICustomerStub customer, Date from, Date to) {
         List<BaseEvent> allEvents = getAllForCustomer(customer);
         for (Iterator<BaseEvent> iter = allEvents.iterator(); iter.hasNext();) {
             BaseEvent event = iter.next();
 
-            if (event.getStopTime().before(from) || event.getStopTime().after(to)) {
+            if (!event.getStopTime().after(from) || event.getStopTime().after(to)) {
             	iter.remove();
             }
         }
