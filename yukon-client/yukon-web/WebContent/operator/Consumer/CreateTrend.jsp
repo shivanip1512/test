@@ -136,7 +136,7 @@ function disableButton(x)
                     <input type="submit" name="Save" value="Save" onclick="disableButton(this)">
                   </td>
                   <td width = "50%"> 
-                    <input type="reset" name="Cancel" value="Cancel" >
+                    <input type="reset" name="Cancel" value="Reset" >
                   </td>
                 </tr>
               </table><br>
