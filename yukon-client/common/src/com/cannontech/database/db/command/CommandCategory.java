@@ -516,13 +516,12 @@ public class CommandCategory
 		return CAT_MCT_4XX_SERIES_DEVTYPES;
 	}
 	
-	public final static ArrayList<String> getAllTwoWayLCRDevTypes() 
-	{
-		if( CAT_TWO_WAY_LCR_DEVTYPES == null)
-		{
+	public final static ArrayList<String> getAllTwoWayLCRDevTypes() {
+		
+		if( CAT_TWO_WAY_LCR_DEVTYPES == null) {
+			
 			CAT_TWO_WAY_LCR_DEVTYPES = new ArrayList<String>();
-			for (int i = DeviceTypes.DEVICE_OFFSET; i <= DeviceTypes.DEVICE_OFFSET + DeviceTypes.DEVICE_TYPES_COUNT; i++)
-			{
+			for (int i = DeviceTypes.DEVICE_OFFSET; i <= DeviceTypes.DEVICE_OFFSET + DeviceTypes.DEVICE_TYPES_COUNT; i++) {
 				if( DeviceTypesFuncs.isTwoWayLcr(i) )
 					CAT_TWO_WAY_LCR_DEVTYPES.add(PAOGroups.getPAOTypeString(i));
 			}

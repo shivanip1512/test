@@ -2015,7 +2015,7 @@ public void setDeviceType(int type)
 
       setIntegrityObjectsVisible(
          !(type == PAOGroups.RTUILEX
-          || type == PAOGroups.LCU415 || type == PAOGroups.RTM) || true);
+          || type == PAOGroups.LCU415 || type == PAOGroups.RTM));
 		
       setHealthObjectsVisible( 
             !(type == PAOGroups.DCT_501
