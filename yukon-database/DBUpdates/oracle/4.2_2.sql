@@ -124,6 +124,25 @@ WHERE Value != 'false'
 AND RolePropertyId = -20153; 
 /* End YUK-7084 */
 
+/* Start YUK-7087 */
+DELETE FROM MspInterface 
+WHERE Interface IN ('MR_CB', 'CD_CB', 'MR_EA', 'OD_OA') 
+AND VendorId != 1; 
+DELETE FROM MspInterface 
+WHERE Interface IN ('CB_MR', 'CB_CD', 'EA_MR', 'OA_OA') 
+AND VendorId = 1; 
+
+UPDATE MspInterface
+SET Interface = 'CB_Server'
+WHERE Interface = 'CB_MR';
+UPDATE MspInterface
+SET Interface = 'EA_Server'
+WHERE Interface = 'EA_MR';
+UPDATE MspInterface
+SET Interface = 'OA_Server'
+WHERE Interface = 'OA_OD';
+/* End YUK-7087 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
