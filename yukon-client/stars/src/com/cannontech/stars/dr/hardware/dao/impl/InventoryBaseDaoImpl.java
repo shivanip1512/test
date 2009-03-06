@@ -248,12 +248,8 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
     @Override
     public List<InventoryBase> getByDeviceId(int deviceId) {
     	
-    	try {
-            List<InventoryBase> list = simpleJdbcTemplate.query(selectByDeviceIdSql, rowMapper, deviceId);
-            return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-        }
+        List<InventoryBase> list = simpleJdbcTemplate.query(selectByDeviceIdSql, rowMapper, deviceId);
+        return list;
     }
 
     private static final ParameterizedRowMapper<InventoryBase> createRowMapper() {

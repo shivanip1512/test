@@ -10,14 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.constants.YukonListEntry;
-import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
+import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
@@ -70,15 +68,12 @@ public class CreateHardwareController extends StarsInventoryActionController {
                 throw new WebClientException("Cannot create hardware: serial # already exists in the inventory list of <i>" + e.getEnergyCompany().getName() + "</i>.");
             }
             
-            YukonListEntry entry = DaoFactory.getYukonListDao().getYukonListEntry(createHw.getDeviceType().getEntryID());
-            boolean isLCR3102 = entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_3102;
-            
-            // need to check deviceCarrierSetting for serial number if this is LCR3102
-            if (isLCR3102) {
+            // need to check deviceCarrierSetting for serial number if this is Two Way LCR
+            if (InventoryUtils.isTwoWayLcr(createHw.getDeviceType().getEntryID())) {
             	
             	List<LiteYukonPAObject> liteYukonPaobjectsByAddress = paoDao.getLiteYukonPaobjectsByAddress(Integer.parseInt(createHw.getLMHardware().getManufacturerSerialNumber()));
             	if (liteYukonPaobjectsByAddress.size() > 0) {
-            		throw new WebClientException("Cannot create LCR-3102 hardware: serial # already exists for a Yukon device address.");
+            		throw new WebClientException("Cannot create Two Way LCR hardware: serial # already exists for a Yukon device address.");
             	}
             }
             

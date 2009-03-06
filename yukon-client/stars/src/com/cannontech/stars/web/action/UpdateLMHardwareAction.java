@@ -27,6 +27,7 @@ import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
+import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
@@ -311,9 +312,7 @@ public class UpdateLMHardwareAction implements ActionBase {
 			}
 			
 			// TWO WAY LCR DEVICE ASSIGNMENT
-			YukonListEntry entry = DaoFactory.getYukonListDao().getYukonListEntry(updateHw.getDeviceType().getEntryID());
-            boolean isLCR3102 = entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_3102;
-            if (isLCR3102) {
+            if (InventoryUtils.isTwoWayLcr(updateHw.getDeviceType().getEntryID())) {
             	InventoryManagerUtil.assignTwoWayLcrDevice(updateHw, liteInv, energyCompany);
             }
             

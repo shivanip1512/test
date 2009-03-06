@@ -23,16 +23,15 @@ import org.apache.commons.lang.StringUtils;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.common.device.YukonDevice;
-import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.DBDeleteResult;
 import com.cannontech.core.dao.DBDeletionDao;
-import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.Transaction;
@@ -42,8 +41,8 @@ import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.device.CarrierBase;
 import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.IDeviceMeterGroup;
-import com.cannontech.database.data.device.TwoWayLCR;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
@@ -51,14 +50,11 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.data.stars.hardware.InventoryBase;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.database.db.device.DeviceLoadProfile;
 import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.device.range.DeviceAddressRange;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -91,8 +87,8 @@ import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsInv;
 import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.cannontech.stars.xml.serialize.StarsLMConfiguration;
-import com.cannontech.stars.xml.serialize.TwoWayLCRSetupInfo;
-import com.cannontech.stars.xml.serialize.TwoWayLCRSetupInfoFactory;
+import com.cannontech.stars.xml.serialize.TwoWayLcrSetupInfo;
+import com.cannontech.stars.xml.serialize.TwoWayLcrSetupInfoFactory;
 import com.cannontech.stars.xml.serialize.VersaCom;
 import com.cannontech.stars.xml.serialize.Voltage;
 import com.cannontech.util.ServletUtil;
@@ -270,11 +266,16 @@ public class InventoryManagerUtil {
 		// - create a TwoWayLcrSetupInfo object and set it on the starsInv
         if (devType != null) {
         	
-        	YukonListEntry entry = DaoFactory.getYukonListDao().getYukonListEntry(devType.getEntryID());
         	PaoDao paoDao = YukonSpringHook.getBean("paoDao", PaoDao.class); 
         	
-        	if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_3102) {
+        	if (InventoryUtils.isTwoWayLcr(devType.getEntryID())) {
             	
+        		try {
+        			Integer.parseInt(req.getParameter("SerialNo"));
+        		} catch (NumberFormatException e) {
+        			throw new WebClientException("Two Way LCR serial number must be numeric.");
+        		}
+        		
         		// NEW YUKON DEVICE
             	if (req.getParameter("yukonDeviceCreationStyleRadio").equals("NEW")) {
                 	
@@ -290,7 +291,15 @@ public class InventoryManagerUtil {
     	    			throw new WebClientException("Yukon device " + yukonDeviceName + " already exists.");
     	    		}
     	    		
-    	    		TwoWayLCRSetupInfo twoWayLCRSetupInfo = TwoWayLCRSetupInfoFactory.getDeviceSetupInfoForNewDevice(yukonDeviceName, Integer.parseInt(req.getParameter("yukonDeviceDemandRate")));
+    	    		YukonListDao yukonListDao = YukonSpringHook.getBean("yukonListDao", YukonListDao.class); 
+    	    		YukonListEntry entry = yukonListDao.getYukonListEntry(devType.getEntryID());
+    	    		String deviceTypeName = entry.getEntryText();
+    	    		int yukonDeviceTypeId = PAOGroups.getDeviceType(deviceTypeName);
+    	    		if (!DeviceTypesFuncs.isTwoWayLcr(yukonDeviceTypeId)) {
+    	    			throw new WebClientException("Selected yukon device must be a Two Way LCR type.");
+    	    		}
+    	    		
+    	    		TwoWayLcrSetupInfo twoWayLCRSetupInfo = TwoWayLcrSetupInfoFactory.getDeviceSetupInfoForNewDevice(yukonDeviceTypeId, yukonDeviceName, Integer.parseInt(req.getParameter("yukonDeviceDemandRate")));
     	    		starsInv.setTwoWayLcrSetupInfo(twoWayLCRSetupInfo);
 
     	    	// EXISTING YUKON DEVICE
@@ -304,16 +313,24 @@ public class InventoryManagerUtil {
     	    			throw new WebClientException("Yukon device is already setup for another LCR-3102");
     	    		}
     	    		
-    	    		LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(deviceId);
-    	    		if (liteYukonPAO.getType() != DeviceTypes.LCR3102) {
-    	    			throw new WebClientException("Select yukon device must be of type LCR-3102");
+    	    		
+    	    		LiteYukonPAObject liteYukonPAO;
+    	    		try {
+    	    			liteYukonPAO = paoDao.getLiteYukonPAO(deviceId);
+    	    		} catch (NotFoundException e) {
+    	    			throw new WebClientException("The selected Yukon device no longer exists.");
     	    		}
     	    		
-    	    		TwoWayLCRSetupInfo twoWayLCRSetupInfo = TwoWayLCRSetupInfoFactory.getDeviceSetupInfoForExistingDevice(deviceId);
+    	    		int yukonDeviceTypeId = liteYukonPAO.getType();
+    	    		if (!DeviceTypesFuncs.isTwoWayLcr(yukonDeviceTypeId)) {
+    	    			throw new WebClientException("Selected yukon device must be a Two Way LCR type.");
+    	    		}
+    	    		
+    	    		TwoWayLcrSetupInfo twoWayLCRSetupInfo = TwoWayLcrSetupInfoFactory.getDeviceSetupInfoForExistingDevice(yukonDeviceTypeId, deviceId);
     	    		starsInv.setTwoWayLcrSetupInfo(twoWayLCRSetupInfo);
     	    		
         		} else {
-        			throw new WebClientException("Must create a new Yukon device, or choose fom an existing Yukon device when creating an LCR-3102.");
+        			throw new WebClientException("Must create a new Yukon device, or choose fom an existing Yukon device when creating an Two Way LCR.");
         		}
             }
         }
@@ -336,7 +353,7 @@ public class InventoryManagerUtil {
 			// NEW YUKON DEVICE
 			if (starsInv.getTwoWayLcrSetupInfo() != null && starsInv.getTwoWayLcrSetupInfo().isNewDevice()) {
 				
-				starsTwoWayLcrYukonDeviceAssignmentService.assignNewDeviceToLcr(liteInv, energyCompany, starsInv.getTwoWayLcrSetupInfo().getDeviceName(), starsInv.getTwoWayLcrSetupInfo().getDemandRate(), true);
+				starsTwoWayLcrYukonDeviceAssignmentService.assignNewDeviceToLcr(liteInv, energyCompany, starsInv.getTwoWayLcrSetupInfo().getYukonDeviceTypeId(), starsInv.getTwoWayLcrSetupInfo().getDeviceName(), starsInv.getTwoWayLcrSetupInfo().getDemandRate(), true);
 			
 	        // EXISTING YUKON DEVICE
 			} else if (starsInv.getTwoWayLcrSetupInfo() != null && !starsInv.getTwoWayLcrSetupInfo().isNewDevice()) {

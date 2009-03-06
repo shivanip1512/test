@@ -127,12 +127,13 @@ Event.observe(window, 'load', function() {
 function twoWayLCRCheck() {
 	if(<%=isLCR3102%>) {
 		$('lcr3102_td').show();
+
+		if('<%= lctYukonDeviceIdStr %>' == '') {
+			alert('A Yukon device MUST be setup for this LCR-3102.\n\nUse the "Yukon LCR-3102 Profile" section to create a new Yukon device, or to link to an existing Yukon device.');
+		}
+		
 	} else {
 		$('lcr3102_td').hide();
-	}
-
-	if('<%= lctYukonDeviceIdStr %>' == '') {
-		alert('A Yukon device MUST be setup for this LCR-3102.\n\nUse the "Yukon LCR-3102 Profile" section to create a new Yukon device, or to link to an existing Yukon device.');
 	}
 }
 

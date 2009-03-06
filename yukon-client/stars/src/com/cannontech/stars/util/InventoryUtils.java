@@ -95,6 +95,16 @@ public class InventoryUtils {
         return valid;
     }
 	
+	public static boolean isTwoWayLcr(int devTypeId) {
+		
+		int devTypeDefID = DaoFactory.getYukonListDao().getYukonListEntry(devTypeId).getYukonDefID(); 
+		if (devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_3102) {
+			return true;
+		}
+		
+		return false;
+	}
+	
 	public static int getHardwareConfigType(int devTypeID) {
 		int devTypeDefID = DaoFactory.getYukonListDao().getYukonListEntry( devTypeID ).getYukonDefID();
 		if (devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_5000_XCOM

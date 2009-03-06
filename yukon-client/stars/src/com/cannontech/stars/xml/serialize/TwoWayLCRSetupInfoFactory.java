@@ -1,12 +1,12 @@
 package com.cannontech.stars.xml.serialize;
 
-public class TwoWayLCRSetupInfoFactory {
+public class TwoWayLcrSetupInfoFactory {
 
-	public static TwoWayLCRSetupInfo getDeviceSetupInfoForNewDevice(String nameOfNewDevice, int demandRateOfNewDevice) {
-		return new TwoWayLCRSetupInfo(true, null, nameOfNewDevice, demandRateOfNewDevice);
+	public static TwoWayLcrSetupInfo getDeviceSetupInfoForNewDevice(int yukonDeviceTypeId, String nameOfNewDevice, int demandRateOfNewDevice) {
+		return new TwoWayLcrSetupInfo(true, yukonDeviceTypeId, null, nameOfNewDevice, demandRateOfNewDevice);
 	}
 	
-	public static TwoWayLCRSetupInfo getDeviceSetupInfoForExistingDevice(int deviceIdOfExistingDevice) {
-		return new TwoWayLCRSetupInfo(false, deviceIdOfExistingDevice, null, null);
+	public static TwoWayLcrSetupInfo getDeviceSetupInfoForExistingDevice(int yukonDeviceTypeId, int deviceIdOfExistingDevice) {
+		return new TwoWayLcrSetupInfo(false, yukonDeviceTypeId, deviceIdOfExistingDevice, null, null);
 	}
 }
