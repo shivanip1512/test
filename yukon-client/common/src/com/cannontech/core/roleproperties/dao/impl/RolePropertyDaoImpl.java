@@ -186,6 +186,10 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
             propertyExceptions.addAll(EnumSet.allOf(YukonRoleProperty.class));
             log.info("propertyException list configured for all role properties");
         } else {
+        	
+        	// Add known issues to this list for 4.2
+        	propertyExceptions.add(YukonRoleProperty.TEMPLATE_ROOT);	//YUK-6977, YUK-7073
+        	
             String[] exceptionArray = exceptionList.split("\\s*,\\s*");
             for (String propertyStr : exceptionArray) {
                 try {
