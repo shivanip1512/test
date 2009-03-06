@@ -418,6 +418,7 @@ public class ProgramSignUpAction implements ActionBase {
         	
             List<LiteStarsLMProgram> progList = liteAcctInfo.getPrograms();	// List of old programs
 			List<LiteStarsAppliance> appList = new ArrayList<LiteStarsAppliance>( liteAcctInfo.getAppliances() );	// List of old appliances
+            appList.addAll(liteAcctInfo.getUnassignedAppliances());
 			List<LiteStarsAppliance> newAppList = new ArrayList<LiteStarsAppliance>();		// List of new appliances
 			List<LiteStarsLMProgram> newProgList = new ArrayList<LiteStarsLMProgram>();	// List of new programs
 			List<Integer> progNewEnrollList = new ArrayList<Integer>();	// List of program IDs newly enrolled in
