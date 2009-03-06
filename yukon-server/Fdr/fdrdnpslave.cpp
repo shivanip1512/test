@@ -79,6 +79,7 @@ const CHAR * CtiFDRDnpSlave::KEY_DB_RELOAD_RATE = "FDR_DNPSLAVE_DB_RELOAD_RATE";
 const CHAR * CtiFDRDnpSlave::KEY_DEBUG_MODE = "FDR_DNPSLAVE_DEBUG_MODE";
 const CHAR * CtiFDRDnpSlave::KEY_FDR_DNPSLAVE_SERVER_NAMES = "FDR_DNPSLAVE_SERVER_NAMES";
 const CHAR * CtiFDRDnpSlave::KEY_LINK_TIMEOUT = "FDR_DNPSLAVE_LINK_TIMEOUT_SECONDS";
+const CHAR * CtiFDRDnpSlave::KEY_STALEDATA_TIMEOUT = "FDR_DNPSLAVE_STALEDATA_TIMEOUT";
 
 const string CtiFDRDnpSlave::dnpMasterId="MasterId";
 const string CtiFDRDnpSlave::dnpSlaveId="SlaveId";
@@ -121,6 +122,8 @@ int CtiFDRDnpSlave::readConfig()
     setReloadRate(iConfigParameters.getValueAsInt(KEY_DB_RELOAD_RATE, 86400));
 
     setLinkTimeout(iConfigParameters.getValueAsInt(KEY_LINK_TIMEOUT, 60));
+
+    _staleDataTimeOut = iConfigParameters.getValueAsInt(KEY_STALEDATA_TIMEOUT, 3600);
 
     
     tempStr = iConfigParameters.getValueAsString(KEY_DEBUG_MODE);
@@ -284,7 +287,7 @@ int CtiFDRDnpSlave::processMessageFromForeignSystem (CtiFDRClientServerConnectio
                                          char* data, unsigned int size)
 {
     BYTEUSHORT dest, src;
-    BOOL timeFlag = true;
+    BOOL timeFlag = false;
     unsigned long function = getHeaderBytes(data, size);
 
     switch (function)
@@ -329,10 +332,10 @@ int CtiFDRDnpSlave::processMessageFromForeignSystem (CtiFDRClientServerConnectio
              ********************************************************************************************************/
             if (size > FDR_DNP_HEADER_SIZE)
             {
-                if (isScanIntegrityRequest(data, size))
+                /*if (isScanIntegrityRequest(data, size))
                 {
                     timeFlag = false;
-                }
+                }*/
                 processScanSlaveRequest (connection, data, size, timeFlag);
             }
             break;
@@ -379,7 +382,7 @@ int CtiFDRDnpSlave::processScanSlaveRequest (CtiFDRClientServerConnection& conne
 
             Cti::Protocol::DNPSlaveInterface::input_point iPoint;
 
-            iPoint.onLine = YukonToForeignQuality(fdrPoint->getQuality());
+            iPoint.onLine = YukonToForeignQuality(fdrPoint->getQuality(), fdrPoint->getLastTimeStamp());
             iPoint.control_offset = dnpId.Offset;
             iPoint.includeTime = includeTime;
             iPoint.timestamp = fdrPoint->getLastTimeStamp();    
@@ -492,14 +495,19 @@ CtiDnpId CtiFDRDnpSlave::ForeignToYukonId(CtiFDRDestination pointDestination)
 }
 
 
-bool CtiFDRDnpSlave::YukonToForeignQuality(USHORT aQuality)
+bool CtiFDRDnpSlave::YukonToForeignQuality(USHORT aQuality, CtiTime lastTimeStamp)
 {
 
     bool goodQuality = false;
+    CtiTime staleTime = CtiTime(CtiTime().seconds() - _staleDataTimeOut);
+
     if (aQuality == ManualQuality ||
         aQuality == NormalQuality)
     {
-        goodQuality = true;
+        if (lastTimeStamp >= staleTime)
+        {
+            goodQuality = true;
+        }
     }
     return goodQuality;
 }

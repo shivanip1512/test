@@ -82,6 +82,7 @@ class IM_EX_FDRBASE CtiFDRManager
         static const CHAR * COLNAME_FDRDIRECTIONTYPE;
 
         static const CHAR * TBLNAME_PTANALOG;
+        static const CHAR * TBLNAME_PTACCUM;
         static const CHAR * COLNAME_PTANALOG_MULT;
         static const CHAR * COLNAME_PTANALOG_OFFSET;
         static const CHAR * COLNAME_PTANALOG_POINTID;
@@ -93,7 +94,7 @@ class IM_EX_FDRBASE CtiFDRManager
 
     private:
         RWDBStatus getPointsFromDB(RWDBSelector& selector, std::map<long,CtiFDRPointSPtr >& fdrPtrMap);
-        void buildFDRPointSelector(RWDBDatabase& db, RWDBSelector& selector, RWDBTable& fdrTranslation, RWDBTable& pointBaseTable, RWDBTable& pointAnalogTable);
+        void buildFDRPointSelector(RWDBDatabase& db, RWDBSelector& selector, RWDBTable& fdrTranslation, RWDBTable& pointBaseTable, RWDBTable& pointAnalogTable, RWDBTable& pointAccumulatorTable);
 
         // private data
         string   iInterfaceName;

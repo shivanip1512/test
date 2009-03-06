@@ -43,6 +43,7 @@ const CHAR * CtiFDRManager::COLNAME_FDRINTERFACETYPE =   "INTERFACETYPE";
 const CHAR * CtiFDRManager::COLNAME_FDRDIRECTIONTYPE =   "DIRECTIONTYPE";
 
 const CHAR * CtiFDRManager::TBLNAME_PTANALOG =           "PointAnalog";
+const CHAR * CtiFDRManager::TBLNAME_PTACCUM  =           "PointAccumulator";
 const CHAR * CtiFDRManager::COLNAME_PTANALOG_MULT =      "MULTIPLIER";
 const CHAR * CtiFDRManager::COLNAME_PTANALOG_OFFSET =    "DATAOFFSET";
 const CHAR * CtiFDRManager::COLNAME_PTANALOG_POINTID =   "PointID";
@@ -121,21 +122,24 @@ RWDBStatus CtiFDRManager::loadPointList()
         RWDBTable fdrTranslation = db.table(TBLNAME_FDRTRANSLATION);
         RWDBTable pointBaseTable = db.table(TBLNAME_PTBASE);
         RWDBTable pointAnalogTable = db.table(TBLNAME_PTANALOG);
+        RWDBTable pointAccumulatorTable = db.table(TBLNAME_PTACCUM);
 
         RWDBSelector selector = db.selector();
-        buildFDRPointSelector(db,selector,fdrTranslation,pointBaseTable,pointAnalogTable);
+        buildFDRPointSelector(db,selector,fdrTranslation,pointBaseTable,pointAnalogTable, pointAccumulatorTable);
 
-        selector.where( selector.where() && fdrTranslation[COLNAME_FDR_POINTID] == pointBaseTable[COLNAME_PTBASE_POINTID] && pointBaseTable[COLNAME_PTBASE_POINTID].leftOuterJoin(pointAnalogTable[COLNAME_PTANALOG_POINTID]));
+        selector.where( selector.where() && fdrTranslation[COLNAME_FDR_POINTID] == pointBaseTable[COLNAME_PTBASE_POINTID] && 
+                        pointBaseTable[COLNAME_PTBASE_POINTID].leftOuterJoin(pointAnalogTable[COLNAME_PTANALOG_POINTID]) &&
+                        pointBaseTable[COLNAME_PTBASE_POINTID].leftOuterJoin(pointAccumulatorTable[COLNAME_PTANALOG_POINTID]));
 
         if(getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " " << selector.asString() << endl;
         }
-
-        std::map<long,CtiFDRPointSPtr> fdrTempMap;
-        retStatus = getPointsFromDB(selector,fdrTempMap);
         
+        std::map<long,CtiFDRPointSPtr> fdrTempMap;
+        retStatus = getPointsFromDB(selector,fdrTempMap); 
+
         //move all from tempMap to main Map.
         for (std::map<long,CtiFDRPointSPtr>::iterator itr = fdrTempMap.begin(); itr != fdrTempMap.end(); itr++) 
         {
@@ -186,9 +190,10 @@ RWDBStatus CtiFDRManager::loadPoint(long pointId)
         RWDBTable fdrTranslation = db.table(TBLNAME_FDRTRANSLATION);
         RWDBTable pointBaseTable = db.table(TBLNAME_PTBASE);
         RWDBTable pointAnalogTable = db.table(TBLNAME_PTANALOG);
+        RWDBTable pointAccumulatorTable = db.table(TBLNAME_PTACCUM);
 
         RWDBSelector selector = db.selector();
-        buildFDRPointSelector(db,selector,fdrTranslation,pointBaseTable,pointAnalogTable);
+        buildFDRPointSelector(db,selector,fdrTranslation,pointBaseTable,pointAnalogTable, pointAccumulatorTable);
 
         selector.where( selector.where() && fdrTranslation[COLNAME_FDR_POINTID] == pointBaseTable[COLNAME_PTBASE_POINTID] && pointBaseTable[COLNAME_PTBASE_POINTID].leftOuterJoin(pointAnalogTable[COLNAME_PTANALOG_POINTID]));
         selector.where( selector.where() && pointBaseTable[COLNAME_FDR_POINTID] == pointId);
@@ -196,9 +201,7 @@ RWDBStatus CtiFDRManager::loadPoint(long pointId)
         std::map<long,CtiFDRPointSPtr > fdrTempMap;
         retStatus = getPointsFromDB(selector,fdrTempMap);
         
-        //should be only 1?
-
-        //move all from tempMap to main Map.
+         //move all from tempMap to main Map.
         for (std::map<long,CtiFDRPointSPtr >::iterator itr = fdrTempMap.begin(); itr != fdrTempMap.end(); itr++) 
         {
             pointMap.insert((*itr).second->getPointID(),(*itr).second);
@@ -238,7 +241,7 @@ RWDBStatus CtiFDRManager::loadPoint(long pointId)
     return retStatus;
 }
 
-void CtiFDRManager::buildFDRPointSelector(RWDBDatabase& db, RWDBSelector& selector, RWDBTable& fdrTranslation, RWDBTable& pointBaseTable, RWDBTable& pointAnalogTable)
+void CtiFDRManager::buildFDRPointSelector(RWDBDatabase& db, RWDBSelector& selector, RWDBTable& fdrTranslation, RWDBTable& pointBaseTable, RWDBTable& pointAnalogTable, RWDBTable& pointAccumulatorTable)
 {
    // Make sure all objects that that store results
 
@@ -248,12 +251,14 @@ void CtiFDRManager::buildFDRPointSelector(RWDBDatabase& db, RWDBSelector& select
     << fdrTranslation[COLNAME_FDRDIRECTIONTYPE]
     << pointBaseTable[COLNAME_PTBASE_POINTTYPE]
     << pointAnalogTable[COLNAME_PTANALOG_MULT]
-    << pointAnalogTable[COLNAME_PTANALOG_OFFSET];
-
+    << pointAnalogTable[COLNAME_PTANALOG_OFFSET]
+    << pointAccumulatorTable[COLNAME_PTANALOG_MULT]
+    << pointAccumulatorTable[COLNAME_PTANALOG_OFFSET];
 
     selector.from( fdrTranslation);
     selector.from( pointBaseTable );
     selector.from( pointAnalogTable);
+    selector.from( pointAccumulatorTable);
 
 
     if(getWhereSelectStr() != "")
@@ -306,17 +311,33 @@ RWDBStatus CtiFDRManager::getPointsFromDB(RWDBSelector& selector, std::map<long,
     if(retStatus.errorCode() == RWDBStatus::ok)
     {
         RWDBReader  rdr = selector.reader( conn );
-
+        RWDBNullIndicator isNull;
         while( rdr() )
         {
 
-            rdr[COLNAME_FDR_POINTID]      >> pointID;
-            rdr[COLNAME_FDRTRANSLATION]   >> translation;
-            rdr[COLNAME_FDRDESTINATION]   >> destination;
-            rdr[COLNAME_FDRDIRECTIONTYPE] >> direction;
-            rdr[COLNAME_PTBASE_POINTTYPE] >> tmp;
-            rdr[COLNAME_PTANALOG_MULT]    >> multiplier;
-            rdr[COLNAME_PTANALOG_OFFSET]  >> dataOffset;
+            rdr[0]      >> pointID;
+            rdr[1]   >> translation;
+            rdr[2]   >> destination;
+            rdr[3] >> direction;
+            rdr[4] >> tmp;
+            rdr[5]    >> isNull;
+            if(!isNull)
+            {
+                rdr[5]    >> multiplier;
+            }
+            else
+            {
+                rdr[7]    >> multiplier;
+            }
+            rdr[6]  >> isNull;
+            if(!isNull)
+            {
+                rdr[6]  >> dataOffset;
+            }
+            else
+            {
+                rdr[8]    >> dataOffset;
+            }
 
             
             std::map< long, CtiFDRPointSPtr >::iterator itr = fdrPtrMap.find(pointID);

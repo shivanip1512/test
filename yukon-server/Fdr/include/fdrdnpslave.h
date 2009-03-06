@@ -126,22 +126,25 @@ class IM_EX_FDRDNPSLAVE CtiFDRDnpSlave : public CtiFDRSocketServer
 
     private:
         CtiDnpId    ForeignToYukonId(CtiFDRDestination pointDestination);
-        bool        YukonToForeignQuality (USHORT aQuality);
+        bool        YukonToForeignQuality (USHORT aQuality, CtiTime lastTimeStamp);
         int processScanSlaveRequest (CtiFDRClientServerConnection& connection,
                                          char* data, unsigned int size, bool includeTime);
 
         bool isScanIntegrityRequest(const char* data, unsigned int size);
+        
         DNPSlaveInterface  _dnpData;
 
         // maps ip address -> server name
         typedef std::map<std::string, std::string> ServerNameMap;
         ServerNameMap _serverNameLookup;
+        int _staleDataTimeOut;
 
         static const CHAR * KEY_LISTEN_PORT_NUMBER;
         static const CHAR * KEY_DB_RELOAD_RATE;
         static const CHAR * KEY_DEBUG_MODE;
         static const CHAR * KEY_FDR_DNPSLAVE_SERVER_NAMES;
         static const CHAR * KEY_LINK_TIMEOUT;
+        static const CHAR * KEY_STALEDATA_TIMEOUT;
 
         static const string dnpMasterId;    
         static const string dnpSlaveId;     

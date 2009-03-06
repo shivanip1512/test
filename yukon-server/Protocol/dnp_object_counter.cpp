@@ -333,11 +333,11 @@ int CounterEvent::restore(const unsigned char *buf, int len)
     return pos;
 }
 
-int  CounterEvent::serialize(unsigned char *buf) const
+
+int CounterEvent::serialize(unsigned char *buf) const
 {
     return serializeVariation(buf, getVariation());;
 }
-
 
 int CounterEvent::serializeVariation(unsigned char *buf, int variation) const
 {
