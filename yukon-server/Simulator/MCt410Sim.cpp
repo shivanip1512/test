@@ -352,7 +352,7 @@ unsigned char * Mct410Sim::getLoadProfileData(int function, int bytesToReturn)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "\n" << CtiTime() << " Error. 13 bytes not to be returned. Canceling return message generation." << bytesToReturn << endl;
-        return NULL;
+        return ret;
     }
 
     /* Load Profile Read*/ 
@@ -384,7 +384,7 @@ unsigned char * Mct410Sim::getLoadProfileData(int function, int bytesToReturn)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "\n" << CtiTime() << " Error. Unhandled function value. Can't determing the channel" << function << endl;
-        return NULL;      
+        return ret;      
     }
 
     CtiTime currentTime;

@@ -20,6 +20,8 @@ private:
     static const    CommandSet  _commandStore;
     static          CommandSet  initCommandStore();
 
+    unsigned char getSixBitValueFromBuffer(unsigned char buffer[], unsigned int valuePosition, unsigned int startPosition, unsigned int bufferSize);
+
 protected:
 
     enum Functions
@@ -39,7 +41,7 @@ protected:
 
     enum PointOffsets
     {
-        PointOffset_LastIntervalBase = 1,   // true PointOffset = Base# + (load/relay# - 1)
+        PointOffset_LastIntervalBase = 1,   //      PointOffset = Base# + (load/relay# - 1)
         PointOffset_RuntimeBase      = 5,   //      ditto here
         PointOffset_ShedtimeBase     = 9,   //      and here
 
@@ -49,7 +51,9 @@ protected:
 
     virtual bool getOperation( const UINT &cmdType, BSTRUCT &b ) const;
 
-    virtual INT executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
+    virtual INT executeGetValue( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
+    virtual INT executeScan    ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
+    virtual INT IntegrityScan  ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority );
 
     int parseLoadValue(CtiCommandParser &parse);
     int parsePreviousValue(CtiCommandParser &parse);
@@ -72,7 +76,9 @@ public:
 
     virtual INT ErrorDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool &overrideExpectMore );
 
-    INT ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
+    virtual INT ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
+
+    virtual LONG getAddress() const;
 
 };
 

@@ -232,7 +232,7 @@ public:
     INT             getAttemptSuccessCount() const;
     CtiDeviceBase&  setAttemptSuccessCount(const INT i);
 
-    INT executeScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+    virtual INT executeScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
     bool adjustCommCounts( bool &isCommFail, bool retry );
     bool isCommFailed() const;
 
