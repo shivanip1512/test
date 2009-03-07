@@ -23,17 +23,17 @@ public abstract class StarsInv {
     private LMHardware LMHardware;
     private MCT _MCT;
     private String meterNumber = "";
-    private TwoWayLcrSetupInfo twoWayLcrSetupInfo;
+    private TwoWayLcrSetupInfoDto twoWayLcrSetupInfoDto;
 
     public StarsInv() {
         
     } 
     
-    public void setTwoWayLcrSetupInfo(TwoWayLcrSetupInfo twoWayLcrSetupInfo) {
-		this.twoWayLcrSetupInfo = twoWayLcrSetupInfo;
+    public void setTwoWayLcrSetupInfoDto(TwoWayLcrSetupInfoDto twoWayLcrSetupInfoDto) {
+		this.twoWayLcrSetupInfoDto = twoWayLcrSetupInfoDto;
 	}
-    public TwoWayLcrSetupInfo getTwoWayLcrSetupInfo() {
-		return twoWayLcrSetupInfo;
+    public TwoWayLcrSetupInfoDto getTwoWayLcrSetupInfoDto() {
+		return twoWayLcrSetupInfoDto;
 	}
 
     public void deleteDeviceID() {

@@ -1,6 +1,6 @@
 package com.cannontech.stars.xml.serialize;
 
-public class TwoWayLcrSetupInfo {
+public class TwoWayLcrSetupInfoDto {
 
 	private boolean isNewDevice;
 	private int yukonDeviceTypeId;
@@ -8,7 +8,7 @@ public class TwoWayLcrSetupInfo {
 	private String deviceName = null;
 	private Integer demandRate = null;
 	
-	public TwoWayLcrSetupInfo(boolean isNewDevice, int yukonDeviceTypeId, Integer deviceId, String deviceName, Integer demandRate) {
+	public TwoWayLcrSetupInfoDto(boolean isNewDevice, int yukonDeviceTypeId, Integer deviceId, String deviceName, Integer demandRate) {
 		this.isNewDevice = isNewDevice;
 		this.yukonDeviceTypeId = yukonDeviceTypeId;
 		this.deviceId = deviceId;

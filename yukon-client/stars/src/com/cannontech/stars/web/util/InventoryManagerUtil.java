@@ -87,8 +87,8 @@ import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsInv;
 import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.cannontech.stars.xml.serialize.StarsLMConfiguration;
-import com.cannontech.stars.xml.serialize.TwoWayLcrSetupInfo;
-import com.cannontech.stars.xml.serialize.TwoWayLcrSetupInfoFactory;
+import com.cannontech.stars.xml.serialize.TwoWayLcrSetupInfoDto;
+import com.cannontech.stars.xml.serialize.TwoWayLcrSetupInfoDtoFactory;
 import com.cannontech.stars.xml.serialize.VersaCom;
 import com.cannontech.stars.xml.serialize.Voltage;
 import com.cannontech.util.ServletUtil;
@@ -299,8 +299,8 @@ public class InventoryManagerUtil {
     	    			throw new WebClientException("Selected yukon device must be a Two Way LCR type.");
     	    		}
     	    		
-    	    		TwoWayLcrSetupInfo twoWayLCRSetupInfo = TwoWayLcrSetupInfoFactory.getDeviceSetupInfoForNewDevice(yukonDeviceTypeId, yukonDeviceName, Integer.parseInt(req.getParameter("yukonDeviceDemandRate")));
-    	    		starsInv.setTwoWayLcrSetupInfo(twoWayLCRSetupInfo);
+    	    		TwoWayLcrSetupInfoDto twoWayLCRSetupInfo = TwoWayLcrSetupInfoDtoFactory.getDeviceSetupInfoDtoForNewDevice(yukonDeviceTypeId, yukonDeviceName, Integer.parseInt(req.getParameter("yukonDeviceDemandRate")));
+    	    		starsInv.setTwoWayLcrSetupInfoDto(twoWayLCRSetupInfo);
 
     	    	// EXISTING YUKON DEVICE
         		} else if (req.getParameter("yukonDeviceCreationStyleRadio").equals("EXISTING")) {
@@ -326,8 +326,8 @@ public class InventoryManagerUtil {
     	    			throw new WebClientException("Selected yukon device must be a Two Way LCR type.");
     	    		}
     	    		
-    	    		TwoWayLcrSetupInfo twoWayLCRSetupInfo = TwoWayLcrSetupInfoFactory.getDeviceSetupInfoForExistingDevice(yukonDeviceTypeId, deviceId);
-    	    		starsInv.setTwoWayLcrSetupInfo(twoWayLCRSetupInfo);
+    	    		TwoWayLcrSetupInfoDto twoWayLCRSetupInfo = TwoWayLcrSetupInfoDtoFactory.getDeviceSetupInfoDtoForExistingDevice(yukonDeviceTypeId, deviceId);
+    	    		starsInv.setTwoWayLcrSetupInfoDto(twoWayLCRSetupInfo);
     	    		
         		} else {
         			throw new WebClientException("Must create a new Yukon device, or choose fom an existing Yukon device when creating an Two Way LCR.");
@@ -351,16 +351,16 @@ public class InventoryManagerUtil {
 			StarsTwoWayLcrYukonDeviceAssignmentService starsTwoWayLcrYukonDeviceAssignmentService = YukonSpringHook.getBean("starsTwoWayLcrYukonDeviceAssignmentService", StarsTwoWayLcrYukonDeviceAssignmentService.class); 
 			
 			// NEW YUKON DEVICE
-			if (starsInv.getTwoWayLcrSetupInfo() != null && starsInv.getTwoWayLcrSetupInfo().isNewDevice()) {
+			if (starsInv.getTwoWayLcrSetupInfoDto() != null && starsInv.getTwoWayLcrSetupInfoDto().isNewDevice()) {
 				
-				starsTwoWayLcrYukonDeviceAssignmentService.assignNewDeviceToLcr(liteInv, energyCompany, starsInv.getTwoWayLcrSetupInfo().getYukonDeviceTypeId(), starsInv.getTwoWayLcrSetupInfo().getDeviceName(), starsInv.getTwoWayLcrSetupInfo().getDemandRate(), true);
+				starsTwoWayLcrYukonDeviceAssignmentService.assignNewDeviceToLcr(liteInv, energyCompany, starsInv.getTwoWayLcrSetupInfoDto().getYukonDeviceTypeId(), starsInv.getTwoWayLcrSetupInfoDto().getDeviceName(), starsInv.getTwoWayLcrSetupInfoDto().getDemandRate(), true);
 			
 	        // EXISTING YUKON DEVICE
-			} else if (starsInv.getTwoWayLcrSetupInfo() != null && !starsInv.getTwoWayLcrSetupInfo().isNewDevice()) {
+			} else if (starsInv.getTwoWayLcrSetupInfoDto() != null && !starsInv.getTwoWayLcrSetupInfoDto().isNewDevice()) {
 				
-				starsTwoWayLcrYukonDeviceAssignmentService.assignExistingDeviceToLcr(liteInv, energyCompany, starsInv.getTwoWayLcrSetupInfo().getDeviceId());
+				starsTwoWayLcrYukonDeviceAssignmentService.assignExistingDeviceToLcr(liteInv, energyCompany, starsInv.getTwoWayLcrSetupInfoDto().getDeviceId());
 			
-			} else if (starsInv.getTwoWayLcrSetupInfo() == null) {
+			} else if (starsInv.getTwoWayLcrSetupInfoDto() == null) {
 				
 				// pass, add/update action has been called but the yukon device is not being set in this case.
 	            
