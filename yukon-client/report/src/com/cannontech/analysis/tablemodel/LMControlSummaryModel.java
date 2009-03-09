@@ -11,6 +11,9 @@ import org.apache.commons.lang.Validate;
 
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.core.dao.EnergyCompanyDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
@@ -83,8 +86,17 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
                                                                                                               groupIdsFromSQL,
                                                                                                               getStartDate(),
                                                                                                               getStopDate());
-
-        List<ProgramLoadGroup> ecPrograms = applianceAndProgramDao.getAllProgramsForAnEC(energyCompanyId);
+        
+        EnergyCompanyDao energyCompanyDao = YukonSpringHook.getBean("energyCompanyDao", EnergyCompanyDao.class);
+        RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
+        LiteYukonUser ecAdminUser = energyCompanyDao.getEnergyCompanyUser(energyCompanyId);
+        boolean inheritCategories = rolePropertyDao.checkProperty(YukonRoleProperty.INHERIT_PARENT_APP_CATS, ecAdminUser);
+        List<ProgramLoadGroup> ecPrograms;
+        if(inheritCategories) {
+            ecPrograms = applianceAndProgramDao.getAllProgramsForAnECAndParentEC(energyCompanyId);
+        } else {
+            ecPrograms = applianceAndProgramDao.getAllProgramsForAnEC(energyCompanyId);
+        }
 
         /*Normal LMControlHistory data is useless to me without the active restore being considered and actual control
          *ranges being assembled out of individual events.  May have to do something unpleasant.

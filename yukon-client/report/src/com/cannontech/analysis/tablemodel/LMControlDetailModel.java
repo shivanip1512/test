@@ -13,7 +13,6 @@ import org.apache.commons.lang.Validate;
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;

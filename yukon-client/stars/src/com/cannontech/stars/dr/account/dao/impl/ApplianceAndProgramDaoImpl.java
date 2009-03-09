@@ -16,12 +16,20 @@ import com.cannontech.stars.dr.account.model.ProgramLoadGroup;
 
 public class ApplianceAndProgramDaoImpl implements ApplianceAndProgramDao {
     private static final String selectAllProgramsForECSql;
+    private static final String selectAllProgramsForECAndParentECSql;
     private static final String selectProgramsByLMGroupId;
     private static final ParameterizedRowMapper<ProgramLoadGroup> programGroupRowMapper;
     
     private SimpleJdbcTemplate simpleJdbcTemplate;
     
     static {
+        selectAllProgramsForECAndParentECSql = "SELECT yp.PAObjectId, MAX(lmwp.ProgramId) AS ProgramId, ywc.AlternateDisplayName, yp.PAOName, -1 AS LMGroupDeviceId FROM YukonPAObject yp," +
+        " LMProgramWebPublishing lmwp, YukonWebConfiguration ywc WHERE lmwp.DeviceId = yp.PAObjectId AND lmwp.WebSettingsId = ywc.ConfigurationId" +
+        " AND yp.Type = '" + PAOGroups.STRING_LM_DIRECT_PROGRAM[0] + "' AND lmwp.ApplianceCategoryId in" +
+        " (SELECT ItemId FROM ECToGenericMapping WHERE MappingCategory = 'ApplianceCategory' AND (EnergyCompanyId = ?" +
+        " OR EnergyCompanyId in (SELECT EnergyCompanyId FROM ECToGenericMapping WHERE ItemId = ? AND MappingCategory = 'Member')))" +
+        " GROUP BY yp.PAObjectId, ywc.AlternateDisplayName, yp.PAOName";
+        
         selectAllProgramsForECSql = "SELECT yp.PAObjectId,lmwp.ProgramId,ywc.AlternateDisplayName,yp.PAOName,-1 AS LMGroupDeviceId FROM YukonPAObject yp," +
                 " LMProgramWebPublishing lmwp, YukonWebConfiguration ywc WHERE lmwp.DeviceId = yp.PAObjectId AND lmwp.WebSettingsId = ywc.ConfigurationId" +
                 " AND yp.Type = '" + PAOGroups.STRING_LM_DIRECT_PROGRAM[0] + "' AND lmwp.ApplianceCategoryId in" +
@@ -44,6 +52,12 @@ public class ApplianceAndProgramDaoImpl implements ApplianceAndProgramDao {
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<ProgramLoadGroup> getAllProgramsForAnEC(final int energyCompanyId) throws DataAccessException {
         List<ProgramLoadGroup> prog = simpleJdbcTemplate.query(selectAllProgramsForECSql, programGroupRowMapper, energyCompanyId);
+        return prog;
+    }
+    
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public List<ProgramLoadGroup> getAllProgramsForAnECAndParentEC(final int energyCompanyId) throws DataAccessException {
+        List<ProgramLoadGroup> prog = simpleJdbcTemplate.query(selectAllProgramsForECAndParentECSql, programGroupRowMapper, energyCompanyId, energyCompanyId);
         return prog;
     }
     
