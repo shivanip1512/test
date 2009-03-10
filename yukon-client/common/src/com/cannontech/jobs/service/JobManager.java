@@ -14,6 +14,8 @@ import com.cannontech.user.YukonUserContext;
 
 public interface JobManager {
 
+    public static final String JOB_MANAGER_DISABLED_KEY = "JOB_MANAGER_DISABLED";
+    
     public void scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, Date time);
     public void scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, Date time, YukonUserContext userContext);
     public void scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, String cronExpression);

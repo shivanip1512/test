@@ -13,6 +13,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.quartz.CronExpression;
 import org.springframework.beans.BeansException;
@@ -23,6 +24,8 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigHelper;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.common.util.TimeSource;
 import com.cannontech.jobs.dao.JobStatusDao;
@@ -35,6 +38,7 @@ import com.cannontech.jobs.model.ScheduledOneTimeJob;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.jobs.service.JobManager;
+import com.cannontech.jobs.support.JobManagerException;
 import com.cannontech.jobs.support.ScheduleException;
 import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.jobs.support.YukonTask;
@@ -61,8 +65,23 @@ public class JobManagerImpl implements JobManager {
 
     private AtomicInteger startOffsetMs = new AtomicInteger(5000);
     private int startOffsetIncrement = 1000;
+    private boolean jobManagerDisabled = false;
+    private static final String JOB_MANAGER_DISABLED_MSG = "Job Manager is disabled by configuration";
 
     public void initialize() {
+        
+        // Retrieve from Master Config whether to disable the Job Manager
+        ConfigurationSource configSource = MasterConfigHelper.getConfiguration();
+        String jobManagerDisabledStr = configSource.getString(JobManager.JOB_MANAGER_DISABLED_KEY);
+        
+        if (StringUtils.isNotBlank(jobManagerDisabledStr)) {
+            jobManagerDisabled = Boolean.valueOf(jobManagerDisabledStr.trim());
+        }
+        
+        if (jobManagerDisabled) {
+            log.warn("!!! Job Manager is disabled by Configuration, Job Manager won't run on this server !!!");
+            return;
+        }
 
         // get all jobs
         Set<ScheduledRepeatingJob> allRepeatingJobs = scheduledRepeatingJobDao.getAll();
@@ -147,11 +166,16 @@ public class JobManagerImpl implements JobManager {
     }
 
     public YukonJob getJob(int jobId) {
+        if (jobManagerDisabled) {
+            throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
+        }
         return yukonJobDao.getById(jobId);
     }
     
     public Set<ScheduledOneTimeJob> getUnRunOneTimeJobsByDefinition(YukonJobDefinition<? extends YukonTask> definition) {
-        
+        if (jobManagerDisabled) {
+            throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
+        }        
         Set<ScheduledOneTimeJob> defJobs =  scheduledOneTimeJobDao.getJobsByDefinition(definition);
         
         Set<ScheduledOneTimeJob> unrunJobs = new HashSet<ScheduledOneTimeJob>();
@@ -164,7 +188,9 @@ public class JobManagerImpl implements JobManager {
     }
     
     public Set<ScheduledRepeatingJob> getUnRunRepeatingJobsByDefinition(YukonJobDefinition<? extends YukonTask> definition) {
-        
+        if (jobManagerDisabled) {
+            throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
+        }        
         Set<ScheduledRepeatingJob> defJobs = scheduledRepeatingJobDao.getJobsByDefinition(definition);
         
         Set<ScheduledRepeatingJob> unrunJobs = new HashSet<ScheduledRepeatingJob>();
@@ -188,11 +214,17 @@ public class JobManagerImpl implements JobManager {
     }
     
     public void scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, Date time) {
+        if (jobManagerDisabled) {
+            throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
+        }        
         scheduleJob(jobDefinition, task, time, new SystemUserContext());
     }
 
     public void scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, Date time, YukonUserContext userContext) {
-        log.info("scheduling onetime job: jobDefinitio=" + jobDefinition + ", task=" + task + ", time=" + time);
+        if (jobManagerDisabled) {
+            throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
+        }
+        log.info("scheduling onetime job: jobDefinition=" + jobDefinition + ", task=" + task + ", time=" + time);
         ScheduledOneTimeJob oneTimeJob = new ScheduledOneTimeJob();
         scheduleJobCommon(oneTimeJob, jobDefinition, task, userContext);
 
@@ -203,11 +235,17 @@ public class JobManagerImpl implements JobManager {
     }
 
     public void scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, String cronExpression) {
+        if (jobManagerDisabled) {
+            throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
+        }        
         scheduleJob(jobDefinition, task, cronExpression, new SystemUserContext());
     }
 
     public void scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, String cronExpression, YukonUserContext userContext) {
-        log.info("scheduling repeating job: jobDefinitio=" + jobDefinition + ", task=" + task + ", cronExpression=" + cronExpression);
+        if (jobManagerDisabled) {
+            throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
+        }        
+        log.info("scheduling repeating job: jobDefinition=" + jobDefinition + ", task=" + task + ", cronExpression=" + cronExpression);
         ScheduledRepeatingJob repeatingJob = new ScheduledRepeatingJob();
         scheduleJobCommon(repeatingJob, jobDefinition, task, userContext);
 
@@ -284,6 +322,9 @@ public class JobManagerImpl implements JobManager {
     }
     
     public void disableJob(YukonJob job) {
+        if (jobManagerDisabled) {
+            throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
+        }        
         log.info("disabling job: " + job);
         job.setDisabled(true);
         yukonJobDao.update(job);
@@ -306,6 +347,9 @@ public class JobManagerImpl implements JobManager {
     }
     
     public void enableJob(YukonJob job) {
+        if (jobManagerDisabled) {
+            throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
+        }        
         log.info("enabling job: " + job);
         job.setDisabled(false);
         
@@ -370,6 +414,9 @@ public class JobManagerImpl implements JobManager {
     }
 
     public YukonTask instantiateTask(YukonJob job) {
+        if (jobManagerDisabled) {
+            throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
+        }        
         YukonJobDefinition<? extends YukonTask> jobDefinition = job.getJobDefinition();
 
         log.info("instantiating task for " + jobDefinition);
@@ -385,10 +432,16 @@ public class JobManagerImpl implements JobManager {
     }
 
     public Collection<YukonJob> getCurrentlyExecuting() {
+        if (jobManagerDisabled) {
+            throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
+        }        
         return currentlyRunning.keySet();
     }
 
     public boolean abortJob(YukonJob job) {
+        if (jobManagerDisabled) {
+            throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
+        }        
         YukonTask task = currentlyRunning.get(job);
         if (task == null) {
             return false;
