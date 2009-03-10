@@ -226,5 +226,14 @@ public class InventoryDaoImpl implements InventoryDao {
         
         return inventoryIds;
     }
+    
+    @Override
+    public int getYukonDefinitionIdByEntryId(int entryId) {
+    	String sql = "SELECT YukonDefinitionId FROM YukonListEntry WHERE entryId = ?";
+    	
+    	int defId = jdbcTemplate.queryForInt(sql, entryId);
+    	
+    	return defId;
+    }
 
 }

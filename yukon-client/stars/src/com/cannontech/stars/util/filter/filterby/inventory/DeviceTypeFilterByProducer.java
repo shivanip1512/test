@@ -5,23 +5,36 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.util.FilterWrapper;
 import com.cannontech.stars.util.filter.JoinTable;
 import com.cannontech.stars.util.filter.filterby.FilterBy;
 
 public class DeviceTypeFilterByProducer extends AbstractInventoryFilterByProducer {
 
+	InventoryDao inventoryDao;
+	
     @Override
     public Collection<? extends FilterBy> createFilterBys(FilterWrapper filter) {
         List<FilterBy> filterList = new ArrayList<FilterBy>();
-        filterList.add(createDeviceType(filter.getFilterID()));
         
-        boolean isMCT = Integer.valueOf(filter.getFilterID()) == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT;
-        if (isMCT) return filterList;
+        int filterId = Integer.parseInt(filter.getFilterID());
+
+        int defId = inventoryDao.getYukonDefinitionIdByEntryId(filterId);
         
-        filterList.add(0, NON_DUMMY_METER);
-        return filterList;
+        boolean isMCT = defId == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT;
+        if (isMCT) {
+        	filterList.add(0, MCT_METER);
+        	return filterList;
+        } else {
+        	filterList.add(createDeviceType(filter.getFilterID()));
+        	filterList.add(0, NON_DUMMY_METER);
+        	return filterList;
+		}
+        
     }
     
     @Override
@@ -44,6 +57,11 @@ public class DeviceTypeFilterByProducer extends AbstractInventoryFilterByProduce
                 return Arrays.<Object>asList(filterValue);
             }
         };
+    }
+    
+    @Autowired
+    public void setInvetoryDao( InventoryDao inventoryDao) {
+    	this.inventoryDao = inventoryDao;
     }
 
 }

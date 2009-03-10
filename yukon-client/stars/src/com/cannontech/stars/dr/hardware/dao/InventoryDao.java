@@ -36,4 +36,11 @@ public interface InventoryDao {
      * @return
      */
     public List<Integer> getInventoryIdsByAccount(int accountId);
+    
+    /**
+     * Method to get the Yukon Definition Id by the Entry Id
+     * @param entryId
+     * @return
+     */
+    public int getYukonDefinitionIdByEntryId(int entryId);
 }

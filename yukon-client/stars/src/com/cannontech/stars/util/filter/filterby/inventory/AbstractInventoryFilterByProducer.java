@@ -36,6 +36,21 @@ public abstract class AbstractInventoryFilterByProducer implements FilterByProdu
                                          YukonListEntryTypes.YUK_DEF_ID_INV_CAT_TWOWAYREC);
         }
     };
+   
+    protected static final FilterBy MCT_METER = new FilterBy() {
+        @Override
+        public Collection<JoinTable> getJoinTables() {
+            return JoinTable.EMPTY_JOINTABLES;
+        }
+        @Override
+        public String getSql() {
+            return "yle.YukonDefinitionId IN (?)";
+        }
+        @Override
+        public List<Object> getParameterValues() {
+            return Arrays.<Object>asList(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT);
+        }
+    };
     
     protected static final FilterBy NON_DUMMY_OR_MCT_METER = new FilterBy() {
         @Override
@@ -50,7 +65,7 @@ public abstract class AbstractInventoryFilterByProducer implements FilterByProdu
         public List<Object> getParameterValues() {
             return Arrays.<Object>asList(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_ONEWAYREC,
                                          YukonListEntryTypes.YUK_DEF_ID_INV_CAT_TWOWAYREC,
-                                         YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT);
+                                         YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT);
         }
     };
     
