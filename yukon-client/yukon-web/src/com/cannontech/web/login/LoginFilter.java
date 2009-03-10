@@ -158,8 +158,11 @@ public class LoginFilter implements Filter {
         String url = request.getRequestURL().toString();
         String urlParams = request.getQueryString();
         String navUrl = url + ((urlParams != null) ? "?" + urlParams : "");
+        
         // strip any unsafe navigation from the URL before it gets encoded.
         String safeNavUrl = ServletUtil.createSafeRedirectUrl(request, navUrl);
+        if (safeNavUrl.equals("/")) return "";
+        
         String encodedNavUrl = ServletUtil.urlEncode(safeNavUrl);
         return encodedNavUrl;
     }
