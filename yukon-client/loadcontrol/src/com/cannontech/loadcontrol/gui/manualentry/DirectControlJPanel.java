@@ -1769,7 +1769,7 @@ private void initialize() {
 		if( rows == null )
 			return false;
 
-        boolean showMulti = rows.length  > 1;
+        boolean showMulti = rows.length  > 1 || isScenario;
         
         if( isScenario )
         {
