@@ -57,7 +57,7 @@
     <entry key="yukon.dr.operator.optout.dateScheduled">Date Scheduled</entry>
     <entry key="yukon.dr.operator.optout.dateActive">Active Date</entry>
     <entry key="yukon.dr.operator.optout.noPreviousOptOuts">There are no previous Opt Outs</entry>
-    <entry key="yukon.dr.operator.optout.duration">Duration</entry>
+    <entry key="yukon.dr.operator.optout.durationHeader">Duration</entry>
     <entry key="yukon.dr.operator.optout.canceled">Canceled</entry>
     <entry key="yukon.dr.operator.optout.viewAll">View Full History</entry>
 

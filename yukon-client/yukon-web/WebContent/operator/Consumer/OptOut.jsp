@@ -62,18 +62,11 @@
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center">
-              <% String header = DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_OPT_OUT); %>
+              <% String header = null; %>
               <%@ include file="include/InfoSearchBar.jspf" %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
-              <table width="550" border="0" cellspacing="0" cellpadding="0">
-                <tr>
-                  <td class="MainText" align="center"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_DESC_OPT_OUT %>"/>
-                  </td>
-                </tr>
-              </table>
-			  <br>
-			  
+              
               <jsp:include page="/spring/stars/operator/optout" />
             
             </div>

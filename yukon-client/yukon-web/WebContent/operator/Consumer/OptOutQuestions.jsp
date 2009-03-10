@@ -33,7 +33,7 @@
 		  </td>
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF" align = "center"> 
-      		  <% String header = DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_OPT_OUT); %>
+      		  <% String header = null; %>
               <%@ include file="include/InfoSearchBar.jspf" %> 
           
             <jsp:include page="/spring/stars/operator/optout/confirm">

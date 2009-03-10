@@ -39,6 +39,8 @@ function createJSON() {
 </script>    
     
     <div align="center">
+        <h3><cti:msg key="yukon.dr.operator.optoutlist.header"/></h3>
+    
         <cti:msg key="yukon.dr.operator.optoutlist.description"/>
         <c:if test="${!empty alreadyOptedOutItems}">
             <br><cti:msg key="yukon.dr.operator.optoutlist.someAlreadyOptedOut"/>

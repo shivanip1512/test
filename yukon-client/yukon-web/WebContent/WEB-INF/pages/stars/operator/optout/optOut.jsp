@@ -5,6 +5,10 @@
 
 <link rel="stylesheet" href="../../WebConfig/yukon/styles/YukonGeneralStyles.css" type="text/css">
 
+<h3><cti:msg key="yukon.dr.operator.optout.header"/></h3>
+
+<cti:msg key="yukon.dr.operator.optout.description"/><br><br>
+
 <form action="/spring/stars/operator/optout/optout2" method="POST">
     <table>
         <tr>
@@ -160,7 +164,7 @@
                 <th><cti:msg key="yukon.dr.operator.optout.program"/></th>
                 <th><cti:msg key="yukon.dr.operator.optout.dateScheduled"/></th>
                 <th><cti:msg key="yukon.dr.operator.optout.dateActive"/></th>
-                <th><cti:msg key="yukon.dr.operator.optout.duration"/></th>
+                <th><cti:msg key="yukon.dr.operator.optout.durationHeader"/></th>
             </tr>
             
             <c:forEach var="optOut" items="${previousOptOutList}">
