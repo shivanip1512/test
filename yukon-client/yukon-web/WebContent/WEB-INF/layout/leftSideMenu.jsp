@@ -45,6 +45,7 @@
                     <cti:checkProperty property="ResidentialCustomerRole.SIGN_OUT_ENABLED">
                         <a href="/servlet/LoginController?ACTION=LOGOUT"><cti:msg key="yukon.web.menu.logout" /></a>
                     </cti:checkProperty>
+                    &nbsp;
                 </td>
             </tr>
             <tr>
