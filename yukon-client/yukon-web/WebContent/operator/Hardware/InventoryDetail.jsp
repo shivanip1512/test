@@ -34,13 +34,15 @@
                 devTypeStr = PAOGroups.getPAOTypeString(DaoFactory.getPaoDao().getLiteYukonPAO(inventory.getDeviceID())
                                                                 .getType());
 
-            String lcrYukonDeviceName = "";
-            String lctYukonDeviceIdStr = "";
-            boolean isLCR3102 = yukonListEntry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_3102;
-            if (isLCR3102) {
-            	LiteYukonPAObject litePao = DaoFactory.getPaoDao().getLiteYukonPAO( liteInv.getDeviceID() );
-            	lcrYukonDeviceName = litePao.getPaoName();
-            	lctYukonDeviceIdStr = Integer.toString(litePao.getYukonID());
+            boolean isTwoWayLcr = InventoryUtils.isTwoWayLcr(yukonListEntry.getEntryID());
+        	String twoWayLcrYukonDeviceName = "";
+            String twoWayLcrYukonDeviceIdStr = "";
+            if (isTwoWayLcr) {
+            	LiteYukonPAObject litePao = DaoFactory.getPaoDao().getLiteYukonPAO( inventory.getDeviceID() );
+    			if (litePao.getYukonID() > 0) {
+    				twoWayLcrYukonDeviceName = litePao.getPaoName();
+    				twoWayLcrYukonDeviceIdStr = Integer.toString(litePao.getYukonID());
+    			} 
             }
             
             boolean isMCT = inventory.getDeviceID() > 0;
@@ -157,20 +159,15 @@ function revealLog() {
 }
 
 Event.observe(window, 'load', function() {
-	twoWayLCRCheck();
+	
+	if(<%=isTwoWayLcr%>) {
+		$('twoWayLcr_TR').show();
+	
+		if('<%= twoWayLcrYukonDeviceIdStr %>' == '') {
+			alert('A Yukon device MUST be setup for this Two Way LCR.\n\nUse the "Yukon Two Way LCR Profile" section to create a new Yukon device, or to link to an existing Yukon device.');
+		}
+	}
 });
-
-function twoWayLCRCheck() {
-	if(<%=isLCR3102%>) {
-		$('lcr3102_td').show();
-	} else {
-		$('lcr3102_td').hide();
-	}
-
-	if(<%= lctYukonDeviceIdStr %> == '') {
-		alert('A Yukon device MUST be setup for this LCR-3102.\n\nUse the "Yukon LCR-3102 Profile" section to create a new Yukon device, or to link to an existing Yukon device.');
-	}
-}
 
 var setChoosenYukonDevice = function() {
 	
@@ -391,13 +388,13 @@ var setChoosenYukonDevice = function() {
                         </tr>
                         
                         
-                      <%-- YUKON DEVICE for LCR-3102--%>
-	                  <tr id="lcr3102_td" style="display:none;">
+                      <%-- YUKON DEVICE for Two Way LCR--%>
+	                  <tr id="twoWayLcr_TR" style="display:none;">
 	                  
 	                  	<td colspan="2">
 	                  		<table border="0" cellspacing="0" cellpadding="0">
 	                        <tr> 
-	                          <td valign="top"><span class="SubtitleHeader">Yukon LCR-3102 Profile <b>(REQUIRED)</b></span> 
+	                          <td valign="top"><span class="SubtitleHeader">Yukon Two Way LCR Profile <b>(REQUIRED)</b></span> 
 	                            <hr>
 	                            <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
 	                              <tr>
@@ -444,15 +441,15 @@ var setChoosenYukonDevice = function() {
 	                                  <div align="right">Device Name: </div>
 	                                </td>
 	                                <td width="500"> 
-	                                	<input type="hidden" id="choosenYukonDeviceId" name="choosenYukonDeviceId" value="<%= lctYukonDeviceIdStr %>" style="display:none;">
+	                                	<input type="hidden" id="choosenYukonDeviceId" name="choosenYukonDeviceId" value="<%= twoWayLcrYukonDeviceIdStr %>" style="display:none;">
 	                              		<span id="choosenYukonDeviceNameSpan" style="display:none;"></span>
 	                              		<cti:paoPicker pickerId="paoPicker" 	
 						    					paoIdField="choosenYukonDeviceId" 
-						    					constraint="com.cannontech.common.search.criteria.LCR3102Criteria" 
+						    					constraint="com.cannontech.common.search.criteria.TwoWayLcrCriteria" 
 						    					paoNameElement="choosenYukonDeviceNameSpan"
 						    					finalTriggerAction="setChoosenYukonDevice">
 						    			</cti:paoPicker>
-	                                  <input type="text" name="choosenYukonDeviceNameField" id="choosenYukonDeviceNameField" value="<%= lcrYukonDeviceName %>" readonly> 
+	                                  <input type="text" name="choosenYukonDeviceNameField" id="choosenYukonDeviceNameField" value="<%= twoWayLcrYukonDeviceName %>" readonly> 
 	                                  <input type="button" value="Choose" onclick="paoPicker.showPicker();$('existingYukDevRadio').checked=true;">
 	                                </td>
 	                              </tr>
@@ -463,7 +460,7 @@ var setChoosenYukonDevice = function() {
 	                  	</td>
 	                  
 	                  </tr>
-	                  <%-- END LCR-3102 --%>
+	                  <%-- END Two Way LCR --%>
                   
                   
                   

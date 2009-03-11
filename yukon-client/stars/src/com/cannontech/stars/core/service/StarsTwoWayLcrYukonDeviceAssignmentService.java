@@ -13,7 +13,7 @@ public interface StarsTwoWayLcrYukonDeviceAssignmentService {
 	 * @param energyCompany
 	 * @param yukonDeviceTypeId the type of Yukon device to create (needs to be a Two Way LCR type or an exception will be thrown0
 	 * @param deviceName name of new Yukon Device. Use null to generate a unique device name base on the LCR serial number.
-	 * @param demandRate set to null to use default rate of 300 (5 minute)
+	 * @param demandRateMinutes set to null to use default rate of 300 (5 minute), specifiy in seconds.
 	 * @param allowCreateIfAlreadyHasAssignedDevice if false, the Yukon device will not be created if the LCR already has a device assigned to it.
 	 * @throws StarsTwoWayLcrYukonDeviceCreationException if there is an exception creating the new Yukon device, or assigning to the LCR
 	 */
@@ -21,7 +21,7 @@ public interface StarsTwoWayLcrYukonDeviceAssignmentService {
 			LiteStarsEnergyCompany energyCompany, 
 			int yukonDeviceTypeId,
 			String deviceName,
-			Integer demandRate,
+			Integer demandRateSeconds,
 			boolean allowCreateIfAlreadyHasAssignedDevice)
 			throws StarsTwoWayLcrYukonDeviceCreationException;
 	

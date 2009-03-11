@@ -304,7 +304,7 @@ public class InventoryManagerUtil {
         			InventoryBaseDao inventoryBaseDao = YukonSpringHook.getBean("inventoryBaseDao", InventoryBaseDao.class); 
     	    		List<com.cannontech.stars.dr.hardware.model.InventoryBase> matchedInventory = inventoryBaseDao.getByDeviceId(deviceId);
     	    		if (matchedInventory.size() != 0 && matchedInventory.get(0).getDeviceId() != starsInv.getDeviceID()) {
-    	    			throw new WebClientException("Yukon device is already setup for another LCR-3102");
+    	    			throw new WebClientException("Yukon device is already setup for another Two Way LCR");
     	    		}
     	    		
     	    		

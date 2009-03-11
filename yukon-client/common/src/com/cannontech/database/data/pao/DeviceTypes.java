@@ -193,7 +193,7 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_MCT_213 = {"MCT-213", "MCT213"};
 	public static final String[] STRING_MCT_BROADCAST = {"MCT Broadcast", "MCT-Broadcast", "MCT_Broadcast", "MCT_Broadcast"};
 	
-	public static final String[] STRING_LCR_3102 = {"LCR-3102", "LCR3102"};
+	public static final String[] STRING_LCR_3102 = {"LCR-3102"};
 	
 	public static final String[] STRING_REPEATER = {"REPEATER", "REPEATER 900"};   
 	public static final String[] STRING_REPEATER_902 = {"REPEATER 902"};   

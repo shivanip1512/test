@@ -310,7 +310,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
                 liteInv = starsInventoryBaseDao.saveLmHardware(lmHw,
                                                                energyCompany.getEnergyCompanyID());
                 
-                // CREATE ADDITIONAL YUKON DEVICE FOR TWO WAY LCR (LCR-3102)
+                // CREATE ADDITIONAL YUKON DEVICE FOR TWO WAY LCR
                 // - only if this is a Two Way LCR that does not yet have a Yukon device assigned to it
                 // - updateDeviceOnAccount() does not support updating a Yukon device already assigned
                 StarsInventory inventory = StarsLiteFactory.createStarsInventory(liteInv, energyCompany);

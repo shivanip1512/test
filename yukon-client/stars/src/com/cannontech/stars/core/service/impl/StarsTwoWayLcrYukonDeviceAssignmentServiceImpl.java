@@ -36,7 +36,7 @@ public class StarsTwoWayLcrYukonDeviceAssignmentServiceImpl implements StarsTwoW
 			LiteStarsEnergyCompany energyCompany, 
 			int yukonDeviceTypeId, 
 			String deviceName,
-			Integer demandRate,
+			Integer demandRateSeconds,
 			boolean allowCreateIfAlreadyHasAssignedDevice)
 			throws StarsTwoWayLcrYukonDeviceCreationException {
 
@@ -46,7 +46,7 @@ public class StarsTwoWayLcrYukonDeviceAssignmentServiceImpl implements StarsTwoW
 		
 		StarsInventory inventory = StarsLiteFactory.createStarsInventory(liteInv, energyCompany);
 		
-		// double check we are only doing this to a Two Way LCR (pretty LCR-3102 specific right now)
+		// double check we are only doing this to a Two Way LCR
 		if (InventoryUtils.isTwoWayLcr(inventory.getDeviceType().getEntryID())) {
 			
 			// if the LCR already has a device assigned to it, skip
@@ -57,8 +57,8 @@ public class StarsTwoWayLcrYukonDeviceAssignmentServiceImpl implements StarsTwoW
         		if (deviceName == null) {
         			deviceName = generateUniqueTwoWayLcrYukonDeviceName("YK TWLCR " + serial);
         		}
-        		if(demandRate == null) {
-        			demandRate = 300;
+        		if(demandRateSeconds == null) {
+        			demandRateSeconds = 300;
         		}
         		
         		YukonDevice yukonDevice = null;
@@ -69,7 +69,7 @@ public class StarsTwoWayLcrYukonDeviceAssignmentServiceImpl implements StarsTwoW
     	    		LiteYukonPAObject paoDevice = paoDao.getLiteYukonPAO(yukonDevice.getDeviceId());
     	            YukonPAObject yukonPaobject = (YukonPAObject)dbPersistentDao.retrieveDBPersistent(paoDevice);
     	            DeviceLoadProfile deviceLoadProfile = ((TwoWayLCR)yukonPaobject).getDeviceLoadProfile();
-    	            deviceLoadProfile.setLastIntervalDemandRate(demandRate);
+    	            deviceLoadProfile.setLastIntervalDemandRate(demandRateSeconds);
     	            dbPersistentDao.performDBChange(yukonPaobject, DBChangeMsg.CHANGE_TYPE_UPDATE);
     	            
         		} catch (Exception e) {
@@ -86,7 +86,7 @@ public class StarsTwoWayLcrYukonDeviceAssignmentServiceImpl implements StarsTwoW
 	@Override
 	public void assignExistingDeviceToLcr(LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany, int deviceId) throws StarsTwoWayLcrYukonDeviceAssignmentException {
 		
-		// double check we are only doing this to a Two Way LCR (pretty LCR-3102 specific right now)
+		// double check we are only doing this to a Two Way LCR
 		StarsInventory inventory = StarsLiteFactory.createStarsInventory(liteInv, energyCompany);
 		if (InventoryUtils.isTwoWayLcr(inventory.getDeviceType().getEntryID())) {
 			updateTwoWayLcrDeviceId(liteInv, deviceId);

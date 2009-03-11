@@ -49,6 +49,9 @@
 	if (savedReq.getProperty("Member") != null)
 		member = StarsDatabaseCache.getInstance().getEnergyCompany(Integer.parseInt(savedReq.getProperty("Member")));
 	if (member == null) member = liteEC;
+	
+	YukonSelectionList devTypeList = member.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
+	
 %>
 <html>
 <head>
@@ -94,15 +97,31 @@ Event.observe(window, 'load', function() {
 });
 
 function twoWayLCRCheck(el) {
-	if(el[el.selectedIndex].innerHTML == 'LCR-3102') {
-		$('lcr3102_td').show();
+
+	var twoWayLcrTypes = $A();
+	var twoWayLcrTypesIdx = 0;
+	<%
+	
+	for (int i = 0; i < devTypeList.getYukonListEntries().size(); i++) {
+		YukonListEntry entry = (YukonListEntry) devTypeList.getYukonListEntries().get(i);
+		int entryId = entry.getEntryID();
+		if (InventoryUtils.isTwoWayLcr(entryId)) {
+			%>
+			twoWayLcrTypes[twoWayLcrTypesIdx++] = <%= entryId %>;
+			<%
+		}
+	}
+	%>
+	
+	if(twoWayLcrTypes.indexOf(el[el.selectedIndex].value) >= 0) {
+		$('twoWayLcr_TR').show();
 
 		if($('choosenYukonDeviceId').value.strip() == '' && $('yukonDeviceName').value.strip() == '') {
-			alert('A Yukon device MUST be setup for this LCR-3102.\n\nUse the "Yukon LCR-3102 Profile" section to create a new Yukon device, or to link to an existing Yukon device.');
+			alert('A Yukon device MUST be setup for this Two Way LCR.\n\nUse the "Yukon Two Way LCR Profile" section to create a new Yukon device, or to link to an existing Yukon device.');
 		}
 		
 	} else {
-		$('lcr3102_td').hide();
+		$('twoWayLcr_TR').hide();
 	}
 }
 
@@ -189,7 +208,6 @@ var setChoosenYukonDevice = function() {
 	if (savedReq.getProperty("DeviceType") != null)
 		savedDeviceType = Integer.parseInt(savedReq.getProperty("DeviceType"));
 	
-	YukonSelectionList devTypeList = member.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
 	for (int i = 0; i < devTypeList.getYukonListEntries().size(); i++) {
 		YukonListEntry entry = (YukonListEntry) devTypeList.getYukonListEntries().get(i);
 		if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT) continue;
@@ -341,7 +359,7 @@ var setChoosenYukonDevice = function() {
                     </td>
                   </tr>
                   
-                  <%-- MCT for LCR-3102--%>
+                  <%-- MCT for Two Way LCR--%>
 <% 
 String savedYukonDeviceCreationStyleRadio = "NEW";
 if (savedReq.getProperty("yukonDeviceCreationStyleRadio") != null)
@@ -349,7 +367,7 @@ if (savedReq.getProperty("yukonDeviceCreationStyleRadio") != null)
 %>
                   
                   
-                  <tr id="lcr3102_td" style="display:none;">
+                  <tr id="twoWayLcr_TR" style="display:none;">
                   
                   	<td colspan="2">
                   		<table border="0" cellspacing="0" cellpadding="0">
@@ -412,7 +430,7 @@ if (savedReq.getProperty("yukonDeviceDemandRate") != null)
                               		<span id="choosenYukonDeviceNameSpan" style="display:none;"></span>
                               		<cti:paoPicker pickerId="paoPicker" 	
 					    					paoIdField="choosenYukonDeviceId" 
-					    					constraint="com.cannontech.common.search.criteria.LCR3102Criteria" 
+					    					constraint="com.cannontech.common.search.criteria.TwoWayLcrCriteria" 
 					    					paoNameElement="choosenYukonDeviceNameSpan"
 					    					finalTriggerAction="setChoosenYukonDevice">
 					    			</cti:paoPicker>
@@ -427,6 +445,7 @@ if (savedReq.getProperty("yukonDeviceDemandRate") != null)
                   	</td>
                   
                   </tr>
+                  <%-- END Two Way LCR --%>
                   
                   
 <%
