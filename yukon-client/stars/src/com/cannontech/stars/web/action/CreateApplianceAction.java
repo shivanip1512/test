@@ -429,9 +429,9 @@ public class CreateApplianceAction implements ActionBase {
 				if (desc.compareTo( appDesc ) <= 0)
 					break;
 			}
-			idx += accountInfo.getStarsAppliances().getStarsApplianceCount();
 
 			starsApps.addStarsAppliance( idx+1, app );
+            idx += accountInfo.getStarsAppliances().getStarsApplianceCount();
 			session.setAttribute( ServletUtils.ATT_REDIRECT, "/operator/Consumer/Appliance.jsp?AppNo=" + String.valueOf(idx+1) );
 			
 			return 0;
