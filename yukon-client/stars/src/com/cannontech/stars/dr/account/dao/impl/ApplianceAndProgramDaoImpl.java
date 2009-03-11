@@ -35,10 +35,11 @@ public class ApplianceAndProgramDaoImpl implements ApplianceAndProgramDao {
                 " AND yp.Type = '" + PAOGroups.STRING_LM_DIRECT_PROGRAM[0] + "' AND lmwp.ApplianceCategoryId in" +
                 " (SELECT ItemId FROM ECToGenericMapping WHERE MappingCategory = 'ApplianceCategory' AND EnergyCompanyId = ?)";
         
-        selectProgramsByLMGroupId = "SELECT yp.PAObjectId, lmwp.ProgramId, ywc.AlternateDisplayName, yp.PAOName, lmpdg.LMGroupDeviceId FROM " +
+        selectProgramsByLMGroupId = "SELECT yp.PAObjectId, MAX(lmwp.ProgramId) AS ProgramId, ywc.AlternateDisplayName, yp.PAOName, lmpdg.LMGroupDeviceId FROM " +
                 "YukonPAObject yp, LMProgramWebPublishing lmwp, YukonWebConfiguration ywc, LMProgramDirectGroup lmpdg WHERE " +
                 "yp.PAObjectId = lmwp.DeviceId AND lmwp.WebSettingsId = ywc.ConfigurationId AND lmwp.DeviceId = lmpdg.DeviceId AND " +
-                "lmpdg.LMGroupDeviceId = ?";
+                "lmpdg.LMGroupDeviceId = ? " +
+                "GROUP BY yp.PAObjectId, ywc.AlternateDisplayName, yp.PAOName, lmpdg.LMGroupDeviceId";
         
         programGroupRowMapper = ApplianceAndProgramDaoImpl.createProgramGroupRowMapper();
     }
