@@ -188,6 +188,7 @@
         
         <option id="visualDisplays">
           <link>/spring/multispeak/visualDisplays/loadManagement/home</link>
+		  <requireRoleProperty value="MSP_LM_MAPPING_SETUP"/>
         </option>
 
       </links>
