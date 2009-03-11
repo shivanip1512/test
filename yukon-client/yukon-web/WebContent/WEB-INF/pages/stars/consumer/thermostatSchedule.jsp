@@ -203,11 +203,8 @@
                     <td align="center"> 
                         <table width="80%" border="0">
                             <tr>
-                                <td class="TableCell" style="width: 50%; text-align: left; vertical-align: top;"> 
+                                <td class="TableCell" style="text-align: left; vertical-align: top;" colspan="2"> 
                                     <cti:msg key="yukon.dr.consumer.thermostatSchedule.instructions" />
-                                </td>
-                                <td class="TableCell"  style="width: 50%; text-align: left; vertical-align: top; padding-top: 11px;"> 
-                                    &nbsp;
                                 </td>
                             </tr>
                             <tr>
