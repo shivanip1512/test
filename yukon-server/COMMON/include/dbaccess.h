@@ -58,7 +58,7 @@ IM_EX_CTIBASE RWDBStatus ExecuteInserter(RWDBConnection& conn, RWDBInserter &ins
 IM_EX_CTIBASE int addDBIgnore(long ignoreError);
 IM_EX_CTIBASE void resetDBIgnore();
 
-
+IM_EX_CTIBASE string makeLeftOuterJoinSQL92Compliant(const string &sql);
 
 #endif
 
