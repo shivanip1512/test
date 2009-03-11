@@ -48,6 +48,8 @@ import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
 import com.cannontech.tdc.TDCMainFrame;
+import com.cannontech.tdc.TDCMainPanel;
+import com.cannontech.tdc.data.Display;
 import com.cannontech.yukon.IMACSConnection;
 import com.cannontech.yukon.conns.ConnPool;
 
@@ -58,10 +60,6 @@ public class SchedulerMainPanel extends javax.swing.JPanel implements ActionList
 	private ScheduleTableModel scheduleTableModel = null;
 	private java.util.ArrayList frames = null;
 	
-	private javax.swing.JSplitPane jSplitPane = null;
-//	private com.cannontech.macs.MACSClientConnection connection = null;
-	private static final String title = "MACS Scheduler";
-	
 	private JTable scheduleTable;
 	private JButton startStopButton;
 	private JButton enableDisableButton;
@@ -69,9 +67,6 @@ public class SchedulerMainPanel extends javax.swing.JPanel implements ActionList
 	private JButton createScheduleButton;
 	private JButton deleteScheduleButton;
 	
-	//public SchedulerFileMenu schedulerFileMenu;
-	//public SchedulerEditMenu schedulerEditMenu;
-	//public SchedulerCreateMenu schedulerCreateMenu;
 	private MessagePanel messagePanel;
 
 	// crutch to remember the last schedule that was selected
@@ -80,7 +75,6 @@ public class SchedulerMainPanel extends javax.swing.JPanel implements ActionList
 
 	// Flag for connection to macs server
 	private boolean lastConnectionStatus = false;
-	//private boolean startingUp = true;
 
 /**
  * SchedulerMainPanel constructor comment.
@@ -510,26 +504,6 @@ public java.util.ArrayList getFrames()
 }
 /**
  * Insert the method's description here.
- * Creation date: (8/23/00 9:29:43 AM)
- * @return javax.swing.JSplitPane
- */
-private javax.swing.JSplitPane getJSplitPane() 
-{
-	if( jSplitPane == null )
-	{
-		jSplitPane = new javax.swing.JSplitPane(javax.swing.JSplitPane.VERTICAL_SPLIT);
-		jSplitPane.setName("JSplitPane");
-		jSplitPane.setDividerSize(8);
-		jSplitPane.setLastDividerLocation(1);
-		jSplitPane.setDividerLocation(185);
-		jSplitPane.setOneTouchExpandable(true);
-		jSplitPane.setBounds(23, 236, 582, 307);
-	}
-	
-	return jSplitPane;
-}
-/**
- * Insert the method's description here.
  * Creation date: (2/23/2001 5:35:55 PM)
  * @return com.cannontech.common.gui.util.MessagePanel
  */
@@ -593,33 +567,12 @@ public javax.swing.JTable getScheduleTable()
 						owner.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
 					}
 		
-					try
-					{						
-//						Schedule sched = 
-//								getScheduleTableModel().getSchedule(getScheduleTable().getSelectedRow());
-
+					try {						
 						s.sort( mc );
-
-						//Set the last selected row selected
-//						int i = 0;
-//						for( i = 0 ; i < getScheduleTableModel().getRowCount(); i++ )
-//							if( getScheduleTableModel().getSchedule(i).equals(sched) )
-//							{
-//								getScheduleTable().getSelectionModel().setSelectionInterval( i, i );
-//								break;
-//							}
-							
-//						i = (i == getScheduleTableModel().getRowCount()-1 ? i+1: i);
-//						getScheduleTable().scrollRectToVisible( 
-//								new Rectangle( 
-//									0, 
-//									(getScheduleTable().getRowHeight() * i),
-//									0, 0 ) );
-					}
-					finally
-					{
-						if( owner != null )
+					} finally {
+						if( owner != null ) {
 							owner.setCursor( original );
+						}
 					}
 					
 				}
@@ -645,7 +598,6 @@ public ScheduleTableModel getScheduleTableModel()
 	{
 		// Set up the schedule table
 		scheduleTableModel = new ScheduleTableModel();
-		//scheduleTableModel.setConnection( getConnection() );
 		
 		getIMACSConnection().addMessageListener( scheduleTableModel );
 		
@@ -1097,7 +1049,6 @@ private void showWizardPanel(WizardPanel wizard)
 {
 	//Set the cursor to wait
 	java.awt.Frame owner = CtiUtilities.getParentFrame( this );
-	java.awt.Cursor savedCursor = owner.getCursor();
 	owner.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
 
 	wizard.addWizardPanelListener(this);	
@@ -1224,22 +1175,25 @@ public void messageReceived( MessageEvent e )
 	}
     else if( in instanceof ConnStateChange )
     {
+		TDCMainPanel tdcMainPanel= (TDCMainPanel)getParent();
+		Display display = tdcMainPanel.getCurrentDisplay();
+		int displayTypeIndex = Display.getDisplayTypeIndexByType(display.getType());
+		if (displayTypeIndex == Display.SCHEDULER_CLIENT_TYPE_INDEX) {
+
+	        // set the frames Title to a connected/not connected text
+	        final String connectedString = getConnectionState();
+	        javax.swing.SwingUtilities.invokeLater( new Runnable() {
+	            public void run() {
+	                java.awt.Frame f = CtiUtilities.getParentFrame(SchedulerMainPanel.this);
+	                if( f != null ) {
+	                    f.setTitle(connectedString);
+	                }
+	            }
+	        });
+		}
+		
         ConnStateChange csMsg = (ConnStateChange)in;
-        
-        // set the frames Title to a connected/not connected text
-        final String connectedString = getConnectionState();
-                
-        javax.swing.SwingUtilities.invokeLater( new Runnable()
-        {
-            public void run()
-            {
-                java.awt.Frame f = CtiUtilities.getParentFrame(SchedulerMainPanel.this);
-                if( f != null )
-                    f.setTitle(connectedString);
-            }
-        });
-        
-        getCreateScheduleButton().setEnabled( csMsg.isConnected() );
+		getCreateScheduleButton().setEnabled( csMsg.isConnected() );
 
         //remove any editors or wizards for schedules if we have been disconnected
         // disable all buttons

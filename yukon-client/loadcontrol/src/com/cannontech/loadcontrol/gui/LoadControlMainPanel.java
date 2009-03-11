@@ -39,6 +39,9 @@ import com.cannontech.loadcontrol.popup.ControlAreaPopUpMenu;
 import com.cannontech.loadcontrol.popup.GroupPopUpMenu;
 import com.cannontech.loadcontrol.popup.ProgramPopUpMenu;
 import com.cannontech.roles.application.TDCRole;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.tdc.TDCMainPanel;
+import com.cannontech.tdc.data.Display;
 import com.cannontech.tdc.observe.ObservableJPopupMenu;
 
 public class LoadControlMainPanel extends javax.swing.JPanel implements ButtonBarPanelListener, 
@@ -50,7 +53,6 @@ public class LoadControlMainPanel extends javax.swing.JPanel implements ButtonBa
 	private static int userRightsInt = 0;
 	
 	//All the possible TableModels the BottomTable can have
-//	private ProgramTableModel programTableModel = null;
 	private GroupTableModel groupTableModel = null;
 	
 	private javax.swing.JComboBox viewComboBox = null;
@@ -58,7 +60,6 @@ public class LoadControlMainPanel extends javax.swing.JPanel implements ButtonBa
 	private ControlAreaPopUpMenu controlAreaPopUpMenu = null;
 	private GroupPopUpMenu groupPopUpMenu = null;
 	private ProgramPopUpMenu programPopUpMenu = null;
-	//private CurtailPopUpMenu curtailCustomerPopUpMenu = null;
 	private com.cannontech.common.gui.util.MessagePanel ivjMessagePanel = null;
 	private CompositeJSplitPane compSplitPane = null;
 	private ButtonBarPanel ivjButtonBarPanel = null;
@@ -217,7 +218,7 @@ public void buttonBarPanel_JButtonDisableAllAction_actionPerformed(java.util.Eve
 		{
 			if( !getControlAreaTableModel().getRowAt(i).getDisableFlag().booleanValue() )
 			{
-				LoadControlClientConnection.getInstance().write(
+				getLoadControlClientConnection().write(
 					new LMCommand( LMCommand.DISABLE_CONTROL_AREA,
 						 				getControlAreaTableModel().getRowAt(i).getYukonID().intValue(),
 						 				0, 0.0) );
@@ -250,7 +251,7 @@ public void buttonBarPanel_JButtonEnableAllAction_actionPerformed(java.util.Even
 		{
 			if( getControlAreaTableModel().getRowAt(i).getDisableFlag().booleanValue() )
 			{
-				LoadControlClientConnection.getInstance().write(
+				getLoadControlClientConnection().write(
 					new LMCommand( LMCommand.ENABLE_CONTROL_AREA,
 						 				getControlAreaTableModel().getRowAt(i).getYukonID().intValue(),
 						 				0, 0.0) );
@@ -538,19 +539,19 @@ private String[] createPrintableText()
 private void retrieveAllControlAreasFromServer() {
     LMCommand command = new LMCommand();
     command.setCommand(LMCommand.RETRIEVE_ALL_CONTROL_AREAS);
-    LoadControlClientConnection.getInstance().queue(command);
+    getLoadControlClientConnection().queue(command);
 }
 
 public void lmDisplayRefresh() {
-    LMControlArea[] currentAreas = LoadControlClientConnection.getInstance().getAllLMControlAreas();
+    LMControlArea[] currentAreas = getLoadControlClientConnection().getAllLMControlAreas();
     if(currentAreas != null && currentAreas.length > 0) {
         getGroupTableModel().clear();
         getProgramTableModel().clear();
         getControlAreaTableModel().clear();
         for(LMControlArea controlArea : currentAreas) {
             updateControlAreaTableModel( controlArea, getControlAreaTableModel());
-            LoadControlClientConnection.getInstance().notifyObservers( new LCChangeEvent( 
-                                 LoadControlClientConnection.getInstance(), 
+            getLoadControlClientConnection().notifyObservers( new LCChangeEvent( 
+                                 getLoadControlClientConnection(), 
                                  LCChangeEvent.UPDATE, 
                                  controlArea ) );
         }
@@ -631,13 +632,13 @@ public javax.swing.JComboBox getViewComboBox() {
 public String getConnectionState() 
 {
 	StringBuffer title = new StringBuffer(LOAD_MANAGEMENT_NAME);
-	boolean validConn = LoadControlClientConnection.getInstance().isValid();
+	boolean validConn = getLoadControlClientConnection().isValid();
 
 	if( validConn && !lastConnectionStatus )
 	{
 		// connected and change
 		title.append("   [Connected to " +
-			LOAD_MANAGEMENT_NAME + "@" + LoadControlClientConnection.getInstance().getHost() + ":" + LoadControlClientConnection.getInstance().getPort() + "]");
+			LOAD_MANAGEMENT_NAME + "@" + getLoadControlClientConnection().getHost() + ":" + getLoadControlClientConnection().getPort() + "]");
 
 		getMessagePanel().messageEvent(new com.cannontech.common.util.MessageEvent(this, 
 				"Connection to " + LOAD_MANAGEMENT_NAME + " server established", com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE));
@@ -655,8 +656,8 @@ public String getConnectionState()
 	else if( lastConnectionStatus )  // still connected
 	{
 		title.append("   [Connected to " + LOAD_MANAGEMENT_NAME + "@" + 
-				LoadControlClientConnection.getInstance().getHost() + ":" + 
-				LoadControlClientConnection.getInstance().getPort() + "]");
+				getLoadControlClientConnection().getHost() + ":" + 
+				getLoadControlClientConnection().getPort() + "]");
 	}
 	else // still disconnected
 	{		
@@ -698,37 +699,12 @@ private com.cannontech.loadcontrol.popup.ControlAreaPopUpMenu getControlAreaPopU
 
 	return controlAreaPopUpMenu;
 }
-/**
- * Insert the method's description here.
- * Creation date: (9/29/00 1:46:27 PM)
- * @return ControlAreaTableModel
- */
-/*
-private ControlAreaTableModel getControlAreaTableModel() 
-{
-	return (ControlAreaTableModel)getJTableControlArea().getModel();
-}
-*/
 
 private IControlAreaTableModel getControlAreaTableModel() 
 {
 	return (IControlAreaTableModel)getJTableControlArea().getModel();
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (4/19/2001 12:56:35 PM)
- * @return com.cannontech.loadcontrol.popup.CurtailPopUpMenu
- */
-/*
-private com.cannontech.loadcontrol.popup.CurtailPopUpMenu getCurtailCustomerPopUpMenu() 
-{
-	if( curtailCustomerPopUpMenu == null )
-		curtailCustomerPopUpMenu = new CurtailPopUpMenu();
-
-	return curtailCustomerPopUpMenu;
-}
-*/
 /**
  * Insert the method's description here.
  * Creation date: (8/4/00 8:59:17 AM)
@@ -998,8 +974,6 @@ public javax.swing.JTable[] getJTables()
    
 public javax.swing.JPanel getMainJPanel()
 {
-
-	//if( LoadControlClientConnection.getInstance().needInitConn() )
 	initClientConnection();
 
 	return this;
@@ -1154,7 +1128,7 @@ private void initClientConnection()
 private void initConnections() throws java.lang.Exception 
 {
 	//Observe the Connection to the Client
-	LoadControlClientConnection.getInstance().addObserver( this );
+	getLoadControlClientConnection().addObserver( this );
     
     //Make sure we request all control areas from the server
     retrieveAllControlAreasFromServer();
@@ -1193,8 +1167,6 @@ private void initConnections() throws java.lang.Exception
 
 	getJTableGroup().addMouseListener( groupListener );
 	getGroupPopUpMenu().addPopupMenuListener( this );
-	//getCurtailCustomerPopUpMenu().addPopupMenuListener( this );
-
 
 	//Add the ProgramPopUpMenu menu listeners
 	getJTableProgram().addMouseListener( new com.cannontech.clientutils.popup.PopUpMenuShower(getProgramPopUpMenu()) );
@@ -1387,12 +1359,6 @@ public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent e)
 	if( e.getSource() == LoadControlMainPanel.this.getGroupPopUpMenu() )
 		getGroupPopUpMenu().setLoadControlGroup( getSelectedGroup() );
 
-/*
-	if( e.getSource() == LoadControlMainPanel.this.getCurtailCustomerPopUpMenu() )
-		getCurtailCustomerPopUpMenu().setLoadControlGroup( 
-			(com.cannontech.loadcontrol.data.LMGroupBase)getSelectedBottomRow() );
-*/
-
 	if( e.getSource() == LoadControlMainPanel.this.getProgramPopUpMenu() )
 	{
 		getProgramPopUpMenu().setLoadControlProgram( getSelectedProgram() );
@@ -1503,7 +1469,8 @@ public void setGridLines(boolean hGridLines, boolean vGridLines )
  */
 public void setInitialTitle()
 {
-	//NOT USED
+	LoadControlClientConnection clientConnection = YukonSpringHook.getBean("loadControlClientConnection", LoadControlClientConnection.class);
+	update(clientConnection, clientConnection);
 }
 /**
  * Insert the method's description here.
@@ -1597,16 +1564,21 @@ public void update(java.util.Observable source, Object val)
 	//notifying us of a change in the connections state
 	if( source instanceof LoadControlClientConnection )
 	{
-		if( val != null && val instanceof LoadControlClientConnection )
+		if( getParent() instanceof TDCMainPanel)
 		{
-			LoadControlClientConnection lcConn = (LoadControlClientConnection)val;
-
-			// set the frames Title to a connected/not connected text
-			final String connectedString = getConnectionState();
-
-			java.awt.Frame f = CtiUtilities.getParentFrame(LoadControlMainPanel.this);
-			if( f != null )
-				f.setTitle(connectedString);						
+			//Do a bunch of work to find out if the displayed display is this display
+			TDCMainPanel tdcMainPanel= (TDCMainPanel)getParent();
+			Display display = tdcMainPanel.getCurrentDisplay();
+			int displayTypeIndex = Display.getDisplayTypeIndexByType(display.getType());
+			if (displayTypeIndex == Display.LOAD_CONTROL_CLIENT_TYPE_INDEX) {
+				// set the frames Title to a connected/not connected text
+				final String connectedString = getConnectionState();
+	
+				java.awt.Frame f = CtiUtilities.getParentFrame(LoadControlMainPanel.this);
+				if( f != null ) {
+					f.setTitle(connectedString);
+				}
+			}
 		}
 	
 		if( val instanceof LCChangeEvent ) {
@@ -1690,13 +1662,13 @@ private synchronized void updateControlAreaTableModel(LMControlArea changedArea,
 
 private synchronized void handleChange( LCChangeEvent msg ) {
     if( msg.id == LCChangeEvent.INSERT ) {
-        LMControlArea newArea = LoadControlClientConnection.getInstance().getControlAreas().get(((LMControlArea)msg.arg).getYukonID());
+        LMControlArea newArea = getLoadControlClientConnection().getControlAreas().get(((LMControlArea)msg.arg).getYukonID());
         getControlAreaTableModel().addControlAreaAt(newArea, getInsertionIndx(newArea, getControlAreaTableModel()));
     }
     else if( msg.id == LCChangeEvent.UPDATE ) {
         boolean found = false;
         if(msg.arg instanceof LMControlArea) {
-            LMControlArea newArea = LoadControlClientConnection.getInstance().getControlAreas().get(((LMControlArea)msg.arg).getYukonID());
+            LMControlArea newArea = getLoadControlClientConnection().getControlAreas().get(((LMControlArea)msg.arg).getYukonID());
             for( int i = 0; i < getControlAreaTableModel().getRowCount(); i++ ) {
                 LMControlArea areaRow = getControlAreaTableModel().getRowAt(i);
                     
@@ -1723,6 +1695,10 @@ private synchronized void handleChange( LCChangeEvent msg ) {
         getControlAreaTableModel().clear();               
     }
 
+}
+
+private LoadControlClientConnection getLoadControlClientConnection() {
+	return YukonSpringHook.getBean("loadControlClientConnection", LoadControlClientConnection.class);
 }
 
 }
