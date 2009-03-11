@@ -35,14 +35,10 @@ import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.activity.ActivityLogActions;
-import com.cannontech.database.data.device.CarrierBase;
-import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
-import com.cannontech.database.data.device.IDeviceMeterGroup;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
@@ -51,12 +47,10 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.data.stars.hardware.InventoryBase;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.stars.hardware.Warehouse;
-import com.cannontech.device.range.DeviceAddressRange;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.spring.YukonSpringHook;
@@ -580,38 +574,6 @@ public class InventoryManagerUtil {
 			return snFrom.toString() + " and above";
 		else
 			return snFrom.toString() + " to " + snTo.toString();
-	}
-	
-	public static int createMCT(int mctType, String deviceName, Integer physicalAddr, String meterNumber, Integer routeID)
-		throws TransactionException, WebClientException
-	{
-		if (!DeviceAddressRange.isValidRange( mctType, physicalAddr.intValue() ))
-			throw new WebClientException( "Invalid physical address: " + DeviceAddressRange.getRangeMessage(mctType) );
-		
-		DeviceBase device = com.cannontech.database.data.device.DeviceFactory.createDevice( mctType );
-		
-        PaoDao paoDao = DaoFactory.getPaoDao();
-		device.setDeviceID(paoDao.getNextPaoId());
-		device.setPAOName( deviceName );
-		
-		((CarrierBase)device).getDeviceCarrierSettings().setAddress( physicalAddr );
-		
-		((IDeviceMeterGroup)device).getDeviceMeterGroup().setMeterNumber( meterNumber );
-		
-		((CarrierBase)device).getDeviceRoutes().setRouteID( routeID );
-		
-		// Automatically generate points for some MCTs
-		DBPersistent val = PointUtil.generatePointsForMCT( device );
-		if (val == null) val = device;
-		
-		val = Transaction.createTransaction( Transaction.INSERT, val ).execute();
-		
-		DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages(
-				(CTIDbChange)val, DBChangeMsg.CHANGE_TYPE_ADD );
-		for (int i = 0; i < dbChange.length; i++)
-			ServerUtils.handleDBChangeMsg( dbChange[i] );
-		
-		return device.getDevice().getDeviceID().intValue();
 	}
 	
 	public static void deleteInventory(LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany, boolean deleteFromYukon) throws Exception

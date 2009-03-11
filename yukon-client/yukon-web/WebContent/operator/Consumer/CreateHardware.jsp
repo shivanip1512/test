@@ -74,8 +74,6 @@
 	StarsInventory origInv = null;
 	if (invNo != null) origInv = inventories.getStarsInventory(Integer.parseInt(invNo));
 	
-	YukonListEntry devTypeMCT = liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT);
-	
 	Properties savedReq = null;
 	if (request.getParameter("failed") != null)
 		savedReq = (Properties) session.getAttribute(ServletUtils.ATT_LAST_SUBMITTED_REQUEST);
@@ -99,82 +97,16 @@
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 
 <script language="JavaScript">
-function setDefaultMeterNumber(form) {
-	if (form.PhysicalAddr.value != "" && form.MeterNumber.value == "") {
-		if (form.MCTType.value == <%= PAOGroups.MCT410IL %>)
-			form.MeterNumber.value = form.PhysicalAddr.value;
-		else
-			form.MeterNumber.value = "10" + form.PhysicalAddr.value;
-	}
-}
 
 function validate(form) {
 <% if (!invChecking) { %>
-	if (document.getElementById("HardwareDiv").style.display == "") {
-		if (form.SerialNo.value == "") {
-			alert("Serial # cannot be empty!");
-			return false;
-		}
-	}
-	else {
-		if (form.DeviceName.value == "") {
-			alert("Device name cannot be empty!");
-			return false;
-		}
+	if (form.SerialNo.value == "") {
+		alert("Serial # cannot be empty!");
+		return false;
 	}
 	form.attributes["action"].value = "<%= request.getContextPath() %>/servlet/InventoryManager";
 <% } %>
 	return true;
-}
-
-function createMCT(form) {
-	if (form.CreateMCT.checked) {
-		form.MCTType.disabled = false;
-		form.PhysicalAddr.disabled = false;
-		form.MeterNumber.disabled = false;
-		form.MCTRoute.disabled = false;
-		document.getElementById("DeviceDiv2").style.display = "";
-	}
-	else {
-		document.getElementById("DeviceDiv2").style.display = "none";
-		form.MCTType.disabled = true;
-		form.PhysicalAddr.disabled = true;
-		form.MeterNumber.disabled = true;
-		form.MCTRoute.disabled = true;
-	}
-}
-
-function changeDeviceType(form) {
-<% if (devTypeMCT != null) { %>
-	if (form.DeviceType.value == <%= devTypeMCT.getEntryID() %>) {
-		if (document.getElementById("HardwareDiv") != null)
-			document.getElementById("HardwareDiv").style.display = "none";
-		if (document.getElementById("HardwareDiv2") != null)
-			document.getElementById("HardwareDiv2").style.display = "none";
-		if (document.getElementById("DeviceDiv") != null)
-			document.getElementById("DeviceDiv").style.display = "";
-		if (document.getElementById("DeviceDiv2") != null) {
-			if (form.CreateMCT == null)
-				document.getElementById("DeviceDiv2").style.display = "";
-			else
-				createMCT(form);
-		}
-	}
-	else {
-		if (document.getElementById("HardwareDiv") != null)
-			document.getElementById("HardwareDiv").style.display = "";
-		if (document.getElementById("HardwareDiv2") != null)
-			document.getElementById("HardwareDiv2").style.display = "";
-		if (document.getElementById("DeviceDiv") != null)
-			document.getElementById("DeviceDiv").style.display = "none";
-		if (document.getElementById("DeviceDiv2") != null)
-			document.getElementById("DeviceDiv2").style.display = "none";
-	}
-<% } %>
-}
-
-function init() {
-	changeDeviceType(document.MForm);
 }
 
 function confirmCancel() {
@@ -267,7 +199,7 @@ function confirmCancel() {
                                   <div align="right">*Type: </div>
                                 </td>
                                 <td width="200"> 
-                                  <select name="DeviceType" onchange="changeDeviceType(this.form);setContentChanged(true);">
+                                  <select name="DeviceType" onchange="setContentChanged(true);">
                                     <%
 	int savedDeviceType = inventory.getDeviceType().getEntryID();
 	if (savedReq.getProperty("DeviceType") != null)
@@ -296,86 +228,7 @@ function confirmCancel() {
                               </tr>
 							</table>
 							</div>
-							<div id="DeviceDiv" style="display:none">
-                              <table width="300" border="0" cellspacing="0" cellpadding="1" align="center" class="TableCell">
-                                <tr> 
-                                  <td width="100" align="right" class="SubtitleHeader">*Device Name: </td>
-                                  <td width="200"> 
-                                    <input type="text" name="DeviceName" maxlength="30" size="24" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("DeviceName")) %>" onchange="setContentChanged(true)">
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td width="100" align="right">&nbsp; </td>
-                                  <td width="200">
-                                    <input type="checkbox" name="CreateMCT" value="true" onclick="createMCT(this.form)" <% if (savedReq.getProperty("CreateMCT") != null) out.print("checked"); %>>
-                                    Create new device</td>
-                                </tr>
-                              </table>
-							</div>
-<% } %>
-<% if (inventory.getDeviceID() == 0) { %>
-							<div id="DeviceDiv2" style="display:none">
-                              <table width="300" border="0" cellspacing="0" cellpadding="1" align="center" class="TableCell">
-                                <tr> 
-                                  <td width="100" align="right" class="SubtitleHeader">*MCT Type: </td>
-                                  <td width="200"> 
-                                    <select name="MCTType" onchange="setContentChanged(true)">
-                                      <%
-	int savedMCTType = 0;
-	if (savedReq.getProperty("MCTType") != null)
-		savedMCTType = Integer.parseInt(savedReq.getProperty("MCTType"));
-	
-	for (int i = 0; i < InventoryManagerUtil.MCT_TYPES.length; i++) {
-		int mctType = PAOGroups.getDeviceType(InventoryManagerUtil.MCT_TYPES[i]);
-		String selected = (mctType == savedMCTType)? "selected" : "";
-%>
-                                      <option value="<%= mctType %>" <%= selected %>><%= InventoryManagerUtil.MCT_TYPES[i] %></option>
-                                      <%
-	}
-%>
-                                    </select>
-                                  </td>
-                                </tr>
-                                <tr> 
-                                  <td width="100" align="right" class="SubtitleHeader">*Physical Addr: </td>
-                                  <td width="200"> 
-                                    <input type="text" name="PhysicalAddr" maxlength="30" size="24" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("PhysicalAddr")) %>" onblur="setDefaultMeterNumber(this.form)" onchange="setContentChanged(true)">
-                                  </td>
-                                </tr>
-                                <tr> 
-                                  <td width="100" align="right" class="SubtitleHeader">*Meter Number: </td>
-                                  <td width="200"> 
-                                    <input type="text" name="MeterNumber" maxlength="30" size="24" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("MeterNumber")) %>" onchange="setContentChanged(true)">
-                                  </td>
-                                </tr>
-                                <tr> 
-                                  <td width="100" align="right" class="SubtitleHeader">*Route: </td>
-                                  <td width="200"> 
-                                    <select name="MCTRoute" onChange="setContentChanged(true)">
-                                      <%
-	int savedRoute = 0;
-	if (savedReq.getProperty("MCTRoute") != null)
-		savedRoute = Integer.parseInt(savedReq.getProperty("MCTRoute"));
-	
-	LiteYukonPAObject[] mctRoutes = liteEC.getAllRoutes();
-	for (int i = 0; i < mctRoutes.length; i++) {
-		if (mctRoutes[i].getType() == RouteTypes.ROUTE_CCU || mctRoutes[i].getType() == RouteTypes.ROUTE_MACRO) {
-			String selected = (mctRoutes[i].getYukonID() == savedRoute)? "selected" : "";
-%>
-                                      <option value="<%= mctRoutes[i].getYukonID() %>" <%= selected %>><%= mctRoutes[i].getPaoName() %></option>
-                                      <%
-		}
-	}
-%>
-                                    </select>
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td width="100" align="right">&nbsp;</td>
-                                  <td width="200">&nbsp;</td>
-                                </tr>
-                              </table>
-							</div>
+
 <% } %>
                             <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                               <tr> 

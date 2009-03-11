@@ -33,6 +33,7 @@ import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.TitleBorder;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.MCT310ID;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
@@ -114,9 +115,10 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
                         String text = generateDeviceChangeText(deviceDefinition);
                         if (((DeviceDefinition) getJListDevices().getSelectedValue()).equals(deviceDefinition)) {
 
-                            int type = deviceDefinition.getType();
-                            if (currentDevice instanceof MCT310ID
-                                    && (type == DeviceTypes.MCT410CL || type == DeviceTypes.MCT410IL)) {
+                            int currentDeviceType = PAOGroups.getDeviceType(currentDevice.getPAOType());
+                            int newType = deviceDefinition.getType();
+                            
+                            if (DeviceTypesFuncs.isDisconnectMCT(currentDeviceType) && (DeviceTypesFuncs.isMCT410(newType)) ) {
                                 isDisconnect = true;
                                 text = "--When changed to a 410, this device will REQUIRE a disconnect address.\n"
                                         + text;

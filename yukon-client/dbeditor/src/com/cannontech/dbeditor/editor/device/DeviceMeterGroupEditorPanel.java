@@ -1055,12 +1055,7 @@ public void setValue(Object val)
 			getLastIntervalDemandRateLabel().setVisible(false);
 		}
 		
-		if(deviceType == PAOGroups.MCT410IL
-			|| deviceType == PAOGroups.MCT410CL
-			|| deviceType == PAOGroups.MCT470
-			|| DeviceTypesFuncs.isMCT430(deviceType)
-			)
-		{
+		if(DeviceTypesFuncs.isMCT4XX(deviceType)) {
 			getChannel2CheckBox().setEnabled(true);
 			getChannel3CheckBox().setEnabled(true);
 			

@@ -219,15 +219,6 @@ public class CreateLMHardwareAction implements ActionBase {
 				hwDB.setLMHardwareTypeID( new Integer(createHw.getDeviceType().getEntryID()) );
 				hwDB.setRouteID( new Integer(createHw.getLMHardware().getRouteID()) );
 			}
-			else if (createHw.getDeviceID() == 0 && createHw.getMCT() != null) {
-				int deviceID = InventoryManagerUtil.createMCT(
-						createHw.getMCT().getMctType(),
-						createHw.getMCT().getDeviceName(),
-						new Integer(createHw.getMCT().getPhysicalAddress()),
-						createHw.getMCT().getMeterNumber(),
-						new Integer(createHw.getMCT().getRouteID()) );
-				createHw.setDeviceID( deviceID );
-			}
 			
 			StarsFactory.setInventoryBase( invDB, createHw );
 			

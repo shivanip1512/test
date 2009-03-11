@@ -11,7 +11,7 @@
 	}
 	else if (request.getParameter("Member") != null) {
 		// Request from the same page while member selection has been changed
-		ServletUtils.saveRequest(request, session, new String[] {"Member", "MCTType", "DeviceName", "PhysicalAddr", "MeterNumber", "MCTRoute", "DeviceLabel", "AltTrackNo", "ReceiveDate", "Voltage", "ServiceCompany", "Notes"});
+		ServletUtils.saveRequest(request, session, new String[] {"Member", "DeviceLabel", "AltTrackNo", "ReceiveDate", "Voltage", "ServiceCompany", "Notes"});
 	}
 	else if (request.getParameter("InvID") != null) {
         
@@ -22,9 +22,6 @@
 		LiteInventoryBase liteInv = starsInventoryBaseDao.getById(Integer.parseInt(request.getParameter("InvID")));
 		LiteYukonPAObject litePao = DaoFactory.getPaoDao().getLiteYukonPAO(liteInv.getDeviceID());
 		Properties savedReq = new Properties();
-		savedReq.setProperty("MCTType", String.valueOf(litePao.getType()));
-		savedReq.setProperty("DeviceName", litePao.getPaoName() + "(New)");
-		savedReq.setProperty("MCTRoute", String.valueOf(litePao.getRouteID()));
 		savedReq.setProperty("DeviceLabel", liteInv.getDeviceLabel());
 		savedReq.setProperty("ReceiveDate", dateFormattingService.formatDate(new Date(liteInv.getReceiveDate()), DateFormatEnum.DATE, userContext));
 		savedReq.setProperty("Voltage", String.valueOf(liteInv.getVoltageID()));
@@ -38,16 +35,9 @@
 	if (savedReq == null) savedReq = new Properties();
 	
 	int deviceID = 0;
-	String deviceType = "(none)";
-	String deviceName = "(none)";
-	String disabled = "";
-	
 	LiteYukonPAObject selectedMCT = (LiteYukonPAObject) session.getAttribute(InventoryManagerUtil.DEVICE_SELECTED);
 	if (selectedMCT != null) {
 		deviceID = selectedMCT.getYukonID();
-		deviceType = PAOGroups.getPAOTypeString(selectedMCT.getType());
-		deviceName = selectedMCT.getPaoName();
-		disabled = "disabled";
 	}
 	
 	LiteStarsEnergyCompany member = null;
@@ -63,15 +53,6 @@
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 
 <script language="JavaScript">
-function setDefaultMeterNumber(form) {
-	if (form.PhysicalAddr.value != "" && form.MeterNumber.value == "") {
-		if (form.MCTType.value == <%= PAOGroups.MCT410IL %>)
-			form.MeterNumber.value = form.PhysicalAddr.value;
-		else
-			form.MeterNumber.value = "10" + form.PhysicalAddr.value;
-	}
-}
-
 function selectMCT(form) {
 	form.attributes["action"].value = "SelectMCT.jsp";
 	form.submit();
@@ -82,25 +63,6 @@ function changeMember(form) {
 	form.submit();
 }
 
-function validate(form) {
-	if (form.DeviceName.value == "") {
-		if (form.DeviceID.value == -1) {
-			alert("You must select a meter from the list of all MCTs");
-			return false;
-		}
-	}
-	else {
-		if (form.PhysicalAddr.value == "") {
-			alert("Physical address cannot be empty");
-			return false;
-		}
-		if (form.MeterNumber.value == "") {
-			alert("Meter number cannot be empty");
-			return false;
-		}
-	}
-	return true;
-}
 </script>
 </head>
 
@@ -181,11 +143,11 @@ function validate(form) {
 	                            <table width="300" border="0" cellspacing="0" cellpadding="3" class="TableCell">
 	                              <tr> 
 	                                <td align="right" width="88">Type:</td>
-	                                <td width="210"><%= deviceType %></td>
+	                                <td width="210"><%= PAOGroups.getPAOTypeString(selectedMCT.getType()) %></td>
 	                              </tr>
 	                              <tr> 
 	                                <td align="right" width="88">Device Name:</td>
-	                                <td width="210"><%= deviceName %></td>
+	                                <td width="210"><%= selectedMCT.getPaoName()%></td>
 	                              </tr>
 	                            </table>
 	                            <br>

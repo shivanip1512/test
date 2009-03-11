@@ -144,7 +144,7 @@ public class CheckInventoryController extends StarsInventoryActionController {
                 if (action.equalsIgnoreCase("CreateLMHardware")) {
                     // Request from CreateHardware.jsp, no inventory checking
                     ServletUtils.saveRequest(request, session, new String[]
-                                                                          {"DeviceType", "SerialNo", "DeviceName", "CreateMCT", "MCTType", "PhysicalAddr", "MeterNumber", "MCTRoute",
+                                                                          {"DeviceType", "SerialNo", 
                             "DeviceLabel", "AltTrackNo", "fieldReceiveDate", "FieldRemoveDate", "Voltage", "Notes", "InstallDate", "ServiceCompany", "InstallNotes", "Route"} );
     
                     StarsCreateLMHardware createHw = new StarsCreateLMHardware();
