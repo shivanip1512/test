@@ -129,8 +129,8 @@ DELETE FROM MspInterface
 WHERE Interface IN ('MR_CB', 'CD_CB', 'MR_EA', 'OD_OA') 
 AND VendorId != 1; 
 DELETE FROM MspInterface 
-WHERE Interface IN ('CB_MR', 'CB_CD', 'EA_MR', 'OA_OA') 
-AND VendorId = 1; 
+WHERE Interface IN ('CB_MR', 'CB_CD', 'EA_MR', 'OA_OD') 
+AND VendorId = 1;
 
 UPDATE MspInterface
 SET Interface = 'CB_Server'
