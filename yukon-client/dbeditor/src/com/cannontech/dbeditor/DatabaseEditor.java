@@ -2181,8 +2181,12 @@ public void popupMenuWillBecomeVisible(PopupMenuEvent event)
       getTreeNodePopupMenu().getJMenuItemDelete().setEnabled(true);
       getTreeNodePopupMenu().getJMenuItemEdit().setEnabled(true);
       getTreeNodePopupMenu().getJMenuSortAllPointsBy().setEnabled(false);
-		
-		
+	
+      editMenu.changeTypeMenuItem.setEnabled(true);
+      editMenu.copyMenuItem.setEnabled(true);
+      editMenu.deleteMenuItem.setEnabled(true);
+      editMenu.editMenuItem.setEnabled(true);
+      
 		//check for multi select
 		if( getTreeViewPanel().getSelectedNodes().length > 1 )
 		{
@@ -2190,7 +2194,12 @@ public void popupMenuWillBecomeVisible(PopupMenuEvent event)
 	      getTreeNodePopupMenu().getJMenuItemCopy().setEnabled(false);
 	      getTreeNodePopupMenu().getJMenuItemDelete().setEnabled(true);
 	      getTreeNodePopupMenu().getJMenuItemEdit().setEnabled(true);
-	      getTreeNodePopupMenu().getJMenuSortAllPointsBy().setEnabled(false);			
+	      getTreeNodePopupMenu().getJMenuSortAllPointsBy().setEnabled(false);
+	      
+	      editMenu.changeTypeMenuItem.setEnabled(false);
+	      editMenu.copyMenuItem.setEnabled(false);
+	      editMenu.deleteMenuItem.setEnabled(true);
+	      editMenu.editMenuItem.setEnabled(true);
 		}
 		else
 		{
@@ -2205,7 +2214,12 @@ public void popupMenuWillBecomeVisible(PopupMenuEvent event)
 	            getTreeNodePopupMenu().getJMenuItemCopy().setEnabled(false);
 	            getTreeNodePopupMenu().getJMenuItemDelete().setEnabled(false);
 	            getTreeNodePopupMenu().getJMenuItemEdit().setEnabled(false);
-	   
+	            
+	            editMenu.changeTypeMenuItem.setEnabled(false);
+	            editMenu.copyMenuItem.setEnabled(false);
+	            editMenu.deleteMenuItem.setEnabled(false);
+	            editMenu.editMenuItem.setEnabled(false);
+	            
 	            if (!selectedNode.isRoot())
 	               getTreeNodePopupMenu().getJMenuSortAllPointsBy().setEnabled(true);
 	         }
@@ -2222,14 +2236,16 @@ public void popupMenuWillBecomeVisible(PopupMenuEvent event)
 	                || litYuk.getType() == com.cannontech.database.data.pao.PAOGroups.MACRO_GROUP
 	                || litYuk.getPaoClass() == com.cannontech.database.data.pao.DeviceClasses.LOADMANAGEMENT )
 	            {
-	               getTreeNodePopupMenu().getJMenuItemChangeType().setEnabled(false);               
-	   
+	               getTreeNodePopupMenu().getJMenuItemChangeType().setEnabled(false);
+	               editMenu.changeTypeMenuItem.setEnabled(false);
 	            }
 	            else if ( litYuk.getCategory() == com.cannontech.database.data.pao.PAOGroups.CAT_CUSTOMER
 	                       || litYuk.getPaoClass() == com.cannontech.database.data.pao.DeviceClasses.SYSTEM)
 	            {
 	               getTreeNodePopupMenu().getJMenuItemChangeType().setEnabled(false);
 	               getTreeNodePopupMenu().getJMenuItemCopy().setEnabled(false);
+	               editMenu.changeTypeMenuItem.setEnabled(false);
+	               editMenu.copyMenuItem.setEnabled(false);
 	            }
 	
 	         }
@@ -2243,6 +2259,8 @@ public void popupMenuWillBecomeVisible(PopupMenuEvent event)
 	         {
 	            getTreeNodePopupMenu().getJMenuItemChangeType().setEnabled(false);
 	            getTreeNodePopupMenu().getJMenuItemCopy().setEnabled(false);
+	            editMenu.changeTypeMenuItem.setEnabled(false);
+	            editMenu.copyMenuItem.setEnabled(false);
 	         }
 	      }
 		}      

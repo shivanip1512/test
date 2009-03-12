@@ -122,7 +122,7 @@ protected javax.swing.JMenuItem getJMenuItemDelete()
 		jMenuItemDelete = new javax.swing.JMenuItem();
 		jMenuItemDelete.setName("JMenuItemDelete");
 		jMenuItemDelete.setMnemonic('t');
-		jMenuItemDelete.setText("Delete...");
+		jMenuItemDelete.setText("Delete");
 	}
 	
 	return jMenuItemDelete;
