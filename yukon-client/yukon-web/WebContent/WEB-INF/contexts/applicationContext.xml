@@ -801,7 +801,10 @@
             <list>
                 <!-- DO NOT REMOVE -->
                 <value>ALLOW|/remote/**|DATABASE_EDITOR,TABULAR_DISPLAY_CONSOLE,COMMANDER,APPLICATION_ESUBSTATION_EDITOR,TRENDING</value>
-
+                <value>ALLOW|/|WEB_CLIENT</value>
+                <value>ALLOW|/index.jsp|WEB_CLIENT</value>
+                <value>ALLOW|/home|WEB_CLIENT</value>
+                                                
                 <value>ALLOW|/spring/stars/consumer/**|RESIDENTIAL_CUSTOMER</value>
                 <value>ALLOW|/spring/login/changelogin/updateusername|RESIDENTIAL_CUSTOMER</value>
                 <value>ALLOW|/spring/login/changelogin/updatepassword|RESIDENTIAL_CUSTOMER</value>                                
