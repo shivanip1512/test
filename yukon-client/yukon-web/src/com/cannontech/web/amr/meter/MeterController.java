@@ -30,6 +30,7 @@ import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.CachingPointFormattingService;
@@ -38,11 +39,13 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.bulk.model.collection.DeviceFilterCollectionHelper;
+import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.updater.point.PointUpdateBackingService;
 
 /**
  * Spring controller class
  */
+@CheckRole({YukonRole.METERING,YukonRole.SYSTEM_BILLING,YukonRole.SCHEDULER})
 public class MeterController extends MultiActionController {
 
     private MeterSearchService meterSearchService = null;

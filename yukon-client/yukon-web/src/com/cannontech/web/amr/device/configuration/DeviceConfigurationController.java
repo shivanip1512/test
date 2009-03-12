@@ -44,11 +44,14 @@ import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 /**
  * Spring controller class for Device Configuration
  */
+@CheckRoleProperty(YukonRoleProperty.ADMIN_VIEW_CONFIG)
 public class DeviceConfigurationController extends MultiActionController {
 
     public DeviceConfigurationDao deviceConfigurationDao = null;

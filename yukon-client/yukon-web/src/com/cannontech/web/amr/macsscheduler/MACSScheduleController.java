@@ -20,6 +20,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import com.cannontech.amr.macsscheduler.service.MACSScheduleService;
 import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.macs.message.Schedule;
@@ -27,7 +28,9 @@ import com.cannontech.roles.operator.SchedulerRole;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.security.annotation.CheckRole;
 
+@CheckRole(YukonRole.SCHEDULER)
 public class MACSScheduleController extends MultiActionController {
     private static final Comparator<Schedule> sortByName;
     private static final Comparator<Schedule> sortByCategory;

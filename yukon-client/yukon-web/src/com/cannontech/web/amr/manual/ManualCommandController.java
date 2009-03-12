@@ -14,16 +14,19 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.core.dao.CommandDao;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.yc.bean.YCBean;
 
 /**
  * Spring controller class
  */
+@CheckRole(YukonRole.COMMANDER)
 public class ManualCommandController extends MultiActionController {
 
 	private PaoDao paoDao = null;

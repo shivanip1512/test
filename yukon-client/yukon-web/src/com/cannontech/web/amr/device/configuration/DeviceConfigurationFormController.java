@@ -13,14 +13,17 @@ import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.CategoryTemplate;
 import com.cannontech.common.device.config.model.ConfigurationBase;
 import com.cannontech.common.device.config.model.ConfigurationTemplate;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.web.input.Input;
 import com.cannontech.web.input.InputFormController;
 import com.cannontech.web.input.InputRoot;
 import com.cannontech.web.input.InputSource;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 /**
  * Spring controller class for Device Configuration form input
  */
+@CheckRoleProperty(YukonRoleProperty.ADMIN_VIEW_CONFIG)
 public class DeviceConfigurationFormController extends InputFormController {
 
     private InputRoot inputRoot = null;

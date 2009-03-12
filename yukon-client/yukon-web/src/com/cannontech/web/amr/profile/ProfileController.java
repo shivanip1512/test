@@ -12,14 +12,17 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.operator.MeteringRole;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 /**
  * Spring controller class for profile
  */
+@CheckRoleProperty({YukonRoleProperty.PROFILE_COLLECTION,YukonRoleProperty.PROFILE_COLLECTION_SCANNING})
 public class ProfileController extends MultiActionController {
 
     private AuthDao authDao = null;
