@@ -117,7 +117,7 @@ function twoWayLCRCheck(el) {
 		$('twoWayLcr_TR').show();
 
 		if($('choosenYukonDeviceId').value.strip() == '' && $('yukonDeviceName').value.strip() == '') {
-			alert('A Yukon device MUST be setup for this Two Way LCR.\n\nUse the "Yukon Two Way LCR Profile" section to create a new Yukon device, or to link to an existing Yukon device.');
+			alert('A Yukon device MUST be setup for this Two Way LCR.\n\nUse the "Yukon Two Way LCR Device Profile" section to create a new Yukon device, or to link to an existing Yukon device.');
 		}
 		
 	} else {
@@ -372,7 +372,7 @@ if (savedReq.getProperty("yukonDeviceCreationStyleRadio") != null)
                   	<td colspan="2">
                   		<table border="0" cellspacing="0" cellpadding="0">
                         <tr> 
-                          <td valign="top"><span class="SubtitleHeader">Yukon Device Profile <b>(REQUIRED)</b></span> 
+                          <td valign="top"><span class="SubtitleHeader">Yukon Two Way LCR Device Profile <b>(REQUIRED)</b></span> 
                             <hr>
                             <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                               <tr>
