@@ -57,7 +57,9 @@
         </constructor-arg>
     </bean>
 
-    <bean id="jobManager" class="com.cannontech.jobs.service.impl.JobManagerImpl" init-method="initialize">
+    <bean id="jobManagerStub" class="com.cannontech.jobs.service.impl.JobManagerStub" />
+    
+    <bean id="jobManagerActual" class="com.cannontech.jobs.service.impl.JobManagerImpl">
         <property name="timeSource" ref="timeSource"/>
         <property name="scheduledOneTimeJobDao" ref="scheduledOneTimeJobDao"/>
         <property name="scheduledRepeatingJobDao" ref="scheduledRepeatingJobDao"/>
@@ -66,5 +68,12 @@
         <property name="transactionTemplate" ref="transactionTemplate"/>
         <property name="scheduledExecutor" ref="jobScheduledExecutor"/>
     </bean>
+    
+    <bean id="jobManager" class="com.cannontech.jobs.support.JobManagerFactory">
+	    <property name="configurationSource" ref="configurationSource"/>
+	    <property name="jobManagerStub" ref="jobManagerStub"/>
+	    <property name="jobManagerActual" ref="jobManagerActual"/>
+    </bean>
+        
 </beans>
 
