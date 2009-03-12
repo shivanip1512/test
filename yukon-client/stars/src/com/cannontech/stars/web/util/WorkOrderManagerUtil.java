@@ -10,6 +10,8 @@ import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.web.bind.ServletRequestUtils;
+
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.xml.serialize.CurrentState;
@@ -34,8 +36,12 @@ public class WorkOrderManagerUtil {
 	{
 		if (req.getParameter("OrderID") != null)
 			starsOrder.setOrderID( Integer.parseInt(req.getParameter("OrderID")) );
-		if (req.getParameter("AccountID") != null)
-			starsOrder.setAccountID( Integer.parseInt(req.getParameter("AccountID")) );
+		
+		int accountId = ServletRequestUtils.getIntParameter(req,
+                                                                    "AccountId",
+                                                                    0);
+		if (accountId > 0)
+			starsOrder.setAccountID(accountId);
 		if (req.getParameter("OrderNo") != null)
 			starsOrder.setOrderNumber( req.getParameter("OrderNo") );
 		if (req.getParameter("AddtlOrderNumber") != null)

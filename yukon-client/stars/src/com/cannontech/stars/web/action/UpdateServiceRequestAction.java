@@ -212,11 +212,13 @@ public class UpdateServiceRequestAction implements ActionBase {
 	}
 	
 	private void parseResponse(StarsServiceRequest starsOrder, StarsCustAccountInformation starsAcctInfo) {
-		StarsServiceRequestHistory orders = starsAcctInfo.getStarsServiceRequestHistory();
-		for (int i = 0; i < orders.getStarsServiceRequestCount(); i++) {
-			if (orders.getStarsServiceRequest(i).getOrderID() == starsOrder.getOrderID()) {
-				orders.setStarsServiceRequest(i, starsOrder);
-				break;
+		if(starsAcctInfo != null){
+			StarsServiceRequestHistory orders = starsAcctInfo.getStarsServiceRequestHistory();
+			for (int i = 0; i < orders.getStarsServiceRequestCount(); i++) {
+				if (orders.getStarsServiceRequest(i).getOrderID() == starsOrder.getOrderID()) {
+					orders.setStarsServiceRequest(i, starsOrder);
+					break;
+				}
 			}
 		}
 	}

@@ -142,12 +142,14 @@ public class CreateServiceRequestAction implements ActionBase {
     				redirect += liteOrder.getOrderID();
                 }
                 session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
-				
-				StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( createOrder.getAccountID() );
-				if (starsAcctInfo != null) {
-					StarsServiceRequest starsOrder = StarsLiteFactory.createStarsServiceRequest( liteOrder, energyCompany );
-					starsAcctInfo.getStarsServiceRequestHistory().addStarsServiceRequest(0, starsOrder);
-				}
+
+                if (createOrder.hasAccountID()) {
+                	StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( createOrder.getAccountID() );
+	                if (starsAcctInfo != null) {
+						StarsServiceRequest starsOrder = StarsLiteFactory.createStarsServiceRequest( liteOrder, energyCompany );
+						starsAcctInfo.getStarsServiceRequestHistory().addStarsServiceRequest(0, starsOrder);
+					}
+	            }
 				
 				respOper.setStarsSuccess( new StarsSuccess() );
 				return SOAPUtil.buildSOAPMessage( respOper );
@@ -182,7 +184,6 @@ public class CreateServiceRequestAction implements ActionBase {
 	public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {
         try {
             StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
-            StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
 
 			StarsFailure failure = operation.getStarsFailure();
 			if (failure != null) {
@@ -196,8 +197,9 @@ public class CreateServiceRequestAction implements ActionBase {
 					session.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
 				
 			StarsCreateServiceRequestResponse resp = operation.getStarsCreateServiceRequestResponse();
-			accountInfo.getStarsServiceRequestHistory().addStarsServiceRequest( 0, resp.getStarsServiceRequest() );
-			
+			if (accountInfo != null) {
+				accountInfo.getStarsServiceRequestHistory().addStarsServiceRequest( 0, resp.getStarsServiceRequest() );
+			}
             return 0;
         }
         catch (Exception e) {
@@ -247,10 +249,13 @@ public class CreateServiceRequestAction implements ActionBase {
 			workOrder.getWorkOrderBase().setCurrentStateID( new Integer(
 					energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PENDING).getEntryID()) );
 		}
-		if (!createOrder.hasAccountID())
-			workOrder.getWorkOrderBase().setAccountID( new Integer(liteAcctInfo.getAccountID()) );
+		if (!createOrder.hasAccountID()) {
+			if (liteAcctInfo != null){
+				workOrder.getWorkOrderBase().setAccountID( new Integer(liteAcctInfo.getAccountID())) ;
+			}
+		}
+		
 		workOrder.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-        
 		workOrder = Transaction.createTransaction(Transaction.INSERT, workOrder).execute();
         
 		//New event!

@@ -1251,8 +1251,6 @@ public class ImportManagerUtil {
 		
 		if (liteAcctInfo != null)
 			createOrder.setAccountID( liteAcctInfo.getAccountID() );
-		else
-			createOrder.setAccountID( CtiUtilities.NONE_ZERO_ID );
 		
 		StarsUtils.starsDateFormat.setTimeZone( energyCompany.getDefaultTimeZone() );
 		

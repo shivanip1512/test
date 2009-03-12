@@ -6,6 +6,7 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="com.cannontech.stars.web.util.WorkOrderManagerUtil" %>
 <%@ page import="com.cannontech.common.util.Pair" %>
+<%@ page import="com.cannontech.stars.core.dao.StarsWorkOrderBaseDao"%>
 <%
     LiteWorkOrderBase liteOrder = null;
     LiteStarsEnergyCompany liteWOEnergyCompany = null;
@@ -14,6 +15,9 @@
         liteOrder = (LiteWorkOrderBase)((Pair)workOrderSetList.get(0)).getFirst();
     else
         liteOrder = (LiteWorkOrderBase)workOrderSetList.get(0);
+    
+    StarsWorkOrderBaseDao starsWorkOrderBaseDao = YukonSpringHook.getBean("starsWorkOrderBaseDao",StarsWorkOrderBaseDao.class);
+    liteOrder = starsWorkOrderBaseDao.getById(liteOrder.getOrderID());
     
     EventWorkOrderDao eventWorkOrderDao = YukonSpringHook.getBean("eventWorkOrderDao", EventWorkOrderDao.class);
     List<EventWorkOrder> eventWorkOrderList = eventWorkOrderDao.getByWorkOrderId(liteOrder.getOrderID());

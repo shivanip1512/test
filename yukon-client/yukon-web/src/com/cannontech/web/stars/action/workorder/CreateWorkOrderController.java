@@ -47,8 +47,6 @@ public class CreateWorkOrderController extends StarsWorkorderActionController {
 
             operation.getStarsCreateServiceRequest().setAccountID( liteAcctInfo.getAccountID() );
         }
-        else
-            operation.getStarsCreateServiceRequest().setAccountID( CtiUtilities.NONE_ZERO_ID );
 
         session.setAttribute(WorkOrderManagerUtil.STARS_WORK_ORDER_OPER_REQ, operation);
         response.sendRedirect(redirect);
