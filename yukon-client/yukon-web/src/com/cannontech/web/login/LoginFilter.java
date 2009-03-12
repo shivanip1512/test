@@ -73,7 +73,8 @@ public class LoginFilter implements Filter {
             "/capcontrol/**",
             "/operator/**",
             "/editor/**",
-            "/user/**"
+            "/user/**",
+            "/"
         };
     }
 
@@ -161,8 +162,6 @@ public class LoginFilter implements Filter {
         
         // strip any unsafe navigation from the URL before it gets encoded.
         String safeNavUrl = ServletUtil.createSafeRedirectUrl(request, navUrl);
-        if (safeNavUrl.equals("/")) return "";
-        
         String encodedNavUrl = ServletUtil.urlEncode(safeNavUrl);
         return encodedNavUrl;
     }
