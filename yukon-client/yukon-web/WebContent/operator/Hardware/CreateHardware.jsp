@@ -372,7 +372,7 @@ if (savedReq.getProperty("yukonDeviceCreationStyleRadio") != null)
                   	<td colspan="2">
                   		<table border="0" cellspacing="0" cellpadding="0">
                         <tr> 
-                          <td valign="top"><span class="SubtitleHeader">Yukon LCR-3102 Profile <b>(REQUIRED)</b></span> 
+                          <td valign="top"><span class="SubtitleHeader">Yukon Device Profile <b>(REQUIRED)</b></span> 
                             <hr>
                             <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                               <tr>
