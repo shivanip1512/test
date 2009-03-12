@@ -159,7 +159,8 @@ public class MACSScheduleController extends MultiActionController {
         final String sortBy = ServletRequestUtils.getRequiredStringParameter(request, "sortBy");
         final Boolean descending = ServletRequestUtils.getRequiredBooleanParameter(request, "descending");
         final Integer id = ServletRequestUtils.getRequiredIntParameter(request, "id");
-
+        String errorMsg = ServletRequestUtils.getStringParameter(request, "errorMsg", null);
+        
         if (!isEditable(userContext.getYukonUser(), SchedulerRole.ROLEID)) return view(request, reponse);
         
         final Schedule schedule = service.getById(id);
@@ -184,6 +185,7 @@ public class MACSScheduleController extends MultiActionController {
         mav.addObject("schedule", schedule);
         mav.addObject("currentTime", cal.getTime());
         mav.addObject("stopTime", stopCal.getTime());
+        mav.addObject("errorMsg", errorMsg);
         return mav;
     }
     
@@ -193,6 +195,18 @@ public class MACSScheduleController extends MultiActionController {
         final String sortBy = ServletRequestUtils.getRequiredStringParameter(request, "sortBy");
         final Boolean descending = ServletRequestUtils.getRequiredBooleanParameter(request, "descending");
         final Integer id = ServletRequestUtils.getRequiredIntParameter(request, "id");
+        
+        mav.setView(createRedirectView(sortBy, descending));
+        
+        String buttonAction = ServletRequestUtils.getRequiredStringParameter(request, "buttonAction");
+        if (buttonAction.equals("Back")) {
+        	return mav;
+        }
+        if (buttonAction.equals("Reset")) {
+        	mav.setView(createResetView(sortBy, descending, id, null));
+            return mav;
+        }
+        
         final String time = ServletRequestUtils.getRequiredStringParameter(request, "time");
         final String stopTime = ServletRequestUtils.getRequiredStringParameter(request, "stoptime");
         final String stopDate = ServletRequestUtils.getRequiredStringParameter(request, "stopdate");
@@ -221,10 +235,16 @@ public class MACSScheduleController extends MultiActionController {
             
         if (start != null) {
             Schedule schedule = service.getById(id);
-            service.start(schedule, start, stop);
+            
+            if (start.compareTo(stop) > 0) {
+            	
+            	mav.setView(createResetView(sortBy, descending, id, "Start date must be before stop date."));
+                return mav;
+            }
+            
+        	service.start(schedule, start, stop);
         }
         
-        mav.setView(createRedirectView(sortBy, descending));
         return mav;
     }
     
@@ -289,6 +309,19 @@ public class MACSScheduleController extends MultiActionController {
         model.put("descending", descending);
         
         RedirectView redirect = new RedirectView("/spring/macsscheduler/schedules/view");
+        redirect.setAttributesMap(model);
+        return redirect;
+    }
+    
+    private RedirectView createResetView(final String sortBy, final Boolean descending, int id, String errorMsg) {
+    	
+    	Map<String,Object> model = new HashMap<String,Object>();
+    	model.put("id", id);
+    	model.put("sortBy", sortBy);
+        model.put("descending", descending);
+        model.put("errorMsg", errorMsg);
+        
+        RedirectView redirect = new RedirectView("/spring/macsscheduler/schedules/controlView");
         redirect.setAttributesMap(model);
         return redirect;
     }

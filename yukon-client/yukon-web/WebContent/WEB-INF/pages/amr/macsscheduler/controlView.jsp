@@ -16,6 +16,9 @@
     <div style="width: 400px;">
         <form id="startform" method="post" action="${submitUrl}/action">
         <tags:abstractContainer type="box" title="Schedule Name:  ${schedule.scheduleName}" >
+        	<c:if test="${errorMsg != null}">
+            	<div class="errorRed">${errorMsg}</div>
+            </c:if>
             <h4>Start</h4>
             <table> 
                 <tr>
@@ -74,9 +77,9 @@
             </table>
         </tags:abstractContainer>
             
-        <input type="submit" value="Apply" />
-        <input type="button" value="Back" onclick="javascript:window.history.back();" />
-        <input type="reset" value="Reset" />
+        <input type="submit" name="buttonAction" value="Apply" />
+        <input type="submit" name="buttonAction" value="Back" />
+        <input type="submit" name="buttonAction" value="Reset" />
         <input type="hidden" name="id" value="${schedule.id}" />
         <input type="hidden" name="sortBy" value="${sortBy}"/>
         <input type="hidden" name="descending" value="${descending}"/>

@@ -49,9 +49,9 @@
             </table>
         </tags:abstractContainer>
                 
-        <input type="submit" value="Apply" />
-        <input type="button" value="Back" onclick="javascript:window.history.back();" />
-        <input type="reset" value="Reset" />
+        <input type="submit" name="buttonAction" value="Apply" />
+        <input type="submit" name="buttonAction" value="Back" />
+        <input type="submit" name="buttonAction" value="Reset" />
         <input type="hidden" name="currenttime" value="${currentTime}" />
         <input type="hidden" name="id" value="${schedule.id}" />
         <input type="hidden" name="sortBy" value="${sortBy}"/>
