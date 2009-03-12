@@ -74,6 +74,7 @@ import com.cannontech.common.device.groups.service.DeviceGroupRenderer;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.DeviceGroupTreeFactory;
 import com.cannontech.common.gui.tree.CustomRenderJTree;
+import com.cannontech.common.gui.unchanging.LongRangeDocument;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -609,6 +610,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     		try {
     			ivjDemandDaysTextField = new javax.swing.JTextField();
     			ivjDemandDaysTextField.setName("DemandDaysTextField");
+    			ivjDemandDaysTextField.setDocument( new LongRangeDocument(0L, 999999999L) );
                 ivjDemandDaysTextField.setToolTipText(getScriptTemplate().getParamaterDescription(BILLING_DEMAND_DAYS_PARAM));
     		} catch (java.lang.Throwable ivjExc) {
     			handleException(ivjExc);
@@ -628,6 +630,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     			ivjDemandResetSpinBox.setName("DemandResetSpinBox");
     			ivjDemandResetSpinBox.setValueRange(new Integer(0), new Integer(5));
     			ivjDemandResetSpinBox.setValue(new Integer(2));
+    			ivjDemandResetSpinBox.setEditable(false);
                 ivjDemandResetSpinBox.setToolTipText(getScriptTemplate().getParamaterDescription(RESET_COUNT_PARAM));
     			
     		} catch (java.lang.Throwable ivjExc) {
@@ -701,6 +704,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     		try {
     			ivjEnergyDaysTextField = new javax.swing.JTextField();
     			ivjEnergyDaysTextField.setName("EnergyDaysTextField");
+    			ivjEnergyDaysTextField.setDocument( new LongRangeDocument(0L, 999999999L) );
                 ivjEnergyDaysTextField.setToolTipText(getScriptTemplate().getParamaterDescription(BILLING_ENERGY_DAYS_PARAM));
     		} catch (java.lang.Throwable ivjExc) {
     			handleException(ivjExc);
@@ -1034,6 +1038,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     		try {
     			ivjMaxRetryHoursTextField = new javax.swing.JTextField();
     			ivjMaxRetryHoursTextField.setName("MaxRetryHoursTextField");
+    			ivjMaxRetryHoursTextField.setDocument( new LongRangeDocument(-1L, 10L) );
                 ivjMaxRetryHoursTextField.setToolTipText(getScriptTemplate().getParamaterDescription(MAX_RETRY_HOURS_PARAM));
     		} catch (java.lang.Throwable ivjExc) {
     			handleException(ivjExc);
@@ -1413,6 +1418,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     		try {
     			ivjPorterTimeoutTextField = new javax.swing.JTextField();
     			ivjPorterTimeoutTextField.setName("PorterTimeoutTextField");
+    			ivjPorterTimeoutTextField.setDocument( new LongRangeDocument(0L, 999999999L) );
                 ivjPorterTimeoutTextField.setToolTipText(getScriptTemplate().getParamaterDescription(PORTER_TIMEOUT_PARAM));
     		} catch (java.lang.Throwable ivjExc) {
     			handleException(ivjExc);
@@ -1449,6 +1455,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     		try {
     			ivjQueueOffCountTextField = new javax.swing.JTextField();
     			ivjQueueOffCountTextField.setName("QueueOffCountTextField");
+    			ivjQueueOffCountTextField.setDocument( new LongRangeDocument(0L, 10L) );
                 ivjQueueOffCountTextField.setToolTipText(getScriptTemplate().getParamaterDescription(QUEUE_OFF_COUNT_PARAM));
     		} catch (java.lang.Throwable ivjExc) {
     			handleException(ivjExc);
@@ -1539,6 +1546,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     		try {
     			ivjRetryCountTextField = new javax.swing.JTextField();
     			ivjRetryCountTextField.setName("RetryCountTextField");
+    			ivjRetryCountTextField.setDocument( new LongRangeDocument(0L, 10L) );
                 ivjRetryCountTextField.setToolTipText(getScriptTemplate().getParamaterDescription(RETRY_COUNT_PARAM));
     		} catch (java.lang.Throwable ivjExc) {
     			handleException(ivjExc);
