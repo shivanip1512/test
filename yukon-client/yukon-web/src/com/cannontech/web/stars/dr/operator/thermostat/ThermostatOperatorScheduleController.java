@@ -273,7 +273,7 @@ public class ThermostatOperatorScheduleController
             String timeOfWeek, String scheduleMode, String temperatureUnit, Integer scheduleId,
             String scheduleName, String saveAction, YukonUserContext yukonUserContext, 
             @RequestParam(value="schedules", required=true) String scheduleString,
-            ModelMap map) throws ServletRequestBindingException {
+            HttpServletRequest request, ModelMap map) throws ServletRequestBindingException {
     	
     	
     	// Create the confirm schedule text
@@ -330,6 +330,11 @@ public class ThermostatOperatorScheduleController
 						    			yukonUserContext.getLocale());
     	map.addAttribute("scheduleConfirm", scheduleConfirm);
     	
+    	// Add cancel url
+    	int inventoryNumber = this.getInventoryNumber(request, thermostatId);
+    	String cancelUrl = "/operator/Consumer/ThermSchedule.jsp?InvNo=" + inventoryNumber;
+    	map.addAttribute("cancelUrl", cancelUrl);
+
     	// Pass all of the parameters through to confirm page
     	map.addAttribute("schedules", scheduleString);
     	map.addAttribute("timeOfWeek", timeOfWeek);
