@@ -61,14 +61,8 @@ public class JobManagerImpl implements JobManager {
 
     private AtomicInteger startOffsetMs = new AtomicInteger(5000);
     private int startOffsetIncrement = 1000;
-    private boolean initialized = false;
 
     public void initialize() {
-        
-        // Safety-net in case this initialize() gets called more than once 
-        // Spring caches singletons created out of FactoryBean, but this check insulates
-        // the bean from any changes to that.
-        if (initialized) return;
         
         // get all jobs
         Set<ScheduledRepeatingJob> allRepeatingJobs = scheduledRepeatingJobDao.getAll();
@@ -137,8 +131,6 @@ public class JobManagerImpl implements JobManager {
             }
         }
 
-        // track that Job Manager is initialized ok
-        initialized = true;
     }
 
     private void handleDisabledRestart(final JobStatus<?> status) {

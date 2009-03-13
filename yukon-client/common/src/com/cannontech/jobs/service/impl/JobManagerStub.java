@@ -23,22 +23,10 @@ import com.cannontech.user.YukonUserContext;
 public class JobManagerStub implements JobManager {
 
     private Logger log = YukonLogManager.getLogger(JobManagerStub.class);
-    private boolean initialized = false;    
     private static final String JOB_MANAGER_DISABLED_MSG = "!!! Job Manager is disabled by Configuration !!!";
 
-    @Override
     public void initialize() {
-        // Safety-net in case this initialize() gets called more than once 
-        // Spring caches singletons created out of FactoryBean, but this check insulates
-        // the bean from any changes to that.
-        // initialize() doesn't do much here, but this trap is covered if this Stub
-        // starts to implement some functionality.
-        if (initialized) return;
-        
         log.warn(JOB_MANAGER_DISABLED_MSG + " Job Manager won't run on this server !!!");
-
-        // track that Job Manager Stub is initialized ok
-        initialized = true;
     }
 
     @Override
