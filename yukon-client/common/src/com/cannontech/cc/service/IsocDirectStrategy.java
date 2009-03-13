@@ -1,9 +1,11 @@
 package com.cannontech.cc.service;
 
+import com.cannontech.cc.model.CurtailmentEvent;
 import com.cannontech.cc.service.builder.CurtailmentBuilder;
 import com.cannontech.cc.service.builder.CurtailmentRemoveCustomerBuilder;
 import com.cannontech.cc.service.builder.EventBuilderBase;
 import com.cannontech.cc.service.builder.VerifiedCustomer;
+import com.cannontech.database.data.lite.LiteYukonUser;
 
 public class IsocDirectStrategy extends BaseDirectStrategy {
     IsocCommonStrategy isocCommonStrategy;
@@ -31,6 +33,11 @@ public class IsocDirectStrategy extends BaseDirectStrategy {
     	return isocCommonStrategy.getConstraintStatus(customer);
     }
 
+    @Override
+    public Boolean canEventBeAdjusted(CurtailmentEvent event, LiteYukonUser user) {
+    	return isocCommonStrategy.canEventBeAdjusted(event, user);
+    }
+
     public IsocCommonStrategy getIsocCommonStrategy() {
         return isocCommonStrategy;
     }
@@ -38,7 +45,4 @@ public class IsocDirectStrategy extends BaseDirectStrategy {
     public void setIsocCommonStrategy(IsocCommonStrategy isocCommonStrategy) {
         this.isocCommonStrategy = isocCommonStrategy;
     }
-    
-    
-
 }

@@ -33,19 +33,17 @@ public class IsocNotificationStrategy extends BaseNotificationStrategy {
     public String getConstraintStatus(com.cannontech.cc.model.CICustomerStub customer) {
     	return isocCommonStrategy.getConstraintStatus(customer);
     }
-
+    
+    @Override
+    public Boolean canEventBeAdjusted(CurtailmentEvent event, LiteYukonUser user) {
+    	return isocCommonStrategy.canEventBeAdjusted(event, user);
+    }
+    
     public IsocCommonStrategy getIsocCommonStrategy() {
         return isocCommonStrategy;
     }
 
     public void setIsocCommonStrategy(IsocCommonStrategy isocCommonStrategy) {
         this.isocCommonStrategy = isocCommonStrategy;
-    }
-    
-    @Override
-    public Boolean canEventBeAdjusted(CurtailmentEvent event, LiteYukonUser user) {
-    	//The addition of new customer restrictions (max 4 hr control in 24 hr period and less than 4 hour control
-    	//  make it so that it no longer is possible to adjust an event safely without reselecting all the customers.
-    	return false;
     }
 }

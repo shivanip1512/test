@@ -25,6 +25,7 @@ import com.cannontech.common.exception.PointException;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.SimplePointAccessDao;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.customer.CICustomerPointType;
 import com.cannontech.support.CustomerPointTypeHelper;
 import com.google.common.collect.Comparators;
@@ -258,6 +259,12 @@ public class IsocCommonStrategy extends StrategyGroupBase {
     	}
     }
 
+    public Boolean canEventBeAdjusted(CurtailmentEvent event, LiteYukonUser user) {
+    	// The addition of new customer restrictions (max 4 hr control in 24 hr period and less than 4 hour control)
+    	//  make it so that it no longer is possible to adjust an event safely without reselecting all the customers.
+    	return false;    	
+    }
+    
     public void setPointAccess(SimplePointAccessDao pointAccess) {
         this.pointAccess = pointAccess;
     }
