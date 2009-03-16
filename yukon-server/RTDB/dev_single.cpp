@@ -2072,7 +2072,6 @@ bool CtiDeviceSingle::isDeviceAddressGlobal()
 }
 
 
-//  timestamp == 0UL means current time
 bool CtiDeviceSingle::insertPointDataReport(CtiPointType_t type, int offset, CtiReturnMsg *rm, point_info pi, const string &default_pointname, const CtiTime &timestamp, double default_multiplier, int tags)
 {
     bool pointdata_inserted = false;

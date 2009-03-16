@@ -134,13 +134,9 @@ INT LCR3102::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage
             break;
         }
         case Emetcon::GetValue_Runtime:
-        {
-            status = decodeGetValueRuntime( InMessage, TimeNow, vgList, retList, outList );
-            break;
-        }
         case Emetcon::GetValue_Shedtime:
         {
-            status = decodeGetValueShedtime( InMessage, TimeNow, vgList, retList, outList );
+            status = decodeGetValueHistoricalTime( InMessage, TimeNow, vgList, retList, outList );
             break;
         }
         case Emetcon::GetValue_PropCount:
@@ -234,9 +230,8 @@ INT LCR3102::decodeGetValueIntervalLast( INMESS *InMessage, CtiTime &TimeNow, li
     return status;
 }
 
-
-//Decodes the getvalue runtime read. All points are generated with a end of interval timestamp.
-INT LCR3102::decodeGetValueRuntime( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+//Decodes the getvalue shedtime/runtime read. All points are generated with a end of interval timestamp.
+INT LCR3102::decodeGetValueHistoricalTime( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT status = NOTNORMAL;
 
@@ -260,15 +255,34 @@ INT LCR3102::decodeGetValueRuntime( INMESS *InMessage, CtiTime &TimeNow, list< C
         int relay   = 0; // Relay is 1-4 here
         int readNum = 0; // Read 1-3, 1 = hr 0-16, ect..
         int function = InMessage->Return.ProtocolInfo.Emetcon.Function;
+        int point_base = 0;
+        string identifier;
+        const int relay_count = 4;
 
-        function -= FuncRead_RuntimePos; // function is now 0-11
+        if( InMessage->Sequence == Emetcon::GetValue_Shedtime )
+        {
+            point_base = PointOffset_ShedtimeBase;
+            function  -= FuncRead_ShedtimePos; // function is now 0-11
+            identifier = "Shedtime";
+        }
+        else if( InMessage->Sequence == Emetcon::GetValue_Runtime )
+        {
+            point_base = PointOffset_RuntimeBase;
+            function  -= FuncRead_RuntimePos; // function is now 0-11
+            identifier = "Runtime";
+        }
+        else
+        {
+            return NOTNORMAL;
+        }
+       
         readNum   = function / 4 + 1;
 
         //There are 4 relays
-        for( int i = 0; i < 4; i++ )
+        for( int i = 0; i < relay_count; i++ )
         {
             // With reads for each relay seperated by 4, this checks for a different relay each time
-            if( (function-i) % 4 == 0 )
+            if( (function-i) % relay_count == 0 )
             {
                 relay = i + 1;
                 break;
@@ -282,7 +296,7 @@ INT LCR3102::decodeGetValueRuntime( INMESS *InMessage, CtiTime &TimeNow, list< C
 
         //Flags = "? ? ? H R4 R3 R2 R1" in binary, H is all we really need.
         unsigned char flags = DSt->Message[0];
-        bool responseInSecondHalfHour = (flags >> 4) & 0x01;
+        bool responseInSecondHalfHour = flags & 0x10;
         CtiTime firstMessageTime;
 
         //This time eventually has to be on the hour, remove the seconds
@@ -315,148 +329,23 @@ INT LCR3102::decodeGetValueRuntime( INMESS *InMessage, CtiTime &TimeNow, list< C
 
         CtiTime pointTime = firstMessageTime;
         point_info pi;
-        pi.freeze_bit = false;
 
-        string results = getName() + " / Hourly Runtime";
+        string results = getName() + " / Hourly " + identifier;
 
         for( int i = 0; i < numberOfTimesReturned; i++ )
         {
-            int value = getSixBitValueFromBuffer(DSt->Message, i, 1, 36);
-            if( value == 0x3F )
-            {
-                pi.value   = 0.0;
-                pi.quality = InvalidQuality;
-            }
-            else
-            {
-                pi.value   = value;
-                pi.quality = NormalQuality;
-            }
+            pi = getSixBitValueFromBuffer(DSt->Message + 1, i, 36 - 1);
 
-            int point_offset = PointOffset_RuntimeBase + relay - 1;
+            int point_offset = point_base + relay - 1;
             
             insertPointDataReport(AnalogPointType, point_offset, ReturnMsg,
-                                  pi, "Runtime Load " + CtiNumStr(relay), pointTime);
+                                  pi, identifier + " Load " + CtiNumStr(relay), pointTime);
 
             pointTime.addMinutes(-1*60); // subtract an hour for each value
         }
         
         ReturnMsg->setResultString(results);
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
-    }
-
-    return status;
-}
-
-//Decodes the getvalue shedtime read. All points are generated with a end of interval timestamp.
-INT LCR3102::decodeGetValueShedtime( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
-{
-    INT status = NOTNORMAL;
-
-    DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
-    CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
-
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
-    {
-        // No error occured, we must do a real decode!
-
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
-        int relay   = 0; // Relay is 1-4 here
-        int readNum = 0; // Read 1-3, 1 = hr 0-16, ect..
-        int function = InMessage->Return.ProtocolInfo.Emetcon.Function;
-
-        function -= FuncRead_ShedtimePos; // function is now 0-11
-        readNum   = function / 4 + 1;
-
-        //There are 4 relays
-        for( int i = 0; i < 4; i++ )
-        {
-            // With reads for each relay seperated by 4, this checks for a different relay each time
-            if( (function-i) % 4 == 0 )
-            {
-                relay = i + 1;
-                break;
-            }
-        }
-
-        if( relay == 0 )
-        {
-            return ErrorInvalidData;
-        }
-
-        //Flags = "? ? ? H R4 R3 R2 R1" in binary, H is all we really need.
-        unsigned char flags = DSt->Message[0];
-        bool responseInSecondHalfHour = (flags >> 4) & 0x01;
-        CtiTime firstMessageTime;
-
-        //This time eventually has to be on the hour, remove the seconds
-        firstMessageTime.addSeconds(-1*firstMessageTime.second());
-
-        // If we are less than 15 after the hour, and the message indicates
-        // it is 30-60 minutes after the hour, we assume WE are ahead an hour.
-        if( firstMessageTime.minute() < 15 && responseInSecondHalfHour )
-        {
-            firstMessageTime.addMinutes(-60);
-        }
-
-        // If we are 45 minutes or more before the hour, and the message indicates
-        // it is 0-30 minutes after the hour, we assume THEY are ahead an hour.
-        if( firstMessageTime.minute() > 45 && !responseInSecondHalfHour )
-        {
-            firstMessageTime.addMinutes(60);
-        }
-
-        firstMessageTime.addMinutes(-1*firstMessageTime.minute()); // align with hour
-         //Align with the read, each function drops off 16 hours. Why doesnt CtiTime have addHours??
-        firstMessageTime.addMinutes(-1*60*16*(readNum-1));
-
-        //8 bits per byte, 6 bits per time fame
-        int numberOfTimesReturned = (DSt->Length-1) * 8 / 6;
-        if( readNum == 3  )
-        {
-            numberOfTimesReturned = std::min(4, numberOfTimesReturned);
-        }
-
-        CtiTime pointTime = firstMessageTime;
-        point_info pi;
-        pi.freeze_bit = false;
-
-        string results = getName() + " / Hourly Shedtime";
-
-        for( int i = 0; i < numberOfTimesReturned; i++ )
-        {
-            int value = getSixBitValueFromBuffer(DSt->Message, i, 1, 36);
-            if( value == 0x3F )
-            {
-                pi.value   = 0.0;
-                pi.quality = InvalidQuality;
-            }
-            else
-            {
-                pi.value   = value;
-                pi.quality = NormalQuality;
-            }
-
-            int point_offset = PointOffset_ShedtimeBase + relay - 1;
-            
-            insertPointDataReport(AnalogPointType, point_offset, ReturnMsg,
-                                  pi, "Shedtime Load " + CtiNumStr(relay), pointTime);
-
-            pointTime.addMinutes(-1*60); // subtract an hour for each value
-        }
-        
-        ReturnMsg->setResultString(results);
-
+        decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
 
@@ -613,9 +502,9 @@ INT LCR3102::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
             // packed 6 bit data
             int total_bits = previous * 6;
 
-                                                    // round up
-            int remaining_bytes = (total_bits / 8) + ((total_bits % 8) ? 1 : 0);
-            int total_messages  = (remaining_bytes / 12) + ((remaining_bytes % 12) ? 1 : 0);
+                                   // round up
+            int remaining_bytes = (total_bits + 7) / 8;
+            int total_messages  = (remaining_bytes + 11) / 12;
 
             if(total_messages > 1)  multiple_messages = true;
 
@@ -769,7 +658,9 @@ int LCR3102::parseLoadValue(CtiCommandParser &parse)
     return (load >= 1 && load <= 4) ? load : -1;
 }
 
-
+// Finds the "previous hours" requested. Handles special values.
+// 12, 24, and 36 are the default values in commander and are translated as:
+// "Do 1 full read, do 2 full reads, and do 3 full reads"
 int LCR3102::parsePreviousValue(CtiCommandParser &parse)
 {
     int previous = -1;  // signifies BADPARAM
@@ -795,27 +686,38 @@ int LCR3102::parsePreviousValue(CtiCommandParser &parse)
     return (previous >= 1 && previous <= 36) ? previous : -1;
 }
 
-// Parses the buffer as having 6 bit values starting at startPosition.
-// Returns the valuePosition'th 6 bit value from the buffer
+// Parses the buffer as having 6 bit values. 0x3F is considered an error
+// Returns the valuePosition'th 6-bit value from the buffer
 // All position values are 0 based!
-unsigned char LCR3102::getSixBitValueFromBuffer(unsigned char buffer[], unsigned int valuePosition, unsigned int startPosition, unsigned int bufferSize)
+CtiDeviceSingle::point_info LCR3102::getSixBitValueFromBuffer(unsigned char buffer[], unsigned int valuePosition, unsigned int bufferSize)
 {
-    unsigned char retVal = 0xFF;
-
-    int startByte = startPosition + valuePosition * 6 / 8;
+    point_info retVal;
+    retVal.freeze_bit = false;
+    retVal.quality    = InvalidQuality;
+    retVal.value      = 0x3F;
+    
+    int startByte = valuePosition * 6 / 8;
     int bitsInStartByte  = 8 - (valuePosition * 6 % 8); 
     int bitsInSecondByte = 6 - bitsInStartByte;
 
     if( (startByte + (bitsInSecondByte ? 1 : 0)) < bufferSize )
     {
-        retVal  = (buffer[startByte] << bitsInSecondByte);
+        unsigned char rawData = (buffer[startByte] << bitsInSecondByte);
         if( bitsInSecondByte > 0 )
         {
-            retVal |= (buffer[startByte+1] >> (8-bitsInSecondByte));
+            rawData |= (buffer[startByte+1] >> (8-bitsInSecondByte));
         }
+        retVal.value = rawData;
     }
 
-    return retVal & 0x3F;
+    // 0x3F is both the default value and the error code for 6 bit values.
+    // It is equivalent to 0xFF for 8 bit values
+    if( retVal.value != 0x3F )
+    {
+        retVal.quality = NormalQuality;
+    }
+
+    return retVal;
 }
 
 // Returns only the 22 bits of emetcon address. 
