@@ -75,7 +75,8 @@ function setNotEnrolled() {
 
 function resendNotEnrolled(form) {
 	setNotEnrolled();
-	form.NotEnrolled.value = "Resend";
+	form.NotEnrolled.value = "true";
+    form.elements['<%= ServletUtils.NEED_MORE_INFORMATION %>'].value = 'false';
 	form.submit();
 }
 
