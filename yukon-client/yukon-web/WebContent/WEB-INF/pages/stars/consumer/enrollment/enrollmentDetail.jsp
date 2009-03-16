@@ -76,14 +76,14 @@ function submitEnrollment() {
                         <c:set var="enrollmentProgramsSize" value="${fn:length(enrollmentPrograms)}"/>
                         <c:set var="rowspan" value="${enrollmentProgramsSize > 0 ? enrollmentProgramsSize : 1}"/>
                     
-                        <c:set var="applianceCategoryId" value="${enrollment.applianceCategoryId}"/>
+                        <c:set var="applianceCategoryId" value="${enrollment.applianceCategory.applianceCategoryId}"/>
                     
                         <tr>
                             <td valign="top" class="${tableDataClass}" rowspan="${rowspan + 1}" width="5%">
                                 <img src="../../../WebConfig/${enrollment.applianceLogo}">
                             </td>
                             <td valign="top" class="${tableDataClass}" rowspan="${rowspan + 1}" width="10%">
-                                <b><cti:msg key="${enrollment.applianceType}"/></b>
+                                <b><cti:msg key="${enrollment.applianceTypeEnum}"/></b>
                             </td>
                             <td colspan="3"></td>
                         </tr>

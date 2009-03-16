@@ -205,7 +205,8 @@ table.programTitle {
 div#programEnrollmentDiv {
 	font-size: .8em;
 	overflow: auto;
-	height: 325px;
+	height: 325px; 
+	vertical-align: top;
 }	
 
 div#controlEventsDiv {
