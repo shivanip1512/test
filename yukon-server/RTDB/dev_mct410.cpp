@@ -1431,14 +1431,12 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
 
             if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) )
             {
-                //  TODO: Update this with an appropriate "something else required" error
-                returnErrorMessage(NoMethod, OutMessage, retList,
+                returnErrorMessage(ErrorInvalidSSPEC, OutMessage, retList,
                                    getName() + " / Daily read requires SSPEC rev 2.1 or higher; execute \"getconfig model\" to verify");
             }
             else if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < SspecRev_DailyRead )
             {
-                //  TODO: Change to "Insufficient firmware" error, not NoMethod (YUK-7067)
-                returnErrorMessage(NoMethod, OutMessage, retList,
+                returnErrorMessage(ErrorInvalidSSPEC, OutMessage, retList,
                                    getName() + " / Daily read requires SSPEC rev 2.1 or higher; MCT reports " + CtiNumStr(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) / 10.0, 1));
             }
             else if( channel < 1 || channel > 3 )

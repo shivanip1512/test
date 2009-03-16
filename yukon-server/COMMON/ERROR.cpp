@@ -225,6 +225,9 @@ ERRSTRUCT CTIErrors[] = {
     { ErrorFreezeNotRecorded,           "There is no record of the last freeze sent to this device.",   ERRTYPEPROTOCOL, " N/A"},
 
     { CtiInvalidRequest,    "Invalid/Incomplete Request",                       ERRTYPESYSTEM, " N/A"},
+
+    { ErrorInvalidSSPEC,    "Insufficient SSPEC/Firmware Revision",             ERRTYPESYSTEM, " N/A"},
+
     { UnknownError,         "Unknown Error",                                    ERRTYPESYSTEM, " N/A"},
 
 };
