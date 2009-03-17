@@ -332,107 +332,109 @@ begin
 	calcCheck = TRUE;
     
     Dlg_SetServices:
+		//There's no going back now!
+		Disable(BACKBUTTON);
 		//get user input
 		AskOptions(nValue, szServicesMsg, macsText, macsCheck, notifText, notifCheck,
 				scanText, scanCheck, smText, smCheck, fdrText, fdrCheck,
 	            ccText, ccCheck, lmText, lmCheck, calcText, calcCheck);
     	//set up yukon services according to what the user checked
     	//dispatch
-    	LaunchAppAndWait("cmd.exe", "sc failure \"Yukon Dispatch Service\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
-    	LaunchAppAndWait("cmd.exe", "sc config \"Yukon Dispatch Service\" start= auto", LAAW_OPTION_WAIT); 
+    	LaunchAppAndWait("", "cmd.exe /c sc failure \"Yukon Dispatch Service\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
+    	LaunchAppAndWait("", "cmd.exe /c sc config \"Yukon Dispatch Service\" start= auto", LAAW_OPTION_WAIT); 
         //porter
-    	LaunchAppAndWait("cmd.exe", "sc failure \"Yukon Port Control Service\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
-    	LaunchAppAndWait("cmd.exe", "sc config \"Yukon Port Control Service\" start= auto", LAAW_OPTION_WAIT); 
+    	LaunchAppAndWait("", "cmd.exe /c sc failure \"Yukon Port Control Service\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
+    	LaunchAppAndWait("", "cmd.exe /c sc config \"Yukon Port Control Service\" start= auto", LAAW_OPTION_WAIT); 
         //web
-    	LaunchAppAndWait("cmd.exe", "sc failure \"YukonWebApplicationService\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
-    	LaunchAppAndWait("cmd.exe", "sc config \"YukonWebApplicationService\" start= auto", LAAW_OPTION_WAIT); 
+    	LaunchAppAndWait("", "cmd.exe /c sc failure \"YukonWebApplicationService\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
+    	LaunchAppAndWait("", "cmd.exe /c sc config \"YukonWebApplicationService\" start= auto", LAAW_OPTION_WAIT); 
     	
     	//TODO:
     	//macs
     	if(macsCheck) then
-    		LaunchAppAndWait("cmd.exe", "sc failure \"Yukon MAC Scheduler Service\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
-    		LaunchAppAndWait("cmd.exe", "sc config \"Yukon MAC Scheduler Service\" start= auto", LAAW_OPTION_WAIT); 
+    		LaunchAppAndWait("", "cmd.exe /c sc failure \"Yukon MAC Scheduler Service\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
+    		LaunchAppAndWait("", "cmd.exe /c sc config \"Yukon MAC Scheduler Service\" start= auto", LAAW_OPTION_WAIT); 
         endif;
         //notification
     	if(notifCheck) then
-    		LaunchAppAndWait("cmd.exe", "sc failure \"YukonNotificationServer\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
-    		LaunchAppAndWait("cmd.exe", "sc config \"YukonNotificationServer\" start= auto", LAAW_OPTION_WAIT); 
+    		LaunchAppAndWait("", "cmd.exe /c sc failure \"YukonNotificationServer\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
+    		LaunchAppAndWait("", "cmd.exe /c sc config \"YukonNotificationServer\" start= auto", LAAW_OPTION_WAIT); 
         endif;
         //scanner
     	if(scanCheck) then
-    		LaunchAppAndWait("cmd.exe", "sc failure \"Yukon Real-Time Scan Service\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
-    		LaunchAppAndWait("cmd.exe", "sc config \"Yukon Real-Time Scan Service\" start= auto", LAAW_OPTION_WAIT); 
+    		LaunchAppAndWait("", "cmd.exe /c sc failure \"Yukon Real-Time Scan Service\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
+    		LaunchAppAndWait("", "cmd.exe /c sc config \"Yukon Real-Time Scan Service\" start= auto", LAAW_OPTION_WAIT); 
         endif;
         //service manager
     	if(smCheck) then
-    		LaunchAppAndWait("cmd.exe", "sc failure \"YukonServiceMgr\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
-    		LaunchAppAndWait("cmd.exe", "sc config \"YukonServiceMgr\" start= auto", LAAW_OPTION_WAIT); 
+    		LaunchAppAndWait("", "cmd.exe /c sc failure \"YukonServiceMgr\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
+    		LaunchAppAndWait("", "cmd.exe /c sc config \"YukonServiceMgr\" start= auto", LAAW_OPTION_WAIT); 
         endif;
         //fdr
     	if(fdrCheck) then
-    		LaunchAppAndWait("cmd.exe", "sc failure \"Yukon Foreign Data Service\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
-    		LaunchAppAndWait("cmd.exe", "sc config \"Yukon Foreign Data Service\" start= auto", LAAW_OPTION_WAIT); 
+    		LaunchAppAndWait("", "cmd.exe /c sc failure \"Yukon Foreign Data Service\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
+    		LaunchAppAndWait("", "cmd.exe /c sc config \"Yukon Foreign Data Service\" start= auto", LAAW_OPTION_WAIT); 
         endif;
         //cap control
     	if(ccCheck) then
-    		LaunchAppAndWait("cmd.exe", "sc failure \"Yukon Cap Control Service\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
-    		LaunchAppAndWait("cmd.exe", "sc config \"Yukon Cap Control Service\" start= auto", LAAW_OPTION_WAIT); 
+    		LaunchAppAndWait("", "cmd.exe /c sc failure \"Yukon Cap Control Service\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
+    		LaunchAppAndWait("", "cmd.exe /c sc config \"Yukon Cap Control Service\" start= auto", LAAW_OPTION_WAIT); 
         endif;
         //load management
     	if(lmCheck) then
-    		LaunchAppAndWait("cmd.exe", "sc failure \"Yukon Load Management Service\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
-    		LaunchAppAndWait("cmd.exe", "sc config \"Yukon Load Management Service\" start= auto", LAAW_OPTION_WAIT); 
+    		LaunchAppAndWait("", "cmd.exe /c sc failure \"Yukon Load Management Service\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
+    		LaunchAppAndWait("", "cmd.exe /c sc config \"Yukon Load Management Service\" start= auto", LAAW_OPTION_WAIT); 
         endif;
         //calc
     	if(calcCheck) then
-    		LaunchAppAndWait("cmd.exe", "sc failure \"Yukon Calc-Logic Service\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
-    		LaunchAppAndWait("cmd.exe", "sc config \"Yukon Calc-Logic Service\" start= auto", LAAW_OPTION_WAIT); 
+    		LaunchAppAndWait("", "cmd.exe /c sc failure \"Yukon Calc-Logic Service\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
+    		LaunchAppAndWait("", "cmd.exe /c sc config \"Yukon Calc-Logic Service\" start= auto", LAAW_OPTION_WAIT); 
         endif;
             
     Dlg_StartPortDispWeb:
-    	StartServicesMsg = "Select Yukon services to start at this time.";
+    	StartServicesMsg = "Select Yukon services to start at this time.\n(More options on next page)";
     	//get user input
-    	nResult = AskOptions(nValue, StartServicesMsg, porterText, porterCheck, dispatchText,
+    	AskOptions(nValue, StartServicesMsg, porterText, porterCheck, dispatchText,
     			dispatchCheck, webText, webCheck);  
     
     Dlg_StartServices:
-    	nResult = AskOptions(nValue, StartServicesMsg, macsText, macsCheck, notifText, notifCheck,
+    	StartServicesMsg = "Select Yukon services to start at this time.";
+    	AskOptions(nValue, StartServicesMsg, macsText, macsCheck, notifText, notifCheck,
 				scanText, scanCheck, smText, smCheck, fdrText, fdrCheck,
 	            ccText, ccCheck, lmText, lmCheck, calcText, calcCheck); 
-    	if(nResult = BACK) goto Dlg_StartPortDispWeb;
     	//start  services according to what the user checked
     	if(dispatchCheck) then
-    		LaunchAppAndWait("cmd.exe", "sc start \"Yukon Dispatch Service\"", LAAW_OPTION_WAIT);
+    		LaunchAppAndWait("", "cmd.exe /c sc start \"Yukon Dispatch Service\"", LAAW_OPTION_WAIT);
         endif;
         if(porterCheck) then
-        	LaunchAppAndWait("cmd.exe", "sc start \"Yukon Port Control Service\"", LAAW_OPTION_WAIT);
+        	LaunchAppAndWait("", "cmd.exe /c sc start \"Yukon Port Control Service\"", LAAW_OPTION_WAIT);
         endif;
         if(webCheck) then
-        	LaunchAppAndWait("cmd.exe", "sc start \"YukonWebApplicationService\"", LAAW_OPTION_WAIT);
+        	LaunchAppAndWait("", "cmd.exe /c sc start \"YukonWebApplicationService\"", LAAW_OPTION_WAIT);
         endif;
         if(macsCheck) then
-        	LaunchAppAndWait("cmd.exe", "sc start \"Yukon MAC Scheduler Service\"", LAAW_OPTION_WAIT);
+        	LaunchAppAndWait("", "cmd.exe /c sc start \"Yukon MAC Scheduler Service\"", LAAW_OPTION_WAIT);
         endif;
         if(notifCheck) then
-        	LaunchAppAndWait("cmd.exe", "sc start \"YukonNotificationServer\"", LAAW_OPTION_WAIT);
+        	LaunchAppAndWait("", "cmd.exe /c sc start \"YukonNotificationServer\"", LAAW_OPTION_WAIT);
         endif;
         if(scanCheck) then
-        	LaunchAppAndWait("cmd.exe", "sc start \"Yukon Real-Time Scan Service\"", LAAW_OPTION_WAIT);
+        	LaunchAppAndWait("", "cmd.exe /c sc start \"Yukon Real-Time Scan Service\"", LAAW_OPTION_WAIT);
         endif;
         if(smCheck) then
-        	LaunchAppAndWait("cmd.exe", "sc start \"YukonServiceMgr\"", LAAW_OPTION_WAIT);
+        	LaunchAppAndWait("", "cmd.exe /c sc start \"YukonServiceMgr\"", LAAW_OPTION_WAIT);
         endif;
         if(fdrCheck) then
-        	LaunchAppAndWait("cmd.exe", "sc start \"Yukon Foreign Data Service\"", LAAW_OPTION_WAIT);
+        	LaunchAppAndWait("", "cmd.exe /c sc start \"Yukon Foreign Data Service\"", LAAW_OPTION_WAIT);
         endif;
         if(ccCheck) then
-        	LaunchAppAndWait("cmd.exe", "sc start \"Yukon Cap Control Service\"", LAAW_OPTION_WAIT);
+        	LaunchAppAndWait("", "cmd.exe /c sc start \"Yukon Cap Control Service\"", LAAW_OPTION_WAIT);
         endif;
         if(lmCheck) then
-        	LaunchAppAndWait("cmd.exe", "sc start \"Yukon Load Management Service\"", LAAW_OPTION_WAIT);
+        	LaunchAppAndWait("", "cmd.exe /c sc start \"Yukon Load Management Service\"", LAAW_OPTION_WAIT);
         endif;
         if(calcCheck) then
-        	LaunchAppAndWait("cmd.exe", "sc start \"Yukon Calc-Logic Service\"", LAAW_OPTION_WAIT);
+        	LaunchAppAndWait("", "cmd.exe /c sc start \"Yukon Calc-Logic Service\"", LAAW_OPTION_WAIT);
         endif;
         
     ShowObjWizardPages(NEXT);
