@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     3/4/2009 11:01:35 AM                         */
+/* Created on:     3/17/2009 10:25:32 AM                        */
 /*==============================================================*/
 
 
@@ -4150,7 +4150,7 @@ go
 /*==============================================================*/
 create table CCurtEEPricingWindow (
    CCurtEEPricingWindowID numeric              not null,
-   EnergyPrice          numeric(19,2)        not null,
+   EnergyPrice          numeric(19,6)        not null,
    Offset               numeric              not null,
    CCurtEEPricingID     numeric              not null,
    constraint PK_CCURTEEPRICINGWINDOW primary key (CCurtEEPricingWindowID)

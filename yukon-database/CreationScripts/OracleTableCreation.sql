@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/4/2009 10:07:26 AM                         */
+/* Created on:     3/17/2009 10:24:03 AM                        */
 /*==============================================================*/
 
 
@@ -1717,7 +1717,7 @@ create unique index INDX_CCURTECONSVTID_REV on CCurtEEPricing (
 /*==============================================================*/
 create table CCurtEEPricingWindow  (
    CCurtEEPricingWindowID NUMBER                          not null,
-   EnergyPrice          NUMBER(19,2)                    not null,
+   EnergyPrice          NUMBER(19,6)                    not null,
    Offset               NUMBER                          not null,
    CCurtEEPricingID     NUMBER                          not null,
    constraint PK_CCURTEEPRICINGWINDOW primary key (CCurtEEPricingWindowID)
