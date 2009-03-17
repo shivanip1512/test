@@ -306,6 +306,7 @@ enum YukonError_t
     ErrorInvalidChannel,
 
     ErrorInvalidSSPEC,          // Hardware has an insufficient SSPEC/firmware revision
+    ErrorVerifySSPEC,           // Need to verify SSPEC/firmware revision
 
     FinalError
 };

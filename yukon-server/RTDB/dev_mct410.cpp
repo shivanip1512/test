@@ -1431,7 +1431,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
 
             if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) )
             {
-                returnErrorMessage(ErrorInvalidSSPEC, OutMessage, retList,
+                returnErrorMessage(ErrorVerifySSPEC, OutMessage, retList,
                                    getName() + " / Daily read requires SSPEC rev 2.1 or higher; execute \"getconfig model\" to verify");
             }
             else if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < SspecRev_DailyRead )

@@ -227,6 +227,7 @@ ERRSTRUCT CTIErrors[] = {
     { CtiInvalidRequest,    "Invalid/Incomplete Request",                       ERRTYPESYSTEM, " N/A"},
 
     { ErrorInvalidSSPEC,    "Insufficient SSPEC/Firmware Revision",             ERRTYPESYSTEM, " N/A"},
+    { ErrorVerifySSPEC,     "Verify SSPEC/Firmware Revision",                   ERRTYPESYSTEM, " N/A"},
 
     { UnknownError,         "Unknown Error",                                    ERRTYPESYSTEM, " N/A"},
 
