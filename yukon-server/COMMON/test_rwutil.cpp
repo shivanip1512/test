@@ -22,6 +22,7 @@
 #include "ctitime.h"
 #include "ctidate.h"
 #include "boost_time.h"
+#include "dbaccess.h"
 
 using boost::unit_test_framework::test_suite;
 
@@ -101,3 +102,106 @@ BOOST_AUTO_TEST_CASE(test_stringCompareIgnoreCase)
 
 
 }
+
+
+BOOST_AUTO_TEST_CASE(test_makeLeftOuterJoinSQL92Compliant)
+{
+    // Tests both Microsoft SQL and Oracle syntax
+
+    // No transformation
+
+    string ms_input = "SELECT t54.PointID, t54.TRANSLATION, t54.DESTINATION FROM FDRTranslation t54";
+    string or_input = ms_input;
+    string expected = ms_input;
+
+    string result = makeLeftOuterJoinSQL92Compliant(ms_input);
+    BOOST_CHECK_EQUAL(result, expected);
+    result = makeLeftOuterJoinSQL92Compliant(or_input);
+    BOOST_CHECK_EQUAL(result, expected);
+
+    // single left outer join with no where condition
+
+    ms_input = "SELECT t55.PointType, t56.MULTIPLIER, t56.DATAOFFSET FROM Point t55, PointAnalog t56"
+               " WHERE t55.PointID *= t56.PointID";
+    or_input = "SELECT t55.PointType, t56.MULTIPLIER, t56.DATAOFFSET FROM Point t55, PointAnalog t56"
+               " WHERE t55.PointID = t56.PointID (+)";
+    expected = "SELECT t55.PointType, t56.MULTIPLIER, t56.DATAOFFSET FROM Point t55 LEFT OUTER JOIN"
+               " PointAnalog t56 ON t55.PointID = t56.PointID";
+
+    result = makeLeftOuterJoinSQL92Compliant(ms_input);
+    BOOST_CHECK_EQUAL(result, expected);
+    result = makeLeftOuterJoinSQL92Compliant(or_input);
+    BOOST_CHECK_EQUAL(result, expected);
+
+    // single left outer join with extra where condition
+
+    ms_input = "SELECT t54.PointID, t55.PointType, t56.MULTIPLIER, t56.DATAOFFSET FROM"
+               " FDRTranslation t54, Point t55, PointAnalog t56 WHERE t54.PointID = t55.PointID"
+               " AND t55.PointID *= t56.PointID";
+    or_input = "SELECT t54.PointID, t55.PointType, t56.MULTIPLIER, t56.DATAOFFSET FROM"
+               " FDRTranslation t54, Point t55, PointAnalog t56 WHERE t54.PointID = t55.PointID"
+               " AND t55.PointID = t56.PointID (+)";
+    expected = "SELECT t54.PointID, t55.PointType, t56.MULTIPLIER, t56.DATAOFFSET FROM"
+               " FDRTranslation t54, Point t55 LEFT OUTER JOIN PointAnalog t56 ON t55.PointID = t56.PointID"
+               " WHERE t54.PointID = t55.PointID";
+
+    result = makeLeftOuterJoinSQL92Compliant(ms_input);
+    BOOST_CHECK_EQUAL(result, expected);
+    result = makeLeftOuterJoinSQL92Compliant(or_input);
+    BOOST_CHECK_EQUAL(result, expected);
+
+    // multiple left outer joins with no where condition
+
+    ms_input = "SELECT t54.PointID, t55.PointType, t56.MULTIPLIER, t56.DATAOFFSET FROM"
+               " FDRTranslation t54, Point t55, PointAnalog t56 WHERE t54.PointID *= t55.PointID"
+               " AND t54.PointID *= t56.PointID";
+    or_input = "SELECT t54.PointID, t55.PointType, t56.MULTIPLIER, t56.DATAOFFSET FROM"
+               " FDRTranslation t54, Point t55, PointAnalog t56 WHERE t54.PointID = t55.PointID (+)"
+               " AND t54.PointID = t56.PointID (+)";
+    expected = "SELECT t54.PointID, t55.PointType, t56.MULTIPLIER, t56.DATAOFFSET FROM"
+               " FDRTranslation t54 LEFT OUTER JOIN Point t55 ON t54.PointID = t55.PointID LEFT OUTER JOIN"
+               " PointAnalog t56 ON t54.PointID = t56.PointID";
+
+    result = makeLeftOuterJoinSQL92Compliant(ms_input);
+    BOOST_CHECK_EQUAL(result, expected);
+    result = makeLeftOuterJoinSQL92Compliant(or_input);
+    BOOST_CHECK_EQUAL(result, expected);
+
+    // multiple left outer joins with extra where condition
+
+    ms_input = "SELECT t54.PointID, t55.PointType, t56.MULTIPLIER, t56.DATAOFFSET FROM"
+               " FDRTranslation t54, Point t55, PointAnalog t56 WHERE t54.PointID *= t55.PointID"
+               " AND t54.PointID *= t56.PointID AND t54.INTERFACETYPE = 'RCCS' AND"
+               " (t54.DIRECTIONTYPE = 'Receive' OR t54.DIRECTIONTYPE = 'Receive for control')";
+    or_input = "SELECT t54.PointID, t55.PointType, t56.MULTIPLIER, t56.DATAOFFSET FROM"
+               " FDRTranslation t54, Point t55, PointAnalog t56 WHERE t54.PointID = t55.PointID (+)"
+               " AND t54.PointID = t56.PointID (+) AND t54.INTERFACETYPE = 'RCCS' AND"
+               " (t54.DIRECTIONTYPE = 'Receive' OR t54.DIRECTIONTYPE = 'Receive for control')";
+    expected = "SELECT t54.PointID, t55.PointType, t56.MULTIPLIER, t56.DATAOFFSET FROM"
+               " FDRTranslation t54 LEFT OUTER JOIN Point t55 ON t54.PointID = t55.PointID LEFT OUTER JOIN"
+               " PointAnalog t56 ON t54.PointID = t56.PointID WHERE t54.INTERFACETYPE = 'RCCS' AND"
+               " (t54.DIRECTIONTYPE = 'Receive' OR t54.DIRECTIONTYPE = 'Receive for control')";
+
+    result = makeLeftOuterJoinSQL92Compliant(ms_input);
+    BOOST_CHECK_EQUAL(result, expected);
+    result = makeLeftOuterJoinSQL92Compliant(or_input);
+    BOOST_CHECK_EQUAL(result, expected);
+
+    // single left outer join with multiple on conditions and extra where condition
+
+    ms_input = "SELECT t54.PointID, t55.PointType, t56.MULTIPLIER, t56.DATAOFFSET FROM"
+               " FDRTranslation t54, Point t55, PointAnalog t56 WHERE t54.PointID = t55.PointID"
+               " AND t55.PointID *= t56.PointID AND t55.MULTIPLIER *= t56.MULTIPLIER";
+    or_input = "SELECT t54.PointID, t55.PointType, t56.MULTIPLIER, t56.DATAOFFSET FROM"
+               " FDRTranslation t54, Point t55, PointAnalog t56 WHERE t54.PointID = t55.PointID"
+               " AND t55.PointID = t56.PointID (+) AND t55.MULTIPLIER = t56.MULTIPLIER (+)";
+    expected = "SELECT t54.PointID, t55.PointType, t56.MULTIPLIER, t56.DATAOFFSET FROM"
+               " FDRTranslation t54, Point t55 LEFT OUTER JOIN PointAnalog t56 ON t55.PointID = t56.PointID"
+               " AND t55.MULTIPLIER = t56.MULTIPLIER WHERE t54.PointID = t55.PointID";
+
+    result = makeLeftOuterJoinSQL92Compliant(ms_input);
+    BOOST_CHECK_EQUAL(result, expected);
+    result = makeLeftOuterJoinSQL92Compliant(or_input);
+    BOOST_CHECK_EQUAL(result, expected);
+}
+
