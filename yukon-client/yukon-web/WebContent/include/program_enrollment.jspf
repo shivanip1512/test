@@ -76,7 +76,7 @@ function setNotEnrolled() {
 function resendNotEnrolled(form) {
 	setNotEnrolled();
 	form.NotEnrolled.value = "true";
-    form.elements['<%= ServletUtils.NEED_MORE_INFORMATION %>'].value = 'false';
+    form.elements["<%= ServletUtils.NEED_MORE_INFORMATION %>"].value = "false";
 	form.submit();
 }
 
@@ -116,7 +116,10 @@ function confirmCancel() {
 <% if (needMoreInfo) { %>
 				    <input type="hidden" name="<%= ServletUtils.NEED_MORE_INFORMATION %>" value="true">
 				    <input type="hidden" name="REDIRECT2" value="<%= request.getContextPath() %>/operator/Consumer/Programs2.jsp">
-<% } %>
+<% } else { %>
+         <input type="hidden" name="<%= ServletUtils.NEED_MORE_INFORMATION %>" value="false">
+<% }
+%>
 				    <% if (inWizard) { %><input type="hidden" name="Wizard" value="true"><% } %>
                     <table border="1" cellspacing="0" cellpadding="3" width="95%">
                       <tr align = "center"> 
