@@ -229,14 +229,21 @@ public class ThermostatServiceImpl implements ThermostatService {
         // time we update the schedule
         if(HardwareType.UTILITY_PRO.equals(type)) {
         	try {
+        		
+        		String serialString = " serial " + thermostat.getSerialNumber();
+        		
 	        	if(ThermostatScheduleMode.WEEKDAY_SAT_SUN.equals(scheduleMode) ||
 	        			ThermostatScheduleMode.ALL.equals(scheduleMode)) {
 	        		// Schedule mode ALL is considered 5-1-1 by the stat
 	        		commandRequestHardwareExecutor.execute(
-	        				thermostat, "putconfig xcom raw 0x2b 0x08 0x03", yukonUser);
+	        				thermostat, 
+	        				"putconfig xcom raw 0x2b 0x08 0x03" + serialString, 
+	        				yukonUser);
 	        	} else if(ThermostatScheduleMode.WEEKDAY_WEEKEND.equals(scheduleMode)) {
 	        		commandRequestHardwareExecutor.execute(
-	        				thermostat, "putconfig xcom raw 0x2b 0x08 0x02", yukonUser);
+	        				thermostat, 
+	        				"putconfig xcom raw 0x2b 0x08 0x02" + serialString, 
+	        				yukonUser);
 	        	}
         	} catch (CommandCompletionException e) {
         		logger.error("Failed to update thermostat schedule mode.", e);
