@@ -2103,6 +2103,7 @@ bool CtiProtocolVersacom::isConfigFullAddressValid(LONG sn) const
                 }
                 e1.assign("[0-9]*-[0-9]*,?");
                 vcrangestr = boost::regex_replace(vcrangestr, e1, " ", boost::match_default | boost::format_all | boost::format_first_only);
+                vcrangestr = trim_left(vcrangestr, " ");
                 if(loopcnt++ > 256)
                 {
                     {
