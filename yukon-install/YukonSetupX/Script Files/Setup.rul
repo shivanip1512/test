@@ -140,7 +140,7 @@ Dlg_SdComponentTree:
             nResult = SdFeatureTree(szTitle, szMsg, szTargetdir, szComponents, nLevel);
             if (nResult = BACK) goto Dlg_SdAskDestPath;
     endif; 
-    
+
 	// setup default status
     SetStatusWindow(0, "");
     Enable(STATUSEX);
@@ -296,8 +296,145 @@ function OnFirstUIAfter()
     STRING szTitle, szMsg1, szMsg2, szOpt1, szOpt2, szMsg;
     NUMBER bvOpt1, bvOpt2;
 	NUMBER bShowUpdateServiceDlg;
+	
+	STRING  szServicesMsg, macsText, notifText, scanText,
+	smText, fdrText, ccText, lmText, calcText, StartServicesMsg,
+	porterText, dispatchText, webText; 
+	BOOL nValue, macsCheck, notifCheck, scanCheck, smCheck, fdrCheck,
+	ccCheck, lmCheck, calcCheck, porterCheck, dispatchCheck, webCheck;
+	NUMBER nResult;
+	 
 begin
-
+    
+    nValue = NONEXCLUSIVE;
+	szServicesMsg = "Select Yukon services to set automatic startup and restart on fail.\n(Porter, Dispatch and Web Applications are always set to automatic.)";
+	porterText = "Port Control";
+	porterCheck = TRUE;
+	dispatchText = "Dispatch";
+	dispatchCheck = TRUE;
+	webText = "Web Applications";
+	webCheck = TRUE;
+	macsText = "Metering and Control Scheduler (MACS)";
+	macsCheck = TRUE;
+	notifText = "Notification";
+	notifCheck = TRUE;
+	scanText = "Real-Time Scanner";
+	scanCheck = TRUE;
+	smText = "Service Manager";
+	smCheck = TRUE;
+	fdrText = "Foreign Data Router (FDR)";;
+	fdrCheck = TRUE;
+	ccText = "Capacitor Control";
+	ccCheck = TRUE;
+	lmText = "Load Management";
+	lmCheck = TRUE;
+	calcText = "Calc Logic";
+	calcCheck = TRUE;
+    
+    Dlg_SetServices:
+		//get user input
+		AskOptions(nValue, szServicesMsg, macsText, macsCheck, notifText, notifCheck,
+				scanText, scanCheck, smText, smCheck, fdrText, fdrCheck,
+	            ccText, ccCheck, lmText, lmCheck, calcText, calcCheck);
+    	//set up yukon services according to what the user checked
+    	//dispatch
+    	LaunchAppAndWait("cmd.exe", "sc failure \"Yukon Dispatch Service\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
+    	LaunchAppAndWait("cmd.exe", "sc config \"Yukon Dispatch Service\" start= auto", LAAW_OPTION_WAIT); 
+        //porter
+    	LaunchAppAndWait("cmd.exe", "sc failure \"Yukon Port Control Service\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
+    	LaunchAppAndWait("cmd.exe", "sc config \"Yukon Port Control Service\" start= auto", LAAW_OPTION_WAIT); 
+        //web
+    	LaunchAppAndWait("cmd.exe", "sc failure \"YukonWebApplicationService\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
+    	LaunchAppAndWait("cmd.exe", "sc config \"YukonWebApplicationService\" start= auto", LAAW_OPTION_WAIT); 
+    	
+    	//TODO:
+    	//macs
+    	if(macsCheck) then
+    		LaunchAppAndWait("cmd.exe", "sc failure \"Yukon MAC Scheduler Service\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
+    		LaunchAppAndWait("cmd.exe", "sc config \"Yukon MAC Scheduler Service\" start= auto", LAAW_OPTION_WAIT); 
+        endif;
+        //notification
+    	if(notifCheck) then
+    		LaunchAppAndWait("cmd.exe", "sc failure \"YukonNotificationServer\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
+    		LaunchAppAndWait("cmd.exe", "sc config \"YukonNotificationServer\" start= auto", LAAW_OPTION_WAIT); 
+        endif;
+        //scanner
+    	if(scanCheck) then
+    		LaunchAppAndWait("cmd.exe", "sc failure \"Yukon Real-Time Scan Service\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
+    		LaunchAppAndWait("cmd.exe", "sc config \"Yukon Real-Time Scan Service\" start= auto", LAAW_OPTION_WAIT); 
+        endif;
+        //service manager
+    	if(smCheck) then
+    		LaunchAppAndWait("cmd.exe", "sc failure \"YukonServiceMgr\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
+    		LaunchAppAndWait("cmd.exe", "sc config \"YukonServiceMgr\" start= auto", LAAW_OPTION_WAIT); 
+        endif;
+        //fdr
+    	if(fdrCheck) then
+    		LaunchAppAndWait("cmd.exe", "sc failure \"Yukon Foreign Data Service\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
+    		LaunchAppAndWait("cmd.exe", "sc config \"Yukon Foreign Data Service\" start= auto", LAAW_OPTION_WAIT); 
+        endif;
+        //cap control
+    	if(ccCheck) then
+    		LaunchAppAndWait("cmd.exe", "sc failure \"Yukon Cap Control Service\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
+    		LaunchAppAndWait("cmd.exe", "sc config \"Yukon Cap Control Service\" start= auto", LAAW_OPTION_WAIT); 
+        endif;
+        //load management
+    	if(lmCheck) then
+    		LaunchAppAndWait("cmd.exe", "sc failure \"Yukon Load Management Service\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
+    		LaunchAppAndWait("cmd.exe", "sc config \"Yukon Load Management Service\" start= auto", LAAW_OPTION_WAIT); 
+        endif;
+        //calc
+    	if(calcCheck) then
+    		LaunchAppAndWait("cmd.exe", "sc failure \"Yukon Calc-Logic Service\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
+    		LaunchAppAndWait("cmd.exe", "sc config \"Yukon Calc-Logic Service\" start= auto", LAAW_OPTION_WAIT); 
+        endif;
+            
+    Dlg_StartPortDispWeb:
+    	StartServicesMsg = "Select Yukon services to start at this time.";
+    	//get user input
+    	nResult = AskOptions(nValue, StartServicesMsg, porterText, porterCheck, dispatchText,
+    			dispatchCheck, webText, webCheck);  
+    
+    Dlg_StartServices:
+    	nResult = AskOptions(nValue, StartServicesMsg, macsText, macsCheck, notifText, notifCheck,
+				scanText, scanCheck, smText, smCheck, fdrText, fdrCheck,
+	            ccText, ccCheck, lmText, lmCheck, calcText, calcCheck); 
+    	if(nResult = BACK) goto Dlg_StartPortDispWeb;
+    	//start  services according to what the user checked
+    	if(dispatchCheck) then
+    		LaunchAppAndWait("cmd.exe", "sc start \"Yukon Dispatch Service\"", LAAW_OPTION_WAIT);
+        endif;
+        if(porterCheck) then
+        	LaunchAppAndWait("cmd.exe", "sc start \"Yukon Port Control Service\"", LAAW_OPTION_WAIT);
+        endif;
+        if(webCheck) then
+        	LaunchAppAndWait("cmd.exe", "sc start \"YukonWebApplicationService\"", LAAW_OPTION_WAIT);
+        endif;
+        if(macsCheck) then
+        	LaunchAppAndWait("cmd.exe", "sc start \"Yukon MAC Scheduler Service\"", LAAW_OPTION_WAIT);
+        endif;
+        if(notifCheck) then
+        	LaunchAppAndWait("cmd.exe", "sc start \"YukonNotificationServer\"", LAAW_OPTION_WAIT);
+        endif;
+        if(scanCheck) then
+        	LaunchAppAndWait("cmd.exe", "sc start \"Yukon Real-Time Scan Service\"", LAAW_OPTION_WAIT);
+        endif;
+        if(smCheck) then
+        	LaunchAppAndWait("cmd.exe", "sc start \"YukonServiceMgr\"", LAAW_OPTION_WAIT);
+        endif;
+        if(fdrCheck) then
+        	LaunchAppAndWait("cmd.exe", "sc start \"Yukon Foreign Data Service\"", LAAW_OPTION_WAIT);
+        endif;
+        if(ccCheck) then
+        	LaunchAppAndWait("cmd.exe", "sc start \"Yukon Cap Control Service\"", LAAW_OPTION_WAIT);
+        endif;
+        if(lmCheck) then
+        	LaunchAppAndWait("cmd.exe", "sc start \"Yukon Load Management Service\"", LAAW_OPTION_WAIT);
+        endif;
+        if(calcCheck) then
+        	LaunchAppAndWait("cmd.exe", "sc start \"Yukon Calc-Logic Service\"", LAAW_OPTION_WAIT);
+        endif;
+        
     ShowObjWizardPages(NEXT);
     
     szTitle = "";
@@ -441,6 +578,81 @@ function OnEnd()
 begin
 
 SHChangeNotify(134217728, 0, NULL, NULL);
+
+end;
+//---------------------------------------------------------------------------
+// OnSetUpdateMode
+//
+// OnSetUpdateMode is called directly by the framework to set the UPDATEMODE
+// InstallShield system variable appropriately to control which UI events
+// are called by OnShowUI.
+//
+// Note: This event is called for all setups.
+//---------------------------------------------------------------------------
+function OnSetUpdateMode()
+	number	nIgnore, nMediaFlags, nInstalledVersion, nUpdateVersion, nResult;
+	string	szVersion, szIgnore, szMsg;
+begin
+	
+	UPDATEMODE = FALSE; // Non-update mode by default.
+
+	// Added 11.5 - Don't set UPDATEMODE when running from Add/Remove
+	if( ADDREMOVE ) then
+		return ISERR_SUCCESS;
+	endif;
+
+	// Added 11.5 - Don't set UPDATEMODE when REMOVEONLY is specified
+	if( REMOVEONLY ) then
+		return ISERR_SUCCESS;
+	endif;
+
+	// Get the media flags.
+	MediaGetData( MEDIA, MEDIA_FIELD_MEDIA_FLAGS, nMediaFlags, szIgnore );
+
+	if( ! ( nMediaFlags & MEDIA_FLAG_UPDATEMODE_SUPPORTED ) ) then
+		return ISERR_SUCCESS; // Update mode not supported by the setup.
+	endif;
+
+	// TODO: If you are updating an application that was installed by a previous
+	// version of InstallShield, IFX_INSTALLED_VERSION will be empty, and
+	// VERSION_COMPARE_RESULT_NOT_INSTALLED will be returned by
+	// VerProductCompareVersions. Change the value of IFX_INSTALLED_VERSION (and
+	// IFX_INSTALLED_DISPLAY_VERSION) here based on application specific version
+	// information determined by the setup. Only do this if IFX_INSTALLED_VERSION
+	// is empty.
+	//if ( !StrLengthChars( IFX_INSTALLED_VERSION ) && MAINTENANCE ) then
+	//	IFX_INSTALLED_VERSION = "X.XX.XXX";
+	//	IFX_INSTALLED_DISPLAY_VERSION = IFX_INSTALLED_VERSION;
+	//endif;
+
+	// Verify that the installed version is valid.
+	if( !StrLengthChars( IFX_INSTALLED_VERSION ) && MAINTENANCE ) then
+		// If this error occurs, IFX_INSTALLED_VERSION needs to be set manually.
+		szMsg = SdLoadString( IDS_IFX_ERROR_UPDATE_NO_INSTALLED_VERSION );
+		MessageBox( szMsg, SEVERE );
+		abort;
+	endif;
+
+	// Verify that the product version is valid.
+	if( !StrLengthChars( IFX_PRODUCT_VERSION ) ) then
+		// If this error occures, IFX_PRODUCT_VERSION was not initialized correctly.
+		szMsg = SdLoadString( IDS_IFX_ERROR_UPDATE_NO_PRODUCT_VERSION );
+		MessageBox( szMsg, SEVERE );
+		abort;
+	endif;
+
+	// Do the version comparison.
+	nResult = VerProductCompareVersions();
+
+	// Make sure that valid data was returned by VerProductCompareVersions
+	if( nResult < ISERR_SUCCESS ) then
+		szMsg = SdLoadString( IDS_IFX_ERROR_UPDATE_VERSION_COMPARE_FAILURE );
+		MessageBox( szMsg, SEVERE );
+		abort;
+	endif;
+
+	// Set update mode if this is a differential media or the product is already installed and the versions do not match.
+	UPDATEMODE = ( nMediaFlags & MEDIA_FLAG_FORMAT_DIFFERENTIAL || ( MAINTENANCE && ( nResult != VERSION_COMPARE_RESULT_SAME ) ) );
 
 end;
  
