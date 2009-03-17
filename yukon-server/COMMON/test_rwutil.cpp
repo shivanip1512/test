@@ -203,5 +203,40 @@ BOOST_AUTO_TEST_CASE(test_makeLeftOuterJoinSQL92Compliant)
     BOOST_CHECK_EQUAL(result, expected);
     result = makeLeftOuterJoinSQL92Compliant(or_input);
     BOOST_CHECK_EQUAL(result, expected);
+
+    // single left outer join with extra where condition and order by ascending
+
+    ms_input = "SELECT t54.PointID, t55.PointType, t56.MULTIPLIER, t56.DATAOFFSET FROM"
+               " FDRTranslation t54, Point t55, PointAnalog t56 WHERE t54.PointID = t55.PointID"
+               " AND t55.PointID *= t56.PointID ORDER BY t54.PointID ASC";
+    or_input = "SELECT t54.PointID, t55.PointType, t56.MULTIPLIER, t56.DATAOFFSET FROM"
+               " FDRTranslation t54, Point t55, PointAnalog t56 WHERE t54.PointID = t55.PointID"
+               " AND t55.PointID = t56.PointID (+) ORDER BY t54.PointID ASC";
+    expected = "SELECT t54.PointID, t55.PointType, t56.MULTIPLIER, t56.DATAOFFSET FROM"
+               " FDRTranslation t54, Point t55 LEFT OUTER JOIN PointAnalog t56 ON t55.PointID = t56.PointID"
+               " WHERE t54.PointID = t55.PointID ORDER BY t54.PointID ASC";
+
+    result = makeLeftOuterJoinSQL92Compliant(ms_input);
+    BOOST_CHECK_EQUAL(result, expected);
+    result = makeLeftOuterJoinSQL92Compliant(or_input);
+    BOOST_CHECK_EQUAL(result, expected);
+
+    // single left outer join with extra where condition and group by
+
+    ms_input = "SELECT t54.PointID, t55.PointType, t56.MULTIPLIER, t56.DATAOFFSET FROM"
+               " FDRTranslation t54, Point t55, PointAnalog t56 WHERE t54.PointID = t55.PointID"
+               " AND t55.PointID *= t56.PointID GROUP BY t54.PointID";
+    or_input = "SELECT t54.PointID, t55.PointType, t56.MULTIPLIER, t56.DATAOFFSET FROM"
+               " FDRTranslation t54, Point t55, PointAnalog t56 WHERE t54.PointID = t55.PointID"
+               " AND t55.PointID = t56.PointID (+) GROUP BY t54.PointID";
+    expected = "SELECT t54.PointID, t55.PointType, t56.MULTIPLIER, t56.DATAOFFSET FROM"
+               " FDRTranslation t54, Point t55 LEFT OUTER JOIN PointAnalog t56 ON t55.PointID = t56.PointID"
+               " WHERE t54.PointID = t55.PointID GROUP BY t54.PointID";
+
+    result = makeLeftOuterJoinSQL92Compliant(ms_input);
+    BOOST_CHECK_EQUAL(result, expected);
+    result = makeLeftOuterJoinSQL92Compliant(or_input);
+    BOOST_CHECK_EQUAL(result, expected);
+
 }
 
