@@ -30,7 +30,6 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.user.YukonGroup;
 import com.cannontech.database.db.customer.CustomerAdditionalContact;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ServerUtils;
@@ -109,20 +108,12 @@ public class UpdateContactsAction implements ActionBase {
 					 * this is part of the whole HECO development rush...some day we will pay
 					 */
 					//ConsumerInfoRole.CREATE_LOGIN_FOR_ACCOUNT needs to be true for this to happen
-                    if(DaoFactory.getAuthDao().checkRoleProperty(user.getUserID(), ConsumerInfoRole.CREATE_LOGIN_FOR_ACCOUNT) || 
-                            DaoFactory.getAuthDao().checkRoleProperty(user.getUserID(), ResidentialCustomerRole.CREATE_LOGIN_FOR_ACCOUNT))
+                    if(DaoFactory.getAuthDao().checkRoleProperty(user.getUserID(), ConsumerInfoRole.CREATE_LOGIN_FOR_ACCOUNT))
                     {
     					com.cannontech.database.data.user.YukonUser login = new com.cannontech.database.data.user.YukonUser();
     					LiteStarsEnergyCompany liteEC = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
     					LiteYukonGroup[] custGroups = liteEC.getResidentialCustomerGroups();
-    					
-    					String time = new Long(java.util.Calendar.getInstance().getTimeInMillis()).toString();
-                        String firstInitial= "";
-    					if(firstName != null)
-    						firstInitial = firstName.toLowerCase().substring(0,1);
-    					String newUserName = firstInitial + lastName.toLowerCase();
-    					if (DaoFactory.getYukonUserDao().getLiteYukonUser( newUserName ) != null)
-    						newUserName = lastName.toLowerCase() + time.substring(time.length() - 2);
+    					String newUserName = DaoFactory.getYukonUserDao().generateUsername(firstName, lastName);
     					login.getYukonUser().setUsername(newUserName);
     					login.getYukonUser().setAuthType(AuthType.NONE);
     					for(LiteYukonGroup group : custGroups) {
@@ -307,14 +298,20 @@ public class UpdateContactsAction implements ActionBase {
             
 			// Remove customer contacts that are not in the update list
 			for (int i = 0; i < contactList.size(); i++) {
-				LiteContact liteContact = contactList.get(i);
-				com.cannontech.database.data.customer.Contact contact = new com.cannontech.database.data.customer.Contact();
-				StarsLiteFactory.setContact( contact, liteContact );
-            	
-            	Transaction.createTransaction( Transaction.DELETE, contact ).execute();
-            	
-            	ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_DELETE );
-            	
+			    LiteContact liteContact = contactList.get(i);
+			    com.cannontech.database.data.customer.Contact contact = new com.cannontech.database.data.customer.Contact();
+			    StarsLiteFactory.setContact( contact, liteContact );				
+			    Transaction.createTransaction( Transaction.DELETE, contact ).execute();
+			    ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_DELETE );
+			    
+                //clean-up user login if exists
+                if (liteContact.getLoginID() > 0) {
+                    com.cannontech.database.data.user.YukonUser login = new com.cannontech.database.data.user.YukonUser();
+                    login.setUserID(liteContact.getLoginID());
+                    login = Transaction.createTransaction(Transaction.DELETE, login).execute();
+                    LiteYukonUser liteUser = new LiteYukonUser( login.getUserID().intValue() );
+                    ServerUtils.handleDBChange(liteUser, DBChangeMsg.CHANGE_TYPE_DELETE);
+                }
 			}
             
 			liteCustomer.setAdditionalContacts( newContactList );

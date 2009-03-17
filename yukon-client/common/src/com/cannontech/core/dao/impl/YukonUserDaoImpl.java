@@ -2,6 +2,7 @@ package com.cannontech.core.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.authorization.dao.PaoPermissionDao;
+import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteContact;
@@ -22,6 +24,7 @@ import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.user.YukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -37,7 +40,8 @@ public final class YukonUserDaoImpl implements YukonUserDao {
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private IDatabaseCache databaseCache;
     private NextValueHelper nextValueHelper;
-    public PaoPermissionDao<LiteYukonUser> userPaoPermissionDao = null;
+    private PaoPermissionDao<LiteYukonUser> userPaoPermissionDao = null;
+    private DBPersistentDao dbPersistantDao;    
 
     static {
         
@@ -134,6 +138,33 @@ public final class YukonUserDaoImpl implements YukonUserDao {
 	    }
 	}
 	
+	public String generateUsername(String firstName, String lastName) {
+        String newUsername = null;
+
+        String firstInitial = "";
+        if (firstName != null) {
+            firstInitial = firstName.toLowerCase().substring(0, 1);
+        }
+        newUsername = firstInitial + lastName.toLowerCase();
+        if (getLiteYukonUser(newUsername) != null) {
+            String timeStamp = Long.toString(new Date().getTime());
+            StringBuilder username = new StringBuilder(lastName.toLowerCase()).append(timeStamp);
+            boolean uniqueUsername = false;
+            for (int i = 0; i < 100; i++) {
+                newUsername = username.append(i).toString();
+                if (getLiteYukonUser(newUsername) == null) {
+                    uniqueUsername = true;
+                    break;
+                }
+            }
+            if (!uniqueUsername) {
+                throw new RuntimeException("Failed to generate unique username, please retry");
+            }
+        }
+
+        return newUsername;
+    }
+	
 	@Override
 	@Transactional
     public void deleteUser(Integer userId) {
@@ -147,6 +178,12 @@ public final class YukonUserDaoImpl implements YukonUserDao {
         userPaoPermissionDao.removeAllPermissions(userId);
         simpleJdbcTemplate.update(deleteYukonUser, userId);
         
+        DBChangeMsg changeMsg = new DBChangeMsg(userId,
+                                                DBChangeMsg.CHANGE_YUKON_USER_DB,
+                                                DBChangeMsg.CAT_YUKON_USER,
+                                                DBChangeMsg.CAT_YUKON_USER,
+                                                DBChangeMsg.CHANGE_TYPE_DELETE);
+        dbPersistantDao.processDBChange(changeMsg);        
 	}
     
     public void setDatabaseCache(IDatabaseCache databaseCache) {
@@ -180,4 +217,9 @@ public final class YukonUserDaoImpl implements YukonUserDao {
     public void setUserPaoPermissionDao(PaoPermissionDao<LiteYukonUser> userPaoPermissionDao) {
         this.userPaoPermissionDao = userPaoPermissionDao;
     }
+    
+    @Autowired
+    public void setDbPersistantDao(DBPersistentDao dbPersistantDao) {
+        this.dbPersistantDao = dbPersistantDao;
+    }    
 }

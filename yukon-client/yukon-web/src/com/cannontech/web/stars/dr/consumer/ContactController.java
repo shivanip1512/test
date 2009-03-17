@@ -1,7 +1,6 @@
 package com.cannontech.web.stars.dr.consumer;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
@@ -113,7 +111,7 @@ public class ContactController extends AbstractConsumerController {
         LiteContact contact = new LiteContact(-1);
         contact.setContFirstName("New Contact");
         contact.setContLastName("New Contact");
-        contact.setLoginID(-9999);
+        contact.setLoginID(UserUtils.USER_DEFAULT_ID);
 
         contactDao.addAdditionalContact(contact, customer);
         
@@ -136,37 +134,27 @@ public class ContactController extends AbstractConsumerController {
 
             if(remove != null) {
                 contactDao.removeAdditionalContact(contactId);
-
+                //clean-up user login, if exists
+                if (contact.getLoginID() > 0) {
+                    yukonUserDao.deleteUser(contact.getLoginID());
+                }                
             } else {
-
 
                 List<LiteContactNotification> notificationList = this.getNotifications(request,
                                                                                        contactId);
-
                 this.addNewNotification(request, contactId, notificationList);
-
                 contact.setNotifications(notificationList);
 
-
-                if(rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_CREATE_LOGIN_FOR_ACCOUNT, user) || 
-                        rolePropertyDao.checkProperty(YukonRoleProperty.RESIDENTIAL_CREATE_LOGIN_FOR_ACCOUNT, user)) {
+                if (rolePropertyDao.checkProperty(YukonRoleProperty.RESIDENTIAL_CREATE_LOGIN_FOR_ACCOUNT, user)) {
 
                     StarsYukonUser starsUser = (StarsYukonUser) request.getSession().getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
                     // If not primary contact and no login exists, create it.
-                    if(!contactDao.isPrimaryContact(contactId) && contact.getLoginID() == -9999) {
+                    if(!contactDao.isPrimaryContact(contactId) && contact.getLoginID() == UserUtils.USER_DEFAULT_ID) {
 
                         YukonUser login = new YukonUser();
                         LiteStarsEnergyCompany liteEC = StarsDatabaseCache.getInstance().getEnergyCompany( starsUser.getEnergyCompanyID() );
                         LiteYukonGroup[] custGroups = liteEC.getResidentialCustomerGroups();
-                        String time = new Long(Calendar.getInstance().getTimeInMillis()).toString();
-                        String firstInitial= "";
-                        if(firstName != null) {
-                            firstInitial = firstName.toLowerCase().substring(0,1);
-                        }
-                        String newUserName = firstInitial + lastName.toLowerCase();
-                        if (yukonUserDao.getLiteYukonUser( newUserName ) != null) {
-                            newUserName = lastName.toLowerCase() + time.substring(time.length() - 2);
-                        }
+                        String newUserName = yukonUserDao.generateUsername(firstName, lastName);
                         login.getYukonUser().setUsername(newUserName);
                         login.getYukonUser().setAuthType(AuthType.NONE);
                         login.getYukonGroups().addElement(((YukonGroup)LiteFactory.convertLiteToDBPers(custGroups[0])).getYukonGroup());
@@ -174,7 +162,7 @@ public class ContactController extends AbstractConsumerController {
                         try {
                             login = Transaction.createTransaction(Transaction.INSERT, login).execute();
                         } catch (TransactionException e) {
-                            CTILogger.error(e);
+                            throw new RuntimeException(e);
                         }
                         LiteYukonUser liteUser = new LiteYukonUser( login.getUserID().intValue() );
                         ServerUtils.handleDBChange(liteUser, DBChangeMsg.CHANGE_TYPE_ADD);

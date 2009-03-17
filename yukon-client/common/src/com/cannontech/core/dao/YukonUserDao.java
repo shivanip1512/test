@@ -50,5 +50,14 @@ public interface YukonUserDao {
      * @throws DataAccessException
      */
     public void update(LiteYukonUser user) throws DataAccessException;
+    
+    /**
+     * Generates a unique username based on the given firstName and lastName.
+     * 
+     * @param firstName
+     * @param lastName
+     * @return newUsername
+     */
+    public String generateUsername(String firstName, String lastName);    
 
 }
