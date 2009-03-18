@@ -855,7 +855,7 @@ void CtiPointClientManager::writeRecordsToDB(list<CtiTablePointDispatch> &update
 
 void CtiPointClientManager::removeOldDynamicData()
 {
-    int count;
+    int count = 0;
     coll_type::writer_lock_guard_t guard(getLock());
     DynamicPointDispatchIterator itr = _dynamic.begin();
     DynamicPointDispatchIterator end = _dynamic.end();
