@@ -182,7 +182,7 @@ void AnalogInput::setValue(long value)
 }
 void AnalogInput::setOnlineFlag(bool online) 
 {
-    _flags.online = (online?1:0);
+    _flags.online = online;
 }
 
 int AnalogInput::getSerializedLen(void) const
