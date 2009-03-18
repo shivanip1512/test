@@ -279,6 +279,7 @@ void CtiProtocol711::describeMasterRequest() const
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
+                char oldfill = dout.fill('0');
                 dout << hex << setw(2) << (INT)_masterToSlave[0] << dec << " IDLC Frame header is valid " << endl;
                 dout << hex << setw(2) << (INT)_masterToSlave[1] << dec << " Request to CCU Address " << (INT)address << endl;
                 dout << hex << setw(2) << (INT)_masterToSlave[2] << dec << "   Control Word (rrrfsss0):"  << endl;
@@ -412,6 +413,8 @@ void CtiProtocol711::describeMasterRequest() const
                     }
                     dout << dec << endl;
                 }
+
+                dout.fill(oldfill);
             }
 
             switch(cmnd)
@@ -754,6 +757,7 @@ void CtiProtocol711::describeLGRPQRequest(const BYTE *data, INT len) const
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
+                char oldfill = dout.fill('0');
                 dout << endl << "LGRPQ CMND: Vol. 1 / pp. 4-92 " << endl;
 
                 dout << hex << setw(2) << (INT)data[0] << dec << "  SETL (set length) " << (INT)setl << endl;
@@ -768,6 +772,7 @@ void CtiProtocol711::describeLGRPQRequest(const BYTE *data, INT len) const
                 dout << hex << setw(2) << (INT)data[10] << dec << "  Fixed Bits " << (INT)fffff << endl;
                 dout << hex << setw(2) << (INT)data[11] << dec << "  Repeaters to follow " << (INT)RRR << endl;
                 dout << hex << setw(2) << (INT)data[12] << dec << "  NFUNC: number of functions to follow " << (INT)nfunc << endl;
+                dout.fill(oldfill);
             }
         }
 
@@ -792,6 +797,7 @@ void CtiProtocol711::describeLGRPQRequest(const BYTE *data, INT len) const
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    char oldfill = dout.fill('0');
                     dout << hex << setw(2) << (INT)data[nfunc_offset] << " through " << setw(2) << (INT)data[nfunc_offset + 4] << dec << "  DLC COMMAND: " << endl;
 
                     switch(dlcword)
@@ -849,41 +855,38 @@ void CtiProtocol711::describeLGRPQRequest(const BYTE *data, INT len) const
                             break;
                         }
                     }
-                }
-
-                switch(dlcword)
-                {
-                case 0x00:
+    
+                    switch(dlcword)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** ACH: UNUSED/ERROR! **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        break;
-                    }
-                case 0x02:
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << hex << setw(2) << (INT)data[nfunc_offset+2] << " BWORD FUNCTION " << (INT)bwordcmd << dec << endl;
-                        dout << hex << setw(2) << (INT)data[nfunc_offset+3] << dec << " BWORD LENGTH " << (INT)dlclen << endl;
-                        break;
-                    }
-                case 0x03:
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** ACH: Word type GWORD **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-                case 0x01:
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** ACH: Word type AWORD **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-                default:
-                    {
+                    case 0x00:
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** ACH: Word type not yet decoded! **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** ACH: UNUSED/ERROR! **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            break;
                         }
-                        break;
+                    case 0x02:
+                        {
+                            dout << hex << setw(2) << (INT)data[nfunc_offset+2] << " BWORD FUNCTION " << (INT)bwordcmd << dec << endl;
+                            dout << hex << setw(2) << (INT)data[nfunc_offset+3] << dec << " BWORD LENGTH " << (INT)dlclen << endl;
+                            break;
+                        }
+                    case 0x03:
+                        {
+                            dout << CtiTime() << " **** ACH: Word type GWORD **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                    case 0x01:
+                        {
+                            dout << CtiTime() << " **** ACH: Word type AWORD **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                    default:
+                        {
+                            {
+                                dout << CtiTime() << " **** ACH: Word type not yet decoded! **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+                            break;
+                        }
                     }
+
+                    dout.fill(oldfill);
                 }
 
                 nfunc_offset += 4;
