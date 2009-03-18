@@ -21,6 +21,8 @@ public interface MspRawPointHistoryDao
      * @return
      */
     public MeterRead[] retrieveMeterReads(ReadBy readBy, String readByValue, Date startDate, Date endDate, String lastReceived, int maxRecords);
+    
+    public MeterRead[] retrieveLatestMeterReads(String lastReceived, int maxRecords);
 
     public FormattedBlock retrieveBlock(FormattedBlockService<Block> block, Date startDate, Date endDate, String lastReceived);
 

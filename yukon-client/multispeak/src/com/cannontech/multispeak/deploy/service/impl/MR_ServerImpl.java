@@ -477,15 +477,12 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         Date timerStart = new Date();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
                 
-        List<com.cannontech.amr.meter.model.Meter> meters = meterDao.getMetersByMeterNumber(lastReceived, 
-                                                             vendor.getMaxReturnRecords());
-        
-        MeterRead[] meterReads = mspMeterReadDao.getMeterRead(meters);
+        MeterRead[] meterReads = mspRawPointHistoryDao.retrieveLatestMeterReads(lastReceived, vendor.getMaxReturnRecords());
 
         int numRemaining = (meterReads.length < vendor.getMaxReturnRecords() ? 0:1); //at least one item remaining, bad assumption.
         multispeakFuncs.getResponseHeader().setObjectsRemaining(new BigInteger(String.valueOf(numRemaining)));
         
-        CTILogger.info("Returning " + meters.size() + " MeterReads. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");
+        CTILogger.info("Returning " + meterReads.length + " MeterReads. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");
         return meterReads;
     }
     

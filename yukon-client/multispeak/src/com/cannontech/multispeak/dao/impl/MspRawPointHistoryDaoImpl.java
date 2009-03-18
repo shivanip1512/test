@@ -124,7 +124,9 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
                     if( device == null)
                         device = MeterReadFactory.createMeterReadObject(paoType, meterNumber);
 
-                    device.populate( pointType, pointOffset, uomId, dateTime, new Double(value));
+                    if (device != null) {	//a device exists and was successfully created by the factory
+                    	device.populate( pointType, pointOffset, uomId, dateTime, new Double(value));
+                    }
                     prevDateTime.setTime(dateTime.getTime());
                     lastPaoID = paobjectID;
                 }
@@ -147,6 +149,114 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
         }
         finally
         {
+        	SqlUtils.close(rset, pstmt, conn );
+        }
+        return meterReadArray;
+    }
+    
+    public MeterRead[] retrieveLatestMeterReads(String lastReceived, int maxRecords) {
+        Date timerStart = new Date();
+        
+        MeterRead[] meterReadArray = new MeterRead[0];
+        String sql = "SELECT DISTINCT P.POINTID, TIMESTAMP, VALUE, P.POINTOFFSET, P.POINTTYPE, UOM.UOMID, " + 
+                     " PAO.TYPE, PAO.CATEGORY, PAO.PAOBJECTID, DMG.METERNUMBER " + 
+                     " FROM " + RawPointHistory.TABLE_NAME + " rph, " + Point.TABLE_NAME + " p, " +
+                     PointUnit.TABLE_NAME + " pu, " + UnitMeasure.TABLE_NAME + " uom, " + 
+                     YukonPAObject.TABLE_NAME + " pao, " + DeviceMeterGroup.TABLE_NAME + " dmg, " +
+                     " (SELECT distinct r.pointid, max(r.timestamp) AS rDate " + 
+              		 " FROM rawpointhistory r " +
+              		 " GROUP BY pointid) irph " +
+                     " WHERE RPH.POINTID = P.POINTID " +
+                     " AND RPH.POINTID = IRPH.POINTID " +
+                     " AND RPH.TIMESTAMP = IRPH.RDATE " +
+                     " AND P.PAOBJECTID = PAO.PAOBJECTID " +
+                     " AND PAO.PAOBJECTID = DMG.DEVICEID " +
+                     " AND P.POINTID = PU.POINTID " +
+                     " AND PU.UOMID = UOM.UOMID " +
+                     " AND (POINTOFFSET < 101 or POINTOFFSET > 104)";   //exclude Profile data for now.
+                     if ( !StringUtils.isBlank(lastReceived) )
+                         sql += " AND DMG.METERNUMBER > ? ";
+                     sql += " ORDER BY METERNUMBER, P.POINTID, TIMESTAMP";  //P.POINTID, 
+        
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rset = null;
+
+        try {
+            conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+
+            if( conn == null ) {
+                CTILogger.error(getClass() + ":  Error getting database connection.");
+                return meterReadArray;
+            } else {
+                pstmt = conn.prepareStatement(sql);
+                if ( !StringUtils.isBlank(lastReceived) ) {
+                    pstmt.setString(1, lastReceived);
+                }
+                
+                rset = pstmt.executeQuery();
+
+                int lastPaoID = -1;
+                int paobjectID = 0;
+                Date prevDateTime = new Date();
+                List<MeterRead> meterReadList = new ArrayList<MeterRead>();
+                
+                ReadableDevice device = null;
+                while( rset.next()) {
+                	
+                    int pointID = rset.getInt(1);
+                    Timestamp ts = rset.getTimestamp(2);
+                    Date dateTime = new Date();
+                    dateTime.setTime(ts.getTime());
+                    double value = rset.getDouble(3);
+                    int pointOffset = rset.getInt(4);
+                    String ptType = rset.getString(5);
+                    int pointType = PointTypes.getType(ptType);
+                    int uomId = rset.getInt(6);
+                    String type = rset.getString(7);
+                    String category = rset.getString(8);
+                    int paoType = PAOGroups.getPAOType(category, type);
+                    paobjectID = rset.getInt(9);
+                    String meterNumber = rset.getString(10);
+                    
+                    //Store any previous meter readings.
+                    if (dateTime.after(prevDateTime) || lastPaoID != paobjectID) {
+                        if( device != null && device.isPopulated()) {
+                            meterReadList.add(device.getMeterRead());
+                        }
+                        device = null;
+                        if( lastPaoID != paobjectID && meterReadList.size() >= maxRecords) {
+                            break;
+                        }
+                    }
+
+                    if( device == null) {
+                        device = MeterReadFactory.createMeterReadObject(paoType, meterNumber);
+                    }
+
+                    if (device != null) {	//a device exists and was successfully created by the factory
+                    	device.populate( pointType, pointOffset, uomId, dateTime, new Double(value));
+                    }
+                    prevDateTime.setTime(dateTime.getTime());
+                    lastPaoID = paobjectID;
+                }
+                
+                //Add the last meterRead object
+                if( device != null && device.isPopulated() &&   //made it all the way through and need to add last one 
+                        lastPaoID == paobjectID) { //but make sure we didn't exit from the break statement
+                    meterReadList.add(device.getMeterRead());
+                }
+
+                meterReadArray = new MeterRead[meterReadList.size()];
+                meterReadList.toArray(meterReadArray);
+                
+                CTILogger.info( (new Date().getTime() - timerStart.getTime())*.001 + " Secs for Latest RPH Data to be loaded" );                
+            }
+        }
+        
+        catch( java.sql.SQLException e ) {
+            CTILogger.error(e);
+        } finally {
         	SqlUtils.close(rset, pstmt, conn );
         }
         return meterReadArray;

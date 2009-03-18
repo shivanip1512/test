@@ -162,7 +162,7 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
         if (lastReceived == null)
             lastReceived = "";
 
-        String sql = meterRowMapper.getSql() + " AND MeterNumber > ? ORDER BY MeterNumber";
+        String sql = meterRowMapper.getSql() + " WHERE MeterNumber > ? ORDER BY MeterNumber";
 
         List<Meter> mspMeters = new ArrayList<Meter>();
         ListRowCallbackHandler lrcHandler = new ListRowCallbackHandler(mspMeters,
@@ -183,7 +183,7 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
         if (lastReceived == null)
             lastReceived = "";
 
-        String sql = meterRowMapper.getSql() + " AND PaoName > ? ORDER BY PaoName";
+        String sql = meterRowMapper.getSql() + " WHERE PaoName > ? ORDER BY PaoName";
 
         List<Meter> mspMeters = new ArrayList<Meter>();
         ListRowCallbackHandler lrcHandler = new ListRowCallbackHandler(mspMeters,

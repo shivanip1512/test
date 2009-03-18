@@ -7,6 +7,7 @@ import java.util.List;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeDynamicDataSource;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.multispeak.dao.MspMeterReadDao;
 import com.cannontech.multispeak.deploy.service.MeterRead;
@@ -33,7 +34,11 @@ public class MspMeterReadDaoImpl implements MspMeterReadDao {
             GregorianCalendar cal = new GregorianCalendar();
             cal.setTime(demand.getPointDataTimeStamp());
             meterRead.setKWDateTime(cal);
-        } catch (IllegalArgumentException e) {}
+        } catch (IllegalArgumentException e) {
+        	//If the attribute doesn't exist, don't add the data
+        } catch (NotFoundException e) {
+        	//If a point doesn't exist, don't add the data
+        }
 
         try {
             PointValueHolder usage = attrDynamicDataSource.getPointValue(meter, BuiltInAttribute.USAGE);
@@ -41,7 +46,11 @@ public class MspMeterReadDaoImpl implements MspMeterReadDao {
             GregorianCalendar cal = new GregorianCalendar();
             cal.setTime(usage.getPointDataTimeStamp());
             meterRead.setReadingDate(cal);
-        } catch (IllegalArgumentException e) {}
+        } catch (IllegalArgumentException e) {
+        	//If the attribute doesn't exist, don't add the data
+        } catch (NotFoundException e) {
+        	//If a point doesn't exist, don't add the data
+        }
         
         return meterRead;
     }
