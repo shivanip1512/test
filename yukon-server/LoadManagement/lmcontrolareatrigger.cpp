@@ -489,15 +489,14 @@ void CtiLMControlAreaTrigger::calculateProjectedValue()
     {
         if( !stringCompareIgnoreCase(getProjectionType(), CtiLMControlAreaTrigger::LSFProjectionType ) )
         {
+            while( getProjectionPointEntriesQueue().size() > getProjectionPoints() )//trim excess pointvalues
+            {
+                getProjectionPointEntriesQueue().erase(getProjectionPointEntriesQueue().begin());
+            }
+
             if( getProjectionPointEntriesQueue().size() >= getProjectionPoints() && getProjectionPoints() > 0 &&
                 getProjectionPointEntriesQueue()[getProjectionPoints()-1].getTimestamp().seconds() > (CtiTime::now().seconds() - 60*60) )
             {
-                std::vector<CtiLMProjectionPointEntry>::iterator itr = getProjectionPointEntriesQueue().begin();
-                while( getProjectionPointEntriesQueue().size() > getProjectionPoints() )//trim excess pointvalues
-                {
-                    getProjectionPointEntriesQueue().erase(itr);
-                }
-
                 double x       = 0.0;
                 double sumX    = 0.0;
                 double sumY    = 0.0;
