@@ -143,7 +143,7 @@
 		        		<th><cti:msg key="yukon.dr.consumer.optout.program"/></th>
 		        		<th><cti:msg key="yukon.dr.consumer.optout.dateScheduled"/></th>
 		        		<th><cti:msg key="yukon.dr.consumer.optout.dateActive"/></th>
-		        		<th><cti:msg key="yukon.dr.consumer.optout.duration"/></th>
+		        		<th><cti:msg key="yukon.dr.consumer.optout.durationHeader"/></th>
 		        	</tr>
 		        	
 		        	<c:forEach var="optOut" items="${previousOptOutList}">

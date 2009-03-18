@@ -370,7 +370,7 @@
     <entry key="yukon.dr.consumer.optout.dateScheduled">Date Scheduled</entry>
     <entry key="yukon.dr.consumer.optout.dateActive">Active Date</entry>
     <entry key="yukon.dr.consumer.optout.noPreviousOptOuts">There are no previous Opt Outs</entry>
-    <entry key="yukon.dr.consumer.optout.duration">Duration</entry>
+    <entry key="yukon.dr.consumer.optout.durationHeader">Duration</entry>
     <entry key="yukon.dr.consumer.optout.canceled">Canceled</entry>
 
     <!-- optOutList.jsp -->

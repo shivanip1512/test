@@ -61,8 +61,6 @@
     <entry key="yukon.dr.operator.optout.canceled">Canceled</entry>
     <entry key="yukon.dr.operator.optout.viewAll">View Full History</entry>
 
-    <entry key="yukon.dr.operator.optout.backToOptOut">Back to Opt Out</entry>
-
     <!-- optOutList.jsp -->
     <entry key="yukon.dr.operator.optoutlist.header">Programs - Opt Out</entry>
     <entry key="yukon.dr.operator.optoutlist.description">Please select the hardware you want to opt out of.</entry>
@@ -82,6 +80,15 @@
     <entry key="yukon.dr.operator.optoutconfirm.question.1">Question 1</entry>
     <entry key="yukon.dr.operator.optoutconfirm.question.2">Question 2</entry>
     <entry key="yukon.dr.operator.optoutconfirm.question.3">Question 3</entry>
+
+    <!--  OptOutHistory.jsp -->
+    <entry key="yukon.dr.operator.optoutHistory.header">Opt Out History</entry>
+    <entry key="yukon.dr.operator.optoutHistory.device">Device</entry>
+    <entry key="yukon.dr.operator.optoutHistory.program">Program(s)</entry>
+    <entry key="yukon.dr.operator.optoutHistory.dateScheduled">Date Scheduled</entry>
+    <entry key="yukon.dr.operator.optoutHistory.dateActive">Active Date</entry>
+    <entry key="yukon.dr.operator.optoutHistory.durationHeader">Duration</entry>
+    <entry key="yukon.dr.operator.optoutHistory.backToOptOut">Back to Opt Out</entry>
 
     <!--  scheduledEvents.jsp -->
     <entry key="yukon.web.modules.dr.scheduledEvents.title">Scheduled Opt Outs</entry>

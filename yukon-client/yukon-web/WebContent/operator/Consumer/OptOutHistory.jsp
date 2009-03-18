@@ -64,14 +64,14 @@ function confirmSubmit(form) { //v1.0
                 <c:set var="previousOptOutList" value="<%=previousOptOutList %>" />                   
                 
                 <!-- Opt Out History -->
-		        <cti:msg key="yukon.dr.operator.optout.optOutHistory"/>
+		        <cti:msg key="yukon.dr.operator.optoutHistory.header"/>
                 <table id="deviceTable" class="miniResultsTable">
                     <tr class="<ct:alternateRow odd="" even="altRow"/>">
-                        <th><cti:msg key="yukon.dr.operator.optout.device"/></th>
-                        <th><cti:msg key="yukon.dr.operator.optout.program"/></th>
-                        <th><cti:msg key="yukon.dr.operator.optout.dateScheduled"/></th>
-                        <th><cti:msg key="yukon.dr.operator.optout.dateActive"/></th>
-                        <th><cti:msg key="yukon.dr.operator.optout.duration"/></th>
+                        <th><cti:msg key="yukon.dr.operator.optoutHistory.device"/></th>
+                        <th><cti:msg key="yukon.dr.operator.optoutHistory.program"/></th>
+                        <th><cti:msg key="yukon.dr.operator.optoutHistory.dateScheduled"/></th>
+                        <th><cti:msg key="yukon.dr.operator.optoutHistory.dateActive"/></th>
+                        <th><cti:msg key="yukon.dr.operator.optoutHistory.durationHeader"/></th>
                     </tr>
                     
                     <c:forEach var="optOut" items="${previousOptOutList}">
@@ -91,7 +91,7 @@ function confirmSubmit(form) { //v1.0
                             <td>
                                 <c:choose>
                                     <c:when test="${optOut.state == 'SCHEDULE_CANCELED'}">
-                                        <cti:msg key="yukon.dr.operator.optout.canceled"/>
+                                        <cti:msg key="yukon.dr.operator.optoutHistory.canceled"/>
                                     </c:when>
                                     <c:otherwise>
                                         <cti:formatTimePeriod startDate="${optOut.startDate}" endDate="${optOut.stopDate}" type="DH"/>
@@ -101,7 +101,7 @@ function confirmSubmit(form) { //v1.0
                         </tr>
                     </c:forEach>
                 </table>
-	            <cti:msg var="backToOptOut" key="yukon.dr.operator.optout.backToOptOut" />
+	            <cti:msg var="backToOptOut" key="yukon.dr.operator.optoutHistory.backToOptOut" />
 	            <input type="button" value="${backToOptOut}" onclick='location.href="./OptOut.jsp"'>
             </div>
             <p>&nbsp;</p>
