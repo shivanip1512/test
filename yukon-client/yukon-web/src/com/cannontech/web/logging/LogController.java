@@ -11,6 +11,8 @@ import org.springframework.web.servlet.mvc.AbstractController;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 /**
  * LogController acts as an abstract base
@@ -20,6 +22,7 @@ import com.cannontech.core.dao.AuthDao;
  * @see internal getLogFile() method
  * @author dharrington
  */
+@CheckRoleProperty(YukonRoleProperty.ADMIN_VIEW_LOGS)
 public abstract class LogController extends AbstractController {
     protected AuthDao authDao;
 

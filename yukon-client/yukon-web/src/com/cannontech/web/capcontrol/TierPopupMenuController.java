@@ -17,12 +17,14 @@ import com.cannontech.cbc.service.CapControlCommentService;
 import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.roles.capcontrol.CBCSettingsRole;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.yukon.cbc.CCArea;
 import com.cannontech.yukon.cbc.CapControlCommand;
 import com.cannontech.yukon.cbc.CCSpecialArea;
@@ -32,6 +34,7 @@ import com.cannontech.yukon.cbc.StreamableCapObject;
 import com.cannontech.yukon.cbc.SubBus;
 import com.cannontech.yukon.cbc.SubStation;
 
+@CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
 public class TierPopupMenuController extends MultiActionController {
     private CapControlCache capControlCache;
     private PaoDao paoDao;

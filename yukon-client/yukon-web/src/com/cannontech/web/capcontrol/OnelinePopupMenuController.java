@@ -26,18 +26,21 @@ import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.CapControlDao;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.CachingPointFormattingService;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.db.capcontrol.CapBankAdditional;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.updater.point.PointUpdateBackingService;
-import com.cannontech.yukon.cbc.CapControlCommand;
 import com.cannontech.yukon.cbc.CapBankDevice;
+import com.cannontech.yukon.cbc.CapControlCommand;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.SubBus;
 
+@CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
 public class OnelinePopupMenuController extends MultiActionController {
     private static final CapBankOperationalState[] allowedOperationStates;
     private CapControlCache capControlCache;

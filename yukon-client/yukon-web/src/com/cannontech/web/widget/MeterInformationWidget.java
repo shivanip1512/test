@@ -10,15 +10,18 @@ import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
 /**
  * Widget used to display basic device information
  */
+@CheckRole(YukonRole.METERING)
 public class MeterInformationWidget extends WidgetControllerBase {
 
     private MeterDao meterDao = null;

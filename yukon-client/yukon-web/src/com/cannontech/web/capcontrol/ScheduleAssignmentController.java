@@ -16,14 +16,17 @@ import org.springframework.web.servlet.View;
 
 import com.cannontech.capcontrol.ScheduleCommand;
 import com.cannontech.core.dao.PaoScheduleDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.db.pao.PAOSchedule;
 import com.cannontech.database.db.pao.PaoScheduleAssignment;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.JsonView;
 
 
 @Controller
 @RequestMapping("/scheduleAssignments/*")
+@CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
 public class ScheduleAssignmentController {
     
 	private PaoScheduleDao paoScheduleDao = null;

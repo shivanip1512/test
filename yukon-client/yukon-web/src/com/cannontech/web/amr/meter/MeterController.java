@@ -45,7 +45,7 @@ import com.cannontech.web.updater.point.PointUpdateBackingService;
 /**
  * Spring controller class
  */
-@CheckRole({YukonRole.METERING,YukonRole.SYSTEM_BILLING,YukonRole.SCHEDULER})
+@CheckRole(YukonRole.METERING)
 public class MeterController extends MultiActionController {
 
     private MeterSearchService meterSearchService = null;

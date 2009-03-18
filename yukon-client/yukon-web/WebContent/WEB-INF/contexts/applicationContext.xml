@@ -213,7 +213,6 @@
         <property name="meterReadService" ref="meterReadService"/>
         <property name="attributeService" ref="attributeService"/>
         <property name="meterDao" ref="meterDao"/>
-        <property name="pointFormattingService" ref="pointFormattingServiceForRequest"/>
     </bean>
     
     <bean id="meterInformationWidget"

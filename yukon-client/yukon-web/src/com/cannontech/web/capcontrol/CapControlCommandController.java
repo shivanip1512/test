@@ -22,15 +22,18 @@ import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.roles.capcontrol.CBCSettingsRole;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.yukon.cbc.CapControlCommand;
 import com.cannontech.yukon.cbc.CCSpecialArea;
 import com.cannontech.yukon.cbc.SubStation;
 
+@CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
 public class CapControlCommandController extends MultiActionController {
     private static final String defaultReason = "(none)";
     private static final String emptyString = "";

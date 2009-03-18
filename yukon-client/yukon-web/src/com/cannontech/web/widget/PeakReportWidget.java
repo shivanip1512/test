@@ -26,15 +26,18 @@ import com.cannontech.common.device.peakReport.model.PeakReportResult;
 import com.cannontech.common.device.peakReport.model.PeakReportRunType;
 import com.cannontech.common.device.peakReport.service.PeakReportService;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
 /**
  * Widget used to display point data in a trend
  */
+@CheckRole(YukonRole.METERING)
 public class PeakReportWidget extends WidgetControllerBase {
 
     private PeakReportService peakReportService = null;

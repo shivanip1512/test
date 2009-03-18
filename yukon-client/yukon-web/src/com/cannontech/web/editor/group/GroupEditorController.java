@@ -9,8 +9,13 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.core.dao.YukonGroupDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonGroup;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
+//currently only used by LM group permission assignment
+//additional possible uses should have associated role property requirements added when needed
+@CheckRoleProperty({YukonRoleProperty.ADMIN_LM_USER_ASSIGN})
 public class GroupEditorController extends MultiActionController {
 
     private YukonGroupDao yukonGroupDao;

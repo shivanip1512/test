@@ -370,14 +370,6 @@
 	</servlet>
 
 	<servlet>
-		<servlet-name>loadProfile</servlet-name>
-		<servlet-class>
-			com.cannontech.web.spring.CannonDispatcherServlet
-		</servlet-class>
-		<load-on-startup>2</load-on-startup>
-	</servlet>
-
-	<servlet>
 		<servlet-name>capcontrol</servlet-name>
 		<servlet-class>
 			com.cannontech.web.spring.CannonDispatcherServlet
@@ -895,11 +887,6 @@
 	<servlet-mapping>
 		<servlet-name>httpRemote</servlet-name>
 		<url-pattern>/remote/*</url-pattern>
-	</servlet-mapping>
-
-	<servlet-mapping>
-		<servlet-name>loadProfile</servlet-name>
-		<url-pattern>/spring/loadProfile/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>

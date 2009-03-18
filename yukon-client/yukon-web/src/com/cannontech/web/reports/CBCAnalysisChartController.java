@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -26,7 +27,11 @@ import com.cannontech.cbc.model.SubstationBus;
 import com.cannontech.cbc.web.CBCWebUtils;
 import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ChartPeriod;
+import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.roles.capcontrol.CBCSettingsRole;
+import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.SubBus;
 
@@ -36,10 +41,13 @@ public class CBCAnalysisChartController extends MultiActionController  {
 	private CapControlCache capControlCache = null;
 	private SubstationBusDao substationBusDao = null;
 	private FeederDao feederDao = null;
-	
+	private AuthDao authDao;
 	
     public ModelAndView cbcChart(HttpServletRequest request, HttpServletResponse response) throws Exception {
     	
+    	YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        authDao.verifyFalseProperty(userContext.getYukonUser(), CBCSettingsRole.HIDE_REPORTS);
+        
     	// PARAMETERS
     	// ------------------------------------------------------------------------------------------------------
     	String analysisType = ServletRequestUtils.getRequiredStringParameter(request, "analysisType");
@@ -293,5 +301,10 @@ public class CBCAnalysisChartController extends MultiActionController  {
     @Required
 	public void setCapControlCache(CapControlCache capControlCache) {
 		this.capControlCache = capControlCache;
+	}
+    
+    @Autowired
+    public void setAuthDao(AuthDao authDao) {
+		this.authDao = authDao;
 	}
 }

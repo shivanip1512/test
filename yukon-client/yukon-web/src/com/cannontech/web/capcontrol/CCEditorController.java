@@ -10,7 +10,10 @@ import org.springframework.web.servlet.mvc.Controller;
 
 import com.cannontech.capcontrol.OrphanCBC;
 import com.cannontech.core.dao.CapControlDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
+@CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
 public class CCEditorController implements Controller {
     private CapControlDao cbcDao;
     

@@ -60,7 +60,6 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
 /**
  * Widget used to display point data in a trend
  */
-@CheckRole(YukonRole.METERING)
 @CheckRoleProperty({YukonRoleProperty.PROFILE_COLLECTION, YukonRoleProperty.PROFILE_COLLECTION_SCANNING})
 public class ProfileWidget extends WidgetControllerBase {
 

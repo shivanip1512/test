@@ -14,11 +14,13 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.user.checker.UserChecker;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
-
+@CheckRoleProperty(YukonRoleProperty.JAVA_WEB_START_LAUNCHER_ENABLED)
 public class JwsMenuController extends AbstractController implements InitializingBean {
     private List<JnlpController> jnlpList = new ArrayList<JnlpController>();
     private String view = "startpage";
@@ -31,7 +33,6 @@ public class JwsMenuController extends AbstractController implements Initializin
         this.view = view;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
                                                  HttpServletResponse response) throws Exception {

@@ -13,10 +13,14 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.common.bulk.collection.DeviceCollection;
+import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.web.bulk.model.DeviceCollectionFactory;
 import com.cannontech.web.group.DeviceCollectionDeviceGroupHelper;
+import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
-
+@CheckRoleProperty(YukonRoleProperty.DEVICE_GROUP_MODIFY)
 public class AddRemoveCollectionToGroupController extends MultiActionController {
     
     private DeviceCollectionDeviceGroupHelper deviceCollectionDeviceGroupHelper = null;

@@ -12,13 +12,16 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.service.LoadProfileService;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
+@CheckRole(YukonRole.METERING)
 public class PendingProfilesWidget extends WidgetControllerBase {
     
     private LoadProfileService loadProfileService;

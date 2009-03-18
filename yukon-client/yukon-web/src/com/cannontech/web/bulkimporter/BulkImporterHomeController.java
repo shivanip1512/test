@@ -9,8 +9,11 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
 import com.cannontech.core.dao.RoleDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.roles.yukon.SystemRole;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
+@CheckRoleProperty(YukonRoleProperty.IMPORTER_ENABLED)
 public class BulkImporterHomeController implements Controller  {
 
     private RoleDao roleDao = null;

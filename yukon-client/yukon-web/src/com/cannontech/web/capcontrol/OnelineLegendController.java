@@ -13,11 +13,14 @@ import org.springframework.web.servlet.mvc.Controller;
 
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.YukonImageDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonImage;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.yukon.cbc.CapControlConst;
 
+@CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
 public class OnelineLegendController implements Controller {
     private StateDao stateDao;
     private YukonImageDao yukonImageDao;
