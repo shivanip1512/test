@@ -720,6 +720,26 @@
       </ul>
     </troubleshooting>
 </error>
+<error code="269">
+  <category>Data Validation</category>
+  <porter>Invalid or insufficient device SSPEC revision.</porter>
+  <description>The command is not supported by this device SSPEC revision.</description>
+  <troubleshooting>The command is not supported by this device SSPEC revision.
+    <ul>
+      <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
+    </ul>
+  </troubleshooting>
+</error>
+<error code="270">
+  <category>Data Verification</category>
+  <porter>Verification of device SSPEC revision is required.</porter>
+  <description>Verification of device SSPEC revision is required.</description>
+  <troubleshooting>Execute 'getconfig model' to verify the device SSPEC revision.
+    <ul>
+      <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
+    </ul>
+  </troubleshooting>
+</error>
 <error code="0">
 	<category>N/A</category> 
     <description>Successful Read</description>
