@@ -200,14 +200,13 @@ void CtiProtocol711::describeSlaveResponse() const
                         break;
                     }
                 }
-#if 1
+
                 dout << hex << setw(2) << (INT)_slaveToMaster[6] << dec<< " through " << hex << setw(2) << (INT)_slaveToMaster[9] << dec << "  STATS " << endl;
                 describeSlaveStatS(&_slaveToMaster[6]);
                 dout << hex << setw(2) << (INT)_slaveToMaster[10] << dec<< " through " << hex << setw(2) << (INT)_slaveToMaster[15] << dec << "  STATD " << endl;
                 describeSlaveStatD(&_slaveToMaster[10]);
                 dout << hex << setw(2) << (INT)_slaveToMaster[16] << dec<< " through " << hex << setw(2) << (INT)_slaveToMaster[17] << dec << "  STATP " << endl;
                 describeSlaveStatP(&_slaveToMaster[16]);
-#endif
                 dout.fill(oldfill);
             }
 
@@ -239,6 +238,7 @@ void CtiProtocol711::describeSlaveResponse() const
             case CMND_RQDIR:
             default:
                 {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << " ACH: Define rest of protocol" << endl;
                     break;
                 }
@@ -264,8 +264,6 @@ void CtiProtocol711::describeMasterRequest() const
     BYTE length    = _masterToSlave[3];
     BYTE src       = _masterToSlave[4] >> 6;
     BYTE dest      = _masterToSlave[4] & 0x3f;
-
-    char oldfill = dout.fill('0');
 
     if(flag == 0x7e)
     {
@@ -475,9 +473,6 @@ void CtiProtocol711::describeMasterRequest() const
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " IDLC Error " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
-
-    dout.fill(oldfill);
-
 }
 
 
@@ -486,7 +481,6 @@ void CtiProtocol711::describeRCOLQRequest(const BYTE *data, INT len) const
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << endl << "RCOLQ CMND: Vol. 1 / pp. 4-86 " << endl;
-
         dout << hex << setw(2) << (INT)data[0] << dec << "  RLEN (reply length RLEN + 14 returned from CCU " << (INT)data[0] << endl;
     }
 }
@@ -557,31 +551,6 @@ void CtiProtocol711::describeRCOLQResponse(const BYTE *data, INT len) const
                 dout << hex << setw(2) << (INT)data[9] << dec << "  ROUTE " << endl;
             }
             dout << hex << setw(2) << nfunc << dec << "  NFUNC - number of functions in this request  " << endl;
-
-#if 0
-            for(byte_offset = 0; byte_offset < nfunc; byte_offset += 3)
-            {
-                L[byte_offset] = (INT)data[13 +byte_offset];
-
-                dout << hex << setw(2) << (INT)data[11 + byte_offset] << " & " << setw(2) << (INT)data[12 + byte_offset] << dec << "  S" << byte_offset+1 << " - status of communication " << byte_offset+1 << endl;
-                dout << hex << setw(2) << (INT)data[13 +byte_offset] << dec << "  L" << byte_offset+1 << " - data length of communication " << byte_offset+1 << endl;
-            }
-
-            byte_offset += 11;
-
-            memcpy(ts, &data[byte_offset],  2);
-            dout << hex << setw(2) << (INT)data[byte_offset] << " & " << setw(2) << (INT)data[1 + byte_offset] << dec << "  TS - transponder status "  << endl;
-
-            byte_offset += 2;
-            INT data_max = byte_offset + L[0];
-
-
-            for( ; byte_offset < data_max; byte_offset++)
-            {
-                dout << hex << setw(2) << (INT)data[byte_offset] << " ";
-            }
-            dout << dec << endl;
-#endif
 
             dout.fill(oldfill);
         }
@@ -755,8 +724,6 @@ void CtiProtocol711::describeLGRPQRequest(const BYTE *data, INT len) const
     BYTE     RRR;
     BYTE     nfunc;
 
-    char oldfill = dout.fill('0');
-
     memcpy(qenid, &data[1], 4);
 
     if(shortformat)
@@ -831,7 +798,6 @@ void CtiProtocol711::describeLGRPQRequest(const BYTE *data, INT len) const
                     {
                     case 0x00:
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " **** ACH: UNUSED/ERROR! **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             break;
                         }
@@ -842,18 +808,15 @@ void CtiProtocol711::describeLGRPQRequest(const BYTE *data, INT len) const
                         }
                     case 0x03:
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " **** ACH: Word type GWORD **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                     case 0x01:
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " **** ACH: Word type AWORD **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                     default:
                         {
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << CtiTime() << " **** ACH: Word type not yet decoded! **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
                             break;
@@ -898,6 +861,7 @@ void CtiProtocol711::describeLGRPQRequest(const BYTE *data, INT len) const
                     }
                 case 0x02:
                     {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << hex << setw(2) << (INT)data[nfunc_offset+2] << " BWORD FUNCTION " << (INT)bwordcmd << dec << endl;
                         dout << hex << setw(2) << (INT)data[nfunc_offset+3] << dec << " BWORD LENGTH " << (INT)dlclen << endl;
                         break;
@@ -941,8 +905,6 @@ void CtiProtocol711::describeLGRPQRequest(const BYTE *data, INT len) const
             }
         }
     }
-
-    dout.fill(oldfill);
 }
 
 void CtiProtocol711::describeXTIMERequest(const BYTE *data, INT len) const
@@ -1016,6 +978,7 @@ void CtiProtocol711::describeXTIMERequest(const BYTE *data, INT len) const
 
 }
 
+// You MUST own the dout mutex to call this function
 void CtiProtocol711::describeSlaveStatS(const BYTE *stat) const
 {
     dout << "  STATS:" << endl;
@@ -1027,10 +990,14 @@ void CtiProtocol711::describeSlaveStatS(const BYTE *stat) const
     dout << "    Alg. fault                " << (stat[0] & 0x20 ? "detected": "not detected") << endl;
     dout << "    Sequence adjust           " << (stat[0] & 0x10 ? "detected": "not detected") << endl;
 }
+
+// You MUST own the dout mutex to call this function
 void CtiProtocol711::describeSlaveStatD(const BYTE *stat) const
 {
     dout << "  STATD Not yet decoded" << endl;
 }
+
+// You MUST own the dout mutex to call this function
 void CtiProtocol711::describeSlaveStatP(const BYTE *stat) const
 {
     dout << "  STATP Not yet decoded" << endl;
