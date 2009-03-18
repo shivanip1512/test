@@ -1505,11 +1505,11 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
         }
 
         // If we have requested 3 or less bytes for a "getvalue kwh" read and our CPARM tells us so - pad
-        // the length to 4 so we get back 2 Dwords instead of 1.  The hope is that this will help eliminate
+        // the length to 4 so we get back 2 Dwords instead of 1.  The hope is that this will help detect
         // crosstalk.
         if( OutMessage->Buffer.BSt.Length <= 3  &&
             parse.getFlags() & CMD_FLAG_GV_KWH  &&
-            ! stringCompareIgnoreCase(gConfigParms.getValueAsString("PORTER_MCT_PAD_KWH_READ", "off"), "on") )
+            gConfigParms.isTrue("PORTER_MCT_PAD_KWH_READ") )
         {
             OutMessage->Buffer.BSt.Length = 4;
         }
