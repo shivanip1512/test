@@ -67,9 +67,9 @@ UserPicker.prototype = Object.extend(new ItemPicker(), {
 	    // the onClick function, instead it generates the onClick function.
 	    /////////////////////////////////////////////////////////////////////////////
 	    this.outputCols = [
-	       	{"title": "User", "field": "userName", "link": createItemLink},
-	        {"title": "Login Group", "field": "groupName", "link": null},
-	        {"title": "User Id", "field": "userId", "link": null}
+	       	{"title": "User", "field": "userName", "link": createItemLink, "maxLen": 18},
+	        {"title": "Login Group", "field": "groupName", "link": null, "maxLen": 48},
+	        {"title": "User Id", "field": "userId", "link": null, "maxLen": null}
 	      ];
 	    
 	    return this.renderTableResults(json, selectCurrent);

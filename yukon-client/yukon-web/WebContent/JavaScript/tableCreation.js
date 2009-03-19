@@ -52,12 +52,19 @@ function createHtmlTableFromJson(dataArray, outputCols, rowCallback) {
               }
           }
           
-          //in case we want to display static text but maintain a value
           var dataString = dataArray[i][outputCols[col].field];
           if(dataString === undefined) {
           	dataString = outputCols[col].field;
           }
-          var text = document.createTextNode(dataString);
+          var displayDataString = dataString;
+          var maxLen = outputCols[col].maxLen;
+          if (maxLen && dataString.length > maxLen) {
+        	  displayDataString = dataString.truncate(maxLen, '...');
+        	  tableCell.setAttribute("title", dataString);
+          }
+          
+          //in case we want to display static text but maintain a value
+          var text = document.createTextNode(displayDataString);
           node.appendChild(text);
       }
     }
