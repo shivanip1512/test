@@ -334,7 +334,7 @@ INT LCR3102::decodeGetValueHistoricalTime( INMESS *InMessage, CtiTime &TimeNow, 
 
         for( int i = 0; i < numberOfTimesReturned; i++ )
         {
-            pi = getSixBitValueFromBuffer(DSt->Message + 1, i, 36 - 1);
+            pi = getSixBitValueFromBuffer(DSt->Message + 1, i, std::min(DSt->Length - 1, 36 - 1));
 
             int point_offset = point_base + relay - 1;
             
