@@ -27,6 +27,7 @@ public class DecrementOverrideLimitRequestEndpointTest {
     private static final String SERIAL1 = "serial1";    
     private static final String INVALID_ACCOUNT = "INVALID_ACCOUNT";
     private static final String INVALID_SERIAL = "INVALID_SERIAL";    
+    private static final String INCORRECT_SERIAL = "INCORRECT_SERIAL";    
 
     //test response xml data
     static final String RESP_ELEMENT_NAME = "decrementDeviceOverrideLimitResponse";   
@@ -38,7 +39,7 @@ public class DecrementOverrideLimitRequestEndpointTest {
         
         impl = new DecrementOverrideLimitRequestEndpoint();
         impl.setOptOutService(mockOptOutService);
-        impl.setAuthDao(new MockAuthDao());
+        impl.setRolePropertyDao(new MockRolePropertyDao());
     }
    
     @Test
@@ -54,7 +55,7 @@ public class DecrementOverrideLimitRequestEndpointTest {
     	//==========================================================================================
     	Element requestElement = LoadManagementTestUtils.createDecrementLimitRequestElement(
     			ACCOUNT1, SERIAL1, XmlVersionUtils.YUKON_MSG_VERSION_1_0, reqSchemaResource);
-        LiteYukonUser user = MockAuthDao.getUnAuthorizedUser();
+        LiteYukonUser user = MockRolePropertyDao.getUnAuthorizedUser();
         Element respElement = impl.invoke(requestElement, user);
 
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
@@ -114,6 +115,24 @@ public class DecrementOverrideLimitRequestEndpointTest {
         outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);
         TestUtils.runVersionAssertion(outputTemplate, RESP_ELEMENT_NAME, XmlVersionUtils.YUKON_MSG_VERSION_1_0);        
         TestUtils.runFailureAssertions(outputTemplate, RESP_ELEMENT_NAME, "InvalidSerialNumber");
+        
+        // test with valid account, valid serial (not associated with account), authorized user
+        //==========================================================================================
+        requestElement = LoadManagementTestUtils.createDecrementLimitRequestElement(
+        		ACCOUNT1, INCORRECT_SERIAL, XmlVersionUtils.YUKON_MSG_VERSION_1_0, reqSchemaResource);
+        respElement = impl.invoke(requestElement, user);
+        
+        // validate the response against schema
+        TestUtils.validateAgainstSchema(respElement, respSchemaResource);
+        
+        //verify mockService was called with correct params
+        Assert.assertEquals("Incorrect accountNumber.", ACCOUNT1, mockOptOutService.getAccountNumber());
+        Assert.assertEquals("Incorrect serialNumber.", INCORRECT_SERIAL, mockOptOutService.getSerialNumber());
+        
+        //verify the results
+        outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);
+        TestUtils.runVersionAssertion(outputTemplate, RESP_ELEMENT_NAME, XmlVersionUtils.YUKON_MSG_VERSION_1_0);        
+        TestUtils.runFailureAssertions(outputTemplate, RESP_ELEMENT_NAME, "InvalidSerialNumber");
     }
     
     private class MockOptOutService extends OptOutServiceAdapter {
@@ -135,6 +154,10 @@ public class DecrementOverrideLimitRequestEndpointTest {
         	
         	if(INVALID_SERIAL.equals(serialNumber)) {
         		throw new InventoryNotFoundException("Serial number invalid");
+        	}
+        	
+        	if(INCORRECT_SERIAL.equals(serialNumber)) {
+        		throw new InventoryNotFoundException("Serial number incorrect");
         	}
             
         }

@@ -8,10 +8,10 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.AccountNotFoundException;
-import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.InventoryNotFoundException;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
@@ -23,7 +23,7 @@ import com.cannontech.yukon.api.util.YukonXml;
 public class DecrementOverrideLimitRequestEndpoint {
 
     private OptOutService optOutService;
-    private AuthDao authDao;
+    private RolePropertyDao rolePropertyDao;
     
     private Namespace ns = YukonXml.getYukonNamespace();
     
@@ -48,9 +48,10 @@ public class DecrementOverrideLimitRequestEndpoint {
         Element resultElement;
         try {
             // Check authorization
-            authDao.verifyTrueProperty(user,
-                                       ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPT_OUT);
-            optOutService.allowAdditionalOptOuts(accountNumber,
+        	rolePropertyDao.verifyProperty(
+        			YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT, user);
+
+        	optOutService.allowAdditionalOptOuts(accountNumber,
                                                  serialNumber,
                                                  1,
                                                  user);
@@ -70,6 +71,13 @@ public class DecrementOverrideLimitRequestEndpoint {
                                                                 e,
                                                                 "InvalidSerialNumber",
                                                                 "No inventory with serial number: " + serialNumber);
+        } catch (IllegalArgumentException e) {
+        	resultElement = 
+        		XMLFailureGenerator.generateFailure(decrementDeviceOverrideLimitRequest,
+        			e,
+        			"InvalidSerialNumber",
+        			"The inventory with serial number: " + serialNumber + 
+        			" is not associated with the account with account number: " + accountNumber);
         }
 
         // build response
@@ -83,8 +91,8 @@ public class DecrementOverrideLimitRequestEndpoint {
 	}
     
     @Autowired
-    public void setAuthDao(AuthDao authDao) {
-		this.authDao = authDao;
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+		this.rolePropertyDao = rolePropertyDao;
 	}
     
 }
