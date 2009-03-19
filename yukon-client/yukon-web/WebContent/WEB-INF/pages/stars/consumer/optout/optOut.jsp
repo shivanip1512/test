@@ -9,56 +9,60 @@
     <cti:standardMenu />
     
     <h3><cti:msg key="yukon.dr.consumer.optout.header"/></h3>
-    
     <div align="center">
-        <cti:msg key="yukon.dr.consumer.optout.description"/>
-        
-        <br>
-        <br>
-        
-        <form action="${actionUrl}" method="POST">
-	        <table>
-	            <tr>
-	                <td align="right">
-	                    <cti:msg key="yukon.dr.consumer.optout.startDate"/>
-	                </td>
-	                
-	                <cti:formatDate  value="${currentDate}" type="DATE" var="formattedDate"/>
-	                
-	                <td align="left">
-	                    <ct:dateInputCalendar fieldName="startDate" fieldValue="${formattedDate}"/>
-	                </td>
-	            </tr>
-	            
-	            <tr>
-	                <td align="right">
-	                    <cti:msg key="yukon.dr.consumer.optout.duration"/>
-	                </td>
-	                
-	                <td align="left">
-	                    <select name="durationInDays">
-		                    
-		                    <c:forEach var="x" begin="1" end="7" step="1">
-		                    
-		                       <c:set var="key" value="${(x == 1) ? 'yukon.dr.consumer.optout.day' : 'yukon.dr.consumer.optout.days' }"/>
-	                        
-	                           <option value="${x}">${x} <cti:msg key="${key}"/></option>
-		                    
-		                    </c:forEach>
-		                    
-	                    </select>
-	                </td>
-	            </tr>
-	            
-	            <tr>
-	                <td align="center" colspan="2">
-	                    <br>
-	                    <input type="submit" value="<cti:msg key='yukon.dr.consumer.optout.apply'/>"></input>
-	                </td>
-	            </tr>
-	        </table>
-        </form>
-        
+	   	<c:if test="${allOptedOut}">
+	   		<cti:msg key="yukon.dr.consumer.optout.allOptedOut"/>
+	   	</c:if>
+       	<c:if test="${!allOptedOut}">
+	        <cti:msg key="yukon.dr.consumer.optout.description"/>
+
+    	    <br>
+        	<br>
+
+	        <form action="${actionUrl}" method="POST">
+		        <table>
+		            <tr>
+		                <td align="right">
+		                    <cti:msg key="yukon.dr.consumer.optout.startDate"/>
+		                </td>
+
+		                <cti:formatDate  value="${currentDate}" type="DATE" var="formattedDate"/>
+
+		                <td align="left">
+		                    <ct:dateInputCalendar fieldName="startDate" fieldValue="${formattedDate}"/>
+		                </td>
+		            </tr>
+
+		            <tr>
+		                <td align="right">
+		                    <cti:msg key="yukon.dr.consumer.optout.duration"/>
+		                </td>
+
+		                <td align="left">
+		                    <select name="durationInDays">
+
+			                    <c:forEach var="x" begin="1" end="7" step="1">
+
+			                       <c:set var="key" value="${(x == 1) ? 'yukon.dr.consumer.optout.day' : 'yukon.dr.consumer.optout.days' }"/>
+
+		                           <option value="${x}">${x} <cti:msg key="${key}"/></option>
+
+			                    </c:forEach>
+
+		                    </select>
+		                </td>
+		            </tr>
+
+		            <tr>
+		                <td align="center" colspan="2">
+		                    <br>
+		                    <input type="submit" value="<cti:msg key='yukon.dr.consumer.optout.apply'/>"></input>
+		                </td>
+		            </tr>
+		        </table>
+	        </form>
+       	</c:if>
+
         <br><br>
         <!-- Current Opt Outs -->
         <cti:msg key="yukon.dr.consumer.optout.currentOptOuts"/>

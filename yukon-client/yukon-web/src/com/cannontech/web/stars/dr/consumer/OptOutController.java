@@ -81,7 +81,8 @@ public class OptOutController extends AbstractConsumerController {
             displayableInventoryDao.getDisplayableInventory(customerAccount.getAccountId());
 
     	List<OptOutCountDto> optOutCountList = new ArrayList<OptOutCountDto>();
-    	
+
+    	boolean allOptedOut = true;
     	for(DisplayableInventory inventory : displayableInventories) {
     		int inventoryId = inventory.getInventoryId();
     		OptOutCountHolder holder = 
@@ -93,6 +94,11 @@ public class OptOutController extends AbstractConsumerController {
     		optOutCountDto.setRemainingOptOuts(holder.getRemainingOptOuts());
     		
     		optOutCountList.add(optOutCountDto);
+
+            if (!optOutEventDao.isOptedOut(inventoryId,
+					customerAccount.getAccountId())) {
+				allOptedOut = false;
+			}
     	}
     	map.addAttribute("optOutCountList", optOutCountList);
     	
@@ -100,8 +106,8 @@ public class OptOutController extends AbstractConsumerController {
     	List<OptOutEventDto> previousOptOutList = 
     		optOutEventDao.getOptOutHistoryForAccount(accountId, MAX_NUMBER_OF_OPT_OUT_HISTORY);
     	map.addAttribute("previousOptOutList", previousOptOutList);
-    	
-    	
+    	map.addAttribute("allOptedOut", allOptedOut);
+
     	return "consumer/optout/optOut.jsp";
     }
 

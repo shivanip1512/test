@@ -105,7 +105,8 @@ public class OptOutOperatorController {
             displayableInventoryDao.getDisplayableInventory(customerAccount.getAccountId());
 
     	List<OptOutCountDto> optOutCountList = new ArrayList<OptOutCountDto>();
-    	
+
+    	boolean allOptedOut = true;
     	for(DisplayableInventory inventory : displayableInventories) {
     		int inventoryId = inventory.getInventoryId();
     		OptOutCountHolder holder = 
@@ -117,6 +118,11 @@ public class OptOutOperatorController {
     		optOutCountDto.setRemainingOptOuts(holder.getRemainingOptOuts());
     		
     		optOutCountList.add(optOutCountDto);
+
+    		if (!optOutEventDao.isOptedOut(inventoryId,
+					customerAccount.getAccountId())) {
+				allOptedOut = false;
+			}
     	}
     	map.addAttribute("optOutCountList", optOutCountList);
     	boolean noOptOutLimits = false;
@@ -127,7 +133,8 @@ public class OptOutOperatorController {
 			noOptOutLimits = countDto.getRemainingOptOuts() == OptOutService.NO_OPT_OUT_LIMIT;
     	}
     	map.addAttribute("noOptOutLimits", noOptOutLimits);
-        
+    	map.addAttribute("allOptedOut", allOptedOut);
+
     	return "operator/optout/optOut.jsp";
     }
     
