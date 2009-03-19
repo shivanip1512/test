@@ -128,6 +128,7 @@ public class FilterCapControlCacheImpl implements CapControlCache {
 	    if (sub == null) return Collections.emptyList();
 	    
 	    int id = cache.getParentAreaID(sub.getCcId());
+	    if (id == 0) return Collections.emptyList();
 	    StreamableCapObject area = cache.getArea(id);
 	    if (filter.valid(area)) return cache.getCapBanksBySubStation(sub);
 	    return Collections.emptyList();
@@ -175,6 +176,9 @@ public class FilterCapControlCacheImpl implements CapControlCache {
 	    if (sub == null) return Collections.emptyList();
 
 	    int id = cache.getParentAreaID(sub.getCcId());
+	    if(id == 0){
+	    	return Collections.emptyList();
+	    }
 	    StreamableCapObject area = cache.getArea(id);
 	    if (filter.valid(area)) return cache.getFeedersBySubStation(sub);
 	    return Collections.emptyList();

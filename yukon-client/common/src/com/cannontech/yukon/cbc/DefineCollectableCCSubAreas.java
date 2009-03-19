@@ -64,10 +64,12 @@ public class DefineCollectableCCSubAreas extends DefineCollectableCBCMessage {
             throws java.io.IOException {
 
         super.restoreGuts(obj, vstr, polystr);
-
-        Vector areaNames = VectorExtract.extractVector(vstr, polystr);
-
+        ((CCSubAreas) obj).setMsgInfoBitMask( new Integer( (int)vstr.extractUnsignedInt() ) );
+	    Vector areaNames = VectorExtract.extractVector(vstr, polystr);
+        
         ((CCSubAreas) obj).setAreas(areaNames);
+        
+	    
     }
 
     /**

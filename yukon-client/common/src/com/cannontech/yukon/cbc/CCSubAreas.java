@@ -3,8 +3,22 @@ package com.cannontech.yukon.cbc;
 import java.util.List;
 
 public class CCSubAreas extends com.cannontech.yukon.cbc.CapControlMessage {	
-    
+	
+	public static final int AREA_ALL    = 0x00000001;
+	public static final int AREA_DEL    = 0x00000002;
+	public static final int AREA_ADD    = 0x00000004;
+	public static final int AREA_UPDATE = 0x00000008;
+	
 	private List<CCArea> areas;
+	private Integer msgInfoBitMask = new Integer(0);
+
+public Integer getMsgInfoBitMask() {
+		return msgInfoBitMask;
+	}
+
+	public void setMsgInfoBitMask(Integer msgInfoBitMask) {
+		this.msgInfoBitMask = msgInfoBitMask;
+	}
 
 /**
  * CBCSubAreaNames constructor comment.
@@ -28,6 +42,17 @@ public CCArea getArea(int index)
  */
 public List<CCArea> getAreas() {
 	return areas;
+}
+
+public boolean isAllAreas()
+{
+    return (getMsgInfoBitMask().intValue() & AREA_ALL    ) > 0;
+}
+public boolean isAddAreas(){
+	return (getMsgInfoBitMask().intValue() & AREA_ADD    ) > 0;
+}
+public boolean isUpdateAreas(){
+	return (getMsgInfoBitMask().intValue() & AREA_UPDATE ) > 0;		
 }
 
 /**

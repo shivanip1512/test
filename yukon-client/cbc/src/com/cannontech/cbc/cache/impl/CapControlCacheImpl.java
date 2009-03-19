@@ -631,6 +631,15 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     }
     
     /**
+     * Removes this area from all the structures in cache. 
+     * @param msg
+     */
+    private synchronized void handleDeletedArea(int id) {   
+        cbcAreaMap.remove(id);
+        getUpdatedObjMap().remove(id);
+    }
+    
+    /**
      * Process multiple SubBuses
      * @param busesMsg
      */
@@ -668,6 +677,24 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         //add the each subbus to the cache
         handleAllSubStation(stationsMsg);
     }
+    
+    /**
+    * Process multiple Areas
+    * @param areaMsg
+    */
+   private synchronized void handleAreas( CCSubAreas areasMsg ) {
+   	logAllAreas(areasMsg);
+       //If this is a full reload of all subs.
+   	if (areasMsg.isAllAreas()) {
+   	    clearCacheMap(cbcAreaMap);
+       }
+       else if( areasMsg.isUpdateAreas()){
+       	//If this is an update to an existing sub.
+           handleDeletedAreas(areasMsg);
+       }
+       //add the each area to the cache
+       handleAllArea(areasMsg);
+   }
 
     
     private synchronized void handleDeletedSubs(CCSubstationBuses busesMsg) {
@@ -686,6 +713,13 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         }
     }
     
+    private synchronized void handleDeletedAreas(CCSubAreas areaMsg) {
+        for( int i = 0; i < areaMsg.getNumberOfAreas(); i++ ){
+        	//remove old
+        	handleDeletedArea( areaMsg.getArea(i).getCcId() );
+        }
+    }
+    
     private synchronized void logAllSubs(CCSubstationBuses busesMsg) {
         for( int i = (busesMsg.getNumberOfBuses()-1); i >= 0; i-- ){
         	CTILogger.debug( new Date().toString()
@@ -700,7 +734,15 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         			+ " : Received SubStations - " + stationsMsg.getSubAt(i).getCcName() 
         			+ "/" + stationsMsg.getSubAt(i).getCcArea() );
         }
+    }  
+    
+    private synchronized void logAllAreas(CCSubAreas areasMsg) {
+        for( int i = (areasMsg.getNumberOfAreas()-1); i >= 0; i-- ){
+        	CTILogger.debug( new Date().toString()
+        			+ " : Received Areas - " + areasMsg.getArea(i).getCcName());
+        }
     }   
+    
     private synchronized void handleAllSubs(CCSubstationBuses busesMsg) {
         for( int i = 0; i < busesMsg.getNumberOfBuses(); i++ ) {
         	handleSubBus( busesMsg.getSubBusAt(i) );
@@ -710,6 +752,12 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     private synchronized void handleAllSubStation(CCSubStations stationsMsg) {
         for( int i = 0; i < stationsMsg.getNumberOfStations(); i++ ) {
         	handleSubStation( stationsMsg.getSubAt(i) );
+        }
+    }
+    
+    private synchronized void handleAllArea(CCSubAreas areasMsg) {
+        for( int i = 0; i < areasMsg.getNumberOfAreas(); i++ ) {
+        	handleArea( areasMsg.getArea(i) );
         }
     }
     /**
@@ -834,6 +882,23 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     }
     
     /**
+     * Processes a single SubStation.
+     * @param SubStation
+     */
+    private synchronized void handleArea( CCArea area ) {   
+        Validate.notNull(area, "area can't be null");
+
+        //remove the old sub from the area hashmap just in case the area changed
+        final Integer areaId = area.getCcId();
+        removeFromCacheMap(cbcAreaMap, areaId);
+        cbcAreaMap.put(areaId, area);
+    
+        //not linking to sub busses, feeders, and capbanks.
+        
+        getUpdatedObjMap().handleCBCChangeEvent(area);
+    }
+    
+    /**
      * Allows access the a CBCClientConnection instance
      * @return
      */
@@ -869,7 +934,8 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         } else if (in instanceof CCSubSpecialAreas) {
             handleSpecialAreaList((CCSubSpecialAreas) in);
         } else if (in instanceof CCSubAreas) {
-            handleAreaList((CCSubAreas) in);
+        	handleAreas((CCSubAreas) in);
+            //handleAreaList((CCSubAreas) in);
         } else if (in instanceof CapControlCommand) {
             handleCBCCommand((CapControlCommand) in);
         } 
