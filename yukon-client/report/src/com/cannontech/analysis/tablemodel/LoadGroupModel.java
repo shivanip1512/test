@@ -242,25 +242,38 @@ public class LoadGroupModel extends ReportModelBase<LoadGroupModel.TempLMControl
 				{
 					sql.append("AND (LMCH.PAOBJECTID IN " +
 					"(SELECT DISTINCT DG.LMGROUPDEVICEID " +
-					" FROM UserPaoPermission us, " +
+					" FROM UserPaoPermission us, GroupPaoPermission gs, " +
 					LMProgramDirectGroup.TABLE_NAME + " DG " +
-					" WHERE us.PaoID = DG.LMGROUPDEVICEID " +
+					" WHERE (us.PaoID = DG.LMGROUPDEVICEID " +
                     " AND us.permission = '" + Permission.LM_VISIBLE + "'" +
 					" AND us.userID IN (SELECT DISTINCT ECLL.OPERATORLOGINID " +
 					" FROM ENERGYCOMPANYOPERATORLOGINLIST ECLL " +
-					" WHERE ECLL.ENERGYCOMPANYID = " + getEnergyCompanyID().intValue() + " ) )");					
+					" WHERE ECLL.ENERGYCOMPANYID = " + getEnergyCompanyID().intValue() + " ) )" +
+					" OR " +
+					"( " +
+					"    gs.paoid = dg.lmgroupdeviceid " +
+					"    and gs.permission = 'LM_VISIBLE' " +
+					"    and gs.groupid in (select groupid from yukonusergroup where userid = " + getUserID() + ") " +
+					" )) ");
 
 					//Get all groups that are part of a macroGroup
 					sql.append("OR LMCH.PAOBJECTID IN " +
 					"(SELECT DISTINCT GM.CHILDID " +
-					" FROM UserPaoPermission us, " +
+					" FROM UserPaoPermission us, GroupPaoPermission gs, " +
 					GenericMacro.TABLE_NAME + " GM " +
-					" WHERE US.PAOID = GM.OWNERID " +
+					" WHERE (US.PAOID = GM.OWNERID " +
                     " AND us.permission = '" + Permission.LM_VISIBLE + "'" +
 					" AND GM.MACROTYPE = '" + MacroTypes.GROUP + "' " +  
 					" AND US.USERID IN (SELECT DISTINCT ECLL.OPERATORLOGINID " +
 					" FROM ENERGYCOMPANYOPERATORLOGINLIST ECLL " +
-					" WHERE ECLL.ENERGYCOMPANYID = " + getEnergyCompanyID().intValue() + " ) ) )");
+					" WHERE ECLL.ENERGYCOMPANYID = " + getEnergyCompanyID().intValue() + " ) )" +
+					" OR " +
+					" ( " +
+					"     gs.paoid = gm.ownerid " +
+					"     and gs.permission = 'LM_VISIBLE' " +
+					"     and gs.groupid in (select groupid from yukonusergroup where userid = " + getUserID() + ") " +
+					" ) " +
+					" ) )");
 				}
 				if( getPaoIDs()!= null)	//null load groups means ALL groups!
 				{
