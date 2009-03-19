@@ -405,7 +405,7 @@ class CtiCCGeoAreasMsg : public CtiCCMessage
 RWDECLARE_COLLECTABLE( CtiCCGeoAreasMsg )
 
 public:
-    CtiCCGeoAreasMsg(CtiCCArea_vec& areaList);
+    CtiCCGeoAreasMsg(CtiCCArea_vec& areaList, ULONG bitMask = 1);
     CtiCCGeoAreasMsg(CtiCCArea* ccArea);
     CtiCCGeoAreasMsg(const CtiCCGeoAreasMsg& ccGeoAreas);
 
@@ -419,10 +419,15 @@ public:
     void saveGuts( RWvostream&) const;
 
     CtiCCGeoAreasMsg& operator=(const CtiCCGeoAreasMsg& right);
+    static ULONG AllAreasSent;
+    static ULONG AreaDeleted;
+    static ULONG AreaAdded;
+    static ULONG AreaModified;
 private:
-    CtiCCGeoAreasMsg() : CtiCCMessage("CCGeoAreas"), _ccGeoAreas(NULL){};
+    CtiCCGeoAreasMsg() : CtiCCMessage("CCGeoAreas"), _ccGeoAreas(NULL), _msgInfoBitMask(1) {};
     
     CtiCCArea_vec* _ccGeoAreas;
+    ULONG _msgInfoBitMask;
 };
 
 class CtiCCSpecialAreasMsg : public CtiCCMessage

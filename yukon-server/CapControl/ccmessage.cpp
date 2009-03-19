@@ -729,6 +729,11 @@ void CtiCCCapBankStatesMsg::saveGuts(RWvostream& strm) const
 }
 
 
+// Static Members
+ULONG CtiCCGeoAreasMsg::AllAreasSent = 0x00000001;
+ULONG CtiCCGeoAreasMsg::AreaDeleted   = 0x00000002;
+ULONG CtiCCGeoAreasMsg::AreaAdded     = 0x00000004;
+ULONG CtiCCGeoAreasMsg::AreaModified  = 0x00000008;
 /*===========================================================================
     CtiCCGeoAreasMsg
 ===========================================================================*/
@@ -738,7 +743,7 @@ RWDEFINE_COLLECTABLE( CtiCCGeoAreasMsg, CTICCGEOAREAS_MSG_ID )
 /*---------------------------------------------------------------------------
     Constuctors
 ---------------------------------------------------------------------------*/
-CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(CtiCCArea_vec& ccGeoAreas) : CtiCCMessage("CCGeoAreas"), _ccGeoAreas(NULL)
+CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(CtiCCArea_vec& ccGeoAreas, ULONG bitMask) : CtiCCMessage("CCGeoAreas"), _ccGeoAreas(NULL), _msgInfoBitMask(bitMask)
 {
     _ccGeoAreas = new CtiCCArea_vec;
     if( _CC_DEBUG & CC_DEBUG_EXTENDED )
@@ -764,7 +769,9 @@ CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(CtiCCArea_vec& ccGeoAreas) : CtiCCMessage("CC
 }
 
 
-CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(const CtiCCGeoAreasMsg& ccGeoAreasMsg) : CtiCCMessage("CCGeoAreas"), _ccGeoAreas(NULL)
+
+
+CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(const CtiCCGeoAreasMsg& ccGeoAreasMsg) : CtiCCMessage("CCGeoAreas"), _ccGeoAreas(NULL), _msgInfoBitMask(ccGeoAreasMsg._msgInfoBitMask)
 {
     operator=(ccGeoAreasMsg);
 }
@@ -827,17 +834,19 @@ CtiCCGeoAreasMsg& CtiCCGeoAreasMsg::operator=(const CtiCCGeoAreasMsg& right)
 void CtiCCGeoAreasMsg::restoreGuts(RWvistream& strm)
 {
     CtiCCMessage::restoreGuts(strm);
+    strm >> _msgInfoBitMask;
     strm >> _ccGeoAreas;
 }
 
 /*---------------------------------------------------------------------------
     saveGuts
-
+    
     Saves the state of self into the given RWvostream
 ---------------------------------------------------------------------------*/
 void CtiCCGeoAreasMsg::saveGuts(RWvostream& strm) const
 {
     CtiCCMessage::saveGuts(strm);
+    strm << _msgInfoBitMask;
     strm << _ccGeoAreas;
 }
 

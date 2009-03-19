@@ -951,7 +951,7 @@ void CtiCapController::controlLoop()
                         if( areaChanges.size() > 0 )
                         {
                             CtiCCExecutorFactory f1;
-                            CtiCCExecutor* executor1 = f1.createExecutor(new CtiCCGeoAreasMsg(ccAreas));
+                            CtiCCExecutor* executor1 = f1.createExecutor(new CtiCCGeoAreasMsg((CtiCCArea_vec&)areaChanges, CtiCCGeoAreasMsg::AreaModified));
                             try
                             {
                                 executor1->Execute();
@@ -996,7 +996,7 @@ void CtiCapController::controlLoop()
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                         }
-                        executor1 = f1.createExecutor(new CtiCCGeoAreasMsg(ccAreas));
+                        executor1 = f1.createExecutor(new CtiCCGeoAreasMsg(ccAreas, CtiCCGeoAreasMsg::AllAreasSent));
                         try
                         {
                             executor1->Execute();

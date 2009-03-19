@@ -336,7 +336,7 @@ void CtiCCSubstation::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDate
         {
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Inserted area into dynamicCCSubstation: " << getPAOName() << endl;
+                dout << CtiTime() << " - Inserted substation into dynamicCCSubstation: " << getPAOName() << endl;
             }
             string addFlags ="NNNNNNNNNNNNNNNNNNNN";
 
