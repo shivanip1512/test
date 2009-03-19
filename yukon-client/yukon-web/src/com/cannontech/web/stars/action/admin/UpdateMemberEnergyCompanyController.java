@@ -43,31 +43,33 @@ public class UpdateMemberEnergyCompanyController extends StarsAdminActionControl
         
         try {
             if (prevLoginID != null) {
-                if (prevLoginID.intValue() == loginID) return;
-                
-                if (loginID != -1) {
-                    String sql = "UPDATE ECToGenericMapping SET ItemID = " + loginID +
-                            " WHERE EnergyCompanyID = " + energyCompany.getEnergyCompanyID() +
-                            " AND MappingCategory = 'MemberLogin'";
-                    SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
-                    stmt.execute();
-                }
-                else {
-                    ECToGenericMapping map = new ECToGenericMapping();
-                    map.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-                    map.setItemID( prevLoginID );
-                    map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_MEMBER_LOGIN );
-                    Transaction.createTransaction( Transaction.DELETE, map ).execute();
-                }
+            	
+            	if (prevLoginID.intValue() != loginID) {
+	                if (loginID != -1) {
+	                    String sql = "UPDATE ECToGenericMapping SET ItemID = " + loginID +
+	                            " WHERE EnergyCompanyID = " + energyCompany.getEnergyCompanyID() +
+	                            " AND MappingCategory = 'MemberLogin'";
+	                    SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+	                    stmt.execute();
+	                }
+	                else {
+	                    ECToGenericMapping map = new ECToGenericMapping();
+	                    map.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+	                    map.setItemID( prevLoginID );
+	                    map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_MEMBER_LOGIN );
+	                    Transaction.createTransaction( Transaction.DELETE, map ).execute();
+	                }
+            	}
             }
             else {
-                if (loginID == -1) return;
+                if (loginID != -1) {
                 
-                ECToGenericMapping map = new ECToGenericMapping();
-                map.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-                map.setItemID( new Integer(loginID) );
-                map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_MEMBER_LOGIN );
-                Transaction.createTransaction( Transaction.INSERT, map ).execute();
+	                ECToGenericMapping map = new ECToGenericMapping();
+	                map.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+	                map.setItemID( new Integer(loginID) );
+	                map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_MEMBER_LOGIN );
+	                Transaction.createTransaction( Transaction.INSERT, map ).execute();
+                }
             }
             
             session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Member setting updated successfully.");
