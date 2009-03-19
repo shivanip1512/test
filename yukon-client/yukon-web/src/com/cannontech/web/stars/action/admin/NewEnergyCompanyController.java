@@ -114,10 +114,13 @@ public class NewEnergyCompanyController extends StarsAdminActionController {
                     Map<Integer, String> rolePropMap = new HashMap<Integer, String>();
                     rolePropMap.put(Integer.valueOf(EnergyCompanyRole.OPERATOR_GROUP_IDS), operGroupIDs );
                     rolePropMap.put(Integer.valueOf(EnergyCompanyRole.CUSTOMER_GROUP_IDS), custGroupIDs );
-                    if (!isAddMember)
+                    if (!isAddMember) {
                         rolePropMap.put(Integer.valueOf(AdministratorRole.ADMIN_INITIALIZE_ENERGY_COMPANY), CtiUtilities.TRUE_STRING);
-                    else
+                        rolePropMap.put(Integer.valueOf(AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY), CtiUtilities.TRUE_STRING);
+                    }
+                    else {
                         rolePropMap.put(Integer.valueOf(AdministratorRole.ADMIN_INITIALIZE_ENERGY_COMPANY), CtiUtilities.FALSE_STRING);
+                    }
                     
                     String adminGroupName = companyName + " Admin Grp";
                     LiteYukonGroup liteAdminGrp = StarsAdminUtil.createOperatorAdminGroup( adminGroupName, rolePropMap );
