@@ -172,9 +172,11 @@ public class ProgramDaoImpl implements ProgramDao {
     public List<Integer> getDistinctGroupIdsByYukonProgramIds(final Set<Integer> programIds) {
         try {
             SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append(" SELECT Distinct LMPDG.LMGroupDeviceId"); 
+            sql.append(" SELECT Distinct LMPDG.LMGroupDeviceId "); 
             sql.append(" FROM LMProgramDirectGroup LMPDG ");
-            sql.append(" WHERE LMPDG.DeviceId in (", programIds, ") ");
+            sql.append(" WHERE LMPDG.DeviceId in (SELECT LMPWP.DeviceId ");
+            sql.append("                          FROM LMProgramWebPublishing LMPWP ");
+            sql.append("                          WHERE LMPWP.ProgramId in (", programIds, ")) ");
             
             List<Integer> list = simpleJdbcTemplate.query(sql.toString(), groupIdRowMapper);
             return list;

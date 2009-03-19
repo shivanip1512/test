@@ -1484,15 +1484,17 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
         
         int relay = 0;
         boolean relayNotFound = true;
-        List<Integer> currentProgramIDs = new ArrayList<Integer>(liteAcctInfo.getAppliances().size());
+        int currentNumberOfAppliances = liteAcctInfo.getAppliances().size();
+        List<Integer> currentProgramIDs = new ArrayList<Integer>(currentNumberOfAppliances);
         if(appFields == null)
             appFields = ImportManagerUtil.prepareFields( ImportManagerUtil.NUM_APP_FIELDS );
         if(appFields[ImportManagerUtil.IDX_RELAY_NUM].trim().length() > 0)
         {
             relay = Integer.parseInt(appFields[ImportManagerUtil.IDX_RELAY_NUM]);
+            programs[0][3] = relay; // LoadNumber (optional)
         }
         
-        for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) 
+        for (int i = 0; i < currentNumberOfAppliances; i++) 
         {
             LiteStarsAppliance liteApp = liteAcctInfo.getAppliances().get(i);
              if(liteApp.getInventoryID() == liteInv.getInventoryID())

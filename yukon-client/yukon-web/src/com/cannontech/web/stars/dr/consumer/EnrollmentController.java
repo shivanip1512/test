@@ -1,6 +1,7 @@
 package com.cannontech.web.stars.dr.consumer;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -19,10 +20,11 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.displayable.dao.DisplayableEnrollmentDao;
 import com.cannontech.stars.dr.displayable.model.DisplayableEnrollment;
+import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
+import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.program.model.ProgramEnrollmentResultEnum;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.cannontech.stars.util.EventUtils;
@@ -38,6 +40,8 @@ public class EnrollmentController extends AbstractConsumerController {
     private static final String KEY_APPLIANCECATEGORYID = "applianceCategoryId";
     private static final String KEY_ENROLL = "enroll";
     private DisplayableEnrollmentDao displayableEnrollmentDao;
+    @Autowired
+    private LMHardwareControlGroupDao lmHardwareControlGroupDao;
     private WebSecurityChecker webSecurityChecker;
     
     @RequestMapping(value = "/consumer/enrollment", method = RequestMethod.GET)
@@ -94,15 +98,16 @@ public class EnrollmentController extends AbstractConsumerController {
                 accountCheckerService.checkInventory(user, inventoryId);
                 accountCheckerService.checkApplianceCategory(user, applianceCategoryId);
                 
-                ProgramEnrollment enrollmentRequest = new ProgramEnrollment();
-                enrollmentRequest.setProgramId(programId);
-                enrollmentRequest.setInventoryId(inventoryId);
-                enrollmentRequest.setApplianceCategoryId(applianceCategoryId);
-                enrollmentRequest.setEnroll(enroll);
-            
                 /* ProgramSignUpAction only cares about programs you are enrolling into,
                    this will be changing. */
                 if (enroll) {
+	                ProgramEnrollment enrollmentRequest = new ProgramEnrollment();
+	                enrollmentRequest.setProgramId(programId);
+	                enrollmentRequest.setInventoryId(inventoryId);
+	                enrollmentRequest.setApplianceCategoryId(applianceCategoryId);
+	                enrollmentRequest.setEnroll(enroll);
+	                setExistingLMGroupAndRelay(enrollmentRequest, customerAccount.getAccountId());
+                
                     requestList.add(enrollmentRequest);
                 }    
             }
@@ -122,6 +127,22 @@ public class EnrollmentController extends AbstractConsumerController {
         map.addAttribute("backUrl", "/spring/stars/consumer/" + enrollPage);
         
         return "consumer/enrollment/enrollmentResult.jsp";
+    }
+
+    private void setExistingLMGroupAndRelay(ProgramEnrollment enrollmentRequest, int accountId){
+        List<LMHardwareControlGroup> lmHardwareControlGroup = 
+        	lmHardwareControlGroupDao.getCurrentEnrollmentByInventoryIdAndAccountId(enrollmentRequest.getInventoryId(),
+                                                                          			accountId);
+        List<Integer> groupIds = 
+        	programDao.getDistinctGroupIdsByYukonProgramIds(Collections.singleton(enrollmentRequest.getProgramId()));
+	    for (LMHardwareControlGroup hardwareControlGroup : lmHardwareControlGroup) {
+			for (Integer groupId : groupIds) {
+				if(groupId.intValue() == hardwareControlGroup.getLmGroupId()){
+					enrollmentRequest.setLmGroupId(hardwareControlGroup.getLmGroupId());
+					enrollmentRequest.setRelay(hardwareControlGroup.getRelay());
+				}
+			}
+		}
     }
     
     @Autowired
