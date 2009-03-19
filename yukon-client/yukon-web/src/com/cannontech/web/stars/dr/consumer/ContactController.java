@@ -162,7 +162,7 @@ public class ContactController extends AbstractConsumerController {
                         try {
                             login = Transaction.createTransaction(Transaction.INSERT, login).execute();
                         } catch (TransactionException e) {
-                            throw new RuntimeException(e);
+                            throw new RuntimeException("Couldn't create user login for the contact, please retry.", e);
                         }
                         LiteYukonUser liteUser = new LiteYukonUser( login.getUserID().intValue() );
                         ServerUtils.handleDBChange(liteUser, DBChangeMsg.CHANGE_TYPE_ADD);
