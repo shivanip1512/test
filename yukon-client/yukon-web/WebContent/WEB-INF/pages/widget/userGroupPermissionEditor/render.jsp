@@ -13,7 +13,7 @@
 
 <script type="text/javascript">
   ${addPao} = function() {
-    ${widgetParameters.jsWidget}.doActionRefresh("addPao", "${addPaoSpanId}", "Adding");
+    ${widgetParameters.jsWidget}.doActionRefresh("addPao", "${addPaoSpanId}", "Adding", null, null);
   }
 </script>
     <tags:widgetState paoIdsList="${paoIds}"/>

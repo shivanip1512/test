@@ -2,6 +2,7 @@
 <%@ attribute name="label" required="true" type="java.lang.String"%>
 <%@ attribute name="labelBusy" required="true" type="java.lang.String"%>
 <%@ attribute name="hide" type="java.lang.Boolean" %>
+<%@ attribute name="confirmText" required="false" type="java.lang.String"%>
 
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -17,7 +18,7 @@
 	</script>
 	
 	<span id="${thisId}">
-	<input type="button" value="${label}" onclick="${widgetParameters.jsWidget}.doActionRefresh('${method}', '${thisId}', '${labelBusy}...', '${uniqueId}')">
+	<input type="button" value="${label}" onclick="${widgetParameters.jsWidget}.doActionRefresh('${method}', '${thisId}', '${labelBusy}...', '${uniqueId}', '${confirmText}')">
 	<span class="widgetAction_waiting" style="display:none">
 	<img src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" alt="waiting" >
 	</span>

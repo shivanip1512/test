@@ -38,17 +38,25 @@ JsWidgetObject.prototype = {
     new Ajax.Updater(container, url, {'parameters': params, 'evalScripts': true, 'onSuccess': this.onSuccess.bind(this)});
   },
   
-  doActionRefresh: function(cmd, actionButton, waitingLabel, key) {
-    $(actionButton).getElementsBySelector('.widgetAction_waiting').invoke('show');
-    $(actionButton).getElementsBySelector('input').each(function(it) {it.value = waitingLabel});
-    $(this.container).getElementsBySelector('input').invoke('disable');
-    
-    newParams = $H(this.linkInfo[key]);
-    oldParams = this.getWidgetParameters();
-    oldParams.merge(newParams);
-    
-    var url = "/spring/widget/" + this.shortName + "/" + cmd;
-    new Ajax.Updater(this.container, url, {'parameters': oldParams, 'evalScripts': true, 'onSuccess': this.onSuccess.bind(this)});
+  doActionRefresh: function(cmd, actionButton, waitingLabel, key, confirmText) {
+
+	var confirmed = true;
+	if (confirmText != null && confirmText.strip() != '') {
+		confirmed = confirm(confirmText);
+	}
+
+	if (confirmed) {
+	    $(actionButton).getElementsBySelector('.widgetAction_waiting').invoke('show');
+	    $(actionButton).getElementsBySelector('input').each(function(it) {it.value = waitingLabel});
+	    $(this.container).getElementsBySelector('input').invoke('disable');
+	    
+	    newParams = $H(this.linkInfo[key]);
+	    oldParams = this.getWidgetParameters();
+	    oldParams.merge(newParams);
+	    
+	    var url = "/spring/widget/" + this.shortName + "/" + cmd;
+	    new Ajax.Updater(this.container, url, {'parameters': oldParams, 'evalScripts': true, 'onSuccess': this.onSuccess.bind(this)});
+	}
   },
   
   doActionUpdate: function(cmd, theContainer, actionButton, waitingLabel, key) {
