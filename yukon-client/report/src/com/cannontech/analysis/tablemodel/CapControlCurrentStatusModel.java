@@ -31,7 +31,7 @@ import com.cannontech.roles.capcontrol.CBCOnelineSettingsRole;
 public class CapControlCurrentStatusModel extends ReportModelBase
 {
 	/** Number of columns */
-	protected final int NUMBER_COLUMNS = 5;
+	protected final int NUMBER_COLUMNS = 11;
 	
 	/** Enum values for column representation */
 	public final static int SUB_BUS_NAME_COLUMN = 0;
@@ -40,7 +40,12 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 	public final static int CONTROL_STATUS_COLUMN = 3;	
 	public final static int LAST_STATUS_CHANGE_TIME_COLUMN = 4;
     public final static int OPERTATIONAL_STATE_COLUMN = 5;
-    public final static int DISABLE_FLAG_COLUMN = 6;
+    public final static int CAP_BANK_ADDRESS_COLUMN = 6;
+    public final static int CAP_BANK_DRIVE_COLUMN = 7;
+    public final static int DISABLE_FLAG_COLUMN = 8;
+    public final static int USER_COLUMN = 9;
+    public final static int CAP_COMMENT_COLUMN = 10;
+
 	
 	/** String values for column representation */
 	public final static String CAP_BANK_NAME_STRING = "Cap Bank";
@@ -49,7 +54,12 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 	public final static String CONTROL_STATUS_STRING = "Status";
 	public final static String LAST_STATUS_CHANGE_TIME_STRING  = "Status Changed Date/Time";
     public final static String OPERATIONAL_STATE_STRING = "Operational State";
+    public final static String CAP_BANK_ADDRESS_STRING = "Map Address";
+    public final static String CAP_BANK_DRIVE_STRING = "Drive Directions";
     public final static String DISABLE_FLAG_STRING = "Disabled";
+    public final static String USER_STRING = "User";
+    public final static String CAP_COMMENT_STRING = "Comments";
+
     
     public static final String[] ORDER_TYPE_STRINGS =
     {
@@ -159,17 +169,20 @@ public class CapControlCurrentStatusModel extends ReportModelBase
             if(operationalState.equalsIgnoreCase("Fixed") && user != null) {
                 operationalState = authDao.getRolePropertyValue(user, CBCOnelineSettingsRole.CAP_BANK_FIXED_TEXT);
             }
-			Integer controlOrder = new Integer(rset.getInt(7));
+            Integer controlOrder = new Integer(rset.getInt(7));
             LiteYukonPAObject lite = DaoFactory.getPaoDao().getLiteYukonPAO(capBankPaoID.intValue());
+            String capAddress = lite.getPaoDescription();
+            String capDriveDir = rset.getString(8);
             String disableFlag = lite.getDisableFlag();
-			
+            String userName = rset.getString(9);
+            String userComment = rset.getString(10);
+            
 			CapControlStatusData ccStatusData= new CapControlStatusData(
 			        capBankPaoID, subBusPaoID, feederPaoID,
-			        controlStatus, lastChangedateTime, operationalState, disableFlag, controlOrder);
+			        controlStatus, new Date(lastChangedateTime.getTime()), operationalState, capAddress, 
+			        						capDriveDir, disableFlag, userName, userComment, controlOrder);
 			getData().add(ccStatusData);
-		}
-		catch(java.sql.SQLException e)
-		{
+		} catch(java.sql.SQLException e){
 			e.printStackTrace();
 		}
 	}
@@ -180,44 +193,63 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 	 */
 	public StringBuffer buildSQLStatement()
 	{
-		StringBuffer sql = new StringBuffer	("SELECT DCC.CAPBANKID, CCF.SUBSTATIONBUSID, CCFBL.FEEDERID, " + 
-                "DCC.CONTROLSTATUS, DCC.LASTSTATUSCHANGETIME, cb.operationalstate, CCFBL.CONTROLORDER " +
-				"FROM DYNAMICCCCAPBANK DCC, CCFEEDERSUBASSIGNMENT CCF, CCFEEDERBANKLIST CCFBL, " +
-				"ccsubstationsubbuslist ssb, ccsubareaassignment saa, capcontrolarea ca, capbank cb  " +
-				"WHERE saa.substationbusid = ssb.substationid and ssb.substationbusid = CCF.substationbusid " +
-				"and saa.areaid = ca.areaid and CCF.FEEDERID = CCFBL.FEEDERID " +
-				"AND DCC.CAPBANKID = CCFBL.DEVICEID and cb.deviceid = ccfbl.deviceid");
+		StringBuffer sql = new StringBuffer	("SELECT DCC.CAPBANKID, CCF.SUBSTATIONBUSID, CCFBL.FEEDERID " +
+				", DCC.CONTROLSTATUS, DCC.LASTSTATUSCHANGETIME, cb.operationalstate, CCFBL.CONTROLORDER " +
+				", cba.drivedirections, yu.username, ccc.capcomment FROM DYNAMICCCCAPBANK DCC " +
+				" join capbank cb on cb.deviceid = dcc.capbankid " +
+				" join capbankadditional cba on cba.deviceid = cb.deviceid " +
+				" join CCFEEDERBANKLIST CCFBL on DCC.CAPBANKID = CCFBL.DEVICEID " +
+				" join CCFEEDERSUBASSIGNMENT CCF on CCF.FEEDERID = CCFBL.FEEDERID " +
+				" join ccsubstationsubbuslist ssb on ssb.substationbusid = CCF.substationbusid " + 
+				" join ccsubareaassignment saa on saa.substationbusid = ssb.substationid " +
+				" join capcontrolarea ca on saa.areaid = ca.areaid " +
+				" left outer join (select  paoid, max(commenttime) maxCommentTime from capcontrolcomment " +
+				" where action like '%ABLED' group by paoid ) ccct on ccct.paoid = cb.deviceid " +
+				" left outer join capcontrolcomment ccc on ccc.commenttime = ccct.maxcommenttime and ccc.paoid = ccct.paoid " +
+				" left outer join yukonuser yu on yu.userid = ccc.userid ");
                 
+				boolean whereStringAdded = false;
                 if (getPaoIDs() != null && getPaoIDs().length > 0) {
                     if(getFilterModelType().equals(ReportFilter.AREA)) { //fix
-                        sql.append(" AND ca.areaid IN ( " + getPaoIDs()[0] +" ");
+                    	sql.append( whereStringAdded ? " AND " : " WHERE ");
+                    	whereStringAdded = true;
+                        sql.append(" ca.areaid IN ( " + getPaoIDs()[0] +" ");
+                        for (int i = 1; i < getPaoIDs().length; i++)
+                            sql.append(" , " + getPaoIDs()[i]);
+                        
+                        sql.append(")");
+                    }else if(getFilterModelType().equals(ReportFilter.CAPCONTROLFEEDER)) { 
+                    	sql.append( whereStringAdded ? " AND " : " WHERE ");                    	
+                    	whereStringAdded = true;
+                        sql.append(" CCFBL.FEEDERID IN ( " + getPaoIDs()[0] +" ");
                         for (int i = 1; i < getPaoIDs().length; i++)
                             sql.append(" , " + getPaoIDs()[i]);
                                 
                         sql.append(")");
-                    }else if(getFilterModelType().equals(ReportFilter.CAPCONTROLFEEDER)) { //fix
-                        sql.append(" AND CCFBL.FEEDERID IN ( " + getPaoIDs()[0] +" ");
+                    }else if(getFilterModelType().equals(ReportFilter.CAPCONTROLSUBBUS)) { 
+                    	sql.append( whereStringAdded ? " AND " : " WHERE ");                    	
+                    	whereStringAdded = true;
+                        sql.append(" CCF.SUBSTATIONBUSID IN ( " + getPaoIDs()[0] +" ");
                         for (int i = 1; i < getPaoIDs().length; i++)
                             sql.append(" , " + getPaoIDs()[i]);
                                 
                         sql.append(")");
-                    }else if(getFilterModelType().equals(ReportFilter.CAPCONTROLSUBBUS)) { //fix
-                        sql.append(" AND CCF.SUBSTATIONBUSID IN ( " + getPaoIDs()[0] +" ");
+                    }else if(getFilterModelType().equals(ReportFilter.CAPCONTROLSUBSTATION)) { 
+                    	sql.append( whereStringAdded ? " AND " : " WHERE ");                    	
+                    	whereStringAdded = true;
+                        sql.append(" ssb.SUBSTATIONID IN ( " + getPaoIDs()[0] +" ");
                         for (int i = 1; i < getPaoIDs().length; i++)
                             sql.append(" , " + getPaoIDs()[i]);
-                                
-                        sql.append(")");
-                    }else if(getFilterModelType().equals(ReportFilter.CAPCONTROLSUBSTATION)) { //fix
-                        sql.append(" AND ssb.substationid IN ( " + getPaoIDs()[0] +" ");
-                        for (int i = 1; i < getPaoIDs().length; i++)
-                            sql.append(" , " + getPaoIDs()[i]);
+
                                 
                         sql.append(")");
                     }
                 }
                 
 				if (getControlStates() != null && getControlStates().length > 0) {
-				    sql.append(" AND DCC.CONTROLSTATUS IN ( " + getControlStates()[0] +" ");
+					sql.append( whereStringAdded ? " AND " : " WHERE ");
+					whereStringAdded = true;
+                    sql.append(" DCC.CONTROLSTATUS IN ( " + getControlStates()[0] +" ");
 				    for (int i = 1; i < getControlStates().length; i++)
 				        sql.append(" , " + getControlStates()[i]);
 				            
@@ -315,9 +347,17 @@ public class CapControlCurrentStatusModel extends ReportModelBase
                     
                 case OPERTATIONAL_STATE_COLUMN:
                     return ccStatData.getOperationalState();
-                    
+                case CAP_BANK_ADDRESS_COLUMN:
+                    return ccStatData.getCapBankAddress();
+                case CAP_BANK_DRIVE_COLUMN:
+                    return ccStatData.getCapBankDriveDir();
                 case DISABLE_FLAG_COLUMN:
                     return ccStatData.getDisableFlag();
+                case USER_COLUMN:
+                    return ccStatData.getUserName();
+                case CAP_COMMENT_COLUMN:
+                    return ccStatData.getUserComment();
+                
 			}
 		}
 		return null;
@@ -337,7 +377,12 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 			    CONTROL_STATUS_STRING,
 			    LAST_STATUS_CHANGE_TIME_STRING,
                 OPERATIONAL_STATE_STRING,
-                DISABLE_FLAG_STRING
+                CAP_BANK_ADDRESS_STRING,
+                CAP_BANK_DRIVE_STRING,
+                DISABLE_FLAG_STRING,
+                USER_STRING,
+                CAP_COMMENT_STRING
+                
 			};
 		}
 		return columnNames;
@@ -357,6 +402,10 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 				String.class,
 				Date.class,
                 String.class,
+                String.class,
+                String.class,
+                String.class,
+                String.class,
                 String.class
 			};
 		}
@@ -371,13 +420,17 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 		if(columnProperties == null)
 		{
 			columnProperties = new ColumnProperties[]{
-				new ColumnProperties(0, 1, 120, null),
-				new ColumnProperties(120, 1, 120, null),
-				new ColumnProperties(240, 1, 120, null),
-				new ColumnProperties(360, 1, 100, null),
-				new ColumnProperties(460, 1, 120, SimpleYukonReportBase.columnDateFormat),
-                new ColumnProperties(580, 1, 80, null),
-                new ColumnProperties(660, 1, 50, null)
+				new ColumnProperties(0, 1, 60, null), //subbus
+				new ColumnProperties(60, 1, 60, null), //feeder
+				new ColumnProperties(120, 1, 60, null), //capbank
+				new ColumnProperties(180, 1, 80, null), //status
+				new ColumnProperties(260, 1, 80, null), //datetime
+				new ColumnProperties(340, 1, 75, null),  //operational state
+				new ColumnProperties(415, 1, 100, null), //address
+				new ColumnProperties(515, 1, 80, null), //drive directions
+				new ColumnProperties(595, 1, 40, null), //disabled
+				new ColumnProperties(635, 1, 30, null), //user
+				new ColumnProperties(665, 1, 60, null)  //comments
 			};
 		}
 		return columnProperties;

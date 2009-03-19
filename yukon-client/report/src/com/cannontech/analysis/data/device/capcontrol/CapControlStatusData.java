@@ -23,7 +23,11 @@ public class CapControlStatusData
 	private Date changeDateTime = null;
 	private Integer controlOrder = null;
     private String operationalState = null;
+    private String capBankAddress = null;
+    private String capBankDriveDir = null;
     private String disableFlag = null;
+    private String userName = null;
+    private String userComment = null;
 	private String pointName = null;
 	private String eventText = null;
 	private Integer eventType = null;	//CCEventLog
@@ -43,7 +47,8 @@ public class CapControlStatusData
 	 * @param changeDateTime
 	 * @param controlOrder
 	 */
-	public CapControlStatusData(Integer capBankPaoID, Integer subBusPaoID, Integer feederPaoID, Integer controlStatus, Date changeDateTime, String operationalState, String disableFlag, Integer controlOrder) {
+	public CapControlStatusData(Integer capBankPaoID, Integer subBusPaoID, Integer feederPaoID, Integer controlStatus, Date changeDateTime, String operationalState, String capAddress, String capDriveDir, 
+								String disableFlag, String userName, String userComment, Integer controlOrder) {
 		super();
 		this.capBankPaoID = capBankPaoID;
 		this.subBusPaoID = subBusPaoID;
@@ -51,10 +56,16 @@ public class CapControlStatusData
 		this.controlStatus = controlStatus;
 		this.changeDateTime = changeDateTime;
         this.operationalState = operationalState;
+        this.capBankAddress = capAddress;
+        this.capBankAddress = capDriveDir;
         this.disableFlag = disableFlag;
+        this.userName = userName;
+        this.userComment = userComment;
+        
 		this.controlOrder = controlOrder;
 	}
 	
+
 	/**
 	 * Constructor used for CapControlEventLog
 	 * @param capBankPaoID
@@ -75,6 +86,7 @@ public class CapControlStatusData
 		this.eventText = eventText;
 		this.controlStatus = controlStatus;
 		this.eventType = eventType;
+      
 	}
 	public Integer getCapBankPaoID()
 	{
@@ -124,5 +136,36 @@ public class CapControlStatusData
 	public Integer getEventType() {
 		return eventType;
 	}
+	public String getCapBankAddress() {
+		return capBankAddress;
+	}
+
+	public void setCapBankAddress(String capBankAddress) {
+		this.capBankAddress = capBankAddress;
+	}
+	public String getCapBankDriveDir() {
+		return capBankDriveDir;
+	}
+
+	public void setCapBankDriveDir(String capBankDriveDir) {
+		this.capBankDriveDir = capBankDriveDir;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public String getUserComment() {
+		return userComment;
+	}
+
+	public void setUserComment(String userComment) {
+		this.userComment = userComment;
+	}
+
 
 }
