@@ -75,6 +75,7 @@ IM_EX_CTIBASE int           gMaxDBConnectionCount = 10;      // Maximum number o
 IM_EX_CTIBASE bool          gIDLCEchoSuppression  = false;   // Eat up IDLC echoes on the comm channel (usually from satellite, etc)
 IM_EX_CTIBASE bool          gDNPVerbose = false;
 IM_EX_CTIBASE UINT          gDNPInternalRetries = 2;
+IM_EX_CTIBASE bool          gDNPOfflineNonUpdated = false;
 IM_EX_CTIBASE int           gDefaultCommFailCount = 10;
 IM_EX_CTIBASE int           gDefaultPortCommFailCount = 5;
 IM_EX_CTIBASE unsigned char gMCT400SeriesSPID = 0xFF;
@@ -233,7 +234,7 @@ DLLEXPORT void InitYukonBaseGlobals(void)
     {
         gDNPVerbose = true;
     }
-    if(DebugLevel & 0x0001) cout << "DNP output is " << ( gLogPorts ? "verbose" : "quiet") << endl;
+    if(DebugLevel & 0x0001) cout << "DNP output is " << ( gDNPVerbose ? "verbose" : "quiet") << endl;
 
     if( !(str = gConfigParms.getValueAsString("YUKON_DNP_INTERNAL_RETRIES")).empty() )
     {
@@ -245,6 +246,13 @@ DLLEXPORT void InitYukonBaseGlobals(void)
         gDNPInternalRetries = 2;
         if(DebugLevel & 0x0001) cout << "DNP Internal Retries set to 2" << endl;
     }
+
+    if( !(str = gConfigParms.getValueAsString("YUKON_DNP_OFFLINE_IS_NONUPDATED")).empty() && (!stricmp("TRUE", str.c_str())))
+    {
+        gDNPOfflineNonUpdated = true;
+    }
+    if(DebugLevel & 0x0001) cout << "DNP points interpret unset online flags as " << ( gDNPOfflineNonUpdated ? "non-updated" : "normal") << endl;
+
 
     //  this is the MCT 400 SPID
     if(!(str = gConfigParms.getValueAsString("YUKON_MCT400SERIESSPID")).empty())

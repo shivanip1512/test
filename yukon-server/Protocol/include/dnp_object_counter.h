@@ -57,7 +57,7 @@ public:
         Group = 20
     };
     void setValue(long value);
-    void setOnLineFlag(bool online);
+    void setOnlineFlag(bool online);
     unsigned long getValue() const;
     unsigned char getFlag() const;   
 

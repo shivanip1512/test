@@ -95,6 +95,7 @@ IM_EX_CTIBASE extern int            ModemConnectionTimeout;      // Modem Connec
 IM_EX_CTIBASE extern bool           gIDLCEchoSuppression;
 IM_EX_CTIBASE extern bool           gDNPVerbose;
 IM_EX_CTIBASE extern UINT           gDNPInternalRetries;
+IM_EX_CTIBASE extern bool           gDNPOfflineNonUpdated;
 IM_EX_CTIBASE extern int            gDefaultCommFailCount;
 IM_EX_CTIBASE extern int            gDefaultPortCommFailCount;
 IM_EX_CTIBASE extern unsigned char  gMCT400SeriesSPID;

@@ -262,7 +262,7 @@ public:
         unsigned long control_offset;
         InputPointType type;
         unsigned long expiration;
-        bool onLine;
+        bool online;
         bool includeTime;
         CtiTime timestamp;
     };

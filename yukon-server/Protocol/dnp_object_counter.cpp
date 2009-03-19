@@ -61,7 +61,7 @@ void Counter::setValue(long value)
     _counter = value;
 }
 
-void Counter::setOnLineFlag(bool online) 
+void Counter::setOnlineFlag(bool online) 
 {
     _flag = (online?0x01:0x00);
 }
@@ -244,7 +244,7 @@ CtiPointDataMsg *Counter::getPoint( const TimeCTO *cto ) const
     //  the child classes add to this, but the values concerned are still the same
     val = _counter;
 
-    if (!_flag)
+    if (!_flag && gDNPOfflineNonUpdated)
     {    
         quality = NonUpdatedQuality;
     }

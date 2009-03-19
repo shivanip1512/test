@@ -244,7 +244,7 @@ CtiPointDataMsg *AnalogInput::getPoint( const TimeCTO *cto ) const
         case AI_32Bit:
         case AI_16Bit:
         {
-            if (!_flags.online)
+            if (!_flags.online && gDNPOfflineNonUpdated)
             {    
                 quality = NonUpdatedQuality;
             }

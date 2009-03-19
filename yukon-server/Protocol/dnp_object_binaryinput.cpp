@@ -144,7 +144,7 @@ void BinaryInput::setStateValue(long value)
     _bi.flags.state = value;
 }
 
-void BinaryInput::setOnLineFlag(bool online) 
+void BinaryInput::setOnlineFlag(bool online) 
 {
     _bi.flags.online = online;
 }
@@ -208,7 +208,7 @@ CtiPointDataMsg *BinaryInput::getPoint( const TimeCTO *cto ) const
     {
 
     }*/
-    if (!_bi.flags.online)
+    if (!_bi.flags.online && gDNPOfflineNonUpdated)
     {    
         quality = NonUpdatedQuality;
     }

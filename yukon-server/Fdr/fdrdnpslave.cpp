@@ -382,7 +382,7 @@ int CtiFDRDnpSlave::processScanSlaveRequest (CtiFDRClientServerConnection& conne
 
             Cti::Protocol::DNPSlaveInterface::input_point iPoint;
 
-            iPoint.onLine = YukonToForeignQuality(fdrPoint->getQuality(), fdrPoint->getLastTimeStamp());
+            iPoint.online = YukonToForeignQuality(fdrPoint->getQuality(), fdrPoint->getLastTimeStamp());
             iPoint.control_offset = dnpId.Offset;
             iPoint.includeTime = includeTime;
             iPoint.timestamp = fdrPoint->getLastTimeStamp();    

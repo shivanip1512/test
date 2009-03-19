@@ -927,14 +927,14 @@ int DNPSlaveInterface::slaveGenerate( CtiXfer &xfer )
                                 ainc = CTIDBG_new DNP::AnalogInputChange( DNP::AnalogInputChange::AIC_32BitWithTime);
                                 ainc->setTime(ip.timestamp);
                                 ainc->setValue(ip.ain.value);
-                                ainc->setOnlineFlag(ip.onLine);
+                                ainc->setOnlineFlag(ip.online);
                                 dob1->addObjectIndex(ainc, ip.control_offset);
                             }
                             else
                             {
                                 ain = CTIDBG_new DNP::AnalogInput( DNP::AnalogInput::AI_32Bit );
                                 ain->setValue(ip.ain.value);
-                                ain->setOnlineFlag(ip.onLine);
+                                ain->setOnlineFlag(ip.online);
                                 dob1->addObjectIndex(ain, ip.control_offset);
                             }
                         }
@@ -945,14 +945,14 @@ int DNPSlaveInterface::slaveGenerate( CtiXfer &xfer )
                                 binc = CTIDBG_new DNP::BinaryInputChange( DNP::BinaryInputChange::BIC_WithTime);
                                 binc->setTime(ip.timestamp);
                                 binc->setStateValue(ip.din.trip_close);
-                                binc->setOnLineFlag(ip.onLine);
+                                binc->setOnlineFlag(ip.online);
                                 dob2->addObjectIndex(binc, ip.control_offset);
                             }
                             else
                             {
                                 bin = CTIDBG_new DNP::BinaryInput( DNP::BinaryInput::BI_WithStatus);
                                 bin->setStateValue(ip.din.trip_close);
-                                bin->setOnLineFlag(ip.onLine);
+                                bin->setOnlineFlag(ip.online);
                                 dob2->addObjectIndex(bin, ip.control_offset);
                             }
                        }
@@ -963,14 +963,14 @@ int DNPSlaveInterface::slaveGenerate( CtiXfer &xfer )
                                 counterevent = CTIDBG_new DNP::CounterEvent( DNP::CounterEvent::CE_Delta32BitWithTime);
                                 counterevent->setTime(ip.timestamp);
                                 counterevent->setValue(ip.counterin.value);
-                                counterevent->setOnLineFlag(ip.onLine);
+                                counterevent->setOnlineFlag(ip.online);
                                 dob3->addObjectIndex(counterevent, ip.control_offset);
                             }
                             else
                             {
                                 counterin = CTIDBG_new DNP::Counter( DNP::Counter::C_Binary32Bit );
                                 counterin->setValue(ip.counterin.value);
-                                counterin->setOnLineFlag(ip.onLine);
+                                counterin->setOnlineFlag(ip.online);
                                 dob3->addObjectIndex(counterin, ip.control_offset);
                             }
                         }

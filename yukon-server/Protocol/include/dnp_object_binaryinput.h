@@ -72,7 +72,7 @@ public:
     virtual int getSerializedLen(void) const;
 
     void setStateValue(long value);
-    void setOnLineFlag(bool online);
+    void setOnlineFlag(bool online);
     virtual CtiPointDataMsg *getPoint( const TimeCTO *cto ) const;
 };
 
