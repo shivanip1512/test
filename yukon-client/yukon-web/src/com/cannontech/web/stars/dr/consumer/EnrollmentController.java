@@ -40,7 +40,6 @@ public class EnrollmentController extends AbstractConsumerController {
     private static final String KEY_APPLIANCECATEGORYID = "applianceCategoryId";
     private static final String KEY_ENROLL = "enroll";
     private DisplayableEnrollmentDao displayableEnrollmentDao;
-    @Autowired
     private LMHardwareControlGroupDao lmHardwareControlGroupDao;
     private WebSecurityChecker webSecurityChecker;
     
@@ -151,6 +150,11 @@ public class EnrollmentController extends AbstractConsumerController {
         this.displayableEnrollmentDao = displayableEnrollmentDao;
     }
     
+    @Autowired
+    public void setLmHardwareControlGroupDao(LMHardwareControlGroupDao lmHardwareControlGroupDao) {
+        this.lmHardwareControlGroupDao = lmHardwareControlGroupDao;
+    }
+
     @Autowired
     public void setWebSecurityChecker(WebSecurityChecker webSecurityChecker) {
         this.webSecurityChecker = webSecurityChecker;
