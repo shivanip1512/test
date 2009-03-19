@@ -123,11 +123,13 @@ label.propertyEntry {
 
 
 .jsfInfo {
+	color: blue;
+	font-size: 1.1em;
 }
 
 .jsfError, .jsfWarn {
   color: red;
-  font-size: .9em;
+  font-size: 1.1em;
 }
 
 .jsfFatal {

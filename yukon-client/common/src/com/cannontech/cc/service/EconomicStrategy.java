@@ -75,4 +75,6 @@ public interface EconomicStrategy extends CICurtailmentStrategy {
     public void setupExtensionCustomers(EconomicBuilder builder);
     
     public void setupCustomers(EconomicBuilder builder);
+    
+    public boolean isBeforeElectionCutoff(EconomicEventPricing revision, Date time);
 }

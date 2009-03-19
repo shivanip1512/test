@@ -16,6 +16,7 @@
 
 <h:form>
 
+<t:outputText rendered="#{sEconomicUserDetail.buyThroughExpired}" styleClass="jsfInfo" value="* The Buy Through election period has expired"/>
 <table class="horizBorders">
   <tr>
     <td>Event Number</td>

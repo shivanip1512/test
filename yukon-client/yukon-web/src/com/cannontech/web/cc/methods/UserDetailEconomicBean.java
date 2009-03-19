@@ -115,6 +115,10 @@ public class UserDetailEconomicBean implements BaseDetailBean {
         EconomicEventParticipantSelectionWindow selectionWindow = getCurrentRowSelectionWindow();
         return priceEditable.get(selectionWindow);
     }
+
+    public boolean isBuyThroughExpired() {
+    	return !strategy.isBeforeElectionCutoff(currentRevision, new Date());
+    }    
     
     private void initPriceEditableLookup () {
         if (priceEditable != null) {

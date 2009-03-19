@@ -642,12 +642,7 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
             return false;
         }
         // first window of revision must not have started
-        Date revisionStartTime = pricingRevision.getFirstAffectedWindow().getStartTime();
-        Date latestEntryTime = TimeUtil.addMinutes(revisionStartTime, -getMinimumAdvanceSelectionEntry(pricingRevision.getEvent().getProgram()));
-        if (time.after(latestEntryTime)) {
-            return false;
-        }
-        return true;
+        return isBeforeElectionCutoff(pricingRevision, time);
     }
 
     public boolean canPricingSelectionBeEdited(EconomicEventParticipantSelectionWindow selectionWindow, 
@@ -764,6 +759,16 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
         return economicEventDao.getAllForProgram(program);
     }
 
+    @Override
+    public boolean isBeforeElectionCutoff(EconomicEventPricing revision, Date time) {
+        Date revisionStartTime = revision.getFirstAffectedWindow().getStartTime();
+        Date latestEntryTime = TimeUtil.addMinutes(revisionStartTime, -getMinimumAdvanceSelectionEntry(revision.getEvent().getProgram()));
+        if (time.after(latestEntryTime)) {
+            return false;
+        }
+        return true;
+    }
+    
     public EconomicEventDao getEconomicEventDao() {
         return economicEventDao;
     }
