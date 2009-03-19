@@ -1,10 +1,12 @@
 package com.cannontech.stars.util.task;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.springframework.util.Assert;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
@@ -48,32 +50,35 @@ public class OptOutTask implements YukonTask {
     
 	public void start() {
     	
-        logger.info("Starting opt out task.");
+        logger.debug("Starting opt out task.");
         
         LiteYukonUser user = this.userContext.getYukonUser();
 
-        // Start scheduled opt outs
-        
-        List<ScheduledOptOutQuestion> questionList = Collections.emptyList();
-
-        // Get scheduled opt outs to start
         List<OptOutEvent> optOutsToStart = optOutEventDao.getScheduledOptOutsToBeStarted();
+        this.startOptOuts(optOutsToStart, user);
+
+        // Get a list of all currently opted out inventory (according to the LMHardwareControlGroup
+        // table)
+        List<Integer> inventoryIds = enrollmentDao.getCurrentlyOptedOutInventory();
+        List<LiteStarsLMHardware> optedOutInventory = getOptedOutInventory(inventoryIds);
+        this.cleanUpCompletedOptOuts(optedOutInventory, user);
         
-        // Start opt outs
-        for(OptOutEvent event : optOutsToStart) {
+    }
+
+    public void stop() throws UnsupportedOperationException {
+        throw new UnsupportedOperationException("Cannot stop this task.");
+    }
+    
+    public void startOptOuts(List<OptOutEvent> optOutsToStart, LiteYukonUser user) {
+    	
+    	for(OptOutEvent event : optOutsToStart) {
         	
-        	CustomerAccount account = customerAccountDao.getById(event.getCustomerAccountId());
+        	OptOutRequest optOutRequest = this.createOptOutRequest(event);
         	
-        	OptOutRequest optOutRequest = new OptOutRequest();
-        	optOutRequest.setStartDate(null); // Null start means start now
-        	optOutRequest.setInventoryIdList(Collections.singletonList(event.getInventoryId()));
-        	optOutRequest.setQuestions(questionList);
-        	
-        	// Update event start to get duration (in case we missed this opt out by more than an hour)
-        	event.setStartDate(new Date());
-        	optOutRequest.setDurationInHours(event.getDurationInHours());
-        	
+        	logger.info("Starting scheduled opt out event for inventory: " + event.getInventoryId() 
+        			+ " and account: " + event.getCustomerAccountId());
         	try {
+        		CustomerAccount account = customerAccountDao.getById(event.getCustomerAccountId());
 				optOutService.optOut(account, optOutRequest, user);
 			} catch (CommandCompletionException e) {
 				logger.error("Could not start scheduled opt out event with id: " 
@@ -81,56 +86,89 @@ public class OptOutTask implements YukonTask {
 			}
         	
         }
+    }
+    
+    public OptOutRequest createOptOutRequest(OptOutEvent event) {
+    	
+    	List<ScheduledOptOutQuestion> questionList = Collections.emptyList();
+    	
+    	OptOutRequest optOutRequest = new OptOutRequest();
+    	optOutRequest.setStartDate(null); // Null start means start now
+    	optOutRequest.setInventoryIdList(Collections.singletonList(event.getInventoryId()));
+    	optOutRequest.setQuestions(questionList);
+    	
+    	// Update event start to get duration (in case we missed this opt out by more than an hour)
+    	event.setStartDate(new Date());
+    	optOutRequest.setDurationInHours(event.getDurationInHours());
+    	
+    	return optOutRequest;
+    }
+    
+    public List<LiteStarsLMHardware> getOptedOutInventory(List<Integer> inventoryIds) {
+    	
+    	List<LiteStarsLMHardware> inventoryList = new ArrayList<LiteStarsLMHardware>();
+    	for(Integer inventoryId : inventoryIds) {
 
-        // Clean up any opt outs that have completed
-        
-        // Get a list of all currently opted out inventory (according to the LMHardwareControlGroup
-        // table)
-        List<Integer> optedOutInventory = enrollmentDao.getCurrentlyOptedOutInventory();
-        for(Integer inventoryId : optedOutInventory) {
-        
-        	LiteStarsLMHardware inventory = 
+    		LiteStarsLMHardware inventory = 
         		(LiteStarsLMHardware) starsInventoryBaseDao.getById(inventoryId);
-        	if(inventory == null) {
-        		// There may be leftover opt data in the LMHardwareControlGroup table
-        		// after an inventory is deleted - ignore these 'open' opt outs
-        		continue;
-        	}
-        	int accountId = inventory.getAccountID();
 
-        	// Check the OptOutEvent table to see if this inventory is REALLY opted out
-        	// or if it has come out of the opted out state
-        	boolean optedOut = optOutEventDao.isOptedOut(inventoryId, accountId);
-			
-        	// If the OptOutEvent table says the inventory is NOT currently opted out,
-        	// cleanup the LMHardwareControlGroup and send a reenable command just to be
-        	// sure the inventory is no longer opted out
-        	if(!optedOut) {
-	        	OptOutEvent lastEvent = 
-	        		optOutEventDao.findLastEvent(inventoryId, accountId);
-	        	
-	        	CustomerAccount account = customerAccountDao.getById(accountId);
-	        	LiteStarsEnergyCompany energyCompany = ecMappingDao.getInventoryEC(inventoryId);
-	        	
-	        	// Don't kill the whole task if we can't re enable a single device
-		        try {
-					optOutService.cleanUpCancelledOptOut(
-							inventory, energyCompany, lastEvent, account, user);
-				} catch (CommandCompletionException e) {
-					logger.error("Attempt to reenable inventory: " 
-							+ inventory.getInventoryID() + " failed", e);
-				} catch (ConnectionException e) {
-					logger.error("Attempt to reenable inventory: " 
-							+ inventory.getInventoryID() + " failed", e);
-				}
+    		// Only add inventory that exists and is supposed to be done opting out according
+    		// to the OptOutEvent table
+        	if(inventory != null && !optOutEventDao.isOptedOut(inventoryId, inventory.getAccountID())) {
+        		inventoryList.add(inventory);
+        	}
+    	}
+    	
+    	return inventoryList;
+    }
+    
+    public void cleanUpCompletedOptOuts(
+    		List<LiteStarsLMHardware> optedOutInventory, 
+    		LiteYukonUser user) 
+    {
+    	
+    	for(LiteStarsLMHardware inventory : optedOutInventory) {
+            
+        	int accountId = inventory.getAccountID();
+        	int inventoryId = inventory.getInventoryID();
+
+        	OptOutEvent lastEvent = 
+        		optOutEventDao.findLastEvent(inventoryId, accountId);
+        	
+        	try {
+        		cancelOptOutEvent(inventory, lastEvent, user);
+        	} catch (IllegalArgumentException e) {
+        		logger.debug("Could not find last opt out event for inventory: " + inventoryId);
         	}
         }
-        
     }
-
-    public void stop() throws UnsupportedOperationException {
-        throw new UnsupportedOperationException("Cannot stop this task.");
+    
+    public void cancelOptOutEvent(
+    		LiteStarsLMHardware inventory, 
+    		OptOutEvent event, 
+    		LiteYukonUser user) 
+    {
+    	Assert.notNull(event, "Event must not be null");
+    	
+    	int inventoryId = inventory.getInventoryID();
+    	
+    	CustomerAccount account = customerAccountDao.getById(event.getCustomerAccountId());
+    	LiteStarsEnergyCompany energyCompany = ecMappingDao.getInventoryEC(inventoryId);
+    	
+    	logger.info("Cleaning up opt out event for inventory: " + event.getInventoryId() 
+    			+ " and account: " + event.getCustomerAccountId());
+    	
+        try {
+			optOutService.cleanUpCancelledOptOut(
+					inventory, energyCompany, event, account, user);
+		} catch (CommandCompletionException e) {
+			logger.error("Attempt to reenable inventory: " + inventoryId + " failed", e);
+		} catch (ConnectionException e) {
+			logger.error("Attempt to reenable inventory: " + inventoryId + " failed", e);
+		}
     }
+    
+    // Injected Dependencies
     
     public void setOptOutEventDao(OptOutEventDao optOutEventDao) {
 		this.optOutEventDao = optOutEventDao;
