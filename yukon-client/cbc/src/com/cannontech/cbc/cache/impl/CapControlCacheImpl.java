@@ -598,20 +598,6 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     }
     
     /**
-    * @param CCSubAreas
-    */
-    private synchronized void handleAreaList(CCSubAreas areas) {
-        clearCacheMap(cbcAreaMap);
-        
-        List<CCArea> list = areas.getAreas();
-        for (final CCArea area : list) {
-            Integer areaId = area.getPaoID();
-            cbcAreaMap.put(areaId, area);
-            getUpdatedObjMap().handleCBCChangeEvent(area);
-        }
-    }
-    
-    /**
      * Removes this subbus from all the structures in cache. 
      * @param msg
      */
@@ -935,7 +921,6 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
             handleSpecialAreaList((CCSubSpecialAreas) in);
         } else if (in instanceof CCSubAreas) {
         	handleAreas((CCSubAreas) in);
-            //handleAreaList((CCSubAreas) in);
         } else if (in instanceof CapControlCommand) {
             handleCBCCommand((CapControlCommand) in);
         } 
