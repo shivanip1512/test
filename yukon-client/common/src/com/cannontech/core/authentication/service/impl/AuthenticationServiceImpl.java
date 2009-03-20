@@ -29,7 +29,7 @@ public class AuthenticationServiceImpl implements AuthenticationService, Initial
     private YukonUserDao yukonUserDao;
     private AuthenticationThrottleHelper authenticationThrottleHelper;
 
-    public LiteYukonUser login(String username, String password) throws BadAuthenticationException {
+    public synchronized LiteYukonUser login(String username, String password) throws BadAuthenticationException {
         // see if login attempt allowed and track the attempt
         authenticationThrottleHelper.loginAttempted(username);
 
