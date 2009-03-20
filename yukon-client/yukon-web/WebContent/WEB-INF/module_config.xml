@@ -69,7 +69,7 @@
 
         <option id="metering">
           <link>/spring/meter/start</link>
-          <requireRoleProperty value="METERING,APPLICATION_BILLING,SCHEDULER,COMMANDER" />
+          <requireRoleProperty value="METERING,APPLICATION_BILLING,SCHEDULER" />
         </option>
         
         <option id="bulkOperations">
@@ -105,7 +105,7 @@
         </option>
         
         <option id="commander">
-          <requireRoleProperty value="COMMANDER" />
+          <requireRoleProperty value="ENABLE_CLIENT_COMMANDER" />
           <script>jwsLaunch('/jws/commander.jnlp')</script>
         </option>
         
@@ -183,7 +183,7 @@
 
         <option id="commander">
           <link>/apps/SelectDevice.jsp</link>
-          <requireRoleProperty value="COMMANDER" />
+          <requireRoleProperty value="ENABLE_WEB_COMMANDER" />
         </option>
         
         <option id="visualDisplays">
@@ -293,7 +293,6 @@
             </option>
 		    <option id="commander">
               <link>/spring/group/commander/groupProcessing</link>
-              <requireRoleProperty value="DEVICE_ACTIONS"/>
               <requireRoleProperty value="GROUP_COMMANDER"/>
             </option>
           </links>

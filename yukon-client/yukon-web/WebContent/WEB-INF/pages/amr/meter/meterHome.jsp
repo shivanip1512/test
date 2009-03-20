@@ -112,13 +112,13 @@
                         <br/>
                         
                         <!-- Actions: >Manual Commander -->
-						<cti:checkRole role="CommanderRole.ROLEID">
+						<cti:checkProperty property="CommanderRole.ENABLE_WEB_COMMANDER">
 							<cti:url var="commanderUrl" value="/spring/amr/manualCommand/home">
 								<cti:param name="deviceId" value="${deviceId}" />
 							</cti:url>
 							<a href="${commanderUrl}">Manual Commander</a>
 							<br>
-						</cti:checkRole>
+						</cti:checkProperty>
                         
                         <!-- Actions: Locate Route -->
                         <cti:checkProperty property="operator.DeviceActionsRole.LOCATE_ROUTE">

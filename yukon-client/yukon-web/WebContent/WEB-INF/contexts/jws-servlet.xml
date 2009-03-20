@@ -125,8 +125,8 @@
         <property name="appMainClassJar" value="yc.jar"/>
         <property name="appIcon" value="/WebConfig/yukon/Icons/Commander64.gif" />
         <property name="userChecker">
-          <bean factory-bean="rolePropertyUserCheckerFactory" factory-method="createRoleChecker">
-            <constructor-arg value="COMMANDER"/>
+          <bean factory-bean="rolePropertyUserCheckerFactory" factory-method="createPropertyChecker">
+            <constructor-arg value="ENABLE_CLIENT_COMMANDER"/>
           </bean>
         </property>
     </bean>

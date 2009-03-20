@@ -31,4 +31,9 @@ public interface CommanderRole {
 
     public static final int EXECUTE_UNKNOWN_COMMAND = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE - 16;
     public static final int EXECUTE_MANUAL_COMMAND = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE - 17;
+
+    /**Controls access to WEB Commander */
+    public static final int ENABLE_WEB_COMMANDER = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE - 18;
+    /**Controls access to Client (Launcher) Commander */
+    public static final int ENABLE_CLIENT_COMMANDER = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE - 19;
 }

@@ -35,6 +35,8 @@ public enum YukonRoleProperty {
     CONTROL_CAP_CONTROL_DEVICE(COMMANDER, com.cannontech.roles.application.CommanderRole.CONTROL_CAP_CONTROL_DEVICE, booleanType()),
     EXECUTE_UNKNOWN_COMMAND(COMMANDER, com.cannontech.roles.application.CommanderRole.EXECUTE_UNKNOWN_COMMAND, booleanType()),
     EXECUTE_MANUAL_COMMAND(COMMANDER, com.cannontech.roles.application.CommanderRole.EXECUTE_MANUAL_COMMAND, booleanType()),
+    ENABLE_WEB_COMMANDER(COMMANDER, com.cannontech.roles.application.CommanderRole.ENABLE_WEB_COMMANDER, booleanType()),
+    ENABLE_CLIENT_COMMANDER(COMMANDER, com.cannontech.roles.application.CommanderRole.ENABLE_CLIENT_COMMANDER, booleanType()),
     
     POINT_ID_EDIT(DATABASE_EDITOR, com.cannontech.roles.application.DBEditorRole.POINT_ID_EDIT, booleanType()),
     DBEDITOR_CORE(DATABASE_EDITOR, com.cannontech.roles.application.DBEditorRole.DBEDITOR_CORE, stringType()),

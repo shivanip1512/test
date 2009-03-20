@@ -253,7 +253,7 @@
 </cti:checkRole> 
 
 <!-- Analysis section -->
-<cti:checkRolesAndProperties value="REPORTING,COMMANDER,MSP_LM_MAPPING_SETUP">
+<cti:checkRolesAndProperties value="REPORTING,ENABLE_WEB_COMMANDER,MSP_LM_MAPPING_SETUP">
 
 	<tags:operationSection sectionName="Analysis" sectionImageName="AnalysisLogo">
         <cti:checkRole role="ReportingRole.ROLEID">
@@ -261,11 +261,11 @@
 	            <a href="../analysis/Reports.jsp">Reporting</a>
             </tags:sectionLink>
         </cti:checkRole>
-        <cti:checkRole role="CommanderRole.ROLEID">
+        <cti:checkProperty property="CommanderRole.ENABLE_WEB_COMMANDER">
             <tags:sectionLink>
             	<a href="../apps/SelectDevice.jsp">Commander</a>
             </tags:sectionLink>
-        </cti:checkRole>
+        </cti:checkProperty>
         <cti:checkProperty property="MultispeakRole.MSP_LM_MAPPING_SETUP">
             <tags:sectionLink>
             	<a href="/spring/multispeak/visualDisplays/loadManagement/home"><cti:msg key="yukon.web.menu.portal.analysis.visualDisplays" /></a>

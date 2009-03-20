@@ -4,6 +4,8 @@
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
+<cti:verifyRolesAndProperties value="ENABLE_WEB_COMMANDER"/>
+
 <jsp:useBean id="commandDeviceBean" class="com.cannontech.yc.bean.CommandDeviceBean" scope="session"/>
 
 <%-- Grab the search criteria --%>
