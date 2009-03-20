@@ -181,20 +181,32 @@ INT LCR3102::decodeGetValueIntervalLast( INMESS *InMessage, CtiTime &TimeNow, li
 
         string results = getName() + " / Last Interval kW:";
 
-        int   message_index   = 1;
-        UCHAR relay_info      = DSt->Message[0];
-        UCHAR multiplier_mask = 0xC0;
-        int   relay_number    = 1;
+        // The relay_info is defined as M2M2M1M1R4R3R2R1 where
+        // Mx is the multiplier (00 = kw, 01 = 1/10, 10=1/100, 11 = 1/1000) and
+        // Rx is the relay number, of which 2 can be set
+        int   ct_number     = 1;
+        int   message_index = 1;
+        int   relay_number  = 1;
+        UCHAR relay_info    = DSt->Message[0];
+        UCHAR multiplier_specifier;
 
         for( UCHAR relay_mask = 0x01; relay_mask < 0x10 && message_index < 5; relay_mask <<= 1, relay_number++ )
         {
             if( relay_info & relay_mask )
             {
-                int value = (DSt->Message[message_index] << 8) | DSt->Message[message_index + 1];
-                message_index += 2;
+                if( ct_number == 1 )
+                {
+                    message_index = 1;
+                    multiplier_specifier = (relay_info >> 4) & 0x03;
+                }
+                else // ct_number == 2
+                {
+                    message_index = 3;
+                    multiplier_specifier = (relay_info >> 6) & 0x03;
+                }
 
-                double multiplier = ( relay_info & multiplier_mask ) ? 1.0 : 0.1;
-                multiplier_mask >>= 2;
+                int    value = (DSt->Message[message_index] << 8) | DSt->Message[message_index + 1];
+                double multiplier = 1 / pow((double)10, (double)multiplier_specifier);
 
                 results += "  Relay " + CtiNumStr(relay_number) + ": ";
 
@@ -208,7 +220,7 @@ INT LCR3102::decodeGetValueIntervalLast( INMESS *InMessage, CtiTime &TimeNow, li
                 {
                     pi.value   = value * multiplier;
                     pi.quality = NormalQuality;
-                    results    += CtiNumStr(pi.value);
+                    results    += CtiNumStr(pi.value, multiplier_specifier);
                 }
 
                 pi.description = "Last Interval kW Relay " + CtiNumStr(relay_number);
@@ -217,6 +229,7 @@ INT LCR3102::decodeGetValueIntervalLast( INMESS *InMessage, CtiTime &TimeNow, li
 
                 insertPointDataReport(DemandAccumulatorPointType, point_offset, ReturnMsg,
                                       pi, "Last Interval kW Relay " + CtiNumStr(relay_number));
+                ct_number++;
             }
         }
 
