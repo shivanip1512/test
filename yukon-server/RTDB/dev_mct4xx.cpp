@@ -1893,7 +1893,7 @@ INT CtiDeviceMCT4xx::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< 
 
                 if( getType() == TYPEMCT470 )
                 {
-                    unsigned fixed_delay = gConfigParms.getValueAsULong("PORTER_MCT470_LLP_READ_DELAY", 25);
+                    unsigned fixed_delay = gConfigParms.getValueAsULong("PORTER_MCT470_LLP_READ_DELAY", 45);
 
                     //  set it to execute in the future
                     if( !strstr(InMessage->Return.CommandStr, " noqueue") )
