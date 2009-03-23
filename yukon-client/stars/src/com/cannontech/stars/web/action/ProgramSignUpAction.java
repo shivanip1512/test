@@ -418,7 +418,7 @@ public class ProgramSignUpAction implements ActionBase {
         	
             List<LiteStarsLMProgram> progList = liteAcctInfo.getPrograms();	// List of old programs
 			List<LiteStarsAppliance> appList = new ArrayList<LiteStarsAppliance>( liteAcctInfo.getAppliances() );	// List of old appliances
-            appList.addAll(liteAcctInfo.getUnassignedAppliances());
+			appList.addAll(liteAcctInfo.getUnassignedAppliances());
 			List<LiteStarsAppliance> newAppList = new ArrayList<LiteStarsAppliance>();		// List of new appliances
 			List<LiteStarsLMProgram> newProgList = new ArrayList<LiteStarsLMProgram>();	// List of new programs
 			List<Integer> progNewEnrollList = new ArrayList<Integer>();	// List of program IDs newly enrolled in
@@ -775,6 +775,9 @@ public class ProgramSignUpAction implements ActionBase {
 							app = (ApplianceBase) StarsLiteFactory.createDBPersistent( liteApp );
 							app = Transaction.createTransaction( Transaction.UPDATE, app ).execute();
 							
+							
+							// Checks to see if there are any hardware that are enrolled in this program already and updated their 
+							// addressing group to the new supplied address group.
 							if (liteInv != null) {
 								for (int j = 0; j < appList.size(); j++) {
 									LiteStarsAppliance lApp = appList.get(j);

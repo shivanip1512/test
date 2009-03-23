@@ -4,7 +4,7 @@ import java.util.Date;
 
 import com.cannontech.user.UserUtils;
 
-public class LMHardwareControlGroup {
+public class LMHardwareControlGroup implements Cloneable{
     private Integer controlEntryId;
     private int inventoryId;
     private int lmGroupId;
@@ -54,6 +54,28 @@ public class LMHardwareControlGroup {
         this.userIdSecondAction = UserUtils.USER_DEFAULT_ID;
     }
 
+    public LMHardwareControlGroup clone(){
+        LMHardwareControlGroup hardwareControlGroup = new LMHardwareControlGroup();
+        if(this.controlEntryId != null)
+            hardwareControlGroup.setControlEntryId(this.controlEntryId);
+        hardwareControlGroup.setInventoryId(this.inventoryId);
+        hardwareControlGroup.setLmGroupId(this.lmGroupId);
+        hardwareControlGroup.setAccountId(this.accountId);
+        if(this.groupEnrollStart != null)
+            hardwareControlGroup.setGroupEnrollStart((Date)this.groupEnrollStart.clone());
+        if(this.groupEnrollStop != null)
+        	hardwareControlGroup.setGroupEnrollStop((Date)this.groupEnrollStop.clone());
+        if(this.optOutStart != null)
+            hardwareControlGroup.setOptOutStart((Date)this.optOutStart.clone());
+        if(this.optOutStop != null)
+            hardwareControlGroup.setOptOutStop((Date)this.optOutStop.clone());
+        hardwareControlGroup.setType(this.type);
+        hardwareControlGroup.setRelay(this.relay);
+        hardwareControlGroup.setUserIdFirstAction(this.userIdFirstAction);
+        hardwareControlGroup.setUserIdSecondAction(this.userIdSecondAction);
+        return hardwareControlGroup;
+    }
+    
     public int getInventoryId() {
         return inventoryId;
     }
@@ -163,4 +185,14 @@ public class LMHardwareControlGroup {
     public void setUserIdSecondAction(int userIdSecondAction) {
         this.userIdSecondAction = userIdSecondAction;
     }
+    
+    public boolean isActiveEnrollment(){
+    	if(this.getGroupEnrollStart() != null &&
+    	   this.getGroupEnrollStop() == null){
+    		return true;
+    	}
+    	
+    	return false;
+    }
+    
 }
