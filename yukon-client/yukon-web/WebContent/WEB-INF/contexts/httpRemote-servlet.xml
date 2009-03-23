@@ -18,7 +18,9 @@
 	</bean>
 
 	<bean name="/MasterConfig" class="com.cannontech.spring.PermissionCheckingHttpInvokerServiceExporter">
-  		<property name="service" ref="localMasterConfig"/>
+  		<property name="service">
+            <bean class="com.cannontech.common.config.MasterConfigServerFactory"/>
+        </property>
   		<property name="serviceInterface" value="com.cannontech.common.config.ConfigurationSource"/>
 	</bean>
 </beans>
