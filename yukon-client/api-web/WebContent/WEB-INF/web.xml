@@ -45,11 +45,25 @@
             <param-name>contextClass</param-name>
             <param-value>com.cannontech.spring.CannonXmlWebApplicationContext</param-value>
         </init-param>
-        </servlet>
+    </servlet>
+        
+    <servlet>
+        <servlet-name>api-ws-plain</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextClass</param-name>
+            <param-value>com.cannontech.spring.CannonXmlWebApplicationContext</param-value>
+        </init-param>
+    </servlet>
 
     <servlet-mapping>
         <servlet-name>api-ws-soap</servlet-name>
         <url-pattern>/soap/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>api-ws-plain</servlet-name>
+        <url-pattern>/plain/*</url-pattern>
     </servlet-mapping>
 
 

@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
-<beans>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
   <bean id="notificationServer" class="com.cannontech.notif.server.NotificationServer">
     <property name="msgHandler" ref="notificationMessageHandler"/>
@@ -22,6 +29,10 @@
   <bean id="voiceHandler" class="com.cannontech.notif.outputs.VoiceHandler">
     <constructor-arg ref="dispatchConnection"/>
   </bean>
+  
+  <bean id="notificationQueue" class="com.cannontech.notif.voice.NotificationQueue" scope="prototype"/>
+  <bean id="callPoolFactory" class="com.cannontech.notif.voice.CallPoolFactory"/>
+  <bean id="urlDialerFactory" class="com.cannontech.notif.voice.UrlDialerFactory"/>
   
   <bean id="emailHandler" class="com.cannontech.notif.outputs.StandardEmailHandler">
   </bean>
@@ -87,13 +98,13 @@
       </constructor-arg>
   </bean>
   
-  <bean id="economicEventScheduler" class="com.cannontech.notif.handler.EconomicEventScheduler" abstract="false" singleton="true" autowire="byType" dependency-check="objects">
+  <bean id="economicEventScheduler" class="com.cannontech.notif.handler.EconomicEventScheduler" abstract="false" scope="singleton" autowire="byType" dependency-check="objects">
       <constructor-arg index="0" type="com.cannontech.notif.outputs.OutputHandlerHelper">
           <ref bean="notificationOutputHandlerHelper" />
       </constructor-arg>
   </bean>
   
-  <bean id="curtailmentEventScheduler" class="com.cannontech.notif.handler.CurtailmentEventScheduler" abstract="false" singleton="true" autowire="byType" dependency-check="objects">
+  <bean id="curtailmentEventScheduler" class="com.cannontech.notif.handler.CurtailmentEventScheduler" abstract="false" scope="singleton" autowire="byType" dependency-check="objects">
       <constructor-arg index="0" type="com.cannontech.notif.outputs.OutputHandlerHelper">
           <ref bean="notificationOutputHandlerHelper" />
       </constructor-arg>

@@ -5,8 +5,11 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.lang.RandomStringUtils;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.concurrent.PropertyChangeMulticaster;
+import com.cannontech.notif.outputs.Notification;
 import com.cannontech.notif.voice.callstates.*;
 
 
@@ -14,15 +17,16 @@ import com.cannontech.notif.voice.callstates.*;
  *  
  */
 public class Call {
-    CallState _state = new Pending();
-    PropertyChangeMulticaster _listeners = new PropertyChangeMulticaster(this);
-    private Object _message;
-    private PhoneNumber _number;
+    private CallState state = new Pending();
+    private PropertyChangeMulticaster listeners = new PropertyChangeMulticaster(this);
+    private Notification message;
+    private PhoneNumber number;
     static private AtomicInteger nextToken = new AtomicInteger(0);
-    final String _token;
+    private final String token;
+    private final int sequenceNumber;
     public static final String CALL_STATE = "state";
-    private TreeMap<String, String> _parameterMap;
-    private final ContactPhone _contactPhone;
+    private TreeMap<String, String> parameterMap;
+    private final ContactPhone contactPhone;
 
     /**
      * @param contactPhone
@@ -30,72 +34,76 @@ public class Call {
      * @param message
      *            The message to be delivered
      */
-    public Call(ContactPhone contactPhone, Object message) {
-        _contactPhone = contactPhone;
-        _number = contactPhone.getPhoneNumber();
+    public Call(ContactPhone contactPhone, Notification message) {
+        this.contactPhone = contactPhone;
+        number = contactPhone.getPhoneNumber();
         
-        _message = message;
-        _token = "CALL-" + nextToken.incrementAndGet();
+        this.message = message;
+        token = "CALL-" + RandomStringUtils.randomAlphanumeric(12);
+        sequenceNumber = nextToken.incrementAndGet();
 
-        _parameterMap = new TreeMap<String, String>();
-        _parameterMap.put("TOKEN", _token);
-        _parameterMap.put("CONTACTID", Integer.toString(getContactId()));
+        parameterMap = new TreeMap<String, String>();
+        parameterMap.put("TOKEN", token);
+        parameterMap.put("CONTACTID", Integer.toString(getContactId()));
+        parameterMap.put("CALL_STATE", getState().toString());
+        parameterMap.put("MESSAGE_TYPE", getMessage().getMessageType());
+
     }
 
     /**
      * @param listener
      */
     public void addPropertyChangeListener(PropertyChangeListener listener) {
-        _listeners.addPropertyChangeListenerIfAbsent(listener);
+        listeners.addPropertyChangeListenerIfAbsent(listener);
     }
 
     /**
      * @param listener
      */
     public void removePropertyChangeListener(PropertyChangeListener listener) {
-        _listeners.removePropertyChangeListener(listener);
+        listeners.removePropertyChangeListener(listener);
     }
     
     public void changeState(CallState newState) {
         CallState oldState;
         synchronized (this) {
-            oldState = _state;
-            _state = newState;
+            oldState = state;
+            state = newState;
         }
         CTILogger.info(this + " changing state " + oldState + " -> " + newState);
-        _listeners.firePropertyChange(CALL_STATE, oldState, newState);
+        listeners.firePropertyChange(CALL_STATE, oldState, newState);
     }
     
     public String getToken() {
-        return _token;
+        return token;
     }
     
     public PhoneNumber getNumber() {
-        return _number;
+        return number;
     }
     
-    public Object getMessage() {
-        return _message;
+    public Notification getMessage() {
+        return message;
     }
     
     public CallState getState() {
-        return _state;
+        return state;
     }
     
     public boolean isRetry() {
-        return _state instanceof Retry;
+        return state instanceof Retry;
     }
     
     public boolean isDone() {
-        return _state.isDone();
+        return state.isDone();
     }
     
     public boolean isReady() {
-        return _state.isReady();
+        return state.isReady();
     }
     
     public String toString() {
-        return getToken() + " (" + _number + ")";
+        return "Call #" + sequenceNumber + "(" + getToken() + ", " + number + ")";
     }
     
     public boolean equals(Object obj) {
@@ -107,19 +115,19 @@ public class Call {
     }
 
     public synchronized void handleTimeout() {
-        _state.handleTimeout(this);
+        state.handleTimeout(this);
     }
     
     public int getContactId() {
-        return _contactPhone.getContactId();
+        return this.contactPhone.getContactId();
     }
     
     public Map<String, String> getCallParameters() {
-        return _parameterMap;
+        return parameterMap;
     }
     
     public int hashCode() {
-        return _token.hashCode();
+        return token.hashCode();
     }
 
 }

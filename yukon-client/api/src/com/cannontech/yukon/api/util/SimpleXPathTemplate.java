@@ -16,6 +16,7 @@
 
 package com.cannontech.yukon.api.util;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -33,6 +34,9 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 import javax.xml.xpath.XPathFactoryConfigurationException;
 
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
+import org.jdom.transform.JDOMSource;
 import org.springframework.xml.namespace.SimpleNamespaceContext;
 import org.springframework.xml.transform.TransformerObjectSupport;
 import org.springframework.xml.transform.TraxUtils;
@@ -385,7 +389,28 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
     }
 
     public void setContext(Source context) {
-        this.context = context;
+        if (context instanceof StreamSource) {
+            try {
+                // parse into JDOM to allow reusability (because InputStream can't be read twice)
+                StreamSource stream = (StreamSource) context;
+                SAXBuilder builder = new SAXBuilder();
+                org.jdom.Document document;
+                if (stream.getInputStream() != null) {
+                    document = builder.build(stream.getInputStream());
+                }
+                else if (stream.getReader() != null) {
+                    document = builder.build(stream.getReader());
+                }
+                else {
+                    throw new IllegalArgumentException("StreamSource contains neither InputStream nor Reader");
+                }
+                this.context = new JDOMSource(document);
+            } catch (Exception e) {
+                throw new IllegalArgumentException("Could not parse context", e);
+            }
+        } else {
+            this.context = context;
+        }
     }
 
 }

@@ -12,6 +12,7 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.notif.outputs.Contactable;
+import com.cannontech.notif.outputs.Notification;
 import com.cannontech.notif.voice.callstates.*;
 import com.cannontech.user.UserUtils;
 
@@ -35,8 +36,8 @@ public class SingleNotification {
         
 	PropertyChangeMulticaster _listeners = new PropertyChangeMulticaster(this);
 	String _state = STATE_INITIAL;
-	private Iterator _phoneIterator;
-	private Object _message;
+	private Iterator<LiteContactNotification> _phoneIterator;
+	private Notification _message;
     private Contactable _contactable;
     private Call _nextCall;
     private String _token;
@@ -44,7 +45,7 @@ public class SingleNotification {
     static private AtomicInteger _nextToken = new AtomicInteger(0);
 
 	
-	public SingleNotification(Contactable contactable, Object message) {
+	public SingleNotification(Contactable contactable, Notification message) {
 		_contactable = contactable;
         _phoneIterator = contactable.getNotifications(checker).iterator();
 		_message = message;
@@ -58,7 +59,7 @@ public class SingleNotification {
             if (!_phoneIterator.hasNext()) {
                 throw new NoRemainingCallsException();
             }
-            contactNotif = (LiteContactNotification)_phoneIterator.next();
+            contactNotif = _phoneIterator.next();
         }
         LiteContact contact = DaoFactory.getContactDao().getContact(contactNotif.getContactID());
         if (contact.getLoginID() == UserUtils.USER_DEFAULT_ID) {
@@ -144,7 +145,7 @@ public class SingleNotification {
         return oldState;
 	}
 
-    public Object getMessage() {
+    public Notification getMessage() {
         return _message;
     }
     

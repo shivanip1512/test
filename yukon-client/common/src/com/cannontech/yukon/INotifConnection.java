@@ -13,7 +13,8 @@ import com.cannontech.yukon.conns.NotifRequestException;
 public interface INotifConnection
 {
 	public String requestMessage( String token ) throws NotifRequestException;
-
+	public int requestMessageContactId( String callToken ) throws NotifRequestException;
+	
 	public void sendConfirmation(String token, boolean success);
 
     public void sendCurtailmentNotification(Integer curtailmentEventId, CurtailmentEventAction action);

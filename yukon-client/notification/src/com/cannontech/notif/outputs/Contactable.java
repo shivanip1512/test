@@ -27,7 +27,7 @@ public class Contactable {
      *            a Set of contact notification types
      * @return A List of LiteContactNotification
      */
-    public List getNotifications(NotificationTypeChecker checker) {
+    public List<LiteContactNotification> getNotifications(NotificationTypeChecker checker) {
         return _contactableBase.getNotifications(checker);
     }
 

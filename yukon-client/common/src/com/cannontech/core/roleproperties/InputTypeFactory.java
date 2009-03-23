@@ -4,12 +4,11 @@ import java.beans.PropertyEditor;
 import java.beans.PropertyEditorSupport;
 import java.util.List;
 
-import org.apache.commons.lang.Validate;
-
 import com.cannontech.web.input.type.BaseEnumeratedType;
 import com.cannontech.web.input.type.BooleanType;
 import com.cannontech.web.input.type.InputOption;
 import com.cannontech.web.input.type.InputType;
+import com.cannontech.web.input.type.IntegerType;
 import com.cannontech.web.input.type.StringType;
 
 /**
@@ -21,6 +20,7 @@ import com.cannontech.web.input.type.StringType;
 public class InputTypeFactory {
     private static final InputType<String> stringType = new StringType();
     private static final InputType<Boolean> booleanType = new BooleanType();
+    private static final InputType<Integer> integerType = new IntegerType();
 
     public static <T extends Enum<T>> InputType<T> enumType(final Class<T> enumClass) {
         BaseEnumeratedType<T> type = new BaseEnumeratedType<T>() {
@@ -56,6 +56,10 @@ public class InputTypeFactory {
     
     public static InputType<Boolean> booleanType() {
         return booleanType;
+    }
+    
+    public static InputType<Integer> integerType() {
+        return integerType;
     }
     
     private static class EnumPropertyEditor<T extends Enum<T>> extends PropertyEditorSupport {

@@ -7,6 +7,7 @@ import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.UnknownRolePropertyException;
+import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -126,6 +127,11 @@ public class AuthDaoAdapter implements AuthDao {
 	public void verifyTrueProperty(LiteYukonUser user, int... rolePropertyIds)
 			throws NotAuthorizedException {
 		throw new UnsupportedOperationException("not implemented");
+	}
+	
+	@Override
+	public String getFirstNotificationPin(LiteContact contact) {
+	    throw new UnsupportedOperationException("not implemented");
 	}
 
 	@Override

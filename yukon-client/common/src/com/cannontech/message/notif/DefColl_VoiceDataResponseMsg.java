@@ -50,6 +50,7 @@ public class DefColl_VoiceDataResponseMsg extends DefineCollectableMessage {
 
         msg.callToken = (String) vstr.restoreObject(SimpleMappings.CString);
         msg.xmlData = (String) vstr.restoreObject(SimpleMappings.CString);
+        msg.contactId = vstr.extractInt();
     }
 
     public void saveGuts(Object obj, VirtualOutputStream vstr,
@@ -59,6 +60,7 @@ public class DefColl_VoiceDataResponseMsg extends DefineCollectableMessage {
 
         vstr.saveObject(msg.callToken, SimpleMappings.CString);
         vstr.saveObject(msg.xmlData, SimpleMappings.CString);
+        vstr.insertInt(msg.contactId);
 
     }
 

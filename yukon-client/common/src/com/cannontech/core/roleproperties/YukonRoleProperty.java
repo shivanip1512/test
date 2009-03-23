@@ -196,9 +196,9 @@ public enum YukonRoleProperty {
     DEFAULT_CONSTRAINT_SELECTION(LM_DIRECT_LOADCONTROL, com.cannontech.roles.loadcontrol.DirectLoadcontrolRole.DEFAULT_CONSTRAINT_SELECTION, stringType()),
     ALLOW_STOP_GEAR_ACCESS(LM_DIRECT_LOADCONTROL, com.cannontech.roles.loadcontrol.DirectLoadcontrolRole.ALLOW_STOP_GEAR_ACCESS, booleanType()),
     
-    VOICE_APP(IVR, com.cannontech.roles.notifications.IvrRole.VOICE_APP, stringType()),
-    NUMBER_OF_CHANNELS(IVR, com.cannontech.roles.notifications.IvrRole.NUMBER_OF_CHANNELS, stringType()),
-    INTRO_TEXT(IVR, com.cannontech.roles.notifications.IvrRole.INTRO_TEXT, stringType()),
+    NUMBER_OF_CHANNELS(IVR, com.cannontech.roles.notifications.IvrRole.NUMBER_OF_CHANNELS, integerType()),
+    IVR_URL_DIALER_TEMPLATE(IVR, com.cannontech.roles.notifications.IvrRole.IVR_URL_DIALER_TEMPLATE, stringType()),
+    IVR_URL_DIALER_SUCCESS_MATCHER(IVR, com.cannontech.roles.notifications.IvrRole.IVR_URL_DIALER_SUCCESS_MATCHER, stringType()),
     
     TEMPLATE_ROOT(NOTIFICATION_CONFIGURATION, com.cannontech.roles.notifications.NotificationConfigurationRole.TEMPLATE_ROOT, stringType()),
     
@@ -432,8 +432,7 @@ public enum YukonRoleProperty {
     STARS_ACTIVATION(SYSTEM, com.cannontech.roles.yukon.SystemRole.STARS_ACTIVATION, stringType()),
     BULK_IMPORTER_COMMUNICATIONS_ENABLED(SYSTEM, com.cannontech.roles.yukon.SystemRole.BULK_IMPORTER_COMMUNICATIONS_ENABLED, stringType()),
 
-    CALL_TIMEOUT(VOICE_SERVER, com.cannontech.roles.yukon.VoiceServerRole.CALL_TIMEOUT, stringType()),
-    CALL_RESPONSE_TIMEOUT(VOICE_SERVER, com.cannontech.roles.yukon.VoiceServerRole.CALL_RESPONSE_TIMEOUT, stringType()),
+    CALL_RESPONSE_TIMEOUT(VOICE_SERVER, com.cannontech.roles.yukon.VoiceServerRole.CALL_RESPONSE_TIMEOUT, integerType()),
     CALL_PREFIX(VOICE_SERVER, com.cannontech.roles.yukon.VoiceServerRole.CALL_PREFIX, stringType()),
     ;
     

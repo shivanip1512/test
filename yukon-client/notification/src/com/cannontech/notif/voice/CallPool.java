@@ -7,15 +7,8 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.UnknownRolePropertyException;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.notif.voice.callstates.*;
-import com.cannontech.roles.notifications.IvrRole;
-import com.cannontech.roles.yukon.SystemRole;
-import com.cannontech.roles.yukon.VoiceServerRole;
-import com.cannontech.util.MBeanUtil;
 
 
 /**
@@ -29,50 +22,35 @@ import com.cannontech.util.MBeanUtil;
 public class CallPool implements PropertyChangeListener, CallPoolMBean {
 
     private static final int MAX_SHUTDOWN_WAIT = 120; // in seconds
-    final protected ThreadPoolExecutor _threadPool;
-    final protected Map<String, Call> _pendingCalls;
-    final Timer _timer = new Timer();
+    protected ThreadPoolExecutor _threadPool;
+    protected Map<String, Call> _pendingCalls;
+    Timer _timer = new Timer();
     private Dialer _dialer;
-    final private Map<Call, TimerTask> _timerTasks;
+    private Map<Call, TimerTask> _timerTasks;
     private static AtomicInteger _callThreadId = new AtomicInteger(1);
-    private final int _callTimeoutSeconds;
+    private int _callTimeoutSeconds;
     private boolean _shutdown = false;
+    private int _numberOfChannels;
 
-    public CallPool(LiteEnergyCompany energyCompany) throws UnknownRolePropertyException {
-        LiteYukonUser user = DaoFactory.getYukonUserDao().getLiteYukonUser(energyCompany.getUserID());
+    public void initialize() throws UnknownRolePropertyException {
 
-        String voiceHost = DaoFactory.getRoleDao().getGlobalPropertyValue(SystemRole.VOICE_HOST);
-        String voiceApp = DaoFactory.getAuthDao().getRolePropertyValueEx(user, IvrRole.VOICE_APP);
-
-        VocomoDialer dialer = new VocomoDialer(voiceHost, voiceApp);
-        dialer.setPhonePrefix(DaoFactory.getRoleDao().getGlobalPropertyValue(VoiceServerRole.CALL_PREFIX));
-        dialer.setCallTimeout(Integer.parseInt(DaoFactory.getRoleDao().getGlobalPropertyValue(VoiceServerRole.CALL_TIMEOUT)));
-        _dialer = dialer;
+        _timerTasks = new ConcurrentHashMap<Call, TimerTask>(30, .75f, _numberOfChannels + 1);
+        _pendingCalls = new ConcurrentHashMap<String, Call>(30, .75f, _numberOfChannels + 1);
         
-        _callTimeoutSeconds = Integer.parseInt(DaoFactory.getRoleDao().getGlobalPropertyValue(VoiceServerRole.CALL_RESPONSE_TIMEOUT));
-        int numberOfChannels = Integer.parseInt(DaoFactory.getAuthDao().getRolePropertyValueEx(user, IvrRole.NUMBER_OF_CHANNELS));
-
-        _timerTasks = new ConcurrentHashMap<Call, TimerTask>(30, .75f, numberOfChannels + 1);
-        _pendingCalls = new ConcurrentHashMap<String, Call>(30, .75f, numberOfChannels + 1);
-        
-        final ThreadGroup threadGroup = new ThreadGroup("Threads for " + dialer);
+        final ThreadGroup threadGroup = new ThreadGroup("Threads for " + _dialer);
         ThreadFactory threadFactory = new ThreadFactory() {
             public Thread newThread(Runnable r) {
                 String name = "Dialer-" + _callThreadId.getAndIncrement();
                 return new Thread(threadGroup, r, name);
             }
         };
-        _threadPool = new ThreadPoolExecutor(numberOfChannels,
-                                             numberOfChannels,
+        _threadPool = new ThreadPoolExecutor(_numberOfChannels,
+                                             _numberOfChannels,
                                              5 * 60,
                                              TimeUnit.SECONDS,
                                              new LinkedBlockingQueue<Runnable>(),
                                              threadFactory);
         
-        // register self as MBean
-        MBeanUtil.tryRegisterMBean("type=CallPool,name=" + energyCompany + " Call Pool,energyCompany=" 
-                + energyCompany + ",numberOfChannels=" + numberOfChannels, this);
-
     }
 
     /**
@@ -134,8 +112,8 @@ public class CallPool implements PropertyChangeListener, CallPoolMBean {
      * @throws UnknownCallTokenException 
      */
     public Call getCall(String token) {
-        Object call = _pendingCalls.get(token);
-        return (Call)call;
+        Call call = _pendingCalls.get(token);
+        return call;
     }
 
     public void shutdown() {
@@ -168,5 +146,17 @@ public class CallPool implements PropertyChangeListener, CallPoolMBean {
     
     public int getNumberPendingCalls() {
         return _pendingCalls.size();
+    }
+    
+    public void setDialer(Dialer dialer) {
+        _dialer = dialer;
+    }
+    
+    public void setCallTimeoutSeconds(int callTimeoutSeconds) {
+        _callTimeoutSeconds = callTimeoutSeconds;
+    }
+    
+    public void setNumberOfChannels(int numberOfChannels) {
+        _numberOfChannels = numberOfChannels;
     }
 }

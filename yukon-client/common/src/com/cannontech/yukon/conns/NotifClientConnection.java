@@ -2,6 +2,8 @@ package com.cannontech.yukon.conns;
 
 import java.util.Date;
 
+import org.apache.commons.lang.Validate;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.enums.CurtailmentEventAction;
 import com.cannontech.enums.EconomicEventAction;
@@ -90,39 +92,68 @@ public class NotifClientConnection extends ClientConnection implements INotifCon
 	 * 
 	 */
 	public synchronized String requestMessage( String token ) throws NotifRequestException {
+	    
+	    String retStr = null;
+	    if( token == null )
+	        return retStr;
+	    
+	    ServerResponseMsg responseMsg = null;
+	    VoiceDataRequestMsg vdReqMsg = new VoiceDataRequestMsg();
+	    vdReqMsg.callToken = token;
+	    
+	    try {
+	        ServerRequest srvrReq = new ServerRequestImpl();
+	        //request the object from the server
+	        responseMsg = srvrReq.makeServerRequest(this, vdReqMsg);
+	    }
+	    catch(Exception e) {
+	        CTILogger.error( "No response received from server", e );
+	    }
+	    
+	    if( responseMsg != null 
+	            && responseMsg.getStatus() == ServerResponseMsg.STATUS_OK )  {
+	        
+	        VoiceDataResponseMsg vdRespMsg = (VoiceDataResponseMsg)responseMsg.getPayload();
+	        retStr = vdRespMsg.xmlData;
+	    }
+	    else {
+	        retStr = "Unable to get the requested voice " + 
+	        "message, responseCode= " +  responseMsg.getStatus() +
+	        ", token= " + vdReqMsg.callToken;
+	        CTILogger.info(retStr);
+	        throw new NotifRequestException(retStr);
+	    }
+	    
+	    return retStr;
+	}
+	
+	public synchronized int requestMessageContactId( String callToken ) throws NotifRequestException {
 
-		String retStr = null;
-		if( token == null )
-			return retStr;
-
+	    Validate.notNull(callToken);
+	    
 		ServerResponseMsg responseMsg = null;
 		VoiceDataRequestMsg vdReqMsg = new VoiceDataRequestMsg();
-		vdReqMsg.callToken = token;
+		vdReqMsg.callToken = callToken;
 
 		try {
             ServerRequest srvrReq = new ServerRequestImpl();
 			//request the object from the server
 			responseMsg = srvrReq.makeServerRequest(this, vdReqMsg);
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			CTILogger.error( "No response received from server", e );
 		}
 
-		if( responseMsg != null 
+		if ( responseMsg != null 
 			&& responseMsg.getStatus() == ServerResponseMsg.STATUS_OK )  {
 
 			VoiceDataResponseMsg vdRespMsg = (VoiceDataResponseMsg)responseMsg.getPayload();
-			retStr = vdRespMsg.xmlData;
+			return vdRespMsg.contactId;
 		}
-		else {
-			retStr = "Unable to get the requested voice " + 
-					"message, responseCode= " +  responseMsg.getStatus() +
-					", token= " + vdReqMsg.callToken;
-			CTILogger.info(retStr);
-			throw new NotifRequestException(retStr);
-		}
-
-		return retStr;
+		String errorMsg = "Unable to get the requested voice " + 
+		"message, responseCode= " +  responseMsg.getStatus() +
+		", token= " + vdReqMsg.callToken;
+		CTILogger.info(errorMsg);
+		throw new NotifRequestException(errorMsg);
 	}
 
     /**

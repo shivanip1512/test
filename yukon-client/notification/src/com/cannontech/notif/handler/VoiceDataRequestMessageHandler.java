@@ -13,8 +13,10 @@ import com.cannontech.message.server.ServerRequestMsg;
 import com.cannontech.message.server.ServerResponseMsg;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.ServerRequestHelper;
+import com.cannontech.notif.outputs.Notification;
 import com.cannontech.notif.outputs.VoiceHandler;
 import com.cannontech.notif.server.NotifServerConnection;
+import com.cannontech.notif.voice.Call;
 
 public class VoiceDataRequestMessageHandler extends MessageHandler {
     
@@ -35,7 +37,9 @@ public class VoiceDataRequestMessageHandler extends MessageHandler {
         
         
         try {
-            Document xmlDoc = _voiceHandler.getCallData(reqMsg.callToken);
+            Call call = _voiceHandler.getCall(reqMsg.callToken);
+            Notification notif = call.getMessage();
+            Document xmlDoc = notif.getDocument();
 
             XMLOutputter out = new XMLOutputter(Format.getCompactFormat());
             StringWriter stringWriter = new StringWriter();
@@ -44,13 +48,14 @@ public class VoiceDataRequestMessageHandler extends MessageHandler {
             VoiceDataResponseMsg rspPayload = new VoiceDataResponseMsg();
             rspPayload.callToken = reqMsg.callToken;
             rspPayload.xmlData = stringWriter.toString();
+            rspPayload.contactId = call.getContactId();
             
             responseMsg.setPayload(rspPayload);
             responseMsg.setStatus(ServerResponseMsg.STATUS_OK);
             connection.write(responseMsg);
             
         } catch (Exception e) {
-            CTILogger.warn("Unable to return VoiceXML data for call (token=" + reqMsg.callToken + ")", e);
+            CTILogger.warn("Unable to return xml parameters for call (token=" + reqMsg.callToken + ")", e);
             responseMsg.setStatus(ServerResponseMsg.STATUS_ERROR);
         }
 

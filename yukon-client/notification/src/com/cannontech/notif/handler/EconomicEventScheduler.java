@@ -136,6 +136,14 @@ public class EconomicEventScheduler extends EventScheduler {
             public Notification buildNotification(Contactable contact) {
                 final Notification notif = new Notification("economic");
                 fillInBaseAttribs(notif, event);
+                EconomicEventPricing initialRevision = event.getInitialRevision();
+                Integer numberOfWindows = initialRevision.getNumberOfWindows();
+                notif.addData("initialRevisionPriceCount", Integer.toString(numberOfWindows));
+                for (int windowIndex = 0; windowIndex < numberOfWindows; ++windowIndex) {
+                    EconomicEventPricingWindow economicEventPricingWindow = initialRevision.getWindows().get(windowIndex);
+                    String attributeName = "initialRevisionPriceHour" + (windowIndex + 1); // add one to make human friendly
+                    notif.addData(attributeName, economicEventPricingWindow.getEnergyPrice().toPlainString());
+                }
                 notif.addData("action", reason.toString());
                 TimeZone timeZone = contact.getTimeZone();
                 fillInFormattedTimes(notif, event, timeZone);

@@ -5,6 +5,7 @@ import java.util.TimeZone;
 
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -165,6 +166,8 @@ public interface AuthDao {
      */
     public LiteYukonUser voiceLogin(int contactid, String pin);
 
+    public String getFirstNotificationPin(LiteContact contact);
+    
     /**
      * Return true if the use has access to a set of PAOids, else return false.
      * 

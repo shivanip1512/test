@@ -21,6 +21,9 @@ public class PhoneNumber {
 		setPhoneNumber(rawPhoneNumber);
 	}
 	private String cleanPhoneNumber(String rawPhoneNumber) {
+	    if (rawPhoneNumber.startsWith("sip:")) {
+	        return rawPhoneNumber;
+	    }
         Matcher matcher = _replacePattern.matcher(rawPhoneNumber);
         return matcher.replaceAll("");
     }

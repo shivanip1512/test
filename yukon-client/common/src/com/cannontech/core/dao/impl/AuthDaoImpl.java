@@ -35,6 +35,7 @@ import com.cannontech.roles.application.WebClientRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.UserUtils;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.collect.Lists;
 
 
 /**
@@ -263,6 +264,24 @@ public class AuthDaoImpl implements AuthDao {
 
 
 		return null;  //failure
+	}
+	
+	public String getFirstNotificationPin(LiteContact contact) {
+	    Validate.notNull(contact);
+
+	    List<String> result = Lists.newArrayListWithExpectedSize(1);
+
+	    LiteContactNotification[] pins = contactDao.getAllPINNotifDestinations( contact.getContactID() );
+	    for (LiteContactNotification liteContactNotification : pins) {
+	        if( liteContactNotification.isDisabled() ) {
+	            CTILogger.debug("Skipping PIN because it is DISABLED, Contact: " + contact.toString());
+	        } else {
+	            String pin = liteContactNotification.getNotification();
+                result.add(pin);
+	        }
+	    }
+	    CTILogger.debug("Found PINs for " + contact + " (returning first): " + result);
+	    return result.get(0);
 	}
 
 	public boolean hasPAOAccess( LiteYukonUser user ) 

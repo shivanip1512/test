@@ -62,14 +62,44 @@ public interface RolePropertyDao {
      * Undefined values are returned as 0.
      * 
      * This method may only be called with properties that have a type return type 
-     * that can be cast to Number.
+     * that can be cast to Number. Rounding or truncation may occur to return an long.
      * 
      * @param property any property with a Number return type
      * @param user a valid user, may be null when accessing System properties
      * @return  the value of the property or 0 if undefined
      * @throws UserNotInRoleException user must be in role to access a role property
      */
-    public long getPropertyIntegerValue(YukonRoleProperty property, LiteYukonUser user) throws UserNotInRoleException;
+    public long getPropertyLongValue(YukonRoleProperty property, LiteYukonUser user) throws UserNotInRoleException;
+    
+    /**
+     * Returns the user's value of the specified role property as an integer.
+     * 
+     * Undefined values are returned as 0.
+     * 
+     * This method may only be called with properties that have a type return type 
+     * that can be cast to Number. Rounding or truncation may occur to return an int.
+     * 
+     * @param property any property with a Number return type
+     * @param user a valid user, may be null when accessing System properties
+     * @return  the value of the property or 0 if undefined
+     * @throws UserNotInRoleException user must be in role to access a role property
+     */
+    public int getPropertyIntegerValue(YukonRoleProperty property, LiteYukonUser user) throws UserNotInRoleException;
+    
+    /**
+     * Returns the user's value of the specified role property as a float.
+     * 
+     * Undefined values are returned as 0.
+     * 
+     * This method may only be called with properties that have a type return type 
+     * that can be cast to Number. Rounding or truncation may occur to return an float.
+     * 
+     * @param property any property with a Number return type
+     * @param user a valid user, may be null when accessing System properties
+     * @return  the value of the property or 0 if undefined
+     * @throws UserNotInRoleException user must be in role to access a role property
+     */
+    public float getPropertyFloatValue(YukonRoleProperty property, LiteYukonUser user) throws UserNotInRoleException;
     
     /**
      * Returns the user's value of the specified role property as a double.
@@ -77,14 +107,14 @@ public interface RolePropertyDao {
      * Undefined values are returned as 0.
      * 
      * This method may only be called with properties that have a type return type 
-     * that can be cast to Number.
+     * that can be cast to Number. Rounding or truncation may occur to return an double.
      * 
      * @param property any property with a Number return type
      * @param user a valid user, may be null when accessing System properties
      * @return  the value of the property or 0 if undefined
      * @throws UserNotInRoleException user must be in role to access a role property
      */
-    public double getPropertyFloatValue(YukonRoleProperty property, LiteYukonUser user) throws UserNotInRoleException;
+    public double getPropertyDoubleValue(YukonRoleProperty property, LiteYukonUser user) throws UserNotInRoleException;
     
     /**
      * Returns the user's value of the specified role property as a enum.

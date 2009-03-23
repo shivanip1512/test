@@ -4,6 +4,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.*;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.UnknownRolePropertyException;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
@@ -17,6 +19,7 @@ public class NotificationQueue implements NotificationQueueMBean {
     private boolean _shutdown = false;
     private Map<LiteEnergyCompany, CallPool> _poolMap = new TreeMap<LiteEnergyCompany, CallPool>();
     private int _notificationsProcessed = 0;
+    private CallPoolFactory callPoolFactory;
     
     public NotificationQueue() {
         //MBeanUtil.tryRegisterMBean("name=NotificationCallQueue", this);
@@ -73,7 +76,7 @@ public class NotificationQueue implements NotificationQueueMBean {
         if (_poolMap.containsKey(energyCompany)) {
             return _poolMap.get(energyCompany);
         } else {
-            CallPool newPool = new CallPool(energyCompany);
+            CallPool newPool = callPoolFactory.createCallPool(energyCompany);
             _poolMap.put(energyCompany, newPool);
             return newPool;
         }
@@ -101,6 +104,11 @@ public class NotificationQueue implements NotificationQueueMBean {
 
     public int getCallsProcessed() {
         return _notificationsProcessed;
+    }
+    
+    @Autowired
+    public void setCallPoolFactory(CallPoolFactory callPoolFactory) {
+        this.callPoolFactory = callPoolFactory;
     }
 
 }

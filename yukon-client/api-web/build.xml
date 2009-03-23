@@ -63,6 +63,7 @@
 		<include name="mail.jar"/>
 		<include name="mx4j-tools.jar"/>
 		<include name="mx4j.jar"/>
+		<include name="notification.jar"/>
 		<include name="quartz-all-1.6.0.jar"/>
 		<include name="rwav.jar"/>
 		<include name="saaj.jar"/>

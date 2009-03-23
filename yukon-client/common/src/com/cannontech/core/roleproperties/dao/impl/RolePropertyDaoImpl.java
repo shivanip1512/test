@@ -400,7 +400,23 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
     }
 
     @Override
-    public double getPropertyFloatValue(YukonRoleProperty property,
+    public float getPropertyFloatValue(YukonRoleProperty property,
+            LiteYukonUser user) throws UserNotInRoleException {
+        Number propertyNumberValue = getPropertyNumberValue(property, user);
+        
+        return propertyNumberValue.floatValue();
+    }
+    
+    @Override
+    public int getPropertyIntegerValue(YukonRoleProperty property,
+            LiteYukonUser user) throws UserNotInRoleException {
+        Number propertyNumberValue = getPropertyNumberValue(property, user);
+        
+        return propertyNumberValue.intValue();
+    }
+    
+    @Override
+    public double getPropertyDoubleValue(YukonRoleProperty property,
             LiteYukonUser user) throws UserNotInRoleException {
         Number propertyNumberValue = getPropertyNumberValue(property, user);
         
@@ -408,7 +424,7 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
     }
     
     @Override
-    public long getPropertyIntegerValue(YukonRoleProperty property,
+    public long getPropertyLongValue(YukonRoleProperty property,
             LiteYukonUser user) throws UserNotInRoleException {
         Number propertyNumberValue = getPropertyNumberValue(property, user);
         
