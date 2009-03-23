@@ -23,12 +23,20 @@
     <cti:msg var="noScheduleName" key="yukon.dr.consumer.thermostatSchedule.noScheduleName" />
     <cti:msg var="saveScheduleText" key="yukon.dr.consumer.thermostatSchedule.saveScheduleText" />
     <cti:msg var="modeChangeText" key="yukon.dr.consumer.thermostatSchedule.modeChangeText" />
-    
-    
+
+
+    <c:set var="scheduleMode" value="${schedule.season.mode}" />
+    <%-- YUK-7069 TODO:  Move this logic into controller. --%>
+    <c:if test="${thermostatType != 'UTILITY_PRO' && scheduleMode == 'WEEKDAY_WEEKEND'}">
+	    <c:set var="scheduleMode" value="WEEKDAY_SAT_SUN" />
+    </c:if>
+
 <script type="text/javascript">
 
     Event.observe(window, 'load', function(){init();});
-    
+
+    currentScheduleMode = '${scheduleMode}';
+
     // Set global variable in thermostat2.js
     tempUnit = '${temperatureUnit}';
     
@@ -120,7 +128,6 @@
     <c:set var="twoBars" value="${schedule.thermostatType == 'COMMERCIAL_EXPRESSSTAT'}" />
     
     <c:set var="timeOfWeek" value="WEEKDAY" />
-    <c:set var="scheduleMode" value="WEEKDAY_SAT_SUN" />
     
     <cti:msg var="degreesCelsius" key="yukon.dr.consumer.thermostatSchedule.degreesCelsius" /> 
     <cti:msg var="degreesFahrenheit" key="yukon.dr.consumer.thermostatSchedule.degreesFahrenheit" /> 
@@ -165,20 +172,20 @@
                         <table width="90%" border="0" height="8">
                             <tr> 
                                 <td align="left"> 
-                                    <input id="allRadio" type="radio" name="scheduleMode" value="ALL" onclick="changeScheduleMode()" ${scheduleMode == 'ALL' ? 'checked' : '' } />
-                                    <label class="timePeriodText" for="allRadio">
+                                    <input id="radioALL" type="radio" name="scheduleMode" value="ALL" onclick="changeScheduleMode()" ${scheduleMode == 'ALL' ? 'checked' : '' } />
+                                    <label class="timePeriodText" for="radioALL">
                                         <cti:msg key="yukon.dr.consumer.thermostatSchedule.scheduleModeAll" />
                                     </label><br>
                                     <c:if test="${thermostatType == 'UTILITY_PRO'}">
-	                                    <cti:checkProperty property="ResidentialCustomerRole.THERMOSTAT_SCHEDULE_5_2">
-		                                    <input id="WEEKDAY_WEEKEND" type="radio" name="scheduleMode" value="WEEKDAY_WEEKEND" onclick="changeScheduleMode()" ${scheduleMode == 'WEEKDAY_WEEKEND' ? 'checked' : '' } />
-		                                    <label class="timePeriodText" for="52Radio">
+	                                    <cti:isPropertyTrue property="ResidentialCustomerRole.THERMOSTAT_SCHEDULE_5_2">
+		                                    <input id="radioWEEKDAY_WEEKEND" type="radio" name="scheduleMode" value="WEEKDAY_WEEKEND" onclick="changeScheduleMode()" ${scheduleMode == 'WEEKDAY_WEEKEND' ? 'checked' : '' } />
+		                                    <label class="timePeriodText" for="radioWEEKDAY_WEEKEND">
 		                                        <cti:msg key="yukon.dr.consumer.thermostatSchedule.scheduleMode52" />
 		                                    </label><br>
-		                                </cti:checkProperty>
+		                                </cti:isPropertyTrue>
 		                            </c:if>
-                                    <input id="WEEKDAY_SAT_SUN" type="radio" name="scheduleMode" value="WEEKDAY_SAT_SUN" onclick="changeScheduleMode()" ${scheduleMode == 'WEEKDAY_SAT_SUN' ? 'checked' : '' } />
-                                    <label class="timePeriodText" for="511Radio">
+                                    <input id="radioWEEKDAY_SAT_SUN" type="radio" name="scheduleMode" value="WEEKDAY_SAT_SUN" onclick="changeScheduleMode()" ${scheduleMode == 'WEEKDAY_SAT_SUN' ? 'checked' : '' } />
+                                    <label class="timePeriodText" for="radioWEEKDAY_SAT_SUN">
                                         <cti:msg key="yukon.dr.consumer.thermostatSchedule.scheduleMode511" />
                                     </label><br>
                                 </td>

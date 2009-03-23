@@ -87,4 +87,36 @@ public class ThermostatSeasonEntry {
         return date;
     }
 
+    // This is a temporary workaround which is intended to be replaced with
+    // more majors changes (see YUK-7069).
+	public boolean equalsIgnoringTimeOfWeek(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ThermostatSeasonEntry other = (ThermostatSeasonEntry) obj;
+		if (coolTemperature == null) {
+			if (other.coolTemperature != null)
+				return false;
+		} else if (!coolTemperature.equals(other.coolTemperature))
+			return false;
+		if (heatTemperature == null) {
+			if (other.heatTemperature != null)
+				return false;
+		} else if (!heatTemperature.equals(other.heatTemperature))
+			return false;
+		if (seasonId == null) {
+			if (other.seasonId != null)
+				return false;
+		} else if (!seasonId.equals(other.seasonId))
+			return false;
+		if (startTime == null) {
+			if (other.startTime != null)
+				return false;
+		} else if (!startTime.equals(other.startTime))
+			return false;
+		return true;
+	}
 }

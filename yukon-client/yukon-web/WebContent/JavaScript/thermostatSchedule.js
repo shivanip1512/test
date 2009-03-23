@@ -422,16 +422,21 @@ function changeScheduleMode() {
 
 	if(!alertModeChange()) {
 		// reselect the last mode
-		$(currentScheduleMode).checked = "checked";
+		$("radio" + currentScheduleMode).checked = "checked";
 		
         return;
     }
 	
-    var mode = $RF('allRadio');
+    var mode = $RF('radioALL');
     
     currentScheduleMode = mode;
 
     if(currentScheduleMode == 'ALL') {
+    	getCurrentSchedule('WEEKEND');
+    	getCurrentSchedule('SATURDAY');
+    	getCurrentSchedule('SUNDAY');
+    }
+    else if(currentScheduleMode == 'WEEKDAY_WEEKEND') {
     	getCurrentSchedule('WEEKEND');
     	getCurrentSchedule('SATURDAY');
     	getCurrentSchedule('SUNDAY');

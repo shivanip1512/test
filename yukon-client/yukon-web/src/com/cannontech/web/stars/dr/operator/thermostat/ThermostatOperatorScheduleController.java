@@ -373,7 +373,8 @@ public class ThermostatOperatorScheduleController
 
         TimeOfWeek scheduleTimeOfWeek = TimeOfWeek.valueOf(timeOfWeek);
         ThermostatScheduleMode thermostatScheduleMode = ThermostatScheduleMode.valueOf(scheduleMode);
-        boolean applyToAll = ThermostatScheduleMode.ALL.equals(thermostatScheduleMode);
+        boolean applyToAll = ThermostatScheduleMode.ALL.equals(thermostatScheduleMode)
+        	|| ThermostatScheduleMode.WEEKDAY_WEEKEND.equals(thermostatScheduleMode);
 
         ThermostatScheduleUpdateResult message = null;
 
