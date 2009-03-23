@@ -463,8 +463,8 @@ INT CtiDeviceSingle::initiateGeneralScan(list< OUTMESS* > &outList, INT ScanPrio
                     if ( isDeviceAddressGlobal() )
                     {
                         // CANNOT scan a global address.
-                        setScanRate(ScanRateAccum, YUKONEOT);    // set him to the end of time!
-                        setNextScan(ScanRateAccum, CtiTime(YUKONEOT));
+                        setScanRate(ScanRateGeneral, YUKONEOT);    // set him to the end of time!
+                        setNextScan(ScanRateGeneral, CtiTime(YUKONEOT));
 
                         return SCAN_ERROR_GLOBAL_ADDRESS; // Cannot scan a global address.
                     }
