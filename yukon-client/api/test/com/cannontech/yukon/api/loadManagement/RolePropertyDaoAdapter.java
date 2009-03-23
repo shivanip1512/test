@@ -61,17 +61,31 @@ public class RolePropertyDaoAdapter implements RolePropertyDao {
 	}
 
 	@Override
-	public double getPropertyFloatValue(YukonRoleProperty property,
-			LiteYukonUser user) throws UserNotInRoleException {
-		throw new UnsupportedOperationException("not implemented");
+	public double getPropertyDoubleValue(YukonRoleProperty property,
+	        LiteYukonUser user) throws UserNotInRoleException {
+	    throw new UnsupportedOperationException("not implemented");
+
 	}
 
 	@Override
-	public long getPropertyIntegerValue(YukonRoleProperty property,
-			LiteYukonUser user) throws UserNotInRoleException {
-		throw new UnsupportedOperationException("not implemented");
-	}
+	public float getPropertyFloatValue(YukonRoleProperty property,
+	        LiteYukonUser user) throws UserNotInRoleException {
+	    throw new UnsupportedOperationException("not implemented");
 
+	}
+	@Override
+	public int getPropertyIntegerValue(YukonRoleProperty property,
+	        LiteYukonUser user) throws UserNotInRoleException {
+	    throw new UnsupportedOperationException("not implemented");
+
+	}
+	@Override
+	public long getPropertyLongValue(YukonRoleProperty property,
+	        LiteYukonUser user) throws UserNotInRoleException {
+	    throw new UnsupportedOperationException("not implemented");
+
+	}
+	
 	@Override
 	public String getPropertyStringValue(YukonRoleProperty property,
 			LiteYukonUser user) throws UserNotInRoleException {
