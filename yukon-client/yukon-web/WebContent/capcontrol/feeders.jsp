@@ -208,7 +208,7 @@ String css = "tableCell";
 		<table id="substationTable" width="100%" cellspacing="0" cellpadding="0">
 			<tr class="columnHeader">
 				<th class="lAlign">Substation Name</th>
-                <th style="width: 2px"></th>
+
 				<th class="lAlign">State</th>
 			</tr>
             <% if (substation != null) { %>
@@ -234,11 +234,9 @@ String css = "tableCell";
                         </font>
                     </td>
                     
-                    <td>
-                        <capTags:warningImg paoId="${thisSubStationId}" type="SUBSTATION"/>
-                    </td>
                     
                     <td>
+                    	<capTags:warningImg paoId="${thisSubStationId}" type="SUBSTATION"/>
                         <a id="substation_state_${thisSubStationId}"
                             <% if (hasSubstationControl) { %>
                                 href="javascript:void(0);"
