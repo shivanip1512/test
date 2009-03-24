@@ -41,9 +41,11 @@ public class OnelineCap extends OnelineObject {
     private StaticImage warningImageStatic;
     private StaticText capBankName;
     private StaticImage tmStmpImage;
+    
     private boolean editFlag = false;
     private boolean commandsFlag = false;
-
+    private boolean additionalInfoFlag = false;
+    
     public OnelineCap(SubBus subBus) {
         this.subBus = subBus;
     }
@@ -80,7 +82,12 @@ public class OnelineCap extends OnelineObject {
         	graph.add(editorImage);
         }
         graph.add(warningImageStatic);
-        graph.add(infoImage);
+        
+        if(additionalInfoFlag)
+        {    
+        	graph.add(infoImage);
+        }
+        
         graph.add(capBankName);
         
         if (tmStmpImage != null)
@@ -314,6 +321,7 @@ public class OnelineCap extends OnelineObject {
         this.user = user;
         commandsFlag = DaoFactory.getAuthDao().checkRoleProperty(user,CBCSettingsRole.ALLOW_CAPBANK_CONTROLS);
         editFlag = DaoFactory.getAuthDao().checkRoleProperty(user,CBCSettingsRole.CBC_DATABASE_EDIT);
+        additionalInfoFlag = DaoFactory.getAuthDao().checkRoleProperty(user,CBCSettingsRole.SHOW_CB_ADDINFO);
     }
     
     public boolean isEditFlag() {
