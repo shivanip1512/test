@@ -54,8 +54,6 @@ public class SubUpdatableStats extends LxAbstractView implements
     public UpdatableTextList estPowerFactor = new UpdatableTextList(CBCOnelineSettingsRole.SUB_EST_POWER_FACTOR,this);
     public PointQualCheckUpdatTextList wattLoad = new PointQualCheckUpdatTextList(CBCOnelineSettingsRole.SUB_WATTS,this);
     public PointQualCheckUpdatTextList voltLoad = new PointQualCheckUpdatTextList(CBCOnelineSettingsRole.SUB_VOLTS,this);
-    public UpdatableTextList dayOp = new UpdatableTextList(CBCOnelineSettingsRole.SUB_DAILY_OPCNT, this);
-    public UpdatableTextList maxDayOp = new UpdatableTextList(CBCOnelineSettingsRole.SUB_MAX_DAILY_OPCNT, this);
     public UpdatableTextList dayMaxOp = new UpdatableTextList( CBCOnelineSettingsRole.SUB_DAILY_MAX_OPCNT, this );
     public UpdatableTextList areaName = new UpdatableTextList(CBCOnelineSettingsRole.SUB_AREA,this);
     public UpdatableTextList ctlMethod = new UpdatableTextList(CBCOnelineSettingsRole.SUB_CTL_METHOD,this);
@@ -91,8 +89,6 @@ public class SubUpdatableStats extends LxAbstractView implements
         propLabelMap.put(CBCOnelineSettingsRole.SUB_EST_POWER_FACTOR, EST_POWERFACTOR);
         propLabelMap.put(CBCOnelineSettingsRole.SUB_WATTS, WATTLOAD);
         propLabelMap.put(CBCOnelineSettingsRole.SUB_VOLTS, VOLTLOAD);
-        propLabelMap.put(CBCOnelineSettingsRole.SUB_DAILY_OPCNT, DAYOP);
-        propLabelMap.put(CBCOnelineSettingsRole.SUB_MAX_DAILY_OPCNT, MAX_DAYOP);
         propLabelMap.put(CBCOnelineSettingsRole.SUB_DAILY_MAX_OPCNT, DAYOP_MAXOP);
         propLabelMap.put(CBCOnelineSettingsRole.SUB_AREA, AREA_NAME);
         propLabelMap.put(CBCOnelineSettingsRole.SUB_CTL_METHOD, CTL_METHOD);
@@ -109,8 +105,6 @@ public class SubUpdatableStats extends LxAbstractView implements
         propColumnMap.put(CBCOnelineSettingsRole.SUB_EST_POWER_FACTOR, CBCDisplay.SUB_ONELINE_EST_PF_COLUMN);
         propColumnMap.put(CBCOnelineSettingsRole.SUB_WATTS, CBCDisplay.SUB_ONELINE_WATT_COLUMN);
         propColumnMap.put(CBCOnelineSettingsRole.SUB_VOLTS, CBCDisplay.SUB_ONELINE_VOLT_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.SUB_DAILY_OPCNT, CBCDisplay.SUB_ONELINE_DAILY_OPCNT_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.SUB_MAX_DAILY_OPCNT, CBCDisplay.SUB_ONELINE_MAX_OPCNT_COLUMN);
         propColumnMap.put(CBCOnelineSettingsRole.SUB_DAILY_MAX_OPCNT, CBCDisplay.SUB_ONELINE_DAILY_MAX_OPCNT_COLUMN);        
         propColumnMap.put(CBCOnelineSettingsRole.SUB_AREA, CBCDisplay.SUB_ONELINE_AREANAME_COLUMN);
         propColumnMap.put(CBCOnelineSettingsRole.SUB_CTL_METHOD, CBCDisplay.SUB_ONELINE_CTL_METHOD_COLUMN);
@@ -166,8 +160,6 @@ public class SubUpdatableStats extends LxAbstractView implements
         allStats.add(estVarLoad);
         allStats.add(powerFactor);
         allStats.add(estPowerFactor);
-        allStats.add(dayOp);   // day Ops
-        allStats.add(maxDayOp);// max Ops
         allStats.add(dayMaxOp);// day / max Ops
         allStats.add(areaName);
         allStats.add(ctlMethod);

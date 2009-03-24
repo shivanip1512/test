@@ -14,8 +14,6 @@ public interface CBCOnelineSettingsRole {
     public static final int SUB_EST_POWER_FACTOR = SUB_ONELINE_PROPID_BASE - 4;
     public static final int SUB_WATTS = SUB_ONELINE_PROPID_BASE - 5;
     public static final int SUB_VOLTS = SUB_ONELINE_PROPID_BASE - 6;
-    public static final int SUB_DAILY_OPCNT = SUB_ONELINE_PROPID_BASE - 7;
-    public static final int SUB_MAX_DAILY_OPCNT = SUB_ONELINE_PROPID_BASE - 8;
     public static final int SUB_AREA = SUB_ONELINE_PROPID_BASE - 9;
     public static final int SUB_CTL_METHOD = SUB_ONELINE_PROPID_BASE - 10;
     public static final int SUB_DAILY_MAX_OPCNT = SUB_ONELINE_PROPID_BASE - 11;
@@ -39,11 +37,9 @@ public interface CBCOnelineSettingsRole {
     //CAP BANK
     public static final int CAP_ONELINE_PROPID_BASE = SUB_ONELINE_PROPID_BASE - 200;
     public static final int CAP_ROLEID = SUB_ROLEID - 2;
-    public static final int CAP_OPCNT = CAP_ONELINE_PROPID_BASE;
     public static final int CAP_BANK_SIZE = CAP_ONELINE_PROPID_BASE - 1;
     public static final int CAP_CBC_NAME = CAP_ONELINE_PROPID_BASE - 2;
     public static final int CAP_TIMESTAMP = CAP_ONELINE_PROPID_BASE - 3;
-    public static final int CAP_DAILY_TOTAL_OPCNT = CAP_ONELINE_PROPID_BASE - 4;
     public static final int CAP_BANK_FIXED_TEXT = CAP_ONELINE_PROPID_BASE - 5;
     public static final int CAP_DAILY_MAX_TOTAL_OPCNT = CAP_ONELINE_PROPID_BASE -6;
 

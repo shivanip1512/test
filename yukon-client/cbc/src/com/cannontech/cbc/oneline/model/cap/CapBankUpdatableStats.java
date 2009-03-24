@@ -27,9 +27,7 @@ public class CapBankUpdatableStats extends LxAbstractView implements
 
     private UpdatableTextList timestamp = new UpdatableTextList(CBCOnelineSettingsRole.CAP_TIMESTAMP, this);
     private UpdatableTextList bankSize = new UpdatableTextList(CBCOnelineSettingsRole.CAP_BANK_SIZE, this);
-    private UpdatableTextList opcount = new UpdatableTextList(CBCOnelineSettingsRole.CAP_OPCNT, this);
     private UpdatableTextList cbcName = new UpdatableTextList(CBCOnelineSettingsRole.CAP_CBC_NAME, this);
-    private UpdatableTextList totalDailyOpCount = new UpdatableTextList(CBCOnelineSettingsRole.CAP_DAILY_TOTAL_OPCNT, this);
     private UpdatableTextList totalMaxDailyOpCount = new UpdatableTextList(CBCOnelineSettingsRole.CAP_DAILY_MAX_TOTAL_OPCNT, this);
     private LxAbstractGraph graph;
     private OnelineCap parentCap;
@@ -57,8 +55,6 @@ public class CapBankUpdatableStats extends LxAbstractView implements
     private void initPropLabelMap() {
         propLabelMap.put(CBCOnelineSettingsRole.CAP_TIMESTAMP, "Updated:");
         propLabelMap.put(CBCOnelineSettingsRole.CAP_BANK_SIZE, "Bank Size");
-        propLabelMap.put(CBCOnelineSettingsRole.CAP_OPCNT, "Total Op:");
-        propLabelMap.put(CBCOnelineSettingsRole.CAP_DAILY_TOTAL_OPCNT, "D/T Op:");
         propLabelMap.put(CBCOnelineSettingsRole.CAP_DAILY_MAX_TOTAL_OPCNT, "D/M/T Op:");
         propLabelMap.put(CBCOnelineSettingsRole.CAP_CBC_NAME, "CBC:");
 
@@ -69,10 +65,6 @@ public class CapBankUpdatableStats extends LxAbstractView implements
                 CBCDisplay.CB_SHORT_TIME_STAMP_COLUMN);
         propColumnMap.put(CBCOnelineSettingsRole.CAP_BANK_SIZE,
                           CBCDisplay.CB_BANK_SIZE_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.CAP_OPCNT,
-                          CBCDisplay.CB_OP_COUNT_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.CAP_DAILY_TOTAL_OPCNT,
-                CBCDisplay.CB_DAILY_TOTAL_OP_COLUMN);
         propColumnMap.put(CBCOnelineSettingsRole.CAP_DAILY_MAX_TOTAL_OPCNT,
                 CBCDisplay.CB_DAILY_MAX_TOTAL_OP_COLUMN);
         propColumnMap.put(CBCOnelineSettingsRole.CAP_CBC_NAME, CBCDisplay.CB_CONTROLLER);
@@ -162,8 +154,6 @@ public class CapBankUpdatableStats extends LxAbstractView implements
 
     public void initAllStats() {
         allStats.add(bankSize);
-        allStats.add(opcount);
-        allStats.add(totalDailyOpCount);
         allStats.add(totalMaxDailyOpCount);
         allStats.add(timestamp);        
         allStats.add(cbcName);

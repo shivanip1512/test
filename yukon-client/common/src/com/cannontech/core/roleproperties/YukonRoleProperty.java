@@ -102,8 +102,6 @@ public enum YukonRoleProperty {
     SUB_EST_POWER_FACTOR(CBC_ONELINE_SUB_SETTINGS, com.cannontech.roles.capcontrol.CBCOnelineSettingsRole.SUB_EST_POWER_FACTOR, stringType()),
     SUB_WATTS(CBC_ONELINE_SUB_SETTINGS, com.cannontech.roles.capcontrol.CBCOnelineSettingsRole.SUB_WATTS, stringType()),
     SUB_VOLTS(CBC_ONELINE_SUB_SETTINGS, com.cannontech.roles.capcontrol.CBCOnelineSettingsRole.SUB_VOLTS, stringType()),
-    SUB_DAILY_OPCNT(CBC_ONELINE_SUB_SETTINGS, com.cannontech.roles.capcontrol.CBCOnelineSettingsRole.SUB_DAILY_OPCNT, stringType()),
-    SUB_MAX_DAILY_OPCNT(CBC_ONELINE_SUB_SETTINGS, com.cannontech.roles.capcontrol.CBCOnelineSettingsRole.SUB_MAX_DAILY_OPCNT, stringType()),
     SUB_AREA(CBC_ONELINE_SUB_SETTINGS, com.cannontech.roles.capcontrol.CBCOnelineSettingsRole.SUB_AREA, stringType()),
     SUB_CTL_METHOD(CBC_ONELINE_SUB_SETTINGS, com.cannontech.roles.capcontrol.CBCOnelineSettingsRole.SUB_CTL_METHOD, stringType()),
     SUB_DAILY_MAX_OPCNT(CBC_ONELINE_SUB_SETTINGS, com.cannontech.roles.capcontrol.CBCOnelineSettingsRole.SUB_DAILY_MAX_OPCNT, stringType()),
@@ -120,11 +118,9 @@ public enum YukonRoleProperty {
     FDR_WATT_VOLT(CBC_ONELINE_FEEDER_SETTINGS, com.cannontech.roles.capcontrol.CBCOnelineSettingsRole.FDR_WATT_VOLT, stringType()),
     FDR_THREE_PHASE(CBC_ONELINE_FEEDER_SETTINGS, com.cannontech.roles.capcontrol.CBCOnelineSettingsRole.FDR_THREE_PHASE, stringType()),
     
-    CAP_OPCNT(CBC_ONELINE_CAP_SETTINGS, com.cannontech.roles.capcontrol.CBCOnelineSettingsRole.CAP_OPCNT, stringType()),
     CAP_BANK_SIZE(CBC_ONELINE_CAP_SETTINGS, com.cannontech.roles.capcontrol.CBCOnelineSettingsRole.CAP_BANK_SIZE, stringType()),
     CAP_CBC_NAME(CBC_ONELINE_CAP_SETTINGS, com.cannontech.roles.capcontrol.CBCOnelineSettingsRole.CAP_CBC_NAME, stringType()),
     CAP_TIMESTAMP(CBC_ONELINE_CAP_SETTINGS, com.cannontech.roles.capcontrol.CBCOnelineSettingsRole.CAP_TIMESTAMP, stringType()),
-    CAP_DAILY_TOTAL_OPCNT(CBC_ONELINE_CAP_SETTINGS, com.cannontech.roles.capcontrol.CBCOnelineSettingsRole.CAP_DAILY_TOTAL_OPCNT, stringType()),
     CAP_BANK_FIXED_TEXT(CBC_ONELINE_CAP_SETTINGS, com.cannontech.roles.capcontrol.CBCOnelineSettingsRole.CAP_BANK_FIXED_TEXT, stringType()),
     CAP_DAILY_MAX_TOTAL_OPCNT(CBC_ONELINE_CAP_SETTINGS, com.cannontech.roles.capcontrol.CBCOnelineSettingsRole.CAP_DAILY_MAX_TOTAL_OPCNT, stringType()),
     
