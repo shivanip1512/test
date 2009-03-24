@@ -63,6 +63,7 @@ public class Feeder extends StreamableCapObject implements PointQualityCheckable
     private Double phaseB = new Double(0.0);
     private Double phaseC = new Double(0.0);
 	private Vector<CapBankDevice> ccCapBanks = null;
+	private Boolean usePhaseData = null;
 	
 	
 /**
@@ -683,5 +684,11 @@ public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) 
 	}
 	public void setLikeDayControlFlag(Boolean likeDayControlFlag) {
 		this.likeDayControlFlag = likeDayControlFlag;
+	}
+	public Boolean getUsePhaseData() {
+		return usePhaseData;
+	}
+	public void setUsePhaseData(Boolean usePhaseData) {
+		this.usePhaseData = usePhaseData;
 	}
 }

@@ -345,9 +345,13 @@ for( SubBus subBus: subBuses ) {
 					</div>
 				</td>
 				<td>
-                    <a onmouseover="showDynamicPopup($('subVarLoadPopup_${thisSubBusId}'));" 
-				       onmouseout="nd();"
-					   id="${thisSubBusId}">
+				<%if(subBus.getUsePhaseData() == true) { %>
+                    	<a onmouseover="showDynamicPopup($('subVarLoadPopup_${thisSubBusId}'));" 
+					       onmouseout="nd();"
+						   id="${thisSubBusId}">
+				   <%} else { %>
+					   <a id="${thisSubBusId}">
+				   <%} %>
                         <cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="KVAR_LOAD"/>   
                     </a>
 				    <div class="ccVarLoadPopup" id="subVarLoadPopup_${thisSubBusId}" style="display: none;" > 
@@ -512,9 +516,13 @@ for (int i = 0; i < feeders.size(); i++ ) {
 					</td>
                     
 					<td>
+					<%if(feeder.getUsePhaseData() == true) { %>
                         <a onmouseover="showDynamicPopup($('feederVarLoadPopup_${thisFeederId}'));" 
 					       onmouseout="nd();"
 						  id="${thisFeederId}">
+					  <%} else  {%>
+						  <a id="${thisFeederId}">
+					  <%} %>
                             <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="KVAR_LOAD"/>
                         </a>
                         <div class="ccVarLoadPopup" id="feederVarLoadPopup_${thisFeederId}" style="display: none;">

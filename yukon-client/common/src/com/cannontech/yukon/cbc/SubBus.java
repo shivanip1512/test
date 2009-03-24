@@ -65,7 +65,7 @@ public class SubBus extends StreamableCapObject implements PointQualityCheckable
     private String controlMethod = null;
     private Integer displayOrder;
     private Boolean voltReductionFlag = null;
-    
+    private Boolean usePhaseData = null;
     
     /**
      * constructor comment.
@@ -762,6 +762,14 @@ public class SubBus extends StreamableCapObject implements PointQualityCheckable
 
 	public void setVoltReductionFlag(Boolean voltReductionFlag) {
 		this.voltReductionFlag = voltReductionFlag;
+	}
+
+	public Boolean getUsePhaseData() {
+		return usePhaseData;
+	}
+
+	public void setUsePhaseData(Boolean usePhaseData) {
+		this.usePhaseData = usePhaseData;
 	}
 
 }

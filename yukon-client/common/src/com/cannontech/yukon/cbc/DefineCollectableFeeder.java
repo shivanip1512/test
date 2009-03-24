@@ -124,6 +124,8 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
     feeder.setLikeDayControlFlag(
 			((int)vstr.extractUnsignedInt() == 1)
 			? new Boolean(true) : new Boolean(false));
+    feeder.setUsePhaseData( ((int)vstr.extractUnsignedInt() == 1) 
+    						? new Boolean(true) : new Boolean(false));
 	feeder.setCcCapBanks(VectorExtract.extractVector(vstr,polystr));
 }
 
@@ -215,6 +217,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
     vstr.insertUnsignedInt( 
 			(feeder.getLikeDayControlFlag().booleanValue() == true)
 			? 1 : 0 );
+	vstr.insertUnsignedInt((feeder.getUsePhaseData().booleanValue() == true)? 1 : 0 );
     VectorInsert.insertVector(feeder.getCcCapBanks(), vstr, polystr);
     
 }
