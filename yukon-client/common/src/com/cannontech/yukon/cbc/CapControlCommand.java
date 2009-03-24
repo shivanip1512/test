@@ -79,7 +79,7 @@ public class CapControlCommand extends com.cannontech.yukon.cbc.CapControlMessag
 		"Unwaive Sub",
 		"Confirm Feeder",  //15
 		"Unwaive Feeder",
-		"Enalbe OV/UV",
+		"Enable OV/UV",
 		"Disable OV/UV",
 		"Delete Item", //19
 		"Confirm Substation Bus",
