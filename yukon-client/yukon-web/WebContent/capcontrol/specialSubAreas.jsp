@@ -8,9 +8,18 @@
 <%@ page import="com.cannontech.spring.YukonSpringHook" %>
 <%@ page import="com.cannontech.cbc.cache.CapControlCache" %>
 
+<%@page import="com.cannontech.clientutils.CTILogger"%>
 <cti:standardPage title="Special Substation Bus Areas" module="capcontrol">
 
 <%@include file="cbc_inc.jspf"%>
+
+<script type="text/javascript" language="JavaScript" >
+// handles analysis links (which are not functional for a substation area - show error alert)
+function loadPointChartGreyBox(title, url) {
+    alert(title + ' is not available for a Substation Area.\n\nChoose specific Substation Bus or Feeder within a Substation');
+    return void(0);
+}
+</script>
 
 <%
 	FilterCacheFactory cacheFactory = YukonSpringHook.getBean("filterCacheFactory", FilterCacheFactory.class);
