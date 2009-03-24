@@ -4717,7 +4717,7 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
 
     if ((stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::IndividualFeederControlMethod) &&
          stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::BusOptimizedFeederControlMethod) ) &&
-        getUsePhaseData() && !getTotalizedControlFlag()  ) 
+        getUsePhaseData() && !getTotalizedControlFlag()  )
     {
         returnBoolean = capBankVerificationPerPhaseStatusUpdate(pointChanges, ccEvents);
     }
@@ -4821,7 +4821,7 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                            additional = string("Feeder: ");
                                            additional += currentFeeder->getPAOName();
 
-                                           if (currentCapBank->getControlStatusQuality() != CC_CommFail) 
+                                           if (currentCapBank->getControlStatusQuality() != CC_CommFail)
                                                currentCapBank->setControlStatusQuality(CC_Fail);
                                        }
                                        else if( minConfirmPercent != 0 )
@@ -4954,7 +4954,7 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
 
                                            additional = string("Feeder: ");
                                            additional += currentFeeder->getPAOName();
-                                           if (currentCapBank->getControlStatusQuality() != CC_CommFail) 
+                                           if (currentCapBank->getControlStatusQuality() != CC_CommFail)
                                                currentCapBank->setControlStatusQuality(CC_Fail);
                                        }
                                        else if( minConfirmPercent != 0 )
@@ -6962,7 +6962,7 @@ BOOL CtiCCSubstationBus::isVerificationAlreadyControlled()
                     returnBoolean = TRUE;
                     break;
                 }
-                
+
             }
         }
         else
@@ -9709,7 +9709,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededTimeOfDayControl
                     {
                         try
                         {
-                            capBank = currentFeeder->findCapBankToChangeVars(-1, pointChanges);  //close 
+                            capBank = currentFeeder->findCapBankToChangeVars(-1, pointChanges);  //close
                         }
                         catch(...)
                         {
@@ -9831,7 +9831,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededTimeOfDayControl
 
                             try
                             {
-                                capBank = currentFeeder->findCapBankToChangeVars(1, pointChanges);  //open 
+                                capBank = currentFeeder->findCapBankToChangeVars(1, pointChanges);  //open
                             }
                             catch(...)
                             {
@@ -10345,6 +10345,7 @@ void CtiCCSubstationBus::restoreGuts(RWvistream& istrm)
     >> _likeDayControlFlag
     >> _displayOrder
     >> _voltReductionFlag
+    >> _usePhaseData
     >> _ccfeeders;
 
     _lastcurrentvarpointupdatetime = CtiTime(tempTime2);
@@ -10448,6 +10449,7 @@ void CtiCCSubstationBus::saveGuts(RWvostream& ostrm ) const
     << _likeDayControlFlag
     << _displayOrder
     << _voltReductionFlag
+    << _usePhaseData
     << _ccfeeders;
 }
 
@@ -10971,17 +10973,17 @@ void CtiCCSubstationBus::setDynamicData(RWDBReader& rdr)
         rdr["iwcount"] >> _iWCount;
 
         //current and before var values were stored in the same db column CURRENTVALUE.BEFOREVALUE
-        double hijackedPhaseABeforeAndAfter; 
-        double hijackedPhaseBBeforeAndAfter; 
-        double hijackedPhaseCBeforeAndAfter; 
+        double hijackedPhaseABeforeAndAfter;
+        double hijackedPhaseBBeforeAndAfter;
+        double hijackedPhaseCBeforeAndAfter;
         rdr["phaseavalue"] >> hijackedPhaseABeforeAndAfter;
         rdr["phasebvalue"] >> hijackedPhaseBBeforeAndAfter;
         rdr["phasecvalue"] >> hijackedPhaseCBeforeAndAfter;
-      
-        _phaseAvalue = (INT)hijackedPhaseABeforeAndAfter; 
-        _phaseBvalue = (INT)hijackedPhaseBBeforeAndAfter; 
-        _phaseCvalue = (INT)hijackedPhaseCBeforeAndAfter; 
-      
+
+        _phaseAvalue = (INT)hijackedPhaseABeforeAndAfter;
+        _phaseBvalue = (INT)hijackedPhaseBBeforeAndAfter;
+        _phaseCvalue = (INT)hijackedPhaseCBeforeAndAfter;
+
         _phaseAvalueBeforeControl = (hijackedPhaseABeforeAndAfter - _phaseAvalue)*BEFOREPHASEMULTIPLIER;
         _phaseBvalueBeforeControl = (hijackedPhaseBBeforeAndAfter - _phaseBvalue)*BEFOREPHASEMULTIPLIER;
         _phaseCvalueBeforeControl = (hijackedPhaseCBeforeAndAfter - _phaseCvalue)*BEFOREPHASEMULTIPLIER;
