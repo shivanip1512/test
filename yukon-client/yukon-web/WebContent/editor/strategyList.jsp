@@ -65,7 +65,7 @@
 							footerClass="scrollerTableHeader"
 							rowClasses="tableRow,altTableRow"
 							value="#{capControlForm.allCBCStrats}"
-							columnClasses="scrollerCentered">
+							columnClasses="scrollerLeft">
 							<h:column>
 								<f:facet name="header">
 									<h:outputText value="Strategy Name" title="Name of the strategy" />
