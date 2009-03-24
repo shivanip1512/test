@@ -32,15 +32,6 @@
     <cti:crumbLink title="Special Substation Areas"/>
 </cti:breadCrumbs>
 
-<%
-String allowCtlVal = DaoFactory.getAuthDao().getRolePropertyValue(user, CBCSettingsRole.SYSTEM_WIDE_CONTROLS);
-if (allowCtlVal!=null) {
-	boolean allowControl = Boolean.valueOf(allowCtlVal);
-	if (allowControl) {%>
-			<div id="systemCommandLink" align="right" > </div>
-	<%} 
-}%>    
-
 <cti:titledContainer title="Special Substation Areas" id="last_titled_container">
 	<form id="areaForm" action="substations.jsp" method="post">
 		<input type="hidden" name="<%=CCSessionInfo.STR_CC_AREA%>" />
