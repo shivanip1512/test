@@ -82,7 +82,7 @@ if( gData != null )
       {%>
         <img id = "theGraph" src="<cti:url value="/servlet/GraphGenerator?action=EncodeGraph"/>">					
       <%}%>
-      <br><font size="-1"><cti:getProperty propertyid="<%= TrendingRole.TRENDING_DISCLAIMER%>"/></font>                	
+      <br><font size="-1"><cti:msg key="yukon.web.modules.trending.user.disclaimer"/></font>                	
       </center>
     </td>
   </tr>
