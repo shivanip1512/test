@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.database.data.activity.ActivityLogActions;
@@ -329,7 +330,15 @@ public class ThermostatServiceImpl implements ThermostatService {
         } else {
             // Set manual values
             Integer temperature = event.getPreviousTemperature();
-            commandString.append(" temp ");
+            if (thermostat.getType() == HardwareType.UTILITY_PRO && 
+            	mode.getDefinitionId() == YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_HEAT){
+            	commandString.append(" heattemp ");
+            } else if (thermostat.getType() == HardwareType.UTILITY_PRO && 
+            	mode.getDefinitionId() == YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_COOL){
+            	commandString.append(" cooltemp ");
+            } else {
+            	commandString.append(" temp ");
+            }
             commandString.append(temperature);
 
             ThermostatFanState fanState = event.getFanState();
