@@ -24,16 +24,19 @@ import com.cannontech.amr.moveInMoveOut.bean.MoveOutResult;
 import com.cannontech.amr.moveInMoveOut.service.MoveInMoveOutEmailService;
 import com.cannontech.amr.moveInMoveOut.service.MoveInMoveOutService;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 /**
  * Widget used to display basic device information
  */
+@CheckRoleProperty(YukonRoleProperty.MOVE_IN_MOVE_OUT)
 public class MoveInMoveOutController extends MultiActionController {
 
     private DateFormattingService dateFormattingService = null;

@@ -15,13 +15,9 @@ import org.springframework.web.util.HtmlUtils;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.FileUtil;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.util.ServletUtil;
-import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 
 /**
@@ -32,7 +28,6 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
  * @see view for this controller is logTail.jsp
  * @author dharrington
  */
-@CheckRoleProperty(YukonRoleProperty.ADMIN_VIEW_LOGS)
 public class LogTailController extends LogController {
     
     //logger for this class
@@ -50,7 +45,7 @@ public class LogTailController extends LogController {
     * @return ModelAndView mav
     */
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        authDao.verifyRole(ServletUtil.getYukonUser(request), AdministratorRole.ROLEID);
+    	
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         
         ModelAndView mav = new ModelAndView("logTail.jsp");

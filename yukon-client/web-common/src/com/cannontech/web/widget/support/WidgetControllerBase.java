@@ -8,12 +8,15 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.cannontech.user.checker.UserChecker;
+
 public abstract class WidgetControllerBase implements WidgetDefinitionBean, BeanNameAware, WidgetController {
     private String shortName;
     private String title;
     private String identityPath;
     private boolean lazyLoad = false;
     private Set<WidgetInput> inputs;
+    private UserChecker roleAndPropertiesChecker;
 
     public ModelAndView identity(HttpServletRequest request, HttpServletResponse response) throws Exception {
         ModelAndView mav = new ModelAndView(identityPath);
@@ -63,6 +66,14 @@ public abstract class WidgetControllerBase implements WidgetDefinitionBean, Bean
     public void setInputs(Set<WidgetInput> inputs) {
         this.inputs = inputs;
     }
+    
+    public UserChecker getRoleAndPropertiesChecker() {
+		return roleAndPropertiesChecker;
+	}
+    
+    public void setRoleAndPropertiesChecker(UserChecker roleAndPropertiesChecker) {
+		this.roleAndPropertiesChecker = roleAndPropertiesChecker;
+	}
     
     public WidgetController getActionTarget() {
         return this;

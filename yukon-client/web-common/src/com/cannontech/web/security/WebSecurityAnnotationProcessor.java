@@ -6,6 +6,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.web.security.annotation.CheckFalseRoleProperty;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.widget.support.WidgetMultiActionController;
@@ -25,6 +26,11 @@ public class WebSecurityAnnotationProcessor {
         boolean hasCheckRoleProperty = hasCheckRoleProperty(clazz);
         if (hasCheckRoleProperty) {
             doHasCheckRoleProperty(getCheckRoleProperty(clazz));
+        }
+        
+        boolean hasCheckFalseRoleProperty = hasCheckFalseRoleProperty(clazz);
+        if (hasCheckFalseRoleProperty) {
+            doHasCheckFalseRoleProperty(getCheckFalseRoleProperty(clazz));
         }
     }
     
@@ -52,6 +58,11 @@ public class WebSecurityAnnotationProcessor {
         webSecurityChecker.checkRoleProperty(roleProperties);
     }
     
+    private void doHasCheckFalseRoleProperty(CheckFalseRoleProperty checkFalseRoleProperty) throws Exception {
+        YukonRoleProperty[] roleProperties = checkFalseRoleProperty.value();
+        webSecurityChecker.checkFalseRoleProperty(roleProperties);
+    }
+    
     private CheckRole getCheckRole(Class<?> clazz) {
         CheckRole checkRole = AnnotationUtils.findAnnotation(clazz, CheckRole.class);
         return checkRole;
@@ -60,6 +71,11 @@ public class WebSecurityAnnotationProcessor {
     private CheckRoleProperty getCheckRoleProperty(Class<?> clazz) {
         CheckRoleProperty checkRoleProperty = AnnotationUtils.findAnnotation(clazz, CheckRoleProperty.class);
         return checkRoleProperty;
+    }
+    
+    private CheckFalseRoleProperty getCheckFalseRoleProperty(Class<?> clazz) {
+    	CheckFalseRoleProperty checkFalseRoleProperty = AnnotationUtils.findAnnotation(clazz, CheckFalseRoleProperty.class);
+        return checkFalseRoleProperty;
     }
     
     private boolean hasCheckRole(Class<?> clazz) {
@@ -72,6 +88,12 @@ public class WebSecurityAnnotationProcessor {
         CheckRoleProperty checkRoleProperty = getCheckRoleProperty(clazz);
         boolean hasCheckRoleProperty = checkRoleProperty != null;
         return hasCheckRoleProperty;
+    }
+    
+    private boolean hasCheckFalseRoleProperty(Class<?> clazz) {
+        CheckFalseRoleProperty checkFalseRoleProperty = getCheckFalseRoleProperty(clazz);
+        boolean hasCheckFalseRoleProperty = checkFalseRoleProperty != null;
+        return hasCheckFalseRoleProperty;
     }
 
     private boolean isProxy(Object bean) {

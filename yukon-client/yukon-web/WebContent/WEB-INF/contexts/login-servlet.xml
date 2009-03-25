@@ -45,7 +45,6 @@
     </bean>
 
     <bean id="indexController" class="com.cannontech.web.login.IndexController">
-        <property name="authDao" ref="authDao"/>
     </bean>
 
     <bean id="loginController"

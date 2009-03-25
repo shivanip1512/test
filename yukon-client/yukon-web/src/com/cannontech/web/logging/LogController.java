@@ -10,7 +10,6 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.mvc.AbstractController;
 
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
@@ -24,7 +23,6 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
  */
 @CheckRoleProperty(YukonRoleProperty.ADMIN_VIEW_LOGS)
 public abstract class LogController extends AbstractController {
-    protected AuthDao authDao;
 
     //get the local log directory
     protected File localDir = new File(CtiUtilities.getYukonBase(), "Server/Log");
@@ -77,9 +75,5 @@ public abstract class LogController extends AbstractController {
 
     public void setLocalDir(File localDir) {
         this.localDir = localDir;
-    }
-
-    public void setAuthDao(AuthDao authDao) {
-        this.authDao = authDao;
     }
 }

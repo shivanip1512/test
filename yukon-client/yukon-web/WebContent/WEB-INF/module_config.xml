@@ -53,7 +53,7 @@
 
     <!-- Metering -->
     <option id="metering">
-      <requireRoleProperty value="METERING,APPLICATION_BILLING,TRENDING,DEVICE_ACTIONS" />
+      <requireRoleProperty value="METERING,APPLICATION_BILLING,TRENDING,SCHEDULER,DEVICE_ACTIONS" />
 
       <links>
         <option id="allTrends">

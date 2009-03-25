@@ -20,17 +20,14 @@ import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.commands.CommandResultHolder;
-import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
 /**
  * Widget used to display basic device information
  */
-@CheckRole(YukonRole.METERING)
 public class TouWidget extends WidgetControllerBase {
 
     private AttributeService attributeService;

@@ -11,18 +11,15 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.HtmlUtils;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.FileUtil;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.taglib.Writable;
 
 /**
@@ -33,7 +30,6 @@ import com.cannontech.web.taglib.Writable;
  * @see view for this controller is logView.jsp
  * @author dharrington
  */
-@CheckRoleProperty(YukonRoleProperty.ADMIN_VIEW_LOGS)
 public class LogViewController extends LogController {
     
     //logger for this class

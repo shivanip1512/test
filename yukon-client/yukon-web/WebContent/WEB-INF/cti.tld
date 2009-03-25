@@ -147,6 +147,21 @@
   </tag>
   
   <tag>
+    <name>checkUserChecker</name>
+    <tag-class>com.cannontech.web.taglib.CheckUserCheckerTag</tag-class>
+    <attribute>
+ 		<name>var</name>
+  		<required>false</required>
+  		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+        <name>userChecker</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
   	<name>checkNoProperty</name>
   	<tag-class>com.cannontech.web.taglib.CheckNoProperty</tag-class>
   	<attribute>

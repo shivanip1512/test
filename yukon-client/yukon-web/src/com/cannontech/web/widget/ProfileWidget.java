@@ -31,13 +31,12 @@ import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.TemplateProcessorFactory;
-import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.YukonUserDao;
-import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.LoadProfileService;
 import com.cannontech.core.service.impl.LoadProfileServiceEmailCompletionCallbackImpl;
@@ -46,21 +45,17 @@ import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.DeviceLoadProfile;
-import com.cannontech.roles.operator.MeteringRole;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.simplereport.SimpleReportService;
 import com.cannontech.tools.email.EmailService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.web.security.annotation.CheckRole;
-import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
 /**
  * Widget used to display point data in a trend
  */
-@CheckRoleProperty({YukonRoleProperty.PROFILE_COLLECTION, YukonRoleProperty.PROFILE_COLLECTION_SCANNING})
 public class ProfileWidget extends WidgetControllerBase {
 
 //    private LoadProfileService.EmailCompletionCallback emailCompletionCallback = null;
@@ -78,7 +73,7 @@ public class ProfileWidget extends WidgetControllerBase {
     private ToggleProfilingService toggleProfilingService = null;
     private MeterReadService meterReadService = null;
     private TemplateProcessorFactory templateProcessorFactory = null;
-    private AuthDao authDao;
+    private RolePropertyDao rolePropertyDao;
     
     /*
      * Long load profile email message format NOTE: Outlook will sometimes strip
@@ -264,7 +259,7 @@ public class ProfileWidget extends WidgetControllerBase {
     public ModelAndView initiateLoadProfile(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        authDao.verifyTrueProperty(userContext.getYukonUser(), MeteringRole.PROFILE_COLLECTION);
+        rolePropertyDao.verifyProperty(YukonRoleProperty.PROFILE_COLLECTION, userContext.getYukonUser());
         
         // init to basic refresh of render
         // after command runs, pending list will be re-got, and dates will be set to requested
@@ -417,7 +412,7 @@ public class ProfileWidget extends WidgetControllerBase {
             HttpServletResponse response) throws Exception {
 
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        authDao.verifyTrueProperty(userContext.getYukonUser(), MeteringRole.PROFILE_COLLECTION_SCANNING);
+        rolePropertyDao.verifyProperty(YukonRoleProperty.PROFILE_COLLECTION_SCANNING, userContext.getYukonUser());
         
         String toggleErrorMsg = null;
         
@@ -732,8 +727,8 @@ public class ProfileWidget extends WidgetControllerBase {
     }
     
     @Autowired
-    public void setAuthDao(AuthDao authDao) {
-        this.authDao = authDao;
-    }
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+		this.rolePropertyDao = rolePropertyDao;
+	}
     
 }

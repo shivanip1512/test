@@ -118,6 +118,11 @@
     <bean id="meterSearchWidget"
     	class="com.cannontech.web.widget.MeterSearchWidget">
     	<property name="title" value="Meter Search" />
+    	<property name="roleAndPropertiesChecker">
+	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                <constructor-arg value="METERING"/>
+            </bean>
+	   	</property>
     </bean>
 
     <bean id="accountInformationWidget"
@@ -130,6 +135,11 @@
     			<ref local="widgetInput.deviceId" />
     		</set>
     	</property>
+    	<property name="roleAndPropertiesChecker">
+	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                <constructor-arg value="METERING"/>
+            </bean>
+	   	</property>
         <property name="mspObjectDao" ref="mspObjectDao"/>
       	<property name="multispeakFuncs" ref="multispeakFuncs"/>
         <property name="multispeakDao" ref="multispeakDao"/>
@@ -159,6 +169,11 @@
               <ref local="widgetInput.deviceId"/>
            </set>
         </property>
+        <property name="roleAndPropertiesChecker">
+	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                <constructor-arg value="METERING"/>
+            </bean>
+	   	</property>
         <property name="attributeService" ref="attributeService"/>
         <property name="meterDao" ref="meterDao"/>
         <property name="meterReadService" ref="meterReadService"/>
@@ -191,6 +206,11 @@
               <ref local="widgetInput.deviceId"/>
            </set>
         </property>
+        <property name="roleAndPropertiesChecker">
+	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                <constructor-arg value="METERING"/>
+            </bean>
+	   	</property>
 		<property name="meterReadService" ref="meterReadService"/>
         <property name="attributeService" ref="attributeService"/>
         <property name="meterDao" ref="meterDao"/>
@@ -210,6 +230,11 @@
               <ref local="widgetInput.deviceId"/>
            </set>
         </property>
+        <property name="roleAndPropertiesChecker">
+	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                <constructor-arg value="METERING"/>
+            </bean>
+	   	</property>
         <property name="meterReadService" ref="meterReadService"/>
         <property name="attributeService" ref="attributeService"/>
         <property name="meterDao" ref="meterDao"/>
@@ -224,6 +249,11 @@
               <ref local="widgetInput.deviceId"/>
            </set>
         </property>
+        <property name="roleAndPropertiesChecker">
+	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                <constructor-arg value="HIGH_BILL_COMPLAINT"/>
+            </bean>
+	   	</property>
         <property name="meterDao" ref="meterDao"/>
         <property name="paoGroupsWrapper" ref="paoGroupsWrapper"/>
         <property name="commandRequestExecutor" ref="commandRequestDeviceExecutor"/>
@@ -238,6 +268,11 @@
               <ref local="widgetInput.deviceId"/>
            </set>
         </property>
+        <property name="roleAndPropertiesChecker">
+	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                <constructor-arg value="METERING"/>
+            </bean>
+	   	</property>
         <property name="attributeService" ref="attributeService" />
         <property name="meterReadService" ref="meterReadService" />
         <property name="meterDao" ref="meterDao"/>
@@ -253,6 +288,11 @@
               <ref local="widgetInput.deviceId"/>
            </set>
         </property>
+        <property name="roleAndPropertiesChecker">
+	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                <constructor-arg value="METERING"/>
+            </bean>
+	   	</property>
         <property name="meterDao" ref="meterDao"/>
         <property name="commandRequestExecutor" ref="commandRequestDeviceExecutor"/>
         <property name="databaseCache" ref="databaseCache"/>
@@ -272,6 +312,11 @@
               </bean>
            </set>
         </property>
+        <property name="roleAndPropertiesChecker">
+	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                <constructor-arg value="METERING"/>
+            </bean>
+	   	</property>
         <property name="meterReadService" ref="meterReadService"/>
         <property name="attributeService" ref="attributeService"/>
         <property name="meterDao" ref="meterDao"/>
@@ -313,6 +358,11 @@
               <ref local="widgetInput.deviceId"/>
            </set>
         </property>
+        <property name="roleAndPropertiesChecker">
+	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                <constructor-arg value="PROFILE_COLLECTION,PROFILE_COLLECTION_SCANNING"/>
+            </bean>
+	   	</property>
         <property name="loadProfileService" ref="loadProfileService" />
         <property name="emailService" ref="emailService"/>
         <property name="paoDao" ref="paoDao"/>
@@ -338,6 +388,11 @@
               <ref local="widgetInput.deviceId"/>
            </set>
         </property>
+        <property name="roleAndPropertiesChecker">
+	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                <constructor-arg value="METERING"/>
+            </bean>
+	   	</property>
         <property name="loadProfileService" ref="loadProfileService" />
         <property name="paoDao" ref="paoDao"/>
         
@@ -355,6 +410,11 @@
               <ref local="widgetInput.userId"/>
            </set>
         </property>
+        <property name="roleAndPropertiesChecker">
+	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                <constructor-arg value="ADMIN_LM_USER_ASSIGN"/>
+            </bean>
+	   	</property>
         <property name="yukonUserDao" ref="yukonUserDao"/>
         <property name="paoDao" ref="paoDao"/>
         <property name="paoGroups" ref="paoGroupsWrapper"/>
@@ -373,6 +433,11 @@
               <ref local="widgetInput.groupId"/>
            </set>
         </property>
+        <property name="roleAndPropertiesChecker">
+	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                <constructor-arg value="ADMIN_LM_USER_ASSIGN"/>
+            </bean>
+	   	</property>
         <property name="yukonGroupDao" ref="yukonGroupDao"/>
         <property name="paoDao" ref="paoDao"/>
         <property name="paoGroups" ref="paoGroupsWrapper"/>
@@ -388,6 +453,11 @@
               <ref local="widgetInput.deviceId"/>
            </set>
         </property>
+        <property name="roleAndPropertiesChecker">
+	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                <constructor-arg value="METERING"/>
+            </bean>
+	   	</property>
         <property name="peakReportService" ref="peakReportService" />
         <property name="meterDao" ref="meterDao"/>
         <property name="dateFormattingService" ref="dateFormattingService"/>

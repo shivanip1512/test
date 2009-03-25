@@ -6,30 +6,25 @@
 <beans>
     <!-- create a bean for LogMenuController.java -->
     <bean id="logMenuController" class="com.cannontech.web.logging.LogMenuController">
-      <property name="authDao" ref="authDao"/>
       <property name="poolManager" ref="databasePoolManager"/>
     </bean>
     
     <!-- create a bean for LogViewController.java -->
     <bean id="logViewController" class="com.cannontech.web.logging.LogViewController">
-      <property name="authDao" ref="authDao"/>
       <property name="dateFormattingService" ref="dateFormattingService" />
     </bean>
     
     <!-- create a bean for LogDownloadController.java -->
     <bean id="logDownloadController" class="com.cannontech.web.logging.LogDownloadController">
-      <property name="authDao" ref="authDao"/>
     </bean>
     
     <!-- create a bean for LogTailController.java -->
     <bean id="logTailController" class="com.cannontech.web.logging.LogTailController">
-      <property name="authDao" ref="authDao"/>
       <property name="dateFormattingService" ref="dateFormattingService" />
     </bean>
     
     <!-- create a bean for LogTailUpdaterController.java -->
     <bean id="logTailUpdaterController" class="com.cannontech.web.logging.LogTailUpdaterController">
-      <property name="authDao" ref="authDao"/>
       <property name="dateFormattingService" ref="dateFormattingService" />
     </bean>
     

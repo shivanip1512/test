@@ -25,11 +25,7 @@ import org.springframework.web.util.HtmlUtils;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.LogSortUtil;
 import com.cannontech.common.version.VersionTools;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.PoolManager;
-import com.cannontech.roles.operator.AdministratorRole;
-import com.cannontech.util.ServletUtil;
-import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 /**
  * LogMenuController handles the retrieving of log file names from the local and
@@ -37,8 +33,6 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
  * @see view for this controller: menu.jsp
  * @author dharrington
  */
-
-@CheckRoleProperty(YukonRoleProperty.ADMIN_VIEW_LOGS)
 public class LogMenuController extends LogController {
 
     private PoolManager poolManager;
@@ -54,8 +48,6 @@ public class LogMenuController extends LogController {
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
-        authDao.verifyRole(ServletUtil.getYukonUser(request),
-                           AdministratorRole.ROLEID);
 
         // Sets up the ModelAndView Object
         ModelAndView mav = new ModelAndView("menu.jsp");

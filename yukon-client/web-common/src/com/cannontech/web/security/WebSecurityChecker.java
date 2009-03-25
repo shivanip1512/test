@@ -35,6 +35,17 @@ public class WebSecurityChecker {
         throw new NotAuthorizedException("User " + user + " is not authorized to access this page.");
     }
     
+    public void checkFalseRoleProperty(YukonRoleProperty... rolePropertyIds) {
+        final LiteYukonUser user = getYukonUser();
+        
+        for (final YukonRoleProperty property : rolePropertyIds) {
+            boolean hasRoleProperty = rolePropertyDao.checkProperty(property, user);
+            if (hasRoleProperty) {
+            	throw new NotAuthorizedException("User " + user + " is not authorized to access this page.");
+            }
+        }
+    }
+    
     private LiteYukonUser getYukonUser() {
         try {
             LiteYukonUser user = SpringWebUtil.getYukonUser();

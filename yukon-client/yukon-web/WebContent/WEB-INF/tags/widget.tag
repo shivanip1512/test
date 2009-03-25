@@ -12,6 +12,9 @@
 <cti:includeScript link="/JavaScript/hideReveal.js"/>
 <cti:beanLookup bean="${bean}" var="beanInst"/>
 
+<%-- AUTHORIZE VISIBLITY BASED ON ROLE/ROLE PROPERTY --%>
+<cti:checkUserChecker userChecker="${beanInst.roleAndPropertiesChecker}">
+
 <!--  Widget: ${beanInst.shortName}  -->
 <c:set var="widgetParameters" value="${cti:combineWidgetParams(paramMap,null)}" scope="request"/>
 <c:set var="widgetParameters" value="${cti:combineWidgetParams(widgetParameters,widgetContainerParams)}" scope="request"/>
@@ -63,3 +66,5 @@ Event.observe(window,'load', function() {${widgetParameters.jsWidget}.render()})
 </ct:abstractContainer>
 
 </div>
+
+</cti:checkUserChecker>

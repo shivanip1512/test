@@ -24,8 +24,8 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.ModifiableDeviceGroupPredicate;
-import com.cannontech.core.dao.AuthDao;
-import com.cannontech.roles.operator.DeviceActionsRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.group.DeviceGroupTreeUtils;
@@ -44,7 +44,7 @@ public class DeviceGroupWidget extends WidgetControllerBase {
     private DeviceGroupEditorDao deviceGroupEditorDao;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     private MeterDao meterDao;
-    private AuthDao authDao;
+    private RolePropertyDao rolePropertyDao;
 
     /**
      * This method renders the default deviceGroupWidget
@@ -133,8 +133,7 @@ public class DeviceGroupWidget extends WidgetControllerBase {
             HttpServletResponse response) throws Exception {
 
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        authDao.verifyRole(userContext.getYukonUser(), DeviceActionsRole.ROLEID);
-        authDao.verifyTrueProperty(userContext.getYukonUser(), DeviceActionsRole.DEVICE_GROUP_MODIFY);
+        rolePropertyDao.verifyProperty(YukonRoleProperty.DEVICE_GROUP_MODIFY, userContext.getYukonUser());
         
         // Gets the parameters from the request
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request,
@@ -165,8 +164,7 @@ public class DeviceGroupWidget extends WidgetControllerBase {
             throws Exception {
 
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        authDao.verifyRole(userContext.getYukonUser(), DeviceActionsRole.ROLEID);
-        authDao.verifyTrueProperty(userContext.getYukonUser(), DeviceActionsRole.DEVICE_GROUP_MODIFY);
+        rolePropertyDao.verifyProperty(YukonRoleProperty.DEVICE_GROUP_MODIFY, userContext.getYukonUser());
         
         // Gets the parameters from the request
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
@@ -212,9 +210,9 @@ public class DeviceGroupWidget extends WidgetControllerBase {
     public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
         this.deviceGroupService = deviceGroupService;
     }
-
+    
     @Autowired
-    public void setAuthDao(AuthDao authDao) {
-        this.authDao = authDao;
-    }
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+		this.rolePropertyDao = rolePropertyDao;
+	}
 }

@@ -11,10 +11,6 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.roles.operator.AdministratorRole;
-import com.cannontech.util.ServletUtil;
-import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 /**
 * LogDownloadController handles the downloading of
@@ -26,7 +22,6 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 * @see LogController base class and AbstractController
 * @author dharrington
 */
-@CheckRoleProperty(YukonRoleProperty.ADMIN_VIEW_LOGS)
 public class LogDownloadController extends LogController {
     
     //logger for this class
@@ -38,7 +33,6 @@ public class LogDownloadController extends LogController {
     * @return null
     */
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        authDao.verifyRole(ServletUtil.getYukonUser(request), AdministratorRole.ROLEID);
         response.setContentType("text/plain");
         
         File logFile = getLogFile(request);
