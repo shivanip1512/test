@@ -11,8 +11,6 @@ public interface BillingRole {
 	public static final int WIZ_ACTIVATE = YukonRoleDefs.BILLING_PROPERTYID_BASE;
 	//Not implemented yet, there is one format that takes an input file, it's location is this property
 	public static final int INPUT_FILE = YukonRoleDefs.BILLING_PROPERTYID_BASE - 1;
-	//Label for the header
-	public static final int HEADER_LABEL = YukonRoleDefs.BILLING_PROPERTYID_BASE - 2;
 	//String for default billing file format.  Use string found in billingFileFormats table.
 	public static final int DEFAULT_BILLING_FORMAT = YukonRoleDefs.BILLING_PROPERTYID_BASE - 3;
 	//int value for demand days query back from billing end date

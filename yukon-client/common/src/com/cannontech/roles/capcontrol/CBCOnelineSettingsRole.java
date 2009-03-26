@@ -14,8 +14,6 @@ public interface CBCOnelineSettingsRole {
     public static final int SUB_EST_POWER_FACTOR = SUB_ONELINE_PROPID_BASE - 4;
     public static final int SUB_WATTS = SUB_ONELINE_PROPID_BASE - 5;
     public static final int SUB_VOLTS = SUB_ONELINE_PROPID_BASE - 6;
-    public static final int SUB_AREA = SUB_ONELINE_PROPID_BASE - 9;
-    public static final int SUB_CTL_METHOD = SUB_ONELINE_PROPID_BASE - 10;
     public static final int SUB_DAILY_MAX_OPCNT = SUB_ONELINE_PROPID_BASE - 11;
     public static final int SUB_TIMESTAMP = SUB_ONELINE_PROPID_BASE - 12;
     public static final int SUB_THREE_PHASE = SUB_ONELINE_PROPID_BASE - 13;

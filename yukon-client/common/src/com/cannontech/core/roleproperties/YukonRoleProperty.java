@@ -102,8 +102,6 @@ public enum YukonRoleProperty {
     SUB_EST_POWER_FACTOR(CBC_ONELINE_SUB_SETTINGS, com.cannontech.roles.capcontrol.CBCOnelineSettingsRole.SUB_EST_POWER_FACTOR, stringType()),
     SUB_WATTS(CBC_ONELINE_SUB_SETTINGS, com.cannontech.roles.capcontrol.CBCOnelineSettingsRole.SUB_WATTS, stringType()),
     SUB_VOLTS(CBC_ONELINE_SUB_SETTINGS, com.cannontech.roles.capcontrol.CBCOnelineSettingsRole.SUB_VOLTS, stringType()),
-    SUB_AREA(CBC_ONELINE_SUB_SETTINGS, com.cannontech.roles.capcontrol.CBCOnelineSettingsRole.SUB_AREA, stringType()),
-    SUB_CTL_METHOD(CBC_ONELINE_SUB_SETTINGS, com.cannontech.roles.capcontrol.CBCOnelineSettingsRole.SUB_CTL_METHOD, stringType()),
     SUB_DAILY_MAX_OPCNT(CBC_ONELINE_SUB_SETTINGS, com.cannontech.roles.capcontrol.CBCOnelineSettingsRole.SUB_DAILY_MAX_OPCNT, stringType()),
     SUB_TIMESTAMP(CBC_ONELINE_SUB_SETTINGS, com.cannontech.roles.capcontrol.CBCOnelineSettingsRole.SUB_TIMESTAMP, stringType()),
     SUB_THREE_PHASE(CBC_ONELINE_SUB_SETTINGS, com.cannontech.roles.capcontrol.CBCOnelineSettingsRole.SUB_THREE_PHASE, stringType()),
@@ -149,10 +147,6 @@ public enum YukonRoleProperty {
     ALLOW_FEEDER_CONTROLS(CBC_SETTINGS, com.cannontech.roles.capcontrol.CBCSettingsRole.ALLOW_FEEDER_CONTROLS, booleanType()),
     ALLOW_CAPBANK_CONTROLS(CBC_SETTINGS, com.cannontech.roles.capcontrol.CBCSettingsRole.ALLOW_CAPBANK_CONTROLS, booleanType()),
     CONTROL_WARNING(CBC_SETTINGS, com.cannontech.roles.capcontrol.CBCSettingsRole.CONTROL_WARNING, stringType()),
-    
-    CI_ESUBSTATION_DRAWINGS_VIEW(CI_ESUBSTATION_DRAWINGS, com.cannontech.roles.cicustomer.EsubDrawingsRole.VIEW, booleanType()),
-    CI_ESUBSTATION_DRAWINGS_EDIT(CI_ESUBSTATION_DRAWINGS, com.cannontech.roles.cicustomer.EsubDrawingsRole.EDIT, booleanType()),
-    CI_ESUBSTATION_DRAWINGS_CONTROL(CI_ESUBSTATION_DRAWINGS, com.cannontech.roles.cicustomer.EsubDrawingsRole.CONTROL, booleanType()),
     
     RESIDENTIAL_CONSUMER_INFO_ACCOUNT_GENERAL(RESIDENTIAL_CUSTOMER, com.cannontech.roles.consumer.ResidentialCustomerRole.CONSUMER_INFO_ACCOUNT_GENERAL, booleanType()),
     RESIDENTIAL_CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY(RESIDENTIAL_CUSTOMER, com.cannontech.roles.consumer.ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY, booleanType()),
@@ -376,7 +370,6 @@ public enum YukonRoleProperty {
     
     WIZ_ACTIVATE(SYSTEM_BILLING, com.cannontech.roles.yukon.BillingRole.WIZ_ACTIVATE, stringType()),
     INPUT_FILE(SYSTEM_BILLING, com.cannontech.roles.yukon.BillingRole.INPUT_FILE, stringType()),
-    HEADER_LABEL(SYSTEM_BILLING, com.cannontech.roles.yukon.BillingRole.HEADER_LABEL, stringType()),
     DEFAULT_BILLING_FORMAT(SYSTEM_BILLING, com.cannontech.roles.yukon.BillingRole.DEFAULT_BILLING_FORMAT, stringType()),
     DEMAND_DAYS_PREVIOUS(SYSTEM_BILLING, com.cannontech.roles.yukon.BillingRole.DEMAND_DAYS_PREVIOUS, stringType()),
     ENERGY_DAYS_PREVIOUS(SYSTEM_BILLING, com.cannontech.roles.yukon.BillingRole.ENERGY_DAYS_PREVIOUS, stringType()),
