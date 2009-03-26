@@ -1545,6 +1545,9 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg,
    }
 	else if( database == DBChangeMsg.CHANGE_NOTIFICATION_GROUP_DB )
 	{
+		//clear out the Contacts as they may have changed
+		releaseAllContacts();
+		
 		retLBase = handleNotificationGroupChange( dbType, id );
 	}
 //	else if( database == DBChangeMsg.CHANGE_NOTIFICATION_RECIPIENT_DB )
