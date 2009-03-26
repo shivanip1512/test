@@ -261,7 +261,8 @@ public class OptOutOperatorController {
 	        	int extraHours = 0;
 	        	// If durationInDays is 1 that means the rest of today only
 	        	if(durationInDays > 1) {
-	        		extraHours = durationInDays * 24;
+	        		// Today counts as the first day
+		        	extraHours = (durationInDays - 1) * 24;
 	        	}
 	        	optOutRequest.setDurationInHours(hoursRemainingInDay + extraHours);
 	        	optOutRequest.setStartDate(null); // Same day OptOut's have null startDates.
