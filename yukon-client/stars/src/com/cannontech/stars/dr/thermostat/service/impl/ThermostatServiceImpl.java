@@ -330,10 +330,10 @@ public class ThermostatServiceImpl implements ThermostatService {
         } else {
             // Set manual values
             Integer temperature = event.getPreviousTemperature();
-            if (thermostat.getType() == HardwareType.UTILITY_PRO && 
+            if (HardwareType.UTILITY_PRO.equals(thermostat.getType()) && 
             	mode.getDefinitionId() == YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_HEAT){
             	commandString.append(" heattemp ");
-            } else if (thermostat.getType() == HardwareType.UTILITY_PRO && 
+            } else if (HardwareType.UTILITY_PRO.equals(thermostat.getType()) && 
             	mode.getDefinitionId() == YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_COOL){
             	commandString.append(" cooltemp ");
             } else {
