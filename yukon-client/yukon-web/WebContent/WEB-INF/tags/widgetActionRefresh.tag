@@ -17,8 +17,24 @@
 		${widgetParameters.jsWidget}.setupLink('${uniqueId}', ${cti:jsonString(linkParameters)});
 	</script>
 	
+	<script type="text/javascript">
+
+		function ${widgetParameters.widgetId}_confirmRefresh(){
+	
+			var confirmText = "${confirmText}";
+			var confirmed = true;
+			if (confirmText != null && confirmText.strip() != '') {
+				confirmed = confirm(confirmText);
+			}
+	
+			if (confirmed) {
+				${widgetParameters.jsWidget}.doActionRefresh('${method}', '${thisId}', '${labelBusy}...', '${uniqueId}')
+			}
+		}
+	</script>
+	
 	<span id="${thisId}">
-	<input type="button" value="${label}" onclick="${widgetParameters.jsWidget}.doActionRefresh('${method}', '${thisId}', '${labelBusy}...', '${uniqueId}', '${confirmText}')">
+	<input type="button" value="${label}" onclick="${widgetParameters.widgetId}_confirmRefresh();">
 	<span class="widgetAction_waiting" style="display:none">
 	<img src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" alt="waiting" >
 	</span>
