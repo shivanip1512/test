@@ -254,8 +254,6 @@ public class ThermostatScheduleController extends AbstractThermostatController {
 
         TimeOfWeek scheduleTimeOfWeek = TimeOfWeek.valueOf(timeOfWeek);
         ThermostatScheduleMode thermostatScheduleMode = ThermostatScheduleMode.valueOf(scheduleMode);
-        boolean applyToAll = ThermostatScheduleMode.ALL.equals(thermostatScheduleMode)
-        	|| ThermostatScheduleMode.WEEKDAY_WEEKEND.equals(thermostatScheduleMode);
 
         ThermostatScheduleUpdateResult message = null;
 
@@ -287,14 +285,13 @@ public class ThermostatScheduleController extends AbstractThermostatController {
                                                          schedule,
                                                          scheduleTimeOfWeek,
                                                          thermostatScheduleMode,
-                                                         applyToAll,
                                                          yukonUserContext);
 
                 // Save changes to schedule
                 thermostatService.updateSchedule(account,
                                                  schedule,
                                                  scheduleTimeOfWeek,
-                                                 applyToAll ,
+                                                 thermostatScheduleMode,
                                                  yukonUserContext);
                 // If there are multiple thermostats to send schedule to and any
                 // of the save/sends fail, the whole thing is failed
@@ -311,7 +308,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
                 thermostatService.updateSchedule(account,
                                                  schedule,
                                                  scheduleTimeOfWeek,
-                                                 applyToAll,
+                                                 thermostatScheduleMode,
                                                  yukonUserContext);
 
                 message = ThermostatScheduleUpdateResult.CONSUMER_SAVE_SCHEDULE_SUCCESS;

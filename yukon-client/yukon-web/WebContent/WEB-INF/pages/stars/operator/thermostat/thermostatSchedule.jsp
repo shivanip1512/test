@@ -21,7 +21,11 @@
 
     <c:set var="scheduleMode" value="${schedule.season.mode}" />
     <%-- YUK-7069 TODO:  Move this logic into controller. --%>
-    <c:if test="${thermostatType != 'UTILITY_PRO' && scheduleMode == 'WEEKDAY_WEEKEND'}">
+    <c:set var="schedule52Enabled" value="false"/>
+    <cti:isPropertyTrue property="ConsumerInfoRole.THERMOSTAT_SCHEDULE_5_2">
+	    <c:set var="schedule52Enabled" value="true"/>
+    </cti:isPropertyTrue>
+    <c:if test="${(thermostatType != 'UTILITY_PRO' || !schedule52Enabled) && scheduleMode == 'WEEKDAY_WEEKEND'}">
 	    <c:set var="scheduleMode" value="WEEKDAY_SAT_SUN" />
     </c:if>
 
@@ -170,13 +174,11 @@
                                     <label class="timePeriodText" for="radioALL">
                                         <cti:msg key="yukon.dr.operator.thermostatSchedule.scheduleModeAll" />
                                     </label><br>
-                                    <c:if test="${thermostatType == 'UTILITY_PRO'}">
-	                                    <cti:isPropertyTrue property="ConsumerInfoRole.THERMOSTAT_SCHEDULE_5_2">
-		                                    <input id="radioWEEKDAY_WEEKEND" type="radio" name="scheduleMode" value="WEEKDAY_WEEKEND" onclick="changeScheduleMode()" ${scheduleMode == 'WEEKDAY_WEEKEND' ? 'checked' : '' } />
-		                                    <label class="timePeriodText" for="radioWEEKDAY_WEEKEND">
-		                                        <cti:msg key="yukon.dr.operator.thermostatSchedule.scheduleMode52" />
-		                                    </label><br>
-		                                </cti:isPropertyTrue>
+                                    <c:if test="${thermostatType == 'UTILITY_PRO' && schedule52Enabled}">
+	                                    <input id="radioWEEKDAY_WEEKEND" type="radio" name="scheduleMode" value="WEEKDAY_WEEKEND" onclick="changeScheduleMode()" ${scheduleMode == 'WEEKDAY_WEEKEND' ? 'checked' : '' } />
+	                                    <label class="timePeriodText" for="radioWEEKDAY_WEEKEND">
+	                                        <cti:msg key="yukon.dr.operator.thermostatSchedule.scheduleMode52" />
+	                                    </label><br>
 		                            </c:if>
                                     <input id="radioWEEKDAY_SAT_SUN" type="radio" name="scheduleMode" value="WEEKDAY_SAT_SUN" onclick="changeScheduleMode()" ${scheduleMode == 'WEEKDAY_SAT_SUN' ? 'checked' : '' } />
                                     <label class="timePeriodText" for="radioWEEKDAY_SAT_SUN">

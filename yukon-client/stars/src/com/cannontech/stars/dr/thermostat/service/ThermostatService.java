@@ -36,8 +36,8 @@ public interface ThermostatService {
      * @param userContext - User context for user updating schedule
      */
     public void updateSchedule(CustomerAccount account,
-            ThermostatSchedule schedule, TimeOfWeek timeOfWeek, boolean applyToAll,
-            YukonUserContext userContext);
+            ThermostatSchedule schedule, TimeOfWeek timeOfWeek,
+            ThermostatScheduleMode scheduleMode, YukonUserContext userContext);
 
     /**
      * Method used to send a schedule to a thermostat
@@ -50,9 +50,8 @@ public interface ThermostatService {
      * @param userContext - User context for user sending schedule
      */
     public ThermostatScheduleUpdateResult sendSchedule(CustomerAccount account,
-            ThermostatSchedule schedule, TimeOfWeek timeOfWeek, 
-            ThermostatScheduleMode thermostatScheduleMode, boolean applyToAll, 
-            YukonUserContext userContext);
+            ThermostatSchedule schedule, TimeOfWeek timeOfWeek,
+            ThermostatScheduleMode scheduleMode, YukonUserContext userContext);
 
     /**
      * Method to get the current schedule for a given thermostat

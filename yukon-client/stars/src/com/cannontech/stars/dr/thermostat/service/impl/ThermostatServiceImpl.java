@@ -169,19 +169,19 @@ public class ThermostatServiceImpl implements ThermostatService {
 
     @Override
     public void updateSchedule(CustomerAccount account,
-            ThermostatSchedule schedule, TimeOfWeek timeOfWeek, boolean applyToAll,
-            YukonUserContext userContext) {
+			ThermostatSchedule schedule, TimeOfWeek timeOfWeek,
+			ThermostatScheduleMode scheduleMode, YukonUserContext userContext) {
 
         Integer thermostatId = schedule.getInventoryId();
         Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
 
         // Get the existing (or default in none exists) schedule for the
         // thermostat and save the changes
-        ThermostatSchedule scheduleToSave = this.getScheduleToSave(account,
-                                                                   thermostat,
-                                                                   schedule,
-                                                                   timeOfWeek,
-                                                                   applyToAll);
+        ThermostatSchedule scheduleToSave = getScheduleToSave(account,
+                                                              thermostat,
+                                                              schedule,
+                                                              timeOfWeek,
+                                                              scheduleMode);
         
         LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(account);
         thermostatScheduleDao.save(scheduleToSave, energyCompany);
@@ -191,8 +191,8 @@ public class ThermostatServiceImpl implements ThermostatService {
     @Override
     @Transactional
     public ThermostatScheduleUpdateResult sendSchedule(CustomerAccount account,
-            ThermostatSchedule schedule, TimeOfWeek timeOfWeek, ThermostatScheduleMode scheduleMode,
-            boolean applyToAll, YukonUserContext userContext) {
+            ThermostatSchedule schedule, TimeOfWeek timeOfWeek,
+            ThermostatScheduleMode scheduleMode, YukonUserContext userContext) {
 
         Integer thermostatId = schedule.getInventoryId();
         Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
@@ -257,10 +257,10 @@ public class ThermostatServiceImpl implements ThermostatService {
         }
         
         // Build the command to send to the thermostat
-        String updateScheduleCommand = this.buildUpdateScheduleCommand(thermostat,
-                                                                       schedule,
-                                                                       timeOfWeek,
-                                                                       applyToAll);
+        String updateScheduleCommand = buildUpdateScheduleCommand(thermostat,
+                                                                  schedule,
+                                                                  timeOfWeek,
+                                                                  scheduleMode);
 
         // Send command to thermostat
         CommandResultHolder resultHolder;
@@ -374,7 +374,8 @@ public class ThermostatServiceImpl implements ThermostatService {
      *         </p>
      */
     private String buildUpdateScheduleCommand(Thermostat thermostat,
-            ThermostatSchedule schedule, TimeOfWeek timeOfWeek, boolean applyToAll) {
+			ThermostatSchedule schedule, TimeOfWeek timeOfWeek,
+			ThermostatScheduleMode scheduleMode) {
 
         ThermostatSeason season = schedule.getSeason();
         List<ThermostatSeasonEntry> seasonEntries = season.getSeasonEntries(timeOfWeek);
@@ -388,7 +389,7 @@ public class ThermostatServiceImpl implements ThermostatService {
         }
 
         String timeOfWeekCommand = timeOfWeek.getCommandString();
-        if (applyToAll) {
+        if (scheduleMode == ThermostatScheduleMode.ALL) {
             commandString.append("all ");
         } else {
             commandString.append(timeOfWeekCommand + " ");
@@ -438,12 +439,12 @@ public class ThermostatServiceImpl implements ThermostatService {
      * @param thermostat - Thermostat to update schedule for
      * @param updatedSchedule - The schedule containing the updates
      * @param timeOfWeek - Time of week to be updated
-     * @param applyToWeekend - True if updates apply to saturday and sunday
+     * @param applyToWeekend - True if updates apply to Saturday and Sunday
      * @return The updated schedule to be saved
      */
     private ThermostatSchedule getScheduleToSave(CustomerAccount account,
             Thermostat thermostat, ThermostatSchedule updatedSchedule,
-            TimeOfWeek timeOfWeek, boolean applyToWeekend) {
+            TimeOfWeek timeOfWeek, ThermostatScheduleMode scheduleMode) {
 
     	ThermostatSchedule schedule;
     	String updatedName = updatedSchedule.getName();
@@ -502,15 +503,21 @@ public class ThermostatServiceImpl implements ThermostatService {
         	}
         }
 
-        if (applyToWeekend) {
-            // Update saturday entries
-            List<ThermostatSeasonEntry> saturdayEntries = season.getSeasonEntries(TimeOfWeek.SATURDAY);
-            this.updateScheduleEntries(updatedEntries, saturdayEntries);
+        if (scheduleMode == ThermostatScheduleMode.ALL) {
+            // Update Saturday entries
+            updateScheduleEntries(updatedEntries,
+                                  season.getSeasonEntries(TimeOfWeek.WEEKEND));
+        }
 
-            // Update sunday entries
-            List<ThermostatSeasonEntry> sundayEntries = season.getSeasonEntries(TimeOfWeek.SUNDAY);
-            this.updateScheduleEntries(updatedEntries, sundayEntries);
+        if (scheduleMode == ThermostatScheduleMode.ALL
+                || scheduleMode == ThermostatScheduleMode.WEEKDAY_WEEKEND && timeOfWeek == TimeOfWeek.WEEKEND) {
+            // Update Saturday entries
+            updateScheduleEntries(updatedEntries,
+                                  season.getSeasonEntries(TimeOfWeek.SATURDAY));
 
+            // Update Sunday entries
+            updateScheduleEntries(updatedEntries,
+                                  season.getSeasonEntries(TimeOfWeek.SUNDAY));
         }
 
         return schedule;
