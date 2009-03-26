@@ -25,9 +25,6 @@ import com.loox.jloox.LxGraph;
 public class SubUpdatableStats extends LxAbstractView implements
         UpdatableStats, AdjustablePosition {
 
-    private static final String AREA_NAME = "Area: ";
-    private static final String CTL_METHOD = "Ctl. Method: ";
-
     private static final String TARGET = "Target: ";
     private static final String TIMESTAMP = "Updated: ";
 
@@ -41,8 +38,6 @@ public class SubUpdatableStats extends LxAbstractView implements
     private static final String WATTLOAD = "kW: ";
     private static final String VOLTLOAD = "Volts: ";
     
-    private static final String DAYOP = "Daily Ops: ";
-    private static final String MAX_DAYOP = "Max Daily Ops: ";
     private static final String DAYOP_MAXOP = "Daily / Max Ops: ";
     
     public UpdatableTextList target = new UpdatableTextList(CBCOnelineSettingsRole.SUB_TARGET, this);
@@ -55,8 +50,6 @@ public class SubUpdatableStats extends LxAbstractView implements
     public PointQualCheckUpdatTextList wattLoad = new PointQualCheckUpdatTextList(CBCOnelineSettingsRole.SUB_WATTS,this);
     public PointQualCheckUpdatTextList voltLoad = new PointQualCheckUpdatTextList(CBCOnelineSettingsRole.SUB_VOLTS,this);
     public UpdatableTextList dayMaxOp = new UpdatableTextList( CBCOnelineSettingsRole.SUB_DAILY_MAX_OPCNT, this );
-    public UpdatableTextList areaName = new UpdatableTextList(CBCOnelineSettingsRole.SUB_AREA,this);
-    public UpdatableTextList ctlMethod = new UpdatableTextList(CBCOnelineSettingsRole.SUB_CTL_METHOD,this);
 
     private OnelineSub parent;
     private LxGraph graph;
@@ -90,8 +83,6 @@ public class SubUpdatableStats extends LxAbstractView implements
         propLabelMap.put(CBCOnelineSettingsRole.SUB_WATTS, WATTLOAD);
         propLabelMap.put(CBCOnelineSettingsRole.SUB_VOLTS, VOLTLOAD);
         propLabelMap.put(CBCOnelineSettingsRole.SUB_DAILY_MAX_OPCNT, DAYOP_MAXOP);
-        propLabelMap.put(CBCOnelineSettingsRole.SUB_AREA, AREA_NAME);
-        propLabelMap.put(CBCOnelineSettingsRole.SUB_CTL_METHOD, CTL_METHOD);
 
     }
 
@@ -106,8 +97,6 @@ public class SubUpdatableStats extends LxAbstractView implements
         propColumnMap.put(CBCOnelineSettingsRole.SUB_WATTS, CBCDisplay.SUB_ONELINE_WATT_COLUMN);
         propColumnMap.put(CBCOnelineSettingsRole.SUB_VOLTS, CBCDisplay.SUB_ONELINE_VOLT_COLUMN);
         propColumnMap.put(CBCOnelineSettingsRole.SUB_DAILY_MAX_OPCNT, CBCDisplay.SUB_ONELINE_DAILY_MAX_OPCNT_COLUMN);        
-        propColumnMap.put(CBCOnelineSettingsRole.SUB_AREA, CBCDisplay.SUB_ONELINE_AREANAME_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.SUB_CTL_METHOD, CBCDisplay.SUB_ONELINE_CTL_METHOD_COLUMN);
 
     }
 
@@ -161,8 +150,6 @@ public class SubUpdatableStats extends LxAbstractView implements
         allStats.add(powerFactor);
         allStats.add(estPowerFactor);
         allStats.add(dayMaxOp);// day / max Ops
-        allStats.add(areaName);
-        allStats.add(ctlMethod);
 
         for (UpdatableTextList list : allStats) {
             list.adjustVisibility();
