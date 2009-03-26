@@ -5,8 +5,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
-import org.springframework.util.Assert;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
@@ -148,7 +148,7 @@ public class OptOutTask implements YukonTask {
     		OptOutEvent event, 
     		LiteYukonUser user) 
     {
-    	Assert.notNull(event, "Event must not be null");
+    	Validate.notNull(event, "Event must not be null");
     	
     	int inventoryId = inventory.getInventoryID();
     	
