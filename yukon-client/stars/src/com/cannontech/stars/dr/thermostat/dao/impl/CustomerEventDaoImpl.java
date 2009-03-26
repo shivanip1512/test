@@ -3,9 +3,9 @@ package com.cannontech.stars.dr.thermostat.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
@@ -80,14 +80,16 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
         sql.append("AND ltmeOuter.InventoryId = ?");
 
         ThermostatManualEvent manualEvent = new ThermostatManualEvent();
-        try {
-            manualEvent = simpleJdbcTemplate.queryForObject(sql.toString(),
-                                                            new ThermostatManualEventMapper(energyCompany),
-                                                            inventoryId);
-        } catch (EmptyResultDataAccessException e) {
-            // ignore - This thermostat has no events
-        }
+        List<ThermostatManualEvent> eventList = 
+        	simpleJdbcTemplate.query(sql.toString(),
+                                     new ThermostatManualEventMapper(energyCompany),
+                                     inventoryId);
 
+        // If any events are found, use the first one - who knows what the 'last event' was
+    	if(eventList.size() > 0) {
+    		manualEvent = eventList.get(0);
+    	}
+    	
         return manualEvent;
     }
 
