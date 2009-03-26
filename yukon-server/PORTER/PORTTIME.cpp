@@ -81,6 +81,7 @@
 #include "dev_base.h"
 #include "dev_ccu.h"
 #include "dev_ccu721.h"
+#include "dev_dnp.h"
 #include "dev_ilex.h"
 #include "dev_mct4xx.h"
 #include "mgr_route.h"
@@ -552,6 +553,67 @@ struct timeSyncCCU721
 };
 
 
+struct timeSyncDNPDevices
+{
+    long port_id;
+
+    timeSyncDNPDevices(long port_id_) : port_id(port_id_) {  };
+
+    void operator()(CtiDeviceSPtr &RemoteRecord)
+    {
+        if(RemoteRecord->getPortID() != port_id || RemoteRecord->isInhibited())
+        {
+            return;
+        }
+
+        /* Allocate some memory */
+        OUTMESS *OutMessage = CTIDBG_new OUTMESS;
+
+        if( OutMessage == NULL)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            return;
+        }
+
+        using Cti::Device::DNP;
+        boost::shared_ptr<DNP> dnp_device = boost::static_pointer_cast<DNP>(RemoteRecord);
+
+        CtiRequestMsg request(RemoteRecord->getID(), "putconfig timesync");
+
+        list<CtiMessage *> stub;
+        list<OUTMESS *> outlist;
+
+        dnp_device->ExecuteRequest(&request, CtiCommandParser(request.CommandString()), OutMessage, stub, stub, outlist);
+
+        while( !stub.empty() )
+        {
+            delete stub.back();
+            stub.pop_back();
+        }
+
+        while( !outlist.empty() )
+        {
+            OutMessage = outlist.back();
+
+            OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
+            OutMessage->ExpirationTime = getNextTimeSync();
+
+            if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+            {
+                printf ("Error Writing to Queue for Port %2hd\n", RemoteRecord->getPortID());
+                delete (OutMessage);
+            }
+
+            outlist.pop_back();
+        }
+    }
+};
+
+
 //  send out the 400-series time sync on all default routes on this port, since we can't use the normal CCU broadcast format
 static void applyMCT400TimeSync(const long key, CtiRouteSPtr pRoute, void* d)
 {
@@ -739,6 +801,16 @@ static void applyPortSendTime(const long unusedid, CtiPortSPtr PortRecord, void 
             DeviceManager.getDevicesByType(TYPE_CCU721,   devices);
             for_each(devices.begin(), devices.end(), timeSyncCCU721(PortRecord->getPortID()));
             devices.clear();
+
+            if( gConfigParms.isTrue("YUKON_DNP_TIMESYNCS") )
+            {
+                DeviceManager.getDevicesByType(TYPE_DNPRTU,   devices);
+                DeviceManager.getDevicesByType(TYPE_DARTRTU,  devices);
+                DeviceManager.getDevicesByType(TYPECBCDNP,    devices);
+                DeviceManager.getDevicesByType(TYPECBC7020,   devices);
+                for_each(devices.begin(), devices.end(), timeSyncDNPDevices(PortRecord->getPortID()));
+                devices.clear();
+            }
 
             CtiDeviceManager::coll_type::reader_lock_guard_t dvguard(DeviceManager.getLock());  // Deadlock avoidance!
             RouteManager.apply(applyMCT400TimeSync, (void*)PortRecord->getPortID());
