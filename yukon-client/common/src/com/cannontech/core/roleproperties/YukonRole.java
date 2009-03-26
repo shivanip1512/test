@@ -26,7 +26,6 @@ public enum YukonRole {
     TRENDING(Application, ApplicationRoleDefs.TRENDING_ROLEID),
     WEB_CLIENT(Application, ApplicationRoleDefs.WEB_CLIENT_ROLEID),
     
-    CI_ESUBSTATION_DRAWINGS(CiCustomer, CICustomerRoleDefs.ESUBSTATION_DRAWINGS_ROLEID),
     USER_CONTROL(CiCustomer, CICustomerRoleDefs.USER_CONTROL_ROLEID),
     
     CBC_SETTINGS(CapControl, CapControlRoleDefs.CBC_SETTINGS_ROLEID),
