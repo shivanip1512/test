@@ -22,7 +22,6 @@ import com.cannontech.esub.element.DrawingMetaElement;
 import com.cannontech.esub.svg.ESubSVGGenerator;
 import com.cannontech.esub.svg.ISVGGenerator;
 import com.cannontech.esub.svg.SVGOptions;
-import com.cannontech.roles.cicustomer.EsubDrawingsRole;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 
@@ -83,8 +82,7 @@ public class SVGGenerator extends HttpServlet {
 			// User requires the role specific to access this drawing
 			// and also the Esub VIEW role to see it, which should we be using?
 			if( DaoFactory.getAuthDao().getRole(user, metaElem.getRoleID()) != null &&	
-				(DaoFactory.getAuthDao().checkRoleProperty(user, com.cannontech.roles.operator.EsubDrawingsRole.VIEW) ||
-				 DaoFactory.getAuthDao().checkRoleProperty(user, EsubDrawingsRole.VIEW))) {				
+				(DaoFactory.getAuthDao().checkRoleProperty(user, com.cannontech.roles.operator.EsubDrawingsRole.VIEW) )) {				
 							
 				boolean canEdit = DaoFactory.getAuthDao().checkRoleProperty(user, com.cannontech.roles.operator.EsubDrawingsRole.EDIT);
 				boolean canControl = DaoFactory.getAuthDao().checkRoleProperty(user, com.cannontech.roles.operator.EsubDrawingsRole.CONTROL);
