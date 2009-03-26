@@ -33,7 +33,6 @@ import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
-import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
@@ -107,7 +106,6 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     private MeterDao meterDao;
     private TransactionTemplate transactionTemplate = null;
     private DeviceDefinitionDao deviceDefinitionDao = null;
-    private DeviceDefinitionService deviceDefinitionService  = null;
     private DeviceCreationService deviceCreationService = null;
     private DeviceUpdateService deviceUpdateService = null;
     private SubstationDao substationDao = null;
@@ -1557,10 +1555,6 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     @Autowired
     public void setDeviceDefinitionDao(DeviceDefinitionDao deviceDefinitionDao) {
         this.deviceDefinitionDao = deviceDefinitionDao;
-    }
-    @Autowired
-    public void setDeviceDefinitionService(DeviceDefinitionService deviceDefinitionService) {
-        this.deviceDefinitionService = deviceDefinitionService;
     }
     @Autowired
     public void setDeviceCreationService(

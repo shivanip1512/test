@@ -8,12 +8,12 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.fdr.FdrDirection;
 import com.cannontech.common.fdr.FdrInterfaceType;
@@ -29,18 +29,23 @@ import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
+import com.cannontech.loadcontrol.data.LMGroupBase;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.service.LoadControlService;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.loadcontrol.service.data.ScenarioStatus;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.util.TimeoutException;
+import com.cannontech.multispeak.dao.MspLMGroupDao;
 import com.cannontech.multispeak.dao.MspLMInterfaceMappingDao;
 import com.cannontech.multispeak.dao.MspObjectDao;
+import com.cannontech.multispeak.db.MspLMGroupCommunications;
 import com.cannontech.multispeak.db.MspLMInterfaceMapping;
 import com.cannontech.multispeak.db.MspLMInterfaceMappingStrategyNameComparator;
 import com.cannontech.multispeak.db.MspLmInterfaceMappingColumnEnum;
 import com.cannontech.multispeak.db.MspLoadControl;
+import com.cannontech.multispeak.db.MspLMGroupCommunications.MspLMGroupStatus;
+import com.cannontech.multispeak.db.MspLMGroupCommunications.MspLMProgramMode;
 import com.cannontech.multispeak.deploy.service.ControlEventType;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
 import com.cannontech.multispeak.deploy.service.LoadManagementEvent;
@@ -63,6 +68,8 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
     public EnrollmentDao enrollmentDao;
     public LoadControlClientConnection loadControlClientConnection;
     public LoadControlProgramDao loadControlProgramDao;
+    public MspLMGroupDao mspLMGroupDao;
+
     private List<? extends String> strategyNames;
     private List<? extends String> strategiesToExcludeInReport;
 	
@@ -250,16 +257,30 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
         List<MspLMInterfaceMapping> mspLmInterfaceMappingList = mspLMInterfaceMappingDao.getAllMappings();
         Collections.sort(mspLmInterfaceMappingList, new MspLMInterfaceMappingStrategyNameComparator(MspLmInterfaceMappingColumnEnum.SUBSTATION, true) );
         
+        List<LMProgramBase> lmProgramBases = new ArrayList<LMProgramBase>();
         String prevSubstationName = null;
+        boolean exclude = false;
         for (MspLMInterfaceMapping mspLMInterfaceMapping : mspLmInterfaceMappingList) {
         	
         	String substationName = mspLMInterfaceMapping.getSubstationName();
+        	exclude = strategiesToExcludeInReport.contains(mspLMInterfaceMapping.getStrategyName().toUpperCase());
         	
         	//Don't report on excluded strategy names
-        	if (!strategiesToExcludeInReport.contains(mspLMInterfaceMapping.getStrategyName())) {
+        	if (!exclude) {
 	        	
+				//not the first iteration and substation name has changed
+				if( prevSubstationName != null && substationName != prevSubstationName) {
+					//Add the previous object
+					SubstationLoadControlStatus substationLoadControlStatus = 
+						buildSubstationLoadControlStatus(prevSubstationName, controlledItemsList, lmProgramBases);
+					substationLoadControlStatusList.add(substationLoadControlStatus);
+	
+					//Clear the list and start again.
+					controlledItemsList.clear();
+				}
+
 	        	//Build a list of all the programs for the controllable object's device type
-	        	List<LMProgramBase> lmProgramBases = new ArrayList<LMProgramBase>();
+	        	lmProgramBases = new ArrayList<LMProgramBase>();
 	        	int paobjectId = mspLMInterfaceMapping.getPaobjectId();
 				LiteYukonPAObject liteYukonPAObject = paoDao.getLiteYukonPAO(paobjectId);
 	        	if ( liteYukonPAObject.getType() == DeviceTypes.LM_DIRECT_PROGRAM) {
@@ -269,35 +290,25 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 	        		List<Integer> programIds = loadControlProgramDao.getProgramIdsByScenarioId(paobjectId);
 	        		lmProgramBases = loadControlClientConnection.getProgramsForProgramIds(programIds);
 	        	}
-	
-				//not the first iteration and substation name has changed
-				if( prevSubstationName != null && substationName != prevSubstationName) {
-					//Add the previous object
-					SubstationLoadControlStatus substationLoadControlStatus = 
-						buildSubstationLoadControlStatus(prevSubstationName, controlledItemsList);
-					substationLoadControlStatusList.add(substationLoadControlStatus);
-	
-					//Clear the list and start again.
-					controlledItemsList.clear();
-				}
-	
+	        	
 				SubstationLoadControlStatusControlledItemsControlItem controlledItem = 
 					buildSubstationLoadControlStatusControlledItemsControlItem(
 							mspLMInterfaceMapping.getStrategyName(), 
 							lmProgramBases, 
 							programCounts);
 				controlledItemsList.add(controlledItem);
+				prevSubstationName = substationName;
         	}
-			
-			prevSubstationName = substationName;
 		}
         
         //add the last object
-		if( prevSubstationName != null) {
-			SubstationLoadControlStatus substationLoadControlStatus = 
-				buildSubstationLoadControlStatus(prevSubstationName, controlledItemsList);
-			substationLoadControlStatusList.add(substationLoadControlStatus);
-		}
+        if (!exclude) {
+			if( prevSubstationName != null) {
+				SubstationLoadControlStatus substationLoadControlStatus = 
+					buildSubstationLoadControlStatus(prevSubstationName, controlledItemsList, lmProgramBases);
+				substationLoadControlStatusList.add(substationLoadControlStatus);
+			}
+        }
         
 		//Convert to array for return
         if( !substationLoadControlStatusList.isEmpty()) {
@@ -370,10 +381,31 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 	 * @return
 	 */
 	private SubstationLoadControlStatus buildSubstationLoadControlStatus(String substationName, 
-			List<SubstationLoadControlStatusControlledItemsControlItem> controlledItemsList) {
+			List<SubstationLoadControlStatusControlledItemsControlItem> controlledItemsList, List<LMProgramBase> lmProgramBases) {
 		
 		SubstationLoadControlStatus substationLoadControlStatus = new SubstationLoadControlStatus();
+		substationLoadControlStatus.setObjectID(substationName);
 		substationLoadControlStatus.setSubstationName(substationName);
+
+		// Loop through all programs
+		List<MspLMGroupStatus> allStatus = new ArrayList<MspLMGroupStatus>();
+		List<MspLMProgramMode> allModes= new ArrayList<MspLMProgramMode>();
+		for (LMProgramBase programBase : lmProgramBases) {
+
+			// Loop through all groups within the program
+			Vector<LMGroupBase> loadGroups = programBase.getLoadControlGroupVector();
+			for (LMGroupBase groupBase : loadGroups) {
+
+				List<MspLMGroupCommunications> mspLMGroupCommunications = mspLMGroupDao.getLMGroupCommunications(groupBase);
+				allStatus.add(mspLMGroupDao.getStatus(mspLMGroupCommunications));				
+			}
+			allModes.add(mspLMGroupDao.getMode(programBase));
+		}
+		
+		//Get unique/master status
+		substationLoadControlStatus.setStatus(mspLMGroupDao.getMasterStatus(allStatus).toString());
+		//Get unique/master mode
+		substationLoadControlStatus.setMode(mspLMGroupDao.getMasterMode(allModes).toString());
 		
 		SubstationLoadControlStatusControlledItemsControlItem [] controlledItemsArray = 
 			new SubstationLoadControlStatusControlledItemsControlItem[controlledItemsList.size()];
@@ -462,6 +494,10 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
     public void setLoadControlProgramDao(
 			LoadControlProgramDao loadControlProgramDao) {
 		this.loadControlProgramDao = loadControlProgramDao;
+	}
+    @Autowired
+    public void setMspLMGroupDao(MspLMGroupDao mspLMGroupDao) {
+		this.mspLMGroupDao = mspLMGroupDao;
 	}
     @Required
     public void setStrategyNames(List<? extends String> strategyNames) {

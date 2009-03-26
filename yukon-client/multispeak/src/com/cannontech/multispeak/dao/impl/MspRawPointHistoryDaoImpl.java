@@ -270,14 +270,11 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
         String sql = "SELECT DISTINCT P.POINTID, TIMESTAMP, VALUE, P.POINTTYPE, " + 
                      " PAO.TYPE, PAO.CATEGORY, PAO.PAOBJECTID, DMG.METERNUMBER " + 
                      " FROM " + RawPointHistory.TABLE_NAME + " rph, " + Point.TABLE_NAME + " p, " +
-                     PointUnit.TABLE_NAME + " pu, " + UnitMeasure.TABLE_NAME + " uom, " + 
                      YukonPAObject.TABLE_NAME + " pao, " + DeviceMeterGroup.TABLE_NAME + " dmg " +
                      " WHERE RPH.POINTID = P.POINTID " +
                      " AND P.PAOBJECTID = PAO.PAOBJECTID " +
                      " AND PAO.PAOBJECTID = DMG.DEVICEID " +
                      
-                     " AND P.POINTID = PU.POINTID " +
-                     " AND PU.UOMID = UOM.UOMID " +
                      " AND TIMESTAMP >= ? AND TIMESTAMP <= ? ";
                      if ( !StringUtils.isBlank(lastReceived) )
                          sql += " AND DMG.METERNUMBER > ? ";

@@ -44,6 +44,9 @@
   
   <bean id="mspLMInterfaceMappingDao" class="com.cannontech.multispeak.dao.impl.MspLMInterfaceMappingDaoImpl">
   </bean>
+
+  <bean id="mspLMGroupDao" class="com.cannontech.multispeak.dao.impl.MspLMGroupDaoImpl">
+  </bean>
   
   <bean id="multispeakMeterService" class="com.cannontech.multispeak.service.impl.MultispeakMeterServiceImpl" init-method="initialize">
   	<property name="porterConnection" ref="porterConnection"/>
@@ -52,20 +55,20 @@
   <bean id="multispeakLMService" class="com.cannontech.multispeak.service.impl.MultispeakLMServiceImpl">
 	<property name="strategyNames">
 	  <list>
-		<value>Water Heaters</value>
-		<value>Voltage control</value>
-		<value>Air conditioners</value>
+		<value>WATER HEATERS</value>
+		<value>VOLTAGE CONTROL</value>
+		<value>AIR CONDITIONERS</value>
 		<value>ETS</value>
 		<value>MISC</value>
-		<value>PJM Demand Response</value>
-		<value>All Devices</value>
-		<value>Scram</value>
+		<value>PJM DEMAND RESPONSE</value>
+		<value>ALL DEVICES</value>
+		<value>SCRAM</value>
 	  </list>
 	</property>
 	<property name="strategiesToExcludeInReport">
 	  <list>
-		<value>All Devices</value>
-		<value>Scram</value>
+		<value>ALL DEVICES</value>
+		<value>SCRAM</value>
 	  </list>
 	</property>
   </bean>
