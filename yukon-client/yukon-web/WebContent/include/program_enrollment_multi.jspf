@@ -11,7 +11,16 @@
 
 <%@page import="com.cannontech.roles.operator.ConsumerInfoRole"%><script language="JavaScript">
 function changeProgram() {
-	document.getElementById("NotEnrolled").checked = false;
+	var notEnrolled = true; 
+	
+	var programs = document.getElementsByName("ProgID");
+	for (progIdx = 0; progIdx < programs.length; progIdx++) {
+		if (programs[progIdx].checked) {
+			notEnrolled = false;
+		}
+	}
+
+	document.getElementById("NotEnrolled").checked = notEnrolled;
 }
 
 function setNotEnrolled() {
