@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     3/26/2009 6:41:30 PM                         */
+/* Created on:     3/26/2009 7:59:51 PM                         */
 /*==============================================================*/
 
 
@@ -11805,24 +11805,25 @@ insert into yukonroleproperty values(-10205, -102, 'Minimum Scan Frequency', '15
 insert into yukonroleproperty values(-10206, -102, 'Maximum Daily Scans', '2', 'Maximum number of get data now scans available daily.');
 
 /* Commander Role Properties */ 
-insert into YukonRoleProperty values(-10300,-103,'msg_priority','14','Tells commander what the outbound priority of messages are (low)1 - 14(high)');
-insert into YukonRoleProperty values(-10301,-103,'Versacom Serial','true','Show a Versacom Serial Number SortBy display');
-insert into YukonRoleProperty values(-10302,-103,'Expresscom Serial','true','Show an Expresscom Serial Number SortBy display');
-insert into YukonRoleProperty values(-10303,-103,'DCU SA205 Serial','false','Show a DCU SA205 Serial Number SortBy display');
-insert into YukonRoleProperty values(-10304,-103,'DCU SA305 Serial','false','Show a DCU SA305 Serial Number SortBy display');
-insert into YukonRoleProperty values(-10305,-103,'Commands Group Name','Default Commands','The commands group name for the displayed commands.');
-insert into yukonroleproperty values(-10306,-103,'Read device', 'true', 'Allow the ability to read values from a device');
-insert into yukonroleproperty values(-10307,-103,'Write to device', 'true', 'Allow the ability to write values to a device');
-insert into yukonroleproperty values(-10309,-103,'Control disconnect', 'true', 'Allow the ability to control a disconnect to a device');
-insert into yukonroleproperty values(-10310,-103,'Read LM device', 'true', 'Allow the ability to read values from an LM device');
-insert into yukonroleproperty values(-10311,-103,'Write to LM device', 'true', 'Allow the ability to write values to an LM device');
-insert into yukonroleproperty values(-10312,-103,'Control LM device', 'true', 'Allow the ability to control an LM device');
-insert into yukonroleproperty values(-10313,-103,'Read Cap Control device', 'true', 'Allow the ability to read values from a Cap Control device');
-insert into yukonroleproperty values(-10314,-103,'Write to Cap Control device', 'true', 'Allow the ability to write values to a Cap Control device');
-insert into yukonroleproperty values(-10315,-103,'Control Cap Control device', 'true', 'Allow the ability to control a Cap Control device');
-insert into yukonroleproperty values(-10316,-103,'Execute Unknown Command', 'true', 'Allow the ability to execute commands which do not fall under another role property.');
-insert into yukonroleproperty values(-10317,-103,'Execute Manual Command', 'true', 'Allow the ability to execute manual commands');
-
+INSERT INTO YukonRoleProperty VALUES(-10300,-103,'msg_priority','14','Tells commander what the outbound priority of messages are (low)1 - 14(high)');
+INSERT INTO YukonRoleProperty VALUES(-10301,-103,'Versacom Serial','true','Show a Versacom Serial Number SortBy display');
+INSERT INTO YukonRoleProperty VALUES(-10302,-103,'Expresscom Serial','true','Show an Expresscom Serial Number SortBy display');
+INSERT INTO YukonRoleProperty VALUES(-10303,-103,'DCU SA205 Serial','false','Show a DCU SA205 Serial Number SortBy display');
+INSERT INTO YukonRoleProperty VALUES(-10304,-103,'DCU SA305 Serial','false','Show a DCU SA305 Serial Number SortBy display');
+INSERT INTO YukonRoleProperty VALUES(-10305,-103,'Commands Group Name','Default Commands','The commands group name for the displayed commands.');
+INSERT INTO YukonRoleProperty VALUES(-10306,-103,'Read device', 'true', 'Allow the ability to read values from a device');
+INSERT INTO YukonRoleProperty VALUES(-10307,-103,'Write to device', 'true', 'Allow the ability to write values to a device');
+INSERT INTO YukonRoleProperty VALUES(-10309,-103,'Control disconnect', 'true', 'Allow the ability to control a disconnect to a device');
+INSERT INTO YukonRoleProperty VALUES(-10310,-103,'Read LM device', 'true', 'Allow the ability to read values from an LM device');
+INSERT INTO YukonRoleProperty VALUES(-10311,-103,'Write to LM device', 'true', 'Allow the ability to write values to an LM device');
+INSERT INTO YukonRoleProperty VALUES(-10312,-103,'Control LM device', 'true', 'Allow the ability to control an LM device');
+INSERT INTO YukonRoleProperty VALUES(-10313,-103,'Read Cap Control device', 'true', 'Allow the ability to read values from a Cap Control device');
+INSERT INTO YukonRoleProperty VALUES(-10314,-103,'Write to Cap Control device', 'true', 'Allow the ability to write values to a Cap Control device');
+INSERT INTO YukonRoleProperty VALUES(-10315,-103,'Control Cap Control device', 'true', 'Allow the ability to control a Cap Control device');
+INSERT INTO YukonRoleProperty VALUES(-10316,-103,'Execute Unknown Command', 'true', 'Allow the ability to execute commands which do not fall under another role property.');
+INSERT INTO YukonRoleProperty VALUES(-10317,-103,'Execute Manual Command', 'true', 'Allow the ability to execute manual commands');
+INSERT INTO YukonRoleProperty VALUES(-10318,-103,'Enable Web Commander', 'true', 'Controls access to web commander applications');
+INSERT INTO YukonRoleProperty VALUES(-10319,-103,'Enable Client Commander', 'true', 'Controls access to client commander application'); 
 
 /* Calc Historical Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-10400,-104,'interval','900','<description>');

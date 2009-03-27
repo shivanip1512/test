@@ -19,6 +19,11 @@ DELETE FROM YukonRoleProperty
 WHERE RolePropertyId IN (-1400, -80002, -1401);
 /* End YUK-7167 */
 
+/* Start YUK-7164 */
+INSERT INTO YukonRoleProperty VALUES(-10318,-103,'Enable Web Commander', 'true', 'Controls access to web commander applications');
+INSERT INTO YukonRoleProperty VALUES(-10319,-103,'Enable Client Commander', 'true', 'Controls access to client commander application'); 
+/* End YUK-7164 */
+
 
 /**************************************************************/
 /* VERSION INFO                                               */
