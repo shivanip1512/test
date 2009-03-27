@@ -2,7 +2,9 @@ package com.cannontech.multispeak.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
@@ -29,7 +31,7 @@ public class MspLMGroupDaoImpl implements MspLMGroupDao {
 
 	private SimpleJdbcTemplate template;
 	private PointDao pointDao;
-	public DynamicDataSource dynamicDataSource;
+	private DynamicDataSource dynamicDataSource;
 	
 	static String selectClause;
 	static String joinClause;
@@ -109,23 +111,19 @@ public class MspLMGroupDaoImpl implements MspLMGroupDao {
 		int totalStatusValue = 0;
 		// Total number of transmitter status points that we checked
 		int totalChecked = 0;
+		
+		Set<Integer> pointIds = getAllStatusPoints(mspLMGroupCommunications);
+		Set<? extends PointValueQualityHolder> pointValues = dynamicDataSource.getPointValue(pointIds);
 		// Check status flag of port
-		for (MspLMGroupCommunications mspLMGroupCommunication : mspLMGroupCommunications) {
-			try {
-				LitePoint commStatusPoint = pointDao.getLitePointIdByDeviceId_Offset_PointType(mspLMGroupCommunication.getTransmitterId(),
-																2000, PointTypes.STATUS_POINT);
-				PointValueQualityHolder pointValue = dynamicDataSource.getPointValue(commStatusPoint.getPointID());
-				Integer value = (int)pointValue.getValue();
-				
-				if (value == 0 || value == 1) {	//two state status values
-					totalChecked++;
-					totalStatusValue += value;
-				} else {
-					//ignore, no idea what this values represents.  Should never get here with a two state status.
-				}				
-			} catch (NotFoundException e) {
-				//can't check if point doesn't exist
-			}
+		for (PointValueQualityHolder pointValueQualityHolder : pointValues) {
+			
+			Integer value = (int)pointValueQualityHolder.getValue();
+			if (value == 0 || value == 1) {	//two state status values
+				totalChecked++;
+				totalStatusValue += value;
+			} else {
+				//ignore, no idea what this values represents.  Should never get here with a two state status.
+			}				
 		}
 		
 		if (totalStatusValue > 0 & totalChecked > 0) {
@@ -135,24 +133,9 @@ public class MspLMGroupDaoImpl implements MspLMGroupDao {
 		return MspLMGroupStatus.ONLINE; 
 	}
 	
-    private MspLMGroupCommunications createMspLMGroupCommunicationsMapping( ResultSet rset) throws SQLException {
-
-        int lmGroupId = rset.getInt(1);
-        int routeId = rset.getInt(2);
-        int transId = rset.getInt(3);
-        char disabledChar = rset.getString(4).charAt(0);
-        boolean disabled = CtiUtilities.isTrue(disabledChar);
-
-        MspLMGroupCommunications mspLMGroupCommunications = new MspLMGroupCommunications(lmGroupId,
-        																					routeId,
-        																					transId,
-        																					disabled);
-        return mspLMGroupCommunications;
-    }
-
     @Override
     public MspLMGroupStatus getMasterStatus(
-    		List<MspLMGroupStatus> mspLMGroupStatus) {
+    		Set<MspLMGroupStatus> mspLMGroupStatus) {
     	
     	if (mspLMGroupStatus.contains(MspLMGroupStatus.FAILED)) {
     		return MspLMGroupStatus.FAILED;
@@ -174,7 +157,7 @@ public class MspLMGroupDaoImpl implements MspLMGroupDao {
     
     @Override
     public MspLMProgramMode getMasterMode(
-    		List<MspLMProgramMode> mspLMProgramMode) {
+    		Set<MspLMProgramMode> mspLMProgramMode) {
     	if (mspLMProgramMode.contains(MspLMProgramMode.COIN)) {
     		return MspLMProgramMode.COIN;
     	} else {
@@ -182,6 +165,40 @@ public class MspLMGroupDaoImpl implements MspLMGroupDao {
     	}
     }
     
+	/**
+	 * Returns a set of all comm status pointIds for mspLMGroupCommunications transmitters
+	 * @param mspLMGroupCommunications
+	 * @return
+	 */
+	private Set<Integer> getAllStatusPoints(List<MspLMGroupCommunications> mspLMGroupCommunications) {
+
+		Set<Integer> pointIds = new HashSet<Integer>();
+		for (MspLMGroupCommunications mspLMGroupCommunication : mspLMGroupCommunications) {
+			try {
+				LitePoint commStatusPoint = pointDao.getLitePointIdByDeviceId_Offset_PointType(mspLMGroupCommunication.getTransmitterId(),
+																2000, PointTypes.STATUS_POINT);
+				pointIds.add(commStatusPoint.getPointID());
+			} catch (NotFoundException e) {
+				//can't check if point doesn't exist
+			}
+		}
+		return pointIds;		
+	}
+    private MspLMGroupCommunications createMspLMGroupCommunicationsMapping( ResultSet rset) throws SQLException {
+
+        int lmGroupId = rset.getInt(1);
+        int routeId = rset.getInt(2);
+        int transId = rset.getInt(3);
+        char disabledChar = rset.getString(4).charAt(0);
+        boolean disabled = CtiUtilities.isTrue(disabledChar);
+
+        MspLMGroupCommunications mspLMGroupCommunications = new MspLMGroupCommunications(lmGroupId,
+        																					routeId,
+        																					transId,
+        																					disabled);
+        return mspLMGroupCommunications;
+    }
+
     @Autowired
     public void setSimpleJdbcTemplate(final SimpleJdbcTemplate template) {
         this.template = template;

@@ -6,8 +6,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -388,8 +390,8 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 		substationLoadControlStatus.setSubstationName(substationName);
 
 		// Loop through all programs
-		List<MspLMGroupStatus> allStatus = new ArrayList<MspLMGroupStatus>();
-		List<MspLMProgramMode> allModes= new ArrayList<MspLMProgramMode>();
+		Set<MspLMGroupStatus> allStatus = new HashSet<MspLMGroupStatus>();
+		Set<MspLMProgramMode> allModes= new HashSet<MspLMProgramMode>();
 		for (LMProgramBase programBase : lmProgramBases) {
 
 			// Loop through all groups within the program

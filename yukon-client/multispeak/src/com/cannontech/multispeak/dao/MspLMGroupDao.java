@@ -1,6 +1,7 @@
 package com.cannontech.multispeak.dao;
 
 import java.util.List;
+import java.util.Set;
 
 import com.cannontech.loadcontrol.data.LMGroupBase;
 import com.cannontech.loadcontrol.data.LMGroupEmetcon;
@@ -58,7 +59,7 @@ public interface MspLMGroupDao {
      * @param mspLMGroupStatus
      * @return
      */
-    public MspLMGroupStatus getMasterStatus(List<MspLMGroupStatus> mspLMGroupStatus);
+    public MspLMGroupStatus getMasterStatus(Set<MspLMGroupStatus> mspLMGroupStatus);
     
     /**
      * Returns the mode of the LMProgramBase
@@ -75,5 +76,5 @@ public interface MspLMGroupDao {
      * @param mspLMProgramMode
      * @return
      */
-    public MspLMProgramMode getMasterMode(List<MspLMProgramMode> mspLMProgramMode);
+    public MspLMProgramMode getMasterMode(Set<MspLMProgramMode> mspLMProgramMode);
 }

@@ -8,9 +8,9 @@ public class MspLMGroupCommunications {
 	private boolean disabled;	//transmitter disable flag
 	
 	public enum MspLMGroupStatus {
-		ONLINE("Online"),
+		FAILED("Failed"),
 		OFFLINE("Offline"),
-		FAILED("Failed");
+		ONLINE("Online");
 		
 		private String status;
 		private MspLMGroupStatus(String status) {
