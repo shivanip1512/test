@@ -145,7 +145,15 @@ public final class YukonUserDaoImpl implements YukonUserDao {
         if (firstName != null) {
             firstInitial = firstName.toLowerCase().substring(0, 1);
         }
-        newUsername = firstInitial + lastName.toLowerCase();
+        
+        // In the event of having a name more than the database limit of 64 characters. 
+        // We will truncate the last name to 63 characters.
+        if(lastName.length() > 63) {
+        	newUsername = firstInitial + lastName.substring(0,63).toLowerCase();
+        } else {
+        	newUsername = firstInitial + lastName.toLowerCase();
+        }
+        
         if (getLiteYukonUser(newUsername) != null) {
             String timeStamp = Long.toString(new Date().getTime());
             StringBuilder username = new StringBuilder(lastName.toLowerCase()).append(timeStamp);
