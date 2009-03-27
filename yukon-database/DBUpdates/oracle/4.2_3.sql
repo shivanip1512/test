@@ -37,6 +37,13 @@ SET KeyName = 'Daily/Max Operation Count', Description = 'is Daily/Max Operation
 WHERE RolePropertyId = -100103; 
 /* End YUK-7184 */
 
+/* Start YUK-7174 */
+/* This delete can take some time. */
+DELETE RawPointHistory 
+WHERE PointId NOT IN (SELECT DISTINCT PointId 
+                      FROM Point); 
+/* End YUK-7174 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
