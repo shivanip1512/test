@@ -45,7 +45,7 @@ import com.cannontech.web.updater.point.PointUpdateBackingService;
 /**
  * Spring controller class
  */
-@CheckRole({YukonRole.METERING,YukonRole.SYSTEM_BILLING,YukonRole.SCHEDULER,YukonRole.DEVICE_ACTIONS})
+@CheckRole({YukonRole.METERING,YukonRole.APPLICATION_BILLING,YukonRole.SCHEDULER,YukonRole.DEVICE_ACTIONS})
 public class MeterController extends MultiActionController {
 
     private MeterSearchService meterSearchService = null;
@@ -265,11 +265,6 @@ public class MeterController extends MultiActionController {
         boolean lpSupported = DeviceTypesFuncs.isLoadProfile4Channel(device.getType());
         mav.addObject("lpSupported", lpSupported);
 
-        boolean profileCollection = rolePropertyDao.checkProperty(YukonRoleProperty.PROFILE_COLLECTION, user);
-        boolean profileCollectionScanning = rolePropertyDao.checkProperty(YukonRoleProperty.PROFILE_COLLECTION_SCANNING, user);
-        mav.addObject("profileCollection", profileCollection);
-        mav.addObject("profileCollectionScanning", profileCollectionScanning);
-        
         boolean peakReportSupported = DeviceTypesFuncs.isMCT410(device.getType());
         mav.addObject("peakReportSupported", peakReportSupported);
 

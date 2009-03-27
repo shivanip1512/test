@@ -251,7 +251,7 @@
         </property>
         <property name="roleAndPropertiesChecker">
 	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
-                <constructor-arg value="HIGH_BILL_COMPLAINT"/>
+                <constructor-arg value="METERING"/>
             </bean>
 	   	</property>
         <property name="meterDao" ref="meterDao"/>
@@ -360,7 +360,7 @@
         </property>
         <property name="roleAndPropertiesChecker">
 	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
-                <constructor-arg value="PROFILE_COLLECTION,PROFILE_COLLECTION_SCANNING"/>
+                <constructor-arg value="METERING"/>
             </bean>
 	   	</property>
         <property name="loadProfileService" ref="loadProfileService" />

@@ -4,28 +4,25 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.common.device.YukonDevice;
-import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.roles.operator.MeteringRole;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 /**
  * Spring controller class for profile
  */
-@CheckRoleProperty({YukonRoleProperty.PROFILE_COLLECTION,YukonRoleProperty.PROFILE_COLLECTION_SCANNING})
 public class ProfileController extends MultiActionController {
 
-    private AuthDao authDao = null;
+    private RolePropertyDao rolePropertyDao;
     private DeviceDao deviceDao = null;
     
     public ModelAndView home(HttpServletRequest request,
@@ -42,10 +39,8 @@ public class ProfileController extends MultiActionController {
         boolean lpSupported = DeviceTypesFuncs.isLoadProfile4Channel(device.getType());
         mav.addObject("lpSupported", lpSupported);
         
-        boolean profileCollection = Boolean.parseBoolean(authDao.getRolePropertyValue(user, MeteringRole.PROFILE_COLLECTION));
-        boolean profileCollectionScanning = Boolean.parseBoolean(authDao.getRolePropertyValue(user, MeteringRole.PROFILE_COLLECTION_SCANNING));
+        boolean profileCollection = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.PROFILE_COLLECTION, user);
         mav.addObject("profileCollection", profileCollection);
-        mav.addObject("profileCollectionScanning", profileCollectionScanning);
 
         boolean peakReportSupported = DeviceTypesFuncs.isMCT410(device.getType());
         mav.addObject("peakReportSupported", peakReportSupported);
@@ -53,14 +48,13 @@ public class ProfileController extends MultiActionController {
         return mav;
     }
 
-    @Required
+    @Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+		this.rolePropertyDao = rolePropertyDao;
+	}
+    
+    @Autowired
     public void setDeviceDao(DeviceDao deviceDao) {
-        this.deviceDao = deviceDao;
-    }
-
-    @Required
-    public void setAuthDao(AuthDao authDao) {
-        this.authDao = authDao;
-    }
-
+		this.deviceDao = deviceDao;
+	}
 }

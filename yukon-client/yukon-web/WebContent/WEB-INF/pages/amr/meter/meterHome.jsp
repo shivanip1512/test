@@ -82,15 +82,14 @@
                     
                         <!-- Actions: Profile -->
                         <c:choose>
-                            <c:when test="${lpSupported && (profileCollection || profileCollectionScanning)}">
+                        	<%-- need one of these at least for the profile page to display anything --%>
+                            <c:when test="${lpSupported || peakReportSupported}">
         						<cti:url var="profileUrl" value="/spring/amr/profile/home">
         							<cti:param name="deviceId" value="${deviceId}" />
         						</cti:url>
                                 <a href="${profileUrl}">Profile</a><br/>
                             </c:when>
-                            <c:when test="${not (profileCollection || profileCollectionScanning)}">
-                                <%-- user has no access, hide --%>
-                            </c:when>
+                            <%-- if you failed the test you must not support lp --%>
 						    <c:otherwise>
                             Profile (not supported)<br/>
                             </c:otherwise>
