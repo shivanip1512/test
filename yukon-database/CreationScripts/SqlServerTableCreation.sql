@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     3/17/2009 10:25:32 AM                        */
+/* Created on:     3/26/2009 6:41:30 PM                         */
 /*==============================================================*/
 
 
@@ -10572,8 +10572,6 @@ insert into YukonGroupRole values(-56,-1,-4,-1314,'(none)');
 insert into YukonGroupRole values(-57,-1,-4,-1315,'(none)');
 insert into YukonGroupRole values(-58,-1,-4,-1316,'(none)');
 insert into YukonGroupRole values(-59,-1,-4,-1317,'(none)');
-insert into YukonGroupRole values(-70,-1,-5,-1400,'(none)');
-insert into YukonGroupRole values(-71,-1,-5,-1401,'(none)');
 insert into YukonGroupRole values(-72,-1,-5,-1402,'(none)');
 insert into YukonGroupRole values(-85,-1,-4,-1300,'(none)');
 insert into YukonGroupRole values(-86,-1,-4,-1301,'(none)');
@@ -11750,7 +11748,6 @@ INSERT INTO YukonRoleProperty VALUES(-1316,-4,'Active Directory Server Timeout',
 INSERT INTO YukonRoleProperty VALUES(-1317,-4,'Active Directory NT Domain Name','(none)','Active Directory NT DOMAIN NAME');
 INSERT INTO YukonRoleProperty VALUES(-1318,-4,'Enable Password Recovery','true','Controls access to password recovery (Forgot your password?) feature.');
 
-INSERT INTO YukonRoleProperty VALUES(-1401,-5,'call_timeout','30','The time-out in seconds given to each outbound call');
 INSERT INTO YukonRoleProperty VALUES(-1402,-5,'call_response_timeout','240','The time-out in seconds given to each outbound call response');
 INSERT INTO YukonRoleProperty VALUES(-1403,-5,'Call Prefix','(none)','Any number or numbers that must be dialed before a call can be placed.');
 
@@ -12102,9 +12099,9 @@ INSERT INTO YukonRoleProperty VALUES(-70026,-700,'Warn on control send.','true',
 
 
 /* Notification / IVR Role properties */
-insert into YukonRoleProperty values(-1400,-800,'voice_app','login','The voice server application that Yukon should use');
-insert into YukonRoleProperty values(-80001,-800,'Number of Channels','1','The number of outgoing channels assigned to the specified voice application.');
-insert into YukonRoleProperty values(-80002,-800,'Intro Text','An important message from your energy provider','The text that is read after the phone is answered, but before the pin has been entered');
+INSERT INTO YukonRoleProperty VALUES(-80001,-800,'Number of Channels','1','The number of outgoing channels assigned to the specified voice application.');
+INSERT INTO YukonRoleProperty VALUES(-80004,-800,'IVR URL Dialer Template','http://127.0.0.1:9998/VoiceXML.start?tokenid=yukon-{MESSAGE_TYPE}&numbertodial={PHONE_NUMBER}','The URL used to initiate a call, see documentation for allowed variables'); 
+INSERT INTO YukonRoleProperty VALUES(-80005,-800,'IVR URL Dialer Success Matcher','success','A Java Regular Expression that will be matched against the output of the URL to determine if the call was successfull'); 
 
 /* Notification / Configuration role properties */
 insert into YukonRoleProperty values(-80100,-801,'Template Root','Server/web/webapps/ROOT/WebConfig/custom/notif_templates/','Either a URL base where the notification templates will be stored (file: or http:) or a directory relative to YUKON_BASE.');
