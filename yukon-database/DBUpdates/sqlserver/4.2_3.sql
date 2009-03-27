@@ -24,6 +24,18 @@ INSERT INTO YukonRoleProperty VALUES(-10318,-103,'Enable Web Commander', 'true',
 INSERT INTO YukonRoleProperty VALUES(-10319,-103,'Enable Client Commander', 'true', 'Controls access to client commander application'); 
 /* End YUK-7164 */
 
+/* Start YUK-7184 */
+DELETE FROM YukonUserRole 
+WHERE RolePropertyId IN (-100007, -100008, -100200, -100204);
+DELETE FROM YukonGroupRole 
+WHERE RolePropertyId IN (-100007, -100008, -100200, -100204);
+DELETE FROM YukonRoleProperty 
+WHERE RolePropertyId IN (-100007, -100008, -100200, -100204);
+
+UPDATE YukonRoleProperty 
+SET KeyName = 'Daily/Max Operation Count', Description = 'is Daily/Max Operation stat displayed'
+WHERE RolePropertyId = -100103; 
+/* End YUK-7184 */
 
 /**************************************************************/
 /* VERSION INFO                                               */

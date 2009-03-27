@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/26/2009 7:57:50 PM                         */
+/* Created on:     3/26/2009 9:12:24 PM                         */
 /*==============================================================*/
 
 
@@ -9333,24 +9333,19 @@ insert into YukonRoleProperty values(-100003, -1000, 'Power Factor', 'true', 'di
 insert into YukonRoleProperty values(-100004, -1000, 'Estimated Power Factor', 'true', 'display estimated Power Factor');
 insert into YukonRoleProperty values(-100005, -1000, 'Watts', 'true', 'display Watts');
 insert into YukonRoleProperty values(-100006, -1000, 'Volts', 'true', 'display Volts');
-insert into YukonRoleProperty values(-100007, -1000, 'Daily Op Count', 'false', 'display Daily Operation Count');
-insert into YukonRoleProperty values(-100008, -1000, 'Max Op Count', 'false', 'display Max Operation Count');
 
 insert into YukonRoleProperty values(-100100, -1001, 'kVAR', 'true', 'display kVAR');
 insert into YukonRoleProperty values(-100101, -1001, 'Power Factor', 'true', 'display Power Factor');
 insert into YukonRoleProperty values(-100102, -1001, 'Watts', 'false', 'display Watts');
-insert into YukonRoleProperty values(-100103, -1001, 'Daily Op Count', 'true', 'display Daily Operation Count');
+insert into YukonRoleProperty values(-100103, -1001, 'Daily/Max Operation Count', 'true', 'is Daily/Max Operation stat displayed');
 insert into YukonRoleProperty values(-100104, -1001, 'Volts', 'false', 'display Volts');
 insert into YukonRoleProperty values(-100105, -1001, 'Target', 'true', 'is target stat displayed');
 
 insert into yukonroleproperty values(-100107, -1001, 'Watt/Volt', 'true', 'display Watts/Volts');
 insert into yukonroleproperty values(-100108, -1001, 'Three Phase', 'false', 'display 3-phase data for feeder'); 
 
-insert into YukonRoleProperty values(-100200, -1002, 'Total Op Count', 'true', 'display Total Operation Count');
 insert into YukonRoleProperty values(-100201, -1002, 'Bank Size', 'true', 'display Bank Size');
 insert into YukonRoleProperty values(-100202, -1002, 'CBC Name', 'true', 'display CBC Name');
-insert into YukonRoleProperty VALUES(-100204, -1002, 'Daily/Total Operation Count', 'false', 'is Daily/Total Operation Count displayed');
-
 
 INSERT INTO YukonRoleProperty VALUES (-100011, -1000, 'Daily/Max Operation Count', 'true', 'is Daily/Max Operation stat displayed');
 INSERT INTO YukonRoleProperty VALUES (-100012, -1000, 'Substation Last Update Timestamp', 'true', 'is last update timestamp shown for substations');
