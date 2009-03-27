@@ -3,7 +3,6 @@ package com.cannontech.core.roleproperties;
 import org.apache.commons.lang.Validate;
 
 import com.cannontech.roles.ApplicationRoleDefs;
-import com.cannontech.roles.CICustomerRoleDefs;
 import com.cannontech.roles.CapControlRoleDefs;
 import com.cannontech.roles.ConsumerRoleDefs;
 import com.cannontech.roles.LMRoleDefs;
@@ -25,8 +24,6 @@ public enum YukonRole {
     TABULAR_DISPLAY_CONSOLE(Application, ApplicationRoleDefs.TABULAR_DISPLAY_CONSOLE_ROLEID),
     TRENDING(Application, ApplicationRoleDefs.TRENDING_ROLEID),
     WEB_CLIENT(Application, ApplicationRoleDefs.WEB_CLIENT_ROLEID),
-    
-    USER_CONTROL(CiCustomer, CICustomerRoleDefs.USER_CONTROL_ROLEID),
     
     CBC_SETTINGS(CapControl, CapControlRoleDefs.CBC_SETTINGS_ROLEID),
     CBC_ONELINE_CAP_SETTINGS(CapControl, CBCOnelineSettingsRole.CAP_ROLEID),

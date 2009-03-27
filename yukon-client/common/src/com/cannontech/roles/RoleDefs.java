@@ -17,7 +17,6 @@ interface RoleDefs {
 	static final int YUKON_ROLEID_BASE = -1;
 	static final int APPLICATION_ROLEID_BASE = -100;
 	static final int OPERATOR_ROLEID_BASE = -200;
-	static final int CICUSTOMER_ROLEID_BASE = -300;
 	static final int CONSUMER_ROLEID_BASE = -400;	
 	static final int CBC_ROLEID_BASE = -700;
 	static final int NOTIFICATIONS_ROLEID_BASE = -800;
@@ -31,7 +30,6 @@ interface RoleDefs {
 	static final int YUKON_PROPERTYID_BASE = -1000;
 	static final int APPLICATION_PROPERTYID_BASE = -10000;
 	static final int OPERATOR_PROPERTYID_BASE = -20000;
-	static final int CICUSTOMER_PROPERTYID_BASE = -30000;
 	static final int CONSUMER_PROPERTYID_BASE = -40000;
 	
 	static final int CBC_PROPERTYID_BASE = -70000;
