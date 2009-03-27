@@ -44,6 +44,26 @@ WHERE PointId NOT IN (SELECT DISTINCT PointId
                       FROM Point); 
 /* End YUK-7174 */
 
+/* Start YUK-7092 */
+UPDATE Command
+SET Command = 'getvalue daily read detail channel 1 ?''MM/DD/YYYY''', Label = 'Read Daily kWh, Peak Demand, Min/Max Voltage (Channel 1).'
+WHERE CommandId = -156;
+UPDATE Command
+SET Command = 'getvalue daily read channel 1 ?''MM/DD/YYYY'' ?''MM/DD/YYYY''', Label = 'Read Daily kWh for date range (Channel 1).'
+WHERE CommandId = -157;
+INSERT INTO Command VALUES(-169, 'getvalue daily read ?''MM/DD/YYYY''', 'Read Daily kWh, Peak kW, and Outages (Channel 1 only, up to 8 days ago)', 'MCT-410IL');
+INSERT INTO Command VALUES(-170, 'getvalue daily read detail channel ?''Channel 2|3'' ?''MM/DD/YYYY''', 'Read Daily kWh, Peak Demand, Outages (Channel 2 or 3).', 'MCT-410IL');
+
+INSERT INTO DeviceTypeCommand VALUES (-794, -169, 'MCT-410CL', 40, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-795, -169, 'MCT-410FL', 40, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-796, -169, 'MCT-410GL', 40, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-797, -169, 'MCT-410IL', 40, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-798, -170, 'MCT-410CL', 41, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-799, -170, 'MCT-410FL', 41, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-800, -170, 'MCT-410GL', 41, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-801, -170, 'MCT-410IL', 41, 'Y', -1);
+/* End YUK-7092 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
