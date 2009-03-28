@@ -25,7 +25,6 @@ public class ReflectivePropertySearcher {
                 "com.cannontech.roles", 
                 "com.cannontech.roles.application",
                 "com.cannontech.roles.capcontrol",
-                "com.cannontech.roles.cicustomer",
                 "com.cannontech.roles.consumer",
                 "com.cannontech.roles.loadcontrol",
                 "com.cannontech.roles.notifications",
