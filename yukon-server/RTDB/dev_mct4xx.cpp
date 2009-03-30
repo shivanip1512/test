@@ -258,7 +258,7 @@ bool CtiDeviceMCT4xx::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 }
 
 
-unsigned char CtiDeviceMCT4xx::crc8( const unsigned char *buf, unsigned int len ) const
+unsigned char CtiDeviceMCT4xx::crc8( const unsigned char *buf, unsigned int len )
 {
     const unsigned char llpcrc_poly = 0x07;
 

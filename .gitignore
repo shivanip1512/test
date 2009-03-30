@@ -105,4 +105,7 @@ yukon-client/yukon-web/work
 yukon-client/yukonappserver/bin
 yukon-client/yukonappserver/build
 yukon-install/build
+yukon-server/Simulator/*.idb
+yukon-server/Simulator/*.obj
+yukon-server/Simulator/*.pdb
 yukon-server/bin

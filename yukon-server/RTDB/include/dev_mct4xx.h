@@ -223,7 +223,7 @@ protected:
     virtual CtiTime getDeviceDawnOfTime() const      { return DawnOfTime_UtcSeconds; }
     virtual bool is_valid_time(const CtiTime) const;
 
-    unsigned char crc8(const unsigned char *buf, unsigned int len) const;
+    static unsigned char crc8(const unsigned char *buf, unsigned int len);
 
     //  force it pure virtual so it must be overridden by the 410 and 470
     virtual const read_key_store_t &getReadKeyStore(void) const = 0;

@@ -3880,7 +3880,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 pi = getData(DSt->Message, 5, ValueType_IED);
 
                 insertPointDataReport(AnalogPointType, PointOffset_TotalKWH,
-                                      ReturnMsg, pi, "kWh total", 0UL, 1.0, TAG_POINT_MUST_ARCHIVE);
+                                      ReturnMsg, pi, "kWh total", CtiTime(), 1.0, TAG_POINT_MUST_ARCHIVE);
 
                 if( pi.quality == InvalidQuality )
                 {
@@ -4103,7 +4103,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 pointname += " total";
 
                 insertPointDataReport(AnalogPointType, offset + rate * 2 + 1,
-                                      ReturnMsg, pi, pointname, 0UL, 1.0, tags);
+                                      ReturnMsg, pi, pointname, CtiTime(), 1.0, tags);
 
                 //  this is CRAZY WIN32 SPECIFIC
                 _TIME_ZONE_INFORMATION tzinfo;

@@ -176,7 +176,7 @@ CtiDeviceMCT410::ConfigPartsList CtiDeviceMCT410::getPartsList()
 }
 
 
-int CtiDeviceMCT410::makeDynamicDemand(double input) const
+int CtiDeviceMCT410::makeDynamicDemand(double input)
 {
     /*
     Bits   Resolution            Range
@@ -193,11 +193,6 @@ int CtiDeviceMCT410::makeDynamicDemand(double input) const
 
     if( input > 40950.0 || input < 0.0 )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - input = " << input << " in CtiDeviceMCT4xx::makeDynamicDemand() for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-
         output = -1;
     }
     else if( input < 0.05 )
@@ -2567,7 +2562,7 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, l
         pi = getData(DSt->Message + 2, 2, ValueType_Voltage);
 
         insertPointDataReport(DemandAccumulatorPointType, PointOffset_Voltage,
-                              ReturnMsg, pi, "Voltage", 0UL, 0.1);
+                              ReturnMsg, pi, "Voltage", CtiTime(), 0.1);
 
         pi = CtiDeviceMCT4xx::getData(DSt->Message + 4, 2, ValueType_Raw);
 
@@ -3789,7 +3784,7 @@ INT CtiDeviceMCT410::decodeGetConfigDisconnect(INMESS *InMessage, CtiTime &TimeN
         pi_disconnect.value   = state;
         pi_disconnect.quality = NormalQuality;
 
-        insertPointDataReport(StatusPointType, 1, ReturnMsg, pi_disconnect, "Disconnect status", 0UL, 1.0, TAG_POINT_MUST_ARCHIVE);
+        insertPointDataReport(StatusPointType, 1, ReturnMsg, pi_disconnect, "Disconnect status", CtiTime(), 1.0, TAG_POINT_MUST_ARCHIVE);
 
         resultStr  = getName() + " / Disconnect Info:\n";
 

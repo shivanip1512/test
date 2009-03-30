@@ -286,7 +286,7 @@ INT CTINEXUS::CTINexusConnect(CTINEXUS *RemoteNexus, HANDLE *hAbort, LONG timeou
     ULONG    param = 1;
     DWORD    dwWait = WAIT_TIMEOUT;
 
-    LONG     loops = (timeout > 0 ? (timeout / 250) + 1 : LONG_MAX);
+    LONG     loops = timeout > 0 ? (timeout + 249) / 250 : LONG_MAX;
 
     //
     // Wait for an incoming request
@@ -534,8 +534,8 @@ INT CTINEXUS::CTINexusRead(VOID *buf, ULONG len, PULONG BRead, LONG TimeOut)
 
     if( TimeOut > 0 )
     {
-        //  convert to microseconds
-        TimeOut *= 1000 * 1000;
+        //  convert to milliseconds
+        TimeOut *= 1000;
     }
 
     try
@@ -556,11 +556,13 @@ INT CTINEXUS::CTINexusRead(VOID *buf, ULONG len, PULONG BRead, LONG TimeOut)
             {
                 if( TimeOut > 0 )
                 {
-                    tv.tv_usec = std::min(TimeOut, 500000L);
+                    //  convert milliseconds to microseconds
+                    tv.tv_usec = std::min(TimeOut, 500L) * 1000;
                 }
                 else
                 {
-                    tv.tv_usec = 500000;
+                    //  convert milliseconds to microseconds
+                    tv.tv_usec = 500 * 1000;
                 }
 
                 elapsed.reset();
@@ -623,7 +625,11 @@ INT CTINEXUS::CTINexusRead(VOID *buf, ULONG len, PULONG BRead, LONG TimeOut)
 
             if( TimeOut )
             {
-                if( TimeOut > 0 )   TimeOut -= min( (LONG) elapsed.delta(), TimeOut);
+                if( TimeOut > 0 )
+                {
+                    //  note that CtiHighPerfTimer::delta() returns milliseconds
+                    TimeOut -= min((LONG)elapsed.delta(), TimeOut);
+                }
 
                 try
                 {

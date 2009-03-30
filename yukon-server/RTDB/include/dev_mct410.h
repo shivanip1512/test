@@ -310,7 +310,7 @@ protected:
 
     point_info getData(const unsigned char *buf, int len, ValueType410 vt) const;
 
-    int makeDynamicDemand(double input) const;
+    static int makeDynamicDemand(double input);
 
     long getLoadProfileInterval(unsigned channel);
     point_info getLoadProfileData(unsigned channel, unsigned char *buf, unsigned len);

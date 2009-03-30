@@ -96,6 +96,15 @@ public:
 
         return Inherited::insert(std::make_pair(element, ++count));
     }
+
+    template<class InputIterator>
+    void insert(InputIterator begin, InputIterator end)
+    {
+        while( begin != end )
+        {
+            Inherited::insert(std::make_pair(*begin++, ++count));
+        }
+    }
 };
 
 
