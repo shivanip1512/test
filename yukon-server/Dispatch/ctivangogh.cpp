@@ -1246,9 +1246,9 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " " << iter->getName() << " resetting seasonal hours" << endl;
                         }
-    
+
                         CtiPointSPtr pControlPoint = PointMgr.getControlOffsetEqual( deviceID, 1);     // This is the control status control point which keeps control in play.
-    
+
                         if(pControlPoint)
                         {
                             CtiPendingPointOperations *pendingSeasonReset = CTIDBG_new CtiPendingPointOperations(pControlPoint->getID());
@@ -1256,7 +1256,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                             pendingSeasonReset->setControlState(CtiPendingPointOperations::controlSeasonalReset);    // control state clues the guts on what we are trying to do for this command.
                             pendingSeasonReset->setExcludeFromHistory(false);
                             pendingSeasonReset->setTime( Cmd->getMessageTime() );
-    
+
                             pendingSeasonReset->getControl().setPAOID(deviceID);
                             pendingSeasonReset->getControl().setActiveRestore(LMAR_PERIOD_TRANSITION);
                             pendingSeasonReset->getControl().setDefaultActiveRestore(LMAR_PERIOD_TRANSITION);
@@ -1268,7 +1268,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                             pendingSeasonReset->getControl().setStopTime(Cmd->getMessageTime());
                             pendingSeasonReset->getControl().setControlCompleteTime(Cmd->getMessageTime());
                             pendingSeasonReset->getControl().setSoeTag( CtiTableLMControlHistory::getNextSOE() );
-    
+
                             //verifyControlTimesValid(pendingSeasonReset);
                             addToPendingSet(pendingSeasonReset, Cmd->getMessageTime());
                         }
@@ -1321,14 +1321,14 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                         const CtiDynamicPointDispatchSPtr pDyn = PointMgr.getDynamic(pPt);
                         if(pDyn)
                         {
-    
+
                             CtiPointDataMsg *pDat = CTIDBG_new CtiPointDataMsg(pPt->getID(),
                                                                                pDyn->getValue(),
                                                                                pDyn->getQuality(),
                                                                                pPt->getType(),
                                                                                string(),
                                                                                pDyn->getDispatch().getTags());
-    
+
                             if(pDat != NULL)
                             {
                                 pDat->setSource(DISPATCH_APPLICATION_NAME);
@@ -3200,7 +3200,7 @@ void CtiVanGogh::writeSignalsToDB(bool justdoit)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Unable to acquire a valid conneciton to the database" << endl;
+                        dout << CtiTime() << " Unable to acquire a valid connection to the database" << endl;
                     }
                 }
             }
@@ -4850,7 +4850,7 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
                         }
                     }
 
-                    
+
 
                     Now = Now.now();
                     loadDeviceLites(id);
@@ -6294,10 +6294,10 @@ INT CtiVanGogh::updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, st
 /**
  * This method attempts to set all device "ablement" information.
  * A key item to remember is that this information _really_ only exists on the _points_ which dispatch tracks.
- * 
- * @param id LONG 
- * @param dbchange bool 
- * @param user string 
+ *
+ * @param id LONG
+ * @param dbchange bool
+ * @param user string
  */
 void CtiVanGogh::adjustDeviceDisableTags(LONG id, bool dbchange, string user)
 {
@@ -6315,7 +6315,7 @@ void CtiVanGogh::adjustDeviceDisableTags(LONG id, bool dbchange, string user)
                 pMulti->setUser(user);
                 pMulti->setSource(DISPATCH_APPLICATION_NAME);
 
-                /** 
+                /**
                  * It is assumed the tags are correct for devices on startup!
                  * The only checking needs to happen on individual devices when
                  * they change!
@@ -6340,7 +6340,7 @@ void CtiVanGogh::adjustDeviceDisableTags(LONG id, bool dbchange, string user)
                         ablementPoint(pPoint, devicedifferent, setmask, tagmask, user, *pMulti);
                     }
                 }
-                
+
                 if(devicedifferent && !dbchange)
                 {
                     CtiDeviceLiteSet_t::iterator dliteit = deviceLiteFind(id);
@@ -7843,23 +7843,23 @@ void CtiVanGogh::checkStatusCommandFail(int alarm, CtiPointDataMsg *pData, CtiMu
     if(pDyn)
     {
         UINT tags = pDyn->getDispatch().getTags();
-    
+
         // We can only care about failure if we are a status/control point
         // and someone has sent out a command.  Otherwise this is irrelevant.
         if(tags & TAG_ATTRIB_CONTROL_AVAILABLE /*|| TriggerMgr.isAVerificationPoint(point->getPointID())*/)
         {
             CtiPendable *pendable = CTIDBG_new CtiPendable(pData->getId(), CtiPendable::CtiPendableAction_ControlStatusComplete, NULL, pData->getTime() );
-    
+
             /*if( TriggerMgr.isAVerificationPoint(point->getPointID()) )
             {
                 PtVerifyTriggerSPtr verificationPtr;
                 if( verificationPtr = TriggerMgr.getPointTriggerFromVerificationID(point->getID()) )
                 {
                     pendable->_pointID = verificationPtr->dbTriggerData.getPointID();
-    
+
                     //This may hit the database.
                     CtiPointSPtr pCtrlPt = PointMgr.getPoint(verificationPtr->dbTriggerData.getPointID());
-    
+
                     if( pCtrlPt )      // We do know this point..
                     {
                         const CtiDynamicPointDispatch *pCtrlDyn = PointMgr.getDynamic(pCtrlPt);
@@ -7870,11 +7870,11 @@ void CtiVanGogh::checkStatusCommandFail(int alarm, CtiPointDataMsg *pData, CtiMu
             pendable->_value = pData->getValue();
             pendable->_tags = tags;
             _pendingOpThread.push( pendable );
-    
+
             if(tags & TAG_CONTROL_PENDING)                                          // Are we still awaiting the start of control?
             {
                 pDyn->getDispatch().resetTags( TAG_CONTROL_PENDING );               // We got to the desired state, no longer pending.. we are now controlling!
-    
+
                 if(gDispatchDebugLevel & DISPATCH_DEBUG_CONTROLS)
                 {
                     if(pDyn->getValue() == pData->getValue())                       // Not changing, must be a control refresh
@@ -8055,7 +8055,7 @@ CtiMultiMsg* CtiVanGogh::resetControlHours()
                 if(isDeviceGroupType(&(*iter)))
                 {
                     deviceID = iter->getID();
-                    
+
                     point = PointMgr.getOffsetTypeEqual(deviceID, ANNUALCONTROLHISTOFFSET, AnalogPointType);
                     if(point)
                     {
@@ -8063,7 +8063,7 @@ CtiMultiMsg* CtiVanGogh::resetControlHours()
                         if(pDyn)
                         {
                             CtiDate ptdate = CtiDate(pDyn->getTimeStamp());
-                        
+
                             if( ANNUALCONTROLHISTOFFSET == point->getPointOffset() && today.year() != ptdate.year() )
                             {
                                 CtiPointDataMsg *pDat = CTIDBG_new CtiPointDataMsg(point->getID(), 0, pDyn->getQuality(), AnalogPointType, "Yearly History Reset", pDyn->getDispatch().getTags());
@@ -8082,7 +8082,7 @@ CtiMultiMsg* CtiVanGogh::resetControlHours()
                         if(pDyn)
                         {
                             CtiDate ptdate = CtiDate(pDyn->getTimeStamp());
-        
+
                             if( MONTHLYCONTROLHISTOFFSET == point->getPointOffset() && today.month() != ptdate.month() )
                             {
                                 CtiPointDataMsg *pDat = CTIDBG_new CtiPointDataMsg(point->getID(), 0, pDyn->getQuality(), AnalogPointType, "Monthly History Reset", pDyn->getDispatch().getTags());
@@ -8101,7 +8101,7 @@ CtiMultiMsg* CtiVanGogh::resetControlHours()
                         if(pDyn)
                         {
                             CtiDate ptdate = CtiDate(pDyn->getTimeStamp());
-    
+
                             if( DAILYCONTROLHISTOFFSET == point->getPointOffset() && today.day() != ptdate.day() )
                             {
                                 CtiPointDataMsg *pDat = CTIDBG_new CtiPointDataMsg(point->getID(), 0, pDyn->getQuality(), AnalogPointType, "Daily History Reset", pDyn->getDispatch().getTags());
@@ -8231,7 +8231,7 @@ void CtiVanGogh::sendPendingControlRequest(const CtiPointDataMsg &aPD, CtiPointS
     CtiPointDataMsg *pPseudoValPD = 0;
     if(pDyn)
     {
-    
+
         CtiPendingPointOperations *pendingControlRequest = CTIDBG_new CtiPendingPointOperations(point->getID());
         pendingControlRequest->setType(CtiPendingPointOperations::pendingControl);
         pendingControlRequest->setControlState( CtiPendingPointOperations::controlSentToPorter );
@@ -8240,19 +8240,19 @@ void CtiVanGogh::sendPendingControlRequest(const CtiPointDataMsg &aPD, CtiPointS
         pendingControlRequest->setControlTimeout(verificationPtr->dbTriggerData.getCommandTimeOut());
         pendingControlRequest->setControlCompleteDeadband(verificationPtr->dbTriggerData.getVerificationDeadband());
         pendingControlRequest->setExcludeFromHistory(!isDeviceGroupType(point->getDeviceID()));
-    
+
         pendingControlRequest->getControl().setPAOID( point->getDeviceID() );
         pendingControlRequest->getControl().setStartTime(CtiTime(YUKONEOT));
         pendingControlRequest->getControl().setControlDuration(0);
-    
+
         string devicename = resolveDeviceName(point);
-    
+
         if( verificationPtr->dbTriggerData.getVerificationID() != 0 )
         {
             const CtiTablePointAlarming &alarming = PointMgr.getAlarming(point);
-    
+
             CtiSignalMsg *pFailSig = CTIDBG_new CtiSignalMsg(point->getID(), aPD.getSOE(), devicename + " / " + point->getName() + ": Triggered Control Failed", getAlarmStateName( alarming.getAlarmCategory(CtiTablePointAlarming::commandFailure) ), GeneralLogType, alarming.getAlarmCategory(CtiTablePointAlarming::commandFailure), aPD.getUser());
-    
+
             pFailSig->setTags((pDyn->getDispatch().getTags() & ~SIGNAL_MANAGER_MASK));
             if(pFailSig->getSignalCategory() > SignalEvent)
             {
@@ -8260,18 +8260,18 @@ void CtiVanGogh::sendPendingControlRequest(const CtiPointDataMsg &aPD, CtiPointS
                 pFailSig->setLogType(AlarmCategoryLogType);
             }
             pFailSig->setCondition(CtiTablePointAlarming::commandFailure);
-    
+
             pendingControlRequest->setSignal( pFailSig );
         }
-    
+
         addToPendingSet(pendingControlRequest, CtiTime::now());
-    
+
         if(gDispatchDebugLevel & DISPATCH_DEBUG_CONTROLS)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " " << devicename << " / " << point->getName() << " has gone CONTROL SUBMITTED. Control expires at " << CtiTime( aPD.getMessageTime() + verificationPtr->dbTriggerData.getCommandTimeOut()) << endl;
         }
-    
+
         CtiSignalMsg *pCRP = CTIDBG_new CtiSignalMsg(point->getID(), aPD.getSOE(), "Triggered Control Sent", string(), GeneralLogType, SignalEvent, aPD.getUser());
         pDyn->getDispatch().setTags( TAG_CONTROL_PENDING );
         pCRP->setTags(pDyn->getDispatch().getTags() & ~SIGNAL_MANAGER_MASK);
@@ -8402,7 +8402,7 @@ void CtiVanGogh::checkForStalePoints(CtiMultiWrapper &aWrap)
                                         newTimeData.time = updatedIter->second + (alarmTime*60);
                                         newTimeData.pointID = point->getPointID();
                                         _expirationSet.insert(newTimeData); //Be sure this cant recurse..
-    
+
                                         if( _signalManager.isAlarmActive(point->getPointID(), alarm) || pDyn->isConditionActive(alarm) )
                                         {
                                             if( gDispatchDebugLevel & DISPATCH_DEBUG_ALARMS )
