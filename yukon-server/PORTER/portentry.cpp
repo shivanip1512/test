@@ -1,5 +1,3 @@
-* REVISION     :  $Revision: 1.63.2.1 $
-* DATE         :  $Date: 2008/11/13 17:23:43 $
 #include "yukon.h"
 #if !defined (NOMINMAX)
 #define NOMINMAX
