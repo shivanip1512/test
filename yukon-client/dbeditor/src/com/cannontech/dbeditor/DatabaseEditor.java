@@ -278,140 +278,88 @@ public DatabaseEditor() {
  */
 public void actionPerformed(ActionEvent event)
 {
-	if( !( event.getSource() instanceof JMenuItem) )
+	if( !( event.getSource() instanceof JMenuItem) ) {
 		return;
+	}
 
 	JMenuItem item = (JMenuItem) event.getSource();
 
 	if( item == viewMenu.coreRadioButtonMenuItem &&
-		currentDatabase != DatabaseTypes.CORE_DB )
-	{
+		currentDatabase != DatabaseTypes.CORE_DB ) {
 		java.awt.Frame f = CtiUtilities.getParentFrame(getContentPane());
 		java.awt.Cursor savedCursor = f.getCursor();
-		try
-		{
+		try {
 			f.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );		
 	 
 			currentDatabase = DatabaseTypes.CORE_DB;
 			setDatabase(currentDatabase);
-		}
-		catch(Exception e)
-		{
+		} catch(Exception e) {
 			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
-		finally
-		{
+		} finally {
 			f.setCursor(savedCursor);
 		}
 
 		f.repaint();
-	}
-	else
-	if( item == viewMenu.lmRadioButtonMenuItem &&
-		currentDatabase != DatabaseTypes.LM_DB )
-	{
+	} else if( item == viewMenu.lmRadioButtonMenuItem &&
+		currentDatabase != DatabaseTypes.LM_DB ) {
 		java.awt.Frame f = CtiUtilities.getParentFrame(getContentPane());
 		java.awt.Cursor savedCursor = f.getCursor();
-		try
-		{
+		try {
 			f.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
 			
 			currentDatabase = DatabaseTypes.LM_DB;
 			setDatabase(currentDatabase);
-		}
-		catch(Exception e)
-		{
+		} catch(Exception e) {
 			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
-		finally
-		{
+		} finally {
 			f.setCursor(savedCursor);
 		}
 
 		f.repaint();
-	}
-	else
-	if( item == viewMenu.systemRadioButtonMenuItem &&
-		currentDatabase != DatabaseTypes.SYSTEM_DB )
-	{
+	} else if( item == viewMenu.systemRadioButtonMenuItem &&
+		currentDatabase != DatabaseTypes.SYSTEM_DB ) {
 		java.awt.Frame f = CtiUtilities.getParentFrame(getContentPane());
 		java.awt.Cursor savedCursor = f.getCursor();
-		try
-		{
+		try {
 			f.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
 			
 			currentDatabase = DatabaseTypes.SYSTEM_DB;
 			setDatabase(currentDatabase);
-		}
-		catch(Exception e)
-		{
+		} catch(Exception e) {
 			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
-		finally
-		{
+		} finally {
 			f.setCursor(savedCursor);
 		}
 
 		f.repaint();
-	}
-	else
-	if( item == fileMenu.exitMenuItem )
-	{
-		if( exitConfirm() )		
+	} else if( item == fileMenu.exitMenuItem ) {
+		if( exitConfirm() ) {
 			exit();
-	}
-	else
-	if( item == editMenu.editMenuItem )
-	{
+		}
+	} else if( item == editMenu.editMenuItem ) {
 		executeEditButton_ActionPerformed(event);
-	}
-	else 
-	if( item == editMenu.deleteMenuItem )
-	{
+	} else  if( item == editMenu.deleteMenuItem ) {
 		executeDeleteButton_ActionPerformed(event);
-	}
-	else
-	if( item == editMenu.copyMenuItem )
-	{
+	} else if( item == editMenu.copyMenuItem ) {
 		executeCopyButton_ActionPerformed( event );		
-	}
-	else if( item == editMenu.searchMenuItem )
-	{
+	} else if( item == editMenu.changeTypeMenuItem) {
+		executeChangeTypeButton_ActionPerformed(event );		
+	} else if( item == editMenu.searchMenuItem ) {
 		executeFindButton_ActionPerformed( event );
-	}
-	else if ( item == toolsMenu.regenerateMenuItem )
-	{
+	} else if ( item == toolsMenu.regenerateMenuItem ) {
 		executeRegenerateButton_ActionPerformed( event);
-	}
-	else if ( item == helpMenu.ptOffsetLegendMenuItem )
-	{
+	} else if ( item == helpMenu.ptOffsetLegendMenuItem ) {
 		executePointOffsetLegend_ActionPerformed( event );
-	}
-	
-	else
-	if( item == viewMenu.refreshMenuItem )
-	{
+	} else if( item == viewMenu.refreshMenuItem ) {
 		viewMenuRefreshAction();
-		
-	}
-	else
-	if( item == viewMenu.showMessageLogButton )
-	{
+	} else if( item == viewMenu.showMessageLogButton ) {
 		getMessagePanel().setVisible( viewMenu.showMessageLogButton.isSelected() );
-	}
-	else
-	if( item == helpMenu.aboutMenuItem )
-	{
+	} else if( item == helpMenu.aboutMenuItem ) {
 		executeAboutButton_ActionPerformed( event );
-	}
-	else
-	if( item == helpMenu.helpTopicMenuItem )
-	{
+	} else if( item == helpMenu.helpTopicMenuItem ) {
 		//run and show our help program
 		CtiUtilities.showHelp( CommonDefines.HELP_FILE );
-	}
-	else
-	{
+	} else {
 		displayAWizardPanel( item );
 	}
 	
