@@ -264,16 +264,19 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 					  && !DeviceTypesFuncs.isIon(devType))
 				    || devType == PAOGroups.DAVISWEATHER)
 		{
+			getDeviceIEDNamePanel().setDeviceType(devType);
 			getDeviceIEDNamePanel().setFirstFocus();
             return getDeviceIEDNamePanel();
 		}
 		else if( devType == PAOGroups.VIRTUAL_SYSTEM )
 		{
+			getDeviceVirtualNamePanel().setDeviceType(devType);
 			getDeviceVirtualNamePanel().setFirstFocus();
             return getDeviceVirtualNamePanel();
 		}
         else if ( devType == PAOGroups.NEUTRAL_MONITOR || devType == PAOGroups.FAULT_CI )
         {
+        	getDeviceGridPanel().setDeviceType(devType);
             getDeviceGridPanel().setFirstFocus();
             return getDeviceGridPanel();
         }

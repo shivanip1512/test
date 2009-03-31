@@ -2,12 +2,20 @@ package com.cannontech.dbeditor.wizard.device;
 
 import java.awt.Dimension;
 
+import org.apache.commons.lang.StringUtils;
+
+import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.database.data.device.IEDBase;
 
 public class DeviceIEDNamePanel extends com.cannontech.common.gui.util.DataInputPanel implements javax.swing.event.CaretListener {
 	private javax.swing.JLabel ivjNameLabel = null;
 	private javax.swing.JTextField ivjNameTextField = null;
 	private javax.swing.JPanel ivjJPanel1 = null;
+	
+	private DeviceBase deviceBase = null;
+	private javax.swing.JLabel ivjJLabelErrorMessage = null;
+
 /**
  * Constructor
  */
@@ -76,6 +84,13 @@ private javax.swing.JPanel getJPanel1() {
 			constraintsNameTextField.anchor = java.awt.GridBagConstraints.EAST;
 			constraintsNameTextField.insets = new java.awt.Insets(5, 10, 5, 0);
 			getJPanel1().add(getNameTextField(), constraintsNameTextField);
+			
+			java.awt.GridBagConstraints constraintsJLabelErrorMsg = new java.awt.GridBagConstraints();
+			constraintsJLabelErrorMsg.gridx = 0; constraintsJLabelErrorMsg.gridy = 1;
+			constraintsJLabelErrorMsg.gridwidth = 2;
+			constraintsJLabelErrorMsg.anchor = java.awt.GridBagConstraints.WEST;
+			getJPanel1().add(getJLabelErrorMessage(), constraintsJLabelErrorMsg);
+
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -199,20 +214,62 @@ private void initialize() {
 	
 	// user code end
 }
+
+private javax.swing.JLabel getJLabelErrorMessage() {
+	if (ivjJLabelErrorMessage == null) {
+		try {
+			ivjJLabelErrorMessage = new javax.swing.JLabel();
+			ivjJLabelErrorMessage.setName("JLabelErrorMsg");
+			ivjJLabelErrorMessage.setOpaque(false);
+			ivjJLabelErrorMessage.setVisible(true);
+			ivjJLabelErrorMessage.setText("TEST la;skdjfasjeif;o awej;ifjasifasdf");
+			ivjJLabelErrorMessage.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+			ivjJLabelErrorMessage.setFont(new java.awt.Font("Arial", 1, 10));
+			ivjJLabelErrorMessage.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+			// user code begin {1}
+
+			ivjJLabelErrorMessage.setVisible( false );
+
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJLabelErrorMessage;
+}
+
 /**
  * This method was created in VisualAge.
  * @return boolean
  */
 public boolean isInputValid() {
-	if( getNameTextField().getText() == null   ||
-		getNameTextField().getText().length() < 1 )
-	{
+	String deviceName = getNameTextField().getText();
+	if( StringUtils.isBlank(deviceName)) {
 		setErrorString("The Name text field must be filled in");
 		return false;
 	}
+	
+	if( !isUniquePao(deviceName, deviceBase.getPAOCategory(), deviceBase.getPAOClass())) {
+		setErrorString("Name '" + deviceName + "' is already in use.");
+     	getJLabelErrorMessage().setText( "(" + getErrorString() + ")" );
+     	getJLabelErrorMessage().setToolTipText( "(" + getErrorString() + ")" );
+     	getJLabelErrorMessage().setVisible( true );
+		return false;
+	}
 
+	getJLabelErrorMessage().setText( "" );
+   	getJLabelErrorMessage().setToolTipText( "" );
+    getJLabelErrorMessage().setVisible( false );
 	return true;
 }
+
+public void setDeviceType(int deviceType) 
+{
+	deviceBase = DeviceFactory.createDevice(deviceType);
+}
+
 /**
  * main entrypoint - starts the part when it is run as an application
  * @param args java.lang.String[]
