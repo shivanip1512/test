@@ -690,7 +690,7 @@ bool CtiDeviceManager::loadDeviceType(id_range_t &paoids, const string &device_n
 
     addIDClause(selector, keyTable["paobjectid"], paoids);
 
-    RWDBReader rdr = selector.reader(conn);
+    RWDBReader rdr = ExecuteQuery( conn, makeLeftOuterJoinSQL92Compliant( string( selector.asString() ) ) );
 
     if( DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok )
     {

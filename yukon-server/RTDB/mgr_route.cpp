@@ -151,7 +151,7 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(RWDBReader &), BOOL (
                 }
                 CtiRouteCCU().getSQL( db, keyTable, selector );
                 selector.where( rwdbUpper(keyTable["category"]) == RWDBExpr("ROUTE") && selector.where());
-                RWDBReader  rdr = selector.reader(conn);
+                RWDBReader rdr = ExecuteQuery( conn, makeLeftOuterJoinSQL92Compliant( string( selector.asString() ) ) );
                 if(DebugLevel & 0x00040000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;

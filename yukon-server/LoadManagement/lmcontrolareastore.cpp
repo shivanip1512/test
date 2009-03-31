@@ -878,7 +878,7 @@ void CtiLMControlAreaStore::reset()
                         }
 
                         CtiLMProgramDirectSPtr currentLMProgramDirect;
-                        RWDBReader rdr = selector.reader(conn);
+                        RWDBReader rdr = ExecuteQuery( conn, makeLeftOuterJoinSQL92Compliant( string( selector.asString() ) ) );
                         RWDBNullIndicator isNull;
                         int total_groups_assigned = 0; //keep track of how many groups we attach to programs for sanity
                         while( rdr() )
@@ -1049,7 +1049,7 @@ void CtiLMControlAreaStore::reset()
                             dout << CtiTime() << " - " << selector.asString().data() << endl;
                         }
 
-                        RWDBReader rdr = selector.reader(conn);
+                        RWDBReader rdr = ExecuteQuery( conn, makeLeftOuterJoinSQL92Compliant( string( selector.asString() ) ) );
                         RWDBNullIndicator isNull;
                         while( rdr() )
                         {
@@ -1195,7 +1195,7 @@ void CtiLMControlAreaStore::reset()
                         }
 
                         CtiLMProgramCurtailmentSPtr currentLMProgramCurtailment;
-                        RWDBReader rdr = selector.reader(conn);
+                        RWDBReader rdr = ExecuteQuery( conn, makeLeftOuterJoinSQL92Compliant( string( selector.asString() ) ) );
                         RWDBNullIndicator isNull;
                         while( rdr() )
                         {
@@ -1360,7 +1360,7 @@ void CtiLMControlAreaStore::reset()
                         }
 
                         CtiLMProgramBaseSPtr currentLMProgramEnergyExchange;
-                        RWDBReader rdr = selector.reader(conn);
+                        RWDBReader rdr = ExecuteQuery( conn, makeLeftOuterJoinSQL92Compliant( string( selector.asString() ) ) );
                         RWDBNullIndicator isNull;
                         while( rdr() )
                         {
@@ -1747,7 +1747,7 @@ void CtiLMControlAreaStore::reset()
                             dout << CtiTime() << " - " << selector.asString().data() << endl;
                         }
 
-                        RWDBReader rdr = selector.reader(conn);
+                        RWDBReader rdr = ExecuteQuery( conn, makeLeftOuterJoinSQL92Compliant( string( selector.asString() ) ) );
 
                         CtiLMControlArea* currentLMControlArea = NULL;
                         CtiLMProgramBaseSPtr currentLMProgramBase;
@@ -1891,7 +1891,7 @@ void CtiLMControlAreaStore::reset()
                             dout << CtiTime() << " - " << selector.asString().data() << endl;
                         }
 
-                        RWDBReader rdr = selector.reader(conn);
+                        RWDBReader rdr = ExecuteQuery( conn, makeLeftOuterJoinSQL92Compliant( string( selector.asString() ) ) );
                         while( rdr() )
                         {
                             CtiLMControlAreaTrigger* newTrigger = CTIDBG_new CtiLMControlAreaTrigger(rdr);
