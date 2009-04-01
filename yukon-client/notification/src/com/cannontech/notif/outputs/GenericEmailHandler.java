@@ -27,7 +27,7 @@ public abstract class GenericEmailHandler extends OutputHandler {
             CTILogger.debug("Using " + notifFormatter + " for " + contact);
             List emailList = contact.getNotifications(getTypeChecker());
             if (emailList.size() == 0) {
-                CTILogger.warn("Unable to " + getNotificationMethod() + " notification for " + contact 
+                CTILogger.debug("Unable to " + getNotificationMethod() + " notification for " + contact 
                                + ", no addresses exist.");
                 return;
             }
