@@ -365,13 +365,14 @@ void CtiConnection::InThread()
                         }
                         catch(...)
                         {
+                            MsgPtr = NULL;
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
                         }
 
-                        if(inQueue)
+                        if(inQueue && MsgPtr != NULL)
                         {
                             try
                             {
