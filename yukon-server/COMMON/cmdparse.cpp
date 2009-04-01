@@ -40,6 +40,9 @@ static const boost::regex   re_date     (str_date);
 static const boost::regex   re_time     (str_time);
 static const boost::regex   re_daterange(str_daterange);
 
+static const boost::regex   re_target   ("target.+assign");
+static const boost::regex   re_assign   ("assign.+");
+
 CtiCommandParser::CtiCommandParser(const string str)
 {
     CtiString cmdStr(str);
@@ -3972,7 +3975,6 @@ void CtiCommandParser::doParseExpresscomAddressing(const string &_CmdStr)
     static const boost::regex re_uda     (CtiString("uda ")      + str_num);
     static const boost::regex re_program (CtiString("program ")  + str_num);
     static const boost::regex re_splinter(CtiString("splinter ") + str_num);
-    static const boost::regex re_target  (CtiString("target.*assign"));
 
     // putconfig xcom target .. assign .. command should not set these!
     if(CmdStr.match(re_target).empty())
@@ -4547,10 +4549,6 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
     CtiString   valStr;
     CtiString   token;
 
-    // This is also defined in doParseExpresscomAddressing
-    static const boost::regex re_target  (CtiString("target.*assign"));
-    static const boost::regex re_assign  (CtiString("assign.*"));
-
     CtiTokenizer   tok(CmdStr);
 
     token = tok(); // Get the first one into the hopper....
@@ -4837,14 +4835,8 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
 
             _cmd["xca_zip_target"] = CtiParseValue( _num );
         }
-        //Note both UDA and USER are considered valid and do exactly the same thing
-        if(!(valStr = token.match(CtiString("uda *") + str_anynum)).empty())
-        {
-            _num = strtol(valStr.match(re_anynum).c_str(), &p, 0);
-
-            _cmd["xca_uda_target"] = CtiParseValue( _num );
-        }
-        if(!(valStr = token.match(CtiString("user *") + str_anynum)).empty())
+        if(!(valStr = token.match(CtiString("uda *") + str_anynum)).empty() ||
+           !(valStr = token.match(CtiString("user *") + str_anynum)).empty())
         {
             _num = strtol(valStr.match(re_anynum).c_str(), &p, 0);
 
@@ -4895,14 +4887,8 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
 
             _cmd["xca_zip"] = CtiParseValue( _num );
         }
-        //Note both UDA and USER are considered valid and do exactly the same thing
-        if(!(valStr = token.match(CtiString("uda *") + str_anynum)).empty())
-        {
-            _num = strtol(valStr.match(re_anynum).c_str(), &p, 0);
-
-            _cmd["xca_uda"] = CtiParseValue( _num );
-        }
-        if(!(valStr = token.match(CtiString("user *") + str_anynum)).empty())
+        if(!(valStr = token.match(CtiString("uda *") + str_anynum)).empty() ||
+           !(valStr = token.match(CtiString("user *") + str_anynum)).empty())
         {
             _num = strtol(valStr.match(re_anynum).c_str(), &p, 0);
 
