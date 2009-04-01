@@ -3972,18 +3972,23 @@ void CtiCommandParser::doParseExpresscomAddressing(const string &_CmdStr)
     static const boost::regex re_uda     (CtiString("uda ")      + str_num);
     static const boost::regex re_program (CtiString("program ")  + str_num);
     static const boost::regex re_splinter(CtiString("splinter ") + str_num);
+    static const boost::regex re_target  (CtiString("target.*assign"));
 
-    CtiString temp;
-
-    if( !(temp = CmdStr.match(re_serial)).empty() )   _cmd["xc_serial"]   = atoi(temp.match((const boost::regex)str_num).data());
-    if( !(temp = CmdStr.match(re_spid)).empty() )     _cmd["xc_spid"]     = atoi(temp.match((const boost::regex)str_num).data());
-    if( !(temp = CmdStr.match(re_geo)).empty() )      _cmd["xc_geo"]      = atoi(temp.match((const boost::regex)str_num).data());
-    if( !(temp = CmdStr.match(re_sub)).empty() )      _cmd["xc_sub"]      = atoi(temp.match((const boost::regex)str_num).data());
-    if( !(temp = CmdStr.match(re_feeder)).empty() )   _cmd["xc_feeder"]   = atoi(temp.match((const boost::regex)str_num).data());
-    if( !(temp = CmdStr.match(re_zip)).empty() )      _cmd["xc_zip"]      = atoi(temp.match((const boost::regex)str_num).data());
-    if( !(temp = CmdStr.match(re_uda)).empty() )      _cmd["xc_uda"]      = atoi(temp.match((const boost::regex)str_num).data());
-    if( !(temp = CmdStr.match(re_program)).empty() )  _cmd["xc_program"]  = atoi(temp.match((const boost::regex)str_num).data());
-    if( !(temp = CmdStr.match(re_splinter)).empty() ) _cmd["xc_splinter"] = atoi(temp.match((const boost::regex)str_num).data());
+    // putconfig xcom target .. assign .. command should not set these!
+    if(CmdStr.match(re_target).empty())
+    {
+        CtiString temp;
+    
+        if( !(temp = CmdStr.match(re_serial)).empty() )   _cmd["xc_serial"]   = atoi(temp.match((const boost::regex)str_num).data());
+        if( !(temp = CmdStr.match(re_spid)).empty() )     _cmd["xc_spid"]     = atoi(temp.match((const boost::regex)str_num).data());
+        if( !(temp = CmdStr.match(re_geo)).empty() )      _cmd["xc_geo"]      = atoi(temp.match((const boost::regex)str_num).data());
+        if( !(temp = CmdStr.match(re_sub)).empty() )      _cmd["xc_sub"]      = atoi(temp.match((const boost::regex)str_num).data());
+        if( !(temp = CmdStr.match(re_feeder)).empty() )   _cmd["xc_feeder"]   = atoi(temp.match((const boost::regex)str_num).data());
+        if( !(temp = CmdStr.match(re_zip)).empty() )      _cmd["xc_zip"]      = atoi(temp.match((const boost::regex)str_num).data());
+        if( !(temp = CmdStr.match(re_uda)).empty() )      _cmd["xc_uda"]      = atoi(temp.match((const boost::regex)str_num).data());
+        if( !(temp = CmdStr.match(re_program)).empty() )  _cmd["xc_program"]  = atoi(temp.match((const boost::regex)str_num).data());
+        if( !(temp = CmdStr.match(re_splinter)).empty() ) _cmd["xc_splinter"] = atoi(temp.match((const boost::regex)str_num).data());
+    }
 }
 
 
@@ -4542,6 +4547,10 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
     CtiString   valStr;
     CtiString   token;
 
+    // This is also defined in doParseExpresscomAddressing
+    static const boost::regex re_target  (CtiString("target.*assign"));
+    static const boost::regex re_assign  (CtiString("assign.*"));
+
     CtiTokenizer   tok(CmdStr);
 
     token = tok(); // Get the first one into the hopper....
@@ -4788,7 +4797,138 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
         }
     }
 
-    if(!(token = CmdStr.match("((assign)|(address))")).empty())
+    if(!(token = CmdStr.match(re_target)).empty())
+    {
+        _cmd["xcgenericaddress"] = TRUE;
+
+        if(!(valStr = token.match(CtiString("serial *") + str_anynum)).empty())
+        {
+            _num = strtol(valStr.match(re_anynum).c_str(), &p, 0);
+
+            _cmd["xca_serial_target"] = CtiParseValue( _num );
+        }
+        if(!(valStr = token.match(CtiString("spid *") + str_anynum)).empty())
+        {
+            _num = strtol(valStr.match(re_anynum).c_str(), &p, 0);
+
+            _cmd["xca_spid_target"] = CtiParseValue( _num );
+        }
+        if(!(valStr = token.match(CtiString("geo *") + str_anynum)).empty())
+        {
+            _num = strtol(valStr.match(re_anynum).c_str(), &p, 0);
+
+            _cmd["xca_geo_target"] = CtiParseValue( _num );
+        }
+        if(!(valStr = token.match(CtiString("sub(station)? *") + str_anynum)).empty())
+        {
+            _num = strtol(valStr.match(re_anynum).c_str(), &p, 0);
+
+            _cmd["xca_sub_target"] = CtiParseValue( _num );
+        }
+        if(!(valStr = token.match(CtiString("feeder *") + str_anynum)).empty())
+        {
+            _num = strtol(valStr.match(re_anynum).c_str(), &p, 0);
+
+            _cmd["xca_feeder_target"] = CtiParseValue( _num );
+        }
+        if(!(valStr = token.match(CtiString("zip *") + str_anynum)).empty())
+        {
+            _num = strtol(valStr.match(re_anynum).c_str(), &p, 0);
+
+            _cmd["xca_zip_target"] = CtiParseValue( _num );
+        }
+        //Note both UDA and USER are considered valid and do exactly the same thing
+        if(!(valStr = token.match(CtiString("uda *") + str_anynum)).empty())
+        {
+            _num = strtol(valStr.match(re_anynum).c_str(), &p, 0);
+
+            _cmd["xca_uda_target"] = CtiParseValue( _num );
+        }
+        if(!(valStr = token.match(CtiString("user *") + str_anynum)).empty())
+        {
+            _num = strtol(valStr.match(re_anynum).c_str(), &p, 0);
+
+            _cmd["xca_uda_target"] = CtiParseValue( _num );
+        }
+        if(!(valStr = token.match(CtiString("program *") + str_anynum)).empty())
+        {
+            _num = strtol(valStr.match(re_anynum).c_str(), &p, 0);
+
+            _cmd["xca_program_target"] = CtiParseValue( _num );
+        }
+        if(!(valStr = token.match(CtiString("splinter *") + str_anynum)).empty())
+        {
+            _num = strtol(valStr.match(re_anynum).c_str(), &p, 0);
+
+            _cmd["xca_splinter_target"] = CtiParseValue( _num );
+        }
+
+        token = CmdStr.match(re_assign);
+
+        if(!(valStr = token.match(CtiString("spid *") + str_anynum)).empty())
+        {
+            _num = strtol(valStr.match(re_anynum).c_str(), &p, 0);
+
+            _cmd["xca_spid"] = CtiParseValue( _num );
+        }
+        if(!(valStr = token.match(CtiString("geo *") + str_anynum)).empty())
+        {
+            _num = strtol(valStr.match(re_anynum).c_str(), &p, 0);
+
+            _cmd["xca_geo"] = CtiParseValue( _num );
+        }
+        if(!(valStr = token.match(CtiString("sub(station)? *") + str_anynum)).empty())
+        {
+            _num = strtol(valStr.match(re_anynum).c_str(), &p, 0);
+
+            _cmd["xca_sub"] = CtiParseValue( _num );
+        }
+        if(!(valStr = token.match(CtiString("feeder *") + str_anynum)).empty())
+        {
+            _num = strtol(valStr.match(re_anynum).c_str(), &p, 0);
+
+            _cmd["xca_feeder"] = CtiParseValue( _num );
+        }
+        if(!(valStr = token.match(CtiString("zip *") + str_anynum)).empty())
+        {
+            _num = strtol(valStr.match(re_anynum).c_str(), &p, 0);
+
+            _cmd["xca_zip"] = CtiParseValue( _num );
+        }
+        //Note both UDA and USER are considered valid and do exactly the same thing
+        if(!(valStr = token.match(CtiString("uda *") + str_anynum)).empty())
+        {
+            _num = strtol(valStr.match(re_anynum).c_str(), &p, 0);
+
+            _cmd["xca_uda"] = CtiParseValue( _num );
+        }
+        if(!(valStr = token.match(CtiString("user *") + str_anynum)).empty())
+        {
+            _num = strtol(valStr.match(re_anynum).c_str(), &p, 0);
+
+            _cmd["xca_uda"] = CtiParseValue( _num );
+        }
+        if(!(valStr = token.match(CtiString("relay *") + str_anynum)).empty())
+        {
+            _num = strtol(valStr.match(re_anynum).c_str(), &p, 0);
+
+            _cmd["xca_load"] = CtiParseValue( _num );
+        }
+        if(!(valStr = token.match(CtiString("program *") + str_anynum)).empty())
+        {
+            _num = strtol(valStr.match(re_anynum).c_str(), &p, 0);
+
+            _cmd["xca_program"] = CtiParseValue( _num );
+        }
+        if(!(valStr = token.match(CtiString("splinter *") + str_anynum)).empty())
+        {
+            _num = strtol(valStr.match(re_anynum).c_str(), &p, 0);
+
+            _cmd["xca_splinter"] = CtiParseValue( _num );
+        }
+
+    } //Note that "assign" appears in re_target. This necessitates the "else" here
+    else if(!(token = CmdStr.match("((assign)|(address))")).empty())
     {
         {
             _cmd["xcaddress"] = TRUE;

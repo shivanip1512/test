@@ -99,10 +99,8 @@ void CtiProtocolExpresscom::addAddressing( UINT    serial,
     return;
 }
 
-bool CtiProtocolExpresscom::parseAddressing(CtiCommandParser &parse)
+INT CtiProtocolExpresscom::parseAddressing(CtiCommandParser &parse)
 {
-    bool status = false;
-
     _uniqueAddress      = parse.getiValue("xc_serial",   0);  //( serial     != -1 ? serial     : 0 );
     _spidAddress        = parse.getiValue("xc_spid",     0);  //( spid       != -1 ? spid       : 0);
     _geoAddress         = parse.getiValue("xc_geo",      0);  //( geo        != -1 ? geo        : 0);
@@ -115,14 +113,29 @@ bool CtiProtocolExpresscom::parseAddressing(CtiCommandParser &parse)
 
     resolveAddressLevel();
 
-    return status;
+    return NORMAL;
 }
 
+INT CtiProtocolExpresscom::parseTargetAddressing(CtiCommandParser &parse)
+{
+    _uniqueAddress      = parse.getiValue("xca_serial_target",   0);  //( serial     != -1 ? serial     : 0 );
+    _spidAddress        = parse.getiValue("xca_spid_target",     0);  //( spid       != -1 ? spid       : 0);
+    _geoAddress         = parse.getiValue("xca_geo_target",      0);  //( geo        != -1 ? geo        : 0);
+    _substationAddress  = parse.getiValue("xca_sub_target",      0);  //( substation != -1 ? substation : 0);
+    _feederAddress      = parse.getiValue("xca_feeder_target",   0);  //( feeder     != -1 ? feeder     : 0);
+    _zipAddress         = parse.getiValue("xca_zip_target",      0);  //( zip        != -1 ? zip        : 0);
+    _udaAddress         = parse.getiValue("xca_uda_target",      0);  //( uda        != -1 ? uda        : 0);
+    _programAddress     = parse.getiValue("xca_program_target",  0);  //( program    != -1 ? program    : 0);
+    _splinterAddress    = parse.getiValue("xca_splinter_target", 0);  //( splinter   != -1 ? splinter   : 0);
+
+    resolveAddressLevel();
+
+    // Either not using unique address, or unique address is > 0
+    return (_uniqueAddress > 0 || _addressLevel != atIndividual) ? NORMAL : BADPARAM;
+}
 
 void CtiProtocolExpresscom::addressMessage()
 {
-    bool status = true;
-
     // Let us assume that we MUST always be called first!
     _message.clear();
     _lengths.clear();
@@ -676,20 +689,18 @@ INT CtiProtocolExpresscom::thermostatSetpointControl(BYTE minTemp, BYTE maxTemp,
 }
 INT CtiProtocolExpresscom::backlightIlluminationMsg(BYTE numCycles, BYTE dutyCycle, BYTE cycPeriod)
 {
-    INT status = NoError;
     _message.push_back( mtBacklightIllumination );
     _message.push_back( numCycles );
     _message.push_back( dutyCycle );
     _message.push_back( cycPeriod );
 
     incrementMessageCount();
-    return status;
+    return NoError;
 }
 
 
 INT CtiProtocolExpresscom::configuration(BYTE configNumber, BYTE length, PBYTE data)
 {
-    INT status = NoError;
     _message.push_back( mtConfiguration );
     _message.push_back( configNumber );
     _message.push_back( length );
@@ -700,7 +711,7 @@ INT CtiProtocolExpresscom::configuration(BYTE configNumber, BYTE length, PBYTE d
     }
 
     incrementMessageCount();
-    return status;
+    return NoError;
 }
 
 INT CtiProtocolExpresscom::rawconfiguration(string str)
@@ -1285,8 +1296,32 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse, CtiOutMess
             if(go)
             {
                 configureGeoAddressing(parse);
-                configureLoadAddressing(parse);
+                configureLoadMaskAddressing(parse);
             }
+        }
+    }
+
+    if(parse.isKeyValid("xcgenericaddress"))
+    {
+        //Add our new target addressing! This overrides all addressing levels!
+        if((status = parseTargetAddressing(parse)) != NORMAL)
+        {
+            //We already know it is wrong, quit!
+            return status;
+        }
+
+        addressMessage();
+
+        // Send Zip, UDA, Feeder, Substation, Geo, SPID (Config 0x01)
+        int tempStatus = configureGeoAddressing(parse);
+        // Send program, splinter, load (Config 0x07)
+        status = configureLoadAddressing(parse);
+
+        // If either succeeds, we are ok. Unless we have MISPARAM which indicates
+        // we would be sending something unexpected based on user input.
+        if(tempStatus == NORMAL && status != MISPARAM)
+        {
+            status = NORMAL;
         }
     }
 
@@ -1648,7 +1683,7 @@ INT CtiProtocolExpresscom::schedulePoint(vector< BYTE > &schedule)
 
 INT CtiProtocolExpresscom::configureGeoAddressing(CtiCommandParser &parse)
 {
-    INT status = NoError;
+    INT status = BADPARAM;
 
     BYTE length = 1;
     BYTE raw[20];
@@ -1706,9 +1741,10 @@ INT CtiProtocolExpresscom::configureGeoAddressing(CtiCommandParser &parse)
     return status;
 }
 
-INT CtiProtocolExpresscom::configureLoadAddressing(CtiCommandParser &parse)
+// Takes a list of programs, splinters, and loads and possibly sends multiple commands
+INT CtiProtocolExpresscom::configureLoadMaskAddressing(CtiCommandParser &parse)
 {
-    INT status = NoError;
+    INT status = BADPARAM;
 
     BYTE length = 1;
     BYTE raw[8];
@@ -1718,7 +1754,7 @@ INT CtiProtocolExpresscom::configureLoadAddressing(CtiCommandParser &parse)
 
     int program   = -1;
     int splinter  = -1;
-    BYTE loadmask = ((BYTE)parse.getiValue("xca_loadmask", 0) & 0x0f);
+    BYTE loadmask = parse.getiValue("xca_loadmask", 0);
     BYTE load;
 
     boost::char_separator<char> sep(",");
@@ -1755,6 +1791,39 @@ INT CtiProtocolExpresscom::configureLoadAddressing(CtiCommandParser &parse)
                 status = configuration( 0x07, length, raw );
             }
         }
+    }
+
+    return status;
+}
+
+// Configures a single load (1-15) or all loads (0)
+// Returns BADPARAM if the parameters are non existang, and MISPARAM if half of the parameters exist
+INT CtiProtocolExpresscom::configureLoadAddressing(CtiCommandParser &parse)
+{
+    INT status = BADPARAM;
+
+    BYTE length = 1;
+    BYTE raw[8];
+
+    int program   = parse.getiValue("xca_program");
+    int splinter  = parse.getiValue("xca_splinter");
+    int load      = parse.getiValue("xca_load");
+
+    if( load != INT_MIN && (program != INT_MIN || splinter != INT_MIN) )
+    {
+        length = 1;
+        raw[0] = (program >= 0 ? 0x20 : 0x00) | (splinter >= 0 ? 0x10 : 0x00) | (load);
+
+        if( program  != INT_MIN )  raw[length++] = (BYTE)program;
+        if( splinter != INT_MIN )  raw[length++] = (BYTE)splinter;
+
+        status = configuration( 0x07, length, raw );
+    }
+    else if( load != INT_MIN || program != INT_MIN || splinter != INT_MIN )
+    {
+        // If we dont have the combination of load and program or splinter, but we do have
+        // One of them, this is a different error.
+        status = MISPARAM;
     }
 
     return status;

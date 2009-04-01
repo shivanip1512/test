@@ -232,6 +232,7 @@ private:
     INT capControl(BYTE action, BYTE subAction, BYTE data1 = 0x00, BYTE data2 = 0x00);
 
     INT configureGeoAddressing(CtiCommandParser &parse);
+    INT configureLoadMaskAddressing(CtiCommandParser &parse);
     INT configureLoadAddressing(CtiCommandParser &parse);
     INT configureColdLoad(CtiCommandParser &parse);
     INT configureLCRMode(CtiCommandParser &parse);
@@ -239,6 +240,7 @@ private:
     INT configureEmetconSilverAddress(CtiCommandParser &parse);
     INT configureTargetLoadAmps(CtiCommandParser &parse);
     INT priority(BYTE priority);
+    INT parseTargetAddressing(CtiCommandParser &parse);
     unsigned short addCRC(unsigned short crc, unsigned char data);
     void calcCRC(std::vector< BYTE >::iterator data, unsigned char len);
     static unsigned short crctbl[256];
@@ -254,7 +256,7 @@ public:
      * This method incorporates all the assigned addressing into the parse object.
      */
     void addAddressing( UINT serial = 0, USHORT spid = 0, USHORT geo = 0, USHORT substation = 0, USHORT feeder = 0, UINT zip = 0, USHORT uda = 0, BYTE program = 0, BYTE splinter = 0);
-    bool parseAddressing(CtiCommandParser &parse);
+    INT parseAddressing(CtiCommandParser &parse);
 
     enum
     {
