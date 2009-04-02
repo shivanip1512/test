@@ -7,8 +7,6 @@
 #include "CommInterface.h"
 #include "types.h"
 
-#include <boost/optional.hpp>
-
 namespace Cti {
 namespace Simulator {
 
