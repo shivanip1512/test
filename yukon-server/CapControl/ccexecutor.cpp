@@ -2170,8 +2170,7 @@ void CtiCCCommandExecutor::OpenCapBank()
                             controlID = currentCapBank->getControlDeviceId();
                             if (!stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState)) 
                                 currentFeeder->setLastCapBankControlledDeviceId(currentCapBank->getPAOId());
-                            currentSubstationBus->setLastFeederControlledPAOId(currentFeeder->getPAOId());
-                            currentSubstationBus->setLastFeederControlledPosition(j);
+                            currentSubstationBus->setLastFeederControlled(currentFeeder->getPAOId());
                             currentSubstationBus->setLastOperationTime(CtiTime());
                             currentFeeder->setLastOperationTime(CtiTime());
                             //currentCapBank->setControlStatus(CtiCCCapBank::OpenPending);
@@ -2492,8 +2491,7 @@ void CtiCCCommandExecutor::CloseCapBank()
                             controlID = currentCapBank->getControlDeviceId();
                             if (!stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState)) 
                                 currentFeeder->setLastCapBankControlledDeviceId(currentCapBank->getPAOId());
-                            currentSubstationBus->setLastFeederControlledPAOId(currentFeeder->getPAOId());
-                            currentSubstationBus->setLastFeederControlledPosition(j);
+                            currentSubstationBus->setLastFeederControlled(currentFeeder->getPAOId());
                             currentSubstationBus->setLastOperationTime(CtiTime());
                             currentFeeder->setLastOperationTime(CtiTime());
                             //currentCapBank->setControlStatus(CtiCCCapBank::ClosePending);
@@ -2917,15 +2915,6 @@ void CtiCCCommandExecutor::ControlAllCapBanksByFeeder(LONG feederId, int control
         CtiCCSubstationBusPtr currentSubstationBus = store->findSubBusByPAObjectID(currentFeeder->getParentId());
         if (currentSubstationBus != NULL)
         {
-            CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
-            for(LONG j=0;j<ccFeeders.size();j++)
-            {
-                CtiCCFeederPtr tempFeeder = (CtiCCFeeder*)ccFeeders.at(j);
-                if( tempFeeder->getPAOId() == feederId )
-                {
-                    currentSubstationBus->setLastFeederControlledPosition(j);
-                }
-            }
             CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
             
             for(LONG k=0;k<ccCapBanks.size();k++)
@@ -4374,8 +4363,7 @@ void CtiCCCommandExecutor::Flip7010Device()
 
                             if (!stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState)) 
                                 currentFeeder->setLastCapBankControlledDeviceId(currentCapBank->getPAOId());
-                            currentSubstationBus->setLastFeederControlledPAOId(currentFeeder->getPAOId());
-                            currentSubstationBus->setLastFeederControlledPosition(j);
+                            currentSubstationBus->setLastFeederControlled(currentFeeder->getPAOId());
                             currentSubstationBus->setLastOperationTime(CtiTime());
                             currentFeeder->setLastOperationTime(CtiTime());
 
@@ -4759,8 +4747,7 @@ void CtiCCCommandExecutor::ConfirmSub()
 
                             if (!stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState)) 
                                 currentFeeder->setLastCapBankControlledDeviceId(currentCapBank->getPAOId());
-                            currentSubstationBus->setLastFeederControlledPAOId(currentFeeder->getPAOId());
-                            currentSubstationBus->setLastFeederControlledPosition(j);
+                            currentSubstationBus->setLastFeederControlled(currentFeeder->getPAOId());
                             currentSubstationBus->setLastOperationTime(CtiTime());
                             currentFeeder->setLastOperationTime(CtiTime());
 
@@ -4936,15 +4923,6 @@ void CtiCCCommandExecutor::ConfirmFeeder()
 
         
         
-        CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
-        for(LONG j=0;j<ccFeeders.size();j++)
-        {
-            CtiCCFeederPtr tempFeeder = (CtiCCFeeder*)ccFeeders.at(j);
-            if( tempFeeder->getPAOId() == fdrId )
-            {
-                currentSubstationBus->setLastFeederControlledPosition(j);
-            }
-        }
         CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
 
         for(LONG k=0;k<ccCapBanks.size();k++)
@@ -4961,7 +4939,7 @@ void CtiCCCommandExecutor::ConfirmFeeder()
 
                 if (!stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState)) 
                     currentFeeder->setLastCapBankControlledDeviceId(currentCapBank->getPAOId());
-                currentSubstationBus->setLastFeederControlledPAOId(currentFeeder->getPAOId());
+                currentSubstationBus->setLastFeederControlled(currentFeeder->getPAOId());
                 currentSubstationBus->setLastOperationTime(CtiTime());
                 currentFeeder->setLastOperationTime(CtiTime());
 
@@ -5376,8 +5354,7 @@ void CtiCCCommandExecutor::ConfirmOpen()
 
                             if (!stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState)) 
                                 currentFeeder->setLastCapBankControlledDeviceId(currentCapBank->getPAOId());
-                            currentSubstationBus->setLastFeederControlledPAOId(currentFeeder->getPAOId());
-                            currentSubstationBus->setLastFeederControlledPosition(j);
+                            currentSubstationBus->setLastFeederControlled(currentFeeder->getPAOId());
                             currentSubstationBus->setLastOperationTime(CtiTime());
                             currentFeeder->setLastOperationTime(CtiTime());
                             savedControlStatus = currentCapBank->getControlStatus();
@@ -5670,8 +5647,7 @@ void CtiCCCommandExecutor::ConfirmClose()
 
                             if (!stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState)) 
                                 currentFeeder->setLastCapBankControlledDeviceId(currentCapBank->getPAOId());
-                            currentSubstationBus->setLastFeederControlledPAOId(currentFeeder->getPAOId());
-                            currentSubstationBus->setLastFeederControlledPosition(j);
+                            currentSubstationBus->setLastFeederControlled(currentFeeder->getPAOId());
                             currentSubstationBus->setLastOperationTime(CtiTime());
                             currentFeeder->setLastOperationTime(CtiTime());
                             savedControlStatus = currentCapBank->getControlStatus();

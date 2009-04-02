@@ -341,9 +341,9 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
                                                      LONG currentVarPointQuality, DOUBLE varAValueBeforeControl, DOUBLE varBValueBeforeControl,
                                                      DOUBLE varCValueBeforeControl, DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue,
                                             const CtiRegression& regA, const CtiRegression& regB, const CtiRegression& regC);
-    string createPhaseControlStatusUpdateText(const int capControlStatus, DOUBLE varAValue,DOUBLE varBValue, DOUBLE varCValue, 
+    string createPhaseControlStatusUpdateText(string capControlStatus, DOUBLE varAValue,DOUBLE varBValue, DOUBLE varCValue, 
                                                   DOUBLE ratioA, DOUBLE ratioB, DOUBLE ratioC);
-    string createControlStatusUpdateText(const int capControlStatus, DOUBLE varAValue, DOUBLE ratioA);
+    string createControlStatusUpdateText(string capControlStatus, DOUBLE varAValue, DOUBLE ratioA);
     string createPhaseVarText(DOUBLE aValue,DOUBLE bValue, DOUBLE cValue, FLOAT multiplier);
     string createPhaseRatioText(DOUBLE aValue,DOUBLE bValue, DOUBLE cValue, FLOAT multiplier);
     string createVarText(DOUBLE aValue, FLOAT multiplier);

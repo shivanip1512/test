@@ -253,6 +253,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setLastVerificationCheck(const CtiTime& checkTime);
     CtiCCSubstationBus& setVarValueBeforeControl(DOUBLE oldvarval);
     CtiCCSubstationBus& setLastFeederControlledPAOId(LONG lastfeederpao);
+    CtiCCSubstationBus& setLastFeederControlled(LONG lastfeederpao);
     CtiCCSubstationBus& setLastFeederControlledPosition(LONG lastfeederposition);
     CtiCCSubstationBus& setPowerFactorValue(DOUBLE pfval);
     CtiCCSubstationBus& setKVARSolution(DOUBLE solution);
@@ -393,6 +394,9 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
 
     BOOL capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents);
     BOOL capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents);
+    void createStatusUpdateMessages(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiCCCapBankPtr capBank, 
+                                    CtiCCFeederPtr feeder, string text, string additional, bool verifyFlag, 
+                                    DOUBLE before, DOUBLE after, DOUBLE change, DOUBLE phaseA, DOUBLE phaseB, DOUBLE phaseC);
     BOOL isDataOldAndFallBackNecessary();
 
     BOOL isDirty() const;
