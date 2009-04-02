@@ -51,6 +51,7 @@ ULONG _REFUSAL_TIMEOUT;
 
 ULONG _OP_STATS_USER_DEF_PERIOD;
 ULONG _OP_STATS_REFRESH_RATE;
+BOOL _OP_STATS_DYNAMIC_UPDATE;
 BOOL _RETRY_ADJUST_LAST_OP_TIME;
 BOOL _USE_PHASE_INDICATORS;
 
@@ -561,6 +562,13 @@ void CtiCCService::Init()
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
+    _OP_STATS_DYNAMIC_UPDATE = gConfigParms.isTrue("CAP_CONTROL_OP_STATS_DYNAMIC_UPDATE", false);
+    if ( _CC_DEBUG & CC_DEBUG_STANDARD)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - CAP_CONTROL_OP_STATS_DYNAMIC_UPDATE: " << _OP_STATS_DYNAMIC_UPDATE << endl;
+    }
+
 
     _MAXOPS_ALARM_CAT = "(NONE)";
     _MAXOPS_ALARM_CATID = 1;

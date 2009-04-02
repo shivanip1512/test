@@ -54,6 +54,7 @@ extern ULONG _OP_STATS_USER_DEF_PERIOD;
 extern ULONG _OP_STATS_REFRESH_RATE;
 extern string _MAXOPS_ALARM_CAT;
 extern LONG _MAXOPS_ALARM_CATID;
+extern BOOL _OP_STATS_DYNAMIC_UPDATE;
 
 using namespace std;
 
@@ -10510,31 +10511,36 @@ void CtiCCSubstationBusStore::setControlStatusAndIncrementOpCount(CtiMultiMsg_ve
     cap->setControlStatus(status);
     cap->setControlRecentlySentFlag(controlRecentlySentFlag);
 
-    CtiCCFeederPtr feeder = findFeederByPAObjectID(cap->getParentId());
-    if (feeder == NULL)
-        return;
-
-    CtiCCSubstationBusPtr subBus = findSubBusByPAObjectID(feeder->getParentId());
-    if (subBus == NULL)
-        return;
-
-    CtiCCSubstationPtr station = findSubstationByPAObjectID(subBus->getParentId());
-    if (station == NULL)
-        return;
-
-    CtiCCSpecialPtr spArea = NULL;
-    CtiCCAreaPtr area = NULL;
-    if (station->getSaEnabledFlag())
+    if (_OP_STATS_DYNAMIC_UPDATE)
     {
-        spArea = findSpecialAreaByPAObjectID(station->getSaEnabledId());
-    }
-    else
-    {
-        area = findAreaByPAObjectID(station->getParentId());
-    }
+         CtiCCFeederPtr feeder = findFeederByPAObjectID(cap->getParentId());
+         if (feeder == NULL)
+             return;
+        
+         CtiCCSubstationBusPtr subBus = findSubBusByPAObjectID(feeder->getParentId());
+         if (subBus == NULL)
+             return;
+        
+         CtiCCSubstationPtr station = findSubstationByPAObjectID(subBus->getParentId());
+         if (station == NULL)
+             return;
+        
+         CtiCCSpecialPtr spArea = NULL;
+         CtiCCAreaPtr area = NULL;
+         if (station->getSaEnabledFlag())
+         {
+             spArea = findSpecialAreaByPAObjectID(station->getSaEnabledId());
+         }
+         else
+         {
+             area = findAreaByPAObjectID(station->getParentId());
+         }
+        
+         cap->getOperationStats().incrementAllOpCounts();
 
-    cap->getOperationStats().incrementAllOpCounts();
-    createOperationStatPointDataMsgs(pointChanges, cap, feeder, subBus, station, area, spArea);
+    
+        createOperationStatPointDataMsgs(pointChanges, cap, feeder, subBus, station, area, spArea);
+    }
 
     return;
 }
@@ -11145,32 +11151,34 @@ void CtiCCSubstationBusStore::setControlStatusAndIncrementFailCount(CtiMultiMsg_
     cap->setControlStatus(status);
     cap->setControlRecentlySentFlag(FALSE);
 
-    CtiCCFeederPtr feeder = findFeederByPAObjectID(cap->getParentId());
-    if (feeder == NULL)
-        return;
-
-    CtiCCSubstationBusPtr subBus = findSubBusByPAObjectID(feeder->getParentId());
-    if (subBus == NULL)
-        return;
-
-    CtiCCSubstationPtr station = findSubstationByPAObjectID(subBus->getParentId());
-    if (station == NULL)
-        return;
-
-    CtiCCSpecialPtr spArea = NULL;
-    CtiCCAreaPtr area = NULL;
-    if (station->getSaEnabledFlag())
+    if (_OP_STATS_DYNAMIC_UPDATE)
     {
-        spArea = findSpecialAreaByPAObjectID(station->getSaEnabledId());
+        CtiCCFeederPtr feeder = findFeederByPAObjectID(cap->getParentId());
+        if (feeder == NULL)
+            return;
+       
+        CtiCCSubstationBusPtr subBus = findSubBusByPAObjectID(feeder->getParentId());
+        if (subBus == NULL)
+            return;
+       
+        CtiCCSubstationPtr station = findSubstationByPAObjectID(subBus->getParentId());
+        if (station == NULL)
+            return;
+       
+        CtiCCSpecialPtr spArea = NULL;
+        CtiCCAreaPtr area = NULL;
+        if (station->getSaEnabledFlag())
+        {
+            spArea = findSpecialAreaByPAObjectID(station->getSaEnabledId());
+        }
+        else
+        {
+            area = findAreaByPAObjectID(station->getParentId());
+        }
+       
+        cap->getOperationStats().incrementAllOpFails();
+        createOperationStatPointDataMsgs(pointChanges, cap, feeder, subBus, station, area, spArea);
     }
-    else
-    {
-        area = findAreaByPAObjectID(station->getParentId());
-    }
-
-    cap->getOperationStats().incrementAllOpFails();
-    createOperationStatPointDataMsgs(pointChanges, cap, feeder, subBus, station, area, spArea);
-
 
     return;
 }

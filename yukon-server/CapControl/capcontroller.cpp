@@ -79,6 +79,7 @@ extern ULONG _VOLT_REDUCTION_COMMAND_DELAY;
 extern BOOL _TIME_OF_DAY_VAR_CONF;
 extern ULONG _OP_STATS_USER_DEF_PERIOD;
 extern ULONG _OP_STATS_REFRESH_RATE;
+extern BOOL _OP_STATS_DYNAMIC_UPDATE;
 extern BOOL _RETRY_ADJUST_LAST_OP_TIME;
 extern ULONG _REFUSAL_TIMEOUT;
 extern BOOL _USE_PHASE_INDICATORS;
@@ -4203,6 +4204,46 @@ void CtiCapController::refreshCParmGlobals(bool force)
             dout << CtiTime() << " - CAP_CONTROL_REFUSAL_TIMEOUT: " << _REFUSAL_TIMEOUT << endl;
         }
 
+        _OP_STATS_USER_DEF_PERIOD = 0; //in minutes.
+        strcpy(var, "CAP_CONTROL_OP_STATS_USER_DEF_PERIOD");
+        if( !(str = gConfigParms.getValueAsString(var)).empty() )
+        {
+            _OP_STATS_USER_DEF_PERIOD = atoi(str.data());
+            if( _CC_DEBUG & CC_DEBUG_STANDARD )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - " << var << ":  " << str << endl;
+            }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        }
+       
+        _OP_STATS_REFRESH_RATE = 3600; //seconds
+                                    
+        strcpy(var, "CAP_CONTROL_OP_STATS_REFRESH_RATE");
+        if( !(str = gConfigParms.getValueAsString(var)).empty() )
+        {
+            _OP_STATS_REFRESH_RATE = atoi(str.data());
+            if( _CC_DEBUG & CC_DEBUG_STANDARD )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - " << var << ":  " << str << endl;
+            }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        }
+        _OP_STATS_DYNAMIC_UPDATE = gConfigParms.isTrue("CAP_CONTROL_OP_STATS_DYNAMIC_UPDATE", false);
+        if ( _CC_DEBUG & CC_DEBUG_STANDARD)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - CAP_CONTROL_OP_STATS_DYNAMIC_UPDATE: " << _OP_STATS_DYNAMIC_UPDATE << endl;
+        }
 
     }
     catch(RWxmsg& msg )
