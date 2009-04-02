@@ -2534,6 +2534,8 @@ CtiCCSubstationBus& CtiCCSubstationBus::setLastFeederControlledPAOId(LONG lastfe
 CtiCCSubstationBus& CtiCCSubstationBus::setLastFeederControlled(LONG lastfeederpao)
 {
     setLastFeederControlledPAOId(lastfeederpao);
+    setLastFeederControlledPosition(0);
+
     CtiFeeder_vec& ccFeeders = getCCFeeders();
     for(LONG j=0;j<ccFeeders.size();j++)
     {
@@ -2541,6 +2543,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setLastFeederControlled(LONG lastfeederp
         if( tempFeeder->getPAOId() == lastfeederpao )
         {
             setLastFeederControlledPosition(j);
+            break;
         }
     }
 
