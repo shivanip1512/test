@@ -512,7 +512,7 @@ RWDBStatus::ErrorCode  CtiStatistics::Insert(RWDBConnection &conn, int counter)
             _rowExists[counter] = true;
             if( counter == CurrentHour )
             {
-                _hourRowExists[ _intervalBounds[counter].first.hour() ];
+                _hourRowExists[ _intervalBounds[counter].first.hour() ] = true;
             }
         }
     }
