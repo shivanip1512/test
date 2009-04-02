@@ -920,7 +920,7 @@ public class AccountServiceImpl implements AccountService {
         liteAddress.setLocationAddress2(CtiUtilities.STRING_NONE);
         liteAddress.setCityName(CtiUtilities.STRING_NONE);
         liteAddress.setCounty(CtiUtilities.STRING_NONE);
-        liteAddress.setStateCode("MN");
+        liteAddress.setStateCode("  ");
         liteAddress.setZipCode(CtiUtilities.STRING_NONE);
     }
     

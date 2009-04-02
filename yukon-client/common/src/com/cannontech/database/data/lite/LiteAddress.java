@@ -1,5 +1,7 @@
 package com.cannontech.database.data.lite;
 
+import com.cannontech.common.util.CtiUtilities;
+
 
 /**
  * @author yao
@@ -10,6 +12,7 @@ package com.cannontech.database.data.lite;
  * Window>Preferences>Java>Code Generation.
  */
 public class LiteAddress extends LiteBase {
+    private final static long serialVersionUID = 1L;
 
 	private String locationAddress1 = null;
 	private String locationAddress2 = null;
@@ -159,10 +162,10 @@ public class LiteAddress extends LiteBase {
 	    String toString = sb.toString();
 	    return toString;
 	}
-	
+
 	private boolean notEmpty(String value) {
-	    boolean result = (value != null && value.trim().length() > 0);
+	    boolean result = (value != null && value.trim().length() > 0)
+	        && !value.equals(CtiUtilities.STRING_NONE);
 	    return result;
 	}
-
 }
