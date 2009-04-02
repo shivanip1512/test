@@ -228,7 +228,7 @@ public enum YukonRoleProperty {
     OPERATOR_CONSUMER_INFO_WORK_ORDERS(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.CONSUMER_INFO_WORK_ORDERS, booleanType()),
     OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_USERNAME(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN_USERNAME, booleanType()),
     OPERATOR_CONSUMER_INFO_ADMIN_FAQ(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.CONSUMER_INFO_ADMIN_FAQ, booleanType()),
-    OPERATOR_CONSUMER_INFO_THERMOSTATS_ALL(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.CONSUMER_INFO_THERMOSTATS_ALL, stringType()),
+    OPERATOR_CONSUMER_INFO_THERMOSTATS_ALL(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.CONSUMER_INFO_THERMOSTATS_ALL, booleanType()),
     OPERATOR_CONSUMER_INFO_METERING_CREATE(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.CONSUMER_INFO_METERING_CREATE, booleanType()),
     OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD, booleanType()),
     OPERATOR_NEW_ACCOUNT_WIZARD(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.NEW_ACCOUNT_WIZARD, booleanType()),
