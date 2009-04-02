@@ -201,7 +201,7 @@ public enum YukonRoleProperty {
     ADMIN_MEMBER_LOGIN_CNTRL(OPERATOR_ADMINISTRATOR, com.cannontech.roles.operator.AdministratorRole.ADMIN_MEMBER_LOGIN_CNTRL, stringType()),
     ADMIN_MEMBER_ROUTE_SELECT(OPERATOR_ADMINISTRATOR, com.cannontech.roles.operator.AdministratorRole.ADMIN_MEMBER_ROUTE_SELECT, stringType()),
     ADMIN_ALLOW_DESIGNATION_CODES(OPERATOR_ADMINISTRATOR, com.cannontech.roles.operator.AdministratorRole.ADMIN_ALLOW_DESIGNATION_CODES, stringType()),
-    ADMIN_MULTI_WAREHOUSE(OPERATOR_ADMINISTRATOR, com.cannontech.roles.operator.AdministratorRole.ADMIN_MULTI_WAREHOUSE, stringType()),
+    ADMIN_MULTI_WAREHOUSE(OPERATOR_ADMINISTRATOR, com.cannontech.roles.operator.AdministratorRole.ADMIN_MULTI_WAREHOUSE, booleanType()),
     ADMIN_AUTO_PROCESS_BATCH_COMMANDS(OPERATOR_ADMINISTRATOR, com.cannontech.roles.operator.AdministratorRole.ADMIN_AUTO_PROCESS_BATCH_COMMANDS, stringType()),
     ADMIN_MULTISPEAK_SETUP(OPERATOR_ADMINISTRATOR, com.cannontech.roles.operator.AdministratorRole.ADMIN_MULTISPEAK_SETUP, booleanType()),
     ADMIN_LM_USER_ASSIGN(OPERATOR_ADMINISTRATOR, com.cannontech.roles.operator.AdministratorRole.ADMIN_LM_USER_ASSIGN, booleanType()),
