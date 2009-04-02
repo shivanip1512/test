@@ -805,7 +805,7 @@ public void jButtonRemove_ActionPerformed(java.awt.event.ActionEvent actionEvent
 	if( row >= 0 && row < getJTableModel().getRowCount() )
 		getJTableModel().removeRow(row);
 
-	
+	fireInputUpdate();
 	return;
 }
 /**
