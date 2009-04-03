@@ -158,8 +158,8 @@ public class AccountServiceImpl implements AccountService {
                 operatorGroup = yukonGroupDao.getLiteYukonGroupByName(accountDto.getLoginGroup());
                 groups.add(operatorGroup);
             }catch (NotFoundException e) {
-                log.error("Account " + accountNumber + " could not be added: The provided login group "+ accountDto.getLoginGroup() + " doesn't exists.");
-                throw new InvalidLoginGroupException("The provided login group doesn't "+ accountDto.getLoginGroup() + " exists.");
+                log.error("Account " + accountNumber + " could not be added: The provided login group '"+ accountDto.getLoginGroup() + "' doesn't exist.");
+                throw new InvalidLoginGroupException("The provided login group '"+ accountDto.getLoginGroup() + "' doesn't exist.");
             }
             String password = accountDto.getPassword();
             if(password != null) {
@@ -611,8 +611,8 @@ public class AccountServiceImpl implements AccountService {
                     loginGroup = yukonGroupDao.getLiteYukonGroupByName(accountDto.getLoginGroup());
                     groups.add(loginGroup);
                 }catch (NotFoundException e) {
-                    log.error("Account " + accountNumber + " could not be added: The provided login group: "+ accountDto.getLoginGroup() + " doesn't exists.");
-                    throw new InvalidLoginGroupException("The provided login group: "+ accountDto.getLoginGroup() + " doesn't exists.");
+                    log.error("Account " + accountNumber + " could not be added: The provided login group '"+ accountDto.getLoginGroup() + "' doesn't exist.");
+                    throw new InvalidLoginGroupException("The provided login group '"+ accountDto.getLoginGroup() + "' doesn't exist.");
                 }
                 String password = accountDto.getPassword();
                 if(password != null) {
