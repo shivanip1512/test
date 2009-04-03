@@ -244,6 +244,12 @@
         <property name="dbPersistentDao" ref="dbPersistentDao" />
     </bean>
     
+    <!-- Cayenta API Service -->
+    <bean id="cayentaApiService" class="com.cannontech.web.cayenta.service.impl.CayentaApiServiceImpl">
+    	<property name="simplePostService">
+    		<bean class="unit.cayenta.MockSimplePostService" />
+    	</property>
+    </bean>
     
     
     

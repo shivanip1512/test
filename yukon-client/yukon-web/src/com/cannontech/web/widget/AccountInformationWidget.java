@@ -16,6 +16,8 @@ import org.springframework.web.servlet.ModelAndView;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.model.Address;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
@@ -44,12 +46,20 @@ public class AccountInformationWidget extends WidgetControllerBase{
     private MultispeakDao multispeakDao;
     private MeterDao meterDao;
     private DateFormattingService dateFormattingService;
+    private RolePropertyDao rolePropertyDao;
     
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
         ModelAndView mav = new ModelAndView("accountInformationWidget/accountInfo.jsp");
         int deviceId = WidgetParameterHelper.getIntParameter(request, "deviceId");
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        
+        int vendorId = Integer.valueOf(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.MSP_PRIMARY_CB_VENDORID, userContext.getYukonUser())).intValue();
+        if (vendorId <= 0) {
+        	mav.addObject("hasVendorId", false);
+        	return mav;
+        }
+        mav.addObject("hasVendorId", true);
         
         Meter meter = meterDao.getForId(deviceId);
         MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(multispeakFuncs.getPrimaryCIS());
@@ -461,23 +471,30 @@ public class AccountInformationWidget extends WidgetControllerBase{
 //        return sb.toString();
 //    }
     
+    @Autowired
     public void setMspObjectDao(MspObjectDao mspObjectDao) {
         this.mspObjectDao = mspObjectDao;
     }
+    @Autowired
     public void setMultispeakFuncs(MultispeakFuncs multispeakFuncs) {
         this.multispeakFuncs = multispeakFuncs;
     }
+    @Autowired
     public void setMultispeakDao(MultispeakDao multispeakDao) {
         this.multispeakDao = multispeakDao;
     }
+    @Autowired
     public void setMeterDao(MeterDao meterDao) {
         this.meterDao = meterDao;
     }
-    
     @Autowired
     public void setDateFormattingService(
             DateFormattingService dateFormattingService) {
         this.dateFormattingService = dateFormattingService;
     }
+    @Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+		this.rolePropertyDao = rolePropertyDao;
+	}
 
 }

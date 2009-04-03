@@ -30,6 +30,7 @@ import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.roleproperties.CisDetailRolePropertyEnum;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -249,8 +250,17 @@ public class MeterController extends MultiActionController {
         boolean outageSupported = (availableAttributes.contains(BuiltInAttribute.OUTAGE_LOG) || availableAttributes.contains(BuiltInAttribute.BLINK_COUNT));
         mav.addObject("outageSupported", outageSupported);
 
-        mav.addObject("mspSupported",
-                      Integer.valueOf(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.MSP_PRIMARY_CB_VENDORID, user)).intValue() > 0);
+        // account information widget
+        // if it is NONE, do a check for vendorId and proceed as if they actually had MULTISPEAK value set
+        CisDetailRolePropertyEnum cisDetailRoleProperty = CisDetailRolePropertyEnum.valueOf(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.CIS_DETAIL_TYPE, user));
+        String cisInfoWidgetName = cisDetailRoleProperty.getWidgetName();
+        if (cisInfoWidgetName == null) {
+        	int vendorId = Integer.valueOf(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.MSP_PRIMARY_CB_VENDORID, user)).intValue();
+        	if (vendorId > 0) {
+        		cisInfoWidgetName = CisDetailRolePropertyEnum.MULTISPEAK.getWidgetName();
+        	}
+        }
+        mav.addObject("cisInfoWidgetName", cisInfoWidgetName);
 
         boolean disconnectSupported = DeviceTypesFuncs.isDisconnectMCTOrHasCollar(device);
         mav.addObject("disconnectSupported", disconnectSupported);

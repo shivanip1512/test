@@ -20,4 +20,9 @@ public interface MeteringRole {
     public static final int PROFILE_COLLECTION_SCANNING = OperatorRoleDefs.METERING_PROPERTYID_BASE - 9; // -20209
     /** Controls access to process a Hight bill complaint */
     public static final int HIGH_BILL_COMPLAINT = OperatorRoleDefs.METERING_PROPERTYID_BASE - 10; // -20210
+    /** Control ability to view the CIS Information widget. */
+    public static final int CIS_DETAIL_WIDGET_ENABLED = OperatorRoleDefs.METERING_PROPERTYID_BASE - 11; // -20211
+    /** Defines what type is CIS Detail widget is to be displayed (i.e. NONE, MULTISPEAK, CAYENTA, etc). See {@link CisDetailRolePropertyEnum}. */
+    public static final int CIS_DETAIL_TYPE = OperatorRoleDefs.METERING_PROPERTYID_BASE - 12; // -20212
+    
 }

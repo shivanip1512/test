@@ -63,5 +63,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/web-common"/>
 	<classpathentry kind="lib" path="/third-party/spring-ws-1.5.5-all.jar" sourcepath="Z:/java/Third-Party Sources/spring-ws-1.5.5-sources.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/api"/>
+	<classpathentry kind="lib" path="/third-party/commons-httpclient.jar"/>
 	<classpathentry kind="output" path="WebContent/WEB-INF/classes"/>
 </classpath>

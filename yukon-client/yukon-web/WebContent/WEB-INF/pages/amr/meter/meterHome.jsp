@@ -35,9 +35,9 @@
 				<ct:widget bean="meterInformationWidget" />
 
 				<ct:widget bean="meterReadingsWidget" />
-
-				<c:if test="${mspSupported}">
-					<ct:widget bean="accountInformationWidget" />
+		
+				<c:if test="${cisInfoWidgetName != null}">
+					<ct:widget bean="${cisInfoWidgetName}" />
 				</c:if>
 
                 <ct:widget bean="deviceGroupWidget" />
