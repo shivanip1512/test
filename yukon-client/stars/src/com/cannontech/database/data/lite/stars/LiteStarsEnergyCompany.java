@@ -230,7 +230,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
     public void initialize() {
     	initSelectionLists();
     	initApplianceCategories();
-    	initDefaultThermostatSchedules();
     }
     
     public Integer getEnergyCompanyID() {
@@ -1997,17 +1996,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
         }
         
         CTILogger.info( "All appliance categories loaded for energy company #" + getEnergyCompanyID() );
-    }
-    
-    private void initDefaultThermostatSchedules() {
-    	
-    	List<HardwareType> thermostatTypes = this.getAvailableThermostatTypes();
-    	for(HardwareType type : thermostatTypes) {
-    		ThermostatSchedule defaultSchedule = 
-    			thermostatScheduleDao.getEnergyCompanyDefaultSchedule(this, type);
-    		this.defaultThermostatScheduleMap.put(type, defaultSchedule);
-    	}
-    	
     }
     
     void setAddressDao(AddressDao addressDao) {
