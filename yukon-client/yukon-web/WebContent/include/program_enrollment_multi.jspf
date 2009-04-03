@@ -17,6 +17,7 @@ function changeProgram() {
 	for (progIdx = 0; progIdx < programs.length; progIdx++) {
 		if (programs[progIdx].checked) {
 			notEnrolled = false;
+			break;
 		}
 	}
 
