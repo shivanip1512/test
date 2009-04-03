@@ -117,7 +117,7 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
 		status = STATUS_RUNNING;
 		
 		boolean searchMembers = DaoFactory.getAuthDao().checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
-				&& energyCompany.getChildren().size() > 0;
+				&& energyCompany.hasChildEnergyCompanies();
 		hwsToAdjust = new ArrayList<LiteStarsLMHardware>();
         
         StarsInventoryBaseDao starsInventoryBaseDao = 

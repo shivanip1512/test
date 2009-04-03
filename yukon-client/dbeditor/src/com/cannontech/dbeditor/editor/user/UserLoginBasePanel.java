@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JPanel;
@@ -557,7 +558,7 @@ public void jCheckBoxEnableEC_ActionPerformed(java.awt.event.ActionEvent actionE
 	{
 		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		
-		List companies = cache.getAllEnergyCompanies();
+		List companies = new ArrayList(cache.getAllEnergyCompanies());
 		java.util.Collections.sort( companies, LiteComparators.liteStringComparator );
 		
 		for(int j = 0; j < companies.size(); j++)

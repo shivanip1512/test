@@ -6,14 +6,15 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.Validate;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.clientutils.CTILogger;
@@ -28,6 +29,7 @@ import com.cannontech.core.authorization.service.PaoPermissionService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.IntegerRowMapper;
@@ -37,12 +39,9 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteBase;
-import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
-import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -51,6 +50,8 @@ import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.customer.Customer;
 import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.database.db.stars.ECToGenericMapping;
+import com.cannontech.database.db.stars.LMProgramWebPublishing;
+import com.cannontech.database.db.stars.appliance.ApplianceCategory;
 import com.cannontech.database.db.stars.customer.CustomerAccount;
 import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -63,6 +64,8 @@ import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.dr.hardware.model.HardwareType;
+import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
+import com.cannontech.stars.dr.thermostat.model.ThermostatSchedule;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.StarsUtils;
@@ -80,6 +83,7 @@ import com.cannontech.stars.xml.serialize.StarsServiceCompany;
 import com.cannontech.stars.xml.serialize.StarsSubstation;
 import com.cannontech.stars.xml.serialize.StarsSubstations;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.PrimitiveArrays;
 
 /**
@@ -91,7 +95,8 @@ import com.google.common.collect.PrimitiveArrays;
  * Window>Preferences>Java>Code Generation.
  */
 public class LiteStarsEnergyCompany extends LiteBase {
-    
+	private final static long serialVersionUID = 1L;
+
     public static final int FAKE_LIST_ID = -9999;   // Magic number for YukonSelectionList ID, used for substation and service company list
     public static final int INVALID_ROUTE_ID = -1;  // Mark that a valid default route id is not found, and prevent futher attempts
     
@@ -161,35 +166,46 @@ public class LiteStarsEnergyCompany extends LiteBase {
     
     private String name = null;
     private int primaryContactID = CtiUtilities.NONE_ZERO_ID;
-    private int userID = com.cannontech.user.UserUtils.USER_DEFAULT_ID;
-    
-    private List<LiteLMProgramWebPublishing> pubPrograms = null;
-    private List<LiteApplianceCategory> appCategories = null;
+    private LiteYukonUser user = null;
+//    private int userID = com.cannontech.user.UserUtils.USER_DEFAULT_ID;
+
     private List<LiteServiceCompany> serviceCompanies = null;
     private List<LiteSubstation> substations = null;
-    private List<YukonSelectionList> selectionLists = null;
     private List<LiteInterviewQuestion> interviewQuestions = null;
+
+    private Map<Integer, Integer> programIdToAppCatIdMap = new ConcurrentHashMap<Integer, Integer>();
+    private Map<Integer, LiteApplianceCategory> appCategoryMap = 
+    	new ConcurrentHashMap<Integer, LiteApplianceCategory>();
+    private Map<String, YukonSelectionList> selectionListMap = 
+    	new ConcurrentHashMap<String, YukonSelectionList>(30, .75f, 2);
+    private Map<HardwareType, ThermostatSchedule> defaultThermostatScheduleMap = 
+    	new ConcurrentHashMap<HardwareType, ThermostatSchedule>(8, .75f, 1);
     
     private List<Integer> routeIDs = null;
     
     private long nextCallNo = 0;
     private long nextOrderNo = 0;
     
-    private boolean hierarchyLoaded = false;
-    
     private int dftRouteID = CtiUtilities.NONE_ZERO_ID;
     private int operDftGroupID = com.cannontech.database.db.user.YukonGroup.EDITABLE_MIN_GROUP_ID - 1;
     
-    // Energy company hierarchy
-    private LiteStarsEnergyCompany parent = null;
-    private List<LiteStarsEnergyCompany> children = null;
-    private List<Integer> memberLoginIDs = null;
 
     private AddressDao addressDao;
     private StarsInventoryBaseDao starsInventoryBaseDao;
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
     private StarsWorkOrderBaseDao starsWorkOrderBaseDao;
     private SimpleJdbcTemplate simpleJdbcTemplate;
+    private YukonListDao yukonListDao;
+    private ThermostatScheduleDao thermostatScheduleDao;
+    
+    private class EnergyCompanyHierarchy {
+        // Energy company hierarchy
+        LiteStarsEnergyCompany parent = null;
+        final List<LiteStarsEnergyCompany> children = new ArrayList<LiteStarsEnergyCompany>();
+        final List<Integer> memberLoginIDs = new ArrayList<Integer>();
+    }
+    
+    private volatile EnergyCompanyHierarchy energyCompanyHierarchy = null;
     
     protected LiteStarsEnergyCompany() {
         super();
@@ -208,7 +224,13 @@ public class LiteStarsEnergyCompany extends LiteBase {
         setLiteID( energyCompany.getEnergyCompanyID().intValue() );
         setName( energyCompany.getName() );
         setPrimaryContactID( energyCompany.getPrimaryContactID().intValue() );
-        setUserID( energyCompany.getUserID().intValue() );
+        setUser(DaoFactory.getYukonUserDao().getLiteYukonUser(energyCompany.getUserID()));
+    }
+    
+    public void initialize() {
+    	initSelectionLists();
+    	initApplianceCategories();
+    	initDefaultThermostatSchedules();
     }
     
     public Integer getEnergyCompanyID() {
@@ -248,19 +270,19 @@ public class LiteStarsEnergyCompany extends LiteBase {
     }
 
     /**
-     * Returns the userID.
-     * @return int
+     * Returns the user.
+     * @return LiteYukonUser
      */
-    public int getUserID() {
-        return userID;
+    public LiteYukonUser getUser() {
+        return user;
     }
 
     /**
-     * Sets the userID.
-     * @param userID The userID to set
+     * Sets the user.
+     * @param user The user to set
      */
-    public void setUserID(int userID) {
-        this.userID = userID;
+    public void setUser(LiteYukonUser user) {
+        this.user = user;
     }
 
     public int getDefaultRouteID() {
@@ -270,7 +292,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
             String dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
             
             PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
-            Set<Integer> permittedPaoIDs = pService.getPaoIdsForUserPermission(new LiteYukonUser(getUserID()), Permission.DEFAULT_ROUTE);
+            Set<Integer> permittedPaoIDs = pService.getPaoIdsForUserPermission(user, Permission.DEFAULT_ROUTE);
             if(! permittedPaoIDs.isEmpty()) {
                 String sql = "SELECT exc.LMGroupID, macro.OwnerID FROM LMGroupExpressCom exc, GenericMacro macro " +
                     "WHERE macro.MacroType = '" + MacroTypes.GROUP + "' AND macro.ChildID = exc.LMGroupID AND exc.SerialNumber = '0'";
@@ -349,8 +371,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
     }
     
     public TimeZone getDefaultTimeZone() {
-        LiteYukonUser liteYukonUser = DaoFactory.getYukonUserDao().getLiteYukonUser(getUserID());
-        return DaoFactory.getAuthDao().getUserTimeZone(liteYukonUser);
+        return DaoFactory.getAuthDao().getUserTimeZone(user);
     }
     
     public String getAdminEmailAddress() {
@@ -361,30 +382,9 @@ public class LiteStarsEnergyCompany extends LiteBase {
         return adminEmail;
     }
     
-    public void clear() {
-        pubPrograms = null;
-        appCategories = null;
-        serviceCompanies = null;
-        substations = null;
-        selectionLists = null;
-        interviewQuestions = null;
-        
-        routeIDs = null;
-        
-        nextCallNo = 0;
-        nextOrderNo = 0;
-        hierarchyLoaded = false;
-        
-        dftRouteID = CtiUtilities.NONE_ZERO_ID;
-        operDftGroupID = com.cannontech.database.db.user.YukonGroup.EDITABLE_MIN_GROUP_ID - 1;
-        
-        parent = null;
-        children = null;
-        memberLoginIDs = null;
-    }
-    
     public String getEnergyCompanySetting(int rolePropertyID) {
-        String value = DaoFactory.getAuthDao().getRolePropertyValue( DaoFactory.getYukonUserDao().getLiteYukonUser(getUserID()), rolePropertyID );
+        String value = DaoFactory.getAuthDao()
+                                 .getRolePropertyValue(user, rolePropertyID);
         if (value != null && value.equalsIgnoreCase(CtiUtilities.STRING_NONE))
             value = "";
         return value;
@@ -424,11 +424,11 @@ public class LiteStarsEnergyCompany extends LiteBase {
     
     public LiteYukonGroup getOperatorAdminGroup() {
         if (operDftGroupID < com.cannontech.database.db.user.YukonGroup.EDITABLE_MIN_GROUP_ID) {
-            LiteYukonUser dftUser = DaoFactory.getYukonUserDao().getLiteYukonUser( getUserID() );
             IDatabaseCache cache = DefaultDatabaseCache.getInstance();
             
             synchronized (cache) {
-                List<LiteYukonGroup> groups = cache.getYukonUserGroupMap().get( dftUser );
+                List<LiteYukonGroup> groups = cache.getYukonUserGroupMap()
+                                                   .get(user);
                 for (int i = 0; i < groups.size(); i++) {
                     LiteYukonGroup group = groups.get(i);
                     if (DaoFactory.getRoleDao().getRolePropValueGroup(group, AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY, null) != null) {
@@ -445,19 +445,33 @@ public class LiteStarsEnergyCompany extends LiteBase {
     /**
      * Get programs published by this energy company only
      */
-    public synchronized List<LiteLMProgramWebPublishing> getPrograms() {
-        if (pubPrograms == null)
-            getApplianceCategories();
-        return pubPrograms;
+    public Iterable<LiteLMProgramWebPublishing> getPrograms() {
+        
+    	Iterable<LiteLMProgramWebPublishing> programs = null;
+    	
+    	Iterable<LiteApplianceCategory> categories = getApplianceCategories();
+        for(LiteApplianceCategory category : categories) {
+        	Iterable<LiteLMProgramWebPublishing> categoryPrograms = category.getPublishedPrograms();
+        	
+        	if(programs == null) {
+        		programs = categoryPrograms;
+        	} else {
+        		programs = Iterables.concat(programs, categoryPrograms);
+        	}
+        }
+        
+        return programs;
     }
     
     /**
      * Get all published programs including those inherited from the parent company
      */
-    public synchronized List<LiteLMProgramWebPublishing> getAllPrograms() {
-        List<LiteLMProgramWebPublishing> pubProgs = new ArrayList<LiteLMProgramWebPublishing>( getPrograms() );
-        if (getParent() != null)
-            pubProgs.addAll( 0, getParent().getPrograms() );
+    public Iterable<LiteLMProgramWebPublishing> getAllPrograms() {
+        Iterable<LiteLMProgramWebPublishing> pubProgs = getPrograms();
+        
+        if (getParent() != null) {
+        	pubProgs = Iterables.concat(pubProgs, getParent().getPrograms());
+        }
         
         return pubProgs;
     }
@@ -465,72 +479,48 @@ public class LiteStarsEnergyCompany extends LiteBase {
     /**
      * Get appliance categories created in this energy company only
      */
-    public synchronized List<LiteApplianceCategory> getApplianceCategories() {
-        if (appCategories == null) {
-            appCategories = new ArrayList<LiteApplianceCategory>();
-            pubPrograms = new ArrayList<LiteLMProgramWebPublishing>();
-            
-            com.cannontech.database.db.stars.appliance.ApplianceCategory[] appCats =
-                    com.cannontech.database.db.stars.appliance.ApplianceCategory.getAllApplianceCategories( getEnergyCompanyID() );
-                    
-            for (int i = 0; i < appCats.length; i++) {
-                LiteApplianceCategory appCat = (LiteApplianceCategory) StarsLiteFactory.createLite( appCats[i] );
-                
-                com.cannontech.database.db.stars.LMProgramWebPublishing[] pubProgs =
-                        com.cannontech.database.db.stars.LMProgramWebPublishing.getAllLMProgramWebPublishing( appCats[i].getApplianceCategoryID().intValue() );
-                
-                for (int j = 0; j < pubProgs.length; j++) {
-                    LiteLMProgramWebPublishing program = (LiteLMProgramWebPublishing) StarsLiteFactory.createLite(pubProgs[j]);
-                    pubPrograms.add( program );
-                    appCat.getPublishedPrograms().add( program );
-                }
-                
-                appCategories.add( appCat );
-            }
-            
-            CTILogger.info( "All appliance categories loaded for energy company #" + getEnergyCompanyID() );
-        }
-        
-        return appCategories;
+    public Iterable<LiteApplianceCategory> getApplianceCategories() {
+        return appCategoryMap.values();
     }
     
     /**
      * Get all appliance categories including those inherited from the parent company if allowed to do so
      */
-    public synchronized List<LiteApplianceCategory> getAllApplianceCategories() {
-        List<LiteApplianceCategory> appCats = new ArrayList<LiteApplianceCategory>( getApplianceCategories() );
-        RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);        
-        boolean inheritCats = rolePropertyDao.checkProperty(YukonRoleProperty.INHERIT_PARENT_APP_CATS, DaoFactory.getYukonUserDao().getLiteYukonUser(getUserID()));
-        if (getParent() != null && inheritCats)
-            appCats.addAll( 0, getParent().getAllApplianceCategories() );
+    public Iterable<LiteApplianceCategory> getAllApplianceCategories() {
         
-        return appCats;
-    }
-
-    public synchronized List<YukonSelectionList> getAllSelectionLists() {
-        if (selectionLists == null) {
-            selectionLists = new ArrayList<YukonSelectionList>();
-            
-            ECToGenericMapping[] items = ECToGenericMapping.getAllMappingItems( getEnergyCompanyID(), YukonSelectionList.TABLE_NAME );
-            if (items != null) {
-                for (int i = 0; i < items.length; i++)
-                    selectionLists.add( DaoFactory.getYukonListDao().getYukonSelectionList(items[i].getItemID().intValue()) );
-            }
+    	Iterable<LiteApplianceCategory> allApplianceCategories = getApplianceCategories();
+        
+    	RolePropertyDao rolePropertyDao = 
+    		YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);        
+        boolean inheritCats = 
+        	rolePropertyDao.checkProperty(YukonRoleProperty.INHERIT_PARENT_APP_CATS, getUser());
+        
+        if (getParent() != null && inheritCats) {
+            Iterable<LiteApplianceCategory> parentCategories = 
+            	getParent().getAllApplianceCategories();
+            allApplianceCategories = Iterables.concat(allApplianceCategories, parentCategories);
         }
         
-        return selectionLists;
+        return allApplianceCategories;
+    }
+
+    public Iterable<YukonSelectionList> getAllSelectionLists() {
+    	return selectionListMap.values();
+    }
+    
+    public void addYukonSelectionList(YukonSelectionList yukonSelectionList) {
+    	Validate.notNull(yukonSelectionList, "Selection list cannot be null");
+    	selectionListMap.put(yukonSelectionList.getListName(), yukonSelectionList);
     }
     
     public YukonSelectionList getYukonSelectionList(String listName, boolean useInherited, boolean useDefault) {
-        List<YukonSelectionList> selectionLists = getAllSelectionLists();
-        synchronized (selectionLists) {
-            for (final YukonSelectionList list : selectionLists) {
-                if (list.getListName().equalsIgnoreCase(listName))
-                    return list;
-            }
-        }
         
-        // If parent company exists, then search the parenet company for the list
+    	YukonSelectionList yukonSelectionList = selectionListMap.get(listName);
+    	if(yukonSelectionList != null) {
+    		return yukonSelectionList;
+    	}
+        
+        // If parent company exists, then search the parent company for the list
         if (getParent() != null && useInherited)
             return getParent().getYukonSelectionList(listName, useInherited, useDefault);
         
@@ -593,7 +583,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
             StarsLiteFactory.setConstantYukonSelectionList(cList, listDB);
             
             DaoFactory.getYukonListDao().getYukonSelectionLists().put( listDB.getListID(), cList );
-            getAllSelectionLists().add( cList );
+            selectionListMap.put(cList.getListName(), cList);
             
             if (populateDefault) {
                 for (int i = 0; i < dftList.getYukonListEntries().size(); i++) {
@@ -626,7 +616,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
     }
     
     public void deleteYukonSelectionList(YukonSelectionList list) {
-        getAllSelectionLists().remove( list );
+        
+    	selectionListMap.remove(list.getListName());
         
         Map<Integer,YukonListEntry> entries = DaoFactory.getYukonListDao().getYukonListEntries();
         synchronized (entries) {
@@ -672,24 +663,28 @@ public class LiteStarsEnergyCompany extends LiteBase {
         return serviceCompanies;
     }
     
+    /**
+     * @return A copy of the serviceCompany list
+     */
     public List<LiteServiceCompany> getAllServiceCompanies() {
-        List<LiteServiceCompany> companies = new ArrayList<LiteServiceCompany>( getServiceCompanies() );
-        if (getParent() != null)
-            companies.addAll( 0, getParent().getAllServiceCompanies() );
+        List<LiteServiceCompany> allCompanies = new ArrayList<LiteServiceCompany>();
+        if (getParent() != null) {
+            allCompanies.addAll(getParent().getAllServiceCompanies());
+        }
+        List<LiteServiceCompany> companies = getServiceCompanies();
+        synchronized (companies) {
+            allCompanies.addAll(companies);
+        }
         
-        return companies;
+        return allCompanies;
     }
     
     public List<LiteServiceCompany> getAllServiceCompaniesDownward() 
     {
         List<LiteServiceCompany> companies = new ArrayList<LiteServiceCompany>( getAllServiceCompanies() );
         
-        if(getChildren() != null)
-        {
-            for(int j = 0; j < getChildren().size(); j++)
-            {
-                companies.addAll( 0, getChildren().get(j).getServiceCompanies());
-            }
+        for (LiteStarsEnergyCompany child : getChildren()) {
+            companies.addAll( 0, child.getServiceCompanies());
         }
         
         return companies;
@@ -699,12 +694,9 @@ public class LiteStarsEnergyCompany extends LiteBase {
     {
         List<Integer> allEnergyCompanies = new ArrayList<Integer>();
         allEnergyCompanies.add(new Integer(getLiteID()));
-        List<LiteStarsEnergyCompany> children = getChildren();
-        synchronized (children) {
-            for (final LiteStarsEnergyCompany company : children) {
-                List<Integer> memberList = company.getAllEnergyCompaniesDownward();
-                allEnergyCompanies.addAll( memberList );
-            }
+        for (final LiteStarsEnergyCompany company : getChildren()) {
+            List<Integer> memberList = company.getAllEnergyCompaniesDownward();
+            allEnergyCompanies.addAll( memberList );
         }
         return allEnergyCompanies;
     }
@@ -713,12 +705,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
     {
         List<Warehouse> warehouses = Warehouse.getAllWarehousesForEnergyCompany(getEnergyCompanyID().intValue());
         
-        if(getChildren() != null)
-        {
-            for(int j = 0; j < getChildren().size(); j++)
-            {
-                warehouses.addAll( 0, Warehouse.getAllWarehousesForEnergyCompany((getChildren().get(j)).getLiteID()));
-            }
+        for (LiteStarsEnergyCompany child : getChildren()) {
+            warehouses.addAll( 0, Warehouse.getAllWarehousesForEnergyCompany(child.getLiteID()));
         }
         
         return warehouses;
@@ -741,12 +729,20 @@ public class LiteStarsEnergyCompany extends LiteBase {
         return substations;
     }
     
+    /**
+     * @return A copy of the substations list
+     */
     public List<LiteSubstation> getAllSubstations() {
-        List<LiteSubstation> substations = new ArrayList<LiteSubstation>(getSubstations() );
-        if (getParent() != null)
-            substations.addAll( 0, getParent().getAllSubstations() );
+        List<LiteSubstation> allSubstations = new ArrayList<LiteSubstation>();
+        if (getParent() != null) {
+            allSubstations.addAll( 0, getParent().getAllSubstations() );
+        }
+        List<LiteSubstation> substations = getSubstations();
+        synchronized (substations) {
+            allSubstations.addAll(substations);
+        }
         
-        return substations;
+        return allSubstations;
     }
     
     public List<Integer> getOperatorLoginIDs() {
@@ -998,39 +994,26 @@ public class LiteStarsEnergyCompany extends LiteBase {
         return qs;
     }
 
-    
     public LiteApplianceCategory getApplianceCategory(int applianceCategoryID) {
-        List<LiteApplianceCategory> appCats = getAllApplianceCategories();
-        for (final LiteApplianceCategory appCat : appCats) {
-            if (appCat.getApplianceCategoryID() == applianceCategoryID) return appCat;
-        }
-        return null;
+        return appCategoryMap.get(applianceCategoryID);
+    }
+    
+    public LiteApplianceCategory getApplianceCategoryForProgram(int programID) {
+    	Integer appCatId = programIdToAppCatIdMap.get(programID);
+    	if(appCatId != null) {
+    		return appCategoryMap.get(appCatId);
+    	}
+    	
+    	return null;
     }
     
     public void addApplianceCategory(LiteApplianceCategory appCat) {
-        List<LiteApplianceCategory> appCats = getApplianceCategories();
-        synchronized (appCats) { appCats.add( appCat ); }
+    	Validate.notNull(appCat, "Appliance category cannot be null");
+        appCategoryMap.put(appCat.getApplianceCategoryID(), appCat);
     }
     
-    public LiteApplianceCategory deleteApplianceCategory(int applianceCategoryID) {
-        List<LiteApplianceCategory> appCats = getApplianceCategories();
-        List<LiteLMProgramWebPublishing> programs = getPrograms();
-        
-        synchronized (appCats) {
-            synchronized (programs) {
-                for (int i = 0; i < appCats.size(); i++) {
-                    LiteApplianceCategory appCat = appCats.get(i);
-                    if (appCat.getApplianceCategoryID() == applianceCategoryID) {
-                        for (int j = 0; j < appCat.getPublishedPrograms().size(); j++)
-                            programs.remove( appCat.getPublishedPrograms().get(j) );
-                        appCats.remove( i );
-                        return appCat;
-                    }
-                }
-            }
-        }
-        
-        return null;
+    public void deleteApplianceCategory(int applianceCategoryID) {
+    	appCategoryMap.remove(applianceCategoryID);
     }
     
     public LiteServiceCompany getServiceCompany(int serviceCompanyID) {
@@ -1097,44 +1080,29 @@ public class LiteStarsEnergyCompany extends LiteBase {
     }
     
     public LiteLMProgramWebPublishing getProgram(int programID) {
-        List<LiteLMProgramWebPublishing> programs = getAllPrograms();
-        for (final LiteLMProgramWebPublishing liteProg : programs) {
-            if (liteProg.getProgramID() == programID) return liteProg;
+        Integer appCatId = programIdToAppCatIdMap.get(programID);
+        if(appCatId != null) {
+        	LiteApplianceCategory applianceCategory = appCategoryMap.get(appCatId);
+        	return applianceCategory.getProgram(programID);
         }
         return null;
     }
     
     public void addProgram(LiteLMProgramWebPublishing liteProg, LiteApplianceCategory liteAppCat) {
-        List<LiteLMProgramWebPublishing> programs = getPrograms();
-        synchronized (programs) { programs.add(liteProg); }
+        LiteApplianceCategory applianceCategory = 
+        	appCategoryMap.get(liteAppCat.getApplianceCategoryID());
+        applianceCategory.addProgram(liteProg);
         
-        liteAppCat.getPublishedPrograms().add( liteProg );
+        programIdToAppCatIdMap.put(liteProg.getProgramID(), liteAppCat.getApplianceCategoryID());
     }
     
-    public LiteLMProgramWebPublishing deleteProgram(int programID) {
-        List<LiteLMProgramWebPublishing> programs = getPrograms();
-        List<LiteApplianceCategory> appCats = getApplianceCategories();
-        
-        synchronized (programs) {
-            synchronized (appCats) {
-                for (int i = 0; i < programs.size(); i++) {
-                    LiteLMProgramWebPublishing liteProg = programs.get(i);
-                    if (liteProg.getProgramID() == programID) {
-                        programs.remove(i);
-                        
-                        for (int j = 0; j < appCats.size(); j++) {
-                            LiteApplianceCategory liteAppCat = appCats.get(j);
-                            if (liteAppCat.getPublishedPrograms().remove( liteProg ))
-                                break;
-                        }
-                        
-                        return liteProg;
-                    }
-                }
-            }
-        }
-        
-        return null;
+    public void deleteProgram(int programID) {
+    	Integer appCatId = programIdToAppCatIdMap.get(programID);
+    	programIdToAppCatIdMap.remove(programID);
+    	if(appCatId != null) {
+	    	LiteApplianceCategory applianceCategory = appCategoryMap.get(appCatId);
+	    	applianceCategory.removeProgram(programID);
+    	}
     }
     
     public LiteStarsThermostatSettings getThermostatSettings(LiteStarsLMHardware liteHw) {
@@ -1187,15 +1155,12 @@ public class LiteStarsEnergyCompany extends LiteBase {
         }
         
         if (searchMembers) {
-            List<LiteStarsEnergyCompany> children = getChildren();
-            synchronized (children) {
-                for (final LiteStarsEnergyCompany company : children) {
-                    List<Object> memberList = company.searchWorkOrderByOrderNo( orderNo, searchMembers );
-                    orderList.addAll( memberList );
-                }
+            for (final LiteStarsEnergyCompany company : getChildren()) {
+                List<Object> memberList = company.searchWorkOrderByOrderNo( orderNo, searchMembers );
+                orderList.addAll( memberList );
             }
         }
-        
+
         return orderList;
     }
 
@@ -1247,12 +1212,16 @@ public class LiteStarsEnergyCompany extends LiteBase {
      * normal length, then 0 or lower will result in the whole account number being used.  This would
      * be default.  
      */
+    @Deprecated
+    /**
+     * Use LiteStarsEnergyCompany.searchAccountByAccountNumber or CustomerAccountDao.getByAccountNumber
+     */
     public LiteStarsCustAccountInformation searchAccountByAccountNo(String accountNo) 
     {
-        List<LiteStarsCustAccountInformation> custAcctInfoList = starsCustAccountInformationDao.getAll(getEnergyCompanyID());
-        String comparableDigitProperty = DaoFactory.getAuthDao().getRolePropertyValue(DaoFactory.getYukonUserDao().getLiteYukonUser(getUserID()), ConsumerInfoRole.ACCOUNT_NUMBER_LENGTH);
+    	List<Object> accounts = searchAccountByAccountNumber(accountNo, false, true);
+        String comparableDigitProperty = DaoFactory.getAuthDao().getRolePropertyValue(user, ConsumerInfoRole.ACCOUNT_NUMBER_LENGTH);
         int comparableDigitEndIndex = 0;
-        String rotationDigitProperty = DaoFactory.getAuthDao().getRolePropertyValue(DaoFactory.getYukonUserDao().getLiteYukonUser(getUserID()), ConsumerInfoRole.ROTATION_DIGIT_LENGTH);
+        String rotationDigitProperty = DaoFactory.getAuthDao().getRolePropertyValue(user, ConsumerInfoRole.ROTATION_DIGIT_LENGTH);
         int accountNumSansRotationDigitsIndex = accountNo.length();
         boolean adjustForRotationDigits = false, adjustForAccountLength = false;
         if(StringUtils.isNotBlank(rotationDigitProperty) && Integer.parseInt(rotationDigitProperty) > 0
@@ -1269,20 +1238,25 @@ public class LiteStarsEnergyCompany extends LiteBase {
                 accountNo = accountNo.substring(0, comparableDigitEndIndex);
             adjustForAccountLength = true;
         }
+
         
-		for (int i = 0; i < custAcctInfoList.size(); i++) {
-            LiteStarsCustAccountInformation liteAcctInfo = custAcctInfoList.get(i);
-            String comparableAcctNum = liteAcctInfo.getCustomerAccount().getAccountNumber();
-            if(accountNumSansRotationDigitsIndex > 0 && comparableAcctNum.length() >= accountNumSansRotationDigitsIndex && adjustForRotationDigits)
-                comparableAcctNum = comparableAcctNum.substring(0, accountNumSansRotationDigitsIndex);
-            if(comparableDigitEndIndex > 0 && comparableAcctNum.length() >= comparableDigitEndIndex && adjustForAccountLength)
-                comparableAcctNum = comparableAcctNum.substring(0, comparableDigitEndIndex);
-            if (comparableAcctNum.equalsIgnoreCase( accountNo ))
-            {
-                return liteAcctInfo;
-            }
+        for (Object object : accounts) {
+        	if (object instanceof Integer) {
+        		Integer accountId = (Integer) object;
+        		LiteStarsCustAccountInformation liteAcctInfo = starsCustAccountInformationDao.getById(accountId, this.getEnergyCompanyID());
+        	
+	            String comparableAcctNum = liteAcctInfo.getCustomerAccount().getAccountNumber();
+	            if(accountNumSansRotationDigitsIndex > 0 && comparableAcctNum.length() >= accountNumSansRotationDigitsIndex && adjustForRotationDigits)
+	                comparableAcctNum = comparableAcctNum.substring(0, accountNumSansRotationDigitsIndex);
+	            if(comparableDigitEndIndex > 0 && comparableAcctNum.length() >= comparableDigitEndIndex && adjustForAccountLength)
+	                comparableAcctNum = comparableAcctNum.substring(0, comparableDigitEndIndex);
+	            if (comparableAcctNum.equalsIgnoreCase( accountNo ))
+	            {
+	                return liteAcctInfo;
+	            }
+        	}
         }
-        
+		
         return null;
     }
     
@@ -1318,30 +1292,21 @@ public class LiteStarsEnergyCompany extends LiteBase {
     		starsSearchDao.searchLMHardwareBySerialNumber(serialNo, Collections.singletonList(this));
         List<Object> accountList = new ArrayList<Object>();
        
-        final Set<Integer> accountIds = new HashSet<Integer>();
         for (int i = 0; i < invList.size(); i++) {
             LiteInventoryBase inv = invList.get(i);
-            int accountId = inv.getAccountID();
-            if (accountId > 0) accountIds.add(accountId);
-        }
-        
-        final Map<Integer, LiteStarsCustAccountInformation> accountMap = 
-            starsCustAccountInformationDao.getByIds(accountIds, getEnergyCompanyID());
-        
-        for (LiteStarsCustAccountInformation account : accountMap.values()) {
-            if (searchMembers)
-                accountList.add( new Pair<LiteStarsCustAccountInformation,LiteStarsEnergyCompany>(account, this) );
-            else
-                accountList.add( account );
+            Integer accountId = inv.getAccountID();
+            if (accountId > 0) {
+                if (searchMembers)
+                    accountList.add( new Pair<Integer,LiteStarsEnergyCompany>(accountId, this) );
+                else
+                    accountList.add( accountId );
+            }
         }
         
         if (searchMembers) {
-           List<LiteStarsEnergyCompany> children = getChildren();
-            synchronized (children) {
-                for (final LiteStarsEnergyCompany company : children) {
-                    List<Object> memberList = company.searchAccountBySerialNo( serialNo, searchMembers );
-                    accountList.addAll( memberList );
-                }
+            for (final LiteStarsEnergyCompany company : getChildren()) {
+                List<Object> memberList = company.searchAccountBySerialNo( serialNo, searchMembers );
+                accountList.addAll( memberList );
             }
         }
         
@@ -1356,34 +1321,19 @@ public class LiteStarsEnergyCompany extends LiteBase {
     public List<Object> searchAccountByAltTrackNo(String altTrackNo, boolean searchMembers) {
         List<Object> accountList = new ArrayList<Object>();
         
-        int[] accountIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByCustomerAltTrackingNumber( altTrackNo + "%", getLiteID() );
-        if (accountIDs != null) {
-            final Set<Integer> accountIds = new HashSet<Integer>(accountIDs.length);
-            for (final int accountId : accountIDs) {
-                accountIds.add(accountId);
-            }
-            
-            Map<Integer,LiteStarsCustAccountInformation> accountMap = 
-                starsCustAccountInformationDao.getByIds(accountIds, getEnergyCompanyID());
-            for (LiteStarsCustAccountInformation liteAcctInfo : accountMap.values()) {
-                if (searchMembers)
-                    accountList.add( new Pair<LiteStarsCustAccountInformation,LiteStarsEnergyCompany>(liteAcctInfo, this) );
-                else
-                    accountList.add( liteAcctInfo );
-            }
-       }
+        // Gets all the possible energy company ids
+        List<Integer> energyCompanyIdList = new ArrayList<Integer>();
+        if (searchMembers) {
+        	List<LiteStarsEnergyCompany> energyCompanyList = ECUtils.getAllDescendants(this);
+        	for (LiteStarsEnergyCompany liteStarsEnergyCompany : energyCompanyList) {
+				energyCompanyIdList.add(liteStarsEnergyCompany.getLiteID());
+			}
+        } else {
+        	energyCompanyIdList.add(getLiteID());
+        }
         
-       if (searchMembers) {
-           List<LiteStarsEnergyCompany> children = getChildren();
-           synchronized (children) {
-               for (final LiteStarsEnergyCompany company : children) {
-                   List<Object> memberList = company.searchAccountByAltTrackNo( altTrackNo, searchMembers );
-                   accountList.addAll( memberList );
-               }
-           }
-       }
-        
-       return accountList;
+        accountList.addAll(CustomerAccount.searchByCustomerAltTrackingNumber( altTrackNo + "%", energyCompanyIdList ));
+        return accountList;
     }
     
     /**
@@ -1394,33 +1344,18 @@ public class LiteStarsEnergyCompany extends LiteBase {
     public List<Object> searchAccountByCompanyName(String searchName, boolean searchMembers) {
         List<Object> accountList = new ArrayList<Object>();
         
-        int[] accountIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByCompanyName( searchName + "%", getLiteID() );
-        if (accountIDs != null) {
-            final Set<Integer> accountIds = new HashSet<Integer>(accountIDs.length);
-            for (final int accountId : accountIDs) {
-                accountIds.add(accountId);
-            }
-            
-            Map<Integer,LiteStarsCustAccountInformation> accountMap = 
-                starsCustAccountInformationDao.getByIds(accountIds, getEnergyCompanyID());
-            for (LiteStarsCustAccountInformation liteAcctInfo : accountMap.values()) {
-                if (searchMembers)
-                    accountList.add( new Pair<LiteStarsCustAccountInformation,LiteStarsEnergyCompany>(liteAcctInfo, this) );
-                else
-                    accountList.add( liteAcctInfo );
-            }
-       }
+        // Gets all the possible energy company ids
+        List<Integer> energyCompanyIdList = new ArrayList<Integer>();
+        if (searchMembers) {
+        	List<LiteStarsEnergyCompany> energyCompanyList = ECUtils.getAllDescendants(this);
+        	for (LiteStarsEnergyCompany liteStarsEnergyCompany : energyCompanyList) {
+				energyCompanyIdList.add(liteStarsEnergyCompany.getLiteID());
+			}
+        } else {
+        	energyCompanyIdList.add(getLiteID());
+        }
         
-       if (searchMembers) {
-           List<LiteStarsEnergyCompany> children = getChildren();
-           synchronized (children) {
-               for (final LiteStarsEnergyCompany company : children) {
-                   List<Object> memberList = company.searchAccountByCompanyName( searchName, searchMembers );
-                   accountList.addAll( memberList );
-               }
-           }
-       }
-        
+        accountList.addAll(CustomerAccount.searchByCompanyName( searchName + "%", energyCompanyIdList));
        return accountList;
    }
     
@@ -1431,34 +1366,20 @@ public class LiteStarsEnergyCompany extends LiteBase {
      */
     public List<Object> searchAccountByMapNo(String mapNo, boolean searchMembers) {
         List<Object> accountList = new ArrayList<Object>();
-        
-        int[] accountIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByMapNumber( mapNo + "%", getLiteID() );
-        if (accountIDs != null) {
-            final Set<Integer> accountIds = new HashSet<Integer>(accountIDs.length);
-            for (final int accountId : accountIDs) {
-                accountIds.add(accountId);
-            }
-            
-            final Map<Integer,LiteStarsCustAccountInformation> accountMap = 
-                starsCustAccountInformationDao.getByIds(accountIds, getEnergyCompanyID());
-            for (final LiteStarsCustAccountInformation liteAcctInfo : accountMap.values()) {
-                if (searchMembers)
-                    accountList.add( new Pair<LiteStarsCustAccountInformation,LiteStarsEnergyCompany>(liteAcctInfo, this) );
-                else
-                    accountList.add( liteAcctInfo );
-            }
-        }
-        
+
+        // Gets all the possible energy company ids
+        List<Integer> energyCompanyIdList = new ArrayList<Integer>();
         if (searchMembers) {
-            List<LiteStarsEnergyCompany> children = getChildren();
-            synchronized (children) {
-                for (final LiteStarsEnergyCompany company : children) {
-                    List<Object> memberList = company.searchAccountByMapNo( mapNo, searchMembers );
-                    accountList.addAll( memberList );
-                }
-            }
+        	List<LiteStarsEnergyCompany> energyCompanyList = ECUtils.getAllDescendants(this);
+        	for (LiteStarsEnergyCompany liteStarsEnergyCompany : energyCompanyList) {
+				energyCompanyIdList.add(liteStarsEnergyCompany.getLiteID());
+			}
+        } else {
+        	energyCompanyIdList.add(getLiteID());
         }
         
+        // Uses the the energy company ids to find all the desired accounts
+        accountList.addAll(CustomerAccount.searchByMapNumber( mapNo + "%", energyCompanyIdList));
         return accountList;
     }
     
@@ -1486,8 +1407,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
         List<Object> orderList = searchWorkOrderByOrderNo( orderNo, false );
         List<Object> accountList = new ArrayList<Object>();
 
-        final Set<Integer> accountIds = new HashSet<Integer>();
-        
         for (final Object obj : orderList) {
             LiteWorkOrderBase liteOrder = null;
             
@@ -1501,31 +1420,23 @@ public class LiteStarsEnergyCompany extends LiteBase {
             
             if (liteOrder != null) {
                 int accountId = liteOrder.getAccountID();
-                if (accountId > 0) accountIds.add(accountId);
-            }
-        }
-        
-        final Map<Integer, LiteStarsCustAccountInformation> accountMap = 
-            starsCustAccountInformationDao.getByIds(accountIds, getEnergyCompanyID());
-        
-        for (final LiteStarsCustAccountInformation account : accountMap.values()) {
-            if (searchMembers) {
-                accountList.add( new Pair<LiteStarsCustAccountInformation,LiteStarsEnergyCompany>(account, this) );
-            } else {
-                accountList.add(account);
-            }
-        }
-        
-        if (searchMembers) {
-            List<LiteStarsEnergyCompany> children = getChildren();
-            synchronized (children) {
-                for (LiteStarsEnergyCompany company : children) {
-                    List<Object> memberList = company.searchAccountByOrderNo( orderNo, searchMembers );
-                    accountList.addAll( memberList );
+                if (accountId > 0){
+                    if (searchMembers) {
+                        accountList.add( new Pair<Integer,LiteStarsEnergyCompany>(accountId, this) );
+                    } else {
+                        accountList.add(accountId);
+                    }
                 }
             }
         }
         
+        if (searchMembers) {
+            for (LiteStarsEnergyCompany company : getChildren()) {
+                List<Object> memberList = company.searchAccountByOrderNo( orderNo, searchMembers );
+                accountList.addAll( memberList );
+            }
+        }
+
         return accountList;
     }
     
@@ -1534,34 +1445,23 @@ public class LiteStarsEnergyCompany extends LiteBase {
 
         int[] accountIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByPrimaryContactIDs( contactIDs, getLiteID() );
         if (accountIDs != null) {
-            Set<Integer> accountIdSet = new HashSet<Integer>(accountIDs.length);
             for (final int accountId : accountIDs) {
-                accountIdSet.add(accountId);
-            }
-            
-            Map<Integer, LiteStarsCustAccountInformation> accountsMap = 
-                starsCustAccountInformationDao.getByIds(accountIdSet, getEnergyCompanyID());
-            
-            for (final LiteStarsCustAccountInformation account : accountsMap.values()) {
                 if (searchMembers) {
                     accountList.add(
-                        new Pair<LiteStarsCustAccountInformation, LiteStarsEnergyCompany>(account, this));
+                        new Pair<Integer, LiteStarsEnergyCompany>(accountId, this));
                 } else {
-                    accountList.add(account);
+                    accountList.add(accountId);
                 }
             }
         }
         
         if (searchMembers) {
-            List<LiteStarsEnergyCompany> children = getChildren();
-            synchronized (children) {
-                for (final LiteStarsEnergyCompany company : children) {
-                    List<Object> memberList = company.searchAccountByContactIDs( contactIDs, searchMembers );
-                    accountList.addAll( memberList );
-                }
+            for (final LiteStarsEnergyCompany company : getChildren()) {
+                List<Object> memberList = company.searchAccountByContactIDs( contactIDs, searchMembers );
+                accountList.addAll( memberList );
             }
         }
-        
+
         return accountList;
     }
     
@@ -1641,7 +1541,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
         return starsList;
     }
     
-    public synchronized StarsCustomerSelectionLists getStarsCustomerSelectionLists(StarsYukonUser starsUser) {
+    public StarsCustomerSelectionLists getStarsCustomerSelectionLists(StarsYukonUser starsUser) {
         if (StarsUtils.isOperator( starsUser.getYukonUser() )) {
             StarsCustomerSelectionLists starsOperSelLists = new StarsCustomerSelectionLists();
             
@@ -1665,13 +1565,13 @@ public class LiteStarsEnergyCompany extends LiteBase {
         return null;
     }
     
-    public synchronized StarsEnrollmentPrograms getStarsEnrollmentPrograms() {
+    public StarsEnrollmentPrograms getStarsEnrollmentPrograms() {
         StarsEnrollmentPrograms starsEnrPrograms = new StarsEnrollmentPrograms();
         StarsLiteFactory.setStarsEnrollmentPrograms( starsEnrPrograms, getAllApplianceCategories(), this );
         return starsEnrPrograms;
     }
     
-    public synchronized StarsServiceCompanies getStarsServiceCompanies() {
+    public StarsServiceCompanies getStarsServiceCompanies() {
         StarsServiceCompanies starsServCompanies = new StarsServiceCompanies();
         // Always add a "(none)" to the service company list
         StarsServiceCompany starsServCompany = new StarsServiceCompany();
@@ -1692,7 +1592,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
         return starsServCompanies;
     }
     
-    public synchronized StarsSubstations getStarsSubstations() {
+    public StarsSubstations getStarsSubstations() {
         StarsSubstations starsSubstations = new StarsSubstations();
         // Always add a "(none)" to the service company list
         StarsSubstation starsSub = new StarsSubstation();
@@ -1713,7 +1613,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
         return starsSubstations;
     }
     
-    public synchronized StarsExitInterviewQuestions getStarsExitInterviewQuestions() {
+    public StarsExitInterviewQuestions getStarsExitInterviewQuestions() {
         StarsExitInterviewQuestions starsExitQuestions = new StarsExitInterviewQuestions();
 
         int exitQType = getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_QUE_TYPE_EXIT).getEntryID();
@@ -1757,10 +1657,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
         }
     }
     
-    private void loadEnergyCompanyHierarchy() {
-        parent = null;
-        memberLoginIDs = new ArrayList<Integer>();
-        children = new ArrayList<LiteStarsEnergyCompany>();
+    private EnergyCompanyHierarchy loadEnergyCompanyHierarchy() {
+        EnergyCompanyHierarchy ech = new EnergyCompanyHierarchy();
         
         String sql = "SELECT EnergyCompanyID, ItemID FROM ECToGenericMapping " +
                 "WHERE MappingCategory='" + ECToGenericMapping.MAPPING_CATEGORY_MEMBER + "' " +
@@ -1775,9 +1673,9 @@ public class LiteStarsEnergyCompany extends LiteBase {
                 int childID = ((java.math.BigDecimal) stmt.getRow(i)[1]).intValue();
                 
                 if (parentID == getLiteID())
-                    children.add( StarsDatabaseCache.getInstance().getEnergyCompany(childID) );
+                    ech.children.add( StarsDatabaseCache.getInstance().getEnergyCompany(childID) );
                 else    // childID == getLiteID()
-                    parent = StarsDatabaseCache.getInstance().getEnergyCompany( parentID );
+                    ech.parent = StarsDatabaseCache.getInstance().getEnergyCompany( parentID );
             }
             
             ECToGenericMapping[] items = ECToGenericMapping.getAllMappingItems(
@@ -1785,38 +1683,68 @@ public class LiteStarsEnergyCompany extends LiteBase {
             
             if (items != null) {
                 for (int i = 0; i < items.length; i++)
-                    memberLoginIDs.add( items[i].getItemID() );
+                    ech.memberLoginIDs.add( items[i].getItemID() );
             }
             
-            hierarchyLoaded = true;
             CTILogger.info( "Energy company hierarchy loaded for energy company #" + getEnergyCompanyID() );
         }
         catch (CommandExecutionException e) {
             CTILogger.error( e.getMessage(), e );
         }
+        return ech;
     }
     
-    public synchronized LiteStarsEnergyCompany getParent() {
-        if (!hierarchyLoaded)
-            loadEnergyCompanyHierarchy();
-        return parent;
+    private EnergyCompanyHierarchy getEnergyCompanyHierarchy() {
+        EnergyCompanyHierarchy value = energyCompanyHierarchy;
+        if (value == null) {
+            EnergyCompanyHierarchy loadedValue = loadEnergyCompanyHierarchy();
+            energyCompanyHierarchy = loadedValue;
+            return loadedValue;
+        }
+        return value;
     }
     
-    public synchronized List<LiteStarsEnergyCompany> getChildren() {
-        if (!hierarchyLoaded)
-            loadEnergyCompanyHierarchy();
-        return children;
+    public LiteStarsEnergyCompany getParent() {
+        return getEnergyCompanyHierarchy().parent;
     }
     
-    public synchronized List<Integer> getMemberLoginIDs() {
-        if (!hierarchyLoaded)
-            loadEnergyCompanyHierarchy();
-        return memberLoginIDs;
+    public Iterable<LiteStarsEnergyCompany> getChildren() {
+        return getEnergyCompanyHierarchy().children;
     }
     
-    public synchronized void clearHierarchy() {
-        hierarchyLoaded = false;
+    public boolean hasChildEnergyCompanies() {
+        return !getEnergyCompanyHierarchy().children.isEmpty();
     }
+    
+    public List<Integer> getMemberLoginIDs() {
+        return getEnergyCompanyHierarchy().memberLoginIDs;
+    }
+    
+    public void clearHierarchy() {
+        energyCompanyHierarchy = null;
+    }
+    
+    public ThermostatSchedule getDefaultThermostatSchedule(HardwareType type) {
+    	Validate.notNull(type, "Hardware type cannot be null");
+    	
+    	ThermostatSchedule defaultSchedule = this.defaultThermostatScheduleMap.get(type);
+    	if(defaultSchedule == null) {
+    		// This schedule is not cached - load it and cache it
+    		defaultSchedule = 
+    			thermostatScheduleDao.getEnergyCompanyDefaultSchedule(this, type);
+    		this.defaultThermostatScheduleMap.put(type, defaultSchedule);
+    	}
+    	return defaultSchedule;
+    }
+
+	public void updateDefaultSchedule(ThermostatSchedule schedule) {
+		Validate.notNull(schedule, "Default thermostat schedule cannot be null");
+		
+		HardwareType thermostatType = schedule.getThermostatType();
+		Validate.notNull(thermostatType, "Default thermostat schedule type cannot be null");
+		
+		this.defaultThermostatScheduleMap.put(thermostatType, schedule);
+	}
 
     private List<Object> searchByPrimaryContactLastName(String lastName_, boolean partialMatch, List<Integer> energyCompanyIDList, boolean searchMembers) {
         if (lastName_ == null || lastName_.length() == 0) return null;
@@ -1831,19 +1759,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
             firstName = lastName_.substring(commaIndex+1).trim();
             lastName = lastName_.substring(0, commaIndex).trim();
         }
-        String sql = "SELECT map.energycompanyID, acct.AccountID, contlastname, contfirstname, " + //1-4" +
-                    " acct.AccountSiteID, acct.AccountNumber, acct.CustomerID, acct.BillingAddressID, acct.AccountNotes, " + //5-9 
-                    " acs.SiteInformationID, acs.SiteNumber, acs.StreetAddressID, acs.PropertyNotes, acs.CustAtHome, acs.CustomerStatus, " + //10-15
-                    " si.Feeder, si.Pole, si.TransformerSize, si.ServiceVoltage, si.SubstationID, " + //16-20
-                    " PrimaryContactID, CustomerTypeID, TimeZone, CustomerNumber, RateScheduleID, AltTrackNum, TemperatureUnit, " + //21-27
-                    " LocationAddress1, LocationAddress2, CityName, StateCode, ZipCode, County " + //28-33
+        String sql = "SELECT map.energycompanyID, acct.AccountID " + 
                     " FROM ECToAccountMapping map, " + CustomerAccount.TABLE_NAME + " acct, " + 
-                    Customer.TABLE_NAME + " cust, " +  Contact.TABLE_NAME + " cont, " +
-                    " AccountSite acs, SiteInformation si, Address adr " +  
+                    Customer.TABLE_NAME + " cust, " +  Contact.TABLE_NAME + " cont " +
                     " WHERE map.AccountID = acct.AccountID " +
-                    " AND acct.AccountSiteID = acs.AccountSiteID " +
-                    " AND acs.streetaddressID = adr.addressID " +
-                    " AND acs.SiteInformationID = si.SiteID " + 
                     " AND acct.CustomerID = cust.CustomerID " + 
                     " AND cust.primarycontactid = cont.contactid " +
                     " AND UPPER(cont.contlastname) like ? " ;
@@ -1882,64 +1801,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
                 
                 Integer accountID = new Integer(rset.getInt(2));
 
-                final LiteStarsCustAccountInformation liteAcctInfo = new LiteStarsCustAccountInformation(accountID.intValue(), energyCompanyID);                
-
-                LiteCustomerAccount customerAccount = new LiteCustomerAccount( accountID.intValue() );
-                customerAccount.setAccountSiteID( rset.getInt(5));
-                customerAccount.setAccountNumber( rset.getString(6));
-                customerAccount.setCustomerID( rset.getInt(7) );
-                customerAccount.setBillingAddressID( rset.getInt(8));
-                customerAccount.setAccountNotes( rset.getString(9) );
-                liteAcctInfo.setCustomerAccount(customerAccount);
-
-                LiteAccountSite accountSite = new LiteAccountSite( customerAccount.getAccountSiteID());
-                accountSite.setSiteInformationID( rset.getInt(10) );
-                accountSite.setSiteNumber( rset.getString(11) );
-                accountSite.setStreetAddressID( rset.getInt(12) );
-                accountSite.setPropertyNotes( rset.getString(13));
-                accountSite.setCustAtHome( rset.getString(14));
-                accountSite.setCustStatus( rset.getString(15) );
-                liteAcctInfo.setAccountSite(accountSite);
-
-                LiteSiteInformation siteInformation = new LiteSiteInformation(accountSite.getAccountSiteID() );
-                siteInformation.setFeeder( rset.getString(16) );
-                siteInformation.setPole( rset.getString(17));
-                siteInformation.setTransformerSize( rset.getString(18) );
-                siteInformation.setServiceVoltage( rset.getString(19) );
-                siteInformation.setSubstationID( rset.getInt(20) );
-                liteAcctInfo.setSiteInformation(siteInformation);
-
-                LiteCustomer customer = new LiteCustomer(customerAccount.getCustomerID());
-                customer.setPrimaryContactID(rset.getInt(21) );
-                customer.setCustomerTypeID( rset.getInt(22) );
-                customer.setTimeZone( rset.getString(23) );
-                customer.setCustomerNumber( rset.getString(24) );
-                customer.setRateScheduleID( rset.getInt(25) );
-                customer.setAltTrackingNumber( rset.getString(26) );
-                customer.setTemperatureUnit( rset.getString(27) );
-
-                if(customer.getCustomerTypeID() == CustomerTypes.CUSTOMER_CI)
-                {   //retrieve the CICustomerBase object instead.
-                    customer = new LiteCICustomer(customer.getCustomerID());
-                customer.retrieve(CtiUtilities.getDatabaseAlias());
-                }
-                liteAcctInfo.setCustomer(customer);
-
-                LiteAddress address = new LiteAddress(accountSite.getStreetAddressID());
-                address.setLocationAddress1( rset.getString(28) );
-                address.setLocationAddress2( rset.getString(29) );
-                address.setCityName( rset.getString(30) );
-                address.setStateCode( rset.getString(31) );
-                address.setZipCode( rset.getString(32) );
-                address.setCounty( rset.getString(33) );
-
-                if( count < 250)//preload only the first SearchResults.jsp page contacts
-                    DaoFactory.getContactDao().getContact(customer.getPrimaryContactID());
-
                 if (searchMembers)
-                    accountList.add(new Pair<LiteStarsCustAccountInformation,LiteStarsEnergyCompany>(liteAcctInfo, liteStarsEC) );
+                    accountList.add(new Pair<Integer,LiteStarsEnergyCompany>(accountID, liteStarsEC) );
                 else
-                    accountList.add(liteAcctInfo);
+                    accountList.add(accountID);
 
                 count++;
             }
@@ -1966,19 +1831,12 @@ public class LiteStarsEnergyCompany extends LiteBase {
         Date timerStart = new Date();
         String address = address_.trim();
         
-        String sql = "SELECT DISTINCT map.energycompanyID, acct.AccountID, " + //1-2" +
-                    " acct.AccountSiteID, acct.AccountNumber, acct.CustomerID, acct.BillingAddressID, acct.AccountNotes, " + //3-7 
-                    " acs.SiteInformationID, acs.SiteNumber, acs.StreetAddressID, acs.PropertyNotes, acs.CustAtHome, acs.CustomerStatus, " + //8-13
-                    " si.Feeder, si.Pole, si.TransformerSize, si.ServiceVoltage, si.SubstationID, " + //14-18
-                    " PrimaryContactID, CustomerTypeID, TimeZone, CustomerNumber, RateScheduleID, AltTrackNum, TemperatureUnit, " + //19-25
-                    " LocationAddress1, LocationAddress2, CityName, StateCode, ZipCode, County " + //26-31
+        String sql = "SELECT map.energycompanyID, acct.AccountID " + 
                     " FROM ECToAccountMapping map, " + CustomerAccount.TABLE_NAME + " acct, " + 
-                    Customer.TABLE_NAME + " cust, AccountSite acs, SiteInformation si, Address adr " +  
+                    " AccountSite acs, Address adr " +  
                     " WHERE map.AccountID = acct.AccountID " +
                     " AND acct.AccountSiteID = acs.AccountSiteID " +
                     " AND acs.streetaddressID = adr.addressID " +
-                    " AND acs.SiteInformationID = si.SiteID " + 
-                    " AND acct.CustomerID = cust.CustomerID " + 
                     " AND UPPER(adr.LocationAddress1) LIKE ? ";
                     // Hey, if we have all the ECIDs available, don't bother adding this criteria!
                     if( energyCompanyIDList.size() != StarsDatabaseCache.getInstance().getAllEnergyCompanies().size())
@@ -2005,72 +1863,17 @@ public class LiteStarsEnergyCompany extends LiteBase {
             CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " After execute" );
   
             LiteStarsEnergyCompany liteStarsEC = null;
-            LiteStarsCustAccountInformation liteAcctInfo = null;
             while(rset.next())
             {
                 Integer energyCompanyID = new Integer(rset.getInt(1));
                 liteStarsEC = StarsDatabaseCache.getInstance().getEnergyCompany(energyCompanyID.intValue());
                 
                 Integer accountID = new Integer(rset.getInt(2));
-            
-                liteAcctInfo = new LiteStarsCustAccountInformation(accountID.intValue(), energyCompanyID);                
-
-                LiteCustomerAccount customerAccount = new LiteCustomerAccount( accountID.intValue() );
-                customerAccount.setAccountSiteID( rset.getInt(3));
-                customerAccount.setAccountNumber( rset.getString(4));
-                customerAccount.setCustomerID( rset.getInt(5) );
-                customerAccount.setBillingAddressID( rset.getInt(6));
-                customerAccount.setAccountNotes( rset.getString(7) );
-                liteAcctInfo.setCustomerAccount(customerAccount);
-                
-                LiteAccountSite accountSite = new LiteAccountSite( customerAccount.getAccountSiteID());
-                accountSite.setSiteInformationID( rset.getInt(8) );
-                accountSite.setSiteNumber( rset.getString(9) );
-                accountSite.setStreetAddressID( rset.getInt(10) );
-                accountSite.setPropertyNotes( rset.getString(11));
-                accountSite.setCustAtHome( rset.getString(12));
-                accountSite.setCustStatus( rset.getString(13) );
-                liteAcctInfo.setAccountSite(accountSite);
-
-                LiteSiteInformation siteInformation = new LiteSiteInformation(accountSite.getAccountSiteID() );
-                siteInformation.setFeeder( rset.getString(14) );
-                siteInformation.setPole( rset.getString(15));
-                siteInformation.setTransformerSize( rset.getString(16) );
-                siteInformation.setServiceVoltage( rset.getString(17) );
-                siteInformation.setSubstationID( rset.getInt(18) );
-                liteAcctInfo.setSiteInformation(siteInformation);
-             
-                LiteCustomer customer = new LiteCustomer(customerAccount.getCustomerID());
-                customer.setPrimaryContactID(rset.getInt(19) );
-                customer.setCustomerTypeID( rset.getInt(20) );
-                customer.setTimeZone( rset.getString(21) );
-                customer.setCustomerNumber( rset.getString(22) );
-                customer.setRateScheduleID( rset.getInt(23) );
-                customer.setAltTrackingNumber( rset.getString(24) );
-                customer.setTemperatureUnit( rset.getString(25) );
-                
-                if(customer.getCustomerTypeID() == CustomerTypes.CUSTOMER_CI)
-                {   //retrieve the CICustomerBase object instead.
-                    customer = new LiteCICustomer(customer.getCustomerID());
-                    customer.retrieve(CtiUtilities.getDatabaseAlias());
-                }
-                liteAcctInfo.setCustomer(customer);
-                                    
-                LiteAddress liteAddress = new LiteAddress(accountSite.getStreetAddressID());
-                liteAddress.setLocationAddress1( rset.getString(26) );
-                liteAddress.setLocationAddress2( rset.getString(27) );
-                liteAddress.setCityName( rset.getString(28) );
-                liteAddress.setStateCode( rset.getString(29) );
-                liteAddress.setZipCode( rset.getString(30) );
-                liteAddress.setCounty( rset.getString(31) );
-                
-                if( count < 250)//preload only the first SearchResults.jsp page contacts
-                    DaoFactory.getContactDao().getContact(customer.getPrimaryContactID());
 
                 if (searchMembers)
-                    accountList.add(new Pair<LiteStarsCustAccountInformation,LiteStarsEnergyCompany>(liteAcctInfo, liteStarsEC) );
+                    accountList.add(new Pair<Integer,LiteStarsEnergyCompany>(accountID, liteStarsEC) );
                 else
-                    accountList.add(liteAcctInfo);
+                    accountList.add(accountID);
 
                 count++;
             }
@@ -2098,22 +1901,9 @@ public class LiteStarsEnergyCompany extends LiteBase {
         Date timerStart = new Date();
         String accountNumber = accountNumber_.trim();
         
-//        SELECT acct.AccountID FROM ECToAccountMapping map, " + TABLE_NAME + " acct "
-//        + "WHERE map.EnergyCompanyID = ? AND map.AccountID = acct.AccountID"
-//        + " AND UPPER(acct.AccountNumber) LIKE UPPER(?)" +
-        String sql = "SELECT DISTINCT map.energycompanyID, acct.AccountID, " + //1-2" +
-                    " acct.AccountSiteID, acct.AccountNumber, acct.CustomerID, acct.BillingAddressID, acct.AccountNotes, " + //3-7 
-                    " acs.SiteInformationID, acs.SiteNumber, acs.StreetAddressID, acs.PropertyNotes, acs.CustAtHome, acs.CustomerStatus, " + //8-13
-                    " si.Feeder, si.Pole, si.TransformerSize, si.ServiceVoltage, si.SubstationID, " + //14-18
-                    " PrimaryContactID, CustomerTypeID, TimeZone, CustomerNumber, RateScheduleID, AltTrackNum, TemperatureUnit, " + //19-25
-                    " LocationAddress1, LocationAddress2, CityName, StateCode, ZipCode, County " + //26-31
-                    " FROM ECToAccountMapping map, " + CustomerAccount.TABLE_NAME + " acct, " + 
-                    Customer.TABLE_NAME + " cust, AccountSite acs, SiteInformation si, Address adr " +  
+        String sql = "SELECT map.energycompanyID, acct.AccountID " + //1-2" +
+                    " FROM ECToAccountMapping map, " + CustomerAccount.TABLE_NAME + " acct " + 
                     " WHERE map.AccountID = acct.AccountID " +
-                    " AND acct.AccountSiteID = acs.AccountSiteID " +
-                    " AND acs.streetaddressID = adr.addressID " +
-                    " AND acs.SiteInformationID = si.SiteID " + 
-                    " AND acct.CustomerID = cust.CustomerID " + 
                     " AND UPPER(acct.AccountNumber) LIKE ? ";
                     // Hey, if we have all the ECIDs available, don't bother adding this criteria!
                     if( energyCompanyIDList.size() != StarsDatabaseCache.getInstance().getAllEnergyCompanies().size())
@@ -2123,7 +1913,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
                              sql += " OR map.EnergyCompanyID = " + energyCompanyIDList.get(i).toString();
                         sql += " ) ";
                     }
-                    sql += " order by adr.LocationAddress1, adr.LocationAddress2, CityName, StateCode";                          
+                    sql += " order by accountNumber";                          
         
         List<Object> accountList = new ArrayList<Object>();
         PreparedStatement pstmt = null;
@@ -2140,72 +1930,18 @@ public class LiteStarsEnergyCompany extends LiteBase {
             CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " After execute" );
   
             LiteStarsEnergyCompany liteStarsEC = null;
-            LiteStarsCustAccountInformation liteAcctInfo = null;
+            Integer accountId = null;
             while(rset.next())
             {
                 Integer energyCompanyID = new Integer(rset.getInt(1));
                 liteStarsEC = StarsDatabaseCache.getInstance().getEnergyCompany(energyCompanyID.intValue());
                 
-                Integer accountID = new Integer(rset.getInt(2));
-            
-                liteAcctInfo = new LiteStarsCustAccountInformation(accountID.intValue(), energyCompanyID);                
+                accountId = new Integer(rset.getInt(2));
 
-                LiteCustomerAccount customerAccount = new LiteCustomerAccount( accountID.intValue() );
-                customerAccount.setAccountSiteID( rset.getInt(3));
-                customerAccount.setAccountNumber( rset.getString(4));
-                customerAccount.setCustomerID( rset.getInt(5) );
-                customerAccount.setBillingAddressID( rset.getInt(6));
-                customerAccount.setAccountNotes( rset.getString(7) );
-                liteAcctInfo.setCustomerAccount(customerAccount);
-                
-                LiteAccountSite accountSite = new LiteAccountSite( customerAccount.getAccountSiteID());
-                accountSite.setSiteInformationID( rset.getInt(8) );
-                accountSite.setSiteNumber( rset.getString(9) );
-                accountSite.setStreetAddressID( rset.getInt(10) );
-                accountSite.setPropertyNotes( rset.getString(11));
-                accountSite.setCustAtHome( rset.getString(12));
-                accountSite.setCustStatus( rset.getString(13) );
-                liteAcctInfo.setAccountSite(accountSite);
-
-                LiteSiteInformation siteInformation = new LiteSiteInformation(accountSite.getAccountSiteID() );
-                siteInformation.setFeeder( rset.getString(14) );
-                siteInformation.setPole( rset.getString(15));
-                siteInformation.setTransformerSize( rset.getString(16) );
-                siteInformation.setServiceVoltage( rset.getString(17) );
-                siteInformation.setSubstationID( rset.getInt(18) );
-                liteAcctInfo.setSiteInformation(siteInformation);
-             
-                LiteCustomer customer = new LiteCustomer(customerAccount.getCustomerID());
-                customer.setPrimaryContactID(rset.getInt(19) );
-                customer.setCustomerTypeID( rset.getInt(20) );
-                customer.setTimeZone( rset.getString(21) );
-                customer.setCustomerNumber( rset.getString(22) );
-                customer.setRateScheduleID( rset.getInt(23) );
-                customer.setAltTrackingNumber( rset.getString(24) );
-                customer.setTemperatureUnit( rset.getString(25) );
-                
-                if(customer.getCustomerTypeID() == CustomerTypes.CUSTOMER_CI)
-                {   //retrieve the CICustomerBase object instead.
-                    customer = new LiteCICustomer(customer.getCustomerID());
-                    customer.retrieve(CtiUtilities.getDatabaseAlias());
-                }
-                liteAcctInfo.setCustomer(customer);
-                                    
-                LiteAddress address = new LiteAddress(accountSite.getStreetAddressID());
-                address.setLocationAddress1( rset.getString(26) );
-                address.setLocationAddress2( rset.getString(27) );
-                address.setCityName( rset.getString(28) );
-                address.setStateCode( rset.getString(29) );
-                address.setZipCode( rset.getString(30) );
-                address.setCounty( rset.getString(31) );
-                
-                if( count < 250)//preload only the first SearchResults.jsp page contacts
-                    DaoFactory.getContactDao().getContact(customer.getPrimaryContactID());
-                                
                 if (searchMembers)
-                    accountList.add(new Pair<LiteStarsCustAccountInformation,LiteStarsEnergyCompany>(liteAcctInfo, liteStarsEC) );
+                    accountList.add(new Pair<Integer,LiteStarsEnergyCompany>(accountId, liteStarsEC) );
                 else
-                    accountList.add(liteAcctInfo);
+                    accountList.add(accountId);
 
                 count++;
             }
@@ -2224,6 +1960,54 @@ public class LiteStarsEnergyCompany extends LiteBase {
 
         CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " Secs for '" + accountNumber_  + "' Search (" + count + " AccountIDS loaded; EC=" + (energyCompanyIDList.size() == StarsDatabaseCache.getInstance().getAllEnergyCompanies().size()? "ALL" : energyCompanyIDList.toString()) + ")" );
         return accountList;
+    }
+    
+    private void initSelectionLists() {
+    	
+    	ECToGenericMapping[] items = 
+    		ECToGenericMapping.getAllMappingItems( 
+    				getEnergyCompanyID(), YukonSelectionList.TABLE_NAME );
+        if (items != null) {
+            for (ECToGenericMapping item : items) {
+                YukonSelectionList yukonSelectionList = 
+                	yukonListDao.getYukonSelectionList(item.getItemID());
+                selectionListMap.put(yukonSelectionList.getListName(), yukonSelectionList);
+            }
+        }
+    }
+    
+    private void initApplianceCategories(){
+
+    	ApplianceCategory[] appCats = ApplianceCategory.getAllApplianceCategories(getEnergyCompanyID());
+                
+        for (ApplianceCategory category : appCats) {
+            LiteApplianceCategory appCat = 
+            	(LiteApplianceCategory) StarsLiteFactory.createLite(category);
+            
+            LMProgramWebPublishing[] pubProgs =
+                    LMProgramWebPublishing.getAllLMProgramWebPublishing(category.getApplianceCategoryID());
+            
+            for (LMProgramWebPublishing pubProg : pubProgs) {
+                LiteLMProgramWebPublishing program = 
+                	(LiteLMProgramWebPublishing) StarsLiteFactory.createLite(pubProg);
+                appCat.addProgram(program);
+                programIdToAppCatIdMap.put(program.getProgramID(), appCat.getApplianceCategoryID());
+            }
+            appCategoryMap.put(appCat.getApplianceCategoryID(), appCat);
+        }
+        
+        CTILogger.info( "All appliance categories loaded for energy company #" + getEnergyCompanyID() );
+    }
+    
+    private void initDefaultThermostatSchedules() {
+    	
+    	List<HardwareType> thermostatTypes = this.getAvailableThermostatTypes();
+    	for(HardwareType type : thermostatTypes) {
+    		ThermostatSchedule defaultSchedule = 
+    			thermostatScheduleDao.getEnergyCompanyDefaultSchedule(this, type);
+    		this.defaultThermostatScheduleMap.put(type, defaultSchedule);
+    	}
+    	
     }
     
     void setAddressDao(AddressDao addressDao) {
@@ -2249,4 +2033,13 @@ public class LiteStarsEnergyCompany extends LiteBase {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
     
+    void setYukonListDao(YukonListDao yukonListDao) {
+		this.yukonListDao = yukonListDao;
+	}
+    
+    void setThermsotatScheduleDao(
+			ThermostatScheduleDao thermostatScheduleDao) {
+		this.thermostatScheduleDao = thermostatScheduleDao;
+	}
+
 }

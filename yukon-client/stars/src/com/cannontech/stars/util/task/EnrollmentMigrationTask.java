@@ -74,7 +74,7 @@ public class EnrollmentMigrationTask extends TimeConsumingTask {
                         LiteInventoryBase inventoryItem = starsInventoryBaseDao.getById(controlGroup.getInventoryId());
                         controlGroup.setGroupEnrollStart(new Date(inventoryItem.getInstallDate()));
                         controlGroup.setType(LMHardwareControlGroup.ENROLLMENT_ENTRY);
-                        controlGroup.setUserIdFirstAction(energyCompany.getUserID());
+                        controlGroup.setUserIdFirstAction(energyCompany.getUser().getUserID());
                         List<LMHardwareControlGroup> existingGroups = lmHardwareControlGroupDao.getByInventoryIdAndGroupIdAndAccountIdAndType(controlGroup.getInventoryId(), groupId, app.getAccountID(), LMHardwareControlGroup.ENROLLMENT_ENTRY);
                         if(existingGroups.size() == 0) {
                             lmHardwareControlGroupDao.add(controlGroup);

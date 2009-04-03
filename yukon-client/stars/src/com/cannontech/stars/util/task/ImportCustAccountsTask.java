@@ -368,7 +368,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 			int errors = 0;
 
 			// Creates a list of all the appliance categories names
-            List<LiteApplianceCategory> allApplianceCategories = energyCompany.getAllApplianceCategories();
+            Iterable<LiteApplianceCategory> allApplianceCategories = energyCompany.getAllApplianceCategories();
             List<String> applianceNameList = new ArrayList<String>(); 
             for (LiteApplianceCategory liteApplianceCategory : allApplianceCategories) {
                 applianceNameList.add(liteApplianceCategory.getDescription());
@@ -1293,64 +1293,60 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 	}
 	
 	private int[][] getEnrolledProgram(String[] fields, LiteStarsEnergyCompany energyCompany) throws WebClientException {
-        List<LiteLMProgramWebPublishing> programs = energyCompany.getAllPrograms();
         boolean matchedProg = false;
         
         if(UNENROLL_CASE.equalsIgnoreCase( fields[ImportManagerUtil.IDX_PROGRAM_NAME] )) {
             return new int[0][0];
         }
         
-		synchronized (programs) {
-			for (int i = 0; i < programs.size(); i++) {
-				LiteLMProgramWebPublishing liteProg = programs.get(i);
-                String progName = CtiUtilities.STRING_NONE;
-                
-                if (liteProg.getDeviceID() > 0) {
-                    try {
-                        progName = DaoFactory.getPaoDao().getYukonPAOName( liteProg.getDeviceID() );
-                        matchedProg = progName.equalsIgnoreCase( fields[ImportManagerUtil.IDX_PROGRAM_NAME] );
-                    }
-                    catch(NotFoundException e) {
-                        CTILogger.error(e.getMessage(), e);
-                    }
+		for (LiteLMProgramWebPublishing liteProg : energyCompany.getAllPrograms()) {
+            String progName = CtiUtilities.STRING_NONE;
+            
+            if (liteProg.getDeviceID() > 0) {
+                try {
+                    progName = DaoFactory.getPaoDao().getYukonPAOName( liteProg.getDeviceID() );
+                    matchedProg = progName.equalsIgnoreCase( fields[ImportManagerUtil.IDX_PROGRAM_NAME] );
                 }
-                
-                if(!matchedProg) {
-                    LiteWebConfiguration liteConfig = StarsDatabaseCache.getInstance().getWebConfiguration( liteProg.getWebSettingsID() );
-                    if (liteConfig != null) {
-                        String[] dispNames = StarsUtils.splitString( liteConfig.getAlternateDisplayName(), "," );
-                        if (dispNames.length > 0 && dispNames[0].length() > 0)
-                            progName = dispNames[0];
-                    }
+                catch(NotFoundException e) {
+                    CTILogger.error(e.getMessage(), e);
                 }
-                
-				if (progName.equalsIgnoreCase( fields[ImportManagerUtil.IDX_PROGRAM_NAME] )) {
-					int[] suProg = new int[4];
-					suProg[0] = liteProg.getProgramID();
-					suProg[1] = -1;	// ApplianceCategoryID (optional)
-					suProg[2] = -1;	// GroupID (optional)
-					suProg[3] = -1;	// LoadNumber (optional)
-					
-					if (fields[ImportManagerUtil.IDX_ADDR_GROUP].trim().length() > 0) {
-						for (int j = 0; j < liteProg.getGroupIDs().length; j++) 
+            }
+            
+            if(!matchedProg) {
+                LiteWebConfiguration liteConfig = StarsDatabaseCache.getInstance().getWebConfiguration( liteProg.getWebSettingsID() );
+                if (liteConfig != null) {
+                    String[] dispNames = StarsUtils.splitString( liteConfig.getAlternateDisplayName(), "," );
+                    if (dispNames.length > 0 && dispNames[0].length() > 0)
+                        progName = dispNames[0];
+                }
+            }
+            
+			if (progName.equalsIgnoreCase( fields[ImportManagerUtil.IDX_PROGRAM_NAME] )) {
+				int[] suProg = new int[4];
+				suProg[0] = liteProg.getProgramID();
+				suProg[1] = -1;	// ApplianceCategoryID (optional)
+				suProg[2] = -1;	// GroupID (optional)
+				suProg[3] = -1;	// LoadNumber (optional)
+				
+				if (fields[ImportManagerUtil.IDX_ADDR_GROUP].trim().length() > 0) {
+					for (int j = 0; j < liteProg.getGroupIDs().length; j++) 
+                    {
+                        try
                         {
-                            try
+                            if (DaoFactory.getPaoDao().getYukonPAOName( liteProg.getGroupIDs()[j] ).equalsIgnoreCase( fields[ImportManagerUtil.IDX_ADDR_GROUP] )) 
                             {
-                                if (DaoFactory.getPaoDao().getYukonPAOName( liteProg.getGroupIDs()[j] ).equalsIgnoreCase( fields[ImportManagerUtil.IDX_ADDR_GROUP] )) 
-                                {
-                                    suProg[2] = liteProg.getGroupIDs()[j];
-                                    break;
-                                }
+                                suProg[2] = liteProg.getGroupIDs()[j];
+                                break;
                             }
-                            catch(NotFoundException e) {}
-						}
-						
-						if (suProg[2] == -1)
-							throw new WebClientException( "The group '" + fields[ImportManagerUtil.IDX_ADDR_GROUP] + "' doesn't belong to program '" + progName + "'" );
+                        }
+                        catch(NotFoundException e) {}
 					}
 					
-					return new int[][] { suProg };
+					if (suProg[2] == -1)
+						throw new WebClientException( "The group '" + fields[ImportManagerUtil.IDX_ADDR_GROUP] + "' doesn't belong to program '" + progName + "'" );
 				}
+				
+				return new int[][] { suProg };
 			}
 		}
 		

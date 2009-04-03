@@ -59,23 +59,23 @@ public class SearchWorkOrderController extends StarsWorkorderActionController {
         session.setAttribute( ServletUtils.ATT_LAST_SERVICE_SEARCH_OPTION, new Integer(searchBy));
         session.setAttribute( ServletUtils.ATT_LAST_SERVICE_SEARCH_VALUE, new String(searchValue) );
         boolean searchMembers = this.authDao.checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS ) && 
-                                (energyCompany.getChildren().size() > 0);
+                                (energyCompany.hasChildEnergyCompanies());
 
         if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_ORDER_NO) {
             liteWorkOrderList = cleanList(energyCompany.searchWorkOrderByOrderNo( searchValue, searchMembers),
                                           LiteWorkOrderBase.class);
         }
         else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_ACCT_NO) {
-            List<LiteStarsCustAccountInformation> accounts = cleanList(energyCompany.searchAccountByAccountNumber( searchValue, searchMembers, true),
-                                                                       LiteStarsCustAccountInformation.class);
-            liteWorkOrderList.addAll(getOrderIDsByAccounts( accounts, energyCompany ) );
+            List<Integer> accountIds = cleanList(energyCompany.searchAccountByAccountNumber( searchValue, searchMembers, true),
+                                                                       Integer.class);
+            liteWorkOrderList.addAll(getOrderIDsByAccounts( accountIds, energyCompany ) );
         }
         else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_PHONE_NO) {
             try {
                 String phoneNo = ServletUtils.formatPhoneNumberForSearch( searchValue );
-                List<LiteStarsCustAccountInformation> accounts = cleanList(energyCompany.searchAccountByPhoneNo( phoneNo, searchMembers),
-                                                                           LiteStarsCustAccountInformation.class);
-                liteWorkOrderList.addAll(getOrderIDsByAccounts( accounts, energyCompany ) );
+                List<Integer> accountIds = cleanList(energyCompany.searchAccountByPhoneNo( phoneNo, searchMembers),
+                                                                           Integer.class);
+                liteWorkOrderList.addAll(getOrderIDsByAccounts( accountIds, energyCompany ) );
             }
             catch (WebClientException e) {
                 session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, e.getMessage());
@@ -85,19 +85,19 @@ public class SearchWorkOrderController extends StarsWorkorderActionController {
             }
         }
         else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_LAST_NAME) {
-            List<LiteStarsCustAccountInformation> accounts = cleanList(energyCompany.searchAccountByLastName( searchValue, searchMembers , true),
-                                                                       LiteStarsCustAccountInformation.class);
-            liteWorkOrderList.addAll(getOrderIDsByAccounts( accounts, energyCompany ) );
+            List<Integer> accountIds = cleanList(energyCompany.searchAccountByLastName( searchValue, searchMembers , true),
+                                                                       Integer.class);
+            liteWorkOrderList.addAll(getOrderIDsByAccounts( accountIds, energyCompany ) );
         }
         else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_SERIAL_NO) {
-            List<LiteStarsCustAccountInformation> accounts = cleanList(energyCompany.searchAccountBySerialNo( searchValue, searchMembers),
-                                                                       LiteStarsCustAccountInformation.class);
-            liteWorkOrderList.addAll(getOrderIDsByAccounts( accounts, energyCompany ) );
+            List<Integer> accountIds = cleanList(energyCompany.searchAccountBySerialNo( searchValue, searchMembers),
+                                                                       Integer.class);
+            liteWorkOrderList.addAll(getOrderIDsByAccounts( accountIds, energyCompany ) );
         }
         else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_ADDRESS) {
-            List<LiteStarsCustAccountInformation> accounts = cleanList(energyCompany.searchAccountByAddress( searchValue, searchMembers, true),
-                                              LiteStarsCustAccountInformation.class);
-            liteWorkOrderList.addAll(getOrderIDsByAccounts( accounts, energyCompany ));
+            List<Integer> accountIds = cleanList(energyCompany.searchAccountByAddress( searchValue, searchMembers, true),
+                                              Integer.class);
+            liteWorkOrderList.addAll(getOrderIDsByAccounts( accountIds, energyCompany ));
         }
         
         if (liteWorkOrderList.size() == 0) {
@@ -113,11 +113,11 @@ public class SearchWorkOrderController extends StarsWorkorderActionController {
         response.sendRedirect(redirect);
     }
     
-    private List<LiteWorkOrderBase> getOrderIDsByAccounts(List<LiteStarsCustAccountInformation> accounts, LiteStarsEnergyCompany defaultEnergyCompany) {
+    private List<LiteWorkOrderBase> getOrderIDsByAccounts(List<Integer> accountIds, LiteStarsEnergyCompany defaultEnergyCompany) {
         List<Integer> workOrderIdList = new ArrayList<Integer>();
         
-        for (final LiteStarsCustAccountInformation account : accounts) {
-            int[] woIDs = WorkOrderBase.searchByAccountID(account.getAccountID());
+        for (final Integer accountId : accountIds) {
+            int[] woIDs = WorkOrderBase.searchByAccountID(accountId);
             if (woIDs == null) continue;
             workOrderIdList.addAll(PrimitiveArrays.asList(woIDs));
         }

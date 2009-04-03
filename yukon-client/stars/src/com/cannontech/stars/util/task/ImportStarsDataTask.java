@@ -498,7 +498,7 @@ public class ImportStarsDataTask extends TimeConsumingTask {
 					}
 					
 					ImportProblem problem = new ImportProblem();
-					ImportManagerUtil.newServiceRequest(fields, liteAcctInfo, energyCompany, energyCompany.getUserID(), first, problem);
+					ImportManagerUtil.newServiceRequest(fields, liteAcctInfo, energyCompany, energyCompany.getUser().getUserID(), first, problem);
 					if (problem.getProblem() != null) {
 						importLog.println( "WARNING at " + position + ": " + problem.getProblem() );
 						if (++numWarnings > WARNING_NUM_LIMIT)
@@ -1020,7 +1020,7 @@ public class ImportStarsDataTask extends TimeConsumingTask {
 		else if (listName.equals("LoadType")) {
 			if (text.equals("")) return null;
 			
-            List<LiteApplianceCategory> appCats = energyCompany.getAllApplianceCategories();
+            Iterable<LiteApplianceCategory> appCats = energyCompany.getAllApplianceCategories();
             for (final LiteApplianceCategory liteAppCat : appCats) {
                 if (text.equalsIgnoreCase( liteAppCat.getDescription() ))
                     return new Integer( liteAppCat.getApplianceCategoryID() );
@@ -1823,7 +1823,8 @@ public class ImportStarsDataTask extends TimeConsumingTask {
                             }
 						}
 						else if (ImportManagerUtil.LIST_NAMES[i][0].equals("LoadType")) {
-                            List<LiteApplianceCategory> appCats = energyCompany.getAllApplianceCategories();
+                            Iterable<LiteApplianceCategory> appCats = 
+                            	energyCompany.getAllApplianceCategories();
                             for (final LiteApplianceCategory liteAppCat : appCats) {
                                 if (liteAppCat.getApplianceCategoryID() == id.intValue()) {
                                     line += "\"" + liteAppCat.getDescription() + "\"";

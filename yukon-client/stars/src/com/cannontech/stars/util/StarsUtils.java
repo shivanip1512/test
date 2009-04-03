@@ -24,6 +24,8 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.TimeZone;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.util.CtiUtilities;
@@ -38,11 +40,8 @@ import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteSubstation;
 import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
-import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
-import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.serialize.StarsEnrLMProgram;
-import com.cannontech.user.YukonUserContext;
 
 /**
  * @author yao
@@ -275,23 +274,26 @@ public class StarsUtils {
 	public static String getPublishedProgramName(LiteLMProgramWebPublishing liteProg) {
 		String progName = CtiUtilities.STRING_NONE;
 		
-		if (liteProg.getDeviceID() > 0)
-        {
-			try
-            {
-			    progName = DaoFactory.getPaoDao().getYukonPAOName( liteProg.getDeviceID() );
-            }
-            catch(NotFoundException e) 
-            {
-                CTILogger.error(e.getMessage(), e);
-            }
-        }
-            
+		//display user-friendly name if exists, else Yukon name
 		LiteWebConfiguration liteConfig = StarsDatabaseCache.getInstance().getWebConfiguration( liteProg.getWebSettingsID() );
 		if (liteConfig != null) {
-			String[] dispNames = StarsUtils.splitString( liteConfig.getAlternateDisplayName(), "," );
-			if (dispNames.length > 0 && dispNames[0].length() > 0)
-				progName = dispNames[0];
+		    String[] dispNames = StarsUtils.splitString( liteConfig.getAlternateDisplayName(), "," );
+		    if (dispNames.length > 0 && dispNames[0].length() > 0)
+		        progName = dispNames[0];
+		}
+		
+		if (StringUtils.isBlank(progName) || progName.equalsIgnoreCase(CtiUtilities.STRING_NONE)){
+		    if (liteProg.getDeviceID() > 0)
+		    {
+		        try
+		        {
+		            progName = DaoFactory.getPaoDao().getYukonPAOName( liteProg.getDeviceID() );
+		        }
+		        catch(NotFoundException e) 
+		        {
+		            CTILogger.error(e.getMessage(), e);
+		        }
+		    }		    
 		}
 		
 		return progName;

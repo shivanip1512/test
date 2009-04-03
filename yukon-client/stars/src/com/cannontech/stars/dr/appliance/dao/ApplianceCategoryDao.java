@@ -14,4 +14,5 @@ public interface ApplianceCategoryDao {
     
     public List<ApplianceCategory> getApplianceCategories(CustomerAccount customerAccount);
     
+    public List<Integer> getApplianceCategoryIds(final CustomerAccount customerAccount);    
 }

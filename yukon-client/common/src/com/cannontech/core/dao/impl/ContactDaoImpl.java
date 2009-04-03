@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
@@ -32,6 +33,7 @@ import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
@@ -356,44 +358,39 @@ public final class ContactDaoImpl implements ContactDao {
      */
 	public LiteCICustomer getOwnerCICustomer( int addtlContactID_ ) 
 	{
-		synchronized(databaseCache)	 
-		{
-			Iterator<LiteCICustomer> iter = databaseCache.getAllCICustomers().iterator();
-			while( iter.hasNext() ) 
-			{
-				LiteCICustomer cst = iter.next();
-				for( int i = 0; i < cst.getAdditionalContacts().size(); i++ )
-				{
-					if( cst.getAdditionalContacts().get(i).getContactID() == addtlContactID_ )
-					{
-						return cst;
-					}
-				}
-			}		
-		}
-			
-		//no owner CICustomer...strange
-		return null;
+		int customerId = -1;
+        String sql = "SELECT c.CustomerID " 
+            + " FROM CustomerAdditionalContact ca, Customer c " 
+            + " WHERE c.CustomerTypeID = " + CustomerTypes.CUSTOMER_CI + " " 
+            + " AND c.CustomerID = ca.CustomerID " 
+            + " AND ca.ContactID = ?";
+        try {
+            customerId = simpleJdbcTemplate.queryForInt(sql, addtlContactID_);
+        } catch (EmptyResultDataAccessException e) {
+            // will return null customer
+        }
+
+        LiteCICustomer liteCICust = null;
+        if (customerId > 0) {
+            LiteCustomer liteCust = databaseCache.getACustomerByCustomerID(customerId);
+            if (liteCust != null && liteCust instanceof LiteCICustomer) {
+                liteCICust = (LiteCICustomer) liteCust;
+            }
+        }
+        return liteCICust;
 	}
-	
+
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.ContactDao#getPrimaryContactCICustomer(int)
      */
 	public LiteCICustomer getPrimaryContactCICustomer( int primaryContactID_ ) 
 	{
-		synchronized(databaseCache)	 
-		{
-			Iterator<LiteCICustomer> iter = databaseCache.getAllCICustomers().iterator();
-			while( iter.hasNext() ) 
-			{
-				LiteCICustomer cst = iter.next();
-				if( cst.getPrimaryContactID() == primaryContactID_)
-					return cst;
-			}		
-		}
-			
-		//no owner CICustomer...strange
-		return null;
+	    LiteCICustomer liteCICust = null;
+        LiteCustomer liteCust = databaseCache.getACustomerByPrimaryContactID(primaryContactID_);
+        if (liteCust != null && liteCust instanceof LiteCICustomer) {
+            liteCICust = (LiteCICustomer) liteCust;
+        }
+        return liteCICust;
 	}
 
 	/* (non-Javadoc)
@@ -412,13 +409,11 @@ public final class ContactDaoImpl implements ContactDao {
      * @see com.cannontech.core.dao.ContactDao#getCustomer(int)
      */
 	public LiteCustomer getCustomer(int contactID) {
-		LiteCICustomer liteCICust = getCICustomer( contactID );
-		if (liteCICust != null) return liteCICust;
-		
-		synchronized (databaseCache) 
-        {
-			return databaseCache.getACustomerByContactID(contactID);
-		}
+	    LiteCustomer liteCust = databaseCache.getACustomerByPrimaryContactID(contactID);
+        if( liteCust == null) {
+            liteCust = getOwnerCICustomer(contactID);
+        }
+		return liteCust;
 	}
 	
 	/* (non-Javadoc)

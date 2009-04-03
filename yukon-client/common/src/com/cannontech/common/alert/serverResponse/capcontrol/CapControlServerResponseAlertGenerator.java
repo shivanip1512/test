@@ -27,13 +27,13 @@ public class CapControlServerResponseAlertGenerator implements MessageListener {
     public void messageReceived(MessageEvent e) {
         Message in = e.getMessage();
         String user = in.getUserName();
-        LiteYukonUser liteUser = yukonUserDao.getLiteYukonUser(user);
         if (in instanceof CapControlServerResponse) {
             CapControlServerResponse response = (CapControlServerResponse)in;
             if (response.getResponseType() == CapControlResponseType.CommandRefused) {
                 ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.alerts.serverResponse");
                 resolvableTemplate.addData("responseText", response.getResponse());
                 CapControlServerResonseAlert alert = new CapControlServerResonseAlert(in.getTimeStamp(), resolvableTemplate);
+                LiteYukonUser liteUser = yukonUserDao.getLiteYukonUser(user);
                 UserChecker userChecker = new SingleUserChecker(liteUser);
                 alert.setUserChecker(userChecker);
                 

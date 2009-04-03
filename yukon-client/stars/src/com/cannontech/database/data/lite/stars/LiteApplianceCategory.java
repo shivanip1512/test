@@ -1,7 +1,9 @@
 package com.cannontech.database.data.lite.stars;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.apache.commons.lang.Validate;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteBase;
@@ -21,8 +23,8 @@ public class LiteApplianceCategory extends LiteBase {
 	private int categoryID = com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID;
 	private int webConfigurationID = CtiUtilities.NONE_ZERO_ID;
 	
-	// Array of published programs
-	private List<LiteLMProgramWebPublishing> publishedPrograms = null;
+	private Map<Integer, LiteLMProgramWebPublishing> publishedPrograms = 
+		new ConcurrentHashMap<Integer, LiteLMProgramWebPublishing>();
 	
 	public LiteApplianceCategory() {
 		super();
@@ -103,18 +105,25 @@ public class LiteApplianceCategory extends LiteBase {
 	 * Returns the publishedPrograms.
 	 * @return List<LiteLMProgramWebPublishing>
 	 */
-	public List<LiteLMProgramWebPublishing> getPublishedPrograms() {
-		if (publishedPrograms == null)
-			publishedPrograms = new ArrayList<LiteLMProgramWebPublishing>();
-		return publishedPrograms;
+	public Iterable<LiteLMProgramWebPublishing> getPublishedPrograms() {
+		return publishedPrograms.values();
+	}
+	
+	public void removeProgram(LiteLMProgramWebPublishing liteProg) {
+		this.publishedPrograms.remove(liteProg.getProgramID());
+	}
+	
+	public void addProgram(LiteLMProgramWebPublishing liteProg) {
+		Validate.notNull(liteProg, "Program cannot be null");
+		this.publishedPrograms.put(liteProg.getProgramID(), liteProg);
 	}
 
-	/**
-	 * Sets the publishedPrograms.
-	 * @param publishedPrograms The publishedPrograms to set
-	 */
-	public void setPublishedPrograms(List<LiteLMProgramWebPublishing> publishedPrograms) {
-		this.publishedPrograms = publishedPrograms;
+	public void removeProgram(int programID) {
+		this.publishedPrograms.remove(programID);
+	}
+
+	public LiteLMProgramWebPublishing getProgram(int programID) {
+		return this.publishedPrograms.get(programID);
 	}
 
 }

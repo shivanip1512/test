@@ -6,7 +6,10 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ReflectivePropertySearcher;
 
 /**
@@ -25,9 +28,12 @@ public class CheckRole extends BodyTagSupport {
 	public int doStartTag() throws JspException {
 		LiteYukonUser user = 
 			(LiteYukonUser) pageContext.getSession().getAttribute("YUKON_USER");
-			
-		boolean invalidRole = (user == null || DaoFactory.getAuthDao().getRole(user,roleid) == null);
-        return invalidRole ? SKIP_BODY : EVAL_BODY_INCLUDE;
+		
+		RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
+		YukonRole yukonRole = YukonRole.getForId(roleid);
+		boolean validRole = rolePropertyDao.checkRole(yukonRole, user);
+				
+        return validRole ? EVAL_BODY_INCLUDE : SKIP_BODY;
 	}
 
 	/**

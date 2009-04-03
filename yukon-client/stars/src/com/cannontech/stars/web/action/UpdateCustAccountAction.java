@@ -322,8 +322,8 @@ public class UpdateCustAccountAction implements ActionBase {
              * More new rotation digit stuff.  It always thinks the account exists if rotation digits
              * enter the picture; we need to make sure this doesn't happen.
              */
-            String comparableDigitProperty = DaoFactory.getAuthDao().getRolePropertyValue(DaoFactory.getYukonUserDao().getLiteYukonUser(energyCompany.getUserID()), ConsumerInfoRole.ACCOUNT_NUMBER_LENGTH);
-            String rotationDigitProperty = DaoFactory.getAuthDao().getRolePropertyValue(DaoFactory.getYukonUserDao().getLiteYukonUser(energyCompany.getUserID()), ConsumerInfoRole.ROTATION_DIGIT_LENGTH);
+            String comparableDigitProperty = DaoFactory.getAuthDao().getRolePropertyValue(energyCompany.getUser(), ConsumerInfoRole.ACCOUNT_NUMBER_LENGTH);
+            String rotationDigitProperty = DaoFactory.getAuthDao().getRolePropertyValue(energyCompany.getUser(), ConsumerInfoRole.ROTATION_DIGIT_LENGTH);
             if(StringUtils.isNotBlank(rotationDigitProperty) && Integer.parseInt(rotationDigitProperty) > 0)
             {
                 if(comparableAcctNum.length() >= Integer.parseInt(rotationDigitProperty))

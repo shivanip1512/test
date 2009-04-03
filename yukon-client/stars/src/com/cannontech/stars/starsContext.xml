@@ -161,8 +161,6 @@
 
     <bean id="accountSiteDao" class="com.cannontech.stars.dr.account.dao.impl.AccountSiteDaoImpl"/>
     
-    <bean id="starsDaoAdvice" class="com.cannontech.stars.dr.advice.StarsDaoAdvice"/>
-
     <bean id="ecMappingDao" class="com.cannontech.stars.core.dao.impl.ECMappingDaoImpl"/>
 
     <bean id="applianceDao" class="com.cannontech.stars.dr.appliance.dao.impl.ApplianceDaoImpl"/>

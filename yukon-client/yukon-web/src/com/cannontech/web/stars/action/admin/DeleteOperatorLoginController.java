@@ -32,7 +32,7 @@ public class DeleteOperatorLoginController extends StarsAdminActionController {
             final int loginID = id.intValue();
             
             if (userID == -1 || loginID == userID) {
-                if (loginID == energyCompany.getUserID()) continue;
+                if (loginID == energyCompany.getUser().getUserID()) continue;
                 
                 try {
                     LiteYukonUser liteUser = this.yukonUserDao.getLiteYukonUser(loginID);

@@ -30,13 +30,13 @@ public class YukonCustomerLookup
 	}
    
     /*
-     * Grab a customer straight from the DB using the contactID 
+     * Grab a customer straight from the DB using the primaryContactId 
      */
-	public static LiteCustomer loadSpecificCustomerByContactID(int contactID)
+	public static LiteCustomer loadSpecificCustomerByPrimaryContactID(int primaryContactId)
 	{
 		com.cannontech.database.SqlStatement stmt =
 			new com.cannontech.database.SqlStatement("SELECT CUSTOMERID, CUSTOMERTYPEID FROM " +
-                                                       Customer.TABLE_NAME + " WHERE PRIMARYCONTACTID = " + contactID, "yukon");
+                                                       Customer.TABLE_NAME + " WHERE PRIMARYCONTACTID = " + primaryContactId, "yukon");
 		LiteCustomer theCustomer = null;
 		
 		try
@@ -53,7 +53,7 @@ public class YukonCustomerLookup
 		}
 		catch( Exception e )
 		{
-			com.cannontech.clientutils.CTILogger.error( "Error retrieving customer for contactID " + contactID + ": " + e.getMessage(), e );
+			com.cannontech.clientutils.CTILogger.error( "Error retrieving customer for primaryContactId " + primaryContactId + ": " + e.getMessage(), e );
 		}
           
         return theCustomer;

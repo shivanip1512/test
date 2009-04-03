@@ -1,19 +1,15 @@
 package com.cannontech.web.stars.action.admin;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonSelectionList;
-import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -22,7 +18,6 @@ import com.cannontech.web.stars.action.StarsAdminActionController;
 
 public class UpdateSelectionListController extends StarsAdminActionController {
 
-    @SuppressWarnings("unchecked")
     @Override
     public void doAction(final HttpServletRequest request, final HttpServletResponse response, 
             final HttpSession session, final StarsYukonUser user,
@@ -103,7 +98,7 @@ public class UpdateSelectionListController extends StarsAdminActionController {
                     cList = new YukonSelectionList();
                     StarsLiteFactory.setConstantYukonSelectionList( cList, listDB );
                     this.yukonListDao.getYukonSelectionLists().put( listDB.getListID(), cList );
-                    energyCompany.getAllSelectionLists().add( cList );
+                    energyCompany.addYukonSelectionList(cList);
                     
                     // Mark all entry data as new entries
                     if (entryData != null) {

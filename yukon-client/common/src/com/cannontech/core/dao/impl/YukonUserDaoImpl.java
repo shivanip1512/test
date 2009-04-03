@@ -133,9 +133,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
 	}
 		
 	public LiteContact getLiteContact(final int userId) {
-	    synchronized(databaseCache) {
-	        return databaseCache.getAContactByUserID(userId);
-	    }
+		return databaseCache.getAContactByUserID(userId);
 	}
 	/**
 	 * Generates a user name from a first name and last name. This will attempt to return the

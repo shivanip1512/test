@@ -11,6 +11,7 @@ import java.util.Map;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.SqlUtils;
@@ -131,12 +132,13 @@ public class CustomerAccount extends DBPersistent {
     	if (contactIDs == null || contactIDs.length == 0) return null;
         int [] accountIDs = new int[0];
     	Date timerStart = new Date();
-        String sql = "SELECT DISTINCT acct.AccountID FROM ECToAccountMapping map, " + TABLE_NAME + " acct, " + com.cannontech.database.db.customer.Customer.TABLE_NAME + " cust "
+        String sql = "SELECT DISTINCT acct.AccountID, acct.AccountNumber FROM ECToAccountMapping map, " + TABLE_NAME + " acct, " + com.cannontech.database.db.customer.Customer.TABLE_NAME + " cust "
     			   + "WHERE map.EnergyCompanyID = " + energyCompanyID + " AND map.AccountID = acct.AccountID "
     			   + "AND acct.CustomerID = cust.CustomerID AND (cust.PrimaryContactID = " + String.valueOf(contactIDs[0]);
     	for (int i = 1; i < contactIDs.length; i++)
     		sql += " OR cust.PrimaryContactID = " + String.valueOf(contactIDs[i]);
     	sql += ")";
+    	sql += "ORDER BY acct.AccountNumber ASC";
     	
         SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
     	
@@ -405,15 +407,16 @@ public class CustomerAccount extends DBPersistent {
     	return customerAccts;
     }
     
-    public static int[] searchByCompanyName(String searchName, int energyCompanyID) 
+    public static List<Integer> searchByCompanyName(String searchName, List<Integer> energyCompanyIdList) 
     {
-        int[] returnAcctIDs = null;
-        String sql = "SELECT DISTINCT acct.AccountID " +
-                    " FROM ECToAccountMapping map, " + TABLE_NAME + " acct, " + CICustomerBase.TABLE_NAME + " cust " + 
-                    " WHERE map.EnergyCompanyID = ?" + 
-                    " AND map.AccountID = acct.AccountID " +
-                    " AND acct.CustomerID = cust.CustomerID " + 
-                    " AND UPPER(cust.CompanyName) LIKE UPPER(?)";
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DISTINCT ACCT.AccountId, CICB.CompanyName ");
+        sql.append("FROM ECToAccountMapping MAP, CustomerAccount ACCT, CICustomerBase CICB ");
+        sql.append("WHERE MAP.EnergyCompanyID = (",energyCompanyIdList,") ");
+        sql.append("AND MAP.AccountId = ACCT.AccountId ");
+        sql.append("AND ACCT.CustomerId = CICB.CustomerId "); 
+        sql.append("AND UPPER(CICB.CompanyName) LIKE UPPER(?) ");
+        sql.append("ORDER BY CICB.CompanyName ASC ");
 
         PreparedStatement pstmt = null;
         Connection conn = null;
@@ -422,19 +425,16 @@ public class CustomerAccount extends DBPersistent {
         try {
             conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
             
-            pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, energyCompanyID);
-            pstmt.setString(2, searchName);
+            pstmt = conn.prepareStatement(sql.toString());
+            pstmt.setString(1, searchName);
 
             rset = pstmt.executeQuery();
             
-            ArrayList<Integer> accountIDs = new ArrayList<Integer>();
+            ArrayList<Integer> accountIds = new ArrayList<Integer>();
             while(rset.next())
-                accountIDs.add(rset.getInt(1));
+                accountIds.add(rset.getInt(1));
+            return accountIds;
             
-            returnAcctIDs = new int[accountIDs.size()];
-            for(int i = 0; i < accountIDs.size(); i++)
-                returnAcctIDs[i] = accountIDs.get(i).intValue();
         }
         catch (Exception e) {
             CTILogger.error( e.getMessage(), e );
@@ -443,7 +443,7 @@ public class CustomerAccount extends DBPersistent {
         {
         	SqlUtils.close(rset, pstmt, conn );
         }
-        return returnAcctIDs;
+        return null;
     }
     
     public static int[] searchByCustomerNumber(String searchNumber, int energyCompanyID) {
@@ -485,14 +485,15 @@ public class CustomerAccount extends DBPersistent {
         return returnAcctIDs;
     }
     
-    public static int[] searchByCustomerAltTrackingNumber(String searchNumber, int energyCompanyID) {
-        int[] returnAcctIDs = null;
-        String sql = "SELECT DISTINCT acct.AccountID " +
-                    " FROM ECToAccountMapping map, " + TABLE_NAME + " acct, " + Customer.TABLE_NAME + " cust " + 
-                    " WHERE map.EnergyCompanyID = ?" + 
-                    " AND map.AccountID = acct.AccountID " +
-                    " AND acct.CustomerID = cust.CustomerID " + 
-                    " AND UPPER(cust.AltTrackNum) LIKE UPPER(?)";
+    public static List<Integer> searchByCustomerAltTrackingNumber(String searchNumber, List<Integer> energyCompanyIdList) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DISTINCT ACCT.AccountId, CUST.AltTrackNum ");
+        sql.append("FROM ECToAccountMapping MAP, CustomerAccount ACCT, Customer CUST ");
+        sql.append("WHERE MAP.EnergyCompanyId IN (",energyCompanyIdList,") ");
+        sql.append("AND MAP.AccountId = ACCT.AccountId ");
+        sql.append("AND ACCT.CustomerId = CUST.CustomerId "); 
+        sql.append("AND UPPER(CUST.AltTrackNum) LIKE UPPER(?) ");
+        sql.append("ORDER BY CUST.AltTrackNum ASC ");
 
         PreparedStatement pstmt = null;
         Connection conn = null;
@@ -501,19 +502,16 @@ public class CustomerAccount extends DBPersistent {
         try {
             conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
             
-            pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, energyCompanyID);
-            pstmt.setString(2, searchNumber);
+            pstmt = conn.prepareStatement(sql.toString());
+            pstmt.setString(1, searchNumber);
 
             rset = pstmt.executeQuery();
             
-            ArrayList<Integer> accountIDs = new ArrayList<Integer>();
+            ArrayList<Integer> accountIds = new ArrayList<Integer>();
             while(rset.next())
-                accountIDs.add(rset.getInt(1));
-            
-            returnAcctIDs = new int[accountIDs.size()];
-            for(int i = 0; i < accountIDs.size(); i++)
-                returnAcctIDs[i] = accountIDs.get(i).intValue();
+                accountIds.add(rset.getInt(1));
+
+            return accountIds;
         }
         catch (Exception e) {
             CTILogger.error( e.getMessage(), e );
@@ -521,7 +519,8 @@ public class CustomerAccount extends DBPersistent {
         finally {
             SqlUtils.close(rset, pstmt, conn );
         }
-        return returnAcctIDs;
+        
+        return null;
     }
     
     public static int[] searchByAddress(String address, int energyCompanyID) {
@@ -568,12 +567,16 @@ public class CustomerAccount extends DBPersistent {
 		return null;
     }
 	
-	public static int[] searchByMapNumber(String mapNo, int energyCompanyID) {
-		String sql = "SELECT acct.AccountID FROM " +
-				"AccountSite site, CustomerAccount acct, ECToAccountMapping map " +
-				"WHERE UPPER(site.SiteNumber) LIKE UPPER(?) " +
-				"AND site.AccountSiteID = acct.AccountSiteID " +
-				"AND acct.AccountID = map.AccountID and map.EnergyCompanyID = ?";
+	public static List<Integer> searchByMapNumber(String mapNo, List<Integer> energyCompanyIdList) {
+		
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		sql.append("SELECT acct.AccountID FROM ");
+		sql.append("AccountSite site, CustomerAccount acct, ECToAccountMapping map ");
+		sql.append("WHERE UPPER(site.SiteNumber) LIKE UPPER(?) ");
+		sql.append("AND site.AccountSiteID = acct.AccountSiteID ");
+		sql.append("AND acct.AccountID = map.AccountID ");
+		sql.append("AND map.EnergyCompanyID IN (",energyCompanyIdList,") ");
+		sql.append("ORDER BY site.SiteNumber ASC");
     	
 		java.sql.Connection conn = null;
 		java.sql.PreparedStatement stmt = null;
@@ -582,20 +585,14 @@ public class CustomerAccount extends DBPersistent {
 		try {
 			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
     		
-			stmt = conn.prepareStatement( sql );
-			stmt.setString( 1, mapNo );
-			stmt.setInt( 2, energyCompanyID );
+			stmt = conn.prepareStatement( sql.toString() );
+			stmt.setString( 1, mapNo);
 			rset = stmt.executeQuery();
 			
-			ArrayList<Integer> acctIDList = new ArrayList<Integer>();
+			ArrayList<Integer> acctIdList = new ArrayList<Integer>();
 			while (rset.next())
-				acctIDList.add( new Integer(rset.getInt(1)) );
-	        
-			int[] accountIDs = new int[ acctIDList.size() ];
-			for (int i = 0; i < accountIDs.length; i++)
-				accountIDs[i] = acctIDList.get(i).intValue();
-			
-			return accountIDs;
+				acctIdList.add( new Integer(rset.getInt(1)) );
+	        return acctIdList;
 		}
 		catch (java.sql.SQLException e) {
 			CTILogger.error( e.getMessage(), e );

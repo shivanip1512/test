@@ -12,6 +12,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
+import org.springframework.jmx.export.annotation.ManagedAttribute;
+import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
@@ -21,6 +23,7 @@ import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.debug.LoggingDataSource;
 
+@ManagedResource
 public class PoolManager {
     private static final Logger dsLog = YukonLogManager.getLogger("com.cannontech.datasource");
     private static final Logger log = YukonLogManager.getLogger(PoolManager.class);
@@ -40,6 +43,7 @@ public class PoolManager {
     private static ConfigurationSource configSource = null;
     private String primaryUrl;
     private String primaryUser;
+	private BasicDataSource bds;
 
     private PoolManager() {
         init();
@@ -130,7 +134,7 @@ public class PoolManager {
             log.info("DB initialSize=" + init);
         }
         
-        BasicDataSource bds = new BasicDataSource();
+        bds = new BasicDataSource();
         bds.setUrl(primaryUrl);
         bds.setUsername(primaryUser);
         bds.setPassword(password);
@@ -273,6 +277,16 @@ public class PoolManager {
 
     public String getPrimaryUser() {
         return primaryUser;
+    }
+    
+    @ManagedAttribute
+    public int getNumActive() {
+    	return bds.getNumActive();
+    }
+    
+    @ManagedAttribute
+    public int getNumIdle() {
+    	return bds.getNumIdle();
     }
 
 }

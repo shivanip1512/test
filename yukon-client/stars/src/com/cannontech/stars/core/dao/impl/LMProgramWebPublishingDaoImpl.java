@@ -13,6 +13,7 @@ import com.cannontech.database.data.lite.stars.LiteLMProgramEvent;
 import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.stars.event.LMProgramEvent;
@@ -22,15 +23,12 @@ public class LMProgramWebPublishingDaoImpl implements LMProgramWebPublishingDao 
     
     @Override
     @Transactional(readOnly = true)
-    public List<LiteLMProgramEvent> getProgramHistory(final int accountId, List<Integer> energyCompanyIds) {
+    public List<LiteLMProgramEvent> getProgramHistory(final int accountId, LiteStarsEnergyCompany energyCompany) {
         
         final LMProgramEvent[] events = LMProgramEvent.getAllLMProgramEvents(accountId);
         if (events == null) return Collections.emptyList();
         
-        final List<LiteLMProgramWebPublishing> allProgs = new ArrayList<LiteLMProgramWebPublishing>();
-        for (Integer energyCompanyId : energyCompanyIds) {
-            allProgs.addAll(getAllWebPublishing(energyCompanyId));
-        }
+        final Iterable<LiteLMProgramWebPublishing> allProgs = energyCompany.getAllPrograms();
 
         final Map<Integer, LiteLMProgramWebPublishing> programIdMap = toProgramIdMap(allProgs);
         final Set<Integer> programIdKeySet = programIdMap.keySet();
@@ -50,17 +48,14 @@ public class LMProgramWebPublishingDaoImpl implements LMProgramWebPublishingDao 
     
     @Override
     @Transactional(readOnly = true)
-    public List<LiteStarsLMProgram> getPrograms(
-            LiteStarsCustAccountInformation account,
-            List<Integer> energyCompanyIds) {
+    public List<LiteStarsLMProgram> getPrograms(LiteStarsCustAccountInformation account,
+            LiteStarsEnergyCompany energyCompany) {
         
-        final List<LiteLMProgramWebPublishing> allPrograms = new ArrayList<LiteLMProgramWebPublishing>();
-        for (Integer energyCompanyId : energyCompanyIds) {
-            allPrograms.addAll(getAllWebPublishing(energyCompanyId));
-        }
+        final Iterable<LiteLMProgramWebPublishing> allPrograms = energyCompany.getAllPrograms();
+        
         final Map<Integer, LiteLMProgramWebPublishing> allProgramsMap = toProgramIdMap(allPrograms);
 
-        final List<LiteLMProgramEvent> progHist = getProgramHistory(account.getAccountID(), energyCompanyIds);
+        final List<LiteLMProgramEvent> progHist = account.getProgramHistory();
         
         final List<LiteStarsLMProgram> programs = new ArrayList<LiteStarsLMProgram>();
                 
@@ -88,35 +83,10 @@ public class LMProgramWebPublishingDaoImpl implements LMProgramWebPublishingDao 
         }
         return programs;
     }
-    
-    @Override
-    @Transactional(readOnly = true)
-    public List<LiteLMProgramWebPublishing> getAllWebPublishing(int energyCompanyId) {
 
-        final List<LiteLMProgramWebPublishing> pubPrograms = new ArrayList<LiteLMProgramWebPublishing>();
-        
-        com.cannontech.database.db.stars.appliance.ApplianceCategory[] appCats =
-                com.cannontech.database.db.stars.appliance.ApplianceCategory.getAllApplianceCategories(energyCompanyId);
-                
-        for (int i = 0; i < appCats.length; i++) {
-            
-            com.cannontech.database.db.stars.LMProgramWebPublishing[] pubProgs =
-                    com.cannontech.database.db.stars.LMProgramWebPublishing.getAllLMProgramWebPublishing( appCats[i].getApplianceCategoryID().intValue() );
-            
-            for (int j = 0; j < pubProgs.length; j++) {
-                LiteLMProgramWebPublishing program = (LiteLMProgramWebPublishing) StarsLiteFactory.createLite(pubProgs[j]);
-                if (program != null){
-                    pubPrograms.add( program );
-                }
-            }
-        }
-        
-        return pubPrograms;
-    }
-
-    private Map<Integer, LiteLMProgramWebPublishing> toProgramIdMap(List<LiteLMProgramWebPublishing> list) {
+    private Map<Integer, LiteLMProgramWebPublishing> toProgramIdMap(Iterable<LiteLMProgramWebPublishing> list) {
         final Map<Integer, LiteLMProgramWebPublishing> resultMap = 
-            new HashMap<Integer, LiteLMProgramWebPublishing>(list.size());
+            new HashMap<Integer, LiteLMProgramWebPublishing>();
         
         for (final LiteLMProgramWebPublishing program : list) {
             Integer programId = program.getProgramID();

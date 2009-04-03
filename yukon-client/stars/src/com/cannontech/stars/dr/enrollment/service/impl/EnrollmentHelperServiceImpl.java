@@ -8,12 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.common.exception.DuplicateEnrollmentException;
-import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -40,7 +40,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     
     private ApplianceDao applianceDao;
     private ApplianceCategoryDao applianceCategoryDao;
-    private AuthDao authDao;
+    private RolePropertyDao rolePropertyDao;
     private CustomerAccountDao customerAccountDao;
     private EnrollmentDao enrollmentDao;
     private LoadGroupDao loadGroupDao;
@@ -118,7 +118,8 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
          * an appliance category this energy company can use.
          */
         List<Integer> energyCompanyIds = new ArrayList<Integer>();
-        if(authDao.checkRoleProperty(energyCompany.getUserID(), EnergyCompanyRole.INHERIT_PARENT_APP_CATS )) {
+        if (rolePropertyDao.checkProperty(YukonRoleProperty.INHERIT_PARENT_APP_CATS,
+                                          energyCompany.getUser())) {
             List<LiteStarsEnergyCompany> allAscendants = ECUtils.getAllAscendants(energyCompany);
             
             for (LiteStarsEnergyCompany ec : allAscendants) {
@@ -278,10 +279,10 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     public void setApplianceCategoryDao(ApplianceCategoryDao applianceCategoryDao) {
         this.applianceCategoryDao = applianceCategoryDao;
     }
-    
+
     @Autowired
-    public void setAuthDao(AuthDao authDao) {
-        this.authDao = authDao;
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
     }
 
     @Autowired

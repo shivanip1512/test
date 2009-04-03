@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.concurrent.Executor;
 
 import javax.mail.MessagingException;
 
@@ -18,6 +19,7 @@ import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +37,8 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.activity.ActivityLogActions;
@@ -92,6 +96,7 @@ public class OptOutServiceImpl implements OptOutService {
 	private ECMappingDao ecMappingDao;
 	private CustomerAccountDao customerAccountDao;
 	private AuthDao authDao;
+	private RolePropertyDao rolePropertyDao;
 	private CommandRequestHardwareExecutor commandRequestHardwareExecutor;
 	private StarsDatabaseCache starsDatabaseCache;
 	private OptOutStatusService optOutStatusService;
@@ -106,17 +111,18 @@ public class OptOutServiceImpl implements OptOutService {
 	private StarsSearchDao starsSearchDao;
 	private SystemDateFormattingService systemDateFormattingService;
 	private YukonUserDao yukonUserDao;
+	private Executor executor;
 	
 	private final Logger logger = YukonLogManager.getLogger(OptOutServiceImpl.class);
 	
 
 	@Override
 	@Transactional
-	public void optOut(CustomerAccount customerAccount, OptOutRequest request, 
-			LiteYukonUser user) throws CommandCompletionException {
+	public void optOut(final CustomerAccount customerAccount, final OptOutRequest request, 
+			final LiteYukonUser user) throws CommandCompletionException {
 		
 		int customerAccountId = customerAccount.getAccountId();
-		LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(customerAccount);
+		final LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(customerAccount);
 		List<Integer> inventoryIdList = request.getInventoryIdList();
 		Date startDate = request.getStartDate();
 		boolean startNow = false;
@@ -225,17 +231,23 @@ public class OptOutServiceImpl implements OptOutService {
     	}
     	
     	// Send opt out notification
-    	try {
-			optOutNotificationService.sendOptOutNotification(
-					customerAccount, 
-					energyCompany, 
-					request, 
-					user);
-		} catch (MessagingException e) {
-			// Not much we can do - tried to send notification
-			logger.error(e);
-		}
-		
+    	Runnable notificationRunner = new Runnable() {
+    		@Override
+    		public void run() {
+    			try {
+    				optOutNotificationService.sendOptOutNotification(
+    						customerAccount, 
+    						energyCompany, 
+    						request, 
+    						user);
+    			} catch (MessagingException e) {
+    				// Not much we can do - tried to send notification
+    				logger.error(e);
+    			}
+    		}
+    	};
+    	executor.execute(notificationRunner);
+
 	}
 
 	@Transactional
@@ -432,7 +444,7 @@ public class OptOutServiceImpl implements OptOutService {
 		TimeZone userTimeZone = authDao.getUserTimeZone(user);
 		
 		String optOutLimitString = 
-			authDao.getRolePropertyValue(contact.getLoginID(), ResidentialCustomerRole.OPT_OUT_LIMITS);
+			rolePropertyDao.getPropertyStringValue(YukonRoleProperty.RESIDENTIAL_OPT_OUT_LIMITS, user);
 		
 		List<OptOutLimit> optOutLimits = this.parseOptOutLimitString(optOutLimitString);
 		int optOutLimit = OptOutService.NO_OPT_OUT_LIMIT;
@@ -677,11 +689,6 @@ public class OptOutServiceImpl implements OptOutService {
 		if(inventory == null) {
 			throw new InventoryNotFoundException("Inventory with serial number: " + serialNumber + 
 					" could not be found.");
-		}
-		
-		if(inventory.getAccountID() != account.getAccountId()) {
-			throw new IllegalArgumentException("The inventory with serial number: " + serialNumber + 
-					" is not associated with the account with account number: " + accountNumber);
 		}
 		
 		optOutAdditionalDao.addAdditonalOptOuts(
@@ -1045,6 +1052,16 @@ public class OptOutServiceImpl implements OptOutService {
 	@Autowired
 	public void setYukonUserDao(YukonUserDao yukonUserDao) {
 		this.yukonUserDao = yukonUserDao;
+	}
+	
+	@Autowired
+	public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+		this.rolePropertyDao = rolePropertyDao;
+	}
+	
+	@Autowired
+	public void setExecutor(@Qualifier("main") Executor executor) {
+		this.executor = executor;
 	}
 	
 }

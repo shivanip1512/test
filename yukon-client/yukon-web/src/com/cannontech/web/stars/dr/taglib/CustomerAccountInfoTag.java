@@ -7,21 +7,17 @@ import javax.servlet.jsp.JspWriter;
 
 import org.apache.ecs.html.Div;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.dao.DataAccessException;
 
-import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.dao.AddressDao;
-import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.service.PhoneNumberFormattingService;
+import com.cannontech.customer.model.CustomerInformation;
 import com.cannontech.database.data.lite.LiteAddress;
-import com.cannontech.database.data.lite.LiteCICustomer;
-import com.cannontech.database.data.lite.LiteContact;
-import com.cannontech.database.data.lite.LiteContactNotification;
-import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.account.dao.AccountSiteDao;
-import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.AccountSite;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.user.YukonUserContext;
@@ -30,40 +26,43 @@ import com.cannontech.web.taglib.YukonTagSupport;
 @Configurable("customerAccountInfoTagPrototype")
 public class CustomerAccountInfoTag extends YukonTagSupport {
     private YukonUserContextMessageSourceResolver messageSourceResolver;
-    private CustomerAccountDao customerAccountDao;
     private CustomerDao customerDao;
-    private ContactDao contactDao;
     private AccountSiteDao accountSiteDao;
     private AddressDao addressDao;
     private PhoneNumberFormattingService phoneNumberFormattingService;
     
-    private String accountNumber;
-    private boolean isAccountNumberSet = false;
+    private CustomerAccount account = null;
     
     @Override
     public void doTag() throws JspException, IOException {
-        if (!isAccountNumberSet) throw new JspException("accountNumber is not set.");
+        if (account == null) throw new JspException("accountNumber is not set.");
         
-        MessageSourceAccessor messageSource = messageSourceResolver.getMessageSourceAccessor(getUserContext());
-        CustomerAccount account = customerAccountDao.getByAccountNumber(accountNumber, getYukonUser());
-        AccountSite accountSite = accountSiteDao.getByAccountSiteId(account.getAccountSiteId());
-        LiteAddress address = addressDao.getByAddressId(accountSite.getStreetAddressId());
-        LiteCustomer customer = customerDao.getLiteCustomer(account.getCustomerId());
-        LiteContact contact = contactDao.getContact(customer.getPrimaryContactID());
-        
+        MessageSourceAccessor messageSource;
+		LiteAddress address;
+		CustomerInformation customer;
+		try {
+			messageSource = messageSourceResolver.getMessageSourceAccessor(getUserContext());
+			AccountSite accountSite = accountSiteDao.getByAccountSiteId(account.getAccountSiteId());
+			address = addressDao.getByAddressId(accountSite.getStreetAddressId());
+			customer = customerDao.getCustomerInformation(account.getCustomerId());
+		} catch (Exception e) {
+			CTILogger.warn("Couldn't get customer info", e);
+			throw new JspException(e);
+		}
+
         final Div mainDiv = new Div();
         mainDiv.addAttribute("class", "customerAccount");
         
         addAccountNumberDiv(mainDiv, account, messageSource);
         
-        addNameDiv(mainDiv, contact);
+        addNameDiv(mainDiv, customer);
 
-        addCompanyNameDiv(mainDiv, account.getCustomerId());
-        
+        addCompanyNameDiv(mainDiv, customer);
+
         addAddressDiv(mainDiv, address);
-        
-        addPhoneNumberDiv(mainDiv, contact, getUserContext());
-        
+
+        addPhoneNumberDiv(mainDiv, customer, getUserContext());
+
         String output = mainDiv.toString();
         
         JspWriter out = getJspContext().getOut();
@@ -79,9 +78,9 @@ public class CustomerAccountInfoTag extends YukonTagSupport {
         mainDiv.addElement(accountNumberDiv);    
     }
     
-    private void addNameDiv(final Div mainDiv, final LiteContact contact) {
+    private void addNameDiv(final Div mainDiv, final CustomerInformation customer) {
         Div fullNameDiv = new Div();
-        fullNameDiv.addElement(contact.getContFirstName() + " " + contact.getContLastName());
+        fullNameDiv.addElement(customer.getContactFirstName() + " " + customer.getContactLastName());
         mainDiv.addElement(fullNameDiv);    
     }
     
@@ -92,24 +91,22 @@ public class CustomerAccountInfoTag extends YukonTagSupport {
         addressDiv.addElement(formattedAddressString);
         mainDiv.addElement(addressDiv);    
     }
-    
-    private void addCompanyNameDiv(final Div mainDiv, final int customerId) {
-        LiteCICustomer customer = customerDao.getLiteCICustomer(customerId);
-        if (customer == null) return;
+
+    private void addCompanyNameDiv(final Div mainDiv, CustomerInformation customer) {
+        if (customer.getCompanyName() == null)
+			return;
 
         Div companyNameDiv = new Div();
         companyNameDiv.addElement(customer.getCompanyName());
         mainDiv.addElement(companyNameDiv);
     }
     
-    private void addPhoneNumberDiv(final Div mainDiv, final LiteContact contact, 
+    private void addPhoneNumberDiv(final Div mainDiv, final CustomerInformation customerInformation, 
             final YukonUserContext yukonUserContext) {
         
-        LiteContactNotification contactNotification = 
-            contactDao.getContactNotification(contact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
-        if (contactNotification == null) return;
+    	String unFormattedPhoneNumber = customerInformation.getContactHomePhone();
+        if (unFormattedPhoneNumber == null) return;
         
-        String unFormattedPhoneNumber = contactNotification.getNotification();
         String phoneNumber = phoneNumberFormattingService.formatPhoneNumber(unFormattedPhoneNumber, yukonUserContext);
         
         Div phoneNumberDiv = new Div();
@@ -117,22 +114,17 @@ public class CustomerAccountInfoTag extends YukonTagSupport {
         mainDiv.addElement(phoneNumberDiv);
     }
     
-    public void setAccountNumber(final String accountNumber) {
-        isAccountNumberSet = true;
-        this.accountNumber = accountNumber;
-    }
+    public void setAccount(CustomerAccount account) {
+		this.account = account;
+	}
     
-    public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
-        this.customerAccountDao = customerAccountDao;
-    }
-
+    public CustomerAccount getAccount() {
+		return account;
+	}
+    
     public void setMessageSourceResolver(
             YukonUserContextMessageSourceResolver messageSourceResolver) {
         this.messageSourceResolver = messageSourceResolver;
-    }
-
-    public void setContactDao(ContactDao contactDao) {
-        this.contactDao = contactDao;
     }
 
     public void setCustomerDao(CustomerDao customerDao) {

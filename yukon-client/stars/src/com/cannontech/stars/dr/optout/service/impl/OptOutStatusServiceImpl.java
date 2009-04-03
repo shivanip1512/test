@@ -6,6 +6,8 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.core.dao.RoleDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonGroup;
@@ -28,6 +30,7 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
 	private EnergyCompanyDao energyCompanyDao;
 	private StarsDatabaseCache starsDatabaseCache;
 	private RoleDao roleDao;
+	private RolePropertyDao rolePropertyDao;
 	
 	@Override
 	public boolean getOptOutCounts(LiteYukonUser user) {
@@ -82,9 +85,7 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
 
 			} else {
 				// Residential user - check role prop value
-				optOutEnabled = authDao.checkRoleProperty(
-											user.getUserID(), 
-											ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT);
+				optOutEnabled = rolePropertyDao.checkProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_OPT_OUT, user);
 			}
 		}
 		
@@ -115,6 +116,11 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
 	@Autowired
 	public void setRoleDao(RoleDao roleDao) {
 		this.roleDao = roleDao;
+	}
+	
+	@Autowired
+	public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+		this.rolePropertyDao = rolePropertyDao;
 	}
 
 }

@@ -20,9 +20,7 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
 import com.cannontech.stars.dr.appliance.model.Appliance;
-import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
-import com.cannontech.stars.dr.hardware.model.InventoryBase;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
@@ -232,15 +230,7 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
     
     private List<Integer> getInventoryIdsByUser(LiteYukonUser user) {
         int customerAccountId = getCustomerAccountId(user);
-
-        final List<InventoryBase> list = inventoryBaseDao.getByAccountId(customerAccountId);
-        final List<Integer> inventoryIdList = new ArrayList<Integer>(list.size());
-        
-        for (final InventoryBase inventory : list) {
-            Integer inventoryId = inventory.getInventoryId();
-            inventoryIdList.add(inventoryId);
-        }
-        
+        final List<Integer> inventoryIdList = inventoryBaseDao.getInventoryIdsByAccountId(customerAccountId);
         return inventoryIdList;
     }
     
@@ -264,14 +254,7 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
         List<CustomerAccount> customerAccountList = customerAccountDao.getByUser(user);
         CustomerAccount customerAccount = customerAccountList.get(0);
         
-        final List<ApplianceCategory> categories = 
-            applianceCategoryDao.getApplianceCategories(customerAccount);
-        final List<Integer> categoryIdList = new ArrayList<Integer>(categories.size());
-        
-        for (ApplianceCategory category : categories) {
-            Integer applianceCategoryId = category.getApplianceCategoryId();
-            categoryIdList.add(applianceCategoryId);
-        }
+        final List<Integer> categoryIdList = applianceCategoryDao.getApplianceCategoryIds(customerAccount);
         
         return categoryIdList;
     }

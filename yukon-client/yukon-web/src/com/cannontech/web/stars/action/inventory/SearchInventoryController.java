@@ -41,7 +41,7 @@ public class SearchInventoryController extends StarsInventoryActionController {
         session.setAttribute( ServletUtils.ATT_LAST_INVENTORY_SEARCH_VALUE, new String(searchValue) );
         
         boolean searchMembers = this.authDao.checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
-                && (energyCompany.getChildren().size() > 0);
+                && (energyCompany.hasChildEnergyCompanies());
         
         List<LiteInventoryBase> invList = null;
         try {

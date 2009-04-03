@@ -3,6 +3,8 @@ package com.cannontech.database.model;
 /**
  * This type was created in VisualAge.
  */
+import java.util.ArrayList;
+
 import javax.swing.tree.TreePath;
 
 import com.cannontech.common.gui.tree.CheckNode;
@@ -90,21 +92,18 @@ public class EnergyCompanyCheckBoxTreeModel extends CheckBoxDBTreeModel
 	{
 		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	
-		synchronized(cache)
+		java.util.List energyCompanies = new ArrayList(cache.getAllEnergyCompanies());
+		java.util.Collections.sort( energyCompanies, LiteComparators.liteStringComparator );
+
+		DBTreeNode rootNode = (DBTreeNode) getRoot();
+		rootNode.removeAllChildren();
+		for( int i = 0; i < energyCompanies.size(); i++ )
 		{
-			java.util.List energyCompanies = cache.getAllEnergyCompanies();
-			java.util.Collections.sort( energyCompanies, LiteComparators.liteStringComparator );
-			
-			DBTreeNode rootNode = (DBTreeNode) getRoot();
-			rootNode.removeAllChildren();
-			for( int i = 0; i < energyCompanies.size(); i++ )
-			{
-				DBTreeNode ecNode = new CheckNode( energyCompanies.get(i) );
-				//If this model was loaded previously...recheck the checked nodes, stored in vector checkedNodes
-				if( getCheckedNodes().contains(ecNode.getUserObject()))
-					((CheckNode)ecNode).setSelected(true);
-				rootNode.add( ecNode );
-			}
+		    DBTreeNode ecNode = new CheckNode( energyCompanies.get(i) );
+		    //If this model was loaded previously...recheck the checked nodes, stored in vector checkedNodes
+		    if( getCheckedNodes().contains(ecNode.getUserObject()))
+		        ((CheckNode)ecNode).setSelected(true);
+		    rootNode.add( ecNode );
 		}
 	
 		reload();

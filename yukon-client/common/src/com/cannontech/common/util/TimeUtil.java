@@ -340,6 +340,17 @@ public static int differenceMinutes(Date from, Date to) {
     }
 
     /**
+     * Method to get a date which represents midnight tonight (00:00:00.000 tomorrow)
+     * @param timeZone - Time zone to get midnight for
+     * @return Midnight date
+     */
+    public static Date getMidnight(TimeZone timeZone) {
+    	
+    	// Get midnight tonight using Joda
+    	return getMidnight(new Date(), timeZone);
+    }
+
+    /**
      * Method to get a date which represents midnight today (last night at 00:00:00.000 today)
      * @param date - Date to get midnight for
      * @param timeZone - Time zone for the date

@@ -20,7 +20,7 @@
 		searchByDefID = DaoFactory.getYukonListDao().getYukonListEntry(lastSearchOption.intValue()).getYukonDefID();
 	
 	boolean showEnergyCompany = DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS)
-			&& (liteEC.getChildren().size() > 0);
+			&& (liteEC.hasChildEnergyCompanies());
 	List<LiteStarsEnergyCompany> descendants = null;
 	if (showEnergyCompany) descendants = com.cannontech.stars.util.ECUtils.getAllDescendants(liteEC);
 %>

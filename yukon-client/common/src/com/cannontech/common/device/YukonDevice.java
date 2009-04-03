@@ -1,38 +1,25 @@
 package com.cannontech.common.device;
 
-import java.io.Serializable;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.springframework.core.style.ToStringCreator;
 
-public class YukonDevice implements Cloneable, Serializable {
-    private int deviceId;
-    private int type;
+import com.cannontech.common.pao.YukonPao;
 
+public class YukonDevice extends YukonPao {
     public YukonDevice(int deviceId, int type) {
-        super();
-        this.deviceId = deviceId;
-        this.type = type;
+        super(deviceId, type);
     }
 
     public YukonDevice() {
     }
 
     public int getDeviceId() {
-        return deviceId;
+        return getPaoId();
     }
 
     public void setDeviceId(int deviceId) {
-        this.deviceId = deviceId;
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
+        setPaoId(deviceId);
     }
 
     @Override
@@ -52,14 +39,14 @@ public class YukonDevice implements Cloneable, Serializable {
             return true;
         }
         YukonDevice device = (YukonDevice) obj;
-        return new EqualsBuilder().append(deviceId, device.getDeviceId())
-                                  .append(type, device.getType())
+        return new EqualsBuilder().append(getDeviceId(), device.getDeviceId())
+                                  .append(getType(), device.getType())
                                   .isEquals();
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(deviceId).append(type).toHashCode();
+        return new HashCodeBuilder().append(getDeviceId()).append(getType()).toHashCode();
     }
 
 }

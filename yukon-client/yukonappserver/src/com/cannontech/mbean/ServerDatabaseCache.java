@@ -1,20 +1,20 @@
 package com.cannontech.mbean;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.Pair;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.SqlUtils;
-import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LiteBase;
@@ -25,12 +25,9 @@ import com.cannontech.database.data.lite.LiteConfig;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
-import com.cannontech.database.data.lite.LiteDeviceConfiguration;
-import com.cannontech.database.data.lite.LiteDeviceConfigurationCategory;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
-import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteGear;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
 import com.cannontech.database.data.lite.LiteHolidaySchedule;
@@ -62,11 +59,11 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.server.cache.AlarmCategoryLoader;
 import com.cannontech.yukon.server.cache.BaselineLoader;
+import com.cannontech.yukon.server.cache.CICustomerLoader;
 import com.cannontech.yukon.server.cache.CommandLoader;
 import com.cannontech.yukon.server.cache.ConfigLoader;
 import com.cannontech.yukon.server.cache.ContactLoader;
 import com.cannontech.yukon.server.cache.ContactNotificationGroupLoader;
-import com.cannontech.yukon.server.cache.CustomerLoader;
 import com.cannontech.yukon.server.cache.DeviceCommPortLoader;
 import com.cannontech.yukon.server.cache.DeviceMeterGroupLoader;
 import com.cannontech.yukon.server.cache.DeviceTypeCommandLoader;
@@ -85,7 +82,6 @@ import com.cannontech.yukon.server.cache.SystemPointLoader;
 import com.cannontech.yukon.server.cache.TOUDayLoader;
 import com.cannontech.yukon.server.cache.TOUScheduleLoader;
 import com.cannontech.yukon.server.cache.TagLoader;
-import com.cannontech.yukon.server.cache.UserEnergyCompanyLoader;
 import com.cannontech.yukon.server.cache.YukonGroupLoader;
 import com.cannontech.yukon.server.cache.YukonGroupRoleLoader;
 import com.cannontech.yukon.server.cache.YukonImageLoader;
@@ -94,11 +90,11 @@ import com.cannontech.yukon.server.cache.YukonRoleLoader;
 import com.cannontech.yukon.server.cache.YukonRolePropertyLoader;
 import com.cannontech.yukon.server.cache.YukonUserGroupLoader;
 import com.cannontech.yukon.server.cache.YukonUserLoader;
-import com.cannontech.yukon.server.cache.YukonUserRoleLoader;
 import com.cannontech.yukon.server.cache.bypass.MapKeyInts;
 import com.cannontech.yukon.server.cache.bypass.YukonCustomerLookup;
 import com.cannontech.yukon.server.cache.bypass.YukonUserContactLookup;
 import com.cannontech.yukon.server.cache.bypass.YukonUserContactNotificationLookup;
+import com.cannontech.yukon.server.cache.bypass.YukonUserEnergyCompanyLookup;
 import com.cannontech.yukon.server.cache.bypass.YukonUserRolePropertyLookup;
 
 /**
@@ -130,13 +126,9 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private ArrayList<LiteBaseline> allBaselines = null;
 	private ArrayList<LiteConfig> allConfigs = null;
 	private ArrayList<LiteDeviceMeterNumber> allDeviceMeterGroups = null;
-	private ArrayList<String> allDMG_CollectionGroups = null;	//distinct DeviceMeterGroup.collectionGroup
-	private ArrayList<String> allDMG_AlternateGroups = null;	//distinct DeviceMeterGroup.alternateGroup
-	private ArrayList<String> allDMG_BillingGroups = null;	//distinct DeviceMeterGroup.billingGroup
 	private ArrayList<LitePointLimit> allPointLimits = null;
 	private ArrayList<LiteYukonImage> allYukonImages = null;
-	private List<LiteCICustomer> allCICustomers = null;
-	private List<LiteCustomer> allCustomers = null;
+	private volatile List<LiteCICustomer> allCICustomers = null;
 	private ArrayList<LiteLMConstraint> allLMProgramConstraints = null;
 	private ArrayList<LiteYukonPAObject> allLMScenarios = null;
 	private ArrayList<LiteLMProgScenario> allLMScenarioProgs = null;
@@ -155,12 +147,11 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private ArrayList<LiteYukonRoleProperty> allYukonRoleProperties = null;
 	private ArrayList<LiteYukonGroup> allYukonGroups = null;
 	
-	private Map allYukonUserRolePropertiesMap = null;
 	private Map allYukonGroupRolePropertiesMap = null;
 	private Map allYukonUserGroupsMap = null;
 	private Map allYukonGroupUsersMap = null;
 		
-	private ArrayList<LiteEnergyCompany> allEnergyCompanies = null;
+	private volatile List<LiteEnergyCompany> allEnergyCompanies = null;
 	
 	//lists that are created by the joining/parsing of existing lists
 	private ArrayList<LiteYukonPAObject> allUnusedCCDevices = null; //PAO
@@ -181,12 +172,14 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	//private Map allPointIDOffsetHashMap = null;
 	//private Map allPointsMap = null;
 	private Map<Integer, LiteYukonPAObject> allPAOsMap = null;
-	private Map<Integer, LiteCustomer> allCustomersMap = null;    
-	private Map<Integer, LiteContact> allContactsMap = new HashMap<Integer, LiteContact>();
+	private final Map<Integer, LiteCustomer> customerCache = new ConcurrentHashMap<Integer, LiteCustomer>(1000, .75f, 30);    
+	private Map<Integer, LiteContact> allContactsMap = new ConcurrentHashMap<Integer, LiteContact>(1000, .75f, 30);
     
 	//derived from allYukonUsers,allYukonRoles,allYukonGroups
 	//see type info in IDatabaseCache
-	private Map<LiteYukonUser, LiteEnergyCompany> allUserEnergyCompaniesMap = null;
+	private final ConcurrentMap<LiteYukonUser, LiteEnergyCompany> userEnergyCompanyCache = new ConcurrentHashMap<LiteYukonUser, LiteEnergyCompany>(1000, .75f, 30);
+	private LiteEnergyCompany NULL_LITE_ENERGY_COMPANY = new LiteEnergyCompany(Integer.MIN_VALUE);
+
     
 	private ArrayList<LiteDeviceTypeCommand> allDeviceTypeCommands = null;
 	private ArrayList<LiteCommand> allCommands = null;
@@ -195,12 +188,13 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private Map<Integer, LiteYukonUser> allUsersMap = null;
 	private Map<Integer, LiteContactNotification> allContactNotifsMap = null;
 	
-	private Map<Integer, LiteContact> userContactMap = new HashMap<Integer, LiteContact>();
+	private Map<Integer, LiteContact> userContactMap = new ConcurrentHashMap<Integer, LiteContact>(1000, .75f, 30);
     private Map<MapKeyInts, String> userRolePropertyValueMap = null;
 	private Map<MapKeyInts, LiteYukonRole> userRoleMap = null;
 
     // injected loaders
     private YukonUserLoader yukonUserLoader;
+    private YukonUserEnergyCompanyLookup yukonUserEnergyCompanyLookup;
 
 /**
  * ServerDatabaseCache constructor comment.
@@ -349,23 +343,17 @@ public synchronized List<LiteContact> getAllContacts() {
 /**
  *
  */
-public synchronized List<LiteCICustomer> getAllCICustomers() {
-    if( allCICustomers == null ) {
-        List<LiteCustomer> customerList = getAllCustomers();
-        ArrayList<LiteCICustomer> tempAllCICustomers = new ArrayList<LiteCICustomer>( customerList.size());
-        
-        for( int i = 0; i < customerList.size(); i++ ) {
-            LiteCustomer aCustomer = customerList.get(i);
-            if( aCustomer instanceof LiteCICustomer && aCustomer.getCustomerTypeID() == CustomerTypes.CUSTOMER_CI) {
-                tempAllCICustomers.add((LiteCICustomer)aCustomer);
-            }
-        }
-        tempAllCICustomers.trimToSize();
+public List<LiteCICustomer> getAllCICustomers() {
+    List<LiteCICustomer> tempAllCICustomers = allCICustomers;
+    if (tempAllCICustomers == null) {
+        tempAllCICustomers = new ArrayList<LiteCICustomer>();
+        CICustomerLoader custLoader = new CICustomerLoader(tempAllCICustomers, databaseAlias);
+        custLoader.run();
         allCICustomers = tempAllCICustomers;
     }
-    
-    return allCICustomers;
+    return Collections.unmodifiableList(tempAllCICustomers);
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (3/14/00 3:19:19 PM)
@@ -832,25 +820,6 @@ public synchronized java.util.Map<Integer, LiteContactNotification> getAllContac
 	}
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (3/14/00 3:19:19 PM)
- * @return java.util.Collection
- */
-public synchronized java.util.Map<Integer, LiteCustomer> getAllCustomersMap()
-{
-	if( allCustomersMap != null )
-		return allCustomersMap ;
-	else
-	{
-		releaseAllCustomers();
-		getAllCustomers();
-
-		return allCustomersMap;
-	}
-}
-
-
 public synchronized List<LitePointLimit> getAllPointLimits() {
 	if( allPointLimits != null ) 
 		return allPointLimits;
@@ -1095,20 +1064,6 @@ public synchronized List<LiteYukonPAObject> getAllYukonPAObjects()
 	}
 
 	/**
-	 * @see com.cannontech.yukon.IDatabaseCache#getYukonUserRolePropertyMap()
-	 */
-	public synchronized Map getYukonUserRolePropertyMap() 
-	{
-		if(allYukonUserRolePropertiesMap == null) {
-			allYukonUserRolePropertiesMap = new java.util.HashMap();
-			final YukonUserRoleLoader l = 
-				new YukonUserRoleLoader(allYukonUserRolePropertiesMap, getAllYukonUsers(), getAllYukonRoles(), getAllYukonRoleProperties(), databaseAlias);
-			l.run();
-		}									
-		return allYukonUserRolePropertiesMap;		
-	}
-	
-	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getYukonGroupRolePropertyMap()
 	 */
 	public synchronized Map getYukonGroupRolePropertyMap() 
@@ -1155,72 +1110,17 @@ public synchronized List<LiteYukonPAObject> getAllYukonPAObjects()
 	}
 	
 	/**
-	 * roleMap<LiteYukonRole, Map<LiteYukonRoleProperty,String>>
-	 * roleIDMap<Integer,LiteYukonRole>
-	 * rolePropertyIDMap<Integer,Pair<LiteYukonRoleProperty,String>>
-	 */
-	private void addRolesAndPropertiesToLookupMap(final Map roleMap, final Map<Integer, LiteYukonRole> roleIDMap, final Map<Integer, Pair> rolePropertyIDMap) {
-		Iterator roleIter = roleMap.keySet().iterator();
-		while(roleIter.hasNext()) {
-			LiteYukonRole groupRole = (LiteYukonRole) roleIter.next();
-			roleIDMap.put(new Integer(groupRole.getRoleID()), groupRole);						
-						
-			// add roleproperties for this role
-			Map rolePropertyMap = (Map) roleMap.get(groupRole);
-			addRolePropertiesToMap(rolePropertyMap, rolePropertyIDMap);						
-		}	
-	}
-	
-	/**
-	 * Adds the properties and values in rolePropertyMap<LiteYukonRoleProperty,String>
-	 * into roleIDMap<Integer,Pair<LiteYukonRoleProperty,String>>
-	 * */
-	private void addRolePropertiesToMap(final Map rolePropertyMap, final Map<Integer, Pair> rolePropertyIDMap) {
-		Iterator propertyIter = rolePropertyMap.keySet().iterator();
-		while(propertyIter.hasNext()) {
-			LiteYukonRoleProperty property = (LiteYukonRoleProperty) propertyIter.next();
-			Pair propPair = new Pair(property, rolePropertyMap.get(property));
-			rolePropertyIDMap.put(new Integer(property.getRolePropertyID()), propPair);
-		}		
-	}
-					
-	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllEnergyCompanies()
 	 */
-	public synchronized List<LiteEnergyCompany> getAllEnergyCompanies() {
-		if(allEnergyCompanies == null) {
-			allEnergyCompanies = new ArrayList<LiteEnergyCompany>();
-			EnergyCompanyLoader l = new EnergyCompanyLoader(allEnergyCompanies, databaseAlias);
-			l.run();
-		}
-		return allEnergyCompanies;
-	}
-	
-	/**
-	 * @see com.cannontech.yukon.IDatabaseCache#getAllUserEnergyCompanies()
-	 */
-	public synchronized Map<LiteYukonUser, LiteEnergyCompany> getAllUserEnergyCompanies() {
-		if(allUserEnergyCompaniesMap == null) {
-			allUserEnergyCompaniesMap = new HashMap<LiteYukonUser, LiteEnergyCompany>();
-			UserEnergyCompanyLoader l = new UserEnergyCompanyLoader(allUserEnergyCompaniesMap, getAllYukonUsers(), getAllEnergyCompanies(), databaseAlias);
-			l.run();
-		}
-		return allUserEnergyCompaniesMap;
-	}
-
-	/**
-	 * @see com.cannontech.yukon.IDatabaseCache#getAllCustomers()
-	 */
-	@SuppressWarnings("unchecked")
-	public synchronized List<LiteCustomer> getAllCustomers() {
-	    if (allCustomers == null)
-	    {
-	        allCustomers = new ArrayList<LiteCustomer>();
-	        allCustomersMap = new HashMap<Integer, LiteCustomer>();
-	        CustomerLoader custLoader = new CustomerLoader(allCustomers, allCustomersMap, databaseAlias);
-	        custLoader.run();
-	    }
-	    return allCustomers;
+	public List<LiteEnergyCompany> getAllEnergyCompanies() {
+        List<LiteEnergyCompany> ec = allEnergyCompanies;
+        if(ec == null) {
+            ec = new ArrayList<LiteEnergyCompany>();
+            EnergyCompanyLoader l = new EnergyCompanyLoader(ec, databaseAlias);
+            l.run();
+            allEnergyCompanies = ec;
+        }
+        return Collections.unmodifiableList(ec);
 	}
 	
 	/**
@@ -1498,10 +1398,6 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg,
 			int type = PAOGroups.getDeviceType(objectType);
 			if(com.cannontech.database.data.device.DeviceTypesFuncs.usesDeviceMeterGroup(type))
 			{
-				allDMG_CollectionGroups = null;
-				allDMG_AlternateGroups = null;
-				allDMG_BillingGroups = null;
-									
 				handleDeviceMeterGroupChange( dbType, id);
 			}
 		}
@@ -1608,23 +1504,24 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg,
 	{
 		retLBase = handleCommandChange( dbType, id );
 	}
-	else if( database == DBChangeMsg.CHANGE_CUSTOMER_DB
-			|| database == DBChangeMsg.CHANGE_ENERGY_COMPANY_DB )
+	else if( database == DBChangeMsg.CHANGE_ENERGY_COMPANY_DB )
 	{
 		allEnergyCompanies = null;
-		allUserEnergyCompaniesMap = null;
+		userEnergyCompanyCache.clear();
 
-		//only let the Customer DBChange go into here
-		if( database == DBChangeMsg.CHANGE_CUSTOMER_DB )
-		{
-			allNotificationGroups = null;
-			retLBase = handleCustomerChange( dbType, id, dbCategory );
+	} else if( database == DBChangeMsg.CHANGE_CUSTOMER_DB ) {
+		allNotificationGroups = null;
+		retLBase = handleCustomerChange( dbType, id, dbCategory, noObjectNeeded );
+		
+		if( dbCategory.equalsIgnoreCase(DBChangeMsg.CAT_CI_CUSTOMER)) {
+			allCICustomers = null;
 			
-			//TODO Find a better way to update the cicustomers, this sweep is begining to hurt my knees.
-			if( dbCategory.equalsIgnoreCase(DBChangeMsg.CAT_CI_CUSTOMER))
-				allCICustomers = null;
-		}			
-	}	
+			// LiteEnergyCompany has a list of all cicustomers
+			allEnergyCompanies = null;
+			userEnergyCompanyCache.clear();
+		}
+		
+	}
 	else if( database == DBChangeMsg.CHANGE_YUKON_USER_DB ) 
 	{
 		if( DBChangeMsg.CAT_YUKON_USER_GROUP.equalsIgnoreCase(dbCategory) )
@@ -1635,11 +1532,10 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg,
 		// This seems heavy handed!
 		allYukonGroups = null;
 		allYukonRoles = null;
-		allYukonUserRolePropertiesMap = null;
 		allYukonGroupRolePropertiesMap = null;
 		allYukonUserGroupsMap = null;
 		allYukonGroupUsersMap = null;
-		allUserEnergyCompaniesMap = null;
+		userEnergyCompanyCache.clear();
 	}
 	else if ( database == DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB )
 	{
@@ -2156,24 +2052,6 @@ private synchronized LiteBase handleCommandChange( int changeType, int id )
 }
 
 
-private synchronized LiteBase handleDeviceConfigCategoryChange( int changeType, int id )
-{
-    return new LiteDeviceConfigurationCategory(id, "Device Configuation Category");
-}
-
-private synchronized LiteBase handleDeviceConfigChange( int changeType, int id )
-{
-    
-    LiteDeviceConfiguration configuration = new LiteDeviceConfiguration(id, "Device Configuation");
-    
-    switch (changeType) {
-        case DBChangeMsg.CHANGE_TYPE_ADD:
-            return LiteFactory.createLite(LiteFactory.convertLiteToDBPersAndRetrieve(configuration));
-        default:
-            return new LiteDeviceConfiguration(id, "Device Configuation");
-        }
-}
-
 private synchronized LiteBase handleConfigChange( int changeType, int id )
 {
 	boolean alreadyAdded = false;
@@ -2538,20 +2416,16 @@ private synchronized LiteBase handleStateGroupChange( int changeType, int id )
  * Insert the method's description here.
  * Creation date: (12/7/00 12:34:05 PM)
  */
-private synchronized LiteBase handleCustomerChange( int changeType, int id, String dbCategory)
+private LiteBase handleCustomerChange( int changeType, int id, String dbCategory, boolean noObjectNeeded)
 {
 	LiteBase lBase = null;
-
-	// if the storage is not already loaded, we must not care about it
-	if( allCustomers == null )
-		return lBase;
 
 	switch(changeType)
 	{
 		case DBChangeMsg.CHANGE_TYPE_ADD:
-
-			lBase = allCustomersMap.get( new Integer(id));
-			if( lBase == null)
+        case DBChangeMsg.CHANGE_TYPE_UPDATE:		    
+            customerCache.remove( new Integer(id));
+			if(!noObjectNeeded)
 			{
 				LiteCustomer lc;
 				if( dbCategory.equalsIgnoreCase(DBChangeMsg.CAT_CI_CUSTOMER ))
@@ -2559,31 +2433,15 @@ private synchronized LiteBase handleCustomerChange( int changeType, int id, Stri
 				else 
 					lc = new LiteCustomer(id);
 				lc.retrieve(databaseAlias);
-				allCustomers.add(lc);
-				allCustomersMap.put( new Integer(lc.getCustomerID()), lc);
+				customerCache.put( new Integer(lc.getCustomerID()), lc);
 				
 				lBase = lc;
 			}
 			break;
-			
-		case DBChangeMsg.CHANGE_TYPE_UPDATE:
-			
-			LiteCustomer lc = allCustomersMap.get(new Integer(id));
-			lc.retrieve(databaseAlias);
-			lBase = lc;
-			break;
-			
-		case DBChangeMsg.CHANGE_TYPE_DELETE:
-			for(int i=0;i<allCustomers.size();i++)
-			{
-				if( allCustomers.get(i).getCustomerID() == id )
-				{
-					allCustomersMap.remove( new Integer(id));
-					lBase = allCustomers.remove(i);
-					break;
-				}
-			}
-			break;
+
+        case DBChangeMsg.CHANGE_TYPE_DELETE:
+		    customerCache.remove( new Integer(id));
+		    break;
 		default:
 				releaseAllCustomers();
 				break;
@@ -2809,13 +2667,9 @@ public synchronized void releaseAllCache()
 	allBaselines = null;
 	allConfigs = null;
 	allDeviceMeterGroups = null;
-	allDMG_CollectionGroups = null;
-	allDMG_AlternateGroups = null;
-	allDMG_BillingGroups = null;    
 	allPointLimits = null;
 	allYukonImages = null;
 	allCICustomers = null;
-	allCustomers = null;
 	allLMProgramConstraints = null;
 	allLMScenarios = null;
 	allLMScenarioProgs = null;
@@ -2833,7 +2687,6 @@ public synchronized void releaseAllCache()
 	allYukonRoleProperties = null;
 	allYukonGroups = null;
     
-	allYukonUserRolePropertiesMap = null;
 	allYukonGroupRolePropertiesMap = null;
 	allYukonUserGroupsMap = null;
 	allYukonGroupUsersMap = null;
@@ -2857,14 +2710,14 @@ public synchronized void releaseAllCache()
     
 	//Maps that are created by the joining/parsing of existing lists
 	allPAOsMap = null;
-	allCustomersMap = null;
+	customerCache.clear();
 	allContactsMap.clear();
 	allUsersMap = null;
 
 
 	//derived from allYukonUsers,allYukonRoles,allYukonGroups
 	//see type info in IDatabaseCache
-	allUserEnergyCompaniesMap = null;
+	userEnergyCompanyCache.clear();
 }
 /**
  * Insert the method's description here.
@@ -2973,10 +2826,9 @@ public synchronized void releaseAllNotificationGroups()
 	allNotificationGroups = null;
 }
 
-public synchronized void releaseAllCustomers()
+public void releaseAllCustomers()
 {
-	allCustomers = null;
-	allCustomersMap = null;
+	customerCache.clear();
 }
 
 /**
@@ -3111,7 +2963,7 @@ public synchronized String getARolePropertyValue(LiteYukonUser user, int rolePro
  *  to see if this contact has been recovered from the db before.  If it has not, it will
  * be taken directly from the database.
  */
-public synchronized LiteContact getAContactByUserID(int userID) 
+public LiteContact getAContactByUserID(int userID) 
 {
     LiteContact specifiedContact = null;
     //check cache for previous grabs
@@ -3194,36 +3046,56 @@ public synchronized LiteContactNotification getAContactNotifByNotifID(int contNo
     return specifiedNotify;
 }
 
-/*This method takes a contactid to look for the relevant customer. It will
+/*This method takes a primaryContactId to look for the relevant customer. It will
  * be taken directly from the database.
  */
-public synchronized LiteCustomer getACustomerByContactID(int contactID) 
+public LiteCustomer getACustomerByPrimaryContactID(int primaryContactId) 
 {
-    return YukonCustomerLookup.loadSpecificCustomerByContactID(contactID);
+    return YukonCustomerLookup.loadSpecificCustomerByPrimaryContactID(primaryContactId);
 }
 
 /*This method takes a customerid to look for the relevant customer. It checks allCustomersMap
  *  to see if this customer has been recovered from the db before.  If it has not, it will
  * be taken directly from the database.
  */
-public synchronized LiteCustomer getACustomerByCustomerID(int customerID) 
+public LiteCustomer getACustomerByCustomerID(int customerID) 
 {
     LiteCustomer specifiedCustomer = null;
     //check cache for previous grabs
-    if(allCustomersMap == null)
-        allCustomersMap = new HashMap<Integer, LiteCustomer>();
-    else
-        specifiedCustomer = allCustomersMap.get(new Integer(customerID));
+    specifiedCustomer = customerCache.get(customerID);
     
     //not in cache, go to DB.
     if(specifiedCustomer == null)
     {
         specifiedCustomer = YukonCustomerLookup.loadSpecificCustomer(customerID);
         //found it, put it in the cache for later searches
-        allCustomersMap.put(new Integer(customerID), specifiedCustomer);
+        customerCache.put(customerID, specifiedCustomer);
     }
     
     return specifiedCustomer;
+}
+
+public LiteEnergyCompany getALiteEnergyCompanyByUserID(LiteYukonUser liteYukonUser) {
+
+	// try to load from map
+	LiteEnergyCompany liteEnergyCompany = userEnergyCompanyCache.get(liteYukonUser);
+	
+	// when null, not found in cache...load entry
+	if( liteEnergyCompany == null) {
+		liteEnergyCompany = yukonUserEnergyCompanyLookup.getLiteEnergyCompanyByUser(liteYukonUser, getAllEnergyCompanies());
+		if (liteEnergyCompany == null) {
+			// user doesn't have a EC, but we need to cache this knowledge somehow
+			userEnergyCompanyCache.put(liteYukonUser, NULL_LITE_ENERGY_COMPANY);
+		} else {
+			userEnergyCompanyCache.put(liteYukonUser, liteEnergyCompany);
+		}
+	}
+	
+	if (liteEnergyCompany == NULL_LITE_ENERGY_COMPANY) { // == on purpose
+		return null;
+	} else {
+		return liteEnergyCompany;
+	}
 }
 
 /* (non-Javadoc)
@@ -3293,6 +3165,12 @@ public List getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddres
 @Required
 public void setYukonUserLoader(YukonUserLoader yukonUserLoader) {
     this.yukonUserLoader = yukonUserLoader;
+}
+
+@Required
+public void setYukonUserEnergyCompanyLookup(
+		YukonUserEnergyCompanyLookup yukonUserEnergyCompanyLookup) {
+	this.yukonUserEnergyCompanyLookup = yukonUserEnergyCompanyLookup;
 }
 
 @Required

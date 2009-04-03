@@ -56,8 +56,7 @@ function memberLogin(userID) {
 				<input type="hidden" name="UserID" value="-1">
                 <table width="50%" border="0" cellspacing="0" cellpadding="5" class="MainText">
                   <%
-	for (int i = 0; i < liteEC.getChildren().size(); i++) {
-		LiteStarsEnergyCompany member = (LiteStarsEnergyCompany) liteEC.getChildren().get(i);
+	for (LiteStarsEnergyCompany member : liteEC.getChildren()) {
 		LiteYukonUser memberLogin = null;
 		for (int j = 0; j < liteEC.getMemberLoginIDs().size(); j++) {
 			LiteYukonUser login = DaoFactory.getYukonUserDao().getLiteYukonUser(((Integer)liteEC.getMemberLoginIDs().get(j)).intValue());

@@ -206,7 +206,7 @@ public class UpdateLoginAction implements ActionBase {
 		throws TransactionException
 	{
 	    RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
-	    LiteYukonUser user = DaoFactory.getYukonUserDao().getLiteYukonUser(energyCompany.getUserID());
+	    LiteYukonUser user = energyCompany.getUser();
 	    AuthType defaultAuthType = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.DEFAULT_AUTH_TYPE, AuthType.class, user);
         
 		com.cannontech.database.data.user.YukonUser dataUser = new com.cannontech.database.data.user.YukonUser();

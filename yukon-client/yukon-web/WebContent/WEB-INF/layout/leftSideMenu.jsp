@@ -59,7 +59,7 @@
                                     <cti:outputContent writable="${bodyContent}"/>
                             </td>
                             <td class="rightColumn">
-                                <cti:customerAccountInfoTag accountNumber="${customerAccount.accountNumber}" />
+                                <cti:customerAccountInfoTag account="${customerAccount}" />
                                 <br>
                                 <cti:logo key="yukon.dr.${pageKey}.rightColumnLogo"/>
                             </td>

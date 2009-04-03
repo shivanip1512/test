@@ -1,6 +1,7 @@
 package com.cannontech.web.stars.action.admin;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,7 +24,6 @@ import com.cannontech.web.stars.action.StarsAdminActionController;
 public class UpdateApplianceCategoryController extends StarsAdminActionController {
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
     
-    @SuppressWarnings("unchecked")
     @Override
     public void doAction(final HttpServletRequest request, final HttpServletResponse response, 
             final HttpSession session, final StarsYukonUser user,
@@ -63,7 +63,7 @@ public class UpdateApplianceCategoryController extends StarsAdminActionControlle
             }
             else {
                 liteAppCat = energyCompany.getApplianceCategory( appCatID );
-                if (!energyCompany.getApplianceCategories().contains(liteAppCat)) {
+                if (liteAppCat == null) {
                     session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Cannot update an inherited appliance category" );
                     String redirect = this.getRedirect(request);
                     response.sendRedirect(redirect);
@@ -80,7 +80,10 @@ public class UpdateApplianceCategoryController extends StarsAdminActionControlle
                 StarsLiteFactory.setLiteWebConfiguration( liteConfig, appCat.getWebConfiguration() );
             }
 
-            ArrayList pubProgList = new ArrayList( liteAppCat.getPublishedPrograms() );
+            List<LiteLMProgramWebPublishing> pubProgList = new ArrayList<LiteLMProgramWebPublishing>();
+            for(LiteLMProgramWebPublishing program : liteAppCat.getPublishedPrograms()) {
+            	pubProgList.add(program);
+            }
 
             String[] progIDs = request.getParameterValues( "ProgIDs" );
             String[] deviceIDs = request.getParameterValues( "DeviceIDs" );

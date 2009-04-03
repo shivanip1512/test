@@ -9,6 +9,7 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -236,6 +237,10 @@ public class ObjectMapperFactoryImplTest extends TestCase {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
+        public YukonPao getYukonPao(int paoId) {
+            throw new UnsupportedOperationException("Method not implemented");   
+        }
+        
         public LiteYukonPAObject getLiteYukonPAO(int paoID) {
             throw new UnsupportedOperationException("Method not implemented");
         }

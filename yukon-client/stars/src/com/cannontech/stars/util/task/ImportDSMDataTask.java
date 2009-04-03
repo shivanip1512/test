@@ -665,7 +665,6 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 		if (loadTypeMap == null) {
 			loadTypeMap = new Hashtable<Integer,Object[]>();
 			
-            List<LiteApplianceCategory> appCats = energyCompany.getApplianceCategories();
 			File file = new File(importDir, "$loadtype.map");
 			String[] lines = StarsUtils.readFile( file, false );
 			
@@ -674,8 +673,7 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				
 				if (fields[2].length() > 0) {
 					Integer appCatID = null;
-					for (int j = 0; j < appCats.size(); j++) {
-						LiteApplianceCategory liteAppCat = appCats.get(j);
+					for (LiteApplianceCategory liteAppCat : energyCompany.getApplianceCategories()) {
 						if (liteAppCat.getDescription().equalsIgnoreCase( fields[2] )) {
 							appCatID = new Integer(liteAppCat.getApplianceCategoryID());
 							loadTypeMap.put( Integer.valueOf(fields[0]), new Object[] {fields[1], appCatID} );
@@ -713,7 +711,6 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 	private ArrayList getProgramTable() throws Exception {
 		if (programTable == null) {
 			programTable = new ArrayList();
-            List<LiteApplianceCategory> appCats = energyCompany.getApplianceCategories();
 			
 			File file = new File(importDir, "$program.map");
 			if (!file.exists())
@@ -725,13 +722,11 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				Integer appCatID = null;
 				Integer programID = null;
 				
-				for (int j = 0; j < appCats.size(); j++) {
-					LiteApplianceCategory liteAppCat = (LiteApplianceCategory) appCats.get(j);
+				for (LiteApplianceCategory liteAppCat : energyCompany.getApplianceCategories()) {
 					if (liteAppCat.getDescription().equalsIgnoreCase( fields[1] )) {
 						appCatID = new Integer(liteAppCat.getApplianceCategoryID());
 						
-						for (int k = 0; k < liteAppCat.getPublishedPrograms().size(); k++) {
-							LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) liteAppCat.getPublishedPrograms().get(k);
+						for (LiteLMProgramWebPublishing liteProg : liteAppCat.getPublishedPrograms()) {
 							if (StarsUtils.getPublishedProgramName(liteProg).equalsIgnoreCase( fields[2] )) {
 								programID = new Integer(liteProg.getProgramID());
 								break;
@@ -1561,8 +1556,7 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 		LiteApplianceCategory appCatDF = null;
 		LiteApplianceCategory appCatSH = null;
 		
-		for (int i = 0; i < energyCompany.getApplianceCategories().size(); i++) {
-			LiteApplianceCategory appCat = (LiteApplianceCategory) energyCompany.getApplianceCategories().get(i);
+		for (LiteApplianceCategory appCat : energyCompany.getApplianceCategories()) {
 			int appCatDefID = DaoFactory.getYukonListDao().getYukonListEntry( appCat.getCategoryID() ).getYukonDefID();
 			if (appCatDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DEFAULT)
 				appCatDft = appCat;

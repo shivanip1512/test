@@ -53,7 +53,6 @@ public class LiteYukonPAObject extends LiteBase
 	private int routeID = PAOGroups.INVALID;
 	//address is only for devices that have a physical address (deviceCarrierStatistics)
 	private int address = PAOGroups.INVALID;
-
 	
 /**
  * LiteDevice
@@ -166,7 +165,6 @@ public String getDisableFlag() {
  */
 public void retrieve(String dbalias)
 {
-
 	try
 	{
 		SqlStatement stat = new SqlStatement(
@@ -193,51 +191,52 @@ public void retrieve(String dbalias)
 	{
 		CTILogger.error(e.getMessage(), e);
 	}
+	
+    try
+    {
+        DeviceDirectCommSettings d = new DeviceDirectCommSettings( new Integer(getLiteID()) );
+        Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, d);
 
-	try
-	{
-		DeviceDirectCommSettings d = new DeviceDirectCommSettings( new Integer(getLiteID()) );
-		Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, d);
+        d = (DeviceDirectCommSettings)t.execute();
 
-		d = (DeviceDirectCommSettings)t.execute();
+        if( d.getPortID() != null )
+            setPortID( d.getPortID().intValue() );
+    }
+    catch( TransactionException e )
+    {
+        CTILogger.error( e.getMessage(), e );
+    }
+    try
+    {
+        DeviceCarrierSettings d = new DeviceCarrierSettings( new Integer(getLiteID()) );
+        Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, d);
 
-		if( d.getPortID() != null )
-			setPortID( d.getPortID().intValue() );
-	}
-	catch( TransactionException e )
-	{
-		CTILogger.error( e.getMessage(), e );
-	}
-	try
-	{
-		DeviceCarrierSettings d = new DeviceCarrierSettings( new Integer(getLiteID()) );
-		Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, d);
+        d = (DeviceCarrierSettings)t.execute();
 
-		d = (DeviceCarrierSettings)t.execute();
+        if( d.getAddress() != null )
+            setAddress( d.getAddress().intValue() );
+    }
+    catch( TransactionException e )
+    {
+        CTILogger.error( e.getMessage(), e );
+    }
+    try
+    {
+        DeviceRoutes d = new DeviceRoutes();
+        d.setDeviceID(new Integer(getLiteID()) );
+        Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, d);
 
-		if( d.getAddress() != null )
-			setAddress( d.getAddress().intValue() );
-	}
-	catch( TransactionException e )
-	{
-		CTILogger.error( e.getMessage(), e );
-	}
-	try
-	{
-		DeviceRoutes d = new DeviceRoutes();
-		d.setDeviceID(new Integer(getLiteID()) );
-		Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, d);
+        d = (DeviceRoutes)t.execute();
 
-		d = (DeviceRoutes)t.execute();
-
-		if( d.getRouteID() != null )
-			setRouteID( d.getRouteID().intValue() );
-	}
-	catch( TransactionException e )
-	{
-		CTILogger.error( e.getMessage(), e );
-	}
+        if( d.getRouteID() != null )
+            setRouteID( d.getRouteID().intValue() );
+    }
+    catch( TransactionException e )
+    {
+        CTILogger.error( e.getMessage(), e );
+    }
 }	
+
 /**
  * Insert the method's description here.
  * Creation date: (9/28/2001 4:57:42 PM)
@@ -346,5 +345,4 @@ public String toString()
 	{
 		routeID = i;
 	}
-
 }

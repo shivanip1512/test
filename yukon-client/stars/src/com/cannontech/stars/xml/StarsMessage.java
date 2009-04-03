@@ -45,7 +45,6 @@ public class StarsMessage extends SOAPMessage {
         return null;
     }
 
-    @Override
     public AttachmentPart getAttachment(SOAPElement element)
             throws SOAPException {
         // TODO Auto-generated method stub
@@ -88,7 +87,6 @@ public class StarsMessage extends SOAPMessage {
         
     }
 
-    @Override
     public void removeAttachments(MimeHeaders headers) {
         // TODO Auto-generated method stub
         

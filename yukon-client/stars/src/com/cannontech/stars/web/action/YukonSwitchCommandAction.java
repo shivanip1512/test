@@ -272,10 +272,9 @@ public class YukonSwitchCommandAction implements ActionBase {
         
 		Integer hwEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID() );
 		Integer termEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION).getEntryID() );
-		
-        YukonUserDao yukonUserDao = DaoFactory.getYukonUserDao();
-        LiteYukonUser user = yukonUserDao.getLiteYukonUser(energyCompany.getUserID());
-        
+
+        LiteYukonUser user = energyCompany.getUser();
+
 		String cmd = null;
 		String map1Cmdlorm = null;
 		String map1Cmdhorm = null;
@@ -361,8 +360,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 		if (liteHw.getManufacturerSerialNumber().length() == 0)
 			throw new WebClientException( "The manufacturer serial # of the hardware cannot be empty" );
 		
-        YukonUserDao yukonUserDao = DaoFactory.getYukonUserDao();
-        LiteYukonUser user = yukonUserDao.getLiteYukonUser(energyCompany.getUserID());
+        LiteYukonUser user = energyCompany.getUser();
         
 		String cmd = null;
 		String map1Cmdlorm = null;
@@ -448,9 +446,8 @@ public class YukonSwitchCommandAction implements ActionBase {
 		if (liteHw.getManufacturerSerialNumber().length() == 0)
 			throw new WebClientException( "The manufacturer serial # of the hardware cannot be empty" );
 		
-        YukonUserDao yukonUserDao = DaoFactory.getYukonUserDao();
-        LiteYukonUser user = yukonUserDao.getLiteYukonUser(energyCompany.getUserID());
-        
+        LiteYukonUser user = energyCompany.getUser();
+
 		Integer invID = new Integer( liteHw.getInventoryID() );
 		Integer hwEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID() );
 		Integer configEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_CONFIG).getEntryID() );

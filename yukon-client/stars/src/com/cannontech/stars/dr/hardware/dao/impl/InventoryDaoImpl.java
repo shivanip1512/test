@@ -24,6 +24,7 @@ import com.cannontech.stars.dr.hardware.model.HardwareStatus;
 import com.cannontech.stars.dr.hardware.model.HardwareType;
 import com.cannontech.stars.dr.hardware.model.InventoryCategory;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
+import com.cannontech.stars.dr.hardware.model.ThermostatSummary;
 import com.cannontech.stars.dr.util.YukonListEntryHelper;
 
 /**
@@ -61,26 +62,27 @@ public class InventoryDaoImpl implements InventoryDao {
 
     @Override
     public List<Thermostat> getThermostatsByAccount(CustomerAccount account) {
-
         int accountId = account.getAccountId();
-
         LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(account);
-
-        String thermostatTypes = SqlStatementBuilder.convertToSqlLikeList(THERMOSTAT_TYPES);
         StringBuilder sql = new StringBuilder("SELECT ib.*, lmhb.* ");
-        sql.append(" FROM InventoryBase ib, LMHardwareBase lmhb ");
-        sql.append(" WHERE ib.accountid = ? ");
-        sql.append(" AND lmhb.inventoryid = ib.inventoryid ");
-        sql.append(" AND lmhb.LMHardwareTypeID IN ");
-        sql.append(" (SELECT entryid FROM YukonListEntry WHERE YukonDefinitionID IN (" + thermostatTypes + "))");
-
+        sql.append(getThermostatsByAccountSqlClause());
         List<Thermostat> thermostatList = jdbcTemplate.query(sql.toString(),
                                                              new ThermostatRowMapper(energyCompany),
                                                              accountId);
-
         return thermostatList;
     }
 
+    @Override
+    public List<ThermostatSummary> getThermostatSummaryByAccount(CustomerAccount account) {
+        int accountId = account.getAccountId();
+        StringBuilder sql = new StringBuilder("SELECT ib.InventoryID, lmhb.ManufacturerSerialNumber, ib.DeviceLabel ");
+        sql.append(getThermostatsByAccountSqlClause());
+        List<ThermostatSummary> thermSummaryList = jdbcTemplate.query(sql.toString(),
+                                                                      new ThermostatSummaryRowMapper(),
+                                                                      accountId);
+        return thermSummaryList;
+    }
+    
     @Override
     public Thermostat getThermostatById(int thermostatId) {
 
@@ -110,6 +112,36 @@ public class InventoryDaoImpl implements InventoryDao {
         jdbcTemplate.update(sql.toString(), label, id);
     }
 
+    // Gets the SQL to get list of Thermostats by accountId
+    private String getThermostatsByAccountSqlClause() {
+        String thermostatTypes = SqlStatementBuilder.convertToSqlLikeList(THERMOSTAT_TYPES);
+        StringBuilder sql = new StringBuilder();
+        sql.append(" FROM InventoryBase ib, LMHardwareBase lmhb ");
+        sql.append(" WHERE ib.accountid = ? ");
+        sql.append(" AND lmhb.inventoryid = ib.inventoryid ");
+        sql.append(" AND lmhb.LMHardwareTypeID IN ");
+        sql.append(" (SELECT entryid FROM YukonListEntry WHERE YukonDefinitionID IN (" + thermostatTypes + "))");
+        return sql.toString();
+    }
+    
+    /**
+     * Mapper class to map a resultset row into a ThermostatSummary
+     */
+    private class ThermostatSummaryRowMapper implements
+            ParameterizedRowMapper<ThermostatSummary> {
+        @Override
+        public ThermostatSummary mapRow(ResultSet rs, int rowNum)
+                throws SQLException {
+
+            int id = rs.getInt("InventoryID");
+            String serialNumber = rs.getString("ManufacturerSerialNumber");
+            String deviceLabel = rs.getString("DeviceLabel");
+
+            ThermostatSummary thermSummary = new ThermostatSummary(id, serialNumber, deviceLabel);
+            return thermSummary;
+        }
+    }
+    
     /**
      * Mapper class to map a resultset row into a thermostat
      */

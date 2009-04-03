@@ -173,18 +173,15 @@ private void initializeAddPanel()
 	getAddRemovePanel().setMode( com.cannontech.common.gui.util.AddRemovePanel.TRANSFER_MODE );
 
 	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-	synchronized( cache )
-	{
-		java.util.List customers = cache.getAllCICustomers();
-		java.util.Vector lmCusts = new java.util.Vector( (int)(customers.size() * .75) );
+	java.util.List customers = cache.getAllCICustomers();
+	java.util.Vector lmCusts = new java.util.Vector( (int)(customers.size() * .75) );
 
-		for( int i = 0; i < customers.size(); i++ )
-		{ 
-			lmCusts.addElement( customers.get(i) );
-		}
-
-		getAddRemovePanel().leftListSetListData(lmCusts);
+	for( int i = 0; i < customers.size(); i++ )
+	{ 
+	    lmCusts.addElement( customers.get(i) );
 	}
+
+	getAddRemovePanel().leftListSetListData(lmCusts);
 }
 /**
  * Method to handle events for the AddRemovePanelListener interface.

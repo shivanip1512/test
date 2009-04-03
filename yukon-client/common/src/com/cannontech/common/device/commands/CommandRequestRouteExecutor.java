@@ -11,7 +11,8 @@ public interface CommandRequestRouteExecutor extends
 		CommandRequestExecutor<CommandRequestRoute> {
 
 	/**
-	 * Convenience method to execute a command on a given route for a user
+	 * Convenience method to execute a command on a given route for a user (this method
+     * will block until command execution is complete)
 	 * @param routeId - Route to execute command for
 	 * @param command - Command to execute
 	 * @param user - User executing command
@@ -22,4 +23,18 @@ public interface CommandRequestRouteExecutor extends
 	 */
 	public CommandResultHolder execute(int routeId, String command,
 			LiteYukonUser user) throws CommandCompletionException;
+	
+	/**
+	 * Convenience method to execute a command on a given route for a user
+	 * @param routeId - Route to execute command for
+	 * @param command - Command to execute
+	 * @param callback - Callback called as results of executing command come in
+	 * @param user - User executing command
+	 * @throws CommandCompletionException
+	 * @throws PaoAuthorizationException - When user doesn't have permission to
+	 *             execute the command
+	 */
+	public void execute(int routeId, String command,
+			CommandCompletionCallback<? super CommandRequestRoute> callback,
+			LiteYukonUser user);
 }

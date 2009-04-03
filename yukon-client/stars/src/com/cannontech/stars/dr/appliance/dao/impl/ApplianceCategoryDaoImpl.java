@@ -19,9 +19,7 @@ import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.IntegerRowMapper;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.core.dao.ECMappingDao;
@@ -35,7 +33,6 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private AuthDao authDao;
     private ECMappingDao ecMappingDao;
-    private YukonUserDao yukonUserDao;
     
     private final String applianceCategorySQLHeader = 
         "SELECT AC.applianceCategoryId, AC.description, YWC.alternateDisplayName, "+
@@ -46,12 +43,11 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
 
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public List<ApplianceCategory> getApplianceCategories(final CustomerAccount customerAccount) {
+    public List<Integer> getApplianceCategoryIds(final CustomerAccount customerAccount) {
 
         LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(customerAccount);
-        LiteYukonUser liteYukonUser = yukonUserDao.getLiteYukonUser(energyCompany.getUserID());
         List<Integer> idList;
-        if (authDao.checkRoleProperty(liteYukonUser, EnergyCompanyRole.INHERIT_PARENT_APP_CATS)){
+        if (authDao.checkRoleProperty(energyCompany.getUser(), EnergyCompanyRole.INHERIT_PARENT_APP_CATS)){
             List<LiteStarsEnergyCompany> allAscendants = ECUtils.getAllAscendants(energyCompany);
             idList = ECUtils.toIdList(allAscendants);
         } else {
@@ -63,7 +59,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
         sqlBuilder.append("FROM ApplianceCategory");
         sqlBuilder.append("WHERE ApplianceCategoryID IN (");
         sqlBuilder.append("     SELECT ItemID ");
-        sqlBuilder.append("		FROM ECToGenericMapping ");
+        sqlBuilder.append("     FROM ECToGenericMapping ");
         sqlBuilder.append("     WHERE MappingCategory = ? ");
         sqlBuilder.append("     AND EnergyCompanyID in ( ");
         sqlBuilder.append(idList);
@@ -73,6 +69,14 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
         List<Integer> applianceCategoryIdList = simpleJdbcTemplate.query(sql,
                                                                          new IntegerRowMapper(),
                                                                          YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY);
+        return applianceCategoryIdList;
+    }    
+    
+    @Override
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public List<ApplianceCategory> getApplianceCategories(final CustomerAccount customerAccount) {
+
+        List<Integer> applianceCategoryIdList = getApplianceCategoryIds(customerAccount);
         
         final Set<ApplianceCategory> set = new HashSet<ApplianceCategory>(applianceCategoryIdList.size());
         
@@ -144,12 +148,6 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     public void setEcMappingDao(ECMappingDao ecMappingDao) {
         this.ecMappingDao = ecMappingDao;
     }
-
-    @Autowired
-    public void setYukonUserDao(YukonUserDao yukonUserDao) {
-        this.yukonUserDao = yukonUserDao;
-    }
-
 }
 
 class ApplianceCategoryRowMapper implements ParameterizedRowMapper<ApplianceCategory> {

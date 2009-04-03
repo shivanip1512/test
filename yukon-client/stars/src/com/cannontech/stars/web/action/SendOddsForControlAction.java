@@ -1,7 +1,5 @@
 package com.cannontech.stars.web.action;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
@@ -112,17 +110,15 @@ public class SendOddsForControlAction implements ActionBase {
 			int energyCompanyID = user.getEnergyCompanyID();
 			LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( energyCompanyID );
             
-            List<LiteApplianceCategory> appCatList = energyCompany.getAllApplianceCategories();
+            Iterable<LiteApplianceCategory> appCatList = energyCompany.getAllApplianceCategories();
 			StarsSendOddsForControl sendCtrlOdds = reqOper.getStarsSendOddsForControl();
 			
 			for (int i = 0; i < sendCtrlOdds.getStarsEnrLMProgramCount(); i++) {
 				StarsEnrLMProgram enrProg = sendCtrlOdds.getStarsEnrLMProgram(i);
 				boolean enrProgFound = false;
         		
-				for (int j = 0; j < appCatList.size(); j++) {
-					LiteApplianceCategory liteAppCat = appCatList.get(j);
-					for (int k = 0; k < liteAppCat.getPublishedPrograms().size(); k++) {
-						LiteLMProgramWebPublishing liteProg = liteAppCat.getPublishedPrograms().get(k);
+				for (LiteApplianceCategory liteAppCat : appCatList) {
+					for (LiteLMProgramWebPublishing liteProg : liteAppCat.getPublishedPrograms()) {
 						if (liteProg.getProgramID() == enrProg.getProgramID()) {
 							com.cannontech.database.db.stars.LMProgramWebPublishing pubProg =
 									new com.cannontech.database.db.stars.LMProgramWebPublishing();
@@ -133,7 +129,9 @@ public class SendOddsForControlAction implements ActionBase {
 							pubProg.setChanceOfControlID( new Integer(liteProg.getChanceOfControlID()) );
 							Transaction.createTransaction(Transaction.UPDATE, pubProg).execute();
 		        			
-							liteProg.setChanceOfControlID( enrProg.getChanceOfControl().getEntryID() );
+							LiteLMProgramWebPublishing cachedProgram = 
+								energyCompany.getProgram(liteProg.getProgramID());
+							cachedProgram.setChanceOfControlID( enrProg.getChanceOfControl().getEntryID() );
 							enrProgFound = true;
         					
 							break;

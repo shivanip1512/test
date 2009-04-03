@@ -153,7 +153,7 @@
         <property name="defaultEncoding" value="UTF-8"/>
         <property name="fallbackToSystemLocale" value="false"/>
         <property name="useCodeAsDefaultMessage" value="false"/>
-        <property name="cacheSeconds" value="1"/> <!-- According to Spring, anything longer isn't really helpful. -->
+        <property name="cacheSeconds" value="-1"/> <!-- According to Spring, anything longer isn't really helpful. -->
     </bean>
     
     <bean id="rootThemeSource" class="com.cannontech.common.i18n.DefaultThemeSource">
@@ -165,7 +165,7 @@
         <property name="fallbackToSystemLocale" value="false"/>
         <property name="parentThemeSource" ref="rootThemeSource"/>
         <property name="useCodeAsDefaultMessage" value="false"/>
-        <property name="cacheSeconds" value="1"/>
+        <property name="cacheSeconds" value="-1"/>
     </bean>
     
     <bean id="yukonUserContextMessageSourceResolver" class="com.cannontech.i18n.YukonUserContextMessageSourceResolverImpl">

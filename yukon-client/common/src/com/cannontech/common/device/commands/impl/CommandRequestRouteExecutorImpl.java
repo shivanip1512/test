@@ -1,9 +1,12 @@
 package com.cannontech.common.device.commands.impl;
 
+import java.util.Collections;
+
 import org.apache.commons.lang.math.RandomUtils;
 import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestRoute;
 import com.cannontech.common.device.commands.CommandRequestRouteExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
@@ -41,5 +44,17 @@ public class CommandRequestRouteExecutorImpl extends
         commandRequest.setRouteId(routeId);
 		
         return execute(commandRequest, user);
+	}
+
+	@Override
+	public void execute(int routeId, String command,
+			CommandCompletionCallback<? super CommandRequestRoute> callback,
+			LiteYukonUser user) {
+		
+		CommandRequestRoute commandRequest = new CommandRequestRoute();
+        commandRequest.setCommand(command);
+        commandRequest.setRouteId(routeId);
+        
+        execute(Collections.singletonList(commandRequest), callback, user);
 	}
 }

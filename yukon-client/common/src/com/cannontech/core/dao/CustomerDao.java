@@ -1,10 +1,11 @@
 package com.cannontech.core.dao;
 
 import java.util.List;
-import java.util.Vector;
 
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
+import com.cannontech.customer.model.CustomerInformation;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
@@ -27,6 +28,13 @@ public interface CustomerDao {
      * @return Customer
      */
     public LiteCustomer getLiteCustomer(int custID);
+
+    /**
+     * Get a customer information by id
+     * @param custID - Id of customer to get
+     * @return the customer information
+     */
+    public CustomerInformation getCustomerInformation(int custID);
 
     /**
      * Finds all LiteContact instances not used by a CICustomer
@@ -82,13 +90,6 @@ public interface CustomerDao {
      * @return LiteCICustomer
      */
     public LiteCICustomer getLiteCICustomer(int customerID);
-
-    /**
-     * Returns a vector of LiteCustomers with given energyCompanyID
-     * @param energycompanyID
-     * @return Vector liteCustomers
-     */
-    public Vector<LiteCustomer> getAllLiteCustomersByEnergyCompany(int energyCompanyID);
 
     /**
      * Method to get the commercial customer for a user

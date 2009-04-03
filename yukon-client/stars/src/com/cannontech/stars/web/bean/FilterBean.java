@@ -83,7 +83,7 @@ public class FilterBean
     
     public boolean getManageMembers()
     {
-        return DaoFactory.getAuthDao().checkRoleProperty(currentUser, AdministratorRole.ADMIN_MANAGE_MEMBERS) && (energyCompany.getChildren().size() > 0);
+        return DaoFactory.getAuthDao().checkRoleProperty(currentUser, AdministratorRole.ADMIN_MANAGE_MEMBERS) && (energyCompany.hasChildEnergyCompanies());
     }
     
     public YukonSelectionList getAvailableFilters()
@@ -190,7 +190,12 @@ public class FilterBean
 	}
 
     public List<LiteApplianceCategory> getAvailableApplianceCategories() {
-        availableApplianceCategories = energyCompany.getAllApplianceCategories();
+    	Iterable<LiteApplianceCategory> applianceCategories = energyCompany.getAllApplianceCategories();
+    	availableApplianceCategories = new ArrayList<LiteApplianceCategory>();
+    	
+    	for(LiteApplianceCategory category : applianceCategories) {
+    		availableApplianceCategories.add(category);
+    	}
         return availableApplianceCategories;
     }
 

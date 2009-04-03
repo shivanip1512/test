@@ -45,13 +45,6 @@ public class LiteStarsLMControlHistory extends LiteBase {
 	public void setGroupID(int groupID) {
 		setLiteID( groupID );
 	}
-	
-	public void clearLMControlHistory() {
-		lmControlHistory = null;
-		lastSearchedCtrlHistID = 0;
-		lastSearchedStartTime = 0;
-		lastSearchedStopTime = 0;
-	}
 
 	/**
 	 * Returns the lmControlHistory.

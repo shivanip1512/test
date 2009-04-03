@@ -25,9 +25,6 @@
 	<bean id="adminUpdateEnergyCompany" class="com.cannontech.web.stars.action.admin.UpdateEnergyCompanyController" 
           parent="starsAdminActionController"/>
 	
-	<bean id="adminRefreshCache" class="com.cannontech.web.stars.action.admin.RefreshCacheController" 
-          parent="starsAdminActionController"/>
-	
 	<bean id="adminSwitchContext" class="com.cannontech.web.stars.action.admin.SwitchContextController" 
           parent="starsAdminActionController">
 		<property name="switchContextService" ref="switchContextService"/>

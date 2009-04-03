@@ -4,6 +4,7 @@ package com.cannontech.dbeditor.editor.notification.group;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
@@ -256,51 +257,50 @@ private javax.swing.JTree getJTreeNotifs() {
 
 
 			IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-			synchronized( cache )
-			{
-			    // Pre load all contacts for use below
-                cache.getAllContacts();
+//			synchronized( cache )
+//			{
+//			    // Pre load all contacts for use below
+//                cache.getAllContacts();
+//			}
                 
-				List<LiteCICustomer> customers = cache.getAllCICustomers();
-				Collections.sort( customers, LiteComparators.liteStringComparator );
-				for( int i = 0; i < customers.size(); i++ )
-				{
-					LiteCICustomer lCust = (LiteCICustomer)customers.get(i);
-					LiteBaseNode custNode = new LiteBaseNode( lCust );
-					custNode.setUserValue( NotifMap.DEF_ATTRIBS );
-					root.add( custNode );
+			List<LiteCICustomer> customers = new ArrayList(cache.getAllCICustomers());
+			Collections.sort( customers, LiteComparators.liteStringComparator );
+			for( int i = 0; i < customers.size(); i++ )
+			{
+			    LiteCICustomer lCust = (LiteCICustomer)customers.get(i);
+			    LiteBaseNode custNode = new LiteBaseNode( lCust );
+			    custNode.setUserValue( NotifMap.DEF_ATTRIBS );
+			    root.add( custNode );
 
 
-					List tempConts = DaoFactory.getCustomerDao().getAllContacts(lCust.getCustomerID());
-					if( tempConts != null )
-					{
-						Collections.sort( tempConts, LiteComparators.liteStringComparator );
-						for( int j = 0; j < tempConts.size(); j++ )
-						{
-							LiteContact lcont = (LiteContact)tempConts.get(j);
-							LiteBaseNode contNode = new LiteBaseNode( lcont );
-							contNode.setUserValue( NotifMap.DEF_ATTRIBS );
+			    List tempConts = DaoFactory.getCustomerDao().getAllContacts(lCust.getCustomerID());
+			    if( tempConts != null )
+			    {
+			        Collections.sort( tempConts, LiteComparators.liteStringComparator );
+			        for( int j = 0; j < tempConts.size(); j++ )
+			        {
+			            LiteContact lcont = (LiteContact)tempConts.get(j);
+			            LiteBaseNode contNode = new LiteBaseNode( lcont );
+			            contNode.setUserValue( NotifMap.DEF_ATTRIBS );
 
-							custNode.add( contNode );
-							
-							addContactNotifsToTree( lcont, contNode );
-						}		
-					}
+			            custNode.add( contNode );
 
-				}
+			            addContactNotifsToTree( lcont, contNode );
+			        }		
+			    }
 
-				int[] contIDs = Contact.getOrphanedContacts();
-				for( int i = 0; i < contIDs.length; i++ )
-				{
-					LiteContact lcont = DaoFactory.getContactDao().getContact( contIDs[i] );
-					LiteBaseNode lbNode = new LiteBaseNode( lcont );
-					lbNode.setUserValue( NotifMap.DEF_ATTRIBS );	
-					
-					unassignContactsNode.add( lbNode );
-					
-					addContactNotifsToTree( lcont, lbNode );
-				}
-				
+			}
+
+			int[] contIDs = Contact.getOrphanedContacts();
+			for( int i = 0; i < contIDs.length; i++ )
+			{
+			    LiteContact lcont = DaoFactory.getContactDao().getContact( contIDs[i] );
+			    LiteBaseNode lbNode = new LiteBaseNode( lcont );
+			    lbNode.setUserValue( NotifMap.DEF_ATTRIBS );	
+
+			    unassignContactsNode.add( lbNode );
+
+			    addContactNotifsToTree( lcont, lbNode );
 			}
 
 			root.add( unassignContactsNode );

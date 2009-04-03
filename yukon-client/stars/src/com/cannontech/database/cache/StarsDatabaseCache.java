@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -37,7 +36,6 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.database.db.web.YukonWebConfiguration;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
@@ -46,10 +44,8 @@ import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.LMControlHistoryUtil;
-import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
-import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.util.StarsAdminUtil;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
@@ -100,13 +96,6 @@ public class StarsDatabaseCache implements DBChangeListener {
         dataSource.addDBChangeListener(this);
 	}
 	
-	private void releaseAllCache() {
-		energyCompanies = null;
-		webConfigList = null;
-		starsYukonUsers = null;
-		lmCtrlHists = null;
-	}
-	
 	public synchronized static StarsDatabaseCache getInstance() {
 		StarsDatabaseCache instance = YukonSpringHook.getBean("starsDatabaseCache", StarsDatabaseCache.class);
 		return instance;
@@ -121,55 +110,6 @@ public class StarsDatabaseCache implements DBChangeListener {
         getAllEnergyCompanies();
     }
 
-	public void refreshCache() {
-		if (energyCompanies != null) {
-			synchronized (energyCompanies) {
-				for (int i = 0; i < energyCompanies.size(); i++)
-					energyCompanies.get(i).clear();
-			}
-			energyCompanies = null;
-		}
-		
-		releaseAllCache();
-		DefaultDatabaseCache.getInstance().releaseAllCache();
-		DaoFactory.getYukonListDao().releaseAllConstants();
-		
-		SwitchCommandQueue.getInstance().syncFromFile();
-		OptOutEventQueue.getInstance().syncFromFile();
-		
-		// Reload data into the cache if necessary
-		String preloadData = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.STARS_PRELOAD_DATA );
-		if (CtiUtilities.isTrue( preloadData ))
-			StarsDatabaseCache.getInstance().loadData();
-	}
-
-	public void refreshCache(LiteStarsEnergyCompany energyCompany) {
-		webConfigList = null;
-		DaoFactory.getYukonListDao().releaseAllConstants();
-		
-		// release cache for all descendants of the current company as well
-		final List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants( energyCompany );
-        for (final LiteStarsEnergyCompany company : descendants) {
-            company.clear();
-            
-            Iterator<StarsYukonUser> it = getAllStarsYukonUsers().values().iterator();
-            while (it.hasNext()) {
-                StarsYukonUser user = it.next();
-                if (user.getEnergyCompanyID() == company.getLiteID())
-                    it.remove();
-            }
-        }
-		
-		SwitchCommandQueue.getInstance().syncFromFile();
-		OptOutEventQueue.getInstance().syncFromFile();
-		
-		// Reload data into the cache if necessary
-		String preloadData = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.STARS_PRELOAD_DATA );
-		if (CtiUtilities.isTrue( preloadData )) {
-			getAllWebConfigurations();
-		}
-	}
-    
 	/*
 	 * Start implementation of class functions
 	 */
@@ -383,9 +323,7 @@ public class StarsDatabaseCache implements DBChangeListener {
     					handleRouteChange( msg, energyCompany );
     			}
     			else if (DeviceTypesFuncs.isLMProgramDirect( litePao.getType() )) {
-    				List<LiteLMProgramWebPublishing> programs = new ArrayList<LiteLMProgramWebPublishing>( energyCompany.getPrograms() );
-    				for (int j = 0; j < programs.size(); j++) {
-    					LiteLMProgramWebPublishing liteProg = programs.get(j);
+    				for (LiteLMProgramWebPublishing liteProg : energyCompany.getPrograms()) {
     					if (liteProg.getDeviceID() == msg.getId()) {
     						handleLMProgramChange( msg, energyCompany, liteProg );
     						return;
@@ -393,11 +331,9 @@ public class StarsDatabaseCache implements DBChangeListener {
     				}
     			}
     			else if (DeviceTypesFuncs.isLmGroup( litePao.getType() )) {
-    				List<LiteLMProgramWebPublishing> programs = new ArrayList<LiteLMProgramWebPublishing>( energyCompany.getPrograms() );
     				StarsEnrollmentPrograms categories = energyCompany.getStarsEnrollmentPrograms();
     				
-    				for (int j = 0; j < programs.size(); j++) {
-    					LiteLMProgramWebPublishing liteProg = programs.get(j);
+    				for (LiteLMProgramWebPublishing liteProg : energyCompany.getPrograms()) {
     					boolean groupFound = false;
     					
     					for (int k = 0; k < liteProg.getGroupIDs().length; k++) {
@@ -533,11 +469,15 @@ public class StarsDatabaseCache implements DBChangeListener {
 							com.cannontech.database.db.device.lm.LMProgramDirectGroup.getAllDirectGroups( new Integer(liteProg.getDeviceID()) );
 					
 					int[] groupIDs = new int[ groups.length ];
-					for (int i = 0; i < groups.length; i++)
+					for (int i = 0; i < groups.length; i++) {
 						groupIDs[i] = groups[i].getLmGroupDeviceID().intValue();
-					liteProg.setGroupIDs( groupIDs );
+					}
 					
-					StarsEnrLMProgram program = ServletUtils.getEnrollmentProgram( energyCompany.getStarsEnrollmentPrograms(), liteProg.getProgramID() );
+					int programID = liteProg.getProgramID();
+					LiteLMProgramWebPublishing cachedProgram = energyCompany.getProgram(programID);
+					cachedProgram.setGroupIDs( groupIDs );
+					
+					StarsEnrLMProgram program = ServletUtils.getEnrollmentProgram( energyCompany.getStarsEnrollmentPrograms(), programID );
 					if (program != null)
 						StarsLiteFactory.setAddressingGroups( program, liteProg );
 				}
@@ -645,7 +585,7 @@ public class StarsDatabaseCache implements DBChangeListener {
 		{
 			// Clear the cached control history if the request date is earlier than the cache start date,
 			// or it is later than the cache stop date and the interval is too long.
-			lmCtrlHist.clearLMControlHistory();
+			lmCtrlHist = new LiteStarsLMControlHistory( groupID );
 		}
 		
 		int lastSearchedID = LMControlHistoryUtil.getLastLMCtrlHistID();
@@ -669,12 +609,13 @@ public class StarsDatabaseCache implements DBChangeListener {
 			}
 			
 			lmCtrlHist.setLastSearchedCtrlHistID( lastSearchedID );
-			lmCtrlHist.setLastSearchedStartTime( startDate.getTime() );
+			if (startDate.getTime() < lmCtrlHist.getLastSearchedStartTime()) {
+				lmCtrlHist.setLastSearchedStartTime(startDate.getTime());
+			}
 			lmCtrlHist.setLastSearchedStopTime( System.currentTimeMillis() );
 		}
 		
-		if(lmCtrlHist.getLmControlHistory() == null)
-		{
+		if (lmCtrlHist.getLmControlHistory() == null) {
 			lmCtrlHist.setLmControlHistory(new ArrayList<LiteBase>());
 		}
 		
@@ -693,8 +634,7 @@ public class StarsDatabaseCache implements DBChangeListener {
 			lastCtrlHist.setCurrentSeasonalTime( liteCtrlHist.getCurrentSeasonalTime() );
 			lastCtrlHist.setCurrentAnnualTime( liteCtrlHist.getCurrentAnnualTime() );
 			lmCtrlHist.setLastControlHistory( lastCtrlHist );
-		}
-		else {
+		} else {
 			int startCtrlHistID = 0;
 			if (lmCtrlHist.getLastControlHistory() != null)
 				startCtrlHistID = lmCtrlHist.getLastControlHistory().getLmCtrlHistID();
@@ -707,8 +647,7 @@ public class StarsDatabaseCache implements DBChangeListener {
 				if (liteCtrlHist.getLmCtrlHistID() < lastSearchedID)
 					liteCtrlHist.setLmCtrlHistID( lastSearchedID );
 				lmCtrlHist.setLastControlHistory( liteCtrlHist );
-			}
-			else {
+			} else {
 				if (lmCtrlHist.getLastControlHistory() == null)
 					lmCtrlHist.setLastControlHistory( new LiteLMControlHistory(lastSearchedID) );
 			}

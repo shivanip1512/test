@@ -5,7 +5,7 @@
 <%@ page import="com.cannontech.stars.dr.hardware.model.LMHardwareBase" %>
 <%@ page import="com.cannontech.stars.util.OptOutEventQueue" %>
 <%
-    boolean showEnergyCompany = liteEC.getChildren().size() > 0 && DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS);
+    boolean showEnergyCompany = liteEC.hasChildEnergyCompanies() && DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS);
     
     int memberID = -1;
     LiteStarsEnergyCompany member = null;

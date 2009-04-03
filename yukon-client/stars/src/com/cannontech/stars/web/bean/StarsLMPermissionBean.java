@@ -4,30 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.common.constants.YukonSelectionList;
-import com.cannontech.common.constants.YukonSelectionListDefs;
-import com.cannontech.common.util.Pair;
 import com.cannontech.core.authorization.service.PaoPermissionService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.database.Transaction;
-import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteLMProgScenario;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
-import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.pao.DeviceTypes;
-import com.cannontech.database.data.stars.hardware.MeterHardwareBase;
-import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
-import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.cannontech.stars.xml.serialize.StarsLMProgram;
 import com.cannontech.stars.xml.serialize.StarsLMPrograms;
 
@@ -120,7 +107,7 @@ public class StarsLMPermissionBean
         }
         
         /*need the full lite object to go from the true yukon paobjectID to the stars program id*/
-        List<LiteLMProgramWebPublishing> litePrograms = energyCompany.getAllPrograms();
+        Iterable<LiteLMProgramWebPublishing> litePrograms = energyCompany.getAllPrograms();
         for(LiteLMProgramWebPublishing fullProg : litePrograms) {
             if(unconvertedYukonPaoIDs.contains(fullProg.getDeviceID()) && !currentList.contains(paoID)) {
                 currentList.add(fullProg.getProgramID());

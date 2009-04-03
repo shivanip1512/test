@@ -125,11 +125,6 @@ public interface IDatabaseCache {
      */
     public Map<Integer,LiteContactNotification> getAllContactNotifsMap();
 
-    /**
-     * @return Map of customerID to LiteCustomer
-     */
-    public Map<Integer,LiteCustomer> getAllCustomersMap();
-
     public List<LitePointLimit> getAllPointLimits();
 
     public List<LiteYukonPAObject> getAllPorts();
@@ -162,8 +157,6 @@ public interface IDatabaseCache {
 
     public List<LiteYukonUser> getAllYukonUsers();
 
-    public Map<LiteYukonUser, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String>>> getYukonUserRolePropertyMap();
-
     public Map<LiteYukonGroup, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String>>> getYukonGroupRolePropertyMap();
 
     public Map<LiteYukonUser,List<LiteYukonGroup>> getYukonUserGroupMap();
@@ -171,10 +164,6 @@ public interface IDatabaseCache {
     public Map<LiteYukonGroup,List<LiteYukonUser>> getYukonGroupUserMap();
 
     public List<LiteEnergyCompany> getAllEnergyCompanies();
-
-    public Map<LiteYukonUser, LiteEnergyCompany> getAllUserEnergyCompanies();
-
-    public List<LiteCustomer> getAllCustomers();
 
     public List<LiteDeviceTypeCommand> getAllDeviceTypeCommands();
 
@@ -250,9 +239,11 @@ public interface IDatabaseCache {
 
     public LiteContactNotification getAContactNotifByNotifID(int contNotifyID);
 
-    public LiteCustomer getACustomerByContactID(int contactID);
+    public LiteCustomer getACustomerByPrimaryContactID(int contactID);
 
     public LiteCustomer getACustomerByCustomerID(int customerID);
+
+    public LiteEnergyCompany getALiteEnergyCompanyByUserID(LiteYukonUser liteYukonUser);
 
     public void releaseUserRoleMap();
 

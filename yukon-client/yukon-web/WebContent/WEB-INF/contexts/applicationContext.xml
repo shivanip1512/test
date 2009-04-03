@@ -799,8 +799,6 @@
     </bean>
     
     <bean id="customerAccountInfoTagPrototype" class="com.cannontech.web.stars.dr.taglib.CustomerAccountInfoTag">
-        <property name="customerAccountDao" ref="customerAccountDao"/>
-        <property name="contactDao" ref="contactDao"/>
         <property name="customerDao" ref="customerDao"/>
         <property name="accountSiteDao" ref="accountSiteDao"/>
         <property name="addressDao" ref="addressDao"/>

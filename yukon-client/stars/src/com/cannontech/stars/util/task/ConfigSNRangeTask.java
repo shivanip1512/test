@@ -101,7 +101,7 @@ public class ConfigSNRangeTask extends TimeConsumingTask {
 		status = STATUS_RUNNING;
 		
 		boolean searchMembers = DaoFactory.getAuthDao().checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
-				&& energyCompany.getChildren().size() > 0;
+				&& energyCompany.hasChildEnergyCompanies();
 		hwsToConfig = new ArrayList();
 		
 		for (int i = 0; i < invToConfig.size(); i++) {

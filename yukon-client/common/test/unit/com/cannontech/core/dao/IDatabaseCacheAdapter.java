@@ -65,7 +65,7 @@ public class IDatabaseCacheAdapter implements IDatabaseCache {
         throw new UnsupportedOperationException();
     }
 
-    public LiteCustomer getACustomerByContactID(int contactID) {
+    public LiteCustomer getACustomerByPrimaryContactID(int contactID) {
 
         throw new UnsupportedOperationException();
     }
@@ -146,16 +146,6 @@ public class IDatabaseCacheAdapter implements IDatabaseCache {
     }
 
     public List<LiteContact> getAllContacts() {
-
-        throw new UnsupportedOperationException();
-    }
-
-    public List<LiteCustomer> getAllCustomers() {
-
-        throw new UnsupportedOperationException();
-    }
-
-    public Map<Integer, LiteCustomer> getAllCustomersMap() {
 
         throw new UnsupportedOperationException();
     }
@@ -325,11 +315,6 @@ public class IDatabaseCacheAdapter implements IDatabaseCache {
         throw new UnsupportedOperationException();
     }
 
-    public Map<LiteYukonUser, LiteEnergyCompany> getAllUserEnergyCompanies() {
-
-        throw new UnsupportedOperationException();
-    }
-
     public Map<Integer, LiteYukonUser> getAllUsersMap() {
 
         throw new UnsupportedOperationException();
@@ -410,11 +395,11 @@ public class IDatabaseCacheAdapter implements IDatabaseCache {
         throw new UnsupportedOperationException();
     }
 
-    public Map<LiteYukonUser, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String>>> getYukonUserRolePropertyMap() {
-
-        throw new UnsupportedOperationException();
+    @Override
+    public LiteEnergyCompany getALiteEnergyCompanyByUserID( LiteYukonUser liteYukonUser) {
+    	throw new UnsupportedOperationException();
     }
-
+    
     public LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg) {
 
         throw new UnsupportedOperationException();

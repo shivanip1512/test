@@ -7,7 +7,6 @@
 package com.cannontech.stars.web.util;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -54,6 +53,7 @@ import com.cannontech.database.data.lite.stars.LiteSubstation;
 import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.pao.DeviceTypes;
+import com.cannontech.database.data.stars.event.LMProgramEvent;
 import com.cannontech.database.data.stars.hardware.LMHardwareBase;
 import com.cannontech.database.db.macro.GenericMacro;
 import com.cannontech.database.db.macro.MacroTypes;
@@ -67,7 +67,6 @@ import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.operator.InventoryRole;
 import com.cannontech.roles.operator.OddsForControlRole;
 import com.cannontech.roles.operator.WorkOrderRole;
-import com.cannontech.roles.yukon.AuthenticationRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsSearchDao;
@@ -159,13 +158,13 @@ public class StarsAdminUtil {
                 }
                 
                 PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
-                pService.addPermission(new LiteYukonUser(energyCompany.getUserID()), new LiteYukonPAObject(grpSerial.getPAObjectID().intValue()), Permission.DEFAULT_ROUTE, true);
+                pService.addPermission(energyCompany.getUser(), new LiteYukonPAObject(grpSerial.getPAObjectID().intValue()), Permission.DEFAULT_ROUTE, true);
 			}
 			else if (routeID > 0 || energyCompany.getDefaultRouteID() > 0) {
 				if (routeID < 0) routeID = 0;
 				
                 PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
-                Set<Integer> permittedPaoIDs = pService.getPaoIdsForUserPermission(new LiteYukonUser(energyCompany.getUserID()), Permission.DEFAULT_ROUTE);
+                Set<Integer> permittedPaoIDs = pService.getPaoIdsForUserPermission(energyCompany.getUser(), Permission.DEFAULT_ROUTE);
                 if(! permittedPaoIDs.isEmpty()) {
                     String sql = "SELECT exc.LMGroupID FROM LMGroupExpressCom exc, GenericMacro macro " +
                         "WHERE macro.MacroType = '" + MacroTypes.GROUP + "' AND macro.ChildID = exc.LMGroupID AND exc.SerialNumber = '0'";
@@ -201,7 +200,7 @@ public class StarsAdminUtil {
 	
 	public static void removeDefaultRoute(LiteStarsEnergyCompany energyCompany) throws Exception {
         PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
-        Set<Integer> permittedPaoIDs = pService.getPaoIdsForUserPermission(new LiteYukonUser(energyCompany.getUserID()), Permission.DEFAULT_ROUTE);
+        Set<Integer> permittedPaoIDs = pService.getPaoIdsForUserPermission(energyCompany.getUser(), Permission.DEFAULT_ROUTE);
         if(! permittedPaoIDs.isEmpty()) {
             String sql = "SELECT exc.LMGroupID, macro.OwnerID FROM LMGroupExpressCom exc, GenericMacro macro " +
 				"WHERE macro.MacroType = '" + MacroTypes.GROUP + "' AND macro.ChildID = exc.LMGroupID AND exc.SerialNumber = '0'";
@@ -223,7 +222,7 @@ public class StarsAdminUtil {
                 /*Load groups are only assigned to users, so for now we only have to worry about removing from
                  * the user.
                  */
-                pService.removePermission(new LiteYukonUser(energyCompany.getUserID()), new LiteYukonPAObject(serialGrpID), Permission.DEFAULT_ROUTE);
+                pService.removePermission(energyCompany.getUser(), new LiteYukonPAObject(serialGrpID), Permission.DEFAULT_ROUTE);
     			stmt.setSQLString( sql );
     			stmt.execute();
     			
@@ -280,14 +279,11 @@ public class StarsAdminUtil {
 	{
 		LiteApplianceCategory liteAppCat = energyCompany.getApplianceCategory(appCatID);
 		
-		int[] programIDs = new int[ liteAppCat.getPublishedPrograms().size() ];
-		for (int i = 0; i < liteAppCat.getPublishedPrograms().size(); i++)
-			programIDs[i] = liteAppCat.getPublishedPrograms().get(i).getProgramID();
-		Arrays.sort( programIDs );
-		
 		// Delete all program events in the category
-		for (int j = 0; j < programIDs.length; j++)
-			com.cannontech.database.data.stars.event.LMProgramEvent.deleteAllLMProgramEvents( programIDs[j] );
+		Iterable<LiteLMProgramWebPublishing> publishedPrograms = liteAppCat.getPublishedPrograms();
+		for (LiteLMProgramWebPublishing program : publishedPrograms) {
+			LMProgramEvent.deleteAllLMProgramEvents(program.getProgramID());
+		}
 		
 		// Delete all appliances in the category
 		com.cannontech.database.db.stars.appliance.ApplianceBase.deleteAppliancesByCategory( appCatID );
@@ -300,8 +296,7 @@ public class StarsAdminUtil {
 		energyCompany.deleteApplianceCategory( liteAppCat.getApplianceCategoryID() );
 		StarsDatabaseCache.getInstance().deleteWebConfiguration( liteAppCat.getWebConfigurationID() );
 		
-		for (int j = 0; j < liteAppCat.getPublishedPrograms().size(); j++) {
-			LiteLMProgramWebPublishing liteProg = liteAppCat.getPublishedPrograms().get(j);
+		for (LiteLMProgramWebPublishing liteProg : publishedPrograms) {
 			
 			com.cannontech.database.db.web.YukonWebConfiguration cfg =
 					new com.cannontech.database.db.web.YukonWebConfiguration();
@@ -315,9 +310,8 @@ public class StarsAdminUtil {
 	public static void deleteAllApplianceCategories(LiteStarsEnergyCompany energyCompany)
 		throws TransactionException
 	{
-        List<LiteApplianceCategory> appCats = energyCompany.getApplianceCategories();
-		for (int i = appCats.size() - 1; i >= 0; i--) {
-			LiteApplianceCategory liteAppCat = appCats.get(i);
+        Iterable<LiteApplianceCategory> appCats = energyCompany.getApplianceCategories();
+		for (LiteApplianceCategory liteAppCat : appCats) {
 			deleteApplianceCategory( liteAppCat.getApplianceCategoryID(), energyCompany );
 		}
 	}
@@ -920,10 +914,9 @@ public class StarsAdminUtil {
 	}
 	
 	public static void removeMember(LiteStarsEnergyCompany energyCompany, int memberID) throws Exception {
-        List<LiteStarsEnergyCompany> members = energyCompany.getChildren();
         List<Integer> loginIDs = energyCompany.getMemberLoginIDs();
 		
-		Iterator<LiteStarsEnergyCompany> it = members.iterator();
+		Iterator<LiteStarsEnergyCompany> it = energyCompany.getChildren().iterator();
 		while (it.hasNext()) {
 			LiteStarsEnergyCompany member = it.next();
 			if (memberID != -1 && member.getLiteID() != memberID) continue;
@@ -1123,7 +1116,7 @@ public class StarsAdminUtil {
 					LiteYukonGroup liteGroup = userGroups.get(i);
 					if (liteGroup.getGroupID() == YukonGroupRoleDefs.GRP_YUKON)
 						continue;
-					if (liteUser.getUserID() == energyCompany.getUserID() && liteGroup.equals(energyCompany.getOperatorAdminGroup()))
+					if (liteUser.getUserID() == energyCompany.getUser().getUserID() && liteGroup.equals(energyCompany.getOperatorAdminGroup()))
 						continue;
 					if (liteGroup.getGroupID() != loginGroup.getGroupID()) {
 						groupChanged = true;
@@ -1138,7 +1131,7 @@ public class StarsAdminUtil {
 					new com.cannontech.database.db.user.YukonGroup( new Integer(loginGroup.getGroupID()) );
 			user.getYukonGroups().addElement( group );
 			
-			if (liteUser.getUserID() == energyCompany.getUserID()) {
+			if (liteUser.getUserID() == energyCompany.getUser().getUserID()) {
 				group = new com.cannontech.database.db.user.YukonGroup( new Integer(energyCompany.getOperatorAdminGroup().getGroupID()) );
 				user.getYukonGroups().addElement( group );
 			}
@@ -1182,11 +1175,10 @@ public class StarsAdminUtil {
 				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_APP_LOCATION,
 					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_APP_LOCATION) );
 				
-                List<LiteApplianceCategory> categories = energyCompany.getAllApplianceCategories();
+                Iterable<LiteApplianceCategory> categories = energyCompany.getAllApplianceCategories();
 				List<Integer> catDefIDs = new ArrayList<Integer>();
 				
-				for (int i = 0; i < categories.size(); i++) {
-					LiteApplianceCategory liteAppCat = categories.get(i);
+				for (LiteApplianceCategory liteAppCat : categories) {
 					int catDefID = DaoFactory.getYukonListDao().getYukonListEntry( liteAppCat.getCategoryID() ).getYukonDefID();
 					if (catDefIDs.contains( new Integer(catDefID) )) continue;
 					catDefIDs.add( new Integer(catDefID) );

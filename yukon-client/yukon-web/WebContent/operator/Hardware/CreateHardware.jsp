@@ -171,7 +171,7 @@ var setChoosenYukonDevice = function() {
 				<input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Hardware/InventoryDetail.jsp?InvId=">
 				<input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
                 <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
-<% if (liteEC.getChildren().size() > 0 && DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS)) { %>
+<% if (liteEC.hasChildEnergyCompanies() && DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS)) { %>
                   <tr align="center"> 
                     <td colspan="2" valign="top" bgcolor="#FFFFFF" class="TableCell"> 
                       Member: 

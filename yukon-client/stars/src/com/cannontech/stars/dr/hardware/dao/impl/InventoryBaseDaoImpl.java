@@ -17,13 +17,15 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.ChunkingSqlTemplate;
-import com.cannontech.common.util.SqlGenerator;
+import com.cannontech.common.util.SqlFragmentGenerator;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.model.InventoryBase;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
+import com.cannontech.stars.dr.hardware.model.LiteHardware;
 
 public class InventoryBaseDaoImpl implements InventoryBaseDao {
     private static final String insertSql;
@@ -35,10 +37,12 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
     private static final String selectByInstallationCompanyIdSql;
     private static final String selectByCategoryIdSql;
     private static final String selectByDeviceIdSql;
+    private static final String selectLiteHardwareSql;
     private static final ParameterizedRowMapper<InventoryBase> rowMapper;
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private NextValueHelper nextValueHelper;
     private LMHardwareBaseDao lmHardwareBaseDao;
+    private LiteHardwareRowMapper liteHardwareMapper = new LiteHardwareRowMapper();
     
     static {
         
@@ -65,6 +69,10 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
         selectByCategoryIdSql = selectAllSql + " WHERE CategoryID = ?";
         
         selectByDeviceIdSql = selectAllSql + " WHERE DeviceId = ?";
+        
+        selectLiteHardwareSql = "SELECT ib.InventoryID, ib.DeviceLabel, lmhb.ManufacturerSerialNumber " 
+            + "FROM InventoryBase ib " 
+            + "JOIN LMHardwareBase lmhb ON ib.inventoryID = lmhb.inventoryID ";        
         
         rowMapper = InventoryBaseDaoImpl.createRowMapper();
     }
@@ -139,17 +147,16 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
     public Map<Integer, InventoryBase> getByIds(List<Integer> inventoryIdList) {
         ChunkingSqlTemplate<Integer> template = new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
         
-        List<InventoryBase> list = template.query(new SqlGenerator<Integer>() {
+        List<InventoryBase> list = template.query(new SqlFragmentGenerator<Integer>() {
             @Override
-            public String generate(List<Integer> subList) {
+            public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
                 sqlBuilder.append(selectAllSql);
                 sqlBuilder.append("WHERE InventoryID IN (");
-                sqlBuilder.append(subList);
+                sqlBuilder.appendArgumentList(subList);
                 sqlBuilder.append(")");
                 sqlBuilder.append("ORDER BY InventoryID");
-                String sql = sqlBuilder.toString();
-                return sql;
+                return sqlBuilder;
             }
         }, inventoryIdList, rowMapper);
         
@@ -251,7 +258,56 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
         List<InventoryBase> list = simpleJdbcTemplate.query(selectByDeviceIdSql, rowMapper, deviceId);
         return list;
     }
+    
+    @Override
+    public List<LiteHardware> getAllLiteHardwareForAccount(int accountId) {
 
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(selectLiteHardwareSql);
+        sql.append("WHERE ib.accountID = ").appendArgument(accountId);
+
+        List<LiteHardware> hardwareList = simpleJdbcTemplate.query(sql.getSql(),
+                                                                   liteHardwareMapper,
+                                                                   sql.getArguments());
+
+        return hardwareList;
+    }
+    
+    @Override
+    public LiteHardware getLiteHardwareById(int inventoryId) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(selectLiteHardwareSql);
+        sql.append("WHERE ib.InventoryID = ").appendArgument(inventoryId);
+
+        LiteHardware hardware = simpleJdbcTemplate.queryForObject(sql.getSql(),
+                                                                  liteHardwareMapper,
+                                                                  sql.getArguments());
+
+        return hardware;
+    }    
+
+    /**
+     * Mapper class to map a resultset row into a LiteHardware
+     */
+    private class LiteHardwareRowMapper implements
+            ParameterizedRowMapper<LiteHardware> {
+        @Override
+        public LiteHardware mapRow(ResultSet rs, int rowNum)
+                throws SQLException {
+
+            int inventoryId = rs.getInt("InventoryID");
+            String deviceLabel = rs.getString("DeviceLabel");
+            String manufacturerSerialNumber = rs.getString("ManufacturerSerialNumber");
+
+            LiteHardware hardware = new LiteHardware(inventoryId,
+                                                     deviceLabel,
+                                                     manufacturerSerialNumber);
+
+            return hardware;
+        }
+    }
+    
     private static final ParameterizedRowMapper<InventoryBase> createRowMapper() {
         ParameterizedRowMapper<InventoryBase> rowMapper = new ParameterizedRowMapper<InventoryBase>() {
             public InventoryBase mapRow(ResultSet rs, int rowNum) throws SQLException {

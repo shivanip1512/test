@@ -43,7 +43,6 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.db.user.YukonGroup;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.core.dao.CallReportDao;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.SiteInformationDao;
@@ -118,11 +117,15 @@ public class AccountServiceImpl implements AccountService {
             throw new InvalidAccountNumberException("The provided account number cannot be empty.");
         }
         
-        LiteStarsCustAccountInformation accountInformation = energyCompany.searchAccountByAccountNo(accountNumber);
-        
-        if(accountInformation != null) {
-            log.error("Account " + accountNumber + " could not be added: The provided account number already exists.");
-            throw new AccountNumberUnavailableException("The provided account number already exists");
+        // Checks to see if the account number is already being used.
+        try {
+            CustomerAccount customerAccount = customerAccountDao.getByAccountNumber(accountNumber, energyCompany.getEnergyCompanyID());
+            if (customerAccount != null){
+            	log.error("Account " + accountNumber + " could not be added: The provided account number already exists.");
+                throw new AccountNumberUnavailableException("The provided account number already exists.");
+            }
+        } catch (NotFoundException e ) {
+        	// Account doesn't exist
         }
         
         if(yukonUserDao.getLiteYukonUser( accountDto.getUserName() ) != null) {
@@ -252,7 +255,7 @@ public class AccountServiceImpl implements AccountService {
         liteCustomer.setCustomerNumber(CtiUtilities.STRING_NONE);
         liteCustomer.setRateScheduleID(CtiUtilities.NONE_ZERO_ID);
         liteCustomer.setAltTrackingNumber(accountDto.getAltTrackingNumber());
-        liteCustomer.setTemperatureUnit(authDao.getRolePropertyValue(energyCompany.getUserID(), EnergyCompanyRole.DEFAULT_TEMPERATURE_UNIT));
+        liteCustomer.setTemperatureUnit(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DEFAULT_TEMPERATURE_UNIT, energyCompany.getUser()));
         customerDao.addCustomer(liteCustomer);
         dbPersistantDao.processDBChange(new DBChangeMsg(liteCustomer.getLiteID(),
                                DBChangeMsg.CHANGE_CUSTOMER_DB,
@@ -475,7 +478,7 @@ public class AccountServiceImpl implements AccountService {
                 userId != UserUtils.USER_YUKON_ID) {
             yukonUserDao.deleteUser(userId);
             starsDatabaseCache.deleteStarsYukonUser( userId );
-            dbPersistantDao.processDBChange(new DBChangeMsg(energyCompany.getUserID(),
+            dbPersistantDao.processDBChange(new DBChangeMsg(energyCompany.getUser().getUserID(),
                                    DBChangeMsg.CHANGE_YUKON_USER_DB,
                                    DBChangeMsg.CAT_YUKON_USER,
                                    DBChangeMsg.CAT_YUKON_USER,
@@ -518,13 +521,6 @@ public class AccountServiceImpl implements AccountService {
         if(StringUtils.isBlank(accountNumber)) {
             log.error("Account " + accountNumber + " could not be added: The provided account number cannot be empty.");
             throw new InvalidAccountNumberException("The provided account number cannot be empty.");
-        }
-        
-        LiteStarsCustAccountInformation accountInformation = energyCompany.searchAccountByAccountNo(accountNumber);
-        
-        if(accountInformation == null) {
-            log.error("Account " + accountNumber + " could not be updated: Unable to find account for account#: " + accountNumber);
-            throw new InvalidAccountNumberException("Unable to find account for account#: " + accountNumber);
         }
         
         CustomerAccount  account = null;

@@ -49,9 +49,7 @@ public class StarsCustAccountInformationDaoImpl implements StarsCustAccountInfor
         sqlBuilder.append("AND ac.AccountSiteID = acs.AccountSiteID "); 
         sqlBuilder.append("AND acs.SiteInformationID = si.SiteID");
         sqlBuilder.append("AND ectam.AccountID = ac.AccountID");
-        sqlBuilder.append("AND ectam.EnergyCompanyID IN (");
-        sqlBuilder.append(getEnergyCompanyIdList(energyCompanyId));
-        sqlBuilder.append(")");
+        sqlBuilder.append("AND ectam.EnergyCompanyID IN (",getEnergyCompanyIdList(energyCompanyId),")");
         final String sql = sqlBuilder.toString();
 
         try {

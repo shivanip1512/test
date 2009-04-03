@@ -76,7 +76,7 @@
             
             <c:forEach var="optOut" items="${currentOptOutList}">
                 <tr class="<ct:alternateRow odd="" even="altRow"/>">
-                    <td>${optOut.inventory.deviceLabel}</td>
+                    <td>${optOut.inventory.displayName}</td>
                     <td>
                         <c:forEach var="program" items="${optOut.programList}">
                             ${program.programName} 
@@ -93,7 +93,7 @@
                         </form>
                         <c:if test="${optOut.state == 'START_OPT_OUT_SENT'}">
                             <form action="/spring/stars/operator/optout/repeat" method="post">
-                                <input type="hidden" name="inventoryId" value="${optOut.inventory.inventoryID}">
+                                <input type="hidden" name="inventoryId" value="${optOut.inventory.inventoryId}">
                                 <input type="submit" name="submit" value="<cti:msg key="yukon.dr.operator.optout.repeat"/>">
                             </form>
                         </c:if>
@@ -174,7 +174,7 @@
             
             <c:forEach var="optOut" items="${previousOptOutList}">
                 <tr class="<ct:alternateRow odd="" even="altRow"/>">
-                    <td>${optOut.inventory.deviceLabel}</td>
+                    <td>${optOut.inventory.displayName}</td>
                     <td>
                         <c:forEach var="program" items="${optOut.programList}">
                             ${program.programName} 

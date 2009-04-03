@@ -20,6 +20,7 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -38,8 +39,17 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.yukon.IDatabaseCache;
 
 public final class PaoDaoImpl implements PaoDao {
-    private static final String litePaoSql = "SELECT y.PAObjectID, y.Category, y.PAOName, " + "y.Type, y.PAOClass, y.Description, y.DisableFlag, d.PORTID, dcs.ADDRESS, dr.routeid " + "FROM yukonpaobject y left outer join devicedirectcommsettings d " + "on y.paobjectid = d.deviceid " + "left outer join devicecarriersettings DCS ON Y.PAOBJECTID = DCS.DEVICEID " + "left outer join deviceroutes dr on y.paobjectid = dr.deviceid ";
+    private static final String yukonPaoSql = "SELECT y.PAObjectID, y.Category, y.Type " 
+        + "FROM yukonpaobject y ";
+    
+    private static final String litePaoSql = "SELECT y.PAObjectID, y.Category, y.PAOName, " 
+        + "y.Type, y.PAOClass, y.Description, y.DisableFlag, d.PORTID, dcs.ADDRESS, dr.routeid " 
+        + "FROM yukonpaobject y "
+        + "left outer join devicedirectcommsettings d ON y.paobjectid = d.deviceid "
+        + "left outer join devicecarriersettings DCS ON Y.PAOBJECTID = DCS.DEVICEID " 
+        + "left outer join deviceroutes dr ON y.paobjectid = dr.deviceid ";
 
+    private final RowMapper yukonPaoRowMapper = new YukonPaoRowMapper();
     private final RowMapper litePaoRowMapper = new LitePaoRowMapper();
 
     private JdbcOperations jdbcOps;
@@ -51,6 +61,18 @@ public final class PaoDaoImpl implements PaoDao {
      * (non-Javadoc)
      * @see com.cannontech.core.dao.PaoDao#getLiteYukonPAO(int)
      */
+    public YukonPao getYukonPao(int paoId) {
+        try {
+            String sql = yukonPaoSql + "where y.paobjectid=?";
+            YukonPao pao = (YukonPao) jdbcOps.queryForObject(sql,
+                                                             new Object[] { paoId },
+                                                             yukonPaoRowMapper);
+            return pao;
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new NotFoundException("A PAObject with id " + paoId + " cannot be found.");
+        }
+    }
+    
     public LiteYukonPAObject getLiteYukonPAO(int paoID) {
         try {
             String sql = litePaoSql + "where y.paobjectid=?";

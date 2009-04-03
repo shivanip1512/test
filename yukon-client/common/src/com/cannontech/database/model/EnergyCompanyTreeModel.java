@@ -3,6 +3,8 @@ package com.cannontech.database.model;
 /**
  * This type was created in VisualAge.
  */
+import java.util.ArrayList;
+
 import javax.swing.tree.TreePath;
 
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -98,23 +100,20 @@ public class EnergyCompanyTreeModel extends DBTreeModel
 	{
 		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	
-		synchronized(cache)
+		java.util.List energyCompanies = new ArrayList(cache.getAllEnergyCompanies());
+		java.util.Collections.sort( energyCompanies, LiteComparators.liteStringComparator );
+
+		DBTreeNode rootNode = (DBTreeNode) getRoot();
+		rootNode.removeAllChildren();
+
+		for( int i = 0; i < energyCompanies.size(); i++ )
 		{
-			java.util.List energyCompanies = cache.getAllEnergyCompanies();
-			java.util.Collections.sort( energyCompanies, LiteComparators.liteStringComparator );
-			
-			DBTreeNode rootNode = (DBTreeNode) getRoot();
-			rootNode.removeAllChildren();
-			
-			for( int i = 0; i < energyCompanies.size(); i++ )
-			{
-				DBTreeNode ecNode = new DBTreeNode( energyCompanies.get(i) );
-				rootNode.add( ecNode );
-	
-				LiteEnergyCompany ltEC = (LiteEnergyCompany)energyCompanies.get(i);
-	
-				ecNode.setWillHaveChildren(true);
-			}
+		    DBTreeNode ecNode = new DBTreeNode( energyCompanies.get(i) );
+		    rootNode.add( ecNode );
+
+		    LiteEnergyCompany ltEC = (LiteEnergyCompany)energyCompanies.get(i);
+
+		    ecNode.setWillHaveChildren(true);
 		}
 	
 		reload();

@@ -963,9 +963,8 @@ public class ImportManagerUtil {
     }
 
 	public static int getApplianceCategoryID(LiteStarsEnergyCompany energyCompany, String appType) {
-        List<LiteApplianceCategory> appCats = energyCompany.getAllApplianceCategories();
-		for (int i = 0; i < appCats.size(); i++) {
-			LiteApplianceCategory appCat = appCats.get(i);
+        Iterable<LiteApplianceCategory> appCats = energyCompany.getAllApplianceCategories();
+		for (LiteApplianceCategory appCat : appCats) {
 			if (appCat.getDescription().equalsIgnoreCase( appType ))
 				return appCat.getApplianceCategoryID();
 		}

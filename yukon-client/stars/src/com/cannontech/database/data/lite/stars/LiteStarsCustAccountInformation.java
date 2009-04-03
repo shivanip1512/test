@@ -15,7 +15,6 @@ import com.cannontech.stars.core.dao.LMProgramWebPublishingDao;
 import com.cannontech.stars.core.dao.StarsApplianceDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
-import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsCallReport;
 
@@ -145,13 +144,10 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	 */
 	public synchronized List<LiteStarsLMProgram> getPrograms() {
 		if (programs == null) {
-                LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany(energyCompanyId);
-	        List<LiteStarsEnergyCompany> allAscendants = ECUtils.getAllAscendants(energyCompany);
-	        List<Integer> energyCompanyIds = ECUtils.toIdList(allAscendants);
-		
+            LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany(energyCompanyId);
 		    LMProgramWebPublishingDao lmProgramWebPublishingDao =
 		        YukonSpringHook.getBean("lmProgramWebPublishingDao", LMProgramWebPublishingDao.class);
-			programs = lmProgramWebPublishingDao.getPrograms(this, energyCompanyIds);
+			programs = lmProgramWebPublishingDao.getPrograms(this, energyCompany);
 		}	
 		return programs;
 	}
@@ -306,12 +302,9 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	public synchronized List<LiteLMProgramEvent> getProgramHistory() {
         if (programHistory == null) {
             LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany(energyCompanyId);
-            List<LiteStarsEnergyCompany> allAscendants = ECUtils.getAllAscendants(energyCompany);
-            List<Integer> energyCompanyIds = ECUtils.toIdList(allAscendants);
-
 		    LMProgramWebPublishingDao lmProgramWebPublishingDao =
 		        YukonSpringHook.getBean("lmProgramWebPublishingDao", LMProgramWebPublishingDao.class);
-			programHistory = lmProgramWebPublishingDao.getProgramHistory(getAccountID(), energyCompanyIds);
+			programHistory = lmProgramWebPublishingDao.getProgramHistory(getAccountID(), energyCompany);
 		}	
 		return programHistory;
 	}

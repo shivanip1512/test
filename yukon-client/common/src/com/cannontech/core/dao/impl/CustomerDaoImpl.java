@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.AddressDao;
@@ -22,8 +23,10 @@ import com.cannontech.core.dao.DeviceCustomerListDao;
 import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.core.dao.GraphCustomerListDao;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.customer.model.CustomerInformation;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
@@ -114,21 +117,19 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
      * @see com.cannontech.core.dao.CustomerDao#getAllContacts(int)
      */
     public List<LiteContact> getAllContacts(int customerID_) {
-        synchronized (databaseCache) {
-            LiteCustomer customer = databaseCache.getACustomerByCustomerID(customerID_);
-            Vector<LiteContact> allContacts = new Vector<LiteContact>(5); // guess capacity
-            if (customer != null) {
-                int primCntctID = customer.getPrimaryContactID();
-                LiteContact liteContact = contactDao.getContact(primCntctID);
-                if (liteContact != null)
-                    allContacts.addElement(liteContact);
+        LiteCustomer customer = databaseCache.getACustomerByCustomerID(customerID_);
+        Vector<LiteContact> allContacts = new Vector<LiteContact>(5); // guess capacity
+        if (customer != null) {
+            int primCntctID = customer.getPrimaryContactID();
+            LiteContact liteContact = contactDao.getContact(primCntctID);
+            if (liteContact != null)
+                allContacts.addElement(liteContact);
 
-                for (int i = 0; i < customer.getAdditionalContacts().size(); i++) {
-                    allContacts.addElement(customer.getAdditionalContacts()
-                            .get(i));
-                }
-                return allContacts;
+            for (int i = 0; i < customer.getAdditionalContacts().size(); i++) {
+                allContacts.addElement(customer.getAdditionalContacts()
+                                       .get(i));
             }
+            return allContacts;
         }
         return null;
     }
@@ -139,14 +140,12 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
      * @see com.cannontech.core.dao.CustomerDao#getPrimaryContact(int)
      */
     public LiteContact getPrimaryContact(int customerID_) {
-        synchronized (databaseCache) {
-            LiteCustomer customer = databaseCache.getACustomerByCustomerID(customerID_);
-            if (customer != null) {
-                int primCntctID = customer.getPrimaryContactID();
-                LiteContact liteContact = contactDao.getContact(primCntctID);
-                if (liteContact != null)
-                    return liteContact;
-            }
+        LiteCustomer customer = databaseCache.getACustomerByCustomerID(customerID_);
+        if (customer != null) {
+            int primCntctID = customer.getPrimaryContactID();
+            LiteContact liteContact = contactDao.getContact(primCntctID);
+            if (liteContact != null)
+                return liteContact;
         }
         return null;
     }
@@ -226,6 +225,24 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
         return customer;
     }
 
+    public CustomerInformation getCustomerInformation(int customerId) {
+        final SqlStatementBuilder sql = new SqlStatementBuilder();
+        // customerId customerTypeId primaryContactId companyName
+
+        sql.append("SELECT c.CustomerId, ci.CompanyName, con.ContFirstName, con.ContLastName, cn.Notification");
+        sql.append("FROM Customer c");
+        sql.append("  JOIN Contact con on c.primaryContactId = con.ContactId");
+        sql.append("  LEFT JOIN ContactNotification cn on con.contactId = cn.ContactId and cn.notificationCategoryId =").appendArgument(YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
+        sql.append("  LEFT JOIN CICustomerBase ci ON c.CustomerID = ci.CustomerID");
+        sql.append("WHERE c.CustomerId =").appendArgument(customerId);
+
+        CustomerInformation customerInfo = simpleJdbcTemplate.queryForObject(sql.getSql(),
+                                                                  new CustomerInformationRowMapper(),
+                                                                  sql.getArguments());
+
+        return customerInfo;
+    }
+
     /**
      * Finds all LiteContact instances not used by a CICustomer
      * 
@@ -275,24 +292,6 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
     /*
      * (non-Javadoc)
      * 
-     * @see com.cannontech.core.dao.CustomerDao#getAllLiteCustomersByEnergyCompany(int)
-     */
-    public Vector<LiteCustomer> getAllLiteCustomersByEnergyCompany(int energyCompanyID) {
-        Vector<LiteCustomer> liteCustomers = new Vector<LiteCustomer>();
-        synchronized (databaseCache) {
-            List<LiteCustomer> allCustomers = databaseCache.getAllCustomers();
-            for (int i = 0; i < allCustomers.size(); i++) {
-                LiteCustomer lc = allCustomers.get(i);
-                if (lc.getEnergyCompanyID() == energyCompanyID)
-                    liteCustomers.add(lc);
-            }
-        }
-        return liteCustomers;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see com.cannontech.core.dao.CustomerDao#getCustomerForUser(com.cannontech.database.data.lite.LiteYukonUser)
      */
     public LiteCICustomer getCICustomerForUser(LiteYukonUser user) {
@@ -318,7 +317,7 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
         return customer;
     }
     
-    private class CustomerRowMapper implements ParameterizedRowMapper<LiteCustomer> {
+    private static class CustomerRowMapper implements ParameterizedRowMapper<LiteCustomer> {
 
         @Override
         public LiteCustomer mapRow(ResultSet rs, int rowNum)
@@ -356,7 +355,28 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
         }
         
     }
-    
+
+    private class CustomerInformationRowMapper implements ParameterizedRowMapper<CustomerInformation> {
+        @Override
+        public CustomerInformation mapRow(ResultSet rs, int rowNum)
+                throws SQLException {
+
+            int customerId = rs.getInt("CustomerId");
+            String firstName = SqlUtils.convertDbValueToString(rs.getString("ContFirstName"));
+            String lastName = SqlUtils.convertDbValueToString(rs.getString("ContLastName"));
+            String homePhone = SqlUtils.convertDbValueToString(rs.getString("Notification"));
+            String companyName = SqlUtils.convertDbValueToString(rs.getString("CompanyName"));
+
+            CustomerInformation customerInfo = new CustomerInformation(customerId);
+            customerInfo.setContactFirstName(firstName);
+            customerInfo.setContactLastName(lastName);
+            customerInfo.setContactHomePhone(homePhone);
+			customerInfo.setCompanyName(companyName);   
+
+            return customerInfo;
+        }
+    }
+
     @Override
     public void setTempForCustomer(int customerId, String temp) {
         String sql = "UPDATE Customer SET TemperatureUnit = ? WHERE CustomerId = ?";

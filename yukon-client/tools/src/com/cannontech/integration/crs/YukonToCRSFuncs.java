@@ -578,9 +578,7 @@ public class YukonToCRSFuncs
 		YukonListEntry appCatEntry = YukonToCRSFuncs.getEntryByYukonDefID(serviceTypeList, appDefID);
 		if( appCatEntry != null)
 		{
-			for (int i = 0; i < liteStarsEnergyCompany.getAllApplianceCategories().size(); i++)
-			{
-				LiteApplianceCategory liteAppCat = liteStarsEnergyCompany.getAllApplianceCategories().get(i);
+			for (LiteApplianceCategory liteAppCat : liteStarsEnergyCompany.getAllApplianceCategories()) {
 				if(liteAppCat.getCategoryID() == appCatEntry.getEntryID())
 				{
 					applCatID = liteAppCat.getApplianceCategoryID();   //Set this here so if we don't find the correct text, we still get a valid applCatID

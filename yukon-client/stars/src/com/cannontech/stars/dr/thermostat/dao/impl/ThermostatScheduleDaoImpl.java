@@ -127,8 +127,7 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao, Initial
     public ThermostatSchedule getCopyOfEnergyCompanyDefaultSchedule(
     		LiteStarsEnergyCompany energyCompany, HardwareType type) {
     	
-    	ThermostatSchedule defaultSchedule = 
-    		this.getEnergyCompanyDefaultSchedule(energyCompany, type);
+    	ThermostatSchedule defaultSchedule = energyCompany.getDefaultThermostatSchedule(type);
     	
     	// Null out all of the ids so this is a 'copy' of the default
     	defaultSchedule.setId(null);
@@ -239,7 +238,8 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao, Initial
     			schedule.getId(),
     			"LMThermostatSchedule");
     	
-    	
+    	// Update default schedule cache
+    	energyCompany.updateDefaultSchedule(schedule);
     	
     }
 
@@ -299,23 +299,6 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao, Initial
 	@Override
 	@Transactional
 	public void delete(int scheduleId) {
-
-		// Delete SeasonEntries
-		SqlStatementBuilder deleteSeasonEntrySql = new SqlStatementBuilder();
-		deleteSeasonEntrySql.append("DELETE FROM ");
-		deleteSeasonEntrySql.append("	LMThermostatSeasonEntry");
-		deleteSeasonEntrySql.append("WHERE SeasonId IN");
-		deleteSeasonEntrySql.append("	(SELECT SeasonId from LMThermostatSeason WHERE ScheduleId = ?)");
-		
-		simpleJdbcTemplate.update(deleteSeasonEntrySql.toString(), scheduleId);
-
-		// Delete Seasons
-		SqlStatementBuilder deleteSeasonSql = new SqlStatementBuilder();
-		deleteSeasonSql.append("DELETE FROM ");
-		deleteSeasonSql.append("	LMThermostatSeason");
-		deleteSeasonSql.append("WHERE ScheduleId = ?");
-		
-		simpleJdbcTemplate.update(deleteSeasonSql.toString(), scheduleId);
 
 		// Delete Schedule
 		SqlStatementBuilder deleteScheduleSql = new SqlStatementBuilder();

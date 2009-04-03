@@ -668,7 +668,7 @@
     <tag-class>com.cannontech.web.stars.dr.taglib.CustomerAccountInfoTag</tag-class>
     <body-content>empty</body-content>
     <attribute>
-        <name>accountNumber</name>
+        <name>account</name>
         <required>true</required>
         <rtexprvalue>true</rtexprvalue>
     </attribute>

@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.SimpleTemplateProcessor;
-import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -51,7 +50,6 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
     private DateFormattingService dateFormattingService;
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
     private StarsInventoryBaseDao starsInventoryBaseDao;
-    private YukonUserDao yukonUserDao;
     private YukonUserContextService yukonUserContextService;
     
     @Override
@@ -138,13 +136,10 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
 	 */
 	private YukonUserContext getDefaultEnergyCompanyUserContext(
 			LiteStarsEnergyCompany energyCompany) {
-		
-		int userId = energyCompany.getUserID();
-    	LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(userId);
-    	
+
     	YukonUserContext userContext = 
-    		yukonUserContextService.getEnergyCompanyDefaultUserContext(yukonUser);
-    	
+    		yukonUserContextService.getEnergyCompanyDefaultUserContext(energyCompany.getUser());
+
     	return userContext;
 	}
 	
@@ -266,12 +261,7 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
 			StarsInventoryBaseDao starsInventoryBaseDao) {
 		this.starsInventoryBaseDao = starsInventoryBaseDao;
 	}
-    
-    @Autowired
-    public void setYukonUserDao(YukonUserDao yukonUserDao) {
-		this.yukonUserDao = yukonUserDao;
-	}
-    
+
     @Autowired
     public void setYukonUserContextService(
 			YukonUserContextService yukonUserContextService) {

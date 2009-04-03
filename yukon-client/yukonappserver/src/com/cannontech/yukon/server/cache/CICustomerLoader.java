@@ -3,6 +3,7 @@ package com.cannontech.yukon.server.cache;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -25,20 +26,19 @@ import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.db.customer.CICustomerBase;
 import com.cannontech.database.db.customer.Customer;
 
-public class CustomerLoader implements Runnable 
+public class CICustomerLoader implements Runnable 
 {
     //if total contact number is over this, better not load this way
     private final int MAX_CUSTOMER_LOAD = 50000;
     
     //	Map<Integer(custID), LiteCustomer>
-    private Map<Integer, LiteCustomer> allCustsMap = null;
-    private List<LiteCustomer> allCustomers = null;
+    private Map<Integer, LiteCICustomer> allCICustomersMap = new HashMap<Integer, LiteCICustomer>();
+    private List<LiteCICustomer> allCICustomers = null;
     
     @SuppressWarnings("unchecked")
-    public CustomerLoader(List<LiteCustomer> custArray, Map<Integer, LiteCustomer> custMap, String alias) {
+    public CICustomerLoader(List<LiteCICustomer> custArray, String alias) {
         super();
-        this.allCustomers = custArray;
-        this.allCustsMap = custMap;
+        this.allCICustomers = custArray;
     }
     
     public void run() {
@@ -56,6 +56,7 @@ public class CustomerLoader implements Runnable
             "select CustomerID, PrimaryContactID, TimeZone, CustomerTypeID, CustomerNumber, RateScheduleID, " +
             "AltTrackNum, TemperatureUnit " +
             "from " + Customer.TABLE_NAME + " " +
+            "where CustomerTypeID = " + CustomerTypes.CUSTOMER_CI + " " +
             "order by CustomerID";
         
         // The following is reusable if slightly refactored.
@@ -71,12 +72,7 @@ public class CustomerLoader implements Runnable
                 String custAltTrackNum = rset.getString("AltTrackNum").trim();
                 String temperatureUnit = rset.getString("TemperatureUnit").trim();
                 
-                LiteCustomer lc;
-                if( custTypeID == CustomerTypes.CUSTOMER_CI) {
-                    lc = new LiteCICustomer(cstID);
-                } else {
-                    lc = new LiteCustomer( cstID );
-                }
+                LiteCICustomer lc = new LiteCICustomer(cstID);
                 lc.setPrimaryContactID(contactID);
                 lc.setTimeZone(timeZone);
                 lc.setCustomerTypeID(custTypeID);
@@ -94,16 +90,16 @@ public class CustomerLoader implements Runnable
         template.query(sqlString, new MaxRowCalbackHandlerRse(new AbstractRowCallbackHandler() {
             @Override
             public void processRow(ResultSet rs, int rowNum) throws SQLException {
-                LiteCustomer customer = (LiteCustomer) customerMapper.mapRow(rs, rowNum);
-                allCustomers.add(customer);
-                allCustsMap.put(customer.getCustomerID(), customer);
+                LiteCICustomer customer = (LiteCICustomer) customerMapper.mapRow(rs, rowNum);
+                allCICustomers.add(customer);
+                allCICustomersMap.put(customer.getCustomerID(), customer);
             }
         }, MAX_CUSTOMER_LOAD));
         
         // Because the customers were ordered by their id, we can look at the last
         // one to determine the max customerId that was loaded. This will then be used
         // to limit how much is loaded in the following queries.
-        LiteCustomer lastCustomer = allCustomers.get(allCustomers.size() - 1);
+        LiteCustomer lastCustomer = allCICustomers.get(allCICustomers.size() - 1);
         int maxCustomerID = lastCustomer.getCustomerID();
         
         // Select the additional contact for each of the customers that we have loaded so far.
@@ -112,6 +108,7 @@ public class CustomerLoader implements Runnable
             "FROM CustomerAdditionalContact ca, " + 
             Customer.TABLE_NAME + " c " + 
             "WHERE ca.CustomerID=c.CustomerID " +
+            "and c.CustomerTypeID = " + CustomerTypes.CUSTOMER_CI + " " +
             "and ca.CustomerID <= " + maxCustomerID + " " +
             "ORDER BY ca.CustomerID, ca.Ordering";
         
@@ -120,7 +117,7 @@ public class CustomerLoader implements Runnable
         template.query(sqlString, new RowCallbackHandler() {
             public void processRow(ResultSet rs) throws SQLException {
                 int custumerId = rs.getInt("CustomerID");
-                LiteCustomer liteCustomer = allCustsMap.get(custumerId);
+                LiteCustomer liteCustomer = allCICustomersMap.get(custumerId);
                 // for the following to be efficient, the contacts should have been cached already
                 LiteContact contact = DaoFactory.getContactDao().getContact(rs.getInt("ContactID"));
                 Vector<LiteContact> contactList = temporaryAdditionalContacts.get(liteCustomer);
@@ -144,8 +141,10 @@ public class CustomerLoader implements Runnable
         if (starsExists()) {
             // Now we do the same for accountIds as we just did with additional contacts.
             sqlString =	"SELECT acct.AccountID, map.EnergyCompanyID, acct.CustomerID " +
-                "FROM CustomerAccount acct, ECToAccountMapping map " +
+                "FROM CustomerAccount acct, ECToAccountMapping map, Customer c " +
                 "WHERE acct.AccountID = map.AccountID " +
+                "and acct.CustomerID = c.CustomerID " +
+                "and c.CustomerTypeID = " + CustomerTypes.CUSTOMER_CI + " " +                
                 "and acct.CustomerID <= " + maxCustomerID + " " +
                 "order by acct.customerID";
             
@@ -157,7 +156,7 @@ public class CustomerLoader implements Runnable
                     int energyCompanyId = rset.getInt("EnergyCompanyID");
                     Integer customerId = rset.getInt("CustomerID");
                     
-                    LiteCustomer customer = allCustsMap.get(customerId);
+                    LiteCustomer customer = allCICustomersMap.get(customerId);
                     customer.setEnergyCompanyID(energyCompanyId);
                     
                     Vector<Integer> accountList = temporaryAccountIds.get(customer);
@@ -191,7 +190,7 @@ public class CustomerLoader implements Runnable
                 double curtAmount = rset.getDouble("CurtailAmount");
                 int customerTypeId = rset.getInt("CICustType");
                 
-                LiteCustomer liteCustomer = allCustsMap.get(customerId);
+                LiteCustomer liteCustomer = allCICustomersMap.get(customerId);
                 if (liteCustomer.getCustomerTypeID() == CustomerTypes.CUSTOMER_CI) {
                     LiteCICustomer liteCiCustomer = (LiteCICustomer) liteCustomer;
                     
@@ -208,7 +207,7 @@ public class CustomerLoader implements Runnable
         
         timerStop = new Date();
         CTILogger.info((timerStop.getTime() - timerStart.getTime())*.001 + 
-                       " Secs for CICustomerLoader with Contacts (" + allCustomers.size() + 
+                       " Secs for CICustomerLoader with Contacts (" + allCICustomers.size() + 
                        " loaded, MAX_CUSTOMER_LOAD="+ MAX_CUSTOMER_LOAD + ")" );
     }
     

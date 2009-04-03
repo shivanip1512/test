@@ -493,7 +493,7 @@ public class NewCustAccountAction implements ActionBase {
             customer.getCustomer().setCustomerNumber(starsAccount.getCustomerNumber());
 			customer.getCustomer().setRateScheduleID(new Integer(starsAccount.getRateScheduleID()));
 			customer.getCustomer().setAltTrackingNumber(starsAccount.getAltTrackingNumber());
-            customer.getCustomer().setTemperatureUnit(DaoFactory.getAuthDao().getRolePropertyValue(energyCompany.getUserID(),
+            customer.getCustomer().setTemperatureUnit(DaoFactory.getAuthDao().getRolePropertyValue(energyCompany.getUser().getUserID(),
                                                       EnergyCompanyRole.DEFAULT_TEMPERATURE_UNIT));
 			account.setCustomer( customer );
 			account.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );

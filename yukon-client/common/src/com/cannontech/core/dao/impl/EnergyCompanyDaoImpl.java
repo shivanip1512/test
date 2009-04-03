@@ -37,14 +37,12 @@ private EnergyCompanyDaoImpl() {
  * @see com.cannontech.core.dao.EnergyCompanyDao#getEnergyCompany(int)
  */
 public LiteEnergyCompany getEnergyCompany(int energyCompanyID) {
-		synchronized( databaseCache ) {
-			for(Iterator<LiteEnergyCompany> i = databaseCache.getAllEnergyCompanies().iterator(); i.hasNext();) {
-				LiteEnergyCompany e = i.next();
-				if(e.getEnergyCompanyID() == energyCompanyID) {
-					return e;
-				}
-			}	
-		}
+    for(Iterator<LiteEnergyCompany> i = databaseCache.getAllEnergyCompanies().iterator(); i.hasNext();) {
+        LiteEnergyCompany e = i.next();
+        if(e.getEnergyCompanyID() == energyCompanyID) {
+            return e;
+        }
+    }	
 	return null;
 }
 
@@ -52,27 +50,22 @@ public LiteEnergyCompany getEnergyCompany(int energyCompanyID) {
  * @see com.cannontech.core.dao.EnergyCompanyDao#getEnergyCompany(com.cannontech.database.data.lite.LiteYukonUser)
  */
 public LiteEnergyCompany getEnergyCompany(LiteYukonUser user) {
-	synchronized( databaseCache ) {
-		Map<LiteYukonUser, LiteEnergyCompany> m = databaseCache.getAllUserEnergyCompanies();
-		LiteEnergyCompany liteEnergyCompany = m.get(user);
-        if (liteEnergyCompany == null) {
-            return getEnergyCompany(DEFAULT_ENERGY_COMPANY_ID);
-        }
-        return liteEnergyCompany;
-	}	
+	LiteEnergyCompany liteEnergyCompany = databaseCache.getALiteEnergyCompanyByUserID(user);
+    if (liteEnergyCompany == null) {
+        return getEnergyCompany(DEFAULT_ENERGY_COMPANY_ID);
+    }
+    return liteEnergyCompany;
 }
 
-    @Override
-    public LiteEnergyCompany getEnergyCompanyByName(final String energyCompanyName) {
-        synchronized (databaseCache) {
-            List<LiteEnergyCompany> energyCompanies = databaseCache.getAllEnergyCompanies();
-            for (final LiteEnergyCompany energyCompany : energyCompanies) {
-                String name = energyCompany.getName();
-                if (name.equalsIgnoreCase(energyCompanyName)) return energyCompany;
-            }
-        }
-        throw new NotFoundException("Energy Company with name: " + energyCompanyName + " not found.");
+@Override
+public LiteEnergyCompany getEnergyCompanyByName(final String energyCompanyName) {
+    List<LiteEnergyCompany> energyCompanies = databaseCache.getAllEnergyCompanies();
+    for (final LiteEnergyCompany energyCompany : energyCompanies) {
+        String name = energyCompany.getName();
+        if (name.equalsIgnoreCase(energyCompanyName)) return energyCompany;
     }
+    throw new NotFoundException("Energy Company with name: " + energyCompanyName + " not found.");
+}
 
 /* (non-Javadoc)
  * @see com.cannontech.core.dao.EnergyCompanyDao#getEnergyCompaniesByCustomer(int)
@@ -80,22 +73,19 @@ public LiteEnergyCompany getEnergyCompany(LiteYukonUser user) {
 public LiteEnergyCompany[] getEnergyCompaniesByCustomer( int customerID_ )
 {
 	List<LiteEnergyCompany> enrgComps = new ArrayList<LiteEnergyCompany>( 16 );
-	synchronized( databaseCache )
+	for( int i = 0; i < databaseCache.getAllEnergyCompanies().size(); i++ )
 	{
-		for( int i = 0; i < databaseCache.getAllEnergyCompanies().size(); i++ )
-		{
-			LiteEnergyCompany e = databaseCache.getAllEnergyCompanies().get(i);
+	    LiteEnergyCompany e = databaseCache.getAllEnergyCompanies().get(i);
 
-			for( int j = 0; j < e.getCiCustumerIDs().size(); i++ )
-			{
-				if( e.getCiCustumerIDs().elementAt(j) == customerID_ )
-				{
-					enrgComps.add( e );
-					break; //move onto the next energycompany
-				}
-			}
-		}	
-	}
+	    for( int j = 0; j < e.getCiCustumerIDs().size(); i++ )
+	    {
+	        if( e.getCiCustumerIDs().elementAt(j) == customerID_ )
+	        {
+	            enrgComps.add( e );
+	            break; //move onto the next energycompany
+	        }
+	    }
+	}	
 
 	LiteEnergyCompany[] cArr = new LiteEnergyCompany[ enrgComps.size() ];
 	return enrgComps.toArray( cArr );

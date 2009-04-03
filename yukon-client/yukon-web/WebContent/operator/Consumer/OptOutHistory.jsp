@@ -76,7 +76,7 @@ function confirmSubmit(form) { //v1.0
                     
                     <c:forEach var="optOut" items="${previousOptOutList}">
                         <tr class="<ct:alternateRow odd="" even="altRow"/>">
-                            <td>${optOut.inventory.deviceLabel}</td>
+                            <td>${optOut.inventory.displayName}</td>
                             <td>
                                 <c:forEach var="program" items="${optOut.programList}">
                                     ${program.programName} 

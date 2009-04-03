@@ -125,7 +125,7 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 				userIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
 			
 			for (int i = 0; i < userIDs.length; i++) {
-				if (userIDs[i] == energyCompany.getUserID()) continue;
+				if (userIDs[i] == energyCompany.getUser().getUserID()) continue;
 				
 				try {
 				    com.cannontech.database.data.user.YukonUser.deleteOperatorLogin(userIDs[i]);
@@ -181,7 +181,6 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 				numInvDeleted++;
 				if (isCanceled) {
 					status = STATUS_CANCELED;
-					energyCompany.clear();
 					return;
 				}
 			}
@@ -210,7 +209,6 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 				numOrderDeleted++;
 				if (isCanceled) {
 					status = STATUS_CANCELED;
-					energyCompany.clear();
 					return;
 				}
 			}
@@ -259,8 +257,7 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 			// Delete all appliance categories
 			currentAction = "Deleting appliance categories";
 			
-			for (int i = 0; i < energyCompany.getApplianceCategories().size(); i++) {
-				LiteApplianceCategory liteAppCat = energyCompany.getApplianceCategories().get(i);
+			for (LiteApplianceCategory liteAppCat : energyCompany.getApplianceCategories()) {
 				
 				com.cannontech.database.data.stars.appliance.ApplianceCategory appCat =
 						new com.cannontech.database.data.stars.appliance.ApplianceCategory();
@@ -269,8 +266,7 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 				Transaction.createTransaction( Transaction.DELETE, appCat ).execute();
 				StarsDatabaseCache.getInstance().deleteWebConfiguration( liteAppCat.getWebConfigurationID() );
 				
-				for (int j = 0; j < liteAppCat.getPublishedPrograms().size(); j++) {
-					LiteLMProgramWebPublishing liteProg = liteAppCat.getPublishedPrograms().get(j);
+				for (LiteLMProgramWebPublishing liteProg : liteAppCat.getPublishedPrograms()) {
 					com.cannontech.database.db.web.YukonWebConfiguration cfg =
 							new com.cannontech.database.db.web.YukonWebConfiguration();
 					cfg.setConfigurationID( new Integer(liteProg.getWebSettingsID()) );
@@ -295,8 +291,7 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 			// Delete customer selection lists
 			currentAction = "Deleting customer selection lists";
 			
-			for (int i = 0; i < energyCompany.getAllSelectionLists().size(); i++) {
-				YukonSelectionList cList = energyCompany.getAllSelectionLists().get(i);
+			for (YukonSelectionList cList : energyCompany.getAllSelectionLists()) {
 				if (cList.getListID() == LiteStarsEnergyCompany.FAKE_LIST_ID) continue;
 				
 				Integer listID = new Integer( cList.getListID() );
@@ -352,11 +347,11 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 			}
 			
 			// Delete the default operator login
-			if (energyCompany.getUserID() != com.cannontech.user.UserUtils.USER_ADMIN_ID &&
-				energyCompany.getUserID() != com.cannontech.user.UserUtils.USER_DEFAULT_ID)
+			if (energyCompany.getUser().getUserID() != com.cannontech.user.UserUtils.USER_ADMIN_ID &&
+				energyCompany.getUser().getUserID() != com.cannontech.user.UserUtils.USER_DEFAULT_ID)
 			{
-				com.cannontech.database.data.user.YukonUser.deleteOperatorLogin( new Integer(energyCompany.getUserID()) );
-				ServerUtils.handleDBChange( DaoFactory.getYukonUserDao().getLiteYukonUser(energyCompany.getUserID()), DBChangeMsg.CHANGE_TYPE_DELETE );
+				com.cannontech.database.data.user.YukonUser.deleteOperatorLogin(energyCompany.getUser().getUserID());
+				ServerUtils.handleDBChange( energyCompany.getUser(), DBChangeMsg.CHANGE_TYPE_DELETE );
 			}
 			
 			status = STATUS_FINISHED;

@@ -56,7 +56,7 @@ public class ManipulationBean
     
     public boolean getManageMembers()
     {
-        return DaoFactory.getAuthDao().checkRoleProperty(currentUser, AdministratorRole.ADMIN_MANAGE_MEMBERS) && (energyCompany.getChildren().size() > 0);
+        return DaoFactory.getAuthDao().checkRoleProperty(currentUser, AdministratorRole.ADMIN_MANAGE_MEMBERS) && (energyCompany.hasChildEnergyCompanies());
     }
     
     public List<LiteStarsEnergyCompany> getAvailableMembers()

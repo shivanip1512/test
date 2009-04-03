@@ -169,7 +169,7 @@ public class InventoryBean {
 	    
 	    boolean showEnergyCompany = false;
         boolean manageMembers = DaoFactory.getAuthDao().checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS);
-        boolean hasChildren = getEnergyCompany().getChildren().size() > 0;
+        boolean hasChildren = getEnergyCompany().hasChildEnergyCompanies();
         
         int style = getHtmlStyle();
         if ((style == HTML_STYLE_FILTERED_INVENTORY_SUMMARY

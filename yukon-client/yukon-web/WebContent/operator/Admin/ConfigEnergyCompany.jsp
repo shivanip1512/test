@@ -22,7 +22,7 @@
     boolean canMembersChangeRoutes = false;
     boolean isMember = false;
     
-	List<LiteStarsEnergyCompany> members = liteEC.getChildren();
+	Set<LiteStarsEnergyCompany> members = Sets.newHashSet(liteEC.getChildren());
 	List<LiteStarsEnergyCompany> memberCandidates = new ArrayList<LiteStarsEnergyCompany>();
 	if (DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS)) {
 		List<LiteStarsEnergyCompany> energyCompanies = StarsDatabaseCache.getInstance().getAllEnergyCompanies();
@@ -55,7 +55,8 @@
 		}
 	}
 %>
-<html>
+
+<%@page import="com.google.common.collect.Sets"%><html>
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
@@ -881,8 +882,9 @@ function deleteWarehouse(form, warehouseId) {
                                   </tr>
                                   <%
 	List<Integer> memberLoginIDs = liteEC.getMemberLoginIDs();
-	for (int i = 0; i < members.size(); i++) {
-		LiteStarsEnergyCompany member = (LiteStarsEnergyCompany) members.get(i);
+    int memberIndex = 0;
+	for (LiteStarsEnergyCompany member : liteEC.getChildren()) {
+		
 %>
                                   <tr> 
                                     <input type="hidden" name="Member" value="<%= member.getLiteID() %>">
@@ -905,13 +907,14 @@ function deleteWarehouse(form, warehouseId) {
                                       </select>
                                     </td>
                                     <td width="10%" class="TableCell"> 
-                                      <input type="button" name="Update" value="Update" onclick="updateMember(this.form, <%= i %>)">
+                                      <input type="button" name="Update" value="Update" onclick="updateMember(this.form, <%= memberIndex %>)">
                                     </td>
                                     <td width="15%" class="TableCell"> 
-                                      <input type="button" name="Remove" value="Remove" onclick="removeMember(this.form, <%= i %>)">
+                                      <input type="button" name="Remove" value="Remove" onclick="removeMember(this.form, <%= memberIndex %>)">
                                     </td>
                                   </tr>
                                   <%
+                                  memberIndex++;
 	}
 %>
                                   <tr> 

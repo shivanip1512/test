@@ -57,7 +57,7 @@ public class SendControlOddsTask implements Runnable {
 					  + "On the first page (or the \"General\" link), uncheck the notification box and click \"Submit\".";
 		
 		List<LiteLMProgramWebPublishing> progList = new ArrayList<LiteLMProgramWebPublishing>();	// Programs that are eligible for notification
-        List<LiteLMProgramWebPublishing> programs = energyCompany.getAllPrograms();
+        Iterable<LiteLMProgramWebPublishing> programs = energyCompany.getAllPrograms();
         for (final LiteLMProgramWebPublishing program : programs) {
             if (program.getChanceOfControlID() != CtiUtilities.NONE_ZERO_ID)
                 progList.add( program );

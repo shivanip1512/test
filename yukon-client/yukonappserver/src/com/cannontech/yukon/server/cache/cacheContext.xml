@@ -5,12 +5,17 @@
 
     <bean id="databaseCache" class="com.cannontech.mbean.ServerDatabaseCache">
         <property name="yukonUserLoader" ref="yukonUserLoader" />
+        <property name="yukonUserEnergyCompanyLookup" ref="yukonUserEnergyCompanyLookup"/>
         <property name="pointDao" ref="pointDao" />
         <property name="paoDao" ref="paoDao" />
     </bean>
 
     <bean id="yukonUserLoader" class="com.cannontech.yukon.server.cache.YukonUserLoader">
         <property name="jdbcTemplate" ref="jdbcTemplate"/>
+    </bean>
+
+    <bean id="yukonUserEnergyCompanyLookup" class="com.cannontech.yukon.server.cache.bypass.YukonUserEnergyCompanyLookup">
+        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
     </bean>
 
 </beans>

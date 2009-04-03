@@ -12,6 +12,7 @@ import org.apache.commons.lang.Validate;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.TimeUtil;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -68,8 +69,8 @@ public class LMControlHistoryUtil {
 	public static Date getPeriodStartTime(StarsCtrlHistPeriod period, TimeZone tz) {
 		Date date = null;
 		Calendar cal = Calendar.getInstance();
-		cal.setTime( com.cannontech.util.ServletUtil.getToday(tz) );
-    	
+		cal.setTime(TimeUtil.getMidnight(tz));
+
 		if (period.getType() == StarsCtrlHistPeriod.ALL_TYPE) {
 			date = new Date(0);
 		}

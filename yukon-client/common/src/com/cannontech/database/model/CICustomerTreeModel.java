@@ -3,6 +3,8 @@ package com.cannontech.database.model;
 /**
  * This type was created in VisualAge.
  */
+import java.util.ArrayList;
+
 import javax.swing.tree.TreePath;
 
 import com.cannontech.core.dao.DaoFactory;
@@ -177,23 +179,20 @@ public void update()
 	IDatabaseCache cache =
 					com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 
-	synchronized(cache)
+	java.util.List ciCustomers = new ArrayList(cache.getAllCICustomers());
+	java.util.Collections.sort( ciCustomers, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
+
+	DBTreeNode rootNode = (DBTreeNode) getRoot();
+	rootNode.removeAllChildren();
+
+	for( int i = 0; i < ciCustomers.size(); i++ )
 	{
-		java.util.List ciCustomers = cache.getAllCICustomers();
-		java.util.Collections.sort( ciCustomers, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
-		
-		DBTreeNode rootNode = (DBTreeNode) getRoot();
-		rootNode.removeAllChildren();
-		
-		for( int i = 0; i < ciCustomers.size(); i++ )
-		{
-			DBTreeNode custNode = new DBTreeNode( ciCustomers.get(i) );
-			rootNode.add( custNode );
+	    DBTreeNode custNode = new DBTreeNode( ciCustomers.get(i) );
+	    rootNode.add( custNode );
 
-			LiteCICustomer ltCust = (LiteCICustomer)ciCustomers.get(i);
+	    LiteCICustomer ltCust = (LiteCICustomer)ciCustomers.get(i);
 
-			custNode.setWillHaveChildren(true);
-		}
+	    custNode.setWillHaveChildren(true);
 	}
 
 	reload();

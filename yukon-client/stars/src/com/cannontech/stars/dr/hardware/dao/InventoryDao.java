@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
+import com.cannontech.stars.dr.hardware.model.ThermostatSummary;
 
 /**
  * Data Access interface for inventory
@@ -17,6 +18,13 @@ public interface InventoryDao {
      */
     public List<Thermostat> getThermostatsByAccount(CustomerAccount account);
 
+    /**
+     * Method to get a list of ThermostatSummary based on an account id
+     * @param account - Account to get summary for
+     * @return List of ThermostatSummary for account
+     */
+    public List<ThermostatSummary> getThermostatSummaryByAccount(CustomerAccount account);
+    
     /**
      * Method to get a thermostat by id
      * @param thermostatId - Id of thermostat to get
@@ -37,10 +45,5 @@ public interface InventoryDao {
      */
     public List<Integer> getInventoryIdsByAccount(int accountId);
     
-    /**
-     * Method to get the Yukon Definition Id by the Entry Id
-     * @param entryId
-     * @return
-     */
     public int getYukonDefinitionIdByEntryId(int entryId);
 }

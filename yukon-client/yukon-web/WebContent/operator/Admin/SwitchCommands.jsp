@@ -5,7 +5,7 @@
 <%@ page import="com.cannontech.stars.core.dao.StarsInventoryBaseDao" %>
 <jsp:useBean id="configBean" class="com.cannontech.stars.web.bean.ConfigBean" scope="page"/>
 <%
-	boolean showEnergyCompany = liteEC.getChildren().size() > 0 && DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS);
+	boolean showEnergyCompany = liteEC.hasChildEnergyCompanies() && DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS);
 	List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants(liteEC);
 	
 	int memberID = -1;

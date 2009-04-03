@@ -18,14 +18,13 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
+import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
+import com.cannontech.stars.dr.hardware.model.LiteHardware;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.stars.dr.optout.model.OptOutAction;
 import com.cannontech.stars.dr.optout.model.OptOutCounts;
@@ -46,7 +45,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	private NextValueHelper nextValueHelper;
 	
 	private EnrollmentDao enrollmentDao;
-	private StarsInventoryBaseDao starsInventoryBaseDao;
+	private InventoryBaseDao inventoryBaseDao;
 	private CustomerAccountDao customerAccountDao;
 	private YukonUserDao yukonUserDao;
 
@@ -707,7 +706,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 				event.setState(eventState);
 				
 				int inventoryId = rs.getInt("InventoryId");
-				LiteInventoryBase inventory = starsInventoryBaseDao.getById(inventoryId);
+				LiteHardware inventory = inventoryBaseDao.getLiteHardwareById(inventoryId);
 				event.setInventory(inventory);
 				
 				List<Program> programList = 
@@ -745,7 +744,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 			event.setState(eventState);
 			
 			int inventoryId = rs.getInt("InventoryId");
-			LiteInventoryBase inventory = starsInventoryBaseDao.getById(inventoryId);
+			LiteHardware inventory = inventoryBaseDao.getLiteHardwareById(inventoryId);
 			event.setInventory(inventory);
 			
 			List<Program> programList = 
@@ -785,9 +784,8 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 
 			int inventoryId = rs.getInt("InventoryId");
 			history.setInventoryId(inventoryId);
-			LiteStarsLMHardware inventory = 
-				(LiteStarsLMHardware) starsInventoryBaseDao.getById(inventoryId);
-			history.setSerialNumber(inventory.getManufacturerSerialNumber());
+			LiteHardware inventory = inventoryBaseDao.getLiteHardwareById(inventoryId);
+			history.setSerialNumber(inventory.getSerialNumber());
 
 			int eventId = rs.getInt("OptOutEventId");
 			int userId = getFirstEventUser(eventId);
@@ -820,17 +818,16 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	}
 	
 	@Autowired
-	public void setStarsInventoryBaseDao(
-			StarsInventoryBaseDao starsInventoryBaseDao) {
-		this.starsInventoryBaseDao = starsInventoryBaseDao;
-	}
+    public void setInventoryBaseDao(InventoryBaseDao inventoryBaseDao) {
+        this.inventoryBaseDao = inventoryBaseDao;
+    }
 	
 	@Autowired
 	public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
 		this.customerAccountDao = customerAccountDao;
 	}
 	
-	@Autowired
+    @Autowired
 	public void setYukonUserDao(YukonUserDao yukonUserDao) {
 		this.yukonUserDao = yukonUserDao;
 	}

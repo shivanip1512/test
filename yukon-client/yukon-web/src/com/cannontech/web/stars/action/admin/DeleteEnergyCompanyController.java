@@ -22,7 +22,7 @@ public class DeleteEnergyCompanyController extends StarsAdminActionController {
             final HttpSession session, final StarsYukonUser user, 
                 final LiteStarsEnergyCompany energyCompany) throws Exception {
         
-        if (energyCompany.getChildren().size() > 0) {
+        if (energyCompany.hasChildEnergyCompanies()) {
             session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Cannot delete this energy company because its member list is not empty");
             String redirect = this.getReferer(request);
             response.sendRedirect(redirect);

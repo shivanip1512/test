@@ -3,7 +3,7 @@ package com.cannontech.stars.dr.optout.model;
 import java.util.Date;
 import java.util.List;
 
-import com.cannontech.database.data.lite.stars.LiteInventoryBase;
+import com.cannontech.stars.dr.hardware.model.LiteHardware;
 import com.cannontech.stars.dr.program.model.Program;
 
 /**
@@ -12,7 +12,7 @@ import com.cannontech.stars.dr.program.model.Program;
 public class OptOutEventDto {
 
 	private Integer eventId;
-	private LiteInventoryBase inventory;
+	private LiteHardware inventory;
 	private List<Program> programList;
 	private OptOutEventState state;
 	private Date scheduledDate;
@@ -27,11 +27,11 @@ public class OptOutEventDto {
 		this.eventId = eventId;
 	}
 
-	public LiteInventoryBase getInventory() {
+	public LiteHardware getInventory() {
 		return inventory;
 	}
 
-	public void setInventory(LiteInventoryBase inventory) {
+	public void setInventory(LiteHardware inventory) {
 		this.inventory = inventory;
 	}
 

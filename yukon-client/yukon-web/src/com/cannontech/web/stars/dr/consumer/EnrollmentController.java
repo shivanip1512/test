@@ -78,6 +78,8 @@ public class EnrollmentController extends AbstractConsumerController {
         
         JSONObject jsonObj = new JSONObject(json);
         List<ProgramEnrollment> requestList = new ArrayList<ProgramEnrollment>();
+        List<Integer> reqInventoryIds = new ArrayList<Integer>();
+        List<Integer> reqAppCategoryIds = new ArrayList<Integer>();
         
         @SuppressWarnings("unchecked") Iterator<String> iterator = jsonObj.keys();
         while (iterator.hasNext()) {
@@ -94,8 +96,8 @@ public class EnrollmentController extends AbstractConsumerController {
                 boolean enroll = value.getBoolean(KEY_ENROLL);
 
                 // Can't check programId's during enrollment.
-                accountCheckerService.checkInventory(user, inventoryId);
-                accountCheckerService.checkApplianceCategory(user, applianceCategoryId);
+                reqInventoryIds.add(inventoryId);
+                reqAppCategoryIds.add(applianceCategoryId);
                 
                 /* ProgramSignUpAction only cares about programs you are enrolling into,
                    this will be changing. */
@@ -111,6 +113,10 @@ public class EnrollmentController extends AbstractConsumerController {
                 }    
             }
         }
+        
+        // verify all ids with accountCheckerService in one go
+        accountCheckerService.checkInventory(user, reqInventoryIds.toArray(new Integer[reqInventoryIds.size()]));
+        accountCheckerService.checkApplianceCategory(user, reqAppCategoryIds.toArray(new Integer[reqAppCategoryIds.size()]));
         
         ProgramEnrollmentResultEnum enrollmentResultEnum = 
             programEnrollmentService.applyEnrollmentRequests(customerAccount, requestList, yukonUserContext.getYukonUser());

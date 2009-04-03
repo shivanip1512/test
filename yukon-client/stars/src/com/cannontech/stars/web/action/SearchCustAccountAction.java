@@ -1,8 +1,6 @@
 package com.cannontech.stars.web.action;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -45,14 +43,6 @@ import com.cannontech.stars.xml.util.StarsConstants;
 
 public class SearchCustAccountAction implements ActionBase {
 
-    private static Comparator ACCOUNT_NO_CMP = new Comparator() {
-    	public int compare(Object o1, Object o2) {
-    		LiteStarsCustAccountInformation acct1 = (LiteStarsCustAccountInformation) o1;
-			LiteStarsCustAccountInformation acct2 = (LiteStarsCustAccountInformation) o2;
-    		return acct1.getCustomerAccount().getAccountNumber().compareTo( acct2.getCustomerAccount().getAccountNumber() );
-    	}
-    };
-    
     /*private static Comparator LAST_NAME_CMP = new Comparator() {
     	public int compare(Object o1, Object o2) {
 			LiteStarsCustAccountInformation acct1 = (LiteStarsCustAccountInformation) o1;
@@ -158,7 +148,7 @@ public class SearchCustAccountAction implements ActionBase {
             }
            
 			boolean searchMembers = DaoFactory.getAuthDao().checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
-					&& (energyCompany.getChildren().size() > 0);
+					&& (energyCompany.hasChildEnergyCompanies());
             List<Object> accountList = null;
             
             if (searchByDefID == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_ACCT_NO) {
@@ -210,18 +200,18 @@ public class SearchCustAccountAction implements ActionBase {
 				resp.setStarsFailure( failure );
             }
             else {
-				LiteStarsCustAccountInformation liteAcctInfo = null;
+            	Integer accountId = null;
             	if (accountList.size() == 1) {
             		if (searchMembers) {
             			if (((Pair)accountList.get(0)).getSecond() == energyCompany)
-            				liteAcctInfo = (LiteStarsCustAccountInformation) ((Pair)accountList.get(0)).getFirst();
+            				accountId = (Integer) ((Pair)accountList.get(0)).getFirst();
             		}
             		else
-						liteAcctInfo = (LiteStarsCustAccountInformation) accountList.get(0);
+						accountId = (Integer) accountList.get(0);
             	}
             	
-                if (liteAcctInfo != null) {    //liteAcctInfo will only be loaded if exactly 1 account was found in search.
-            		liteAcctInfo = energyCompany.getCustAccountInformation( liteAcctInfo.getAccountID(), true );
+                if (accountId != null) {    //liteAcctInfo will only be loaded if exactly 1 account was found in search.
+            		LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( accountId, true );
             		
 					if (liteAcctInfo.hasTwoWayThermostat(energyCompany)) {
 						// Get up-to-date thermostat settings
@@ -240,10 +230,9 @@ public class SearchCustAccountAction implements ActionBase {
                     //Don't sort, the sort by has already been handled in the CustomerAccount.searchByPrimaryContactLastName query.
                     for (int i = 0; i < accountList.size(); i++) {
                         StarsBriefCustAccountInfo starsAcctInfo = new StarsBriefCustAccountInfo();
-                        LiteStarsCustAccountInformation liteStarsCustAcctInfo = (LiteStarsCustAccountInformation)
-                            (searchMembers? ((Pair)accountList.get(i)).getFirst() : accountList.get(i));
+                        Integer accountId2 = (Integer) (searchMembers ? ((Pair)accountList.get(i)).getFirst() : accountList.get(i));
                         
-                        starsAcctInfo.setAccountID( liteStarsCustAcctInfo.getAccountID());
+                        starsAcctInfo.setAccountID( accountId2);
                         LiteStarsEnergyCompany company = energyCompany;
                         if (searchMembers) company = (LiteStarsEnergyCompany) ((Pair)accountList.get(i)).getSecond();
                         if (searchMembers) starsAcctInfo.setEnergyCompanyID( company.getLiteID() );
@@ -254,33 +243,32 @@ public class SearchCustAccountAction implements ActionBase {
 				else {
 					// Order the search result by company name/search criteria
 					// (last name if search by last name, address if search by address, account # otherwise)
-					TreeMap companyNameMap = new TreeMap();
-					Hashtable companyAcctTable = new Hashtable();
+					TreeMap<String, LiteStarsEnergyCompany> companyNameMap = new TreeMap<String, LiteStarsEnergyCompany>();
+					Hashtable<LiteStarsEnergyCompany, ArrayList<Integer>> companyAcctTable = new Hashtable<LiteStarsEnergyCompany, ArrayList<Integer>>();
 					
 					for (int i = 0; i < accountList.size(); i++) {
 						LiteStarsEnergyCompany company = energyCompany;
 						if (searchMembers) company = (LiteStarsEnergyCompany) ((Pair)accountList.get(i)).getSecond();
 						
-						ArrayList acctList = (ArrayList) companyAcctTable.get( company );
+						ArrayList<Integer> acctList = companyAcctTable.get( company );
 						if (acctList == null) {
-							acctList = new ArrayList();
+							acctList = new ArrayList<Integer>();
 							companyAcctTable.put( company, acctList );
 							
 							String companyName = (company == energyCompany)? "" : company.getName();
 							companyNameMap.put( companyName, company );
 						}
-						
-						LiteStarsCustAccountInformation acctInfo = (LiteStarsCustAccountInformation)
-								(searchMembers? ((Pair)accountList.get(i)).getFirst() : accountList.get(i));
-						acctList.add( acctInfo );
+
+						Integer accountId2 = (Integer) (searchMembers ? ((Pair) accountList.get(i)).getFirst() : accountList.get(i));
+						acctList.add( accountId2);
 					}
 					
 					Iterator it = companyNameMap.values().iterator();
 					while (it.hasNext()) {
 						LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) it.next();
-						ArrayList acctList = (ArrayList) companyAcctTable.get( company );
+						ArrayList<Integer> acctList = companyAcctTable.get( company );
 						
-						LiteStarsCustAccountInformation[] accounts = new LiteStarsCustAccountInformation[ acctList.size() ];
+						Integer[] accounts = new Integer[acctList.size()];
 						acctList.toArray( accounts );
 						
 						if (searchByDefID == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_LAST_NAME) {
@@ -296,13 +284,10 @@ public class SearchCustAccountAction implements ActionBase {
 							for (int i = 0; i < accounts.length; i++)
 								accounts[i] = (LiteStarsCustAccountInformation) pairs[i].getFirst();*/
 						}
-						else {
-							Arrays.sort( accounts, ACCOUNT_NO_CMP );
-						}
 						
 						for (int i = 0; i < accounts.length; i++) {
 							StarsBriefCustAccountInfo starsAcctInfo = new StarsBriefCustAccountInfo();
-							starsAcctInfo.setAccountID( accounts[i].getAccountID() );
+							starsAcctInfo.setAccountID( accounts[i] );
 							if (searchMembers) starsAcctInfo.setEnergyCompanyID( company.getLiteID() );
 							
 							resp.addStarsBriefCustAccountInfo( starsAcctInfo );
@@ -344,7 +329,7 @@ public class SearchCustAccountAction implements ActionBase {
 			StarsSearchCustomerAccountResponse resp = operation.getStarsSearchCustomerAccountResponse();
             if (resp == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 
-			if (resp.getStarsCustAccountInformation() == null) {
+            if (resp.getStarsBriefCustAccountInfo() == null  || resp.getStarsBriefCustAccountInfoCount() > 1) {
             	/* No customer account, or more than one account found */
 				session.setAttribute( ServletUtils.ATT_ACCOUNT_SEARCH_RESULTS, resp );
             	return StarsConstants.FAILURE_CODE_OPERATION_FAILED;

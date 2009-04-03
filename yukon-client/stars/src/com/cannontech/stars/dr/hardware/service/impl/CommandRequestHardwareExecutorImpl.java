@@ -1,10 +1,14 @@
 package com.cannontech.stars.dr.hardware.service.impl;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.amr.errors.model.DeviceErrorDescription;
+import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.commands.CommandRequestRoute;
 import com.cannontech.common.device.commands.CommandRequestRouteExecutor;
-import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -23,11 +27,11 @@ public class CommandRequestHardwareExecutorImpl implements
 	private ECMappingDao ecMappingDao;
 	private StarsInventoryBaseDao starsInventoryBaseDao;
 	private CommandRequestRouteExecutor commandRequestRouteExecutor;
+	private Logger logger = YukonLogManager.getLogger(CommandRequestHardwareExecutorImpl.class);
 
 	@Override
-	public CommandResultHolder execute(LiteStarsLMHardware hardware,
-			String command, LiteYukonUser user)
-			throws CommandCompletionException {
+	public void execute(final LiteStarsLMHardware hardware, String command,
+			LiteYukonUser user) throws CommandCompletionException {
 
 		int routeId = hardware.getRouteID();
 		
@@ -38,18 +42,37 @@ public class CommandRequestHardwareExecutorImpl implements
 			routeId = energyCompany.getDefaultRouteID();
 		}
 		
-		return commandRequestRouteExecutor.execute(routeId, command, user);
+		commandRequestRouteExecutor.execute(
+				routeId, 
+				command, 
+				new CommandCompletionCallbackAdapter<CommandRequestRoute>(){
+					@Override
+					public void receivedLastError(CommandRequestRoute command,
+							DeviceErrorDescription error) {
+						logger.error("Could not execute command for inventory with id: " + 
+								hardware.getInventoryID() + " Error: " + error.toString());
+					}
+					
+					@Override
+					public void receivedLastResultString(
+							CommandRequestRoute command, String value) {
+						logger.debug("Command executed successfully for inventory with id: " + 
+								hardware.getInventoryID() + " Command: " + command.toString());
+					}
+					
+				}, 
+				user);
 		
 	}
 	
 	@Override
-	public CommandResultHolder execute(Thermostat thermostat, String command,
-			LiteYukonUser user)  throws CommandCompletionException {
+	public void execute(Thermostat thermostat, String command,
+			LiteYukonUser user) throws CommandCompletionException {
 
 		LiteStarsLMHardware hardware = 
 			(LiteStarsLMHardware) starsInventoryBaseDao.getById(thermostat.getId());
 		
-		return this.execute(hardware, command, user);
+		this.execute(hardware, command, user);
 	}
 	
 	@Autowired

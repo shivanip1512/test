@@ -4,13 +4,18 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 public interface PaoDao {
     
+    public YukonPao getYukonPao(int paoId);
+    
     /**
-     * This method was created in VisualAge.
-     * @return String
+     * Retrieves the YukonPao object along with related data
+     * like port, address and route info
+     * @param paoID
+     * @return
      */
     public LiteYukonPAObject getLiteYukonPAO(int paoID);
     

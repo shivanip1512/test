@@ -621,6 +621,7 @@ public static String formatDateString(java.util.Date d) {
  * -1 would be yesterday and +1 would be tomorrow
  * Creation date: (3/28/00 4:15:54 PM)
  * @return java.util.Date
+ * @deprecated use TimeUtil.getMidnight
  */
 public static Date getDate(int dayOffset) {
 
@@ -900,6 +901,7 @@ public static java.util.Date getStartingDateOfInterval(Date startingDate, String
  * Returns a Date that represents the beginning of today.
  * Creation date: (3/28/00 4:15:54 PM)
  * @return java.util.Date
+ * @deprecated
  */
 public static java.util.Date getToday() {
 	return getToday(TimeZone.getDefault());
@@ -909,6 +911,7 @@ public static java.util.Date getToday() {
  * Returns a Date that represents the beginning of today in the given TimeZone
  * @param tz
  * @return
+ * @deprecated use TimeUtil.getMidnight
  */
 public static Date getToday(TimeZone tz) {
 	GregorianCalendar cal = new GregorianCalendar();
@@ -923,6 +926,7 @@ public static Date getToday(TimeZone tz) {
  * Returns a Date that represents the beginning of tomorrow.
  * Creation date: (3/28/00 4:15:54 PM)
  * @return java.util.Date
+ * @deprecated use TimeUtil.getMidnight
  */
 public static java.util.Date getTomorrow() {
 	return getTomorrow(TimeZone.getDefault());
@@ -933,6 +937,7 @@ public static java.util.Date getTomorrow() {
  * Returns a Date that represents the beginning of tomorrow in the given TimeZone.
  * @param tz
  * @return
+ * @deprecated use TimeUtil.getMidnight
  */
 public static Date getTomorrow(TimeZone tz) {
 	GregorianCalendar cal = new GregorianCalendar();
@@ -950,6 +955,7 @@ public static Date getTomorrow(TimeZone tz) {
  * Returns a Date that represents the beginning of yesterday.
  * Creation date: (3/28/00 4:22:52 PM)
  * @return java.util.Date
+ * @deprecated use TimeUtil.getMidnight
  */
 public static java.util.Date getYesterday() {
 	return getYesterday(TimeZone.getDefault());
@@ -959,6 +965,7 @@ public static java.util.Date getYesterday() {
  * Returns a Date that represents the beginning of yesterday in the given TimeZone.
  * @param tz
  * @return
+ * @deprecated use TimeUtil.getMidnight
  */
 public static Date getYesterday(TimeZone tz) {
 	GregorianCalendar cal = new GregorianCalendar();
@@ -1007,27 +1014,6 @@ public static synchronized Date parseDateStringLiberally(String dateStr, TimeZon
 	}
 
 	return retVal;	
-}
-/**
- * Insert the method's description here.
- * Creation date: (7/10/00 4:08:59 PM)
- * @return java.util.Date
- * @param toRound java.util.Date
- */
-public static Date roundToMinute(Date toRound) {
-	GregorianCalendar cal = new GregorianCalendar();
-	cal.setTime(toRound);
-
-	if( cal.get( Calendar.SECOND ) < 30 )
-	{
-		cal.set( Calendar.SECOND, 0 );
-	}
-	else
-	{
-		cal.set( Calendar.SECOND, 60 );
-	}
-
-	return cal.getTime();
 }
 
 	/**

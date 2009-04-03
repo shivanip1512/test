@@ -14,6 +14,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
@@ -28,7 +29,6 @@ import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonGroup;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.stars.hardware.InventoryBase;
@@ -1034,7 +1034,7 @@ public class StarsLiteFactory {
 		company.setEnergyCompanyID( liteCompany.getEnergyCompanyID() );
 		company.setName( liteCompany.getName() );
 		company.setPrimaryContactID( new Integer(liteCompany.getPrimaryContactID()) );
-		company.setUserID( new Integer(liteCompany.getUserID()) );
+		company.setUserID(liteCompany.getUser().getUserID());
 	}
 	
 	public static void setApplianceCategory(com.cannontech.database.db.stars.appliance.ApplianceCategory appCat, LiteApplianceCategory liteAppCat) {
@@ -1943,46 +1943,42 @@ public class StarsLiteFactory {
 		starsProg.removeAllAddressingGroup();
 		
 		for (int j = 0; j < liteProg.getGroupIDs().length; j++) {
-			LiteYukonPAObject litePao = DaoFactory.getPaoDao().getLiteYukonPAO( liteProg.getGroupIDs()[j] );
+		    YukonPao yukonPao = DaoFactory.getPaoDao().getYukonPao(liteProg.getGroupIDs()[j]);
 			
-			if (litePao.getType() == PAOGroups.MACRO_GROUP) {
-				java.sql.Connection conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-				try {
-					GenericMacro[] groups = GenericMacro.getGenericMacros(
-							new Integer(litePao.getYukonID()), MacroTypes.GROUP, conn );
-					
-					for (int k = 0; k < groups.length; k++) 
-                    {
-						int groupID = groups[k].getChildID().intValue();
-						AddressingGroup group = new AddressingGroup();
-						group.setEntryID( groupID );
-                        try
-                        {
-						    group.setContent( DaoFactory.getPaoDao().getYukonPAOName(groupID) );
-                        }
-                        catch(NotFoundException e)
-                        {
-                            CTILogger.error(e.getMessage(), e);
-                            group.setContent("No Yukon name found.");
-                        }
-                        starsProg.addAddressingGroup( group );
-					}
-				}
-				catch (java.sql.SQLException e) {
-					CTILogger.error( e.getMessage(), e );
-				}
-				finally {
-					try {
-						if (conn != null) conn.close();
-					}
-					catch (java.sql.SQLException e) {}
-				}
+			if (yukonPao.getType() == PAOGroups.MACRO_GROUP) {
+			    java.sql.Connection conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+			    try {
+			        GenericMacro[] groups = GenericMacro.getGenericMacros(new Integer(yukonPao.getPaoId()),
+                                                                          MacroTypes.GROUP,
+                                                                          conn);
+                    List<Integer> paoIds = new ArrayList<Integer>();
+                    for (GenericMacro group : groups) {
+                        paoIds.add(group.getChildID());
+                    }
+                    Map<Integer, String> paoMap = DaoFactory.getPaoDao()
+                                                            .getYukonPAONames(paoIds);
+                    for (GenericMacro group : groups) {
+                        AddressingGroup addrGroup = new AddressingGroup();
+                        addrGroup.setEntryID(group.getChildID());
+                        addrGroup.setContent(paoMap.get(group.getChildID()));
+                        starsProg.addAddressingGroup(addrGroup);
+                    }
+			    }
+			    catch (java.sql.SQLException e) {
+			        CTILogger.error( e.getMessage(), e );
+			    }
+			    finally {
+			        try {
+			            if (conn != null) conn.close();
+			        }
+			        catch (java.sql.SQLException e) {}
+			    }
 			}
 			else {
-				AddressingGroup group = new AddressingGroup();
-				group.setEntryID( liteProg.getGroupIDs()[j] );
-				group.setContent( litePao.getPaoName() );
-				starsProg.addAddressingGroup( group );
+			    AddressingGroup addrGroup = new AddressingGroup();
+			    addrGroup.setEntryID( liteProg.getGroupIDs()[j] );
+			    addrGroup.setContent( DaoFactory.getPaoDao().getYukonPAOName(yukonPao.getPaoId()) );
+			    starsProg.addAddressingGroup( addrGroup );
 			}
 		}
 		
@@ -1994,15 +1990,17 @@ public class StarsLiteFactory {
 		StarsApplianceCategory starsAppCat = new StarsApplianceCategory();
 		starsAppCat.setApplianceCategoryID( liteAppCat.getApplianceCategoryID() );
 		starsAppCat.setCategoryID( liteAppCat.getCategoryID() );
-		starsAppCat.setInherited( !energyCompany.getApplianceCategories().contains(liteAppCat) );
+		LiteApplianceCategory applianceCategory = 
+			energyCompany.getApplianceCategory(liteAppCat.getApplianceCategoryID());
+		starsAppCat.setInherited(applianceCategory == null);
 		starsAppCat.setDescription( StarsUtils.forceNotNull(liteAppCat.getDescription()) );
 		
 		LiteWebConfiguration liteConfig = StarsDatabaseCache.getInstance().getWebConfiguration( liteAppCat.getWebConfigurationID() );
 		StarsWebConfig starsConfig = createStarsWebConfig( liteConfig );
 		starsAppCat.setStarsWebConfig( starsConfig );
 		
-		List<LiteLMProgramWebPublishing> programs = liteAppCat.getPublishedPrograms();
-		Set<Integer> deviceIds = new HashSet<Integer>(programs.size());
+		Iterable<LiteLMProgramWebPublishing> programs = liteAppCat.getPublishedPrograms();
+		Set<Integer> deviceIds = new HashSet<Integer>();
 		
 		for (final LiteLMProgramWebPublishing program : programs) {
 		    int deviceId = program.getDeviceID();
@@ -2380,11 +2378,16 @@ public class StarsLiteFactory {
 		return starsCustSelLists;
 	}
 	
-	public static void setStarsEnrollmentPrograms(StarsEnrollmentPrograms starsAppCats, List<LiteApplianceCategory> liteAppCats, LiteStarsEnergyCompany energyCompany) {
+	public static void setStarsEnrollmentPrograms(
+			StarsEnrollmentPrograms starsAppCats, 
+			Iterable<LiteApplianceCategory> liteAppCats, 
+			LiteStarsEnergyCompany energyCompany) 
+	{
 		starsAppCats.removeAllStarsApplianceCategory();
 		
         for (final LiteApplianceCategory liteAppCat : liteAppCats) {
-            starsAppCats.addStarsApplianceCategory(StarsLiteFactory.createStarsApplianceCategory(liteAppCat, energyCompany) );
+            starsAppCats.addStarsApplianceCategory(
+            		StarsLiteFactory.createStarsApplianceCategory(liteAppCat, energyCompany) );
         }
 	}
 	

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.cannontech.stars.dr.hardware.model.InventoryBase;
+import com.cannontech.stars.dr.hardware.model.LiteHardware;
 
 public interface InventoryBaseDao {
 
@@ -34,5 +35,9 @@ public interface InventoryBaseDao {
     public void uninstallInventory(Integer inventoryId);
     
     public List<InventoryBase> getByDeviceId(int deviceId);
+    
+    public List<LiteHardware> getAllLiteHardwareForAccount(int accountId);
+    
+    public LiteHardware getLiteHardwareById(int inventoryId);
     
 }

@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.PostConstruct;
 
@@ -18,6 +19,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+import org.springframework.jmx.export.annotation.ManagedAttribute;
+import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
@@ -60,6 +63,7 @@ import com.google.common.collect.ImmutableMap.Builder;
  *    RolePropertyChangeHelper --|
  * </pre>
  */
+@ManagedResource
 public class RolePropertyDaoImpl implements RolePropertyDao {
     private static class UserGroupPropertyValue {
         public boolean isUser;
@@ -109,11 +113,16 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
     private Logger log = YukonLogManager.getLogger(RolePropertyDaoImpl.class);
     
     private ImmutableMap<YukonRoleProperty, Object> defaultValueLookup;
-    private LeastRecentlyUsedCacheMap<UserPropertyTuple, Object> convertedValueCache = new LeastRecentlyUsedCacheMap<UserPropertyTuple, Object>(1000);
+    private LeastRecentlyUsedCacheMap<UserPropertyTuple, Object> convertedValueCache = new LeastRecentlyUsedCacheMap<UserPropertyTuple, Object>(10000);
     private final Object NULL_CACHE_VALUE = new Object();
     private LeastRecentlyUsedCacheMap<Integer, Set<YukonRole>> userRoleCache = new LeastRecentlyUsedCacheMap<Integer, Set<YukonRole>>(1000);
     private Set<YukonRoleProperty> propertyExceptions = EnumSet.noneOf(YukonRoleProperty.class);
     private boolean allowRoleConflicts = false;
+    
+    // statistics
+    private AtomicLong totalAccesses = new AtomicLong(0);
+    private AtomicLong totalCacheHits = new AtomicLong(0);
+    private AtomicLong totalDbHits = new AtomicLong(0);
     
     private static final ParameterizedRowMapper<UserGroupPropertyValue> userGroupPropertyValue = new ParameterizedRowMapper<UserGroupPropertyValue>() {
         public UserGroupPropertyValue mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -327,6 +336,7 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
      */
     public <T> T getConvertedValue(YukonRoleProperty property,
             LiteYukonUser user, Class<T> returnType) throws BadPropertyTypeException {
+    	totalAccesses.incrementAndGet();
         if (log.isDebugEnabled()) {
             log.debug("getting converted value of " + property + " for " + user + " as " + returnType.getSimpleName());
         }
@@ -340,6 +350,7 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
                 cachedValue = null;
             }
             log.debug("cache hit, returning: " + cachedValue);
+            totalCacheHits.incrementAndGet();
             return returnType.cast(cachedValue);
         }
         String stringValue = getPropertyValue(property, user);
@@ -460,6 +471,7 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
 
     public String getPropertyValue(YukonRoleProperty property,
             LiteYukonUser user) throws UserNotInRoleException {
+    	totalDbHits.incrementAndGet();
         if (property.getRole().getCategory().isSystem()) {
             String result = getGlobalPropertyValue(property);
             return result;
@@ -652,5 +664,30 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
     @Autowired
     public void setConfigurationSource(ConfigurationSource configurationSource) {
         this.configurationSource = configurationSource;
+    }
+    
+    @ManagedAttribute
+    public long getTotalAccesses() {
+		return totalAccesses.get();
+	}
+    
+    @ManagedAttribute
+    public long getTotalCacheHits() {
+		return totalCacheHits.get();
+	}
+    
+    @ManagedAttribute
+    public long getTotalDbHits() {
+		return totalDbHits.get();
+	}
+    
+    @ManagedAttribute
+    public long getPropertyCacheSize() {
+    	return convertedValueCache.size();
+    }
+    
+    @ManagedAttribute
+    public long getRoleCacheSize() {
+    	return userRoleCache.size();
     }
 }
