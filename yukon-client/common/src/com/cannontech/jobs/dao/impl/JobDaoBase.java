@@ -28,7 +28,7 @@ public class JobDaoBase implements InitializingBean {
             p.addValue("userId", userId);
             String locale = job.getUserContext().getLocale().toString();
             p.addValue("locale", locale);
-            String timeZone = job.getUserContext().getTimeZone().getDisplayName();
+            String timeZone = job.getUserContext().getTimeZone().getID();
             p.addValue("timezone", timeZone);
             String themeName = job.getUserContext().getThemeName();
             p.addValue("themeName", themeName);
