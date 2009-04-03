@@ -174,6 +174,22 @@ public class ProgramDaoImpl implements ProgramDao {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append(" SELECT Distinct LMPDG.LMGroupDeviceId "); 
             sql.append(" FROM LMProgramDirectGroup LMPDG ");
+            sql.append(" WHERE LMPDG.DeviceId in (", programIds, ") ");
+            
+            List<Integer> list = simpleJdbcTemplate.query(sql.toString(), groupIdRowMapper);
+            return list;
+        } catch (IncorrectResultSizeDataAccessException e) {
+            return Collections.emptyList();
+        } 
+    }
+    
+    @Override
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public List<Integer> getDistinctGroupIdsByProgramIds(final Set<Integer> programIds) {
+        try {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append(" SELECT Distinct LMPDG.LMGroupDeviceId "); 
+            sql.append(" FROM LMProgramDirectGroup LMPDG ");
             sql.append(" WHERE LMPDG.DeviceId in (SELECT LMPWP.DeviceId ");
             sql.append("                          FROM LMProgramWebPublishing LMPWP ");
             sql.append("                          WHERE LMPWP.ProgramId in (", programIds, ")) ");

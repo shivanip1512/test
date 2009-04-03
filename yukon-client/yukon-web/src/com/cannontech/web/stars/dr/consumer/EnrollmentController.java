@@ -139,7 +139,7 @@ public class EnrollmentController extends AbstractConsumerController {
         	lmHardwareControlGroupDao.getCurrentEnrollmentByInventoryIdAndAccountId(enrollmentRequest.getInventoryId(),
                                                                           			accountId);
         List<Integer> groupIds = 
-        	programDao.getDistinctGroupIdsByYukonProgramIds(Collections.singleton(enrollmentRequest.getProgramId()));
+        	programDao.getDistinctGroupIdsByProgramIds(Collections.singleton(enrollmentRequest.getProgramId()));
 	    for (LMHardwareControlGroup hardwareControlGroup : lmHardwareControlGroup) {
 			for (Integer groupId : groupIds) {
 				if(groupId.intValue() == hardwareControlGroup.getLmGroupId()){

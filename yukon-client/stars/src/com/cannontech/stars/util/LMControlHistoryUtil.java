@@ -839,7 +839,7 @@ public class LMControlHistoryUtil {
         for(int j = 0; j < starsCtrlHist.getControlHistoryCount(); j++) {
             ControlHistory cntrlHist = starsCtrlHist.getControlHistory(j);
             Date start = cntrlHist.getStartDateTime();
-            Date stop = new Date(cntrlHist.getStartDateTime().getTime() + cntrlHist.getControlDuration());
+            Date stop = new Date(cntrlHist.getStartDateTime().getTime() + (cntrlHist.getControlDuration() * 1000));
             long newDuration = cntrlHist.getControlDuration();
             long newOptOutControlTime = 0;
             long totalOptOutTime = 0;
@@ -908,21 +908,21 @@ public class LMControlHistoryUtil {
                         //Subtract the difference of opt out start and the period's stop from duration.
                         else if(optOutEntry.getOptOutStart().getTime() > start.getTime() && optOutEntry.getOptOutStart().getTime() < stop.getTime() && 
                                 (optOutEntry.getOptOutStop() == null || optOutEntry.getOptOutStop().getTime() > stop.getTime())) {
-                            newDuration = newDuration - (stop.getTime() - optOutEntry.getOptOutStart().getTime());
+                            newDuration = newDuration - ((stop.getTime() - optOutEntry.getOptOutStart().getTime())/ 1000);
                             newOptOutControlTime = newOptOutControlTime + (stop.getTime() - optOutEntry.getOptOutStart().getTime());
                         }
                         //opt out ended during a control period that started during the opt out
                         //subtract the difference of opt out stop and period start.
                         else if(optOutEntry.getOptOutStart().getTime() < start.getTime() && optOutEntry.getOptOutStop() != null &&
                                 optOutEntry.getOptOutStop().getTime() > start.getTime() && optOutEntry.getOptOutStop().getTime() < stop.getTime()) {
-                            newDuration = newDuration - (optOutEntry.getOptOutStop().getTime() - start.getTime());
+                            newDuration = newDuration - ((optOutEntry.getOptOutStop().getTime() - start.getTime())/ 1000);
                             newOptOutControlTime = newOptOutControlTime + (optOutEntry.getOptOutStop().getTime() - start.getTime());
                         }
                         //an opt out occurred cleanly in the middle of a control period
                         //subtract the entire opt out duration from the control history total
                         else if(optOutEntry.getOptOutStart().getTime() > start.getTime() && optOutEntry.getOptOutStop() != null &&
                                 optOutEntry.getOptOutStop().getTime() < stop.getTime()) {
-                            newDuration = newDuration - (optOutEntry.getOptOutStop().getTime() - optOutEntry.getOptOutStart().getTime());
+                            newDuration = newDuration - ((optOutEntry.getOptOutStop().getTime() - optOutEntry.getOptOutStart().getTime()) / 1000);
                             newOptOutControlTime = newOptOutControlTime + (optOutEntry.getOptOutStop().getTime() - optOutEntry.getOptOutStart().getTime());
                         }
                     }
@@ -934,7 +934,7 @@ public class LMControlHistoryUtil {
                 totals[TOTAL_OPTOUT_EVENTS] = optOutEvent;
                 
                 if(newDuration > 0)  {
-                    long controlEnd = cntrlHist.getStartDateTime().getTime() + cntrlHist.getControlDuration();
+                    long controlEnd = cntrlHist.getStartDateTime().getTime() + (cntrlHist.getControlDuration() * 1000);
                     if( controlEnd >= startDate.getTime() && controlEnd <= stopDate.getTime()) {
                         totals[TOTAL_CONTROL_TIME] = totals[TOTAL_CONTROL_TIME] + newDuration;
                         if(newOptOutControlTime < 0) 
