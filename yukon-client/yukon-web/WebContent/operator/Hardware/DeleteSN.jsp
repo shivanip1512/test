@@ -67,7 +67,7 @@ function confirmSubmit(form) {
               <%@ include file="include/SearchBar.jspf" %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
-              <form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/InventoryManager" onsubmit="confirmSubmit(this)">
+              <form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/InventoryManager" onsubmit="return confirmSubmit(this)">
 			    <input type="hidden" name="action" value="DeleteSNRange">
 			    <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>">
 			    <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?failed">
