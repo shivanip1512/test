@@ -12,29 +12,27 @@
 <c:if test="${!hide}">
 	<cti:uniqueIdentifier var="thisId" prefix="widgetAction_"/>
 	<cti:uniqueIdentifier var="uniqueId" prefix="widgetLinkId_"/>
+	<cti:uniqueIdentifier var="buttonId" prefix="widgetRefreshButton_"/>
 	
 	<script type="text/javascript">
 		${widgetParameters.jsWidget}.setupLink('${uniqueId}', ${cti:jsonString(linkParameters)});
 	</script>
 	
+	<span id="${thisId}">
+	<input type="button" value="${label}" id="${buttonId}" >
 	<script type="text/javascript">
-
-		function ${widgetParameters.widgetId}_confirmRefresh(){
-	
-			var confirmText = "${confirmText}";
+		
+		$("${buttonId}").observe("click", function() {
+			var confirmText = '${cti:escapeJavaScript(confirmText)}';
 			var confirmed = true;
 			if (confirmText != null && confirmText.strip() != '') {
 				confirmed = confirm(confirmText);
 			}
-	
 			if (confirmed) {
-				${widgetParameters.jsWidget}.doActionRefresh('${method}', '${thisId}', '${labelBusy}...', '${uniqueId}')
+				${widgetParameters.jsWidget}.doActionRefresh('${method}', '${thisId}', '${labelBusy}...', '${uniqueId}');
 			}
-		}
+		});
 	</script>
-	
-	<span id="${thisId}">
-	<input type="button" value="${label}" onclick="${widgetParameters.widgetId}_confirmRefresh();">
 	<span class="widgetAction_waiting" style="display:none">
 	<img src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" alt="waiting" >
 	</span>

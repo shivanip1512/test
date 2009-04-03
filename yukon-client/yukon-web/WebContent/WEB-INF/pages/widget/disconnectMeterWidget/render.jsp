@@ -53,7 +53,7 @@
     
     <%-- CONNECT/DISCONNECT BUTTONS --%>
     <span id="connectSpan" style="${connectStyle}">
-		<ct:widgetActionRefresh hide="${!controllable}" method="connect" label="Connect" labelBusy="Connecting" confirmText="Are you sure you want to connect this meter?"/>
+		<ct:widgetActionRefresh hide="${!controllable}" method="connect" label="Connect" labelBusy="Connecting" />
     </span>
     
     <span id="disconnectSpan" style="${disconnectStyle}">
