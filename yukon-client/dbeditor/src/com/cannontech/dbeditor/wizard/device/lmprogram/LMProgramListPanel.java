@@ -1,5 +1,6 @@
 package com.cannontech.dbeditor.wizard.device.lmprogram;
 
+import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -367,7 +368,7 @@ public void setValue(Object o)
 			(com.cannontech.database.db.device.lm.LMProgramDirectGear)dirProg.getLmProgramDirectGearVector().get(i);
 
 		//we only can add LM_GROUP_POINTS group types to a program with a LATCHING gear
-		if( gear.getControlMethod().equalsIgnoreCase(com.cannontech.database.db.device.lm.LMProgramDirectGear.CONTROL_LATCHING) )
+		if( gear.getControlMethod() == GearControlMethod.Latching )
 		{
 			isLatching = true;
 			break;

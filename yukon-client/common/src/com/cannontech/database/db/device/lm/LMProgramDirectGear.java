@@ -4,12 +4,18 @@ import java.sql.Statement;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.data.device.lm.LatchingGear;
+import com.cannontech.database.data.device.lm.MasterCycleGear;
 import com.cannontech.database.data.device.lm.NoControlGear;
 import com.cannontech.database.data.device.lm.MagnitudeCycleGear;
+import com.cannontech.database.data.device.lm.RotationGear;
 import com.cannontech.database.data.device.lm.SimpleThermostatRampingGear;
+import com.cannontech.database.data.device.lm.SmartCycleGear;
 import com.cannontech.database.data.device.lm.TargetCycleGear;
 import com.cannontech.database.data.device.lm.ThermostatPreOperateGear;
 import com.cannontech.database.data.device.lm.ThermostatSetbackGear;
+import com.cannontech.database.data.device.lm.TimeRefreshGear;
+import com.cannontech.database.data.device.lm.TrueCycleGear;
 import com.cannontech.database.db.NestedDBPersistent;
 
 /**
@@ -24,7 +30,7 @@ public abstract class LMProgramDirectGear
 	private Integer deviceID = null;
 	private String gearName = null;
 	private Integer gearNumber = new Integer(1);
-	private String controlMethod = null;
+	private GearControlMethod controlMethod = null;
 	private Integer methodRate = new Integer(0);
 	private Integer methodPeriod = new Integer(0);
 	private Integer methodRateCount = new Integer(0);
@@ -102,7 +108,7 @@ public abstract class LMProgramDirectGear
 
 		Object addValues[] =
 		{ 
-			getDeviceID(), getGearName(), getGearNumber(), getControlMethod(),
+			getDeviceID(), getGearName(), getGearNumber(), getControlMethod().toString(),
 			getMethodRate(), getMethodPeriod(), getMethodRateCount(),
 			getCycleRefreshRate(), getMethodStopType(), getChangeCondition(),
 			getChangeDuration(), getChangePriority(), getChangeTriggerNumber(),
@@ -118,63 +124,42 @@ public abstract class LMProgramDirectGear
 	/**
 	 * This method was created in VisualAge.
 	 */
-	public static final LMProgramDirectGear createGearFactory(String gearType)
+	public static final LMProgramDirectGear createGearFactory(GearControlMethod gearType)
 	{
 		if (gearType == null)
 			return null;
 
-		if (gearType.equalsIgnoreCase(CONTROL_LATCHING))
+		switch (gearType) 
 		{
-			return new com.cannontech.database.data.device.lm.LatchingGear();
+			case Latching:
+				return new LatchingGear();
+			case MasterCycle:
+				return new MasterCycleGear();
+			case Rotation:
+				return new RotationGear();
+			case SmartCycle:
+				return new SmartCycleGear();
+			case TrueCycle:
+				return new TrueCycleGear();
+			case MagnitudeCycle:
+				return new MagnitudeCycleGear();
+			case TargetCycle:
+				return new TargetCycleGear();
+			case TimeRefresh:
+				return new TimeRefreshGear();
+			case ThermostatPreOperate:
+				return new ThermostatPreOperateGear();
+			case ThermostatRamping:
+				return new ThermostatSetbackGear();
+			case SimpleThermostatRamping:
+				return new SimpleThermostatRampingGear();
+			case NoControl:
+				return new NoControlGear();
+			default:
+				throw new IllegalArgumentException("Unable to create DirectGear for type : " 
+						+ gearType.toString());
+				
 		}
-		else if (gearType.equalsIgnoreCase(CONTROL_MASTER_CYCLE))
-		{
-			return new com.cannontech.database.data.device.lm.MasterCycleGear();
-		}
-		else if (gearType.equalsIgnoreCase(CONTROL_ROTATION))
-		{
-			return new com.cannontech.database.data.device.lm.RotationGear();
-		}
-		else if (gearType.equalsIgnoreCase(CONTROL_SMART_CYCLE))
-		{
-			return new com.cannontech.database.data.device.lm.SmartCycleGear();
-		}
-		else if (gearType.equalsIgnoreCase(CONTROL_TRUE_CYCLE))
-		{
-			return new com.cannontech.database.data.device.lm.TrueCycleGear();
-		}
-        else if (gearType.equalsIgnoreCase(CONTROL_MAGNITUDE_CYCLE))
-        {
-            return new MagnitudeCycleGear();
-        }
-        else if (gearType.equalsIgnoreCase(CONTROL_TARGET_CYCLE))
-        {
-            return new TargetCycleGear();
-        }
-		else if (gearType.equalsIgnoreCase(CONTROL_TIME_REFRESH))
-		{
-			return new com.cannontech.database.data.device.lm.TimeRefreshGear();
-		}
-		else if (gearType.equalsIgnoreCase(THERMOSTAT_PRE_OPERATE))
-		{
-			return new ThermostatPreOperateGear();
-		}
-		else if (gearType.equalsIgnoreCase(THERMOSTAT_SETBACK))
-		{
-			return new ThermostatSetbackGear();
-		}
-		else if (gearType.equalsIgnoreCase(SIMPLE_THERMOSTAT_SETBACK))
-		{
-		    return new SimpleThermostatRampingGear();
-		}
-		else if (gearType.equalsIgnoreCase(NO_CONTROL))
-		{
-			return new NoControlGear();
-		}
-		else
-			throw new IllegalArgumentException(
-				"Unable to create DirectGear for type : " + gearType);
-
 	}
 	/**
 	 * delete method comment.
@@ -267,8 +252,9 @@ public abstract class LMProgramDirectGear
 				Integer gID = new Integer(rset.getInt(1)); //"GearID"));
 				String name = new String(rset.getString(2));
 				Integer gearNum = new Integer(rset.getInt(3));
-				LMProgramDirectGear gear =
-					LMProgramDirectGear.createGearFactory(rset.getString(4));
+				GearControlMethod method = GearControlMethod.getGearControlMethod(rset.getString(4));
+				LMProgramDirectGear gear = LMProgramDirectGear.createGearFactory(method);
+				
 				gear.setDeviceID(deviceID);
 				gear.setGearID(gID);
 				gear.setDbConnection(conn);
@@ -449,7 +435,7 @@ public static final Integer getDefaultGearID(Integer programID, java.sql.Connect
 	 * Creation date: (3/16/2001 5:20:28 PM)
 	 * @return java.lang.String
 	 */
-	public java.lang.String getControlMethod()
+	public GearControlMethod getControlMethod()
 	{
 		return controlMethod;
 	}
@@ -613,7 +599,10 @@ public static final Integer getDefaultGearID(Integer programID, java.sql.Connect
 			setDeviceID((Integer) results[0]);
 			setGearName((String) results[1]);
 			setGearNumber((Integer) results[2]);
-			setControlMethod((String) results[3]);
+			
+			String method = (String) results[3];			
+			setControlMethod(GearControlMethod.getGearControlMethod(method));
+			
 			setMethodRate((Integer) results[4]);
 			setMethodPeriod((Integer) results[5]);
 			setMethodRateCount((Integer) results[6]);
@@ -694,7 +683,7 @@ public static final Integer getDefaultGearID(Integer programID, java.sql.Connect
 	 * Creation date: (3/16/2001 5:20:28 PM)
 	 * @param newControlMethod java.lang.String
 	 */
-	public void setControlMethod(java.lang.String newControlMethod)
+	public void setControlMethod(GearControlMethod newControlMethod)
 	{
 		controlMethod = newControlMethod;
 	}
@@ -847,7 +836,7 @@ public static final Integer getDefaultGearID(Integer programID, java.sql.Connect
 	{
 		Object setValues[] =
 		{ 
-			getDeviceID(), getGearName(), getGearNumber(), getControlMethod(),
+			getDeviceID(), getGearName(), getGearNumber(), getControlMethod().toString(),
 			getMethodRate(), getMethodPeriod(), getMethodRateCount(),
 			getCycleRefreshRate(), getMethodStopType(), getChangeCondition(),
 			getChangeDuration(), getChangePriority(), getChangeTriggerNumber(),

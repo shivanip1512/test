@@ -1,5 +1,7 @@
 package com.cannontech.database.data.device.lm;
 
+import com.cannontech.database.db.device.lm.GearControlMethod;
+
 /**
  * Insert the type's description here.
  * Creation date: (2/11/2002 10:36:09 AM)
@@ -12,7 +14,7 @@ public class SmartCycleGear extends com.cannontech.database.db.device.lm.LMProgr
 public SmartCycleGear() 
 {
 	super();
-	setControlMethod( CONTROL_SMART_CYCLE );
+	setControlMethod( GearControlMethod.SmartCycle );
 }
 
 /**

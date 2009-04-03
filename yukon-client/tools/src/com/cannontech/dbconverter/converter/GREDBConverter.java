@@ -39,6 +39,7 @@ import com.cannontech.database.data.route.RouteBase;
 import com.cannontech.database.data.route.RouteFactory;
 import com.cannontech.database.data.state.GroupState;
 import com.cannontech.database.data.state.State;
+import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.database.db.device.lm.IlmDefines;
 import com.cannontech.database.db.device.lm.LMControlScenarioProgram;
 import com.cannontech.database.db.device.lm.LMProgramConstraint;
@@ -528,7 +529,7 @@ public boolean processLoadPrograms()
 		
 		/* Create a default gear */
 		TimeRefreshGear gear = (TimeRefreshGear)LMProgramDirectGear.createGearFactory(
-									LMProgramDirectGear.CONTROL_TIME_REFRESH );
+									GearControlMethod.TimeRefresh );
 		gear.setGearName("Refresh");
 		gear.setDeviceID( lmProgram.getPAObjectID() );
 		gear.setShedTime( new Integer(900) ); //15 minutes
@@ -1867,8 +1868,8 @@ public boolean processUnxPrograms()
 		LMProgramDirectGear gear = 
 			LMProgramDirectGear.createGearFactory(
 				(line[5].trim().equalsIgnoreCase("cycl")
-				 ? LMProgramDirectGear.CONTROL_SMART_CYCLE
-				 : LMProgramDirectGear.CONTROL_TIME_REFRESH) );
+				 ? GearControlMethod.SmartCycle
+				 : GearControlMethod.TimeRefresh) );
 
 		if( gear instanceof TimeRefreshGear )
 		{

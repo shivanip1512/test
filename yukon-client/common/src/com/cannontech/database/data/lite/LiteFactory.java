@@ -18,6 +18,7 @@ import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.command.Command;
 import com.cannontech.database.db.company.SettlementConfig;
+import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
 import com.cannontech.database.db.point.RawPointHistory;
 import com.cannontech.database.db.user.YukonGroup;
@@ -160,7 +161,8 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 			((com.cannontech.database.db.device.lm.LMProgramConstraint)returnObject).setConstraintName(((LiteLMConstraint)liteObject).getConstraintName());
 			break;
 		case LiteTypes.GEAR:
-			returnObject = LMProgramDirectGear.createGearFactory(((LiteGear)liteObject).getGearType());
+			String method = ((LiteGear)liteObject).getGearType();
+			returnObject = LMProgramDirectGear.createGearFactory(GearControlMethod.getGearControlMethod(method));
 			((LMProgramDirectGear)returnObject).setGearID(new Integer(liteObject.getLiteID()));
 			((LMProgramDirectGear)returnObject).setGearName(((LiteGear)liteObject).getGearName());
 			break;

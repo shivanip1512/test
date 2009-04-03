@@ -3,13 +3,21 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
  * This type was created in VisualAge.
  */
 
+import java.sql.Connection;
+import java.sql.SQLException;
+
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.StringUtils;
+import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
+import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
+import com.cannontech.database.db.device.lm.LMThermostatGear;
 
 public class DirectModifyGearPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener, javax.swing.event.CaretListener, com.cannontech.common.gui.util.DataInputPanelListener {
-    private String gearType = null;
+    private GearControlMethod gearControlMethod = null;
     private javax.swing.JLabel ivjJLabelGearName = null;
     private javax.swing.JTextField ivjJTextFieldGearName = null;
     private javax.swing.JComboBox ivjJComboBoxGearType = null;
@@ -24,6 +32,7 @@ public class DirectModifyGearPanel extends com.cannontech.common.gui.util.DataIn
     private ThermostatSetbackGearPanel ivjThermoSetbackGearPanel1 = null;
     private SimpleThermostatSetbackGearPanel ivjSimpleThermoSetbackGearPanel1;
     private NoControlGearPanel ivjNoControlGearPanel1 = null;
+    private boolean changedToRamping = false;
     
 /**
  * Constructor
@@ -32,7 +41,6 @@ public DirectModifyGearPanel() {
     super();
     initialize();
 }
-
 
 /**
  * Method to handle events for the ActionListener interface.
@@ -199,8 +207,8 @@ private void connEtoC8(java.awt.event.ActionEvent arg1) {
  * Creation date: (2/8/2002 5:37:00 PM)
  * @return java.lang.String
  */
-public java.lang.String getGearType() {
-    return gearType;
+public GearControlMethod getGearType() {
+    return gearControlMethod;
 }
 
 
@@ -252,7 +260,6 @@ private javax.swing.JComboBox getJComboBoxGearType() {
     }
     return ivjJComboBoxGearType;
 }
-
 
 /**
  * Return the JLabelGearName property value.
@@ -345,58 +352,77 @@ private javax.swing.JTextField getJTextFieldGearName() {
  */
 public Object getValue(Object o) 
 {
+	Object obj = null;
     LMProgramDirectGear gear = null;
+    String selectedItem = getJComboBoxGearType().getSelectedItem().toString();
     
-    if( o == null )
-   {
-      setGearType( getJComboBoxGearType().getSelectedItem().toString() );
-        gear = LMProgramDirectGear.createGearFactory( getGearType() );  
-   }
-    else
-    {       
-      setGearType( getJComboBoxGearType().getSelectedItem().toString() );
-        gear = LMProgramDirectGear.createGearFactory( getGearType() );
-        gear.setGearID(((LMProgramDirectGear)o).getGearID());
+    GearControlMethod method = GearControlMethod.getGearControlMethod(selectedItem.replaceAll(" ",""));
+    setGearType(method);
+    gear = LMProgramDirectGear.createGearFactory( method );  
+
+    if( o != null ){
+    	gear.setGearID(((LMProgramDirectGear)o).getGearID());
+	}
+    
+    gear.setGearName(getJTextFieldGearName().getText());
+    gear.setControlMethod(method);
+    
+    switch (method) {
+	    case SmartCycle: {
+	    	obj = getIvjSmartGearPanel1().getValue(gear);
+	    	break;
+	    }
+	    case MasterCycle: {
+	    	obj = getIvjMasterGearPanel1().getValue(gear);
+	    	break;
+	    }
+	    case TimeRefresh: {
+	    	obj = getIvjTimeGearPanel1().getValue(gear);
+	    	break;
+	    }
+	    case Rotation: {
+	    	obj = getIvjRotationGearPanel1().getValue(gear);
+	    	break;
+	    }
+	    case Latching: {
+	    	obj = getIvjLatchingGearPanel1().getValue(gear);
+	    	break;
+	    }
+	    case ThermostatRamping: {
+	    	obj = getIvjThermoSetbackGearPanel1().getValue(gear);
+	    	break;
+	    }
+	    case SimpleThermostatRamping: {
+	    	obj = getIvjSimpleThermoSetbackGearPanel1().getValue(gear);
+	    	break;
+	    }
+	    case NoControl: {
+	    	obj = getNoControlGearPanel().getValue(gear);
+	    	break;
+	    }
+	    default: {
+	    	obj = gear;
+	    	break;
+	    }	
     }
     
-    gear.setGearName( getJTextFieldGearName().getText() );
-    gear.setControlMethod( getGearType() );
-    
-    if( gear instanceof com.cannontech.database.data.device.lm.SmartCycleGear )
-    {
-        return getIvjSmartGearPanel1().getValue(gear);          
+    //We changed from a methods to a Thermostat method. 
+    // Make sure the table exists before the update call.
+    if (changedToRamping) {
+    	Connection conn = null;
+    	try {
+    		conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+    		LMThermostatGear thermostat = (LMThermostatGear)obj;
+    		thermostat.setDbConnection(conn);
+    		thermostat.addPartial();
+    	} catch (SQLException e) {
+    		//Already in the DB. Moving on.
+    	} finally {
+    		changedToRamping = false;
+    		SqlUtils.close(null, null, conn);
+    	}
     }
-    else if( gear instanceof com.cannontech.database.data.device.lm.MasterCycleGear )
-    {
-        return getIvjMasterGearPanel1().getValue(gear); 
-    }
-    else if( gear instanceof com.cannontech.database.data.device.lm.TimeRefreshGear )
-    {
-        return getIvjTimeGearPanel1().getValue(gear);
-    }
-    //else if( gear.getControlMethod() == LMProgramDirectGearDefines.CONTROL_ROTATION)
-    else if( gear instanceof com.cannontech.database.data.device.lm.RotationGear )
-    {
-        return getIvjRotationGearPanel1().getValue(gear);
-    }
-    else if( gear instanceof com.cannontech.database.data.device.lm.LatchingGear )
-    {
-        return getIvjLatchingGearPanel1().getValue(gear);       
-    }
-    else if( gear instanceof com.cannontech.database.data.device.lm.ThermostatSetbackGear )
-    {
-        return getIvjThermoSetbackGearPanel1().getValue(gear);  
-    }
-    else if (gear instanceof com.cannontech.database.data.device.lm.SimpleThermostatRampingGear)
-    {
-        return getIvjSimpleThermoSetbackGearPanel1().getValue(gear);
-    }
-    else if( gear instanceof com.cannontech.database.data.device.lm.NoControlGear)
-    {
-        return getNoControlGearPanel().getValue(gear);  
-    }
-    else
-        return gear;
+    return obj;
 }
 
 
@@ -489,8 +515,8 @@ private void initialize() {
     } catch (java.lang.Throwable ivjExc) {
         handleException(ivjExc);
     }
-
-    getJComboBoxGearType().setSelectedItem( LMProgramDirectGear.CONTROL_TIME_REFRESH );
+    String selectedItem = GearControlMethod.TimeRefresh.toString();
+    //getJComboBoxGearType().setSelectedItem(StringUtils.addCharBetweenWords( ' ', selectedItem));
 }
 
 /**
@@ -518,7 +544,9 @@ public void jComboBoxGearType_ActionPerformed(java.awt.event.ActionEvent actionE
 
     if( getJComboBoxGearType().getSelectedItem() != null )
     {
-        setGearType( getJComboBoxGearType().getSelectedItem().toString() );
+    	String selectedItem = getJComboBoxGearType().getSelectedItem().toString();
+    	
+        setGearType(GearControlMethod.getGearControlMethod(selectedItem.replaceAll(" ","")));
         getGenericGearPanel1().jComboBoxWhenChange_ActionPerformed(actionEvent);
         
         fireInputUpdate();
@@ -559,64 +587,58 @@ public static void main(java.lang.String[] args) {
  * Creation date: (2/8/2002 5:37:00 PM)
  * @param newGearType java.lang.String
  */
-private void setGearType(java.lang.String newGearType)
+private void setGearType(GearControlMethod method)
 {
-    gearType = StringUtils.removeChars( ' ', newGearType );
+	//This indicates if we switched gears to a ramping gear for getValue()
+	if( gearControlMethod != null) {
+	    boolean isRamping = GearControlMethod.isRamping(gearControlMethod);
+		if( isRamping == false && GearControlMethod.isRamping(method) == true) {
+			changedToRamping = true;
+		}
+	}
+	
+    gearControlMethod = method;
 
     if( getGearType() == null )
         return;
 
-    if( getGearType().equalsIgnoreCase(LMProgramDirectGear.CONTROL_LATCHING) )
-    {
-        //Latching
+    switch (method) {
+    case Latching:
         getJScrollPane1().setViewportView(getIvjLatchingGearPanel1());
-    }
-    else if( getGearType().equalsIgnoreCase(LMProgramDirectGear.CONTROL_MASTER_CYCLE) )
-    {
-        //MasterCycle
-        getJScrollPane1().setViewportView(getIvjMasterGearPanel1());
-    }
-    else if( getGearType().equalsIgnoreCase(LMProgramDirectGear.CONTROL_ROTATION) )
-    {
-        //Rotation
-        getJScrollPane1().setViewportView(getIvjRotationGearPanel1());
-    }
-    else if( getGearType().equalsIgnoreCase(LMProgramDirectGear.CONTROL_SMART_CYCLE)
-                 || getGearType().equalsIgnoreCase(LMProgramDirectGear.CONTROL_TRUE_CYCLE)
-                 || getGearType().equalsIgnoreCase(LMProgramDirectGear.CONTROL_MAGNITUDE_CYCLE)
-                 || getGearType().equalsIgnoreCase(LMProgramDirectGear.CONTROL_TARGET_CYCLE))
-    {
-        //SmartCycle
+    	break;
+    case MasterCycle:
+    	getJScrollPane1().setViewportView(getIvjMasterGearPanel1());
+    	break;
+    case Rotation:
+    	getJScrollPane1().setViewportView(getIvjRotationGearPanel1());
+    	break;
+    	
+    case SmartCycle:
+    case TrueCycle:
+    case MagnitudeCycle:
+    case TargetCycle:
         getJScrollPane1().setViewportView(getIvjSmartGearPanel1());
-        getIvjSmartGearPanel1().setTargetCycle(getGearType().equalsIgnoreCase(LMProgramDirectGear.CONTROL_TARGET_CYCLE));
-    }
-    else if( getGearType().equalsIgnoreCase(LMProgramDirectGear.CONTROL_TIME_REFRESH) )
-    {
-        //TimeRefresh
-        getJScrollPane1().setViewportView(getIvjTimeGearPanel1());
-    }
-
-    else if( getGearType().equalsIgnoreCase(LMProgramDirectGear.THERMOSTAT_SETBACK) )
-    {
-        //Thermostat Setback
-        getJScrollPane1().setViewportView(getIvjThermoSetbackGearPanel1());
-    }
-    else if( getGearType().equalsIgnoreCase(LMProgramDirectGear.SIMPLE_THERMOSTAT_SETBACK) )
-    {
-        //Simple Thermostat Setback
-        getJScrollPane1().setViewportView(getIvjSimpleThermoSetbackGearPanel1());
-    }
-    else if( getGearType().equalsIgnoreCase(LMProgramDirectGear.NO_CONTROL) )
-    {
-        //No Control
-        getJScrollPane1().setViewportView(getNoControlGearPanel());
-    }
-    else
-        throw new Error("Unknown LMProgramDirectGear " +
-            "type found, the value = " + getGearType() );
-
-    return;
+        getIvjSmartGearPanel1().setTargetCycle(method == GearControlMethod.TargetCycle);
+    	break;
     
+    case TimeRefresh:
+    	getJScrollPane1().setViewportView(getIvjTimeGearPanel1());
+    	break;
+    case ThermostatRamping:
+    	getJScrollPane1().setViewportView(getIvjThermoSetbackGearPanel1());
+    	break;
+    case SimpleThermostatRamping:
+    	getJScrollPane1().setViewportView(getIvjSimpleThermoSetbackGearPanel1());
+    	break;
+    case NoControl:
+    	getJScrollPane1().setViewportView(getNoControlGearPanel());
+    	break;
+    default:
+        throw new Error("Unknown LMProgramDirectGear " + "type found, the value = " 
+        		+ getGearType().toString() );
+    }
+
+    return;    
 }
 
 
@@ -644,7 +666,7 @@ public void setValue(Object o)
     else
         gear = (LMProgramDirectGear)o;
 
-    getJComboBoxGearType().setSelectedItem( StringUtils.addCharBetweenWords( ' ', gear.getControlMethod() ) );
+    getJComboBoxGearType().setSelectedItem( StringUtils.addCharBetweenWords( ' ', gear.getControlMethod().toString() ) );
     getJTextFieldGearName().setText( gear.getGearName() );
 
     if( gear instanceof com.cannontech.database.data.device.lm.SmartCycleGear )

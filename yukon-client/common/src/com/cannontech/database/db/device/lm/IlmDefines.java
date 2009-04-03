@@ -27,18 +27,18 @@ public interface IlmDefines
 	public static final String SELECTION_LEAST_CONTROL_TIME = "LeastControlTime";
 
 	//all possible control methods for a gear
-	public static final String CONTROL_TIME_REFRESH = "TimeRefresh";
-	public static final String CONTROL_SMART_CYCLE = "SmartCycle";
-	public static final String CONTROL_MASTER_CYCLE = "MasterCycle";
-	public static final String CONTROL_ROTATION = "Rotation";
-	public static final String CONTROL_LATCHING = "Latching";
-	public static final String CONTROL_TRUE_CYCLE = "TrueCycle";
-    public static final String CONTROL_MAGNITUDE_CYCLE = "MagnitudeCycle";
-    public static final String CONTROL_TARGET_CYCLE = "TargetCycle";
-	public static final String THERMOSTAT_SETBACK = "ThermostatRamping";
-	public static final String SIMPLE_THERMOSTAT_SETBACK = "SimpleThermostatRamping";
-	public static final String THERMOSTAT_PRE_OPERATE = "ThermostatPre-operate";
-	public static final String NO_CONTROL = "NoControl";
+	public static final String CONTROL_TIME_REFRESH = GearControlMethod.TimeRefresh.toString();
+	public static final String CONTROL_SMART_CYCLE = GearControlMethod.SmartCycle.toString();
+	public static final String CONTROL_MASTER_CYCLE = GearControlMethod.MasterCycle.toString();
+	public static final String CONTROL_ROTATION = GearControlMethod.Rotation.toString();
+	public static final String CONTROL_LATCHING = GearControlMethod.Latching.toString();
+	public static final String CONTROL_TRUE_CYCLE = GearControlMethod.TrueCycle.toString();
+    public static final String CONTROL_MAGNITUDE_CYCLE = GearControlMethod.MagnitudeCycle.toString();
+    public static final String CONTROL_TARGET_CYCLE = GearControlMethod.TargetCycle.toString();
+	public static final String THERMOSTAT_SETBACK = GearControlMethod.ThermostatRamping.toString();
+	public static final String SIMPLE_THERMOSTAT_SETBACK = GearControlMethod.SimpleThermostatRamping.toString();
+	public static final String THERMOSTAT_PRE_OPERATE = GearControlMethod.ThermostatPreOperate.toString();
+	public static final String NO_CONTROL = GearControlMethod.NoControl.toString();
 
 	//a mapping of all the possible control methods
 	public static final String[] ALL_CONTROL_METHODS =

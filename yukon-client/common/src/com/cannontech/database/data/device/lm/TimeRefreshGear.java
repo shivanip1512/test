@@ -1,5 +1,7 @@
 package com.cannontech.database.data.device.lm;
 
+import com.cannontech.database.db.device.lm.GearControlMethod;
+
 /**
  * Insert the type's description here.
  * Creation date: (2/11/2002 10:36:09 AM)
@@ -13,7 +15,7 @@ public TimeRefreshGear()
 {
 	super();
 
-	setControlMethod( CONTROL_TIME_REFRESH );
+	setControlMethod( GearControlMethod.TimeRefresh );
 	setCycleRefreshRate( new Integer(0) );
 }
 

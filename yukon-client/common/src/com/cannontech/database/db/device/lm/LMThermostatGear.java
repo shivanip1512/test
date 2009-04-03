@@ -56,7 +56,17 @@ public abstract class LMThermostatGear extends com.cannontech.database.db.device
 
         add( TABLE_NAME, addValues );
     }
+    
+    @Override
+    public void addPartial() throws java.sql.SQLException 
+    {
+        Object addValues[] = { getGearID(), getSettings().toString(), getMinValue(),
+                getMaxValue(), getValueB(), getValueD(), getValueF(),
+                getRandom(), getValueTa(), getValueTb(), getValueTc(), 
+                getValueTd(), getValueTe(), getValueTf(), getRampRate() };
 
+        add( TABLE_NAME, addValues );
+    }
 
     /**
      * delete method comment.
@@ -70,6 +80,11 @@ public abstract class LMThermostatGear extends com.cannontech.database.db.device
 
     }
 
+    @Override
+    public void deletePartial() throws java.sql.SQLException 
+    {
+        delete( TABLE_NAME, "GearID", getGearID() );
+    }
 
     /**
      * This method was created in VisualAge.
