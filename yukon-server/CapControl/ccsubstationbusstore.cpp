@@ -66,7 +66,7 @@ CtiTime timeSaver;
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBusStore::CtiCCSubstationBusStore() : _isvalid(FALSE), _reregisterforpoints(TRUE), _reloadfromamfmsystemflag(FALSE), _lastdbreloadtime(CtiTime(CtiDate(1,1,1990),0,0,0)), _wassubbusdeletedflag(FALSE), _lastindividualdbreloadtime(CtiTime(CtiDate(1,1,1990),0,0,0))
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
     _ccSubstationBuses = new CtiCCSubstationBus_vec;
     _ccSubstations = new CtiCCSubstation_vec;
     _ccCapBankStates = new CtiCCState_vec;
@@ -128,7 +128,7 @@ CtiCCSubstationBusStore::CtiCCSubstationBusStore() : _isvalid(FALSE), _reregiste
 -----------------------------------------------------------------------------*/
 CtiCCSubstationBusStore::~CtiCCSubstationBusStore()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
     if( _resetthr.isValid() )
     {
         _resetthr.requestCancellation();
@@ -157,7 +157,7 @@ CtiCCSubstationBusStore::~CtiCCSubstationBusStore()
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus_vec* CtiCCSubstationBusStore::getCCSubstationBuses(ULONG secondsFrom1901)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
     if( (!_isvalid) && (secondsFrom1901 >= _lastdbreloadtime.seconds()+30) )
     {//is not valid and has been at 0.5 minutes from last db reload, so we don't do this a bunch of times in a row on multiple updates
@@ -195,7 +195,7 @@ CtiCCSubstationBus_vec* CtiCCSubstationBusStore::getCCSubstationBuses(ULONG seco
 ---------------------------------------------------------------------------*/
 CtiCCArea_vec* CtiCCSubstationBusStore::getCCGeoAreas(ULONG secondsFrom1901)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
     if( !_isvalid && secondsFrom1901 >= _lastdbreloadtime.seconds()+30 )
     {//is not valid and has been at 0.5 minutes from last db reload, so we don't do this a bunch of times in a row on multiple updates
@@ -212,7 +212,7 @@ CtiCCArea_vec* CtiCCSubstationBusStore::getCCGeoAreas(ULONG secondsFrom1901)
 ---------------------------------------------------------------------------*/
 CtiCCSpArea_vec* CtiCCSubstationBusStore::getCCSpecialAreas(ULONG secondsFrom1901)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
     if( !_isvalid && secondsFrom1901 >= _lastdbreloadtime.seconds()+30 )
     {//is not valid and has been at 0.5 minutes from last db reload, so we don't do this a bunch of times in a row on multiple updates
@@ -228,7 +228,7 @@ CtiCCSpArea_vec* CtiCCSubstationBusStore::getCCSpecialAreas(ULONG secondsFrom190
 ---------------------------------------------------------------------------*/
 CtiCCSubstation_vec* CtiCCSubstationBusStore::getCCSubstations(ULONG secondsFrom1901)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
     if( !_isvalid && secondsFrom1901 >= _lastdbreloadtime.seconds()+30 )
     {//is not valid and has been at 0.5 minutes from last db reload, so we don't do this a bunch of times in a row on multiple updates
@@ -246,7 +246,7 @@ CtiCCSubstation_vec* CtiCCSubstationBusStore::getCCSubstations(ULONG secondsFrom
 ---------------------------------------------------------------------------*/
 CtiCCState_vec* CtiCCSubstationBusStore::getCCCapBankStates(ULONG secondsFrom1901)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
     if( !_isvalid && secondsFrom1901 >= _lastdbreloadtime.seconds()+90 )
     {//is not valid and has been at 1.5 minutes from last db reload, so we don't do this a bunch of times in a row on multiple updates
@@ -447,7 +447,7 @@ long CtiCCSubstationBusStore::findSubIDbyAltSubID(long altSubId, int index)
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::dumpAllDynamicData()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
     /*{
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -672,7 +672,7 @@ void CtiCCSubstationBusStore::dumpAllDynamicData()
 BOOL CtiCCSubstationBusStore::deleteCapControlMaps()
 {
     BOOL wasAlreadyRunning = false;
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
     try
     {
         map <long, CtiCCStrategyPtr>::iterator iter = _strategyid_strategy_map.begin();
@@ -832,7 +832,7 @@ void CtiCCSubstationBusStore::reset()
                 dout << CtiTime() << " - Obtained connection to the database..." << endl;
                 dout << CtiTime() << " - Resetting substation buses from database..." << endl;
             }
-            RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+            RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
             wasAlreadyRunning = deleteCapControlMaps();
 
@@ -1197,7 +1197,7 @@ void CtiCCSubstationBusStore::reset()
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::checkAMFMSystemForUpdates()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
     //if( _CC_DEBUG )
     {
@@ -1331,7 +1331,7 @@ void CtiCCSubstationBusStore::checkAMFMSystemForUpdates()
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::handleAMFMChanges(RWDBReader& rdr)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
     RWDBNullIndicator isNull;
 
@@ -1529,7 +1529,7 @@ void CtiCCSubstationBusStore::feederReconfigureM3IAMFM( string& capacitor_id_str
                                                         string& cap_disable_type, string& inoperable_bad_order_equipnote,
                                                         string& open_tag_note, string& cap_change_type )
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
     //LONG capacitor_id = atol(capacitor_id_string);
 
@@ -1740,7 +1740,7 @@ void CtiCCSubstationBusStore::feederReconfigureM3IAMFM( string& capacitor_id_str
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::capBankMovedToDifferentFeeder(CtiCCFeeder* oldFeeder, CtiCCCapBank* movedCapBank, LONG feederid, LONG capswitchingorder)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
     CtiCCCapBank_SVector& oldFeederCapBanks = oldFeeder->getCCCapBanks();
 
@@ -1854,7 +1854,7 @@ void CtiCCSubstationBusStore::capBankMovedToDifferentFeeder(CtiCCFeeder* oldFeed
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::capBankDifferentOrderSameFeeder(CtiCCFeeder* currentFeeder, CtiCCCapBank* currentCapBank, LONG capswitchingorder)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
     LONG oldControlOrder = currentCapBank->getControlOrder();
 
@@ -1900,7 +1900,7 @@ void CtiCCSubstationBusStore::capBankDifferentOrderSameFeeder(CtiCCFeeder* curre
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::capOutOfServiceM3IAMFM(LONG feederid, LONG capid, string& enableddisabled, string& fixedswitched)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
     BOOL found = FALSE;
     if( _ccSubstationBuses->size() > 0 )
@@ -1968,7 +1968,7 @@ void CtiCCSubstationBusStore::capOutOfServiceM3IAMFM(LONG feederid, LONG capid, 
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::feederOutOfServiceM3IAMFM(LONG feederid, string& fixedswitched, string& enableddisabled)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
     BOOL found = FALSE;
     if( _ccSubstationBuses->size() > 0 )
@@ -2027,7 +2027,7 @@ void CtiCCSubstationBusStore::feederOutOfServiceM3IAMFM(LONG feederid, string& f
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::shutdown()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
     dumpAllDynamicData();
     delete_container(*_ccSubstationBuses);
@@ -2102,7 +2102,7 @@ void CtiCCSubstationBusStore::doOpStatsThr()
             }
             
             {
-                RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+                RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
                 CtiMultiMsg* multiDispatchMsg = new CtiMultiMsg();
                 CtiMultiMsg_vec& pointChanges = multiDispatchMsg->getData();
@@ -2438,7 +2438,7 @@ void CtiCCSubstationBusStore::deleteInstance()
 ---------------------------------------------------------------------------*/
 BOOL CtiCCSubstationBusStore::isValid()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
     return _isvalid;
 }
 
@@ -2449,7 +2449,7 @@ BOOL CtiCCSubstationBusStore::isValid()
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::setValid(BOOL valid)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
     _isvalid = valid;
 }
 
@@ -2460,7 +2460,7 @@ void CtiCCSubstationBusStore::setValid(BOOL valid)
 ---------------------------------------------------------------------------*/
 BOOL CtiCCSubstationBusStore::getReregisterForPoints()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
     return _reregisterforpoints;
 }
 
@@ -2471,7 +2471,7 @@ BOOL CtiCCSubstationBusStore::getReregisterForPoints()
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::setReregisterForPoints(BOOL reregister)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
     _reregisterforpoints = reregister;
 }
 
@@ -2482,7 +2482,7 @@ void CtiCCSubstationBusStore::setReregisterForPoints(BOOL reregister)
 ---------------------------------------------------------------------------*/
 BOOL CtiCCSubstationBusStore::getReloadFromAMFMSystemFlag()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
     return _reloadfromamfmsystemflag;
 }
 
@@ -2493,31 +2493,31 @@ BOOL CtiCCSubstationBusStore::getReloadFromAMFMSystemFlag()
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::setReloadFromAMFMSystemFlag(BOOL reload)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
     _reloadfromamfmsystemflag = reload;
 }
 
 BOOL CtiCCSubstationBusStore::getWasSubBusDeletedFlag()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
     return _wassubbusdeletedflag;
 }
 
 void CtiCCSubstationBusStore::setWasSubBusDeletedFlag(BOOL wasDeleted)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
     _wassubbusdeletedflag = wasDeleted;
 }
 
 BOOL CtiCCSubstationBusStore::get2wayFlagUpdate()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
     return _2wayFlagUpdate;
 }
 
 void CtiCCSubstationBusStore::set2wayFlagUpdate(BOOL flag)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
     _2wayFlagUpdate = flag;
 }
 
@@ -2531,7 +2531,7 @@ void CtiCCSubstationBusStore::set2wayFlagUpdate(BOOL flag)
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
     for(int i=0;i<_ccSubstationBuses->size();i++)
     {
@@ -2795,7 +2795,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::resetDailyOperations()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
     CtiMultiMsg* multiPointMsg = new CtiMultiMsg();
     CtiMultiMsg_vec& pointChanges = multiPointMsg->getData();
 
@@ -2882,7 +2882,7 @@ void CtiCCSubstationBusStore::resetDailyOperations()
 ---------------------------------------------------------------------------*/
 bool CtiCCSubstationBusStore::UpdateBusVerificationFlagsInDB(CtiCCSubstationBus* bus)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
     {
         CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
@@ -2922,7 +2922,7 @@ bool CtiCCSubstationBusStore::UpdateBusVerificationFlagsInDB(CtiCCSubstationBus*
 ---------------------------------------------------------------------------*/
 bool CtiCCSubstationBusStore::UpdateAreaDisableFlagInDB(CtiCCArea* area)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
     {
         CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
@@ -2958,7 +2958,7 @@ bool CtiCCSubstationBusStore::UpdateAreaDisableFlagInDB(CtiCCArea* area)
 ---------------------------------------------------------------------------*/
 bool CtiCCSubstationBusStore::UpdateSpecialAreaDisableFlagInDB(CtiCCSpecial* area)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
     {
         CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
@@ -2994,7 +2994,7 @@ bool CtiCCSubstationBusStore::UpdateSpecialAreaDisableFlagInDB(CtiCCSpecial* are
 ---------------------------------------------------------------------------*/
 bool CtiCCSubstationBusStore::UpdateSubstationDisableFlagInDB(CtiCCSubstation* station)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
     {
         CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
@@ -3031,7 +3031,7 @@ bool CtiCCSubstationBusStore::UpdateSubstationDisableFlagInDB(CtiCCSubstation* s
 ---------------------------------------------------------------------------*/
 bool CtiCCSubstationBusStore::UpdateBusDisableFlagInDB(CtiCCSubstationBus* bus)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
     {
         CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
@@ -3067,7 +3067,7 @@ bool CtiCCSubstationBusStore::UpdateBusDisableFlagInDB(CtiCCSubstationBus* bus)
 ---------------------------------------------------------------------------*/
 bool CtiCCSubstationBusStore::UpdateFeederDisableFlagInDB(CtiCCFeeder* feeder)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
     {
         CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
@@ -3104,7 +3104,7 @@ bool CtiCCSubstationBusStore::UpdateFeederDisableFlagInDB(CtiCCFeeder* feeder)
 ---------------------------------------------------------------------------*/
 bool CtiCCSubstationBusStore::UpdateCapBankDisableFlagInDB(CtiCCCapBank* capbank)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
     {
         CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         RWDBConnection conn = getConnection();
@@ -3141,7 +3141,7 @@ bool CtiCCSubstationBusStore::UpdateCapBankDisableFlagInDB(CtiCCCapBank* capbank
 ---------------------------------------------------------------------------*/
 bool CtiCCSubstationBusStore::UpdateCapBankOperationalStateInDB(CtiCCCapBank* capbank)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
     {
         CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         RWDBConnection conn = getConnection();
@@ -3178,7 +3178,7 @@ bool CtiCCSubstationBusStore::UpdateCapBankOperationalStateInDB(CtiCCCapBank* ca
 ---------------------------------------------------------------------------*/
 bool CtiCCSubstationBusStore::UpdateCapBankInDB(CtiCCCapBank* capbank)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
     {
         CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
@@ -3228,7 +3228,7 @@ bool CtiCCSubstationBusStore::UpdateCapBankInDB(CtiCCCapBank* capbank)
 ---------------------------------------------------------------------------*/
 bool CtiCCSubstationBusStore::UpdateFeederBankListInDB(CtiCCFeeder* feeder)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
     {
         CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
@@ -3284,7 +3284,7 @@ bool CtiCCSubstationBusStore::UpdateFeederBankListInDB(CtiCCFeeder* feeder)
 ---------------------------------------------------------------------------*/
 bool CtiCCSubstationBusStore::InsertCCEventLogInDB(CtiCCEventLogMsg* msg)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
     {
         INT logId = CCEventLogIdGen();
 
@@ -3358,7 +3358,7 @@ bool CtiCCSubstationBusStore::InsertCCEventLogInDB(CtiCCEventLogMsg* msg)
 void CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId, map< long, CtiCCStrategyPtr > *strategy_map)
 {
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
 
     CtiCCStrategyPtr strategyToUpdate = NULL;
@@ -3727,7 +3727,7 @@ void CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId, map< l
 void CtiCCSubstationBusStore::reloadAndAssignHolidayStrategysFromDatabase(long strategyId, map< long, CtiCCStrategyPtr > *strategy_map)
 {
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
 
     try
@@ -3997,7 +3997,7 @@ void CtiCCSubstationBusStore::reloadAndAssignHolidayStrategysFromDatabase(long s
 void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDatabase(long strategyId, map< long, CtiCCStrategyPtr > *strategy_map)
 {
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
 
     CtiCCStrategyPtr strategyToUpdate = NULL;
@@ -4327,7 +4327,7 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
         substationToUpdate = findSubstationByPAObjectID(substationId);
     }
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
     try
     {
         if (substationToUpdate != NULL)
@@ -4710,7 +4710,7 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId, map< long, Cti
         areaToUpdate = findAreaByPAObjectID(areaId);
     }
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
     try
     {
         if (areaToUpdate != NULL)
@@ -5129,7 +5129,7 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId, map< lo
         spAreaToUpdate = findSpecialAreaByPAObjectID(areaId);
     }
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
     try
     {
         if (spAreaToUpdate != NULL)
@@ -5566,7 +5566,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
         subBusToUpdate = findSubBusByPAObjectID(subBusId);
     }
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
     try
     {
         if (subBusToUpdate != NULL)
@@ -7938,7 +7938,7 @@ void CtiCCSubstationBusStore::reloadMiscFromDatabase()
 {
     try
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+        RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
         {
             CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
             RWDBConnection conn = getConnection();
@@ -8081,7 +8081,7 @@ void CtiCCSubstationBusStore::reloadMapOfBanksToControlByLikeDay(long subbusId, 
 {
     try
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+        RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
         CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         {
 
@@ -8181,7 +8181,7 @@ void CtiCCSubstationBusStore::locateOrphans(list<long> *orphanCaps, list<long> *
 {
     try
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+        RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
         {
         orphanFeeders->clear();
         map <long, CtiCCFeederPtr>::iterator iter = paobject_feeder_map.begin();
@@ -8218,7 +8218,7 @@ BOOL CtiCCSubstationBusStore::isFeederOrphan(long feederId)
 
     try
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+        RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
         {
             list <long>::iterator iter = _orphanedFeeders.begin();
 
@@ -8244,7 +8244,7 @@ BOOL CtiCCSubstationBusStore::isCapBankOrphan(long capBankId)
 
     try
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+        RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
         {
             list <long>::iterator iter = _orphanedCapBanks.begin();
 
@@ -8275,7 +8275,7 @@ void CtiCCSubstationBusStore::removeFromOrphanList(long ccId)
 {
     try
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+        RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
         {
             _orphanedCapBanks.remove(ccId);
             _orphanedFeeders.remove(ccId);
@@ -9021,7 +9021,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
 
     try
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+        RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
         {
 
             if (_reloadList.empty() && _2wayFlagUpdate)
@@ -9982,7 +9982,7 @@ void CtiCCSubstationBusStore::clearDBReloadList()
 
 void CtiCCSubstationBusStore::insertUnsolicitedCapBankList(CtiCCCapBankPtr x)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
     if (!list_contains(_unsolicitedCapBanks, x))
     {
@@ -9992,14 +9992,14 @@ void CtiCCSubstationBusStore::insertUnsolicitedCapBankList(CtiCCCapBankPtr x)
 
 void CtiCCSubstationBusStore::removeCapbankFromUnsolicitedCapBankList(CtiCCCapBankPtr x)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
     _unsolicitedCapBanks.remove(x);
 }
 
 void CtiCCSubstationBusStore::clearUnsolicitedCapBankList()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
     if (!_unsolicitedCapBanks.empty())
     { 
@@ -10021,7 +10021,7 @@ void CtiCCSubstationBusStore::clearUnsolicitedCapBankList()
 
 void CtiCCSubstationBusStore::checkUnsolicitedList()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
     list <CtiCCCapBankPtr> tempList = getUnsolicitedCapBankList();
     list <CtiCCCapBankPtr>::iterator listIter = tempList.begin();
@@ -10064,7 +10064,7 @@ void CtiCCSubstationBusStore::checkUnsolicitedList()
 
 void CtiCCSubstationBusStore::insertRejectedCapBankList(CtiCCCapBankPtr x)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
     if (!list_contains(_rejectedCapBanks, x))
     {
@@ -10074,14 +10074,14 @@ void CtiCCSubstationBusStore::insertRejectedCapBankList(CtiCCCapBankPtr x)
 
 void CtiCCSubstationBusStore::removeCapbankFromRejectedCapBankList(CtiCCCapBankPtr x)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
     _rejectedCapBanks.remove(x);
 }
 
 void CtiCCSubstationBusStore::clearRejectedCapBankList()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
     if (!_rejectedCapBanks.empty())
     { 
@@ -10090,7 +10090,7 @@ void CtiCCSubstationBusStore::clearRejectedCapBankList()
 }
 void CtiCCSubstationBusStore::checkRejectedList()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
     list <CtiCCCapBankPtr> tempList = getRejectedControlCapBankList();
     list <CtiCCCapBankPtr>::iterator listIter = tempList.begin();
@@ -10658,7 +10658,7 @@ void CtiCCSubstationBusStore::resetAllConfirmationStats()
 
 void CtiCCSubstationBusStore::reCalculateAllStats( )
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
     {
         LONG i = 0;
         for(i=0;i<_ccSubstationBuses->size();i++)

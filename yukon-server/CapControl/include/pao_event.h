@@ -15,22 +15,14 @@
 #ifndef CTIPAOEVENT_H
 #define CTIPAOEVENT_H
 
-#include <rw/thr/thrfunc.h>
-#include <rw/thr/runfunc.h>
-#include <rw/thr/srvpool.h>
-#include <rw/thr/thrutil.h>
-#include <rw/thr/countptr.h> 
-#include <rw/collect.h>
+#include <rw/db/reader.h>
 
-#include "dbaccess.h"
-#include "connection.h"
 #include "ctibase.h"
 #include "logger.h"
-#include "yukon.h"
 #include "pao_event.h"
 #include "dbmemobject.h"
                        
-class CtiPAOEvent  : public CtiMemDBObject, public RWMonitor< RWRecursiveLock< RWMutexLock > >
+class CtiPAOEvent  : public CtiMemDBObject
 {
 public:
 

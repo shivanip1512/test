@@ -18,10 +18,6 @@
 #ifndef __DBMEMOBJECT_H__
 #define __DBMEMOBJECT_H__
 
-#include <rw/thr/monitor.h>
-#include <rw/thr/recursiv.h>
-#include <rw\thr\mutex.h>
-
 class CtiMemDBObject
 {
 protected:
@@ -58,7 +54,6 @@ public:
     {
         if(this != &aRef)
         {
-            // RWRecursiveLock<RWMutexLock>::LockGuard guard( getMux() );
             _valid   = aRef.isValid();
             _updated = aRef.getUpdatedFlag();
             _dirty   = aRef.isDirty();
@@ -77,7 +72,5 @@ public:
     BOOL isDirty() const                   { return _dirty;}
     virtual void setDirty(BOOL b = TRUE)   { _dirty = b;}
     void resetDirty(BOOL b = FALSE)        { _dirty = b;}
-
-    // MutexType& getMux()  { return mutex();}
 };
 #endif // #ifndef __DBMEMOBJECT_H__

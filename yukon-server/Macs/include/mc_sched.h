@@ -30,7 +30,7 @@
 #include "logger.h"
 #include "message.h"
 
-class CtiMCSchedule : public CtiMemDBObject, public CtiMessage, public RWMonitor< RWRecursiveLock< RWMutexLock > >
+class CtiMCSchedule : public CtiMemDBObject, public CtiMessage
 {
 public:
 

@@ -85,7 +85,7 @@ private:
 };
 
 
-class CtiLMControlAreaStore// : public RWMonitor< RWRecursiveLock< RWMutexLock > >
+class CtiLMControlAreaStore
 {
 public:   
 
@@ -122,8 +122,6 @@ public:
     CtiLMControlArea* getLMControlArea(long controlAreaID);
 
     static const string LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE;
-
-    //RWRecursiveLock<RWMutexLock> & getMux() { return mutex(); };
 
 private:
 

@@ -93,7 +93,7 @@ private:
 };
 
 
-class CtiCCSubstationBusStore : public RWMonitor< RWRecursiveLock< RWMutexLock > >
+class CtiCCSubstationBusStore
 {
 public:   
 
@@ -404,7 +404,7 @@ public:
     static void sendUserQuit(void *who);
     static void periodicComplain( void *la );
 
-    RWRecursiveLock<RWMutexLock> & getMux() { return mutex(); };
+    RWRecursiveLock<RWMutexLock> & getMux() { return _storeMutex; };
 
     /* Relating to Max Kvar Cparm */
     bool addKVAROperation( long capbankId, long kvar );
@@ -540,7 +540,7 @@ private:
 
     map< long, MaxKvarObject > maxKvarMap;
 
-    //mutable RWRecursiveLock<RWMutexLock> _storemutex;
+    mutable RWRecursiveLock<RWMutexLock> _storeMutex;
 };
 
 #endif

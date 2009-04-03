@@ -18,7 +18,6 @@
 #include "msg_dbchg.h"
 #include "capcontroller.h"
 #include "pao_schedule.h"
-#include <rw/thr/prodcons.h>
 
 /*---------------------------------------------------------------------------
     Constructor

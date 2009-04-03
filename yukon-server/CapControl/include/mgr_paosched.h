@@ -21,6 +21,8 @@
 #include <list>
 using std::list;
 
+#include <rw/thr/thread.h>
+
 #include "pao_schedule.h"
 #include "pao_event.h"
 
