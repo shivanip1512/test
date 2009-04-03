@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/26/2009 10:28:53 PM                        */
+/* Created on:     4/3/2009 4:48:45 PM                          */
 /*==============================================================*/
 
 
@@ -119,6 +119,8 @@ drop index Indx_Cstmr_PcId;
 
 drop index CstAccCstPro_FK;
 
+drop index INDX_CustAcct_AcctNum;
+
 drop index Indx_CstAcc_CstId;
 
 drop index Indx_acctid_custid;
@@ -130,6 +132,10 @@ drop index Indx_DevTypeCmd_GroupID;
 drop index Index_DYNVER_CS;
 
 drop index Indx_DYNV_TIME;
+
+drop index INDX_ECToInvMap_InvId;
+
+drop index INDX_ECToCustEventMap_EventId;
 
 drop index Indx_EnCmpName;
 
@@ -160,6 +166,18 @@ drop index INDX_LMGroupId_ParamName_UNQ;
 drop index CstLdIn_LMHrdCfg_FK;
 
 drop index LmHrd_LmHrdCfg_FK;
+
+drop index INDX_LMHardContGroup_AcctId;
+
+drop index INDX_LMHardContGroup_InvId;
+
+drop index INDX_LMThermSch_AcctId;
+
+drop index INDX_LMThermSch_InvId;
+
+drop index INDX_LMThermSea_SchId;
+
+drop index INDX_LMThermSeaEntry_SeaId;
 
 drop index INDEX_1;
 
@@ -2453,6 +2471,13 @@ create index Indx_CstAcc_CstId on CustomerAccount (
 create index Indx_acctid_custid on CustomerAccount (
    AccountID ASC,
    CustomerID ASC
+);
+
+/*==============================================================*/
+/* Index: INDX_CustAcct_AcctNum                                 */
+/*==============================================================*/
+create index INDX_CustAcct_AcctNum on CustomerAccount (
+   AccountNumber ASC
 );
 
 /*==============================================================*/
@@ -4983,12 +5008,26 @@ create table ECToInventoryMapping  (
 );
 
 /*==============================================================*/
+/* Index: INDX_ECToInvMap_InvId                                 */
+/*==============================================================*/
+create index INDX_ECToInvMap_InvId on ECToInventoryMapping (
+   InventoryID ASC
+);
+
+/*==============================================================*/
 /* Table: ECToLMCustomerEventMapping                            */
 /*==============================================================*/
 create table ECToLMCustomerEventMapping  (
    EnergyCompanyID      NUMBER                          not null,
    EventID              NUMBER                          not null,
    constraint PK_ECTOLMCUSTOMEREVENTMAPPING primary key (EnergyCompanyID, EventID)
+);
+
+/*==============================================================*/
+/* Index: INDX_ECToCustEventMap_EventId                         */
+/*==============================================================*/
+create index INDX_ECToCustEventMap_EventId on ECToLMCustomerEventMapping (
+   EventID ASC
 );
 
 /*==============================================================*/
@@ -6089,6 +6128,20 @@ create table LMHardwareControlGroup  (
 );
 
 /*==============================================================*/
+/* Index: INDX_LMHardContGroup_AcctId                           */
+/*==============================================================*/
+create index INDX_LMHardContGroup_AcctId on LMHardwareControlGroup (
+   AccountID ASC
+);
+
+/*==============================================================*/
+/* Index: INDX_LMHardContGroup_InvId                            */
+/*==============================================================*/
+create index INDX_LMHardContGroup_InvId on LMHardwareControlGroup (
+   InventoryID ASC
+);
+
+/*==============================================================*/
 /* Table: LMHardwareEvent                                       */
 /*==============================================================*/
 create table LMHardwareEvent  (
@@ -6364,6 +6417,20 @@ create table LMThermostatSchedule  (
 INSERT INTO LMThermostatSchedule VALUES (-1,'(none)',0,0,0);
 
 /*==============================================================*/
+/* Index: INDX_LMThermSch_InvId                                 */
+/*==============================================================*/
+create index INDX_LMThermSch_InvId on LMThermostatSchedule (
+   InventoryID ASC
+);
+
+/*==============================================================*/
+/* Index: INDX_LMThermSch_AcctId                                */
+/*==============================================================*/
+create index INDX_LMThermSch_AcctId on LMThermostatSchedule (
+   AccountID ASC
+);
+
+/*==============================================================*/
 /* Table: LMThermostatSeason                                    */
 /*==============================================================*/
 create table LMThermostatSeason  (
@@ -6376,6 +6443,13 @@ create table LMThermostatSeason  (
 );
 
 INSERT INTO LMThermostatSeason VALUES (-1,-1,-2,'01-JUN-00','15-OCT-00');
+
+/*==============================================================*/
+/* Index: INDX_LMThermSea_SchId                                 */
+/*==============================================================*/
+create index INDX_LMThermSea_SchId on LMThermostatSeason (
+   ScheduleID ASC
+);
 
 /*==============================================================*/
 /* Table: LMThermostatSeasonEntry                               */
@@ -6402,6 +6476,13 @@ INSERT INTO LMThermostatSeasonEntry VALUES (-16,-1,1174,21600,72,72);
 INSERT INTO LMThermostatSeasonEntry VALUES (-15,-1,1174,30600,72,72);
 INSERT INTO LMThermostatSeasonEntry VALUES (-14,-1,1174,61200,72,72);
 INSERT INTO LMThermostatSeasonEntry VALUES (-13,-1,1174,75600,72,72);
+
+/*==============================================================*/
+/* Index: INDX_LMThermSeaEntry_SeaId                            */
+/*==============================================================*/
+create index INDX_LMThermSeaEntry_SeaId on LMThermostatSeasonEntry (
+   SeasonID ASC
+);
 
 /*==============================================================*/
 /* Table: LOGIC                                                 */
@@ -11674,20 +11755,22 @@ alter table LMThermostatSchedule
       references YukonListEntry (EntryID);
 
 alter table LMThermostatSeason
-   add constraint FK_ThSc_LThSs foreign key (ScheduleID)
-      references LMThermostatSchedule (ScheduleID);
+   add constraint FK_LMThermSea_LMThermSch foreign key (ScheduleID)
+      references LMThermostatSchedule (ScheduleID)
+      on delete cascade;
 
 alter table LMThermostatSeason
    add constraint FK_YkWbC_LThSs foreign key (WebConfigurationID)
       references YukonWebConfiguration (ConfigurationID);
 
 alter table LMThermostatSeasonEntry
-   add constraint FK_CsLsE_LThSE foreign key (TimeOfWeekID)
-      references YukonListEntry (EntryID);
+   add constraint FK_LMThermSeaEntry_LMThermSea foreign key (SeasonID)
+      references LMThermostatSeason (SeasonID)
+      on delete cascade;
 
 alter table LMThermostatSeasonEntry
-   add constraint FK_LThSe_LThSEn foreign key (SeasonID)
-      references LMThermostatSeason (SeasonID);
+   add constraint FK_CsLsE_LThSE foreign key (TimeOfWeekID)
+      references YukonListEntry (EntryID);
 
 alter table MACROROUTE
    add constraint SYS_C0013274 foreign key (ROUTEID)

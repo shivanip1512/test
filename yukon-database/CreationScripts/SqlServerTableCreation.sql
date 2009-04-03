@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     3/26/2009 10:31:17 PM                        */
+/* Created on:     4/3/2009 4:12:50 PM                          */
 /*==============================================================*/
 
 
@@ -449,6 +449,15 @@ go
 if exists (select 1
             from  sysindexes
            where  id    = object_id('CustomerAccount')
+            and   name  = 'INDX_CustAcct_AcctNum'
+            and   indid > 0
+            and   indid < 255)
+   drop index CustomerAccount.INDX_CustAcct_AcctNum
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('CustomerAccount')
             and   name  = 'Indx_CstAcc_CstId'
             and   indid > 0
             and   indid < 255)
@@ -498,6 +507,24 @@ if exists (select 1
             and   indid > 0
             and   indid < 255)
    drop index DynamicVerification.Indx_DYNV_TIME
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('ECToInventoryMapping')
+            and   name  = 'INDX_ECToInvMap_InvId'
+            and   indid > 0
+            and   indid < 255)
+   drop index ECToInventoryMapping.INDX_ECToInvMap_InvId
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('ECToLMCustomerEventMapping')
+            and   name  = 'INDX_ECToCustEventMap_EventId'
+            and   indid > 0
+            and   indid < 255)
+   drop index ECToLMCustomerEventMapping.INDX_ECToCustEventMap_EventId
 go
 
 if exists (select 1
@@ -633,6 +660,60 @@ if exists (select 1
             and   indid > 0
             and   indid < 255)
    drop index LMHardwareConfiguration.LmHrd_LmHrdCfg_FK
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('LMHardwareControlGroup')
+            and   name  = 'INDX_LMHardContGroup_AcctId'
+            and   indid > 0
+            and   indid < 255)
+   drop index LMHardwareControlGroup.INDX_LMHardContGroup_AcctId
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('LMHardwareControlGroup')
+            and   name  = 'INDX_LMHardContGroup_InvId'
+            and   indid > 0
+            and   indid < 255)
+   drop index LMHardwareControlGroup.INDX_LMHardContGroup_InvId
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('LMThermostatSchedule')
+            and   name  = 'INDX_LMThermSch_AcctId'
+            and   indid > 0
+            and   indid < 255)
+   drop index LMThermostatSchedule.INDX_LMThermSch_AcctId
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('LMThermostatSchedule')
+            and   name  = 'INDX_LMThermSch_InvId'
+            and   indid > 0
+            and   indid < 255)
+   drop index LMThermostatSchedule.INDX_LMThermSch_InvId
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('LMThermostatSeason')
+            and   name  = 'INDX_LMThermSea_SchId'
+            and   indid > 0
+            and   indid < 255)
+   drop index LMThermostatSeason.INDX_LMThermSea_SchId
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('LMThermostatSeasonEntry')
+            and   name  = 'INDX_LMThermSeaEntry_SeaId'
+            and   indid > 0
+            and   indid < 255)
+   drop index LMThermostatSeasonEntry.INDX_LMThermSeaEntry_SeaId
 go
 
 if exists (select 1
@@ -4745,7 +4826,7 @@ INSERT INTO Command VALUES(-153, 'putconfig xcom lcrmode Em', 'Set LCR3100 Emetc
 INSERT INTO Command VALUES(-154, 'getvalue tou kwh', 'Read Current TOU kWh for rates A, B, C, D.', 'MCT-410IL');
 INSERT INTO Command VALUES(-155, 'getvalue tou kwh frozen', 'Read Frozen TOU kWh for rates A, B, C, D.', 'MCT-410IL');
 INSERT INTO Command VALUES(-156, 'getvalue daily read detail channel 1 ?''MM/DD/YYYY''', 'Read Daily kWh, Peak Demand, Min/Max Voltage (Channel 1).', 'MCT-410IL');
-INSERT INTO Command VALUES(-157, 'getvalue daily read channel 1 ?''MM/DD/YYYY'' ?''MM/DD/YYYY''', 'Read Daily kWh for date range (Channel 1).', 'MCT-410IL'); 
+INSERT INTO Command VALUES(-157, 'getvalue daily read channel 1 ?''MM/DD/YYYY'' ?''MM/DD/YYYY''', 'Read Daily kWh for date range (Channel 1).', 'MCT-410IL');
 
 INSERT INTO Command VALUES(-158, 'getvalue interval last', 'Last Interval kW', 'All Two Way LCR');
 INSERT INTO Command VALUES(-159, 'getvalue runtime load 1 previous ?''12 , 24, or 36''', 'Runtime Load 1', 'All Two Way LCR');
@@ -4932,6 +5013,14 @@ go
 create index Indx_acctid_custid on CustomerAccount (
 AccountID ASC,
 CustomerID ASC
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_CustAcct_AcctNum                                 */
+/*==============================================================*/
+create index INDX_CustAcct_AcctNum on CustomerAccount (
+AccountNumber ASC
 )
 go
 
@@ -7559,12 +7648,28 @@ create table ECToInventoryMapping (
 go
 
 /*==============================================================*/
+/* Index: INDX_ECToInvMap_InvId                                 */
+/*==============================================================*/
+create index INDX_ECToInvMap_InvId on ECToInventoryMapping (
+InventoryID ASC
+)
+go
+
+/*==============================================================*/
 /* Table: ECToLMCustomerEventMapping                            */
 /*==============================================================*/
 create table ECToLMCustomerEventMapping (
    EnergyCompanyID      numeric              not null,
    EventID              numeric              not null,
    constraint PK_ECTOLMCUSTOMEREVENTMAPPING primary key (EnergyCompanyID, EventID)
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_ECToCustEventMap_EventId                         */
+/*==============================================================*/
+create index INDX_ECToCustEventMap_EventId on ECToLMCustomerEventMapping (
+EventID ASC
 )
 go
 
@@ -8752,6 +8857,22 @@ create table LMHardwareControlGroup (
 go
 
 /*==============================================================*/
+/* Index: INDX_LMHardContGroup_AcctId                           */
+/*==============================================================*/
+create index INDX_LMHardContGroup_AcctId on LMHardwareControlGroup (
+AccountID ASC
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_LMHardContGroup_InvId                            */
+/*==============================================================*/
+create index INDX_LMHardContGroup_InvId on LMHardwareControlGroup (
+InventoryID ASC
+)
+go
+
+/*==============================================================*/
 /* Table: LMHardwareEvent                                       */
 /*==============================================================*/
 create table LMHardwareEvent (
@@ -9047,6 +9168,22 @@ go
 INSERT INTO LMThermostatSchedule VALUES (-1,'(none)',0,0,0);
 
 /*==============================================================*/
+/* Index: INDX_LMThermSch_InvId                                 */
+/*==============================================================*/
+create index INDX_LMThermSch_InvId on LMThermostatSchedule (
+InventoryID ASC
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_LMThermSch_AcctId                                */
+/*==============================================================*/
+create index INDX_LMThermSch_AcctId on LMThermostatSchedule (
+AccountID ASC
+)
+go
+
+/*==============================================================*/
 /* Table: LMThermostatSeason                                    */
 /*==============================================================*/
 create table LMThermostatSeason (
@@ -9060,6 +9197,14 @@ create table LMThermostatSeason (
 go
 
 INSERT INTO LMThermostatSeason VALUES (-1,-1,-2,'01-JUN-00','15-OCT-00');
+
+/*==============================================================*/
+/* Index: INDX_LMThermSea_SchId                                 */
+/*==============================================================*/
+create index INDX_LMThermSea_SchId on LMThermostatSeason (
+ScheduleID ASC
+)
+go
 
 /*==============================================================*/
 /* Table: LMThermostatSeasonEntry                               */
@@ -9087,6 +9232,14 @@ INSERT INTO LMThermostatSeasonEntry VALUES (-16,-1,1174,21600,72,72);
 INSERT INTO LMThermostatSeasonEntry VALUES (-15,-1,1174,30600,72,72);
 INSERT INTO LMThermostatSeasonEntry VALUES (-14,-1,1174,61200,72,72);
 INSERT INTO LMThermostatSeasonEntry VALUES (-13,-1,1174,75600,72,72);
+
+/*==============================================================*/
+/* Index: INDX_LMThermSeaEntry_SeaId                            */
+/*==============================================================*/
+create index INDX_LMThermSeaEntry_SeaId on LMThermostatSeasonEntry (
+SeasonID ASC
+)
+go
 
 /*==============================================================*/
 /* Table: LOGIC                                                 */
@@ -14934,8 +15087,9 @@ alter table LMThermostatSchedule
 go
 
 alter table LMThermostatSeason
-   add constraint FK_ThSc_LThSs foreign key (ScheduleID)
+   add constraint FK_LMThermSea_LMThermSch foreign key (ScheduleID)
       references LMThermostatSchedule (ScheduleID)
+         on delete cascade
 go
 
 alter table LMThermostatSeason
@@ -14944,13 +15098,14 @@ alter table LMThermostatSeason
 go
 
 alter table LMThermostatSeasonEntry
-   add constraint FK_CsLsE_LThSE foreign key (TimeOfWeekID)
-      references YukonListEntry (EntryID)
+   add constraint FK_LMThermSeaEntry_LMThermSea foreign key (SeasonID)
+      references LMThermostatSeason (SeasonID)
+         on delete cascade
 go
 
 alter table LMThermostatSeasonEntry
-   add constraint FK_LThSe_LThSEn foreign key (SeasonID)
-      references LMThermostatSeason (SeasonID)
+   add constraint FK_CsLsE_LThSE foreign key (TimeOfWeekID)
+      references YukonListEntry (EntryID)
 go
 
 alter table MACROROUTE
