@@ -9,23 +9,20 @@ import com.cannontech.database.data.lite.LiteYukonUser;
  */
 public class MockRolePropertyDao extends RolePropertyDaoAdapter {
 
-	private static String UNAUTHORIZED_STATUS = "UNAUTHORIZED";
+	private static LiteYukonUser user = new LiteYukonUser();
 	
 	/**
 	 * Method to get a user that this mock role property dao will throw a NotAuthorizedException for
 	 * @return Unauthorized user
 	 */
 	public static final LiteYukonUser getUnAuthorizedUser() {
-		LiteYukonUser user = new LiteYukonUser();
-		user.setStatus(UNAUTHORIZED_STATUS);
-		
-		return user;
+		return MockRolePropertyDao.user;
 	}
 	
 	@Override
 	public void verifyProperty(YukonRoleProperty property, LiteYukonUser user)
 			throws NotAuthorizedException {
-		if (UNAUTHORIZED_STATUS.equals(user.getStatus())) {
+		if (user == MockRolePropertyDao.user) {
 			throw new NotAuthorizedException("Mock role property dao not authorized");
 		}
 	}
