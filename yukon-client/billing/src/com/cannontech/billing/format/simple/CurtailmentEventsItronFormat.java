@@ -16,7 +16,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import com.cannontech.cc.dao.BaseEventDao;
 import com.cannontech.cc.dao.CustomerStubDao;
 import com.cannontech.cc.dao.EconomicEventParticipantDao;
-import com.cannontech.cc.daohibe.CustomerStubDaoImpl;
 import com.cannontech.cc.daohibe.EconomicEventParticipantDaoImpl;
 import com.cannontech.cc.model.BaseEvent;
 import com.cannontech.cc.model.CICustomerStub;
@@ -30,7 +29,6 @@ import com.cannontech.cc.service.enums.CurtailmentEventState;
 import com.cannontech.cc.service.enums.EconomicEventState;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.EnergyCompanyDao;
-import com.cannontech.core.dao.impl.EnergyCompanyDaoImpl;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.spring.YukonSpringHook;
@@ -51,17 +49,22 @@ import com.cannontech.spring.YukonSpringHook;
  * 
  * ***Detail Records Information
  * Example:
- * ,,Customer Name,Product Name,Event Type,,Event Start,Event Stop,Buy-Through Quantity,,,,String Value,Product Parameter Value,Process Flag,Active Flag
+ * Interface Name,,Account Number,,Product Name,Event Type,Item Name,Event Start Time,Event Stop Time,Buy Through Quantity,,,,Cannon Event ID,Product Parameter Value,Processing Flag,Active Flag
+ * Samples:
+ * Event - CSV,,1879113_300674428,,ISOC-CO Non-Economic Event Processing,Non-Economic,Non-Economic,20090223140000,20090223180000,0,,,,TC-16,Y,I,Y
+ * Event - CSV,,2905861_300675629,,ISOC-CO Economic Event Processing,Economic,Buy-Through Demand,20090218190000,20090218200000,0.0000,,,,TE-1,Y,I,Y
  * 
- * Customer Name   Should be a combination of premiseEservicepoint.  Will be found in customeraccount.accountnumber (Example:  030067629E01)
- * Product Name   Hard coded ISOC-CO (this is the name of the product In PBS)
- * Event Type   One of these values: Economic, Capacity&Contingency
+ * Interface Name  ISOC-CO (this is the name of the interface In PBS)
+ * Account Number Should be a combination of premiseEservicepoint.  Will be found in customeraccount.accountnumber (Example:  030067629E01)
+ * Product Name   One of these values: ISOC-CO Economic Event Processing, ISOC-CO Non-Economic Event Processing
+ * Event Type   One of these values: Economic, Non-Economic
+ * Item Name     One of these values: Buy-Through Demand, Non-Economic
  * Event Start   Format: YYYYMMDDhhmmss
  * Event Stop   Format: YYYYMMDDhhmmss
- * Buy-Through Quantity  9(11).9(4)
+ * Buy-Through Quantity  9(11).9(4), or 0 for Non-Economic
  * Buy-Through Price  9(11).9(6)       *** Not Required
  * String Value    Yukon EventNumber
- * Product Parameter Value  Hard coded value Event – CSV (required by interface)
+ * Product Parameter Value  Hard coded value Y
  * Process Flag                    Hard Coded value I (for insert)
  * Active Flag                     Hard Coded Value Y (for yes)
  * 
@@ -70,8 +73,8 @@ public class CurtailmentEventsItronFormat extends SimpleBillingFormatBase {
 
 	private final SimpleDateFormat DATE_TIME_FORMAT = new SimpleDateFormat("yyyyMMddHHmmss");
 	private final DecimalFormat BUY_THROUGH_FORMAT = new DecimalFormat("0.0000");
-	private final String PRODUCT_NAME = "ISOC-CO"; 
-	private final String PRODUCT_PARAMETER = "Event - CSV";
+	private final String INTERFACE_NAME = "Event - CSV";
+	private final String PRODUCT_PARAMETER = "Y";
 	private final String PROCESS_FLAG = "I";
 	private final String ACTIVE_FLAG = "Y";
 
@@ -120,7 +123,9 @@ public class CurtailmentEventsItronFormat extends SimpleBillingFormatBase {
 			String eventDataStr = "";
 			LiteCustomer liteCustomer = ciCustomerStub.getLite();
 			eventDataStr += buildDataString(getCustomerName(liteCustomer),
+					getProductNameString(event),
 					getEventTypeString(event), 
+					getItemNameString(event),
 					event.getStartTime(), 
 					event.getStopTime(), 
 					null, 
@@ -146,8 +151,10 @@ public class CurtailmentEventsItronFormat extends SimpleBillingFormatBase {
                 EconomicEventParticipantSelectionWindow participantSelectionWindow = 
                     economicService.getCustomerSelectionWindow(eventPricing, economicEventParticipant, i);
                 
-                eventDataStr += buildDataString(getCustomerName(liteCustomer), 
+                eventDataStr += buildDataString(getCustomerName(liteCustomer),
+                		getProductNameString(event),
                 		getEventTypeString(event), 
+                		getItemNameString(event),
                 		participantSelectionWindow.getWindow().getStartTime(),
                 		participantSelectionWindow.getWindow().getStopTime(),
                 		participantSelectionWindow.getEnergyToBuy(),
@@ -158,16 +165,19 @@ public class CurtailmentEventsItronFormat extends SimpleBillingFormatBase {
 		return "";
 	}
 	
-	private String buildDataString(String customerName, String eventType, Date startTime, Date stopTime, BigDecimal buyThroughEnergy, String displayName) {
+	private String buildDataString(String customerName, String productName, String eventType, String itemName, 
+			Date startTime, Date stopTime, BigDecimal buyThroughEnergy, String displayName) {
 		String eventDataStr = ""; 
+		eventDataStr += INTERFACE_NAME;
 		eventDataStr += ",,";
 		eventDataStr += customerName +",";
-		eventDataStr += PRODUCT_NAME +",";
-		eventDataStr += eventType + ",";
 		eventDataStr += ",";
+		eventDataStr += productName +",";
+		eventDataStr += eventType + ",";
+		eventDataStr += itemName + ",";
 		eventDataStr += DATE_TIME_FORMAT.format(startTime) + ",";
 		eventDataStr += DATE_TIME_FORMAT.format(stopTime) + ",";
-		eventDataStr += (buyThroughEnergy!=null ? BUY_THROUGH_FORMAT.format(buyThroughEnergy): "") +",";	//buy through quantity - n/a
+		eventDataStr += (buyThroughEnergy!=null ? BUY_THROUGH_FORMAT.format(buyThroughEnergy): "0") +",";	//buy through quantity - n/a
 		eventDataStr += ",";	//buy through price - not required
 		eventDataStr += ",,";
 		eventDataStr += displayName + ",";	//String value
@@ -202,9 +212,19 @@ public class CurtailmentEventsItronFormat extends SimpleBillingFormatBase {
 		
 	}
 
+	private String getProductNameString(BaseEvent event) {
+		if (event instanceof CurtailmentEvent) {
+			return "ISOC-CO Non-Economic Event Processing";
+		} else if (event instanceof EconomicEvent) {
+			return "ISOC-CO Economic Event Processing";
+		} else {
+			return "unknown";
+		}
+	}
+	
 	private String getEventTypeString(BaseEvent event) {
 		if (event instanceof CurtailmentEvent) {
-			return "Capacity&Contingency";
+			return "Non-Economic";
 		} else if (event instanceof EconomicEvent) {
 			return "Economic";
 		} else {
@@ -212,6 +232,16 @@ public class CurtailmentEventsItronFormat extends SimpleBillingFormatBase {
 		}
 	}
 
+	private String getItemNameString(BaseEvent event) {
+		if (event instanceof CurtailmentEvent) {
+			return "Non-Economic";
+		} else if (event instanceof EconomicEvent) {
+			return "Buy-Through Demand";
+		} else {
+			return "unknown";
+		}
+	}
+	
 	private String getEvents() {
 		detailRecordCount = 0;
 		String eventString = new String();
