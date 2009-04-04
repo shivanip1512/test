@@ -8,6 +8,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -38,16 +39,20 @@ public abstract class AbstractThermostatOperatorController {
         String thermostatIds = ServletRequestUtils.getStringParameter(request,
                                                                       "thermostatIds");
 
-        List<Integer> idList = new ArrayList<Integer>();
-
-        // If thermostatIds exists, remove brackets, split and create Integer list
-        thermostatIds = thermostatIds.replaceAll("[\\[|\\]]", "");
-        if (!StringUtils.isBlank(thermostatIds)) {
-			List<Integer> tempIdList = ServletUtil.getIntegerListFromString(thermostatIds);
-        	idList.addAll(tempIdList);
+        if(!StringUtils.isBlank(thermostatIds)) {
+	        List<Integer> idList = new ArrayList<Integer>();
+	
+	        // If thermostatIds exists, remove brackets, split and create Integer list
+	        thermostatIds = thermostatIds.replaceAll("[\\[|\\]]", "");
+	        if (!StringUtils.isBlank(thermostatIds)) {
+				List<Integer> tempIdList = ServletUtil.getIntegerListFromString(thermostatIds);
+	        	idList.addAll(tempIdList);
+	        }
+	
+	        return idList;
         }
-
-        return idList;
+        
+        return new ArrayList<Integer>();
     }
     
     @ModelAttribute("customerAccount")
@@ -101,6 +106,18 @@ public abstract class AbstractThermostatOperatorController {
 	    		throw new NotAuthorizedException("The Inventory with id: " + inventoryId + 
 	    				" does not belong to the current customer account with id: " + accountId);
 	    	}
+    	}
+    }
+    
+    public void addThermostatModelAttribute(
+    		HttpServletRequest request, ModelMap map, List<Integer> thermostatIds) {
+    	
+    	if(thermostatIds.size() > 1) {
+    		map.addAttribute("AllTherm", "true");
+    	} else {
+    		Integer thermostatId = thermostatIds.get(0);
+    		int inventoryNumber = this.getInventoryNumber(request, thermostatId);
+    		map.addAttribute("InvNo", inventoryNumber);
     	}
     }
 

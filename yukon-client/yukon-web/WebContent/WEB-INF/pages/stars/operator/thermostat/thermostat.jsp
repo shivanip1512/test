@@ -10,8 +10,6 @@
     <cti:msg var="degreesCelsius" key="yukon.dr.operator.thermostat.degreesCelsius" />
     <cti:msg var="degreesFahrenheit" key="yukon.dr.operator.thermostat.degreesFahrenheit" />
     
-    <c:set var="multipleThermostatsSelected" value="${fn:length(fn:split(thermostatIds, ',')) > 1}"></c:set>
-    
     <h3>
         <cti:msg key="yukon.dr.operator.thermostat.header" /><br>
         <cti:msg var="label" key="${thermostatLabel}" htmlEscape="true"/><br>
@@ -19,12 +17,11 @@
     </h3>
     
     <div style="text-align: center;">
-        <c:if test="${multipleThermostatsSelected}">
-            <cti:url var="allUrl" value="/spring/stars/operator/thermostat/view/all">
-                <cti:param name="thermostatIds" value="${thermostatIds}"></cti:param>
-            </cti:url>
-            <a href="${allUrl}"><cti:msg key="yukon.dr.operator.thermostat.changeSelected" /></a><br><br>
-        </c:if>
+	    <c:set var="multipleThermostatsSelected" value="${fn:length(fn:split(thermostatIds, ',')) > 1}"></c:set>
+	    <c:if test="${multipleThermostatsSelected}">
+	        <cti:url var="allUrl" value="/operator/Consumer/AllTherm.jsp" />
+	        <a href="${allUrl}"><cti:msg key="yukon.dr.operator.thermostat.changeSelected" /></a><br><br>
+	    </c:if>
     </div>
 
     <div class="plainText">

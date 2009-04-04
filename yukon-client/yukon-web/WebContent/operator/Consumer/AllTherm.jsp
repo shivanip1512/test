@@ -6,30 +6,12 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
-	int invID = 0;
-	Integer[] invIDs = new Integer[1];
-	
-	boolean allTherm = request.getParameter("AllTherm") != null;
-	String thermNoStr = "AllTherm";
-	
-	if (allTherm) {
-		// Set multiple thermostats
-		invIDs = (Integer[]) session.getAttribute(ServletUtils.ATT_THERMOSTAT_INVENTORY_IDS);
-	}
-	else {
-		// Set a single thermostat
-		int thermNo = Integer.parseInt(request.getParameter("InvNo"));
-		StarsInventory thermostat = inventories.getStarsInventory(thermNo);
-		invID = thermostat.getInventoryID();
-		thermNoStr = "InvNo=" + thermNo;
-		
-		invIDs[0] = invID;
-	}
-	
-	String thermostatIds = StringUtils.join(invIDs, ",");
-	
+    int invID = 0;
+    
+    // Clear out any previous thermsotatids
+    session.removeAttribute(ServletUtils.ATT_THERMOSTAT_INVENTORY_IDS);
+    
 %>
-<c:set var="thermostatIds" value="<%=thermostatIds%>" />
 
 <html>
   <head>
@@ -61,20 +43,20 @@
 	        </tr>
 	        <tr> 
 	          <td  valign="top" width="101">
-			  <% String pageName = "ThermSchedule.jsp?" + thermNoStr; %>
+			  <% String pageName = "AllTherm.jsp";%>
 	          <%@ include file="include/Nav.jspf" %>
 			  </td>
 	          <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
 			  <td width="657" valign="top" bgcolor="#FFFFFF"> 
 	            <div align="center"> 
-	              <% String header = ""; %>
+	              <% String header = null; %>
 	              <%@ include file="include/InfoSearchBar.jspf" %>
 	              <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 	              <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
 
-                  <c:url var="thermostatUrl" value="/spring/stars/operator/thermostat/schedule/confirm">
-                    <c:param name="thermostatIds" value="${thermostatIds}" />
-                  </c:url>
+                  <cti:url var="thermostatUrl" value="/spring/stars/operator/thermostat/view/all">
+                    <cti:param name="thermostatIds" value="" />
+                  </cti:url>
                   <jsp:include page="${thermostatUrl}" />
                   
 				  <p align="center" class="MainText">

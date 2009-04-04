@@ -496,9 +496,13 @@ public class ThermostatServiceImpl implements ThermostatService {
         }
 
         if (scheduleMode == ThermostatScheduleMode.ALL) {
-            // Update Saturday entries
-            updateScheduleEntries(updatedEntries,
-                                  season.getSeasonEntries(TimeOfWeek.WEEKEND));
+            // Update Weekend entries
+            List<ThermostatSeasonEntry> weekendEntries = 
+            	season.getSeasonEntries(TimeOfWeek.WEEKEND);
+            if(weekendEntries != null) {
+            	updateScheduleEntries(updatedEntries,
+            			weekendEntries);
+            }
         }
 
         if (scheduleMode == ThermostatScheduleMode.ALL

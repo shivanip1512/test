@@ -7,14 +7,14 @@
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
 	int invID = 0;
-	int[] invIDs = new int[1];
+    Integer[] invIDs = new Integer[1];
 	
 	boolean allTherm = request.getParameter("AllTherm") != null;
 	String thermNoStr = "AllTherm";
 	
 	if (allTherm) {
 		// Set multiple thermostats
-		invIDs = (int[]) session.getAttribute(ServletUtils.ATT_THERMOSTAT_INVENTORY_IDS);
+		invIDs = (Integer[]) session.getAttribute(ServletUtils.ATT_THERMOSTAT_INVENTORY_IDS);
 	}
 	else {
 		// Set a single thermostat
@@ -26,7 +26,7 @@
 		invIDs[0] = invID;
 	}
 	
-	String thermostatIds = StringUtils.join(ArrayUtils.toObject(invIDs), ",");
+	String thermostatIds = StringUtils.join(invIDs, ",");
 	
 %>
 <c:set var="thermostatIds" value="<%=thermostatIds%>" />
@@ -67,7 +67,7 @@
 	          <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
 			  <td width="657" valign="top" bgcolor="#FFFFFF"> 
 	            <div align="center"> 
-	              <% String header = ""; %>
+	              <% String header = null; %>
 	              <%@ include file="include/InfoSearchBar.jspf" %>
 	              <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 	              <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>

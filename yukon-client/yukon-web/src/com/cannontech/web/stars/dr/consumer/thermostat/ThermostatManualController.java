@@ -1,5 +1,6 @@
 package com.cannontech.web.stars.dr.consumer.thermostat;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -189,18 +190,14 @@ public class ThermostatManualController extends AbstractThermostatController {
         ThermostatManualEventResult resultMessage = ThermostatManualEventResult.valueOf(message);
         String key = resultMessage.getDisplayKey();
 
-        YukonMessageSourceResolvable resolvable;
-
-        if (thermostatIds.size() == 1) {
-            int id = thermostatIds.get(0);
-            Thermostat thermostat = inventoryDao.getThermostatById(id);
-
-            resolvable = new YukonMessageSourceResolvable(key,
-                                                          thermostat.getLabel());
-
-        } else {
-            resolvable = new YukonMessageSourceResolvable(key);
+        List<String> thermostatLabels = new ArrayList<String>();
+        for(Integer thermostatId : thermostatIds) {
+        	Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
+        	thermostatLabels.add(thermostat.getLabel());
         }
+        
+        String thermostatLabelString = StringUtils.join(thermostatLabels, ", ");
+        YukonMessageSourceResolvable resolvable = new YukonMessageSourceResolvable(key, thermostatLabelString);
 
         map.addAttribute("message", resolvable);
         map.addAttribute("thermostatIds", thermostatIds);

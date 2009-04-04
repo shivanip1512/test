@@ -1,6 +1,33 @@
+<%@ page import="org.apache.commons.lang.StringUtils" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
+<%
+    int invID = 0;
+    Integer[] invIDs = new Integer[1];
+    
+    boolean allTherm = request.getParameter("AllTherm") != null;
+    String thermNoStr = "AllTherm";
+    
+    if (allTherm) {
+        // Set multiple thermostats
+        invIDs = (Integer[]) session.getAttribute(ServletUtils.ATT_THERMOSTAT_INVENTORY_IDS);
+    }
+    else {
+        // Set a single thermostat
+        int thermNo = Integer.parseInt(request.getParameter("InvNo"));
+        StarsInventory thermostat = inventories.getStarsInventory(thermNo);
+        invID = thermostat.getInventoryID();
+        thermNoStr = "InvNo=" + thermNo;
+        
+        invIDs[0] = invID;
+    }
+    
+    String thermostatIds = StringUtils.join(invIDs, ",");
+
+%>
+<c:set var="thermostatIds" value="<%=thermostatIds%>" />
+
 <html>
   <head>
     <title>Energy Services Operations Center</title>
@@ -34,7 +61,7 @@
                 <!-- Don't have to include the 'message' param in this url because it is already
                      on the request (message param is used by controller) -->
                 <cti:url var="completeUrl" value="/spring/stars/operator/thermostat/schedule/hints">
-                    <cti:param name="thermostatIds" value="${param.thermostatIds}" />
+                    <cti:param name="thermostatIds" value="${thermostatIds}" />
                 </cti:url>
                 <jsp:include page="${completeUrl}"></jsp:include>
               </div>

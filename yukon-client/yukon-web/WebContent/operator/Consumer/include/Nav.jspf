@@ -534,10 +534,8 @@ pageLinks = new Array(<%= inventories.getStarsInventoryCount() %>);
 	int invCnt = inventories.getStarsInventoryCount();
 %>
 	// Defines links for the thermostat "All" menu
-	pageLinks[<%= invCnt %>] = new Array(3);
+	pageLinks[<%= invCnt %>] = new Array(1);
 	pageLinks[<%= invCnt %>][0] = "AllTherm.jsp";
-	pageLinks[<%= invCnt %>][1] = "ThermSchedule.jsp?AllTherm";
-	pageLinks[<%= invCnt %>][2] = "Thermostat.jsp?AllTherm";
 
 </script>
 
@@ -621,24 +619,12 @@ pageLinks = new Array(<%= inventories.getStarsInventoryCount() %>);
   </div>
 </div>
 
-<div id="thermostatAllMenu" class="bgMenu" style="width:100px" align="left">
-  <div id="thermostatAllMenuItem" name="thermostatAllMenuItem" style="width:100px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "if (warnUnsavedChanges()) showPage(0)">
+<div id="thermostatAllMenu" class="bgMenu" style="width:110px" align="left">
+  <div id="thermostatAllMenuItem" name="thermostatAllMenuItem" style="width:110px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "if (warnUnsavedChanges()) showPage(0)">
   &nbsp;&nbsp;&nbsp;Select Thermostats
   </div>
-  <div id="thermostatAllMenuItemSelected" name="thermostatAllMenuItemSelected" style="width:100px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "if (warnUnsavedChanges()) showPage(0)">
+  <div id="thermostatAllMenuItemSelected" name="thermostatAllMenuItemSelected" style="width:110px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "if (warnUnsavedChanges()) showPage(0)">
   &nbsp;&#149;&nbsp;Select Thermostats
-  </div>
-  <div id="thermostatAllMenuItem" name="thermostatAllMenuItem" style="width:100px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "if (warnUnsavedChanges()) showPage(1)">
-  &nbsp;&nbsp;&nbsp;<%= DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_SCHED) %>
-  </div>
-  <div id="thermostatAllMenuItemSelected" name="thermostatAllMenuItemSelected" style="width:100px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "if (warnUnsavedChanges()) showPage(1)">
-  &nbsp;&#149;&nbsp;<%= DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_SCHED) %>
-  </div>
-  <div id="thermostatAllMenuItem" name="thermostatAllMenuItem" style="width:100px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "if (warnUnsavedChanges()) showPage(2)">
-  &nbsp;&nbsp;&nbsp;<%= DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_MANUAL) %>
-  </div>
-  <div id="thermostatAllMenuItemSelected" name="thermostatAllMenuItemSelected" style="width:100px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "if (warnUnsavedChanges()) showPage(2)">
-  &nbsp;&#149;&nbsp;<%= DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_MANUAL) %>
   </div>
 </div>
 

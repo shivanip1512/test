@@ -23,7 +23,7 @@ import com.cannontech.web.security.annotation.CheckRole;
  */
 @CheckRole(YukonRole.CONSUMER_INFO)
 @Controller
-public class AbstractThermostatOperatorScheduleController {
+public class AbstractThermostatOperatorScheduleController extends AbstractThermostatOperatorController {
 
 
     /**

@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import net.sf.json.JSONObject;
 
@@ -17,13 +16,11 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestBindingException;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -31,11 +28,8 @@ import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
-import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.HardwareType;
@@ -48,12 +42,7 @@ import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleUpdateResult;
 import com.cannontech.stars.dr.thermostat.model.ThermostatSeasonEntry;
 import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
 import com.cannontech.stars.dr.thermostat.service.ThermostatService;
-import com.cannontech.stars.util.ServletUtils;
-import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
-import com.cannontech.stars.xml.serialize.StarsInventories;
-import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRole;
 
 /**
@@ -69,84 +58,9 @@ public class ThermostatOperatorScheduleController
     private CustomerDao customerDao;
     private ThermostatService thermostatService;
     
-    private CustomerAccountDao customerAccountDao;
-	private StarsInventoryBaseDao starsInventoryBaseDao;
 	private DateFormattingService dateFormattingService;
 	private YukonUserContextMessageSourceResolver messageSourceResolver;
     
-	@ModelAttribute("thermostatIds")
-    public List<Integer> getThermostatIds(HttpServletRequest request)
-            throws ServletRequestBindingException {
-
-        String thermostatIds = ServletRequestUtils.getStringParameter(request,
-                                                                      "thermostatIds");
-
-        List<Integer> idList = new ArrayList<Integer>();
-
-        // If thermostatIds exists, remove brackets, split and create Integer list
-        thermostatIds = thermostatIds.replaceAll("[\\[|\\]]", "");
-        if (!StringUtils.isBlank(thermostatIds)) {
-			List<Integer> tempIdList = ServletUtil.getIntegerListFromString(thermostatIds);
-        	idList.addAll(tempIdList);
-        }
-
-        return idList;
-    }
-    
-    @ModelAttribute("customerAccount")
-    public CustomerAccount getCustomerAccount(HttpServletRequest request) {
-    	
-    	// Get the account info from the session
-    	HttpSession session = request.getSession();
-    	StarsCustAccountInformation accountInfo = 
-            (StarsCustAccountInformation) session.getAttribute(ServletUtils.TRANSIENT_ATT_CUSTOMER_ACCOUNT_INFO);
-    	
-        int accountId = accountInfo.getStarsCustomerAccount().getAccountID();
-		CustomerAccount account = customerAccountDao.getById(accountId);
-        return account;
-    }
-    
-    /**
-     * Helper method to get the legacy 'inventory number' for use with leagcy stars operator
-     * urls
-     * @param request - Current request
-     * @param thermostatId - Id to get number for
-     * @return Inventory number
-     */
-    protected int getInventoryNumber(HttpServletRequest request, int thermostatId) {
-    	
-    	StarsCustAccountInformation accountInfo = 
-            (StarsCustAccountInformation) request.getSession().getAttribute(
-            		ServletUtils.TRANSIENT_ATT_CUSTOMER_ACCOUNT_INFO);
-        StarsInventories inventories = accountInfo.getStarsInventories();
-        StarsInventory[] starsInventory = inventories.getStarsInventory();
-        int count = 0;
-        for(StarsInventory inventory : starsInventory) {
-        	if(thermostatId == inventory.getInventoryID()) {
-        		break;
-        	}
-        	count++;
-        }
-        
-        return count;
-    }
-    
-    /**
-     * Helper method to make sure the inventory being used belongs to the current account 
-     */
-    public void checkInventoryAgainstAccount(List<Integer> inventoryIdList, CustomerAccount customerAccount){
-    	
-    	for(Integer inventoryId : inventoryIdList) {
-    	
-	    	LiteInventoryBase inventory = starsInventoryBaseDao.getById(inventoryId);
-	    	int accountId = customerAccount.getAccountId();
-			if(inventory.getAccountID() != accountId) {
-	    		throw new NotAuthorizedException("The Inventory with id: " + inventoryId + 
-	    				" does not belong to the current customer account with id: " + accountId);
-	    	}
-    	}
-    }
-
     @RequestMapping(value = "/operator/thermostat/schedule/view", method = RequestMethod.GET)
     public String view(@ModelAttribute("customerAccount") CustomerAccount account, 
             @ModelAttribute("thermostatIds") List<Integer> thermostatIds,
@@ -164,6 +78,9 @@ public class ThermostatOperatorScheduleController
                                                                        accountId);
         }
 
+        StringBuffer hintsUrl = new StringBuffer("/operator/Consumer/ThermostatScheduleHints.jsp?");
+        StringBuffer tempUrl = new StringBuffer("/operator/Consumer/Thermostat.jsp?");
+        
         Integer thermostatId = null;
         HardwareType thermostatType = null;
         if (thermostatIds.size() == 1) {
@@ -189,6 +106,11 @@ public class ThermostatOperatorScheduleController
             defaultSchedule = thermostatScheduleDao.getEnergyCompanyDefaultSchedule(accountId,
                                                                                     thermostat.getType());
             thermostatType = thermostat.getType();
+            
+            int inventoryNumber = this.getInventoryNumber(request, thermostatId);
+    		hintsUrl.append("InvNo=" + inventoryNumber);
+    		tempUrl.append("InvNo=" + inventoryNumber);
+            
         } else {
             // multiple thermostats selected
 
@@ -205,7 +127,11 @@ public class ThermostatOperatorScheduleController
 
             defaultSchedule = thermostatScheduleDao.getEnergyCompanyDefaultSchedule(accountId,
                                                                                     thermostatType);
+            hintsUrl.append("AllTherm=true");
+            tempUrl.append("AllTherm=true");
         }
+        map.addAttribute("hintsUrl", hintsUrl);
+        map.addAttribute("tempUrl", tempUrl);
 
         // Add the temperature unit to model
         LiteCustomer customer = customerDao.getLiteCustomer(account.getCustomerId());
@@ -228,10 +154,7 @@ public class ThermostatOperatorScheduleController
         map.addAttribute("localeString", locale.toString());
 
         map.addAttribute("thermostatType", thermostatType.toString());
-        
-        int inventoryNumber = this.getInventoryNumber(request, thermostatId);
-        map.addAttribute("inventoryNumber", inventoryNumber);
-        
+
         return "operator/thermostat/thermostatSchedule.jsp";
     }
     
@@ -258,10 +181,7 @@ public class ThermostatOperatorScheduleController
     	map.addAttribute("scheduleId", scheduleId);
     	map.addAttribute("scheduleName", scheduleName);
     	
-    	// There is only 1 thermostat on this page
-        int thermostatId = thermostatIds.get(0);
-    	int inventoryNumber = this.getInventoryNumber(request, thermostatId);
-    	map.addAttribute("InvNo", inventoryNumber);
+    	this.addThermostatModelAttribute(request, map, thermostatIds);
     	
     	return "redirect:/operator/Consumer/ThermostatScheduleConfirm.jsp";
     	
@@ -288,15 +208,29 @@ public class ThermostatOperatorScheduleController
     	List<Object> argumentList = new ArrayList<Object>();
     	argumentList.add(timeOfWeekString);
     	
-    	// Add the thermostat label to the model
-    	Thermostat thermostat = null;
-        int thermostatId = thermostatIds.get(0);
+    	String cancelUrl;
+    	YukonMessageSourceResolvable thermostatLabelresolvable;
+    	int thermostatId = thermostatIds.get(0);
+    	Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
+    	
+    	this.addThermostatModelAttribute(request, map, thermostatIds);
+    	if(thermostatIds.size() > 1) {
+    		
+            thermostatLabelresolvable = 
+            	new YukonMessageSourceResolvable("yukon.dr.operator.thermostatSchedule.allLabel");
+            
+			cancelUrl = "/operator/Consumer/ThermSchedule.jsp?AllTherm=true";
+        	
+    	} else {
+    		// There is only 1 thermostat on this page
+    		// Add the thermostat label to the model
+			thermostatLabelresolvable = new YukonMessageSourceResolvable("yukon.dr.operator.thermostatSchedule.label",
+					thermostat.getLabel());
 
-		thermostat = inventoryDao.getThermostatById(thermostatId);
-        YukonMessageSourceResolvable resolvable = 
-        	new YukonMessageSourceResolvable("yukon.dr.operator.thermostatSchedule.label",
-        									 thermostat.getLabel());
-        map.addAttribute("thermostatLabel", resolvable);
+			int inventoryNumber = this.getInventoryNumber(request, thermostatId);
+			cancelUrl = "/operator/Consumer/ThermSchedule.jsp?InvNo=" + inventoryNumber;
+    	}
+        map.addAttribute("thermostatLabel", thermostatLabelresolvable);
     	
         String scheduleConfirmKey = "yukon.dr.operator.thermostatScheduleConfirm.scheduleText";
     	if (HardwareType.COMMERCIAL_EXPRESSSTAT.equals(thermostat.getType())) {
@@ -330,9 +264,6 @@ public class ThermostatOperatorScheduleController
 						    			yukonUserContext.getLocale());
     	map.addAttribute("scheduleConfirm", scheduleConfirm);
     	
-    	// Add cancel url
-    	int inventoryNumber = this.getInventoryNumber(request, thermostatId);
-    	String cancelUrl = "/operator/Consumer/ThermSchedule.jsp?InvNo=" + inventoryNumber;
     	map.addAttribute("cancelUrl", cancelUrl);
 
     	// Pass all of the parameters through to confirm page
@@ -399,7 +330,7 @@ public class ThermostatOperatorScheduleController
 
                 schedule.setInventoryId(thermostatId);
 
-                // Send schedule to thermsotat
+                // Send schedule to thermostat
                 message = thermostatService.sendSchedule(account,
                                                          schedule,
                                                          scheduleTimeOfWeek,
@@ -461,26 +392,26 @@ public class ThermostatOperatorScheduleController
 
         YukonMessageSourceResolvable resolvable;
 
-        if (thermostatIds.size() == 1) {
-            int thermostatId = thermostatIds.get(0);
-            Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
-
-            resolvable = new YukonMessageSourceResolvable(key,
-                                                          thermostat.getLabel());
-
-        } else {
-            resolvable = new YukonMessageSourceResolvable(key);
+        List<String> thermostatLabels = new ArrayList<String>();
+        for(Integer thermostatId : thermostatIds) {
+        	Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
+        	thermostatLabels.add(thermostat.getLabel());
         }
         
-        // Get the first thermostat id
-        Integer thermostatId = thermostatIds.get(0);
+        String thermostatLabelString = StringUtils.join(thermostatLabels, ", ");
+        resolvable = new YukonMessageSourceResolvable(key, thermostatLabelString);
         
-        // Get the 'inventory number' for use with legacy stars operator links
-        int inventoryNumber = this.getInventoryNumber(request, thermostatId);
-
         map.addAttribute("message", resolvable);
 
-        map.addAttribute("viewUrl", "/operator/Consumer/ThermSchedule.jsp?InvNo=" + inventoryNumber);
+        StringBuffer viewUrl = new StringBuffer("/operator/Consumer/ThermSchedule.jsp?");
+        if(thermostatIds.size() > 1) {
+        	viewUrl.append("AllTherm=true");
+    	} else {
+    		Integer thermostatId = thermostatIds.get(0);
+    		int inventoryNumber = this.getInventoryNumber(request, thermostatId);
+    		viewUrl.append("InvNo=" + inventoryNumber);
+    	}
+        map.addAttribute("viewUrl", viewUrl.toString());
 
         return "operator/thermostat/actionComplete.jsp";
     }
@@ -492,13 +423,16 @@ public class ThermostatOperatorScheduleController
     	
     	this.checkInventoryAgainstAccount(thermostatIds, customerAccount);
     	
-    	Integer thermostatId = null;
-    	if(thermostatIds.size() > 0) {
-    		thermostatId = thermostatIds.get(0);
+    	StringBuffer backUrl = new StringBuffer("/operator/Consumer/ThermSchedule.jsp?");
+        if(thermostatIds.size() > 1) {
+        	backUrl.append("AllTherm=true");
+    	} else {
+    		Integer thermostatId = thermostatIds.get(0);
+    		int inventoryNumber = this.getInventoryNumber(request, thermostatId);
+    		backUrl.append("InvNo=" + inventoryNumber);
     	}
+        map.addAttribute("backUrl", backUrl);
     	
-    	int inventoryNumber = this.getInventoryNumber(request, thermostatId);
-    	map.addAttribute("inventoryNumber", inventoryNumber);
         return "operator/thermostat/scheduleHints.jsp";
     }
 
@@ -530,10 +464,7 @@ public class ThermostatOperatorScheduleController
     	
     	thermostatScheduleDao.delete(scheduleId);
 
-    	// There is only 1 thermostat on this page
-    	int thermostatId = thermostatIds.get(0);
-    	int inventoryNumber = this.getInventoryNumber(request, thermostatId);
-    	map.addAttribute("InvNo", inventoryNumber);
+    	this.addThermostatModelAttribute(request, map, thermostatIds);
     	
     	map.addAttribute("scheduleId", scheduleId);
     	return "redirect:/operator/Consumer/SavedSchedules.jsp";
@@ -545,11 +476,7 @@ public class ThermostatOperatorScheduleController
     		Integer scheduleId, ModelMap map, HttpServletRequest request) throws Exception {
     	
     	this.checkInventoryAgainstAccount(thermostatIds, account);
-    	
-    	// There is only 1 thermostat on this page
-    	int thermostatId = thermostatIds.get(0);
-    	int inventoryNumber = this.getInventoryNumber(request, thermostatId);
-    	map.addAttribute("InvNo", inventoryNumber);
+    	this.addThermostatModelAttribute(request, map, thermostatIds);
     	
     	map.addAttribute("scheduleId", scheduleId);
     	return "redirect:/operator/Consumer/ThermSchedule.jsp";
@@ -575,17 +502,6 @@ public class ThermostatOperatorScheduleController
     public void setThermostatService(ThermostatService thermostatService) {
         this.thermostatService = thermostatService;
     }
-    
-    @Autowired
-    public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
-		this.customerAccountDao = customerAccountDao;
-	}
-    
-    @Autowired
-    public void setStarsInventoryBaseDao(
-			StarsInventoryBaseDao starsInventoryBaseDao) {
-		this.starsInventoryBaseDao = starsInventoryBaseDao;
-	}
     
     @Autowired
     public void setDateFormattingService(

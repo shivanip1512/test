@@ -157,9 +157,7 @@
 
             <c:set var="multipleThermostatsSelected" value="${fn:length(fn:split(thermostatIds, ',')) > 1}"></c:set>
             <c:if test="${multipleThermostatsSelected}">
-                <cti:url var="allUrl" value="/spring/stars/operator/thermostat/view/all">
-                    <cti:param name="thermostatIds" value="${thermostatIds}"></cti:param>
-                </cti:url>
+                <cti:url var="allUrl" value="/operator/Consumer/AllTherm.jsp" />
                 <a href="${allUrl}"><cti:msg key="yukon.dr.operator.thermostatSchedule.changeSelected" /></a><br><br>
             </c:if>
             
@@ -215,10 +213,10 @@
                             </tr>
                             <tr>
                                 <td class="TableCell" style="width: 50%; text-align: center; vertical-align: top;"> 
-                                    <cti:msg key="yukon.dr.operator.thermostatSchedule.hints" arguments="/operator/Consumer/ThermostatScheduleHints.jsp?thermostatIds=${thermostatIds}" />
+                                    <cti:msg key="yukon.dr.operator.thermostatSchedule.hints" arguments="${hintsUrl}" />
                                 </td>
                                 <td class="TableCell"  style="width: 50%; text-align: center; vertical-align: top;"> 
-                                    <cti:msg key="yukon.dr.operator.thermostatSchedule.temporaryAdjustments" arguments="/operator/Consumer/Thermostat.jsp?InvNo=${inventoryNumber}" />
+                                    <cti:msg key="yukon.dr.operator.thermostatSchedule.temporaryAdjustments" arguments="${tempUrl}" />
                                 </td>
                             </tr>
                         </table>

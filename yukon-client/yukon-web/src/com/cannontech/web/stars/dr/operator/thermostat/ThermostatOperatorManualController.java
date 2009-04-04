@@ -1,5 +1,6 @@
 package com.cannontech.web.stars.dr.operator.thermostat;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -165,28 +166,29 @@ public class ThermostatOperatorManualController extends AbstractThermostatOperat
         ThermostatManualEventResult resultMessage = ThermostatManualEventResult.valueOf(message);
         String key = resultMessage.getDisplayKey();
 
-        YukonMessageSourceResolvable resolvable;
-
-        if (thermostatIds.size() == 1) {
-            int id = thermostatIds.get(0);
-            Thermostat thermostat = inventoryDao.getThermostatById(id);
-
-            resolvable = new YukonMessageSourceResolvable(key,
-                                                          thermostat.getLabel());
-
-        } else {
-            resolvable = new YukonMessageSourceResolvable(key);
+        List<String> thermostatLabels = new ArrayList<String>();
+        for(Integer thermostatId : thermostatIds) {
+        	Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
+        	thermostatLabels.add(thermostat.getLabel());
         }
         
-        // Get the first thermostat id
-        Integer thermostatId = thermostatIds.get(0);
+        String thermostatLabelString = StringUtils.join(thermostatLabels, ", ");
+        YukonMessageSourceResolvable resolvable = 
+        	new YukonMessageSourceResolvable(key, thermostatLabelString);
         
-        // Get the 'inventory number' for use with legacy stars operator links
-        int inventoryNumber = this.getInventoryNumber(request, thermostatId);
-
+        this.addThermostatModelAttribute(request, map, thermostatIds);
+        
         map.addAttribute("message", resolvable);
 
-        map.addAttribute("viewUrl", "/operator/Consumer/Thermostat.jsp?InvNo=" + inventoryNumber);
+        StringBuffer viewUrl = new StringBuffer("/operator/Consumer/Thermostat.jsp?");
+        if(thermostatIds.size() > 1) {
+        	viewUrl.append("AllTherm=true");
+    	} else {
+    		Integer thermostatId = thermostatIds.get(0);
+    		int inventoryNumber = this.getInventoryNumber(request, thermostatId);
+    		viewUrl.append("InvNo=" + inventoryNumber);
+    	}
+        map.addAttribute("viewUrl", viewUrl.toString());
 
         return "operator/thermostat/actionComplete.jsp";
     }

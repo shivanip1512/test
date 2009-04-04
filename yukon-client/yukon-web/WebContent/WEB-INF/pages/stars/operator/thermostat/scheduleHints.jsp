@@ -12,7 +12,7 @@
             <cti:msg key="yukon.dr.operator.scheduleHints.hint" />
         </div>
         
-        <a href="/operator/Consumer/ThermSchedule.jsp?InvNo=${inventoryNumber}">
+        <a href="${backUrl}">
             <cti:msg key="yukon.dr.operator.scheduleHints.back" />
         </a>
     </div>

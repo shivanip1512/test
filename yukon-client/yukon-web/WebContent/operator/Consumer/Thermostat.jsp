@@ -7,14 +7,14 @@
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
 	int invID = 0;
-	int[] invIDs = new int[1];
+	Integer[] invIDs = new Integer[1];
 	
 	boolean allTherm = request.getParameter("AllTherm") != null;
 	String thermNoStr = "AllTherm";
 	
 	if (allTherm) {
 		// Set multiple thermostats
-		invIDs = (int[]) session.getAttribute(ServletUtils.ATT_THERMOSTAT_INVENTORY_IDS);
+		invIDs = (Integer[]) session.getAttribute(ServletUtils.ATT_THERMOSTAT_INVENTORY_IDS);
 	}
 	else {
 		// Set a single thermostat
@@ -26,7 +26,7 @@
 		invIDs[0] = invID;
 	}
 	
-	String thermostatIds = StringUtils.join(ArrayUtils.toObject(invIDs), ",");
+	String thermostatIds = StringUtils.join(invIDs, ",");
 
 %>
 <c:set var="thermostatIds" value="<%=thermostatIds%>" />
