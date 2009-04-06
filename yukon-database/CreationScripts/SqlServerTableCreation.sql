@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     4/3/2009 4:12:50 PM                          */
+/* Created on:     4/6/2009 11:36:24 AM                         */
 /*==============================================================*/
 
 
@@ -12089,12 +12089,14 @@ INSERT INTO YukonRoleProperty VALUES(-20016,-200,'View Logs','true','Controls ac
 INSERT INTO YukonRoleProperty VALUES(-20017,-200,'Initialize Energy Company Setup','false','Controls if Energy Company needs to be initialized. Property should not be changed manually, but rather will be controlled by the system.');
 
 /* Operator Metering Role Properties*/
-INSERT INTO YukonRoleProperty VALUES (-20203,-202,'Enable Bulk Importer','true','Allows access to the Bulk Importer');
-INSERT INTO YukonRoleProperty VALUES (-20206,-202,'Profile Collection','true','Controls access to submit a (past) profile collection request');
-INSERT INTO YukonRoleProperty VALUES (-20207,-202,'Move In/Move Out Auto Archiving','true','Enables automatic archiving of move in/move out transactions');
-INSERT INTO YukonRoleProperty VALUES (-20208,-202,'Move In/Move Out','true','Controls access to process a move in/move out');
-INSERT INTO YukonRoleProperty VALUES (-20209,-202,'Profile Collection Scanning','true','Controls access to start/stop scanning of profile data'); 
-INSERT INTO YukonRoleProperty VALUES (-20210,-202,'High Bill Complaint','true','Controls access to process a high bill complaint'); 
+INSERT INTO YukonRoleProperty VALUES(-20203,-202,'Enable Bulk Importer','true','Allows access to the Bulk Importer');
+INSERT INTO YukonRoleProperty VALUES(-20206,-202,'Profile Collection','true','Controls access to submit a (past) profile collection request');
+INSERT INTO YukonRoleProperty VALUES(-20207,-202,'Move In/Move Out Auto Archiving','true','Enables automatic archiving of move in/move out transactions');
+INSERT INTO YukonRoleProperty VALUES(-20208,-202,'Move In/Move Out','true','Controls access to process a move in/move out');
+INSERT INTO YukonRoleProperty VALUES(-20209,-202,'Profile Collection Scanning','true','Controls access to start/stop scanning of profile data'); 
+INSERT INTO YukonRoleProperty VALUES(-20210,-202,'High Bill Complaint','true','Controls access to process a high bill complaint'); 
+INSERT INTO YukonRoleProperty VALUES(-20211,-202,'CIS Info Widget Enabled','false','Controls access to view the CIS Information widget.');
+INSERT INTO YukonRoleProperty VALUES(-20212,-202,'CIS Info Type','NONE','Defines the type of CIS Information widget to display. Available placeholders: NONE, MULTISPEAK, CAYENTA');
 
 /* Operator Esubstation Drawings Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-20600,-206,'View Drawings','true','Controls viewing of Esubstations drawings');
