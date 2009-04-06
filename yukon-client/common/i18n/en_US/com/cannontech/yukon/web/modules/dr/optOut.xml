@@ -61,18 +61,20 @@
     <entry key="yukon.dr.operator.optout.canceled">Canceled</entry>
     <entry key="yukon.dr.operator.optout.viewAll">View Full History</entry>
     <entry key="yukon.dr.operator.optout.allOptedOut">All devices have already been opted out.</entry>
+    <entry key="yukon.dr.operator.optout.noOptOutsAvailable">All opt outs for all devices have been used.</entry>
 
     <!-- optOutList.jsp -->
     <entry key="yukon.dr.operator.optoutlist.header">Programs - Opt Out</entry>
     <entry key="yukon.dr.operator.optoutlist.description">Please select the hardware you want to opt out of.</entry>
-    <entry key="yukon.dr.operator.optoutlist.someAlreadyOptedOut">Items already checked have already been opted out.</entry>
-    <entry key="yukon.dr.operator.optoutlist.programOptOutTitle">Program Opt Out</entry>
     <entry key="yukon.dr.operator.optoutlist.hardware">Hardware</entry>
     <entry key="yukon.dr.operator.optoutlist.programAssigned">Program Assigned</entry>
     <entry key="yukon.dr.operator.optoutlist.relay">Relay {0}</entry>
     <entry key="yukon.dr.operator.optoutlist.noRelay">Relay (N/A)</entry>
+    <entry key="yukon.dr.operator.optoutlist.currentlyOptedOut">This device is currently opted out.</entry>
+    <entry key="yukon.dr.operator.optoutlist.noMoreOptOutsAvailable">No more opt outs are available for this device.</entry>
     <entry key="yukon.dr.operator.optoutlist.save">Opt Out</entry>
-    
+    <entry key="yukon.dr.operator.optoutlist.cancel">Cancel</entry>
+
     <!--  optOutConfirm.jsp -->
     <entry key="yukon.dr.operator.optoutconfirm.header">Programs - Opt Out</entry>
     <entry key="yukon.dr.operator.optoutconfirm.description">Please complete the following form to opt out of your program:</entry>
@@ -90,6 +92,11 @@
     <entry key="yukon.dr.operator.optoutHistory.dateActive">Active Date</entry>
     <entry key="yukon.dr.operator.optoutHistory.durationHeader">Duration</entry>
     <entry key="yukon.dr.operator.optoutHistory.backToOptOut">Back to Opt Out</entry>
+
+    <!--  OptOutError.jsp -->
+    <entry key="yukon.dr.operator.optoutError.header">Opt Out Error</entry>
+    <entry key="yukon.dr.operator.optoutError.invalidStartDate"><![CDATA[<i>The start date cannot be earlier than today.</i>]]></entry>
+    <entry key="yukon.dr.operator.optoutError.ok">Ok</entry>
 
     <!--  scheduledEvents.jsp -->
     <entry key="yukon.web.modules.dr.scheduledEvents.title">Scheduled Opt Outs</entry>

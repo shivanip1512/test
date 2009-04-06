@@ -2,6 +2,7 @@ package com.cannontech.stars.dr.displayable.model;
 
 import java.util.List;
 
+import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.stars.dr.program.model.Program;
 
 public class DisplayableInventory {
@@ -9,7 +10,10 @@ public class DisplayableInventory {
     private String displayName;
     private String serialNumber;
     private List<Program> programs;
-    
+    private int usedOptOuts = 0;
+    private int remainingOptOuts = 0;
+    private boolean currentlyOptedOut = false;
+
     public int getInventoryId() {
         return inventoryId;
     }
@@ -40,6 +44,34 @@ public class DisplayableInventory {
     
     public void setPrograms(List<Program> programs) {
         this.programs = programs;
+    }
+
+    public int getUsedOptOuts() {
+        return usedOptOuts;
+    }
+
+    public void setUsedOptOuts(int usedOptOuts) {
+        this.usedOptOuts = usedOptOuts;
+    }
+
+    public int getRemainingOptOuts() {
+        return remainingOptOuts;
+    }
+
+    public void setRemainingOptOuts(int remainingOptOuts) {
+        this.remainingOptOuts = remainingOptOuts;
+    }
+
+    public boolean isOptOutsRemaining() {
+        return remainingOptOuts > 0 || remainingOptOuts == OptOutService.NO_OPT_OUT_LIMIT;
+    }
+
+    public boolean isCurrentlyOptedOut() {
+        return currentlyOptedOut;
+    }
+
+    public void setCurrentlyOptedOut(boolean currentlyOptedOut) {
+        this.currentlyOptedOut = currentlyOptedOut;
     }
 
     @Override

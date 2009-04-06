@@ -373,18 +373,20 @@
     <entry key="yukon.dr.consumer.optout.durationHeader">Duration</entry>
     <entry key="yukon.dr.consumer.optout.canceled">Canceled</entry>
     <entry key="yukon.dr.consumer.optout.allOptedOut">All devices have already been opted out.</entry>
+    <entry key="yukon.dr.consumer.optout.noOptOutsAvailable">All opt outs for all devices have been used.</entry>
 
     <!-- optOutList.jsp -->
     <entry key="yukon.dr.consumer.optoutlist.header">Programs - Opt Out</entry>
     <entry key="yukon.dr.consumer.optoutlist.description">Please select the hardware you want to opt out of.</entry>
-    <entry key="yukon.dr.consumer.optoutlist.someAlreadyOptedOut">Items already checked have already been opted out.</entry>
-    <entry key="yukon.dr.consumer.optoutlist.programOptOutTitle">Program Opt Out</entry>
     <entry key="yukon.dr.consumer.optoutlist.hardware">Hardware</entry>
     <entry key="yukon.dr.consumer.optoutlist.programAssigned">Program Assigned</entry>
     <entry key="yukon.dr.consumer.optoutlist.relay">Relay {0}</entry>
     <entry key="yukon.dr.consumer.optoutlist.noRelay">Relay (N/A)</entry>
+    <entry key="yukon.dr.consumer.optoutlist.currentlyOptedOut">This device is currently opted out.</entry>
+    <entry key="yukon.dr.consumer.optoutlist.noMoreOptOutsAvailable">No more opt outs are available for this device.</entry>
     <entry key="yukon.dr.consumer.optoutlist.save">Opt Out</entry>
-    
+    <entry key="yukon.dr.consumer.optoutlist.cancel">Cancel</entry>
+
     <!--  optOutConfirm.jsp -->
     <entry key="yukon.dr.consumer.optoutconfirm.header">Programs - Opt Out</entry>
     <entry key="yukon.dr.consumer.optoutconfirm.description">Please complete the following form to opt out of your program:</entry>

@@ -8,10 +8,13 @@
 <h3><cti:msg key="yukon.dr.operator.optout.header"/></h3>
 
 <c:if test="${allOptedOut}">
-	<cti:msg key="yukon.dr.consumer.optout.allOptedOut"/>
+	<cti:msg key="yukon.dr.operator.optout.allOptedOut"/>
+</c:if>
+<c:if test="${!optOutsAvailable}">
+    <cti:msg key="yukon.dr.operator.optout.noOptOutsAvailable"/>
 </c:if>
 
-<c:if test="${!allOptedOut}">
+<c:if test="${!allOptedOut && optOutsAvailable}">
 	<cti:msg key="yukon.dr.operator.optout.description"/><br><br>
 
 	<form action="/spring/stars/operator/optout/optout2" method="POST">
@@ -124,14 +127,14 @@
         </c:if>
     </tr>
     
-    <c:forEach var="optOutCount" items="${optOutCountList}">
+    <c:forEach var="inventory" items="${displayableInventories}">
         <tr class="<ct:alternateRow odd="" even="altRow"/>">
-            <td>${optOutCount.inventory.displayName}</td>
-            <td>${optOutCount.usedOptOuts}</td>
+            <td>${inventory.displayName}</td>
+            <td>${inventory.usedOptOuts}</td>
             <c:if test="${!noOptOutLimits}">
 	            <td>
 	                <form action="/spring/stars/operator/optOut/allowAnother" method="post">
-	                    <input type="hidden" name="inventoryId" value="${optOutCount.inventory.inventoryId}">
+	                    <input type="hidden" name="inventoryId" value="${inventory.inventoryId}">
 	                    <input type="submit" name="submit" value="<cti:msg key="yukon.dr.operator.optout.allowAnother"/>">
 	                </form>
 	            </td>
@@ -142,14 +145,14 @@
                         <cti:msg key="yukon.dr.consumer.optout.unlimitedRemaining"/>
                     </c:when>
                     <c:otherwise>
-                        ${optOutCount.remainingOptOuts}
+                        ${inventory.remainingOptOuts}
                     </c:otherwise>
                 </c:choose>
             </td>
             <c:if test="${!noOptOutLimits}">
 	            <td>
 	                <form action="/spring/stars/operator/optOut/resetToLimit" method="post">
-	                    <input type="hidden" name="inventoryId" value="${optOutCount.inventory.inventoryId}">
+	                    <input type="hidden" name="inventoryId" value="${inventory.inventoryId}">
 	                    <input type="submit" name="submit" value="<cti:msg key="yukon.dr.operator.optout.clear"/>">
 	                </form>
 	            </td>

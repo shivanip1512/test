@@ -1,12 +1,11 @@
 package com.cannontech.web.stars.dr.consumer;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,12 +25,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.TimeUtil;
-import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.displayable.model.DisplayableInventory;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
@@ -44,7 +42,6 @@ import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.stars.dr.optout.service.OptOutStatusService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.web.stars.dr.OptOutCountDto;
 
 @CheckRoleProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_OPT_OUT)
 @Controller
@@ -52,7 +49,7 @@ public class OptOutController extends AbstractConsumerController {
 	
 	private static int MAX_NUMBER_OF_OPT_OUT_HISTORY = 6;
 	
-    private AuthDao authDao;
+    private RolePropertyDao rolePropertyDao;
     private DateFormattingService dateFormattingService;
     private OptOutService optOutService; 
     private OptOutEventDao optOutEventDao;
@@ -75,38 +72,29 @@ public class OptOutController extends AbstractConsumerController {
 		List<OptOutEventDto> currentOptOutList = 
     		optOutEventDao.getCurrentOptOuts(accountId);
     	map.addAttribute("currentOptOutList", currentOptOutList);
-    	
+
     	// Get the current counts for used opt outs and remaining allowed opt outs for each device
     	List<DisplayableInventory> displayableInventories =
             displayableInventoryDao.getDisplayableInventory(customerAccount.getAccountId());
 
-    	List<OptOutCountDto> optOutCountList = new ArrayList<OptOutCountDto>();
-
     	boolean allOptedOut = true;
+    	boolean optOutsAvailable = false;
     	for(DisplayableInventory inventory : displayableInventories) {
-    		int inventoryId = inventory.getInventoryId();
-    		OptOutCountHolder holder = 
-    			optOutService.getCurrentOptOutCount(inventoryId, accountId);
-    		
-    		OptOutCountDto optOutCountDto = new OptOutCountDto();
-    		optOutCountDto.setInventory(inventory);
-    		optOutCountDto.setUsedOptOuts(holder.getUsedOptOuts());
-    		optOutCountDto.setRemainingOptOuts(holder.getRemainingOptOuts());
-    		
-    		optOutCountList.add(optOutCountDto);
-
-            if (!optOutEventDao.isOptedOut(inventoryId,
-					customerAccount.getAccountId())) {
+    	    if (!inventory.isCurrentlyOptedOut()) {
 				allOptedOut = false;
 			}
+    	    if (inventory.isOptOutsRemaining()) {
+    	        optOutsAvailable = true;
+    	    }
     	}
-    	map.addAttribute("optOutCountList", optOutCountList);
-    	
+    	map.addAttribute("displayableInventories", displayableInventories);
+
     	// Get the list of completed and canceled opt outs
     	List<OptOutEventDto> previousOptOutList = 
     		optOutEventDao.getOptOutHistoryForAccount(accountId, MAX_NUMBER_OF_OPT_OUT_HISTORY);
     	map.addAttribute("previousOptOutList", previousOptOutList);
     	map.addAttribute("allOptedOut", allOptedOut);
+    	map.addAttribute("optOutsAvailable", optOutsAvailable);
 
     	return "consumer/optout/optOut.jsp";
     }
@@ -120,32 +108,34 @@ public class OptOutController extends AbstractConsumerController {
     	this.checkOptOutsEnabled(user);
 
         final boolean hasDeviceSelection =
-            authDao.checkRoleProperty(user, ResidentialCustomerRole.OPT_OUT_DEVICE_SELECTION);
+            rolePropertyDao.checkProperty(YukonRoleProperty.RESIDENTIAL_OPT_OUT_DEVICE_SELECTION, user);
 
         map.addAttribute("durationInDays", durationInDays);
         map.addAttribute("startDate", startDate);
 
-        List<DisplayableInventory> displayableInventories =
-            displayableInventoryDao.getDisplayableInventory(customerAccount.getAccountId());
-        // It's annoying we have to use a Map here instead of a Set but there
-        // is no easy way in EL (that I know of) to check if something is in
-        // a Set.
-        Map<Integer, Boolean> alreadyOptedOutItems = new HashMap<Integer, Boolean>();
-        for (DisplayableInventory inventoryItem : displayableInventories) {
-            if (optOutEventDao.isOptedOut(inventoryItem.getInventoryId(),
-                                      customerAccount.getAccountId())) {
-                alreadyOptedOutItems.put(inventoryItem.getInventoryId(), true);
-            }
+        // Validate the start date
+        Date startDateObj = parseDate(startDate, yukonUserContext);
+        final Calendar now = dateFormattingService.getCalendar(yukonUserContext);
+        TimeZone userTimeZone = yukonUserContext.getTimeZone();
+        final Date today = TimeUtil.getMidnight(now.getTime(), userTimeZone);
+        boolean isValidStartDate = isValidStartDate(startDateObj, today);
+        if (!isValidStartDate) {
+            MessageSourceResolvable message = new YukonMessageSourceResolvable(
+                    "yukon.dr.consumer.optoutresult.invalidStartDate");
+            map.addAttribute("result", message);
+            return "consumer/optout/optOutResult.jsp";
         }
 
+        boolean isSameDay = DateUtils.isSameDay(startDateObj, today);
+        map.addAttribute("isSameDay", isSameDay);
+
+        List<DisplayableInventory> displayableInventories =
+            displayableInventoryDao.getDisplayableInventory(customerAccount.getAccountId());
         List<DisplayableInventory> optOutableInventories = new ArrayList<DisplayableInventory>();
-        for(DisplayableInventory inventory : displayableInventories) {
-        	// Only add the inventories that have opt outs remaining
-        	OptOutCountHolder optOutCount = 
-        		optOutService.getCurrentOptOutCount(
-        				inventory.getInventoryId(), customerAccount.getAccountId());
-        	if(optOutCount.hasOptOutsRemaining()) {
-        		optOutableInventories.add(inventory);
+
+        for (DisplayableInventory inventory : displayableInventories) {
+        	if (inventory.isOptOutsRemaining()) {
+        	    optOutableInventories.add(inventory);
         	}
         }
 
@@ -163,8 +153,7 @@ public class OptOutController extends AbstractConsumerController {
             return "redirect:/spring/stars/consumer/optout/confirm";
         }
 
-        map.addAttribute("displayableInventories", optOutableInventories);
-        map.addAttribute("alreadyOptedOutItems", alreadyOptedOutItems);
+        map.addAttribute("displayableInventories", displayableInventories);
         return "consumer/optout/optOutList.jsp";
     }
 
@@ -215,9 +204,9 @@ public class OptOutController extends AbstractConsumerController {
         				"inventory with id: " + inventoryId);
         	}
         }
-        
-        Date startDateObj = dateFormattingService.flexibleDateParser(startDate, yukonUserContext);
-        
+
+        Date startDateObj = parseDate(startDate, yukonUserContext);
+
         MessageSourceResolvable result = new YukonMessageSourceResolvable(
 			"yukon.dr.consumer.optoutresult.success");
         
@@ -280,7 +269,15 @@ public class OptOutController extends AbstractConsumerController {
         
     	return "redirect:/spring/stars/consumer/optout";
     }
-    
+
+    private Date parseDate(String dateStr, YukonUserContext yukonUserContext) {
+        try {
+            return dateFormattingService.flexibleDateParser(dateStr, yukonUserContext);
+        } catch (ParseException e) {
+        }
+        return null;
+    }
+
     private boolean isValidStartDate(Date startDate, Date todayDate) {
         if (startDate == null) return false;
         
@@ -314,12 +311,12 @@ public class OptOutController extends AbstractConsumerController {
     				"Opt Out event with id: " + eventId);
     	}
 	}
-    
+
     @Autowired
-    public void setAuthDao(AuthDao authDao) {
-        this.authDao = authDao;
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
     }
-    
+
     @Autowired
     public void setDateFormattingService(
             DateFormattingService dateFormattingService) {

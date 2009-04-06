@@ -50,60 +50,65 @@ function createJSON() {
         <br>
 
         <form id="form" action="${actionUrl}" method="POST" onsubmit="createJSON();">
-            <table width="100%">
-                <tr>
-                    <td>
-                        <cti:msg key="yukon.dr.operator.optoutlist.programOptOutTitle" var="programOptOutTitle"/>
-                        <ct:boxContainer title="${programOptOutTitle}" hideEnabled="false">
-                            <div id="controlEventsDiv" style="height: auto;">
-                                <table align="center" width="99%">
-                                    <tr>
-                                        <th></th>
-                                        <th align="left"><cti:msg key="yukon.dr.operator.optoutlist.hardware"/></th>
-                                        <th align="left"><cti:msg key="yukon.dr.operator.optoutlist.programAssigned"/></th>
-                                    </tr>
-                                    <c:forEach var="displayableInventory" items="${displayableInventories}">
-                                        <c:set var="inventoryId" value="${displayableInventory.inventoryId}"/>
-                                        
-                                        <tr class="<ct:alternateRow odd="altRow" even=""/>">
-                                            <td align="left">
-                                            	<c:choose>
-                                            		<c:when test="${alreadyOptedOutItems[inventoryId]}">
-                                            		    <input id="unused_${inventoryId}" checked="checked" disabled="disabled" type="checkbox"></input>
-                                            		</c:when>
-                                            		<c:otherwise>
-                                                        <input type="hidden" name="inventoryId" value="${inventoryId}"/>
-                                                        <input id="check_${inventoryId}" type="checkbox"></input>
-                                            		</c:otherwise>
-                                            	</c:choose>
-                                            </td>
-                                            <td align="left" title="${displayableInventory.serialNumber}">
-                                                <spring:escapeBody htmlEscape="true">${displayableInventory.displayName}</spring:escapeBody>
-                                            </td>
-                                            <td align="left">
-                                                <c:set var="programsList" value="${displayableInventory.programs}"/>
-                                                <c:set var="count" value="0"/>
-                                                
-                                                <c:forEach var="program" items="${programsList}">
-                                                    <c:set var="count" value="${count + 1}"/>
-                                                    <cti:msg key="${program.displayName}"/><c:if test="${fn:length(programsList) != count}">,</c:if>
-                                                </c:forEach>    
-                                            </td>
-                                        </tr>
-                                    </c:forEach>    
-                                </table>
-                            </div>
-                        </ct:boxContainer>
-                    </td>
-                </tr>
-                
-                <tr>
-                    <td align="center">
-                        <br>
-                        <input type="submit" value="<cti:msg key='yukon.dr.operator.optoutlist.save'/>"></input>
-                    </td>
-                </tr>
-            </table>
+            <div id="controlEventsDiv" style="height: auto;">
+                <table class="resultsTable" align="center" width="99%">
+                    <tr>
+                        <th></th>
+                        <th align="left"><cti:msg key="yukon.dr.operator.optoutlist.hardware"/></th>
+                        <th align="left"><cti:msg key="yukon.dr.operator.optoutlist.programAssigned"/></th>
+                    </tr>
+                    <c:forEach var="displayableInventory" items="${displayableInventories}">
+                        <c:set var="inventoryId" value="${displayableInventory.inventoryId}"/>
+                        
+                        <tr class="<ct:alternateRow odd="altRow" even=""/>">
+                            <td align="left">
+                            	<c:choose>
+                            		<c:when test="${!displayableInventory.optOutsRemaining || displayableInventory.currentlyOptedOut && isSameDay}">
+                            		    <input id="unused_${inventoryId}" checked="checked" disabled="disabled" type="checkbox"></input>
+                            		</c:when>
+                            		<c:otherwise>
+                                        <input type="hidden" name="inventoryId" value="${inventoryId}"/>
+                                        <input id="check_${inventoryId}" type="checkbox"></input>
+                            		</c:otherwise>
+                            	</c:choose>
+                            </td>
+                            <td align="left" title="${displayableInventory.serialNumber}">
+                                <spring:escapeBody htmlEscape="true">${displayableInventory.displayName}</spring:escapeBody>
+                            </td>
+                            <td align="left">
+                                <c:set var="programsList" value="${displayableInventory.programs}"/>
+                                <c:set var="count" value="0"/>
+                                
+                                <c:forEach var="program" items="${programsList}">
+                                    <c:set var="count" value="${count + 1}"/>
+                                    <cti:msg key="${program.displayName}"/><c:if test="${fn:length(programsList) != count}">,</c:if>
+                                </c:forEach>    
+                            </td>
+                        </tr>
+                        <c:if test="${!displayableInventory.optOutsRemaining || displayableInventory.currentlyOptedOut}">
+                            <tr class="<ct:alternateRow odd="altRow" even="" skipToggle="true"/>">
+                                <td>&nbsp;</td>
+                                <td colspan="2">
+                                <c:if test="${!displayableInventory.optOutsRemaining}">
+                                    <cti:msg key="yukon.dr.consumer.optoutlist.noMoreOptOutsAvailable"/><br>
+                                </c:if>
+                                <c:if test="${displayableInventory.currentlyOptedOut}">
+                                   <cti:msg key="yukon.dr.consumer.optoutlist.currentlyOptedOut"/><br>
+                                </c:if>
+                                </td>
+                            </tr>
+                        </c:if>
+                    </c:forEach>    
+                </table>
+            </div>
+
+            <br>
+            <span style="padding-right: 0.5em;">
+                <input type="submit" value="<cti:msg key='yukon.dr.operator.optoutlist.save'/>"></input>
+            </span>    
+            <cti:url var="optOutUrl" value="/operator/Consumer/OptOut.jsp"/>
+            <input type="button" value="<cti:msg key='yukon.dr.operator.optoutlist.cancel'/>"
+                   onclick="javascript:location.href='${optOutUrl}';"></input>
             
             <input type="hidden" name="durationInDays" value="${durationInDays}"></input>
             <input type="hidden" name="startDate" value="${startDate}"></input>

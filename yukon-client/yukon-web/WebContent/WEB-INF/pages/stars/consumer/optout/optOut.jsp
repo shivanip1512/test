@@ -10,10 +10,13 @@
     
     <h3><cti:msg key="yukon.dr.consumer.optout.header"/></h3>
     <div align="center">
-	   	<c:if test="${allOptedOut}">
-	   		<cti:msg key="yukon.dr.consumer.optout.allOptedOut"/>
-	   	</c:if>
-       	<c:if test="${!allOptedOut}">
+        <c:if test="${allOptedOut}">
+            <cti:msg key="yukon.dr.consumer.optout.allOptedOut"/>
+        </c:if>
+        <c:if test="${!optOutsAvailable}">
+            <cti:msg key="yukon.dr.consumer.optout.noOptOutsAvailable"/>
+        </c:if>
+       	<c:if test="${!allOptedOut && optOutsAvailable}">
 	        <cti:msg key="yukon.dr.consumer.optout.description"/>
 
     	    <br>
@@ -118,17 +121,17 @@
                 <th><cti:msg key="yukon.dr.consumer.optout.remaining"/></th>
             </tr>
             
-            <c:forEach var="optOutCount" items="${optOutCountList}">
+            <c:forEach var="inventory" items="${displayableInventories}">
                 <tr class="<ct:alternateRow odd="" even="altRow"/>">
-                    <td>${optOutCount.inventory.displayName}</td>
-                    <td>${optOutCount.usedOptOuts}</td>
+                    <td>${inventory.displayName}</td>
+                    <td>${inventory.usedOptOuts}</td>
                     <td>
                         <c:choose>
-                            <c:when test="${optOutCount.remainingOptOuts == -1}">
+                            <c:when test="${inventory.remainingOptOuts == -1}">
                                 <cti:msg key="yukon.dr.consumer.optout.unlimitedRemaining"/>
                             </c:when>
                             <c:otherwise>
-                                ${optOutCount.remainingOptOuts}
+                                ${inventory.remainingOptOuts}
                             </c:otherwise>
                         </c:choose>
                     </td>
