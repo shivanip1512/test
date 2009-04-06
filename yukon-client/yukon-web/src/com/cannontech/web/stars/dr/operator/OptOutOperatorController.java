@@ -21,15 +21,18 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.common.constants.YukonSelectionList;
+import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -45,12 +48,13 @@ import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.consumer.OptOutControllerHelper;
 
 @Controller
+@CheckRoleProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT)
 public class OptOutOperatorController {
 	
-    private RolePropertyDao rolePropertyDao;
     private OptOutService optOutService; 
     private OptOutEventDao optOutEventDao;
     private OptOutAdditionalDao optOutAdditionalDao;
@@ -58,6 +62,7 @@ public class OptOutOperatorController {
 	private StarsInventoryBaseDao starsInventoryBaseDao;
 	private DisplayableInventoryDao displayableInventoryDao;
 	private DateFormattingService dateFormattingService;
+	private ECMappingDao ecMappingDao;
 	protected YukonUserContextMessageSourceResolver messageSourceResolver;
     
     @ModelAttribute("customerAccount")
@@ -76,10 +81,6 @@ public class OptOutOperatorController {
     @RequestMapping(value = "/operator/optout", method = RequestMethod.GET)
     public String view(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
     		Integer eventId, YukonUserContext yukonUserContext, ModelMap map) {
-    	
-    	LiteYukonUser user = yukonUserContext.getYukonUser();
-    	rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT,
-                                       user);
     	
     	Calendar cal = Calendar.getInstance(yukonUserContext.getTimeZone());
     	Date currentDate = cal.getTime();
@@ -122,6 +123,14 @@ public class OptOutOperatorController {
     	map.addAttribute("noOptOutLimits", noOptOutLimits);
     	map.addAttribute("allOptedOut", allOptedOut);
         map.addAttribute("optOutsAvailable", optOutsAvailable);
+    	
+    	// The following is a hack and will be fixed by YUK-7269
+    	LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(customerAccount);
+    	YukonSelectionList optOutPeriodList = 
+    		energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD);
+    	int maxOptOutDays = optOutPeriodList.getYukonListEntries().size();
+    	map.addAttribute("maxOptOutDays", maxOptOutDays);
+    	// end hack
 
     	return "operator/optout/optOut.jsp";
     }
@@ -139,10 +148,6 @@ public class OptOutOperatorController {
     public String view2(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
             YukonUserContext yukonUserContext, String startDate, 
             int durationInDays, ModelMap map) {
-
-    	final LiteYukonUser user = yukonUserContext.getYukonUser();
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT,
-                                       user);
 
         map.addAttribute("durationInDays", durationInDays);
         map.addAttribute("startDate", startDate);
@@ -193,9 +198,6 @@ public class OptOutOperatorController {
             YukonUserContext yukonUserContext, String startDate, int durationInDays,
             String jsonInventoryIds, ModelMap map) {
         
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT,
-                                       yukonUserContext.getYukonUser());
-
         map.addAttribute("startDate", startDate);
         map.addAttribute("durationInDays", durationInDays);
         
@@ -217,9 +219,6 @@ public class OptOutOperatorController {
             YukonUserContext yukonUserContext, String startDate, int durationInDays,
             String jsonInventoryIds, HttpServletRequest request, ModelMap map) throws Exception {
         
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT,
-                                       yukonUserContext.getYukonUser());
-
         String unEscaped = StringEscapeUtils.unescapeHtml(jsonInventoryIds);
         List<Integer> inventoryIds = OptOutControllerHelper.toInventoryIdList(unEscaped);
         
@@ -279,9 +278,6 @@ public class OptOutOperatorController {
     public String cancel(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
     		Integer eventId, YukonUserContext yukonUserContext) throws Exception {
     	
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT,
-                                       yukonUserContext.getYukonUser());
-
     	// Check that the inventory we're working with belongs to the current account
     	this.checkEventAgainstAccount(eventId, customerAccount);
     	
@@ -295,9 +291,6 @@ public class OptOutOperatorController {
     public String allowAnother(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
     		Integer inventoryId, YukonUserContext yukonUserContext) {
     	
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT,
-                                       yukonUserContext.getYukonUser());
-
     	// Check that the inventory we're working with belongs to the current account
     	this.checkInventoryAgainstAccount(Collections.singletonList(inventoryId), customerAccount);
     	
@@ -311,9 +304,6 @@ public class OptOutOperatorController {
     public String repeat(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
     		Integer inventoryId, YukonUserContext yukonUserContext) throws Exception {
     	
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT,
-                                       yukonUserContext.getYukonUser());
-
     	// Check that the inventory we're working with belongs to the current account
     	this.checkInventoryAgainstAccount(Collections.singletonList(inventoryId), customerAccount);
     	
@@ -329,9 +319,6 @@ public class OptOutOperatorController {
     public String resetToLimit(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
     		Integer inventoryId, YukonUserContext yukonUserContext) {
     	
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT,
-                                       yukonUserContext.getYukonUser());
-
     	// Check that the inventory we're working with belongs to the current account
     	this.checkInventoryAgainstAccount(Collections.singletonList(inventoryId), customerAccount);
     	
@@ -391,11 +378,6 @@ public class OptOutOperatorController {
     }
 
     @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-
-    @Autowired
     public void setOptOutService(OptOutService optOutService) {
 		this.optOutService = optOutService;
 	}
@@ -431,6 +413,11 @@ public class OptOutOperatorController {
     public void setDateFormattingService(
 			DateFormattingService dateFormattingService) {
 		this.dateFormattingService = dateFormattingService;
+	}
+    
+    @Autowired
+    public void setEcMappingDao(ECMappingDao ecMappingDao) {
+		this.ecMappingDao = ecMappingDao;
 	}
     
     @Autowired

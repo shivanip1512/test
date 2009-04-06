@@ -23,13 +23,17 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.common.constants.YukonSelectionList;
+import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.displayable.model.DisplayableInventory;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
@@ -54,6 +58,7 @@ public class OptOutController extends AbstractConsumerController {
     private OptOutService optOutService; 
     private OptOutEventDao optOutEventDao;
     private OptOutStatusService optOutStatusService;
+    private ECMappingDao ecMappingDao;
     
     @RequestMapping(value = "/consumer/optout", method = RequestMethod.GET)
     public String view(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
@@ -95,7 +100,15 @@ public class OptOutController extends AbstractConsumerController {
     	map.addAttribute("previousOptOutList", previousOptOutList);
     	map.addAttribute("allOptedOut", allOptedOut);
     	map.addAttribute("optOutsAvailable", optOutsAvailable);
-
+    	
+    	// The following is a hack and will be fixed by YUK-7269
+    	LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(customerAccount);
+    	YukonSelectionList optOutPeriodList = 
+    		energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD);
+    	int maxOptOutDays = optOutPeriodList.getYukonListEntries().size();
+    	map.addAttribute("maxOptOutDays", maxOptOutDays);
+    	// end hack
+    	    	
     	return "consumer/optout/optOut.jsp";
     }
 
@@ -336,6 +349,11 @@ public class OptOutController extends AbstractConsumerController {
     @Autowired
     public void setOptOutStatusService(OptOutStatusService optOutStatusService) {
 		this.optOutStatusService = optOutStatusService;
+	}
+    
+    @Autowired
+    public void setEcMappingDao(ECMappingDao ecMappingDao) {
+		this.ecMappingDao = ecMappingDao;
 	}
     
 }

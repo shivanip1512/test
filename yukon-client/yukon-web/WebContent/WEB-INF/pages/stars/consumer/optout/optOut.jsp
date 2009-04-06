@@ -44,7 +44,7 @@
 		                <td align="left">
 		                    <select name="durationInDays">
 
-			                    <c:forEach var="x" begin="1" end="7" step="1">
+			                    <c:forEach var="x" begin="1" end="${maxOptOutDays}" step="1">
 
 			                       <c:set var="key" value="${(x == 1) ? 'yukon.dr.consumer.optout.day' : 'yukon.dr.consumer.optout.days' }"/>
 
