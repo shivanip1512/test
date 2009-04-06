@@ -70,7 +70,7 @@ CREATE INDEX INDX_ECToInvMap_InvId ON ECToInventoryMapping (
 /* End YUK-7257 */
 
 /* Start YUK-7178 */
-INSERT INTO YukonRoleProperty VALUES(-20211,-202,'CIS Info Widget Enabled','false','Controls access to view the CIS Information widget.');
+INSERT INTO YukonRoleProperty VALUES(-20211,-202,'CIS Info Widget Enabled','true','Controls access to view the CIS Information widget.');
 INSERT INTO YukonRoleProperty VALUES(-20212,-202,'CIS Info Type','NONE','Defines the type of CIS Information widget to display. Available placeholders: NONE, MULTISPEAK, CAYENTA');
 /* End YUK-7178 */
 

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     4/6/2009 11:36:24 AM                         */
+/* Created on:     4/6/2009 2:55:15 PM                          */
 /*==============================================================*/
 
 
@@ -12095,7 +12095,7 @@ INSERT INTO YukonRoleProperty VALUES(-20207,-202,'Move In/Move Out Auto Archivin
 INSERT INTO YukonRoleProperty VALUES(-20208,-202,'Move In/Move Out','true','Controls access to process a move in/move out');
 INSERT INTO YukonRoleProperty VALUES(-20209,-202,'Profile Collection Scanning','true','Controls access to start/stop scanning of profile data'); 
 INSERT INTO YukonRoleProperty VALUES(-20210,-202,'High Bill Complaint','true','Controls access to process a high bill complaint'); 
-INSERT INTO YukonRoleProperty VALUES(-20211,-202,'CIS Info Widget Enabled','false','Controls access to view the CIS Information widget.');
+INSERT INTO YukonRoleProperty VALUES(-20211,-202,'CIS Info Widget Enabled','true','Controls access to view the CIS Information widget.');
 INSERT INTO YukonRoleProperty VALUES(-20212,-202,'CIS Info Type','NONE','Defines the type of CIS Information widget to display. Available placeholders: NONE, MULTISPEAK, CAYENTA');
 
 /* Operator Esubstation Drawings Role Properties */
