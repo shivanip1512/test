@@ -222,7 +222,6 @@ private javax.swing.JLabel getJLabelErrorMessage() {
 			ivjJLabelErrorMessage.setName("JLabelErrorMsg");
 			ivjJLabelErrorMessage.setOpaque(false);
 			ivjJLabelErrorMessage.setVisible(true);
-			ivjJLabelErrorMessage.setText("TEST la;skdjfasjeif;o awej;ifjasifasdf");
 			ivjJLabelErrorMessage.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 			ivjJLabelErrorMessage.setFont(new java.awt.Font("Arial", 1, 10));
 			ivjJLabelErrorMessage.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
