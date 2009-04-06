@@ -57,16 +57,12 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 			CTILogger.debug("Billing Bean is Null, generate new instance in session.");
 			session.setAttribute(ServletUtil.ATT_BILLING_BEAN, localBean);
 		}
+		localBean.setErrorMsg(null);
 		
 		String fileFormat = req.getParameter("fileFormat");
         final int fileFormatValue = (fileFormat != null) ?
                 Integer.parseInt(fileFormat) : FileFormatTypes.INVALID;
 
-		String[] billGroupArray = req.getParameterValues("billGroup");
-		if (fileFormatValue != FileFormatTypes.CURTAILMENT_EVENTS_ITRON) {
-			Validate.notNull(billGroupArray, "a billing group must be selected");
-	        localBean.setBillGroup(Arrays.asList(billGroupArray));
-		}
 		String removeMultiplier = req.getParameter("removeMultiplier");
 		String demandDays = req.getParameter("demandDays");
 		String energyDays = req.getParameter("energyDays");
@@ -89,6 +85,16 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 			localBean.setEndDateStr(endDate);
 		else
 			localBean.setEndDate(ServletUtil.getToday());
+		
+		String[] billGroupArray = req.getParameterValues("billGroup");
+		if (fileFormatValue != FileFormatTypes.CURTAILMENT_EVENTS_ITRON) {
+			if (billGroupArray == null) {
+				localBean.setErrorMsg("A billing group must be selected.");
+				resp.sendRedirect(req.getContextPath() + "/operator/Metering/Billing.jsp");
+				return;
+			}
+	        localBean.setBillGroup(Arrays.asList(billGroupArray));
+		}
 		
 		SimpleDateFormat fileNameFormat = new SimpleDateFormat("yyyyMMdd");
         final StringBuilder fileName = new StringBuilder("billing");

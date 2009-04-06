@@ -42,6 +42,7 @@ public class BillingBean implements java.util.Observer
 	private Date endDate = null;
 	private int timer = 0;
 	private String timerString = "";
+	private String errorMsg = null;
 	
 
 /**
@@ -306,4 +307,13 @@ public String getInputFile() {
 public void setInputFile(String inputFile) {
 	this.inputFile = inputFile;
 }
+
+public String getErrorMsg() {
+	return errorMsg;
+}
+
+public void setErrorMsg(String errorMsg) {
+	this.errorMsg = errorMsg;
+}
+
 }

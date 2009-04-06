@@ -20,6 +20,21 @@
 	<cti:includeScript link="/JavaScript/calendarControl.js"/>
 	<cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
 	
+	<script type="text/javascript">
+
+		function checkBillingGroup() {
+			
+			var format = $('fileFormat').options[$('fileFormat').selectedIndex].value;
+			var billingGroupSelected = $('billGroup').value.strip() != '';
+
+			if (!billingGroupSelected && format != <%= FileFormatTypes.CURTAILMENT_EVENTS_ITRON %>) {
+				alert("Billing group must be selected.");
+			} else {
+				$('MForm').submit();
+			}
+		}
+	</script>
+	
 	<h2>Billing</h2>
 	<br>
 	
@@ -29,11 +44,16 @@
     
     <tags:boxContainer title="Settings:" id="billingContainer" hideEnabled="false">
 
-	<form name = "MForm" action="<cti:url value="/servlet/BillingServlet" />" method="post">
+	<form id="MForm" name = "MForm" action="<cti:url value="/servlet/BillingServlet" />" method="post">
+	
+			<c:if test="${BILLING_BEAN.errorMsg != null}">
+				<div style="font-weight:bold;color:#CC0000;">${BILLING_BEAN.errorMsg}</div>
+				<br>
+			</c:if>
 	
 			<tags:nameValueContainer>
 				<tags:nameValue name="File Format" nameColumnWidth="250px">
-		            <select name="fileFormat">
+		            <select id="fileFormat" name="fileFormat">
 		            	<c:forEach var="format" items="${formatMap}">
 		            		<option value="${format.value}" ${(format.value == BILLING_BEAN.fileFormat)?'selected':''}>${format.key}</option>
 		            	</c:forEach>
@@ -68,7 +88,7 @@
 				</tags:nameValue>
 				
 			</tags:nameValueContainer>
-			<input type="submit" name="generate" value="Generate">
+			<input type="button" name="generate" value="Generate" onclick="checkBillingGroup();">
 
 	</form>
     
