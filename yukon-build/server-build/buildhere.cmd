@@ -47,6 +47,7 @@ rem             set the corresponding build information labels
 set debug=true
 set build_version=
 set build_version_details=
+set build_mode=DEBUG
 set exit=0
 set _build_args=
 
@@ -62,6 +63,7 @@ if "%~1" == "" goto Done_Processing
     
     if /i "%~1" == "--release" (
         set debug=
+        set build_mode=RELEASE
         set rwbuildlevel=12
         shift
         goto Process_Args
@@ -180,6 +182,7 @@ echo +---------------------------------------
 echo ^|
 echo ^| Build version: %build_version%
 echo ^| Build details: %build_version_details%
+echo ^| Build mode   : %build_mode%
 echo ^|
 
 if not exist %yukonoutput% md %yukonoutput%
