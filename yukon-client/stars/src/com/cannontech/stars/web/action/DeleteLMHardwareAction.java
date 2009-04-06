@@ -106,9 +106,13 @@ public class DeleteLMHardwareAction implements ActionBase {
 						StarsConstants.FAILURE_CODE_OPERATION_FAILED, "The hardware doesn't belong to any customer account") );
 				return SOAPUtil.buildSOAPMessage( respOper );
 			}
-            
-			LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( liteInv.getAccountID(), true );
-			
+			//Use account in session, if inventory belongs to it
+			//else retreive account (ex. inventory deleted from inventory list)
+            LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) session.getAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
+            if (liteAcctInfo == null || liteAcctInfo.getAccountID() != liteInv.getAccountID()) {
+                liteAcctInfo = energyCompany.getCustAccountInformation( liteInv.getAccountID(), true );    
+            }
+		
 			removeInventory( delHw, liteAcctInfo, energyCompany );
         	
         	// Response will be handled here, instead of in parse()
