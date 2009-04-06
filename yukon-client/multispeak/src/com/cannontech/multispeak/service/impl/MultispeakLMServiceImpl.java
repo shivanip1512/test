@@ -260,6 +260,9 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
         Collections.sort(mspLmInterfaceMappingList, new MspLMInterfaceMappingStrategyNameComparator(MspLmInterfaceMappingColumnEnum.SUBSTATION, true) );
         
         List<LMProgramBase> lmProgramBases = new ArrayList<LMProgramBase>();
+		Set<MspLMGroupStatus> allStatus = new HashSet<MspLMGroupStatus>();
+		Set<MspLMProgramMode> allModes= new HashSet<MspLMProgramMode>();
+
         String prevSubstationName = null;
         boolean exclude = false;
         for (MspLMInterfaceMapping mspLMInterfaceMapping : mspLmInterfaceMappingList) {
@@ -271,14 +274,22 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
         	if (!exclude) {
 	        	
 				//not the first iteration and substation name has changed
-				if( prevSubstationName != null && substationName != prevSubstationName) {
+				if( prevSubstationName != null && !substationName.equals(prevSubstationName)) {
 					//Add the previous object
 					SubstationLoadControlStatus substationLoadControlStatus = 
-						buildSubstationLoadControlStatus(prevSubstationName, controlledItemsList, lmProgramBases);
+						buildSubstationLoadControlStatus(prevSubstationName, controlledItemsList);
+					
+					//Get unique/master status
+					substationLoadControlStatus.setStatus(mspLMGroupDao.getMasterStatus(allStatus).toString());
+					//Get unique/master mode
+					substationLoadControlStatus.setMode(mspLMGroupDao.getMasterMode(allModes).toString());
+					
 					substationLoadControlStatusList.add(substationLoadControlStatus);
 	
 					//Clear the list and start again.
 					controlledItemsList.clear();
+					allStatus.clear();
+					allModes.clear();
 				}
 
 	        	//Build a list of all the programs for the controllable object's device type
@@ -299,15 +310,32 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 							lmProgramBases, 
 							programCounts);
 				controlledItemsList.add(controlledItem);
+				
+				
+				// Loop through all programs and load the status and mode values.
+				for (LMProgramBase programBase : lmProgramBases) {
+					// Loop through all groups within the program
+					Vector<LMGroupBase> loadGroups = programBase.getLoadControlGroupVector();
+					for (LMGroupBase groupBase : loadGroups) {
+						List<MspLMGroupCommunications> mspLMGroupCommunications = mspLMGroupDao.getLMGroupCommunications(groupBase);
+						allStatus.add(mspLMGroupDao.getStatus(mspLMGroupCommunications));				
+					}
+					allModes.add(mspLMGroupDao.getMode(programBase));
+				}
+				
 				prevSubstationName = substationName;
         	}
 		}
         
         //add the last object
-        if (!exclude) {
+        if (!controlledItemsList.isEmpty()) {
 			if( prevSubstationName != null) {
 				SubstationLoadControlStatus substationLoadControlStatus = 
-					buildSubstationLoadControlStatus(prevSubstationName, controlledItemsList, lmProgramBases);
+					buildSubstationLoadControlStatus(prevSubstationName, controlledItemsList);
+				//Get unique/master status
+				substationLoadControlStatus.setStatus(mspLMGroupDao.getMasterStatus(allStatus).toString());
+				//Get unique/master mode
+				substationLoadControlStatus.setMode(mspLMGroupDao.getMasterMode(allModes).toString());
 				substationLoadControlStatusList.add(substationLoadControlStatus);
 			}
         }
@@ -383,32 +411,12 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 	 * @return
 	 */
 	private SubstationLoadControlStatus buildSubstationLoadControlStatus(String substationName, 
-			List<SubstationLoadControlStatusControlledItemsControlItem> controlledItemsList, List<LMProgramBase> lmProgramBases) {
+			List<SubstationLoadControlStatusControlledItemsControlItem> controlledItemsList) {
 		
 		SubstationLoadControlStatus substationLoadControlStatus = new SubstationLoadControlStatus();
 		substationLoadControlStatus.setObjectID(substationName);
 		substationLoadControlStatus.setSubstationName(substationName);
 
-		// Loop through all programs
-		Set<MspLMGroupStatus> allStatus = new HashSet<MspLMGroupStatus>();
-		Set<MspLMProgramMode> allModes= new HashSet<MspLMProgramMode>();
-		for (LMProgramBase programBase : lmProgramBases) {
-
-			// Loop through all groups within the program
-			Vector<LMGroupBase> loadGroups = programBase.getLoadControlGroupVector();
-			for (LMGroupBase groupBase : loadGroups) {
-
-				List<MspLMGroupCommunications> mspLMGroupCommunications = mspLMGroupDao.getLMGroupCommunications(groupBase);
-				allStatus.add(mspLMGroupDao.getStatus(mspLMGroupCommunications));				
-			}
-			allModes.add(mspLMGroupDao.getMode(programBase));
-		}
-		
-		//Get unique/master status
-		substationLoadControlStatus.setStatus(mspLMGroupDao.getMasterStatus(allStatus).toString());
-		//Get unique/master mode
-		substationLoadControlStatus.setMode(mspLMGroupDao.getMasterMode(allModes).toString());
-		
 		SubstationLoadControlStatusControlledItemsControlItem [] controlledItemsArray = 
 			new SubstationLoadControlStatusControlledItemsControlItem[controlledItemsList.size()];
 		controlledItemsArray = controlledItemsList.toArray(controlledItemsArray);
