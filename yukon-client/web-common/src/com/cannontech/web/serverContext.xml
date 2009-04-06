@@ -19,8 +19,5 @@
 <!--        <property name="namingStrategy" ref="namingStrategy"/>-->
 <!--        <property name="autodetect" value="true"/>-->
 <!--    </bean>-->
-    
-    <bean id="simplePostService" class="com.cannontech.web.simplePost.impl.SimplePostServiceImpl">
-    </bean>
 
 </beans>

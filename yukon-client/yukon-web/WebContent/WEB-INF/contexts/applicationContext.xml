@@ -995,6 +995,10 @@
         <property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao" />
     </bean>
     
+    <!-- Simple Post Service -->
+    <bean id="simplePostService" class="com.cannontech.web.simplePost.impl.SimplePostServiceImpl">
+    </bean>
+    
     <!-- Cayenta API Service -->
     <bean id="cayentaApiService" class="com.cannontech.web.cayenta.service.impl.CayentaApiServiceImpl">
     </bean>
