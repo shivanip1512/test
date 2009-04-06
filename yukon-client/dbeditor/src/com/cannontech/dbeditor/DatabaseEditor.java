@@ -1979,20 +1979,21 @@ private void initConnections()
 	{
 		public void mousePressed(MouseEvent e) 
 		{
-			int selRow = getTree().getRowForLocation(e.getX(), e.getY());
-			
-			if(selRow != -1) 
-			{
-				//be sure this is not a multi selection attempt
-				if( !e.isShiftDown() && !e.isControlDown() 
-				    && getTree().getSelectionCount() <= 1 )
-				{
-					getTree().setSelectionRow( selRow );
-				}
-
-				if(e.getClickCount() == 2) 
-				{
-					executeEditButton_ActionPerformed( new ActionEvent(e.getSource(), e.getID(), "MouseDBLClicked") );
+			if (e.getSource() == editMenu) {
+				popupMenuWillBecomeVisible(new PopupMenuEvent(DatabaseEditor.this.getTreeNodePopupMenu()));
+			} else {
+				int selRow = getTree().getRowForLocation(e.getX(), e.getY());
+				
+				if(selRow != -1) {
+					//be sure this is not a multi selection attempt
+					if( !e.isShiftDown() && !e.isControlDown() 
+					    && getTree().getSelectionCount() <= 1 ) {
+						getTree().setSelectionRow( selRow );
+					}
+	
+					if(e.getClickCount() == 2) {
+						executeEditButton_ActionPerformed( new ActionEvent(e.getSource(), e.getID(), "MouseDBLClicked") );
+					}
 				}
 			}
 			
@@ -2000,6 +2001,7 @@ private void initConnections()
 	};
 
 	getTree().addMouseListener(ml);
+	editMenu.addMouseListener(ml);
 
 }
 /**
