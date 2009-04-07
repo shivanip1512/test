@@ -279,7 +279,7 @@
 			var idx = filters.selectedIndex;
 			if (idx > 0 && idx < filters.options.length) 
 			{
-				var oOption = filters.remove.options[idx];
+				var oOption = filters.options[idx];
 				filters.remove(idx);
 				filters.options.add(oOption, idx-1);
 				value = filterTexts[idx];
