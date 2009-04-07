@@ -10,6 +10,7 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.exception.AuthenticationThrottleException;
+import com.cannontech.core.roleproperties.UserNotInRoleException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -54,11 +55,15 @@ public class YukonLoginController extends MultiActionController {
             if (redirectedFrom != null && !redirectedFrom.equals("")) {
                 redirect = redirectedFrom;
             } else {
-                String homeUrl = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, user);
-                redirect = ServletUtil.createSafeUrl(request, homeUrl);
+            	try {
+            		String homeUrl = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, user);
+            		redirect = ServletUtil.createSafeUrl(request, homeUrl);
+            	} catch (UserNotInRoleException e) {
+            		redirect = null;
+            	}
             }
             
-            boolean hasUrlAccess = urlAccessChecker.hasUrlAccess(redirect, user);
+            boolean hasUrlAccess = redirect != null && urlAccessChecker.hasUrlAccess(redirect, user);
             if (!hasUrlAccess) {
                 redirect = LoginController.LOGIN_URL + "?" + LoginController.INVALID_URL_ACCESS_PARAM;
             }
