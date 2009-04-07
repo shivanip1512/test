@@ -933,6 +933,7 @@ public final static boolean isTransmitter(int deviceType)
 		case SNPP_TERMINAL:
 		case SERIES_5_LMI:
 		case RTC:
+		case XML_TRANSMITTER:
 			return true;
 	
 		default:
