@@ -108,11 +108,12 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	 */
 	public synchronized List<StarsCallReport> getCallReportHistory() {
 	    if (callReportHistory == null) {
+	        callReportHistory = new ArrayList<StarsCallReport>();
 	        if (getCustomerAccount() != null) { //Must already have at least the base objects loaded
 	            StarsCallReport[] calls = StarsFactory.getStarsCallReports(getAccountID());
-	            if (calls != null) callReportHistory = Arrays.asList(calls);  
+	            if (calls != null) callReportHistory.addAll(Arrays.asList(calls));  
 	        }
-	    }    
+	    }
 		return callReportHistory;
 	}
 
