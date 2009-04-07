@@ -1,5 +1,7 @@
 package com.cannontech.database.data.lite;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.cannontech.common.util.CtiUtilities;
 
 
@@ -163,9 +165,9 @@ public class LiteAddress extends LiteBase {
 	    return toString;
 	}
 
-	private boolean notEmpty(String value) {
-	    boolean result = (value != null && value.trim().length() > 0)
-	        && !value.equals(CtiUtilities.STRING_NONE);
-	    return result;
-	}
+    private boolean notEmpty(String value) {
+        boolean result = StringUtils.isNotBlank(value)
+            && !value.equals(CtiUtilities.STRING_NONE);
+        return result;
+    }
 }
