@@ -207,7 +207,6 @@ private void initialize() {
 
 		getJComboBoxPortType().addItem( com.cannontech.common.util.CtiUtilities.STRING_NONE );
 		getJComboBoxPortType().addItem( CommPort.SHARE_ACS );
-		getJComboBoxPortType().addItem( CommPort.SHARE_VALMET );
 		getJComboBoxPortType().addItem( CommPort.SHARE_ILEX );
 		
 		// user code end

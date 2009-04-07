@@ -11,7 +11,6 @@ public class CommPort extends DBPersistent
 {
 	public static final int DEFAULT_SHARED_SOCKET_NUMBER = 1025;
 	public static final String SHARE_ACS = "ACS";
-	public static final String SHARE_VALMET = "VALMET";
 	public static final String SHARE_ILEX = "ILEX";
 	
 	private Integer portID = null;
