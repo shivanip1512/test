@@ -627,8 +627,11 @@ var setChoosenYukonDevice = function() {
                 </tr>
 <%
 		StarsLMHardwareHistory hwHist = inventory.getStarsLMHardwareHistory();
-		for (int i = hwHist.getStarsLMHardwareEventCount() - 1; i >= 0 && i >= hwHist.getStarsLMHardwareEventCount() - 5; i--) {
-			StarsLMHardwareEvent event = hwHist.getStarsLMHardwareEvent(i);
+		int count = 0;
+		for (StarsLMHardwareEvent event : hwHist.getStarsLMHardwareEventList()) {
+		    if (++count > 5) {
+		        break;
+		    }
 %>
                 <tr valign="top"> 
                   <td width="50%" class="TableCell" bgcolor="#FFFFFF"><cti:formatDate value="<%=event.getEventDateTime()%>" type="DATE" /></td>

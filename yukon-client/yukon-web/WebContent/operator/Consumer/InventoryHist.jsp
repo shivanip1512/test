@@ -51,8 +51,7 @@
                         </tr>
                         <%
 	StarsLMHardwareHistory hwHist = inventory.getStarsLMHardwareHistory();
-	for (int i = hwHist.getStarsLMHardwareEventCount() - 1; i >= 0; i--) {
-		StarsLMHardwareEvent event = hwHist.getStarsLMHardwareEvent(i);
+	for (StarsLMHardwareEvent event : hwHist.getStarsLMHardwareEventList()) {
 %>
                         <tr valign="top"> 
                           <td width="104" class="TableCell" bgcolor="#FFFFFF"><%= ServletUtils.formatDate(event.getEventDateTime(), datePart, "----") %></td>

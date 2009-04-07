@@ -11,6 +11,7 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -32,7 +33,7 @@ public class StarsLMHardwareHistory {
     **/
     private boolean _has_inventoryID;
 
-    private java.util.Vector _starsLMHardwareEventList;
+    private Vector<StarsLMHardwareEvent> _starsLMHardwareEventList;
 
 
       //----------------/
@@ -41,7 +42,7 @@ public class StarsLMHardwareHistory {
 
     public StarsLMHardwareHistory() {
         super();
-        _starsLMHardwareEventList = new Vector();
+        _starsLMHardwareEventList = new Vector<StarsLMHardwareEvent>();
     } //-- com.cannontech.stars.xml.serialize.StarsLMHardwareHistory()
 
 
@@ -81,9 +82,9 @@ public class StarsLMHardwareHistory {
 
     /**
     **/
-    public java.util.Enumeration enumerateStarsLMHardwareEvent()
+    public List<StarsLMHardwareEvent> getStarsLMHardwareEventList()
     {
-        return _starsLMHardwareEventList.elements();
+        return _starsLMHardwareEventList;
     } //-- java.util.Enumeration enumerateStarsLMHardwareEvent() 
 
     /**
