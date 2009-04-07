@@ -66,7 +66,7 @@ CREATE INDEX INDX_LMThermSch_AcctId on LMThermostatSchedule (
 /* Index added to ECToInventoryMapping (InventoryId) */
 CREATE INDEX INDX_ECToInvMap_InvId ON ECToInventoryMapping (
     InventoryId ASC
-)
+);
 /* End YUK-7257 */
 
 /* Start YUK-7178 */
