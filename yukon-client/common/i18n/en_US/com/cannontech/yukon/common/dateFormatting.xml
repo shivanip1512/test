@@ -5,6 +5,7 @@
          java.text.SimpleDateFormat
 -->
 <entry key="yukon.common.dateFormatting.TIME">HH:mm</entry>
+<entry key="yukon.common.dateFormatting.TIME_12H">hh:mm a</entry>
 <entry key="yukon.common.dateFormatting.TIME_TZ">HH:mm z</entry>
 <entry key="yukon.common.dateFormatting.TIMEZONE">z</entry>
 <entry key="yukon.common.dateFormatting.DATE">MM/dd/yyyy</entry>

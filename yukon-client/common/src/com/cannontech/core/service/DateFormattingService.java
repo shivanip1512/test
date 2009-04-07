@@ -21,6 +21,7 @@ public interface DateFormattingService {
 
     static public enum DateFormatEnum {
         TIME(MidnightMode.NORMAL), 
+        TIME_12H(MidnightMode.NORMAL), 
         TIME_TZ(MidnightMode.NORMAL),
         TIMEZONE(MidnightMode.NORMAL),
         DATE(MidnightMode.NORMAL), 
