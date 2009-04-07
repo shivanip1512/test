@@ -124,14 +124,14 @@
             <c:forEach var="inventory" items="${displayableInventories}">
                 <tr class="<ct:alternateRow odd="" even="altRow"/>">
                     <td>${inventory.displayName}</td>
-                    <td>${inventory.usedOptOuts}</td>
+                    <td>${optOutCounts[inventory.inventoryId].usedOptOuts}</td>
                     <td>
                         <c:choose>
-                            <c:when test="${inventory.remainingOptOuts == -1}">
+                            <c:when test="${optOutCounts[inventory.inventoryId].remainingOptOuts == -1}">
                                 <cti:msg key="yukon.dr.consumer.optout.unlimitedRemaining"/>
                             </c:when>
                             <c:otherwise>
-                                ${inventory.remainingOptOuts}
+                                ${optOutCounts[inventory.inventoryId].remainingOptOuts}
                             </c:otherwise>
                         </c:choose>
                     </td>

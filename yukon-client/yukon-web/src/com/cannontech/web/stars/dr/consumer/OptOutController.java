@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
@@ -81,6 +83,8 @@ public class OptOutController extends AbstractConsumerController {
     	// Get the current counts for used opt outs and remaining allowed opt outs for each device
     	List<DisplayableInventory> displayableInventories =
             displayableInventoryDao.getDisplayableInventory(customerAccount.getAccountId());
+        Map<Integer, OptOutCountHolder> optOutCounts =
+            getOptOutCountsForInventories(displayableInventories, customerAccount.getAccountId());
 
     	boolean allOptedOut = true;
     	boolean optOutsAvailable = false;
@@ -88,11 +92,12 @@ public class OptOutController extends AbstractConsumerController {
     	    if (!inventory.isCurrentlyOptedOut()) {
 				allOptedOut = false;
 			}
-    	    if (inventory.isOptOutsRemaining()) {
+    	    if (optOutCounts.get(inventory.getInventoryId()).isOptOutsRemaining()) {
     	        optOutsAvailable = true;
     	    }
     	}
     	map.addAttribute("displayableInventories", displayableInventories);
+        map.addAttribute("optOutCounts", optOutCounts);
 
     	// Get the list of completed and canceled opt outs
     	List<OptOutEventDto> previousOptOutList = 
@@ -145,9 +150,11 @@ public class OptOutController extends AbstractConsumerController {
         List<DisplayableInventory> displayableInventories =
             displayableInventoryDao.getDisplayableInventory(customerAccount.getAccountId());
         List<DisplayableInventory> optOutableInventories = new ArrayList<DisplayableInventory>();
+        Map<Integer, OptOutCountHolder> optOutCounts =
+            getOptOutCountsForInventories(displayableInventories, customerAccount.getAccountId());
 
         for (DisplayableInventory inventory : displayableInventories) {
-        	if (inventory.isOptOutsRemaining()) {
+        	if (optOutCounts.get(inventory.getInventoryId()).isOptOutsRemaining()) {
         	    optOutableInventories.add(inventory);
         	}
         }
@@ -167,6 +174,7 @@ public class OptOutController extends AbstractConsumerController {
         }
 
         map.addAttribute("displayableInventories", displayableInventories);
+        map.addAttribute("optOutCounts", optOutCounts);
         return "consumer/optout/optOutList.jsp";
     }
 
@@ -212,7 +220,7 @@ public class OptOutController extends AbstractConsumerController {
         for(int inventoryId : inventoryIds) {
         	OptOutCountHolder optOutCount = 
         		optOutService.getCurrentOptOutCount(inventoryId, customerAccount.getAccountId());
-        	if(!optOutCount.hasOptOutsRemaining()) {
+        	if(!optOutCount.isOptOutsRemaining()) {
         		throw new NotAuthorizedException("There are no remaining opt outs for " +
         				"inventory with id: " + inventoryId);
         	}
@@ -324,6 +332,18 @@ public class OptOutController extends AbstractConsumerController {
     				"Opt Out event with id: " + eventId);
     	}
 	}
+
+    private Map<Integer, OptOutCountHolder> getOptOutCountsForInventories(
+            Iterable<DisplayableInventory> inventories, int customerAccountId) {
+        Map<Integer, OptOutCountHolder> retVal = new HashMap<Integer, OptOutCountHolder>();
+        for (DisplayableInventory inventory : inventories) {
+            int inventoryId = inventory.getInventoryId();
+            OptOutCountHolder holder = 
+                optOutService.getCurrentOptOutCount(inventoryId, customerAccountId);
+            retVal.put(inventoryId, holder);
+        }
+        return retVal;
+    }
 
     @Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {

@@ -35,7 +35,7 @@ public class OptOutCountHolder {
 		this.remainingOptOuts = remainingOptOuts;
 	}
 	
-	public boolean hasOptOutsRemaining() {
+	public boolean isOptOutsRemaining() {
 		return remainingOptOuts > 0 || remainingOptOuts == OptOutService.NO_OPT_OUT_LIMIT;
 	}
 }

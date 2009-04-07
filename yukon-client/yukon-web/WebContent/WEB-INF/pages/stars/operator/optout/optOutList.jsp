@@ -59,11 +59,12 @@ function createJSON() {
                     </tr>
                     <c:forEach var="displayableInventory" items="${displayableInventories}">
                         <c:set var="inventoryId" value="${displayableInventory.inventoryId}"/>
-                        
+                        <c:set var="optOutCount" value="${optOutCounts[inventoryId]}"/>
+
                         <tr class="<ct:alternateRow odd="altRow" even=""/>">
                             <td align="left">
                             	<c:choose>
-                            		<c:when test="${!displayableInventory.optOutsRemaining || displayableInventory.currentlyOptedOut && isSameDay}">
+                            		<c:when test="${!optOutCount.optOutsRemaining || displayableInventory.currentlyOptedOut && isSameDay}">
                             		    <input id="unused_${inventoryId}" checked="checked" disabled="disabled" type="checkbox"></input>
                             		</c:when>
                             		<c:otherwise>
@@ -85,11 +86,11 @@ function createJSON() {
                                 </c:forEach>    
                             </td>
                         </tr>
-                        <c:if test="${!displayableInventory.optOutsRemaining || displayableInventory.currentlyOptedOut}">
+                        <c:if test="${!optOutCount.optOutsRemaining || displayableInventory.currentlyOptedOut}">
                             <tr class="<ct:alternateRow odd="altRow" even="" skipToggle="true"/>">
                                 <td>&nbsp;</td>
                                 <td colspan="2">
-                                <c:if test="${!displayableInventory.optOutsRemaining}">
+                                <c:if test="${!optOutCount.optOutsRemaining}">
                                     <cti:msg key="yukon.dr.consumer.optoutlist.noMoreOptOutsAvailable"/><br>
                                 </c:if>
                                 <c:if test="${displayableInventory.currentlyOptedOut}">

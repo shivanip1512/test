@@ -18,15 +18,12 @@ import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.model.InventoryBase;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
-import com.cannontech.stars.dr.optout.model.OptOutCountHolder;
-import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.stars.dr.program.model.Program;
 
 @Repository("displayableInventoryDao")
 public class DisplayableInventoryDaoImpl extends AbstractDisplayableDao implements DisplayableInventoryDao {
     private static final Comparator<DisplayableInventory> displayableInventoryComparator = createComparator();
     private LMHardwareBaseDao lmHardwareBaseDao;
-    private OptOutService optOutService = null; 
     private OptOutEventDao optOutEventDao;
 
     @Override
@@ -57,11 +54,6 @@ public class DisplayableInventoryDaoImpl extends AbstractDisplayableDao implemen
             displayableInventory.setDisplayName(displayName);
             displayableInventory.setSerialNumber(serialNumber);
             displayableInventory.setPrograms(programs);
-
-            OptOutCountHolder holder = 
-                optOutService.getCurrentOptOutCount(inventoryId, customerAccountId);
-            displayableInventory.setUsedOptOuts(holder.getUsedOptOuts());
-            displayableInventory.setRemainingOptOuts(holder.getRemainingOptOuts());
 
             displayableInventory.setCurrentlyOptedOut(optOutEventDao.isOptedOut(inventoryId,
                                                                                 customerAccountId));
@@ -145,11 +137,6 @@ public class DisplayableInventoryDaoImpl extends AbstractDisplayableDao implemen
     @Autowired
     public void setLmHardwareBaseDao(LMHardwareBaseDao lmHardwareBaseDao) {
         this.lmHardwareBaseDao = lmHardwareBaseDao;
-    }
-
-    @Autowired
-    public void setOptOutService(OptOutService optOutService) {
-        this.optOutService = optOutService;
     }
 
     @Autowired
