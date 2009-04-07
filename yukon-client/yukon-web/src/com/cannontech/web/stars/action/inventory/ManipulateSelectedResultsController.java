@@ -53,7 +53,6 @@ public class ManipulateSelectedResultsController extends StarsInventoryActionCon
 
         iBean.setInventoryList(inventoryList);
         iBean.setNumberOfRecords(String.valueOf((iBeanInventoryList.size())));
-        //session.setAttribute("inventoryBean", iBean);
 
         this.manipulateInventoryResults.doAction(request, response, session, user, energyCompany);
     }

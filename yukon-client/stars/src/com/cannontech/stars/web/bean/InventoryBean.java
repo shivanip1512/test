@@ -741,6 +741,10 @@ public class InventoryBean {
         return numberOfRecords;
     }
     
+    public String getNumberOfRecordsSelected() {
+        return Integer.toString(inventorySet.size());
+    }
+    
     public void setInternalRequest(HttpServletRequest req)
     {
         internalRequest = req;
@@ -772,6 +776,10 @@ public class InventoryBean {
         
         List<LiteInventoryBase> list = simpleCollection.getList();
         return list;
+    }
+    
+    public List<LiteInventoryBase> getSelectedInventoryList() {
+    	return inventorySet;
     }
 
     public boolean isOverHardwareDisplayLimit() 

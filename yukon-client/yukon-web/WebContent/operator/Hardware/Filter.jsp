@@ -279,8 +279,8 @@
 			var idx = filters.selectedIndex;
 			if (idx > 0 && idx < filters.options.length) 
 			{
-				var oOption = filters.options[idx];
-				filters.options.remove(idx);
+				var oOption = filters.remove.options[idx];
+				filters.remove(idx);
 				filters.options.add(oOption, idx-1);
 				value = filterTexts[idx];
 				filterTexts[idx] = filterTexts[idx-1];
@@ -302,7 +302,7 @@
 			var idx = filters.selectedIndex;
 			if (idx >= 0 && idx < filters.options.length) {
 				var oOption = filters.options[idx];
-				filters.options.remove(idx);
+				filters.remove(idx);
 				filters.options.add(oOption, idx+1);
 				var value = filterTexts[idx];
 				filterTexts[idx] = filterTexts[idx+1];
@@ -324,7 +324,7 @@
 			var idx = filters.selectedIndex;
 			if (idx >= 0 && idx < filters.options.length) 
 			{
-				filters.options.remove(idx);
+				filters.remove(idx);
 				filterTexts.splice(idx, 1);
 				selectionIDs.splice(idx, 1);
 				yukonDefIDs.splice(idx, 1);
@@ -342,7 +342,7 @@
 			{
 				if (!confirm("Are you sure you want to remove all filters?")) return;
 				for (idx = filters.options.length; idx >= 0; idx--)
-					filters.options.remove(idx);
+					filters.remove(idx);
 				filterTexts.splice(0, filterTexts.length);
 				selectionIDs.splice(0, selectionIDs.length);
 				yukonDefIDs.splice(0, yukonDefIDs.length);

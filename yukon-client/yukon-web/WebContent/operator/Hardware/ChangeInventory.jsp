@@ -102,7 +102,7 @@
         	<table width="600" border="0" cellspacing="0" cellpadding="5" align="center">
             	<tr>
                 	<td width="320" class="headeremphasis"> 
-                    	<c:out value="${inventoryBean.numberOfRecords}"/>
+                    	<c:out value="${inventoryBean.numberOfRecordsSelected}"/>
 						records selected from inventory.
                   	</td>
                   	<td width="205"> 
