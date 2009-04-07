@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -169,9 +168,8 @@ public class OptOutOperatorController {
 
         // Validate the start date
         Date startDateObj = parseDate(startDate, yukonUserContext);
-        final Calendar now = dateFormattingService.getCalendar(yukonUserContext);
         TimeZone userTimeZone = yukonUserContext.getTimeZone();
-        final Date today = TimeUtil.getMidnight(now.getTime(), userTimeZone);
+        final Date today = TimeUtil.getMidnight(new Date(), userTimeZone);
         boolean isValidStartDate = isValidStartDate(startDateObj, today);
         if (!isValidStartDate) {
             MessageSourceResolvable error = new YukonMessageSourceResolvable(
@@ -180,7 +178,7 @@ public class OptOutOperatorController {
             return "operator/optout/optOutError.jsp";
         }
 
-        boolean isSameDay = DateUtils.isSameDay(startDateObj, today);
+        boolean isSameDay = TimeUtil.isSameDay(startDateObj, today, yukonUserContext.getTimeZone());
         map.addAttribute("isSameDay", isSameDay);
 
         List<DisplayableInventory> displayableInventories =
@@ -248,18 +246,18 @@ public class OptOutOperatorController {
 			"yukon.dr.operator.optoutresult.success");
         
         // Validate the start date
-        final Calendar now = dateFormattingService.getCalendar(yukonUserContext);
+        final Date now = new Date();
         TimeZone userTimeZone = yukonUserContext.getTimeZone();
-		final Date today = TimeUtil.getMidnight(now.getTime(), userTimeZone);
+		final Date today = TimeUtil.getMidnight(now, userTimeZone);
         boolean isValidStartDate = isValidStartDate(startDateObj, today);
         if (!isValidStartDate) {
         	result = new YukonMessageSourceResolvable(
         			"yukon.dr.operator.optoutresult.invalidStartDate");
         } else {
         	
-        	int hoursRemainingInDay = TimeUtil.getHoursTillMidnight(now.getTime(), userTimeZone);
-            boolean isSameDay = DateUtils.isSameDay(startDateObj, today);
-        	
+        	int hoursRemainingInDay = TimeUtil.getHoursTillMidnight(now, userTimeZone);
+            boolean isSameDay = TimeUtil.isSameDay(startDateObj, today, yukonUserContext.getTimeZone());
+
         	String jsonQuestions = ServletRequestUtils.getStringParameter(
 													        			request, 
 													        			"jsonQuestions");
@@ -381,6 +379,7 @@ public class OptOutOperatorController {
             return dateFormattingService.flexibleDateParser(dateStr,
                                                             yukonUserContext);
         } catch (ParseException e) {
+            // caller requires a date so null is treated as an error
         }
         return null;
     }
