@@ -42,6 +42,7 @@ import com.cannontech.stars.dr.optout.dao.OptOutAdditionalDao;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.optout.model.OptOutEventDto;
+import com.cannontech.stars.dr.optout.model.OptOutLimit;
 import com.cannontech.stars.dr.optout.model.ScheduledOptOutQuestion;
 import com.cannontech.stars.dr.optout.service.OptOutRequest;
 import com.cannontech.stars.dr.optout.service.OptOutService;
@@ -121,6 +122,14 @@ public class OptOutOperatorController {
 			noOptOutLimits = inventory.getRemainingOptOuts() == OptOutService.NO_OPT_OUT_LIMIT;
     	}
     	map.addAttribute("noOptOutLimits", noOptOutLimits);
+    	
+		OptOutLimit currentOptOutLimit = optOutService.getCurrentOptOutLimit(accountId);
+		int optOutLimit = OptOutService.NO_OPT_OUT_LIMIT;
+		if(currentOptOutLimit != null) {
+			optOutLimit = currentOptOutLimit.getLimit();
+		}
+    	
+		map.addAttribute("optOutLimit", optOutLimit);
     	map.addAttribute("allOptedOut", allOptedOut);
         map.addAttribute("optOutsAvailable", optOutsAvailable);
     	

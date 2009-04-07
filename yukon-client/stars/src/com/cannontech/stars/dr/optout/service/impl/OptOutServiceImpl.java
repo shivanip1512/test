@@ -50,8 +50,6 @@ import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
-import com.cannontech.roles.operator.InventoryRole;
-import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
@@ -433,7 +431,6 @@ public class OptOutServiceImpl implements OptOutService {
 		DateTime dateTime = new DateTime();
 		int currentMonth = dateTime.getMonthOfYear();
 		
-
 		// Get the Opt Out limits for the user
 		CustomerAccount customerAccount = customerAccountDao.getById(customerAccountId);
 		LiteContact contact = customerDao.getPrimaryContact(customerAccount.getCustomerId());
@@ -443,19 +440,14 @@ public class OptOutServiceImpl implements OptOutService {
 		LiteYukonUser user = yukonUserDao.getLiteYukonUser(userId);
 		TimeZone userTimeZone = authDao.getUserTimeZone(user);
 		
-		String optOutLimitString = 
-			rolePropertyDao.getPropertyStringValue(YukonRoleProperty.RESIDENTIAL_OPT_OUT_LIMITS, user);
-		
-		List<OptOutLimit> optOutLimits = this.parseOptOutLimitString(optOutLimitString);
 		int optOutLimit = OptOutService.NO_OPT_OUT_LIMIT;
 		Date startDate = new Date(0);
-		for (OptOutLimit limit : optOutLimits) {
-            if (limit.isMonthUnderLimit(currentMonth)) {
-                optOutLimit = limit.getLimit();
-                startDate = limit.getOptOutLimitStartDate(currentMonth, userTimeZone);
-                break;
-            }
-        }
+
+		OptOutLimit currentOptOutLimit = this.getCurrentOptOutLimit(user);
+		if(currentOptOutLimit != null) {
+			optOutLimit = currentOptOutLimit.getLimit();
+			startDate = currentOptOutLimit.getOptOutLimitStartDate(currentMonth, userTimeZone);
+		}
 
 		// Get the number of opt outs used from the start of the limit (if there is a limit)
 		// till now
@@ -502,10 +494,13 @@ public class OptOutServiceImpl implements OptOutService {
 		OptOutCountHolder currentOptOutCount = 
 			this.getCurrentOptOutCount(inventoryId, accountId);
 
-		// Add additional opt outs to 'erase' any used opt outs
 		int usedOptOuts = currentOptOutCount.getUsedOptOuts();
-		optOutAdditionalDao.addAdditonalOptOuts(inventoryId, accountId, usedOptOuts);
+		int additionalOptOuts = optOutAdditionalDao.getAdditionalOptOuts(inventoryId, accountId);
 		
+		int optOutsToAdd = usedOptOuts - additionalOptOuts;
+		if(optOutsToAdd > 0) {
+			optOutAdditionalDao.addAdditonalOptOuts(inventoryId, accountId, optOutsToAdd);
+		}
 	}
 	
 	@Override
@@ -712,6 +707,37 @@ public class OptOutServiceImpl implements OptOutService {
 		
 	}
 	
+	@Override
+	public OptOutLimit getCurrentOptOutLimit(int customerAccountId) {
+		
+		CustomerAccount customerAccount = customerAccountDao.getById(customerAccountId);
+		LiteContact contact = customerDao.getPrimaryContact(customerAccount.getCustomerId());
+
+		// Get the consumer user's time zone for date calculation
+		int userId = contact.getLoginID();
+		LiteYukonUser user = yukonUserDao.getLiteYukonUser(userId);
+		
+		return this.getCurrentOptOutLimit(user);
+	};
+	
+	private  OptOutLimit getCurrentOptOutLimit(LiteYukonUser user) {
+		
+		DateTime dateTime = new DateTime();
+		int currentMonth = dateTime.getMonthOfYear();
+		
+		String optOutLimitString = 
+			rolePropertyDao.getPropertyStringValue(YukonRoleProperty.RESIDENTIAL_OPT_OUT_LIMITS, user);
+		
+		List<OptOutLimit> optOutLimits = this.parseOptOutLimitString(optOutLimitString);
+		for (OptOutLimit limit : optOutLimits) {
+            if (limit.isMonthUnderLimit(currentMonth)) {
+                return limit;
+            }
+        }
+		
+		return null;
+	}
+	
 	/**
 	 * Helper method to send the opt out cancel command and cancel notification message
 	 * @param inventory - Inventory to cancel opt out on
@@ -854,9 +880,9 @@ public class OptOutServiceImpl implements OptOutService {
 			cmd.append(durationString);
 			
 			//if true, the opt out also includes a restore command so the switch gets both at once
-			boolean restoreFirst = authDao.checkRoleProperty(
-													user, 
-													InventoryRole.EXPRESSCOM_TOOS_RESTORE_FIRST);
+			boolean restoreFirst = rolePropertyDao.checkProperty(
+					YukonRoleProperty.EXPRESSCOM_TOOS_RESTORE_FIRST, user);
+			
 			if (restoreFirst) {
 				cmd.append(" control restore load 0");
 			}
@@ -867,9 +893,9 @@ public class OptOutServiceImpl implements OptOutService {
 		} else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA305) {
 			//SA305
 			
-			boolean trackHwAddr = authDao.checkRoleProperty(
-														user, 
-														EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING);
+			boolean trackHwAddr = rolePropertyDao.checkProperty(
+					YukonRoleProperty.TRACK_HARDWARE_ADDRESSING, user);
+			
 			if (!trackHwAddr) {
 				throw new IllegalStateException("The utility ID of the SA305 switch is unknown");
 			}
@@ -923,8 +949,9 @@ public class OptOutServiceImpl implements OptOutService {
 		} else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA305) {
 			// SA305
 			
-			boolean trackHwAddr = authDao.checkRoleProperty(user,
-					EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING);
+			boolean trackHwAddr = rolePropertyDao.checkProperty(
+					YukonRoleProperty.TRACK_HARDWARE_ADDRESSING, user);
+			
 			if (!trackHwAddr) {
 				throw new IllegalStateException(
 						"The utility ID of the SA305 switch is unknown");

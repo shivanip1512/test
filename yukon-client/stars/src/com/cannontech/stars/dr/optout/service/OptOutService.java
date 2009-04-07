@@ -96,6 +96,13 @@ public interface OptOutService {
 	 * @return List of current opt out limits
 	 */
 	public List<OptOutLimit> getAllOptOutLimits(LiteYukonGroup group);
+	
+	/**
+	 * Method to get the current opt out limit for an account
+	 * @param customerAccountId - Account to get limit for
+	 * @return Current limit or null if there is no limit
+	 */
+	public OptOutLimit getCurrentOptOutLimit(int customerAccountId);
 
 	/**
 	 * Method to reset the number of opt outs a user has remaining to the limit. (basically

@@ -151,10 +151,17 @@
             </td>
             <c:if test="${!noOptOutLimits}">
 	            <td>
-	                <form action="/spring/stars/operator/optOut/resetToLimit" method="post">
-	                    <input type="hidden" name="inventoryId" value="${inventory.inventoryId}">
-	                    <input type="submit" name="submit" value="<cti:msg key="yukon.dr.operator.optout.clear"/>">
-	                </form>
+	               <c:choose>
+	                   <c:when test="${optOutLimit <= inventory.remainingOptOuts}">
+	                       <cti:msg key="yukon.dr.operator.optout.atLimit"/>
+	                   </c:when>
+	                   <c:otherwise>
+			                <form action="/spring/stars/operator/optOut/resetToLimit" method="post">
+			                    <input type="hidden" name="inventoryId" value="${inventory.inventoryId}">
+			                    <input type="submit" name="submit" value="<cti:msg key="yukon.dr.operator.optout.clear"/>">
+			                </form>
+	                   </c:otherwise>
+	               </c:choose>
 	            </td>
 	        </c:if>
         </tr>

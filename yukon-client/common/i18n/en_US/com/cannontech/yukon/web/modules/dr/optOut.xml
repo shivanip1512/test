@@ -52,6 +52,7 @@
     <entry key="yukon.dr.consumer.optout.unlimitedRemaining">unlimited</entry>
     <entry key="yukon.dr.operator.optout.reset">Reset</entry>
     <entry key="yukon.dr.operator.optout.clear">Clear</entry>
+    <entry key="yukon.dr.operator.optout.atLimit">Remaining opt outs&lt;br&gt;at opt out limit</entry>
     
     <entry key="yukon.dr.operator.optout.optOutHistory">Opt Out History</entry>
     <entry key="yukon.dr.operator.optout.dateScheduled">Date Scheduled</entry>
