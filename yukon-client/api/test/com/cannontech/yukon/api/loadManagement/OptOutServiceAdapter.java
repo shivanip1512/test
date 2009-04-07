@@ -118,4 +118,9 @@ public class OptOutServiceAdapter implements OptOutService {
 		throw new UnsupportedOperationException("not implemented");
 	}
 
+	@Override
+	public OptOutLimit getCurrentOptOutLimit(int customerAccountId) {
+		throw new UnsupportedOperationException("not implemented");
+	}
+
 }
