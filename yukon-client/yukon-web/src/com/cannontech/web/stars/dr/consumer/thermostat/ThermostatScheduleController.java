@@ -199,8 +199,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     		Integer heatTemperature = entry.getHeatTemperature();
     		
     		String startDateString = 
-    			dateFormattingService.formatDate(
-    					startDate, DateFormatEnum.TIME_12H, yukonUserContext);
+    			dateFormattingService.formatDate(startDate, DateFormatEnum.TIME, yukonUserContext);
 
     		// Temperatures are only -1 if this is a 2 time temp thermostat type - ignore if -1
     		if(coolTemperature != -1 && heatTemperature != -1) {
