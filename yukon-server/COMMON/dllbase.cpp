@@ -175,7 +175,7 @@ DLLEXPORT void InitYukonBaseGlobals(void)
         if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_RWDBDLL   found : " << str << endl;
 
         dbDll = str;
-        std::tolower(str);
+        std::transform(str.begin(), str.end(), str.begin(), ::tolower);
 
         if(str == "oracle")
         {
