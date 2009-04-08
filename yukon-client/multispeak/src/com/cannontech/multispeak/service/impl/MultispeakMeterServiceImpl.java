@@ -41,6 +41,7 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.service.DeviceUpdateService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
@@ -110,6 +111,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     private DeviceUpdateService deviceUpdateService = null;
     private SubstationDao substationDao = null;
     private SubstationToRouteMappingDao substationToRouteMappingDao = null;
+    private DeviceDao deviceDao = null;
 
 	/** Singleton incrementor for messageIDs to send to porter connection */
 	private static long messageID = 1;
@@ -819,38 +821,51 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         updateBillingCyle(cycleGroupName, meterNumber, newDevice, "MeterAddNotification", mspVendor);
         
         // ROUTES
-        try {
-            
-            // get routes
-            Substation substation = substationDao.getByName(substationName);
-            List<Integer> routeIds = substationToRouteMappingDao.getRouteIdsBySubstationId(substation.getId());
-            
-            // set route
-            if (routeIds.size() > 0) {
-                
-                // initally set route to first sub mapping
-                deviceUpdateService.changeRoute(newDevice, routeIds.get(0));
-                mspObjectDao.logMSPActivity("MeterAddNotification", "MeterNumber(" + meterNumber + ") - Route initially set to that of template device, will run route discovery.", mspVendor.getCompanyName());
-            
-                // run route discovery
-                LiteYukonUser liteYukonUser = UserUtils.getYukonUser(); 
-                deviceUpdateService.routeDiscovery(newDevice, routeIds, liteYukonUser);
-                
-                List<String> routeNames = new ArrayList<String>(routeIds.size());
-                for (int routeId : routeIds) {
-                    routeNames.add(paoDao.getRouteNameForRouteId(routeId));
-                }
-                mspObjectDao.logMSPActivity("MeterAddNotification", "MeterNumber(" + meterNumber + ") - Route discovery started on: " + StringUtils.join(routeNames, ",") + ".", mspVendor.getCompanyName());
-            
-            // no routes for sub
-            } else {
-            	mspObjectDao.logMSPActivity("MeterAddNotification", "MeterNumber(" + meterNumber + ") - No Routes for substation (" + substationName + "), using route from template device.", mspVendor.getCompanyName());
-            }
-            
-        // bad sub name
-        } catch(NotFoundException e) {
-            mspObjectDao.logMSPActivity("MeterAddNotification", "MeterNumber(" + meterNumber + ") - " + e.getMessage() + ", using route from template device.", mspVendor.getCompanyName());
-        }
+        updateMeterRouteForSubstation(newDevice, mspVendor, substationName, meterNumber);
+    }
+    
+    
+    private void updateMeterRouteForSubstation(int paoId, MultispeakVendor mspVendor, String substationName, String meterNumber) {
+    	
+    	YukonDevice meterDevice = deviceDao.getYukonDevice(paoId);
+    	updateMeterRouteForSubstation(meterDevice, mspVendor, substationName, meterNumber);
+    }
+    
+    private void updateMeterRouteForSubstation(YukonDevice meterDevice, MultispeakVendor mspVendor, String substationName, String meterNumber) {
+    	
+    	try {
+    		
+	    	// get routes
+	        Substation substation = substationDao.getByName(substationName);
+	        List<Integer> routeIds = substationToRouteMappingDao.getRouteIdsBySubstationId(substation.getId());
+	        
+	        // set route
+	        if (routeIds.size() > 0) {
+	            
+	            // initally set route to first sub mapping
+	            deviceUpdateService.changeRoute(meterDevice, routeIds.get(0));
+	            mspObjectDao.logMSPActivity("MeterAddNotification", "MeterNumber(" + meterNumber + ") - Route initially set to that of template device, will run route discovery.", mspVendor.getCompanyName());
+	        
+	            // run route discovery
+	            LiteYukonUser liteYukonUser = UserUtils.getYukonUser(); 
+	            deviceUpdateService.routeDiscovery(meterDevice, routeIds, liteYukonUser);
+	            
+	            List<String> routeNames = new ArrayList<String>(routeIds.size());
+	            for (int routeId : routeIds) {
+	                routeNames.add(paoDao.getRouteNameForRouteId(routeId));
+	            }
+	            mspObjectDao.logMSPActivity("MeterAddNotification", "MeterNumber(" + meterNumber + ") - Route discovery started on: " + StringUtils.join(routeNames, ",") + ".", mspVendor.getCompanyName());
+	        
+	        // no routes for sub
+	        } else {
+	        	mspObjectDao.logMSPActivity("MeterAddNotification", "MeterNumber(" + meterNumber + ") - No Routes for substation (" + substationName + "), using route from template device.", mspVendor.getCompanyName());
+	        }
+        
+	     // bad sub name
+	    } catch(NotFoundException e) {
+	        mspObjectDao.logMSPActivity("MeterAddNotification", "MeterNumber(" + meterNumber + ") - " + e.getMessage() + ", using route from template device.", mspVendor.getCompanyName());
+	    }
+    	
     }
     
     /**
@@ -1162,19 +1177,38 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             errorObjects.add(err);
         } else { //Valid template found
             //Find a valid substation
-            if( mspMeter.getUtilityInfo() == null || mspMeter.getUtilityInfo().getSubstationName()== null){
-                createMeter(mspMeter, mspVendor, templateName, "");
-            } else {
-                String substationName = mspMeter.getUtilityInfo().getSubstationName();
-                err = isValidSubstation(substationName, meterNo, mspVendor);
-                if (err != null) {
-                    errorObjects.add(err);
-                } else {
-                    createMeter(mspMeter, mspVendor, templateName, substationName);
-                }
-            }
+        	String substationName = getMeterSubstationName(mspMeter, mspVendor, errorObjects);
+        	if (errorObjects.size() == 0) {
+        		createMeter(mspMeter, mspVendor, templateName, substationName);
+        	}
         }
         return errorObjects;
+	}
+	
+	/**
+	 * Return the substation name of a Meter.
+	 * If the Meter does not contain a substation name in its utility info, empty string is returned.
+	 * If the substation name is not valid (not found, or has no routes), an error is added to errorObjects, and
+	 * an empty string is returned. 
+	 * @param mspMeter
+	 * @param mspVendor
+	 * @param errorObjects
+	 * @return
+	 */
+	private String getMeterSubstationName(Meter mspMeter, MultispeakVendor mspVendor, List<ErrorObject> errorObjects) {
+		
+		String substationName = "";
+		if(!(mspMeter.getUtilityInfo() == null || mspMeter.getUtilityInfo().getSubstationName()== null)){
+			String meterNo = mspMeter.getMeterNo().trim();
+			substationName = mspMeter.getUtilityInfo().getSubstationName();
+			ErrorObject err = isValidSubstation(substationName, meterNo, mspVendor);
+			if (err != null) {
+				substationName = "";
+                errorObjects.add(err);
+            }
+		}
+		
+		return substationName;
 	}
 	
 	/**
@@ -1370,6 +1404,14 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             DeviceCarrierSettings deviceCarrierSettings = ((MCTBase)yukonPaobject).getDeviceCarrierSettings();
             deviceCarrierSettings.setAddress(Integer.valueOf(newAddress));
             logString += "(Addr-" + currentAddress + " to " + newAddress + ");";
+        }
+        
+        //Update route
+        List<ErrorObject> substationNameErrors = new ArrayList<ErrorObject>();
+        String substationName = getMeterSubstationName(mspMeter, mspVendor, substationNameErrors);
+        if (!StringUtils.isBlank(substationName) && substationNameErrors.size() == 0) {
+        	
+        	updateMeterRouteForSubstation(yukonPaobject.getPAObjectID(), mspVendor, substationName, meter.getMeterNumber());
         }
         
         //Enable the meter
@@ -1574,4 +1616,8 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             SubstationToRouteMappingDao substationToRouteMappingDao) {
         this.substationToRouteMappingDao = substationToRouteMappingDao;
     }
+    @Autowired
+    public void setDeviceDao(DeviceDao deviceDao) {
+		this.deviceDao = deviceDao;
+	}
 }
