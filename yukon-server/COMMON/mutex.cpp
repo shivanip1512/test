@@ -37,12 +37,10 @@ bool CtiMutex::acquire()
 {
 #ifdef _WINDOWS
     DWORD result = WaitForSingleObject( hMutex, INFINITE );
-#ifdef _DEBUG
     for(int i = 2; i > 0; i--)
         _threadID[i] = _threadID[i-1];
 
     _threadID[0] = GetCurrentThreadId();
-#endif
     return( result == WAIT_OBJECT_0 );
 #endif
 }
@@ -60,7 +58,6 @@ bool CtiMutex::acquire(unsigned long millis)
     DWORD result = WaitForSingleObject( hMutex, millis );
     //assert(result != WAIT_FAILED);   // Why??? CGP 021502
 
-#ifdef _DEBUG
     if(result == WAIT_OBJECT_0)
     {
         for(int i = 2; i > 0; i--)
@@ -68,7 +65,6 @@ bool CtiMutex::acquire(unsigned long millis)
 
         _threadID[0] = GetCurrentThreadId();
     }
-#endif
     if( result == WAIT_FAILED )
     {
         std::cerr << " mutex wait failed, last error: " << GetLastError() << std::endl;
@@ -87,10 +83,8 @@ void CtiMutex::release()
 #ifdef _WINDOWS
     BOOL retres = ReleaseMutex( hMutex );
 
-#ifdef _DEBUG
     if(!retres)
         _threadID[0] = 0;
-#endif
 #endif
 }
 
@@ -107,9 +101,8 @@ void CtiMutex::reset()
     if(hMutex != INVALID_HANDLE_VALUE) CloseHandle( hMutex );
     hMutex = INVALID_HANDLE_VALUE;
     hMutex = CreateMutex( NULL, FALSE, NULL );
-#ifdef _DEBUG
+
     for(int i = 0; i < 3; i++) _threadID[i] = 0;
-#endif
 #endif
 }
 

@@ -173,7 +173,26 @@ DLLEXPORT void InitYukonBaseGlobals(void)
     if( !(str = gConfigParms.getValueAsString("DB_RWDBDLL")).empty() )
     {
         if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_RWDBDLL   found : " << str << endl;
+
         dbDll = str;
+        std::tolower(str);
+
+        if(str == "oracle")
+        {
+            #ifdef _DEBUG
+            dbDll = "ora15d.dll";
+            #else
+            dbDll = "ora12d.dll";
+            #endif
+        }
+        else if(str == "sqlserver")
+        {
+            #ifdef _DEBUG
+            dbDll = "msq15d.dll";
+            #else
+            dbDll = "msq12d.dll";
+            #endif
+        }
     }
     else
     {

@@ -296,7 +296,7 @@ INT ChangeIdGen(bool force)
 
     INT tempid = 0;
     static BOOL init_id = FALSE;
-    static INT id = 0;
+    volatile static INT id = 0;
     static const CHAR sql[] = "SELECT MAX(CHANGEID) FROM RAWPOINTHISTORY";
 
     if(!init_id || force)

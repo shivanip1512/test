@@ -55,7 +55,6 @@ public:
     CtiLockGuard(T& resource) :  _res(resource)
     {
         static bool hasDumped = false;
-        #ifdef _DEBUG
         while(!(_acquired = _res.acquire(900000)))
         {
             std::cerr << " guard is unable to lock resource FOR thread id: " << GetCurrentThreadId() << " resource is owned by " << _res.lastAcquiredByTID() << std::endl;
@@ -73,9 +72,6 @@ public:
                 /// CreateDump(GetCurrentProcessId(), file.c_str(), (unsigned long) 0, (unsigned long) NULL, (EXCEPTION_POINTERS*) NULL); //I would like a MiniDumpWithDataSegs but I think it would be too large.
             }
         }
-        #else
-        _res.acquire();
-        #endif
         _acquired = true;
     }
 
@@ -115,7 +111,6 @@ public:
     CtiReadLockGuard(T& resource) :  _res(resource)
     {
         static bool hasDumped = false;
-        #ifdef _DEBUG
         while(!(_acquired = _res.acquireRead(900000)))
         {
             std::cerr << " guard is unable to lock resource FOR thread id: " << GetCurrentThreadId() << " resource is owned by " << _res.lastAcquiredByTID() << std::endl;
@@ -133,9 +128,6 @@ public:
                 ///CreateDump(GetCurrentProcessId(), file.c_str(), (unsigned long) 0, (unsigned long) NULL, (EXCEPTION_POINTERS*) NULL); //I would like a MiniDumpWithDataSegs but I think it would be too large.
             }
         }
-        #else
-        _res.acquire();
-        #endif
         _acquired = true;
     }
 
