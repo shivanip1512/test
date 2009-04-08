@@ -90,7 +90,7 @@
 %>
                           <tr> 
                             <td class="TableCell" width="200"><cti:formatDate value="<%=hist.getStartDateTime()%>" type="BOTH"/></td>
-                            <td class="TableCell" width="200"><%= ServletUtils.getDurationFromSeconds(durationSec) %></td>
+                            <td class="TableCell" width="200"><%= ServletUtils.getDurationFromSeconds(durationSec, true) %></td>
                           </tr>
                           <%
 	}

@@ -140,7 +140,7 @@
                         <%} else { %>
                             <td width="61" class="TableCell"><%= timePart.format(stopTime) %></td>
                         <%} %>
-                        <td width="60" class="TableCell"><%= ServletUtils.getDurationFromSeconds(durationSec) %></td>
+                        <td width="60" class="TableCell"><%= ServletUtils.getDurationFromSeconds(durationSec, true) %></td>
                       </tr>
                       <%
 				}

@@ -136,9 +136,9 @@ public class ServletUtils {
 	public static final String UTIL_EMAIL = "<<EMAIL>>";
 
 	public static final String INHERITED_FAQ = "INHERITED_FAQ";
-	
-	private static java.text.DecimalFormat decFormat = new java.text.DecimalFormat("0.#");
-	
+
+	private static java.text.DecimalFormat decFormat = new java.text.DecimalFormat("0.##");
+
 	private static final java.text.SimpleDateFormat[] timeFormat =
 	{
 		new java.text.SimpleDateFormat("hh:mm a"),
@@ -158,17 +158,42 @@ public class ServletUtils {
 		if (str == null || str.trim().equals(""))
 			return "&nbsp;";
 		return str;
-	}
+    }
 
-	public static String getDurationFromSeconds(int sec) {
-		String durationStr = null;
+    /**
+     * Format the duration for use in the UI. Will display in minutes if less
+     * than an hour or hours if more than an hour.
+     * @param sec The number of seconds in the duration.
+     * @return the formatted string
+     */
+    public static String getDurationFromSeconds(int sec) {
+        return getDurationFromSeconds(sec, false);
+    }
 
-		if (sec >= 3600)
-			durationStr = decFormat.format(1.0 * sec / 3600) + " Hours";
-		else
-			durationStr = String.valueOf(sec / 60) + " Minutes";
+    /**
+     * Format the duration for use in the UI. Will display in minutes if less
+     * than an hour or hours if more than an hour.
+     * @param sec The number of seconds in the duration.
+     * @param extraDecimal Use true if an extra decimal place is desired in the
+     *            output. This is used when summing values. The total does not
+     *            include the extra place but the values being summed do. This
+     *            avoids showing the user things like 1 + 1 = 3 due to rounding.
+     * @return the formatted string
+     */
+    public static String getDurationFromSeconds(int sec, boolean extraDecimal) {
+		double value = sec / 60.0;
+		int placesToKeep = extraDecimal ? 1 : 0;
+		String units = "Hours";
 
-		return durationStr;
+		if (sec >= 3600) {
+		    placesToKeep++;
+		    value /= 60.0;
+        } else {
+            units = "Minutes";
+        }
+
+		double multiplier = Math.pow(10, placesToKeep);
+		return decFormat.format(Math.round(value * multiplier) / multiplier) + " " + units;
 	}
 	
 	public static String getDurationFromHours(int hour) {
