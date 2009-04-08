@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/6/2009 2:56:14 PM                          */
+/* Created on:     4/8/2009 10:11:38 AM                         */
 /*==============================================================*/
 
 
@@ -138,6 +138,8 @@ drop index INDX_ECToInvMap_InvId;
 drop index INDX_ECToCustEventMap_EventId;
 
 drop index Indx_EnCmpName;
+
+drop index INDX_ECompCustList_CustId;
 
 drop index Indx_FdrTransIntTyp;
 
@@ -5066,6 +5068,13 @@ create table EnergyCompanyCustomerList  (
    EnergyCompanyID      NUMBER                          not null,
    CustomerID           NUMBER                          not null,
    constraint PK_ENERGYCOMPANYCUSTOMERLIST primary key (EnergyCompanyID, CustomerID)
+);
+
+/*==============================================================*/
+/* Index: INDX_ECompCustList_CustId                             */
+/*==============================================================*/
+create index INDX_ECompCustList_CustId on EnergyCompanyCustomerList (
+   CustomerID ASC
 );
 
 /*==============================================================*/

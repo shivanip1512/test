@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     4/6/2009 2:55:15 PM                          */
+/* Created on:     4/8/2009 10:10:47 AM                         */
 /*==============================================================*/
 
 
@@ -534,6 +534,15 @@ if exists (select 1
             and   indid > 0
             and   indid < 255)
    drop index EnergyCompany.Indx_EnCmpName
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('EnergyCompanyCustomerList')
+            and   name  = 'INDX_ECompCustList_CustId'
+            and   indid > 0
+            and   indid < 255)
+   drop index EnergyCompanyCustomerList.INDX_ECompCustList_CustId
 go
 
 if exists (select 1
@@ -7712,6 +7721,14 @@ create table EnergyCompanyCustomerList (
    EnergyCompanyID      numeric              not null,
    CustomerID           numeric              not null,
    constraint PK_ENERGYCOMPANYCUSTOMERLIST primary key (EnergyCompanyID, CustomerID)
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_ECompCustList_CustId                             */
+/*==============================================================*/
+create index INDX_ECompCustList_CustId on EnergyCompanyCustomerList (
+CustomerID ASC
 )
 go
 
