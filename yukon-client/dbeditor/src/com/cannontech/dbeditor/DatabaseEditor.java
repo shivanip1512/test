@@ -2125,6 +2125,21 @@ public void popupMenuWillBecomeVisible(PopupMenuEvent event)
 {
 	if( event.getSource() == DatabaseEditor.this.getTreeNodePopupMenu() )
 	{
+		//If nothing selected, default and return
+		if( getTreeViewPanel().getSelectedNodes() == null ) {
+			getTreeNodePopupMenu().getJMenuItemChangeType().setEnabled(false);
+		      getTreeNodePopupMenu().getJMenuItemCopy().setEnabled(false);
+		      getTreeNodePopupMenu().getJMenuItemDelete().setEnabled(false);
+		      getTreeNodePopupMenu().getJMenuItemEdit().setEnabled(false);
+		      getTreeNodePopupMenu().getJMenuSortAllPointsBy().setEnabled(true);
+			
+		      editMenu.changeTypeMenuItem.setEnabled(false);
+		      editMenu.copyMenuItem.setEnabled(false);
+		      editMenu.deleteMenuItem.setEnabled(false);
+		      editMenu.editMenuItem.setEnabled(false);
+		      return;
+		}
+		
 		//defaults value here
       getTreeNodePopupMenu().getJMenuItemChangeType().setEnabled(true);
       getTreeNodePopupMenu().getJMenuItemCopy().setEnabled(true);
@@ -2142,14 +2157,9 @@ public void popupMenuWillBecomeVisible(PopupMenuEvent event)
 		{
 	      getTreeNodePopupMenu().getJMenuItemChangeType().setEnabled(false);
 	      getTreeNodePopupMenu().getJMenuItemCopy().setEnabled(false);
-	      getTreeNodePopupMenu().getJMenuItemDelete().setEnabled(true);
-	      getTreeNodePopupMenu().getJMenuItemEdit().setEnabled(true);
-	      getTreeNodePopupMenu().getJMenuSortAllPointsBy().setEnabled(false);
 	      
 	      editMenu.changeTypeMenuItem.setEnabled(false);
 	      editMenu.copyMenuItem.setEnabled(false);
-	      editMenu.deleteMenuItem.setEnabled(true);
-	      editMenu.editMenuItem.setEnabled(true);
 		}
 		else
 		{
