@@ -323,37 +323,41 @@ public class StarsDatabaseCache implements DBChangeListener {
     					handleRouteChange( msg, energyCompany );
     			}
     			else if (DeviceTypesFuncs.isLMProgramDirect( litePao.getType() )) {
-    				for (LiteLMProgramWebPublishing liteProg : energyCompany.getPrograms()) {
-    					if (liteProg.getDeviceID() == msg.getId()) {
-    						handleLMProgramChange( msg, energyCompany, liteProg );
-    						return;
-    					}
+    				if (energyCompany.getPrograms() != null) {
+	    				for (LiteLMProgramWebPublishing liteProg : energyCompany.getPrograms()) {
+	    					if (liteProg.getDeviceID() == msg.getId()) {
+	    						handleLMProgramChange( msg, energyCompany, liteProg );
+	    						return;
+	    					}
+	    				}
     				}
     			}
     			else if (DeviceTypesFuncs.isLmGroup( litePao.getType() )) {
     				StarsEnrollmentPrograms categories = energyCompany.getStarsEnrollmentPrograms();
     				
-    				for (LiteLMProgramWebPublishing liteProg : energyCompany.getPrograms()) {
-    					boolean groupFound = false;
-    					
-    					for (int k = 0; k < liteProg.getGroupIDs().length; k++) {
-    						if (liteProg.getGroupIDs()[k] == msg.getId()) {
-    							handleLMGroupChange( msg, energyCompany, liteProg );
-    							groupFound = true;
-    							break;
-    						}
-    					}
-    					
-    					if (!groupFound) {
-    						// Program could contain a macro group, while a LM group in that macro group is changed
-    						StarsEnrLMProgram starsProg = ServletUtils.getEnrollmentProgram( categories, liteProg.getProgramID() );
-    						for (int k = 0; k < starsProg.getAddressingGroupCount(); k++) {
-    							if (starsProg.getAddressingGroup(k).getEntryID() == msg.getId()) {
-    								handleLMGroupChange( msg, energyCompany, liteProg );
-    								break;
-    							}
-    						}
-    					}
+    				if (energyCompany.getPrograms() != null) {
+	    				for (LiteLMProgramWebPublishing liteProg : energyCompany.getPrograms()) {
+	    					boolean groupFound = false;
+	    					
+	    					for (int k = 0; k < liteProg.getGroupIDs().length; k++) {
+	    						if (liteProg.getGroupIDs()[k] == msg.getId()) {
+	    							handleLMGroupChange( msg, energyCompany, liteProg );
+	    							groupFound = true;
+	    							break;
+	    						}
+	    					}
+	    					
+	    					if (!groupFound) {
+	    						// Program could contain a macro group, while a LM group in that macro group is changed
+	    						StarsEnrLMProgram starsProg = ServletUtils.getEnrollmentProgram( categories, liteProg.getProgramID() );
+	    						for (int k = 0; k < starsProg.getAddressingGroupCount(); k++) {
+	    							if (starsProg.getAddressingGroup(k).getEntryID() == msg.getId()) {
+	    								handleLMGroupChange( msg, energyCompany, liteProg );
+	    								break;
+	    							}
+	    						}
+	    					}
+	    				}
     				}
     			}
     			else if (DeviceTypesFuncs.isMCT( litePao.getType() )) {
