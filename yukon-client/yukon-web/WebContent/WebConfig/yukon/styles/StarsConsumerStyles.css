@@ -212,7 +212,6 @@ div#programEnrollmentDiv {
 div#controlEventsDiv {
 	font-size: .8em;
 	overflow: auto;
-	height: 300px;
 }	
 
 div#controlEventsDiv table {
