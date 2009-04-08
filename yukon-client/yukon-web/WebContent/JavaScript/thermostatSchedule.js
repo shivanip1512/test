@@ -14,8 +14,8 @@ var currentTimePeriod = 'WEEKDAY';
 var currentScheduleMode = 'WEEKDAY_SAT_SUN';
 
 var tempUnit = 'F';     // Temperature mode, 'F'/'C'
-var lowerLimit = 45;  //always specified in fahrenheit
-var upperLimit = 88;  //always specified in fahrenheit
+var lowerLimit = 40;  //always specified in fahrenheit
+var upperLimit = 90;  //always specified in fahrenheit
 var defaultTemp = 72;
 
 var thermostats = ['', 'MovingLayer1', 'MovingLayer2', 'MovingLayer3', 'MovingLayer4'];

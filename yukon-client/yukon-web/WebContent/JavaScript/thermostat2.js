@@ -8,8 +8,8 @@ var thermometerLen = 100;
 var arrowTopBnd = arrowBottomBnd - thermometerLen;
 
 var tempUnit = 'F';     // Temperature mode, 'F'/'C'
-var lowerLimit = 45;  //always specified in fahrenheit
-var upperLimit = 88;  //always specified in fahrenheit
+var lowerLimit = 40;  //always specified in fahrenheit
+var upperLimit = 90;  //always specified in fahrenheit
 
 var thermostats = ['', 'MovingLayer1', 'MovingLayer2', 'MovingLayer3', 'MovingLayer4'];
 var tempCArrows = ['', 'div1C', 'div2C', 'div3C', 'div4C'];
