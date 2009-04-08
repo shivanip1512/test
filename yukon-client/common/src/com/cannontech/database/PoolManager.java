@@ -60,7 +60,10 @@ public class PoolManager {
         // otherwise, see what dll is setup
         
         String rwDllName = configSource.getString("DB_RWDBDLL");
-        if ("msq15d.dll".equals(rwDllName)) {
+        
+        if ("msq15d.dll".equalsIgnoreCase(rwDllName) ||
+    		"msq12d.dll".equalsIgnoreCase(rwDllName) ||
+    		"sqlserver" .equalsIgnoreCase(rwDllName)) {
             // configure as microsoft
             // example: jdbc:jtds:sqlserver://mn1db02:1433;APPNAME=yukon-client;TDS=8.0
             StringBuilder url = new StringBuilder();
@@ -72,7 +75,9 @@ public class PoolManager {
             return url.toString();
         }
         
-        if ("ora15d.dll".equals(rwDllName)) {
+        if ("ora15d.dll".equalsIgnoreCase(rwDllName) ||
+    		"ora12d.dll".equalsIgnoreCase(rwDllName) ||
+    		"oracle"    .equalsIgnoreCase(rwDllName)) {
             try {
                 // configure as Oracle
                 // example: jdbc:oracle:thin:@mn1db02:1521:xcel
