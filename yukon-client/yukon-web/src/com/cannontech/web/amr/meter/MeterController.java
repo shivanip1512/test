@@ -252,15 +252,18 @@ public class MeterController extends MultiActionController {
 
         // account information widget
         // if it is NONE, do a check for vendorId and proceed as if they actually had MULTISPEAK value set
-        CisDetailRolePropertyEnum cisDetailRoleProperty = CisDetailRolePropertyEnum.valueOf(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.CIS_DETAIL_TYPE, user));
-        String cisInfoWidgetName = cisDetailRoleProperty.getWidgetName();
-        if (cisInfoWidgetName == null) {
-        	int vendorId = Integer.valueOf(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.MSP_PRIMARY_CB_VENDORID, user)).intValue();
-        	if (vendorId > 0) {
-        		cisInfoWidgetName = CisDetailRolePropertyEnum.MULTISPEAK.getWidgetName();
-        	}
+        boolean cisDetailWidgetEnabled = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.CIS_DETAIL_WIDGET_ENABLED, user);
+        if (cisDetailWidgetEnabled) {
+	        CisDetailRolePropertyEnum cisDetailRoleProperty = CisDetailRolePropertyEnum.valueOf(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.CIS_DETAIL_TYPE, user));
+	        String cisInfoWidgetName = cisDetailRoleProperty.getWidgetName();
+	        if (cisInfoWidgetName == null) {
+	        	int vendorId = Integer.valueOf(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.MSP_PRIMARY_CB_VENDORID, user)).intValue();
+	        	if (vendorId > 0) {
+	        		cisInfoWidgetName = CisDetailRolePropertyEnum.MULTISPEAK.getWidgetName();
+	        	}
+	        }
+	        mav.addObject("cisInfoWidgetName", cisInfoWidgetName);
         }
-        mav.addObject("cisInfoWidgetName", cisInfoWidgetName);
 
         boolean disconnectSupported = DeviceTypesFuncs.isDisconnectMCTOrHasCollar(device);
         mav.addObject("disconnectSupported", disconnectSupported);

@@ -36,9 +36,11 @@ import com.cannontech.multispeak.deploy.service.PointType;
 import com.cannontech.multispeak.deploy.service.UtilityInfo;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
+@CheckRoleProperty(YukonRoleProperty.CIS_DETAIL_WIDGET_ENABLED)
 public class AccountInformationWidget extends WidgetControllerBase{
     
     private MspObjectDao mspObjectDao;

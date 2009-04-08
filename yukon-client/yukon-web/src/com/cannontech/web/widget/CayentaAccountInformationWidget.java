@@ -9,14 +9,17 @@ import org.springframework.web.servlet.ModelAndView;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.model.Address;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.web.cayenta.model.CayentaLocationInfo;
 import com.cannontech.web.cayenta.model.CayentaMeterInfo;
 import com.cannontech.web.cayenta.model.CayentaPhoneInfo;
 import com.cannontech.web.cayenta.service.CayentaApiService;
 import com.cannontech.web.cayenta.util.CayentaMeterNotFoundException;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
+@CheckRoleProperty(YukonRoleProperty.CIS_DETAIL_WIDGET_ENABLED)
 public class CayentaAccountInformationWidget extends WidgetControllerBase {
     
     private MeterDao meterDao;
