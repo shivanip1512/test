@@ -88,7 +88,7 @@ public class CommandDeviceBean implements DBChangeListener
 	private static final String COMM_CHANNEL_STRING = "Comm Channel";
 
 	private static final String LOAD_GROUP_STRING = "Load Group";
-	private static final String LMGROUP_SERIAL_STRING = "Serial Number";
+	private static final String LMGROUP_SERIAL_STRING = "Group Serial Number";
 	private static final String LMGROUP_CAPACITY_STRING = "kW Capactiy";
 	private static final String LMGROUP_ROUTE_STRING = "Group Route";
 	
