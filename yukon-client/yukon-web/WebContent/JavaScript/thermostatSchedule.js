@@ -14,7 +14,7 @@ var currentTimePeriod = 'WEEKDAY';
 var currentScheduleMode = 'WEEKDAY_SAT_SUN';
 
 var tempUnit = 'F';     // Temperature mode, 'F'/'C'
-var lowerLimit = 40;  //always specified in fahrenheit
+var lowerLimit = 50;  //always specified in fahrenheit
 var upperLimit = 90;  //always specified in fahrenheit
 var defaultTemp = 72;
 

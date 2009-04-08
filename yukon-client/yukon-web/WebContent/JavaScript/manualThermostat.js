@@ -4,7 +4,7 @@
     
     // Static temps in fahrenheit
     var tempDefault = 72;
-    var tempLowerLimit = 40;
+    var tempLowerLimit = 50;
     var tempUpperLimit = 90;
     
     var actualCurrentTemp = 72;
