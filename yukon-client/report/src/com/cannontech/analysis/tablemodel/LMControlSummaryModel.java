@@ -50,6 +50,7 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
     }
     
     static public class ModelRow {
+    	public String total = "";
         public String program;
         public Integer enrolledCustomers = 0;
         public Double controlHours;

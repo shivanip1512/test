@@ -78,6 +78,7 @@ public abstract class SingleGroupYukonReportBase extends SimpleYukonReportBase {
         
         GroupFooter footer = ReportFactory.createGroupFooterDefault();
         createFooterFields(footer);
+        footer.addElement(ReportFactory.createBasicLine("footerGroupLine", 0.5f, 0));
         singleGroup.setFooter(footer);
         
         return singleGroup;
