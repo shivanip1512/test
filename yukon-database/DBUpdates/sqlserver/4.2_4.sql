@@ -70,7 +70,6 @@ INSERT INTO YukonRoleProperty VALUES(-20212,-202,'CIS Info Type','NONE','Defines
 /* End YUK-7178 */
 
 /* Start YUK-7264 */
-DROP INDEX INDX_ECompCustList_CustId;
 CREATE INDEX INDX_ECompCustList_CustId ON EnergyCompanyCustomerList(
     CustomerId ASC
 );
@@ -80,3 +79,4 @@ CREATE INDEX INDX_ECompCustList_CustId ON EnergyCompanyCustomerList(
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
+INSERT INTO CTIDatabase VALUES('4.2', 'Matt K', '08-APR-2009', 'Latest Update', 4);
