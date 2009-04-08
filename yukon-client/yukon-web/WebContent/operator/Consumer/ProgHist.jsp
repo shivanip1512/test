@@ -44,9 +44,9 @@ function confirmSubmit(form) { //v1.0
               <% String header = "PROGRAM HISTORY"; %>
               <%@ include file="include/InfoSearchBar.jspf" %>
               <br>
-              <table width="366" border="1" cellspacing="0" align="center" cellpadding="3">
+              <table width="450" border="1" cellspacing="0" align="center" cellpadding="3">
                   <tr> 
-                    <td class="HeaderCell" width="75">Date</td>
+                    <td class="HeaderCell" width="130">Date</td>
                     <td class="HeaderCell" width="120">Type - Duration</td>
                     <td class="HeaderCell" width="145">Program</td>
                   </tr>
@@ -72,7 +72,7 @@ function confirmSubmit(form) { //v1.0
 			if (progNames.equals("")) continue;
 %>
                   <tr> 
-                    <td class="TableCell" width="75" ><%= datePart.format(event.getEventDateTime()) %></td>
+                    <td class="TableCell" width="130" ><cti:formatDate value="<%=event.getEventDateTime()%>" type="BOTH"/></td>
                     <td class="TableCell" width="120" ><%= event.getEventAction() %> 
                       <% if (event.hasDuration()) { %>- <%= durationStr %><% } %>
 					  <%= scheduledStr %>
