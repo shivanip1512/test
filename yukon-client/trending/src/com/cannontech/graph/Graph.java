@@ -40,7 +40,6 @@ import com.cannontech.graph.buffer.html.UsageHtml;
 import com.cannontech.graph.exportdata.ExportDataFile;
 import com.cannontech.graph.model.TrendModel;
 import com.cannontech.graph.model.TrendProperties;
-import com.cannontech.jfreechart.chart.YukonChartPanel;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.util.Command;
@@ -332,10 +331,11 @@ public void setGraphDefinition(LiteGraphDefinition liteGraphDefinition)
  */
 public void setGraphDefinition(int liteGraphDefinitionID)
 {
-	if( liteGraphDefinitionID > 0)
-	{
+	if( liteGraphDefinitionID > 0) {
 		LiteGraphDefinition liteGraphDef = DaoFactory.getGraphDao().getLiteGraphDefinition(liteGraphDefinitionID);
 		setGraphDefinition(liteGraphDef);
+	} else {
+		graphDefinition = null;
 	}
 }
 
