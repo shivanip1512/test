@@ -108,20 +108,17 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 
 		resp.addHeader("Content-Disposition", "attachment;filename=" + fileName.toString());
 		
-		if( req.getParameter("generate") != null)
-		{		    
-			javax.servlet.ServletOutputStream out = null;
-			try
-			{
-				out = resp.getOutputStream();
-				localBean.generateFile( out );
-				out.flush();
-				CTILogger.debug("*** Just tried to flush the out!");
-			}
-			catch (java.io.IOException ioe)
-			{
-				ioe.printStackTrace();
-			}
+		javax.servlet.ServletOutputStream out = null;
+		try
+		{
+			out = resp.getOutputStream();
+			localBean.generateFile( out );
+			out.flush();
+			CTILogger.debug("*** Just tried to flush the out!");
+		}
+		catch (java.io.IOException ioe)
+		{
+			ioe.printStackTrace();
 		}
 	}
 }
