@@ -369,7 +369,7 @@ CtiDeviceManager::ptr_type CtiDeviceManager::RemoteGetPortRemoteEqual (LONG Port
     {
         p = *itr++;
 
-        if( p->getAddress() > 0 && p->getAddress() == Remote )
+        if( p->getAddress() >= 0 && p->getAddress() == Remote )
         {
             break;
         }
@@ -405,7 +405,7 @@ CtiDeviceManager::ptr_type CtiDeviceManager::RemoteGetPortRemoteTypeEqual (LONG 
     {
         p = *itr++;
 
-        if( p->getType() == Type && p->getAddress() > 0 && p->getAddress() == Remote )
+        if( p->getType() == Type && p->getAddress() >= 0 && p->getAddress() == Remote )
         {
             break;
         }
@@ -442,9 +442,9 @@ CtiDeviceManager::ptr_type CtiDeviceManager::RemoteGetPortMasterSlaveTypeEqual (
         p = *itr++;
 
         if( p->getType()          == Type  &&
-            p->getAddress()       > 0      &&
-            p->getMasterAddress() > 0      &&
+            p->getAddress()       >= 0     &&
             p->getAddress()       == Slave &&
+            p->getMasterAddress() >= 0     &&
             p->getMasterAddress() == Master )
         {
             break;
