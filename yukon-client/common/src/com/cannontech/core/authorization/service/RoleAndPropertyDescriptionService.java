@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleCategory;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -17,7 +19,8 @@ import com.google.common.collect.Lists;
 
 public class RoleAndPropertyDescriptionService {
     private RolePropertyUserCheckerFactory userCheckerFactory;
-
+    private ConfigurationSource configurationSource;
+    
     /**
      * This will check that the user has the given roles, categories,
      * or has a true value for the given role properties.
@@ -92,6 +95,23 @@ public class RoleAndPropertyDescriptionService {
                 continue;
 
             } catch (IllegalArgumentException ignore) { }
+            
+            // see if it is a supported boolean key in master.cfg
+            try {
+            	
+            	MasterConfigBooleanKeysEnum.valueOf(someEnumName);
+            	boolean bool = configurationSource.getBoolean(someEnumName, false);
+            	
+                UserChecker propertyChecker;
+                if (inverted) {
+                    propertyChecker = userCheckerFactory.createBooleanChecker(!bool);
+                } else {
+                    propertyChecker = userCheckerFactory.createBooleanChecker(bool);
+                }
+                checkers.add(propertyChecker);
+                continue;
+
+            } catch (IllegalArgumentException ignore) { }
 
             // if we get here, we must not have a valid role or property
             throw new IllegalArgumentException("Can't use '" + someEnumName + "', check that it is a valid role, category, or boolean property");
@@ -106,5 +126,8 @@ public class RoleAndPropertyDescriptionService {
             RolePropertyUserCheckerFactory userCheckerFactory) {
         this.userCheckerFactory = userCheckerFactory;
     }
-
+    @Autowired
+    public void setConfigurationSource(ConfigurationSource configurationSource) {
+		this.configurationSource = configurationSource;
+	}
 }

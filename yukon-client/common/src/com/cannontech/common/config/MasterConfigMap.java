@@ -87,4 +87,14 @@ public class MasterConfigMap implements ConfigurationSource {
         return Integer.parseInt(string);
     }
     
+    @Override
+    public boolean getBoolean(String key, boolean defaultValue) {
+    	
+    	if (!configMap.containsKey(key)) {
+            return defaultValue;
+        }
+    	
+    	return Boolean.parseBoolean(configMap.get(key));
+    }
+    
 }

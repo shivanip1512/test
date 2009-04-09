@@ -85,6 +85,22 @@ public class RolePropertyUserCheckerFactory {
         return checker;
     }
     
+    public UserChecker createBooleanChecker(final boolean isTrue) {
+        
+        UserCheckerBase checker = new UserCheckerBase() {
+            @Override
+            public boolean check(LiteYukonUser user) {
+                return isTrue;
+            };
+            
+            @Override
+            public String toString() {
+                return "boolean checker (" + isTrue + ")";
+            }
+        };
+        return checker;
+    }
+    
     @Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
         this.rolePropertyDao = rolePropertyDao;
