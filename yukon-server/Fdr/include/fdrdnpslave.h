@@ -47,6 +47,7 @@
 #define SINGLE_SOCKET_DNP_READ         1
 #define SINGLE_SOCKET_DNP_WRITE        2
 #define SINGLE_SOCKET_DNP_DIRECT_OP    5
+#define SINGLE_SOCKET_DNP_DATALINK_REQ 100
 
 //namespace Cti
 //{
@@ -129,6 +130,7 @@ class IM_EX_FDRDNPSLAVE CtiFDRDnpSlave : public CtiFDRSocketServer
         bool        YukonToForeignQuality (USHORT aQuality, CtiTime lastTimeStamp);
         int processScanSlaveRequest (CtiFDRClientServerConnection& connection,
                                          char* data, unsigned int size, bool includeTime);
+        int processDataLinkConfirmationRequest(CtiFDRClientServerConnection& connection, char* data);
 
         bool isScanIntegrityRequest(const char* data, unsigned int size);
         

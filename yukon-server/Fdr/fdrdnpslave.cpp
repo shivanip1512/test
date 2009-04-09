@@ -292,6 +292,11 @@ int CtiFDRDnpSlave::processMessageFromForeignSystem (CtiFDRClientServerConnectio
 
     switch (function)
     {
+        case SINGLE_SOCKET_DNP_DATALINK_REQ:
+        {
+            processDataLinkConfirmationRequest (connection, data);
+            break;
+        }
         case SINGLE_SOCKET_DNP_READ:
         {
             /******************************************************************************************************** 
@@ -354,6 +359,52 @@ int CtiFDRDnpSlave::processMessageFromForeignSystem (CtiFDRClientServerConnectio
         }
     }
     return 0;
+}
+
+
+int CtiFDRDnpSlave::processDataLinkConfirmationRequest(CtiFDRClientServerConnection& connection, char* data)
+{
+    int retVal = 0;
+    char* buffer = NULL;
+    unsigned int bufferSize = getMessageSize(data);
+    if (bufferSize == 10)
+    {
+        buffer = new CHAR[bufferSize];
+
+        memcpy(buffer, data, bufferSize);
+
+        buffer[2] = 5; 
+
+        buffer[6] = data[4]; //swap destination to source
+        buffer[7] = data[5];
+        buffer[4] = data[6]; //swap source to destination
+        buffer[5] = data[7];
+
+        buffer[3] = (data[3] & 0xBF);
+        buffer[3] |= 0x09;
+        
+
+        connection.queueMessage(buffer, bufferSize, MAXPRIORITY - 1); 
+        //error processing data link confirmation Request
+        if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
+        {
+            CtiLockGuard<CtiLogger> dout_guard(dout);
+            logNow() << " "<< getInterfaceName() <<" sending DNP data link acknowledgement message."<< endl;
+        }
+    }
+    else
+    {
+        //error processing data link confirmation Request
+        if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
+        {
+            CtiLockGuard<CtiLogger> dout_guard(dout);
+            logNow() << " "<< getInterfaceName() <<" received an DNP data link confirmation request message, response not generated. "<< endl;
+        }
+        retVal = -1;
+    }
+    return retVal;
+    
+
 }
 
 int CtiFDRDnpSlave::processScanSlaveRequest (CtiFDRClientServerConnection& connection,
@@ -526,6 +577,13 @@ unsigned long CtiFDRDnpSlave::getHeaderBytes(const char* data, unsigned int size
             retVal = function;
         }
     }
+    else //size == FDR_DNP_HEADER_SIZE
+    {
+
+        //data link confirmation request
+        retVal = SINGLE_SOCKET_DNP_DATALINK_REQ;
+    }
+
     return retVal;
     
 }
@@ -533,12 +591,20 @@ unsigned long CtiFDRDnpSlave::getHeaderBytes(const char* data, unsigned int size
 unsigned int CtiFDRDnpSlave::getMessageSize(const char* data)
 {
     BYTE msgSize = 0;
+    BYTE msgLength = 0;
     if (data != NULL)
     {
-        msgSize =  (BYTE)*(data + 2);
+        msgLength =  (BYTE)*(data + 2);
 
-        msgSize += ( (msgSize / 16) * 2);
-        msgSize += 7; //x05 x64 Len(1) headerCRC(2)  finalCRC(2)
+        msgSize += msgLength;
+        msgSize += 5; //x05 x64 Len(1) headerCRC(2)  
+
+        if (msgLength > 5)
+        {
+            msgSize += ( (msgLength - 5) / 16) * 2;
+
+            msgSize += 2; //finalCRC(2)
+        }
     }
     return msgSize;
 }
@@ -580,7 +646,7 @@ bool CtiFDRDnpSlave::isScanIntegrityRequest(const char* data, unsigned int size)
 
 unsigned int CtiFDRDnpSlave::getMagicInitialMsgSize()
 {
-    return FDR_DNP_HEADER_SIZE + 2;
+    return FDR_DNP_HEADER_SIZE;
 }
 
 
