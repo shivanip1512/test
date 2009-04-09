@@ -132,6 +132,17 @@ var setChoosenYukonDevice = function() {
 		return;
 	}
 
+	new Ajax.Request('/spring/stars/hardware/info/getMeterAddress', {
+        
+        'parameters': {'deviceId':$('choosenYukonDeviceId').value.strip()},
+        'onSuccess': function(transport, json) {
+        
+            $('SerialNo').value = json.address;
+            $('SerialNo').readOnly = true;
+        }
+      }
+    );
+	
 	$('choosenYukonDeviceNameField').value = $('choosenYukonDeviceNameSpan').innerHTML;
 }
 
@@ -225,7 +236,7 @@ var setChoosenYukonDevice = function() {
                                   <div align="right">*Serial #:</div>
                                 </td>
                                 <td width="210"> 
-                                  <input type="text" name="SerialNo" maxlength="30" size="24" onchange="setContentChanged(true)" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("SerialNo")) %>">
+                                  <input type="text" id="SerialNo" name="SerialNo" maxlength="30" size="24" onchange="setContentChanged(true)" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("SerialNo")) %>">
                                 </td>
                               </tr>
                               <tr> 
@@ -377,7 +388,7 @@ if (savedReq.getProperty("yukonDeviceCreationStyleRadio") != null)
                             <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                               <tr>
                               	<td colspan="2">
-                              		<input type="radio" name="yukonDeviceCreationStyleRadio" id="newYukDevRadio" value="NEW" <%if(savedYukonDeviceCreationStyleRadio.equals("NEW")){%>checked<%}%>> Create new Yukon device
+                              		<input type="radio" name="yukonDeviceCreationStyleRadio" id="newYukDevRadio" value="NEW" onclick="$('SerialNo').readOnly = false;" <%if(savedYukonDeviceCreationStyleRadio.equals("NEW")){%>checked<%}%>> Create new Yukon device
                               	</td>
                               </tr>
                               <tr> 
@@ -418,7 +429,7 @@ if (savedReq.getProperty("yukonDeviceDemandRate") != null)
                               </tr>
                               <tr>
                               	<td colspan="2">
-                              		<input type="radio" name="yukonDeviceCreationStyleRadio" id="existingYukDevRadio" value="EXISTING" <%if(savedYukonDeviceCreationStyleRadio.equals("EXISTING")){%>checked<%}%>> Link to existing Yukon device
+                              		<input type="radio" name="yukonDeviceCreationStyleRadio" id="existingYukDevRadio" value="EXISTING" onclick="$('SerialNo').readOnly = true;"  <%if(savedYukonDeviceCreationStyleRadio.equals("EXISTING")){%>checked<%}%>> Link to existing Yukon device
                               	</td>
                               </tr>
                               <tr> 

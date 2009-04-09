@@ -29,6 +29,7 @@
 				<prop key="/servlet/ImportManager">importManager</prop>
 				<prop key="/hardware/deviceactivation">deviceActivationController</prop>
                 <prop key="/hardware/deviceverification">deviceVerificationController</prop>
+                <prop key="/hardware/info/*">hardwareInfoController</prop>
 			</props>
 		</property>
         <property name="order" value="2"/>
@@ -81,6 +82,9 @@
     <bean id="deviceVerificationController" class="com.cannontech.web.stars.dr.hardware.DeviceVerificationController">
         <property name="deviceVerificationService" ref="deviceVerificationService"/>
         <property name="methodNameResolver" ref="methodNameResolver" />
+    </bean>
+    
+    <bean id="hardwareInfoController" class="com.cannontech.web.stars.dr.hardware.HardwareInfoController">
     </bean>
 	
 	<bean id="methodNameResolver"

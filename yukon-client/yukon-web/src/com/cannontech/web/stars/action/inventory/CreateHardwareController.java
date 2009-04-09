@@ -68,15 +68,6 @@ public class CreateHardwareController extends StarsInventoryActionController {
                 throw new WebClientException("Cannot create hardware: serial # already exists in the inventory list of <i>" + e.getEnergyCompany().getName() + "</i>.");
             }
             
-            // need to check deviceCarrierSetting for serial number if this is Two Way LCR
-            if (InventoryUtils.isTwoWayLcr(createHw.getDeviceType().getEntryID())) {
-            	
-            	List<LiteYukonPAObject> liteYukonPaobjectsByAddress = paoDao.getLiteYukonPaobjectsByAddress(Integer.parseInt(createHw.getLMHardware().getManufacturerSerialNumber()));
-            	if (liteYukonPaobjectsByAddress.size() > 0) {
-            		throw new WebClientException("Cannot create Two Way LCR hardware: serial # already exists for a Yukon device address.");
-            	}
-            }
-            
             LiteInventoryBase liteInv = CreateLMHardwareAction.addInventory( createHw, null, member );
             
             if (request.getParameter("UseHardwareAddressing") != null) {

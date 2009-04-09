@@ -347,11 +347,13 @@ public class InventoryManagerUtil {
 			// NEW YUKON DEVICE
 			if (starsInv.getTwoWayLcrSetupInfoDto() != null && starsInv.getTwoWayLcrSetupInfoDto().isNewDevice()) {
 				
+				checkSerialNumberMatchesAddress(starsInv);
 				starsTwoWayLcrYukonDeviceAssignmentService.assignNewDeviceToLcr(liteInv, energyCompany, starsInv.getTwoWayLcrSetupInfoDto().getYukonDeviceTypeId(), starsInv.getTwoWayLcrSetupInfoDto().getDeviceName(), starsInv.getTwoWayLcrSetupInfoDto().getDemandRate(), true);
 			
 	        // EXISTING YUKON DEVICE
 			} else if (starsInv.getTwoWayLcrSetupInfoDto() != null && !starsInv.getTwoWayLcrSetupInfoDto().isNewDevice()) {
 				
+				checkSerialNumberMatchesAddress(starsInv);
 				starsTwoWayLcrYukonDeviceAssignmentService.assignExistingDeviceToLcr(liteInv, energyCompany, starsInv.getTwoWayLcrSetupInfoDto().getDeviceId());
 			
 			} else if (starsInv.getTwoWayLcrSetupInfoDto() == null) {
@@ -364,6 +366,21 @@ public class InventoryManagerUtil {
 			
 		} catch (Exception e) {
 			throw new WebClientException(e.getMessage());
+		}
+	}
+	
+	private static void checkSerialNumberMatchesAddress(StarsInv starsInv) throws WebClientException {
+		
+		PaoDao paoDao = YukonSpringHook.getBean("paoDao", PaoDao.class); 
+		
+		int yukonDeviceId = starsInv.getTwoWayLcrSetupInfoDto().getDeviceId();
+		LiteYukonPAObject pao = paoDao.getLiteYukonPAO(yukonDeviceId);
+		
+		int serial = Integer.valueOf(starsInv.getLMHardware().getManufacturerSerialNumber());
+		int address = pao.getAddress();
+		
+		if (address != serial) {
+			throw new WebClientException("Yukon device serial must match that of the Two Way LCR.");
 		}
 	}
 	
