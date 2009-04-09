@@ -689,13 +689,64 @@ INT CtiProtocolExpresscom::thermostatSetpointControl(BYTE minTemp, BYTE maxTemp,
 }
 INT CtiProtocolExpresscom::backlightIlluminationMsg(BYTE numCycles, BYTE dutyCycle, BYTE cycPeriod)
 {
+    INT status = NoError;
     _message.push_back( mtBacklightIllumination );
     _message.push_back( numCycles );
     _message.push_back( dutyCycle );
     _message.push_back( cycPeriod );
 
     incrementMessageCount();
-    return NoError;
+    return status;
+}
+
+INT CtiProtocolExpresscom::criticalPeakPricing(  BOOL includeHeatPoint, BYTE minHeat, BOOL includeCoolPoint, BYTE maxCool,
+                                                 BOOL useCelsius, USHORT controlTime, BOOL deltaFlag, BOOL wakeFlag, BYTE wake, 
+                                                 BOOL leaveFlag, BYTE leave, BOOL returnFlag, BYTE ret, BOOL sleepFlag, BYTE sleep)
+{
+    INT status = NoError;
+    BYTE flag = ((includeHeatPoint || includeCoolPoint) ? 0x80 : 0x00);
+    flag |= ( useCelsius ? 0x40 : 0x00 );
+    flag |= ( includeHeatPoint ? 0x20 : 0x00 );
+    flag |= ( deltaFlag ? 0x10 : 0x00 );
+    flag |= ( sleepFlag ? 0x08 : 0x00 );
+    flag |= ( returnFlag ? 0x04 : 0x00 );
+    flag |= ( leaveFlag ? 0x02 : 0x00 );
+    flag |= ( wakeFlag ? 0x01 : 0x00 );
+                 
+    _message.push_back( mtCriticalPeakPricing );
+    _message.push_back(flag);
+    _message.push_back(HIBYTE(controlTime));
+    _message.push_back(LOBYTE(controlTime));
+    
+    if(includeHeatPoint)
+    {
+        _message.push_back(0xFF);
+        _message.push_back(minHeat);
+    }
+    else if(includeCoolPoint)
+    {
+        _message.push_back(maxCool);
+        _message.push_back(0xFF);
+    }
+    if(wakeFlag)
+    {
+        _message.push_back(wake);
+    }
+    if(leaveFlag)
+    {
+        _message.push_back(leave);
+    }
+    if(returnFlag)
+    {
+        _message.push_back(ret);
+    }
+    if(sleepFlag)
+    {
+        _message.push_back(sleep);
+    }
+
+    incrementMessageCount();
+    return status;
 }
 
 
@@ -1220,6 +1271,29 @@ INT CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse, CtiOutMessag
 
 
     }
+    else if(parse.isKeyValid("xccpp"))
+    {
+        BYTE setPoint = 0xFF;
+        bool includeHeatPoint = parse.isKeyValid("xcminheat");
+        bool includeCoolPoint = parse.isKeyValid("xcmaxcool");
+
+        status = criticalPeakPricing(   includeHeatPoint,
+                                        parse.getiValue("xcminheat", 0),
+                                        includeCoolPoint,
+                                        parse.getiValue("xcmaxcool", 0),
+                                        _celsiusMode,
+                                        parse.getiValue("xccontroltime", 0),
+                                        parse.isKeyValid("xcdeltavalues"),
+                                        parse.isKeyValid("xcwake"),
+                                        parse.getiValue("xcwake", 0),
+                                        parse.isKeyValid("xcleave"),
+                                        parse.getiValue("xcleave", 0),
+                                        parse.isKeyValid("xcreturn"),
+                                        parse.getiValue("xcreturn", 0),
+                                        parse.isKeyValid("xcsleep"),
+                                        parse.getiValue("xcsleep", 0));
+
+    }
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1486,7 +1560,18 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse, CtiOutMess
     {
         status = configureTargetLoadAmps(parse);
     }
-
+    else if(parse.isKeyValid("xcpricetier"))
+    {
+        status = configurePriceTierCommand(parse.getiValue("xcpricetier", 0));
+    }
+    else if (parse.isKeyValid("xccomparerssi"))
+    {
+        status = compareRSSI();
+    }
+    else if(parse.isKeyValid("xccmdinitiator"))
+    {
+        status = commandInitiator(parse.getiValue("xccmdinitiator", 0));
+    }
     if(parse.isKeyValid("ovuv"))
     {
         BYTE action = 0x01;
@@ -1519,6 +1604,39 @@ INT CtiProtocolExpresscom::assemblePutStatus(CtiCommandParser &parse, CtiOutMess
         status = capControl( action, subaction, data1, data2 );
   }
 
+    return status;
+}
+
+INT CtiProtocolExpresscom::configurePriceTierCommand(BYTE priceTier)
+{
+    INT status = NoError;
+    _message.push_back(mtThermostatPriceTier);
+    if(priceTier > 4)
+    {
+        priceTier = 0;        
+    }
+    _message.push_back(priceTier);
+
+    incrementMessageCount();
+    return status;
+}
+
+INT CtiProtocolExpresscom::compareRSSI()
+{
+    INT status = NoError;
+    _message.push_back(mtCompareRSSI);
+    
+    incrementMessageCount();
+    return status;
+}
+
+INT CtiProtocolExpresscom::commandInitiator(BYTE commandId)
+{
+    INT status = NoError;
+     _message.push_back(mtCommandInitiator);
+     _message.push_back(commandId);
+    
+    incrementMessageCount();
     return status;
 }
 
