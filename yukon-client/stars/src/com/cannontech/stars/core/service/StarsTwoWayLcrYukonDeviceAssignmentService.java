@@ -4,8 +4,19 @@ import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.hardware.exception.StarsTwoWayLcrYukonDeviceAssignmentException;
 import com.cannontech.stars.dr.hardware.exception.StarsTwoWayLcrYukonDeviceCreationException;
+import com.cannontech.stars.xml.serialize.StarsInv;
 
 public interface StarsTwoWayLcrYukonDeviceAssignmentService {
+
+	/**
+	 * Used to do the work of either creating a new Yukon device and assigning to the Two Way LCR
+	 * or to assigning an existing Yukon device to the LCR.
+	 * @param starsInv
+	 * @param liteInv
+	 * @param energyCompany
+	 * @throws WebClientException
+	 */
+	public void assignTwoWayLcrDevice(StarsInv starsInv, LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany) throws StarsTwoWayLcrYukonDeviceAssignmentException;
 
 	/**
 	 * Creates a new Yukon device and assigns it to the Two Way LCR.
@@ -25,12 +36,4 @@ public interface StarsTwoWayLcrYukonDeviceAssignmentService {
 			boolean allowCreateIfAlreadyHasAssignedDevice)
 			throws StarsTwoWayLcrYukonDeviceCreationException;
 	
-	/**
-	 * Assigns an existing Yukon device to the Two Way LCR
-	 * @param liteInv inventory representing the Two Way LCR
-	 * @param energyCompany
-	 * @param deviceId the devieId of the existing Yukon device
-	 * @throws StarsTwoWayLcrYukonDeviceAssignmentException
-	 */
-	public void assignExistingDeviceToLcr(LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany, int deviceId) throws StarsTwoWayLcrYukonDeviceAssignmentException;
 }

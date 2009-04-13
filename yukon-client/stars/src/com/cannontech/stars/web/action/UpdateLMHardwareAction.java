@@ -8,7 +8,6 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
@@ -26,7 +25,9 @@ import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
+import com.cannontech.stars.core.service.StarsTwoWayLcrYukonDeviceAssignmentService;
 import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
+import com.cannontech.stars.dr.hardware.exception.StarsTwoWayLcrYukonDeviceAssignmentException;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.ServletUtils;
@@ -313,13 +314,16 @@ public class UpdateLMHardwareAction implements ActionBase {
 			
 			// TWO WAY LCR DEVICE ASSIGNMENT
             if (InventoryUtils.isTwoWayLcr(updateHw.getDeviceType().getEntryID())) {
-            	InventoryManagerUtil.assignTwoWayLcrDevice(updateHw, liteInv, energyCompany);
+            	StarsTwoWayLcrYukonDeviceAssignmentService starsTwoWayLcrYukonDeviceAssignmentService = YukonSpringHook.getBean("starsTwoWayLcrYukonDeviceAssignmentService", StarsTwoWayLcrYukonDeviceAssignmentService.class);
+            	starsTwoWayLcrYukonDeviceAssignmentService.assignTwoWayLcrDevice(updateHw, liteInv, energyCompany);
             }
             
 		}
 		catch (TransactionException e) {
 			CTILogger.error( e.getMessage(), e );
 			throw new WebClientException( "Failed to update the hardware information" );
+		} catch (StarsTwoWayLcrYukonDeviceAssignmentException e) {
+			throw new WebClientException(e.getMessage(), e);
 		}
 	}
 	

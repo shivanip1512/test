@@ -22,7 +22,7 @@ public class TwoWayLcrSetupInfoDto {
 	public int getYukonDeviceTypeId() {
 		return yukonDeviceTypeId;
 	}
-	public int getDeviceId() {
+	public Integer getDeviceId() {
 		return deviceId;
 	}
 	public String getDeviceName() {

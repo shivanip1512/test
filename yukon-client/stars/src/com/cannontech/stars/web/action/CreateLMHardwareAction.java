@@ -28,6 +28,8 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.db.stars.hardware.StaticLoadGroupMapping;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.core.service.StarsTwoWayLcrYukonDeviceAssignmentService;
+import com.cannontech.stars.dr.hardware.exception.StarsTwoWayLcrYukonDeviceAssignmentException;
 import com.cannontech.stars.dr.hardware.model.HardwareType;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.model.ThermostatSchedule;
@@ -523,7 +525,8 @@ public class CreateLMHardwareAction implements ActionBase {
 			
 			// TWO WAY LCR DEVICE ASSIGNMENT
             if (InventoryUtils.isTwoWayLcr(createHw.getDeviceType().getEntryID())) {
-            	InventoryManagerUtil.assignTwoWayLcrDevice(createHw, liteInv, energyCompany);
+            	StarsTwoWayLcrYukonDeviceAssignmentService starsTwoWayLcrYukonDeviceAssignmentService = YukonSpringHook.getBean("starsTwoWayLcrYukonDeviceAssignmentService", StarsTwoWayLcrYukonDeviceAssignmentService.class);
+            	starsTwoWayLcrYukonDeviceAssignmentService.assignTwoWayLcrDevice(createHw, liteInv, energyCompany);
             }
 			
 			return liteInv;
@@ -533,6 +536,8 @@ public class CreateLMHardwareAction implements ActionBase {
 				throw (WebClientException)e;
 			else if (liteAcctInfo != null)
 				throw new WebClientException( "Failed to add the hardware to the customer account", e );
+			else if (e instanceof StarsTwoWayLcrYukonDeviceAssignmentException)
+				throw new WebClientException(e.getMessage(), e);
 			else
 				throw new WebClientException( "Failed to create the hardware", e );
 		}

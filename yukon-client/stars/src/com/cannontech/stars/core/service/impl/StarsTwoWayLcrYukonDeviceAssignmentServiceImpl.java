@@ -21,6 +21,8 @@ import com.cannontech.stars.core.service.StarsTwoWayLcrYukonDeviceAssignmentServ
 import com.cannontech.stars.dr.hardware.exception.StarsTwoWayLcrYukonDeviceAssignmentException;
 import com.cannontech.stars.dr.hardware.exception.StarsTwoWayLcrYukonDeviceCreationException;
 import com.cannontech.stars.util.InventoryUtils;
+import com.cannontech.stars.util.WebClientException;
+import com.cannontech.stars.xml.serialize.StarsInv;
 import com.cannontech.stars.xml.serialize.StarsInventory;
 
 public class StarsTwoWayLcrYukonDeviceAssignmentServiceImpl implements StarsTwoWayLcrYukonDeviceAssignmentService {
@@ -29,6 +31,35 @@ public class StarsTwoWayLcrYukonDeviceAssignmentServiceImpl implements StarsTwoW
 	private DeviceDao deviceDao;
 	private DBPersistentDao dbPersistentDao;
 	private PaoDao paoDao;
+	
+	public void assignTwoWayLcrDevice(StarsInv starsInv, LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany) throws StarsTwoWayLcrYukonDeviceCreationException {
+		
+		try {
+			
+			// NEW YUKON DEVICE
+			if (starsInv.getTwoWayLcrSetupInfoDto() != null && starsInv.getTwoWayLcrSetupInfoDto().isNewDevice()) {
+				
+				checkSerialNumberMatchesAddress(starsInv);
+				assignNewDeviceToLcr(liteInv, energyCompany, starsInv.getTwoWayLcrSetupInfoDto().getYukonDeviceTypeId(), starsInv.getTwoWayLcrSetupInfoDto().getDeviceName(), starsInv.getTwoWayLcrSetupInfoDto().getDemandRate(), true);
+			
+	        // EXISTING YUKON DEVICE
+			} else if (starsInv.getTwoWayLcrSetupInfoDto() != null && !starsInv.getTwoWayLcrSetupInfoDto().isNewDevice()) {
+				
+				checkSerialNumberMatchesAddress(starsInv);
+				assignExistingDeviceToLcr(liteInv, energyCompany, starsInv.getTwoWayLcrSetupInfoDto().getDeviceId());
+			
+			} else if (starsInv.getTwoWayLcrSetupInfoDto() == null) {
+				
+				// pass, add/update action has been called but the yukon device is not being set in this case.
+	            
+			} else {
+				throw new WebClientException("Unable to assign Two Way LCR Yukon device - invalid update object.");
+			}
+			
+		} catch (Exception e) {
+			throw new StarsTwoWayLcrYukonDeviceCreationException(e.getMessage());
+		}
+	}
 	
 	// ASSIGN NEW DEVICE
 	@Override
@@ -83,8 +114,14 @@ public class StarsTwoWayLcrYukonDeviceAssignmentServiceImpl implements StarsTwoW
 	}
 	
 	// ASSIGN EXISTING DEVICE
-	@Override
-	public void assignExistingDeviceToLcr(LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany, int deviceId) throws StarsTwoWayLcrYukonDeviceAssignmentException {
+	/**
+	 * Assigns an existing Yukon device to the Two Way LCR
+	 * @param liteInv inventory representing the Two Way LCR
+	 * @param energyCompany
+	 * @param deviceId the devieId of the existing Yukon device
+	 * @throws StarsTwoWayLcrYukonDeviceAssignmentException
+	 */
+	private void assignExistingDeviceToLcr(LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany, int deviceId) throws StarsTwoWayLcrYukonDeviceAssignmentException {
 		
 		// double check we are only doing this to a Two Way LCR
 		StarsInventory inventory = StarsLiteFactory.createStarsInventory(liteInv, energyCompany);
@@ -94,6 +131,21 @@ public class StarsTwoWayLcrYukonDeviceAssignmentServiceImpl implements StarsTwoW
 	}
 	
 	// HELPERS
+	private void checkSerialNumberMatchesAddress(StarsInv starsInv) throws StarsTwoWayLcrYukonDeviceCreationException {
+		
+		Integer yukonDeviceId = starsInv.getTwoWayLcrSetupInfoDto().getDeviceId();
+		if (yukonDeviceId != null) {
+			LiteYukonPAObject pao = paoDao.getLiteYukonPAO(yukonDeviceId);
+			
+			int serial = Integer.valueOf(starsInv.getLMHardware().getManufacturerSerialNumber());
+			int address = pao.getAddress();
+			
+			if (address != serial) {
+				throw new StarsTwoWayLcrYukonDeviceCreationException("Yukon device serial must match that of the Two Way LCR.");
+			}
+		}
+	}
+
 	private void updateTwoWayLcrDeviceId(LiteInventoryBase liteInv, int deviceId) {
 		
 		try {

@@ -56,7 +56,6 @@ import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
-import com.cannontech.stars.core.service.StarsTwoWayLcrYukonDeviceAssignmentService;
 import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.EventUtils;
@@ -328,60 +327,6 @@ public class InventoryManagerUtil {
         		}
             }
         }
-	}
-	
-	/**
-	 * Used to do the work of either creating a new Yukon device and assigning to the Two Way LCR
-	 * or to assigning an existing Yukon device to the LCR.
-	 * @param starsInv
-	 * @param liteInv
-	 * @param energyCompany
-	 * @throws WebClientException
-	 */
-	public static void assignTwoWayLcrDevice(StarsInv starsInv, LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany) throws WebClientException {
-		
-		try {
-			
-			StarsTwoWayLcrYukonDeviceAssignmentService starsTwoWayLcrYukonDeviceAssignmentService = YukonSpringHook.getBean("starsTwoWayLcrYukonDeviceAssignmentService", StarsTwoWayLcrYukonDeviceAssignmentService.class); 
-			
-			// NEW YUKON DEVICE
-			if (starsInv.getTwoWayLcrSetupInfoDto() != null && starsInv.getTwoWayLcrSetupInfoDto().isNewDevice()) {
-				
-				checkSerialNumberMatchesAddress(starsInv);
-				starsTwoWayLcrYukonDeviceAssignmentService.assignNewDeviceToLcr(liteInv, energyCompany, starsInv.getTwoWayLcrSetupInfoDto().getYukonDeviceTypeId(), starsInv.getTwoWayLcrSetupInfoDto().getDeviceName(), starsInv.getTwoWayLcrSetupInfoDto().getDemandRate(), true);
-			
-	        // EXISTING YUKON DEVICE
-			} else if (starsInv.getTwoWayLcrSetupInfoDto() != null && !starsInv.getTwoWayLcrSetupInfoDto().isNewDevice()) {
-				
-				checkSerialNumberMatchesAddress(starsInv);
-				starsTwoWayLcrYukonDeviceAssignmentService.assignExistingDeviceToLcr(liteInv, energyCompany, starsInv.getTwoWayLcrSetupInfoDto().getDeviceId());
-			
-			} else if (starsInv.getTwoWayLcrSetupInfoDto() == null) {
-				
-				// pass, add/update action has been called but the yukon device is not being set in this case.
-	            
-			} else {
-				throw new WebClientException("Unable to assign Two Way LCR Yukon device - invalid update object.");
-			}
-			
-		} catch (Exception e) {
-			throw new WebClientException(e.getMessage());
-		}
-	}
-	
-	private static void checkSerialNumberMatchesAddress(StarsInv starsInv) throws WebClientException {
-		
-		PaoDao paoDao = YukonSpringHook.getBean("paoDao", PaoDao.class); 
-		
-		int yukonDeviceId = starsInv.getTwoWayLcrSetupInfoDto().getDeviceId();
-		LiteYukonPAObject pao = paoDao.getLiteYukonPAO(yukonDeviceId);
-		
-		int serial = Integer.valueOf(starsInv.getLMHardware().getManufacturerSerialNumber());
-		int address = pao.getAddress();
-		
-		if (address != serial) {
-			throw new WebClientException("Yukon device serial must match that of the Two Way LCR.");
-		}
 	}
 	
 	/**
