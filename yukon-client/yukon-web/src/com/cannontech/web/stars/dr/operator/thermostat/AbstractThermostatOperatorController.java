@@ -63,9 +63,13 @@ public abstract class AbstractThermostatOperatorController {
     	StarsCustAccountInformation accountInfo = 
             (StarsCustAccountInformation) session.getAttribute(ServletUtils.TRANSIENT_ATT_CUSTOMER_ACCOUNT_INFO);
     	
-        int accountId = accountInfo.getStarsCustomerAccount().getAccountID();
-		CustomerAccount account = customerAccountDao.getById(accountId);
-        return account;
+    	if(accountInfo != null) {
+	        int accountId = accountInfo.getStarsCustomerAccount().getAccountID();
+			CustomerAccount account = customerAccountDao.getById(accountId);
+	        return account;
+    	}
+    	
+    	return null;
     }
     
     /**
