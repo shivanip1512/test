@@ -135,6 +135,7 @@ var setChoosenYukonDevice = function() {
 	new Ajax.Request('/spring/stars/hardware/info/getMeterAddress', {
         
         'parameters': {'deviceId':$('choosenYukonDeviceId').value.strip()},
+        'method': 'get',
         'onSuccess': function(transport, json) {
         
             $('SerialNo').value = json.address;
