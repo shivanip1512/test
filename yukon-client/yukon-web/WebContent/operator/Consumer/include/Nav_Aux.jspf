@@ -55,13 +55,12 @@
 %>
 
 <table width="101" border="0" cellspacing="0" cellpadding="5">
-<cti:checkMultiProperty propertyid="<%= Integer.toString(ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_GENERAL) + ',' + Integer.toString(ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_RESIDENCE) + ',' + Integer.toString(ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_CALL_TRACKING) %>">
+<cti:checkMultiProperty propertyid="<%= Integer.toString(ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_RESIDENCE) + ',' + Integer.toString(ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_CALL_TRACKING) %>">
   <tr> 
     <td> 
       <div align="left">
 	    <span class="NavHeader"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_HEADING_ACCOUNT %>" defaultvalue="Account"/></span><br>
         <table width="100%" border="0" cellspacing="0" cellpadding="0">
-          <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_GENERAL %>"> 
           <tr> 
             <td width="10"><%= ((String[]) links.get("Update.jsp"))[0] %></td>
             <td style="padding:1"><%= ((String[]) links.get("Update.jsp"))[1] %></td>
@@ -70,7 +69,6 @@
             <td width="10"><%= ((String[]) links.get("Contacts.jsp"))[0] %></td>
             <td style="padding:1"><%= ((String[]) links.get("Contacts.jsp"))[1] %></td>
           </tr>
-		  </cti:checkProperty>
 		  <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_RESIDENCE %>">
           <tr> 
             <td width="10"><%= ((String[]) links.get("Residence.jsp"))[0] %></td>

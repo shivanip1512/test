@@ -541,7 +541,6 @@ function deleteWarehouse(form, warehouseId) {
                       </td>
                     </tr>
 
-                    <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_GENERAL %>">
 					<tr>
                       <td>
                         <form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/StarsAdmin">
@@ -599,7 +598,6 @@ function deleteWarehouse(form, warehouseId) {
                         </form>
                       </td>
                     </tr>
-					</cti:checkProperty>
                     <%
 	if (DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, ConsumerInfoRole.CONSUMER_INFO_ADMIN_FAQ) ||
 		custGroups.length > 0 && !CtiUtilities.isFalse(DaoFactory.getRoleDao().getRolePropValueGroup(custGroups[0], ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_FAQ, "false")))

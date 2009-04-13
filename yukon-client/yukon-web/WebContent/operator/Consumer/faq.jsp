@@ -3,18 +3,21 @@
 <%@page import="com.cannontech.common.i18n.MessageSourceAccessor"%>
 <%@page import="org.springframework.context.NoSuchMessageException"%>
 <%@page import="com.cannontech.i18n.YukonUserContextMessageSourceResolver"%>
+<%@page import="com.cannontech.core.roleproperties.dao.RolePropertyDao" %>
 
 <% 
-if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } 
+YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
+
+RolePropertyDao rolePropDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
+boolean hasFaqRoleProp = rolePropDao.getPropertyBooleanValue(YukonRoleProperty.OPERATOR_CONSUMER_INFO_ADMIN_FAQ, yukonUserContext.getYukonUser());
+
+if (accountInfo == null || !hasFaqRoleProp) { response.sendRedirect("../Operations.jsp"); return; } 
 
 YukonUserContextMessageSourceResolver messageSourceResolver = YukonSpringHook.getBean("yukonUserContextMessageSourceResolver", YukonUserContextMessageSourceResolver.class);
 String keyPrefix = "yukon.dr.consumer.faq.question.";
 String question = ".question";
 String answer = ".answer";
 String subject = ".subject";
-
-
-YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
 
 
 MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(yukonUserContext);

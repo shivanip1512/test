@@ -305,7 +305,6 @@
     <skin name="leftSideMenu"/>
    	<links>
    		<option id="account">
-   		   <requireRoleProperty value="RESIDENTIAL_CONSUMER_INFO_ACCOUNT_GENERAL" />
    		   <links>
 	          <option id="general">
 	   		    <link>/spring/stars/consumer/general</link>
