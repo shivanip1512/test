@@ -83,7 +83,7 @@ public class ThermostatAdminScheduleController extends AbstractThermostatOperato
         HardwareType hardwareType = HardwareType.valueOf(type);
         newSchedule.setThermostatType(hardwareType);
         
-        if (type.equals(HardwareType.COMMERCIAL_EXPRESSSTAT)) {
+        if (hardwareType.equals(HardwareType.COMMERCIAL_EXPRESSSTAT)) {
             this.setToTwoTimeTemps(newSchedule);
         }
 
