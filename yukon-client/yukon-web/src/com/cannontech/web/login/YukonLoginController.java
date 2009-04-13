@@ -10,7 +10,7 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.exception.AuthenticationThrottleException;
-import com.cannontech.core.roleproperties.UserNotInRoleException;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -35,7 +35,7 @@ public class YukonLoginController extends MultiActionController {
         final Boolean createRememberMeCookie = ServletRequestUtils.getBooleanParameter(request, "rememberme", false);
         final String redirectedFrom = ServletRequestUtils.getStringParameter(request, LoginController.REDIRECTED_FROM);
 
-        String redirect;
+        String redirect = null;
 
         boolean success = false;
         long retrySeconds = 0;
@@ -46,7 +46,7 @@ public class YukonLoginController extends MultiActionController {
         }
         if (success) {
             LiteYukonUser user = ServletUtil.getYukonUser(request);
-
+            boolean hasWebClientRole = rolePropertyDao.checkRole(YukonRole.WEB_CLIENT, user);
             if (createRememberMeCookie) {
                 String value = loginCookieHelper.createCookieValue(username, password);
                 ServletUtil.createCookie(request, response, LoginController.REMEMBER_ME_COOKIE, value);
@@ -54,13 +54,9 @@ public class YukonLoginController extends MultiActionController {
 
             if (redirectedFrom != null && !redirectedFrom.equals("")) {
                 redirect = redirectedFrom;
-            } else {
-            	try {
-            		String homeUrl = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, user);
-            		redirect = ServletUtil.createSafeUrl(request, homeUrl);
-            	} catch (UserNotInRoleException e) {
-            		redirect = null;
-            	}
+            } else if (hasWebClientRole) {
+        		String homeUrl = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, user);
+        		redirect = ServletUtil.createSafeUrl(request, homeUrl);
             }
             
             boolean hasUrlAccess = redirect != null && urlAccessChecker.hasUrlAccess(redirect, user);
