@@ -1,10 +1,13 @@
 package com.cannontech.stars.web.action;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
+
+import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
@@ -151,13 +154,19 @@ public class NewCustAccountAction implements ActionBase {
             
 			LiteStarsEnergyCompany liteEC = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 			com.cannontech.database.data.lite.LiteYukonGroup[] custGroups = liteEC.getResidentialCustomerGroups();
-            
 			for (int i = 2; i <= 4; i++) {
 				String lastName = req.getParameter("LastName" + i);
 				String firstName = req.getParameter("FirstName" + i);
 				
 				if (lastName != null && lastName.trim().length() > 0
 					|| firstName != null && firstName.trim().length() > 0) {
+					
+					List<String> usedNames = new ArrayList<String>();
+					String primaryContactFirstName = primContact.getFirstName();
+					String primaryContactLastName = primContact.getLastName();
+					String primFirstInitial = StringUtils.isBlank(primaryContactFirstName) ? "" : primaryContactFirstName.toLowerCase().substring(0,1);
+					usedNames.add(primFirstInitial + (StringUtils.isBlank(primaryContactLastName)? "" : primaryContactLastName));
+					
 					AdditionalContact contact = new AdditionalContact();
 					contact.setLastName( lastName );
 					contact.setFirstName( firstName );
@@ -182,14 +191,16 @@ public class NewCustAccountAction implements ActionBase {
     					if(firstName != null)
     						firstInitial = firstName.toLowerCase().substring(0,1);
     					String newUserName = firstInitial + lastName.toLowerCase();
-    					if (DaoFactory.getYukonUserDao().getLiteYukonUser( newUserName ) != null)
+    					if (DaoFactory.getYukonUserDao().getLiteYukonUser( newUserName ) != null || usedNames.contains(newUserName)){
                             newUserName = lastName.toLowerCase() + time.substring(time.length() - 2);
+    					}
+    					usedNames.add(newUserName);
+    					
     					login.getYukonUser().setUsername(newUserName);
     					login.getYukonUser().setAuthType(AuthType.NONE); 
                         if(custGroups.length > 0)
                             login.getYukonGroups().addElement(((com.cannontech.database.data.user.YukonGroup)LiteFactory.convertLiteToDBPers(custGroups[0])).getYukonGroup());
     					login.getYukonUser().setStatus(UserUtils.STATUS_ENABLED);
-    					//login.setEnergyCompany()
     					login = Transaction.createTransaction(Transaction.INSERT, login).execute();
     					LiteYukonUser liteUser = new LiteYukonUser( login.getUserID().intValue() );
     					ServerUtils.handleDBChange(liteUser, DBChangeMsg.CHANGE_TYPE_ADD);		
