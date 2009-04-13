@@ -25,5 +25,4 @@ public interface AdministratorRole {
     public static final int ADMIN_VIEW_CONFIG = OperatorRoleDefs.ADMINISTRATOR_PROPERTYID_BASE - 14;
     public static final int ADMIN_MANAGE_INDEXES = OperatorRoleDefs.ADMINISTRATOR_PROPERTYID_BASE - 15;
     public static final int ADMIN_VIEW_LOGS = OperatorRoleDefs.ADMINISTRATOR_PROPERTYID_BASE - 16;
-    public static final int ADMIN_INITIALIZE_ENERGY_COMPANY = OperatorRoleDefs.ADMINISTRATOR_PROPERTYID_BASE - 17;
 }

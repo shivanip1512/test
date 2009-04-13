@@ -164,41 +164,6 @@
 	        histDateFormat.setTimeZone(tz);
 	        ampmTimeFormat.setTimeZone(tz);
 	        
-	        if (ecSettings.getStarsCustomerSelectionLists() != null) {
-	            selectionListTable = new HashMap<String, StarsCustSelectionList>();
-	            
-	            for (int i = 0; i < ecSettings.getStarsCustomerSelectionLists().getStarsCustSelectionListCount(); i++) {
-	                StarsCustSelectionList value = ecSettings.getStarsCustomerSelectionLists().getStarsCustSelectionList(i);
-	                String key = value.getListName();
-	                selectionListTable.put(key, value);
-	            }
-	            session.setAttribute(ServletUtils.ATT_CUSTOMER_SELECTION_LISTS, selectionListTable);
-	            
-            	boolean initEnergyCompany = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_INITIALIZE_ENERGY_COMPANY, lYukonUser);
-
-	            if (initEnergyCompany &&
-	                 (selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE) != null)) {
-	                
-	                // The default operator login for the first time, edit the device type list first!
-	                com.cannontech.database.data.lite.LiteYukonGroup adminGroup = liteEC.getOperatorAdminGroup();
-	                if (DaoFactory.getRoleDao().updateGroupRoleProperty(
-	                    adminGroup, AdministratorRole.ROLEID, AdministratorRole.ADMIN_INITIALIZE_ENERGY_COMPANY, CtiUtilities.FALSE_STRING))
-	                {
-	                    com.cannontech.stars.util.ServerUtils.handleDBChange(
-	                        adminGroup, com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE );
-	                }
-	                
-	                session.setAttribute(ServletUtils.ATT_MSG_PAGE_REDIRECT, request.getContextPath() + "/operator/Admin/SelectionList.jsp?List=DeviceType");
-	                session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "This is the first time you have logged in as the default operator. Please edit the device type list and other energy company settings.");
-	                
-	                String location = ServletUtil.createSafeRedirectUrl(request, "/operator/Admin/Message.jsp?delay=0");
-	                response.sendRedirect(location);
-	                return;
-	            }
-	        }
-	    	
-	
-	    		
 	        accountInfo = ServletUtils.removeAccountInformation(session);
 	        if (accountInfo != null) { // ensure there is a new instance of StarsCustAccountInformation for each request
 	            
