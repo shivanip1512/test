@@ -197,6 +197,11 @@ public:
     {
         Inherited::calcDateTimeStart(now, sched, start_time);
     }
+    void testCalcDayOfMonthStart(const CtiTime& now, const CtiMCSchedule& sched,
+                           CtiTime& start_time ) const
+    {
+        Inherited::calcDayOfMonthStart(now, sched, start_time);
+    }
 };
 
 #endif

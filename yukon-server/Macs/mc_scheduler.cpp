@@ -686,9 +686,7 @@ void CtiMCScheduler::calcDayOfMonthStart(const CtiTime& now, const CtiMCSchedule
 {
     struct tm start_tm;
     unsigned hour, minute, second;
-    int mday = sched.getStartDay();
-    CtiTime temp;
-
+ 
     parseTimeString( sched.getStartTime(), hour, minute, second );
 
     now.extract(&start_tm);
@@ -696,25 +694,35 @@ void CtiMCScheduler::calcDayOfMonthStart(const CtiTime& now, const CtiMCSchedule
     start_tm.tm_min  = minute;
     start_tm.tm_sec  = second;
 
-    temp = CtiTime(&start_tm);
+    int month = start_tm.tm_mon + 1;
+    int year = start_tm.tm_year + 1900;
+    int day = std::min((unsigned int)sched.getStartDay(), CtiDate::daysInMonthYear(month, year));
 
-    if( start_tm.tm_mday < mday ) {
-        temp += (86400 * (mday - start_tm.tm_mday));
-        start_time = temp;
+    start_time = CtiTime(&start_tm);
+
+    if( start_tm.tm_mday < day ) {
+        // if the scheduled day has not yet happened in this month
+        start_time += (86400 * (day - start_tm.tm_mday));
     }
     else
     {
-        if( start_tm.tm_mday == mday && now < temp) {
-            start_time = temp;
-        }
-        else {
-            int month = start_tm.tm_mon + 1;
-            if( month > 12 ) month = 1;
-
-            int year = start_tm.tm_year + 1900;
-
-            temp += 86400 * ((CtiDate::daysInMonthYear(month,year) - start_tm.tm_mday) + mday);
-            start_time = temp;
+        if( now > start_time || start_time.day() != day ) {
+            // scheduled day is next month
+            if( month == 12 )
+            {
+                start_tm.tm_mon = 0;
+                month = 1;
+                year++;
+                start_tm.tm_year++;
+            }
+            else
+            {
+                start_tm.tm_mon++;
+                month++;
+            }
+            
+            start_tm.tm_mday = std::min((unsigned int)sched.getStartDay(), CtiDate::daysInMonthYear(month, year));
+            start_time = CtiTime(&start_tm);
         }
     }
 }

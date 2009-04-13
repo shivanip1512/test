@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE(test_MACS_calc_date_time_start)
     schedule.setStartMonth(11);//Months are 1-12
     schedule.setStartDay(2);// 11/2/2008 is last day of DST (change on this day)
 
-    tempDate = CtiDate::CtiDate(2, 11, 2008);
+    tempDate = CtiDate(2, 11, 2008);
     expectedResult = CtiTime(tempDate, 9, 2, 4);
 
     scheduler.testCalcDateTimeStart(now, schedule, startTime);
@@ -87,3 +87,63 @@ BOOST_AUTO_TEST_CASE(test_MACS_calc_date_time_start)
     BOOST_CHECK_EQUAL(expectedResult, startTime);
 }
 
+BOOST_AUTO_TEST_CASE(test_MACS_day_of_month_start)
+{
+    CtiMCScheduleManager schedMgr;
+    Test_CtiMCScheduler scheduler = Test_CtiMCScheduler::Test_CtiMCScheduler(schedMgr);
+    CtiMCSchedule schedule;
+    CtiTime startTime, expectedResult;
+    CtiDate febLeapYear(22, 2, 2008); // February has 29 days in 2008
+    CtiDate febNonLeapYear(22, 2, 2009); // February has 28 days in 2009
+
+    schedule.setStartTime("09:02:04");
+    schedule.setStartDay(31);
+    schedule.setStartYear(2008); // Irrelevant
+    schedule.setStartMonth(11);// Irrelevant
+    
+    CtiTime now(febLeapYear, 3, 3, 3);
+    CtiDate tempDate = CtiDate(29, 2, 2008); // Testing leap year first
+    expectedResult = CtiTime(tempDate, 9, 2, 4);
+    scheduler.testCalcDayOfMonthStart(now, schedule, startTime);
+
+    BOOST_CHECK_EQUAL(expectedResult, startTime);
+
+    now = CtiTime::CtiTime(febNonLeapYear, 3, 3, 3);
+    tempDate = CtiDate(28, 2, 2009); // Testing non leap year second
+    expectedResult = CtiTime(tempDate, 9, 2, 4);
+    scheduler.testCalcDayOfMonthStart(now, schedule, startTime);
+
+    BOOST_CHECK_EQUAL(expectedResult, startTime);
+
+    schedule.setStartDay(28);
+
+    now = CtiTime::CtiTime(CtiDate(22,3,2009), 3, 3, 3);
+    expectedResult = CtiTime(CtiDate(28, 3, 2009), 9, 2, 4); // Testing March
+    scheduler.testCalcDayOfMonthStart(now, schedule, startTime);
+
+    BOOST_CHECK_EQUAL(expectedResult, startTime);
+
+    now = CtiTime::CtiTime(CtiDate(28,1,2009), 9, 2, 5); // 1 second after the time
+    expectedResult = CtiTime(CtiDate(28, 2, 2009), 9, 2, 4); // Means next month is selected
+    scheduler.testCalcDayOfMonthStart(now, schedule, startTime);
+
+    BOOST_CHECK_EQUAL(expectedResult, startTime);
+
+    now = CtiTime::CtiTime(CtiDate(28,1,2009), 9, 2, 4); // Exactly on the time
+    expectedResult = CtiTime(CtiDate(28, 1, 2009), 9, 2, 4);
+    scheduler.testCalcDayOfMonthStart(now, schedule, startTime);
+
+    BOOST_CHECK_EQUAL(expectedResult, startTime);
+
+    now = CtiTime::CtiTime(CtiDate(28,1,2009), 9, 2, 3); // 1 second before the time
+    expectedResult = CtiTime(CtiDate(28, 1, 2009), 9, 2, 4);
+    scheduler.testCalcDayOfMonthStart(now, schedule, startTime);
+
+    BOOST_CHECK_EQUAL(expectedResult, startTime);
+
+    now = CtiTime::CtiTime(CtiDate(29,12,2009), 3, 3, 3);
+    expectedResult = CtiTime(CtiDate(28, 1, 2010), 9, 2, 4); // This overlaps the year!
+    scheduler.testCalcDayOfMonthStart(now, schedule, startTime);
+
+    BOOST_CHECK_EQUAL(expectedResult, startTime);
+}
