@@ -5,17 +5,6 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
-<script language="JavaScript">
-function prepareSubmit(form) {
-	var checkboxes = document.getElementsByName("InvID");
-	for (i = 0; i < checkboxes.length; i++) {
-		if (checkboxes[i].checked)
-			return true;
-	}
-	alert("You must select at least one hardware");
-	return false;
-}
-</script>
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">

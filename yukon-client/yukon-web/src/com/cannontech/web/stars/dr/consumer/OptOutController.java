@@ -116,10 +116,10 @@ public class OptOutController extends AbstractConsumerController {
     	return "consumer/optout/optOut.jsp";
     }
 
-    @RequestMapping(value = "/consumer/optout/view2", method = RequestMethod.POST)
+    @RequestMapping(value = "/consumer/optout/view2")
     public String view2(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
             YukonUserContext yukonUserContext, String startDate, 
-            int durationInDays, ModelMap map) {
+            int durationInDays, String error, ModelMap map) {
 
     	final LiteYukonUser user = yukonUserContext.getYukonUser();
     	this.checkOptOutsEnabled(user);
@@ -129,6 +129,7 @@ public class OptOutController extends AbstractConsumerController {
 
         map.addAttribute("durationInDays", durationInDays);
         map.addAttribute("startDate", startDate);
+        map.addAttribute("error", error);
 
         // Validate the start date
         Date startDateObj = parseDate(startDate, yukonUserContext);
@@ -182,10 +183,17 @@ public class OptOutController extends AbstractConsumerController {
             String jsonInventoryIds, ModelMap map) {
         
     	LiteYukonUser user = yukonUserContext.getYukonUser();
-    	this.checkOptOutsEnabled(user);
-    	
+    	checkOptOutsEnabled(user);
+
         map.addAttribute("startDate", startDate);
         map.addAttribute("durationInDays", durationInDays);
+
+        List<Integer> inventoryIds = getInventoryIds(yukonUserContext, jsonInventoryIds);
+        if (inventoryIds.size() == 0) {
+            map.addAttribute("error", "yukon.dr.consumer.optoutlist.noInventorySelected");
+            return "redirect:/spring/stars/consumer/optout/view2";
+        }
+        validateInventoryIds(inventoryIds, customerAccount);
         
         String escaped = StringEscapeUtils.escapeHtml(jsonInventoryIds);
         map.addAttribute("jsonInventoryIds", escaped);
@@ -206,23 +214,10 @@ public class OptOutController extends AbstractConsumerController {
             String jsonInventoryIds, HttpServletRequest request, ModelMap map) throws Exception {
         
     	LiteYukonUser user = yukonUserContext.getYukonUser();
-    	this.checkOptOutsEnabled(user);
-    	
-        String unEscaped = StringEscapeUtils.unescapeHtml(jsonInventoryIds);
-        List<Integer> inventoryIds = OptOutControllerHelper.toInventoryIdList(unEscaped);
-        
-        accountCheckerService.checkInventory(yukonUserContext.getYukonUser(),
-                                             inventoryIds.toArray(new Integer[inventoryIds.size()]));
-        
-        // Check that there are opt outs remaining for each inventory being opted out
-        for(int inventoryId : inventoryIds) {
-        	OptOutCountHolder optOutCount = 
-        		optOutService.getCurrentOptOutCount(inventoryId, customerAccount.getAccountId());
-        	if(!optOutCount.isOptOutsRemaining()) {
-        		throw new NotAuthorizedException("There are no remaining opt outs for " +
-        				"inventory with id: " + inventoryId);
-        	}
-        }
+    	checkOptOutsEnabled(user);
+
+    	List<Integer> inventoryIds = getInventoryIds(yukonUserContext, jsonInventoryIds);
+    	validateInventoryIds(inventoryIds, customerAccount);
 
         Date startDateObj = parseDate(startDate, yukonUserContext);
 
@@ -341,6 +336,29 @@ public class OptOutController extends AbstractConsumerController {
             retVal.put(inventoryId, holder);
         }
         return retVal;
+    }
+
+    private List<Integer> getInventoryIds(YukonUserContext yukonUserContext, String jsonInventoryIds) {
+        String unEscaped = StringEscapeUtils.unescapeHtml(jsonInventoryIds);
+        List<Integer> inventoryIds = OptOutControllerHelper.toInventoryIdList(unEscaped);
+
+        accountCheckerService.checkInventory(yukonUserContext.getYukonUser(),
+                                             inventoryIds.toArray(new Integer[inventoryIds.size()]));
+        return inventoryIds;
+    }
+
+    private void validateInventoryIds(List<Integer> inventoryIds,
+            CustomerAccount customerAccount) {
+        // Check that there are opt outs remaining for each inventory being
+        // opted out
+        for (int inventoryId : inventoryIds) {
+            OptOutCountHolder optOutCount = 
+                optOutService.getCurrentOptOutCount(inventoryId, customerAccount.getAccountId());
+            if(!optOutCount.isOptOutsRemaining()) {
+                throw new NotAuthorizedException("There are no remaining opt outs for " +
+                        "inventory with id: " + inventoryId);
+            }
+        }
     }
 
     @Autowired

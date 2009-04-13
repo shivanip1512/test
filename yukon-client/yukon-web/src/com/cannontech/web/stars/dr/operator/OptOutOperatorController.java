@@ -161,10 +161,11 @@ public class OptOutOperatorController {
     @RequestMapping(value = "/operator/optout/view2", method = RequestMethod.GET)
     public String view2(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
             YukonUserContext yukonUserContext, String startDate, 
-            int durationInDays, ModelMap map) {
+            int durationInDays, String error, ModelMap map) {
 
         map.addAttribute("durationInDays", durationInDays);
         map.addAttribute("startDate", startDate);
+        map.addAttribute("error", error);
 
         // Validate the start date
         Date startDateObj = parseDate(startDate, yukonUserContext);
@@ -172,9 +173,9 @@ public class OptOutOperatorController {
         final Date today = TimeUtil.getMidnight(new Date(), userTimeZone);
         boolean isValidStartDate = isValidStartDate(startDateObj, today);
         if (!isValidStartDate) {
-            MessageSourceResolvable error = new YukonMessageSourceResolvable(
+            MessageSourceResolvable errorMsg = new YukonMessageSourceResolvable(
                     "yukon.dr.operator.optoutError.invalidStartDate");
-            map.addAttribute("error", error);
+            map.addAttribute("error", errorMsg);
             return "operator/optout/optOutError.jsp";
         }
 
@@ -195,8 +196,17 @@ public class OptOutOperatorController {
     public String optoutQuestions(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
     		YukonUserContext yukonUserContext, String startDate, 
             int durationInDays, String jsonInventoryIds, ModelMap map) {
-    	
-    	List<String> questions = OptOutControllerHelper.getConfirmQuestions(
+
+        String unEscaped = StringEscapeUtils.unescapeHtml(jsonInventoryIds);
+        List<Integer> inventoryIds = OptOutControllerHelper.toInventoryIdList(unEscaped);
+        if (inventoryIds.size() == 0) {
+            map.addAttribute("startDate", startDate);
+            map.addAttribute("duration", durationInDays);
+            map.addAttribute("error", "yukon.dr.operator.optoutlist.noInventorySelected");
+            return "redirect:/operator/Consumer/OptOut2.jsp";
+        }
+
+        List<String> questions = OptOutControllerHelper.getConfirmQuestions(
     			messageSourceResolver, 
     			yukonUserContext,
     			"yukon.dr.operator.optoutconfirm.question.");

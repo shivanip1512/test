@@ -73,6 +73,7 @@
     <entry key="yukon.dr.operator.optoutlist.noRelay">Relay (N/A)</entry>
     <entry key="yukon.dr.operator.optoutlist.currentlyOptedOut">This device is currently opted out.</entry>
     <entry key="yukon.dr.operator.optoutlist.noMoreOptOutsAvailable">No more opt outs are available for this device.</entry>
+    <entry key="yukon.dr.operator.optoutlist.noInventorySelected">At least one device must be chosen.</entry>
     <entry key="yukon.dr.operator.optoutlist.save">Opt Out</entry>
     <entry key="yukon.dr.operator.optoutlist.cancel">Cancel</entry>
 

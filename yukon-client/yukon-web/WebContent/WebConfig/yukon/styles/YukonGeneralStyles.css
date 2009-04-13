@@ -561,6 +561,11 @@ div.sectionContainer .sectionContainer_content {
     color:#CC0000;
 }
 
+.errorMessage {
+    color:#CC0000;
+    font-style: italic;
+}
+
 .subtleGray {
     color:#777777;
 }

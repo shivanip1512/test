@@ -38,9 +38,13 @@ function createJSON() {
     $('form').appendChild(inputElement);
 }
 </script>    
-    
+
+	<c:if test="${!empty error}">
+		<span class="errorMessage"><cti:msg key="${error}"/></span><br>
+	</c:if>
+
     <h3><cti:msg key="yukon.dr.consumer.optoutlist.header"/></h3>
-    
+
     <div align="center">
         <cti:msg key="yukon.dr.consumer.optoutlist.description"/>
         <br>
