@@ -191,7 +191,7 @@ pageContext.setAttribute("nowDate", nowStartOrStop);%>
      <input type="hidden" name="h_starttime" id="h_starttime" value=""/>                       
      <input type="hidden" name="h_stoptime" id="h_stoptime" value=""/>                       
     <cti:formatDate value="${nowDate}" type="DATE" var="startAtThisMoment" />
-    <cti:formatDate value="${nowDate}" type="TIME" var="startAtThisMomentHHMM" />
+    <cti:formatDate value="${nowDate}" type="TIME24H" var="startAtThisMomentHHMM" />
     
     <table width="350" border="1" cellspacing="0" cellpadding="6" align="center" valign="top" bgcolor="#FFFFFF">
       <tr> 
@@ -456,7 +456,7 @@ pageContext.setAttribute("nowDate", nowStartOrStop);%>
  pageContext.setAttribute("stopNowDate", stpDate);
 %>
 <cti:formatDate value="${stopNowDate}" type="DATE" var="stopAtThisMoment" />
-<cti:formatDate value="${stopNowDate}" type="TIME" var="stopAtThisMomentHHMM" />
+<cti:formatDate value="${stopNowDate}" type="TIME24H" var="stopAtThisMomentHHMM" />
  
                 <tags:dateInputCalendar fieldName="stopdate" 
                                         fieldValue="${stopAtThisMoment}"

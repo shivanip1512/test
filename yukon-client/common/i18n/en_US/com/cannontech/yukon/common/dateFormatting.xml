@@ -4,7 +4,9 @@
 <!-- Please see JavaDocs for the following for help with the values in this file.
          java.text.SimpleDateFormat
 -->
-<entry key="yukon.common.dateFormatting.TIME">HH:mm</entry>
+<entry key="yukon.common.dateFormatting.TIME">hh:mm a</entry>
+<!--DO NOT change the value of TIME24H - 3Tier depends on 24 time -->
+<entry key="yukon.common.dateFormatting.TIME24H">HH:mm</entry>
 <entry key="yukon.common.dateFormatting.TIME_TZ">HH:mm z</entry>
 <entry key="yukon.common.dateFormatting.TIMEZONE">z</entry>
 <entry key="yukon.common.dateFormatting.DATE">MM/dd/yyyy</entry>
