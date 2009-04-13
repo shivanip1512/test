@@ -235,12 +235,13 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
         sql.append("  LEFT JOIN ContactNotification cn on con.contactId = cn.ContactId and cn.notificationCategoryId =").appendArgument(YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
         sql.append("  LEFT JOIN CICustomerBase ci ON c.CustomerID = ci.CustomerID");
         sql.append("WHERE c.CustomerId =").appendArgument(customerId);
+        sql.append("ORDER BY cn.Ordering");
 
-        CustomerInformation customerInfo = simpleJdbcTemplate.queryForObject(sql.getSql(),
+        List<CustomerInformation> customerInfo = simpleJdbcTemplate.query(sql.getSql(),
                                                                   new CustomerInformationRowMapper(),
                                                                   sql.getArguments());
 
-        return customerInfo;
+        return customerInfo.get(0);
     }
 
     /**
