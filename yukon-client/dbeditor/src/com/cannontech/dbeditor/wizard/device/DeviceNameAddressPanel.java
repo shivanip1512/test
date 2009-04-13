@@ -16,11 +16,9 @@ import com.cannontech.common.gui.unchanging.LongRangeDocument;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.wizard.CancelInsertException;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.device.*;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -613,7 +611,7 @@ public void setDeviceType(int deviceType)
 	deviceBase = DeviceFactory.createDevice(deviceType);
    if( DeviceTypesFuncs.hasMasterAddress(deviceType) )
       getPhysicalAddressLabel().setText("Master Address:");
-   else if( DeviceTypesFuncs.hasSlaveAddress(deviceType) )
+   else if( DeviceTypesFuncs.hasSlaveAddress(deviceType) || DeviceTypes.CCU721 == deviceType )
       getPhysicalAddressLabel().setText("Slave Address:");
    else if( deviceType == DeviceTypes.MCTBROADCAST )
       getPhysicalAddressLabel().setText("Lead Meter Address:");

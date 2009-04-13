@@ -16,6 +16,7 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.capcontrol.*;
+import com.cannontech.database.data.device.CCU721;
 import com.cannontech.database.data.device.CarrierBase;
 import com.cannontech.database.data.device.DNPBase;
 import com.cannontech.database.data.device.DeviceBase;
@@ -593,6 +594,8 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
 				 ((Series5Base) val).getSeries5().setSlaveAddress( new Integer(getAddressTextField().getText()) );
 			} else if (val instanceof RTCBase) {
 				((RTCBase) val).getDeviceRTC().setRTCAddress( new Integer( getAddressTextField().getText()));
+			} else if (val instanceof CCU721) {
+				((CCU721) val).getDeviceAddress().setSlaveAddress(new Integer(getAddressTextField().getText()));
 			} else { //didn't find it
 				throw new Error("Unable to determine device type when attempting to set the address");
 			}
@@ -974,7 +977,11 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
          getAddressTextField().setDocument(new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_CAP_BANK_ADDRESS_LENGTH));           
       }
 
-
+      if (val instanceof CCU721) {
+          getPhysicalAddressLabel().setText("Slave Address:");
+          getAddressTextField().setText(((CCU721)val).getDeviceAddress().getSlaveAddress().toString() );
+      }
+      
       getNameTextField().setText( val.getPAOName() + "(copy)" );      
    }
    

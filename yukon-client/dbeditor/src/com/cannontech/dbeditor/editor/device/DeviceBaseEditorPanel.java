@@ -7,6 +7,7 @@ import javax.swing.JOptionPane;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.unchanging.LongRangeDocument;
 import com.cannontech.common.gui.util.AdvancedPropertiesDialog;
+import com.cannontech.common.gui.util.JTextFieldComboEditor;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
@@ -1839,6 +1840,19 @@ public Object getValue(Object val)
 
 				iedBase.getDeviceIED().setSlaveAddress(slaveAddress);
 			}
+	  	} else if (val instanceof CCU721) {
+	         CCU721 ccu721 = (CCU721)val;
+	         try {
+	        	 ccu721.getDeviceAddress().setMasterAddress( new Integer(getPhysicalAddressTextField().getText()) );
+	         } catch( NumberFormatException e ) {
+	        	 ccu721.getDeviceAddress().setMasterAddress( new Integer(0) );
+	         }
+	            
+	         try {         
+	        	 ccu721.getDeviceAddress().setSlaveAddress( new Integer(getSlaveAddressComboBox().getSelectedItem().toString() ) );
+	         } catch( NumberFormatException e ) {
+	        	 ccu721.getDeviceAddress().setSlaveAddress( new Integer(0) );
+	         }	      
 	  	}
 
 	} else {
@@ -2143,14 +2157,6 @@ private void setIDLCBaseValue( IDLCBase idlcBase )
 	getPhysicalAddressLabel().setVisible(true);
 	getPhysicalAddressTextField().setVisible(true);
 
-}
-private void setCCU721BaseValue( CCU721 ccu721 )
-{
-	Integer address = ccu721.getDeviceAddress().getSlaveAddress();
-	getPhysicalAddressTextField().setText( address.toString() );
-	
-	getPhysicalAddressLabel().setVisible(true);
-	getPhysicalAddressTextField().setVisible(true);
 }
 /**
  * Insert the method's description here.
@@ -2615,9 +2621,31 @@ private void setRemoteBaseValue( RemoteBase rBase, int intType )
 		else
 			getControlInhibitCheckBox().setSelected(false);
 		
-	}
-	else
-	{
+	} else if( rBase instanceof CCU721) {
+		getPhysicalAddressLabel().setVisible(false);
+		getPhysicalAddressLabel().setText("Master Address:");
+		getPhysicalAddressTextField().setVisible(false);
+		getPhysicalAddressTextField().setText( ((CCU721)rBase).getDeviceAddress().getMasterAddress().toString() );
+
+		getSlaveAddressLabel().setVisible(true);
+		getSlaveAddressComboBox().setVisible(true);
+      
+		//create a new editor for our combobox so we can set the document
+		getSlaveAddressComboBox().setEditable( true );
+		getSlaveAddressComboBox().removeAllItems();
+		JTextFieldComboEditor editor = new JTextFieldComboEditor();
+		editor.setDocument( new LongRangeDocument(0L, 128L));
+      	editor.addCaretListener(this);  //be sure to fireInputUpdate() messages!
+      	getSlaveAddressComboBox().setEditor( editor );
+      	getSlaveAddressComboBox().addItem( ((CCU721)rBase).getDeviceAddress().getSlaveAddress() );
+
+		getPostCommWaitSpinner().setVisible(false);
+		getPostCommWaitLabel().setVisible(false);
+		getWaitLabel().setVisible(false);
+		getPasswordLabel().setVisible(false);
+		getPasswordTextField().setVisible(false);
+		
+	}else {
 		getPasswordLabel().setVisible(false);
 		getPasswordTextField().setVisible(false);
 		getSlaveAddressLabel().setVisible(false);
@@ -2667,9 +2695,6 @@ public void setValue(Object val)
 	}
 	else if (val instanceof IDLCBase ) {
 		setIDLCBaseValue( (IDLCBase) val );
-	}
-	else if (val instanceof CCU721 ) {
-		setCCU721BaseValue( (CCU721) val );
 	}
 	else {
 		if (deviceBase.getPAOClass().equalsIgnoreCase(DeviceClasses.STRING_CLASS_VIRTUAL) ) {
