@@ -50,8 +50,7 @@ public class BillingFile extends java.util.Observable implements Runnable
 			char argDel = '=';
 			BillingFile billingFile = new BillingFile();
 			BillingFileDefaults billingFileDefaults = new BillingFileDefaults();
-			//Default the billingEndDate for command line use to tomorrow (midnight tonight).  May be overridden by command arg "end"
-			billingFileDefaults.setEndDate(ServletUtil.getTomorrow());
+			billingFileDefaults.setEndDate(ServletUtil.getToday());
 			
 			String username = null;
 			String password = null;
