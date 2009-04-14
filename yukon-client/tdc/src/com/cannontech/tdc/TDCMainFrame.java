@@ -4129,14 +4129,15 @@ public static void main(final java.lang.String[] args)
 {
     try
     {
-        CTILogger.info("Syntax for optional parameters is as follows:");
-        CTILogger.info("   TDCMainFrame view=<value> display=<value>");
         ClientStartupHelper clientStartupHelper = new ClientStartupHelper();
         clientStartupHelper.setAppName("TDC");
         clientStartupHelper.setRequiredRole(TDCRole.ROLEID);
         clientStartupHelper.setSplashUrl(CtiUtilities.TDC_SPLASH);
 
         clientStartupHelper.doStartup();
+
+        CTILogger.info("Syntax for optional parameters is as follows:");
+        CTILogger.info("   TDCMainFrame view=<value> display=<value>");
 
         javax.swing.ToolTipManager.sharedInstance().setDismissDelay(2000);
 
