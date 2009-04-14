@@ -680,8 +680,8 @@
 </error>
 <error code="264">
 	<category>Data Validation</category> 
-	<porter>Invalid data was was received for one or more data points.</porter>
-    <description>Invalid data was was received for one or more data points.</description>
+	<porter>Invalid data was received for one or more data points.</porter>
+    <description>Invalid data was received for one or more data points.</description>
     <troubleshooting>
       <ul>
         <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
