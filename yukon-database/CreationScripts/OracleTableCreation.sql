@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/14/2009 10:55:19 AM                        */
+/* Created on:     4/14/2009 11:21:37 AM                        */
 /*==============================================================*/
 
 
@@ -8930,7 +8930,7 @@ INSERT INTO YukonRole VALUES(-105,'Web Graph','Yukon','Web Graph. Edit this role
 
 /* Application specific roles */
 INSERT INTO YukonRole VALUES(-100,'Database Editor','Application','Access to the Yukon Database Editor application');
-INSERT INTO YukonRole VALUES(-101,'Tabular Display Console','Application','Access to the Yukon Tabular Display Console application');
+INSERT INTO YukonRole VALUES(-101,'Tabular Data Console','Application','Access to the Yukon Tabular Data Console (TDC) application');
 INSERT INTO YukonRole VALUES(-102,'Trending','Application','Access to the Yukon Trending application');
 INSERT INTO YukonRole VALUES(-103,'Commander','Application','Access to the Yukon Commander application');
 INSERT INTO YukonRole VALUES(-106,'Billing','Application','Billing. Edit this role from the Yukon SetUp page.');
