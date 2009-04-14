@@ -256,6 +256,24 @@ private:
     void calcCRC(std::vector< BYTE >::iterator data, unsigned char len);
     static unsigned short crctbl[256];
 
+    typedef union //criticalPeakPricingFlags  
+    {
+        struct
+        {
+            
+            unsigned char wakesp            : 1;
+            unsigned char leavesp           : 1;
+            unsigned char returnsp          : 1;
+            unsigned char sleepsp           : 1; 
+            unsigned char usedelta          : 1;
+            unsigned char heatsetpoint      : 1; 
+            unsigned char usecelsius        : 1;          
+            unsigned char setpointincluded  : 1;
+        };
+
+        unsigned char raw;
+    } CPPFlags_t;
+
 public:
 
     CtiProtocolExpresscom();

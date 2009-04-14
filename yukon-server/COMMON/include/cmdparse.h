@@ -70,7 +70,7 @@ private:
     void    doParseExpresscomAddressing(const string &CmdStr);
 
     void    doParseControlExpresscom  (const string &CmdStr);
-    void    doParseCriticalPeakPricing(const string &_CmdStr);
+    void    doParseControlExpresscomCriticalPeakPricing(const string &_CmdStr);
     void    doParsePutConfigExpresscom(const string &CmdStr);
     void    doParsePutStatusExpresscom(const string &CmdStr);
 

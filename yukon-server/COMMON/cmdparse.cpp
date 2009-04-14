@@ -4541,10 +4541,10 @@ void  CtiCommandParser::doParseControlExpresscom(const string &_CmdStr)
         }
     }
 
-    if(!(token = CmdStr.match( (const boost::regex) (CtiString("cpp")) )).empty()) //critical peak pricing
+    if(!(token = CmdStr.match( (const boost::regex) (CtiString(" cpp ")) )).empty()) //critical peak pricing
     {
         _cmd["xccpp"] = CtiParseValue(TRUE);
-        doParseCriticalPeakPricing(CmdStr);
+        doParseControlExpresscomCriticalPeakPricing(CmdStr);
     }
 }
 
@@ -6132,7 +6132,7 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
 }
 
 
-void CtiCommandParser::doParseCriticalPeakPricing(const string &_CmdStr)
+void CtiCommandParser::doParseControlExpresscomCriticalPeakPricing(const string &_CmdStr)
 {
     CtiString CmdStr(_CmdStr);
     CtiString   str;

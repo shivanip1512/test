@@ -689,32 +689,32 @@ INT CtiProtocolExpresscom::thermostatSetpointControl(BYTE minTemp, BYTE maxTemp,
 }
 INT CtiProtocolExpresscom::backlightIlluminationMsg(BYTE numCycles, BYTE dutyCycle, BYTE cycPeriod)
 {
-    INT status = NoError;
     _message.push_back( mtBacklightIllumination );
     _message.push_back( numCycles );
     _message.push_back( dutyCycle );
     _message.push_back( cycPeriod );
 
     incrementMessageCount();
-    return status;
+    return NoError;
 }
 
 INT CtiProtocolExpresscom::criticalPeakPricing(  BOOL includeHeatPoint, BYTE minHeat, BOOL includeCoolPoint, BYTE maxCool,
                                                  BOOL useCelsius, USHORT controlTime, BOOL deltaFlag, BOOL wakeFlag, BYTE wake, 
                                                  BOOL leaveFlag, BYTE leave, BOOL returnFlag, BYTE ret, BOOL sleepFlag, BYTE sleep)
 {
-    INT status = NoError;
-    BYTE flag = ((includeHeatPoint || includeCoolPoint) ? 0x80 : 0x00);
-    flag |= ( useCelsius ? 0x40 : 0x00 );
-    flag |= ( includeHeatPoint ? 0x20 : 0x00 );
-    flag |= ( deltaFlag ? 0x10 : 0x00 );
-    flag |= ( sleepFlag ? 0x08 : 0x00 );
-    flag |= ( returnFlag ? 0x04 : 0x00 );
-    flag |= ( leaveFlag ? 0x02 : 0x00 );
-    flag |= ( wakeFlag ? 0x01 : 0x00 );
+    CPPFlags_t flag;
+    flag.raw = 0;
+    flag.setpointincluded = (includeHeatPoint || includeCoolPoint);
+    flag.usecelsius = useCelsius;
+    flag.heatsetpoint = includeHeatPoint;
+    flag.usedelta =  deltaFlag;
+    flag.sleepsp = sleepFlag;
+    flag.returnsp = returnFlag;
+    flag.leavesp = leaveFlag;
+    flag.wakesp = wakeFlag;
                  
     _message.push_back( mtCriticalPeakPricing );
-    _message.push_back(flag);
+    _message.push_back(flag.raw);
     _message.push_back(HIBYTE(controlTime));
     _message.push_back(LOBYTE(controlTime));
     
@@ -746,7 +746,7 @@ INT CtiProtocolExpresscom::criticalPeakPricing(  BOOL includeHeatPoint, BYTE min
     }
 
     incrementMessageCount();
-    return status;
+    return NoError;
 }
 
 
