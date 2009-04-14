@@ -1283,7 +1283,7 @@ INT CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse, CtiOutMessag
                                         parse.getiValue("xcmaxcool", 0),
                                         _celsiusMode,
                                         parse.getiValue("xccontroltime", 0),
-                                        parse.isKeyValid("xcdeltavalues"),
+                                        parse.isKeyValid("xcdelta"),
                                         parse.isKeyValid("xcwake"),
                                         parse.getiValue("xcwake", 0),
                                         parse.isKeyValid("xcleave"),

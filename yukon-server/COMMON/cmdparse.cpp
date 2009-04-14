@@ -22,7 +22,7 @@ using namespace std;
 
 static const CtiString str_quoted_token("((\"[^\"]+\")|('[^']+'))");
 
-static const CtiString str_signed_num     ("(\\+|\\-)([0-9]+)");
+static const CtiString str_signed_num     ("(\\+|\\-)?([0-9]+)");
 static const CtiString str_num     ("([0-9]+)");
 static const CtiString str_floatnum("([0-9]+(\\.[0-9]*)?)");
 static const CtiString str_hexnum  ("(0x[0-9a-f]+)");
@@ -6140,8 +6140,8 @@ void CtiCommandParser::doParseControlExpresscomCriticalPeakPricing(const string 
     CtiString   valStr;
     CtiString   token;
 
-    UINT setpoint = 0;
-    INT  delta = 0;
+    INT setpoint = 0;
+
     if(!(temp = CmdStr.match( (const boost::regex) (CtiString(" minheat[ =]+") + str_num) )).empty())
     {
         if(!(valStr = temp.match(re_num)).empty())
@@ -6169,69 +6169,40 @@ void CtiCommandParser::doParseControlExpresscomCriticalPeakPricing(const string 
     }
     if(!(temp = CmdStr.match( (const boost::regex) (CtiString("(wake|leave|return|sleep)[ =]+") + str_signed_num ) )).empty())
     {
-        _cmd["xcdeltavalues"] = CtiParseValue( TRUE );
-    }
-    if(!(temp = CmdStr.match( (const boost::regex) (CtiString("wake[ =]+") + str_signed_num ) )).empty()||
-       !(temp = CmdStr.match( (const boost::regex) (CtiString("wake[ =]+") + str_num ) )).empty())
-    {
-        if(!(valStr = temp.match(re_signed_num)).empty())
+    
+        if(!(temp = CmdStr.match((const boost::regex) (CtiString("wake[ =]+" + str_signed_num) )).empty())
         {
-            delta = atoi(valStr.c_str()) & 0xFF;
-            _cmd["xcwake"] = CtiParseValue(delta);
-
+            if(!(valStr = temp.match(re_signed_num)).empty())
+            {
+                setpoint = atoi(valStr.c_str()) & 0xFF;
+                _cmd["xcwake"] = CtiParseValue(setpoint); 
+            }
         }
-        else if(!(valStr = temp.match(re_num)).empty())
+        if(!(temp = CmdStr.match((const boost::regex) (CtiString("leave[ =]+" + str_signed_num) )).empty())
         {
-            setpoint = atoi(valStr.c_str()) & 0xFF;
-            _cmd["xcwake"] = CtiParseValue(setpoint); 
+            if(!(valStr = temp.match(re_signed_num)).empty())
+            {
+                setpoint = atoi(valStr.c_str()) & 0xFF;
+                _cmd["xcleave"] = CtiParseValue(setpoint); 
+            }
         }
-    }
-    if(!(temp = CmdStr.match( (const boost::regex) (CtiString("leave[ =]+") + str_signed_num ) )).empty()||
-       !(temp = CmdStr.match( (const boost::regex) (CtiString("leave[ =]+") + str_num ) )).empty())
-    {
-        if(!(valStr = temp.match(re_signed_num)).empty())
+        if(!(temp = CmdStr.match((const boost::regex) (CtiString("return[ =]+" + str_signed_num) )).empty())
         {
-            delta = atoi(valStr.c_str()) & 0xFF;
-            _cmd["xcleave"] = CtiParseValue(delta);
-
+            if(!(valStr = temp.match(re_signed_num)).empty())
+            {
+                setpoint = atoi(valStr.c_str()) & 0xFF;
+                _cmd["xcreturn"] = CtiParseValue(setpoint); 
+            }
         }
-        else if(!(valStr = temp.match(re_num)).empty())
+        if(!(temp = CmdStr.match((const boost::regex) (CtiString("sleep[ =]+" + str_signed_num) )).empty())
         {
-            setpoint = atoi(valStr.c_str()) & 0xFF;
-            _cmd["xcleave"] = CtiParseValue(setpoint); 
-        }
-    }
-    if(!(temp = CmdStr.match( (const boost::regex) (CtiString("return[ =]+") + str_signed_num ) )).empty()||
-       !(temp = CmdStr.match( (const boost::regex) (CtiString("return[ =]+") + str_num ) )).empty())
-    {
-        if(!(valStr = temp.match(re_signed_num)).empty())
-        {
-            delta = atoi(valStr.c_str()) & 0xFF;
-            _cmd["xcreturn"] = CtiParseValue(delta);
-
-        }
-        else if(!(valStr = temp.match(re_num)).empty())
-        {
-            setpoint = atoi(valStr.c_str()) & 0xFF;
-            _cmd["xcreturn"] = CtiParseValue(setpoint); 
+            if(!(valStr = temp.match(re_signed_num)).empty())
+            {
+                setpoint = atoi(valStr.c_str()) & 0xFF;
+                _cmd["xcsleep"] = CtiParseValue(setpoint); 
+            }
         }
     }
-    if(!(temp = CmdStr.match( (const boost::regex) (CtiString("sleep[ =]+") + str_signed_num ) )).empty()||
-       !(temp = CmdStr.match( (const boost::regex) (CtiString("sleep[ =]+") + str_num ) )).empty())
-    {
-        if(!(valStr = temp.match(re_signed_num)).empty())
-        {
-            delta = atoi(valStr.c_str()) & 0xFF;
-            _cmd["xcsleep"] = CtiParseValue(delta);
-
-        }
-        else if(!(valStr = temp.match(re_num)).empty())
-        {
-            setpoint = atoi(valStr.c_str()) & 0xFF;
-            _cmd["xcsleep"] = CtiParseValue(setpoint); 
-        }
-    }
-
 }
 
 void CtiCommandParser::doParsePutConfigUtilityUsage(const string &_CmdStr)
