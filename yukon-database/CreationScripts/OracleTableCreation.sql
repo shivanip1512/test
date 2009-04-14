@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/8/2009 10:11:38 AM                         */
+/* Created on:     4/14/2009 10:55:19 AM                        */
 /*==============================================================*/
 
 
@@ -9230,7 +9230,6 @@ INSERT INTO YukonRoleProperty VALUES(-20013,-200,'Edit Device Config','false','C
 INSERT INTO YukonRoleProperty VALUES(-20014,-200,'View Device Config','true','Controls the ability to view existing device configurations');
 INSERT INTO YukonRoleProperty VALUES(-20015,-200,'Manage Indexes','true','Controls access to manually build Lucene indexes.'); 
 INSERT INTO YukonRoleProperty VALUES(-20016,-200,'View Logs','true','Controls access to view or download log files.');
-INSERT INTO YukonRoleProperty VALUES(-20017,-200,'Initialize Energy Company Setup','false','Controls if Energy Company needs to be initialized. Property should not be changed manually, but rather will be controlled by the system.');
 
 /* Operator Metering Role Properties*/
 INSERT INTO YukonRoleProperty VALUES(-20203,-202,'Enable Bulk Importer','true','Allows access to the Bulk Importer');
