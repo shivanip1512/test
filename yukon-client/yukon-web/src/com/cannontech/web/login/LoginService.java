@@ -13,6 +13,8 @@ public interface LoginService {
     
     public void logout(HttpServletRequest request, HttpServletResponse response) throws Exception;
     
+    public void invalidateSession(HttpServletRequest request, String reason);
+    
     public void createSession(HttpServletRequest request, LiteYukonUser user);
     
     public void clientLogin(HttpServletRequest request, HttpServletResponse response) throws Exception;

@@ -35,7 +35,7 @@ public class YukonLoginController extends MultiActionController {
         final Boolean createRememberMeCookie = ServletRequestUtils.getBooleanParameter(request, "rememberme", false);
         final String redirectedFrom = ServletRequestUtils.getStringParameter(request, LoginController.REDIRECTED_FROM);
 
-        String redirect = null;
+        String redirect;
 
         boolean success = false;
         long retrySeconds = 0;
@@ -46,23 +46,34 @@ public class YukonLoginController extends MultiActionController {
         }
         if (success) {
             LiteYukonUser user = ServletUtil.getYukonUser(request);
-            boolean hasWebClientRole = rolePropertyDao.checkRole(YukonRole.WEB_CLIENT, user);
-            if (createRememberMeCookie) {
-                String value = loginCookieHelper.createCookieValue(username, password);
-                ServletUtil.createCookie(request, response, LoginController.REMEMBER_ME_COOKIE, value);
-            }
-
-            if (redirectedFrom != null && !redirectedFrom.equals("")) {
-                redirect = redirectedFrom;
-            } else if (hasWebClientRole) {
-        		String homeUrl = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, user);
-        		redirect = ServletUtil.createSafeUrl(request, homeUrl);
-            }
             
-            boolean hasUrlAccess = redirect != null && urlAccessChecker.hasUrlAccess(redirect, user);
-            if (!hasUrlAccess) {
-                redirect = LoginController.LOGIN_URL + "?" + LoginController.INVALID_URL_ACCESS_PARAM;
+            boolean hasWebClientRole = rolePropertyDao.checkRole(YukonRole.WEB_CLIENT, user);
+            
+            if (hasWebClientRole) {
+            
+	            if (createRememberMeCookie) {
+	                String value = loginCookieHelper.createCookieValue(username, password);
+	                ServletUtil.createCookie(request, response, LoginController.REMEMBER_ME_COOKIE, value);
+	            }
+
+	            if (redirectedFrom != null && !redirectedFrom.equals("")) {
+	                redirect = redirectedFrom;
+	            } else {
+	        		String homeUrl = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, user);
+	        		redirect = ServletUtil.createSafeUrl(request, homeUrl);
+	            }
+            
+	            boolean hasUrlAccess = urlAccessChecker.hasUrlAccess(redirect, user);
+	            if (!hasUrlAccess) {
+	            	loginService.invalidateSession(request, "No access to URL (" + redirect + ")");
+	                redirect = LoginController.LOGIN_URL + "?" + LoginController.INVALID_URL_ACCESS_PARAM;
+	            }
+	          
+            } else {
+            	loginService.invalidateSession(request, "Not in WEB_CLIENT role.");
+            	redirect = LoginController.LOGIN_URL + "?" + LoginController.INVALID_URL_ACCESS_PARAM;
             }
+	            
         } else {
             ServletUtil.deleteAllCookies(request, response);
 

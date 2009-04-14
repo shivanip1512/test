@@ -99,6 +99,16 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
+    public void invalidateSession(HttpServletRequest request, String reason) {
+    	
+    	LiteYukonUser user = ServletUtil.getYukonUser(request);
+    	HttpSession session = request.getSession(false);
+    	session.invalidate();
+    	
+    	ActivityLogger.logEvent(user.getUserID(),LOGOUT_ACTIVITY_LOG, "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has been logged out from " + request.getRemoteAddr() + ". Reason: " + reason);
+    }
+    
+    @Override
     @SuppressWarnings("unchecked")
     public void logout(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String redirect = this.getRedirect(request);
