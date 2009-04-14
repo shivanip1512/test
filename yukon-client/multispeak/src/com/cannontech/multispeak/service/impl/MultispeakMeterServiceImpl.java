@@ -863,7 +863,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         
 	     // bad sub name
 	    } catch(NotFoundException e) {
-	        mspObjectDao.logMSPActivity("MeterAddNotification", "MeterNumber(" + meterNumber + ") - " + e.getMessage() + ", using route from template device.", mspVendor.getCompanyName());
+	        mspObjectDao.logMSPActivity("MeterAddNotification", "MeterNumber(" + meterNumber + ") - " + e.getMessage() + ", Bad substation name.", mspVendor.getCompanyName());
 	    }
     	
     }
@@ -1177,10 +1177,13 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             errorObjects.add(err);
         } else { //Valid template found
             //Find a valid substation
-        	String substationName = getMeterSubstationName(mspMeter, mspVendor, errorObjects);
-        	if (errorObjects.size() == 0) {
-        		createMeter(mspMeter, mspVendor, templateName, substationName);
-        	}
+        	String substationName = getMeterSubstationName(mspMeter);
+        	err = isValidSubstation(substationName, mspMeter.getMeterNo(), mspVendor, true);
+    		if (err == null) {
+    			createMeter(mspMeter, mspVendor, templateName, substationName);
+            } else {
+            	errorObjects.add(err);
+            }
         }
         return errorObjects;
 	}
@@ -1188,24 +1191,15 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 	/**
 	 * Return the substation name of a Meter.
 	 * If the Meter does not contain a substation name in its utility info, empty string is returned.
-	 * If the substation name is not valid (not found, or has no routes), an error is added to errorObjects, and
 	 * an empty string is returned. 
 	 * @param mspMeter
-	 * @param mspVendor
-	 * @param errorObjects
 	 * @return
 	 */
-	private String getMeterSubstationName(Meter mspMeter, MultispeakVendor mspVendor, List<ErrorObject> errorObjects) {
+	private String getMeterSubstationName(Meter mspMeter) {
 		
 		String substationName = "";
 		if(!(mspMeter.getUtilityInfo() == null || mspMeter.getUtilityInfo().getSubstationName()== null)){
-			String meterNo = mspMeter.getMeterNo().trim();
 			substationName = mspMeter.getUtilityInfo().getSubstationName();
-			ErrorObject err = isValidSubstation(substationName, meterNo, mspVendor);
-			if (err != null) {
-				substationName = "";
-                errorObjects.add(err);
-            }
 		}
 		
 		return substationName;
@@ -1220,7 +1214,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
      * @param mspVendor
      * @return
      */
-    private ErrorObject isValidSubstation(String substationName, String meterNumber, MultispeakVendor mspVendor) {
+    private ErrorObject isValidSubstation(String substationName, String meterNumber, MultispeakVendor mspVendor, boolean isAdd) {
         
         String errorReason = null;
         try {
@@ -1238,7 +1232,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         if (errorReason != null) {
             ErrorObject err = mspObjectDao.getErrorObject(meterNumber, 
                                                           "Error: MeterNumber(" + meterNumber + ") - SubstationName(" + 
-                                                          substationName + ") - " + errorReason + ".  Meter was NOT added",
+                                                          substationName + ") - " + errorReason + ".  Meter was NOT " + (isAdd ? "added" : "updated"),
                                                           "Meter", "MeterAddNotification", mspVendor.getCompanyName());
              return err;
         }
@@ -1356,6 +1350,18 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         		//Ignore Exception...this is what we want, for the address to NOT already exist in Yukon
         	}
         }
+        
+        // Verify substation name
+        String substationName = getMeterSubstationName(mspMeter);
+        if (StringUtils.isBlank(substationName)) {
+        	mspObjectDao.logMSPActivity("MeterAddNotification", "MeterNumber(" + meter.getMeterNumber() + ") - substation name not provided, route locate will not happen.", mspVendor.getCompanyName());
+        } else {
+        	err = isValidSubstation(substationName, meter.getMeterNumber(), mspVendor, false);
+        	if (err != null) {
+        		mspObjectDao.logMSPActivity("MeterAddNotification", "MeterNumber(" + meter.getMeterNumber() + ") - substation name is invalid.", mspVendor.getCompanyName());
+        		return err;
+        	}
+        }
 
         final String paoAliasStr = MultispeakVendor.paoNameAliasStrings[paoAlias];
         //Load the CIS serviceLocation.
@@ -1407,10 +1413,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         }
         
         //Update route
-        List<ErrorObject> substationNameErrors = new ArrayList<ErrorObject>();
-        String substationName = getMeterSubstationName(mspMeter, mspVendor, substationNameErrors);
-        if (!StringUtils.isBlank(substationName) && substationNameErrors.size() == 0) {
-        	
+        if (!StringUtils.isBlank(substationName)) {
         	updateMeterRouteForSubstation(yukonPaobject.getPAObjectID(), mspVendor, substationName, meter.getMeterNumber());
         }
         
