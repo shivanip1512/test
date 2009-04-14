@@ -1,8 +1,12 @@
 package com.cannontech.stars.util.task;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
+
+import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
@@ -15,6 +19,8 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.roles.operator.ConsumerInfoRole;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.tools.email.EmailMessage;
 import com.cannontech.util.ServletUtil;
@@ -44,23 +50,13 @@ public class SendControlOddsTask implements Runnable {
 		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( energyCompanyID );
 		
 		String LINE_SEPARATOR = System.getProperty("line.separator");
-		String blanks = "                                ";
-		String ctrlOddsText = energyCompany.getEnergyCompanySetting( ConsumerInfoRole.WEB_TEXT_ODDS_FOR_CONTROL );
-		
-		String subject = "Today's " + ServletUtil.capitalizeAll( ctrlOddsText );
-		
-		String header = "Program Enrollment              " + ServletUtil.capitalizeAll( ctrlOddsText ) + LINE_SEPARATOR
-					  + "================================================================" + LINE_SEPARATOR;
-		
-		String footer = "To unsubscribe from the notification list, please go to "
-					  + "http://www.wisewatts.com and login with your username and password. "
-					  + "On the first page (or the \"General\" link), uncheck the notification box and click \"Submit\".";
-		
+
 		List<LiteLMProgramWebPublishing> progList = new ArrayList<LiteLMProgramWebPublishing>();	// Programs that are eligible for notification
         Iterable<LiteLMProgramWebPublishing> programs = energyCompany.getAllPrograms();
         for (final LiteLMProgramWebPublishing program : programs) {
-            if (program.getChanceOfControlID() != CtiUtilities.NONE_ZERO_ID)
+            if (program.getChanceOfControlID() != CtiUtilities.NONE_ZERO_ID) {
                 progList.add( program );
+            }
         }
 		
 		if (progList.size() > 0) {
@@ -81,9 +77,14 @@ public class SendControlOddsTask implements Runnable {
 					sql.toString(), CtiUtilities.getDatabaseAlias() );
 			try {
 				stmt.execute();
+				
+				StarsCustAccountInformationDao starsCustAccountInformationDao = 
+					YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
+				
 				for (int i = 0; i < stmt.getRowCount(); i++) {
 					int accountID = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
-					LiteStarsCustAccountInformation accountInfo = energyCompany.getCustAccountInformation( accountID, true );
+					LiteStarsCustAccountInformation accountInfo =
+						starsCustAccountInformationDao.getById(accountID, energyCompanyID);
 					
 					LiteContact primContact = DaoFactory.getContactDao().getContact( accountInfo.getCustomer().getPrimaryContactID() );
 					LiteContactNotification email = DaoFactory.getContactDao().getContactNotification(
@@ -91,7 +92,7 @@ public class SendControlOddsTask implements Runnable {
 					if (email == null || email.getDisableFlag().equalsIgnoreCase("Y"))
 						continue;
 					
-					ArrayList activeProgs = new ArrayList();	// List of all the active programs
+					List<LiteStarsLMProgram> activeProgs = new ArrayList<LiteStarsLMProgram>();	// List of all the active programs
 					for (int j = 0; j < accountInfo.getPrograms().size(); j++) {
 						LiteStarsLMProgram program = (LiteStarsLMProgram) accountInfo.getPrograms().get(j);
 						if (progList.contains( program.getPublishedProgram() ) && program.isInService())
@@ -100,30 +101,65 @@ public class SendControlOddsTask implements Runnable {
 					if (activeProgs.size() == 0) continue;
 					
 					StringTokenizer st = new StringTokenizer( email.getNotification(), "," );
-					ArrayList toList = new ArrayList();
-					while (st.hasMoreTokens())
+					List<String> toList = new ArrayList<String>();
+					while (st.hasMoreTokens()) {
 						toList.add( st.nextToken() );
-					String[] to = new String[ toList.size() ];
-					toList.toArray( to );
+					}
+					String[] to = toList.toArray(new String[]{});
 					
-					StringBuffer text = new StringBuffer( header );
+					Map<String, String> programOddsMap = new HashMap<String, String>();
+					int maxProgramNameLength = 0;
 					for (int j = 0; j < activeProgs.size(); j++) {
 						LiteStarsLMProgram program = (LiteStarsLMProgram) activeProgs.get(j);
 						String progName = StarsUtils.getPublishedProgramName( program.getPublishedProgram() );
 						String ctrlOdds = DaoFactory.getYukonListDao().getYukonListEntry( program.getPublishedProgram().getChanceOfControlID() ).getEntryText();
 						
-						text.append( progName );
-						text.append( blanks.substring(progName.length()) );
-						text.append( ctrlOdds );
-						text.append( LINE_SEPARATOR );
+						int currentProgramNameLength = progName.length();
+						if(currentProgramNameLength > maxProgramNameLength) {
+							maxProgramNameLength = currentProgramNameLength;
+						}
+						programOddsMap.put(progName, ctrlOdds);
+
 					}
-					text.append( LINE_SEPARATOR );
-					text.append( LINE_SEPARATOR );
-					text.append( LINE_SEPARATOR );
-					text.append( footer );
+
+					String ctrlOddsText = energyCompany.getEnergyCompanySetting( ConsumerInfoRole.WEB_TEXT_ODDS_FOR_CONTROL );
+					String subject = "Today's " + ServletUtil.capitalizeAll( ctrlOddsText );
+					
+					StringBuffer messageText = new StringBuffer();
+
+					String columnHeader = 
+						StringUtils.rightPad("Program Enrollment", maxProgramNameLength + 2, " "); 
+					messageText.append(columnHeader);
+					
+					messageText.append(ServletUtil.capitalizeAll( ctrlOddsText ));
+					messageText.append( LINE_SEPARATOR );
+					
+					String lineText = StringUtils.leftPad("  ", maxProgramNameLength + 2, "=");
+					lineText = 
+						StringUtils.rightPad(lineText, lineText.length() + ctrlOddsText.length(), "=");
+					messageText.append(lineText);
+					messageText.append( LINE_SEPARATOR );
+					
+					for (String programName : programOddsMap.keySet()) {
+						messageText.append(
+								StringUtils.rightPad(programName, maxProgramNameLength + 2));
+						messageText.append(programOddsMap.get(programName));
+						messageText.append( LINE_SEPARATOR );
+					}
+					
+					messageText.append( LINE_SEPARATOR );
+					messageText.append( LINE_SEPARATOR );
+					messageText.append( LINE_SEPARATOR );
+					
+					messageText.append("To unsubscribe from the notification list, please contact your program administrator or "
+							  + "login to your account and do the following. "
+							  + "On the first page (or the \"General\" link), uncheck the notification box and click \"Submit\".");
+					
+					messageText.append( LINE_SEPARATOR );
+					messageText.append( LINE_SEPARATOR );
 					
 					try {
-						EmailMessage emailMsg = new EmailMessage( to, subject, text.toString() );
+						EmailMessage emailMsg = new EmailMessage( to, subject, messageText.toString() );
 						emailMsg.setFrom( energyCompany.getAdminEmailAddress() );
 						emailMsg.send();
 					}

@@ -141,9 +141,10 @@ public class SendOddsForControlAction implements ActionBase {
 					if (enrProgFound) break;
 				}
             	
-				// Create a new thread to get through all the accounts and send out emails
-				new Thread( new SendControlOddsTask(energyCompanyID), "SendControlOddsTask--action" ).start();
 			}
+			
+			// Create a new thread to get through all the accounts and send out emails
+			new Thread( new SendControlOddsTask(energyCompanyID), "SendControlOddsTask--action" ).start();
             
 			StarsSuccess success = new StarsSuccess();
 			success.setDescription( "Odds for control sent out successfully" );
