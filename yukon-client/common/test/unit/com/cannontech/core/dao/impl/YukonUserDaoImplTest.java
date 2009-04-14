@@ -25,24 +25,14 @@ public class YukonUserDaoImplTest {
 		}
 	}
 	
-	private class testFail4times extends YukonUserDaoImpl {
-		int i = 0;
+	private class testFailFirstRunOnly extends YukonUserDaoImpl {
+		boolean done = false;
 		public LiteYukonUser getLiteYukonUser(String username) {
-			if( i++ == 4) {
-				return null;
-			} else {
+			if(!done) {
+				done = true;
 				return new LiteYukonUser();
-			}
-		}
-	}
-	
-	private class testFail100times extends YukonUserDaoImpl {
-		int i = 0;
-		public LiteYukonUser getLiteYukonUser(String username) {
-			if( i++ == 100) {
-				return null;
 			} else {
-				return new LiteYukonUser();
+				return null;
 			}
 		}
 	}
@@ -78,36 +68,59 @@ public class YukonUserDaoImplTest {
 	}
 	
 	@Test
-	public void testGenerateUsernameFourthTruncate() {
-		YukonUserDaoImpl dao = new testFail4times();
+	public void testGenerateUsernameTruncate() {
+		YukonUserDaoImpl dao = new testAlwaysPass();
 		
 		String firstName = "FirstName";
 		String lastName = "LastNameLastNameLastNameLastNameLastNameLastNameLastNameLastNameLastNameLastNameLastName";
 		
 		try {
+			//This should only Truncate. No random numbers
 			String result = dao.generateUsername(firstName, lastName);
-			String patternStr = "flastname.*2";
+			String patternStr = "flastname[a-zA-Z]*";
 			Pattern pattern = Pattern.compile(patternStr);
 			Matcher matcher = pattern.matcher(result);
 			boolean match = matcher.matches();
-			
-			assertEquals(result.length(),64);
+
 			assertEquals(true,match);
+			assertEquals(result.length(),64);
 		} catch (RuntimeException e) {
 			assertEquals("This Should not happen","But it did");
 		}
 	}
 	
 	@Test
-	public void testGenerateUsernameFourthNoTruncate() {
-		YukonUserDaoImpl dao = new testFail4times();
+	public void testGenerateUsernameTruncateGenerate() {
+		YukonUserDaoImpl dao = new testFailFirstRunOnly();
+		
+		String firstName = "FirstName";
+		String lastName = "LastNameLastNameLastNameLastNameLastNameLastNameLastNameLastNameLastNameLastNameLastName";
+		
+		try {
+			//This should generate a random number and still maintain < 64 characters.
+			String result = dao.generateUsername(firstName, lastName);
+			String patternStr = "flastname[a-zA-Z]*[0-9][0-9]*";
+			Pattern pattern = Pattern.compile(patternStr);
+			Matcher matcher = pattern.matcher(result);
+			boolean match = matcher.matches();
+
+			assertEquals(true,match);			
+			assertEquals(result.length(),64);
+		} catch (RuntimeException e) {
+			assertEquals("This Should not happen","But it did");
+		}
+	}
+	
+	@Test
+	public void testGenerateUsernameNoTruncateGenerate() {
+		YukonUserDaoImpl dao = new testFailFirstRunOnly();
 		
 		String firstName = "FirstName";
 		String lastName = "LastName";
 		
 		try {
 			String result = dao.generateUsername(firstName, lastName);
-			String patternStr = "flastname[0-9]*2";
+			String patternStr = "flastname[0-9]*";
 			Pattern pattern = Pattern.compile(patternStr);
 			Matcher matcher = pattern.matcher(result);
 			boolean match = matcher.matches();
@@ -118,24 +131,4 @@ public class YukonUserDaoImplTest {
 		}
 	}
 	
-	@Test
-	public void testGenerateUsernameHundred() {
-		YukonUserDaoImpl dao = new testFail100times();
-		
-		String firstName = "FirstName";
-		String lastName = "LastNameLastNameLastNameLastNameLastNameLastNameLastNameLastNameLastNameLastNameLastName";
-		
-		try {
-			String result = dao.generateUsername(firstName, lastName);
-			String patternStr = "flastname.*98";
-			Pattern pattern = Pattern.compile(patternStr);
-			Matcher matcher = pattern.matcher(result);
-			boolean match = matcher.matches();
-			
-			assertEquals(result.length(),64);
-			assertEquals(true,match);
-		} catch (RuntimeException e) {
-			assertEquals("This Should not happen","But it did");
-		}
-	}
 }

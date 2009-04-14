@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataRetrievalFailureException;
@@ -43,6 +44,8 @@ public class YukonUserDaoImpl implements YukonUserDao {
     private PaoPermissionDao<LiteYukonUser> userPaoPermissionDao = null;
     private DBPersistentDao dbPersistantDao;    
 
+    public static final int numberOfRandomChars = 2;
+    
     static {
         
         selectSql = "SELECT UserID,UserName,Status,AuthType FROM YukonUser";
@@ -160,43 +163,28 @@ public class YukonUserDaoImpl implements YukonUserDao {
         	newUsername = firstInitial + lastName.toLowerCase();
         }
         
+        //If the username is not unique, we will try once to generate a unique one.
         if (getLiteYukonUser(newUsername) != null) {
             String timeStamp = Long.toString(new Date().getTime());
-            boolean usernameUnique = false;
-            int i = 0;
-            String extraDigits = "";
+            String extraDigits = RandomStringUtils.randomNumeric(numberOfRandomChars);
+            String uniqueUsername;
             
-            do{
-	            String uniqueUsername;
-	            
-	            //If the time stamp and extra digits will push this over 64, 
-	            // we will truncate part of the user name to make room for it.
-	            if(newUsername.length() + timeStamp.length() > 64  ) {
-	            	uniqueUsername = newUsername.substring(0, newUsername.length() - 
-	            											  timeStamp.length() - 
-	            											  extraDigits.length());
-	            } else {
-	            	uniqueUsername = newUsername;
-	            }
-	            
-	            uniqueUsername += timeStamp + extraDigits;
-	            
-	            //Setup
-                if (getLiteYukonUser(uniqueUsername) == null) {
-                    usernameUnique = true;
-                    newUsername = uniqueUsername;
-                    break;
-                } else {
-                	// Not unique yet.
-                	// Add a number and try again.
-    	            extraDigits = Integer.toString(i);
-                }
-	            
-	        //Stop when it is unique or give up after trying 100 variations.
-            }while(usernameUnique == false && i++ < 100);
+            //If the time stamp and extra digits will push this over 64, 
+            // we will truncate part of the user name to make room for it.
+            if(newUsername.length() + timeStamp.length() + extraDigits.length() > 64  ) {
+            	uniqueUsername = newUsername.substring(0, newUsername.length() - 
+            											  timeStamp.length() - 
+            											  extraDigits.length());
+            } else {
+            	uniqueUsername = newUsername;
+            }
             
-            if (!usernameUnique) {
+            uniqueUsername += timeStamp + extraDigits;
+
+            if (getLiteYukonUser(uniqueUsername) != null) {
                 throw new RuntimeException("Failed to generate unique username, please retry");
+            } else {
+            	newUsername = uniqueUsername;
             }
         }
 
