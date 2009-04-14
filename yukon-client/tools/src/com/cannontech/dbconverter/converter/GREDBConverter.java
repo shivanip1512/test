@@ -528,8 +528,7 @@ public boolean processLoadPrograms()
 
 		
 		/* Create a default gear */
-		TimeRefreshGear gear = (TimeRefreshGear)LMProgramDirectGear.createGearFactory(
-									GearControlMethod.TimeRefresh );
+		TimeRefreshGear gear = (TimeRefreshGear)GearControlMethod.TimeRefresh.createNewGear();
 		gear.setGearName("Refresh");
 		gear.setDeviceID( lmProgram.getPAObjectID() );
 		gear.setShedTime( new Integer(900) ); //15 minutes
@@ -1865,11 +1864,9 @@ public boolean processUnxPrograms()
 			continue;
 
 		/* Create a default gear */
-		LMProgramDirectGear gear = 
-			LMProgramDirectGear.createGearFactory(
-				(line[5].trim().equalsIgnoreCase("cycl")
+		LMProgramDirectGear gear = (line[5].trim().equalsIgnoreCase("cycl")
 				 ? GearControlMethod.SmartCycle
-				 : GearControlMethod.TimeRefresh) );
+				 : GearControlMethod.TimeRefresh).createNewGear() ;
 
 		if( gear instanceof TimeRefreshGear )
 		{

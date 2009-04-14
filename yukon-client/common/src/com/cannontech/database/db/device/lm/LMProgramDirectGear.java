@@ -120,44 +120,7 @@ public abstract class LMProgramDirectGear
 
 		add(TABLE_NAME, addValues);
 	}
-	/**
-	 * This method was created in VisualAge.
-	 */
-	public static final LMProgramDirectGear createGearFactory(GearControlMethod gearType)
-	{
-		if (gearType == null)
-			return null;
 
-		switch (gearType) 
-		{
-			case Latching:
-				return new LatchingGear();
-			case MasterCycle:
-				return new MasterCycleGear();
-			case Rotation:
-				return new RotationGear();
-			case SmartCycle:
-				return new SmartCycleGear();
-			case TrueCycle:
-				return new TrueCycleGear();
-			case MagnitudeCycle:
-				return new MagnitudeCycleGear();
-			case TargetCycle:
-				return new TargetCycleGear();
-			case TimeRefresh:
-				return new TimeRefreshGear();
-			case ThermostatRamping:
-				return new ThermostatSetbackGear();
-			case SimpleThermostatRamping:
-				return new SimpleThermostatRampingGear();
-			case NoControl:
-				return new NoControlGear();
-			default:
-				throw new IllegalArgumentException("Unable to create DirectGear for type : " 
-						+ gearType.toString());
-				
-		}
-	}
 	/**
 	 * delete method comment.
 	 */
@@ -250,7 +213,7 @@ public abstract class LMProgramDirectGear
 				String name = new String(rset.getString(2));
 				Integer gearNum = new Integer(rset.getInt(3));
 				GearControlMethod method = GearControlMethod.getGearControlMethod(rset.getString(4));
-				LMProgramDirectGear gear = LMProgramDirectGear.createGearFactory(method);
+				LMProgramDirectGear gear = method.createNewGear();
 				
 				gear.setDeviceID(deviceID);
 				gear.setGearID(gID);

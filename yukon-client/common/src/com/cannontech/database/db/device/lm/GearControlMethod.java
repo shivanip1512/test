@@ -47,8 +47,14 @@ public enum GearControlMethod {
 		}
 	}
 	
-	public LMProgramDirectGear createNewGear() throws IllegalAccessException, InstantiationException{
-		return (LMProgramDirectGear)gearClass.newInstance();
+	public LMProgramDirectGear createNewGear() {
+		try{
+			return (LMProgramDirectGear)gearClass.newInstance();
+		} catch (IllegalAccessException e) {
+			return null;
+		} catch (InstantiationException e) {
+			return null;
+		}
 	}
 }
 

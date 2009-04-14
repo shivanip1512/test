@@ -162,7 +162,7 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 			break;
 		case LiteTypes.GEAR:
 			String method = ((LiteGear)liteObject).getGearType();
-			returnObject = LMProgramDirectGear.createGearFactory(GearControlMethod.getGearControlMethod(method));
+			returnObject = GearControlMethod.getGearControlMethod(method).createNewGear();
 			((LMProgramDirectGear)returnObject).setGearID(new Integer(liteObject.getLiteID()));
 			((LMProgramDirectGear)returnObject).setGearName(((LiteGear)liteObject).getGearName());
 			break;

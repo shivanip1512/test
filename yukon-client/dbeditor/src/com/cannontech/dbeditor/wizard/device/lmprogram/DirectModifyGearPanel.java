@@ -358,7 +358,7 @@ public Object getValue(Object o)
     
     GearControlMethod method = GearControlMethod.getGearControlMethod(selectedItem.replaceAll(" ",""));
     setGearType(method);
-    gear = LMProgramDirectGear.createGearFactory( method );  
+    gear = method.createNewGear();  
 
     if( o != null ){
     	gear.setGearID(((LMProgramDirectGear)o).getGearID());
