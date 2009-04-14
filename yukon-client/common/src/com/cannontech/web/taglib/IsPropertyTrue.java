@@ -32,14 +32,9 @@ public class IsPropertyTrue extends BodyTagSupport
 		LiteYukonUser user = 
 			(LiteYukonUser) pageContext.getSession().getAttribute("YUKON_USER");
 	
-		LiteYukonRoleProperty liteProp =
-			DaoFactory.getRoleDao().getRoleProperty(propertyid);
-
-		if( user != null && liteProp != null )
+		if (user != null)
 		{
-			boolean val = DaoFactory.getAuthDao().checkRoleProperty(
-				user,
-				liteProp.getRolePropertyID() );
+			boolean val = DaoFactory.getAuthDao().checkRoleProperty(user, propertyid);
 			
 			if(val) {
 				return EVAL_BODY_INCLUDE;

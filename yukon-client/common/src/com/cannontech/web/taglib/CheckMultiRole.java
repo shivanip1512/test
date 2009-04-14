@@ -7,8 +7,10 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ReflectivePropertySearcher;
 
 /**
@@ -31,12 +33,15 @@ public class CheckMultiRole extends BodyTagSupport {
 		LiteYukonUser user = 
 			(LiteYukonUser) pageContext.getSession().getAttribute("YUKON_USER");
 		if (user == null) return SKIP_BODY;
+
+		RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
 		
 		java.util.StringTokenizer st = new java.util.StringTokenizer(roleid, ",");
 		while (st.hasMoreTokens()) {
 			try {
 				int rid = Integer.parseInt( st.nextToken() );
-				if (DaoFactory.getAuthDao().getRole(user, rid) != null) return EVAL_BODY_INCLUDE;
+				YukonRole yukonRole = YukonRole.getForId(rid);
+				if (rolePropertyDao.checkRole(yukonRole, user)) return EVAL_BODY_INCLUDE;
 			}
 			catch (NumberFormatException e) {
 				throw new JspException( e.getMessage() );
