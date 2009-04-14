@@ -164,6 +164,17 @@
 	        histDateFormat.setTimeZone(tz);
 	        ampmTimeFormat.setTimeZone(tz);
 	        
+            if (ecSettings.getStarsCustomerSelectionLists() != null) {
+                selectionListTable = new HashMap<String, StarsCustSelectionList>();
+                
+                for (int i = 0; i < ecSettings.getStarsCustomerSelectionLists().getStarsCustSelectionListCount(); i++) {
+                    StarsCustSelectionList value = ecSettings.getStarsCustomerSelectionLists().getStarsCustSelectionList(i);
+                    String key = value.getListName();
+                    selectionListTable.put(key, value);
+                }
+                session.setAttribute(ServletUtils.ATT_CUSTOMER_SELECTION_LISTS, selectionListTable);
+            }
+	        
 	        accountInfo = ServletUtils.removeAccountInformation(session);
 	        if (accountInfo != null) { // ensure there is a new instance of StarsCustAccountInformation for each request
 	            
