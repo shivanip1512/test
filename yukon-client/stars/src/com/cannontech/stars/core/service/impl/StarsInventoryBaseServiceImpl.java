@@ -21,7 +21,6 @@ import com.cannontech.database.data.lite.stars.LiteLMHardwareEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
-import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
@@ -43,7 +42,6 @@ import com.cannontech.stars.dr.util.YukonListEntryHelper;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.StarsInvalidArgumentException;
-import com.cannontech.stars.xml.serialize.StarsInventory;
 
 public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService {
 
@@ -173,17 +171,20 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
         }
         
         // CREATE ADDITIONAL YUKON DEVICE FOR TWO WAY LCR
-        StarsInventory inventory = StarsLiteFactory.createStarsInventory(liteInv, energyCompany);
-        if (InventoryUtils.isTwoWayLcr(inventory.getDeviceType().getEntryID())) {
-        	
-    		YukonListEntry entry = yukonListDao.getYukonListEntry(inventory.getDeviceType().getEntryID());
-    		String deviceTypeName = entry.getEntryText();
-    		int yukonDeviceTypeId = PAOGroups.getDeviceType(deviceTypeName);
-    		if (!DeviceTypesFuncs.isTwoWayLcr(yukonDeviceTypeId)) {
-    			throw new StarsTwoWayLcrYukonDeviceCreationException("Selected yukon device must be a Two Way LCR.");
-    		}
-    		
-        	starsTwoWayLcrYukonDeviceAssignmentService.assignNewDeviceToLcr(liteInv, energyCompany, yukonDeviceTypeId, null, null, true);
+        if(lmHardware) {
+        	LiteStarsLMHardware lmHw = (LiteStarsLMHardware) liteInv;
+        	int hardwareTypeID = lmHw.getLmHardwareTypeID();
+	        if (InventoryUtils.isTwoWayLcr(hardwareTypeID)) {
+	        	
+	    		YukonListEntry entry = yukonListDao.getYukonListEntry(hardwareTypeID);
+	    		String deviceTypeName = entry.getEntryText();
+	    		int yukonDeviceTypeId = PAOGroups.getDeviceType(deviceTypeName);
+	    		if (!DeviceTypesFuncs.isTwoWayLcr(yukonDeviceTypeId)) {
+	    			throw new StarsTwoWayLcrYukonDeviceCreationException("Selected yukon device must be a Two Way LCR.");
+	    		}
+	    		
+	        	starsTwoWayLcrYukonDeviceAssignmentService.assignNewDeviceToLcr(liteInv, energyCompany, yukonDeviceTypeId, null, null, true);
+	        }
         }
         
         return liteInv;
@@ -313,11 +314,11 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
                 // CREATE ADDITIONAL YUKON DEVICE FOR TWO WAY LCR
                 // - only if this is a Two Way LCR that does not yet have a Yukon device assigned to it
                 // - updateDeviceOnAccount() does not support updating a Yukon device already assigned
-                StarsInventory inventory = StarsLiteFactory.createStarsInventory(liteInv, energyCompany);
-                if (InventoryUtils.isTwoWayLcr(inventory.getDeviceType().getEntryID())) {
-                	if (inventory.getDeviceID() < 1) {
+                int hardwareTypeID = lmHw.getLmHardwareTypeID();
+                if (InventoryUtils.isTwoWayLcr(hardwareTypeID)) {
+                	if (liteInv.getDeviceID() < 1) {
                 		
-                		YukonListEntry entry = yukonListDao.getYukonListEntry(inventory.getDeviceType().getEntryID());
+                		YukonListEntry entry = yukonListDao.getYukonListEntry(hardwareTypeID);
         	    		String deviceTypeName = entry.getEntryText();
         	    		int yukonDeviceTypeId = PAOGroups.getDeviceType(deviceTypeName);
         	    		if (!DeviceTypesFuncs.isTwoWayLcr(yukonDeviceTypeId)) {
