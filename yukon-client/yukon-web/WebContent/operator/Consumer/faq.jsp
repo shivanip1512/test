@@ -9,9 +9,9 @@
 YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
 
 RolePropertyDao rolePropDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
-boolean hasFaqRoleProp = rolePropDao.getPropertyBooleanValue(YukonRoleProperty.OPERATOR_CONSUMER_INFO_ADMIN_FAQ, yukonUserContext.getYukonUser());
+rolePropDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_ADMIN_FAQ, yukonUserContext.getYukonUser());
 
-if (accountInfo == null || !hasFaqRoleProp) { response.sendRedirect("../Operations.jsp"); return; } 
+if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } 
 
 YukonUserContextMessageSourceResolver messageSourceResolver = YukonSpringHook.getBean("yukonUserContextMessageSourceResolver", YukonUserContextMessageSourceResolver.class);
 String keyPrefix = "yukon.dr.consumer.faq.question.";
