@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.jdbc.support.JdbcUtils;
+import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
@@ -57,22 +58,18 @@ public class SetupServlet extends HttpServlet
 		//HttpSession session = req.getSession(false);
 		String retPage = req.getContextPath() + "/setup.jsp";
 		
-		String adminPword = req.getParameter("admin_password");
+		String adminPword = ServletRequestUtils.getRequiredStringParameter(req, "admin_password");
 		
-		if( adminPword != null )
-		{
-			//validate the password since we have a good DB connection
-			LiteYukonUser admin = DaoFactory.getYukonUserDao().getLiteYukonUser( UserUtils.USER_YUKON_ID );
-			
-			if( DaoFactory.getAuthDao().login(admin.getUsername(), adminPword) == null )
-			{
-				urlParams.put( "invalid", "true" );
-				resp.sendRedirect( retPage + urlParams.toString() );
-				return;
-			}
+		//validate the password since we have a good DB connection
+		LiteYukonUser admin = DaoFactory.getYukonUserDao().getLiteYukonUser( UserUtils.USER_YUKON_ID );
 
+		if( DaoFactory.getAuthDao().login(admin.getUsername(), adminPword) == null )
+		{
+		    urlParams.put( "invalid", "true" );
+		    resp.sendRedirect( retPage + urlParams.toString() );
+		    return;
 		}
-		
+
 		boolean isValidDBConn = false;
 		try
 		{
