@@ -91,7 +91,7 @@
         <webClassPathEntry>/third-party/rwav.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/saaj.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/spring-webmvc.jar</webClassPathEntry>
-        <webClassPathEntry>/third-party/spring-ws-1.5.5-all.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/spring-ws-1.5.6-all.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/spring.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/struts.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/wsdl4j.jar</webClassPathEntry>

@@ -7,8 +7,11 @@ import java.util.TimeZone;
 
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
+import javax.xml.transform.dom.DOMSource;
 
+import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.input.DOMBuilder;
 import org.jdom.transform.JDOMResult;
 import org.jdom.transform.JDOMSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +19,7 @@ import org.springframework.ws.WebServiceMessage;
 import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.server.endpoint.MethodEndpoint;
 import org.springframework.ws.server.endpoint.adapter.AbstractMethodEndpointAdapter;
+import org.w3c.dom.Node;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.exception.NotAuthorizedException;
@@ -60,6 +64,17 @@ public class FlexibleMethodEndpointAdapter extends AbstractMethodEndpointAdapter
                 if (Element.class.equals(parameter)) {
                     Source requestSource = messageContext.getRequest().getPayloadSource();
                     if (requestSource != null) {
+                        if (requestSource instanceof DOMSource) {
+                            Node node = ((DOMSource) requestSource).getNode();
+                            DOMBuilder domBuilder = new DOMBuilder();
+                            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                            	thisArgument = domBuilder.build((org.w3c.dom.Element) node);
+                            }
+                            else if (node.getNodeType() == Node.DOCUMENT_NODE) {
+                                Document document = domBuilder.build((org.w3c.dom.Document) node);
+                                thisArgument = document.getRootElement();
+                            }
+                        }
                         JDOMResult jdomResult = new JDOMResult();
                         transform(requestSource, jdomResult);
                         thisArgument = jdomResult.getDocument().getRootElement();
