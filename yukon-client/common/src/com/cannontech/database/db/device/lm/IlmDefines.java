@@ -37,7 +37,6 @@ public interface IlmDefines
     public static final String CONTROL_TARGET_CYCLE = GearControlMethod.TargetCycle.toString();
 	public static final String THERMOSTAT_SETBACK = GearControlMethod.ThermostatRamping.toString();
 	public static final String SIMPLE_THERMOSTAT_SETBACK = GearControlMethod.SimpleThermostatRamping.toString();
-	public static final String THERMOSTAT_PRE_OPERATE = GearControlMethod.ThermostatPreOperate.toString();
 	public static final String NO_CONTROL = GearControlMethod.NoControl.toString();
 
 	//a mapping of all the possible control methods
@@ -51,7 +50,6 @@ public interface IlmDefines
 		CONTROL_MASTER_CYCLE,
 		CONTROL_ROTATION,
 		CONTROL_LATCHING,
-		THERMOSTAT_PRE_OPERATE,
 		THERMOSTAT_SETBACK,
 		SIMPLE_THERMOSTAT_SETBACK,
 		NO_CONTROL

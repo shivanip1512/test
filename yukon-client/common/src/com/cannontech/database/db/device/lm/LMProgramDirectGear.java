@@ -12,7 +12,6 @@ import com.cannontech.database.data.device.lm.RotationGear;
 import com.cannontech.database.data.device.lm.SimpleThermostatRampingGear;
 import com.cannontech.database.data.device.lm.SmartCycleGear;
 import com.cannontech.database.data.device.lm.TargetCycleGear;
-import com.cannontech.database.data.device.lm.ThermostatPreOperateGear;
 import com.cannontech.database.data.device.lm.ThermostatSetbackGear;
 import com.cannontech.database.data.device.lm.TimeRefreshGear;
 import com.cannontech.database.data.device.lm.TrueCycleGear;
@@ -147,8 +146,6 @@ public abstract class LMProgramDirectGear
 				return new TargetCycleGear();
 			case TimeRefresh:
 				return new TimeRefreshGear();
-			case ThermostatPreOperate:
-				return new ThermostatPreOperateGear();
 			case ThermostatRamping:
 				return new ThermostatSetbackGear();
 			case SimpleThermostatRamping:

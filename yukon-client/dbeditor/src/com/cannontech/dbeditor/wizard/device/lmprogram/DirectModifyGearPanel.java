@@ -591,8 +591,7 @@ private void setGearType(GearControlMethod method)
 {
 	//This indicates if we switched gears to a ramping gear for getValue()
 	if( gearControlMethod != null) {
-	    boolean isRamping = GearControlMethod.isRamping(gearControlMethod);
-		if( isRamping == false && GearControlMethod.isRamping(method) == true) {
+		if( gearControlMethod.isRamping() == false && method.isRamping() == true) {
 			changedToRamping = true;
 		}
 	}
