@@ -59,7 +59,7 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 		
 		for (int i = 0; i < getInventories().size(); i++) {
 			int invID = getInventories().get(i).intValue();
-			LiteInventoryBase liteInv = starsInventoryBaseDao.getById(invID);
+			LiteInventoryBase liteInv = starsInventoryBaseDao.getByInventoryId(invID);
 			
 			if (liteInv instanceof LiteStarsLMHardware &&
 				((LiteStarsLMHardware) liteInv).isTwoWayThermostat())

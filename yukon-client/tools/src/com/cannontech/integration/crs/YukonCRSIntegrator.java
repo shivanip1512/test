@@ -591,7 +591,7 @@ public final class YukonCRSIntegrator
                                     lmHardwareBase.getInventoryBase().setCurrentStateID(new Integer(devStateEntry.getEntryID()));
                                 }
 				       			lmHardwareBase = Transaction.createTransaction(Transaction.UPDATE, lmHardwareBase).execute();
-                                LiteInventoryBase liteHardInvBase = starsInventoryBaseDao.getById(lmHardwares.get(i).getInventoryID().intValue());
+                                LiteInventoryBase liteHardInvBase = starsInventoryBaseDao.getByInventoryId(lmHardwares.get(i).getInventoryID().intValue());
                                 liteHardInvBase.setCurrentStateID(lmHardwareBase.getInventoryBase().getCurrentStateID().intValue());
 				       			
 				       			//Log the inventory (lmHardwarebase) state change.

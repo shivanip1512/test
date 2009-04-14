@@ -735,7 +735,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
                                         hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {
                                     for (int i = 0; i < liteAcctInfo.getInventories().size(); i++) {
                                         int invID = liteAcctInfo.getInventories().get(i);
-                                        LiteInventoryBase lInv = starsInventoryBaseDao.getById(invID);
+                                        LiteInventoryBase lInv = starsInventoryBaseDao.getByInventoryId(invID);
                                         if (lInv instanceof LiteStarsLMHardware && ((LiteStarsLMHardware)lInv).getManufacturerSerialNumber().equals(hwFields[ImportManagerUtil.IDX_SERIAL_NO])) {
                                             liteInv = lInv;
                                             break;
@@ -1360,7 +1360,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 		
 		for (int i = 0; i < liteAcctInfo.getInventories().size(); i++) {
 			int invID = liteAcctInfo.getInventories().get(i);
-			LiteInventoryBase lInv = starsInventoryBaseDao.getById(invID);
+			LiteInventoryBase lInv = starsInventoryBaseDao.getByInventoryId(invID);
 			if (lInv instanceof LiteStarsLMHardware && ((LiteStarsLMHardware)lInv).getManufacturerSerialNumber().equals(hwFields[ImportManagerUtil.IDX_SERIAL_NO])) {
 				liteInv = lInv;
 				break;

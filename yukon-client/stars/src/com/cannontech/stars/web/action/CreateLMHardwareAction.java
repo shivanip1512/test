@@ -292,7 +292,7 @@ public class CreateLMHardwareAction implements ActionBase {
 					YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
 				
 				// Add hardware in the inventory to customer account
-				liteInv = starsInventoryBaseDao.getById(invID);
+				liteInv = starsInventoryBaseDao.getByInventoryId(invID);
 				
 				if (liteInv.getAccountID() > 0) {
 					// Remove hardware from previous account
@@ -305,7 +305,7 @@ public class CreateLMHardwareAction implements ActionBase {
 					DeleteLMHardwareAction.removeInventory(deleteHw, litePrevAccount, energyCompany);
 					
 					// The liteInv object is changed in the method above, so we need to retrieve it again
-					liteInv = starsInventoryBaseDao.getById(invID);
+					liteInv = starsInventoryBaseDao.getByInventoryId(invID);
 					
 					StarsCustAccountInformation starsPrevAccount = energyCompany.getStarsCustAccountInformation( litePrevAccount.getAccountID() );
 					if (starsPrevAccount != null)

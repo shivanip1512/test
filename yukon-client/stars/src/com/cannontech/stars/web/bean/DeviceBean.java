@@ -73,7 +73,7 @@ public class DeviceBean {
 			for (int i = 0; i < devices.size(); i++) {
 				LiteYukonPAObject litePao =  devices.get(i);
 				try {
-					LiteInventoryBase liteInv = starsSearchDao.getDevice(litePao.getYukonID(), getEnergyCompany());
+					LiteInventoryBase liteInv = starsSearchDao.getDeviceByDeviceId(litePao.getYukonID(), getEnergyCompany());
 					if (liteInv == null)
 						deviceList.add( litePao );
 					else if (liteInv.getAccountID() == 0 && getFilter() == DEV_FILTER_NOT_ASSIGNED)

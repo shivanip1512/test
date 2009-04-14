@@ -141,6 +141,6 @@ public class InventoryDetailBean
         StarsInventoryBaseDao starsInventoryBaseDao = 
 			YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
         
-        currentInventory = starsInventoryBaseDao.getById(currentInventoryID);
+        currentInventory = starsInventoryBaseDao.getByInventoryId(currentInventoryID);
     }
 }

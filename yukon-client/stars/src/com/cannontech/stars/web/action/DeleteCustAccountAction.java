@@ -110,7 +110,7 @@ public class DeleteCustAccountAction implements ActionBase {
 				for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
 					LiteStarsAppliance liteApp = liteAcctInfo.getAppliances().get(i);
 					if (liteApp.getProgramID() > 0 && liteApp.getInventoryID() > 0) {
-						LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getById(liteApp.getInventoryID());
+						LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(liteApp.getInventoryID());
 						if (!hwToDisable.contains( liteHw )) {
 							hwToDisable.add( liteHw );
 							YukonSwitchCommandAction.sendDisableCommand( energyCompany, liteHw, null );

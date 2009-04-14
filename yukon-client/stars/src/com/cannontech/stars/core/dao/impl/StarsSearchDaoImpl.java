@@ -171,23 +171,37 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 	}
 
 	@Override
-	public LiteInventoryBase getDevice(int deviceID, LiteStarsEnergyCompany energyCompany)
+	public LiteInventoryBase getDeviceByDeviceId(int deviceId, LiteStarsEnergyCompany energyCompany)
 			throws ObjectInOtherEnergyCompanyException {
 
-		LiteInventoryBase inventoryBase = starsInventoryBaseDao.getById(deviceID);
+		LiteInventoryBase inventoryBase = starsInventoryBaseDao.getByDeviceId(deviceId);
 		
-		if(inventoryBase == null) {
-			return inventoryBase;
-		}
-		
-		if(!energyCompany.getEnergyCompanyID().equals(inventoryBase.getEnergyCompanyId())) {
-			LiteStarsEnergyCompany inventoryEC = ecMappingDao.getInventoryEC(inventoryBase.getInventoryID());
-			throw new ObjectInOtherEnergyCompanyException( inventoryBase, inventoryEC);
-		}
-		
-		return inventoryBase;
+		return getDevice(inventoryBase,energyCompany);
 	}
 
+	@Override
+	public LiteInventoryBase getDeviceByInventoryId(int inventoryId, LiteStarsEnergyCompany energyCompany)
+			throws ObjectInOtherEnergyCompanyException {
+
+		LiteInventoryBase inventoryBase = starsInventoryBaseDao.getByInventoryId(inventoryId);
+		
+		return getDevice(inventoryBase,energyCompany);
+	}
+	
+	private LiteInventoryBase getDevice(LiteInventoryBase invBase, LiteStarsEnergyCompany energyCompany) throws ObjectInOtherEnergyCompanyException {
+		
+		if(invBase == null) {
+			return invBase;
+		}
+		
+		if(!energyCompany.getEnergyCompanyID().equals(invBase.getEnergyCompanyId())) {
+			LiteStarsEnergyCompany inventoryEC = ecMappingDao.getInventoryEC(invBase.getInventoryID());
+			throw new ObjectInOtherEnergyCompanyException( invBase, inventoryEC);
+		}
+		
+		return invBase;
+	}
+	
 	@Override
 	public List<LiteInventoryBase> searchInventoryByAltTrackNumber(
 			String altTrackNumber,

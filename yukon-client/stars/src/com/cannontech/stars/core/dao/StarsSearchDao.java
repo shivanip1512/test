@@ -57,14 +57,24 @@ public interface StarsSearchDao {
 	
 	/**
 	 * Method to find a device by device id for a given energy company
-	 * @param deviceID - Id of device
+	 * @param deviceId - Id of device
 	 * @param energyCompany - Energy company to get device for
 	 * @return Hardware if found or null if not found
 	 * @throws ObjectInOtherEnergyCompanyException - If hardware exists in another energy company
 	 */
-	public LiteInventoryBase getDevice(int deviceID, LiteStarsEnergyCompany energyCompany) 
+	public LiteInventoryBase getDeviceByDeviceId(int deviceId, LiteStarsEnergyCompany energyCompany) 
 			throws ObjectInOtherEnergyCompanyException;
 
+	/**
+	 * Method to find a device by inventory id for a given energy company
+	 * @param inventoryId - Inventory Id of device
+	 * @param energyCompany - Energy company to get device for
+	 * @return Hardware if found or null if not found
+	 * @throws ObjectInOtherEnergyCompanyException - If hardware exists in another energy company
+	 */
+	public LiteInventoryBase getDeviceByInventoryId(int inventoryId, LiteStarsEnergyCompany energyCompany) 
+			throws ObjectInOtherEnergyCompanyException;
+	
 	/**
 	 * Method to find a device by Alternate tracking number within a given list of energy companies
 	 * @param altTrackNumber - Tracking number to find (exact match only)

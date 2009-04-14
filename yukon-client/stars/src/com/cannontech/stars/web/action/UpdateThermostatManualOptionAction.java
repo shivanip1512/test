@@ -143,7 +143,7 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 				YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
 			
 			for (int i = 0; i < invIDs.length; i++) {
-				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getById(invIDs[i]);
+				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(invIDs[i]);
 				
 				if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
 					String errorMsg = null;

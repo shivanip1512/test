@@ -208,7 +208,7 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
         List<LiteStarsLMHardware> hardwares = new ArrayList<LiteStarsLMHardware>();;
         
         for (final Integer inventoryId : inventoryIdList) {
-            hardwares.add((LiteStarsLMHardware) starsInventoryBaseDao.getById(inventoryId));
+            hardwares.add((LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId));
         }    
         
         String accountInfo = OptOutNotificationUtil.getAccountInformation(holder.energyCompany, liteAcctInfo);

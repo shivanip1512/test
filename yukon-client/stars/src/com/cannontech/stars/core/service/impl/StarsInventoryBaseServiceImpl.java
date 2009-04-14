@@ -135,7 +135,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
         }
         // existing inventory
         else {
-            LiteInventoryBase liteInvPrev = starsInventoryBaseDao.getById(liteInv.getLiteID());
+            LiteInventoryBase liteInvPrev = starsInventoryBaseDao.getByInventoryId(liteInv.getLiteID());
             // Error, if the device is already assigned to another account
             // If replaceAccount is desired, caller needs to remove from the
             // previous account, then add to the new account
@@ -299,8 +299,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
 
                 // see if serialNumber is changed, if so, see it doesn't already
                 // exist on another device
-                LiteStarsLMHardware lmHwPrev = (LiteStarsLMHardware) starsSearchDao.getDevice(lmHw.getInventoryID(),
-                                                                                              energyCompany);
+                LiteStarsLMHardware lmHwPrev = (LiteStarsLMHardware) starsSearchDao.getDeviceByInventoryId(lmHw.getInventoryID(), energyCompany);
                 if (!lmHwPrev.getManufacturerSerialNumber().equals(newSerialNo) && starsSearchDao.searchLMHardwareBySerialNumber(newSerialNo,
                                                                                                                                  energyCompany) != null) {
                     throw new StarsDeviceSerialNumberAlreadyExistsException(newSerialNo,
@@ -398,7 +397,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
             }
 
             // update the Inventory to remove it from the account
-            LiteInventoryBase liteInvDB = starsInventoryBaseDao.getById(liteInv.getInventoryID());                
+            LiteInventoryBase liteInvDB = starsInventoryBaseDao.getByInventoryId(liteInv.getInventoryID());                
             liteInvDB.setRemoveDate(removeDate);
             starsInventoryBaseDao.removeInventoryFromAccount(liteInvDB);
         }

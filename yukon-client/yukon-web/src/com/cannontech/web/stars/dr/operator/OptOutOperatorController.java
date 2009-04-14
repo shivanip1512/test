@@ -360,7 +360,7 @@ public class OptOutOperatorController {
     	
     	for(Integer inventoryId : inventoryIdList) {
     	
-	    	LiteInventoryBase inventory = starsInventoryBaseDao.getById(inventoryId);
+	    	LiteInventoryBase inventory = starsInventoryBaseDao.getByInventoryId(inventoryId);
 	    	int accountId = customerAccount.getAccountId();
 			if(inventory.getAccountID() != accountId) {
 	    		throw new NotAuthorizedException("The Inventory with id: " + inventoryId + 

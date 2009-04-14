@@ -32,7 +32,7 @@ public class UpdateInventoryController extends StarsInventoryActionController {
         
         try {
             int invID = ServletRequestUtils.getIntParameter(request, "InvID");
-            LiteInventoryBase liteInv = starsInventoryBaseDao.getById(invID);
+            LiteInventoryBase liteInv = starsInventoryBaseDao.getByInventoryId(invID);
             
             StarsOperation operation = UpdateLMHardwareAction.getRequestOperation(request, energyCompany);
             UpdateLMHardwareAction.updateInventory( operation.getStarsUpdateLMHardware(), liteInv, energyCompany );

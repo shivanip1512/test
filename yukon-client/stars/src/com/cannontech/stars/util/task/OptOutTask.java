@@ -110,7 +110,7 @@ public class OptOutTask implements YukonTask {
     	for(Integer inventoryId : inventoryIds) {
 
     		LiteStarsLMHardware inventory = 
-        		(LiteStarsLMHardware) starsInventoryBaseDao.getById(inventoryId);
+        		(LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
 
     		// Only add inventory that exists and is supposed to be done opting out according
     		// to the OptOutEvent table

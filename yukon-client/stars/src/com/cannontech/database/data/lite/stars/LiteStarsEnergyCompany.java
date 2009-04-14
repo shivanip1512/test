@@ -1645,7 +1645,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
     	for (int i = 0; i < liteAcctInfo.getInventories().size(); i++) {
             int invID = liteAcctInfo.getInventories().get(i).intValue();
 
-            LiteInventoryBase liteInv = starsInventoryBaseDao.getById(invID);
+            LiteInventoryBase liteInv = starsInventoryBaseDao.getByInventoryId(invID);
             if (!(liteInv instanceof LiteStarsLMHardware)) continue;
             
             LiteStarsLMHardware liteHw = (LiteStarsLMHardware) liteInv;

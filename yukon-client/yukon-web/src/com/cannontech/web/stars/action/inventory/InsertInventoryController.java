@@ -39,7 +39,7 @@ public class InsertInventoryController extends StarsInventoryActionController {
         String redirect = null;
         
         int invID = ServletRequestUtils.getIntParameter(request, "InvID");
-        LiteInventoryBase liteInv = starsInventoryBaseDao.getById(invID);
+        LiteInventoryBase liteInv = starsInventoryBaseDao.getByInventoryId(invID);
         Integer invNo = (Integer) session.getAttribute( InventoryManagerUtil.STARS_INVENTORY_NO );
         
         if (liteInv.getAccountID() == CtiUtilities.NONE_ZERO_ID) {

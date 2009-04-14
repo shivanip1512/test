@@ -364,7 +364,7 @@ public class InventoryManagerUtil {
 			YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class); 
 
 		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( cmd.getEnergyCompanyID() );
-		LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getById(cmd.getInventoryID());
+		LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(cmd.getInventoryID());
         boolean writeToFile = false;
         String batchProcessType = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.BATCHED_SWITCH_COMMAND_TOGGLE );
         if(batchProcessType != null)
@@ -580,7 +580,7 @@ public class InventoryManagerUtil {
 				
 				for (int j = 0; j < liteAcctInfo.getInventories().size(); j++) {
 					int invID = liteAcctInfo.getInventories().get(j).intValue();
-					LiteInventoryBase liteInv = starsInventoryBaseDao.getById(invID);
+					LiteInventoryBase liteInv = starsInventoryBaseDao.getByInventoryId(invID);
 					invList.add(liteInv);
 				}
 			}
@@ -588,7 +588,7 @@ public class InventoryManagerUtil {
 				LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) accounts.get(i);
 				for (int j = 0; j < liteAcctInfo.getInventories().size(); j++) {
 					int invID = liteAcctInfo.getInventories().get(j).intValue();
-					LiteInventoryBase liteInv = starsInventoryBaseDao.getById(invID);
+					LiteInventoryBase liteInv = starsInventoryBaseDao.getByInventoryId(invID);
 					invList.add(liteInv);
 				}
 			}

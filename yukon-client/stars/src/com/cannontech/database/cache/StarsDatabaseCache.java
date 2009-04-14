@@ -365,7 +365,7 @@ public class StarsDatabaseCache implements DBChangeListener {
     				StarsInventoryBaseDao starsInventoryBaseDao = 
     					YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
     				
-    				LiteInventoryBase inventoryBase = starsInventoryBaseDao.getById(msg.getId());
+    				LiteInventoryBase inventoryBase = starsInventoryBaseDao.getByInventoryId(msg.getId());
     				if (inventoryBase != null) {
                         handleDeviceChange(msg, energyCompany, inventoryBase);
                         return;

@@ -156,7 +156,7 @@ public class YukonSwitchCommandAction implements ActionBase {
                 
 				if (command.getStarsDisableService() != null) {
 					int invID = command.getStarsDisableService().getInventoryID();
-					liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getById(invID);
+					liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(invID);
 					if(VersionTools.staticLoadGroupMappingExists()) {
                         cmd.setEnergyCompanyID( energyCompany.getLiteID() );
                         cmd.setAccountID( liteHw.getAccountID() );
@@ -170,7 +170,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 				}
 				else if (command.getStarsEnableService() != null) {
 					int invID = command.getStarsEnableService().getInventoryID();
-					liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getById(invID);
+					liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(invID);
                     if(VersionTools.staticLoadGroupMappingExists())
                     {
                         cmd.setEnergyCompanyID( energyCompany.getLiteID() );
@@ -186,7 +186,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 				}
 				else if (command.getStarsConfig() != null) {
 					int invID = command.getStarsConfig().getInventoryID();
-					liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getById(invID);
+					liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(invID);
 					sendConfigCommand( energyCompany, liteHw, true, null );
 					action = ActivityLogActions.HARDWARE_CONFIGURATION_ACTION;
 				}

@@ -73,7 +73,7 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
 
     @Override
     @Transactional(readOnly = true)
-    public LiteInventoryBase getById(final int inventoryId) {
+    public LiteInventoryBase getByInventoryId(final int inventoryId) {
         SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
         sqlBuilder.append(selectInventorySql);
         sqlBuilder.append("WHERE ib.InventoryId = ?");
@@ -91,6 +91,27 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
         return inventoryBase;
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public LiteInventoryBase getByDeviceId(final int deviceId) {
+        SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
+        sqlBuilder.append(selectInventorySql);
+        sqlBuilder.append("WHERE ib.DeviceId = ?");
+
+        String sql = sqlBuilder.toString();
+        List<LiteInventoryBase> liteInventoryList = simpleJdbcTemplate.query(sql,
+                                                                             smartInventoryRowMapper,
+                                                                             deviceId);
+        if (liteInventoryList.size() == 0) {
+            return null;
+        }
+
+        LiteInventoryBase inventoryBase = liteInventoryList.get(0);
+
+        return inventoryBase;
+    }
+
+    
     @Override
     @Transactional(readOnly = true)
     public List<LiteInventoryBase> getByIds(
@@ -333,7 +354,7 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
     public void deleteInventoryBase(int inventoryId) {
 
         // retrieve the Inventory
-        LiteInventoryBase liteInv = getById(inventoryId);
+        LiteInventoryBase liteInv = getByInventoryId(inventoryId);
 
         // delete the lmHardware info
         deleteLMHardwareInfo(liteInv);

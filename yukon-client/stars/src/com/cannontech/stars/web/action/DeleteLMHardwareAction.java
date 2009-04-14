@@ -99,7 +99,7 @@ public class DeleteLMHardwareAction implements ActionBase {
 			StarsDeleteLMHardware delHw = reqOper.getStarsDeleteLMHardware();
 			StarsInventoryBaseDao starsInventoryBaseDao = 
 				YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
-			LiteInventoryBase liteInv = starsInventoryBaseDao.getById(delHw.getInventoryID());
+			LiteInventoryBase liteInv = starsInventoryBaseDao.getByInventoryId(delHw.getInventoryID());
 			
 			if (liteInv.getAccountID() == 0) {
 				respOper.setStarsFailure( StarsFactory.newStarsFailure(
@@ -194,7 +194,7 @@ public class DeleteLMHardwareAction implements ActionBase {
 		    LMHardwareControlGroupDao lmHardwareControlGroupDao = YukonSpringHook.getBean("lmHardwareControlGroupDao", LMHardwareControlGroupDao.class);
 			StarsInventoryBaseDao starsInventoryBaseDao = 
 				YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
-			LiteInventoryBase liteInv = starsInventoryBaseDao.getById(deleteHw.getInventoryID());
+			LiteInventoryBase liteInv = starsInventoryBaseDao.getByInventoryId(deleteHw.getInventoryID());
         	
 			if (deleteHw.getDeleteFromInventory()) {
 				InventoryManagerUtil.deleteInventory( liteInv, energyCompany, deleteHw.getDeleteFromYukon() );

@@ -50,7 +50,7 @@ public class InsertDeviceController extends StarsInventoryActionController {
 
         LiteInventoryBase liteInv = null;
         try {
-            liteInv = starsSearchDao.getDevice(deviceID, energyCompany);
+            liteInv = starsSearchDao.getDeviceByDeviceId(deviceID, energyCompany);
         }
         catch (ObjectInOtherEnergyCompanyException e) {
             session.setAttribute( InventoryManagerUtil.INVENTORY_TO_CHECK, e );

@@ -70,7 +70,7 @@ public class CommandRequestHardwareExecutorImpl implements
 			LiteYukonUser user) throws CommandCompletionException {
 
 		LiteStarsLMHardware hardware = 
-			(LiteStarsLMHardware) starsInventoryBaseDao.getById(thermostat.getId());
+			(LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(thermostat.getId());
 		
 		this.execute(hardware, command, user);
 	}

@@ -19,7 +19,7 @@ public class StarsCacheServiceImpl implements StarsCacheService {
 
     public void updateInventoryCache(LiteStarsEnergyCompany energyCompany, InventoryBase inventoryBase, 
             CustomerAccount customerAccount, LMCustomerEventBase eventBase) {
-        LiteInventoryBase liteInventoryBase = starsInventoryBaseDao.getById(inventoryBase.getInventoryId());
+        LiteInventoryBase liteInventoryBase = starsInventoryBaseDao.getByInventoryId(inventoryBase.getInventoryId());
         updateInventoryModel(inventoryBase, liteInventoryBase);
     }
     

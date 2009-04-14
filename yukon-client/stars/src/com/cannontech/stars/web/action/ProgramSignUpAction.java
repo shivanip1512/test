@@ -486,7 +486,7 @@ public class ProgramSignUpAction implements ActionBase {
 					if (!program.hasInventoryID()) {
 						for (int j = 0; j < liteAcctInfo.getInventories().size(); j++) {
 							int invID = liteAcctInfo.getInventories().get(j).intValue();
-							if (starsInventoryBaseDao.getById(invID) instanceof LiteStarsLMHardware) {
+							if (starsInventoryBaseDao.getByInventoryId(invID) instanceof LiteStarsLMHardware) {
 								if (!program.hasInventoryID()) {
 									program.setInventoryID( invID );
 								}
@@ -542,7 +542,7 @@ public class ProgramSignUpAction implements ActionBase {
 					
 					if (liteApp.getInventoryID() > 0) {
 						
-						LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getById(liteApp.getInventoryID());
+						LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(liteApp.getInventoryID());
 						if (!hwsToConfig.contains( liteHw )) 
 							hwsToConfig.add( liteHw );
                             
@@ -617,7 +617,7 @@ public class ProgramSignUpAction implements ActionBase {
         		
 				LiteStarsLMHardware liteHw = null;
 				if (program.getInventoryID() > 0)
-					liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getById(program.getInventoryID());
+					liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(program.getInventoryID());
     			
     			LiteStarsAppliance liteApp = 
     					progHwAppMap.get(new Integer(program.getProgramID())).get(program.getInventoryID());
@@ -784,7 +784,7 @@ public class ProgramSignUpAction implements ActionBase {
 									if (lApp.getProgramID() == program.getProgramID() && lApp.getInventoryID() != program.getInventoryID()) {
 										lApp.setAddressingGroupID( groupID );
 										
-										LiteStarsLMHardware lHw = (LiteStarsLMHardware) starsInventoryBaseDao.getById(lApp.getInventoryID());
+										LiteStarsLMHardware lHw = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(lApp.getInventoryID());
 										if (!hwsToConfig.contains( lHw ))
 											hwsToConfig.add( lHw );
 										
@@ -1065,7 +1065,7 @@ public class ProgramSignUpAction implements ActionBase {
 			int invID = liteAcctInfo.getInventories().get(i);
 			
 			try {
-				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getById(invID);
+				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(invID);
 				if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
 					YukonSwitchCommandAction.sendDisableCommand( energyCompany, liteHw, null );
 					starsInvs.addStarsInventory( StarsLiteFactory.createStarsInventory(liteHw, energyCompany) );

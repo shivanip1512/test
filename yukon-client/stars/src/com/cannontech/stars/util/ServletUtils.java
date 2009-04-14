@@ -278,7 +278,7 @@ public class ServletUtils {
 			for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
 				StarsAppliance app = appliances.getStarsAppliance(i);
 				if (app.getProgramID() == program.getProgramID() && app.getInventoryID() > 0) {
-					LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getById(app.getInventoryID());
+					LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(app.getInventoryID());
 					int[] grpIDs = null;
 					if (liteHw.getLMConfiguration() != null)
 						grpIDs = LMControlHistoryUtil.getControllableGroupIDs( liteHw.getLMConfiguration(), app.getLoadNumber() );

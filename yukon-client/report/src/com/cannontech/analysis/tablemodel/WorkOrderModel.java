@@ -408,7 +408,7 @@ public class WorkOrderModel extends ReportModelBase<WorkOrder> {
                     
                     LiteStarsCustAccountInformation accountInfo = accountMap.get(accountId);
                     for (Integer inventoryId : accountInfo.getInventories()) {
-                        LiteInventoryBase liteInvBase = starsInventoryBaseDao.getById(inventoryId);
+                        LiteInventoryBase liteInvBase = starsInventoryBaseDao.getByInventoryId(inventoryId);
                         meterInventoryList.add(liteInvBase);
                     }
                 }
@@ -437,7 +437,7 @@ public class WorkOrderModel extends ReportModelBase<WorkOrder> {
                     ArrayList<String> ignoreMeterNumbers = new ArrayList<String>();
 					for (int k = 0; k < liteAcctInfo.getInventories().size(); k++) {
 						Integer invID = liteAcctInfo.getInventories().get(k);
-						LiteInventoryBase liteInvBase = starsInventoryBaseDao.getById(invID);
+						LiteInventoryBase liteInvBase = starsInventoryBaseDao.getByInventoryId(invID);
 						 
 						if (liteInvBase instanceof LiteStarsLMHardware)
 						{
@@ -452,7 +452,7 @@ public class WorkOrderModel extends ReportModelBase<WorkOrder> {
                     //Second loop through and find anything that is not LiteStarsLMHardware, forcing other types to be last in the list.
                     for (int k = 0; k < liteAcctInfo.getInventories().size(); k++) {
                         int invID = liteAcctInfo.getInventories().get(k).intValue();
-                        LiteInventoryBase liteInvBase = starsInventoryBaseDao.getById(invID);
+                        LiteInventoryBase liteInvBase = starsInventoryBaseDao.getByInventoryId(invID);
                         /*
                          * TODO: Now that non yukon meters have been removed from cache, need to make sure
                          * that this section is still properly obtaining meters for this account.

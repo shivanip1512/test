@@ -10,7 +10,8 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 
 public interface StarsInventoryBaseDao {
 
-    public LiteInventoryBase getById(int inventoryId);
+    public LiteInventoryBase getByInventoryId(int inventoryId);
+    public LiteInventoryBase getByDeviceId(int deviceId);
     
     public List<LiteInventoryBase> getByIds(Collection<Integer> inventoryIds);
 

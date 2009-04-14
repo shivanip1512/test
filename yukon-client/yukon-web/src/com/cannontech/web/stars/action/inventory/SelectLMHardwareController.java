@@ -24,11 +24,11 @@ public class SelectLMHardwareController extends StarsInventoryActionController {
         final Integer memberId = ServletRequestUtils.getIntParameter(request, "MemberID");
         
         if (memberId != null) {
-            LiteInventoryBase liteInv = starsInventoryBaseDao.getById(invID);
+            LiteInventoryBase liteInv = starsInventoryBaseDao.getByInventoryId(invID);
             LiteStarsEnergyCompany member = this.starsDatabaseCache.getEnergyCompany(memberId);
             session.setAttribute(InventoryManagerUtil.INVENTORY_SELECTED, new Pair<Object,Object>(liteInv, member));
         } else {
-            LiteInventoryBase liteInv = starsInventoryBaseDao.getById(invID);
+            LiteInventoryBase liteInv = starsInventoryBaseDao.getByInventoryId(invID);
             session.setAttribute(InventoryManagerUtil.INVENTORY_SELECTED, liteInv);
         }
         

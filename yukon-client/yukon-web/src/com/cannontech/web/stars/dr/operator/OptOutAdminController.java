@@ -158,7 +158,7 @@ public class OptOutAdminController {
     		
     		Integer inventoryId = event.getInventoryId();
     		LiteStarsLMHardware inventory = 
-    			(LiteStarsLMHardware) starsInventoryBaseDao.getById(inventoryId);
+    			(LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
     		eventDto.setSerialNumber(inventory.getManufacturerSerialNumber());
     		
     		events.add(eventDto);

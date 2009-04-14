@@ -1428,7 +1428,7 @@ public class StarsLiteFactory {
 		Map<String, List<StarsInventory>> invMap = new TreeMap<String, List<StarsInventory>>();
 		for (int i = 0; i < liteInvs.size(); i++) {
 			
-			LiteInventoryBase liteInv = starsInventoryBaseDao.getById(liteInvs.get(i));
+			LiteInventoryBase liteInv = starsInventoryBaseDao.getByInventoryId(liteInvs.get(i));
 			StarsInventory starsInv = createStarsInventory( liteInv, energyCompany );
 			
 			List<StarsInventory> list = invMap.get( starsInv.getDeviceLabel() );
@@ -1647,8 +1647,8 @@ public class StarsLiteFactory {
 		
 		starsInv.setDeviceStatus( (DeviceStatus) StarsFactory.newStarsCustListEntry(
 				energyCompany.getYukonListEntry( liteInv.getCurrentStateID() ), DeviceStatus.class) );
-		
-		if (liteInv instanceof LiteStarsLMHardware) {
+		boolean whatif = liteInv instanceof LiteStarsLMHardware;
+		if (whatif) {
 			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) liteInv;
 			starsInv.setDeviceType( (DeviceType)StarsFactory.newStarsCustListEntry(
 					DaoFactory.getYukonListDao().getYukonListEntry(liteHw.getLmHardwareTypeID()),

@@ -134,7 +134,7 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 			StarsInventoryBaseDao starsInventoryBaseDao = 
 				YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
 			StarsUpdateLMHardwareConfig updateHwConfig = reqOper.getStarsUpdateLMHardwareConfig();
-			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getById(updateHwConfig.getInventoryID());
+			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(updateHwConfig.getInventoryID());
             
 			try {
 				StarsUpdateLMHardwareConfigResponse resp = updateLMHardwareConfig(

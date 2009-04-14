@@ -138,7 +138,7 @@ public class OptOutServiceImpl implements OptOutService {
     	for(Integer inventoryId : inventoryIdList) { 
 
 			LiteStarsLMHardware inventory = 
-    			(LiteStarsLMHardware) starsInventoryBaseDao.getById(inventoryId);
+    			(LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
     		
 			// Create and save opt out event for this inventory
 			OptOutEvent event = new OptOutEvent();
@@ -258,7 +258,7 @@ public class OptOutServiceImpl implements OptOutService {
 		if (optedOut) {
 			
 			LiteStarsLMHardware inventory = 
-				(LiteStarsLMHardware) starsInventoryBaseDao.getById(inventoryId);
+				(LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
 			LiteStarsEnergyCompany energyCompany = ecMappingDao.getInventoryEC(inventoryId);
 			
 			OptOutEvent lastEvent = optOutEventDao.findLastEvent(inventoryId, customerAccountId);
@@ -302,7 +302,7 @@ public class OptOutServiceImpl implements OptOutService {
 			OptOutEvent event = optOutEventDao.getOptOutEventById(eventId);
 			Integer inventoryId = event.getInventoryId();
 			LiteStarsLMHardware inventory = 
-				(LiteStarsLMHardware) starsInventoryBaseDao.getById(inventoryId);
+				(LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
 			LiteStarsEnergyCompany energyCompany = ecMappingDao.getInventoryEC(inventoryId);
     		CustomerAccount customerAccount = customerAccountDao.getAccountByInventoryId(inventoryId);
     		
@@ -372,7 +372,7 @@ public class OptOutServiceImpl implements OptOutService {
 			
 			Integer inventoryId = event.getInventoryId();
 			LiteStarsLMHardware inventory = 
-				(LiteStarsLMHardware) starsInventoryBaseDao.getById(inventoryId);
+				(LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
 			CustomerAccount customerAccount = customerAccountDao.getAccountByInventoryId(inventoryId);
 			
 			try {
