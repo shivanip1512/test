@@ -146,4 +146,45 @@ BOOST_AUTO_TEST_CASE(test_MACS_day_of_month_start)
     scheduler.testCalcDayOfMonthStart(now, schedule, startTime);
 
     BOOST_CHECK_EQUAL(expectedResult, startTime);
+
+    //DST TESTING!!!!!
+    schedule.setStartTime("03:02:04");//after DST change
+    schedule.setStartDay(9);// 3/9/2008 is first day of DST (change on this day)
+    expectedResult = CtiTime(CtiDate(9, 3, 2008), 3, 2, 4);
+    now = CtiTime::CtiTime(CtiDate(3, 3, 2008), 3, 3, 3);
+    scheduler.testCalcDayOfMonthStart(now, schedule, startTime);
+
+    BOOST_CHECK_EQUAL(expectedResult, startTime);
+
+    expectedResult = CtiTime(CtiDate(9, 3, 2008), 3, 2, 4);
+    now = CtiTime::CtiTime(CtiDate(9, 2, 2008), 3, 3, 3); // hour after last month's
+    scheduler.testCalcDayOfMonthStart(now, schedule, startTime);
+
+    BOOST_CHECK_EQUAL(expectedResult, startTime);
+
+    expectedResult = CtiTime(CtiDate(9, 3, 2008), 3, 2, 4);
+    now = CtiTime::CtiTime(CtiDate(9, 3, 2008), 1, 1, 1); // few hours before, on same day
+    scheduler.testCalcDayOfMonthStart(now, schedule, startTime);
+
+    BOOST_CHECK_EQUAL(expectedResult, startTime);
+
+    schedule.setStartMonth(11);//Months are 1-12
+    schedule.setStartDay(2);// 11/2/2008 is last day of DST (change on this day)
+    now = CtiTime::CtiTime(CtiDate(2, 11, 2008), 1, 1, 1); // few hours before, same day
+    expectedResult = CtiTime(CtiDate(2, 11, 2008), 3, 2, 4); 
+    scheduler.testCalcDayOfMonthStart(now, schedule, startTime);
+
+    BOOST_CHECK_EQUAL(expectedResult, startTime);
+
+    now = CtiTime::CtiTime(CtiDate(2, 11, 2008), 3, 2, 5); // 1 second past, on DST day
+    expectedResult = CtiTime(CtiDate(2, 12, 2008), 3, 2, 4);
+    scheduler.testCalcDayOfMonthStart(now, schedule, startTime);
+
+    BOOST_CHECK_EQUAL(expectedResult, startTime);
+
+    now = CtiTime::CtiTime(CtiDate(2, 10, 2008), 3, 2, 5); // 1 second after previous month's end
+    expectedResult = CtiTime(CtiDate(2, 11, 2008), 3, 2, 4);
+    scheduler.testCalcDayOfMonthStart(now, schedule, startTime);
+
+    BOOST_CHECK_EQUAL(expectedResult, startTime);
 }
