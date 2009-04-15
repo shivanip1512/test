@@ -68,6 +68,7 @@
 #include "dnp_object_counter.h"
 #include "dnp_objects.h"
 
+using namespace std;
 using namespace Cti::Protocol;
 /** local definitions **/
 
@@ -88,6 +89,10 @@ const string CtiFDRDnpSlave::dnpPointOffset="Offset";
 const string CtiFDRDnpSlave::dnpPointStatusString="Status";
 const string CtiFDRDnpSlave::dnpPointAnalogString="Analog";
 const string CtiFDRDnpSlave::dnpPointCounterString="PulseAccumulator";
+
+const string CtiFDRDnpSlave::CtiFdrDNPInMessageString="DNP InMessage";
+const string CtiFDRDnpSlave::CtiFdrDNPOutMessageString="DNP OutMessage";
+    
 
 // Constructors, Destructor, and Operators
 CtiFDRDnpSlave::CtiFDRDnpSlave()
@@ -365,31 +370,40 @@ int CtiFDRDnpSlave::processMessageFromForeignSystem (CtiFDRClientServerConnectio
 int CtiFDRDnpSlave::processDataLinkConfirmationRequest(CtiFDRClientServerConnection& connection, char* data)
 {
     int retVal = 0;
-    char* buffer = NULL;
+    unsigned char* buffer = NULL;
     unsigned int bufferSize = getMessageSize(data);
     if (bufferSize == 10)
     {
-        buffer = new CHAR[bufferSize];
+        if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
+        {
+            CtiLockGuard<CtiLogger> dout_guard(dout);
+            logNow() << " "<< getInterfaceName() <<" received DNP data link request message."<< endl;
+            dumpDNPMessage(CtiFdrDNPInMessageString, data, bufferSize);
+        }
+        buffer = new UCHAR[bufferSize];
 
-        memcpy(buffer, data, bufferSize);
+        std::memcpy(buffer, data, bufferSize);
 
         buffer[2] = 5; 
+        buffer[3] = 0x0B;
 
-        buffer[6] = data[4]; //swap destination to source
-        buffer[7] = data[5];
         buffer[4] = data[6]; //swap source to destination
         buffer[5] = data[7];
+        buffer[6] = data[4]; //swap destination to source
+        buffer[7] = data[5];
 
-        buffer[3] = (data[3] & 0xBF);
-        buffer[3] |= 0x09;
-        
+        BYTEUSHORT crc;
+        crc.sh = DNP::Datalink::crc((const unsigned char*) buffer, 8);
+        buffer[8] = crc.ch[0];
+        buffer[9] = crc.ch[1];
 
-        connection.queueMessage(buffer, bufferSize, MAXPRIORITY - 1); 
+        connection.queueMessage((CHAR *)buffer, bufferSize, MAXPRIORITY - 1);
         //error processing data link confirmation Request
         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> dout_guard(dout);
             logNow() << " "<< getInterfaceName() <<" sending DNP data link acknowledgement message."<< endl;
+            dumpDNPMessage(CtiFdrDNPOutMessageString, (CHAR *)buffer, bufferSize);
         }
     }
     else
@@ -414,6 +428,12 @@ int CtiFDRDnpSlave::processScanSlaveRequest (CtiFDRClientServerConnection& conne
     int retVal = 0;
     
     CtiXfer xfer = CtiXfer(NULL, 0, (BYTE*)data, getMessageSize(data));
+    if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
+    {
+        CtiLockGuard<CtiLogger> dout_guard(dout);
+        logNow() << " "<< getInterfaceName() <<" received DNP scan request message."<< endl;
+        dumpDNPMessage(CtiFdrDNPInMessageString, data, size);
+    }
     
     BYTEUSHORT dest, src;
     dest.ch[0] = data[4];
@@ -475,8 +495,13 @@ int CtiFDRDnpSlave::processScanSlaveRequest (CtiFDRClientServerConnection& conne
             char* buffer = NULL;
             unsigned int bufferSize = xfer.getOutCount();
             buffer = new CHAR[bufferSize];
-            memcpy(buffer, xfer.getOutBuffer(), bufferSize);
-            
+            std::memcpy(buffer, xfer.getOutBuffer(), bufferSize);
+            if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
+            {
+                CtiLockGuard<CtiLogger> dout_guard(dout);
+                logNow() << " "<< getInterfaceName() <<" sending DNP scan response message."<< endl;
+                dumpDNPMessage(CtiFdrDNPOutMessageString, buffer, bufferSize);
+            }
             connection.queueMessage(buffer, xfer.getOutCount(), MAXPRIORITY - 1); 
         }
     }
@@ -641,6 +666,17 @@ bool CtiFDRDnpSlave::isScanIntegrityRequest(const char* data, unsigned int size)
 
 
     return retVal;
+}
+
+void CtiFDRDnpSlave::dumpDNPMessage(const string direction, const char* data, unsigned int size)
+{
+    CtiLockGuard<CtiLogger> dout_guard(dout);
+    logNow() << " "<< getInterfaceName() <<" "<<direction<<" message:"<< endl;
+    for (int x=0; x < size; x++ ) 
+    {
+        dout <<" " + CtiNumStr(data[x]).hex().zpad(2).toString();
+    }
+    dout << endl;
 }
 
 

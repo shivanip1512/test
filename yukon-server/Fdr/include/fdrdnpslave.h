@@ -133,6 +133,7 @@ class IM_EX_FDRDNPSLAVE CtiFDRDnpSlave : public CtiFDRSocketServer
         int processDataLinkConfirmationRequest(CtiFDRClientServerConnection& connection, char* data);
 
         bool isScanIntegrityRequest(const char* data, unsigned int size);
+        void dumpDNPMessage(const string direction, const char* data, unsigned int size);
         
         DNPSlaveInterface  _dnpData;
 
@@ -155,6 +156,9 @@ class IM_EX_FDRDNPSLAVE CtiFDRDnpSlave : public CtiFDRSocketServer
         static const string dnpPointStatusString;
         static const string dnpPointAnalogString;
         static const string dnpPointCounterString;
+
+        static const string CtiFdrDNPInMessageString;
+        static const string CtiFdrDNPOutMessageString;
 
     public:
 
