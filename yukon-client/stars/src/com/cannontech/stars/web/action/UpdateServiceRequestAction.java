@@ -136,14 +136,7 @@ public class UpdateServiceRequestAction implements ActionBase {
 			}
         	StarsLiteFactory.setLiteWorkOrderBase( liteOrder, order );
         	
-        	if (updateOrder.hasAccountID()) {
-				// Request from WorkOrder.jsp
-//				StarsCustAccountInformation starsAcctInfo = liteStarsEC.getStarsCustAccountInformation( liteOrder.getAccountID() );
-//				if (starsAcctInfo != null) {
-//					StarsServiceRequest starsOrder = StarsLiteFactory.createStarsServiceRequest( liteOrder, liteStarsEC );
-//					parseResponse( starsOrder, starsAcctInfo );
-//				}
-        	} else {
+        	if (!updateOrder.hasAccountID()) {
         	    StarsUpdateServiceRequestResponse resp = new StarsUpdateServiceRequestResponse();
         	    StarsServiceRequest starsOrder = StarsLiteFactory.createStarsServiceRequest(liteOrder, liteStarsEC);
         	    resp.setStarsServiceRequest( starsOrder );

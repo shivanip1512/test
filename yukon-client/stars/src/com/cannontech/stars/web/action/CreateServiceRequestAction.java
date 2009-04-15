@@ -142,14 +142,6 @@ public class CreateServiceRequestAction implements ActionBase {
     				redirect += liteOrder.getOrderID();
                 }
                 session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
-
-//                if (createOrder.hasAccountID()) {
-//                	StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( createOrder.getAccountID() );
-//	                if (starsAcctInfo != null) {
-//						StarsServiceRequest starsOrder = StarsLiteFactory.createStarsServiceRequest( liteOrder, energyCompany );
-//						starsAcctInfo.getStarsServiceRequestHistory().addStarsServiceRequest(0, starsOrder);
-//					}
-//	            }
             } else {
                 StarsServiceRequest starsOrder = StarsLiteFactory.createStarsServiceRequest( liteOrder, energyCompany );
                 StarsCreateServiceRequestResponse resp = new StarsCreateServiceRequestResponse();
