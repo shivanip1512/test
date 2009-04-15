@@ -16,19 +16,20 @@ import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.authentication.service.AuthenticationService;
-import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 
 @Controller
 public class ChangeLoginController {
-    public static final String LOGIN_ERROR_PARAM = "loginError";
+    public static final String LOGIN_CHANGE_MESSAGE_PARAM = "loginChangeMsg";
+    public static final String LOGIN_CHANGE_SUCCESS_PARAM = "success";
     private YukonUserDao yukonUserDao;
-    private AuthDao authDao;
+    private RolePropertyDao rolePropertyDao;
     private AuthenticationService authenticationService;
     
     @RequestMapping(value = "/changelogin", method = RequestMethod.GET)
@@ -53,9 +54,10 @@ public class ChangeLoginController {
         final YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
         final LiteYukonUser user = yukonUserContext.getYukonUser();
         final AuthType type = user.getAuthType();
-        authDao.verifyTrueProperty(user, ResidentialCustomerRole.CONSUMER_INFO_CHANGE_LOGIN_PASSWORD);
+        rolePropertyDao.verifyProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_PASSWORD, user);
         
         boolean isValidPassword = false;
+        boolean success = false;
         long retrySeconds = 0;
         try {
             isValidPassword = isValidPassword(user.getUsername(), oldPassword);
@@ -65,26 +67,27 @@ public class ChangeLoginController {
         boolean supportsPasswordChange = authenticationService.supportsPasswordChange(type);
         boolean hasRequiredFields = hasRequiredFields(oldPassword, newPassword, confirm);
 
-        ChangeLoginError loginError;
+        ChangeLoginMessage loginMsg;
         
         if (!isValidPassword) {
-            loginError = ChangeLoginError.INVALID_CREDENTIALS;
+            loginMsg = ChangeLoginMessage.INVALID_CREDENTIALS_PASSWORD_CHANGE;
         }
         else if (!supportsPasswordChange) {
-            loginError =  ChangeLoginError.PASSWORD_CHANGE_NOT_SUPPORTED;
+            loginMsg = ChangeLoginMessage.PASSWORD_CHANGE_NOT_SUPPORTED;
         }
         else if (!hasRequiredFields) {
-            loginError = ChangeLoginError.REQUIRED_FIELDS_MISSING;
+            loginMsg = ChangeLoginMessage.REQUIRED_FIELDS_MISSING;
         }
         else if (!newPassword.equals(confirm)) {
-            loginError = ChangeLoginError.NO_PASSWORDMATCH;
+            loginMsg = ChangeLoginMessage.NO_PASSWORDMATCH;
         }
         else {
             authenticationService.changePassword(user, oldPassword, newPassword);
-            loginError = ChangeLoginError.NONE;
+            loginMsg = ChangeLoginMessage.LOGIN_PASSWORD_CHANGED;
+            success = true;
         }
         
-        return sendRedirect(request, redirectUrl, loginError, retrySeconds);
+        return sendRedirect(request, redirectUrl, loginMsg, retrySeconds, success);
     }
     
     @RequestMapping(value = "/changelogin/updateusername", method = RequestMethod.POST)
@@ -93,9 +96,10 @@ public class ChangeLoginController {
         
         final YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
         final LiteYukonUser user = yukonUserContext.getYukonUser();
-        authDao.verifyTrueProperty(user, ResidentialCustomerRole.CONSUMER_INFO_CHANGE_LOGIN_USERNAME);
+        rolePropertyDao.verifyProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_USERNAME, user);
         
         boolean isValidPassword = false;
+        boolean success = false;
         long retrySeconds = 0;
         try {
             isValidPassword = isValidPassword(user.getUsername(), oldPassword);
@@ -104,24 +108,25 @@ public class ChangeLoginController {
         }        
         final boolean hasRequiredFields = hasRequiredFields(username, oldPassword);
         
-        ChangeLoginError loginError;
+        ChangeLoginMessage loginMsg;
         
         if (!isValidPassword) {
-            loginError = ChangeLoginError.INVALID_CREDENTIALS;
+            loginMsg = ChangeLoginMessage.INVALID_CREDENTIALS_USERNAME_CHANGE;
         }
         else if (!hasRequiredFields) {
-            loginError = ChangeLoginError.REQUIRED_FIELDS_MISSING;
+            loginMsg = ChangeLoginMessage.REQUIRED_FIELDS_MISSING;
         }
         else {
             try {
                 saveUsernameChange(request, user, username);
-                loginError = ChangeLoginError.NONE;
+                loginMsg = ChangeLoginMessage.LOGIN_USERNAME_CHANGED;
+                success = true;
             } catch (NotAuthorizedException e) {
-                loginError = ChangeLoginError.USER_EXISTS;
+                loginMsg = ChangeLoginMessage.USER_EXISTS;
             }
         }
         
-        return sendRedirect(request, redirectUrl, loginError, retrySeconds);
+        return sendRedirect(request, redirectUrl, loginMsg, retrySeconds, success);
     }
     
     private boolean hasRequiredFields(String... fields) {
@@ -153,22 +158,27 @@ public class ChangeLoginController {
         session.setAttribute(LoginController.YUKON_USER, user);
     }
     
-    private String sendRedirect(HttpServletRequest request, String redirectUrl, ChangeLoginError loginError,
-            long retrySeconds) {
+    private String sendRedirect(HttpServletRequest request, String redirectUrl, ChangeLoginMessage loginMessage,
+                                long retrySeconds, boolean success) {
         String safeRedirectUrl = ServletUtil.createSafeRedirectUrl(request, redirectUrl);
-        if (loginError != null) {
-            StringBuilder errorParams = new StringBuilder().append("?")
-                                                          .append(LOGIN_ERROR_PARAM)
-                                                          .append("=")
-                                                          .append(loginError.name());
+        if (loginMessage != null) {
+            StringBuilder msgParams = new StringBuilder().append("?")
+                                                         .append(LOGIN_CHANGE_MESSAGE_PARAM)
+                                                         .append("=")
+                                                         .append(loginMessage.name())
+                                                         .append("&")
+                                                         .append(LOGIN_CHANGE_SUCCESS_PARAM)
+                                                         .append("=")
+                                                         .append(success);
+            
             if (retrySeconds > 0) {
-                errorParams.append("&")
+                msgParams.append("&")
                           .append(LoginController.AUTH_RETRY_SECONDS_PARAM)
                           .append("=")
                           .append(retrySeconds);
             }
             
-            safeRedirectUrl += errorParams.toString();
+            safeRedirectUrl += msgParams.toString();
         }
         
         String redirect = "redirect:" + safeRedirectUrl; 
@@ -181,14 +191,13 @@ public class ChangeLoginController {
     }
 
     @Autowired
-    public void setAuthDao(AuthDao authDao){
-        this.authDao = authDao; 
-    }
-    
-    @Autowired
     public void setAuthenticationService(
             AuthenticationService authenticationService) {
         this.authenticationService = authenticationService;
     }
 
+    @Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+    	this.rolePropertyDao = rolePropertyDao;
+    }
 }

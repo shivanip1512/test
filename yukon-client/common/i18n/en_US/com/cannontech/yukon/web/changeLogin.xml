@@ -12,13 +12,16 @@
     <entry key="yukon.web.changelogin.save">Save</entry>
     <entry key="yukon.web.changelogin.cancel">Cancel</entry>
     
-    <entry key="yukon.web.changelogin.error.NONE">&lt;i&gt;** Success&lt;/i&gt;</entry>
-    <entry key="yukon.web.changelogin.error.NO_CHANGE">&lt;i&gt;** No changes made&lt;/i&gt;</entry>
-    <entry key="yukon.web.changelogin.error.NO_PASSWORDMATCH">&lt;i&gt;** Passwords did not match&lt;/i&gt;</entry>
-    <entry key="yukon.web.changelogin.error.REQUIRED_FIELDS_MISSING">&lt;i&gt;** Required fields missing&lt;/i&gt;</entry>
-    <entry key="yukon.web.changelogin.error.INVALID_CREDENTIALS">&lt;i&gt;** Invalid Credentials&lt;/i&gt;</entry>
-    <entry key="yukon.web.changelogin.error.RETRY">Login disabled, please retry after {0} seconds</entry>
-    <entry key="yukon.web.changelogin.error.USER_EXISTS">&lt;i&gt;** Username already exists&lt;/i&gt;</entry>
-    <entry key="yukon.web.changelogin.error.PASSWORD_CHANGE_NOT_SUPPORTED">&lt;i&gt;** Password changes are not supported&lt;/i&gt;</entry>
+    <entry key="yukon.web.changelogin.message.LOGIN_USERNAME_CHANGED">&lt;i&gt;** User login name updated successfully &lt;/i&gt;</entry>
+    <entry key="yukon.web.changelogin.message.LOGIN_PASSWORD_CHANGED">&lt;i&gt;** User login password updated successfully &lt;/i&gt;</entry>
+
+    <entry key="yukon.web.changelogin.message.NO_CHANGE">&lt;i&gt;** No changes made&lt;/i&gt;</entry>
+    <entry key="yukon.web.changelogin.message.NO_PASSWORDMATCH">&lt;i&gt;** Passwords did not match&lt;/i&gt;</entry>
+    <entry key="yukon.web.changelogin.message.REQUIRED_FIELDS_MISSING">&lt;i&gt;** Required fields missing&lt;/i&gt;</entry>
+    <entry key="yukon.web.changelogin.message.INVALID_CREDENTIALS_USERNAME_CHANGE">&lt;i&gt;** User does not have access/permission to change username. &lt;/i&gt;</entry>
+    <entry key="yukon.web.changelogin.message.INVALID_CREDENTIALS_PASSWORD_CHANGE">&lt;i&gt;** User does not have access/permission to change password. &lt;/i&gt;</entry>
+    <entry key="yukon.web.changelogin.message.RETRY">Login disabled, please retry after {0} seconds</entry>
+    <entry key="yukon.web.changelogin.message.USER_EXISTS">&lt;i&gt;** Username already exists&lt;/i&gt;</entry>
+    <entry key="yukon.web.changelogin.message.PASSWORD_CHANGE_NOT_SUPPORTED">&lt;i&gt;** Password changes are not supported&lt;/i&gt;</entry>
     
 </properties>    

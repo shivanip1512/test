@@ -3,11 +3,29 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 
+<link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <cti:url var="actionUrl" value="/spring/login/changelogin"/>
 <cti:url var="usernameActionUrl" value="${actionUrl}/updateusername"/>
 <cti:url var="passwordActionUrl" value="${actionUrl}/updatepassword"/>
 
 <div id="changeLogin">
+    <c:if test="${not empty loginChangeMsg}">
+    	<c:choose>
+    		<c:when test="${success}">
+    	        <Span class="ConfirmMsg" id="changeLoginErrorDiv">
+    		</c:when>
+    		<c:otherwise>
+                <Span class="ErrorMsg" id="changeLoginErrorDiv">
+    		</c:otherwise>
+    	</c:choose>
+            <cti:msg key="${loginChangeMsg}"/>
+            <c:if test="${!empty param.retrySeconds}">
+                <br/>
+                <cti:msg key="yukon.web.changelogin.error.RETRY" argument="${param.retrySeconds}"></cti:msg>
+            </c:if>            
+        </Span>
+        <br/>
+    </c:if>
 
     <cti:checkProperty  property="ResidentialCustomerRole.CONSUMER_INFO_CHANGE_LOGIN_USERNAME">
     <cti:msg key="yukon.web.changelogin.changeUsername" var="changeUsernameTitle"/>
@@ -90,14 +108,4 @@
     </ct:boxContainer>
     </cti:checkProperty>    
 
-    <c:if test="${not empty loginError}">
-        <br>
-        <div id="changeLoginErrorDiv">
-            <cti:msg key="${loginError}"/>
-            <c:if test="${!empty param.retrySeconds}">
-                <br/>
-                <cti:msg key="yukon.web.changelogin.error.RETRY" argument="${param.retrySeconds}"></cti:msg>
-            </c:if>            
-        </div>
-    </c:if>
 <div>

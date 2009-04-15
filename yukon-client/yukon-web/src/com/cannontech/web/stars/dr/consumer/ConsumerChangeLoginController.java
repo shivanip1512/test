@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.web.login.ChangeLoginController;
-import com.cannontech.web.login.ChangeLoginError;
+import com.cannontech.web.login.ChangeLoginMessage;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @CheckRoleProperty({YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_USERNAME, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_PASSWORD})
@@ -22,12 +22,16 @@ public class ConsumerChangeLoginController extends AbstractConsumerController {
     @RequestMapping(method = RequestMethod.GET)
     public String view(HttpServletRequest request, HttpServletResponse response, ModelMap map) throws Exception {
         
-        String loginErrorParam = ServletRequestUtils.getStringParameter(request, ChangeLoginController.LOGIN_ERROR_PARAM);
-        if (loginErrorParam != null) {
-            ChangeLoginError loginError = ChangeLoginError.valueOf(loginErrorParam);
-            map.addAttribute(ChangeLoginController.LOGIN_ERROR_PARAM, loginError);
+        String loginChangeMsgParam = ServletRequestUtils.getStringParameter(request, ChangeLoginController.LOGIN_CHANGE_MESSAGE_PARAM);
+        String loginChangeSuccessParam = ServletRequestUtils.getStringParameter(request, ChangeLoginController.LOGIN_CHANGE_SUCCESS_PARAM);
+        if (loginChangeMsgParam != null) {
+        	ChangeLoginMessage loginMsg = ChangeLoginMessage.valueOf(loginChangeMsgParam);
+            map.addAttribute(ChangeLoginController.LOGIN_CHANGE_MESSAGE_PARAM, loginMsg);
         }
-        
+        if (loginChangeSuccessParam != null) {
+        	boolean success = Boolean.parseBoolean(loginChangeSuccessParam);
+        	map.addAttribute(ChangeLoginController.LOGIN_CHANGE_SUCCESS_PARAM, success);
+        }        
         return "consumer/consumerChangeLogin.jsp";
     }
     
