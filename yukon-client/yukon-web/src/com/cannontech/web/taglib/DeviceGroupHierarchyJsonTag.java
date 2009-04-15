@@ -7,11 +7,13 @@ import javax.servlet.jsp.JspException;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.device.groups.service.DeviceGroupUiService;
 import com.cannontech.common.util.predicate.AggregateAndPredicate;
 import com.cannontech.web.group.DeviceGroupTreeUtils;
 import com.cannontech.web.util.ExtTreeNode;
@@ -20,6 +22,7 @@ import com.cannontech.web.util.ExtTreeNode;
 public class DeviceGroupHierarchyJsonTag extends YukonTagSupport{
 
     private DeviceGroupService deviceGroupService;
+    private DeviceGroupUiService deviceGroupUiService;
     
     private String predicates = "";
     private String rootName = "Groups";
@@ -31,7 +34,7 @@ public class DeviceGroupHierarchyJsonTag extends YukonTagSupport{
         AggregateAndPredicate<DeviceGroup> aggregatePredicate = DeviceGroupTreeUtils.getAggregratePredicateFromString(predicates);
 
         DeviceGroup rootGroup = deviceGroupService.getRootGroup();
-        DeviceGroupHierarchy groupHierarchy = deviceGroupService.getDeviceGroupHierarchy(rootGroup, aggregatePredicate);
+        DeviceGroupHierarchy groupHierarchy = deviceGroupUiService.getDeviceGroupHierarchy(rootGroup, aggregatePredicate);
         
         ExtTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupExtTree(groupHierarchy, rootName, null);
         JSONObject jsonObj = new JSONObject(root.toMap());
@@ -46,6 +49,11 @@ public class DeviceGroupHierarchyJsonTag extends YukonTagSupport{
     public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
         this.deviceGroupService = deviceGroupService;
     }
+    
+    @Autowired
+    public void setDeviceGroupUiService(DeviceGroupUiService deviceGroupUiService) {
+		this.deviceGroupUiService = deviceGroupUiService;
+	}
     
     public void setPredicates(String predicates) {
         this.predicates = predicates;

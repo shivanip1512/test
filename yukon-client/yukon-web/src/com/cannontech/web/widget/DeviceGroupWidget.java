@@ -23,6 +23,7 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.device.groups.service.DeviceGroupUiService;
 import com.cannontech.common.device.groups.service.ModifiableDeviceGroupPredicate;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -39,7 +40,8 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
  */
 public class DeviceGroupWidget extends WidgetControllerBase {
 
-    private DeviceGroupService deviceGroupService = null;
+    private DeviceGroupService deviceGroupService;
+    private DeviceGroupUiService deviceGroupUiService;
     private DeviceGroupProviderDao deviceGroupDao;
     private DeviceGroupEditorDao deviceGroupEditorDao;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
@@ -95,7 +97,7 @@ public class DeviceGroupWidget extends WidgetControllerBase {
         
         // Ext tree JSON
         DeviceGroup rootGroup = deviceGroupService.getRootGroup();
-        DeviceGroupHierarchy groupHierarchy = deviceGroupService.getDeviceGroupHierarchy(rootGroup, new ModifiableDeviceGroupPredicate());
+        DeviceGroupHierarchy groupHierarchy = deviceGroupUiService.getDeviceGroupHierarchy(rootGroup, new ModifiableDeviceGroupPredicate());
         
         // NodeAttributeSettingCallback to highlight node fo selected group
         class AddGroupIdInfoAndDisableCurrentGroups implements NodeAttributeSettingCallback {
@@ -214,5 +216,10 @@ public class DeviceGroupWidget extends WidgetControllerBase {
     @Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
 		this.rolePropertyDao = rolePropertyDao;
+	}
+    
+    @Autowired
+    public void setDeviceGroupUiService(DeviceGroupUiService deviceGroupUiService) {
+		this.deviceGroupUiService = deviceGroupUiService;
 	}
 }

@@ -20,9 +20,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.model.DeviceGroup;
-import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
-import com.cannontech.common.util.predicate.Predicate;
 import com.cannontech.core.dao.NotFoundException;
 
 public class DeviceGroupServiceImpl implements DeviceGroupService {
@@ -161,44 +159,4 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
     public void setDeviceGroupDao(DeviceGroupProviderDao deviceGroupDao) {
         this.deviceGroupDao = deviceGroupDao;
     }
-
-    public DeviceGroupHierarchy getDeviceGroupHierarchy(DeviceGroup root, Predicate<DeviceGroup> deviceGroupPredicate) {
-
-        DeviceGroupHierarchy hierarchy = new DeviceGroupHierarchy();
-        hierarchy.setGroup(root);
-
-        setChildHierarchy(hierarchy, deviceGroupPredicate);
-
-        return hierarchy;
-    }
-    
-    public DeviceGroupHierarchy getFilteredDeviceGroupHierarchy(DeviceGroupHierarchy hierarchy, Predicate<DeviceGroup> deviceGroupPredicate) {
-        
-        return getDeviceGroupHierarchy(hierarchy.getGroup(), deviceGroupPredicate);
-    }
-
-    /**
-     * Helper method to recursively set child hierarchy
-     * @param hierarchy - parent hierarchy to set children on
-     */
-    private void setChildHierarchy(DeviceGroupHierarchy hierarchy, Predicate<DeviceGroup> deviceGroupPredicate) {
-
-        List<DeviceGroupHierarchy> childGroupList = new ArrayList<DeviceGroupHierarchy>();
-        List<? extends DeviceGroup> childGroups = deviceGroupDao.getChildGroups(hierarchy.getGroup());
-        for (DeviceGroup childGroup : childGroups) {
-            
-            if (deviceGroupPredicate.evaluate(childGroup)) {
-            
-                DeviceGroupHierarchy childHierarchy = new DeviceGroupHierarchy();
-                childHierarchy.setGroup(childGroup);
-    
-                setChildHierarchy(childHierarchy, deviceGroupPredicate);
-    
-                childGroupList.add(childHierarchy);
-            }
-        }
-
-        hierarchy.setChildGroupList(childGroupList);
-    }
-
 }

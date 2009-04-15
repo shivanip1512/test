@@ -102,8 +102,9 @@ import com.cannontech.analysis.tablemodel.StatisticModel;
 import com.cannontech.analysis.tablemodel.SystemLogModel;
 import com.cannontech.analysis.tablemodel.WorkOrderModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
-import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupUiService;
+import com.cannontech.common.device.groups.service.NonHiddenDeviceGroupPredicate;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.authorization.service.PaoPermissionService;
@@ -296,7 +297,7 @@ public class ReportFuncs
             return cache.getAllPorts();
 
         } else if( filter.equals(ReportFilter.GROUPS)){
-            List<? extends DeviceGroup> allGroups = ((DeviceGroupProviderDao)YukonSpringHook.getBean("deviceGroupDao")).getAllGroups();
+            List<? extends DeviceGroup> allGroups = ((DeviceGroupUiService)YukonSpringHook.getBean("deviceGroupUiService")).getGroups(new NonHiddenDeviceGroupPredicate());
             List<String> mappingList = new MappingList<DeviceGroup, String>(allGroups, new ObjectMapper<DeviceGroup, String>() {
                 public String map(DeviceGroup from) {
                     return from.getFullName();

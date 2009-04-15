@@ -5,8 +5,6 @@ import java.util.Set;
 
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.model.DeviceGroup;
-import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
-import com.cannontech.common.util.predicate.Predicate;
 import com.cannontech.core.dao.NotFoundException;
 
 /**
@@ -94,22 +92,5 @@ public interface DeviceGroupService {
      * @return
      */
     public String getDeviceGroupSqlWhereClause(Collection<? extends DeviceGroup> group, String identifier);
-
-    /**
-     * Method to get a hierarchy of the current device groups starting with the
-     * given group. Predicate is evaluated to determine if child groups should be included in heirarchy.
-     * @param root
-     * @param predicate
-     * @return
-     */
-    public DeviceGroupHierarchy getDeviceGroupHierarchy(DeviceGroup root, Predicate<DeviceGroup> predicate);
-    
-    /**
-     * Given an existing hierarchy, filters out groups that do not pass predicate and returns new hierarchy.
-     * @param hierarchy
-     * @param deviceGroupPredicate
-     * @return
-     */
-    public DeviceGroupHierarchy getFilteredDeviceGroupHierarchy(DeviceGroupHierarchy hierarchy, Predicate<DeviceGroup> deviceGroupPredicate);
 
 }

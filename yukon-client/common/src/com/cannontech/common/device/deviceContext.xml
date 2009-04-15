@@ -156,6 +156,9 @@
         <property name="deviceGroupDao" ref="deviceGroupDao"/>
     </bean>
     
+    <bean id="deviceGroupUiService" class="com.cannontech.common.device.groups.service.impl.DeviceGroupUiServiceImpl">
+    </bean>
+    
     <bean id="copyDeviceGroupService" class="com.cannontech.common.device.groups.service.impl.CopyDeviceGroupServiceImpl">
         <property name="deviceGroupDao" ref="deviceGroupDao" />
         <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao" />

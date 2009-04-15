@@ -31,6 +31,7 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
 import com.cannontech.common.device.groups.service.CopyDeviceGroupService;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.device.groups.service.DeviceGroupUiService;
 import com.cannontech.common.device.groups.service.ModifiableDeviceGroupPredicate;
 import com.cannontech.common.device.groups.service.NonHiddenDeviceGroupPredicate;
 import com.cannontech.common.exception.NotAuthorizedException;
@@ -49,6 +50,7 @@ import com.cannontech.web.util.ExtTreeNode;
 public class GroupEditorController extends MultiActionController {
 
     private DeviceGroupService deviceGroupService = null;
+    private DeviceGroupUiService deviceGroupUiService = null;
     private DeviceGroupProviderDao deviceGroupDao = null;
     private DeviceGroupEditorDao deviceGroupEditorDao = null;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao = null;
@@ -116,6 +118,11 @@ public class GroupEditorController extends MultiActionController {
     public void setAuthDao(AuthDao authDao) {
         this.authDao = authDao;
     }
+    
+    @Autowired
+    public void setDeviceGroupUiService(DeviceGroupUiService deviceGroupUiService) {
+		this.deviceGroupUiService = deviceGroupUiService;
+	}
 
     public ModelAndView home(HttpServletRequest request, HttpServletResponse response)
             throws Exception, ServletException {
@@ -157,7 +164,7 @@ public class GroupEditorController extends MultiActionController {
         }
                 
         // ALL GROUPS HIERARCHY
-        DeviceGroupHierarchy allGroupsGroupHierarchy = deviceGroupService.getDeviceGroupHierarchy(rootGroup, new NonHiddenDeviceGroupPredicate());
+        DeviceGroupHierarchy allGroupsGroupHierarchy = deviceGroupUiService.getDeviceGroupHierarchy(rootGroup, new NonHiddenDeviceGroupPredicate());
         
         // NodeAttributeSettingCallback to highlight node fo selected group
         final DeviceGroup selectedDeviceGroup = group;
@@ -215,7 +222,7 @@ public class GroupEditorController extends MultiActionController {
         predicates.add(moveOrCopyPredicate);
         
         AggregateAndPredicate<DeviceGroup> aggregatePredicate = new AggregateAndPredicate<DeviceGroup>(predicates);
-        DeviceGroupHierarchy groupHierarchy = deviceGroupService.getFilteredDeviceGroupHierarchy(allGroupsGroupHierarchy, aggregatePredicate);
+        DeviceGroupHierarchy groupHierarchy = deviceGroupUiService.getFilteredDeviceGroupHierarchy(allGroupsGroupHierarchy, aggregatePredicate);
         ExtTreeNode groupRoot = DeviceGroupTreeUtils.makeDeviceGroupExtTree(groupHierarchy, "Groups", null);
         
         JSONObject groupJsonObj = new JSONObject(groupRoot.toMap());
@@ -393,7 +400,7 @@ public class GroupEditorController extends MultiActionController {
         
         // Ext tree JSON
         DeviceGroup rootGroup = deviceGroupService.getRootGroup();
-        DeviceGroupHierarchy groupHierarchy = deviceGroupService.getDeviceGroupHierarchy(rootGroup, new NonHiddenDeviceGroupPredicate());
+        DeviceGroupHierarchy groupHierarchy = deviceGroupUiService.getDeviceGroupHierarchy(rootGroup, new NonHiddenDeviceGroupPredicate());
         
         // NodeAttributeSettingCallback to highlight node fo selected group
         class DisableCurrentGroup implements NodeAttributeSettingCallback {
