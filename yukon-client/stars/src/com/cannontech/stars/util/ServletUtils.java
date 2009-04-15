@@ -1,5 +1,6 @@
 package com.cannontech.stars.util;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -137,8 +138,6 @@ public class ServletUtils {
 
 	public static final String INHERITED_FAQ = "INHERITED_FAQ";
 
-	private static java.text.DecimalFormat decFormat = new java.text.DecimalFormat("0.##");
-
 	private static final java.text.SimpleDateFormat[] timeFormat =
 	{
 		new java.text.SimpleDateFormat("hh:mm a"),
@@ -192,8 +191,10 @@ public class ServletUtils {
             units = "Minutes";
         }
 
-		double multiplier = Math.pow(10, placesToKeep);
-		return decFormat.format(Math.round(value * multiplier) / multiplier) + " " + units;
+        NumberFormat format = NumberFormat.getInstance();
+        format.setMaximumFractionDigits(placesToKeep);
+
+        return format.format(value) + " " + units;
 	}
 	
 	public static String getDurationFromHours(int hour) {
