@@ -166,7 +166,7 @@ function validate(form) {
 		
 		TreeMap serialMap = new TreeMap();
 		for (int j = 0; j < commands.length; j++) {
-			String serialNo = ((LiteStarsLMHardware) starsInventoryBaseDao.getById(commands[j].getInventoryID())).getManufacturerSerialNumber();
+			String serialNo = ((LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(commands[j].getInventoryID())).getManufacturerSerialNumber();
 			try {
 				Integer num = Integer.valueOf(serialNo);
 				serialMap.put(num, commands[j]);

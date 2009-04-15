@@ -15,7 +15,7 @@
 	        YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
         
 		// Request from InventoryDetail.jsp to copy a hardware device
-		LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getById(Integer.parseInt(request.getParameter("InvID")));
+		LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(Integer.parseInt(request.getParameter("InvID")));
 		Properties savedReq = new Properties();
 		savedReq.setProperty("DeviceType", String.valueOf(liteHw.getLmHardwareTypeID()));
 		savedReq.setProperty("DeviceLabel", liteHw.getDeviceLabel());

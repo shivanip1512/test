@@ -10,7 +10,7 @@
         YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
 
 	int invID = Integer.parseInt(request.getParameter("InvID"));
-	LiteInventoryBase liteInv = starsInventoryBaseDao.getById(invID);
+	LiteInventoryBase liteInv = starsInventoryBaseDao.getByInventoryId(invID);
 %>
 <html>
 <head>
