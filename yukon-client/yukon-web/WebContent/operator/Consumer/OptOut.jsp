@@ -30,10 +30,12 @@
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
+<link rel="stylesheet" href="../../WebConfig/yukon/styles/YukonGeneralStyles.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 
 <!-- include calendar control stylesheet and .js file since this is NOT a standard page -->
 <link rel="stylesheet" href="../../WebConfig/yukon/styles/calendarControl.css" type="text/css">
+
 <script language="JavaScript" type="text/javascript"  src="/JavaScript/calendarControl.js"></script>
 
 </head>
@@ -61,7 +63,7 @@
 		  </td>
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
-            <div align="center">
+            <div align="center" class="contentArea">
               <% String header = null; %>
               <%@ include file="include/InfoSearchBar.jspf" %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>

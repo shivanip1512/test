@@ -3,8 +3,6 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 
-<link rel="stylesheet" href="../../WebConfig/yukon/styles/YukonGeneralStyles.css" type="text/css">
-
 <cti:url var="optOutUrl" value="/operator/Consumer/OptOut.jsp" />
 <cti:url var="actionUrl" value="/spring/stars/operator/optout/update" />
 
@@ -51,7 +49,6 @@ function createItem(element) {
     
     <h3><cti:msg key="yukon.dr.operator.optoutconfirm.header"/></h3>
     
-    <div align="center">
         <cti:msg key="yukon.dr.operator.optoutconfirm.description"/>
         
         <br>
@@ -85,5 +82,3 @@ function createItem(element) {
             <input type="hidden" name="startDate" value="${startDate}"></input>
             <input type="hidden" name="jsonInventoryIds" value="${jsonInventoryIds}"></input>
         </form>
-    </div>
-    

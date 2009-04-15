@@ -6,6 +6,10 @@ h2 { /*Page Header*/
 	color: #FC6;
 }
 
+.contentArea {
+	font-family: Arial, Helvetica, sans-serif;
+}
+
 .titledContainer .content h4 {
   margin-bottom: 2px;
   margin-top: 8px;

@@ -3,8 +3,6 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 
-<link rel="stylesheet" href="../../WebConfig/yukon/styles/YukonGeneralStyles.css" type="text/css">
-
 <h3><cti:msg key="yukon.dr.operator.optout.header"/></h3>
 
 <c:if test="${allOptedOut}">

@@ -5,6 +5,7 @@
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
+<link rel="stylesheet" href="../../WebConfig/yukon/styles/YukonGeneralStyles.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 
 </head>
@@ -35,12 +36,14 @@
           <td width="657" valign="top" bgcolor="#FFFFFF" align = "center"> 
       		  <% String header = null; %>
               <%@ include file="include/InfoSearchBar.jspf" %> 
-          
+
+			<div class="contentArea" align="center">          
             <jsp:include page="/spring/stars/operator/optout/confirm">
                 <jsp:param name="startDate" value="${param.startDate}"/>
                 <jsp:param name="durationInDays" value="${param.duration}"/>
                 <jsp:param name="jsonInventoryIds" value="${param.inventoryIds}"/>
               </jsp:include>
+            </div>
           </td>
         <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
     </tr>

@@ -4,7 +4,6 @@
 
 <h3><cti:msg key="yukon.dr.operator.optoutError.header"/></h3>
 
-<div align="center">
     <cti:msg key="${error}"/>
 
     <br>
@@ -13,4 +12,3 @@
     <cti:url var="optOutUrl" value="/operator/Consumer/OptOut.jsp"/>
     <input type="button" value='<cti:msg key="yukon.dr.operator.optoutError.ok"/>'
            onclick="location.href='<c:out value="${optOutUrl}"/>';"></input>
-</div>
