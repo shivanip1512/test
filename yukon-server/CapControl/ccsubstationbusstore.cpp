@@ -10919,10 +10919,19 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
                             }
                             cap->getOperationStats().incrementMonthlyOpCounts();
                         }
-                        else
+                        else if ( (_CC_DEBUG & CC_DEBUG_OPSTATS) &&
+                                 (_CC_DEBUG & CC_DEBUG_EXTENDED) )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " irregular LOG datetime: " << CtiTime(logDateTime) << endl;
+                            if (cap != NULL)
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " irregular LOG datetime: " << CtiTime(logDateTime) << " for CAPBANK: " << cap->getPAOName()<< endl;
+                            }
+                            else
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " irregular LOG datetime: " << CtiTime(logDateTime) <<" CAPBANK with Bank Status PID: "<< pointId <<" no longer exists."<< endl;
+                            }
                         }
                     }
                     //MONTHLY FAILS
@@ -10981,10 +10990,19 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
                         {
                             cap->getOperationStats().incrementMonthlyOpFails();
                         }
-                        else
+                        else if ( (_CC_DEBUG & CC_DEBUG_OPSTATS) &&
+                                 (_CC_DEBUG & CC_DEBUG_EXTENDED) )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " irregular LOG datetime: " << CtiTime(logDateTime) << endl;
+                            if (cap != NULL)
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " irregular LOG datetime: " << CtiTime(logDateTime) << " for CAPBANK: " << cap->getPAOName()<< endl;
+                            }
+                            else
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " irregular LOG datetime: " << CtiTime(logDateTime) <<" CAPBANK with Bank Status PID: "<< pointId <<" no longer exists."<< endl;
+                            }
                         }
                     }
                 }
