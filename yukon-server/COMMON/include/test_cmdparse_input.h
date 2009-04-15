@@ -147,9 +147,9 @@ std::string inputString[TEST_SIZE] = {
 "putconfig xcom command initiator 2 serial 200148000",
 "putconfig xcom price tier 3 serial 200148000",
 "putconfig xcom compare rssi serial 200148000",
-"control xcom cpp 3600 min minheat 71 wake=+2 sleep =+4 return=-1 leave -2 serial 200148000",
+"control xcom cpp 3600 min minheat 71 delta wake=+2 sleep =+4 return=-1 leave -2 serial 200148000",
 "control xcom cpp 3600 minutes maxcool 71 wake=78 sleep =72 return=76 serial 200148000",
-"control xcom cpp 3600 mins celsius maxcool 29 wake=+1 sleep =-2 leave +3 serial 200148000",
+"control xcom cpp 3600 mins celsius maxcool 29 delta wake=+1 sleep =-2 leave +3 serial 200148000",
 };
 
 
