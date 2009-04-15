@@ -25,6 +25,12 @@ public interface ProgramDao {
 
     public List<Integer> getDistinctGroupIdsByProgramIds(final Set<Integer> programIds);
     
+    /**
+     * Gets all the programIds for the given groupId without getting any duplicates.
+     * 
+     * @param groupIds
+     * @return
+     */
     public List<Integer> getDistinctProgramIdsByGroupIds(final Set<Integer> groupIds);
     
     public List<Integer> getGroupIdsByProgramId(int programId);

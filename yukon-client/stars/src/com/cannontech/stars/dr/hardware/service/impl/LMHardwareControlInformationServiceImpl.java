@@ -70,7 +70,7 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
             controlInformation.setGroupEnrollStart(now);
             lmHardwareControlGroupDao.add(controlInformation);
             
-            refactorExistingEnrollments(inventoryId, loadGroupId, accountId, relay, currentUser);
+            adjustLoadGroupsForExistingEnrollments(inventoryId, loadGroupId, accountId, relay, currentUser);
 
             return true;
         } catch (Exception e) {
@@ -207,11 +207,11 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
     }
     
     
-    /** Checks to see if there are any other enrollments that use the same program that is not the same piece of hardware
-     * and updates the address group for the enrollment as well.
+    /** Checks to see if there are any other enrollments that use the same program that are not the same piece of hardware
+     * and updates the address group for those enrollment as well.
      * @throws Exception 
      */
-    private void refactorExistingEnrollments(int inventoryId, int loadGroupId, int accountId, int relay, LiteYukonUser currentUser) throws Exception {
+    private void adjustLoadGroupsForExistingEnrollments(int inventoryId, int loadGroupId, int accountId, int relay, LiteYukonUser currentUser) throws Exception {
     	
     	List<LMHardwareControlGroup> controlInformationList = 
         	lmHardwareControlGroupDao.getByAccountId(accountId); 
@@ -224,9 +224,13 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
                inventoryId != existingEnrollment.getInventoryId() &&
                existingEnrollment.getLmGroupId() != loadGroupId) {
 
+    		    // This gets the programIds for the existing enrollment that does not match the current enrollment's load group
     	    	List<Integer> controlInformationloadGroupProgramIds = 
     	    		programDao.getDistinctProgramIdsByGroupIds(Collections.singleton(existingEnrollment.getLmGroupId()));
 
+    	    	// This iterates through the programIds to check to see if the newly enrolled program is the same
+    	    	// program as one that already exists.  If this is the case, we end the current enrollment
+    	    	// and start a new enrollment with the new load group.
     	    	for (Integer controlInformationLoadGroupId : controlInformationloadGroupProgramIds) {
 					if(loadGroupProgramIds.contains(controlInformationLoadGroupId)){
 						LMHardwareControlGroup newEnrollment = existingEnrollment.clone();
@@ -241,13 +245,13 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
         }
     }
     
-    private void endEnrollment(LMHardwareControlGroup existingEnrollment, LiteYukonUser currentUser) throws Exception{
+    private void endEnrollment(LMHardwareControlGroup existingEnrollment, LiteYukonUser currentUser){
     	existingEnrollment.setGroupEnrollStop(new Date());
 		existingEnrollment.setUserIdSecondAction(currentUser.getUserID());
 		lmHardwareControlGroupDao.update(existingEnrollment);
     }
     
-    private void startEnrollment(LMHardwareControlGroup newEnrollment, LiteYukonUser currentUser) throws Exception{
+    private void startEnrollment(LMHardwareControlGroup newEnrollment, LiteYukonUser currentUser){
     	newEnrollment.setGroupEnrollStart(new Date());
     	newEnrollment.setUserIdFirstAction(currentUser.getUserID());
 		lmHardwareControlGroupDao.add(newEnrollment);

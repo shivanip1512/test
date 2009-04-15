@@ -107,7 +107,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
     }
     
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-    public void add(final LMHardwareControlGroup hardwareControlGroup) throws Exception {
+    public void add(final LMHardwareControlGroup hardwareControlGroup) {
         template.insert(hardwareControlGroup);
     }
     
@@ -119,12 +119,12 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
     }
     
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-    public void update(final LMHardwareControlGroup hardwareControlGroup) throws Exception {
+    public void update(final LMHardwareControlGroup hardwareControlGroup){
         template.update(hardwareControlGroup);
     }
     
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-    public void unenrollHardware(int inventoryId) throws DataAccessException{
+    public void unenrollHardware(int inventoryId) {
         
         SqlStatementBuilder unenrollHardwareSQL = new SqlStatementBuilder();
         unenrollHardwareSQL.append("UPDATE LMHardwareControlGroup");
@@ -137,7 +137,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public LMHardwareControlGroup getById(final int controlEntryId) throws DataAccessException {
+    public LMHardwareControlGroup getById(final int controlEntryId) {
         LMHardwareControlGroup hardwareControlGroup = simpleJdbcTemplate.queryForObject(selectById, rowMapper, controlEntryId);
         return hardwareControlGroup;
     }

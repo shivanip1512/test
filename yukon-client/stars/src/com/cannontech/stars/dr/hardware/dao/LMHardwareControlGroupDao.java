@@ -2,22 +2,21 @@ package com.cannontech.stars.dr.hardware.dao;
 
 import java.util.Date;
 import java.util.List;
-import org.springframework.dao.DataAccessException;
 
 import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 
 public interface LMHardwareControlGroupDao {
 
-    public void add(LMHardwareControlGroup hardwareControlGroup) throws Exception;
+    public void add(LMHardwareControlGroup hardwareControlGroup);
     
     public boolean remove(LMHardwareControlGroup hardwareControlGroup);
     
-    public void update(LMHardwareControlGroup hardwareControlGroup) throws Exception;
+    public void update(LMHardwareControlGroup hardwareControlGroup);
     
-    public void unenrollHardware(int inventoryId) throws DataAccessException;
+    public void unenrollHardware(int inventoryId);
     
-    public LMHardwareControlGroup getById(int controlEntryId) throws DataAccessException;
+    public LMHardwareControlGroup getById(int controlEntryId);
     
     public List<LMHardwareControlGroup> getByLMGroupId(int groupId);
     
