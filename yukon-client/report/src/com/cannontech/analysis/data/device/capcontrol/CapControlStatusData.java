@@ -57,7 +57,7 @@ public class CapControlStatusData
 		this.changeDateTime = changeDateTime;
         this.operationalState = operationalState;
         this.capBankAddress = capAddress;
-        this.capBankAddress = capDriveDir;
+        this.capBankDriveDir = capDriveDir;
         this.disableFlag = disableFlag;
         this.userName = userName;
         this.userComment = userComment;
