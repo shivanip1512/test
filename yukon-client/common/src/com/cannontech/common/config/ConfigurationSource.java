@@ -28,6 +28,8 @@ public interface ConfigurationSource {
      */
     public String getString(String key, String defaultValue);
     
+    public int getRequiredInteger(String key) throws UnknownKeyException;
+    
     public int getInteger(String key, int defaultValue);
     
     /**

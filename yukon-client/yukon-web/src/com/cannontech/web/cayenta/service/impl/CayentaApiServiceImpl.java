@@ -11,6 +11,8 @@ import org.jdom.output.XMLOutputter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.xml.xpath.XPathException;
 
+import unit.cayenta.MockSimpleHttpPostServiceFactory;
+
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.web.cayenta.model.CayentaLocationInfo;
 import com.cannontech.web.cayenta.model.CayentaMeterInfo;
@@ -19,7 +21,8 @@ import com.cannontech.web.cayenta.service.CayentaApiService;
 import com.cannontech.web.cayenta.util.CayentaMeterNotFoundException;
 import com.cannontech.web.cayenta.util.CayentaRequestException;
 import com.cannontech.web.cayenta.util.CayentaXmlUtils;
-import com.cannontech.web.simplePost.SimplePostService;
+import com.cannontech.web.simplePost.SimpleHttpPostService;
+import com.cannontech.web.simplePost.SimpleHttpPostServiceFactory;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XmlUtils;
 
@@ -27,12 +30,8 @@ public class CayentaApiServiceImpl implements CayentaApiService {
 
 	private static Logger log = YukonLogManager.getLogger(CayentaApiServiceImpl.class);
 	private static XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
-	private SimplePostService simplePostService;
+	private SimpleHttpPostServiceFactory simpleHttpPostServiceFactory;
 	
-	private static String url = "http://<CAYENTA_API_SERVER>";
-	private static int port = 8080;
-	private static String username = "<CAYENTA_API_USERNAME>";
-	private static String password = "<CAYENTA_API_PASSWORD>";
 	private static String postElementName = "XMLREQUEST";
 	
 	// GET LOCATION
@@ -190,7 +189,12 @@ public class CayentaApiServiceImpl implements CayentaApiService {
 		try {
 			log.debug("Sending request: " + xmlOutputter.outputString(requestElement));
 			String value = xmlOutputter.outputString(requestElement);
-			String resp = simplePostService.postValue(postElementName, value, url, port, username, password);
+			
+			// --- TEST FOR MOCK RESPONSE ---
+			SimpleHttpPostService postService = (new MockSimpleHttpPostServiceFactory()).getCayentaPostService();
+			
+			//SimpleHttpPostService postService = simpleHttpPostServiceFactory.getCayentaPostService();
+			String resp = postService.postValue(postElementName, value);
 			log.debug("Recieved response: " + resp);
 			return resp;
 		} catch (HttpException e) {
@@ -203,7 +207,8 @@ public class CayentaApiServiceImpl implements CayentaApiService {
 	}
 	
 	@Autowired
-	public void setSimplePostService(SimplePostService simplePostService) {
-		this.simplePostService = simplePostService;
+	public void setSimpleHttpPostServiceFactory(
+			SimpleHttpPostServiceFactory simpleHttpPostServiceFactory) {
+		this.simpleHttpPostServiceFactory = simpleHttpPostServiceFactory;
 	}
 }

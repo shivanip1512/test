@@ -79,6 +79,15 @@ public class MasterConfigMap implements ConfigurationSource {
     }
     
     @Override
+    public int getRequiredInteger(String key) throws UnknownKeyException {
+    	if (!configMap.containsKey(key)) {
+            throw new UnknownKeyException(key);
+        }
+    	String string = getString(key);
+    	return Integer.parseInt(string);
+    }
+    
+    @Override
     public int getInteger(String key, int defaultValue) {
         String string = getString(key);
         if (string == null) {

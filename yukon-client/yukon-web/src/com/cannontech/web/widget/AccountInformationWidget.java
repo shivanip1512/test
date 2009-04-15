@@ -56,7 +56,7 @@ public class AccountInformationWidget extends WidgetControllerBase{
         int deviceId = WidgetParameterHelper.getIntParameter(request, "deviceId");
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         
-        int vendorId = Integer.valueOf(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.MSP_PRIMARY_CB_VENDORID, userContext.getYukonUser())).intValue();
+        int vendorId = rolePropertyDao.getPropertyIntegerValue(YukonRoleProperty.MSP_PRIMARY_CB_VENDORID, userContext.getYukonUser());
         if (vendorId <= 0) {
         	mav.addObject("hasVendorId", false);
         	return mav;

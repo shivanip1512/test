@@ -44,7 +44,7 @@
 		    
 		    <tr>
 		        <td width="30%" class="label">Phone Number:</td>
-		        <td>${phoneInfo.phoneNumber}</td>
+		        <td><cti:formatPhoneNumber value="${phoneInfo.phoneNumber}"/></td>
 		    </tr>
 		    
 		    <tr>

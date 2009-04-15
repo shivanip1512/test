@@ -9,11 +9,24 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.PostMethod;
 
-import com.cannontech.web.simplePost.SimplePostService;
+import com.cannontech.web.simplePost.SimpleHttpPostService;
 
-public class SimplePostServiceImpl implements SimplePostService {
+public class SimpleHttpPostServiceImpl implements SimpleHttpPostService {
 
-	public String postValue(String name, String value, String url, int port, String userName, String password) throws IOException, HttpException {
+	private String url;
+	private int port;
+	private String userName;
+	private String password;
+	
+	public SimpleHttpPostServiceImpl(String url, int port, String userName, String password) {
+		
+		this.url = url;
+		this.port = port;
+		this.userName = userName;
+		this.password = password;
+	}
+	
+	public String postValue(String name, String value) throws IOException, HttpException {
 		
 		HttpClient client = new HttpClient();
 

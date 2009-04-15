@@ -254,7 +254,7 @@ public class MeterController extends MultiActionController {
         // if it is NONE, do a check for vendorId and proceed as if they actually had MULTISPEAK value set
         boolean cisDetailWidgetEnabled = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.CIS_DETAIL_WIDGET_ENABLED, user);
         if (cisDetailWidgetEnabled) {
-	        CisDetailRolePropertyEnum cisDetailRoleProperty = CisDetailRolePropertyEnum.valueOf(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.CIS_DETAIL_TYPE, user));
+        	CisDetailRolePropertyEnum cisDetailRoleProperty = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.CIS_DETAIL_TYPE, CisDetailRolePropertyEnum.class, user);
 	        String cisInfoWidgetName = cisDetailRoleProperty.getWidgetName();
 	        if (cisInfoWidgetName == null) {
 	        	int vendorId = Integer.valueOf(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.MSP_PRIMARY_CB_VENDORID, user)).intValue();

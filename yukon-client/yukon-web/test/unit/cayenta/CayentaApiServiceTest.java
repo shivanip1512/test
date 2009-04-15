@@ -4,27 +4,25 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.web.cayenta.model.CayentaLocationInfo;
 import com.cannontech.web.cayenta.model.CayentaMeterInfo;
 import com.cannontech.web.cayenta.model.CayentaPhoneInfo;
 import com.cannontech.web.cayenta.service.impl.CayentaApiServiceImpl;
 import com.cannontech.web.cayenta.util.CayentaRequestException;
-import com.cannontech.web.simplePost.SimplePostService;
+import com.cannontech.web.simplePost.SimpleHttpPostServiceFactory;
 
 public class CayentaApiServiceTest {
 	
 	private CayentaApiServiceImpl cayentaApiService;
-	private SimplePostService mockSimplePostService;
+	private SimpleHttpPostServiceFactory simpleHttpPosterServiceFactory;
 	
 	@Before
     public void setUp() throws Exception {
 		
-		mockSimplePostService = new MockSimplePostService();
+		simpleHttpPosterServiceFactory = new MockSimpleHttpPostServiceFactory();
 		
-		YukonSpringHook.setDefaultContext("com.cannontech.context.web");
-		cayentaApiService = YukonSpringHook.getBean("cayentaApiService", CayentaApiServiceImpl.class);
-		cayentaApiService.setSimplePostService(mockSimplePostService);
+		cayentaApiService = new CayentaApiServiceImpl();
+		cayentaApiService.setSimpleHttpPostServiceFactory(simpleHttpPosterServiceFactory);
     }
 	
 	@Test
@@ -49,7 +47,7 @@ public class CayentaApiServiceTest {
 		// SYSTEM FAILURE TEST
 		String systemFailureMessage = null;
 		try {
-			cayentaApiService.getMeterInfoForMeterNumber(MockSimplePostService.SYSTEM_FAILURE);
+			cayentaApiService.getMeterInfoForMeterNumber(MockSimpleHttpPostService.SYSTEM_FAILURE);
 		} catch (CayentaRequestException e) {
 			systemFailureMessage = e.getMessage();
 		}
@@ -58,7 +56,7 @@ public class CayentaApiServiceTest {
 		// FUNCTION FAILURE TEST
 		String functionFailureMessage = null;
 		try {
-			cayentaApiService.getMeterInfoForMeterNumber(MockSimplePostService.FUNCTION_FAILURE);
+			cayentaApiService.getMeterInfoForMeterNumber(MockSimpleHttpPostService.FUNCTION_FAILURE);
 		} catch (CayentaRequestException e) {
 			functionFailureMessage = e.getMessage();
 		}
@@ -67,7 +65,7 @@ public class CayentaApiServiceTest {
 		// HTTP FAILURE TEST
 		String httpFailureMessage = null;
 		try {
-			cayentaApiService.getMeterInfoForMeterNumber(MockSimplePostService.HTTP_FAILURE);
+			cayentaApiService.getMeterInfoForMeterNumber(MockSimpleHttpPostService.HTTP_FAILURE);
 		} catch (CayentaRequestException e) {
 			httpFailureMessage = e.getMessage();
 		}
@@ -76,7 +74,7 @@ public class CayentaApiServiceTest {
 		// HTTP IO FAILURE TEST
 		String httpIoFailureMessage = null;
 		try {
-			cayentaApiService.getMeterInfoForMeterNumber(MockSimplePostService.HTTP_IO_FAILURE);
+			cayentaApiService.getMeterInfoForMeterNumber(MockSimpleHttpPostService.HTTP_IO_FAILURE);
 		} catch (CayentaRequestException e) {
 			httpIoFailureMessage = e.getMessage();
 		}

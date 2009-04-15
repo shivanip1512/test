@@ -13,11 +13,11 @@ import org.springframework.core.io.Resource;
 
 import com.cannontech.web.cayenta.util.CayentaRequestException;
 import com.cannontech.web.cayenta.util.CayentaXmlUtils;
-import com.cannontech.web.simplePost.SimplePostService;
+import com.cannontech.web.simplePost.SimpleHttpPostService;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XmlUtils;
 
-class MockSimplePostService implements SimplePostService {
+class MockSimpleHttpPostService implements SimpleHttpPostService {
     
 	public static String SYSTEM_FAILURE = "SYSTEM_FAILURE";
 	public static String FUNCTION_FAILURE = "FUNCTION_FAILURE";
@@ -28,7 +28,7 @@ class MockSimplePostService implements SimplePostService {
 	// Receive a request, parse out the request type and send an example response back.
 	// In some cases, the meter number in the request is used to indicate that some special response should be returned.
 	@Override
-	public String postValue(String name, String value, String url, int port, String userName, String password) throws IOException, HttpException {
+	public String postValue(String name, String value) throws IOException, HttpException {
 		
 		String response = "";
 		String meterNumber = "";
