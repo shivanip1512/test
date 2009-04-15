@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
@@ -42,19 +43,29 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 			String serialNumber,
 			LiteStarsEnergyCompany energyCompany)
 			throws ObjectInOtherEnergyCompanyException {
-
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-		sql.append("SELECT ib.*, lhb.*, etim.EnergyCompanyId, yle.YukonDefinitionId AS CategoryDefId");
-		sql.append("FROM InventoryBase ib, LMHardwareBase lhb, ECToInventoryMapping etim, YukonListEntry yle");
-		sql.append("WHERE lhb.InventoryId = ib.InventoryId");
-		sql.append("AND etim.InventoryId = ib.InventoryId");
-		sql.append("AND yle.EntryId = ib.CategoryId");
-		sql.append("AND UPPER(lhb.ManufacturerSerialNumber) = UPPER(?)");
-
-		List<LiteStarsLMHardware> liteHardwareList = jdbcTemplate.query(
-				sql.toString(), 
-				new LiteStarsLMHardwareRowMapper(),
-				serialNumber);
+		
+		SqlStatementBuilder idSql = new SqlStatementBuilder();
+		idSql.append("SELECT inventoryId");
+		idSql.append("FROM LMHardwareBase");
+		idSql.append("WHERE UPPER(ManufacturerSerialNumber) = UPPER(?)");
+		
+		List<Integer> hardwareIds = 
+			jdbcTemplate.query(idSql.toString(), new IntegerRowMapper(), serialNumber);
+		
+		List<LiteStarsLMHardware> liteHardwareList = new ArrayList<LiteStarsLMHardware>();
+		if(hardwareIds.size() > 0) {
+			SqlStatementBuilder sql = new SqlStatementBuilder();
+			sql.append("SELECT ib.*, lhb.*, etim.EnergyCompanyId, yle.YukonDefinitionId AS CategoryDefId");
+			sql.append("FROM InventoryBase ib, LMHardwareBase lhb, ECToInventoryMapping etim, YukonListEntry yle");
+			sql.append("WHERE lhb.InventoryId = ib.InventoryId");
+			sql.append("AND etim.InventoryId = ib.InventoryId");
+			sql.append("AND yle.EntryId = ib.CategoryId");
+			sql.append("AND ib.InventoryId IN ").appendArgumentList(hardwareIds);
+	
+			liteHardwareList = jdbcTemplate.query(
+					sql.toString(), 
+					new LiteStarsLMHardwareRowMapper());
+		}
 		
 		if(liteHardwareList.size() == 0) {
 			return null;
