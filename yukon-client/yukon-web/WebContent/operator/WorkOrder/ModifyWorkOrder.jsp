@@ -235,6 +235,7 @@ function sendWorkOrder() {
               <% String header = "SERVICE ORDER"; %>
               <%@ include file="include/SearchBar.jspf" %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+              <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>			  
               
 			  <form name="soForm" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient" onsubmit="return validate(this)" onreset="resetOrder(this)">
 			    <input type="hidden" name="action" value="UpdateWorkOrder">

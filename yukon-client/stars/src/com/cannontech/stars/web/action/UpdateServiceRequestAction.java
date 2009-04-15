@@ -138,20 +138,24 @@ public class UpdateServiceRequestAction implements ActionBase {
         	
         	if (updateOrder.hasAccountID()) {
 				// Request from WorkOrder.jsp
-				StarsCustAccountInformation starsAcctInfo = liteStarsEC.getStarsCustAccountInformation( liteOrder.getAccountID() );
-				if (starsAcctInfo != null) {
-					StarsServiceRequest starsOrder = StarsLiteFactory.createStarsServiceRequest( liteOrder, liteStarsEC );
-					parseResponse( starsOrder, starsAcctInfo );
-				}
-        		
-				respOper.setStarsSuccess( new StarsSuccess() );
-				return SOAPUtil.buildSOAPMessage( respOper );
+//				StarsCustAccountInformation starsAcctInfo = liteStarsEC.getStarsCustAccountInformation( liteOrder.getAccountID() );
+//				if (starsAcctInfo != null) {
+//					StarsServiceRequest starsOrder = StarsLiteFactory.createStarsServiceRequest( liteOrder, liteStarsEC );
+//					parseResponse( starsOrder, starsAcctInfo );
+//				}
+        	} else {
+        	    StarsUpdateServiceRequestResponse resp = new StarsUpdateServiceRequestResponse();
+        	    StarsServiceRequest starsOrder = StarsLiteFactory.createStarsServiceRequest(liteOrder, liteStarsEC);
+        	    resp.setStarsServiceRequest( starsOrder );
+        	    respOper.setStarsUpdateServiceRequestResponse( resp );
+        	    
+        	    StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
+        	    session.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
+        	    parseResponse( starsOrder, accountInfo );        	    
         	}
-        	
-        	StarsUpdateServiceRequestResponse resp = new StarsUpdateServiceRequestResponse();
-        	resp.setStarsServiceRequest( StarsLiteFactory.createStarsServiceRequest(liteOrder, liteStarsEC) );
-            
-            respOper.setStarsUpdateServiceRequestResponse( resp );
+            StarsSuccess success = new StarsSuccess();
+            success.setDescription("Work order is updated successfully");
+            respOper.setStarsSuccess( success );
             return SOAPUtil.buildSOAPMessage( respOper );
         }
         catch (Exception e) {
@@ -183,15 +187,11 @@ public class UpdateServiceRequestAction implements ActionBase {
 				return failure.getStatusCode();
 			}
 			
-			if (operation.getStarsSuccess() != null) return 0;
-			
-			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
-					session.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
-			
-			StarsServiceRequest order = operation.getStarsUpdateServiceRequestResponse().getStarsServiceRequest();
-			parseResponse( order, accountInfo );
-			
-            return 0;
+            StarsSuccess success = operation.getStarsSuccess();
+            if (success != null) {
+                session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, success.getDescription() );
+                return 0;
+            }			
         }
         catch (Exception e) {
             CTILogger.error( e.getMessage(), e );

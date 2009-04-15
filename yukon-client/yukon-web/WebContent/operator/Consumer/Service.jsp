@@ -63,7 +63,7 @@ function changeStatus(form) {
 			  
 			  <form name="soForm" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient" onsubmit="return validate(this)">
                 <input type="hidden" name="action" value="CreateWorkOrder">
-                <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Consumer/SOHistory.jsp?OrderNo=0">
+                <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Consumer/ServiceSummary.jsp">
                 <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
                 <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
                   <tr> 

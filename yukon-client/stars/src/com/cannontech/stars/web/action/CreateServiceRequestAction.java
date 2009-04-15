@@ -143,23 +143,29 @@ public class CreateServiceRequestAction implements ActionBase {
                 }
                 session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
 
-                if (createOrder.hasAccountID()) {
-                	StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( createOrder.getAccountID() );
-	                if (starsAcctInfo != null) {
-						StarsServiceRequest starsOrder = StarsLiteFactory.createStarsServiceRequest( liteOrder, energyCompany );
-						starsAcctInfo.getStarsServiceRequestHistory().addStarsServiceRequest(0, starsOrder);
-					}
-	            }
-				
-				respOper.setStarsSuccess( new StarsSuccess() );
-				return SOAPUtil.buildSOAPMessage( respOper );
+//                if (createOrder.hasAccountID()) {
+//                	StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( createOrder.getAccountID() );
+//	                if (starsAcctInfo != null) {
+//						StarsServiceRequest starsOrder = StarsLiteFactory.createStarsServiceRequest( liteOrder, energyCompany );
+//						starsAcctInfo.getStarsServiceRequestHistory().addStarsServiceRequest(0, starsOrder);
+//					}
+//	            }
+            } else {
+                StarsServiceRequest starsOrder = StarsLiteFactory.createStarsServiceRequest( liteOrder, energyCompany );
+                StarsCreateServiceRequestResponse resp = new StarsCreateServiceRequestResponse();
+                resp.setStarsServiceRequest( starsOrder );
+                respOper.setStarsCreateServiceRequestResponse( resp );
+                
+                StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
+                session.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
+                if (accountInfo != null && starsOrder != null) {
+                    accountInfo.getStarsServiceRequestHistory().addStarsServiceRequest( 0, starsOrder);
+                }
             }
             
-            StarsServiceRequest starsOrder = StarsLiteFactory.createStarsServiceRequest( liteOrder, energyCompany );
-            StarsCreateServiceRequestResponse resp = new StarsCreateServiceRequestResponse();
-            resp.setStarsServiceRequest( starsOrder );
-            
-            respOper.setStarsCreateServiceRequestResponse( resp );
+            StarsSuccess success = new StarsSuccess();
+            success.setDescription("Work order is created successfully");            
+            respOper.setStarsSuccess( success );
             return SOAPUtil.buildSOAPMessage( respOper );
         }
         catch (Exception e) {
@@ -191,16 +197,11 @@ public class CreateServiceRequestAction implements ActionBase {
 				return failure.getStatusCode();
 			}
 			
-			if (operation.getStarsSuccess() != null) return 0;
-            
-			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
-					session.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
-				
-			StarsCreateServiceRequestResponse resp = operation.getStarsCreateServiceRequestResponse();
-			if (accountInfo != null) {
-				accountInfo.getStarsServiceRequestHistory().addStarsServiceRequest( 0, resp.getStarsServiceRequest() );
+			StarsSuccess success = operation.getStarsSuccess();
+			if (success != null) {
+			    session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, success.getDescription() );
+			    return 0;			    
 			}
-            return 0;
         }
         catch (Exception e) {
             CTILogger.error( e.getMessage(), e );

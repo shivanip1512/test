@@ -67,6 +67,7 @@ function checkOrderNo(form) {
               <% String header = DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_SERVICE_HISTORY); %>
               <%@ include file="include/InfoSearchBar.jspf" %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+              <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>              
               <span class="MainText">Click on an Order # to view the complete 
               order history.</span> 
             </div>

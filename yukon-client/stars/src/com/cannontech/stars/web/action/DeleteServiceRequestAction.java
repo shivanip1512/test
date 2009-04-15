@@ -113,20 +113,21 @@ public class DeleteServiceRequestAction implements ActionBase {
 				return failure.getStatusCode();
 			}
 			
-			if (operation.getStarsSuccess() == null)
+			StarsSuccess success = operation.getStarsSuccess();			
+			if (success == null) {
 				return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
-			if (operation.getStarsSuccess().getDescription() == null)
-				return 0;
-			
-			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
-					session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
-			if (accountInfo == null)
-				return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
-			
-			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
-			parseResponse( reqOper.getStarsDeleteServiceRequest().getOrderID(), accountInfo );
-			
-			return 0;
+			} else {
+                session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, success.getDescription() );
+                
+                StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
+                session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
+                if (accountInfo != null) {
+                    StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
+                    parseResponse( reqOper.getStarsDeleteServiceRequest().getOrderID(), accountInfo );
+                }
+                
+                return 0;
+			}
 		}
 		catch (Exception e) {
 			CTILogger.error( e.getMessage(), e );
