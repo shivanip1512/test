@@ -197,7 +197,7 @@ public class SearchCustAccountAction implements ActionBase {
             if (accountList == null || accountList.size() == 0) {
 				StarsFailure failure = StarsFactory.newStarsFailure(
 						StarsConstants.FAILURE_CODE_OPERATION_FAILED, "No customer account matching the search criteria" );
-				respOper.setStarsFailure( failure );
+				resp.setStarsFailure( failure );
             }
             else {
             	Integer accountId = null;
@@ -329,7 +329,7 @@ public class SearchCustAccountAction implements ActionBase {
 			StarsSearchCustomerAccountResponse resp = operation.getStarsSearchCustomerAccountResponse();
             if (resp == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 
-            if (resp.getStarsBriefCustAccountInfo() == null  || resp.getStarsBriefCustAccountInfoCount() > 1) {
+            if (resp.getStarsCustAccountInformation() == null  || resp.getStarsBriefCustAccountInfoCount() > 1) {
             	/* No customer account, or more than one account found */
 				session.setAttribute( ServletUtils.ATT_ACCOUNT_SEARCH_RESULTS, resp );
             	return StarsConstants.FAILURE_CODE_OPERATION_FAILED;
