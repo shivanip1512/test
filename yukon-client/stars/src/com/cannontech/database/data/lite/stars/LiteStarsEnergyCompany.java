@@ -459,7 +459,11 @@ public class LiteStarsEnergyCompany extends LiteBase {
         	}
         }
         
-        return programs;
+        if (programs == null) {
+            return Collections.emptyList();
+        } else {
+            return programs;
+        }
     }
     
     /**
