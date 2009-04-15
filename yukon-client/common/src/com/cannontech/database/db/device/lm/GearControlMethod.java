@@ -51,9 +51,9 @@ public enum GearControlMethod {
 		try{
 			return (LMProgramDirectGear)gearClass.newInstance();
 		} catch (IllegalAccessException e) {
-			return null;
+			throw new RuntimeException("IllegalAccessException while from createNewGear()");
 		} catch (InstantiationException e) {
-			return null;
+			throw new RuntimeException("InstantiationException while from createNewGear()");
 		}
 	}
 }
