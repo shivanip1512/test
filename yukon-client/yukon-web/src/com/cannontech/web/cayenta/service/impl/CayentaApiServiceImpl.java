@@ -11,8 +11,6 @@ import org.jdom.output.XMLOutputter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.xml.xpath.XPathException;
 
-import unit.cayenta.MockSimpleHttpPostServiceFactory;
-
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.web.cayenta.model.CayentaLocationInfo;
 import com.cannontech.web.cayenta.model.CayentaMeterInfo;
@@ -191,9 +189,9 @@ public class CayentaApiServiceImpl implements CayentaApiService {
 			String value = xmlOutputter.outputString(requestElement);
 			
 			// --- TEST FOR MOCK RESPONSE ---
-			SimpleHttpPostService postService = (new MockSimpleHttpPostServiceFactory()).getCayentaPostService();
+			//SimpleHttpPostService postService = (new MockSimpleHttpPostServiceFactory()).getCayentaPostService();
 			
-			//SimpleHttpPostService postService = simpleHttpPostServiceFactory.getCayentaPostService();
+			SimpleHttpPostService postService = simpleHttpPostServiceFactory.getCayentaPostService();
 			String resp = postService.postValue(postElementName, value);
 			log.debug("Recieved response: " + resp);
 			return resp;
