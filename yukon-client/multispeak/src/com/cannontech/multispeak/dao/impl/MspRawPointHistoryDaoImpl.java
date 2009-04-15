@@ -62,7 +62,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
                      sql += " AND TIMESTAMP >= ? AND TIMESTAMP <= ? ";
                      if ( !StringUtils.isBlank(lastReceived) )
                          sql += " AND DMG.METERNUMBER > ? ";
-                     sql += " ORDER BY PAO.PAOBJECTID, P.POINTID, TIMESTAMP";  //P.POINTID, 
+                     sql += " ORDER BY DMG.METERNUMBER, P.POINTID, TIMESTAMP";  //P.POINTID, 
         
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -262,7 +262,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
         return meterReadArray;
     }
     
-    public FormattedBlock retrieveBlock(FormattedBlockService<Block> block, Date startDate, Date endDate, String lastReceived) {
+    public FormattedBlock retrieveBlock(FormattedBlockService<Block> block, Date startDate, Date endDate, String lastReceived, int maxRecords) {
         Date timerStart = new Date();
         
         List<Block> blockList = new ArrayList<Block>();
@@ -278,7 +278,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
                      " AND TIMESTAMP >= ? AND TIMESTAMP <= ? ";
                      if ( !StringUtils.isBlank(lastReceived) )
                          sql += " AND DMG.METERNUMBER > ? ";
-                     sql += " ORDER BY PAO.PAOBJECTID, TIMESTAMP";  //P.POINTID, 
+                     sql += " ORDER BY DMG.METERNUMBER, TIMESTAMP";  //P.POINTID, 
         
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -335,7 +335,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
                         if( b.hasData())
                             blockList.add(b);
                         b = null;
-                        if( lastPaoID != paobjectID && blockList.size() >= 100)
+                        if( lastPaoID != paobjectID && blockList.size() >= maxRecords)
                             break;
                     }
 
@@ -368,7 +368,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
     }
     
     public FormattedBlock retrieveBlockByMeterNo(FormattedBlockService<Block> block, Date startDate, 
-                                                Date endDate, String meterNumber, int maxRecords) {
+                                                Date endDate, String meterNumber) {
         Date timerStart = new Date();
         
         List<Block> blockList = new ArrayList<Block>();
@@ -406,7 +406,6 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
                 CTILogger.info("Data Collection Started: START DATE >= " + startDate + " - STOP DATE < " + endDate);
                 rset = pstmt.executeQuery();
 
-                int lastPaoID = -1;
                 int paobjectID = 0;
                 Date prevDateTime = new Date();
                 
@@ -435,12 +434,10 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
                     SimplePointValue pointValue = new SimplePointValue(pointID, dateTime, pointType, value);
                     
                     //Store any previous meter readings.
-                    if (dateTime.after(prevDateTime) || lastPaoID != paobjectID) {
+                    if (dateTime.after(prevDateTime)) {
                         if( b.hasData())
                             blockList.add(b);
                         b = null;
-                        if( lastPaoID != paobjectID && blockList.size() >= maxRecords)
-                            break;
                     }
 
                     if( b == null) 
@@ -448,13 +445,12 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
 
                     b.populate( meter, pointValue);
                     prevDateTime.setTime(dateTime.getTime());
-                    lastPaoID = paobjectID;
                 }
                 
                 //Add the last meterRead object
-                if( b.hasData() &&   //made it all the way through and need to add last one 
-                        lastPaoID == paobjectID)  //but make sure we didn't exit from the break statement
+                if( b.hasData()) {   //made it all the way through and need to add last one 
                     blockList.add(b);
+                }
 
                 CTILogger.info( (new Date().getTime() - timerStart.getTime())*.001 + 
                                                           " Secs for RPH Data for formattedBlock to be loaded" );                

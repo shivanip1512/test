@@ -522,7 +522,15 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
             mspValidationService.isValidBlockReadingType(readingTypesMap, readingType);
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         
-        FormattedBlock formattedBlock = mspRawPointHistoryDao.retrieveBlock(formattedBlockServ, startDate.getTime(), endDate.getTime(), lastReceived);
+        FormattedBlock formattedBlock = mspRawPointHistoryDao.retrieveBlock(formattedBlockServ, 
+        																	startDate.getTime(), 
+        																	endDate.getTime(), 
+        																	lastReceived, 
+        																	vendor.getMaxReturnRecords());
+        
+        setObjectsRemaining(vendor.getMaxReturnRecords(), formattedBlock);
+        setLastSent(formattedBlockServ, formattedBlock);
+        
         FormattedBlock[] formattedBlocks = new FormattedBlock[]{formattedBlock};
      
         setObjectsRemaining(vendor.getMaxReturnRecords(), formattedBlock);
@@ -540,15 +548,11 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         FormattedBlockService<Block> formattedBlockServ = 
             mspValidationService.isValidBlockReadingType(readingTypesMap, readingType);
         
-        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         FormattedBlock formattedBlock = mspRawPointHistoryDao.retrieveBlockByMeterNo(formattedBlockServ, 
                                                                                startDate.getTime(), 
                                                                                endDate.getTime(),
-                                                                               meterNo,
-                                                                               vendor.getMaxReturnRecords());
-        setObjectsRemaining(vendor.getMaxReturnRecords(), formattedBlock);
-        setLastSent(formattedBlockServ, formattedBlock);
-        
+                                                                               meterNo);
+
         FormattedBlock[] formattedBlocks = new FormattedBlock[]{formattedBlock};
      
         return formattedBlocks;
