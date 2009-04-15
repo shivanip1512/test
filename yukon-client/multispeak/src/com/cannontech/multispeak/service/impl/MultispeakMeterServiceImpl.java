@@ -199,7 +199,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             CTILogger.info("Received " + meterNumber + " for CDMeterState from " + mspVendor.getCompanyName());
 
             String commandStr = "getstatus disconnect";
-            writePilRequest(meter, commandStr, id, 15);
+            writePilRequest(meter, commandStr, id, 13);
             mspObjectDao.logMSPActivity("getCDMeterState",
             				"(ID:" + meter.getDeviceId() + ") MeterNumber (" + meterNumber + ") - " + commandStr,
             				mspVendor.getCompanyName());    
@@ -235,7 +235,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         
         final String meterNumber = meter.getMeterNumber();
         CTILogger.info("Received " + meterNumber + " for LatestReadingInterrogate from " + mspVendor.getCompanyName());
-        writePilRequest(meter, commandStr, id, 15);
+        writePilRequest(meter, commandStr, id, 13);
         mspObjectDao.logMSPActivity("getLatestReadingByMeterNo",
 						"(ID:" + meter.getDeviceId() + ") MeterNumber (" + meterNumber + ") - " + commandStr,
 						mspVendor.getCompanyName());
