@@ -1178,7 +1178,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         } else { //Valid template found
             //Find a valid substation
         	String substationName = getMeterSubstationName(mspMeter);
-        	err = isValidSubstation(substationName, mspMeter.getMeterNo(), mspVendor, true);
+        	err = isValidSubstation(substationName, mspMeter.getMeterNo().trim(), mspVendor);
     		if (err == null) {
     			createMeter(mspMeter, mspVendor, templateName, substationName);
             } else {
@@ -1214,7 +1214,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
      * @param mspVendor
      * @return
      */
-    private ErrorObject isValidSubstation(String substationName, String meterNumber, MultispeakVendor mspVendor, boolean isAdd) {
+    private ErrorObject isValidSubstation(String substationName, String meterNumber, MultispeakVendor mspVendor) {
         
         String errorReason = null;
         try {
@@ -1232,7 +1232,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         if (errorReason != null) {
             ErrorObject err = mspObjectDao.getErrorObject(meterNumber, 
                                                           "Error: MeterNumber(" + meterNumber + ") - SubstationName(" + 
-                                                          substationName + ") - " + errorReason + ".  Meter was NOT " + (isAdd ? "added" : "updated"),
+                                                          substationName + ") - " + errorReason + ".  Meter was NOT added or updated",
                                                           "Meter", "MeterAddNotification", mspVendor.getCompanyName());
              return err;
         }
@@ -1356,7 +1356,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         if (StringUtils.isBlank(substationName)) {
         	mspObjectDao.logMSPActivity("MeterAddNotification", "MeterNumber(" + meter.getMeterNumber() + ") - substation name not provided, route locate will not happen.", mspVendor.getCompanyName());
         } else {
-        	err = isValidSubstation(substationName, meter.getMeterNumber(), mspVendor, false);
+        	err = isValidSubstation(substationName, meter.getMeterNumber(), mspVendor);
         	if (err != null) {
         		mspObjectDao.logMSPActivity("MeterAddNotification", "MeterNumber(" + meter.getMeterNumber() + ") - substation name is invalid.", mspVendor.getCompanyName());
         		return err;
