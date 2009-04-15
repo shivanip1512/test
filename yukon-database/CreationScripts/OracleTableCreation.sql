@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/14/2009 11:21:37 AM                        */
+/* Created on:     4/15/2009 10:26:26 AM                        */
 /*==============================================================*/
 
 
@@ -7963,9 +7963,6 @@ insert into YukonGroupRole values(-270,-1,-7,-1600,'0');
 /* Configuration (Device) */
 INSERT INTO YukonGroupRole VALUES(-280,-1,-8,-1700,'(none)');
 
-/* Esubstation Editor */
-insert into YukonGroupRole values(-250,-100,-107,-10700,'(none)');
-
 /* Assign roles to the default Esub Users */
 insert into YukonGroupRole values(-300,-200,-206,-20600,'(none)');
 insert into YukonGroupRole values(-301,-200,-206,-20601,'(none)');
@@ -8188,8 +8185,6 @@ insert into YukonGroupRole values(-1075,-2,-103,-10305,'(none)');
 /* Billing */
 insert into YukonGroupRole values(-1390,-2,-106,-10600,'(none)');
 
-/* Esubstation Editor */
-insert into YukonGroupRole values(-1080,-2,-107,-10700,'(none)');
 insert into YukonGroupRole values(-1081,-2,-206,-20600,'(none)');
 insert into YukonGroupRole values(-1082,-2,-206,-20601,'(none)');
 insert into YukonGroupRole values(-1083,-2,-206,-20602,'(none)');
@@ -9033,7 +9028,6 @@ insert into YukonRoleProperty values(-1109,-2,'z_optional_product_dev','00000000
 insert into YukonRoleProperty values(-1110,-2,'Default Temperature Unit','F','Default temperature unit for an energy company, F(ahrenheit) or C(elsius)');
 insert into YukonRoleProperty values(-1111,-2,'z_meter_mct_base_desig','yukon','Allow meters to be used general STARS entries versus Yukon MCTs');
 insert into YukonRoleProperty values(-1112,-2,'applicable_point_type_key',' ','The name of the set of CICustomerPointData TYPES that should be set for customers.');
-insert into YukonRoleProperty values(-1113,-2,'Standard Page Style Sheet',' ','A comma separated list of URLs for CSS files that will be included on every Standard Page');
 insert into YukonRoleProperty values(-1114,-2,'Inherit Parent App Cats','true','If part of a member structure, should appliance categories be inherited from the parent.');
 
 INSERT INTO YukonRoleProperty VALUES(-1300,-4,'server_address','127.0.0.1','Authentication server machine address');
@@ -9142,9 +9136,6 @@ INSERT INTO YukonRoleProperty VALUES(-10402,-104,'daysprevioustocollect','30','<
 INSERT INTO YukonRoleProperty VALUES(-10500,-105,'home_directory','c:yukonclientwebgraphs','<description>');
 INSERT INTO YukonRoleProperty VALUES(-10501,-105,'run_interval','900','<description>');
 INSERT INTO YukonRoleProperty VALUES(-10600,-106,'Dynamic Billing File Setup','true','Controls access to create, edit, and delete dynamic billing files.'); 
-
-/* Esubstation Editor Role Properties */
-INSERT INTO YukonRoleProperty VALUES(-10700,-107,'default','false','The default esub editor property');
 
 /* Web Client Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-10800,-108,'home_url','/operator/Operations.jsp','The url to take the user immediately after logging into the Yukon web application');
@@ -9649,9 +9640,6 @@ INSERT INTO YukonUserRole VALUES(-172,-1,-103,-10302,'true');
 INSERT INTO YukonUserRole VALUES(-173,-1,-103,-10303,'false');
 INSERT INTO YukonUserRole VALUES(-174,-1,-103,-10304,'false');
 INSERT INTO YukonUserRole VALUES(-175,-1,-103,-10305,'(none)');
-
-/* Esubstation Editor */
-INSERT INTO YukonUserRole VALUES(-250,-1,-107,-10700,'(none)');
 
 /* Esub Drawings */
 INSERT INTO YukonUserRole VALUES(-300,-1,-206,-20600,'(none)');

@@ -14,6 +14,12 @@ SET RoleName = 'Tabular Data Console', RoleDescription = 'Access to the Yukon Ta
 WHERE RoleId = -101;
 /* End YUK-7238 */
 
+/* Start YUK-7236 */
+DELETE FROM YukonGroupRole WHERE RolePropertyId IN (-1113, -10700);
+DELETE FROM YukonUserRole WHERE RolePropertyId IN (-1113, -10700);
+DELETE FROM YukonRoleProperty WHERE RolePropertyId IN (-1113, -10700);
+/* End YUK-7236 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
