@@ -23,6 +23,9 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "exchange.h"
 #include "dlldefs.h"
 
+#pragma optimize( "", off ) // Be careful with this, be sure ON is at the bottom of the file 
+                            // and that all header files are before this!
+
 CtiExchange::CtiExchange(RWSocketPortal portal) : Portal_(new RWSocketPortal(portal))
 {
     CtiLockGuard<CtiMutex> guard(_classMutex);
@@ -79,4 +82,4 @@ CtiExchange::~CtiExchange()
     }
 }
 
-
+#pragma optimize( "", on ) 

@@ -32,6 +32,9 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 #include "logger.h"
 
+#pragma optimize( "", off ) // Be careful with this, be sure ON is at the bottom of the file 
+                            // and that all header files are before this!
+
 CtiConnection::~CtiConnection()
 {
     try
@@ -1426,3 +1429,5 @@ void CtiConnection::cleanExchange()
     }
     _exchange = NULL;
 }
+
+#pragma optimize( "", on ) 
