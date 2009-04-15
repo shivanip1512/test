@@ -695,13 +695,15 @@ void CtiMCScheduler::calcDayOfMonthStart(const CtiTime& now, const CtiMCSchedule
     int year = nowDate.year();
     int day = std::min((unsigned int)sched.getStartDay(), CtiDate::daysInMonthYear(month, year));
 
-    if( start_time.day() < day ) {
+    const int days_remaining = day - start_time.day();
+
+    if( days_remaining > 0 ) {
         // if the scheduled day has not yet happened in this month
-        start_time.addDays(day - start_time.day());
+        start_time.addDays(days_remaining);
     }
     else
     {
-        if( now > start_time || start_time.day() != day ) {
+        if( days_remaining != 0 || now > start_time ) {
             // scheduled day is next month
             if( month == 12 )
             {
