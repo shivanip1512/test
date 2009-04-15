@@ -197,7 +197,7 @@ public class SearchCustAccountAction implements ActionBase {
             if (accountList == null || accountList.size() == 0) {
 				StarsFailure failure = StarsFactory.newStarsFailure(
 						StarsConstants.FAILURE_CODE_OPERATION_FAILED, "No customer account matching the search criteria" );
-				resp.setStarsFailure( failure );
+				respOper.setStarsFailure( failure );
             }
             else {
             	Integer accountId = null;
