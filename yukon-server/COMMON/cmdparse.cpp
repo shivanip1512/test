@@ -6170,7 +6170,7 @@ void CtiCommandParser::doParseControlExpresscomCriticalPeakPricing(const string 
     if(!(temp = CmdStr.match( (const boost::regex) (CtiString("(wake|leave|return|sleep)[ =]+") + str_signed_num ) )).empty())
     {
     
-        if(!(temp = CmdStr.match((const boost::regex) (CtiString("wake[ =]+" + str_signed_num) )).empty())
+        if(!(temp = CmdStr.match((const boost::regex) (CtiString("wake[ =]+") + str_signed_num) )).empty())
         {
             if(!(valStr = temp.match(re_signed_num)).empty())
             {
@@ -6178,7 +6178,7 @@ void CtiCommandParser::doParseControlExpresscomCriticalPeakPricing(const string 
                 _cmd["xcwake"] = CtiParseValue(setpoint); 
             }
         }
-        if(!(temp = CmdStr.match((const boost::regex) (CtiString("leave[ =]+" + str_signed_num) )).empty())
+        if(!(temp = CmdStr.match((const boost::regex) (CtiString("leave[ =]+") + str_signed_num) )).empty())
         {
             if(!(valStr = temp.match(re_signed_num)).empty())
             {
@@ -6186,7 +6186,7 @@ void CtiCommandParser::doParseControlExpresscomCriticalPeakPricing(const string 
                 _cmd["xcleave"] = CtiParseValue(setpoint); 
             }
         }
-        if(!(temp = CmdStr.match((const boost::regex) (CtiString("return[ =]+" + str_signed_num) )).empty())
+        if(!(temp = CmdStr.match((const boost::regex) (CtiString("return[ =]+") + str_signed_num) )).empty())
         {
             if(!(valStr = temp.match(re_signed_num)).empty())
             {
@@ -6194,7 +6194,7 @@ void CtiCommandParser::doParseControlExpresscomCriticalPeakPricing(const string 
                 _cmd["xcreturn"] = CtiParseValue(setpoint); 
             }
         }
-        if(!(temp = CmdStr.match((const boost::regex) (CtiString("sleep[ =]+" + str_signed_num) )).empty())
+        if(!(temp = CmdStr.match((const boost::regex) (CtiString("sleep[ =]+") + str_signed_num) )).empty())
         {
             if(!(valStr = temp.match(re_signed_num)).empty())
             {
