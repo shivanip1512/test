@@ -124,7 +124,6 @@ public class IntegrationLoginController {
     }
 
     @Autowired
-    @Resource(name="localMasterConfig")
     public void setConfig(ConfigurationSource config) {
         this.config = config;
     }

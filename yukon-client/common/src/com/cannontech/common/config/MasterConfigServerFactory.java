@@ -3,10 +3,9 @@ package com.cannontech.common.config;
 import java.io.File;
 import java.io.InputStream;
 
-import javax.annotation.Resource;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.CtiUtilities;
@@ -45,7 +44,7 @@ public class MasterConfigServerFactory implements FactoryBean {
         return false;
     }
     
-    @Resource(name="localMasterConfig")
+    @Autowired
     public void setLocalConfigurationSource(
             ConfigurationSource localConfigurationSource) {
         this.localConfigurationSource = localConfigurationSource;

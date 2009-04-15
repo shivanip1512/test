@@ -55,10 +55,6 @@
         <property name="defaultThemeResolver" ref="themeResolver"/>
     </bean>
 
-    <bean id="localMasterConfig" class="com.cannontech.common.config.MasterConfigHelper"
-          factory-method="getLocalConfiguration">
-    </bean>
-
     <bean id="timerTaskUtil" class="com.cannontech.stars.web.util.TimerTaskUtil">
       <property name="timer" ref="globalScheduledExecutor"/>
     </bean>
@@ -934,7 +930,7 @@
     <bean id="abstractLoginRequestHandler" class="com.cannontech.web.login.AbstractLoginRequestHandler"
           abstract="true">
         <property name="loginService" ref="loginService"/>
-        <property name="config" ref="localMasterConfig"/>
+        <property name="config" ref="configurationSource"/>
         <property name="yukonUserDao" ref="yukonUserDao"/>
     </bean>          
     

@@ -8,19 +8,23 @@
          
     <bean id="handlerMapping" class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"/>
 
-	<bean id="remoteLogger" class="com.cannontech.clientutils.RemoteLoggerImpl">
-	  
-	</bean>
+	<bean id="remoteLogger" class="com.cannontech.clientutils.RemoteLoggerImpl"/>
 	
 	<bean name="/RemoteLogger" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
   		<property name="service" ref="remoteLogger"/>
   		<property name="serviceInterface" value="com.cannontech.clientutils.RemoteLogger"/>
 	</bean>
+	
+	<bean id="localMasterConfig" class="com.cannontech.common.config.MasterConfigHelper"
+          factory-method="getLocalConfiguration">
+    </bean>
+
+	<bean id="standardLocalOrRemoteLocalMasterConfig" class="com.cannontech.common.config.MasterConfigServerFactory">
+	    <property name="localConfigurationSource" ref="localMasterConfig"/>
+	</bean>
 
 	<bean name="/MasterConfig" class="com.cannontech.spring.PermissionCheckingHttpInvokerServiceExporter">
-  		<property name="service">
-            <bean class="com.cannontech.common.config.MasterConfigServerFactory"/>
-        </property>
+  		<property name="service" ref="standardLocalOrRemoteLocalMasterConfig"/>
   		<property name="serviceInterface" value="com.cannontech.common.config.ConfigurationSource"/>
 	</bean>
 </beans>
