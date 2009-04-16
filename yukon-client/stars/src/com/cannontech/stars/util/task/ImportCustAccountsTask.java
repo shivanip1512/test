@@ -179,7 +179,6 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 	String email = null;
 	boolean preScan = false;
     boolean insertSpecified = false;
-    boolean seasonalLoad = false;
     int userID = UserUtils.USER_DEFAULT_ID;
     LiteYukonUser currentUser;
     boolean firstFinishedPass = true;
@@ -663,14 +662,6 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 						hwFields[ImportManagerUtil.IDX_LINE_NUM] = String.valueOf(lineNo);
 						setHardwareFields( hwFields, columns, hwColIdx );
 						
-						/*
-                         * Need to check for seasonal load option (same relay, different app, same switch, different prog
-						 */
-                        if(hwFields[ImportManagerUtil.IDX_OPTION_PARAMS].trim().length() > 0)
-                        {
-                            seasonalLoad = hwFields[ImportManagerUtil.IDX_OPTION_PARAMS].equalsIgnoreCase(ImportManagerUtil.SEASONAL_LOAD_OPTION);
-                        }
-
                         if (hwFields[ImportManagerUtil.IDX_SERIAL_NO].trim().length() == 0) {
                             custFileErrors++;
                             String[] value = custLines.get(lineNoKey);
@@ -966,14 +957,6 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 						custFields = custFieldsMap.get( hwFields[ImportManagerUtil.IDX_ACCOUNT_ID] );
 					LiteStarsCustAccountInformation liteAcctInfo = null;
 					
-                    /*
-                     * Need to check for seasonal load option (same relay, different app, same switch, different prog
-                     */
-                    if(hwFields[ImportManagerUtil.IDX_OPTION_PARAMS].trim().length() > 0)
-                    {
-                        seasonalLoad = hwFields[ImportManagerUtil.IDX_OPTION_PARAMS].equalsIgnoreCase(ImportManagerUtil.SEASONAL_LOAD_OPTION);
-                    }
-                    
 					if (custFields != null) {
 						if (custFields[ImportManagerUtil.IDX_ACCOUNT_ACTION].equals("REMOVE")) {
 							if (hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {
@@ -1479,7 +1462,6 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 	    boolean forcedUnenroll = programs.length < 1;
         
         int relay = 0;
-        boolean relayNotFound = true;
         int currentNumberOfAppliances = liteAcctInfo.getAppliances().size();
         List<Integer> currentProgramIDs = new ArrayList<Integer>(currentNumberOfAppliances);
         if(appFields == null)
@@ -1500,26 +1482,11 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
                     return;
                  }
                  
-                 if(!forcedUnenroll && liteApp.getLoadNumber() == relay && !seasonalLoad)
-                 {
-                     relayNotFound = false;
-                 }
-                 else
-                 {
-                     currentProgramIDs.add(liteApp.getProgramID());
-                 }
+                 currentProgramIDs.add(liteApp.getProgramID());
              }
 		}
 		
-        /*
-         * We are looking for the specified relay.  If it exists on any appliance connected to
-         * the same switch, then we will want to update that specific appliance
-         * and enrollment.  If it doesn't exist on any app for this switch, then we know that it
-         * should be a new separate app and enrollment while maintaining the old enrollment.
-         *--We only add a new enrollment and appliance on the same relay when the seasonal load
-         *flag is set.
-         */
-        if(!forcedUnenroll && ((relayNotFound && relay > -1) || seasonalLoad))
+        if(!forcedUnenroll)
         {
             int[] newEnrollment = programs[0];
             programs = new int[currentProgramIDs.size() + 1][];
