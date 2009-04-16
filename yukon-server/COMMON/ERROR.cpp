@@ -229,6 +229,8 @@ ERRSTRUCT CTIErrors[] = {
     { ErrorInvalidSSPEC,    "Insufficient SSPEC/Firmware Revision",             ERRTYPESYSTEM, " N/A"},
     { ErrorVerifySSPEC,     "Verify SSPEC/Firmware Revision",                   ERRTYPESYSTEM, " N/A"},
 
+    { ErrorTransmitterBusy, "Transmitter is busy",                              ERRTYPEPROTOCOL, " N/A"},
+
     { UnknownError,         "Unknown Error",                                    ERRTYPESYSTEM, " N/A"},
 
 };

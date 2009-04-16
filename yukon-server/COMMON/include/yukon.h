@@ -308,6 +308,8 @@ enum YukonError_t
     ErrorInvalidSSPEC,          // Hardware has an insufficient SSPEC/firmware revision
     ErrorVerifySSPEC,           // Need to verify SSPEC/firmware revision
 
+    ErrorTransmitterBusy,
+
     FinalError
 };
 

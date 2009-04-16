@@ -431,13 +431,19 @@ INT IM_EX_CTIBASE NackTst (BYTE Reply,           /* character to be tested */
    }
 
    /* calculate out the ack character for this CCU and compare */
-   if((Reply & 0x7c) == 0x40)
-      *NAck = 0;
-   else if((Reply & 0x7c) == 0x30)
-      *NAck = 1;
+   const BYTE ack_bits = Reply & 0x7c;
+
+   switch( ack_bits )
+   {
+       case 0x40:  *NAck = 0;  break;
+       case 0x30:  *NAck = 1;  break;
+       case 0x3c:  return ErrorTransmitterBusy;
+  }
 
    if((Reply & 0x03) != (CCU & 0x03))
+   {
       return(BADCCU);
+   }
 
    return(NORMAL);
 }
