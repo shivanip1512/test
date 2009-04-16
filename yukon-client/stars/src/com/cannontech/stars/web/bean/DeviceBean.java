@@ -11,6 +11,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
@@ -73,13 +74,16 @@ public class DeviceBean {
 			for (int i = 0; i < devices.size(); i++) {
 				LiteYukonPAObject litePao =  devices.get(i);
 				try {
-					LiteInventoryBase liteInv = starsSearchDao.getDeviceByDeviceId(litePao.getYukonID(), getEnergyCompany());
-					if (liteInv == null)
-						deviceList.add( litePao );
-					else if (liteInv.getAccountID() == 0 && getFilter() == DEV_FILTER_NOT_ASSIGNED)
+					LiteInventoryBase liteInv = starsSearchDao.getByDeviceId(litePao.getYukonID(), getEnergyCompany());
+					if (liteInv.getAccountID() == 0 && getFilter() == DEV_FILTER_NOT_ASSIGNED)
 						deviceList.add( litePao );
 				}
-				catch (ObjectInOtherEnergyCompanyException e) {}
+				catch (ObjectInOtherEnergyCompanyException e) {
+					
+				}
+				catch (NotFoundException e) {
+					deviceList.add( litePao );
+				}
 			}
 		}
 		else {

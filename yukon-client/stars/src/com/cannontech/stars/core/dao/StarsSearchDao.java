@@ -56,23 +56,23 @@ public interface StarsSearchDao {
 			List<LiteStarsEnergyCompany> energyCompanyList);
 	
 	/**
-	 * Method to find a device by device id for a given energy company
+	 * Method to find an Inventory by device id for a given energy company
 	 * @param deviceId - Id of device
 	 * @param energyCompany - Energy company to get device for
 	 * @return Hardware if found or null if not found
 	 * @throws ObjectInOtherEnergyCompanyException - If hardware exists in another energy company
 	 */
-	public LiteInventoryBase getDeviceByDeviceId(int deviceId, LiteStarsEnergyCompany energyCompany) 
+	public LiteInventoryBase getByDeviceId(int deviceId, LiteStarsEnergyCompany energyCompany) 
 			throws ObjectInOtherEnergyCompanyException;
 
 	/**
-	 * Method to find a device by inventory id for a given energy company
+	 * Method to find an Inventory by inventory id for a given energy company
 	 * @param inventoryId - Inventory Id of device
 	 * @param energyCompany - Energy company to get device for
 	 * @return Hardware if found or null if not found
 	 * @throws ObjectInOtherEnergyCompanyException - If hardware exists in another energy company
 	 */
-	public LiteInventoryBase getDeviceByInventoryId(int inventoryId, LiteStarsEnergyCompany energyCompany) 
+	public LiteInventoryBase getById(int inventoryId, LiteStarsEnergyCompany energyCompany) 
 			throws ObjectInOtherEnergyCompanyException;
 	
 	/**

@@ -183,29 +183,30 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 	}
 
 	@Override
-	public LiteInventoryBase getDeviceByDeviceId(int deviceId, LiteStarsEnergyCompany energyCompany)
+	public LiteInventoryBase getByDeviceId(int deviceId, LiteStarsEnergyCompany energyCompany)
 			throws ObjectInOtherEnergyCompanyException {
 
+		//Throws NotFoundException
 		LiteInventoryBase inventoryBase = starsInventoryBaseDao.getByDeviceId(deviceId);
 		
-		return getDevice(inventoryBase,energyCompany);
+		return verifyInventoryInEnergyCompany(inventoryBase,energyCompany);
 	}
 
 	@Override
-	public LiteInventoryBase getDeviceByInventoryId(int inventoryId, LiteStarsEnergyCompany energyCompany)
+	public LiteInventoryBase getById(int inventoryId, LiteStarsEnergyCompany energyCompany)
 			throws ObjectInOtherEnergyCompanyException {
 
 		LiteInventoryBase inventoryBase = starsInventoryBaseDao.getByInventoryId(inventoryId);
-		
-		return getDevice(inventoryBase,energyCompany);
-	}
-	
-	private LiteInventoryBase getDevice(LiteInventoryBase invBase, LiteStarsEnergyCompany energyCompany) throws ObjectInOtherEnergyCompanyException {
-		
-		if(invBase == null) {
-			return invBase;
+		//Remove this test when getByInventoryId is change to throw NotFoundException
+		if(inventoryBase == null) {
+			return inventoryBase;
 		}
 		
+		return verifyInventoryInEnergyCompany(inventoryBase,energyCompany);
+	}
+	
+	private LiteInventoryBase verifyInventoryInEnergyCompany(LiteInventoryBase invBase, LiteStarsEnergyCompany energyCompany) throws ObjectInOtherEnergyCompanyException {
+
 		if(!energyCompany.getEnergyCompanyID().equals(invBase.getEnergyCompanyId())) {
 			LiteStarsEnergyCompany inventoryEC = ecMappingDao.getInventoryEC(invBase.getInventoryID());
 			throw new ObjectInOtherEnergyCompanyException( invBase, inventoryEC);

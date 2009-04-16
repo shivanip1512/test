@@ -1647,8 +1647,8 @@ public class StarsLiteFactory {
 		
 		starsInv.setDeviceStatus( (DeviceStatus) StarsFactory.newStarsCustListEntry(
 				energyCompany.getYukonListEntry( liteInv.getCurrentStateID() ), DeviceStatus.class) );
-		boolean whatif = liteInv instanceof LiteStarsLMHardware;
-		if (whatif) {
+
+		if (liteInv instanceof LiteStarsLMHardware) {
 			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) liteInv;
 			starsInv.setDeviceType( (DeviceType)StarsFactory.newStarsCustListEntry(
 					DaoFactory.getYukonListDao().getYukonListEntry(liteHw.getLmHardwareTypeID()),

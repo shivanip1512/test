@@ -14,8 +14,10 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
@@ -74,43 +76,49 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
     @Override
     @Transactional(readOnly = true)
     public LiteInventoryBase getByInventoryId(final int inventoryId) {
-        SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
-        sqlBuilder.append(selectInventorySql);
-        sqlBuilder.append("WHERE ib.InventoryId = ?");
-
-        String sql = sqlBuilder.toString();
-        List<LiteInventoryBase> liteInventoryList = simpleJdbcTemplate.query(sql,
-                                                                             smartInventoryRowMapper,
-                                                                             inventoryId);
-        if (liteInventoryList.size() == 0) {
-            return null;
-        }
-
-        LiteInventoryBase inventoryBase = liteInventoryList.get(0);
-
-        return inventoryBase;
+        //Silencing the exception until each caller can be addressed to
+    	//handle the change from returning null to catching an exception.
+    	try {
+        	return getLiteInventoryBaseById("WHERE ib.InventoryId = ?",inventoryId);
+        } catch (NotFoundException e) {
+        	CTILogger.warn(e);
+    		return null;
+    	}
     }
 
     @Override
     @Transactional(readOnly = true)
     public LiteInventoryBase getByDeviceId(final int deviceId) {
+   		return getLiteInventoryBaseById("WHERE ib.DeviceId = ?",deviceId);
+    }
+
+    /**
+     * Gets LiteInventoryBase using the passed in WHERE and id. 
+     * Throws NotFoundException if there is no result found.
+     * 
+     * @param whereClause
+     * @param id
+     * @return
+     */
+    private LiteInventoryBase getLiteInventoryBaseById(String whereClause, final int id) throws NotFoundException {
         SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
         sqlBuilder.append(selectInventorySql);
-        sqlBuilder.append("WHERE ib.DeviceId = ?");
+        sqlBuilder.append(whereClause);
 
         String sql = sqlBuilder.toString();
         List<LiteInventoryBase> liteInventoryList = simpleJdbcTemplate.query(sql,
                                                                              smartInventoryRowMapper,
-                                                                             deviceId);
+                                                                             id);
         if (liteInventoryList.size() == 0) {
-            return null;
+            throw new NotFoundException("LiteInventoryBase with condition: " + whereClause + " and id: " + id + " not found.");
+        } else if (liteInventoryList.size() > 1) {
+        	CTILogger.warn("Unexpected number of results from database for id: " + id + ", returning only the first result.");
         }
 
         LiteInventoryBase inventoryBase = liteInventoryList.get(0);
 
         return inventoryBase;
     }
-
     
     @Override
     @Transactional(readOnly = true)

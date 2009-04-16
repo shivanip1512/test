@@ -50,13 +50,14 @@ public class InsertDeviceController extends StarsInventoryActionController {
 
         LiteInventoryBase liteInv = null;
         try {
-            liteInv = starsSearchDao.getDeviceByDeviceId(deviceID, energyCompany);
-        }
-        catch (ObjectInOtherEnergyCompanyException e) {
+            liteInv = starsSearchDao.getByDeviceId(deviceID, energyCompany);
+        } catch (ObjectInOtherEnergyCompanyException e) {
             session.setAttribute( InventoryManagerUtil.INVENTORY_TO_CHECK, e );
             String location = request.getContextPath() + "/operator/Consumer/CheckInv.jsp";
             response.sendRedirect(location);
             return;
+        } catch (NotFoundException e) {
+        	CTILogger.info(" Device Id: " + deviceID + " not found in Energy Company: " + energyCompany.getName());
         }
 
         Integer invNo = (Integer) session.getAttribute( InventoryManagerUtil.STARS_INVENTORY_NO );

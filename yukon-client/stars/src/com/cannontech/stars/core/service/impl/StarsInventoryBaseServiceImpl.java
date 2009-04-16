@@ -299,7 +299,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
 
                 // see if serialNumber is changed, if so, see it doesn't already
                 // exist on another device
-                LiteStarsLMHardware lmHwPrev = (LiteStarsLMHardware) starsSearchDao.getDeviceByInventoryId(lmHw.getInventoryID(), energyCompany);
+                LiteStarsLMHardware lmHwPrev = (LiteStarsLMHardware) starsSearchDao.getById(lmHw.getInventoryID(), energyCompany);
                 if (!lmHwPrev.getManufacturerSerialNumber().equals(newSerialNo) && starsSearchDao.searchLMHardwareBySerialNumber(newSerialNo,
                                                                                                                                  energyCompany) != null) {
                     throw new StarsDeviceSerialNumberAlreadyExistsException(newSerialNo,
