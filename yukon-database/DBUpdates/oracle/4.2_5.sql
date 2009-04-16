@@ -27,6 +27,12 @@ CREATE INDEX INDX_LMProgEvent_AcctId_ProgId ON LMProgramEvent (
 ); 
 /* End YUK-7321 */
 
+/* Start YUK-7320 */
+CREATE INDEX INDX_LMHardBase_ManSerNum_FB ON LMHardwareBase (
+    UPPER(ManufacturerSerialNumber)
+);
+/* End YUK-7320 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
