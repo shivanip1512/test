@@ -270,10 +270,11 @@ CtiStatistics& CtiStatistics::operator=(const CtiStatistics& aRef)
 
         _dirty = true;
 
-        _paoid = aRef._paoid;
-        _doHistInsert = aRef._doHistInsert;
-        _dirtyCounter = aRef._dirtyCounter;
-        _rowExists    = aRef._rowExists;
+        _paoid         = aRef._paoid;
+        _doHistInsert  = aRef._doHistInsert;
+        _dirtyCounter  = aRef._dirtyCounter;
+        _rowExists     = aRef._rowExists;
+        _hourRowExists = aRef._hourRowExists;
 
         for(i = 0; i < FinalCounterBin; i++)
         {
@@ -421,7 +422,8 @@ void CtiStatistics::Factory(RWDBReader &rdr, vector<CtiStatistics *> &restored)
 
             if( counter >= 0 )
             {
-                if( startdt == stat->_intervalBounds[counter].first )
+                // This ensures we only load the values if they are current. Old values are not loaded.
+                if( startdt == stat->_intervalBounds[counter].first || counter == Lifetime )
                 {
                     rdr["requests"]         >> val;  stat->setInitialCounterVal( Requests,       counter, val);
                     rdr["completions"]      >> val;  stat->setInitialCounterVal( Completions,    counter, val);
@@ -505,15 +507,6 @@ RWDBStatus::ErrorCode  CtiStatistics::Insert(RWDBConnection &conn, int counter)
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << "Statistics Insert Error Code = " << stat.errorCode() << endl;
             dout << ins.asString() << endl;
-        }
-        else
-        {
-            _dirtyCounter[counter] = false;
-            _rowExists[counter] = true;
-            if( counter == CurrentHour )
-            {
-                _hourRowExists[ _intervalBounds[counter].first.hour() ] = true;
-            }
         }
     }
 
@@ -675,13 +668,24 @@ bool CtiStatistics::isDirty() const
     return _dirty;
 }
 
+// Clears all dirty flags and sets all dirty intervals as being written
 CtiStatistics& CtiStatistics::resetDirty()
 {
     _dirty = false;
     _doHistInsert = false;
 
-    _dirtyCounter.reset();
+    for(int counter = 0; counter < FinalCounterBin; counter++)
+    {
+        if( _dirtyCounter.test(counter) )
+        {
+            _dirtyCounter[counter] = false;
+            _rowExists[counter] = true;
+            if( counter == CurrentHour || counter == PreviousHour)
+            {
+                _hourRowExists[ _intervalBounds[counter].first.hour() ] = true;
+            }
+        }
+    }
 
     return *this;
 }
-
