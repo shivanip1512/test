@@ -190,10 +190,6 @@
     <entry key="yukon.dr.consumer.thermostatSchedule.label">{0}</entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.multipleLabel">Multiple Thermostats</entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.changeSelected">Change selected thermostats</entry>
-    <entry key="yukon.dr.consumer.thermostatSchedule.weekday">Weekday</entry>
-    <entry key="yukon.dr.consumer.thermostatSchedule.weekend">Weekend</entry>
-    <entry key="yukon.dr.consumer.thermostatSchedule.saturday">Staturday</entry>
-    <entry key="yukon.dr.consumer.thermostatSchedule.sunday">Sunday</entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.scheduleMode">Schedule mode</entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.scheduleModeAll">Same schedule all days of week</entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.scheduleMode52">Weekday and Weekend schedules</entry>

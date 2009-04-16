@@ -119,10 +119,6 @@
     <entry key="yukon.dr.operator.thermostatSchedule.allLabel">all selected thermostats</entry>
     <entry key="yukon.dr.operator.thermostatSchedule.multipleLabel">Multiple Thermostats</entry>
     <entry key="yukon.dr.operator.thermostatSchedule.changeSelected">Change selected thermostats</entry>
-    <entry key="yukon.dr.operator.thermostatSchedule.weekday">Weekday</entry>
-    <entry key="yukon.dr.operator.thermostatSchedule.weekend">Weekend</entry>
-    <entry key="yukon.dr.operator.thermostatSchedule.saturday">Staturday</entry>
-    <entry key="yukon.dr.operator.thermostatSchedule.sunday">Sunday</entry>
     <entry key="yukon.dr.operator.thermostatSchedule.scheduleMode">Schedule mode</entry>
     <entry key="yukon.dr.operator.thermostatSchedule.scheduleModeAll">Same schedule all days of week</entry>
     <entry key="yukon.dr.operator.thermostatSchedule.scheduleMode52">Weekday and Weekend schedules</entry>
