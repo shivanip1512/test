@@ -60,11 +60,12 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 			sql.append("WHERE lhb.InventoryId = ib.InventoryId");
 			sql.append("AND etim.InventoryId = ib.InventoryId");
 			sql.append("AND yle.EntryId = ib.CategoryId");
-			sql.append("AND ib.InventoryId IN ").appendArgumentList(hardwareIds);
+			sql.append("AND ib.InventoryId IN (").appendArgumentList(hardwareIds).append(")");
 	
 			liteHardwareList = jdbcTemplate.query(
-					sql.toString(), 
-					new LiteStarsLMHardwareRowMapper());
+					sql.getSql(), 
+					new LiteStarsLMHardwareRowMapper(),
+					sql.getArguments());
 		}
 		
 		if(liteHardwareList.size() == 0) {
