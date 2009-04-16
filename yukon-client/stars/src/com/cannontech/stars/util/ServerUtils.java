@@ -1,5 +1,7 @@
 package com.cannontech.stars.util;
 
+import java.util.List;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -222,5 +224,12 @@ public class ServerUtils {
         }
         
         return dirBase;
+    }
+    
+    public static<T> T returnFirstRow(List<T> list, String errorString) {
+    	if (list.size() > 1) {
+    		CTILogger.warn(errorString + " got " + list.size() + " rows");
+    	}
+    	return list.get(0);
     }
 }

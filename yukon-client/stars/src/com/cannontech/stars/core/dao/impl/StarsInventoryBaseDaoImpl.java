@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.FieldMapper;
@@ -33,6 +34,7 @@ import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
 import com.cannontech.stars.dr.hardware.dao.LMConfigurationBaseDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
+import com.cannontech.stars.util.ServerUtils;
 
 public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, InitializingBean {
     private static final ParameterizedRowMapper<LiteInventoryBase> smartInventoryRowMapper = new SmartLiteInventoryBaseRowMapper();
@@ -76,48 +78,38 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
     @Override
     @Transactional(readOnly = true)
     public LiteInventoryBase getByInventoryId(final int inventoryId) {
-        //Silencing the exception until each caller can be addressed to
-    	//handle the change from returning null to catching an exception.
-    	try {
-        	return getLiteInventoryBaseById("WHERE ib.InventoryId = ?",inventoryId);
-        } catch (NotFoundException e) {
-        	CTILogger.warn(e);
-    		return null;
-    	}
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+    	sql.append(selectInventorySql);
+    	sql.append("WHERE ib.InventoryId = ").appendArgument(inventoryId);
+    	
+        List<LiteInventoryBase> liteInventoryList = simpleJdbcTemplate.query(sql.getSql(),
+                smartInventoryRowMapper,
+                sql.getArguments());
+        
+        if (liteInventoryList.size() == 0) {
+            throw new NotFoundException("LiteInventoryBase not found by Device Id: " + inventoryId);
+        }
+        
+        return ServerUtils.returnFirstRow(liteInventoryList, "multiple Inventory ids found for " + inventoryId);
     }
-
+    
+    
     @Override
     @Transactional(readOnly = true)
     public LiteInventoryBase getByDeviceId(final int deviceId) {
-   		return getLiteInventoryBaseById("WHERE ib.DeviceId = ?",deviceId);
-    }
-
-    /**
-     * Gets LiteInventoryBase using the passed in WHERE and id. 
-     * Throws NotFoundException if there is no result found.
-     * 
-     * @param whereClause
-     * @param id
-     * @return
-     */
-    private LiteInventoryBase getLiteInventoryBaseById(String whereClause, final int id) throws NotFoundException {
-        SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
-        sqlBuilder.append(selectInventorySql);
-        sqlBuilder.append(whereClause);
-
-        String sql = sqlBuilder.toString();
-        List<LiteInventoryBase> liteInventoryList = simpleJdbcTemplate.query(sql,
-                                                                             smartInventoryRowMapper,
-                                                                             id);
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+    	sql.append(selectInventorySql);
+    	sql.append("WHERE ib.DeviceId = ").appendArgument(deviceId);
+    	
+        List<LiteInventoryBase> liteInventoryList = simpleJdbcTemplate.query(sql.getSql(),
+                smartInventoryRowMapper,
+                sql.getArguments());
+        
         if (liteInventoryList.size() == 0) {
-            throw new NotFoundException("LiteInventoryBase with condition: " + whereClause + " and id: " + id + " not found.");
-        } else if (liteInventoryList.size() > 1) {
-        	CTILogger.warn("Unexpected number of results from database for id: " + id + ", returning only the first result.");
+            throw new NotFoundException("LiteInventoryBase not found by Device Id: " + deviceId);
         }
-
-        LiteInventoryBase inventoryBase = liteInventoryList.get(0);
-
-        return inventoryBase;
+        
+        return ServerUtils.returnFirstRow(liteInventoryList, "multiple device ids found for " + deviceId);
     }
     
     @Override
