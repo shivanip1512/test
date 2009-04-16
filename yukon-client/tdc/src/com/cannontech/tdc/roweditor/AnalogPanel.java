@@ -141,7 +141,7 @@ private javax.swing.JLabel getJLabelValue() {
 			ivjJLabelValue = new javax.swing.JLabel();
 			ivjJLabelValue.setName("JLabelValue");
 			ivjJLabelValue.setFont(new java.awt.Font("dialog", 0, 12));
-			ivjJLabelValue.setText("Value");
+			ivjJLabelValue.setText("Value:");
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {

@@ -16,7 +16,6 @@ import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.gui.util.Colors;
-import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
@@ -62,7 +61,7 @@ public class Display2WayDataAdapter extends AbstractTableModel implements com.ca
 
 	/* BEGIN -Data for each row */
 	private Vector pointValues = null;  // row specific characteristics
-	private Vector rows = null; // values the row contains
+	private Vector<Object> rows = null; // values the row contains
 	private AlarmingRowVector alarmedRows = null;
 	/* END -data for each row */
 	
@@ -146,10 +145,10 @@ protected Vector getColumnTypeName()
 	return columnTypeName;
 }
 
-protected Vector getRows()
+protected Vector<Object> getRows()
 {
 	if( rows == null )
-		rows = new Vector(64);	
+		rows = new Vector<Object>(64);	
 	return rows;
 }
 
@@ -1602,6 +1601,7 @@ private boolean checkFilter( Signal signal )
  * This method was created in VisualAge.
  *    ONLY SIGNALS SHOULD BE ALLOWED IN HERE
  */
+@SuppressWarnings("unchecked")
 public synchronized void processSignalReceived( Signal signal, int pageNumber )
 {
 	// make sure we have a point and we are not a LOG display
@@ -1623,13 +1623,27 @@ public synchronized void processSignalReceived( Signal signal, int pageNumber )
 		handleAlarm( signal );
 		
 		// set all fields that overlap in the PointData() and Signal() data structures
-		if( getPointValue(getRowNumber(signal)) != null )
+		int rowNum = getRowNumber(signal) > -1 ? getRowNumber(signal) : getRowNumber(signal.getPointID());
+		if( getPointValue(rowNum) != null)
 		{
-			rNum = getRowNumber(signal);
-
+			rNum = rowNum;
+			PointValues pv = getPointValue(rNum); 
 			//the new row has been added, lets set its signl instance
-			getPointValue(rNum).updateSignal( signal );
-
+			pv.updateSignal( signal );
+			// update other things that signals can tell us
+			pv.setPointState(TagUtils.getTagString(signal.getTags()));
+			pv.setTags(signal.getTags());
+			Vector<Object> dataRow = (Vector<Object>)getRows().elementAt( rNum );
+			if ( getColumnTypeName().contains(CustomDisplay.COLUMN_TYPE_POINTQUALITY) ) {
+				String quality = (String) pv.getPointQuality().getAbbreviation();
+				quality += TagUtils.isAlarmActive(signal.getTags()) ? "-(ALM)" : "";
+				int index = getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_POINTQUALITY);
+	 			dataRow.setElementAt(quality, index); 
+			}
+			if ( getColumnTypeName().contains(CustomDisplay.COLUMN_TYPE_STATE) ){
+	 			dataRow.setElementAt(TagUtils.getTagString( signal.getTags() ), getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_STATE) ); 
+			}
+			
 			//update the tables view of the data
 			setRowTimeStamp(
 					getPointValue(rNum),
@@ -1866,6 +1880,7 @@ private Integer getCellQualityCount( PointValues point_, int loc_, final Integer
  * This method was created in VisualAge.
  * @param Point com.cannontech.message.dispatch.message.SinglePointChange
  */
+@SuppressWarnings("unchecked")
 private void setCorrectRowValue( PointValues point, int location ) 
 {
 	
