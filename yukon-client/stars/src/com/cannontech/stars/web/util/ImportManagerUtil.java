@@ -505,7 +505,7 @@ public class ImportManagerUtil {
 			}
 			catch (NumberFormatException e) {
 				// Otherwise, this is the substation name inside ""
-				String subName = fields[IDX_SUBSTATION].substring( 1, fields[IDX_SUBSTATION].length()-1 );
+				String subName = fields[IDX_SUBSTATION];//.substring( 1, fields[IDX_SUBSTATION].length()-1 );
 				
                 List<LiteSubstation> subList = energyCompany.getAllSubstations();
 				for (int i = 0; i < subList.size(); i++) {

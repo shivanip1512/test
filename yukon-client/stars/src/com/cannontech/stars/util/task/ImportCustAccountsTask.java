@@ -1218,7 +1218,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 		if (colIdx[COL_MAP_NO] >= 0 && colIdx[COL_MAP_NO] < columns.length)
 			fields[ImportManagerUtil.IDX_MAP_NO] = columns[ colIdx[COL_MAP_NO] ];
 		if (colIdx[COL_SUBSTATION] >= 0 && colIdx[COL_SUBSTATION] < columns.length && columns[colIdx[COL_SUBSTATION]].trim().length() > 0)
-			fields[ImportManagerUtil.IDX_SUBSTATION] = "\"" + columns[ colIdx[COL_SUBSTATION] ] + "\"";
+			fields[ImportManagerUtil.IDX_SUBSTATION] = columns[ colIdx[COL_SUBSTATION] ];
 		if (colIdx[COL_FEEDER] >= 0 && colIdx[COL_FEEDER] < columns.length)
 			fields[ImportManagerUtil.IDX_FEEDER] = columns[ colIdx[COL_FEEDER] ];
 		if (colIdx[COL_POLE] >= 0 && colIdx[COL_POLE] < columns.length)
