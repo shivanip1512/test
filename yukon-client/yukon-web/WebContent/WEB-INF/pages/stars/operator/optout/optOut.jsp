@@ -140,7 +140,7 @@
             <td>
                 <c:choose>
                     <c:when test="${noOptOutLimits}">
-                        <cti:msg key="yukon.dr.consumer.optout.unlimitedRemaining"/>
+                        <cti:msg key="yukon.dr.operator.optout.unlimitedRemaining"/>
                     </c:when>
                     <c:otherwise>
                         ${optOutCounts[inventory.inventoryId].remainingOptOuts}

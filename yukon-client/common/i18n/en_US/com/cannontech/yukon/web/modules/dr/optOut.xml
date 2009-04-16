@@ -49,7 +49,7 @@
     <entry key="yukon.dr.operator.optout.allowAdditional">Allow Another Opt Out</entry>
     <entry key="yukon.dr.operator.optout.allowAnother">Allow 1</entry>
     <entry key="yukon.dr.operator.optout.remaining">Consumer Opt Outs&lt;br&gt;Remaining</entry>
-    <entry key="yukon.dr.consumer.optout.unlimitedRemaining">unlimited</entry>
+    <entry key="yukon.dr.operator.optout.unlimitedRemaining">unlimited</entry>
     <entry key="yukon.dr.operator.optout.reset">Reset</entry>
     <entry key="yukon.dr.operator.optout.clear">Clear</entry>
     <entry key="yukon.dr.operator.optout.atLimit">Remaining opt outs&lt;br&gt;at opt out limit</entry>
