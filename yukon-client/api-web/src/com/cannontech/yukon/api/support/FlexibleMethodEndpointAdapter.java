@@ -64,20 +64,23 @@ public class FlexibleMethodEndpointAdapter extends AbstractMethodEndpointAdapter
                 if (Element.class.equals(parameter)) {
                     Source requestSource = messageContext.getRequest().getPayloadSource();
                     if (requestSource != null) {
-                        if (requestSource instanceof DOMSource) {
+                        if ( requestSource instanceof DOMSource) {
                             Node node = ((DOMSource) requestSource).getNode();
                             DOMBuilder domBuilder = new DOMBuilder();
                             if (node.getNodeType() == Node.ELEMENT_NODE) {
-                            	thisArgument = domBuilder.build((org.w3c.dom.Element) node);
+                                thisArgument = domBuilder.build((org.w3c.dom.Element) node);
                             }
                             else if (node.getNodeType() == Node.DOCUMENT_NODE) {
                                 Document document = domBuilder.build((org.w3c.dom.Document) node);
                                 thisArgument = document.getRootElement();
                             }
                         }
-                        JDOMResult jdomResult = new JDOMResult();
-                        transform(requestSource, jdomResult);
-                        thisArgument = jdomResult.getDocument().getRootElement();
+                        if (thisArgument == null) {
+                            // direct conversion not possible, must transform
+                            JDOMResult jdomResult = new JDOMResult();
+                            transform(requestSource, jdomResult);
+                            thisArgument = jdomResult.getDocument().getRootElement();
+                        }
                     }
                 } else if (LiteYukonUser.class.equals(parameter)) {
 
