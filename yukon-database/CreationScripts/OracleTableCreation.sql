@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/15/2009 10:26:26 AM                        */
+/* Created on:     4/16/2009 2:52:41 PM                         */
 /*==============================================================*/
 
 
@@ -172,6 +172,8 @@ drop index LmHrd_LmHrdCfg_FK;
 drop index INDX_LMHardContGroup_AcctId;
 
 drop index INDX_LMHardContGroup_InvId;
+
+drop index INDX_LMProgEvent_AcctId_ProgId;
 
 drop index INDX_LMThermSch_AcctId;
 
@@ -6334,6 +6336,14 @@ create table LMProgramEvent  (
    AccountID            NUMBER                          not null,
    ProgramID            NUMBER,
    constraint PK_LMPROGRAMEVENT primary key (EventID)
+);
+
+/*==============================================================*/
+/* Index: INDX_LMProgEvent_AcctId_ProgId                        */
+/*==============================================================*/
+create index INDX_LMProgEvent_AcctId_ProgId on LMProgramEvent (
+   AccountID ASC,
+   ProgramID ASC
 );
 
 /*==============================================================*/

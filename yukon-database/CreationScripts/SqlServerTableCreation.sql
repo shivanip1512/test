@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     4/15/2009 10:28:00 AM                        */
+/* Created on:     4/16/2009 2:49:46 PM                         */
 /*==============================================================*/
 
 
@@ -687,6 +687,15 @@ if exists (select 1
             and   indid > 0
             and   indid < 255)
    drop index LMHardwareControlGroup.INDX_LMHardContGroup_InvId
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('LMProgramEvent')
+            and   name  = 'INDX_LMProgEvent_AcctId_ProgId'
+            and   indid > 0
+            and   indid < 255)
+   drop index LMProgramEvent.INDX_LMProgEvent_AcctId_ProgId
 go
 
 if exists (select 1
@@ -9086,6 +9095,15 @@ create table LMProgramEvent (
    AccountID            numeric              not null,
    ProgramID            numeric              null,
    constraint PK_LMPROGRAMEVENT primary key (EventID)
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_LMProgEvent_AcctId_ProgId                        */
+/*==============================================================*/
+create index INDX_LMProgEvent_AcctId_ProgId on LMProgramEvent (
+AccountID ASC,
+ProgramID ASC
 )
 go
 

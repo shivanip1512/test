@@ -20,6 +20,13 @@ DELETE FROM YukonUserRole WHERE RolePropertyId IN (-1113, -10700);
 DELETE FROM YukonRoleProperty WHERE RolePropertyId IN (-1113, -10700);
 /* End YUK-7236 */
 
+/* Start YUK-7321 */
+CREATE INDEX INDX_LMProgEvent_AcctId_ProgId ON LMProgramEvent (
+    AccountId ASC,
+    ProgramId ASC
+); 
+/* End YUK-7321 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
