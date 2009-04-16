@@ -1710,7 +1710,28 @@ INT CtiDeviceMCT410::executeGetConfig( CtiRequestMsg              *pReq,
 
         if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= SspecRev_Disconnect_ConfigReadEnhanced )
         {
+            //  adds the config byte and the disconnect verification threshold
             OutMessage->Buffer.BSt.Length += 2;
+        }
+        else if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) )
+        {
+            //  since we won't be getting the config byte back in the extended read, we need to read
+            //    it out ourselves so we can display the disconnect button status in the decode
+            CtiOutMessage *interest_om = new CtiOutMessage(*OutMessage);
+
+            if( getOperation(Emetcon::GetConfig_Model, interest_om->Buffer.BSt) )
+            {
+                interest_om->Sequence = Emetcon::GetConfig_Model;
+
+                //  make this return message disappear so it doesn't confuse the client
+                interest_om->Request.Connection = 0;
+
+                outList.push_back(interest_om);
+            }
+            else
+            {
+                delete interest_om;
+            }
         }
     }
     else if( parse.isKeyValid("thresholds") )
