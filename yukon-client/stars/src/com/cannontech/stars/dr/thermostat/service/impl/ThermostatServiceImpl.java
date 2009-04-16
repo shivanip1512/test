@@ -143,8 +143,8 @@ public class ThermostatServiceImpl implements ThermostatService {
                                     account.getAccountId(),
                                     account.getCustomerId());
 
-        return ThermostatManualEventResult.CONSUMER_MANUAL_SUCCESS;
-
+        return event.isRunProgram() ? ThermostatManualEventResult.CONSUMER_MANUAL_PROGRAM_SUCCESS
+                : ThermostatManualEventResult.CONSUMER_MANUAL_SUCCESS;
         }
 
     @Override

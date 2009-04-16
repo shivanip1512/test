@@ -6,7 +6,8 @@ package com.cannontech.stars.dr.thermostat.model;
 public enum ThermostatManualEventResult {
     OPERATOR_UNAVAILABLE_ERROR(true), 
     CONSUMER_MANUAL_ERROR(true), 
-    CONSUMER_MANUAL_SUCCESS(false), 
+    CONSUMER_MANUAL_SUCCESS(false),
+    CONSUMER_MANUAL_PROGRAM_SUCCESS(false), 
     CONSUMER_MULTIPLE_ERROR(true),
     OPERATOR_NO_SERIAL_ERROR(true), 
     CONSUMER_NO_SERIAL_ERROR(true);
