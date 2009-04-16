@@ -393,7 +393,7 @@ enum CtiRoute_t
     RouteTypeSeriesVLMI,
     RouteTypeSNPP,
     RouteTypeForeignPorter,
-	RouteTypeXML,
+    RouteTypeXML,
 
     RouteTypeMax
 };
@@ -474,7 +474,7 @@ enum CtiOutMessageFlags_t
     MessageFlag_RouteToPorterGatewayThread = 0x00000001 << 2,
     MessageFlag_ExpectMore                 = 0x00000001 << 3,
     MessageFlag_QueuedToDevice             = 0x00000001 << 4,
-    MessageFlag_MessageRequeued            = 0x00000001 << 5,   // This message was reque'd and retries were decremented.
+    MessageFlag_BroadcastOnMacroSubroutes  = 0x00000001 << 5,
     MessageFlag_PortSharing                = 0x00000001 << 6,
     MessageFlag_AddSilence                 = 0x00000001 << 7,
     MessageFlag_StatisticsRequested        = 0x00000001 << 8,

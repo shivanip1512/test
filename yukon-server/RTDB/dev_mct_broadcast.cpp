@@ -126,7 +126,8 @@ INT CtiDeviceMCTBroadcast::ExecuteRequest( CtiRequestMsg              *pReq,
             OutMessage = NULL;
         }
 
-        executeOnDLCRoute(pReq, parse, OutMessage, tmpOutList, vgList, retList, outList, false);
+        //  everything is broadcast on an MCT Broadcast device
+        executeOnDLCRoute(pReq, parse, tmpOutList, vgList, retList, outList, true);
     }
 
     return nRet;

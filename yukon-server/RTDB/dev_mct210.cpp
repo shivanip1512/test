@@ -121,26 +121,6 @@ INT CtiDeviceMCT210::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
             break;
         }
 
-        case (Emetcon::Control_Connect):
-        case (Emetcon::Control_Disconnect):
-        {
-            CtiRequestMsg newReq(getID(),
-                                 "getstatus disconnect noqueue",
-                                 InMessage->Return.UserID,
-                                 InMessage->Return.GrpMsgID,
-                                 InMessage->Return.RouteID,
-                                 selectInitialMacroRouteOffset(InMessage->Return.RouteID),
-                                 InMessage->Return.Attempt);
-
-            newReq.setConnectionHandle((void *)InMessage->Return.Connection);
-
-            CtiCommandParser parse(newReq.CommandString());
-
-            CtiDeviceBase::ExecuteRequest(&newReq, parse, vgList, retList, outList);
-
-            break;
-        }
-
         default:
         {
             status = Inherited::ModelDecode(InMessage, TimeNow, vgList, retList, outList);

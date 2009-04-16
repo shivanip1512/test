@@ -858,26 +858,6 @@ INT CtiDeviceMCT410::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
         case Emetcon::GetConfig_Multiplier:
         case Emetcon::GetConfig_CentronParameters:  status = decodeGetConfigCentron(InMessage, TimeNow, vgList, retList, outList);      break;
 
-        case Emetcon::Control_Connect:
-        case Emetcon::Control_Disconnect:
-        {
-            CtiRequestMsg newReq(getID(),
-                                 "getstatus disconnect noqueue",
-                                 InMessage->Return.UserID,
-                                 InMessage->Return.GrpMsgID,
-                                 InMessage->Return.RouteID,
-                                 selectInitialMacroRouteOffset(InMessage->Return.RouteID),
-                                 0,
-                                 0,
-                                 InMessage->Priority);
-
-            newReq.setConnectionHandle((void *)InMessage->Return.Connection);
-
-            CtiDeviceBase::ExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
-
-            break;
-        }
-
         default:
         {
             status = Inherited::ModelDecode(InMessage, TimeNow, vgList, retList, outList);

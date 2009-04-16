@@ -73,12 +73,11 @@ protected:
 
     int executeOnDLCRoute( CtiRequestMsg              *pReq,
                            CtiCommandParser           &parse,
-                           OUTMESS                   *&OutMessage,
                            list< OUTMESS* >     &tmpOutList,
                            list< CtiMessage* >  &vgList,
                            list< CtiMessage* >  &retList,
                            list< OUTMESS* >     &outList,
-                           bool                        wait );
+                           bool                  broadcastWritesOnMacroSubroutes );
 
     class CommandStore
     {

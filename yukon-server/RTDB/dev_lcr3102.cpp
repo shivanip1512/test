@@ -49,9 +49,9 @@ INT LCR3102::ExecuteRequest ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
 {
     int nRet = NoMethod;
 
-    bool twoWay = false;
+    bool broadcast = false;
     list< OUTMESS* > tmpOutList;
- 
+
     if( OutMessage )
     {
         EstablishOutMessagePriority( OutMessage, MAXPRIORITY - 4 );
@@ -67,6 +67,7 @@ INT LCR3102::ExecuteRequest ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
         case ScanRequest:
         {
             nRet = executeScan( pReq, parse, OutMessage, vgList, retList, tmpOutList );
+            break;
         }
     }
 
@@ -101,7 +102,7 @@ INT LCR3102::ExecuteRequest ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
             OutMessage = NULL;
         }
 
-        nRet = executeOnDLCRoute(pReq, parse, OutMessage, tmpOutList, vgList, retList, outList, twoWay);
+        nRet = executeOnDLCRoute(pReq, parse, tmpOutList, vgList, retList, outList, broadcast);
     }
 
     return nRet;
@@ -288,7 +289,7 @@ INT LCR3102::decodeGetValueHistoricalTime( INMESS *InMessage, CtiTime &TimeNow, 
         {
             return NOTNORMAL;
         }
-       
+
         readNum   = function / 4 + 1;
 
         //There are 4 relays
@@ -350,13 +351,13 @@ INT LCR3102::decodeGetValueHistoricalTime( INMESS *InMessage, CtiTime &TimeNow, 
             pi = getSixBitValueFromBuffer(DSt->Message + 1, i, std::min(DSt->Length - 1, 36 - 1));
 
             int point_offset = point_base + relay - 1;
-            
+
             insertPointDataReport(AnalogPointType, point_offset, ReturnMsg,
                                   pi, identifier + " Load " + CtiNumStr(relay), pointTime);
 
             pointTime.addMinutes(-1*60); // subtract an hour for each value
         }
-        
+
         ReturnMsg->setResultString(results);
         decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
@@ -577,7 +578,7 @@ INT LCR3102::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
         {
             incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
         }
-            
+
         nRet = NoError;
     }
 
@@ -708,9 +709,9 @@ CtiDeviceSingle::point_info LCR3102::getSixBitValueFromBuffer(unsigned char buff
     retVal.freeze_bit = false;
     retVal.quality    = InvalidQuality;
     retVal.value      = 0x3F;
-    
+
     int startByte = valuePosition * 6 / 8;
-    int bitsInStartByte  = 8 - (valuePosition * 6 % 8); 
+    int bitsInStartByte  = 8 - (valuePosition * 6 % 8);
     int bitsInSecondByte = 6 - bitsInStartByte;
 
     if( (startByte + (bitsInSecondByte ? 1 : 0)) < bufferSize )
@@ -733,7 +734,7 @@ CtiDeviceSingle::point_info LCR3102::getSixBitValueFromBuffer(unsigned char buff
     return retVal;
 }
 
-// Returns only the 22 bits of emetcon address. 
+// Returns only the 22 bits of emetcon address.
 // This is called by executeOnDLCRoute so cannot be renamed
 LONG LCR3102::getAddress() const
 {

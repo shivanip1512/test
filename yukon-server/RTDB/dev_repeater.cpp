@@ -41,7 +41,7 @@ CtiDeviceRepeater900::~CtiDeviceRepeater900() { }
 
 CtiDeviceRepeater900& CtiDeviceRepeater900::operator=(const CtiDeviceRepeater900& aRef)
 {
-    if(this != &aRef)  
+    if(this != &aRef)
     {
        Inherited::operator=(aRef);
     }
@@ -90,6 +90,7 @@ INT CtiDeviceRepeater900::ExecuteRequest(CtiRequestMsg                  *pReq,
                                          list< OUTMESS* >         &outList)
 {
     int nRet = NoError;
+    bool broadcast = false;
     list< OUTMESS* > tmpOutList;
 
     switch( parse.getCommand() )
@@ -112,6 +113,7 @@ INT CtiDeviceRepeater900::ExecuteRequest(CtiRequestMsg                  *pReq,
         case PutConfigRequest:
         {
             nRet = executePutConfig(pReq, parse, OutMessage, vgList, retList, tmpOutList);
+            broadcast = true;
             break;
         }
         case GetValueRequest:
@@ -164,7 +166,7 @@ INT CtiDeviceRepeater900::ExecuteRequest(CtiRequestMsg                  *pReq,
             OutMessage = NULL;
         }
 
-        executeOnDLCRoute(pReq, parse, OutMessage, tmpOutList, vgList, retList, outList, true);
+        executeOnDLCRoute(pReq, parse, tmpOutList, vgList, retList, outList, broadcast);
     }
 
     return nRet;

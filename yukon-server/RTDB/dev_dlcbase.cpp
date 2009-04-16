@@ -372,12 +372,11 @@ INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, list< CtiMessage
 
 int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
                                          CtiCommandParser           &parse,
-                                         OUTMESS                   *&OutMessage,
                                          list< OUTMESS* >     &tmpOutList,
                                          list< CtiMessage* >  &vgList,
                                          list< CtiMessage* >  &retList,
                                          list< OUTMESS* >     &outList,
-                                         bool                        result )
+                                         bool                  broadcastWritesOnMacroSubroutes )
 {
     int nRet = NoError;
 
@@ -403,16 +402,20 @@ int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
 
         EstablishOutMessagePriority( pOut, MAXPRIORITY - 4 );
 
+        //  if they said to broadcast it and it's a write, tag it for macro route broadcast
+        if( broadcastWritesOnMacroSubroutes
+            && (pOut->Buffer.BSt.IO == Emetcon::IO_Function_Write ||
+                pOut->Buffer.BSt.IO == Emetcon::IO_Write) )
+        {
+            pOut->MessageFlags |= MessageFlag_BroadcastOnMacroSubroutes;
+        }
+
         if( (Route = CtiDeviceBase::getRoute( pOut->Request.RouteID )) )
         {
             pOut->TargetID  = getID();
 
-            pOut->EventCode = BWORD | WAIT;
-
-            if( result || (pOut->Buffer.BSt.IO == Emetcon::IO_Function_Read || pOut->Buffer.BSt.IO == Emetcon::IO_Read))
-            {
-                pOut->EventCode |= RESULT;
-            }
+            //  all B word DLC commands return a "result" - even if it's just notification that a one-way command was submitted (such as a control, write, etc)
+            pOut->EventCode = BWORD | WAIT | RESULT;
 
             if( pOut->Sequence == Emetcon::PutConfig_TSync )
             {

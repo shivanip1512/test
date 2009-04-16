@@ -442,7 +442,7 @@ INT CtiDeviceMCT::ExecuteRequest( CtiRequestMsg              *pReq,
                                   list< OUTMESS* >     &outList )
 {
     int nRet = NoError;
-    bool twoWay = true;
+    bool broadcast = false;
     list< OUTMESS* > tmpOutList;
 
     if( OutMessage )
@@ -470,13 +470,13 @@ INT CtiDeviceMCT::ExecuteRequest( CtiRequestMsg              *pReq,
         case PutValueRequest:
         {
             nRet = executePutValue( pReq, parse, OutMessage, vgList, retList, tmpOutList );
-            twoWay = false;
+            broadcast = true;
             break;
         }
         case ControlRequest:
         {
             nRet = executeControl( pReq, parse, OutMessage, vgList, retList, tmpOutList );
-            twoWay = false;
+            broadcast = true;
             break;
         }
         case GetStatusRequest:
@@ -487,7 +487,7 @@ INT CtiDeviceMCT::ExecuteRequest( CtiRequestMsg              *pReq,
         case PutStatusRequest:
         {
             nRet = executePutStatus( pReq, parse, OutMessage, vgList, retList, tmpOutList );
-            twoWay = false;
+            broadcast = true;
             break;
         }
         case GetConfigRequest:
@@ -498,7 +498,7 @@ INT CtiDeviceMCT::ExecuteRequest( CtiRequestMsg              *pReq,
         case PutConfigRequest:
         {
             nRet = executePutConfig( pReq, parse, OutMessage, vgList, retList, tmpOutList );
-            twoWay = false;
+            broadcast = true;
             break;
         }
         default:
@@ -545,7 +545,7 @@ INT CtiDeviceMCT::ExecuteRequest( CtiRequestMsg              *pReq,
             OutMessage = NULL;
         }
 
-        executeOnDLCRoute(pReq, parse, OutMessage, tmpOutList, vgList, retList, outList, twoWay);
+        executeOnDLCRoute(pReq, parse, tmpOutList, vgList, retList, outList, broadcast);
     }
 
     return nRet;
@@ -2880,6 +2880,26 @@ INT CtiDeviceMCT::executeControl(CtiRequestMsg                  *pReq,
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
         outList.push_back( OutMessage );
+
+        if( function == Emetcon::Control_Disconnect ||
+            function == Emetcon::Control_Connect )
+        {
+            OUTMESS *gs_OutMessage = new OUTMESS(*OutMessage);
+
+            if( getOperation(Emetcon::GetStatus_Disconnect, gs_OutMessage->Buffer.BSt) )
+            {
+                gs_OutMessage->Sequence = Emetcon::GetStatus_Disconnect;
+
+                //  this doesn't need the silence referenced above
+                gs_OutMessage->MessageFlags = gs_OutMessage->MessageFlags & ~MessageFlag_AddSilence;
+
+                outList.push_back(gs_OutMessage);
+            }
+            else
+            {
+                delete gs_OutMessage;
+            }
+        }
 
         OutMessage = NULL;
     }

@@ -103,10 +103,13 @@ INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
 
     try
     {
-        bool ignore2WayBehavior = findStringIgnoreCase( parse.getCommandStr(), " allroutes" ); // If specified, all routes in the macro will get the command.
+        bool allroutes = false;
+
+        allroutes |= findStringIgnoreCase( parse.getCommandStr(), " allroutes" ); // If specified, all routes in the macro will get the command.
+        allroutes |= OutMessage->MessageFlags & MessageFlag_BroadcastOnMacroSubroutes;
 
         CtiLockGuard< CtiMutex > listguard(getRouteListMux());
-        if( !ignore2WayBehavior && (OutMessage->EventCode & RESULT) &&  onebasedoffset > 0 )       // If this is a two way request we want to walk the routelist.  Otherwise send on all subroutes.
+        if( !allroutes && (OutMessage->EventCode & RESULT) &&  onebasedoffset > 0 )       // If this is a two way request we want to walk the routelist.  Otherwise send on all subroutes.
         {
             if( offset < RoutePtrList.length())
             {
