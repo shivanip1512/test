@@ -44,7 +44,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
     private PaoPermissionDao<LiteYukonUser> userPaoPermissionDao = null;
     private DBPersistentDao dbPersistantDao;    
 
-    public static final int numberOfRandomChars = 2;
+    public static final int numberOfRandomChars = 5;
     
     static {
         
@@ -150,10 +150,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
 	public String generateUsername(String firstName, String lastName) {
         String newUsername = null;
 
-        String firstInitial = "";
-        if (firstName != null) {
-            firstInitial = firstName.toLowerCase().substring(0, 1);
-        }
+        String firstInitial = firstName.toLowerCase().substring(0, 1);
         
         // In the event of having a name more than the database limit of 64 characters. 
         // We will truncate the last name to 63 characters.
@@ -163,23 +160,20 @@ public class YukonUserDaoImpl implements YukonUserDao {
         	newUsername = firstInitial + lastName.toLowerCase();
         }
         
-        //If the username is not unique, we will try once to generate a unique one.
+        //If the user name is not unique, we will try once to generate a unique one.
         if (getLiteYukonUser(newUsername) != null) {
-            String timeStamp = Long.toString(new Date().getTime());
-            String extraDigits = RandomStringUtils.randomNumeric(numberOfRandomChars);
+            String extraDigits = RandomStringUtils.randomAlphanumeric(numberOfRandomChars);
             String uniqueUsername;
             
-            //If the time stamp and extra digits will push this over 64, 
-            // we will truncate part of the user name to make room for it.
-            if(newUsername.length() + timeStamp.length() + extraDigits.length() > 64  ) {
-            	uniqueUsername = newUsername.substring(0, newUsername.length() - 
-            											  timeStamp.length() - 
-            											  extraDigits.length());
+            //If the extra digits will push this over 64, 
+            //we will truncate part of the user name to make room for it.
+            if(newUsername.length() + numberOfRandomChars > 64  ) {
+            	uniqueUsername = newUsername.substring(0, newUsername.length() - numberOfRandomChars);
             } else {
             	uniqueUsername = newUsername;
             }
             
-            uniqueUsername += timeStamp + extraDigits;
+            uniqueUsername += extraDigits;
 
             if (getLiteYukonUser(uniqueUsername) != null) {
                 throw new RuntimeException("Failed to generate unique username, please retry");

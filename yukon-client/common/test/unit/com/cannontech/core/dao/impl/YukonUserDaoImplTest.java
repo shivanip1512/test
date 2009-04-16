@@ -77,7 +77,7 @@ public class YukonUserDaoImplTest {
 		try {
 			//This should only Truncate. No random numbers
 			String result = dao.generateUsername(firstName, lastName);
-			String patternStr = "flastname[a-zA-Z]*";
+			String patternStr = "flastnamelastnamelastnamelastnamelastnamelastnamelastnamelastnam";
 			Pattern pattern = Pattern.compile(patternStr);
 			Matcher matcher = pattern.matcher(result);
 			boolean match = matcher.matches();
@@ -99,7 +99,7 @@ public class YukonUserDaoImplTest {
 		try {
 			//This should generate a random number and still maintain < 64 characters.
 			String result = dao.generateUsername(firstName, lastName);
-			String patternStr = "flastname[a-zA-Z]*[0-9][0-9]*";
+			String patternStr = "flastnamelastnamelastnamelastnamelastnamelastnamelastnamela[a-zA-Z0-9][a-zA-Z0-9][a-zA-Z0-9][a-zA-Z0-9][a-zA-Z0-9]";
 			Pattern pattern = Pattern.compile(patternStr);
 			Matcher matcher = pattern.matcher(result);
 			boolean match = matcher.matches();
@@ -120,7 +120,7 @@ public class YukonUserDaoImplTest {
 		
 		try {
 			String result = dao.generateUsername(firstName, lastName);
-			String patternStr = "flastname[0-9]*";
+			String patternStr = "flastname[a-zA-Z0-9][a-zA-Z0-9][a-zA-Z0-9][a-zA-Z0-9][a-zA-Z0-9]";
 			Pattern pattern = Pattern.compile(patternStr);
 			Matcher matcher = pattern.matcher(result);
 			boolean match = matcher.matches();
