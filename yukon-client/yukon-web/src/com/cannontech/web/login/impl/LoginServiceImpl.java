@@ -43,7 +43,6 @@ public class LoginServiceImpl implements LoginService {
     private static final String REDIRECT = com.cannontech.common.constants.LoginController.REDIRECT;
     private static final String YUKON_USER = com.cannontech.common.constants.LoginController.YUKON_USER;
     private static final String SAVED_YUKON_USERS = com.cannontech.common.constants.LoginController.SAVED_YUKON_USERS;
-    private static final String LOGIN_WEB_ACTIVITY_ACTION = com.cannontech.database.data.activity.ActivityLogActions.LOGIN_WEB_ACTIVITY_ACTION;
     private static final String LOGIN_CLIENT_ACTIVITY_ACTION = com.cannontech.database.data.activity.ActivityLogActions.LOGIN_CLIENT_ACTIVITY_ACTION;
     private static final String LOGOUT_ACTIVITY_LOG = com.cannontech.database.data.activity.ActivityLogActions.LOGOUT_ACTIVITY_LOG;
     private static final String LOGIN_FAILED_ACTIVITY_LOG = com.cannontech.database.data.activity.ActivityLogActions.LOGIN_FAILED_ACTIVITY_LOG;
@@ -63,7 +62,6 @@ public class LoginServiceImpl implements LoginService {
             final LiteYukonUser user = authenticationService.login(username, password);
             createSession(request, user);
 
-            ActivityLogger.logEvent(user.getUserID(), LOGIN_WEB_ACTIVITY_ACTION, "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " + request.getRemoteAddr());
             return true;
         } catch (AuthenticationThrottleException e) {
             ActivityLogger.logEvent(LOGIN_FAILED_ACTIVITY_LOG,
@@ -263,7 +261,7 @@ public class LoginServiceImpl implements LoginService {
             session.setAttribute( SAVED_YUKON_USERS, new Pair(oldContext, referer) );
 
         initSession(user, session);
-        ActivityLogger.logEvent(user.getUserID(), LOGIN_WEB_ACTIVITY_ACTION, "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " + request.getRemoteAddr());
+        ActivityLogger.logEvent(user.getUserID(), LoginService.LOGIN_WEB_ACTIVITY_ACTION, "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " + request.getRemoteAddr());
 
         CtiNavObject nav = (CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE);
         if(nav == null) nav = new CtiNavObject();

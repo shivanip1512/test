@@ -8,6 +8,7 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
+import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.exception.AuthenticationThrottleException;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -46,6 +47,12 @@ public class YukonLoginController extends MultiActionController {
         }
         if (success) {
             LiteYukonUser user = ServletUtil.getYukonUser(request);
+
+            ActivityLogger.logEvent(
+            		user.getUserID(), 
+            		LoginService.LOGIN_WEB_ACTIVITY_ACTION, 
+            		"User " + user.getUsername() + " (userid=" + user.getUserID() + 
+            			") has logged in from " + request.getRemoteAddr());
             
             boolean hasWebClientRole = rolePropertyDao.checkRole(YukonRole.WEB_CLIENT, user);
             

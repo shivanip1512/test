@@ -10,12 +10,15 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
+import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.exception.AuthenticationThrottleException;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.login.AbstractLoginRequestHandler;
 import com.cannontech.web.login.LoginCookieHelper;
+import com.cannontech.web.login.LoginService;
 import com.cannontech.web.login.UserPasswordHolder;
 
 public class CookieLoginRequestHandler extends AbstractLoginRequestHandler {
@@ -34,6 +37,14 @@ public class CookieLoginRequestHandler extends AbstractLoginRequestHandler {
 
                 boolean success = loginService.login(request, holder.getUsername(), holder.getPassword());
                 if (success) {
+                    LiteYukonUser user = ServletUtil.getYukonUser(request);
+
+                    ActivityLogger.logEvent(
+                    		user.getUserID(), 
+                    		LoginService.LOGIN_WEB_ACTIVITY_ACTION, 
+                    		"User " + user.getUsername() + " (userid=" + user.getUserID() + 
+                    			") has logged in from " + request.getRemoteAddr() + " (cookie)");
+                	
                     log.info("Proceeding with request after successful Remember Me login");
                     return true;
                 }
