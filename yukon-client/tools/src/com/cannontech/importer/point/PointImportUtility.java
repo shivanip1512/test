@@ -54,7 +54,7 @@ public class PointImportUtility
 		boolean ret = true;
 		try{
 			f = new FileInputStream( fileLocation );
-			processAnalogPoints( new BufferedReader(new InputStreamReader(f)) );
+			ret = processAnalogPoints( new BufferedReader(new InputStreamReader(f)) );
 		}catch( IOException e )
 		{
 			ret = false;
@@ -494,7 +494,7 @@ public class PointImportUtility
 		boolean ret = true;
 		try{
 			f = new FileInputStream( fileLocation );
-			processAccumulatorPoints( new BufferedReader(new InputStreamReader(f)) );
+			ret = processAccumulatorPoints( new BufferedReader(new InputStreamReader(f)) );
 		}catch( IOException e )
 		{
 			ret = false;
@@ -910,7 +910,7 @@ public class PointImportUtility
 		boolean ret = true;
 		try{
 			f = new FileInputStream( fileLocation );
-			processCalcPoints( new BufferedReader(new InputStreamReader(f)) );
+			ret = processCalcPoints( new BufferedReader(new InputStreamReader(f)) );
 		}catch( IOException e )
 		{
 			ret = false;
@@ -1392,7 +1392,7 @@ public class PointImportUtility
 		boolean ret = true;
 		try{
 			f = new FileInputStream( fileLocation );
-			processStatusPoints( new BufferedReader(new InputStreamReader(f)) );
+			ret = processStatusPoints( new BufferedReader(new InputStreamReader(f)) );
 		}catch( IOException e )
 		{
 			ret = false;
