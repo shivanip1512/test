@@ -1220,8 +1220,6 @@ CtiDeviceSingle::~CtiDeviceSingle()
             }
         }
     }
-    // dump the vector if needed
-    _windowVector.erase(_windowVector.begin(), _windowVector.end());
 }
 
 CtiDeviceSingle& CtiDeviceSingle::operator=(const CtiDeviceSingle& aRef)
