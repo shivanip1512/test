@@ -73,7 +73,8 @@ public class LoginFilter implements Filter {
             "/capcontrol/**",
             "/operator/**",
             "/editor/**",
-            "/user/**"
+            "/user/**",
+            "/servlet/SOAPClient/**"
         };
     }
 
