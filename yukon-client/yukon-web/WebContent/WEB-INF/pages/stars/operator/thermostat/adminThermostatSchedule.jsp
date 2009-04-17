@@ -19,9 +19,21 @@
     <cti:msg var="modeChangeText" key="yukon.dr.operator.thermostatSchedule.modeChangeText" />
     
     
+    <c:set var="scheduleMode" value="${schedule.season.mode}" />
+    <%-- YUK-7069 TODO:  Move this logic into controller. --%>
+    <c:set var="schedule52Enabled" value="false"/>
+    <cti:isPropertyTrue property="ConsumerInfoRole.THERMOSTAT_SCHEDULE_5_2">
+        <c:set var="schedule52Enabled" value="true"/>
+    </cti:isPropertyTrue>
+    <c:if test="${(thermostatType != 'UTILITY_PRO' || !schedule52Enabled) && scheduleMode == 'WEEKDAY_WEEKEND'}">
+        <c:set var="scheduleMode" value="WEEKDAY_SAT_SUN" />
+    </c:if>
+    
 <script type="text/javascript">
 
     Event.observe(window, 'load', function(){init();});
+
+    currentScheduleMode = '${scheduleMode}';
     
     // Set global variable in thermostat2.js
     tempUnit = '${temperatureUnit}';
@@ -36,7 +48,6 @@
         
         setCurrentSchedule(currentTimePeriod);
     }
-    
     
     function saveSchedule(action) {
     
@@ -99,7 +110,6 @@
     <c:set var="twoBars" value="${schedule.thermostatType == 'COMMERCIAL_EXPRESSSTAT'}" />
     
     <c:set var="timeOfWeek" value="WEEKDAY" />
-    <c:set var="scheduleMode" value="WEEKDAY_SAT_SUN" />
     
     <cti:msg var="degreesCelsius" key="yukon.dr.operator.thermostatSchedule.degreesCelsius" /> 
     <cti:msg var="degreesFahrenheit" key="yukon.dr.operator.thermostatSchedule.degreesFahrenheit" /> 
@@ -135,12 +145,18 @@
                         <table width="90%" border="0" height="8">
                             <tr> 
                                 <td align="left"> 
-                                    <input id="allRadio" type="radio" name="scheduleMode" value="ALL" onclick="changeScheduleMode()" ${scheduleMode == 'ALL' ? 'checked' : '' } />
-                                    <label class="timePeriodText" for="allRadio">
+                                    <input id="radioALL" type="radio" name="scheduleMode" value="ALL" onclick="changeScheduleMode()" ${scheduleMode == 'ALL' ? 'checked' : '' } />
+                                    <label class="timePeriodText" for="radioALL">
                                         <cti:msg key="yukon.dr.operator.thermostatSchedule.scheduleModeAll" />
                                     </label><br>
-                                    <input id="WEEKDAY_SAT_SUN" type="radio" name="scheduleMode" value="WEEKDAY_SAT_SUN" onclick="changeScheduleMode()" ${scheduleMode == 'WEEKDAY_SAT_SUN' ? 'checked' : '' } />
-                                    <label class="timePeriodText" for="511Radio">
+                                    <c:if test="${thermostatType == 'UTILITY_PRO' && schedule52Enabled}">
+                                        <input id="radioWEEKDAY_WEEKEND" type="radio" name="scheduleMode" value="WEEKDAY_WEEKEND" onclick="changeScheduleMode()" ${scheduleMode == 'WEEKDAY_WEEKEND' ? 'checked' : '' } />
+                                        <label class="timePeriodText" for="radioWEEKDAY_WEEKEND">
+                                            <cti:msg key="yukon.dr.operator.thermostatSchedule.scheduleMode52" />
+                                        </label><br>
+                                    </c:if>
+                                    <input id="radioWEEKDAY_SAT_SUN" type="radio" name="scheduleMode" value="WEEKDAY_SAT_SUN" onclick="changeScheduleMode()" ${scheduleMode == 'WEEKDAY_SAT_SUN' ? 'checked' : '' } />
+                                    <label class="timePeriodText" for="radioWEEKDAY_SAT_SUN">
                                         <cti:msg key="yukon.dr.operator.thermostatSchedule.scheduleMode511" />
                                     </label><br>
                                 </td>
