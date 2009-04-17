@@ -1066,6 +1066,7 @@ bool CtiDeviceBase::getOutMessage(CtiOutMessage *&OutMessage)
         }
 
         delete OutMessage;
+        OutMessage = 0;
     }
 
     return false;
