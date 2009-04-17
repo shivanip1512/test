@@ -11,6 +11,7 @@ import java.security.Key;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
+import javax.crypto.spec.IvParameterSpec;
 
 import org.apache.commons.codec.binary.Base64;
 
@@ -18,59 +19,47 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authentication.service.CryptoService;
 
 public class CryptoServiceImpl implements CryptoService {
-    private static final Base64 base64Encoder = new Base64();
+    private static final Base64 codec = new Base64();
     private static final String separator = System.getProperty("file.separator");
     private String keyFileDir = CtiUtilities.getYukonBase() + separator + "cache";
-    private String keyFileName =  ".key";
-    private String algorithm = "Blowfish";
+    private String keyFileName =  ".key2";
     private int keySize = 128; //SEE: Sun's JCE Unlimited Strength Jurisdiction Policy Files
     private Key key;
-    private Cipher encryptCipher;
-    private Cipher decryptCipher;
+    private IvParameterSpec ivParameterSpec;
+    
+    {
+        // the following is arbitrary and could be anything
+        ivParameterSpec = new IvParameterSpec(new byte[]{32,96,-45,0,5,16,27,28,-54,-100,11,98,4,3,2,1});
+        
+    }
     
     public CryptoServiceImpl() {
-    
-    }
-    
-    public void setAlgorithm(final String algorithm) {
-        this.algorithm = algorithm;
-    }
-
-    public void setKeyFileName(final String keyFileName) {
-        this.keyFileName = keyFileName;
-    }
-    
-    public void setKeySize(final int keySize) {
-        this.keySize = keySize;
+        
     }
     
     public String encrypt(final String input) throws GeneralSecurityException {
         byte[] raw = getEncryptCipher().doFinal(input.getBytes()); 
-        byte[] base64Output = base64Encoder.encode(raw);
-        String toString = new String(base64Output);
+        byte[] encodedBytes = codec.encode(raw);
+        String toString = new String(encodedBytes);
         return toString;
     }
     
     public String decrypt(String input) throws GeneralSecurityException {
-        byte[] raw = base64Encoder.decode(input.getBytes());
+        byte[] raw = codec.decode(input.getBytes());
         byte[] output = getDecryptCipher().doFinal(raw);
         String toString = new String(output);
         return toString;
     }
     
-    public synchronized Cipher getEncryptCipher() throws GeneralSecurityException {
-        if (this.encryptCipher == null) {
-            this.encryptCipher = Cipher.getInstance(algorithm);
-            this.encryptCipher.init(Cipher.ENCRYPT_MODE, getKey());
-        }
+    public Cipher getEncryptCipher() throws GeneralSecurityException {
+        Cipher encryptCipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+        encryptCipher.init(Cipher.ENCRYPT_MODE, getKey(), ivParameterSpec);
         return encryptCipher;
     }
     
-    public synchronized Cipher getDecryptCipher() throws GeneralSecurityException {
-        if (this.decryptCipher == null) {
-            this.decryptCipher = Cipher.getInstance(algorithm);
-            this.decryptCipher.init(Cipher.DECRYPT_MODE, getKey());
-        }
+    public Cipher getDecryptCipher() throws GeneralSecurityException {
+        Cipher decryptCipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+        decryptCipher.init(Cipher.DECRYPT_MODE, getKey(), ivParameterSpec);
         return decryptCipher;
     }
     
@@ -105,7 +94,7 @@ public class CryptoServiceImpl implements CryptoService {
     
     private synchronized Key generateKey() {
         try {
-            KeyGenerator generator = KeyGenerator.getInstance(algorithm);
+            KeyGenerator generator = KeyGenerator.getInstance("AES");
             generator.init(keySize);
             Key generatedKey = generator.generateKey();
             return generatedKey;

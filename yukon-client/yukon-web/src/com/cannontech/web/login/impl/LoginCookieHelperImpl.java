@@ -1,5 +1,8 @@
 package com.cannontech.web.login.impl;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
 
 import org.apache.commons.lang.RandomStringUtils;
@@ -24,12 +27,24 @@ public class LoginCookieHelperImpl implements LoginCookieHelper {
         sb.append(password);
 
         String cryptValue = cryptoService.encrypt(sb.toString());
-        return cryptValue;
+        String encodedValue;
+        try {
+            encodedValue = URLEncoder.encode(cryptValue, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+        return encodedValue;
     }
 
     @Override
     public UserPasswordHolder decodeCookieValue(String cryptValue) throws GeneralSecurityException {
-        String value = cryptoService.decrypt(cryptValue);
+        String decodedValue;
+        try {
+            decodedValue = URLDecoder.decode(cryptValue, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+        String value = cryptoService.decrypt(decodedValue);
 
         String[] split = value.split(delimiter);
         if (split.length < 3) {
