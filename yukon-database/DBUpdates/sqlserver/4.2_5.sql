@@ -31,3 +31,4 @@ CREATE INDEX INDX_LMProgEvent_AcctId_ProgId ON LMProgramEvent (
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
+INSERT INTO CTIDatabase VALUES('4.2', 'Matt K', '17-APR-2009', 'Latest Update', 5);
