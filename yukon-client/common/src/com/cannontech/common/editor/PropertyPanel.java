@@ -4,6 +4,7 @@ package com.cannontech.common.editor;
  * This type was created in VisualAge.
  */
 
+import java.awt.Component;
 import java.util.Vector;
 
 import javax.swing.JTabbedPane;
@@ -196,6 +197,16 @@ public abstract class PropertyPanel extends com.cannontech.common.gui.util.DataI
 	 * @return java.lang.String
 	 */
 	protected abstract String[] getTabNames();
+	
+	public void disposeValue() {
+        for( int i = 0; i < getTabbedPane().getTabCount(); i++ ) {
+            DataInputPanel tab = (DataInputPanel) getTabbedPane().getComponentAt(i);
+            if (tab != null) {
+                tab.disposeValue();
+            }
+        }
+	}
+	
 	/**
 	 * getValue method comment.
 	 */
@@ -259,8 +270,8 @@ public abstract class PropertyPanel extends com.cannontech.common.gui.util.DataI
 		getPropertyButtonPanel().getCancelJButton().addActionListener(this);
 		getPropertyButtonPanel().getApplyJButton().addActionListener(this);
 	
-		 
 	}
+	
 	/**
 	 * This method was created in VisualAge.
 	 * @param event DataInputPanelEvent

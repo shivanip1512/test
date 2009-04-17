@@ -18,17 +18,26 @@ public interface ContactNotificationDao {
     public List<LiteContactNotification> getAllContactNotifications();
 
     /**
-     * Returns the parent Contact for this ContactNotifcation
-     */
-    public LiteContact getContactNotificationsParent(int notifCatID);
-
-    /**
      * Method to get a list of contact notifications for a given contact
      * @param contactId - Contact in question
      * @return List of notifications
      */
-    public List<LiteContactNotification> getNotificationsForContact(
-            int contactId);
+    public List<LiteContactNotification> getNotificationsForContact(int contactId);
+    
+    public List<LiteContactNotification> getNotificationsForContact(LiteContact liteContact);
+    
+    public List<LiteContactNotification> getNotificationsForContactByType(LiteContact liteContact, int notifCatID);
+
+    /**
+     * Method to return the lite notification for a contact of a specific type.
+     * Returns null if none exists for that type.
+     * Example usage: getFirstNotificationForContactByType(contact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE)
+     * would return the home phone for that contact.
+     * @param contact
+     * @param type
+     * @return
+     */
+    public LiteContactNotification getFirstNotificationForContactByType(LiteContact liteContact, int type);
 
     /**
      * Method to save a list of contact notifications for a contact (will remove
@@ -56,17 +65,6 @@ public interface ContactNotificationDao {
      * @param contactId - Id of contact to remove notificaitons for
      */
     public void removeNotificationsForContact(int contactId);
-
-    /**
-     * Method to return the lite notification for a contact of a specific type.
-     * Returns null if none exists for that type.
-     * Example usage: getNotificationForContactByType(contact.getContactId(), YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE)
-     * would return the home phone for that contact.
-     * @param contactId
-     * @param type
-     * @return
-     */
-    public LiteContactNotification getNotificationForContactByType(int contactId, int type);
 
     /**
      * Method to return the contact notification ids for a contact

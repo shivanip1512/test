@@ -90,11 +90,11 @@ public final class OptOutNotificationUtil {
         }
         
         String homePhone = StarsUtils.getNotification(
-                DaoFactory.getContactDao().getContactNotification(cont, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE) );
+                DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(cont, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE) );
         String workPhone = StarsUtils.getNotification(
-                DaoFactory.getContactDao().getContactNotification(cont, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE) );
+                DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(cont, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE) );
         String email = StarsUtils.getNotification(
-                DaoFactory.getContactDao().getContactNotification(cont, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL) );
+                DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(cont, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL) );
         
         if (homePhone.length() > 0)
             text.append(homePhone).append(LINE_SEPARATOR);

@@ -208,7 +208,7 @@ public class LiteContact extends LiteBase
                 rset = pstmt.executeQuery();                
 
                 //refresh our notification list
-                getLiteContactNotifications().removeAllElements();
+                Vector<LiteContactNotification> newContactNotifications = new Vector<LiteContactNotification>();
                 
                 while(rset.next()) //add the LiteContact to this Customer
                 {
@@ -217,7 +217,7 @@ public class LiteContact extends LiteBase
                     liteContNotif.setNotificationCategoryID(rset.getInt(3));
                     liteContNotif.setDisableFlag(rset.getString(4));
                     liteContNotif.setNotification(rset.getString(5));
-                    getLiteContactNotifications().add( liteContNotif );
+                    newContactNotifications.add( liteContNotif );
                 }
             }
             catch (Exception e) {
@@ -254,32 +254,16 @@ public class LiteContact extends LiteBase
 	/**
 	 * Returns the liteContactNotifications.
 	 * @return Vector
+	 * @deprecated Please use ContactNotificationDao
 	 */
+	@Deprecated
     public Vector<LiteContactNotification> getLiteContactNotifications() {
-        if (liteContactNotifications == null)
-        {
+        if (liteContactNotifications == null) {
             liteContactNotifications = new Vector<LiteContactNotification>();
-            if( !isExtended())  //Don't load them again!  ContactLoader uses this flag to load these contactNotifs on his own.
-                retrieveExtended();
+            retrieveExtended();
         }
         return liteContactNotifications;
     }
-
-	public String getNotifactionsStrings()
-	{		
-		StringBuffer ret = new StringBuffer("");
-		
-		for( int i = 0; i < getLiteContactNotifications().size(); i++ )
-		{
-			LiteContactNotification notif = getLiteContactNotifications().get(i);
-			ret.append( notif.getNotification() + "," );;
-		}
-
-		if( ret.length() > 0 )
-			ret.deleteCharAt( ret.length() - 1 ); //remove that extra ,
-		
-		return ret.toString();
-	}
 
     public boolean isExtended()
     {
@@ -292,8 +276,7 @@ public class LiteContact extends LiteBase
     }
     
     public void setNotifications(List<LiteContactNotification> notificationList) {
-        liteContactNotifications = new Vector<LiteContactNotification>();
-        liteContactNotifications.addAll(notificationList);
+        liteContactNotifications = new Vector<LiteContactNotification>(notificationList);
     }
 	
 }

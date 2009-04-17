@@ -41,6 +41,7 @@ import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteMeterHardwareBase;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
@@ -619,8 +620,9 @@ public class WorkOrderModel extends ReportModelBase<WorkOrder> {
                             if (StarsUtils.forceNotNone(lAddr.getZipCode()).length() > 0)
                                 returnStr += " " + StarsUtils.forceNotNone(lAddr.getZipCode());
 						}
-						if(  DaoFactory.getContactDao().getContactNotification(lc_ec, YukonListEntryTypes.YUK_ENTRY_ID_PHONE) != null)
-							returnStr += "\r\n" + DaoFactory.getContactDao().getContactNotification(lc_ec, YukonListEntryTypes.YUK_ENTRY_ID_PHONE);
+						LiteContactNotification notification = DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(lc_ec, YukonListEntryTypes.YUK_ENTRY_ID_PHONE);
+                        if(  notification != null)
+							returnStr += "\r\n" + notification;
 					}
 					return returnStr;
 				case ORDER_NO_COLUMN:
@@ -668,17 +670,17 @@ public class WorkOrderModel extends ReportModelBase<WorkOrder> {
 						return "";
 				case PHONE_HOME_COLUMN:
 					if (liteContact != null)
-						return DaoFactory.getContactDao().getContactNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
+						return DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
 					else
 						return "";
 				case PHONE_WORK_COLUMN:
 					if (liteContact != null)
-						return DaoFactory.getContactDao().getContactNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE);
+						return DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE);
 					else
 						return "";
 				case PHONE_CONTACT_COLUMN:
 					if (liteContact != null)
-						return DaoFactory.getContactDao().getContactNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_CALL_BACK_PHONE);
+						return DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_CALL_BACK_PHONE);
 					else
 						return "";
                 case PRESENCE_REQUIRED_COLUMN:

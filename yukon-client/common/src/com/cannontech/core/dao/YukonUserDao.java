@@ -1,9 +1,10 @@
 package com.cannontech.core.dao;
 
-import org.springframework.dao.DataAccessException;
-
 import java.util.List;
 
+import org.springframework.dao.DataAccessException;
+
+import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -58,6 +59,14 @@ public interface YukonUserDao {
      * @param lastName
      * @return newUsername
      */
-    public String generateUsername(String firstName, String lastName);    
+    public String generateUsername(String firstName, String lastName); 
+    
+    public int getAllYukonUserCount();
+
+    public void callbackWithAllYukonUsers(SimpleCallback<LiteYukonUser> callback);
+
+    public void callbackWithYukonUsersInGroup(
+            LiteYukonGroup liteGroup,
+            SimpleCallback<LiteYukonUser> simpleCallback);
 
 }

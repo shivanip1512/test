@@ -10,6 +10,7 @@ import org.springframework.web.servlet.mvc.Controller;
 
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.ContactDao;
+import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.RoleDao;
@@ -32,6 +33,7 @@ public abstract class AbstractBaseActionController implements Controller {
     protected EnergyCompanyDao energyCompanyDao;
     protected PaoDao paoDao;
     protected ContactDao contactDao;
+    protected ContactNotificationDao contactNotificationDao;
     protected AuthDao authDao;
     protected RoleDao roleDao;
     protected YukonListDao yukonListDao;
@@ -113,4 +115,9 @@ public abstract class AbstractBaseActionController implements Controller {
     public void setStarsSearchDao(StarsSearchDao starsSearchDao) {
 		this.starsSearchDao = starsSearchDao;
 	}
+    
+    public void setContactNotificationDao(
+            ContactNotificationDao contactNotificationDao) {
+        this.contactNotificationDao = contactNotificationDao;
+    }
 }

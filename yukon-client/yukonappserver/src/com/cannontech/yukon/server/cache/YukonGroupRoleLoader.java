@@ -24,13 +24,13 @@ import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 public final class YukonGroupRoleLoader implements Runnable
 {
 	private static final String sql = "SELECT GroupID,RoleID,RolePropertyID,Value FROM YukonGroupRole";
-	final private Map allGroupRoleProperties;
-	final private List allGroups;
-	final private List allRoles;
-	final private List allRoleProperties;
+	final private Map<LiteYukonGroup, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String>>> allGroupRoleProperties;
+	final private List<LiteYukonGroup> allGroups;
+	final private List<LiteYukonRole> allRoles;
+	final private List<LiteYukonRoleProperty> allRoleProperties;
 	final private String dbAlias;
 
-	public YukonGroupRoleLoader(final Map allGroupRoleProperties, final List allGroups, final List allRoles, final List allRoleProperties, final String dbAlias) {
+	public YukonGroupRoleLoader(final Map<LiteYukonGroup, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String>>> allGroupRoleProperties, final List<LiteYukonGroup> allGroups, final List<LiteYukonRole> allRoles, final List<LiteYukonRoleProperty> allRoleProperties, final String dbAlias) {
 		this.allGroupRoleProperties = allGroupRoleProperties;
    		this.allGroups = allGroups;
    		this.allRoles = allRoles;
@@ -48,25 +48,25 @@ public final class YukonGroupRoleLoader implements Runnable
 		   		
    		// build up some hashtables to avoid 
    		// exponential algorithm   		
-   		final HashMap groupMap = new HashMap(allGroups.size()*2);
-   		final HashMap roleMap = new HashMap(allRoles.size()*2);
-		final HashMap rolePropertyMap = new HashMap(allRoleProperties.size()*2);
+   		final HashMap<Integer, LiteYukonGroup> groupMap = new HashMap<Integer, LiteYukonGroup>(allGroups.size()*2);
+   		final HashMap<Integer, LiteYukonRole> roleMap = new HashMap<Integer, LiteYukonRole>(allRoles.size()*2);
+		final HashMap<Integer, LiteYukonRoleProperty> rolePropertyMap = new HashMap<Integer, LiteYukonRoleProperty>(allRoleProperties.size()*2);
 		
-   		Iterator i = allGroups.iterator();
-   		while(i.hasNext()) {
-   			LiteYukonGroup g = (LiteYukonGroup) i.next();
+   		Iterator<LiteYukonGroup> groupIter = allGroups.iterator();
+   		while(groupIter.hasNext()) {
+   			LiteYukonGroup g = groupIter.next();
    			groupMap.put(new Integer(g.getGroupID()), g);
    		}
    		
-   		i = allRoles.iterator();
-   		while(i.hasNext()) {
-   			LiteYukonRole r = (LiteYukonRole) i.next();
+   		Iterator<LiteYukonRole> roleIter = allRoles.iterator();
+   		while(roleIter.hasNext()) {
+   			LiteYukonRole r = roleIter.next();
    			roleMap.put(new Integer(r.getRoleID()), r);
    		}
    		
- 		i = allRoleProperties.iterator();
- 		while(i.hasNext()) {
- 			LiteYukonRoleProperty p = (LiteYukonRoleProperty) i.next();
+ 		Iterator<LiteYukonRoleProperty> rolePropertyIter = allRoleProperties.iterator();
+ 		while(rolePropertyIter.hasNext()) {
+ 			LiteYukonRoleProperty p = rolePropertyIter.next();
  			rolePropertyMap.put(new Integer(p.getRolePropertyID()), p);
  		}
  		
@@ -84,9 +84,9 @@ public final class YukonGroupRoleLoader implements Runnable
       			final Integer rolePropertyID = new Integer(rset.getInt(3));
       			String value = rset.getString(4);
       			      			
-      			final LiteYukonGroup group = (LiteYukonGroup) groupMap.get(groupID);
-      			final LiteYukonRole role = (LiteYukonRole) roleMap.get(roleID);
-      			final LiteYukonRoleProperty roleProperty = (LiteYukonRoleProperty) rolePropertyMap.get(rolePropertyID);
+      			final LiteYukonGroup group = groupMap.get(groupID);
+      			final LiteYukonRole role = roleMap.get(roleID);
+      			final LiteYukonRoleProperty roleProperty = rolePropertyMap.get(rolePropertyID);
       			
       			// Check to see if we should use the properties default 
       			if(CtiUtilities.STRING_NONE.equalsIgnoreCase(value)) {
@@ -98,15 +98,15 @@ public final class YukonGroupRoleLoader implements Runnable
       			    value = roleProperty.getDefaultValue();
       			}
       			
-      			Map groupRoleMap = (Map) allGroupRoleProperties.get(group);
+      			Map<LiteYukonRole, Map<LiteYukonRoleProperty, String>> groupRoleMap = allGroupRoleProperties.get(group);
       			if(groupRoleMap == null) {
-      				groupRoleMap = new HashMap();
+      				groupRoleMap = new HashMap<LiteYukonRole, Map<LiteYukonRoleProperty, String>>();
       				allGroupRoleProperties.put(group,groupRoleMap);      			
       			}
       			
-      			Map groupRolePropertyMap = (Map) groupRoleMap.get(role);
+      			Map<LiteYukonRoleProperty, String> groupRolePropertyMap = groupRoleMap.get(role);
       			if(groupRolePropertyMap == null) {
-      				groupRolePropertyMap = new HashMap();
+      				groupRolePropertyMap = new HashMap<LiteYukonRoleProperty, String>();
       				groupRoleMap.put(role, groupRolePropertyMap);
       			}
       			

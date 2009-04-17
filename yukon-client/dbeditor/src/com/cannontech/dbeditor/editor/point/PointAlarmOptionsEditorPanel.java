@@ -112,32 +112,6 @@ private void connEtoC5(java.awt.event.ActionEvent arg1) {
 		handleException(ivjExc);
 	}
 }
-/**
- * Looks the first email notificatoin type in the list passed in.  Returns a NONE_ZERO_ID if
- * no email type is found.
- * @param contact
- * @return int
- */
-private int findEmailContact( LiteContact contact )
-{
-	if( contact != null )
-	{
-		//find the first email address in the list ContactNotifications...then use it
-		for( int j = 0; j < contact.getLiteContactNotifications().size(); j++  )
-		{	
-			LiteContactNotification ltCntNotif = 
-					(LiteContactNotification)contact.getLiteContactNotifications().get(j);
-						
-			if( ltCntNotif.getNotificationCategoryID() == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL )
-			{
-				return ltCntNotif.getContactNotifID();
-			}
-		}
-	}
-
-	//no e-mail notif found
-	return CtiUtilities.NONE_ZERO_ID;
-}
 
 /**
  * Return the ConfigurationPanel property value.

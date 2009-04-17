@@ -1,8 +1,14 @@
 package com.cannontech.dbeditor.wizard.customer;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+
 import com.cannontech.common.gui.dnd.IDroppableTableModel;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteContactNotification;
 
 /**
  * Insert the type's description here.
@@ -24,77 +30,6 @@ public class CustomerContactTableModel extends javax.swing.table.AbstractTableMo
 	public static final int COLUMN_NAME = 0;
 	public static final int COLUMN_LOGIN = 1;
 	public static final int COLUMN_NOTIFICATION = 2;
-
-/*
-	public class CustomerContactRow
-	{
-		private com.cannontech.database.data.customer.Contact customer = null;
-		private String firstName = null;
-		private String lastName = null;
-		private String phone1 = null;
-		private String phone2 = null;
-		private com.cannontech.database.data.lite.LiteContactNotification liteRecipient = null;
-		private boolean isPrimeContact = false;
-		
-		public CustomerContactRow(String nameFirst, String nameLast, String phoneOne, String phoneTwo, com.cannontech.database.data.lite.LiteContactNotification ltRecipient )
-		{
-			super();
-
-			firstName = nameFirst;
-			lastName = nameLast;
-			phone1 = phoneOne;
-			phone2 = phoneTwo;
-			liteRecipient = ltRecipient;
-		}
-
-		//use this constructor if you have a CustomerContact already
-		public CustomerContactRow( com.cannontech.database.data.customer.Contact customerContact, com.cannontech.database.data.lite.LiteContactNotification ltRecipient )
-		{
-			super();
-			customer = customerContact;
-			
-			firstName = customer.getContact().getContFirstName();
-			lastName = customer.getContact().getContLastName();
-			phone1 = customer.getContact().getContPhone1();
-			phone2 = customer.getContact().getContPhone2();
-			liteRecipient = ltRecipient;
-		}
-		
-		public String getFirstName()
-		{
-			return firstName;
-		}
-		public String getLastName()
-		{
-			return lastName;
-		}
-		public String getPhone1()
-		{
-			return phone1;
-		}
-		public String getPhone2()
-		{
-			return phone2;
-		}
-		public void setPrimeContact(boolean isPrime)
-		{
-			isPrimeContact = isPrime;
-		}
-		public boolean isPrimeContact()
-		{
-			return isPrimeContact;
-		}
-		public com.cannontech.database.data.customer.Contact getCustomer()
-		{
-			return customer;
-		}
-
-		public com.cannontech.database.data.lite.LiteContactNotification getLiteRecipient()
-		{
-			return liteRecipient;
-		}
-	};
-*/
 
 	/**
 	 * CustomerContactTableModel constructor comment.
@@ -208,11 +143,21 @@ public class CustomerContactTableModel extends javax.swing.table.AbstractTableMo
 								con.getLoginID()).getUsername();
 	
 			case COLUMN_NOTIFICATION:
-				return con.getNotifactionsStrings();
+				return getNotificationsStringForContact(con);
 		}
 		
 		return null;
 	}
+	
+	private String getNotificationsStringForContact(LiteContact contact) {
+	    List<String> notificationStrings = new ArrayList<String>();
+	    List<LiteContactNotification> notificationsForContact = DaoFactory.getContactNotificationDao().getNotificationsForContact(contact);
+	    for (LiteContactNotification liteContactNotification : notificationsForContact) {
+            notificationStrings.add(liteContactNotification.getNotification());
+        }
+	    return StringUtils.join(notificationStrings, ", ");
+	}
+	
 	/**
 	 * This method was created in VisualAge.
 	 * @return boolean

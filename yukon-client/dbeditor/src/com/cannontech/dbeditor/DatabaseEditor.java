@@ -76,6 +76,7 @@ import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.model.DBTreeModel;
 import com.cannontech.database.model.DBTreeNode;
 import com.cannontech.database.model.DummyTreeNode;
+import com.cannontech.database.model.FrameAware;
 import com.cannontech.database.model.ModelFactory;
 import com.cannontech.dbeditor.defines.CommonDefines;
 import com.cannontech.dbeditor.editor.device.configuration.DeviceConfigurationWizardPanel;
@@ -2481,6 +2482,7 @@ public void selectionPerformed( PropertyPanelEvent event)
 		}
 		
 		panel.setChanged(false);
+		panel.disposeValue();
 		synchronized (getInternalEditorFrames()) {
 		    getInternalEditorFrames()[frameLocation].setVisible(false); //.dispose() ?? not sure!!???
 		}
@@ -2654,7 +2656,8 @@ public void setDatabase(int whichDatabase)
 	Integer[] models = null;
 
 	//Get a ref to the rootpane
-	JRootPane rPane = ((JFrame) CtiUtilities.getParentFrame( getContentPane() )).getRootPane();
+	JFrame frame = (JFrame) CtiUtilities.getParentFrame( getContentPane() );
+    JRootPane rPane = frame.getRootPane();
 	
 	switch( whichDatabase )
 	{
@@ -2717,7 +2720,11 @@ public void setDatabase(int whichDatabase)
                 continue;
             }
         
-		newModels[(deviceConfigFound) ? i - 1 : i] = ModelFactory.create(models[i].intValue());
+		DBTreeModel treeModel = ModelFactory.create(models[i].intValue());
+		if (treeModel instanceof FrameAware) {
+		    ((FrameAware) treeModel).setParentFrame(frame);
+		}
+        newModels[(deviceConfigFound) ? i - 1 : i] = treeModel;
 	}
     
 	getTreeViewPanel().setTreeModels(newModels);
@@ -2726,7 +2733,7 @@ public void setDatabase(int whichDatabase)
 	if( models == LM_MODELS || models == LM_MODELS_WITH_SA )
 		getTreeViewPanel().setSelectedSortByIndex( 5 ); //"load groups" is the default
 	if( models == SYSTEM_MODELS )
-		getTreeViewPanel().setSelectedSortByIndex( 5 ); //"logins" is the default
+		getTreeViewPanel().setSelectedSortByIndex( 6 ); //"login groups" is the default
 	
 	rPane.setJMenuBar( this.menuBar );
 	rPane.revalidate();

@@ -13,6 +13,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
@@ -22,6 +23,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.AddressDao;
@@ -30,7 +32,9 @@ import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.database.AbstractRowCallbackHandler;
 import com.cannontech.database.IntegerRowMapper;
+import com.cannontech.database.MappingRowCallbackHandler;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.customer.CustomerTypes;
@@ -41,10 +45,12 @@ import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.contact.Contact;
+import com.cannontech.database.db.contact.ContactNotification;
 import com.cannontech.database.db.customer.Customer;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.collect.Maps;
 
 /**
  * Insert the type's description here.
@@ -120,21 +126,6 @@ public final class ContactDaoImpl implements ContactDao {
         
         return resultMap;
     }
-
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.ContactDao#getContactNotification(com.cannontech.database.data.lite.LiteContact, int)
-     */
-	public LiteContactNotification getContactNotification(LiteContact liteContact, int notifCatID)
-	{
-		for (int i = 0; i < liteContact.getLiteContactNotifications().size(); i++) {
-			LiteContactNotification liteNotif = liteContact.getLiteContactNotifications().get(i);
-			
-			if (liteNotif.getNotificationCategoryID() == notifCatID)
-				return liteNotif;
-		}
-		
-		return null;
-	}
 
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.ContactDao#retrieveContactIDsByLastName(java.lang.String, boolean)
@@ -278,21 +269,13 @@ public final class ContactDaoImpl implements ContactDao {
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.ContactDao#getAllEmailAddresses(int)
      */
-	public String[] getAllEmailAddresses( int contactID_ )
-	{
-		LiteContact contact = getContact( contactID_ );
-		ArrayList<String> strList = new ArrayList<String>(16);
+	public String[] getAllEmailAddresses( int contactId ) {
+		LiteContact contact = getContact( contactId );
+		List<String> strList = new ArrayList<String>();
 
 		//find all the email addresses in the list ContactNotifications
-		for( int j = 0; j < contact.getLiteContactNotifications().size(); j++  )
-		{	
-			LiteContactNotification ltCntNotif = 
-					contact.getLiteContactNotifications().get(j);
-					
-			if( ltCntNotif.getNotificationCategoryID() == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL )
-			{
-				strList.add( ltCntNotif.getNotification() );
-			}
+		for( LiteContactNotification liteContactNotification : contactNotificationDao.getNotificationsForContactByType(contact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL)) {	
+		    strList.add( liteContactNotification.getNotification() );
 		}
 
 		return strList.toArray( new String[strList.size()] );
@@ -301,23 +284,11 @@ public final class ContactDaoImpl implements ContactDao {
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.ContactDao#getAllPINNotifDestinations(int)
      */
-	public LiteContactNotification[] getAllPINNotifDestinations( int contactID_ )
+	public LiteContactNotification[] getAllPINNotifDestinations( int contactId )
 	{
-		LiteContact contact = getContact( contactID_ );
-		List<LiteContactNotification> strList = new ArrayList<LiteContactNotification>(16);
-
-		//find all the PINs in the list ContactNotifications
-		for( int j = 0; j < contact.getLiteContactNotifications().size(); j++  )
-		{	
-			LiteContactNotification ltCntNotif =
-					contact.getLiteContactNotifications().get(j);
-					
-			if( ltCntNotif.getNotificationCategoryID() == YukonListEntryTypes.YUK_ENTRY_ID_PIN )
-				strList.add( ltCntNotif );
-		}
-
-		LiteContactNotification[] pins = new LiteContactNotification[ strList.size() ];
-		return strList.toArray( pins );
+		LiteContact contact = getContact( contactId );
+		List<LiteContactNotification> notificationsForContactByType = contactNotificationDao.getNotificationsForContactByType(contact, YukonListEntryTypes.YUK_ENTRY_ID_PIN);
+		return notificationsForContactByType.toArray( new LiteContactNotification[notificationsForContactByType.size()] );
 	}
 
     /* (non-Javadoc)
@@ -329,13 +300,9 @@ public final class ContactDaoImpl implements ContactDao {
         List<LiteContactNotification> phoneList = new ArrayList<LiteContactNotification>(16);
 
         //find all the phone numbers in the list ContactNotifications
-        for( int j = 0; j < contact.getLiteContactNotifications().size(); j++  )
-        {   
-            LiteContactNotification ltCntNotif = 
-                    contact.getLiteContactNotifications().get(j);
+        for(LiteContactNotification ltCntNotif : contactNotificationDao.getNotificationsForContact(contact)) {   
                 
-            if( yukonListDao.isPhoneNumber(ltCntNotif.getNotificationCategoryID()) )
-            {
+            if (yukonListDao.isPhoneNumber(ltCntNotif.getNotificationCategoryID())) {
                 phoneList.add( ltCntNotif );
             }
         }
@@ -449,9 +416,8 @@ public final class ContactDaoImpl implements ContactDao {
      * @see com.cannontech.core.dao.ContactDao#hasPin(int)
      */
     public boolean hasPin(int contactId) {
-        LiteContact contact = getContact( contactId );
         
-        List<LiteContactNotification> liteContactNotifications = contact.getLiteContactNotifications();
+        List<LiteContactNotification> liteContactNotifications = contactNotificationDao.getNotificationsForContact(contactId);
         for (Iterator<LiteContactNotification> iter = liteContactNotifications.iterator(); iter.hasNext();) {
             LiteContactNotification contactNotification = iter.next();
             if (contactNotification.getNotificationCategoryID() == YukonListEntryTypes.YUK_ENTRY_ID_PIN) {
@@ -519,6 +485,40 @@ public final class ContactDaoImpl implements ContactDao {
                                                                  accountId);
 
         return contactList;
+    }
+    
+    @Override
+    public int getAllContactCount() {
+        String sql = "select count(*) from Contact";
+        int count = simpleJdbcTemplate.queryForInt(sql);
+        return count;
+    }
+    
+    @Override
+    public void callbackWithAllContacts(final SimpleCallback<LiteContact> callback) {
+        // the following code may look familiar, I lifted it from the ContactLoader!
+
+        //get all the customer contacts that are assigned to a customer
+        String sqlString = 
+            "SELECT cnt.contactID, cnt.ContFirstName, cnt.ContLastName, " + 
+            "cnt.Loginid, cnt.AddressID " + 
+            "FROM Contact cnt " +
+            "where cnt.ContactID > " + CtiUtilities.NONE_ZERO_ID + " " +
+            "order by cnt.ContLastName, cnt.ContFirstName";
+
+        final LiteContactNoNotificationsRowMapper liteContactNoNotificationsRowMapper = new LiteContactNoNotificationsRowMapper();
+        simpleJdbcTemplate.getJdbcOperations().query(sqlString, new AbstractRowCallbackHandler() {
+            public void processRow(ResultSet rs, int rowNum) throws SQLException {
+                LiteContact lc = liteContactNoNotificationsRowMapper.mapRow(rs, rowNum);
+                try {
+                    callback.handle(lc);
+                } catch (Exception e) {
+                    throw new RuntimeException("Unable to use call callback", e);
+                }
+
+            }
+        });
+
     }
 
     @Override
@@ -706,29 +706,39 @@ public final class ContactDaoImpl implements ContactDao {
      */
     private class LiteContactRowMapper implements
             ParameterizedRowMapper<LiteContact> {
+        
+        private LiteContactNoNotificationsRowMapper baseMapper = new LiteContactNoNotificationsRowMapper();
 
         @Override
         public LiteContact mapRow(ResultSet rs, int rowNum) throws SQLException {
 
+            LiteContact contact = baseMapper.mapRow(rs, rowNum);
+            
+            List<LiteContactNotification> notifications = contactNotificationDao
+					.getNotificationsForContact(contact.getContactID());
+			contact.setNotifications(notifications);
+            
+            return contact;
+        }
+
+    }
+    
+    private class LiteContactNoNotificationsRowMapper implements ParameterizedRowMapper<LiteContact> {
+        public LiteContact mapRow(ResultSet rs, int rowNum) throws SQLException {
             int id = rs.getInt("ContactId");
             int loginId = rs.getInt("LoginId");
             int addressId = rs.getInt("AddressId");
-            String firstName = SqlUtils.convertDbValueToString(rs.getString("ContFirstName"));
-            String lastName = SqlUtils.convertDbValueToString(rs.getString("ContLastName"));
+            String firstName = SqlUtils.convertDbValueToString(rs.getString("ContFirstName")).trim();
+            String lastName = SqlUtils.convertDbValueToString(rs.getString("ContLastName")).trim();
 
             LiteContact contact = new LiteContact(id);
             contact.setLoginID(loginId);
             contact.setAddressID(addressId);
             contact.setContFirstName(firstName);
             contact.setContLastName(lastName);
-
-            List<LiteContactNotification> notifications = contactNotificationDao
-					.getNotificationsForContact(id);
-			contact.setNotifications(notifications);
             
             return contact;
         }
-
     }
     
     @Autowired

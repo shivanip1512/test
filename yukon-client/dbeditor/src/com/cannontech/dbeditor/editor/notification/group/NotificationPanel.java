@@ -235,7 +235,6 @@ private CTITreeModel getJTreeModel()
  * Return the JTree1 property value.
  * @return javax.swing.JTree
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 @SuppressWarnings("unchecked")
 private javax.swing.JTree getJTreeNotifs() {
 	if (ivjJTreeNotifis == null) {
@@ -243,7 +242,6 @@ private javax.swing.JTree getJTreeNotifs() {
 			ivjJTreeNotifis = new javax.swing.JTree();
 			ivjJTreeNotifis.setName("JTreeRoles");
 			ivjJTreeNotifis.setBounds(0, 0, 165, 243);
-			// user code begin {1}
 			
 			DummyTreeNode root = 
 				new DummyTreeNode("CI Customers");
@@ -257,29 +255,24 @@ private javax.swing.JTree getJTreeNotifs() {
 
 
 			IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-//			synchronized( cache )
-//			{
-//			    // Pre load all contacts for use below
-//                cache.getAllContacts();
-//			}
                 
 			List<LiteCICustomer> customers = new ArrayList(cache.getAllCICustomers());
 			Collections.sort( customers, LiteComparators.liteStringComparator );
 			for( int i = 0; i < customers.size(); i++ )
 			{
-			    LiteCICustomer lCust = (LiteCICustomer)customers.get(i);
+			    LiteCICustomer lCust = customers.get(i);
 			    LiteBaseNode custNode = new LiteBaseNode( lCust );
 			    custNode.setUserValue( NotifMap.DEF_ATTRIBS );
 			    root.add( custNode );
 
 
-			    List tempConts = DaoFactory.getCustomerDao().getAllContacts(lCust.getCustomerID());
+			    List<LiteContact> tempConts = DaoFactory.getCustomerDao().getAllContacts(lCust);
 			    if( tempConts != null )
 			    {
 			        Collections.sort( tempConts, LiteComparators.liteStringComparator );
 			        for( int j = 0; j < tempConts.size(); j++ )
 			        {
-			            LiteContact lcont = (LiteContact)tempConts.get(j);
+			            LiteContact lcont = tempConts.get(j);
 			            LiteBaseNode contNode = new LiteBaseNode( lcont );
 			            contNode.setUserValue( NotifMap.DEF_ATTRIBS );
 
@@ -309,10 +302,7 @@ private javax.swing.JTree getJTreeNotifs() {
 			ivjJTreeNotifis.expandPath( new TreePath(root.getPath()) );			
 			ivjJTreeNotifis.addMouseListener( getNodeListener() );
 
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
+		} catch (Exception ivjExc) {
 			handleException(ivjExc);
 		}
 	}
@@ -325,13 +315,13 @@ private javax.swing.JTree getJTreeNotifs() {
  */
 private void addContactNotifsToTree( LiteContact contact, LiteBaseNode parent )
 {
-	if(contact == null || parent == null) return;
+	if (contact == null || parent == null) return;
+	
+	List<LiteContactNotification> notificationsForContact = DaoFactory.getContactNotificationDao().getNotificationsForContact(contact);
 
-	for( int j = 0; j < contact.getLiteContactNotifications().size(); j++ )
-	{
-		LiteContactNotification lcn = (LiteContactNotification)contact.getLiteContactNotifications().get(j);			
+	for (LiteContactNotification lcn : notificationsForContact) {
 		YukonListDao yukonListDao = DaoFactory.getYukonListDao();
-        if( yukonListDao.isPhoneNumber(lcn.getNotificationCategoryID())
+        if ( yukonListDao.isPhoneNumber(lcn.getNotificationCategoryID())
 			|| yukonListDao.isEmail(lcn.getNotificationCategoryID()) 
             || yukonListDao.isShortEmail(lcn.getNotificationCategoryID()))
 		{

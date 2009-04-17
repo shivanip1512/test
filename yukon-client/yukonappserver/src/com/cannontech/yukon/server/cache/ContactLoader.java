@@ -1,9 +1,14 @@
 package com.cannontech.yukon.server.cache;
 
-import java.util.List;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.Date;
 import java.util.Map;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
@@ -24,7 +29,6 @@ public class ContactLoader implements Runnable
     //Map<Integer(contactID), LiteContact>
     private final Map<Integer, LiteContact> allContactsMap;
 
-    private final List<LiteContact> allContacts;
 	private final String databaseAlias;
 
     //Map<Integer(ContactNotifID), LiteContactNotif>
@@ -33,9 +37,8 @@ public class ContactLoader implements Runnable
 	/**
 	 * CustomerContactLoader constructor comment.
 	 */
-	public ContactLoader(List<LiteContact> customerContactArray, Map<Integer, LiteContact> contactMap, Map<Integer, LiteContactNotification> allContactNotifsMap, String alias) {
+	public ContactLoader(Map<Integer, LiteContact> contactMap, Map<Integer, LiteContactNotification> allContactNotifsMap, String alias) {
 		super();
-		this.allContacts = customerContactArray;
         this.allContactsMap = contactMap;
         this.allContactNotifsMap = allContactNotifsMap;
 		this.databaseAlias = alias;
@@ -45,15 +48,10 @@ public class ContactLoader implements Runnable
 	 */
 	public void run() 
 	{
-	//temp code
-	java.util.Date timerStart = null;
-	java.util.Date timerStop = null;
-	//temp code
-	
-	//temp code
-	timerStart = new java.util.Date();
-	//temp code
-	
+	    Date timerStart = null;
+	    Date timerStop = null;
+	    timerStart = new java.util.Date();
+
 		//get all the customer contacts that are assigned to a customer
 		String sqlString = 
 			"SELECT cnt.contactID, cnt.ContFirstName, cnt.ContLastName, " + 
@@ -62,16 +60,16 @@ public class ContactLoader implements Runnable
 			"where cnt.ContactID > " + CtiUtilities.NONE_ZERO_ID + " " +
 			"order by cnt.contactID";
 	
-		java.sql.Connection conn = null;
-		java.sql.Statement stmt = null;
-		java.sql.ResultSet rset = null;
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rset = null;
         
         int maxContactID = 0;
         int loadIterator = MAX_CONTACT_LOAD;
         
 		try
 		{
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection( this.databaseAlias );
+			conn = PoolManager.getInstance().getConnection( this.databaseAlias );
 			stmt = conn.createStatement();
 			rset = stmt.executeQuery(sqlString);
 	
@@ -85,7 +83,6 @@ public class ContactLoader implements Runnable
 								rset.getInt(4),
 								rset.getInt(5) );
 	
-				allContacts.add(lc);
                 allContactsMap.put( new Integer(lc.getContactID()), lc );
                 if(maxContactID < lc.getContactID())
                     maxContactID = lc.getContactID();
@@ -130,23 +127,21 @@ public class ContactLoader implements Runnable
 		} 
 		catch( java.sql.SQLException e )
 		{
-			com.cannontech.clientutils.CTILogger.error( "Unable to load contacts.", e );
+			CTILogger.error( "Unable to load contacts.", e );
 		}
 		finally
 		{
             SqlUtils.close(rset, stmt, conn);
-        	//temp code
-        	timerStop = new java.util.Date();
-        	com.cannontech.clientutils.CTILogger.info( 
-        	    (timerStop.getTime() - timerStart.getTime())*.001 + 
-        	      " Secs for ContactLoader (" + allContacts.size() + " loaded)" );
+
+            timerStop = new Date();
+        	double secondsToLoad = (timerStop.getTime() - timerStart.getTime())*.001;
+            CTILogger.info(secondsToLoad + " Secs for ContactLoader" );
             if(loadIterator <= 0)
             {
-                com.cannontech.clientutils.CTILogger.warn("Contact loader limit exceeded!  System will need to use " +
+                CTILogger.warn("Contact loader limit exceeded!  System will need to use " +
                                                              "dynamic loading for some contacts and notifications.");
                 willNeedDynamicLoad = true;
             }
-        	//temp code
         }
 	}
     

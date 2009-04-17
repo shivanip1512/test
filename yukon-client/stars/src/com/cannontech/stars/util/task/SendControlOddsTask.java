@@ -87,7 +87,7 @@ public class SendControlOddsTask implements Runnable {
 						starsCustAccountInformationDao.getById(accountID, energyCompanyID);
 					
 					LiteContact primContact = DaoFactory.getContactDao().getContact( accountInfo.getCustomer().getPrimaryContactID() );
-					LiteContactNotification email = DaoFactory.getContactDao().getContactNotification(
+					LiteContactNotification email = DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(
 							primContact, com.cannontech.common.constants.YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
 					if (email == null || email.getDisableFlag().equalsIgnoreCase("Y"))
 						continue;

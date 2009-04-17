@@ -87,7 +87,7 @@ public class UpdateControlNotificationAction implements ActionBase {
             
         	LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) session.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
         	LiteContact litePrimContact = DaoFactory.getContactDao().getContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
-			LiteContactNotification liteNotifEmail = DaoFactory.getContactDao().getContactNotification( litePrimContact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
+			LiteContactNotification liteNotifEmail = DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType( litePrimContact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
             
             ContactNotification email = reqOper.getStarsUpdateControlNotification().getContactNotification();
             

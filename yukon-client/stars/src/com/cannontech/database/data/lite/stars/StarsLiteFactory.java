@@ -1492,13 +1492,13 @@ public class StarsLiteFactory {
 			LiteContact liteContact = DaoFactory.getContactDao().getContact( liteCompany.getPrimaryContactID() );
 			
 			if (liteContact != null) {
-				LiteContactNotification liteNotifPhone = DaoFactory.getContactDao().getContactNotification( liteContact, YukonListEntryTypes.YUK_ENTRY_ID_PHONE );
+				LiteContactNotification liteNotifPhone = DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType( liteContact, YukonListEntryTypes.YUK_ENTRY_ID_PHONE );
 				starsCompany.setMainPhoneNumber( StarsUtils.getNotification(liteNotifPhone) );
 				
-				LiteContactNotification liteNotifFax = DaoFactory.getContactDao().getContactNotification( liteContact, YukonListEntryTypes.YUK_ENTRY_ID_FAX );
+				LiteContactNotification liteNotifFax = DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType( liteContact, YukonListEntryTypes.YUK_ENTRY_ID_FAX );
 				starsCompany.setMainFaxNumber( StarsUtils.getNotification(liteNotifFax) );
 				
-				LiteContactNotification liteNotifEmail = DaoFactory.getContactDao().getContactNotification( liteContact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
+				LiteContactNotification liteNotifEmail = DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType( liteContact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
 				starsCompany.setEmail( StarsUtils.getNotification(liteNotifEmail) );
 				
 				if (liteContact.getAddressID() != CtiUtilities.NONE_ZERO_ID) {
@@ -2051,19 +2051,15 @@ public class StarsLiteFactory {
 		starsUser.setStatus( StarsMsgUtils.getLoginStatus(liteUser.getStatus()) );
 		
 		LiteYukonGroup[] custGroups = energyCompany.getResidentialCustomerGroups();
-		IDatabaseCache cache =
-				com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 		
-		synchronized (cache) {
-			List<LiteYukonGroup> userGroups = cache.getYukonUserGroupMap().get( liteUser );
-			for (int i = 0; i < custGroups.length; i++) {
-				if (userGroups.contains( custGroups[i] )) {
-					starsUser.setGroupID( custGroups[i].getGroupID() );
-					break;
-				}
-			}
+		List<LiteYukonGroup> userGroups = DaoFactory.getYukonGroupDao().getGroupsForUser(liteUser);
+		for (int i = 0; i < custGroups.length; i++) {
+		    if (userGroups.contains( custGroups[i] )) {
+		        starsUser.setGroupID( custGroups[i].getGroupID() );
+		        break;
+		    }
 		}
-		
+
 		return starsUser;
 	}
 	

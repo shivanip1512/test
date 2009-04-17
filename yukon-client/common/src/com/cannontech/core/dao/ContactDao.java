@@ -3,6 +3,7 @@ package com.cannontech.core.dao;
 import java.util.List;
 import java.util.Map;
 
+import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
@@ -19,15 +20,6 @@ public interface ContactDao {
     public LiteContact getContact(int contactID_);
     
     public Map<Integer, LiteContact> getContacts(List<Integer> contactIds);
-
-    /**
-     * Returns the LiteContactNotification of the specified category
-     * @param liteContact com.cannontech.database.data.lite.LiteContact
-     * @param notifCatID int
-     * @return com.cannontech.database.data.lite.LiteContactNotification
-     */
-    public LiteContactNotification getContactNotification(
-            LiteContact liteContact, int notifCatID);
 
     /**
      * @param phoneNo
@@ -221,5 +213,9 @@ public interface ContactDao {
      * @return
      */
     public List<LiteContact> getContactsByLoginId(int loginId);
+
+    public int getAllContactCount();
+    
+    public void callbackWithAllContacts(SimpleCallback<LiteContact> simpleCallback);
 
 }

@@ -13,9 +13,8 @@ public class ContactableContact extends ContactableBase {
     
     public ContactableContact(LiteContact contact) {
         _liteContact = contact;
-        List notifs = contact.getLiteContactNotifications();
-        for (Iterator iter = notifs.iterator(); iter.hasNext();) {
-            LiteContactNotification liteNotif = (LiteContactNotification) iter.next();
+        List<LiteContactNotification> notifs = DaoFactory.getContactNotificationDao().getNotificationsForContact(contact);
+        for (LiteContactNotification liteNotif : notifs) {
             _notifList.add(new ContactableNotification(liteNotif));
         }
     }

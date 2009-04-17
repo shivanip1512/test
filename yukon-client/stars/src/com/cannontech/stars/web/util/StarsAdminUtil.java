@@ -26,6 +26,7 @@ import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.authorization.service.PaoPermissionService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.PoolManager;
@@ -1108,22 +1109,19 @@ public class StarsAdminUtil {
 		
 		boolean groupChanged = false;
 		if (loginGroup != null) {
-			IDatabaseCache cache =
-					com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-			synchronized (cache) {
-                List<LiteYukonGroup> userGroups = cache.getYukonUserGroupMap().get( liteUser );
-				for (int i = 0; i < userGroups.size(); i++) {
-					LiteYukonGroup liteGroup = userGroups.get(i);
-					if (liteGroup.getGroupID() == YukonGroupRoleDefs.GRP_YUKON)
-						continue;
-					if (liteUser.getUserID() == energyCompany.getUser().getUserID() && liteGroup.equals(energyCompany.getOperatorAdminGroup()))
-						continue;
-					if (liteGroup.getGroupID() != loginGroup.getGroupID()) {
-						groupChanged = true;
-						break;
-					}
-				}
-			}
+		    YukonGroupDao yukonGroupDao = DaoFactory.getYukonGroupDao();
+		    List<LiteYukonGroup> userGroups = yukonGroupDao.getGroupsForUser(liteUser);
+		    for (int i = 0; i < userGroups.size(); i++) {
+		        LiteYukonGroup liteGroup = userGroups.get(i);
+		        if (liteGroup.getGroupID() == YukonGroupRoleDefs.GRP_YUKON)
+		            continue;
+		        if (liteUser.getUserID() == energyCompany.getUser().getUserID() && liteGroup.equals(energyCompany.getOperatorAdminGroup()))
+		            continue;
+		        if (liteGroup.getGroupID() != loginGroup.getGroupID()) {
+		            groupChanged = true;
+		            break;
+		        }
+		    }
 		}
 		
 		if (groupChanged) {

@@ -20,6 +20,7 @@ import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.dao.ContactDao;
+import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonUserDao;
@@ -55,6 +56,7 @@ import com.cannontech.web.stars.dr.consumer.model.ContactNotificationOption;
 @Controller
 public class ContactController extends AbstractConsumerController {
     private ContactDao contactDao;
+    private ContactNotificationDao contactNotificationDao;
     private CustomerDao customerDao;
     private YukonListDao yukonListDao;
     private YukonUserDao yukonUserDao;
@@ -225,7 +227,7 @@ public class ContactController extends AbstractConsumerController {
                     } else if(yukonListDao.isEmail(notifCatId)) {
                         if (contactDao.isPrimaryContact(contactId)) {
                             LiteContact primContact = contactDao.getContact(contactId);
-                            LiteContactNotification email = contactDao.getContactNotification(primContact, notifCatId);
+                            LiteContactNotification email = contactNotificationDao.getFirstNotificationForContactByType(primContact, notifCatId);
                             if (email != null) {
                                 disabledFlag = email.getDisableFlag();
                             }
@@ -295,5 +297,11 @@ public class ContactController extends AbstractConsumerController {
     @Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
         this.rolePropertyDao = rolePropertyDao;
+    }
+    
+    @Autowired
+    public void setContactNotificationDao(
+            ContactNotificationDao contactNotificationDao) {
+        this.contactNotificationDao = contactNotificationDao;
     }
 }

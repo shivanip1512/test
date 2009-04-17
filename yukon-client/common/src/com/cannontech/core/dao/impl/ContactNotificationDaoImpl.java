@@ -74,32 +74,6 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao,
         }
 	}
 
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.ContactNotificationDao#getContactNotificationsParent(int)
-     */
-	public LiteContact getContactNotificationsParent( int notifCatID ) 
-	{
-		synchronized( databaseCache )
-		{
-			List<LiteContact> cstCnts = databaseCache.getAllContacts();
-			
-			for( int i = 0; i < cstCnts.size(); i++ )
-			{
-				LiteContact ltCntact = cstCnts.get(i);
-				for( int j = 0; j < ltCntact.getLiteContactNotifications().size(); j++ )
-				{
-					LiteContactNotification ltNotif = 
-						ltCntact.getLiteContactNotifications().get(j);
-
-					if( notifCatID == ltNotif.getContactNotifID() )
-						return cstCnts.get(i);
-				}
-			}
-		}
-	
-		return null;
-	}
-	
 	@Override
     @Transactional
     public void saveNotificationsForContact(int contactId,
@@ -187,8 +161,7 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao,
     }
 
     @Override
-    public List<LiteContactNotification> getNotificationsForContact(
-            int contactId) {
+    public List<LiteContactNotification> getNotificationsForContact(int contactId) {
 
         StringBuilder sql = new StringBuilder("SELECT *");
         sql.append(" FROM ContactNotification");
@@ -200,7 +173,24 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao,
                                                                                   contactId);
 
         return notificationList;
-
+    }
+    
+    @Override
+    public List<LiteContactNotification> getNotificationsForContact(
+            LiteContact liteContact) {
+        return getNotificationsForContact(liteContact.getContactID());
+    }
+    
+    public List<LiteContactNotification> getNotificationsForContactByType(LiteContact liteContact, int notifCatID) {
+        List<LiteContactNotification> result = new ArrayList<LiteContactNotification>();
+        List<LiteContactNotification> notificationsForContact = getNotificationsForContact(liteContact.getContactID());
+        for (LiteContactNotification liteNotif : notificationsForContact) {
+            if (liteNotif.getNotificationCategoryID() == notifCatID) {
+                result.add(liteNotif);
+            }
+        }
+        
+        return result;
     }
     
     @Override
@@ -221,14 +211,9 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao,
     }
     
     @Override
-    public LiteContactNotification getNotificationForContactByType(int contactId, int type) {
-        List<LiteContactNotification> notifs = getNotificationsForContact(contactId);
-        for(LiteContactNotification notif : notifs) {
-            if(notif.getNotificationCategoryID() == type) {
-                return notif;
-            }
-        }
-        return null;
+    public LiteContactNotification getFirstNotificationForContactByType(LiteContact liteContact, int type) {
+        List<LiteContactNotification> notificationsForContactByType = getNotificationsForContactByType(liteContact, type);
+        return notificationsForContactByType.isEmpty() ? null : notificationsForContactByType.get(0);
     }
 
     @Override

@@ -210,9 +210,9 @@ function navPage()
                 }
                 else {
                     LiteContactNotification homeNotif = 
-                            DaoFactory.getContactDao().getContactNotification(contact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
+                            DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(contact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
                     LiteContactNotification workNotif = 
-                            DaoFactory.getContactDao().getContactNotification(contact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE);
+                            DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(contact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE);
 %>
 					<cti:formatNotification var="homePhone" value="<%=homeNotif%>" />
 					<cti:formatNotification var="workPhone" value="<%=workNotif%>" />

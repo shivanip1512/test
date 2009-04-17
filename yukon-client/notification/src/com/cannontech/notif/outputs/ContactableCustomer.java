@@ -16,7 +16,7 @@ public class ContactableCustomer extends ContactableBase {
      */
     public ContactableCustomer(LiteCICustomer customer) {
         _liteCustomer = customer;
-        List contacts = DaoFactory.getCustomerDao().getAllContacts(customer.getCustomerID());
+        List contacts = DaoFactory.getCustomerDao().getAllContacts(customer);
         for (Iterator iter = contacts.iterator(); iter.hasNext();) {
             LiteContact contact = (LiteContact) iter.next();
             _contactList.add(new ContactableContact(contact));

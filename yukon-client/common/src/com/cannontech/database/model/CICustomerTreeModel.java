@@ -3,14 +3,23 @@ package com.cannontech.database.model;
 /**
  * This type was created in VisualAge.
  */
+import java.awt.Cursor;
+import java.awt.Frame;
 import java.util.ArrayList;
+import java.util.concurrent.Executor;
 
+import javax.swing.ProgressMonitor;
+import javax.swing.SwingWorker;
 import javax.swing.tree.TreePath;
 
+import com.cannontech.common.util.SimpleCallback;
+import com.cannontech.core.dao.ContactDao;
+import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
 
@@ -19,8 +28,9 @@ import com.cannontech.yukon.IDatabaseCache;
  * 
  * 
 */
-public class CICustomerTreeModel extends DBTreeModel 
-{
+public class CICustomerTreeModel extends DBTreeModel implements FrameAware {
+private SwingWorker<Object, LiteCICustomer> worker;
+private Frame frame;
 /**
  * CICustomerTreeModel constructor comment.
  * @param root javax.swing.tree.TreeNode
@@ -28,6 +38,12 @@ public class CICustomerTreeModel extends DBTreeModel
 public CICustomerTreeModel() {
 	super( new DBTreeNode("CI Customers") );
 }
+
+@Override
+public void setParentFrame(Frame frame) {
+    this.frame = frame;
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (4/17/2002 1:58:45 PM)
@@ -108,44 +124,20 @@ public synchronized void treePathWillExpand(javax.swing.tree.TreePath path)
 		LiteCICustomer ciCust = (LiteCICustomer)node.getUserObject();
 		
 		node.removeAllChildren();
-		for( int i = 0; i < ciCust.getAdditionalContacts().size(); i++ )
-			node.add( new DBTreeNode(ciCust.getAdditionalContacts().get(i)) );
+		
+		int primaryContactId = ciCust.getPrimaryContactID();
+		if (primaryContactId > 0) {
+		    LiteContact primaryContact = DaoFactory.getContactDao().getContact(primaryContactId);
+		    node.add(new DBTreeNode(primaryContact));
+		}
+		
+		for (LiteContact contact : ciCust.getAdditionalContacts()) {
+            node.add( new DBTreeNode(contact) );
+        }
 	}
 
 	node.setWillHaveChildren(false);
 }
-
-/*
- * Insert the method's description here.
- * Creation date: (4/17/2002 1:58:45 PM)
- * @param lite com.cannontech.database.data.lite.LiteBase
- *
-public boolean updateTreeObject(LiteBase lb) 
-{
-	if( lb == null || !isLiteTypeSupported(lb.getLiteType()) )
-		return false;
-
-java.util.Date s = new java.util.Date();
-	DBTreeNode node = findLiteObject( null, lb );
-
-com.cannontech.clientutils.CTILogger.info("*** !!! UPDATE Took " + 
-	(new java.util.Date().getTime() - s.getTime()) * .001 + 
-	" seconds to find node in DBtreeModel, node = " + node);
-
-
-	if( node != null )
-	{
-		node.setWillHaveChildren( true );
-		treePathWillExpand( new TreePath(node) );
-		nodeStructureChanged( node );
-		
-		
-		return true;
-	}
-
-	return false;
-}
-*/
 
 /**
  * Insert the method's description here.
@@ -174,28 +166,69 @@ public boolean updateTreeObject(LiteBase lb)
 /**
  * This method was created in VisualAge.
  */
-public void update() 
-{
-	IDatabaseCache cache =
-					com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+public void update() {
+	frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+    // if we have a worker, cancel it
+    if (worker != null) {
+        worker.cancel(false);
+    }
+    
+    final DBTreeNode rootNode = (DBTreeNode) getRoot();
+    rootNode.removeAllChildren();
+    nodeStructureChanged(rootNode);
 
-	java.util.List ciCustomers = new ArrayList(cache.getAllCICustomers());
-	java.util.Collections.sort( ciCustomers, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
+    final CustomerDao customerDao = DaoFactory.getCustomerDao();
+    
+    final ProgressMonitor monitor = new ProgressMonitor(frame, "Loading contents", "---", 0, 0);
 
-	DBTreeNode rootNode = (DBTreeNode) getRoot();
-	rootNode.removeAllChildren();
+    worker = new SwingWorker<Object, LiteCICustomer>() {
+        private int count = 0;
+        private volatile int customerCount = 0;
+        protected Object doInBackground() throws Exception {
+            customerCount = customerDao.getAllCiCustomerCount();
+            customerDao.callbackWithAllCiCustomers(new SimpleCallback<LiteCICustomer>() {
+                public void handle(LiteCICustomer item) {
+                    publish(item);
+                }
+            });
+            return null;
+        };
+        
+        protected void process(java.util.List<LiteCICustomer> chunks) {
+            // if the user canceled, there isn't much we can do about the background thread
+            // but we can stop adding stuff to the model (and tying up memory)
+            if (monitor.isCanceled() || isCancelled()) return;
+            
+            for (LiteCICustomer customer : chunks) {
+                DBTreeNode custNode = new DBTreeNode(customer);
+                rootNode.add( custNode );
 
-	for( int i = 0; i < ciCustomers.size(); i++ )
-	{
-	    DBTreeNode custNode = new DBTreeNode( ciCustomers.get(i) );
-	    rootNode.add( custNode );
+                custNode.setWillHaveChildren(true);
 
-	    LiteCICustomer ltCust = (LiteCICustomer)ciCustomers.get(i);
+                count++;
+            }
+            reload();
+            
+            // update monitor here on the event dispatch thread
+            monitor.setMaximum(customerCount);
+            monitor.setNote(count + " out of " + customerCount);
+            monitor.setProgress(count);
+            frame.setCursor(Cursor.getDefaultCursor());
 
-	    custNode.setWillHaveChildren(true);
-	}
-
-	reload();
+        };
+        
+        @Override
+        protected void done() {
+            // this happens automatically, but if we cancel via the worker.cancel() method
+            // we want to make sure the dialog goes away
+            monitor.close();
+            frame.setCursor(Cursor.getDefaultCursor());
+            
+        }
+    };
+    
+    Executor executor = YukonSpringHook.getBean("globalScheduledExecutor", Executor.class);
+    executor.execute(worker);
 }
 
 }

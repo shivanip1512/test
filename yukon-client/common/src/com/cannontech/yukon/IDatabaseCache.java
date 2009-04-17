@@ -54,8 +54,6 @@ public interface IDatabaseCache {
     
     public List<LiteYukonPAObject> getAllCapControlSubStations();
 
-    public List<LiteContact> getAllContacts();
-
     public List<LiteCICustomer> getAllCICustomers();
 
     public List<LiteDeviceMeterNumber> getAllDeviceMeterGroups();
@@ -116,11 +114,6 @@ public interface IDatabaseCache {
     public Map<Integer,LiteYukonPAObject> getAllPAOsMap();
 
     /**
-     * @return Map of userID to LiteYukonUser
-     */
-    public Map<Integer,LiteYukonUser> getAllUsersMap();
-
-    /**
      * @return Map of contactNotifID to LiteContactNotification
      */
     public Map<Integer,LiteContactNotification> getAllContactNotifsMap();
@@ -155,13 +148,7 @@ public interface IDatabaseCache {
 
     public List<LiteYukonRoleProperty> getAllYukonRoleProperties();
 
-    public List<LiteYukonUser> getAllYukonUsers();
-
     public Map<LiteYukonGroup, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String>>> getYukonGroupRolePropertyMap();
-
-    public Map<LiteYukonUser,List<LiteYukonGroup>> getYukonUserGroupMap();
-
-    public Map<LiteYukonGroup,List<LiteYukonUser>> getYukonGroupUserMap();
 
     public List<LiteEnergyCompany> getAllEnergyCompanies();
 
@@ -214,8 +201,6 @@ public interface IDatabaseCache {
     public void releaseAllNotificationGroups();
 
     public void releaseAllCustomers();
-
-    public void releaseAllYukonUsers();
 
     public void releaseAllStateGroups();
 

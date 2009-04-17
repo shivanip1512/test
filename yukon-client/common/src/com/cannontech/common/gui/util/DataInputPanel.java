@@ -112,6 +112,10 @@ public void setErrorString(java.lang.String newErrorString) {
  */
 public abstract void setValue(Object o);
 
+public void disposeValue() {
+    // nothing by default, used to clean up large pieces of memory
+}
+
 public void postSave(DBPersistent o) {
     // default nothing
 }

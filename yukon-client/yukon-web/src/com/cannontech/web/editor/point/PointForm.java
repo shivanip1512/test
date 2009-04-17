@@ -15,6 +15,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -190,36 +191,31 @@ public class PointForm extends DBEditorForm
      * @return
      */ 
     public SelectItem[] getEmailNotifcations() {
-        
-        if( emailNotifcations == null ) {           
-            
-            IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-            
-            synchronized( cache ) {
-                
-                List<LiteContact> contacts = cache.getAllContacts();
 
-                ArrayList<SelectItem> emailList = new ArrayList<SelectItem>();
-                emailList.add( 
-                    new SelectItem(
-                        new Integer(LiteContact.NONE_LITE_CONTACT.getContactID()),
-                        LiteContact.NONE_LITE_CONTACT.toString()) );
-                
-                for( int i = 0; i < contacts.size(); i++ ) {
+        if( emailNotifcations == null ) {     
 
-                    LiteContact contact = contacts.get(i);
+            final ArrayList<SelectItem> emailList = new ArrayList<SelectItem>();
+            SelectItem nullEntry = new SelectItem(
+                                                  LiteContact.NONE_LITE_CONTACT.getContactID(),
+                                                  LiteContact.NONE_LITE_CONTACT.toString());
+            emailList.add(nullEntry );
+            DaoFactory.getContactDao().callbackWithAllContacts(new SimpleCallback<LiteContact>() {
+                @Override
+                public void handle(LiteContact contact) throws Exception {
+
                     int cntNotifID = findEmailContact(contact);
 
-                    if( cntNotifID != CtiUtilities.NONE_ZERO_ID )
-                        emailList.add( 
-                            new SelectItem(
-                                new Integer(cntNotifID),
-                                contact.toString()) );
-                }
+                    if( cntNotifID != CtiUtilities.NONE_ZERO_ID ) {
+                        SelectItem selectItem = new SelectItem(
+                                                               cntNotifID,
+                                                               contact.toString());
+                        emailList.add(selectItem );
+                    }
 
-                emailNotifcations = new SelectItem[ emailList.size() ];
-                emailNotifcations = emailList.toArray( emailNotifcations );
-            }           
+                }
+            });
+            emailNotifcations = new SelectItem[ emailList.size() ];
+            emailNotifcations = emailList.toArray( emailNotifcations );
         }
 
         return emailNotifcations;

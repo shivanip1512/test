@@ -369,6 +369,7 @@ java.util.Date timerStart = new java.util.Date();
 		LiteBaseTreeModel model = 
 			(LiteBaseTreeModel) getSortByComboBox().getSelectedItem();
 
+		getTree().setModel(model);
 		try
 		{
 			model.update();  //time hog on large DB's possibly!!
@@ -378,7 +379,6 @@ java.util.Date timerStart = new java.util.Date();
 			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}		
 
-		getTree().setModel(model);
 
 		//Make sure that the tree is expanded at least one level
 		expandRoot();

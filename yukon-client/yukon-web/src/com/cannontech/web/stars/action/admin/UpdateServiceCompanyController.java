@@ -125,7 +125,7 @@ public class UpdateServiceCompanyController extends StarsAdminActionController {
             }
             else {
                 contact = (com.cannontech.database.data.customer.Contact)
-                Transaction.createTransaction( Transaction.UPDATE, contact ).execute();
+                    Transaction.createTransaction( Transaction.UPDATE, contact ).execute();
                 StarsLiteFactory.setLiteContact( liteContact, contact );
                 ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_UPDATE );
 

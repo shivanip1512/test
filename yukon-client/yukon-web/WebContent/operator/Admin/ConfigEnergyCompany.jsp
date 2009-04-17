@@ -56,7 +56,8 @@
 	}
 %>
 
-<%@page import="com.google.common.collect.Sets"%><html>
+<%@page import="com.google.common.collect.Sets"%>
+<%@page import="com.cannontech.database.data.lite.LiteYukonGroup"%><html>
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
@@ -781,13 +782,10 @@ function deleteWarehouse(form, warehouseId) {
                                     <td width="15%" class="HeaderCell">&nbsp;</td>
                                   </tr>
                                   <%
-	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-	Map userGroupMap = cache.getYukonUserGroupMap();
 	
-	List userGroups = (List) userGroupMap.get(lYukonUser);
+	List<LiteYukonGroup> userGroups = DaoFactory.getYukonGroupDao().getGroupsForUser(lYukonUser);
 	String groupNames = "";
-	for (int i = 0; i < userGroups.size(); i++) {
-		com.cannontech.database.data.lite.LiteYukonGroup liteGroup = (com.cannontech.database.data.lite.LiteYukonGroup) userGroups.get(i);
+	for (LiteYukonGroup liteGroup : userGroups) {
 		if (liteGroup.getGroupID() == -1) continue;
 		if (groupNames.length() > 0) groupNames += ", ";
 		groupNames += liteGroup.getGroupName();
@@ -816,10 +814,9 @@ function deleteWarehouse(form, warehouseId) {
 		LiteYukonUser liteUser = DaoFactory.getYukonUserDao().getLiteYukonUser(userID);
 		if (liteUser == null) continue;
 		
-		userGroups = (List) userGroupMap.get(liteUser);
+		userGroups = DaoFactory.getYukonGroupDao().getGroupsForUser(lYukonUser);
 		groupNames = "";
-		for (int j = 0; j < userGroups.size(); j++) {
-			com.cannontech.database.data.lite.LiteYukonGroup liteGroup = (com.cannontech.database.data.lite.LiteYukonGroup) userGroups.get(j);
+		for (LiteYukonGroup liteGroup : userGroups) {
 			if (liteGroup.getGroupID() == -1) continue;
 			if (groupNames.length() > 0) groupNames += ", ";
 			groupNames += liteGroup.getGroupName();

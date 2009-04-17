@@ -657,9 +657,9 @@ var setChoosenYukonDevice = function() {
                 LiteAddress liteAddr = liteEC.getAddress(liteAcctSite.getStreetAddressID());
 
                 String name = StarsUtils.formatName(liteContact);
-                String homePhone = StarsUtils.getNotification(DaoFactory.getContactDao().getContactNotification(liteContact,
+                String homePhone = StarsUtils.getNotification(DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(liteContact,
                                                                                                   YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE));
-                String workPhone = StarsUtils.getNotification(DaoFactory.getContactDao().getContactNotification(liteContact,
+                String workPhone = StarsUtils.getNotification(DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(liteContact,
                                                                                                   YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE));
                 String mapNo = StarsUtils.forceNotNone(liteAcctSite.getSiteNumber());
 

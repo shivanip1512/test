@@ -29,6 +29,7 @@ import com.cannontech.core.authorization.service.PaoPermissionService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -422,23 +423,20 @@ public class LiteStarsEnergyCompany extends LiteBase {
     }
     
     public LiteYukonGroup getOperatorAdminGroup() {
+        YukonGroupDao yukonGroupDao = DaoFactory.getYukonGroupDao();
         if (operDftGroupID < com.cannontech.database.db.user.YukonGroup.EDITABLE_MIN_GROUP_ID) {
-            IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-            
-            synchronized (cache) {
-                List<LiteYukonGroup> groups = cache.getYukonUserGroupMap()
-                                                   .get(user);
-                for (int i = 0; i < groups.size(); i++) {
-                    LiteYukonGroup group = groups.get(i);
-                    if (DaoFactory.getRoleDao().getRolePropValueGroup(group, AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY, null) != null) {
-                        operDftGroupID = group.getGroupID();
-                        return group;
-                    }
+
+            List<LiteYukonGroup> groups = yukonGroupDao.getGroupsForUser(user);
+            for (int i = 0; i < groups.size(); i++) {
+                LiteYukonGroup group = groups.get(i);
+                if (DaoFactory.getRoleDao().getRolePropValueGroup(group, AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY, null) != null) {
+                    operDftGroupID = group.getGroupID();
+                    return group;
                 }
             }
         }
-        
-        return DaoFactory.getRoleDao().getGroup( operDftGroupID );
+
+        return yukonGroupDao.getLiteYukonGroup(operDftGroupID);
     }
     
     /**

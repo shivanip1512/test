@@ -49,7 +49,7 @@ public class SendWorkOrderController extends StarsWorkorderActionController {
         String email = null;
         if (sc.getPrimaryContactID() > 0) {
             LiteContact contact = this.contactDao.getContact( sc.getPrimaryContactID() );
-            LiteContactNotification emailNotif = this.contactDao.getContactNotification( contact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
+            LiteContactNotification emailNotif = this.contactNotificationDao.getFirstNotificationForContactByType( contact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
             if (emailNotif != null) email = emailNotif.getNotification();
         }
         

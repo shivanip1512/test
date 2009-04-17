@@ -88,8 +88,6 @@ import com.cannontech.yukon.server.cache.YukonImageLoader;
 import com.cannontech.yukon.server.cache.YukonPAOLoader;
 import com.cannontech.yukon.server.cache.YukonRoleLoader;
 import com.cannontech.yukon.server.cache.YukonRolePropertyLoader;
-import com.cannontech.yukon.server.cache.YukonUserGroupLoader;
-import com.cannontech.yukon.server.cache.YukonUserLoader;
 import com.cannontech.yukon.server.cache.bypass.MapKeyInts;
 import com.cannontech.yukon.server.cache.bypass.YukonCustomerLookup;
 import com.cannontech.yukon.server.cache.bypass.YukonUserContactLookup;
@@ -119,7 +117,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private List<LiteNotificationGroup> allNotificationGroups = null;
 		
 	private ArrayList<LiteAlarmCategory> allAlarmCategories = null;
-	private ArrayList<LiteContact> allContacts = null;
 	private ArrayList<LiteGraphDefinition> allGraphDefinitions = null;
 	private ArrayList<LiteYukonPAObject> allMCTs = null;
 	private ArrayList<LiteHolidaySchedule> allHolidaySchedules = null;
@@ -142,14 +139,11 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private ArrayList <LiteTOUSchedule> allTOUSchedules = null;
 	private ArrayList<LiteTOUDay> allTOUDays = null;
 	
-	private ArrayList<LiteYukonUser> allYukonUsers = null;
 	private ArrayList<LiteYukonRole> allYukonRoles = null;
 	private ArrayList<LiteYukonRoleProperty> allYukonRoleProperties = null;
 	private ArrayList<LiteYukonGroup> allYukonGroups = null;
 	
-	private Map allYukonGroupRolePropertiesMap = null;
-	private Map allYukonUserGroupsMap = null;
-	private Map allYukonGroupUsersMap = null;
+	private Map<LiteYukonGroup, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String>>> allYukonGroupRolePropertiesMap = null;
 		
 	private volatile List<LiteEnergyCompany> allEnergyCompanies = null;
 	
@@ -185,7 +179,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private ArrayList<LiteCommand> allCommands = null;
 	private Map<Integer, LiteCommand> allCommandsMap = null;
 	private Map<Integer, LiteStateGroup> allStateGroupMap = null;
-	private Map<Integer, LiteYukonUser> allUsersMap = null;
 	private Map<Integer, LiteContactNotification> allContactNotifsMap = null;
 	
 	private Map<Integer, LiteContact> userContactMap = new ConcurrentHashMap<Integer, LiteContact>(1000, .75f, 30);
@@ -193,7 +186,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private Map<MapKeyInts, LiteYukonRole> userRoleMap = null;
 
     // injected loaders
-    private YukonUserLoader yukonUserLoader;
     private YukonUserEnergyCompanyLookup yukonUserEnergyCompanyLookup;
 
 /**
@@ -324,24 +316,26 @@ public synchronized List<LiteYukonPAObject> getAllCapControlSubStations()
  * Insert the method's description here.
  * Creation date: (3/14/00 3:19:19 PM)
  */
-public synchronized List<LiteContact> getAllContacts() {
-    if( allContacts != null && allContactsMap != null && allContactNotifsMap != null) {
-        return allContacts;
+private synchronized void loadAllContacts() {
+    if (allContactsMap != null && allContactNotifsMap != null) {
+        return;
     } else {
-        allContacts = new ArrayList<LiteContact>();        
         allContactsMap.clear();
         allContactNotifsMap = new HashMap<Integer, LiteContactNotification>();
         
         ContactLoader contactLoader =
-            new ContactLoader(allContacts, allContactsMap, allContactNotifsMap, databaseAlias);
+            new ContactLoader(allContactsMap, allContactNotifsMap, databaseAlias);
         
         contactLoader.run();		
-        return allContacts;
+        return;
     }
 }
 
 /**
- *
+ * Called by:
+ *  com.cannontech.analysis.tablemodel.HECO_SettlementModelBase.loadSettlementCustomerMap()
+ *  com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramEnergyExchangeCustomerListPanel.initializeAddPanel()
+ *  com.cannontech.dbeditor.editor.notification.group.NotificationPanel.getJTreeNotifs()
  */
 public List<LiteCICustomer> getAllCICustomers() {
     List<LiteCICustomer> tempAllCICustomers = allCICustomers;
@@ -722,8 +716,7 @@ public synchronized List<LiteYukonPAObject> getAllLoadManagement()
 	return allLoadManagement;
 }
 /**
- * Insert the method's description here.
- * Creation date: (3/14/00 3:19:19 PM)
+ * Called in four external places.
  */
 public synchronized List<LiteNotificationGroup> getAllContactNotificationGroups()
 {
@@ -740,6 +733,9 @@ public synchronized List<LiteNotificationGroup> getAllContactNotificationGroups(
 	}
 }
 
+/**
+ * Called in three external places.
+ */
 public synchronized List<LiteNotificationGroup> getAllContactNotificationGroupsWithNone()
 {
     List<LiteNotificationGroup> notifGroup = new ArrayList<LiteNotificationGroup>();
@@ -790,34 +786,10 @@ public synchronized java.util.Map<Integer, LiteYukonPAObject> getAllPAOsMap()
 	}
 }
 
-/**
- * A map for all LiteYukonUser objects keyed by userid
- * 
- */
-public synchronized java.util.Map<Integer, LiteYukonUser> getAllUsersMap()
-{
-	if( allUsersMap != null )
-		return allUsersMap;
-	else
-	{
-		releaseAllYukonUsers();
-		getAllYukonUsers();
-
-		return allUsersMap;
-	}
-}
-
 public synchronized java.util.Map<Integer, LiteContactNotification> getAllContactNotifsMap()
 {
-	if( allContactNotifsMap != null )
-		return allContactNotifsMap;
-	else
-	{
-        releaseAllContacts();
-        getAllContacts();
-
-        return allContactNotifsMap;
-	}
+    loadAllContacts();
+    return allContactNotifsMap;
 }
 
 public synchronized List<LitePointLimit> getAllPointLimits() {
@@ -1046,31 +1018,15 @@ public synchronized List<LiteYukonPAObject> getAllYukonPAObjects()
 		}
 		return allYukonRoleProperties;
 	}
-	/**
-	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonUsers()
-	 */
-	public synchronized List<LiteYukonUser> getAllYukonUsers()
-	{		
-		if( allYukonUsers != null && allUsersMap != null )
-			return allYukonUsers;
-		else
-		{
-			allYukonUsers = new ArrayList<LiteYukonUser>();
-			allUsersMap = new HashMap<Integer, LiteYukonUser>();
-			yukonUserLoader.load(allYukonUsers, allUsersMap);
-			return allYukonUsers;
-		}
-
-	}
 
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getYukonGroupRolePropertyMap()
 	 */
-	public synchronized Map getYukonGroupRolePropertyMap() 
+	public synchronized Map<LiteYukonGroup, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String>>> getYukonGroupRolePropertyMap() 
 	{
 		if(allYukonGroupRolePropertiesMap == null) 
 		{
-			allYukonGroupRolePropertiesMap = new java.util.HashMap();
+			allYukonGroupRolePropertiesMap = new HashMap<LiteYukonGroup, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String>>>();
 			final YukonGroupRoleLoader l = 
 				new YukonGroupRoleLoader(allYukonGroupRolePropertiesMap, getAllYukonGroups(), getAllYukonRoles(), getAllYukonRoleProperties(), databaseAlias);
 			l.run();
@@ -1078,37 +1034,6 @@ public synchronized List<LiteYukonPAObject> getAllYukonPAObjects()
 		return allYukonGroupRolePropertiesMap;
 	}
 
-	/**
-	 * @see com.cannontech.yukon.IDatabaseCache#getYukonUserGroupMap()
-	 */
-	public synchronized Map getYukonUserGroupMap() 
-	{
-		if(allYukonUserGroupsMap == null) {
-			loadUsersAndGroups();
-		}
-		return allYukonUserGroupsMap;
-	}
-		
-	/**
-	 * @see com.cannontech.yukon.IDatabaseCache#getYukonGroupUserMap()
-	 */
-	public synchronized Map getYukonGroupUserMap()
-	{
-		if(allYukonUserGroupsMap == null) {
-			loadUsersAndGroups();
-		}
-		return allYukonGroupUsersMap;				
-	}
-
-	private void loadUsersAndGroups() 
-	{
-		allYukonUserGroupsMap = new HashMap();
-		allYukonGroupUsersMap = new HashMap();
-		YukonUserGroupLoader l = 
-				new YukonUserGroupLoader(allYukonUserGroupsMap, allYukonGroupUsersMap, getAllYukonUsers(), getAllYukonGroups(), databaseAlias);
-		l.run();
-	}
-	
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllEnergyCompanies()
 	 */
@@ -1304,9 +1229,7 @@ private synchronized LiteBase handleContactChange( int changeType, int id )
     }
     case DBChangeMsg.CHANGE_TYPE_UPDATE:
     {
-        LiteContact oldContact = allContactsMap.get(id);
         allContactsMap.remove(id);
-        getAllContactsList().remove(oldContact);
         LiteContact lc = getAContactByContactID(id);
         lBase = lc;
         
@@ -1324,17 +1247,7 @@ private synchronized LiteBase handleContactChange( int changeType, int id )
         }		
         
         allContactsMap.remove( new Integer(id) );
-        if (allContacts != null) {
-            for (int i=0;i<allContacts.size();i++)
-            {
-                if ( allContacts.get(i).getLiteID() == id )
-                {
-                    lBase = allContacts.remove(i);
-                    break;
-                }
-            }
-        }
-        
+
         //better wipe the user to contact mapping, in case one of the contacts from the map was deleted
         releaseUserContactMap();
         
@@ -1527,14 +1440,12 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg,
 		if( DBChangeMsg.CAT_YUKON_USER_GROUP.equalsIgnoreCase(dbCategory) )
 			retLBase = handleYukonGroupChange( dbType, id );
 		else
-			retLBase = handleYukonUserChange( dbType, id );
+			retLBase = handleYukonUserChange( dbType, id, noObjectNeeded);
 		
 		// This seems heavy handed!
 		allYukonGroups = null;
 		allYukonRoles = null;
 		allYukonGroupRolePropertiesMap = null;
-		allYukonUserGroupsMap = null;
-		allYukonGroupUsersMap = null;
 		userEnergyCompanyCache.clear();
 	}
 	else if ( database == DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB )
@@ -2522,59 +2433,38 @@ private synchronized LiteBase handleYukonGroupChange( int changeType, int id )
  * Insert the method's description here.
  * Creation date: (12/7/00 12:34:05 PM)
  */
-private synchronized LiteBase handleYukonUserChange( int changeType, int id )
+private synchronized LiteBase handleYukonUserChange( int changeType, int id, boolean noObjectNeeded )
 {
-	LiteBase lBase = null;
+    LiteBase lBase = null;
 
-	// if the storage is not already loaded, we must not care about it
-	if( allYukonUsers == null || allUsersMap == null )
-		return lBase;
+    LiteYukonUser lu = null;
+    switch(changeType)
+    {
+    case DBChangeMsg.CHANGE_TYPE_ADD:
+        if( !noObjectNeeded )
+        {
+            lu = new LiteYukonUser(id);
+            lu.retrieve(databaseAlias);
+            lBase = lu;
+        }
+        break;
 
-	switch(changeType)
-	{
-		case DBChangeMsg.CHANGE_TYPE_ADD:
-			lBase = allUsersMap.get( new Integer(id) );				
-			if( lBase == null )
-			{
-				LiteYukonUser lu = new LiteYukonUser(id);
-				lu.retrieve(databaseAlias);
-				allYukonUsers.add(lu);
-				allUsersMap.put( new Integer(lu.getUserID()), lu );
-		
-				lBase = lu;
-			}
-			break;
+    case DBChangeMsg.CHANGE_TYPE_UPDATE:
+        if (!noObjectNeeded) {
+            lu = new LiteYukonUser(id);
+            lu.retrieve(databaseAlias);
+            lBase = lu;
+        }
+        adjustUserMappings(id);
+        break;
 
-		case DBChangeMsg.CHANGE_TYPE_UPDATE:
-			LiteYukonUser lu = allUsersMap.get( new Integer(id) );				
-			lu.retrieve( databaseAlias );
-						
-			lBase = lu;
-            adjustUserMappings(id);           
-			break;
+    case DBChangeMsg.CHANGE_TYPE_DELETE:
+        adjustUserMappings(id); 
+        break;
 
-		case DBChangeMsg.CHANGE_TYPE_DELETE:
-			for(int i=0;i<allYukonUsers.size();i++)
-			{
-				if( allYukonUsers.get(i).getUserID() == id )
-				{
-					allUsersMap.remove( new Integer(id) );
-					lBase = allYukonUsers.remove(i);
-					break;
-				}
-			}
-            adjustUserMappings(id); 
-			break;
+    }
 
-		default:
-			releaseAllYukonUsers();
-            releaseUserRoleMap();
-            releaseUserRolePropertyValueMap();
-            releaseUserContactMap();
-			break;
-	}
-
-	return lBase;
+    return lBase;
 }
 
 /**
@@ -2660,7 +2550,6 @@ public synchronized void releaseAllCache()
 	allContactNotifsMap = null;
     
 	allAlarmCategories = null;
-	allContacts = null;
 	allGraphDefinitions = null;
 	allMCTs = null;
 	allHolidaySchedules = null;
@@ -2682,14 +2571,11 @@ public synchronized void releaseAllCache()
 	allTOUSchedules = null;
 	allTOUDays = null;
     
-	allYukonUsers = null;
 	allYukonRoles = null;
 	allYukonRoleProperties = null;
 	allYukonGroups = null;
     
 	allYukonGroupRolePropertiesMap = null;
-	allYukonUserGroupsMap = null;
-	allYukonGroupUsersMap = null;
         
 	allEnergyCompanies = null;
     
@@ -2712,7 +2598,6 @@ public synchronized void releaseAllCache()
 	allPAOsMap = null;
 	customerCache.clear();
 	allContactsMap.clear();
-	allUsersMap = null;
 
 
 	//derived from allYukonUsers,allYukonRoles,allYukonGroups
@@ -2725,7 +2610,6 @@ public synchronized void releaseAllCache()
  */
 public synchronized void releaseAllContacts()
 {
-	allContacts = null;
 	allContactsMap.clear();
 	allContactNotifsMap = null;
 }
@@ -2840,16 +2724,6 @@ public synchronized void releaseAllSystemPoints()
     allSystemPoints = null;
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (3/14/00 3:22:47 PM)
- */
-public synchronized void releaseAllYukonUsers(){
-	allYukonUsers = null;
-	allUsersMap = null;
-	releaseUserRoleMap();
-	releaseUserRolePropertyValueMap();
-}
 /**
  * Insert the method's description here.
  * Creation date: (3/14/00 3:22:47 PM)
@@ -2995,22 +2869,12 @@ public synchronized LiteContact getAContactByContactID(int contactID)
 
         //found it, put it in the cache for later searches
         if (specifiedContact != null) {
-            getAllContactsList().add(specifiedContact);
             allContactsMap.put(contactID, specifiedContact);  
             userContactMap.put(specifiedContact.getLoginID(), specifiedContact);
         }
     }
     
     return specifiedContact;
-}
-
-public synchronized List<LiteContact> getAllContactsList() {
-
-    if (allContacts == null) {
-        allContacts = new ArrayList<LiteContact>();
-    }
-
-    return allContacts;
 }
 
 public synchronized LiteContact[] getContactsByPhoneNumber(String phone, boolean partialMatch) 
@@ -3025,11 +2889,7 @@ public synchronized LiteContact getContactsByEmail(String email)
 
 public synchronized LiteContactNotification getAContactNotifByNotifID(int contNotifyID) 
 {
-    //check cache for previous grabs
-    if(allContactsMap == null || allContactNotifsMap == null) 
-    {
-		getAllContacts();
-	} 
+    loadAllContacts();
     
     LiteContactNotification specifiedNotify = allContactNotifsMap.get(new Integer(contNotifyID));
 	
@@ -3160,11 +3020,6 @@ public synchronized List getDevicesByCommPort(int portId)
 public List getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress) {
     return DeviceCommPortLoader.getDevicesByDeviceAddress(masterAddress, slaveAddress);
     
-}
-
-@Required
-public void setYukonUserLoader(YukonUserLoader yukonUserLoader) {
-    this.yukonUserLoader = yukonUserLoader;
 }
 
 @Required

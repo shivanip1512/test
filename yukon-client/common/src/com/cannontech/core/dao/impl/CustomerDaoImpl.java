@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.ContactDao;
@@ -24,6 +25,7 @@ import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.core.dao.GraphCustomerListDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.customer.model.CustomerInformation;
+import com.cannontech.database.AbstractRowCallbackHandler;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.SqlUtils;
@@ -33,6 +35,7 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.spring.SeparableRowMapper;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -116,8 +119,7 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
      * 
      * @see com.cannontech.core.dao.CustomerDao#getAllContacts(int)
      */
-    public List<LiteContact> getAllContacts(int customerID_) {
-        LiteCustomer customer = databaseCache.getACustomerByCustomerID(customerID_);
+    public List<LiteContact> getAllContacts(LiteCustomer customer) {
         Vector<LiteContact> allContacts = new Vector<LiteContact>(5); // guess capacity
         if (customer != null) {
             int primCntctID = customer.getPrimaryContactID();
@@ -216,7 +218,7 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
         sql.append("WHERE c.CustomerId = ?");
 
         LiteCustomer customer = simpleJdbcTemplate.queryForObject(sql.getSql(),
-                                                                  new CustomerRowMapper(),
+                                                                  new TypeAwareCustomerRowMapper(),
                                                                   customerId);
 
         List<LiteContact> additionalContacts = contactDao.getAdditionalContactsForCustomer(customerId);
@@ -318,21 +320,59 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
         return customer;
     }
     
-    private static class CustomerRowMapper implements ParameterizedRowMapper<LiteCustomer> {
+    public void callbackWithAllCiCustomers(final SimpleCallback<LiteCICustomer> callback) {
 
+        final SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT c.*, ectam.EnergyCompanyId, ci.*");
+        sql.append("FROM Customer c");
+        sql.append("  JOIN CICustomerBase ci ON c.CustomerID = ci.CustomerID");
+        sql.append("  LEFT JOIN CustomerAccount ca ON c.CustomerId = ca.CustomerId");
+        sql.append("  LEFT JOIN ECToAccountMapping ectam ON ca.AccountId = ectam.AccountId");
+        sql.append("ORDER BY CompanyName");
+
+        final CiCustomerRowMapper customerRowMapper = new CiCustomerRowMapper();
+        simpleJdbcTemplate.getJdbcOperations().query(sql.getSql(), new AbstractRowCallbackHandler() {
+            public void processRow(ResultSet rs, int rowNum) throws SQLException {
+                LiteCICustomer lc = customerRowMapper.mapRow(rs, rowNum);
+                try {
+                    callback.handle(lc);
+                } catch (Exception e) {
+                    throw new RuntimeException("Unable to use call callback", e);
+                }
+            }
+        });
+    }
+    
+    @Override
+    public int getAllCiCustomerCount() {
+        final SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT count(*)");
+        sql.append("FROM CICustomerBase");
+        int result = simpleJdbcTemplate.queryForInt(sql.getSql());
+        return result;
+    }
+    
+    private static class TypeAwareCustomerRowMapper implements ParameterizedRowMapper<LiteCustomer> {
+        private ParameterizedRowMapper<LiteCustomer> customer = new CustomerRowMapper();
+        private ParameterizedRowMapper<LiteCICustomer> ciCustomer = new CiCustomerRowMapper();
         @Override
-        public LiteCustomer mapRow(ResultSet rs, int rowNum)
-                throws SQLException {
-
-            final int customerId = rs.getInt("CustomerId");
+        public LiteCustomer mapRow(ResultSet rs, int rowNum) throws SQLException {
             final int customerTypeId = rs.getInt("CustomerTypeId");
-            final boolean isCICustomer = customerTypeId == CustomerTypes.CUSTOMER_CI;
-
-            final LiteCustomer customer = (isCICustomer) ? 
-                    new LiteCICustomer(customerId) : new LiteCustomer(customerId);
-                    
+            final boolean isCiCustomer = customerTypeId == CustomerTypes.CUSTOMER_CI;
+             
+            return isCiCustomer ? ciCustomer.mapRow(rs, rowNum) : customer.mapRow(rs, rowNum);
+        }
+    }
+    
+    private static class CustomerRowMapper extends SeparableRowMapper<LiteCustomer> {
+        protected LiteCustomer createObject(ResultSet rs) throws SQLException {
+            return new LiteCustomer(rs.getInt("CustomerId"));
+        }
+        
+        public void mapRow(ResultSet rs, LiteCustomer customer)
+        throws SQLException {
             customer.setPrimaryContactID(rs.getInt("PrimaryContactId"));
-            customer.setCustomerTypeID(customerTypeId);
+            customer.setCustomerTypeID(rs.getInt("CustomerTypeId"));
             customer.setTimeZone(rs.getString("TimeZone"));
             customer.setCustomerNumber(rs.getString("CustomerNumber"));
             customer.setRateScheduleID(rs.getInt("RateScheduleId"));
@@ -343,18 +383,28 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
             {
                 customer.setEnergyCompanyID(energyCompanyId);
             }
-            
-            if (!isCICustomer) return customer;
-            
+        }
+    }
+    
+    private static class CiCustomerRowMapper extends SeparableRowMapper<LiteCICustomer> {
+        public CiCustomerRowMapper() {
+            super(new CustomerRowMapper());
+        }
+        
+        protected LiteCICustomer createObject(ResultSet rs) throws SQLException {
+            return new LiteCICustomer(rs.getInt("CustomerId"));
+        }
+        
+        public void mapRow(ResultSet rs, LiteCICustomer customer)
+                throws SQLException {
+
             final LiteCICustomer ciCustomer = (LiteCICustomer) customer;
             ciCustomer.setMainAddressID(rs.getInt("MainAddressID"));            
             ciCustomer.setCompanyName(rs.getString("CompanyName"));   
             ciCustomer.setDemandLevel(rs.getDouble("CustomerDemandLevel"));
             ciCustomer.setCurtailAmount(rs.getDouble("CurtailAmount"));
             ciCustomer.setCICustType(rs.getInt("CICustType"));
-            return ciCustomer;
         }
-        
     }
 
     private class CustomerInformationRowMapper implements ParameterizedRowMapper<CustomerInformation> {

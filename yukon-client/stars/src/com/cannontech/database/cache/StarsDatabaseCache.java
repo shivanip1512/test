@@ -104,9 +104,6 @@ public class StarsDatabaseCache implements DBChangeListener {
     public void loadData() {
         getAllWebConfigurations();
         
-        // Force all contacts to be loaded (since this can take a long time, and slow down the first time login)
-        DefaultDatabaseCache.getInstance().getAllContacts();
-        
         getAllEnergyCompanies();
     }
 

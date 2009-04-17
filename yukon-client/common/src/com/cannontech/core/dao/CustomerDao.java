@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
+import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.customer.model.CustomerInformation;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
@@ -18,7 +19,7 @@ public interface CustomerDao {
      * @param userID
      * @return List LiteContact
      */
-    public List<LiteContact> getAllContacts(int customerID_);
+    public List<LiteContact> getAllContacts(LiteCustomer customer);
 
     public LiteContact getPrimaryContact(int customerID_);
 
@@ -110,6 +111,8 @@ public interface CustomerDao {
 	 */
     public LiteCustomer getCustomerForUser(int userId);
     
+    public void callbackWithAllCiCustomers(final SimpleCallback<LiteCICustomer> callback);
+    
     /**
      * Method to save the temperature unit 'F' or 'C' for this customer.
      * 
@@ -171,5 +174,7 @@ public interface CustomerDao {
      * @return
      */
     public int getAddressIdForCICustomer(int customerId);
+
+    public int getAllCiCustomerCount();
 
 }
