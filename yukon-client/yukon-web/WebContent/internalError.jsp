@@ -56,41 +56,37 @@ String friendlyExceptionMessage = ErrorHelperFilter.getFriendlyExceptionMessage(
 <head>
 <title>Yukon Error Page</title>
 <link rel="stylesheet" href="<cti:url value="/WebConfig/yukon/StandardStyles.css"/>" type="text/css">
+<cti:css key="yukon.web.error.errorStyles"/>
 
-<style type="text/css">
+</head>
 
-  body {
-    background: #eee;
-  }
-  #error {
-    background: white;
-    width: 90%;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 30px;
-    padding: 20px;
-    text-align: center;
-    border: solid 2px #888;
-  }
-  
-  #errorMain {
-    font-weight: bold;
-    font-size: 150%;
-  }
-  
-  #errorFriendly {
-    font-weight: bold;
-    font-size: 130%;
-    color: #CC0000;
-  }
-  
-  #stackTrace {
-    text-align: left;
-    font-size: 11px;
-  }
-  
-</style>
+<body>
+<div id="error">
+<div id="errorImg">
+    <cti:link key="yukon.web.error.logoLink" href="/" escapeBody="false">
+        <cti:logo key="yukon.web.error.logo" />
+    </cti:link>
+</div>
+<% if (friendlyExceptionMessage != null && showStack) { %>
+<br/>
+<div id="errorFriendly">
+<c:set var="friendlyExceptionMessage" value="<%=friendlyExceptionMessage %>"/>
+<cti:msg key="yukon.web.error.detailedFriendlyMessage" argument="${friendlyExceptionMessage}" />
+</div>
+<br/>
+<% } else{%>
+<div id="errorMain"><cti:msg key="yukon.web.error.genericMainMessage" /></div>
+<% }%>
 
+<% if (errorKey == null) { %>
+<div id="errorSub"><cti:msg key="yukon.web.error.genericSubMessage"/></div>
+<% } else { %>
+<c:set var="errorKey" value="<%=errorKey %>"/>
+    <div id="errorSub">
+        <cti:msg key="yukon.web.error.genericSubMessageWithKey" argument="${errorKey}"/>
+    </div>
+<% } %>
+<% if (showStack) { %>
 <script type="text/javascript" src="<cti:url value="/JavaScript/prototype.js"/>"></script>
 <script type="text/javascript">
 function showStack( chkBox ) {
@@ -100,25 +96,7 @@ function showStack( chkBox ) {
 
 }
 </script>
-
-</head>
-
-<body>
-<div id="error">
-<div id="errorImg"><a href="<%=homeUrl%>"><img style="border:none;" src="<%=request.getContextPath()%><%= logo %>"></a></div>
-<% if (friendlyExceptionMessage != null && showStack) { %>
-<br/>
-<div id="errorFriendly"><%=friendlyExceptionMessage %></div>
-<br/>
-<% } else{%>
-<div id="errorMain">An error occurred while processing your request</div>
-<% }%>
-<% if (errorKey == null) { %>
-<div id="errorSub">Try to execute your request again.</div>
-<% } else { %>
-<div id="errorSub">Try to execute your request again (<%=errorKey %>).</div>
-<% } %>
-<% if (showStack) { %>
+<div id="errorDetail">
 <div id="showMore"><a href="javascript:showStack()">Detailed information</a></div>
 <div style="display: none" id="stackTrace">
     <b>Yukon Version:</b> <%= VersionTools.getYUKON_VERSION()%>
@@ -128,6 +106,7 @@ function showStack( chkBox ) {
     <br><b>Error type</b>: <%= error_type.toString()%>
     <br><b>Request URI</b>: <%= request_uri.toString()%>
     <%= ServletUtil.printNiceHtmlStackTrace(throwable)%>
+</div>
 </div>
 <% } %>
 </body>
