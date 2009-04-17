@@ -105,8 +105,8 @@ INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
     {
         bool allroutes = false;
 
-        allroutes |= findStringIgnoreCase( parse.getCommandStr(), " allroutes" ); // If specified, all routes in the macro will get the command.
-        allroutes |= OutMessage->MessageFlags & MessageFlag_BroadcastOnMacroSubroutes;
+        allroutes |= findStringIgnoreCase( parse.getCommandStr(), " allroutes" ) != 0; // If specified, all routes in the macro will get the command.
+        allroutes |= (OutMessage->MessageFlags & MessageFlag_BroadcastOnMacroSubroutes) != 0;
 
         CtiLockGuard< CtiMutex > listguard(getRouteListMux());
         if( !allroutes && (OutMessage->EventCode & RESULT) &&  onebasedoffset > 0 )       // If this is a two way request we want to walk the routelist.  Otherwise send on all subroutes.
