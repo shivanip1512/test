@@ -37,7 +37,7 @@ private:
 
     CHAR            *readLinePtr;
 
-    SAX2XMLReader   *parser;            // Parser to parse the WCTP response message
+    XERCES_CPP_NAMESPACE::SAX2XMLReader   *parser;            // Parser to parse the WCTP response message
     SAXWctpHandler  *handler;           // WCTP response message handler
 
     BOOL            statusParsed;       // Whether the HTTP response status line has been parsed
@@ -152,7 +152,7 @@ private:
        return readLinePtr;
    }
 
-   SAX2XMLReader*  getSAXParser();
+   XERCES_CPP_NAMESPACE::SAX2XMLReader*  getSAXParser();
    SAXWctpHandler* getWctpHandler();
 
    CHAR* removeDocType(const CHAR *src, CHAR *dst);
@@ -163,7 +163,7 @@ private:
 
 
 
-class SAXWctpHandler : public DefaultHandler
+class SAXWctpHandler : public XERCES_CPP_NAMESPACE::DefaultHandler
 {
 public:
     // -----------------------------------------------------------------------
@@ -207,16 +207,16 @@ public:
     // -----------------------------------------------------------------------
     //  Handlers for the SAX2 ContentHandler interface
     // -----------------------------------------------------------------------
-    void startElement (const XMLCh* const uri, const XMLCh* const localname, const XMLCh* const qname, const Attributes &attrs);
+    void startElement (const XMLCh* const uri, const XMLCh* const localname, const XMLCh* const qname, const XERCES_CPP_NAMESPACE::Attributes &attrs);
     void endElement (const XMLCh* const uri, const XMLCh* const localname, const XMLCh* const qname);
     void characters(const XMLCh* const chars, const unsigned int length);
 
     // -----------------------------------------------------------------------
     //  Handlers for the SAX2 ErrorHandler interface
     // -----------------------------------------------------------------------
-    void  error (const SAXParseException &exception);
-    void  fatalError (const SAXParseException &exception);
-    void  warning (const SAXParseException &exception);
+    void  error (const XERCES_CPP_NAMESPACE::SAXParseException &exception);
+    void  fatalError (const XERCES_CPP_NAMESPACE::SAXParseException &exception);
+    void  warning (const XERCES_CPP_NAMESPACE::SAXParseException &exception);
 
 
 private:

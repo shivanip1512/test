@@ -114,8 +114,11 @@ SIGNAL          = $(COMPILEBASE)\dbsignal
 RTDB            = $(COMPILEBASE)\rtdb
 INTERP          = $(COMPILEBASE)\interp
 DEVICECONFIGURATION = $(COMPILEBASE)\deviceconfiguration
+
 TCLINC          = $(COMPILEBASE)\tcl\include
-XERCESINC       = $(COMPILEBASE)\xerces\include
+
+XERCESHOME      = $(YUKONBASE)\yukon-3rdparty\Xerces
+XERCESINC       = $(XERCESHOME)\include
 
 BOOST           = $(YUKONBASE)\yukon-3rdparty\boost
 
@@ -162,6 +165,8 @@ DLLFLAGS= /nologo /Zc:wchar_t- /Zi /Od /EHa /LD /MDd /Zm200 /FD /D_DEBUG  $(D_VE
 #LINKFLAGS = /link
 #LINKFLAGS = /link /FORCE /NODEFAULTLIB:MSVCRT.lib 
 #LINKFLAGS = /link /VERBOSE:LIB 
+XERCES_LIB = xerces-c_3D
+XERCES_DLL = xerces-c_3_0D
 !ELSE
 #This part is the non-debug section a/k/a release or retail build
 #echo non-debug build used 
@@ -170,11 +175,11 @@ DLLFLAGS= /nologo /Zc:wchar_t- /Zi /O2 /Oy- /EHa /LD /MD /Zm200 /FD $(VERSION) $
 #LINKFLAGS = /link /NODEFAULTLIB:MSVCRTD.lib 
 #LINKFLAGS = /link /FORCE /NODEFAULTLIB:MSVCRTD.lib 
 #LINKFLAGS = /link /VERBOSE:LIB  
+XERCES_LIB = xerces-c_3
+XERCES_DLL = xerces-c_3_0
 !ENDIF
 
 TCL_LIB = tcl81
-XERCES_LIB = xerces-c_1
-XERCES_DLL = xerces-c_1_7_0
 
 PCHFLAGS = /Yu"yukon.h" /Fp"$(BIN)\yukon.pch"
 

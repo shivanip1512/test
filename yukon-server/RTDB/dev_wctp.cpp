@@ -42,6 +42,7 @@
 #include "ctidate.h"
 #include "ctitime.h"
 
+XERCES_CPP_NAMESPACE_USE
 
 static int pagesPerMinute  = gConfigParms.getValueAsInt("PAGES_PER_MINUTE", 0);
 
@@ -52,18 +53,24 @@ UINT numSpecialChars = 6;
 CHAR *toBeReplaced[] = {"&", "\033", "\"", "'", "<", ">"};
 CHAR *replaceWith[]  = {"&amp;", "&lt;esc&gt;", "&quot;", "&apos;", "&lt;", "&gt;"};
 
-
+/* 
+    Xerces wants XMLPlatformUtils::Terminate() to be the absolute last thing to be called when using
+     the library.  This includes destructors.  We enforce by only calling it once on object destruction
+     after the handler and parser have been deleted.
+*/
 CtiDeviceWctpTerminal::~CtiDeviceWctpTerminal()
 {
     freeDataBins();
     destroyBuffers();
-    if(parser != NULL)
-    {
-        delete parser;
-    }
     if(handler != NULL)
     {
         delete handler;
+    }
+    if(parser != NULL)
+    {
+        delete parser;
+
+        XMLPlatformUtils::Terminate();
     }
 }
 
@@ -418,11 +425,18 @@ void CtiDeviceWctpTerminal::destroyBuffers()
 
 }
 
-
+/*
+    Xerces expects that XMLPlatformUtils::Initialize() will be called before any part of the library
+     is actually used.  We enforce this by calling only once when we first try to grab a parser.
+ 
+     Note: We need to get the parser before we get the handler...
+*/
 SAX2XMLReader* CtiDeviceWctpTerminal::getSAXParser()
 {
     if(parser == NULL)
     {
+        XMLPlatformUtils::Initialize();
+
         parser = XMLReaderFactory::createXMLReader();
     }
 
@@ -1044,12 +1058,11 @@ INT CtiDeviceWctpTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnValue, l
 
                             try
                             {
-                                // Initialize the XML4C2 system
-                                XMLPlatformUtils::Initialize();
-
                                 // Prepare the WTCP message parser and handler
-                                handler = getWctpHandler();
+                                //  obtaining the parser now initializes the Xerces XMLPlatformUtils.
+                                //      get parser first!
                                 parser = getSAXParser();
+                                handler = getWctpHandler();
                                 parser->setContentHandler(handler);
                                 parser->setErrorHandler(handler);
                             }
@@ -1154,9 +1167,6 @@ INT CtiDeviceWctpTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnValue, l
                                 status = ErrorWctp600Series;
                             }
                         }
-
-                        // And call the termination method
-                        XMLPlatformUtils::Terminate();
 
                         //Set up Verification.
                         //Message sent and accepted. Add to verification list!
@@ -1304,19 +1314,13 @@ timeEllapsed(0),
 _outMessage(NULL)
 {}
 
-/*
+
 CtiDeviceWctpTerminal::CtiDeviceWctpTerminal(const CtiDeviceWctpTerminal& aRef) :
-   _sendFiller(true),
-   _idByteCount(20),
-   _pageCount(0),
-   _pagePrefix('a'),
-   _pageLength(0),
-   _inStr(string()),
-   _pageBuffer(NULL)
+   _sendFiller(true)
 {
    *this = aRef;
 }
-*/
+
 CtiDeviceWctpTerminal& CtiDeviceWctpTerminal::operator=(const CtiDeviceWctpTerminal& aRef)
 {
     if(this != &aRef)
@@ -1461,12 +1465,12 @@ void SAXWctpHandler::startElement(const XMLCh *const uri,
         if(!isRoot)
         {
             err = true;
-            throw CTIDBG_new SAXParseException(
-                                              XMLString::transcode("wctp-Operation must be the root element"),
-                                              NULL,
-                                              XMLString::transcode(elemName),
-                                              0,
-                                              0);
+            throw SAXParseException(
+                                      XMLString::transcode("wctp-Operation must be the root element"),
+                                      NULL,
+                                      XMLString::transcode(elemName),
+                                      0,
+                                      0);
         }
         isRoot = false;
         inOperation = true;
@@ -1476,12 +1480,12 @@ void SAXWctpHandler::startElement(const XMLCh *const uri,
         if(!inOperation)
         {
             err = true;
-            throw CTIDBG_new SAXParseException(
-                                              XMLString::transcode("unexpected location of start of element"),
-                                              NULL,
-                                              XMLString::transcode(elemName),
-                                              0,
-                                              0);
+            throw SAXParseException(
+                                      XMLString::transcode("unexpected location of start of element"),
+                                      NULL,
+                                      XMLString::transcode(elemName),
+                                      0,
+                                      0);
         }
         inSubmitClientResponse = true;
     }
@@ -1490,12 +1494,12 @@ void SAXWctpHandler::startElement(const XMLCh *const uri,
         if(!inSubmitClientResponse)
         {
             err = true;
-            throw CTIDBG_new SAXParseException(
-                                              XMLString::transcode("unexpected location of start of element"),
-                                              NULL,
-                                              XMLString::transcode(elemName),
-                                              0,
-                                              0);
+            throw SAXParseException(
+                                      XMLString::transcode("unexpected location of start of element"),
+                                      NULL,
+                                      XMLString::transcode(elemName),
+                                      0,
+                                      0);
         }
         inClientSuccess = true;
 
@@ -1510,12 +1514,12 @@ void SAXWctpHandler::startElement(const XMLCh *const uri,
         if(respCode == 0)
         {        // Conversion failed
             err = true;
-            throw CTIDBG_new SAXParseException(
-                                              XMLString::transcode("unable to convert attribute successCode's value to integer"),
-                                              NULL,
-                                              XMLString::transcode(elemName),
-                                              0,
-                                              0);
+            throw SAXParseException(
+                                      XMLString::transcode("unable to convert attribute successCode's value to integer"),
+                                      NULL,
+                                      XMLString::transcode(elemName),
+                                      0,
+                                      0);
         }
 
         pXMLChTemp = XMLString::transcode("successText");
@@ -1527,12 +1531,12 @@ void SAXWctpHandler::startElement(const XMLCh *const uri,
         if(!inSubmitClientResponse && !inConfirmation)
         {
             err = true;
-            throw CTIDBG_new SAXParseException(
-                                              XMLString::transcode("unexpected location of start of element"),
-                                              NULL,
-                                              XMLString::transcode(elemName),
-                                              0,
-                                              0);
+            throw SAXParseException(
+                                      XMLString::transcode("unexpected location of start of element"),
+                                      NULL,
+                                      XMLString::transcode(elemName),
+                                      0,
+                                      0);
         }
         inFailure = true;
 
@@ -1542,12 +1546,12 @@ void SAXWctpHandler::startElement(const XMLCh *const uri,
         if(respCode == 0)
         {        // Conversion failed
             err = true;
-            throw CTIDBG_new SAXParseException(
-                                              XMLString::transcode("unable to convert attribute errorCode's value to integer"),
-                                              NULL,
-                                              XMLString::transcode(elemName),
-                                              0,
-                                              0);
+            throw SAXParseException(
+                                      XMLString::transcode("unable to convert attribute errorCode's value to integer"),
+                                      NULL,
+                                      XMLString::transcode(elemName),
+                                      0,
+                                      0);
         }
         XMLString::transcode( attrs.getValue(XMLString::transcode("errorText")), respText, 255);
     }
@@ -1557,12 +1561,12 @@ void SAXWctpHandler::startElement(const XMLCh *const uri,
         if(!inOperation)
         {
             err = true;
-            throw CTIDBG_new SAXParseException(
-                                              XMLString::transcode("unexpected location of start of element"),
-                                              NULL,
-                                              XMLString::transcode(elemName),
-                                              0,
-                                              0);
+            throw SAXParseException(
+                                      XMLString::transcode("unexpected location of start of element"),
+                                      NULL,
+                                      XMLString::transcode(elemName),
+                                      0,
+                                      0);
         }
         inConfirmation = true;
     }
@@ -1571,12 +1575,12 @@ void SAXWctpHandler::startElement(const XMLCh *const uri,
         if(!inConfirmation)
         {
             err = true;
-            throw CTIDBG_new SAXParseException(
-                                              XMLString::transcode("unexpected location of start of element"),
-                                              NULL,
-                                              XMLString::transcode(elemName),
-                                              0,
-                                              0);
+            throw SAXParseException(
+                                      XMLString::transcode("unexpected location of start of element"),
+                                      NULL,
+                                      XMLString::transcode(elemName),
+                                      0,
+                                      0);
         }
         inSuccess = true;
 
@@ -1588,12 +1592,12 @@ void SAXWctpHandler::startElement(const XMLCh *const uri,
         if(respCode == 0)
         {        // Conversion failed
             err = true;
-            throw CTIDBG_new SAXParseException(
-                                              XMLString::transcode("unable to convert attribute successCode's value to integer"),
-                                              NULL,
-                                              XMLString::transcode(elemName),
-                                              0,
-                                              0);
+            throw SAXParseException(
+                                      XMLString::transcode("unable to convert attribute successCode's value to integer"),
+                                      NULL,
+                                      XMLString::transcode(elemName),
+                                      0,
+                                      0);
         }
 
         pXMLChTemp = XMLString::transcode("successText");
@@ -1613,12 +1617,12 @@ void SAXWctpHandler::endElement(const XMLCh* const uri, const XMLCh* const local
         if(!inOperation)
         {
             err = true;
-            throw CTIDBG_new SAXParseException(
-                                              XMLString::transcode("End of element has no matching start of element"),
-                                              NULL,
-                                              XMLString::transcode(elemName),
-                                              0,
-                                              0);
+            throw SAXParseException(
+                                      XMLString::transcode("End of element has no matching start of element"),
+                                      NULL,
+                                      XMLString::transcode(elemName),
+                                      0,
+                                      0);
         }
         inOperation = false;
     }
@@ -1627,12 +1631,12 @@ void SAXWctpHandler::endElement(const XMLCh* const uri, const XMLCh* const local
         if(!inSubmitClientResponse)
         {
             err = true;
-            throw CTIDBG_new SAXParseException(
-                                              XMLString::transcode("End of element has no matching start of element"),
-                                              NULL,
-                                              XMLString::transcode(elemName),
-                                              0,
-                                              0);
+            throw SAXParseException(
+                                      XMLString::transcode("End of element has no matching start of element"),
+                                      NULL,
+                                      XMLString::transcode(elemName),
+                                      0,
+                                      0);
         }
         inSubmitClientResponse = false;
     }
@@ -1641,12 +1645,12 @@ void SAXWctpHandler::endElement(const XMLCh* const uri, const XMLCh* const local
         if(!inClientSuccess)
         {
             err = true;
-            throw CTIDBG_new SAXParseException(
-                                              XMLString::transcode("End of element has no matching start of element"),
-                                              NULL,
-                                              XMLString::transcode(elemName),
-                                              0,
-                                              0);
+            throw SAXParseException(
+                                      XMLString::transcode("End of element has no matching start of element"),
+                                      NULL,
+                                      XMLString::transcode(elemName),
+                                      0,
+                                      0);
         }
         inClientSuccess = false;
     }
@@ -1655,12 +1659,12 @@ void SAXWctpHandler::endElement(const XMLCh* const uri, const XMLCh* const local
         if(!inFailure)
         {
             err = true;
-            throw CTIDBG_new SAXParseException(
-                                              XMLString::transcode("End of element has no matching start of element"),
-                                              NULL,
-                                              XMLString::transcode(elemName),
-                                              0,
-                                              0);
+            throw SAXParseException(
+                                      XMLString::transcode("End of element has no matching start of element"),
+                                      NULL,
+                                      XMLString::transcode(elemName),
+                                      0,
+                                      0);
         }
         inFailure = false;
     }
@@ -1669,12 +1673,12 @@ void SAXWctpHandler::endElement(const XMLCh* const uri, const XMLCh* const local
         if(!inConfirmation)
         {
             err = true;
-            throw CTIDBG_new SAXParseException(
-                                              XMLString::transcode("End of element has no matching start of element"),
-                                              NULL,
-                                              XMLString::transcode(elemName),
-                                              0,
-                                              0);
+            throw SAXParseException(
+                                      XMLString::transcode("End of element has no matching start of element"),
+                                      NULL,
+                                      XMLString::transcode(elemName),
+                                      0,
+                                      0);
         }
         inConfirmation = false;
     }
@@ -1683,12 +1687,12 @@ void SAXWctpHandler::endElement(const XMLCh* const uri, const XMLCh* const local
         if(!inSuccess)
         {
             err = true;
-            throw CTIDBG_new SAXParseException(
-                                              XMLString::transcode("End of element has no matching start of element"),
-                                              NULL,
-                                              XMLString::transcode(elemName),
-                                              0,
-                                              0);
+            throw SAXParseException(
+                                      XMLString::transcode("End of element has no matching start of element"),
+                                      NULL,
+                                      XMLString::transcode(elemName),
+                                      0,
+                                      0);
         }
         inSuccess = false;
     }

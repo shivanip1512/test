@@ -16,6 +16,8 @@ copy:
                -@if not exist $(YUKONOUTPUT)\msvcp90$(MICROSOFTDLL).dll copy $(YUKONBASE)\yukon-3rdparty\Microsoft\msvc*90$(MICROSOFTDLL).dll $(YUKONOUTPUT)
                -@if not exist $(YUKONOUTPUT)\Microsoft.VC90.DebugCRT.manifest copy $(YUKONBASE)\yukon-3rdparty\Microsoft\Microsoft.VC90.*CRT.manifest $(YUKONOUTPUT)
                -@if not exist $(YUKONOUTPUT)\ntwdblib.dll copy $(YUKONBASE)\yukon-3rdparty\Microsoft\ntwdblib.dll $(YUKONOUTPUT)
+
+               -@if not exist $(YUKONOUTPUT)\$(XERCES_DLL).dll copy $(XERCESHOME)\bin\$(XERCES_DLL).dll $(YUKONOUTPUT)
                
 
 clean:
@@ -26,4 +28,5 @@ $(YUKONOUTPUT)\*15d.dll \
 $(YUKONOUTPUT)\*12d.dll \
 $(YUKONOUTPUT)\ntwdblib.dll \
 $(YUKONOUTPUT)\msvcp90*.dll \
+$(YUKONOUTPUT)\$(XERCES_DLL).dll \
 $(YUKONOUTPUT)\Microsoft.VC90.*CRT.manifest \

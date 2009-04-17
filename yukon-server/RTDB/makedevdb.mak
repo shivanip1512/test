@@ -32,6 +32,7 @@ INCLPATHS+= \
 ;$(DISPATCH)\include \
 ;$(MSG)\include \
 ;$(TCLINC) \
+;$(XERCESINC) \
 ;$(BOOST) \
 ;$(RW)
 
@@ -140,7 +141,7 @@ $(COMPILEBASE)\lib\ctidbsrc.lib \
 $(COMPILEBASE)\lib\ctipntdb.lib \
 $(COMPILEBASE)\lib\cticparms.lib \
 $(COMPILEBASE)\lib\cticonfig.lib \
-$(COMPILEBASE)\lib\$(XERCES_LIB).lib \
+$(XERCESHOME)\lib\$(XERCES_LIB).lib \
 $(COMPILEBASE)\lib\clrdump.lib \
 
 

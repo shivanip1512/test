@@ -46,7 +46,7 @@ $(COMPILEBASE)\lib\ctipntdb.lib \
 $(COMPILEBASE)\lib\cticparms.lib \
 $(COMPILEBASE)\lib\ctidevdb.lib \
 $(COMPILEBASE)\lib\cticonfig.lib \
-$(COMPILEBASE)\lib\$(XERCES_LIB).lib \
+$(XERCESHOME)\lib\$(XERCES_LIB).lib \
 $(COMPILEBASE)\lib\clrdump.lib \
 
 TEST_OBJS=\
