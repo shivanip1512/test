@@ -42,7 +42,6 @@ import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
-import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
@@ -57,6 +56,7 @@ import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
+import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.InventoryUtils;
@@ -573,22 +573,22 @@ public class InventoryManagerUtil {
 		
 		StarsInventoryBaseDao starsInventoryBaseDao = 
 			YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+		InventoryDao inventoryDao = YukonSpringHook.getBean("inventoryDao", InventoryDao.class);
 		
 		for (int i = 0; i < accounts.size(); i++) {
 			if (accounts.get(i) instanceof Pair) {
-				@SuppressWarnings("unchecked") LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) ((Pair)accounts.get(i)).getFirst();
-				
-				for (int j = 0; j < liteAcctInfo.getInventories().size(); j++) {
-					int invID = liteAcctInfo.getInventories().get(j).intValue();
-					LiteInventoryBase liteInv = starsInventoryBaseDao.getByInventoryId(invID);
+				@SuppressWarnings("unchecked") Integer accountId = (Integer) ((Pair)accounts.get(i)).getFirst();
+				List<Integer> inventoryIds = inventoryDao.getInventoryIdsByAccount(accountId);
+				for (Integer inventoryId : inventoryIds) {
+					LiteInventoryBase liteInv = starsInventoryBaseDao.getByInventoryId(inventoryId);
 					invList.add(liteInv);
 				}
 			}
 			else {
-				LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) accounts.get(i);
-				for (int j = 0; j < liteAcctInfo.getInventories().size(); j++) {
-					int invID = liteAcctInfo.getInventories().get(j).intValue();
-					LiteInventoryBase liteInv = starsInventoryBaseDao.getByInventoryId(invID);
+				Integer accountId = (Integer) accounts.get(i);
+				List<Integer> inventoryIds = inventoryDao.getInventoryIdsByAccount(accountId);
+				for (Integer inventoryId : inventoryIds) {
+					LiteInventoryBase liteInv = starsInventoryBaseDao.getByInventoryId(inventoryId);
 					invList.add(liteInv);
 				}
 			}
