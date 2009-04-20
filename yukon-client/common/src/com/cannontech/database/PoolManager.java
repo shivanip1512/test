@@ -44,6 +44,8 @@ public class PoolManager {
     private String primaryUrl;
     private String primaryUser;
 	private BasicDataSource bds;
+	
+	enum Databases { UNKNOWN_DATABASE, ORACLE_DATABASE, MSSQL_DATABASE };
 
     private PoolManager() {
         init();
@@ -60,10 +62,20 @@ public class PoolManager {
         // otherwise, see what dll is setup
         
         String rwDllName = configSource.getString("DB_RWDBDLL");
+        String dbTypeName = configSource.getString("DB_TYPE");
+        Databases dbType = Databases.UNKNOWN_DATABASE;
         
-        if ("msq15d.dll".equalsIgnoreCase(rwDllName) ||
-    		"msq12d.dll".equalsIgnoreCase(rwDllName) ||
-    		"sqlserver" .equalsIgnoreCase(rwDllName)) {
+        //This establishes the precedence of DB_TYPE over DB_RWDBDLL
+        if ("mssql".equalsIgnoreCase(dbTypeName))
+        	dbType = Databases.MSSQL_DATABASE;
+        else if ("oracle".equalsIgnoreCase(dbTypeName))
+        	dbType = Databases.ORACLE_DATABASE;
+        else if ("msq15d.dll".equalsIgnoreCase(rwDllName))
+        	dbType = Databases.MSSQL_DATABASE;
+        else if ("ora15d.dll".equalsIgnoreCase(rwDllName))
+        	dbType = Databases.ORACLE_DATABASE;
+        
+        if (dbType == Databases.MSSQL_DATABASE) {
             // configure as microsoft
             // example: jdbc:jtds:sqlserver://mn1db02:1433;APPNAME=yukon-client;TDS=8.0
             StringBuilder url = new StringBuilder();
@@ -71,13 +83,11 @@ public class PoolManager {
             String host = configSource.getRequiredString("DB_SQLSERVER");
             url.append(host);
             url.append(":1433;APPNAME=yukon-client;TDS=8.0");
-            log.debug("Found msq15d.dll, url=" + jdbcUrl);
+            log.debug("Found msq15d.dll, url=" + url);
             return url.toString();
         }
         
-        if ("ora15d.dll".equalsIgnoreCase(rwDllName) ||
-    		"ora12d.dll".equalsIgnoreCase(rwDllName) ||
-    		"oracle"    .equalsIgnoreCase(rwDllName)) {
+        if (dbType == Databases.ORACLE_DATABASE) {
             try {
                 // configure as Oracle
                 // example: jdbc:oracle:thin:@mn1db02:1521:xcel
@@ -89,7 +99,7 @@ public class PoolManager {
                 String tnsName = configSource.getRequiredString("DB_SQLSERVER");
                 url.append(tnsName);
                 
-                log.debug("Found ora15d.dll, url=" + jdbcUrl);
+                log.debug("Found ora15d.dll, url=" + url);
                 return url.toString();
             } catch (UnknownKeyException e) {
                 throw new BadConfigurationException("Cannot connect to Oracle without DB_SQLSERVER_HOST and DB_SQLSERVER being specified.", e);
