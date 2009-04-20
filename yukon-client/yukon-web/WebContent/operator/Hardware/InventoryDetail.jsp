@@ -65,7 +65,12 @@
                 referer = ServletUtil.createSafeRedirectUrl(request, referer);
             } else if (!src.equalsIgnoreCase("SelectInv")) {
                 if (src.equalsIgnoreCase("Search")) {
-                    referer = "Inventory.jsp";
+                	if(((ArrayList)session.getAttribute(ServletUtil.FILTER_INVEN_LIST)) == null || 
+            				((ArrayList)session.getAttribute(ServletUtil.FILTER_INVEN_LIST)).size() < 1){
+                		referer = "Filter.jsp";
+                	}else {
+                    	referer = "Inventory.jsp";
+                	}
                 } else if (src.equalsIgnoreCase("Inventory") || src.equalsIgnoreCase("ResultSet")) {
                     referer = ((CtiNavObject) session.getAttribute(ServletUtils.NAVIGATE)).getPreviousPage();
                     if (referer == null || 
