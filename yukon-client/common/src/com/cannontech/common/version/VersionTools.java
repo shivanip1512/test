@@ -10,6 +10,7 @@ import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcOperations;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.exception.StarsNotCreatedException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.JdbcTemplateHelper;
@@ -139,7 +140,7 @@ public static boolean starsExists()
         // we'll keep checking until we find it
         appCatFound = VersionTools.tableExists("APPLIANCECATEGORY");
         if (!appCatFound) {
-            throw new RuntimeException("STARS tables not present in this database.");
+            throw new StarsNotCreatedException("STARS tables not present in this database.");
         }
         // appCatFound is now true and we'll not check in the future
     }

@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
+import com.cannontech.common.exception.StarsNotCreatedException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.PoolManager;
@@ -137,6 +138,7 @@ public class DBUpdater extends MessageFrameAdaptor
 			getIMessageFrame().addOutput("   DB Version   : " + db.getVersion() + "  Build:  " + db.getBuild() );
 			getIMessageFrame().addOutput("   DB Alias     : " + CtiUtilities.getDatabaseAlias() );			
 			
+			VersionTools.starsExists();
 			getUpdateCommands();
 			
 			getIMessageFrame().addOutput("   Lines read from files successfully, starting DB transactions..." );
@@ -146,11 +148,13 @@ public class DBUpdater extends MessageFrameAdaptor
 				getIMessageFrame().finish( "DBUpdate Completed Successfully" );
 			else
 				getIMessageFrame().addOutput( "DBUpdate was Unsuccessfully executed" );
-		}
-		catch( Exception e )
-		{
+		} catch (StarsNotCreatedException e) {
+			getIMessageFrame().addOutput( "STOP!!!  STARS database tables are missing.\r\nRun the STARS Database Creation script before continuing with this tool." );
+			CTILogger.error("A problem occurred in the execution", e );
+		
+		} catch( Exception e ) {
 			getIMessageFrame().addOutput( "DBUpdate was Unsuccessfully executed" );
-			CTILogger.warn( "A problem occurred in the main execution", e );
+			CTILogger.warn( "A problem occurred in the execution", e );
 		}
 
 	}
