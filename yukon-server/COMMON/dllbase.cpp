@@ -170,9 +170,10 @@ DLLEXPORT void InitYukonBaseGlobals(void)
         if(DebugLevel & 0x0001) cout << "Configuration Parameter NOTIFICATION_PORT   failed : " << endl;
     }
 
-    if( !(str = gConfigParms.getValueAsString("DB_RWDBDLL")).empty() )
+    if(!(str = gConfigParms.getValueAsString("DB_TYPE")).empty() || 
+       !(str = gConfigParms.getValueAsString("DB_RWDBDLL")).empty() )
     {
-        if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_RWDBDLL   found : " << str << endl;
+        if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_RWDBDLL/DB_TYPE found : " << str << endl;
 
         dbDll = str;
         std::transform(str.begin(), str.end(), str.begin(), ::tolower);
@@ -185,7 +186,7 @@ DLLEXPORT void InitYukonBaseGlobals(void)
             dbDll = "ora12d.dll";
             #endif
         }
-        else if(str == "sqlserver")
+        else if(str == "mssql")
         {
             #ifdef _DEBUG
             dbDll = "msq15d.dll";
