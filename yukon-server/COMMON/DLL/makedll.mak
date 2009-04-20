@@ -28,5 +28,5 @@ $(YUKONOUTPUT)\*15d.dll \
 $(YUKONOUTPUT)\*12d.dll \
 $(YUKONOUTPUT)\ntwdblib.dll \
 $(YUKONOUTPUT)\msvcp90*.dll \
-$(YUKONOUTPUT)\$(XERCES_DLL).dll \
+$(YUKONOUTPUT)\xerces-c*.dll \
 $(YUKONOUTPUT)\Microsoft.VC90.*CRT.manifest \
