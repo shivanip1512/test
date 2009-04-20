@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/16/2009 2:52:41 PM                         */
+/* Created on:     4/20/2009 12:19:21 PM                        */
 /*==============================================================*/
 
 
@@ -7973,6 +7973,9 @@ insert into YukonGroupRole values(-270,-1,-7,-1600,'0');
 /* Configuration (Device) */
 INSERT INTO YukonGroupRole VALUES(-280,-1,-8,-1700,'(none)');
 
+/* Esubstation Editor */
+INSERT INTO YukonGroupRole VALUES(-250,-100,-107,-10700,'(none)');
+
 /* Assign roles to the default Esub Users */
 insert into YukonGroupRole values(-300,-200,-206,-20600,'(none)');
 insert into YukonGroupRole values(-301,-200,-206,-20601,'(none)');
@@ -8195,6 +8198,8 @@ insert into YukonGroupRole values(-1075,-2,-103,-10305,'(none)');
 /* Billing */
 insert into YukonGroupRole values(-1390,-2,-106,-10600,'(none)');
 
+/* Esubstation Editor */
+insert into YukonGroupRole values(-1080,-2,-107,-10700,'(none)');
 insert into YukonGroupRole values(-1081,-2,-206,-20600,'(none)');
 insert into YukonGroupRole values(-1082,-2,-206,-20601,'(none)');
 insert into YukonGroupRole values(-1083,-2,-206,-20602,'(none)');
@@ -9147,6 +9152,9 @@ INSERT INTO YukonRoleProperty VALUES(-10500,-105,'home_directory','c:yukonclient
 INSERT INTO YukonRoleProperty VALUES(-10501,-105,'run_interval','900','<description>');
 INSERT INTO YukonRoleProperty VALUES(-10600,-106,'Dynamic Billing File Setup','true','Controls access to create, edit, and delete dynamic billing files.'); 
 
+/* Esubstation Editor Role Properties */
+INSERT INTO YukonRoleProperty VALUES(-10700,-107,'default','false','The default esub editor property');
+
 /* Web Client Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-10800,-108,'home_url','/operator/Operations.jsp','The url to take the user immediately after logging into the Yukon web application');
 INSERT INTO YukonRoleProperty VALUES(-10802,-108,'style_sheet','yukon/CannonStyle.css','The web client cascading style sheet.');
@@ -9650,6 +9658,9 @@ INSERT INTO YukonUserRole VALUES(-172,-1,-103,-10302,'true');
 INSERT INTO YukonUserRole VALUES(-173,-1,-103,-10303,'false');
 INSERT INTO YukonUserRole VALUES(-174,-1,-103,-10304,'false');
 INSERT INTO YukonUserRole VALUES(-175,-1,-103,-10305,'(none)');
+
+/* Esubstation Editor */
+INSERT INTO YukonUserRole VALUES(-250,-1,-107,-10700,'(none)');
 
 /* Esub Drawings */
 INSERT INTO YukonUserRole VALUES(-300,-1,-206,-20600,'(none)');

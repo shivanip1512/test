@@ -15,9 +15,9 @@ WHERE RoleId = -101;
 /* End YUK-7238 */
 
 /* Start YUK-7236 */
-DELETE FROM YukonGroupRole WHERE RolePropertyId IN (-1113, -10700);
-DELETE FROM YukonUserRole WHERE RolePropertyId IN (-1113, -10700);
-DELETE FROM YukonRoleProperty WHERE RolePropertyId IN (-1113, -10700);
+DELETE FROM YukonGroupRole WHERE RolePropertyId = -1113;
+DELETE FROM YukonUserRole WHERE RolePropertyId = -1113;
+DELETE FROM YukonRoleProperty WHERE RolePropertyId = -1113;
 /* End YUK-7236 */
 
 /* Start YUK-7321 */
