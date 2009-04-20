@@ -50,7 +50,7 @@
             String src = request.getParameter("src");
             String referer = "";
 			String pageName = "Inventory.jsp";
-			if(((ArrayList)session.getAttribute(ServletUtil.FILTER_INVEN_LIST)) == null || 
+			if((session.getAttribute(ServletUtil.FILTER_INVEN_LIST)) == null || 
 				((ArrayList)session.getAttribute(ServletUtil.FILTER_INVEN_LIST)).size() < 1) { 
 				pageName = "Filter.jsp";	
 			}
@@ -65,8 +65,8 @@
                 referer = ServletUtil.createSafeRedirectUrl(request, referer);
             } else if (!src.equalsIgnoreCase("SelectInv")) {
                 if (src.equalsIgnoreCase("Search")) {
-                	if(((ArrayList)session.getAttribute(ServletUtil.FILTER_INVEN_LIST)) == null || 
-            				((ArrayList)session.getAttribute(ServletUtil.FILTER_INVEN_LIST)).size() < 1){
+                	if((session.getAttribute(ServletUtil.FILTER_INVEN_LIST)) == null || 
+            				((Collection)session.getAttribute(ServletUtil.FILTER_INVEN_LIST)).size() < 1){
                 		referer = "Filter.jsp";
                 	}else {
                     	referer = "Inventory.jsp";
