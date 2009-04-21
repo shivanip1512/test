@@ -51,7 +51,7 @@
             String referer = "";
 			String pageName = "Inventory.jsp";
 			if((session.getAttribute(ServletUtil.FILTER_INVEN_LIST)) == null || 
-				((ArrayList)session.getAttribute(ServletUtil.FILTER_INVEN_LIST)).size() < 1) { 
+				((Collection)session.getAttribute(ServletUtil.FILTER_INVEN_LIST)).size() < 1) { 
 				pageName = "Filter.jsp";	
 			}
             if (src == null) {
@@ -75,7 +75,12 @@
                     referer = ((CtiNavObject) session.getAttribute(ServletUtils.NAVIGATE)).getPreviousPage();
                     if (referer == null || 
                        (!(referer.contains("Inventory.jsp") || referer.contains("Filter.jsp"))))
-                        referer = "Inventory.jsp";
+                    	if((session.getAttribute(ServletUtil.FILTER_INVEN_LIST)) == null || 
+                				((Collection)session.getAttribute(ServletUtil.FILTER_INVEN_LIST)).size() < 1){
+                    		referer = "Filter.jsp";
+                    	}else {
+                        	referer = "Inventory.jsp";
+                    	}
 
                     if (referer.indexOf("page=") < 0) {
                         if (referer.indexOf("?") < 0)
