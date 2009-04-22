@@ -732,12 +732,10 @@ public void setLoadControlArea(LMControlArea newLoadControlArea)
 	else
 	{
 		getJMenuItemDisable().setText("Disable / Waive");
-		if(newLoadControlArea.getControlAreaState() == LMControlArea.STATE_INACTIVE) {
-		    getJMenuItemStart().setVisible(true);
-		    getJMenuItemStop().setVisible(false);
-		}else {
+		if(newLoadControlArea.getControlAreaState() == LMControlArea.STATE_FULLY_ACTIVE) {
 		    getJMenuItemStart().setVisible(false);
-		    getJMenuItemStop().setVisible(true);
+		}else {
+		    getJMenuItemStart().setVisible(true);
 		}
 		
 	}
