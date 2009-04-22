@@ -86,6 +86,9 @@ public class AlarmAudioServlet extends HttpServlet {
                 audioSounding = true;
             }
         }
+        
+        resp.setHeader("Pragma", "no-cache");
+        resp.setHeader("Cache-Control", "no-cache, must-revalidate, no-store");
 
         Writer writer = resp.getWriter();
         writer.write(Boolean.toString(audioSounding));

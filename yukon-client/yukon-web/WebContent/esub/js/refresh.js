@@ -157,8 +157,7 @@ function checkAlarmAudio(deviceIds, pointIds, alarmCategoryIds) {
 	var url = 	"/servlet/AlarmAudioServlet?" +
 			"deviceid=" + deviceIds +
 			"&pointid=" + pointIds +
-			"&alarmcategoryid=" + alarmCategoryIds +
-			"&rand=" + Math.random();
+			"&alarmcategoryid=" + alarmCategoryIds;
 
 	getCtiURL(url, fn3);
 
@@ -211,8 +210,7 @@ function updateAlarmsTable(node,url) {
 				'&height=' + node.getAttribute('height') +
 				'&acked=' + node.getAttribute('acked') +
 				'&events=' + node.getAttribute('events') +
-				'&inactive=' + node.getAttribute('inactive') +
-				'&rand=' + Math.random();		
+				'&inactive=' + node.getAttribute('inactive');		
 				
 				
 	getCtiURL(url,fn2);
