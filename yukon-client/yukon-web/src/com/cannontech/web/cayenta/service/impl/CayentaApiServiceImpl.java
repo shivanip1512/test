@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.xml.xpath.XPathException;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.web.cayenta.model.CayentaLocationInfo;
 import com.cannontech.web.cayenta.model.CayentaMeterInfo;
 import com.cannontech.web.cayenta.model.CayentaPhoneInfo;
@@ -29,6 +30,7 @@ public class CayentaApiServiceImpl implements CayentaApiService {
 	private static Logger log = YukonLogManager.getLogger(CayentaApiServiceImpl.class);
 	private static XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
 	private SimpleHttpPostServiceFactory simpleHttpPostServiceFactory;
+	private ConfigurationSource configurationSource;
 	
 	private static String postElementName = "XMLREQUEST";
 	
@@ -188,10 +190,12 @@ public class CayentaApiServiceImpl implements CayentaApiService {
 			log.debug("Sending request: " + xmlOutputter.outputString(requestElement));
 			String value = xmlOutputter.outputString(requestElement);
 			
-			// --- TEST FOR MOCK RESPONSE ---
-			//SimpleHttpPostService postService = (new MockSimpleHttpPostServiceFactory()).getCayentaPostService();
+			String url = configurationSource.getRequiredString("CAYENTA_API_SERVER_URL");
+			int port = configurationSource.getRequiredInteger("CAYENTA_API_SERVER_PORT");
+			String userName = configurationSource.getRequiredString("CAYENTA_API_SERVER_USERNAME");
+			String password = configurationSource.getRequiredString("CAYENTA_API_SERVER_PASSSWORD");
+			SimpleHttpPostService postService = simpleHttpPostServiceFactory.getSimpleHttpPostService(url, port, userName, password);
 			
-			SimpleHttpPostService postService = simpleHttpPostServiceFactory.getCayentaPostService();
 			String resp = postService.postValue(postElementName, value);
 			log.debug("Recieved response: " + resp);
 			return resp;
@@ -208,5 +212,10 @@ public class CayentaApiServiceImpl implements CayentaApiService {
 	public void setSimpleHttpPostServiceFactory(
 			SimpleHttpPostServiceFactory simpleHttpPostServiceFactory) {
 		this.simpleHttpPostServiceFactory = simpleHttpPostServiceFactory;
+	}
+	
+	@Autowired
+	public void setConfigurationSource(ConfigurationSource configurationSource) {
+		this.configurationSource = configurationSource;
 	}
 }

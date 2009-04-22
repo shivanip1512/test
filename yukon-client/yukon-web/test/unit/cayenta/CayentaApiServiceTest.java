@@ -4,26 +4,53 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.UnknownKeyException;
 import com.cannontech.web.cayenta.model.CayentaLocationInfo;
 import com.cannontech.web.cayenta.model.CayentaMeterInfo;
 import com.cannontech.web.cayenta.model.CayentaPhoneInfo;
 import com.cannontech.web.cayenta.service.impl.CayentaApiServiceImpl;
 import com.cannontech.web.cayenta.util.CayentaRequestException;
-import com.cannontech.web.simplePost.SimpleHttpPostServiceFactory;
 
 public class CayentaApiServiceTest {
 	
 	private CayentaApiServiceImpl cayentaApiService;
-	private SimpleHttpPostServiceFactory simpleHttpPosterServiceFactory;
 	
 	@Before
     public void setUp() throws Exception {
 		
-		simpleHttpPosterServiceFactory = new MockSimpleHttpPostServiceFactory();
-		
 		cayentaApiService = new CayentaApiServiceImpl();
-		cayentaApiService.setSimpleHttpPostServiceFactory(simpleHttpPosterServiceFactory);
+		cayentaApiService.setSimpleHttpPostServiceFactory(new MockSimpleHttpPostServiceFactory());
+		cayentaApiService.setConfigurationSource(new MockConfigurationSource());
     }
+	
+	class MockConfigurationSource implements ConfigurationSource {
+
+		@Override
+		public boolean getBoolean(String key, boolean defaultValue) {
+			throw new UnsupportedOperationException();
+		}
+		@Override
+		public int getInteger(String key, int defaultValue) {
+			throw new UnsupportedOperationException();
+		}
+		@Override
+		public int getRequiredInteger(String key) throws UnknownKeyException {
+			return 0;
+		}
+		@Override
+		public String getRequiredString(String key) throws UnknownKeyException {
+			return "";
+		}
+		@Override
+		public String getString(String key, String defaultValue) {
+			throw new UnsupportedOperationException();
+		}
+		@Override
+		public String getString(String key) {
+			throw new UnsupportedOperationException();
+		}
+	}
 	
 	@Test
     public void testInvoke() throws Exception {
