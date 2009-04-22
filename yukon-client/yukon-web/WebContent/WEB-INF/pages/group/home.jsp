@@ -15,7 +15,27 @@
     
     
     <script type="text/javascript">
-        
+    
+    	Event.observe(window, 'load', function(){initGroupsHome();});
+
+    	function initGroupsHome() {
+
+    		makeTreeGroupVisible();
+    	}
+
+    	function makeTreeGroupVisible() {
+
+    		var tree = this.tree_deviceGroupEditorTree;
+
+    		var extSelectedNodePath = '${extSelectedNodePath}';
+			var pathParts = extSelectedNodePath.split('/')
+			var selectedNodeId = pathParts[pathParts.length - 1];
+
+			tree.expandPath(extSelectedNodePath);
+			var selectedNode = this.tree_deviceGroupEditorTree.getNodeById(selectedNodeId);
+			selectedNode.ensureVisible();
+    	}
+    
         function showGroupPopup(popupDiv, focusElem){
             
             $(popupDiv).toggle();

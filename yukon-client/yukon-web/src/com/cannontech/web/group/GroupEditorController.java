@@ -38,9 +38,10 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.predicate.AggregateAndPredicate;
 import com.cannontech.common.util.predicate.Predicate;
-import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.DuplicateException;
-import com.cannontech.roles.operator.DeviceActionsRole;
+import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.bulk.model.DeviceCollectionCreationException;
@@ -56,7 +57,7 @@ public class GroupEditorController extends MultiActionController {
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao = null;
     private CopyDeviceGroupService copyDeviceGroupService = null;
     private DeviceCollectionDeviceGroupHelper deviceCollectionDeviceGroupHelper;
-    private AuthDao authDao;
+    private RolePropertyDao rolePropertyDao;
     
     private DeviceCollectionFactory deviceCollectionFactory = null;
 
@@ -115,13 +116,13 @@ public class GroupEditorController extends MultiActionController {
     }
     
     @Autowired
-    public void setAuthDao(AuthDao authDao) {
-        this.authDao = authDao;
-    }
-    
-    @Autowired
     public void setDeviceGroupUiService(DeviceGroupUiService deviceGroupUiService) {
 		this.deviceGroupUiService = deviceGroupUiService;
+	}
+    
+    @Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+		this.rolePropertyDao = rolePropertyDao;
 	}
 
     public ModelAndView home(HttpServletRequest request, HttpServletResponse response)
@@ -166,18 +167,32 @@ public class GroupEditorController extends MultiActionController {
         // ALL GROUPS HIERARCHY
         DeviceGroupHierarchy allGroupsGroupHierarchy = deviceGroupUiService.getDeviceGroupHierarchy(rootGroup, new NonHiddenDeviceGroupPredicate());
         
-        // NodeAttributeSettingCallback to highlight node fo selected group
+        // NodeAttributeSettingCallback to highlight node for selected group
+        // This one has been given an additional responsibility of recording the node path of the selected node,
+        // this path will be used to expand the tree to the selected node and ensure it is visible.
         final DeviceGroup selectedDeviceGroup = group;
         class HighlightSelectedGroup implements NodeAttributeSettingCallback {
+        	
+        	private String extSelectedNodePath;
+        	
             public void setAdditionalAttributes(ExtTreeNode node, DeviceGroup deviceGroup) {
                 if (selectedDeviceGroup != null && selectedDeviceGroup.getFullName().equals(deviceGroup.getFullName())) {
                     node.setAttribute("cls", "highlighted");
+                    extSelectedNodePath = node.getNodePath();
                 }
             }
+            public String getExtSelectedNodePath() {
+				return extSelectedNodePath;
+			}
         }
         
         // ALL GROUPS TREE JSON
-        ExtTreeNode allGroupsRoot = DeviceGroupTreeUtils.makeDeviceGroupExtTree(allGroupsGroupHierarchy, "Groups", new HighlightSelectedGroup());
+        HighlightSelectedGroup callback = new HighlightSelectedGroup();
+        ExtTreeNode allGroupsRoot = DeviceGroupTreeUtils.makeDeviceGroupExtTree(allGroupsGroupHierarchy, "Groups", callback);
+        
+        // selected node Ext path
+        String extSelectedNodePath = callback.getExtSelectedNodePath();
+        mav.addObject("extSelectedNodePath", extSelectedNodePath);
         
         JSONObject allGroupsJsonObj = new JSONObject(allGroupsRoot.toMap());
         String allGroupsDataJson = allGroupsJsonObj.toString();
@@ -262,8 +277,8 @@ public class GroupEditorController extends MultiActionController {
             throws ServletException {
         
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        authDao.verifyRole(userContext.getYukonUser(), DeviceActionsRole.ROLEID);
-        authDao.verifyTrueProperty(userContext.getYukonUser(), DeviceActionsRole.DEVICE_GROUP_EDIT);
+        rolePropertyDao.verifyRole(YukonRole.DEVICE_ACTIONS, userContext.getYukonUser());
+        rolePropertyDao.verifyProperty(YukonRoleProperty.DEVICE_GROUP_EDIT, userContext.getYukonUser());
         
         ModelAndView mav = new ModelAndView("redirect:/spring/group/editor/home");
 
@@ -298,8 +313,8 @@ public class GroupEditorController extends MultiActionController {
             throws ServletException {
         
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        authDao.verifyRole(userContext.getYukonUser(), DeviceActionsRole.ROLEID);
-        authDao.verifyTrueProperty(userContext.getYukonUser(), DeviceActionsRole.DEVICE_GROUP_MODIFY);
+        rolePropertyDao.verifyRole(YukonRole.DEVICE_ACTIONS, userContext.getYukonUser());
+        rolePropertyDao.verifyProperty(YukonRoleProperty.DEVICE_GROUP_MODIFY, userContext.getYukonUser());
         
         ModelAndView mav = new ModelAndView("redirect:/spring/group/editor/home");
 
@@ -345,8 +360,8 @@ public class GroupEditorController extends MultiActionController {
             throws ServletException {
 
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        authDao.verifyRole(userContext.getYukonUser(), DeviceActionsRole.ROLEID);
-        authDao.verifyTrueProperty(userContext.getYukonUser(), DeviceActionsRole.DEVICE_GROUP_MODIFY);
+        rolePropertyDao.verifyRole(YukonRole.DEVICE_ACTIONS, userContext.getYukonUser());
+        rolePropertyDao.verifyProperty(YukonRoleProperty.DEVICE_GROUP_MODIFY, userContext.getYukonUser());
         
         ModelAndView mav = new ModelAndView("redirect:/spring/group/editor/home");
 
@@ -425,8 +440,8 @@ public class GroupEditorController extends MultiActionController {
                                                  HttpServletResponse response) throws ServletException {
         
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        authDao.verifyRole(userContext.getYukonUser(), DeviceActionsRole.ROLEID);
-        authDao.verifyTrueProperty(userContext.getYukonUser(), DeviceActionsRole.DEVICE_GROUP_MODIFY);
+        rolePropertyDao.verifyRole(YukonRole.DEVICE_ACTIONS, userContext.getYukonUser());
+        rolePropertyDao.verifyProperty(YukonRoleProperty.DEVICE_GROUP_MODIFY, userContext.getYukonUser());
         
         ModelAndView mav = new ModelAndView("redirect:/spring/group/editor/home");
         
@@ -447,8 +462,8 @@ public class GroupEditorController extends MultiActionController {
             throws ServletException {
         
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        authDao.verifyRole(userContext.getYukonUser(), DeviceActionsRole.ROLEID);
-        authDao.verifyTrueProperty(userContext.getYukonUser(), DeviceActionsRole.DEVICE_GROUP_MODIFY);
+        rolePropertyDao.verifyRole(YukonRole.DEVICE_ACTIONS, userContext.getYukonUser());
+        rolePropertyDao.verifyProperty(YukonRoleProperty.DEVICE_GROUP_MODIFY, userContext.getYukonUser());
         
         ModelAndView mav = new ModelAndView("redirect:/spring/group/editor/home");
 
@@ -477,8 +492,8 @@ public class GroupEditorController extends MultiActionController {
             throws ServletException {
 
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        authDao.verifyRole(userContext.getYukonUser(), DeviceActionsRole.ROLEID);
-        authDao.verifyTrueProperty(userContext.getYukonUser(), DeviceActionsRole.DEVICE_GROUP_EDIT);
+        rolePropertyDao.verifyRole(YukonRole.DEVICE_ACTIONS, userContext.getYukonUser());
+        rolePropertyDao.verifyProperty(YukonRoleProperty.DEVICE_GROUP_EDIT, userContext.getYukonUser());
         
         ModelAndView mav = new ModelAndView("redirect:/spring/group/editor/home");
 
@@ -515,8 +530,8 @@ public class GroupEditorController extends MultiActionController {
     public ModelAndView copyContentsToGroup(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        authDao.verifyRole(userContext.getYukonUser(), DeviceActionsRole.ROLEID);
-        authDao.verifyTrueProperty(userContext.getYukonUser(), DeviceActionsRole.DEVICE_GROUP_MODIFY);
+        rolePropertyDao.verifyRole(YukonRole.DEVICE_ACTIONS, userContext.getYukonUser());
+        rolePropertyDao.verifyProperty(YukonRoleProperty.DEVICE_GROUP_MODIFY, userContext.getYukonUser());
         
         ModelAndView mav = new ModelAndView("redirect:/spring/group/editor/home");
         
@@ -572,8 +587,8 @@ public class GroupEditorController extends MultiActionController {
             throws ServletException {
 
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        authDao.verifyRole(userContext.getYukonUser(), DeviceActionsRole.ROLEID);
-        authDao.verifyTrueProperty(userContext.getYukonUser(), DeviceActionsRole.DEVICE_GROUP_EDIT);
+        rolePropertyDao.verifyRole(YukonRole.DEVICE_ACTIONS, userContext.getYukonUser());
+        rolePropertyDao.verifyProperty(YukonRoleProperty.DEVICE_GROUP_EDIT, userContext.getYukonUser());
         
         ModelAndView mav = new ModelAndView("redirect:/spring/group/editor/home");
 
@@ -604,8 +619,8 @@ public class GroupEditorController extends MultiActionController {
         try {
             
             YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-            authDao.verifyRole(userContext.getYukonUser(), DeviceActionsRole.ROLEID);
-            authDao.verifyTrueProperty(userContext.getYukonUser(), DeviceActionsRole.DEVICE_GROUP_MODIFY);
+            rolePropertyDao.verifyRole(YukonRole.DEVICE_ACTIONS, userContext.getYukonUser());
+            rolePropertyDao.verifyProperty(YukonRoleProperty.DEVICE_GROUP_MODIFY, userContext.getYukonUser());
             
             // Make sure we can remove the group
             if (removeGroup.isEditable()) {

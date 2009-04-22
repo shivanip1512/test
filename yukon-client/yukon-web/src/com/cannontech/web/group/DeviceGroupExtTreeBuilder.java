@@ -14,32 +14,41 @@ public class DeviceGroupExtTreeBuilder {
     
     private Map<String, Integer> nodeIdHistory = new HashMap<String, Integer>();
     
-    public ExtTreeNode doMakeDeviceGroupExtTree(DeviceGroupHierarchy dgh, String rootName, NodeAttributeSettingCallback nodeCallback) {
+    public ExtTreeNode doMakeDeviceGroupExtTree(DeviceGroupHierarchy dgh, String rootName, NodeAttributeSettingCallback nodeCallback, String parentNodeId) {
         
         DeviceGroup deviceGroup = dgh.getGroup();
         
         // setup node basics
         ExtTreeNode node = new ExtTreeNode();
+        
+        // node id
         String nodeId = createUniqueNodeId(deviceGroup.getFullName());
-        
-        DeviceGroupTreeUtils.setupNodeAttributes(node, deviceGroup, nodeId, rootName);
-        
-        // no href
-        node.setAttribute("href", "javascript:void(0);");
-        
-        // run speical callback to set specific attributes if provided
-        if (nodeCallback != null) {
-            nodeCallback.setAdditionalAttributes(node, deviceGroup);
+        if (rootName != null) {
+        	nodeId = rootName;
         }
         
-        // always add group name to node info attribute
+        // node path
+        // this is the path that Ext uses organize the tree, it can be used in Ext js code to perform certain functions
+        String nodePath = parentNodeId + "/" + nodeId;
+        node.setNodePath(nodePath);
+        
+        // node attributes
+        DeviceGroupTreeUtils.setupNodeAttributes(node, deviceGroup, nodeId, rootName, "javascript:void(0);");
+        
+        // add group name to the list of items in the node's "info" attribute
         DeviceGroupTreeUtils.addToNodeInfo(node, "groupName", deviceGroup.getFullName());
         
         // recursively add child groups
         for (DeviceGroupHierarchy d : dgh.getChildGroupList()) {
-            node.addChild(doMakeDeviceGroupExtTree(d, null, nodeCallback));
+            node.addChild(doMakeDeviceGroupExtTree(d, null, nodeCallback, nodePath));
         }
         
+        // run special callback to set specific attributes if provided
+        if (nodeCallback != null) {
+            nodeCallback.setAdditionalAttributes(node, deviceGroup);
+        }
+        
+        // leaf attribute should only be set after possible child groups have been added
         DeviceGroupTreeUtils.setLeaf(node);
         
         return node;

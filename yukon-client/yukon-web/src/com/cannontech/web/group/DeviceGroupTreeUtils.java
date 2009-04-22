@@ -20,15 +20,11 @@ public class DeviceGroupTreeUtils {
     public static ExtTreeNode makeDeviceGroupExtTree(DeviceGroupHierarchy dgh, String rootName, NodeAttributeSettingCallback nodeCallback) {
     
         DeviceGroupExtTreeBuilder builder = new DeviceGroupExtTreeBuilder();
-        ExtTreeNode root = builder.doMakeDeviceGroupExtTree(dgh, rootName, nodeCallback);
         
-        // give the root an id
-        root.setAttribute("id", rootName);
-        
-        return root;
+        return builder.doMakeDeviceGroupExtTree(dgh, rootName, nodeCallback, "");
     }
     
-    public static void setupNodeAttributes(ExtTreeNode node, DeviceGroup deviceGroup, String nodeId, String rootName) {
+    public static void setupNodeAttributes(ExtTreeNode node, DeviceGroup deviceGroup, String nodeId, String rootName, String href) {
         
         // set id
         node.setAttribute("id", nodeId);
@@ -47,6 +43,11 @@ public class DeviceGroupTreeUtils {
         }
         else {
             node.setAttribute("text", deviceGroup.getName());
+        }
+        
+        // set href
+        if (!StringUtils.isBlank(href)) {
+        	node.setAttribute("href", href);
         }
     }
     

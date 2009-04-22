@@ -9,6 +9,7 @@ public class ExtTreeNode {
 
     private Map<String, Object> attributes;
     private List<ExtTreeNode> children;
+    private String nodePath;
 
     // constructor
     public ExtTreeNode() {
@@ -80,5 +81,13 @@ public class ExtTreeNode {
     public void setAttributes(Map<String, Object> attributes) {
         this.attributes = attributes;
     }
+
+	public String getNodePath() {
+		return nodePath;
+	}
+
+	public void setNodePath(String nodePath) {
+		this.nodePath = nodePath;
+	}
     
 }
