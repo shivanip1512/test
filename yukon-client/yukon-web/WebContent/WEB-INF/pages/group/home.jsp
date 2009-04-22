@@ -32,8 +32,10 @@
 			var selectedNodeId = pathParts[pathParts.length - 1];
 
 			tree.expandPath(extSelectedNodePath);
-			var selectedNode = this.tree_deviceGroupEditorTree.getNodeById(selectedNodeId);
-			selectedNode.ensureVisible();
+			var selectedNode = tree.getNodeById(selectedNodeId);
+			if(selectedNode.getDepth() > 0) {
+				selectedNode.ensureVisible();
+			}
     	}
     
         function showGroupPopup(popupDiv, focusElem){
