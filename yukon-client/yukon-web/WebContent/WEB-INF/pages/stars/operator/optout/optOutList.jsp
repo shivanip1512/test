@@ -66,7 +66,7 @@ function createJSON() {
                         <tr class="<ct:alternateRow odd="altRow" even=""/>">
                             <td align="left">
                             	<c:choose>
-                            		<c:when test="${!optOutCount.optOutsRemaining || displayableInventory.currentlyOptedOut && isSameDay}">
+                            		<c:when test="${displayableInventory.currentlyOptedOut && isSameDay}">
                             		    <input id="unused_${inventoryId}" checked="checked" disabled="disabled" type="checkbox"></input>
                             		</c:when>
                             		<c:otherwise>
