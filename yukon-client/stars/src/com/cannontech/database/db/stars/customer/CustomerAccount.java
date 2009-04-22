@@ -567,7 +567,7 @@ public class CustomerAccount extends DBPersistent {
 		return null;
     }
 	
-	public static List<Integer> searchByMapNumber(String mapNo, List<Integer> energyCompanyIdList) {
+	public static List<Integer> searchBySiteNumber(String mapNo, List<Integer> energyCompanyIdList) {
 		
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("SELECT acct.AccountID FROM ");

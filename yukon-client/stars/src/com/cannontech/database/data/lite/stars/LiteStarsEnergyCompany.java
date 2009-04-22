@@ -38,7 +38,6 @@ import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteBase;
@@ -83,7 +82,6 @@ import com.cannontech.stars.xml.serialize.StarsServiceCompanies;
 import com.cannontech.stars.xml.serialize.StarsServiceCompany;
 import com.cannontech.stars.xml.serialize.StarsSubstation;
 import com.cannontech.stars.xml.serialize.StarsSubstations;
-import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.PrimitiveArrays;
 
@@ -1380,7 +1378,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
         }
         
         // Uses the the energy company ids to find all the desired accounts
-        accountList.addAll(CustomerAccount.searchByMapNumber( mapNo + "%", energyCompanyIdList));
+        accountList.addAll(CustomerAccount.searchBySiteNumber( mapNo + "%", energyCompanyIdList));
         return accountList;
     }
     
