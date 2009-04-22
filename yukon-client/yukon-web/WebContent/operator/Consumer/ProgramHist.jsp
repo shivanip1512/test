@@ -126,7 +126,7 @@
 			}
 			else {
 				int totalSec = 0;
-				for (int j = 0; j < ctrlHistToday.getControlHistoryCount(); j++) {
+				for (int j = ctrlHistToday.getControlHistoryCount() - 1; j >= 0; j--) {
 					ControlHistory hist = ctrlHistToday.getControlHistory(j);
 					
 					int durationSec = hist.getControlDuration();

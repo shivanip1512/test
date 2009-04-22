@@ -105,7 +105,7 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
 
         final List<ControlHistoryEvent> eventList = new ArrayList<ControlHistoryEvent>();
 
-        for (int j = 0; j < controlHistory.getControlHistoryCount(); j++) {
+        for (int j = controlHistory.getControlHistoryCount() - 1; j >= 0; j--) {
             com.cannontech.stars.xml.serialize.ControlHistory history = controlHistory.getControlHistory(j);
 
             Date startDate = history.getStartDateTime();
