@@ -412,7 +412,7 @@ public class CustomerAccount extends DBPersistent {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DISTINCT ACCT.AccountId, CICB.CompanyName ");
         sql.append("FROM ECToAccountMapping MAP, CustomerAccount ACCT, CICustomerBase CICB ");
-        sql.append("WHERE MAP.EnergyCompanyID = (",energyCompanyIdList,") ");
+        sql.append("WHERE MAP.EnergyCompanyID IN (",energyCompanyIdList,") ");
         sql.append("AND MAP.AccountId = ACCT.AccountId ");
         sql.append("AND ACCT.CustomerId = CICB.CustomerId "); 
         sql.append("AND UPPER(CICB.CompanyName) LIKE UPPER(?) ");
