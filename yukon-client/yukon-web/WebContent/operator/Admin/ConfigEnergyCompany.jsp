@@ -814,7 +814,7 @@ function deleteWarehouse(form, warehouseId) {
 		LiteYukonUser liteUser = DaoFactory.getYukonUserDao().getLiteYukonUser(userID);
 		if (liteUser == null) continue;
 		
-		userGroups = DaoFactory.getYukonGroupDao().getGroupsForUser(lYukonUser);
+		userGroups = DaoFactory.getYukonGroupDao().getGroupsForUser(liteUser);
 		groupNames = "";
 		for (LiteYukonGroup liteGroup : userGroups) {
 			if (liteGroup.getGroupID() == -1) continue;
