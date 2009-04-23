@@ -5919,7 +5919,7 @@
         </points>
     </device>
     <device>
-        <type value="1098" javaConstant="CCU721" changeGroup="ccu721"/>
+        <type value="1098" javaConstant="CCU721"/>
         <displayName value="CCU-721"/>
         <displayGroup value="Signal Transmitters"/>
         <points>
