@@ -39,7 +39,6 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.predicate.AggregateAndPredicate;
 import com.cannontech.common.util.predicate.Predicate;
 import com.cannontech.core.dao.DuplicateException;
-import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.servlet.YukonUserContextUtils;
@@ -277,7 +276,6 @@ public class GroupEditorController extends MultiActionController {
             throws ServletException {
         
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        rolePropertyDao.verifyRole(YukonRole.DEVICE_ACTIONS, userContext.getYukonUser());
         rolePropertyDao.verifyProperty(YukonRoleProperty.DEVICE_GROUP_EDIT, userContext.getYukonUser());
         
         ModelAndView mav = new ModelAndView("redirect:/spring/group/editor/home");
@@ -313,7 +311,6 @@ public class GroupEditorController extends MultiActionController {
             throws ServletException {
         
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        rolePropertyDao.verifyRole(YukonRole.DEVICE_ACTIONS, userContext.getYukonUser());
         rolePropertyDao.verifyProperty(YukonRoleProperty.DEVICE_GROUP_MODIFY, userContext.getYukonUser());
         
         ModelAndView mav = new ModelAndView("redirect:/spring/group/editor/home");
@@ -360,7 +357,6 @@ public class GroupEditorController extends MultiActionController {
             throws ServletException {
 
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        rolePropertyDao.verifyRole(YukonRole.DEVICE_ACTIONS, userContext.getYukonUser());
         rolePropertyDao.verifyProperty(YukonRoleProperty.DEVICE_GROUP_MODIFY, userContext.getYukonUser());
         
         ModelAndView mav = new ModelAndView("redirect:/spring/group/editor/home");
@@ -440,7 +436,6 @@ public class GroupEditorController extends MultiActionController {
                                                  HttpServletResponse response) throws ServletException {
         
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        rolePropertyDao.verifyRole(YukonRole.DEVICE_ACTIONS, userContext.getYukonUser());
         rolePropertyDao.verifyProperty(YukonRoleProperty.DEVICE_GROUP_MODIFY, userContext.getYukonUser());
         
         ModelAndView mav = new ModelAndView("redirect:/spring/group/editor/home");
@@ -462,7 +457,6 @@ public class GroupEditorController extends MultiActionController {
             throws ServletException {
         
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        rolePropertyDao.verifyRole(YukonRole.DEVICE_ACTIONS, userContext.getYukonUser());
         rolePropertyDao.verifyProperty(YukonRoleProperty.DEVICE_GROUP_MODIFY, userContext.getYukonUser());
         
         ModelAndView mav = new ModelAndView("redirect:/spring/group/editor/home");
@@ -492,7 +486,6 @@ public class GroupEditorController extends MultiActionController {
             throws ServletException {
 
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        rolePropertyDao.verifyRole(YukonRole.DEVICE_ACTIONS, userContext.getYukonUser());
         rolePropertyDao.verifyProperty(YukonRoleProperty.DEVICE_GROUP_EDIT, userContext.getYukonUser());
         
         ModelAndView mav = new ModelAndView("redirect:/spring/group/editor/home");
@@ -530,7 +523,6 @@ public class GroupEditorController extends MultiActionController {
     public ModelAndView copyContentsToGroup(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        rolePropertyDao.verifyRole(YukonRole.DEVICE_ACTIONS, userContext.getYukonUser());
         rolePropertyDao.verifyProperty(YukonRoleProperty.DEVICE_GROUP_MODIFY, userContext.getYukonUser());
         
         ModelAndView mav = new ModelAndView("redirect:/spring/group/editor/home");
@@ -587,7 +579,6 @@ public class GroupEditorController extends MultiActionController {
             throws ServletException {
 
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        rolePropertyDao.verifyRole(YukonRole.DEVICE_ACTIONS, userContext.getYukonUser());
         rolePropertyDao.verifyProperty(YukonRoleProperty.DEVICE_GROUP_EDIT, userContext.getYukonUser());
         
         ModelAndView mav = new ModelAndView("redirect:/spring/group/editor/home");
@@ -619,7 +610,6 @@ public class GroupEditorController extends MultiActionController {
         try {
             
             YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-            rolePropertyDao.verifyRole(YukonRole.DEVICE_ACTIONS, userContext.getYukonUser());
             rolePropertyDao.verifyProperty(YukonRoleProperty.DEVICE_GROUP_MODIFY, userContext.getYukonUser());
             
             // Make sure we can remove the group
