@@ -147,7 +147,6 @@ routetest.exe:   $(RTESTOBJS) makeexe.mak
 
 copy:           $(CTIPROGS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-               mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                -@if exist bin\*.exe copy bin\*.exe $(YUKONOUTPUT)
 
 

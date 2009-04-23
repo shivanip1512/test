@@ -89,7 +89,6 @@ killscan.exe:   poker.obj makeexe.mak
 
 copy:           scanner.exe
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-               mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                -@if exist bin\scanner.exe copy bin\scanner.exe $(YUKONOUTPUT)
 
 

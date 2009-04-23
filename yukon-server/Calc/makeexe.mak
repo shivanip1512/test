@@ -116,7 +116,6 @@ calc_logic.exe:  $(CALCOBJS) makeexe.mak
            mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
            -copy ..\$@ $(YUKONOUTPUT)
         @%cd $(CWD)
-        #mt.exe –manifest MyApp.exe.manifest -outputresource:MyApp.exe;1 
 #--  START TEST APPLICATIONS
 lurk.exe:       $(LURKOBJS) makeexe.mak
         @echo:
@@ -165,7 +164,6 @@ $(NEWVALRNGOBJS) -link $(RWLIBS) $(BOOSTLIBS) $(TESTLIBS)
 
 copy:
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-           mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
            -@if exist bin\*.exe copy bin\*.exe $(YUKONOUTPUT)
 
 

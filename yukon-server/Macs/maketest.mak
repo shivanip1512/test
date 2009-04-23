@@ -73,7 +73,6 @@ macs:      $(MACSTESTOBJS) maketest.mak
 
 copy:
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-           mt.exe -manifest $(BIN)\$(@B).exe.manifest -outputresource:$(BIN)\$(@B).exe;1
            -@if exist bin\*.exe copy bin\*.exe $(YUKONOUTPUT)
 
 

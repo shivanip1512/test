@@ -48,7 +48,7 @@ PORTERTESTOBJS= \
 test_LantronixEncryption.obj
 
 PORTERBASEOBJS= \
-$(OBJ)\encryption_lantronix.obj 
+$(OBJ)\encryption_lantronix.obj
 
 ALL: porter
 
@@ -56,7 +56,6 @@ porter:  $(PORTERTESTOBJS) makeexe.mak
 
 copy:
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-           mt.exe -manifest $(BIN)\$(@B).exe.manifest -outputresource:$(BIN)\$(@B).exe;1
            -@if exist bin\*.exe copy bin\*.exe $(YUKONOUTPUT)
 
 
