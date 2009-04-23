@@ -204,4 +204,31 @@ public class ThermostatSeason {
     	}
     	return true;
 	}
+
+	public ThermostatSeason getCopy() {
+		
+		ThermostatSeason season = new ThermostatSeason();
+		season.setId(this.getId());
+		season.setCoolStartDate(this.getCoolStartDate());
+		season.setHeatStartDate(this.getHeatStartDate());
+		season.setScheduleId(this.getScheduleId());
+		season.setWebConfigurationId(this.getWebConfigurationId());
+		
+		Map<TimeOfWeek, List<ThermostatSeasonEntry>> seasonEntryMap = 
+			new HashMap<TimeOfWeek, List<ThermostatSeasonEntry>>();
+		
+		for(Map.Entry<TimeOfWeek, List<ThermostatSeasonEntry>> entry : this.seasonEntryMap.entrySet()) {
+			
+			List<ThermostatSeasonEntry> seasonEntryList = new ArrayList<ThermostatSeasonEntry>();
+			
+			for(ThermostatSeasonEntry seasonEntry : entry.getValue()) {
+				seasonEntryList.add(seasonEntry.getCopy());
+			}
+			seasonEntryMap.put(entry.getKey(), seasonEntryList);
+		}
+		
+		season.setSeasonEntryMap(seasonEntryMap);
+	
+		return season;
+	}
 }

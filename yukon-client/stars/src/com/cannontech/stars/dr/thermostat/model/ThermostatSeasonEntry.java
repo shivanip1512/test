@@ -119,4 +119,17 @@ public class ThermostatSeasonEntry {
 			return false;
 		return true;
 	}
+
+	public ThermostatSeasonEntry getCopy() {
+
+		ThermostatSeasonEntry seasonEntry = new ThermostatSeasonEntry();
+		seasonEntry.setId(this.getId());
+		seasonEntry.setSeasonId(this.getSeasonId());
+		seasonEntry.setStartTime(this.getStartTime());
+		seasonEntry.setCoolTemperature(this.getCoolTemperature());
+		seasonEntry.setHeatTemperature(this.getHeatTemperature());
+		seasonEntry.setTimeOfWeek(this.getTimeOfWeek());
+		
+		return seasonEntry;
+	}
 }

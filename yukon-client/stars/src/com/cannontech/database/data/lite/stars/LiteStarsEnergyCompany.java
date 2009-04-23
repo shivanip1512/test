@@ -1733,7 +1733,9 @@ public class LiteStarsEnergyCompany extends LiteBase {
     			thermostatScheduleDao.getEnergyCompanyDefaultSchedule(this, type);
     		this.defaultThermostatScheduleMap.put(type, defaultSchedule);
     	}
-    	return defaultSchedule;
+    	
+    	// Return a copy of the cached schedule
+    	return defaultSchedule.getCopy();
     }
 
 	public void updateDefaultSchedule(ThermostatSchedule schedule) {

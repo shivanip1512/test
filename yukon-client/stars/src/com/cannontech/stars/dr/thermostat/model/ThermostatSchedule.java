@@ -63,5 +63,19 @@ public class ThermostatSchedule {
     public void setSeason(ThermostatSeason season) {
         this.season = season;
     }
+    
+    public ThermostatSchedule getCopy() {
+    	
+    	ThermostatSchedule schedule = new ThermostatSchedule();
+    	schedule.setId(this.getId());
+    	schedule.setName(this.getName());
+    	schedule.setAccountId(this.accountId);
+    	schedule.setInventoryId(this.getInventoryId());
+    	schedule.setThermostatType(this.getThermostatType());
+    	
+    	schedule.setSeason(this.getSeason().getCopy());
+    	
+    	return schedule;
+    }
 
 }
