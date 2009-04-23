@@ -135,41 +135,61 @@ public strictfp class DurationFormattingServiceImpl implements DurationFormattin
     private Object[] getArgs(Period period, DurationFormat type) {
     	// Create a Joda period
 
-     	switch (type) {
+        int days = period.get(DurationFieldType.days());
+        int hours = period.get(DurationFieldType.hours());
+        int minutes = period.get(DurationFieldType.minutes());
+        int seconds = period.get(DurationFieldType.seconds());
+
+        // do appropriate rounding
+        if (type == DurationFormat.DHMS || type == DurationFormat.HMS) {
+            if (period.get(DurationFieldType.millis()) >= 500) {
+                seconds++;
+            }
+        } else if (type == DurationFormat.HM || type == DurationFormat.HM) {
+            if (seconds >= 30) {
+                minutes++;
+            }
+        } else if (type == DurationFormat.DH || type == DurationFormat.H) {
+            if (minutes >= 30) {
+                hours++;
+            }
+        }
+
+        switch (type) {
             case DHMS : {
                 return new Object[] { 
-                		period.get(DurationFieldType.days()), 
-                		period.get(DurationFieldType.hours()), 
-                		period.get(DurationFieldType.minutes()), 
-                		period.get(DurationFieldType.seconds())};
+                		days, 
+                		hours, 
+                		minutes, 
+                		seconds};
             }
             case DH : {
             	return new Object[] { 
-            			period.get(DurationFieldType.days()), 
-            			period.get(DurationFieldType.hours())};
+            			days, 
+            			hours};
             }
 
             case HMS : {
             	return new Object[] { 
-            			period.get(DurationFieldType.hours()), 
-            			period.get(DurationFieldType.minutes()), 
-            			period.get(DurationFieldType.seconds())};
+            	        hours, 
+            			minutes, 
+            			seconds};
             }
 
             case HM : {
             	return new Object[] { 
-            			period.get(DurationFieldType.hours()), 
-            			period.get(DurationFieldType.minutes())};
+            	        hours, 
+            	        minutes};
             }
 
             case H : {
             	return new Object[] { 
-            			period.get(DurationFieldType.hours())};
+            	        hours};
             }
             
             case M : {
             	return new Object[] { 
-            			period.get(DurationFieldType.minutes())};
+            	        minutes};
             }
             
             default : throw new UnsupportedOperationException("Unsupported DurationFormat: " + type);
