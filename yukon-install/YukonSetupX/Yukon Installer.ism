@@ -125,6 +125,7 @@
 		<row><td>Message Dispatcher</td><td>{955F515A-D38D-444A-9B1B-091D2E6B8429}</td><td>SERVER</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Notification</td><td>{054F4508-F404-409E-8877-0B26421CCAAD}</td><td>TARGETDIR</td><td>0</td><td/><td/><td>264705</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Port Control</td><td>{73DC694D-F725-4C09-A12F-70D7643594B7}</td><td>SERVER</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>Prophecy Examples</td><td>{AFB1DE16-822A-48DD-97C7-FB0BB6FB6B4E}</td><td>PROPHECY_EXAMPLES</td><td>0</td><td/><td/><td>51729</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Scanner</td><td>{99E72965-B85A-4BEB-81FE-F7E985453A1C}</td><td>SERVER</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Tabular Data Console</td><td>{7FE662D9-03C5-49CE-B2A3-49A9E178D51F}</td><td>CLIENT</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Test Applications</td><td>{19DD76F0-6036-41C1-834A-BBF35CCB2E27}</td><td>SERVER</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
@@ -275,6 +276,7 @@
 		<row><td>JRE</td><td>STATIC</td><td>JRE</td><td/><td>0</td><td/></row>
 		<row><td>NEW_VARIABLE</td><td>ISRUNTIMETEXTSUBS</td><td>NEW VARIABLE</td><td/><td>0</td><td/></row>
 		<row><td>PROGRAMFILES</td><td/><td>Program Files</td><td/><td>0</td><td/></row>
+		<row><td>PROPHECY_EXAMPLES</td><td>EXTRAS</td><td>Prophecy Examples</td><td/><td>0</td><td/></row>
 		<row><td>ProgramMenuFolder</td><td/><td>Programs</td><td/><td>3</td><td/></row>
 		<row><td>ROOT</td><td>WEBAPPS</td><td>ROOT</td><td/><td>0</td><td/></row>
 		<row><td>RUNTIME</td><td>TARGETDIR</td><td>Runtime</td><td/><td>0</td><td/></row>
@@ -319,6 +321,7 @@
 		<row><td>{3AAABB93-964B-43CA-9691-90F8B5E7455A}</td><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>Trending</td><td/><td>6</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Trending</td></row>
 		<row><td>{3B752146-EC34-49F0-B636-E9DCA5C40CF6}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>Scanner</td><td/><td>4</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Scanner</td></row>
 		<row><td>{424AC885-B168-4B71-922E-6A22C47FB177}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>Calculation Server</td><td/><td>14</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Calculation Server</td></row>
+		<row><td>{43D78ABC-C78A-445C-83BB-2710B1337AAF}</td><td>{37AA5718-AAED-4365-BC7A-BF934E7C0DDE}</td><td>##ID_STRING30##</td><td/><td>4</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Prophecy Examples</td></row>
 		<row><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td/><td>Yukon Server</td><td/><td>6</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Yukon Server</td></row>
 		<row><td>{4ACFFB62-6E17-49AE-B063-E56B4FC5D9A5}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>MACS</td><td/><td>8</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>MACS</td></row>
 		<row><td>{52095A08-45B8-4DDD-AF60-1CAEDAA000DA}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>Test Applications</td><td/><td>18</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Test Applications</td></row>
@@ -368,6 +371,7 @@
 		<row><td>{424AC885-B168-4B71-922E-6A22C47FB177}</td><td>Common Directories</td></row>
 		<row><td>{424AC885-B168-4B71-922E-6A22C47FB177}</td><td>Common Dlls</td></row>
 		<row><td>{424AC885-B168-4B71-922E-6A22C47FB177}</td><td>Initial Server Config</td></row>
+		<row><td>{43D78ABC-C78A-445C-83BB-2710B1337AAF}</td><td>Prophecy Examples</td></row>
 		<row><td>{4ACFFB62-6E17-49AE-B063-E56B4FC5D9A5}</td><td>Common Directories</td></row>
 		<row><td>{4ACFFB62-6E17-49AE-B063-E56B4FC5D9A5}</td><td>Common Dlls</td></row>
 		<row><td>{4ACFFB62-6E17-49AE-B063-E56B4FC5D9A5}</td><td>Initial Server Config</td></row>
@@ -470,6 +474,7 @@
 		<row><td>Message Dispatcher</td><td>0</td><td/><td>_E3E3A7A5_B241_48E4_B5B6_9B07A20256B5_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Notification</td><td/><td/><td>_B63BCCE2_416D_4701_A212_CBDD7F292383_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Port Control</td><td>0</td><td/><td>_88520290_19E7_4C67_9BB6_DF5CC61ACE94_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>Prophecy Examples</td><td/><td/><td>_4E2060B9_7587_4EED_AEE8_01A998C87C77_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Scanner</td><td>0</td><td/><td>_5AC4F3D2_6CA9_4E97_B95A_092959853ACB_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Tabular Data Console</td><td>0</td><td/><td>_5724FC49_DEC9_4BD2_924E_9CE4C6F4C7E1_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Test Applications</td><td>0</td><td/><td>_354574D2_8BC0_4882_BC03_99625A4D6FFF_FILTER</td><td/><td/><td/><td/></row>
@@ -537,6 +542,7 @@
 		<row><td>JRE</td><td>&lt;PATH_TO_JRE_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
 		<row><td>Java Service Manager</td><td>&lt;PATH_TO_WRAPPER_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
 		<row><td>Notification</td><td>&lt;PATH_TO_WRAPPER_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
+		<row><td>Prophecy Examples</td><td>&lt;PATH_TO_EXTRAS_FILES&gt;\Prophecy Examples</td><td>1</td><td>*.*</td><td/><td>0</td></row>
 		<row><td>Tomcat</td><td>&lt;PATH_TO_TOMCAT_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
 		<row><td>WebStart</td><td>&lt;PATH_TO_WEBSTARTJRE_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
 		<row><td>Yukon Base</td><td>&lt;PATH_TO_YUKON_BASE&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
@@ -569,6 +575,7 @@
 		<row><td>{3AAABB93-964B-43CA-9691-90F8B5E7455A}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>36</td><td/><td/><td/></row>
 		<row><td>{3B752146-EC34-49F0-B636-E9DCA5C40CF6}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>36</td><td/><td/><td/></row>
 		<row><td>{424AC885-B168-4B71-922E-6A22C47FB177}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>36</td><td/><td/><td/></row>
+		<row><td>{43D78ABC-C78A-445C-83BB-2710B1337AAF}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>36</td><td/><td/><td/></row>
 		<row><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>YukonServer_Installing</td><td>YukonServer_Installed</td><td>YukonServer_UnInstalling</td><td/><td/><td/><td/><td/><td>36</td><td/><td/><td/></row>
 		<row><td>{4ACFFB62-6E17-49AE-B063-E56B4FC5D9A5}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>36</td><td/><td/><td/></row>
 		<row><td>{52095A08-45B8-4DDD-AF60-1CAEDAA000DA}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>36</td><td/><td/><td/></row>
@@ -1252,6 +1259,7 @@
 		<row><td>Cannon Custom Install</td><td>{0B88D9BB-C5A3-48AF-B241-82AE8A834CA5}</td></row>
 		<row><td>Cannon Custom Install</td><td>{37AA5718-AAED-4365-BC7A-BF934E7C0DDE}</td></row>
 		<row><td>Cannon Custom Install</td><td>{3AAABB93-964B-43CA-9691-90F8B5E7455A}</td></row>
+		<row><td>Cannon Custom Install</td><td>{43D78ABC-C78A-445C-83BB-2710B1337AAF}</td></row>
 		<row><td>Cannon Custom Install</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td></row>
 		<row><td>Cannon Custom Install</td><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td></row>
 		<row><td>Cannon Custom Install</td><td>{6F242179-A573-4344-B86F-07C5DA79E8F1}</td></row>
@@ -1466,6 +1474,7 @@
 		<row><td>ID_STRING28</td><td>1033</td><td>NewShortcut19</td><td>0</td><td/><td>-1105446480</td></row>
 		<row><td>ID_STRING29</td><td>1033</td><td>NewShortcut19</td><td>0</td><td/><td>-300131190</td></row>
 		<row><td>ID_STRING3</td><td>1033</td><td>All Yukon server and client applications</td><td>0</td><td/><td>1620663024</td></row>
+		<row><td>ID_STRING30</td><td>1033</td><td>Prophecy Examples</td><td>0</td><td/><td>-1172462679</td></row>
 		<row><td>ID_STRING4</td><td>1033</td><td>Only the client applications are installed</td><td>0</td><td/><td>1620673328</td></row>
 		<row><td>ID_STRING5</td><td>1033</td><td/><td>0</td><td/><td>1754871247</td></row>
 		<row><td>ID_STRING6</td><td>1033</td><td/><td>0</td><td/><td>1620655728</td></row>
