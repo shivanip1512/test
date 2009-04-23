@@ -67,7 +67,15 @@ public class OptOutOperatorController {
 	private DateFormattingService dateFormattingService;
 	private ECMappingDao ecMappingDao;
 	protected YukonUserContextMessageSourceResolver messageSourceResolver;
-    
+
+    private static class StartDateException extends Exception {
+        private final static long serialVersionUID = 1L;
+
+        private StartDateException(String message) {
+            super(message);
+        }
+    };
+
     @ModelAttribute("customerAccount")
     public CustomerAccount getCustomerAccount(HttpServletRequest request) {
     	
@@ -171,10 +179,11 @@ public class OptOutOperatorController {
         Date startDateObj = parseDate(startDate, yukonUserContext);
         TimeZone userTimeZone = yukonUserContext.getTimeZone();
         final Date today = TimeUtil.getMidnight(new Date(), userTimeZone);
-        boolean isValidStartDate = isValidStartDate(startDateObj, today);
-        if (!isValidStartDate) {
+        try {
+            validateStartDate(startDateObj, today, userTimeZone);
+        } catch (StartDateException exception) {
             MessageSourceResolvable errorMsg = new YukonMessageSourceResolvable(
-                    "yukon.dr.operator.optoutError.invalidStartDate");
+                    exception.getMessage());
             map.addAttribute("error", errorMsg);
             return "operator/optout/optOutError.jsp";
         }
@@ -259,42 +268,47 @@ public class OptOutOperatorController {
         final Date now = new Date();
         TimeZone userTimeZone = yukonUserContext.getTimeZone();
 		final Date today = TimeUtil.getMidnight(now, userTimeZone);
-        boolean isValidStartDate = isValidStartDate(startDateObj, today);
-        if (!isValidStartDate) {
-        	result = new YukonMessageSourceResolvable(
-        			"yukon.dr.operator.optoutresult.invalidStartDate");
-        } else {
-        	
-        	int hoursRemainingInDay = TimeUtil.getHoursTillMidnight(now, userTimeZone);
-            boolean isSameDay = TimeUtil.isSameDay(startDateObj, today, yukonUserContext.getTimeZone());
-
-        	String jsonQuestions = ServletRequestUtils.getStringParameter(
-													        			request, 
-													        			"jsonQuestions");
-        	List<ScheduledOptOutQuestion> questionList = 
-        		OptOutControllerHelper.toOptOutQuestionList(jsonQuestions);
-        
-	        OptOutRequest optOutRequest = new OptOutRequest();
-	        if (isSameDay) {
-	        	int extraHours = 0;
-	        	// If durationInDays is 1 that means the rest of today only
-	        	if(durationInDays > 1) {
-	        		// Today counts as the first day
-		        	extraHours = (durationInDays - 1) * 24;
-	        	}
-	        	optOutRequest.setDurationInHours(hoursRemainingInDay + extraHours);
-	        	optOutRequest.setStartDate(null); // Same day OptOut's have null startDates.
-	        } else {
-		        optOutRequest.setStartDate(startDateObj);
-		        optOutRequest.setDurationInHours(durationInDays * 24);
-	        }
-	        optOutRequest.setInventoryIdList(inventoryIds);
-	        optOutRequest.setQuestions(questionList);
-	        
-	        LiteYukonUser user = yukonUserContext.getYukonUser();
-	        optOutService.optOut(customerAccount, optOutRequest, user);
-	        
+        try {
+            validateStartDate(startDateObj, today, userTimeZone);
+        } catch (StartDateException exception) {
+            map.addAttribute("startDate", startDate);
+            map.addAttribute("duration", durationInDays);
+            map.addAttribute("error", exception.getMessage());
+            result = new YukonMessageSourceResolvable(exception.getMessage());
+            map.addAttribute("result", result);
+            return "redirect:/operator/Consumer/OptOut.jsp";
         }
+
+        int hoursRemainingInDay = TimeUtil.getHoursTillMidnight(now,
+                                                                userTimeZone);
+        boolean isSameDay = TimeUtil.isSameDay(startDateObj,
+                                               today,
+                                               yukonUserContext.getTimeZone());
+
+        String jsonQuestions = ServletRequestUtils.getStringParameter(request,
+                                                                      "jsonQuestions");
+        List<ScheduledOptOutQuestion> questionList = OptOutControllerHelper.toOptOutQuestionList(jsonQuestions);
+
+        OptOutRequest optOutRequest = new OptOutRequest();
+        if (isSameDay) {
+            int extraHours = 0;
+            // If durationInDays is 1 that means the rest of today only
+            if (durationInDays > 1) {
+                // Today counts as the first day
+                extraHours = (durationInDays - 1) * 24;
+            }
+            optOutRequest.setDurationInHours(hoursRemainingInDay + extraHours);
+            optOutRequest.setStartDate(null); // Same day OptOut's have null
+                                              // startDates.
+        } else {
+            optOutRequest.setStartDate(startDateObj);
+            optOutRequest.setDurationInHours(durationInDays * 24);
+        }
+        optOutRequest.setInventoryIdList(inventoryIds);
+        optOutRequest.setQuestions(questionList);
+
+        LiteYukonUser user = yukonUserContext.getYukonUser();
+        optOutService.optOut(customerAccount, optOutRequest, user);
         
         map.addAttribute("result", result);
         return "redirect:/operator/Consumer/OptOut.jsp";
@@ -394,14 +408,25 @@ public class OptOutOperatorController {
         return null;
     }
 
-    private boolean isValidStartDate(Date startDate, Date todayDate) {
-        if (startDate == null) return false;
-        
+    private void validateStartDate(Date startDate, Date todayDate, TimeZone zone)
+            throws StartDateException {
+        // this shouldn't happen unless the user is hacking the UI
+        if (startDate == null) throw new RuntimeException("empty start date");
+
         long startTime = startDate.getTime();
         long todayTime = todayDate.getTime();
-        
-        boolean result = startTime >= todayTime;
-        return result;
+
+        if (startTime < todayTime) {
+            throw new StartDateException("yukon.dr.operator.optout.startDateTooEarly");
+        }
+
+        Calendar cal = Calendar.getInstance(zone);
+        cal.setTime(todayDate);
+        cal.add(Calendar.YEAR, 1);
+        long yearInFuture = cal.getTimeInMillis();
+        if (startTime > yearInFuture) {
+            throw new StartDateException("yukon.dr.operator.optout.startDateTooLate");
+        }
     }
 
     private Map<Integer, OptOutCountHolder> getOptOutCountsForInventories(

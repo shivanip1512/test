@@ -63,6 +63,8 @@
     <entry key="yukon.dr.operator.optout.viewAll">View Full History</entry>
     <entry key="yukon.dr.operator.optout.allOptedOut">All devices have already been opted out.</entry>
     <entry key="yukon.dr.operator.optout.noOptOutsAvailable">All opt outs for all devices have been used.</entry>
+    <entry key="yukon.dr.operator.optout.startDateTooEarly">The start date cannot be earlier than today.</entry>
+    <entry key="yukon.dr.operator.optout.startDateTooLate">The start date cannot be more than 1 year in the future.</entry>
 
     <!-- optOutList.jsp -->
     <entry key="yukon.dr.operator.optoutlist.header">Programs - Opt Out</entry>
@@ -97,7 +99,6 @@
 
     <!--  OptOutError.jsp -->
     <entry key="yukon.dr.operator.optoutError.header">Opt Out Error</entry>
-    <entry key="yukon.dr.operator.optoutError.invalidStartDate"><![CDATA[<i>The start date cannot be earlier than today.</i>]]></entry>
     <entry key="yukon.dr.operator.optoutError.ok">Ok</entry>
 
     <!--  scheduledEvents.jsp -->
