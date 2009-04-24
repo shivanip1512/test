@@ -44,6 +44,10 @@
 <entry key="yukon.web.menu.portal.capacitorControl">Capacitor Control</entry>
 <entry key="yukon.web.menu.portal.capacitorControl.capControl">Cap Control</entry>
 
+<!-- eSubstation -->
+<entry key="yukon.web.menu.portal.eSubstation">eSubstation</entry>
+<entry key="yukon.web.menu.portal.eSubstation.eSub">eSubstation</entry>
+
 <!-- Hardware Inventory -->
 <entry key="yukon.web.menu.portal.hardwareInventory">Hardware Inventory</entry>
 <entry key="yukon.web.menu.portal.hardwareInventory.inventory">Inventory</entry>
