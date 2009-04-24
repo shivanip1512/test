@@ -144,7 +144,7 @@ public class OptOutController extends AbstractConsumerController {
         TimeZone userTimeZone = yukonUserContext.getTimeZone();
         final Date today = TimeUtil.getMidnight(new Date(), userTimeZone);
         try {
-            validateStartDate(startDateObj, today, userTimeZone);
+            validateStartDate(startDateObj, today, yukonUserContext);
         } catch (StartDateException exception) {
             MessageSourceResolvable message = new YukonMessageSourceResolvable(
                     exception.getMessage());
@@ -238,7 +238,7 @@ public class OptOutController extends AbstractConsumerController {
         final Date now = new Date();
 		final Date today = TimeUtil.getMidnight(now, userTimeZone);
 		try {
-		    validateStartDate(startDateObj, today, userTimeZone);
+		    validateStartDate(startDateObj, today, yukonUserContext);
         } catch (StartDateException exception) {
         	result = new YukonMessageSourceResolvable(
         			"yukon.dr.consumer.optoutresult.invalidStartDate");
@@ -306,8 +306,8 @@ public class OptOutController extends AbstractConsumerController {
         return null;
     }
 
-    private void validateStartDate(Date startDate, Date todayDate, TimeZone zone)
-            throws StartDateException {
+    private void validateStartDate(Date startDate, Date todayDate,
+            YukonUserContext userContext) throws StartDateException {
         // this shouldn't happen unless the user is hacking the UI
         if (startDate == null)
             throw new RuntimeException("empty start date");
@@ -319,7 +319,7 @@ public class OptOutController extends AbstractConsumerController {
             throw new StartDateException("yukon.dr.consumer.optout.startDateTooEarly");
         }
 
-        Calendar cal = Calendar.getInstance(zone);
+        Calendar cal = dateFormattingService.getCalendar(userContext);
         cal.setTime(todayDate);
         cal.add(Calendar.YEAR, 1);
         long yearInFuture = cal.getTimeInMillis();

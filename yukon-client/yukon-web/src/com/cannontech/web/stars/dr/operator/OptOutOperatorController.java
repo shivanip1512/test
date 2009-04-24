@@ -180,7 +180,7 @@ public class OptOutOperatorController {
         TimeZone userTimeZone = yukonUserContext.getTimeZone();
         final Date today = TimeUtil.getMidnight(new Date(), userTimeZone);
         try {
-            validateStartDate(startDateObj, today, userTimeZone);
+            validateStartDate(startDateObj, today, yukonUserContext);
         } catch (StartDateException exception) {
             MessageSourceResolvable errorMsg = new YukonMessageSourceResolvable(
                     exception.getMessage());
@@ -269,7 +269,7 @@ public class OptOutOperatorController {
         TimeZone userTimeZone = yukonUserContext.getTimeZone();
 		final Date today = TimeUtil.getMidnight(now, userTimeZone);
         try {
-            validateStartDate(startDateObj, today, userTimeZone);
+            validateStartDate(startDateObj, today, yukonUserContext);
         } catch (StartDateException exception) {
             map.addAttribute("startDate", startDate);
             map.addAttribute("duration", durationInDays);
@@ -408,8 +408,8 @@ public class OptOutOperatorController {
         return null;
     }
 
-    private void validateStartDate(Date startDate, Date todayDate, TimeZone zone)
-            throws StartDateException {
+    private void validateStartDate(Date startDate, Date todayDate,
+            YukonUserContext userContext) throws StartDateException {
         // this shouldn't happen unless the user is hacking the UI
         if (startDate == null) throw new RuntimeException("empty start date");
 
@@ -420,7 +420,7 @@ public class OptOutOperatorController {
             throw new StartDateException("yukon.dr.operator.optout.startDateTooEarly");
         }
 
-        Calendar cal = Calendar.getInstance(zone);
+        Calendar cal = dateFormattingService.getCalendar(userContext);
         cal.setTime(todayDate);
         cal.add(Calendar.YEAR, 1);
         long yearInFuture = cal.getTimeInMillis();
