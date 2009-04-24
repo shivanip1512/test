@@ -338,7 +338,7 @@ public final class ContactDaoImpl implements ContactDao {
         }
 
         LiteCICustomer liteCICust = null;
-        if (customerId > 0) {
+        if (customerId >= 0) {
             LiteCustomer liteCust = databaseCache.getACustomerByCustomerID(customerId);
             if (liteCust != null && liteCust instanceof LiteCICustomer) {
                 liteCICust = (LiteCICustomer) liteCust;

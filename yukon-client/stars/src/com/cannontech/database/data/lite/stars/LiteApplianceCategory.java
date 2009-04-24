@@ -23,7 +23,7 @@ public class LiteApplianceCategory extends LiteBase {
 	private int categoryID = com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID;
 	private int webConfigurationID = CtiUtilities.NONE_ZERO_ID;
 	
-	private Map<Integer, LiteLMProgramWebPublishing> publishedPrograms = 
+	private final Map<Integer, LiteLMProgramWebPublishing> publishedPrograms = 
 		new ConcurrentHashMap<Integer, LiteLMProgramWebPublishing>();
 	
 	public LiteApplianceCategory() {

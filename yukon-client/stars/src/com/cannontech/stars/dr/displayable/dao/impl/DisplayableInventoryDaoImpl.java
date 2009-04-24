@@ -14,16 +14,13 @@ import com.cannontech.stars.dr.appliance.model.Appliance;
 import com.cannontech.stars.dr.displayable.dao.AbstractDisplayableDao;
 import com.cannontech.stars.dr.displayable.dao.DisplayableInventoryDao;
 import com.cannontech.stars.dr.displayable.model.DisplayableInventory;
-import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
-import com.cannontech.stars.dr.hardware.model.InventoryBase;
-import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
+import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.stars.dr.program.model.Program;
 
 @Repository("displayableInventoryDao")
 public class DisplayableInventoryDaoImpl extends AbstractDisplayableDao implements DisplayableInventoryDao {
     private static final Comparator<DisplayableInventory> displayableInventoryComparator = createComparator();
-    private LMHardwareBaseDao lmHardwareBaseDao;
     private OptOutEventDao optOutEventDao;
 
     @Override
@@ -31,20 +28,18 @@ public class DisplayableInventoryDaoImpl extends AbstractDisplayableDao implemen
 
         List<Appliance> applianceList = applianceDao.getByAccountId(customerAccountId);
         List<Program> programList = programDao.getByAppliances(applianceList);
-        List<InventoryBase> inventoryList = 
-            inventoryBaseDao.getByAccountId(customerAccountId);
-
+        List<HardwareSummary> hardwareList = 
+            inventoryDao.getAllHardwareSummaryForAccount(customerAccountId);
+        
         Map<Integer, List<Appliance>> inventoryToApplianceMap = toInventoryIdMap(applianceList);
         Map<Integer, Program> programIdMap = toProgramIdMap(programList);
 
         final List<DisplayableInventory> displayableInventoryList = new ArrayList<DisplayableInventory>();
 
-        for (final InventoryBase inventory : inventoryList) {
+        for (final HardwareSummary inventory : hardwareList) {
             int inventoryId = inventory.getInventoryId();
-            String displayName = inventoryBaseDao.getDisplayName(inventory);
-            
-            LMHardwareBase hardware = lmHardwareBaseDao.getById(inventoryId);
-            String serialNumber = hardware.getManufacturerSerialNumber();
+            String displayName = inventory.getDisplayName();
+            String serialNumber = inventory.getSerialNumber();
             
             List<Program> programs = 
                 createProgramList(inventoryId, inventoryToApplianceMap, programIdMap);
@@ -134,11 +129,6 @@ public class DisplayableInventoryDaoImpl extends AbstractDisplayableDao implemen
         };
     }
     
-    @Autowired
-    public void setLmHardwareBaseDao(LMHardwareBaseDao lmHardwareBaseDao) {
-        this.lmHardwareBaseDao = lmHardwareBaseDao;
-    }
-
     @Autowired
     public void setOptOutEventDao(OptOutEventDao optOutEventDao) {
         this.optOutEventDao = optOutEventDao;

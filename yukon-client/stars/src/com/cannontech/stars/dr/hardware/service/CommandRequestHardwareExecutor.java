@@ -1,7 +1,6 @@
 package com.cannontech.stars.dr.hardware.service;
 
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
-import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
@@ -19,8 +18,6 @@ public interface CommandRequestHardwareExecutor {
 	 * @param command - Command to execute
 	 * @param user - User executing command
 	 * @throws CommandCompletionException
-	 * @throws PaoAuthorizationException - When user doesn't have permission to
-     *             execute the command
 	 */
 	public void execute(LiteStarsLMHardware hardware, String command,
 			LiteYukonUser user) throws CommandCompletionException;
@@ -33,8 +30,6 @@ public interface CommandRequestHardwareExecutor {
 	 * @param command - Command to execute
 	 * @param user - User executing command
 	 * @throws CommandCompletionException
-	 * @throws PaoAuthorizationException - When user doesn't have permission to
-	 *             execute the command
 	 */
 	public void execute(Thermostat thermostat, String command,
 			LiteYukonUser yukonUser) throws CommandCompletionException;

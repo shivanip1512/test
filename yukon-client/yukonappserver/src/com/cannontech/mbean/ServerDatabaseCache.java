@@ -167,7 +167,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	//private Map allPointsMap = null;
 	private Map<Integer, LiteYukonPAObject> allPAOsMap = null;
 	private final Map<Integer, LiteCustomer> customerCache = new ConcurrentHashMap<Integer, LiteCustomer>(1000, .75f, 30);    
-	private Map<Integer, LiteContact> allContactsMap = new ConcurrentHashMap<Integer, LiteContact>(1000, .75f, 30);
+	private final Map<Integer, LiteContact> allContactsMap = new ConcurrentHashMap<Integer, LiteContact>(1000, .75f, 30);
     
 	//derived from allYukonUsers,allYukonRoles,allYukonGroups
 	//see type info in IDatabaseCache
@@ -181,7 +181,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private Map<Integer, LiteStateGroup> allStateGroupMap = null;
 	private Map<Integer, LiteContactNotification> allContactNotifsMap = null;
 	
-	private Map<Integer, LiteContact> userContactMap = new ConcurrentHashMap<Integer, LiteContact>(1000, .75f, 30);
+	private final Map<Integer, LiteContact> userContactMap = new ConcurrentHashMap<Integer, LiteContact>(1000, .75f, 30);
     private Map<MapKeyInts, String> userRolePropertyValueMap = null;
 	private Map<MapKeyInts, LiteYukonRole> userRoleMap = null;
 
@@ -317,7 +317,7 @@ public synchronized List<LiteYukonPAObject> getAllCapControlSubStations()
  * Creation date: (3/14/00 3:19:19 PM)
  */
 private synchronized void loadAllContacts() {
-    if (allContactsMap != null && allContactNotifsMap != null) {
+    if (allContactNotifsMap != null) {
         return;
     } else {
         allContactsMap.clear();
@@ -2942,7 +2942,7 @@ public LiteEnergyCompany getALiteEnergyCompanyByUserID(LiteYukonUser liteYukonUs
 	
 	// when null, not found in cache...load entry
 	if( liteEnergyCompany == null) {
-		liteEnergyCompany = yukonUserEnergyCompanyLookup.getLiteEnergyCompanyByUser(liteYukonUser, getAllEnergyCompanies());
+		liteEnergyCompany = yukonUserEnergyCompanyLookup.loadLiteEnergyCompanyByUser(liteYukonUser, getAllEnergyCompanies());
 		if (liteEnergyCompany == null) {
 			// user doesn't have a EC, but we need to cache this knowledge somehow
 			userEnergyCompanyCache.put(liteYukonUser, NULL_LITE_ENERGY_COMPANY);

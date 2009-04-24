@@ -20,13 +20,13 @@ public class LiteStarsEnergyCompanyFactory {
 	private YukonListDao yukonListDao;
 	private ThermostatScheduleDao thermostatScheduleDao;
     
-    public synchronized LiteStarsEnergyCompany createEnergyCompany(EnergyCompany energyCompany) {
+    public LiteStarsEnergyCompany createEnergyCompany(EnergyCompany energyCompany) {
         LiteStarsEnergyCompany liteStarsEnergyCompany = new LiteStarsEnergyCompany(energyCompany);
         applyPropertySetters(liteStarsEnergyCompany);
         return liteStarsEnergyCompany;
     }
     
-    public synchronized LiteStarsEnergyCompany createEnergyCompany(int energyCompanyId) {
+    public LiteStarsEnergyCompany createEnergyCompany(int energyCompanyId) {
         LiteStarsEnergyCompany energyCompany = new LiteStarsEnergyCompany(energyCompanyId);
         applyPropertySetters(energyCompany);
         return energyCompany;

@@ -2,13 +2,13 @@ package com.cannontech.stars.dr.hardware.model;
 
 import org.apache.commons.lang.StringUtils;
 
-public class LiteHardware {
+public class HardwareSummary {
 
     private Integer inventoryId;
     private String deviceLabel;
     private String serialNumber;
 
-    public LiteHardware(Integer inventoryId, String deviceLabel,
+    public HardwareSummary(Integer inventoryId, String deviceLabel,
             String serialNumber) {
         this.inventoryId = inventoryId;
         this.deviceLabel = deviceLabel;

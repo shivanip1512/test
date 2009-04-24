@@ -16,7 +16,6 @@ import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.message.util.ConnectionException;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
@@ -262,9 +261,6 @@ public class ThermostatServiceImpl implements ThermostatService {
                                         thermostat, updateScheduleCommand, yukonUser);
         } catch (CommandCompletionException e) {
             logger.error("Failed to update thermostat schedule.", e);
-            return ThermostatScheduleUpdateResult.CONSUMER_UPDATE_SCHEDULE_ERROR;
-        } catch (ConnectionException e) {
-            logger.error("Thermostat manual event failed.", e);
             return ThermostatScheduleUpdateResult.CONSUMER_UPDATE_SCHEDULE_ERROR;
         }
 

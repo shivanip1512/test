@@ -7,7 +7,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
-import com.cannontech.stars.dr.hardware.model.ThermostatSummary;
+import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.user.checker.NullUserChecker;
 import com.cannontech.web.menu.option.MenuOption;
@@ -42,10 +42,10 @@ public class ThermostatMenuOptionProducer extends DynamicMenuOptionProducer {
         // Get all thermostats for each of the user's accounts
         List<CustomerAccount> accounts = customerAccountDao.getByUser(userContext.getYukonUser());
         for (CustomerAccount account : accounts) {
-            List<ThermostatSummary> thermSummaryList = inventoryDao.getThermostatSummaryByAccount(account);
+            List<HardwareSummary> thermSummaryList = inventoryDao.getThermostatSummaryByAccount(account);
 
-            for (ThermostatSummary thermSummary : thermSummaryList) {
-                String label = thermSummary.getLabel();
+            for (HardwareSummary thermSummary : thermSummaryList) {
+                String label = thermSummary.getDisplayName();
                 YukonMessageSourceResolvable resolvable = new YukonMessageSourceResolvable("yukon.web.menu.config.consumer.thermostat.name",
                                                                                            label);
 
@@ -68,21 +68,21 @@ public class ThermostatMenuOptionProducer extends DynamicMenuOptionProducer {
         return optionList;
     }
 
-    public List<MenuOptionProducer> createSubMenu(ThermostatSummary thermSummary) {
+    public List<MenuOptionProducer> createSubMenu(HardwareSummary thermSummary) {
         List<MenuOptionProducer> producerList = new ArrayList<MenuOptionProducer>(4);
 
         MenuOptionProducer producer;
         
         // Create schedule menu option
-        producer = createLink("schedule", "/spring/stars/consumer/thermostat/schedule/view?thermostatIds=" + thermSummary.getId());
+        producer = createLink("schedule", "/spring/stars/consumer/thermostat/schedule/view?thermostatIds=" + thermSummary.getInventoryId());
         producerList.add(producer);
 
         // Create manual menu option
-        producer = createLink("manual", "/spring/stars/consumer/thermostat/view?thermostatIds=" + thermSummary.getId());
+        producer = createLink("manual", "/spring/stars/consumer/thermostat/view?thermostatIds=" + thermSummary.getInventoryId());
         producerList.add(producer);
 
         // Create saved schedules menu option
-        producer = createLink("savedSchedules", "/spring/stars/consumer/thermostat/schedule/view/saved?thermostatIds=" + thermSummary.getId());
+        producer = createLink("savedSchedules", "/spring/stars/consumer/thermostat/schedule/view/saved?thermostatIds=" + thermSummary.getInventoryId());
         producerList.add(producer);
 
         return producerList;

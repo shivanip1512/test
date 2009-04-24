@@ -347,10 +347,11 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 			}
 			
 			// Delete the default operator login
-			if (energyCompany.getUser().getUserID() != com.cannontech.user.UserUtils.USER_ADMIN_ID &&
-				energyCompany.getUser().getUserID() != com.cannontech.user.UserUtils.USER_DEFAULT_ID)
+			int defaultUserId = energyCompany.getUser().getUserID();
+			if (defaultUserId != com.cannontech.user.UserUtils.USER_ADMIN_ID &&
+			        defaultUserId != com.cannontech.user.UserUtils.USER_DEFAULT_ID)
 			{
-				com.cannontech.database.data.user.YukonUser.deleteOperatorLogin(energyCompany.getUser().getUserID());
+				com.cannontech.database.data.user.YukonUser.deleteOperatorLogin(defaultUserId);
 				ServerUtils.handleDBChange( energyCompany.getUser(), DBChangeMsg.CHANGE_TYPE_DELETE );
 			}
 			

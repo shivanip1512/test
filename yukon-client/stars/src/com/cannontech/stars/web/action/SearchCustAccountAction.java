@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -243,14 +244,14 @@ public class SearchCustAccountAction implements ActionBase {
 				else {
 					// Order the search result by company name/search criteria
 					// (last name if search by last name, address if search by address, account # otherwise)
-					TreeMap<String, LiteStarsEnergyCompany> companyNameMap = new TreeMap<String, LiteStarsEnergyCompany>();
-					Hashtable<LiteStarsEnergyCompany, ArrayList<Integer>> companyAcctTable = new Hashtable<LiteStarsEnergyCompany, ArrayList<Integer>>();
+					Map<String, LiteStarsEnergyCompany> companyNameMap = new TreeMap<String, LiteStarsEnergyCompany>();
+					Map<LiteStarsEnergyCompany, List<Integer>> companyAcctTable = new Hashtable<LiteStarsEnergyCompany, List<Integer>>();
 					
 					for (int i = 0; i < accountList.size(); i++) {
 						LiteStarsEnergyCompany company = energyCompany;
 						if (searchMembers) company = (LiteStarsEnergyCompany) ((Pair)accountList.get(i)).getSecond();
 						
-						ArrayList<Integer> acctList = companyAcctTable.get( company );
+						List<Integer> acctList = companyAcctTable.get( company );
 						if (acctList == null) {
 							acctList = new ArrayList<Integer>();
 							companyAcctTable.put( company, acctList );
@@ -266,7 +267,7 @@ public class SearchCustAccountAction implements ActionBase {
 					Iterator it = companyNameMap.values().iterator();
 					while (it.hasNext()) {
 						LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) it.next();
-						ArrayList<Integer> acctList = companyAcctTable.get( company );
+						List<Integer> acctList = companyAcctTable.get( company );
 						
 						Integer[] accounts = new Integer[acctList.size()];
 						acctList.toArray( accounts );

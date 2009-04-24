@@ -19,7 +19,7 @@ import com.cannontech.stars.dr.displayable.model.DisplayableEnrollment;
 import com.cannontech.stars.dr.displayable.model.DisplayableEnrollment.DisplayableEnrollmentInventory;
 import com.cannontech.stars.dr.displayable.model.DisplayableEnrollment.DisplayableEnrollmentProgram;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
-import com.cannontech.stars.dr.hardware.model.LiteHardware;
+import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.cannontech.user.YukonUserContext;
@@ -44,8 +44,8 @@ public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao impleme
         	programDao.getByApplianceCategories(applianceCategories);
 
         // Get all Hardware that belongs to this CustomerAccount
-        final List<LiteHardware> hardwareList = 
-        	inventoryBaseDao.getAllLiteHardwareForAccount(customerAccountId);
+        final List<HardwareSummary> hardwareList = 
+        	inventoryDao.getAllHardwareSummaryForAccount(customerAccountId);
 
         // Get all current program enrollments for account
         List<ProgramEnrollment> activeEnrollments = 
@@ -92,7 +92,7 @@ public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao impleme
     
     private DisplayableEnrollmentProgram createDisplayableEnrollmentProgram(
     		Program program, 
-    		List<LiteHardware> hardwareList, 
+    		List<HardwareSummary> hardwareList, 
     		List<ProgramEnrollment> activeEnrollments) 
     {
     
@@ -100,7 +100,7 @@ public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao impleme
     	List<DisplayableEnrollmentInventory> enrollmentInventoryList = 
     		new ArrayList<DisplayableEnrollmentInventory>();
     	
-    	for(LiteHardware hardware : hardwareList) {
+    	for(HardwareSummary hardware : hardwareList) {
     		DisplayableEnrollmentInventory displayableEnrollmentInventory = 
     			this.createDisplayableEnrollmentInventory(hardware, programId, activeEnrollments);
     		enrollmentInventoryList.add(displayableEnrollmentInventory);
@@ -111,7 +111,7 @@ public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao impleme
     }
 
     private DisplayableEnrollmentInventory createDisplayableEnrollmentInventory(
-    		LiteHardware hardware, 
+    		HardwareSummary hardware, 
     		int programId, 
     		List<ProgramEnrollment> activeEnrollments) 
     {

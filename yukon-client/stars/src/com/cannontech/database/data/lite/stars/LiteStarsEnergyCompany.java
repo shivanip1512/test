@@ -166,18 +166,17 @@ public class LiteStarsEnergyCompany extends LiteBase {
     private String name = null;
     private int primaryContactID = CtiUtilities.NONE_ZERO_ID;
     private LiteYukonUser user = null;
-//    private int userID = com.cannontech.user.UserUtils.USER_DEFAULT_ID;
 
     private List<LiteServiceCompany> serviceCompanies = null;
     private List<LiteSubstation> substations = null;
     private List<LiteInterviewQuestion> interviewQuestions = null;
 
-    private Map<Integer, Integer> programIdToAppCatIdMap = new ConcurrentHashMap<Integer, Integer>();
-    private Map<Integer, LiteApplianceCategory> appCategoryMap = 
+    private final Map<Integer, Integer> programIdToAppCatIdMap = new ConcurrentHashMap<Integer, Integer>();
+    private final Map<Integer, LiteApplianceCategory> appCategoryMap = 
     	new ConcurrentHashMap<Integer, LiteApplianceCategory>();
-    private Map<String, YukonSelectionList> selectionListMap = 
+    private final Map<String, YukonSelectionList> selectionListMap = 
     	new ConcurrentHashMap<String, YukonSelectionList>(30, .75f, 2);
-    private Map<HardwareType, ThermostatSchedule> defaultThermostatScheduleMap = 
+    private final Map<HardwareType, ThermostatSchedule> defaultThermostatScheduleMap = 
     	new ConcurrentHashMap<HardwareType, ThermostatSchedule>(8, .75f, 1);
     
     private List<Integer> routeIDs = null;
@@ -441,25 +440,15 @@ public class LiteStarsEnergyCompany extends LiteBase {
      * Get programs published by this energy company only
      */
     public Iterable<LiteLMProgramWebPublishing> getPrograms() {
-        
-    	Iterable<LiteLMProgramWebPublishing> programs = null;
+    	Iterable<LiteLMProgramWebPublishing> programs = Iterables.emptyIterable();
     	
     	Iterable<LiteApplianceCategory> categories = getApplianceCategories();
         for(LiteApplianceCategory category : categories) {
-        	Iterable<LiteLMProgramWebPublishing> categoryPrograms = category.getPublishedPrograms();
-        	
-        	if(programs == null) {
-        		programs = categoryPrograms;
-        	} else {
-        		programs = Iterables.concat(programs, categoryPrograms);
-        	}
+            Iterable<LiteLMProgramWebPublishing> categoryPrograms = category.getPublishedPrograms();
+            programs = Iterables.concat(programs, categoryPrograms);
         }
         
-        if (programs == null) {
-            return Collections.emptyList();
-        } else {
-            return programs;
-        }
+        return programs;
     }
     
     /**
@@ -469,7 +458,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
         Iterable<LiteLMProgramWebPublishing> pubProgs = getPrograms();
         
         if (getParent() != null) {
-        	pubProgs = Iterables.concat(pubProgs, getParent().getPrograms());
+        	pubProgs = Iterables.concat(pubProgs, getParent().getAllPrograms());
         }
         
         return pubProgs;
@@ -680,35 +669,38 @@ public class LiteStarsEnergyCompany extends LiteBase {
     
     public List<LiteServiceCompany> getAllServiceCompaniesDownward() 
     {
-        List<LiteServiceCompany> companies = new ArrayList<LiteServiceCompany>( getAllServiceCompanies() );
-        
+        List<LiteServiceCompany> descCompanies = new ArrayList<LiteServiceCompany>();
+        List<LiteServiceCompany> companies = getServiceCompanies();
+        synchronized (companies) {
+            descCompanies.addAll(companies);
+        }        
         for (LiteStarsEnergyCompany child : getChildren()) {
-            companies.addAll( 0, child.getServiceCompanies());
+            descCompanies.addAll(child.getAllServiceCompaniesDownward());
         }
         
-        return companies;
+        return descCompanies;
     }
     
     public List<Integer> getAllEnergyCompaniesDownward()
     {
-        List<Integer> allEnergyCompanies = new ArrayList<Integer>();
-        allEnergyCompanies.add(new Integer(getLiteID()));
+        List<Integer> descEnergyCompanies = new ArrayList<Integer>();
+        descEnergyCompanies.add(new Integer(getLiteID()));
         for (final LiteStarsEnergyCompany company : getChildren()) {
             List<Integer> memberList = company.getAllEnergyCompaniesDownward();
-            allEnergyCompanies.addAll( memberList );
+            descEnergyCompanies.addAll( memberList );
         }
-        return allEnergyCompanies;
+        return descEnergyCompanies;
     }
 
     public List<Warehouse> getAllWarehousesDownward() 
     {
-        List<Warehouse> warehouses = Warehouse.getAllWarehousesForEnergyCompany(getEnergyCompanyID().intValue());
+        List<Warehouse> descWarehouses = Warehouse.getAllWarehousesForEnergyCompany(getEnergyCompanyID().intValue());
         
         for (LiteStarsEnergyCompany child : getChildren()) {
-            warehouses.addAll( 0, Warehouse.getAllWarehousesForEnergyCompany(child.getLiteID()));
+            descWarehouses.addAll(child.getAllWarehousesDownward());
         }
         
-        return warehouses;
+        return descWarehouses;
     }
     
     public synchronized List<LiteSubstation> getSubstations() {
@@ -734,7 +726,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
     public List<LiteSubstation> getAllSubstations() {
         List<LiteSubstation> allSubstations = new ArrayList<LiteSubstation>();
         if (getParent() != null) {
-            allSubstations.addAll( 0, getParent().getAllSubstations() );
+            allSubstations.addAll(getParent().getAllSubstations() );
         }
         List<LiteSubstation> substations = getSubstations();
         synchronized (substations) {
@@ -1323,10 +1315,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
         // Gets all the possible energy company ids
         List<Integer> energyCompanyIdList = new ArrayList<Integer>();
         if (searchMembers) {
-        	List<LiteStarsEnergyCompany> energyCompanyList = ECUtils.getAllDescendants(this);
-        	for (LiteStarsEnergyCompany liteStarsEnergyCompany : energyCompanyList) {
-				energyCompanyIdList.add(liteStarsEnergyCompany.getLiteID());
-			}
+            energyCompanyIdList = getAllEnergyCompaniesDownward();
         } else {
         	energyCompanyIdList.add(getLiteID());
         }
@@ -1346,10 +1335,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
         // Gets all the possible energy company ids
         List<Integer> energyCompanyIdList = new ArrayList<Integer>();
         if (searchMembers) {
-        	List<LiteStarsEnergyCompany> energyCompanyList = ECUtils.getAllDescendants(this);
-        	for (LiteStarsEnergyCompany liteStarsEnergyCompany : energyCompanyList) {
-				energyCompanyIdList.add(liteStarsEnergyCompany.getLiteID());
-			}
+            energyCompanyIdList = getAllEnergyCompaniesDownward();
         } else {
         	energyCompanyIdList.add(getLiteID());
         }
@@ -1369,10 +1355,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
         // Gets all the possible energy company ids
         List<Integer> energyCompanyIdList = new ArrayList<Integer>();
         if (searchMembers) {
-        	List<LiteStarsEnergyCompany> energyCompanyList = ECUtils.getAllDescendants(this);
-        	for (LiteStarsEnergyCompany liteStarsEnergyCompany : energyCompanyList) {
-				energyCompanyIdList.add(liteStarsEnergyCompany.getLiteID());
-			}
+            energyCompanyIdList = getAllEnergyCompaniesDownward();
         } else {
         	energyCompanyIdList.add(getLiteID());
         }
@@ -1688,7 +1671,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
             CTILogger.info( "Energy company hierarchy loaded for energy company #" + getEnergyCompanyID() );
         }
         catch (CommandExecutionException e) {
-            CTILogger.error( e.getMessage(), e );
+            throw new RuntimeException(e);
         }
         return ech;
     }

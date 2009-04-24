@@ -1,7 +1,7 @@
 package com.cannontech.core.dao.impl;
 
 /**
- * 
+ * SQL Result RowMapper for YukonPao object
  */
 import java.sql.ResultSet;
 import java.sql.SQLException;

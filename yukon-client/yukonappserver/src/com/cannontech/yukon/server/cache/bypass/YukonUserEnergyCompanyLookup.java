@@ -31,7 +31,7 @@ public class YukonUserEnergyCompanyLookup {
 		sqlForOperatorLogin = "SELECT EnergyCompanyID FROM EnergyCompanyOperatorLoginList";
     }
     
-	public LiteEnergyCompany getLiteEnergyCompanyByUser(LiteYukonUser liteYukonUser, List<LiteEnergyCompany> allEnergyCompanies) {
+	public LiteEnergyCompany loadLiteEnergyCompanyByUser(LiteYukonUser liteYukonUser, List<LiteEnergyCompany> allEnergyCompanies) {
 
 		// Load LiteEnergyCompany by (primary) contact
    		try {

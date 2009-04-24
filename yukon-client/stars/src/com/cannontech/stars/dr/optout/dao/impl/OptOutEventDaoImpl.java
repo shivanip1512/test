@@ -23,8 +23,8 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
-import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
-import com.cannontech.stars.dr.hardware.model.LiteHardware;
+import com.cannontech.stars.dr.hardware.dao.InventoryDao;
+import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.stars.dr.optout.model.OptOutAction;
 import com.cannontech.stars.dr.optout.model.OptOutCounts;
@@ -45,7 +45,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	private NextValueHelper nextValueHelper;
 	
 	private EnrollmentDao enrollmentDao;
-	private InventoryBaseDao inventoryBaseDao;
+	private InventoryDao inventoryDao;
 	private CustomerAccountDao customerAccountDao;
 	private YukonUserDao yukonUserDao;
 
@@ -706,7 +706,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 				event.setState(eventState);
 				
 				int inventoryId = rs.getInt("InventoryId");
-				LiteHardware inventory = inventoryBaseDao.getLiteHardwareById(inventoryId);
+				HardwareSummary inventory = inventoryDao.getHardwareSummaryById(inventoryId);
 				event.setInventory(inventory);
 				
 				List<Program> programList = 
@@ -744,7 +744,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 			event.setState(eventState);
 			
 			int inventoryId = rs.getInt("InventoryId");
-			LiteHardware inventory = inventoryBaseDao.getLiteHardwareById(inventoryId);
+			HardwareSummary inventory = inventoryDao.getHardwareSummaryById(inventoryId);
 			event.setInventory(inventory);
 			
 			List<Program> programList = 
@@ -784,7 +784,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 
 			int inventoryId = rs.getInt("InventoryId");
 			history.setInventoryId(inventoryId);
-			LiteHardware inventory = inventoryBaseDao.getLiteHardwareById(inventoryId);
+			HardwareSummary inventory = inventoryDao.getHardwareSummaryById(inventoryId);
 			history.setSerialNumber(inventory.getSerialNumber());
 
 			int eventId = rs.getInt("OptOutEventId");
@@ -818,8 +818,8 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	}
 	
 	@Autowired
-    public void setInventoryBaseDao(InventoryBaseDao inventoryBaseDao) {
-        this.inventoryBaseDao = inventoryBaseDao;
+    public void setInventoryDao(InventoryDao inventoryDao) {
+        this.inventoryDao = inventoryDao;
     }
 	
 	@Autowired

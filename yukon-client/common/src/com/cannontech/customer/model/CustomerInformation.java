@@ -1,11 +1,7 @@
 package com.cannontech.customer.model;
 
-import com.cannontech.database.data.lite.LiteContact;
-
-
 public class CustomerInformation {
     private int customerId = 0;
-    private LiteContact primaryContact = null;
     private String companyName = null;
     private String contactFirstName = null;
     private String contactLastName = null;
@@ -47,16 +43,8 @@ public class CustomerInformation {
         return customerId;
     }
 
-    public LiteContact getPrimaryContact() {
-        return primaryContact;
-    }
-
     public String getCompanyName() {
         return companyName;
-    }
-
-    public void setPrimaryContact(LiteContact primaryContact) {
-        this.primaryContact = primaryContact;
     }
 
     public void setCompanyName(String companyName) {

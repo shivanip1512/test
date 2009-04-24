@@ -3,8 +3,8 @@ package com.cannontech.stars.dr.hardware.dao;
 import java.util.List;
 
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
-import com.cannontech.stars.dr.hardware.model.ThermostatSummary;
 
 /**
  * Data Access interface for inventory
@@ -18,12 +18,16 @@ public interface InventoryDao {
      */
     public List<Thermostat> getThermostatsByAccount(CustomerAccount account);
 
+    public List<HardwareSummary> getAllHardwareSummaryForAccount(int accountId);
+    
+    public HardwareSummary getHardwareSummaryById(int inventoryId);
+    
     /**
-     * Method to get a list of ThermostatSummary based on an account id
+     * Method to get a list of thermostat summary based on an account id
      * @param account - Account to get summary for
-     * @return List of ThermostatSummary for account
+     * @return List of thermostat summary for account
      */
-    public List<ThermostatSummary> getThermostatSummaryByAccount(CustomerAccount account);
+    public List<HardwareSummary> getThermostatSummaryByAccount(CustomerAccount account);
     
     /**
      * Method to get a thermostat by id
