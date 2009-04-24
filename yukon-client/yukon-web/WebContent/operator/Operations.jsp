@@ -178,6 +178,17 @@
 	
 </cti:checkRole>
 
+<!-- eSubstation section -->
+<!--<cti:checkProperty property="OperatorRoleDefs.ESUBSTATION_DRAWINGS_PROPERTYID_BASE">--> 
+
+    <tags:operationSection sectionName="eSubstation" sectionImageName="eSubstationLogo">
+        <tags:sectionLink>
+            <a href="/spring/login/esub/home">eSubstation</a>
+        </tags:sectionLink>
+    </tags:operationSection>
+    
+<!--</cti:checkProperty>-->
+
 <!-- Hardware Inventory section -->
 <cti:checkRole roleid="<%= InventoryRole.ROLEID %>">
 

@@ -42,6 +42,14 @@ form {
   	height: 102px;
 }
 
+#eSubstationLogo {
+    float: left;
+    background-image: url(../eSubstationImage.jpg);
+    background-repeat: no-repeat;
+    width: 102px;
+    height: 102px;
+}
+
 #HardwareInventoryLogo {
 	float: left;
   	background-image: url(../InventoryImage.jpg);

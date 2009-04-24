@@ -75,6 +75,7 @@ public enum YukonRoleProperty {
     MAXIMUM_DAILY_SCANS(TRENDING, com.cannontech.roles.application.TrendingRole.MAXIMUM_DAILY_SCANS, stringType()),
     
     HOME_URL(WEB_CLIENT, com.cannontech.roles.application.WebClientRole.HOME_URL, stringType()),
+    ESUB_HOME_URL(WEB_CLIENT, com.cannontech.roles.application.WebClientRole.ESUB_HOME_URL, stringType()),
     STYLE_SHEET(WEB_CLIENT, com.cannontech.roles.application.WebClientRole.STYLE_SHEET, stringType()),
     NAV_BULLET_SELECTED(WEB_CLIENT, com.cannontech.roles.application.WebClientRole.NAV_BULLET_SELECTED, stringType()),
     NAV_BULLET_EXPAND(WEB_CLIENT, com.cannontech.roles.application.WebClientRole.NAV_BULLET_EXPAND, stringType()),

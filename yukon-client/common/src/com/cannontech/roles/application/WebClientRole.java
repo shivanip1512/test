@@ -30,4 +30,5 @@ public interface WebClientRole {
     public static final int VIEW_ALARMS_AS_ALERTS = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 18;
     
     public static final int DEFAULT_TIMEZONE = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 19; //client timezone
+    public static final int ESUB_HOME_URL = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 20; // esub home url
 }
