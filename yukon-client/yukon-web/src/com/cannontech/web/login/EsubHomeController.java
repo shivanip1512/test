@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -18,7 +17,7 @@ import com.cannontech.util.ServletUtil;
 public class EsubHomeController {
     private RolePropertyDao rolePropertyDao;
     
-    @RequestMapping(value = "/esub/home", method = RequestMethod.GET)
+    @RequestMapping("/esub/home")
     public ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
         final LiteYukonUser user = ServletUtil.getYukonUser(request);

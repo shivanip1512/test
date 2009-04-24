@@ -34,20 +34,12 @@ form {
   	height: 102px;
 }
 
-#CapControlLogo {
+#DistributionAutomationLogo {
 	float: left;
-  	background-image: url(../CapControlImage.jpg);
+  	background-image: url(../EsubImage.jpg);
   	background-repeat: no-repeat;
   	width: 102px;
   	height: 102px;
-}
-
-#eSubstationLogo {
-    float: left;
-    background-image: url(../EsubImage.jpg);
-    background-repeat: no-repeat;
-    width: 102px;
-    height: 102px;
 }
 
 #HardwareInventoryLogo {

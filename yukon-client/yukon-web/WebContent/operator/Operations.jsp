@@ -167,27 +167,23 @@
 
 </cti:checkMultiRole>
 
-<!-- Capacitor Control section -->
-<cti:checkRole role="CBCSettingsRole.ROLEID">
+<!-- Distribution Automation section -->
+<cti:checkRolesAndProperties value="CAP_CONTROL_ACCESS,OPERATOR_ESUBSTATION_DRAWINGS_VIEW">
 
-	<tags:operationSection sectionName="Capacitor Control" sectionImageName="CapControlLogo">
-	    <tags:sectionLink>
-	    	<a href="../capcontrol/subareas.jsp">Cap Control</a>
-	    </tags:sectionLink>
+	<tags:operationSection sectionName="Distribution Automation" sectionImageName="DistributionAutomationLogo">
+	    <cti:isPropertyTrue property="CBCSettingsRole.ACCESS">
+		    <tags:sectionLink>
+		    	<a href="../capcontrol/subareas.jsp">Cap Control</a>
+		    </tags:sectionLink>
+	    </cti:isPropertyTrue>
+	    <cti:isPropertyTrue property="operator.EsubDrawingsRole.VIEW"> 
+		    <tags:sectionLink>
+	            <a href="/esub/home">eSubstation</a>
+	        </tags:sectionLink>
+        </cti:isPropertyTrue>
 	</tags:operationSection>
 	
-</cti:checkRole>
-
-<!-- eSubstation section -->
-<!--<cti:checkProperty property="OperatorRoleDefs.ESUBSTATION_DRAWINGS_PROPERTYID_BASE">--> 
-
-    <tags:operationSection sectionName="eSubstation" sectionImageName="eSubstationLogo">
-        <tags:sectionLink>
-            <a href="/spring/login/esub/home">eSubstation</a>
-        </tags:sectionLink>
-    </tags:operationSection>
-    
-<!--</cti:checkProperty>-->
+</cti:checkRolesAndProperties>
 
 <!-- Hardware Inventory section -->
 <cti:checkRole roleid="<%= InventoryRole.ROLEID %>">

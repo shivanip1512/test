@@ -142,30 +142,22 @@
       </links>
     </option>
 
-    <!-- Capacitor Control -->
-    <option id="capacitorControl">
+    <!-- Distribution Automation -->
+    <option id="distributionAutomation">
       <requireRoleProperty value="CBC_SETTINGS" />
-
+      <requireRoleProperty value="OPERATOR_ESUBSTATION_DRAWINGS_VIEW" />
       <links>
         <option id="capControl">
           <link>/capcontrol/subareas.jsp</link>
         </option>
-
       </links>
-    </option>
-    
-    <!-- eSubstation -->
-    <option id="eSubstation">
-      <requireRoleProperty value="OPERATOR_ESUBSTATION_DRAWINGS_VIEW" />
-
       <links>
         <option id="eSub">
           <link>/spring/login/esub/home</link>
         </option>
-
       </links>
     </option>
-
+    
     <!-- Hardware Inventory -->
     <option id="hardwareInventory">
       <requireRoleProperty value="INVENTORY" />

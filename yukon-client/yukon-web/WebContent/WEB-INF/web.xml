@@ -801,7 +801,7 @@
     
     <servlet-mapping>
         <servlet-name>login</servlet-name>
-        <url-pattern>/spring/login/*</url-pattern>
+        <url-pattern>/esub/home</url-pattern>
     </servlet-mapping>
     
     <servlet-mapping>
