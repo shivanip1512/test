@@ -151,7 +151,10 @@ public class ProgramDaoImpl implements ProgramDao {
         programQuery.append("                                        AND ECTGM.mappingCategory = 'ApplianceCategory')");
         programQuery.append("WHERE PAO.paoClass = ?");
         programQuery.append("AND PAO.category = ?");
-        programQuery.append("AND PAO.paoName = ?");
+        programQuery.append("AND (PAO.paoName = ?");
+        programQuery.append("     OR YWC.alternateDisplayName = ?");
+        programQuery.append("     OR YWC.alternateDisplayName like ?");
+        programQuery.append("     OR YWC.alternateDisplayName like ?)");
         programQuery.append("AND ECTGM.energyCompanyId in (", energyCompanyIds, ")");
         
         try {
@@ -159,7 +162,10 @@ public class ProgramDaoImpl implements ProgramDao {
             										 new ProgramRowMapper(simpleJdbcTemplate),
                                                      DeviceClasses.STRING_CLASS_LOADMANAGER,
                                                      PAOGroups.STRING_CAT_LOADMANAGEMENT,
-                                                     programName);
+                                                     programName,
+                                                     programName,
+                                                     programName+",%",
+                                                     "%,"+programName);
         } catch(EmptyResultDataAccessException ex){
             throw new NotFoundException("The program name supplied does not exist: " + programName);
         } catch(IncorrectResultSizeDataAccessException ex){

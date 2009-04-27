@@ -1,20 +1,15 @@
 package com.cannontech.stars.web.action;
 
-import java.util.Date;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.data.lite.stars.LiteLMProgramEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.db.stars.appliance.ApplianceAirConditioner;
 import com.cannontech.database.db.stars.appliance.ApplianceDualFuel;
@@ -24,6 +19,16 @@ import com.cannontech.database.db.stars.appliance.ApplianceHeatPump;
 import com.cannontech.database.db.stars.appliance.ApplianceIrrigation;
 import com.cannontech.database.db.stars.appliance.ApplianceStorageHeat;
 import com.cannontech.database.db.stars.appliance.ApplianceWaterHeater;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
+import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
+import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
+import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
+import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
+import com.cannontech.stars.dr.loadgroup.dao.LoadGroupDao;
+import com.cannontech.stars.dr.loadgroup.model.LoadGroup;
+import com.cannontech.stars.dr.program.dao.ProgramDao;
+import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsFactory;
@@ -122,11 +127,15 @@ public class DeleteApplianceAction implements ActionBase {
 			}
         	
 			if (liteApp.getProgramID() > 0) {
-				unenrollProgram = true;
+				unenrollProgram = false;
 				for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
 					LiteStarsAppliance lApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
-					if (!lApp.equals(liteApp) && lApp.getProgramID() == liteApp.getProgramID()) {
-						unenrollProgram = false;
+					if (lApp.getApplianceCategoryID() == liteApp.getApplianceCategoryID() &&
+						lApp.getInventoryID() == liteApp.getInventoryID() &&
+						lApp.getProgramID() == liteApp.getProgramID() &&
+						lApp.getAddressingGroupID() == liteApp.getAddressingGroupID()) {
+						
+						unenrollProgram = true;
 						break;
 					}
 				}
@@ -173,39 +182,30 @@ public class DeleteApplianceAction implements ActionBase {
 				Transaction.createTransaction(Transaction.DELETE, app).execute();
 			}
         	
-			com.cannontech.database.data.stars.appliance.ApplianceBase app = new com.cannontech.database.data.stars.appliance.ApplianceBase();
-			app.setApplianceID( new Integer(delApp.getApplianceID()) );
-			Transaction.createTransaction(Transaction.DELETE, app).execute();
-        	
-			liteAcctInfo.getAppliances().remove( liteApp );
     		
 			if (unenrollProgram) {
-				// Add "termination" event to the enrolled program
 				LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
-				
-				com.cannontech.database.data.stars.event.LMProgramEvent event =
-						new com.cannontech.database.data.stars.event.LMProgramEvent();
-				com.cannontech.database.db.stars.event.LMProgramEvent eventDB = event.getLMProgramEvent();
-				com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = event.getLMCustomerEventBase();
-				
-				event.setEnergyCompanyID( new Integer(user.getEnergyCompanyID()) );
-				eventDB.setAccountID( new Integer(liteAcctInfo.getCustomerAccount().getAccountID()) );
-				eventDB.setProgramID( new Integer(liteApp.getProgramID()) );
-				eventBase.setEventTypeID( new Integer(energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMPROGRAM).getEntryID()) );
-				eventBase.setActionID( new Integer(energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION).getEntryID()) );
-				eventBase.setEventDateTime( new Date() );
-				Transaction.createTransaction(Transaction.INSERT, event).execute();
-				
-				LiteLMProgramEvent liteEvent = (LiteLMProgramEvent) StarsLiteFactory.createLite(event);
-				liteAcctInfo.getProgramHistory().add( liteEvent );
-	        	
-				for (int i = 0; i < liteAcctInfo.getPrograms().size(); i++) {
-					LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getPrograms().get(i);
-					if (liteProg.getProgramID() == liteApp.getProgramID()) {
-						liteAcctInfo.getPrograms().remove( i );
-						break;
-					}
-				}
+
+                LoadGroupDao loadGroupDao = YukonSpringHook.getBean("loadGroupDao", LoadGroupDao.class);
+                LoadGroup loadGroup = loadGroupDao.getById(liteApp.getAddressingGroupID());
+                String loadGroupName = loadGroup.getLoadGroupName();
+
+                ProgramDao programDao = YukonSpringHook.getBean("starsProgramDao", ProgramDao.class);
+                Program program = programDao.getByProgramId(liteApp.getProgramID());
+                String programName = program.getProgramName();
+
+                LMHardwareBaseDao lmHardwareBaseDao = YukonSpringHook.getBean("hardwareBaseDao", LMHardwareBaseDao.class);
+                LMHardwareBase hardwareBase = lmHardwareBaseDao.getById(liteApp.getInventoryID());
+                String serialNumber = hardwareBase.getManufacturerSerialNumber(); 
+                
+                EnrollmentHelper enrollmentHelper = new EnrollmentHelper(liteAcctInfo.getCustomerAccount().getAccountNumber(),
+                                                                         loadGroupName, 
+                                                                         programName, 
+                                                                         serialNumber);
+                
+                
+                EnrollmentHelperService enrollmentHelperService = YukonSpringHook.getBean("enrollmentService", EnrollmentHelperService.class);
+                enrollmentHelperService.doEnrollment(enrollmentHelper, EnrollmentEnum.UNENROLL, user.getYukonUser());
 				
 				StarsDeleteApplianceResponse resp = new StarsDeleteApplianceResponse();
 				resp.setStarsLMPrograms( StarsLiteFactory.createStarsLMPrograms(liteAcctInfo, energyCompany) );
@@ -217,6 +217,12 @@ public class DeleteApplianceAction implements ActionBase {
 				respOper.setStarsSuccess( success );
 			}
             
+			com.cannontech.database.data.stars.appliance.ApplianceBase app = new com.cannontech.database.data.stars.appliance.ApplianceBase();
+			app.setApplianceID( new Integer(delApp.getApplianceID()) );
+			Transaction.createTransaction(Transaction.DELETE, app).execute();
+			
+			liteAcctInfo.getAppliances().remove( liteApp );
+			
 			return SOAPUtil.buildSOAPMessage( respOper );
 		}
 		catch (Exception e) {
