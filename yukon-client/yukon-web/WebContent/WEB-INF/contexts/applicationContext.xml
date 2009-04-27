@@ -954,6 +954,7 @@
     <bean id="themostatMenuOption" class="com.cannontech.web.menu.option.producer.ThermostatMenuOptionProducer">
         <property name="inventoryDao" ref="inventoryDao" />
         <property name="customerAccountDao" ref="customerAccountDao" />
+        <property name="rolePropertyDao" ref="rolePropertyDao"/>
     </bean>
     
     <bean id="consumerFAQMenuOption" class="com.cannontech.web.menu.option.producer.ConsumerFAQMenuOptionProducer"/>

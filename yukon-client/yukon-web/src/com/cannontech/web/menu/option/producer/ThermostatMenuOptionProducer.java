@@ -3,6 +3,9 @@ package com.cannontech.web.menu.option.producer;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -22,6 +25,7 @@ public class ThermostatMenuOptionProducer extends DynamicMenuOptionProducer {
 
     private InventoryDao inventoryDao;
     private CustomerAccountDao customerAccountDao;
+    private RolePropertyDao rolePropertyDao;
 
     public void setInventoryDao(InventoryDao inventoryDao) {
         this.inventoryDao = inventoryDao;
@@ -30,6 +34,10 @@ public class ThermostatMenuOptionProducer extends DynamicMenuOptionProducer {
     public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
         this.customerAccountDao = customerAccountDao;
     }
+    
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+		this.rolePropertyDao = rolePropertyDao;
+	}
 
     @Override
     public List<MenuOption> getMenuOptions(YukonUserContext userContext) {
@@ -40,7 +48,8 @@ public class ThermostatMenuOptionProducer extends DynamicMenuOptionProducer {
         List<MenuOption> optionList = new ArrayList<MenuOption>();
 
         // Get all thermostats for each of the user's accounts
-        List<CustomerAccount> accounts = customerAccountDao.getByUser(userContext.getYukonUser());
+        LiteYukonUser yukonUser = userContext.getYukonUser();
+		List<CustomerAccount> accounts = customerAccountDao.getByUser(yukonUser);
         for (CustomerAccount account : accounts) {
             List<HardwareSummary> thermSummaryList = inventoryDao.getThermostatSummaryByAccount(account);
 
@@ -58,7 +67,9 @@ public class ThermostatMenuOptionProducer extends DynamicMenuOptionProducer {
         }
 
         // Add an 'All' option if there is at least two thermostats
-        if(optionList.size() > 1) {
+        boolean showAllLink = rolePropertyDao.checkProperty(
+        		YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_THERMOSTATS_ALL, yukonUser);
+        if(showAllLink && optionList.size() > 1) {
 	        String menuTextKey = "yukon.web.menu.config.consumer.thermostat.all";
 	        SimpleMenuOptionLink option = new SimpleMenuOptionLink("allThermostats", menuTextKey);
 	        option.setLinkUrl("/spring/stars/consumer/thermostat/view/all");
