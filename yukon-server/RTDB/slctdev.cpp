@@ -99,10 +99,11 @@
 #include "resolvers.h"
 #include "slctdev.h"
 #include "yukon.h"
-
+#include "ObjectPool.h"
 
 using namespace Cti;  //  in preparation for moving devices to their own namespace
 
+typedef Cti::ObjectPool<CtiDeviceMCT410, 1024> CtiDevicePoolMCT410;
 
 DLLEXPORT CtiDeviceBase* DeviceFactory(RWDBReader &rdr)
 {
