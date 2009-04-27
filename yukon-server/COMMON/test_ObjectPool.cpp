@@ -19,6 +19,7 @@ class ObPool_TestObj
 {
     char buffer[32];
     int  length;
+    static unsigned count;
 
 public:
 
@@ -26,6 +27,12 @@ public:
     {
         strcpy(buffer, "<uninitialised>");
         length = strlen(buffer);
+        count++;
+    }
+
+    ~ObPool_TestObj()
+    {
+        count--;
     }
 
     int getLength() const
@@ -37,7 +44,15 @@ public:
     {
         return buffer;
     }
+
+    static int getCount()
+    {
+        return count;
+    }
 };
+
+unsigned ObPool_TestObj::count = 0;
+
 
 typedef Cti::ObjectPool<ObPool_TestObj, 4>  ThePool;
 typedef boost::shared_ptr<ObPool_TestObj>   ObjPtr;
@@ -105,8 +120,45 @@ BOOST_AUTO_TEST_CASE(test_objectpool_default_destruction)
 {
     // The Pool stores a custom deallocator for the object when it goes out of scope.
 
-    // I have NO idea how to test this...
+    BOOST_CHECK_EQUAL( ObPool_TestObj::getCount() , 0 );
+    
+    {
+        ObjPtr ptr( ThePool::Create() );        
+        BOOST_CHECK_EQUAL( ObPool_TestObj::getCount() , 1 );
+    }
 
-    BOOST_CHECK( true );
+    BOOST_CHECK_EQUAL( ObPool_TestObj::getCount() , 0 );
+}
+
+BOOST_AUTO_TEST_CASE(test_objectpool_smart_ptr_copy_destruction)
+{
+    // Make sure smart pointer only deallocates the last reference to the pool object.
+
+    ObjPtr ptr2;
+
+    BOOST_CHECK_EQUAL( ptr2.use_count() , 0 );
+    BOOST_CHECK_EQUAL( ObPool_TestObj::getCount() , 0 );
+    
+    {
+        ObjPtr ptr( ThePool::Create() );
+                
+        BOOST_CHECK_EQUAL( ptr.use_count() , 1 );
+        BOOST_CHECK_EQUAL( ptr2.use_count() , 0 );
+        BOOST_CHECK_EQUAL( ObPool_TestObj::getCount() , 1 );
+        
+        ptr2 = ptr;
+
+        BOOST_CHECK_EQUAL( ptr.use_count() , 2 );
+        BOOST_CHECK_EQUAL( ptr2.use_count() , 2 );
+        BOOST_CHECK_EQUAL( ObPool_TestObj::getCount() , 1 );
+    }
+
+    BOOST_CHECK_EQUAL( ptr2.use_count() , 1 );
+    BOOST_CHECK_EQUAL( ObPool_TestObj::getCount() , 1 );
+
+    ptr2.reset();
+
+    BOOST_CHECK_EQUAL( ptr2.use_count() , 0 );
+    BOOST_CHECK_EQUAL( ObPool_TestObj::getCount() , 0 );
 }
 

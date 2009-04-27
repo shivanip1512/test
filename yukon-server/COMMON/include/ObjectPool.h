@@ -5,11 +5,13 @@
 #ifndef __CTI_OBJECTPOOL_H__
 #define __CTI_OBJECTPOOL_H__
 
+#ifdef _WINDOWS
+    #include <windows.h>        // for Interlocked{Increment/Decrement}
+#endif
+
 #include <boost/pool/singleton_pool.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include "mutex.h"
-#include "guard.h"
 
 namespace Cti
 {
@@ -35,27 +37,23 @@ private:
         T,
         sizeof(T),
         boost::default_user_allocator_new_delete,
-        boost::details::pool::null_mutex,           // No mutex on pool_ because we lock it externally
+        boost::details::pool::default_mutex,
         SIZE
     >
     pool_;
 
     static T *CreateObject()
     {
-        CtiLockGuard<CtiMutex> guard_(mutex_);
-
         T *p = static_cast<T*>(pool_::malloc());
         ::new (p) T();
 
-        ++count_;
+        InterlockedIncrement(&count_);
 
         return p;
     }
     
     static void DeleteObject(T *p)
     {
-        CtiLockGuard<CtiMutex> guard_(mutex_);
-
         p->~T();
         pool_::free(p);
 
@@ -66,18 +64,18 @@ private:
         //  but right on an allocation border.
         // Note: We never totally purge all memory when the pool is empty.
 
-        if (((--count_ + (pool_::next_size / 2)) % pool_::next_size) == 0)
+        LONG tempCount = InterlockedDecrement(&count_);
+
+        if (((tempCount + (pool_::next_size / 2)) % pool_::next_size) == 0)
         {
             pool_::release_memory();
         }
     }
 
-    static unsigned count_;         // Total count of allocated objects in the pool
-    static CtiMutex mutex_;         // Mutex to lock the pool etc...
+    static LONG count_;         // Total count of allocated objects in the pool
 };
 
-template <typename T, int SIZE> unsigned ObjectPool<T, SIZE>::count_ = 0;
-template <typename T, int SIZE> CtiMutex ObjectPool<T, SIZE>::mutex_;
+template <typename T, int SIZE> LONG ObjectPool<T, SIZE>::count_ = 0;
 
 }
 
