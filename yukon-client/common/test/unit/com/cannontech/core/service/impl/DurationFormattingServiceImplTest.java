@@ -67,12 +67,27 @@ public class DurationFormattingServiceImplTest {
         expected = "25 hours 0 minutes 5 seconds";
         result = service.formatDuration(90005, TimeUnit.SECONDS, DurationFormat.HMS, null);
         Assert.assertEquals(expected, result);
+
+        expected = "0 hours 0 minutes 0 seconds";
+        result = service.formatDuration(499, TimeUnit.MILLISECONDS, DurationFormat.HMS, null);
+        Assert.assertEquals(expected, result);
+
+        expected = "0 hours 0 minutes 1 second";
+        result = service.formatDuration(500, TimeUnit.MILLISECONDS, DurationFormat.HMS, null);
+        Assert.assertEquals(expected, result);
     }
     
     @Test
     public void test_format_HM() {
         String expected = "0 hours 0 minutes";
         String result = service.formatDuration(0, TimeUnit.SECONDS, DurationFormat.HM, null);
+        Assert.assertEquals(expected, result);
+
+        result = service.formatDuration(29, TimeUnit.SECONDS, DurationFormat.HM, null);
+        Assert.assertEquals(expected, result);
+
+        expected = "0 hours 1 minute";
+        result = service.formatDuration(30, TimeUnit.SECONDS, DurationFormat.HM, null);
         Assert.assertEquals(expected, result);
 
         expected = "0 hours 59 minutes";
@@ -87,10 +102,16 @@ public class DurationFormattingServiceImplTest {
     @Test
     public void test_format_H() {
         String expected = "0 hours";
-        String result = service.formatDuration(3540, TimeUnit.SECONDS, DurationFormat.H, null);
+        String result = service.formatDuration(1799, TimeUnit.SECONDS, DurationFormat.H, null);
         Assert.assertEquals(expected, result);
-        
+
         expected = "1 hour";
+        result = service.formatDuration(1800, TimeUnit.SECONDS, DurationFormat.H, null);
+        Assert.assertEquals(expected, result);
+
+        result = service.formatDuration(3540, TimeUnit.SECONDS, DurationFormat.H, null);
+        Assert.assertEquals(expected, result);
+
         result = service.formatDuration(3600, TimeUnit.SECONDS, DurationFormat.H, null);
         Assert.assertEquals(expected, result);
     }
@@ -100,12 +121,18 @@ public class DurationFormattingServiceImplTest {
         String expected = "0 minutes";
         String result = service.formatDuration(0, TimeUnit.SECONDS, DurationFormat.M, null);
         Assert.assertEquals(expected, result);
-        
+
+        result = service.formatDuration(29, TimeUnit.SECONDS, DurationFormat.M, null);
+        Assert.assertEquals(expected, result);
+
         expected = "800 minutes";
         result = service.formatDuration(48000, TimeUnit.SECONDS, DurationFormat.M, null);
         Assert.assertEquals(expected, result);
 
         expected = "1 minute";
+        result = service.formatDuration(30, TimeUnit.SECONDS, DurationFormat.M, null);
+        Assert.assertEquals(expected, result);
+
         result = service.formatDuration(60, TimeUnit.SECONDS, DurationFormat.M, null);
         Assert.assertEquals(expected, result);
     }

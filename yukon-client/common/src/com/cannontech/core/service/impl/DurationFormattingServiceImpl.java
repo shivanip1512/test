@@ -52,7 +52,7 @@ public strictfp class DurationFormattingServiceImpl implements DurationFormattin
             	minutes = (int) (tempDuration / MILLIS_IN_MINUTE);
             	tempDuration = tempDuration - (MILLIS_IN_MINUTE * minutes);
             	
-            	seconds = (int) (tempDuration / MILLIS_IN_SECOND);
+            	seconds = (int) ((tempDuration + 500) / MILLIS_IN_SECOND);
             	break;
             case HMS :
             case HM : 
@@ -62,14 +62,14 @@ public strictfp class DurationFormattingServiceImpl implements DurationFormattin
             	
             	minutes = (int) (tempDuration / MILLIS_IN_MINUTE);
             	tempDuration = tempDuration - (MILLIS_IN_MINUTE * minutes);
-            	
-            	seconds = (int) (tempDuration / MILLIS_IN_SECOND);
+
+            	seconds = (int) ((tempDuration + 500) / MILLIS_IN_SECOND);
             	break;
             case M : 
             	minutes = (int) (tempDuration / (1000 * 60));
             	tempDuration = tempDuration - (MILLIS_IN_MINUTE * minutes);
             	
-            	seconds = (int) (tempDuration / MILLIS_IN_SECOND);
+            	seconds = (int) ((tempDuration + 500) / MILLIS_IN_SECOND);
             	break;
             default : throw new UnsupportedOperationException("Unsupported DurationFormat: " + type);
         }
@@ -145,7 +145,7 @@ public strictfp class DurationFormattingServiceImpl implements DurationFormattin
             if (period.get(DurationFieldType.millis()) >= 500) {
                 seconds++;
             }
-        } else if (type == DurationFormat.HM || type == DurationFormat.HM) {
+        } else if (type == DurationFormat.HM || type == DurationFormat.M) {
             if (seconds >= 30) {
                 minutes++;
             }
