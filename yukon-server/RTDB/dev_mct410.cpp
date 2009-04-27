@@ -3070,7 +3070,8 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
                 while( !days.empty() )
                 {
                     insertPointDataReport(PulseAccumulatorPointType, _daily_read_info.request.channel, ReturnMsg,
-                                          days.back(), consumption_pointname, CtiTime(_daily_read_info.request.begin + 1));  //  add on 24 hours - end of day
+                                          days.back(), consumption_pointname, CtiTime(_daily_read_info.request.begin + 1),  //  add on 24 hours - end of day
+                                          0.1, TAG_POINT_MUST_ARCHIVE);
 
                     ++_daily_read_info.request.begin;
 
