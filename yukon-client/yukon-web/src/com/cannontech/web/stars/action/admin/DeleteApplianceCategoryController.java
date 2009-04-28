@@ -27,6 +27,12 @@ public class DeleteApplianceCategoryController extends StarsAdminActionControlle
                 session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Appliance categories have been deleted successfully");
             }
             else {
+                if (energyCompany.isApplianceCategoryInherited(appCatID)) {
+                    session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Cannot delete an inherited appliance category" );
+                    String redirect = this.getRedirect(request);
+                    response.sendRedirect(redirect);
+                    return;
+                }                
                 StarsAdminUtil.deleteApplianceCategory( appCatID, energyCompany );
                 session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Appliance category has been deleted successfully");
             }

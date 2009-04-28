@@ -15,6 +15,7 @@ public class StarsEnrLMProgram {
     private StarsWebConfig _starsWebConfig;
     private java.util.Vector _addressingGroupList;
     private ChanceOfControl _chanceOfControl;
+    private int programOrder = 0;
 
     public StarsEnrLMProgram() {
         _addressingGroupList = new Vector();
@@ -165,5 +166,12 @@ public class StarsEnrLMProgram {
     {
         this._yukonName = yukonName;
     }
+    
+    public int getProgramOrder() {
+        return programOrder;
+    }
 
+    public void setProgramOrder(int i) {
+        programOrder = i;
+    }    
 }

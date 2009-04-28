@@ -63,7 +63,7 @@ public class UpdateApplianceCategoryController extends StarsAdminActionControlle
             }
             else {
                 liteAppCat = energyCompany.getApplianceCategory( appCatID );
-                if (liteAppCat == null) {
+                if (energyCompany.isApplianceCategoryInherited(appCatID)) {
                     session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Cannot update an inherited appliance category" );
                     String redirect = this.getRedirect(request);
                     response.sendRedirect(redirect);

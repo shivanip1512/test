@@ -22,7 +22,7 @@
 	}
     
 	final List<StarsEnrLMProgram> programList = Arrays.asList(category.getStarsEnrLMProgram());
-    Collections.sort(programList, StarsUtils.createLMProgramComparator(liteEC));
+    Collections.sort(programList, StarsUtils.createLMProgramComparator());
 
     LCConnectionServlet cs = (LCConnectionServlet) application.getAttribute(LCConnectionServlet.SERVLET_CONTEXT_ID);
     LMProgramBase[] allPrograms;

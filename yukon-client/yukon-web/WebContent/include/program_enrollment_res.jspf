@@ -240,7 +240,7 @@ function confirmCancel() {
 %>
 <%
             final List<StarsEnrLMProgram> programList = Arrays.asList(category.getStarsEnrLMProgram());
-            Collections.sort(programList, StarsUtils.createLMProgramComparator(liteEC));
+            Collections.sort(programList, StarsUtils.createLMProgramComparator());
 			for (int j = 0; j < programList.size(); j++) {
 				/* Each row is a program in this category */
 				StarsEnrLMProgram prog = programList.get(j);

@@ -14,7 +14,7 @@
 %>
 <%
 
-    final Comparator<StarsEnrLMProgram> programComparator = StarsUtils.createLMProgramComparator(liteEC);
+    final Comparator<StarsEnrLMProgram> programComparator = StarsUtils.createLMProgramComparator();
 
 	com.cannontech.database.data.lite.LiteYukonGroup[] custGroups = liteEC.getResidentialCustomerGroups();
 	

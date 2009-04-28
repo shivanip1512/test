@@ -1990,9 +1990,7 @@ public class StarsLiteFactory {
 		StarsApplianceCategory starsAppCat = new StarsApplianceCategory();
 		starsAppCat.setApplianceCategoryID( liteAppCat.getApplianceCategoryID() );
 		starsAppCat.setCategoryID( liteAppCat.getCategoryID() );
-		LiteApplianceCategory applianceCategory = 
-			energyCompany.getApplianceCategory(liteAppCat.getApplianceCategoryID());
-		starsAppCat.setInherited(applianceCategory == null);
+		starsAppCat.setInherited(energyCompany.isApplianceCategoryInherited(liteAppCat.getApplianceCategoryID()));
 		starsAppCat.setDescription( StarsUtils.forceNotNull(liteAppCat.getDescription()) );
 		
 		LiteWebConfiguration liteConfig = StarsDatabaseCache.getInstance().getWebConfiguration( liteAppCat.getWebConfigurationID() );
@@ -2018,6 +2016,7 @@ public class StarsLiteFactory {
 			StarsEnrLMProgram starsProg = new StarsEnrLMProgram();
 			starsProg.setProgramID( liteProg.getProgramID() );
 			starsProg.setDeviceID(deviceId);
+			starsProg.setProgramOrder(liteProg.getProgramOrder());
 			
 			if (deviceId > 0) {
 			    String yukonName = nameMap.get(deviceId);

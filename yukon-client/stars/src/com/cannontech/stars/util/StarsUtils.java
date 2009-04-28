@@ -37,7 +37,6 @@ import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
-import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteSubstation;
 import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
@@ -299,14 +298,12 @@ public class StarsUtils {
 		return progName;
 	}
 	
-	public static Comparator<StarsEnrLMProgram> createLMProgramComparator(final LiteStarsEnergyCompany energyCompany) {
+	public static Comparator<StarsEnrLMProgram> createLMProgramComparator() {
 	    Comparator<StarsEnrLMProgram> comp = new Comparator<StarsEnrLMProgram>() {
 	        @Override
 	        public int compare(StarsEnrLMProgram o1, StarsEnrLMProgram o2) {
-	            LiteLMProgramWebPublishing program1 = energyCompany.getProgram(o1.getProgramID());
-                LiteLMProgramWebPublishing program2 = energyCompany.getProgram(o2.getProgramID());
-                Integer order1 = program1.getProgramOrder();
-                Integer order2 = program2.getProgramOrder();
+                Integer order1 = o1.getProgramOrder();
+                Integer order2 = o2.getProgramOrder();
 	            int result = order1.compareTo(order2);
 	            return result;
 	        }

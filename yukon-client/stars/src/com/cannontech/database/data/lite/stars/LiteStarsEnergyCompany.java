@@ -986,16 +986,17 @@ public class LiteStarsEnergyCompany extends LiteBase {
     }
 
     public LiteApplianceCategory getApplianceCategory(int applianceCategoryID) {
-        return appCategoryMap.get(applianceCategoryID);
+        Iterable<LiteApplianceCategory> allCategories = getAllApplianceCategories();
+        for (LiteApplianceCategory category : allCategories) {
+            if (category.getApplianceCategoryID() == applianceCategoryID) {
+                return category;
+            }
+        }
+        return null;
     }
     
-    public LiteApplianceCategory getApplianceCategoryForProgram(int programID) {
-    	Integer appCatId = programIdToAppCatIdMap.get(programID);
-    	if(appCatId != null) {
-    		return appCategoryMap.get(appCatId);
-    	}
-    	
-    	return null;
+    public boolean isApplianceCategoryInherited(int applianceCategoryID) {
+        return (appCategoryMap.get(applianceCategoryID) == null) ? true : false;
     }
     
     public void addApplianceCategory(LiteApplianceCategory appCat) {
@@ -1071,10 +1072,11 @@ public class LiteStarsEnergyCompany extends LiteBase {
     }
     
     public LiteLMProgramWebPublishing getProgram(int programID) {
-        Integer appCatId = programIdToAppCatIdMap.get(programID);
-        if(appCatId != null) {
-        	LiteApplianceCategory applianceCategory = appCategoryMap.get(appCatId);
-        	return applianceCategory.getProgram(programID);
+        Iterable<LiteLMProgramWebPublishing> allPrograms = getAllPrograms();
+        for (LiteLMProgramWebPublishing program : allPrograms) {
+            if (program.getProgramID() == programID) {
+                return program;
+            }
         }
         return null;
     }
