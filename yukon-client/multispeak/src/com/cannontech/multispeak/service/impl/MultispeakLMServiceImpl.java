@@ -226,6 +226,9 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 		pointData.setType(PointTypes.ANALOG_POINT);
 		pointData.setStr("MultiSpeak ScadaAnalog Analog point update.");
 		pointData.setUserName(userName);
+		if ( scadaAnalog.getTimeStamp() != null) {
+			pointData.setTime(scadaAnalog.getTimeStamp().getTime());
+		}
 		return pointData;
 	}
 
