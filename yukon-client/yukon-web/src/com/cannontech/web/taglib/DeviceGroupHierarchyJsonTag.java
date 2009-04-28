@@ -7,7 +7,6 @@ import javax.servlet.jsp.JspException;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -50,7 +49,6 @@ public class DeviceGroupHierarchyJsonTag extends YukonTagSupport{
         this.deviceGroupService = deviceGroupService;
     }
     
-    @Autowired
     public void setDeviceGroupUiService(DeviceGroupUiService deviceGroupUiService) {
 		this.deviceGroupUiService = deviceGroupUiService;
 	}

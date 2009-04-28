@@ -685,6 +685,7 @@
     
     <bean id="deviceGroupHierarchyJsonPrototype" class="com.cannontech.web.taglib.DeviceGroupHierarchyJsonTag">
         <property name="deviceGroupService" ref="deviceGroupService"/>
+        <property name="deviceGroupUiService" ref="deviceGroupUiService"/>
     </bean>
     
     <bean id="verifyRolesAndPropertiesTagPrototype" class="com.cannontech.web.util.VerifyRolesAndPropertiesTag">
@@ -964,10 +965,6 @@
     </bean>
     <bean id="optOutMenuOption" class="com.cannontech.web.menu.option.producer.OptOutMenuOptionProducer">
         <property name="optOutStatusService" ref="optOutStatusService" />
-    </bean>
-
-    <bean id="deviceGroupSelectorTagPrototype" class="com.cannontech.web.taglib.DeviceGroupSelectorTag">
-        <property name="deviceGroupService" ref="deviceGroupService"/>
     </bean>
 
     <bean id="deviceFilterCollectionProducer" class="com.cannontech.web.bulk.model.collection.DeviceFilterCollectionProducer"/>
