@@ -138,19 +138,27 @@ public class DBUpdater extends MessageFrameAdaptor
 			getIMessageFrame().addOutput("   DB Version   : " + db.getVersion() + "  Build:  " + db.getBuild() );
 			getIMessageFrame().addOutput("   DB Alias     : " + CtiUtilities.getDatabaseAlias() );			
 			
-			VersionTools.starsExists();
 			getUpdateCommands();
 			
 			getIMessageFrame().addOutput("   Lines read from files successfully, starting DB transactions..." );
 			getIMessageFrame().addOutput("");			
 
-			if( executeCommands() )
-				getIMessageFrame().finish( "DBUpdate Completed Successfully" );
-			else
-				getIMessageFrame().addOutput( "DBUpdate was Unsuccessfully executed" );
+			//do a final check to make sure STARS exist or will exist.  If not, it will need to be manually addressed.
+			if (updateDB.starsExistsOrWillExist()) {
+	
+				if( executeCommands() )
+					getIMessageFrame().finish( "DBUpdate Completed Successfully" );
+				else
+					getIMessageFrame().addOutput( "DBUpdate was Unsuccessfully executed" );
+			} else {
+				throw new StarsNotCreatedException("STARS tables not present in this database");
+			}
+			
 		} catch (StarsNotCreatedException e) {
-			getIMessageFrame().addOutput( "STOP!!!  STARS database tables are missing.\r\nRun the STARS Database Creation script before continuing with this tool." );
-			CTILogger.error("A problem occurred in the execution", e );
+			String errorString = "WARNING!!!  STARS database tables are missing and cannot be automatically created." + 
+							"\r\nContact Technical Support or TSSL immediately to get the STARS Database Creation script\r\n before continuing with this tool.";
+			getIMessageFrame().addOutput(errorString);
+			CTILogger.error(errorString, e );
 		
 		} catch( Exception e ) {
 			getIMessageFrame().addOutput( "DBUpdate was Unsuccessfully executed" );
@@ -214,6 +222,7 @@ public class DBUpdater extends MessageFrameAdaptor
 			for( int i = 0; i < fileVers.length; i++ )
 			{
 				sqlFile = fileVers[i].getFile();
+				getIMessageFrame().addOutput("***** Begin Proceessing File: " + sqlFile + " ******");
 				validLines = updateDB.readFile( sqlFile );
 				isIgnoreAllErrors = false;
                 isIgnoreBlockErrors = false;
@@ -229,6 +238,7 @@ public class DBUpdater extends MessageFrameAdaptor
 
 				//we will rename the file since it was a success
 				renameFile( sqlFile );
+				getIMessageFrame().addOutput("***** End Proceessing File: " + sqlFile + " ******");
 			}
 			
 			

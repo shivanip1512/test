@@ -32,6 +32,7 @@ public class UpdateDB
 
 	private IMessageFrame output = null;
     private Double version = null;
+    private boolean starsToBeCreated = false;
 
 	/**
 	 * 
@@ -75,7 +76,7 @@ public class UpdateDB
      * Helper method to determine if stars tables exist
      * @return True if tables exist
      */
-    private boolean starsExists() {
+    public boolean starsExistsOrWillExist() {
         
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -105,7 +106,7 @@ public class UpdateDB
             }
         }
 
-        return false;
+        return starsToBeCreated;
     }
 
 	/**
@@ -334,8 +335,7 @@ public class UpdateDB
 	{
 		UpdateLine[] starsLines = null;
 
-		if( token.indexOf(DBMSDefines.STARS_INC) > 0 
-			 && starsExists() )
+		if( token.indexOf(DBMSDefines.STARS_INC) > 0 && starsExistsOrWillExist() )
 		{
 			getIMessageFrame().addOutput( "    <-=======================================->" );
 			getIMessageFrame().addOutput( "            Loading STARS updates" );
@@ -356,6 +356,38 @@ public class UpdateDB
 			}
 			
 			getIMessageFrame().addOutput( "          Done with STARS updates" );
+			getIMessageFrame().addOutput( "    <-=======================================->" );
+		}
+		
+		return starsLines;
+	}
+
+	private UpdateLine[] handleCreateStarsMeta( final String token, final File file )
+	{
+		UpdateLine[] starsLines = null;
+
+		if( token.indexOf(DBMSDefines.STARS_CREATE) > 0 && !starsExistsOrWillExist())
+		{
+			getIMessageFrame().addOutput( "    <-=======================================->" );
+			getIMessageFrame().addOutput( "            Loading STARS Creation" );
+			
+			try
+			{
+				//d:/eclipse/head/yukon-database/dbupdates/sqlserver
+				File starsFile = new File( file.getParent() + "/stars/" +
+					file.getName().substring(0, file.getName().length()-4) + "-createstars.sql" );					
+
+				UpdateDB newUp = new UpdateDB( getIMessageFrame() );
+				starsLines = newUp.readFile( starsFile );
+				starsToBeCreated = true;
+			}
+			catch( Exception e )
+			{
+				getIMessageFrame().addOutput("--------- CAUGHT EXCEPTION with STARS Create---------");
+				getIMessageFrame().addOutput("    " + e.getMessage() );
+			}
+			
+			getIMessageFrame().addOutput( "          Done with STARS Create" );
 			getIMessageFrame().addOutput( "    <-=======================================->" );
 		}
 		
@@ -446,6 +478,13 @@ public class UpdateDB
 								UpdateLine[] extraLines = handleIncludeMeta( token, file );
 
 								//if we have lines from the include, add them to our VALIDs list
+								//Stars updates extra lines
+								if( extraLines != null )
+									for( int i = 0; i < extraLines.length; i++ ) {
+										validLines.add( extraLines[i] );
+									}
+								//Stars Creation extra lines
+								extraLines = handleCreateStarsMeta( token, file );
 								if( extraLines != null )
 									for( int i = 0; i < extraLines.length; i++ ) {
 										validLines.add( extraLines[i] );

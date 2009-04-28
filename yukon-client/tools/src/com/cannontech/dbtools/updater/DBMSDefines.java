@@ -38,6 +38,7 @@ public interface DBMSDefines
 	public static final String COMMENT_BEGIN			= "/*";
 	public static final String COMMENT_END				= "*/";
 	public static final String STARS_INC				= "StarsUpdate";
+	public static final String STARS_CREATE				= "StarsCreate";
 	public static final double MIN_VERSION				= 2.40;
 	
     /*For use with T-SQL or PL/SQL transaction blocks*/

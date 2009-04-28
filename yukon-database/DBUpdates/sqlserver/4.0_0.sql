@@ -2550,6 +2550,9 @@ go
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
 /* @include StarsUpdate */
+
+/* Run the Stars CREATION SCRIPTS are needed here */
+/* @include StarsCreate */
 /******************************************************************************/
 
 /**************************************************************/
