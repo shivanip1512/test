@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     4/20/2009 12:27:03 PM                        */
+/* Created on:     4/28/2009 10:33:51 AM                        */
 /*==============================================================*/
 
 
@@ -12301,7 +12301,7 @@ INSERT INTO YukonRoleProperty VALUES(-70026,-700,'Warn on control send.','true',
 /* Notification / IVR Role properties */
 INSERT INTO YukonRoleProperty VALUES(-80001,-800,'Number of Channels','1','The number of outgoing channels assigned to the specified voice application.');
 INSERT INTO YukonRoleProperty VALUES(-80004,-800,'IVR URL Dialer Template','http://127.0.0.1:9998/VoiceXML.start?tokenid=yukon-{MESSAGE_TYPE}&numbertodial={PHONE_NUMBER}','The URL used to initiate a call, see documentation for allowed variables'); 
-INSERT INTO YukonRoleProperty VALUES(-80005,-800,'IVR URL Dialer Success Matcher','success','A Java Regular Expression that will be matched against the output of the URL to determine if the call was successfull'); 
+INSERT INTO YukonRoleProperty VALUES(-80005,-800,'IVR URL Dialer Success Matcher','success','A Java Regular Expression that will be matched against the output of the URL to determine if the call was successful'); 
 
 /* Notification / Configuration role properties */
 insert into YukonRoleProperty values(-80100,-801,'Template Root','Server/web/webapps/ROOT/WebConfig/custom/notif_templates/','Either a URL base where the notification templates will be stored (file: or http:) or a directory relative to YUKON_BASE.');
@@ -14094,6 +14094,11 @@ alter table DYNAMICCCOPERATIONSTATISTICS
       references YukonPAObject (PAObjectID)
 go
 
+alter table DYNAMICCCSPECIALAREA
+   add constraint FK_DynCCSpecA_CapContSpecA foreign key (AreaID)
+      references CAPCONTROLSPECIALAREA (AreaID)
+go
+
 alter table DYNAMICCCSUBSTATION
    add constraint FK_DYNAMICC_REFERENCE_CAPCONTR foreign key (SubStationID)
       references CAPCONTROLSUBSTATION (SubstationID)
@@ -15013,7 +15018,7 @@ go
 
 alter table LMProgramCurtailment
    add constraint FK_LMPrg_LMPrgCurt foreign key (DeviceID)
-      references LMPROGRAM (DEVICEID)
+      references LMPROGRAM (DeviceID)
 go
 
 alter table LMProgramDirect
