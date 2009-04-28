@@ -57,6 +57,8 @@ import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.dr.account.service.AccountService;
+import com.cannontech.stars.dr.program.dao.ProgramDao;
+import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.service.StarsControllableDeviceDTOConverter;
 import com.cannontech.stars.service.UpdatableAccountConverter;
 import com.cannontech.stars.util.ServerUtils;
@@ -1461,9 +1463,8 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
         //it's a forced UNENROLL!
 	    boolean forcedUnenroll = programs.length < 1;
         
-        int relay = 0;
+        int relay = -1;
         int currentNumberOfAppliances = liteAcctInfo.getAppliances().size();
-        List<Integer> currentProgramIDs = new ArrayList<Integer>(currentNumberOfAppliances);
         if(appFields == null)
             appFields = ImportManagerUtil.prepareFields( ImportManagerUtil.NUM_APP_FIELDS );
         if(appFields[ImportManagerUtil.IDX_RELAY_NUM].trim().length() > 0)
@@ -1472,37 +1473,62 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
             programs[0][3] = relay; // LoadNumber (optional)
         }
         
-        for (int i = 0; i < currentNumberOfAppliances; i++) 
-        {
+        ProgramDao programDao = YukonSpringHook.getBean("starsProgramDao", ProgramDao.class);
+        Program program = programDao.getByProgramId(programs[0][0]);
+        
+        List<int[]> programList = new ArrayList<int[]>();
+        programList.add(programs[0]);
+        for (int i = 0; i < currentNumberOfAppliances; i++) {
             LiteStarsAppliance liteApp = liteAcctInfo.getAppliances().get(i);
-             if(liteApp.getInventoryID() == liteInv.getInventoryID())
-             {
-                 if (!forcedUnenroll && liteApp.getProgramID() == programs[0][0] && (liteApp.getLoadNumber() == relay))
-                 {
-                    return;
-                 }
-                 
-                 currentProgramIDs.add(liteApp.getProgramID());
-             }
-		}
-		
-        if(!forcedUnenroll)
-        {
-            int[] newEnrollment = programs[0];
-            programs = new int[currentProgramIDs.size() + 1][];
-            programs[0] = newEnrollment;
-            for(int j = 0; j < currentProgramIDs.size(); j++)
-            {
-                int[] suProg = new int[4];
-                suProg[0] = currentProgramIDs.get(j).intValue();
-                suProg[1] = -1; // ApplianceCategoryID (optional)
-                suProg[2] = -1; // GroupID (optional)
-                suProg[3] = -1; // LoadNumber (optional)
-                programs[j + 1] = suProg; 
+            if(liteApp.getInventoryID() == liteInv.getInventoryID()) {
+                Program existingProgram = programDao.getByProgramId(liteApp.getProgramID());
+                if(existingProgram.getApplianceCategoryId() == program.getApplianceCategoryId()){
+                    if((liteApp.getLoadNumber() == relay || relay == -1)) {
+	                    if (liteApp.getProgramID() == program.getProgramId()) {
+	                    	if(liteApp.getAddressingGroupID() == programs[0][2] || programs[0][2] == -1) {
+	                    		return;
+	                    	} else {
+	                    		int[] previousEnrollment = {liteApp.getProgramID(),
+                                                           	liteApp.getApplianceCategoryID(),
+                                                           	programs[0][2],
+                                                           	programs[0][3]};
+                    			programList.add(previousEnrollment);
+                    			continue;
+	                    	}
+	           		    } else {
+	                        int[] previousEnrollment = {program.getProgramId(),
+        		                                        liteApp.getApplianceCategoryID(),
+        		                                        programs[0][2],
+        		                                        programs[0][3]};
+                            programList.add(previousEnrollment);
+	                        continue;
+	                    }
+                    } else {
+                    	if (liteApp.getProgramID() == program.getProgramId()) {
+	                    	int[] previousEnrollment = {liteApp.getProgramID(),
+                                                        liteApp.getApplianceCategoryID(),
+                                                        programs[0][2],
+                                                        programs[0][3]};
+                            programList.add(previousEnrollment);
+                            continue;
+	           		    }
+                    }
+                }
+                int[] existingEnrollment = {liteApp.getProgramID(),
+                		                    liteApp.getApplianceCategoryID(),
+                		                    liteApp.getAddressingGroupID(),
+                		                    liteApp.getLoadNumber()};
+                programList.add(existingEnrollment);
             }
         }
+		
+        int[][] enrollmentPrograms = new int[programList.size()][4];
+        for (int i = 0; i < programList.size(); i++) {
+            enrollmentPrograms[i] = programList.get(i);
+        }
+        
 
-        ImportManagerUtil.programSignUp( programs, liteAcctInfo, liteInv, energyCompany, this.currentUser, automatedImport );
+        ImportManagerUtil.programSignUp( enrollmentPrograms, liteAcctInfo, liteInv, energyCompany, this.currentUser, automatedImport );
 		
 		if (appFields[ImportManagerUtil.IDX_APP_TYPE].trim().length() > 0) {
 			int appID = -1;
