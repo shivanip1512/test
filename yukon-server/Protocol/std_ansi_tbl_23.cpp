@@ -804,34 +804,54 @@ double CtiAnsiTable23::getDemandValue ( int index, int dataBlock )
     {
         case 0:
         {
-            return  *(_tot_data_block.demands[index].demand);
+            if (_tot_data_block.demands[index].demand != NULL)
+            {
+                return  *(_tot_data_block.demands[index].demand);
+            }
             break;
         }
         case 1:
         {
-            return  *(_tier_data_block[dataBlock -1].demands[index].demand);
+            if (_tier_data_block[dataBlock -1].demands[index].demand != NULL)
+            {
+                return  *(_tier_data_block[dataBlock -1].demands[index].demand);
+            }
             break;
         }
         case 2:
         {
-            return  *(_tier_data_block[dataBlock -1].demands[index].demand);
+            if (_tier_data_block[dataBlock -1].demands[index].demand != NULL)
+            {
+                return  *(_tier_data_block[dataBlock -1].demands[index].demand);
+            }
             break;
         }
         case 3:
         {
-            return  *(_tier_data_block[dataBlock -1].demands[index].demand);
+            if (_tier_data_block[dataBlock -1].demands[index].demand != NULL)
+            {
+                return  *(_tier_data_block[dataBlock -1].demands[index].demand);
+            }
             break;
         }
         case 4:
         {
-            return  *(_tier_data_block[dataBlock -1].demands[index].demand);
+            if (_tier_data_block[dataBlock -1].demands[index].demand != NULL)
+            {
+                return  *(_tier_data_block[dataBlock -1].demands[index].demand);
+            }
             break;
         }
         default:
-            return  *(_tot_data_block.demands[index].demand);
+        {
+            if (_tot_data_block.demands[index].demand != NULL)
+            {
+                return  *(_tot_data_block.demands[index].demand);
+            }
             break;
+        }
     }
-    return *(_tot_data_block.demands[index].demand);
+    return *(_tot_data_block.demands[0].demand);
 }
 double CtiAnsiTable23::getSummationsValue ( int index, int dataBlock )
 {
