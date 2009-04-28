@@ -4895,11 +4895,11 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                {
                                    char tempchar[80];
                                    currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
-                                   text = string("Non Normal Var Quality = ");
+                                   text = " Var: ";
+                                   text += doubleToString(getCurrentVarLoadPointValue());
+                                   text += "- Non Normal Var Quality = ";
                                    _ltoa(getCurrentVarPointQuality(),tempchar,10);
                                    text += tempchar;
-                                   text += " Var: ";
-                                   text += doubleToString(getCurrentVarLoadPointValue());
                                    text += ", OpenQuestionable";
                                    additional = string("Feeder: ");
                                    additional += currentFeeder->getPAOName();
@@ -5037,11 +5037,11 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                {
                                    char tempchar[80];
                                    currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
-                                   text = string("Non Normal Var Quality = ");
+                                   text = "Var: ";
+                                   text += doubleToString(getCurrentVarLoadPointValue());
+                                   text += "- Non Normal Var Quality = ";
                                    _ltoa(getCurrentVarPointQuality(),tempchar,10);
                                    text += tempchar;
-                                   text += " Var: ";
-                                   text += doubleToString(getCurrentVarLoadPointValue());
                                    text += ", CloseQuestionable";
                                    additional = string("Feeder: ");
                                    additional += currentFeeder->getPAOName();
@@ -5419,11 +5419,11 @@ BOOL CtiCCSubstationBus::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec
                            {
                                char tempchar[80];
                                currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
-                               text = string("Non Normal Var Quality = ");
+                               text = "Var: ";
+                               text += doubleToString(getCurrentVarLoadPointValue());
+                               text += "- Non Normal Var Quality = ";
                                _ltoa(getCurrentVarPointQuality(),tempchar,10);
                                text += tempchar;
-                               text += " Var: ";
-                               text += doubleToString(getCurrentVarLoadPointValue());
                                text += ", OpenQuestionable";
                                additional = string("Feeder: ");
                                additional += currentFeeder->getPAOName();
@@ -5600,11 +5600,11 @@ BOOL CtiCCSubstationBus::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec
                            {
                                char tempchar[80];
                                currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
-                               text = string("Non Normal Var Quality = ");
+                               text = "Var: ";
+                               text += doubleToString(getCurrentVarLoadPointValue());
+                               text += "- Non Normal Var Quality = ";
                                _ltoa(getCurrentVarPointQuality(),tempchar,10);
                                text += tempchar;
-                               text += " Var: ";
-                               text += doubleToString(getCurrentVarLoadPointValue());
                                text += ", CloseQuestionable";
                                additional = string("Feeder: ");
                                additional += currentFeeder->getPAOName();
@@ -9897,8 +9897,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededTimeOfDayControl
                                 {
                                     pilMessages.push_back(request);
                                     setLastOperationTime(currentDateTime);
-                                    setLastFeederControlledPAOId(currentFeeder->getPAOId());
-                                    setLastFeederControlledPosition(currentPosition);
+                                    setLastFeederControlled(currentFeeder->getPAOId());
                                     currentFeeder->setLastOperationTime(currentDateTime);
                                     setCurrentDailyOperationsAndSendMsg(getCurrentDailyOperations() + 1, pointChanges);
                                 }

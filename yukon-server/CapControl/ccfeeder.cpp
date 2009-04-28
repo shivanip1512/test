@@ -2370,7 +2370,7 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* c
         store->getFeederParentInfo(this, spAreaId, areaId, stationId);
         INT actionId = CCEventActionIdGen(capBank->getStatusPointId()) + 1;
         string stateInfo = capBank->getControlStatusQualityString();
-        ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), spAreaId, areaId, stationId, getParentId(), getPAOId(), capControlVerificationCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control verification", kvarBefore, kvarBefore, 0,
+        ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), spAreaId, areaId, stationId, getParentId(), getPAOId(), capControlCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control verification", kvarBefore, kvarBefore, 0,
                                                 capBank->getIpAddress(), actionId, stateInfo, varAValue, varBValue, varCValue));
     }
     else
@@ -2461,7 +2461,7 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* c
         store->getFeederParentInfo(this, spAreaId, areaId, stationId);
         INT actionId = CCEventActionIdGen(capBank->getStatusPointId()) + 1;
         string stateInfo = capBank->getControlStatusQualityString();
-        ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), spAreaId, areaId, stationId, getParentId(), getPAOId(), capControlVerificationCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control verification", kvarBefore, kvarBefore, 0,
+        ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), spAreaId, areaId, stationId, getParentId(), getPAOId(), capControlCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control verification", kvarBefore, kvarBefore, 0, 
                                                 capBank->getIpAddress(), actionId, stateInfo, varAValue, varBValue, varCValue));
     }
     else
@@ -3530,11 +3530,11 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                 {
                     char tempchar[80];
                     currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
-                    text = string("Non Normal Var Quality = ");
+                    text = "Var: ";
+                    text += CtiNumStr(currentVarLoadPointValue, getDecimalPlaces()).toString();
+                    text += "- Non Normal Var Quality = ";
                     _ltoa(currentVarPointQuality,tempchar,10);
                     text += tempchar;
-                    text += " Var: ";
-                    text += CtiNumStr(currentVarLoadPointValue, getDecimalPlaces()).toString();
                     text += ", OpenQuestionable";
 
                     currentCapBank->setBeforeVarsString(createVarText(varValueBC, 1.0));
@@ -3631,11 +3631,10 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                 {
                     char tempchar[80];
                     currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
-                    text = string("Non Normal Var Quality = ");
-                    _ltoa(currentVarPointQuality,tempchar,10);
-                    text += tempchar;
-                    text += " Var: ";
+                    text = "Var: ";
                     text += CtiNumStr(currentVarLoadPointValue, getDecimalPlaces()).toString();
+                    text += "- Non Normal Var Quality = ";
+                    _ltoa(currentVarPointQuality,tempchar,10);
                     text += ", CloseQuestionable";
 
                     currentCapBank->setBeforeVarsString(createVarText(varValueBC, 1.0));
@@ -3841,11 +3840,16 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                 {
                     char tempchar[80];
                     currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
-                    text = string("Non Normal Var Quality = ");
+                    text = "Var: ";
+                    text += CtiNumStr(varAValue, getDecimalPlaces()).toString();
+                    text += ":";
+                    text += CtiNumStr(varBValue, getDecimalPlaces()).toString();
+                    text += ":";
+                    text += CtiNumStr(varCValue, getDecimalPlaces()).toString();
+
+                    text += "- Non Normal Var Quality = ";
                     _ltoa(currentVarPointQuality,tempchar,10);
                     text += tempchar;
-                    text += " Var: ";
-                    text += CtiNumStr(varAValue, getDecimalPlaces()).toString();
                     text += ", OpenQuestionable";
                     currentCapBank->setControlStatusQuality(CC_AbnormalQuality);
                 }
@@ -3940,11 +3944,15 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                 {
                     char tempchar[80];
                     currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
-                    text = string("Non Normal Var Quality = ");
+                    text = "Var: ";
+                    text += CtiNumStr(varAValue, getDecimalPlaces()).toString();
+                    text += ":";
+                    text += CtiNumStr(varBValue, getDecimalPlaces()).toString();
+                    text += ":";
+                    text += CtiNumStr(varCValue, getDecimalPlaces()).toString();
+                    text += "- Non Normal Var Quality = ";
                     _ltoa(currentVarPointQuality,tempchar,10);
                     text += tempchar;
-                    text += " Var: ";
-                    text += CtiNumStr(varAValue, getDecimalPlaces()).toString();
                     text += ", CloseQuestionable";
                     currentCapBank->setControlStatusQuality(CC_AbnormalQuality);
                 }
@@ -4144,11 +4152,11 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                    {
                        char tempchar[80];
                        currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
-                       text = string("Non Normal Var Quality = ");
+                       text = "Var: ";
+                       text += CtiNumStr(getCurrentVarLoadPointValue(), getDecimalPlaces()).toString();
+                       text += "- Non Normal Var Quality = ";
                        _ltoa(getCurrentVarPointQuality(),tempchar,10);
                        text += tempchar;
-                       text += " Var: ";
-                       text += CtiNumStr(getCurrentVarLoadPointValue(), getDecimalPlaces()).toString();
                        text += ", OpenQuestionable";
                        additional = string("Feeder: ");
                        additional += getPAOName();
@@ -4260,11 +4268,11 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                    {
                        char tempchar[80];
                        currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
-                       text = string("Non Normal Var Quality = ");
+                       text = "Var: ";
+                       text += CtiNumStr(getCurrentVarLoadPointValue(), getDecimalPlaces()).toString();
+                       text += "- Non Normal Var Quality = ";
                        _ltoa(getCurrentVarPointQuality(),tempchar,10);
                        text += tempchar;
-                       text += " Var: ";
-                       text += CtiNumStr(getCurrentVarLoadPointValue(), getDecimalPlaces()).toString();
                        text += ", CloseQuestionable";
                        additional = string("Feeder: ");
                        additional += getPAOName();
@@ -4513,11 +4521,11 @@ BOOL CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& point
                {
                    char tempchar[80];
                    currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
-                   text = string("Non Normal Var Quality = ");
+                   text = "Var: ";
+                   text += CtiNumStr(getCurrentVarLoadPointValue(), getDecimalPlaces()).toString();
+                   text += "- Non Normal Var Quality = ";
                    _ltoa(getCurrentVarPointQuality(),tempchar,10);
                    text += tempchar;
-                   text += " Var: ";
-                   text += CtiNumStr(getCurrentVarLoadPointValue(), getDecimalPlaces()).toString();
                    text += ", OpenQuestionable";
                    additional = string("Feeder: ");
                    additional += getPAOName();
@@ -4645,11 +4653,11 @@ BOOL CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& point
                {
                    char tempchar[80];
                    currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
-                   text = string("Non Normal Var Quality = ");
+                    text = "Var: ";
+                   text += CtiNumStr(getCurrentVarLoadPointValue(), getDecimalPlaces()).toString();
+                   text += "- Non Normal Var Quality = ";
                    _ltoa(getCurrentVarPointQuality(),tempchar,10);
                    text += tempchar;
-                   text += " Var: ";
-                   text += CtiNumStr(getCurrentVarLoadPointValue(), getDecimalPlaces()).toString();
                    text += ", CloseQuestionable";
                    additional = string("Feeder: ");
                    additional += getPAOName();
@@ -5489,7 +5497,7 @@ BOOL CtiCCFeeder::attemptToResendControl(const CtiTime& currentDateTime, CtiMult
 
                             LONG stationId, areaId, spAreaId;
                             store->getFeederParentInfo(this, spAreaId, areaId, stationId);
-                            ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, getParentId(), getPAOId(), capBankStateUpdate, getEventSequence(), currentCapBank->getControlStatus(), text, "cap control"));
+                            ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, getParentId(), getPAOId(), capControlCommandRetrySent, getEventSequence(), currentCapBank->getControlStatus(), text, "cap control"));
                         }
                         else
                         {
@@ -5528,7 +5536,7 @@ BOOL CtiCCFeeder::attemptToResendControl(const CtiTime& currentDateTime, CtiMult
 
                             LONG stationId, areaId, spAreaId;
                             store->getFeederParentInfo(this, spAreaId, areaId, stationId);
-                            ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, getParentId(), getPAOId(), capBankStateUpdate, getEventSequence(), currentCapBank->getControlStatus(), text, "cap control"));
+                            ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, getParentId(), getPAOId(), capControlCommandRetrySent, getEventSequence(), currentCapBank->getControlStatus(), text, "cap control"));
                         }
                         else
                         {

@@ -2111,31 +2111,40 @@ void CtiCCSubstationBusStore::doOpStatsThr()
                 resetAllConfirmationStats();
                 reCalculateOperationStatsFromDatabase( );
                 reCalculateConfirmationStatsFromDatabase( );
-                reCalculateAllStats( );
-                lastOpStatsThreadPulse = secondsFrom1901;
-                opStatRefreshRate =  nextScheduledTimeAlignedOnRate( currentTime,  _OP_STATS_REFRESH_RATE );
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Next OP STATS CHECKTIME : "<<opStatRefreshRate << endl;
-                }
-               
-                createAllStatsPointDataMsgs(pointChanges);
                 try
                 {
-                    //send point changes to dispatch
-                    if( multiDispatchMsg->getCount() > 0 )
+                    reCalculateAllStats( );
+                    lastOpStatsThreadPulse = secondsFrom1901;
+                    opStatRefreshRate =  nextScheduledTimeAlignedOnRate( currentTime,  _OP_STATS_REFRESH_RATE );
                     {
-                        multiDispatchMsg->resetTime(); // CGP 5/21/04 Update its time to current time.
-                        CtiCapController::getInstance()->sendMessageToDispatch(multiDispatchMsg);
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - Next OP STATS CHECKTIME : "<<opStatRefreshRate << endl;
                     }
-                    else
-                        delete multiDispatchMsg;
+                   
+                    createAllStatsPointDataMsgs(pointChanges);
+                    try
+                    {
+                        //send point changes to dispatch
+                        if( multiDispatchMsg->getCount() > 0 )
+                        {
+                            multiDispatchMsg->resetTime(); // CGP 5/21/04 Update its time to current time.
+                            CtiCapController::getInstance()->sendMessageToDispatch(multiDispatchMsg);
+                        }
+                        else
+                            delete multiDispatchMsg;
+                    }
+                    catch(...)
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    }
                 }
                 catch(...)
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
+                
             }
 
             
@@ -11204,52 +11213,109 @@ void CtiCCSubstationBusStore::setControlStatusAndIncrementFailCount(CtiMultiMsg_
 void CtiCCSubstationBusStore::createAllStatsPointDataMsgs(CtiMultiMsg_vec& pointChanges)
 {
     LONG i=0;
-    for(i=0;i<_ccGeoAreas->size();i++)
+    try
     {
-        CtiCCArea* currentArea = (CtiCCArea*)_ccGeoAreas->at(i);
-        currentArea->getOperationStats().createPointDataMsgs(pointChanges);
-        currentArea->getConfirmationStats().createPointDataMsgs(pointChanges);
-    }
-
-    for(i=0;i<_ccSpecialAreas->size();i++)
-    {
-        CtiCCSpecial* currentSpArea = (CtiCCSpecial*)_ccSpecialAreas->at(i);
-        currentSpArea->getOperationStats().createPointDataMsgs(pointChanges);
-        currentSpArea->getConfirmationStats().createPointDataMsgs(pointChanges);
-
-    }
-
-    for(i=0;i<_ccSubstations->size();i++)
-    {
-        CtiCCSubstation* currentStation = (CtiCCSubstation*)_ccSubstations->at(i);
-        currentStation->getOperationStats().createPointDataMsgs(pointChanges);
-        currentStation->getConfirmationStats().createPointDataMsgs(pointChanges);
-
-    }
-
-    for(i=0;i<_ccSubstationBuses->size();i++)
-    {
-        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)_ccSubstationBuses->at(i);
-        currentSubstationBus->getOperationStats().createPointDataMsgs(pointChanges);
-        currentSubstationBus->getConfirmationStats().createPointDataMsgs(pointChanges);
-
-        CtiFeeder_vec &ccFeeders = currentSubstationBus->getCCFeeders();
-
-        for(LONG j=0; j < ccFeeders.size(); j++)
+        for(i=0;i<_ccGeoAreas->size();i++)
         {
-            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)(ccFeeders.at(j));
-            currentFeeder->getOperationStats().createPointDataMsgs(pointChanges);
-            currentFeeder->getConfirmationStats().createPointDataMsgs(pointChanges);
+            CtiCCArea* currentArea = (CtiCCArea*)_ccGeoAreas->at(i);
+            currentArea->getOperationStats().createPointDataMsgs(pointChanges);
+            currentArea->getConfirmationStats().createPointDataMsgs(pointChanges);
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
 
-            CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
+    try
+    {
+        for(i=0;i<_ccSpecialAreas->size();i++)
+        {
+            CtiCCSpecial* currentSpArea = (CtiCCSpecial*)_ccSpecialAreas->at(i);
+            currentSpArea->getOperationStats().createPointDataMsgs(pointChanges);
+            currentSpArea->getConfirmationStats().createPointDataMsgs(pointChanges);
+    
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
 
-            for(LONG k=0;k<ccCapBanks.size();k++)
+    try
+    {
+        for(i=0;i<_ccSubstations->size();i++)
+        {
+            CtiCCSubstation* currentStation = (CtiCCSubstation*)_ccSubstations->at(i);
+            currentStation->getOperationStats().createPointDataMsgs(pointChanges);
+            currentStation->getConfirmationStats().createPointDataMsgs(pointChanges);
+    
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+
+    try
+    {
+        for(i=0;i<_ccSubstationBuses->size();i++)
+        {
+            CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)_ccSubstationBuses->at(i);
+
+            try
             {
-                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[k]);
-                currentCapBank->getOperationStats().createPointDataMsgs(pointChanges);
-                currentCapBank->getConfirmationStats().createPointDataMsgs(pointChanges);
+                currentSubstationBus->getOperationStats().createPointDataMsgs(pointChanges);
+                currentSubstationBus->getConfirmationStats().createPointDataMsgs(pointChanges);
+            }
+            catch(...)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            }
+    
+            CtiFeeder_vec &ccFeeders = currentSubstationBus->getCCFeeders();
+    
+            for(LONG j=0; j < ccFeeders.size(); j++)
+            {
+                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)(ccFeeders.at(j));
+                try
+                {
+                    currentFeeder->getOperationStats().createPointDataMsgs(pointChanges);
+                    currentFeeder->getConfirmationStats().createPointDataMsgs(pointChanges);
+        
+                    CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
+        
+                    for(LONG k=0;k<ccCapBanks.size();k++)
+                    {
+                        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[k]);
+                        try
+                        {
+                            currentCapBank->getOperationStats().createPointDataMsgs(pointChanges);
+                            currentCapBank->getConfirmationStats().createPointDataMsgs(pointChanges);
+                        }
+                        catch(...)
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        }
+                    }
+                }
+                catch(...)
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                }
             }
         }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
     return;

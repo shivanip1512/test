@@ -770,8 +770,7 @@ CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(CtiCCArea_vec& ccGeoAreas, ULONG bitMask) : C
 
 
 
-
-CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(const CtiCCGeoAreasMsg& ccGeoAreasMsg) : CtiCCMessage("CCGeoAreas"), _ccGeoAreas(NULL), _msgInfoBitMask(ccGeoAreasMsg._msgInfoBitMask)
+CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(const CtiCCGeoAreasMsg& ccGeoAreasMsg) : CtiCCMessage("CCGeoAreas"), _ccGeoAreas(NULL),_msgInfoBitMask(0)
 {
     operator=(ccGeoAreasMsg);
 }

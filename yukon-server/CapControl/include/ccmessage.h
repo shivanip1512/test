@@ -34,9 +34,9 @@ typedef std::vector<CtiCCStatePtr> CtiCCState_vec;
 
 enum CtiCCEventType_t
 {
-    capBankStateUpdate = 0,
-    capControlCommandSent = 1,
-    capControlManualCommand = 2,
+    capBankStateUpdate = 0,  //operation confirmed
+    capControlCommandSent = 1, //operation sent
+    capControlManualCommand = 2, 
     capControlPointOutsideOperatingLimits = 3,
     capControlSetOperationCount = 4,
     capControlEnable = 5,
@@ -47,7 +47,9 @@ enum CtiCCEventType_t
     capControlSwitchOverUpdate = 10,
     capControlEnableOvUv = 11,
     capControlDisableOvUv = 12,
-    capBankStateUpdateFail = 13
+    capBankStateUpdateFail = 13,
+    capControlCommandRetrySent
+
 };
 
 
@@ -405,8 +407,8 @@ class CtiCCGeoAreasMsg : public CtiCCMessage
 RWDECLARE_COLLECTABLE( CtiCCGeoAreasMsg )
 
 public:
-    CtiCCGeoAreasMsg(CtiCCArea_vec& areaList, ULONG bitMask = 1);
-    CtiCCGeoAreasMsg(CtiCCArea* ccArea);
+    CtiCCGeoAreasMsg(CtiCCArea_vec& areaList, ULONG bitMask = 0);
+    //CtiCCGeoAreasMsg(CtiCCArea* ccArea);
     CtiCCGeoAreasMsg(const CtiCCGeoAreasMsg& ccGeoAreas);
 
     virtual ~CtiCCGeoAreasMsg();
@@ -424,7 +426,7 @@ public:
     static ULONG AreaAdded;
     static ULONG AreaModified;
 private:
-    CtiCCGeoAreasMsg() : CtiCCMessage("CCGeoAreas"), _ccGeoAreas(NULL), _msgInfoBitMask(1) {};
+    CtiCCGeoAreasMsg() : CtiCCMessage("CCGeoAreas"), _ccGeoAreas(NULL), _msgInfoBitMask(0) {};
     
     CtiCCArea_vec* _ccGeoAreas;
     ULONG _msgInfoBitMask;
