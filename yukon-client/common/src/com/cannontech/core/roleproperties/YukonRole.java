@@ -24,7 +24,6 @@ public enum YukonRole {
     TABULAR_DISPLAY_CONSOLE(Application, ApplicationRoleDefs.TABULAR_DISPLAY_CONSOLE_ROLEID),
     TRENDING(Application, ApplicationRoleDefs.TRENDING_ROLEID),
     WEB_CLIENT(Application, ApplicationRoleDefs.WEB_CLIENT_ROLEID),
-    ESUB_EDITOR(Application, ApplicationRoleDefs.ESUBSTATION_EDITOR_ROLEID),
     
     CBC_SETTINGS(CapControl, CapControlRoleDefs.CBC_SETTINGS_ROLEID),
     CBC_ONELINE_CAP_SETTINGS(CapControl, CBCOnelineSettingsRole.CAP_ROLEID),
