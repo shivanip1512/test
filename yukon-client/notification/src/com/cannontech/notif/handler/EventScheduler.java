@@ -4,6 +4,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import org.apache.log4j.helpers.ISO8601DateFormat;
+
 import com.cannontech.cc.model.BaseEvent;
 import com.cannontech.cc.model.EventNotif;
 import com.cannontech.clientutils.CTILogger;
@@ -16,7 +18,8 @@ public abstract class EventScheduler {
 
     static final DateFormat _dateFormatter = new SimpleDateFormat("EEEE, MMMM d"); // e.g. "Tuesday, May 31"
     static final DateFormat _timeFormatter = new SimpleDateFormat("h:mm a"); // e.g. "3:45 PM"
-
+    static final ISO8601DateFormat _dateTimeFormatter = new ISO8601DateFormat();
+    
     protected Timer timer = new Timer(getClass().getSimpleName(), true);
     final OutputHandlerHelper _helper;
 
@@ -104,12 +107,15 @@ public abstract class EventScheduler {
             // we will use _dateFormatter as if we'd explicitly synched on it too
             _timeFormatter.setTimeZone(timeZone);
             _dateFormatter.setTimeZone(timeZone);
+            _dateTimeFormatter.setTimeZone(timeZone);
             
             notif.addData("timezone", timeZone.getDisplayName());
             notif.addData("starttime", _timeFormatter.format(event.getStartTime()));
             notif.addData("startdate", _dateFormatter.format(event.getStartTime()));
+            notif.addData("startdatetime", _dateTimeFormatter.format(event.getStartTime()));
             notif.addData("stoptime", _timeFormatter.format(event.getStopTime()));
             notif.addData("stopdate", _dateFormatter.format(event.getStopTime()));
+            notif.addData("stopdatetime", _dateTimeFormatter.format(event.getStopTime()));
         }
     }
 

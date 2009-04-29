@@ -7,6 +7,7 @@ import java.util.TimeZone;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
+import org.apache.log4j.helpers.ISO8601DateFormat;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -96,13 +97,16 @@ public class AlarmMessageHandler extends NotifHandler {
                 
                 DateFormat dateFormatter = new SimpleDateFormat("EEEE, MMMM d"); // e.g. "Tuesday, May 31"
                 DateFormat timeFormatter = new SimpleDateFormat("h:mm:ss a z"); // e.g. "3:45:13 CDT"
+                ISO8601DateFormat dateTimeFormatter = new ISO8601DateFormat();
                 
                 TimeZone timeZone = contact.getTimeZone();
                 timeFormatter.setTimeZone(timeZone);
                 dateFormatter.setTimeZone(timeZone);
+                dateTimeFormatter.setTimeZone(timeZone);
                 
                 notif.addData("alarmtime", timeFormatter.format(msg.alarmTimestamp));
                 notif.addData("alarmdate", dateFormatter.format(msg.alarmTimestamp));
+                notif.addData("alarmdatetime", dateTimeFormatter.format(msg.alarmTimestamp));
                 
                 String uofm = "";
                 if (point.getPointType() == PointTypes.STATUS_POINT) {

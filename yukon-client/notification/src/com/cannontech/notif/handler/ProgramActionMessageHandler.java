@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.helpers.ISO8601DateFormat;
 
 import com.cannontech.cc.dao.ProgramDao;
 import com.cannontech.cc.dao.ProgramNotificationGroupDao;
@@ -28,7 +29,8 @@ public class ProgramActionMessageHandler extends NotifHandler {
 
     private static final DateFormat _dateFormatter = new SimpleDateFormat("EEEE, MMMM d"); // e.g. "Tuesday, May 31"
     private static final DateFormat _timeFormatter = new SimpleDateFormat("h:mm a"); // e.g. "3:45 PM"
-
+    private static final ISO8601DateFormat _dateTimeFormatter = new ISO8601DateFormat();
+    
     public ProgramActionMessageHandler(OutputHandlerHelper helper) {
         super(helper);
     }
@@ -72,15 +74,19 @@ public class ProgramActionMessageHandler extends NotifHandler {
                 synchronized (_dateFormatter) {
                     _timeFormatter.setTimeZone(timeZone);
                     _dateFormatter.setTimeZone(timeZone);
+                    _dateTimeFormatter.setTimeZone(timeZone);
                     
                     notif.addData("timezone", timeZone.getDisplayName());
                     
                     notif.addData("starttime", _timeFormatter.format(msg.startTime));
                     notif.addData("startdate", _dateFormatter.format(msg.startTime));
+                    notif.addData("startdatetime", _dateTimeFormatter.format(msg.startTime));
                     notif.addData("stoptime", _timeFormatter.format(msg.stopTime));
                     notif.addData("stopdate", _dateFormatter.format(msg.stopTime));
+                    notif.addData("stopdatetime", _dateTimeFormatter.format(msg.stopTime));
                     notif.addData("notiftime", _timeFormatter.format(msg.notificationTime));
                     notif.addData("notifdate", _dateFormatter.format(msg.notificationTime));
+                    notif.addData("notifdatetime", _dateTimeFormatter.format(msg.notificationTime));
                 }
                 
                 notif.addData("durationminutes", durationMinutesStr);

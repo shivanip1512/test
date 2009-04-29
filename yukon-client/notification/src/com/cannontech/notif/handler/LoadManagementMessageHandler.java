@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.helpers.ISO8601DateFormat;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dao.DaoFactory;
@@ -23,7 +24,8 @@ public class LoadManagementMessageHandler extends NotifHandler {
 
     private static final DateFormat _dateFormatter = new SimpleDateFormat("EEEE, MMMM d"); // e.g. "Tuesday, May 31"
     private static final DateFormat _timeFormatter = new SimpleDateFormat("h:mm a"); // e.g. "3:45 PM"
-
+    private static final ISO8601DateFormat _dateTimeFormatter = new ISO8601DateFormat();
+    
     public LoadManagementMessageHandler(OutputHandlerHelper helper) {
         super(helper);
     }
@@ -78,13 +80,16 @@ public class LoadManagementMessageHandler extends NotifHandler {
                 synchronized (_dateFormatter) {
                     _timeFormatter.setTimeZone(timeZone);
                     _dateFormatter.setTimeZone(timeZone);
+                    _dateTimeFormatter.setTimeZone(timeZone);
                     
                     notif.addData("timezone", timeZone.getDisplayName());
                     
                     notif.addData("starttime", _timeFormatter.format(msg.startTime));
                     notif.addData("startdate", _dateFormatter.format(msg.startTime));
+                    notif.addData("startdatetime", _dateTimeFormatter.format(msg.startTime));
                     notif.addData("stoptime", _timeFormatter.format(msg.stopTime));
                     notif.addData("stopdate", _dateFormatter.format(msg.stopTime));
+                    notif.addData("stopdatetime", _dateTimeFormatter.format(msg.stopTime));
                 }
                 
                 notif.addData("durationminutes", durationMinutesStr);
