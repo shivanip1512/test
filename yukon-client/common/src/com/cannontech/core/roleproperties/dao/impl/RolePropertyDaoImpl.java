@@ -204,12 +204,14 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         	
             String[] exceptionArray = exceptionList.split("\\s*,\\s*");
             for (String propertyStr : exceptionArray) {
-                try {
-                    YukonRoleProperty property = YukonRoleProperty.valueOf(propertyStr);
-                    propertyExceptions.add(property);
-                } catch (IllegalArgumentException e) {
-                    log.warn("master.cfg contains an unknown role property: " + propertyStr);
-                }
+            	if (StringUtils.isNotBlank(propertyStr)) {
+	                try {
+	                    YukonRoleProperty property = YukonRoleProperty.valueOf(propertyStr);
+	                    propertyExceptions.add(property);
+	                } catch (IllegalArgumentException e) {
+	                    log.warn("master.cfg contains an unknown role property: " + propertyStr);
+	                }
+            	}
             }
             log.info("propertyException list configured for: " + propertyExceptions);
         }
