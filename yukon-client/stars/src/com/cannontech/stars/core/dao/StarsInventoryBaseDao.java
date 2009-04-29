@@ -11,10 +11,11 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 public interface StarsInventoryBaseDao {
 
 	/**
-	 * Finds Inventory by Inventory Id. This will return null if it is not found in the database.
+	 * Finds Inventory by Inventory Id. Throws NotFoundException if the Inventory is not in the database.
 	 * 
 	 * @param inventoryId
-	 * @return
+	 * @return LiteInventoryBase
+	 * @throws NotFoundException
 	 */
     public LiteInventoryBase getByInventoryId(int inventoryId);
     
@@ -22,7 +23,8 @@ public interface StarsInventoryBaseDao {
      * Finds Inventory by Device Id. Throws NotFoundException if the Inventory is not in the database.
      * 
      * @param deviceId
-     * @return
+     * @return LiteInventoryBase
+     * @throws NotFoundException
      */
     public LiteInventoryBase getByDeviceId(int deviceId);
     

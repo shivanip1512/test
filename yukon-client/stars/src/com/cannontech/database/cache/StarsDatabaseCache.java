@@ -357,17 +357,7 @@ public class StarsDatabaseCache implements DBChangeListener {
 	    				}
     				}
     			}
-    			else if (DeviceTypesFuncs.isMCT( litePao.getType() )) {
-    				
-    				StarsInventoryBaseDao starsInventoryBaseDao = 
-    					YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
-    				
-    				LiteInventoryBase inventoryBase = starsInventoryBaseDao.getByInventoryId(msg.getId());
-    				if (inventoryBase != null) {
-                        handleDeviceChange(msg, energyCompany, inventoryBase);
-                        return;
-                    }
-    			}
+    			// nothing to do for MCT devices, DeviceTypesFuncs.isMCT(litePao.getType())
     		}
     	}
 		else if (msg.getDatabase() == DBChangeMsg.CHANGE_YUKON_USER_DB) {
@@ -486,33 +476,6 @@ public class StarsDatabaseCache implements DBChangeListener {
 					CTILogger.error( e.getMessage(), e );
 				}
 				
-				break;
-		}
-	}
-	
-	private void handleDeviceChange(DBChangeMsg msg, LiteStarsEnergyCompany energyCompany, LiteInventoryBase liteInv) {
-		switch( msg.getTypeOfChange() )
-		{
-			case DBChangeMsg.CHANGE_TYPE_ADD:
-				// Don't need to do anything
-				break;
-				
-			case DBChangeMsg.CHANGE_TYPE_UPDATE :
-				StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteInv.getAccountID() );
-				if (starsAcctInfo != null) {
-					for (int i = 0; i < starsAcctInfo.getStarsInventories().getStarsInventoryCount(); i++) {
-						StarsInventory starsInv = starsAcctInfo.getStarsInventories().getStarsInventory(i);
-						if (starsInv.getDeviceID() == msg.getId()) {
-							starsInv.getMCT().setDeviceName( DaoFactory.getPaoDao().getYukonPAOName(msg.getId()) );
-							break;
-						}
-					}
-				}
-				
-				break;
-				
-			case DBChangeMsg.CHANGE_TYPE_DELETE :
-				// Don't need to do anything
 				break;
 		}
 	}

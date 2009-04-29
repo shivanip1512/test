@@ -15,6 +15,7 @@ import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -616,8 +617,14 @@ public class ProgramSignUpAction implements ActionBase {
 				liteStarsProg.setGroupID( groupID );
         		
 				LiteStarsLMHardware liteHw = null;
-				if (program.getInventoryID() > 0)
-					liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(program.getInventoryID());
+				if (program.getInventoryID() > 0) {
+				    try {
+				        liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(program.getInventoryID());
+				    }
+				    catch (NotFoundException e) {
+				        //not found ok, leave as null and continue
+				    }
+				}
     			
     			LiteStarsAppliance liteApp = 
     					progHwAppMap.get(new Integer(program.getProgramID())).get(program.getInventoryID());

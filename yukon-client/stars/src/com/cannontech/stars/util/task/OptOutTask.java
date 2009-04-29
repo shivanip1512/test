@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
@@ -108,15 +109,18 @@ public class OptOutTask implements YukonTask {
     	
     	List<LiteStarsLMHardware> inventoryList = new ArrayList<LiteStarsLMHardware>();
     	for(Integer inventoryId : inventoryIds) {
-
-    		LiteStarsLMHardware inventory = 
-        		(LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
-
-    		// Only add inventory that exists and is supposed to be done opting out according
-    		// to the OptOutEvent table
-        	if(inventory != null && !optOutEventDao.isOptedOut(inventoryId, inventory.getAccountID())) {
-        		inventoryList.add(inventory);
-        	}
+    	    try {
+        		LiteStarsLMHardware inventory = 
+            		(LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
+                // Only add inventory that exists and is supposed to be done opting out according
+                // to the OptOutEvent table
+                if(!optOutEventDao.isOptedOut(inventoryId, inventory.getAccountID())) {
+                    inventoryList.add(inventory);
+                }        		
+    	    }
+    	    catch (NotFoundException e) {
+    	        //ignore if inventory not found, and continue
+    	    }
     	}
     	
     	return inventoryList;

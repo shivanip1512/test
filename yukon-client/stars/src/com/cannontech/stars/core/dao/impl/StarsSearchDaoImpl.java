@@ -197,11 +197,6 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 			throws ObjectInOtherEnergyCompanyException {
 
 		LiteInventoryBase inventoryBase = starsInventoryBaseDao.getByInventoryId(inventoryId);
-		//Remove this test when getByInventoryId is change to throw NotFoundException
-		if(inventoryBase == null) {
-			return inventoryBase;
-		}
-		
 		return verifyInventoryInEnergyCompany(inventoryBase,energyCompany);
 	}
 	

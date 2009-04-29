@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
@@ -79,18 +80,18 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
     @Transactional(readOnly = true)
     public LiteInventoryBase getByInventoryId(final int inventoryId) {
     	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	sql.append(selectInventorySql);
-    	sql.append("WHERE ib.InventoryId = ").appendArgument(inventoryId);
-    	
-        List<LiteInventoryBase> liteInventoryList = simpleJdbcTemplate.query(sql.getSql(),
-                smartInventoryRowMapper,
-                sql.getArguments());
-        
-        if (liteInventoryList.size() == 0) {
-            throw new NotFoundException("LiteInventoryBase not found by Device Id: " + inventoryId);
+        sql.append(selectInventorySql);
+        sql.append("WHERE ib.InventoryId = ").appendArgument(inventoryId);
+        LiteInventoryBase liteInv = null;
+        try {
+            liteInv = simpleJdbcTemplate.queryForObject(sql.getSql(),
+                                                        smartInventoryRowMapper,
+                                                        sql.getArguments());
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("LiteInventoryBase not found by Inventory Id: " + inventoryId);
         }
-        
-        return ServerUtils.returnFirstRow(liteInventoryList, "multiple Inventory ids found for " + inventoryId);
+
+        return liteInv;
     }
     
     
