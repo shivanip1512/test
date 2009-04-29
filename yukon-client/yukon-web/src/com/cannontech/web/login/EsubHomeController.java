@@ -21,7 +21,7 @@ public class EsubHomeController {
     public ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
         final LiteYukonUser user = ServletUtil.getYukonUser(request);
-        String esubHomeUrl = ServletUtil.createSafeUrl(request, rolePropertyDao.getPropertyStringValue(YukonRoleProperty.ESUB_HOME_URL, user));
+        String esubHomeUrl = ServletUtil.createSafeUrl(request, rolePropertyDao.getPropertyStringValue(YukonRoleProperty.OPERATOR_ESUBSTATION_DRAWINGS_HOME_URL, user));
         
         ModelAndView mav = new ModelAndView();
         mav.setViewName("redirect:" + esubHomeUrl);

@@ -75,7 +75,6 @@ public enum YukonRoleProperty {
     MAXIMUM_DAILY_SCANS(TRENDING, com.cannontech.roles.application.TrendingRole.MAXIMUM_DAILY_SCANS, stringType()),
     
     HOME_URL(WEB_CLIENT, com.cannontech.roles.application.WebClientRole.HOME_URL, stringType()),
-    ESUB_HOME_URL(WEB_CLIENT, com.cannontech.roles.application.WebClientRole.ESUB_HOME_URL, stringType()),
     STYLE_SHEET(WEB_CLIENT, com.cannontech.roles.application.WebClientRole.STYLE_SHEET, stringType()),
     NAV_BULLET_SELECTED(WEB_CLIENT, com.cannontech.roles.application.WebClientRole.NAV_BULLET_SELECTED, stringType()),
     NAV_BULLET_EXPAND(WEB_CLIENT, com.cannontech.roles.application.WebClientRole.NAV_BULLET_EXPAND, stringType()),
@@ -322,6 +321,7 @@ public enum YukonRoleProperty {
     OPERATOR_ESUBSTATION_DRAWINGS_VIEW(OPERATOR_ESUBSTATION_DRAWINGS, com.cannontech.roles.operator.EsubDrawingsRole.VIEW, booleanType()),
     OPERATOR_ESUBSTATION_DRAWINGS_EDIT(OPERATOR_ESUBSTATION_DRAWINGS, com.cannontech.roles.operator.EsubDrawingsRole.EDIT, booleanType()),
     OPERATOR_ESUBSTATION_DRAWINGS_CONTROL(OPERATOR_ESUBSTATION_DRAWINGS, com.cannontech.roles.operator.EsubDrawingsRole.CONTROL, booleanType()),
+    OPERATOR_ESUBSTATION_DRAWINGS_HOME_URL(OPERATOR_ESUBSTATION_DRAWINGS, com.cannontech.roles.operator.EsubDrawingsRole.ESUB_HOME_URL, stringType()),
     
     INVENTORY_SHOW_ALL(INVENTORY, com.cannontech.roles.operator.InventoryRole.INVENTORY_SHOW_ALL, booleanType()),
     SN_ADD_RANGE(INVENTORY, com.cannontech.roles.operator.InventoryRole.SN_ADD_RANGE, stringType()),

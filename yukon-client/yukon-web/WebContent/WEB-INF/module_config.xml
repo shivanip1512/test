@@ -144,19 +144,17 @@
 
     <!-- Distribution Automation -->
     <option id="distributionAutomation">
-      <requireRoleProperty value="CBC_SETTINGS" />
-      <requireRoleProperty value="OPERATOR_ESUBSTATION_DRAWINGS_VIEW" />
       <links>
         <option id="capControl">
+        <requireRoleProperty value="CBC_SETTINGS" />
           <link>/capcontrol/subareas.jsp</link>
         </option>
-      </links>
-      <links>
         <option id="eSub">
-          <link>/spring/login/esub/home</link>
+        <requireRoleProperty value="OPERATOR_ESUBSTATION_DRAWINGS_VIEW" />
+          <link>/esub/home</link>
         </option>
       </links>
-    </option>
+    </option> 
     
     <!-- Hardware Inventory -->
     <option id="hardwareInventory">
@@ -441,7 +439,7 @@
             <link>/spring/capcontrol/scheduleAssignments/schedule</link>
           </option>
           <option id="recentcontrols">
-            <link>/capcontrol/tabledata.jsp?type=RC'</link>
+            <script>showRecentCmds('/capcontrol/tabledata.jsp?type=RC')</script>
           </option>
           <option id="recentcapbankmoves">
        		<link>/capcontrol/movedCapBanks.jsp</link>  

@@ -171,16 +171,16 @@
 <cti:checkRolesAndProperties value="CAP_CONTROL_ACCESS,OPERATOR_ESUBSTATION_DRAWINGS_VIEW">
 
 	<tags:operationSection sectionName="Distribution Automation" sectionImageName="DistributionAutomationLogo">
-	    <cti:isPropertyTrue property="CBCSettingsRole.ACCESS">
+	    <cti:checkRolesAndProperties value="CAP_CONTROL_ACCESS">
 		    <tags:sectionLink>
 		    	<a href="../capcontrol/subareas.jsp">Cap Control</a>
 		    </tags:sectionLink>
-	    </cti:isPropertyTrue>
-	    <cti:isPropertyTrue property="operator.EsubDrawingsRole.VIEW"> 
+	    </cti:checkRolesAndProperties>
+	    <cti:checkRolesAndProperties value="OPERATOR_ESUBSTATION_DRAWINGS_VIEW"> 
 		    <tags:sectionLink>
 	            <a href="/esub/home">eSubstation</a>
 	        </tags:sectionLink>
-        </cti:isPropertyTrue>
+        </cti:checkRolesAndProperties>
 	</tags:operationSection>
 	
 </cti:checkRolesAndProperties>

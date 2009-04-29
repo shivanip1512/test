@@ -14,4 +14,6 @@ public interface EsubDrawingsRole {
 	public static final int VIEW = OperatorRoleDefs.ESUBSTATION_DRAWINGS_PROPERTYID_BASE;
 	public static final int EDIT = OperatorRoleDefs.ESUBSTATION_DRAWINGS_PROPERTYID_BASE - 1;
 	public static final int CONTROL = OperatorRoleDefs.ESUBSTATION_DRAWINGS_PROPERTYID_BASE - 2;
+    public static final int ESUB_HOME_URL = OperatorRoleDefs.ESUBSTATION_DRAWINGS_PROPERTYID_BASE - 3; // esub home url
+
 }
