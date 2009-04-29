@@ -293,8 +293,6 @@ void CtiVanGogh::VGMainThread()
 
     try
     {
-        establishListener();
-
         /*
          *  MAIN: The main Dispatch loop lives here for all time!
          */
@@ -550,8 +548,6 @@ void CtiVanGogh::VGMainThread()
                             dout << CtiTime() << " **** Restarting ConnThread **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
 
-                        establishListener();
-
                         // all that is good and ready has been started, open up for business from clients
                         ConnThread_ = rwMakeThreadFunction(*this, &CtiVanGogh::VGConnectionHandlerThread);
                         ConnThread_.start();
@@ -673,8 +669,7 @@ void CtiVanGogh::VGConnectionHandlerThread()
 
     UINT sanity = 0;
 
-    CtiCommandMsg     *CmdMsg = NULL;
-
+    RWSocket           socket;
     CtiExchange       *XChg;
 
     {
@@ -682,65 +677,64 @@ void CtiVanGogh::VGConnectionHandlerThread()
         dout << CtiTime() << " Dispatch Connection Handler Thread starting as TID " << rwThreadId() << " (0x" << hex << rwThreadId() << dec << ")" << endl;
     }
 
+    NetPort = RWInetPort(gConfigParms.getValueAsInt("DISPATCH_PORT", VANGOGHNEXUS));
+    NetAddr = RWInetAddr(NetPort);
+    
+    socket.listen(NetAddr);
+
+    // This is here for looks, in reality it is rarely called.
+    if( !socket.valid() )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "Could not open socket " << NetAddr << " for listening" << endl;
+
+        exit(-1);
+    }
 
     /* Up this threads priority a notch over the other procs */
     CTISetPriority(PRTYC_NOCHANGE, THREAD_PRIORITY_BELOW_NORMAL);
-
-    /*
-     *  Wait for Main to get listener up and ready to go.
-     */
-    while(!_listenerAvailable && !bGCtrlC)
-    {
-        rwSleep(250);
-    }
 
     for(;!bQuit && !bGCtrlC;)
     {
         try
         {
-            /*
-             *  This next bit blocks on a connect and creates a new
-             */
-
-            /*
-             *  First off, let me apologize for the awful line which follows.
-             *  The problem is that RWSocketListener is a reference counted entity and any
-             *  varaible used would hold a reference, so I put it in the initializer for
-             *  my xchange to keep that extra reference from happening.
-             */
-
+            // It seems necessary to make this copy. RW does this and now so do we.
+            RWSocket tempSocket = socket;
+            RWSocket newSocket = tempSocket.accept();
             RWSocketPortal sock;
 
-            if(Listener)
+            if( !newSocket.valid() )
             {
-                sock = (*Listener)();
-
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Dispatch Connection Handler Thread. New connect. " << endl;
-                }
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << "Could not accept new connection " << endl;
             }
             else
             {
-                bQuit = TRUE;
-                continue; // the for loop
-            }
-
-            {
-                CtiServerExclusion guard(_server_exclusion);
-
-                XChg                                = CTIDBG_new CtiExchange(sock);
-                CtiVanGoghConnectionManager *ConMan = CTIDBG_new CtiVanGoghConnectionManager(XChg, &MainQueue_);
-                CtiServer::ptr_type sptrConMan(ConMan);
-
-                clientConnect( sptrConMan );
-                sptrConMan->ThreadInitiate();     // Kick off the connection's communication threads.
-
-                if(gDispatchDebugLevel & DISPATCH_DEBUG_CONNECTIONS)
+                // This is very important. We tell the socket portal that we own the socket!
+                sock = RWSocketPortal(newSocket, RWSocketPortalBase::Application);
+    
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " New connection established" << endl;
+                    dout << CtiTime() << " Connection Handler Thread. New connect. " << endl;
                 }
+    
+                {
+                    CtiServerExclusion guard(_server_exclusion);
+    
+                    XChg                                = CTIDBG_new CtiExchange(sock);
+                    CtiVanGoghConnectionManager *ConMan = CTIDBG_new CtiVanGoghConnectionManager(XChg, &MainQueue_);
+                    CtiServer::ptr_type sptrConMan(ConMan);
+    
+                    clientConnect( sptrConMan );
+                    sptrConMan->ThreadInitiate();     // Kick off the connection's communication threads.
+    
+                    if(gDispatchDebugLevel & DISPATCH_DEBUG_CONNECTIONS)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " New connection established" << endl;
+                    }
+                }
+
             }
 
             reportOnThreads();
@@ -5894,71 +5888,6 @@ CtiVanGogh::CtiDeviceLiteSet_t::iterator CtiVanGogh::deviceLiteFind(const LONG p
     return dliteit;
 }
 
-void CtiVanGogh::establishListener()
-{
-    try
-    {
-        CtiServerExclusion guard(_server_exclusion);
-
-        try
-        {
-            if(Listener != 0)
-            {
-                _listenerAvailable = FALSE;
-                delete Listener;
-
-                Listener = 0;
-            }
-        }
-        catch(...)
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-        }
-
-        try
-        {
-            NetPort  = RWInetPort(gConfigParms.getValueAsInt("DISPATCH_PORT", VANGOGHNEXUS));
-            NetAddr  = RWInetAddr(NetPort);           // This one for this server!
-
-            Listener = CTIDBG_new RWSocketListener(NetAddr);
-
-            if(!Listener)
-            {
-                dout << "Could not open socket " << NetAddr << " for listening" << endl;
-
-                exit(-1);
-            }
-        }
-        catch(const RWxmsg& x)
-        {
-            cout << "Exception: " << x.why() << endl;
-            RWTHROW(x);
-        }
-        catch(...)
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-        }
-
-        _listenerAvailable = TRUE;                 // Release the connection handler
-
-    }
-    catch(RWxmsg &msg)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Exception " << __FILE__ << " (" << __LINE__ << ") " << msg.why() << endl;
-    }
-    catch(...)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Exception " << __FILE__ << " (" << __LINE__ << ") " << endl;
-    }
-}
 
 void CtiVanGogh::reportOnThreads()
 {

@@ -53,6 +53,7 @@ private:
 
 public:
     CtiExchange(RWSocketPortal portal);
+    CtiExchange(RWInetAddr sockAddress);
     virtual ~CtiExchange();
 
     RWBoolean   valid() const
@@ -84,7 +85,8 @@ public:
         return(oStream->bad() || iStream->bad());
     }
 
-
+    void close();
+    
     RWpistream & In()
     {
         CtiLockGuard<CtiMutex> guard( (_classMutex));

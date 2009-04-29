@@ -292,7 +292,6 @@ public:
     void displayConnections(void);
 
     CtiDeviceLiteSet_t::iterator deviceLiteFind(const LONG paoId);
-    void establishListener();
     void reportOnThreads();
     void writeMessageToScanner(const CtiCommandMsg *Cmd);
     void writeMessageToClient(CtiMessage *&pReq, string clientName);

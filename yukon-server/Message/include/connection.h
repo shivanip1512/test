@@ -89,6 +89,8 @@ protected:
          UINT     _dontReconnect          : 1;
          UINT     _serverConnection       : 1;
          UINT     _localQueueAlloc        : 1;
+         UINT     _preventInThreadReset   : 1;     // This is here because the In and Out threads can both 
+         UINT     _preventOutThreadReset  : 1;     // call cleanConnection, we dont want them fighting.
       };
    };
 

@@ -48,13 +48,17 @@ routetest.obj
 DEVTESTOBJS=\
 devtest.obj
 
+CONNTESTOBJS=\
+conntest.obj
+
 
 CTIPROGS=\
 porttest.exe \
 pointtest.exe \
 routetest.exe \
 devtest.exe \
-memtest.exe
+memtest.exe \
+conntest.exe
 
 
 ALL:            $(CTIPROGS)
@@ -145,6 +149,20 @@ routetest.exe:   $(RTESTOBJS) makeexe.mak
                 @echo:
                 @%cd $(CWD)
 
+conntest.exe:   $(CONNTESTOBJS) makeexe.mak
+                @echo:
+                @echo Compiling ..\$@
+                @%cd $(OBJ)
+                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ $(CONNTESTOBJS) \
+-link $(COMPILEBASE)\lib\cticparms.lib $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\ctimsg.lib $(COMPILEBASE)\lib\clrdump.lib $(COMPILEBASE)\lib\ctisvr.lib $(COMPILEBASE)\lib\ctidbsrc.lib $(COMPILEBASE)\lib\ctidevdb.lib  $(RWLIBS) $(BOOSTLIBS)
+               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+               mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
+               -@copy ..\$@ $(YUKONOUTPUT)
+                @echo:
+                @echo Done building Target ..\$@
+                @echo:
+                @%cd $(CWD)
+
 copy:           $(CTIPROGS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@if exist bin\*.exe copy bin\*.exe $(YUKONOUTPUT)
@@ -168,6 +186,14 @@ deps:
 ######################################################################################
 
 #UPDATE#
+conntest.obj:	yukon.h precompiled.h ctidbgmem.h dllbase.h os2_2w32.h \
+		dlldefs.h types.h cticalls.h dsm2.h mutex.h guard.h numstr.h \
+		clrdump.h cticonnect.h netports.h connection.h exchange.h \
+		logger.h thread.h ctitime.h CtiPCPtrQueue.h utility.h \
+		queues.h sorted_vector.h message.h collectable.h rwutil.h \
+		boost_time.h boostutil.h msg_multi.h msg_pdata.h pointdefs.h \
+		pointtypes.h msg_ptreg.h msg_reg.h queue.h cparms.h \
+		configkey.h configval.h
 device.obj:	yukon.h precompiled.h ctidbgmem.h dev_carrier.h \
 		dev_dlcbase.h dev_single.h dsm2.h mutex.h dlldefs.h guard.h \
 		numstr.h clrdump.h cticonnect.h netports.h dev_base.h \

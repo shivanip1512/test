@@ -69,7 +69,6 @@ public:
 private:
 
 protected:
-   BOOL                       _listenerAvailable;
 
    #ifdef USE_CTIMUTEX
    CtiMutex                   _server_exclusion;       // Mutual exclusion object.
@@ -93,8 +92,6 @@ protected:
 
    RWInetPort                    NetPort;
    RWInetAddr                    NetAddr;    // This one for this server!
-   RWSocketListener              *Listener;
-
 
 public:
 

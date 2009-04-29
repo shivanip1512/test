@@ -150,35 +150,6 @@ void CtiPILServer::mainThread()
     VanGoghConnection.setName("Dispatch");
     VanGoghConnection.WriteConnQue(CTIDBG_new CtiRegistrationMsg(PIL_REGISTRATION_NAME, rwThreadId(), TRUE));
 
-    try
-    {
-        CtiServerExclusion server_guard(_server_exclusion);
-
-        NetPort  = RWInetPort(PORTERINTERFACENEXUS);
-        NetAddr  = RWInetAddr(NetPort);           // This one for this server!
-
-        Listener = CTIDBG_new RWSocketListener(NetAddr);
-
-        if(!Listener)
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Could not open socket " << NetAddr << " for listning" << endl;
-            }
-
-            exit(-1);
-        }
-
-        _listenerAvailable = TRUE;                 // Release the connection handler
-
-    }
-    catch(RWxmsg &msg)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Exception " << __FILE__ << " (" << __LINE__ << ") " << msg.why() << endl;
-        throw;
-    }
-
     /* Give us a tiny attitude */
     CTISetPriority(PRTYC_TIMECRITICAL, THREAD_PRIORITY_HIGHEST);
 
@@ -409,6 +380,7 @@ void CtiPILServer::connectionThread()
     BOOL              bQuit = FALSE;
 
     CtiCommandMsg     *CmdMsg = NULL;
+    RWSocket           socket;
 
     CtiExchange       *XChg;
 
@@ -417,29 +389,40 @@ void CtiPILServer::connectionThread()
         dout << CtiTime() << " ConnThread     : Started as TID " << rwThreadId() << endl;
     }
 
-    /*
-     *  Wait for Main to get lister up and ready to go.
-     */
-    while(!_listenerAvailable)
+    try
     {
-        rwSleep(250);
+        NetPort  = RWInetPort(PORTERINTERFACENEXUS);
+        NetAddr  = RWInetAddr(NetPort);           // This one for this server!
+
+        socket.listen(NetAddr);
+        
+        if(!socket.valid())
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << "Could not open socket " << NetAddr << " for listning" << endl;
+            }
+
+            exit(-1);
+        }
+    }
+    catch(RWxmsg &msg)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "Exception " << __FILE__ << " (" << __LINE__ << ") " << msg.why() << endl;
+        throw;
     }
 
     for(;!bQuit;)
     {
         try
-        {
+        { // It seems necessary to make this copy. RW does this and now so do we.
+            RWSocket tempSocket = socket;
+            RWSocket newSocket = tempSocket.accept();
             RWSocketPortal sock;
 
-            if( Listener )
-            {
-                sock = (*Listener)();
-            }
-            else
-            {
-                bQuit = TRUE;
-                continue; // the for loop
-            }
+            // This is very important. We tell the socket portal that we own the socket!
+            sock = RWSocketPortal(newSocket, RWSocketPortalBase::Application);
 
             if( sock.socket().valid() )
             {

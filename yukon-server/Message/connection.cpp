@@ -284,7 +284,7 @@ void CtiConnection::InThread()
         {
             establishConnection( 15 );    // blocks until connected, marked for dontReconnect, or canceled.  Connect attempts made every 15 seconds
 
-            if( _valid )
+            if( _valid && !_dontReconnect && !_noLongerViable )
             {
                 try
                 {
@@ -335,15 +335,20 @@ void CtiConnection::InThread()
                     }
                     else
                     {
-                        if(getDebugLevel() & DEBUGLEVEL_CONNECTION)
+                        CtiLockGuard< CtiMutex > guard(_mux, 30000);
+                        if( !_preventInThreadReset )
                         {
-                            string whoStr = who();
+                            if(getDebugLevel() & DEBUGLEVEL_CONNECTION)
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << "**** Resetting the connection **** " << whoStr << endl;
+                                string whoStr = who();
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << "**** Resetting the connection **** " << whoStr << endl;
+                                }
                             }
+                            cleanExchange();      // Make us prepare for reconnect or die trying...
                         }
-                        cleanExchange();      // Make us prepare for reconnect or die trying...
+                        _preventInThreadReset = false;
                     }
 
                     continue;
@@ -402,6 +407,8 @@ void CtiConnection::InThread()
                             _lastInQueueWrite = _lastInQueueWrite.now();    // Refresh the time...
 
                             writeIncomingMessageToQueue(MsgPtr);
+
+                            _preventInThreadReset = false; // It seems the conn is valid, so I can reset if needed
                             //inQueue->putQueue(MsgPtr);
                         }
                         else
@@ -566,6 +573,8 @@ void CtiConnection::OutThread()
                         {
                             delete MyMsg;
                             MyMsg = NULL;
+
+                            _preventOutThreadReset = false; // It seems the conn is valid, so I can reset if needed
                         }
                     }
                     else
@@ -598,12 +607,17 @@ void CtiConnection::OutThread()
                 {
                     if(!_bQuit)
                     {
-                        string whoStr = who();
+                        CtiLockGuard< CtiMutex > guard(_mux, 30000);
+                        if( !_preventOutThreadReset )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Attempting a connection reset with " << whoStr << endl;
+                            string whoStr = who();
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " Attempting a connection reset with " << whoStr << endl;
+                            }
+                            cleanExchange();
                         }
-                        cleanExchange();
+                        _preventOutThreadReset = false; // We only are prevented 1 time!
                     }
                     else if(_bQuit)
                     {
@@ -760,20 +774,17 @@ INT CtiConnection::ConnectPortal()
              */
             if( !_serverConnection && !_dontReconnect )
             {
-                RWSocketPortal psck(RWInetAddr(_port, _host.c_str()));
+                RWInetAddr rwAddress(_port, _host.c_str());
 
-                if(!psck.socket().valid())
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "Socket Error " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    nRet = -1;
-                }
-                else
-                {
+                    CtiLockGuard< CtiMutex > guard(_mux, 30000);
                     cleanExchange();
-                    _exchange = CTIDBG_new CtiExchange(psck);
+                    if( _exchange == NULL )
+                    {
+                        _exchange = CTIDBG_new CtiExchange(rwAddress);
+                    }
 
-                    if(!_exchange->In().bad() && !_exchange->Out().bad())
+                    if( !_exchange->In().bad() && !_exchange->Out().bad() )
                     {
                         _valid = TRUE;
 
@@ -809,39 +820,42 @@ INT CtiConnection::ConnectPortal()
 
 void CtiConnection::ShutdownConnection()
 {
-    CtiLockGuard< CtiMutex > guard(_mux, 60000);
     try
     {
         if(_connectCalled)
         {
-            // 1.  We want the outQueue/OutThread to flush itself.
-            //     I allow _termTime seconds for this to occur
-
-            int i = 0;
-
-            while(outQueue.entries() > 0 && _valid)
             {
-                string whoStr = who();
+                CtiLockGuard< CtiMutex > guard(_mux, 60000);
+                // 1.  We want the outQueue/OutThread to flush itself.
+                //     I allow _termTime seconds for this to occur
+    
+                int i = 0;
+    
+                while(outQueue.entries() > 0 && _valid)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Waiting for outbound Queue " << whoStr << " to flush " << outQueue.entries() << " entries" << endl;
+                    string whoStr = who();
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " Waiting for outbound Queue " << whoStr << " to flush " << outQueue.entries() << " entries" << endl;
+                    }
+    
+                    Sleep(1000);
+    
+                    if(i++ > _termTime)
+                    {
+                        outQueue.clearAndDestroy();      // Get rid of the evidence...
+                        break;
+                    }
                 }
+    
+                // This flag tells InThread not to wait for a reconnection....
+                _dontReconnect = TRUE;
 
-                Sleep(1000);
-
-                if(i++ > _termTime)
-                {
-                    outQueue.clearAndDestroy();      // Get rid of the evidence...
-                    break;
-                }
+                outthread_.requestCancellation(1);
+                inthread_.requestCancellation(1);
+                cleanExchange();
             }
 
-            // This flag tells InThread not to wait for a reconnection....
-            _dontReconnect = TRUE;
-
-            cleanExchange();
-
-            // Should check the cancellation once per second.
             if( outthread_.join(100) == RW_THR_TIMEOUT )
             {
                 if( outthread_.requestCancellation(2000)  == RW_THR_TIMEOUT )
@@ -860,6 +874,7 @@ void CtiConnection::ShutdownConnection()
                     // 20051201 CGP... NOT GOOD // outthread_.terminate();
                 }
             }
+            
 
             if( inQueue && _localQueueAlloc && inQueue->entries() != 0 )
             {
@@ -886,6 +901,7 @@ void CtiConnection::ShutdownConnection()
                     // 20051201 CGP... NOT GOOD // inthread_.terminate();
                 }
             }
+
 
             if(getDebugLevel() & DEBUGLEVEL_CONNECTION)
             {
@@ -1416,8 +1432,19 @@ void CtiConnection::cleanExchange()
     {
         if(_exchange != NULL)
         {
+            //First we try to close the socket to unblock the blocking calls
+            //The inthread or outthread should release the << and block on the mutex call.
             _valid = FALSE;
+
+            //Try to make sure we arent resetting multiple times!
+            _preventInThreadReset  = TRUE;
+            _preventOutThreadReset = TRUE;
+            _exchange->close();
+            Sleep(1000);
+            
             delete _exchange;
+            _exchange = NULL;
+            
         }
     }
     catch(...)
@@ -1427,7 +1454,6 @@ void CtiConnection::cleanExchange()
             dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
-    _exchange = NULL;
 }
 
 #pragma optimize( "", on ) 

@@ -121,11 +121,11 @@ void CtiCCClientConnection::close()
 
     oStream->vflush();
 
+    delete _portal;
     delete sinbuf;
     delete soubuf;
     delete oStream;
     delete iStream;
-    delete _portal;
 
     sinbuf = NULL;
     soubuf = NULL;

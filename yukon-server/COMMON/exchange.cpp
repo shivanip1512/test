@@ -26,6 +26,20 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #pragma optimize( "", off ) // Be careful with this, be sure ON is at the bottom of the file 
                             // and that all header files are before this!
 
+// Throws RWSockErr with error.errorNumber() != WSAECONNREFUSED
+CtiExchange::CtiExchange(RWInetAddr sockAddress)
+{
+    CtiLockGuard<CtiMutex> guard(_classMutex);
+
+    RWSocket socket;
+    socket.connect(sockAddress);
+    Portal_ = new RWSocketPortal(socket, RWSocketPortal::Application);
+    sinbuf  = new RWPortalStreambuf(*Portal_);
+    soubuf  = new RWPortalStreambuf(*Portal_);
+    oStream = new RWpostream(soubuf);
+    iStream = new RWpistream(sinbuf);
+}
+
 CtiExchange::CtiExchange(RWSocketPortal portal) : Portal_(new RWSocketPortal(portal))
 {
     CtiLockGuard<CtiMutex> guard(_classMutex);
@@ -48,8 +62,22 @@ CtiExchange::~CtiExchange()
     CtiLockGuard<CtiMutex> guard(_classMutex);
     try
     {
-        // Attempt to keep the delete of sinbuf/soutbuf from blocking us!
-        SET_NON_BLOCKING( Portal_->socket() );
+        try
+        {
+            if(Portal_ != NULL)
+            {
+                delete Portal_;
+                Portal_ = NULL;
+            }
+        }
+        catch(RWSockErr& msg )
+        {
+            if(msg.errorNumber() != RWNETNOTINITIALISED)
+            {
+                cout << "Socket Error :" << msg.errorNumber() << " occurred" << endl;
+                cout << "  " << msg.why() << endl;
+            }
+        }
 
         delete sinbuf;
         delete soubuf;
@@ -61,24 +89,35 @@ CtiExchange::~CtiExchange()
         oStream = NULL;
         iStream = NULL;
 
-        try
-        {
-            delete Portal_;
-        }
-        catch(RWSockErr& msg )
-        {
-            if(msg.errorNumber() != RWNETNOTINITIALISED)
-            {
-                cout << "Socket Error :" << msg.errorNumber() << " occurred" << endl;
-                cout << "  " << msg.why() << endl;
-            }
-        }
+        
+
+        
     }
     catch(RWxmsg& msg )
     {
         cout << endl << "CtiExchange Deletion Failed: " ;
         cout << msg.why() << endl;
         throw;
+    }
+}
+
+void CtiExchange::close()
+{
+    try
+    {
+        CtiLockGuard<CtiMutex> guard(_classMutex);
+        if(Portal_ != NULL)
+        {
+            Portal_->socket().closesocket();
+        }
+    }
+    catch(RWSockErr& msg )
+    {
+        if(msg.errorNumber() != RWNETNOTINITIALISED)
+        {
+            cout << "Socket Error :" << msg.errorNumber() << " occurred" << endl;
+            cout << "  " << msg.why() << endl;
+        }
     }
 }
 

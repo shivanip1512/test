@@ -39,10 +39,6 @@ void  CtiServer::shutdown()
 {
     CtiServerExclusion server_guard(_server_exclusion);
 
-    _listenerAvailable = FALSE;
-    if(Listener) delete Listener;
-    Listener = NULL;
-
     mConnectionTable.getMap().clear();
     MainQueue_.clearAndDestroy();
 }
@@ -447,8 +443,6 @@ int  CtiServer::clientPurgeQuestionables(PULONG pDeadClients)
 
 
 CtiServer::CtiServer() :
-Listener(0),
-_listenerAvailable(0),
 mConnectionTable(),
 MainQueue_()
 {
