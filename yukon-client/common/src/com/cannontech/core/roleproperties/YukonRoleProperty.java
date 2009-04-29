@@ -96,6 +96,8 @@ public enum YukonRoleProperty {
     HOME_DIRECTORY(WEB_GRAPH, com.cannontech.roles.application.WebGraphRole.HOME_DIRECTORY, stringType()),
     RUN_INTERVAL(WEB_GRAPH, com.cannontech.roles.application.WebGraphRole.RUN_INTERVAL, stringType()),
     
+    ESUB_EDITOR_ROLE_EXITS(ESUB_EDITOR, com.cannontech.roles.application.EsubEditorRole.ESUB_EDITOR_ROLE_EXITS, booleanType()),
+    
     SUB_TARGET(CBC_ONELINE_SUB_SETTINGS, com.cannontech.roles.capcontrol.CBCOnelineSettingsRole.SUB_TARGET, stringType()),
     SUB_VARLOAD(CBC_ONELINE_SUB_SETTINGS, com.cannontech.roles.capcontrol.CBCOnelineSettingsRole.SUB_VARLOAD, stringType()),
     SUB_EST_VARLOAD(CBC_ONELINE_SUB_SETTINGS, com.cannontech.roles.capcontrol.CBCOnelineSettingsRole.SUB_EST_VARLOAD, stringType()),
