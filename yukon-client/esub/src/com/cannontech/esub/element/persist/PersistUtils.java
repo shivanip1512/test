@@ -27,9 +27,14 @@ public class PersistUtils {
 	 * @throws IOException
 	 */
 	public static Color readColor(InputStream in) throws IOException {
-		return new Color(	LxSaveUtils.readInt(in), 
-							LxSaveUtils.readInt(in),
-							LxSaveUtils.readInt(in));
+	    int red = LxSaveUtils.readInt(in);
+	    int green = LxSaveUtils.readInt(in);
+	    int blue = LxSaveUtils.readInt(in);
+	    if(red > -1) {
+	        return new Color(red, green, blue);
+	    }else {
+	        return null;
+	    }
 	}
 	
 	/**
@@ -39,15 +44,20 @@ public class PersistUtils {
 	 * @throws IOException
 	 */
 	public static void writeColor(OutputStream out, Color color) throws IOException {
-		LxSaveUtils.writeInt(out, color.getRed());
-		LxSaveUtils.writeInt(out, color.getGreen());
-		LxSaveUtils.writeInt(out, color.getBlue());		
+	    if(color != null) {
+    		LxSaveUtils.writeInt(out, color.getRed());
+    		LxSaveUtils.writeInt(out, color.getGreen());
+    		LxSaveUtils.writeInt(out, color.getBlue());
+	    }else {
+	        LxSaveUtils.writeInt(out, -1);
+            LxSaveUtils.writeInt(out, -1);
+            LxSaveUtils.writeInt(out, -1);
+	    }
 	}
     
-    @SuppressWarnings("unchecked")
-    public static Map readIntFloatMap(InputStream in) throws IOException {
+    public static Map<Integer, Float> readIntFloatMap(InputStream in) throws IOException {
         int numEntries = LxSaveUtils.readInt(in);
-        Map m = new HashMap();
+        Map<Integer, Float> m = new HashMap<Integer, Float>();
         for(int i = 0; i < numEntries; i++) {
             int rawState = LxSaveUtils.readInt(in);
             float f = LxSaveUtils.readFloat(in);
@@ -57,25 +67,24 @@ public class PersistUtils {
         return m;
     }
     
-    public static void writeIntFloatMap(OutputStream out, Map m) throws IOException {
-        Set s = m.keySet();
+    public static void writeIntFloatMap(OutputStream out, Map<Integer,Float> m) throws IOException {
+        Set<Integer> s = m.keySet();
 
         LxSaveUtils.writeInt(out, s.size());
         
-        Iterator iter = s.iterator();
+        Iterator<Integer> iter = s.iterator();
         while (iter.hasNext()) {
-            Integer rawState = (Integer) iter.next();           
-            Float f = (Float) m.get(rawState);
+            Integer rawState = iter.next();           
+            Float f = m.get(rawState);
             
             LxSaveUtils.writeInt(out, rawState.intValue());
             LxSaveUtils.writeFloat(out, f.floatValue());
         }
     }
 	
-    @SuppressWarnings("unchecked")
-    public static Map readIntStringMap(InputStream in) throws IOException {
+    public static Map<Integer, String> readIntStringMap(InputStream in) throws IOException {
         int numEntries = LxSaveUtils.readInt(in);
-        Map m = new HashMap();
+        Map<Integer, String> m = new HashMap<Integer, String>();
         for(int i = 0; i < numEntries; i++) {
             int rawState = LxSaveUtils.readInt(in);
             String str = LxSaveUtils.readString(in);
@@ -85,25 +94,24 @@ public class PersistUtils {
         return m;
     }
     
-    public static void writeIntStringMap(OutputStream out, Map m) throws IOException {
-        Set s = m.keySet();
+    public static void writeIntStringMap(OutputStream out, Map<Integer, String> m) throws IOException {
+        Set<Integer> s = m.keySet();
 
         LxSaveUtils.writeInt(out, s.size());
         
-        Iterator iter = s.iterator();
+        Iterator<Integer> iter = s.iterator();
         while (iter.hasNext()) {
-            Integer rawState = (Integer) iter.next();           
-            String str = (String) m.get(rawState);
+            Integer rawState = iter.next();           
+            String str = m.get(rawState);
             
             LxSaveUtils.writeInt(out, rawState.intValue());
             LxSaveUtils.writeString(out, str);
         }
     }
     
-	@SuppressWarnings("unchecked")
-    public static Map readIntIntMap(InputStream in) throws IOException {
+    public static Map<Integer, Integer> readIntIntMap(InputStream in) throws IOException {
 		int numEntries = LxSaveUtils.readInt(in);
-		Map m = new HashMap();
+		Map<Integer, Integer> m = new HashMap<Integer, Integer>();
 		for(int i = 0; i < numEntries; i++) {
 			int rawState = LxSaveUtils.readInt(in);
 			int imageId = LxSaveUtils.readInt(in);
@@ -113,25 +121,24 @@ public class PersistUtils {
 		return m;
 	}
 	
-	public static void writeIntIntMap(OutputStream out, Map m) throws IOException {
-		Set s = m.keySet();
+	public static void writeIntIntMap(OutputStream out, Map<Integer, Integer> m) throws IOException {
+		Set<Integer> s = m.keySet();
 
 		LxSaveUtils.writeInt(out, s.size());
 		
-		Iterator iter = s.iterator();
+		Iterator<Integer> iter = s.iterator();
 		while (iter.hasNext()) {
-			Integer rawState = (Integer) iter.next();			
-			Integer imageId = (Integer) m.get(rawState);
+			Integer rawState = iter.next();			
+			Integer imageId = m.get(rawState);
 			
 			LxSaveUtils.writeInt(out, rawState.intValue());
 			LxSaveUtils.writeInt(out, imageId.intValue());
 		}
 	}
     
-    @SuppressWarnings("unchecked")
-    public static Map readIntColorMap(InputStream in) throws IOException {
+    public static Map<Integer, Color> readIntColorMap(InputStream in) throws IOException {
         int numEntries = LxSaveUtils.readInt(in);
-        Map m = new HashMap();
+        Map<Integer, Color> m = new HashMap<Integer, Color>();
         for(int i = 0; i < numEntries; i++) {
             int rawState = LxSaveUtils.readInt(in);
             Color stateColor = readColor(in);
@@ -141,15 +148,15 @@ public class PersistUtils {
         return m;
     }
     
-    public static void writeIntColorMap(OutputStream out, Map m) throws IOException {
-        Set s = m.keySet();
+    public static void writeIntColorMap(OutputStream out, Map<Integer, Color> m) throws IOException {
+        Set<Integer> s = m.keySet();
 
         LxSaveUtils.writeInt(out, s.size());
         
-        Iterator iter = s.iterator();
+        Iterator<Integer> iter = s.iterator();
         while (iter.hasNext()) {
-            Integer rawState = (Integer) iter.next();           
-            Color stateColor = (Color) m.get(rawState);
+            Integer rawState = iter.next();           
+            Color stateColor = m.get(rawState);
             
             LxSaveUtils.writeInt(out, rawState.intValue());
             writeColor(out, stateColor);

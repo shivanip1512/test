@@ -7,6 +7,7 @@ import com.cannontech.esub.element.DrawingMetaElement;
 import com.cannontech.esub.element.DynamicGraphElement;
 import com.cannontech.esub.element.DynamicText;
 import com.cannontech.esub.element.FunctionElement;
+import com.cannontech.esub.element.RectangleElement;
 import com.cannontech.esub.element.StateImage;
 import com.cannontech.esub.element.StaticImage;
 import com.cannontech.esub.element.StaticText;
@@ -27,7 +28,8 @@ public class ElementEditorFactory {
 		{ CurrentAlarmsTable.class, CurrentAlarmsTableEditor.class },
 		{ AlarmTextElement.class, AlarmTextElementEditor.class },
         { FunctionElement.class, FunctionElementEditor.class },
-        { LineElement.class, LineElementEditor.class }
+        { LineElement.class, LineElementEditor.class },
+        { RectangleElement.class, RectangleElementEditor.class }
 	};
 		
 	private static ElementEditorFactory instance = null;

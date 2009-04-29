@@ -5,13 +5,11 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -31,14 +29,14 @@ import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.esub.editor.Util;
-import com.cannontech.esub.element.DynamicText;;
+import com.cannontech.esub.element.DynamicText;
 
 public class TextColorPointPanel extends DataInputPanel implements ActionListener, TreeSelectionListener {
     private javax.swing.JPanel pointPanel = null;
     private PointSelectionPanel pointSelectionPanel = null;
     private javax.swing.JPanel buttonGroup = null;
     private DynamicText dynamicText;
-    private HashMap map = new HashMap();
+    private HashMap<Integer, Color> map = new HashMap<Integer, Color>();
     private JButton okButton;
     private JLabel previewLabel;
     private JLabel rawStateLabel;
@@ -82,7 +80,7 @@ public class TextColorPointPanel extends DataInputPanel implements ActionListene
     private JLabel[] colorLabels = new JLabel[12];
     private JButton[] buttons = new JButton[12];
     private JLabel[] stateLabels = new JLabel[12];
-    private HashMap oldColorMap;
+    private HashMap<Integer, Color> oldColorMap;
     
     
 /**
@@ -303,7 +301,7 @@ public PointSelectionPanel getPointSelectionPanel() {
     return pointSelectionPanel;
 }
 
-public HashMap getCustomColorMap() {
+public HashMap<Integer, Color> getCustomColorMap() {
     return map;
 }
 
@@ -487,23 +485,22 @@ public void valueChanged(TreeSelectionEvent evt)
     fireInputUpdate();
 }
 
-@SuppressWarnings("unchecked")
 public void resetPreviewPanelColors(LitePoint p)
 {
-    List colors = new ArrayList(12);
+    List<JLabel> colors = new ArrayList<JLabel>(12);
     if(p != null)
     {
         LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(p.getStateGroupID());
-        List states = lsg.getStatesList();
+        List<LiteState> states = lsg.getStatesList();
         
         for(int i = 0; i < states.size(); i++) 
         {
-            int color = ((LiteState) states.get(i)).getFgColor();
-            LiteState state = (LiteState)states.get(i);
+            int color = states.get(i).getFgColor();
+            LiteState state = states.get(i);
             int rawStateNumber = state.getStateRawState();
            
-            colorLabels[rawStateNumber].setForeground((Color)oldColorMap.get(color));
-            colorLabels[rawStateNumber].setBackground((Color)oldColorMap.get(color));
+            colorLabels[rawStateNumber].setForeground(oldColorMap.get(color));
+            colorLabels[rawStateNumber].setBackground(oldColorMap.get(color));
             colors.add(colorLabels[rawStateNumber]);
             
             stateLabels[i].setText(state.getStateText());
@@ -553,12 +550,12 @@ public void setPreviewPanelColors(LitePoint p)
         if(!(map.get(rawStateNumber) == null))
         {
             
-            colorLabels[rawStateNumber].setForeground((Color)map.get(rawStateNumber));
-            colorLabels[rawStateNumber].setBackground((Color)map.get(rawStateNumber));
+            colorLabels[rawStateNumber].setForeground(map.get(rawStateNumber));
+            colorLabels[rawStateNumber].setBackground(map.get(rawStateNumber));
         }else {
        
-        colorLabels[rawStateNumber].setForeground((Color)oldColorMap.get(color));
-        colorLabels[rawStateNumber].setBackground((Color)oldColorMap.get(color));
+        colorLabels[rawStateNumber].setForeground(oldColorMap.get(color));
+        colorLabels[rawStateNumber].setBackground(oldColorMap.get(color));
         }
         colors.add(colorLabels[rawStateNumber]);
         
@@ -1174,7 +1171,6 @@ private JButton getResetButton()
     return resetButton;
 }
 
-@SuppressWarnings({"unchecked","deprecation"})
 public void actionPerformed(ActionEvent e) 
 {
     Object source = e.getSource();
@@ -1199,7 +1195,7 @@ public void actionPerformed(ActionEvent e)
            }
        );
 
-       d.show();
+       d.setVisible(true);
        d.dispose();
     }else if (source == getEditButton1()) {
         javax.swing.JDialog d = javax.swing.JColorChooser.createDialog(this, "Select a color", true, colorChooser, 
@@ -1215,7 +1211,7 @@ public void actionPerformed(ActionEvent e)
                 }
             }
         );
-        d.show();
+        d.setVisible(true);
         d.dispose();
     }else if (source == getEditButton2()) {
         javax.swing.JDialog d = javax.swing.JColorChooser.createDialog(this, "Select a color", true, colorChooser, 
@@ -1231,7 +1227,7 @@ public void actionPerformed(ActionEvent e)
                }
            }
        );
-       d.show();
+       d.setVisible(true);
        d.dispose();
    }else if (source == getEditButton3()) {
        javax.swing.JDialog d = javax.swing.JColorChooser.createDialog(this, "Select a color", true, colorChooser, 
@@ -1248,7 +1244,7 @@ public void actionPerformed(ActionEvent e)
           }
       );
 
-      d.show();
+      d.setVisible(true);
       d.dispose();
    }else if (source == getEditButton4()) {
        javax.swing.JDialog d = javax.swing.JColorChooser.createDialog(this, "Select a color", true, colorChooser, 
@@ -1265,7 +1261,7 @@ public void actionPerformed(ActionEvent e)
           }
       );
 
-      d.show();
+      d.setVisible(true);
       d.dispose();
    }else if (source == getEditButton5()) {
        javax.swing.JDialog d = javax.swing.JColorChooser.createDialog(this, "Select a color", true, colorChooser, 
@@ -1282,7 +1278,7 @@ public void actionPerformed(ActionEvent e)
           }
       );
 
-      d.show();
+      d.setVisible(true);
       d.dispose();
    }else if (source == getEditButton6()) {
        javax.swing.JDialog d = javax.swing.JColorChooser.createDialog(this, "Select a color", true, colorChooser, 
@@ -1299,7 +1295,7 @@ public void actionPerformed(ActionEvent e)
           }
       );
 
-      d.show();
+      d.setVisible(true);
       d.dispose();
    }else if (source == getEditButton7()) {
        javax.swing.JDialog d = javax.swing.JColorChooser.createDialog(this, "Select a color", true, colorChooser, 
@@ -1316,7 +1312,7 @@ public void actionPerformed(ActionEvent e)
           }
       );
 
-      d.show();
+      d.setVisible(true);
       d.dispose();
    }else if (source == getEditButton8()) {
        javax.swing.JDialog d = javax.swing.JColorChooser.createDialog(this, "Select a color", true, colorChooser, 
@@ -1333,7 +1329,7 @@ public void actionPerformed(ActionEvent e)
           }
       );
 
-      d.show();
+      d.setVisible(true);
       d.dispose();
    }else if (source == getEditButton9()) {
        javax.swing.JDialog d = javax.swing.JColorChooser.createDialog(this, "Select a color", true, colorChooser, 
@@ -1350,7 +1346,7 @@ public void actionPerformed(ActionEvent e)
           }
       );
 
-      d.show();
+      d.setVisible(true);
       d.dispose();
    }else if (source == getEditButton10()) {
        javax.swing.JDialog d = javax.swing.JColorChooser.createDialog(this, "Select a color", true, colorChooser, 
@@ -1367,7 +1363,7 @@ public void actionPerformed(ActionEvent e)
           }
       );
 
-      d.show();
+      d.setVisible(true);
       d.dispose();
    }
 }

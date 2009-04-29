@@ -1,14 +1,22 @@
 package com.cannontech.esub.editor.element;
 
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JColorChooser;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JSlider;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.common.gui.util.SimpleLabel;
@@ -16,7 +24,6 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.esub.editor.Util;
 import com.cannontech.esub.element.LineElement;
 
@@ -510,7 +517,7 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
         lineElement = (LineElement) o;
         
         //save off initial values in case of a cancel
-        initialColor = lineElement.getColor();
+        initialColor = lineElement.getLineColor();
         initialColorPointID = lineElement.getColorPointID();
         initialThickness = lineElement.getLineThickness();
         initialThicknessPointID = lineElement.getThicknessPointID();
@@ -523,7 +530,6 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
         
         if(!lineElement.isNew()){
             colorChooser.setColor(lineElement.getLineColor());
-            colorChooser.setColor((java.awt.Color)lineElement.getPaint());
             getColorButton().setBackground(colorChooser.getColor());
             getColorLabel().setBackground(colorChooser.getColor());
             getThicknessSlider().setValue(new Float(lineElement.getLineThickness()).intValue());
@@ -716,7 +722,6 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
         return blinkPointPanel;
     }
 
-    @SuppressWarnings({"deprecation"})
     public void actionPerformed(ActionEvent e) {
         
         Object source = e.getSource();
@@ -727,9 +732,9 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
                     public void actionPerformed(java.awt.event.ActionEvent e) {
                         getColorButton().setBackground(colorChooser.getColor());
                         getColorLabel().setBackground(colorChooser.getColor());
-                    
+                        getColorLabel().revalidate();
+                        getColorLabel().repaint();
                         lineElement.setLineColor(colorChooser.getColor());
-                        
                     }
                 },
                 new java.awt.event.ActionListener() { //cancel listener
@@ -738,7 +743,7 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
                 }
             );
 
-            d.show();
+            d.setVisible(true);
             d.dispose();
         }else if( source == getArrowComboBox()) {
             int arrow = getArrowComboBox().getSelectedIndex();
@@ -799,35 +804,35 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
             pointPanelDialog.setContentPane(getColorPointPanel());
             pointPanelDialog.setSize(new java.awt.Dimension(540, 630));
             getColorPointPanel().setValue(lineElement);
-            pointPanelDialog.show();
+            pointPanelDialog.setVisible(true);
         }
         else if( source == getThicknessPointButton()) {
             pointPanelDialog = new JDialog(CtiUtilities.getParentFrame(this), true);
             pointPanelDialog.setContentPane(getThicknessPointPanel());
             pointPanelDialog.setSize(new java.awt.Dimension(540, 650));
             getThicknessPointPanel().setValue(lineElement);
-            pointPanelDialog.show();
+            pointPanelDialog.setVisible(true);
         }
         else if( source == getArrowPointButton()) {
             pointPanelDialog = new JDialog(CtiUtilities.getParentFrame(this), true);
             pointPanelDialog.setContentPane(getArrowPointPanel());
             pointPanelDialog.setSize(new java.awt.Dimension(540, 630));
             getArrowPointPanel().setValue(lineElement);
-            pointPanelDialog.show();
+            pointPanelDialog.setVisible(true);
         }
         else if( source == getOpacityPointButton()) {
             pointPanelDialog = new JDialog(CtiUtilities.getParentFrame(this), true);
             pointPanelDialog.setContentPane(getOpacityPointPanel());
             pointPanelDialog.setSize(new java.awt.Dimension(540, 650));
             getOpacityPointPanel().setValue(lineElement);
-            pointPanelDialog.show();
+            pointPanelDialog.setVisible(true);
         }
         else if( source == getBlinkPointButton()) {
             pointPanelDialog = new JDialog(CtiUtilities.getParentFrame(this), true);
             pointPanelDialog.setContentPane(getBlinkPointPanel());
             pointPanelDialog.setSize(new java.awt.Dimension(540, 500));
             getBlinkPointPanel().setValue(lineElement);
-            pointPanelDialog.show();
+            pointPanelDialog.setVisible(true);
         }
         else if( source == getColorPointPanel().getOkButton()) {
             getColorPointPanel().getValue(lineElement);

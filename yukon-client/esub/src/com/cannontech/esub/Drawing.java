@@ -6,19 +6,25 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.element.DrawingElement;
 import com.cannontech.esub.element.DrawingMetaElement;
+import com.cannontech.esub.element.LineElement;
+import com.cannontech.esub.element.RectangleElement;
 import com.cannontech.esub.svg.ESubSVGGenerator;
 import com.cannontech.esub.svg.SVGOptions;
 import com.cannontech.esub.util.HTMLGenerator;
 import com.cannontech.esub.util.ImageExporter;
+import com.cannontech.esub.util.Util;
 import com.cannontech.user.SystemUserContext;
 import com.cannontech.user.YukonUserContext;
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;
+import com.loox.jloox.LxLine;
+import com.loox.jloox.LxRectangle;
 import com.loox.jloox.LxView;
 
 /**
@@ -59,13 +65,39 @@ public class Drawing implements Serializable {
 		}
 		fileName = file;
 
-		// Fix up each element so they know who their drawing is
+		/*
+		 *  Fix up each element so they know who their drawing is.
+		 *  Create new versions of lines and rectangles and replace
+		 *  the old ones with the new ones in the graph component list.
+		 */
+		List<LxComponent> componentsToAdd = new ArrayList<LxComponent>();
+		List<LxComponent> componentsToRemove = new ArrayList<LxComponent>();
 		LxComponent[] comps = lxGraph.getComponents();
-		for (int i = 0; i < comps.length; i++) {
-			if (comps[i] instanceof DrawingElement) {
-				((DrawingElement) comps[i]).setDrawing(this);
+		for (LxComponent component : comps) {
+		    if(component instanceof LxLine) {
+                LineElement line = Util.convertToLineElement((LxLine)component);
+                ((DrawingElement) line).setDrawing(this);
+                componentsToAdd.add(line);
+                componentsToRemove.add(component);
+            } else 
+                if (component instanceof LxRectangle) {
+                RectangleElement rectangle = Util.convertToRectangleElement((LxRectangle)component);
+                ((DrawingElement) rectangle).setDrawing(this);
+                componentsToAdd.add(rectangle);
+                componentsToRemove.add(component);
+            }
+			if (component instanceof DrawingElement) {
+			    ((DrawingElement) component).setDrawing(this);
 			}							
 		}
+		// Remove the old versions of these elements
+		for(LxComponent oldComp : componentsToRemove) {
+		    lxGraph.remove(oldComp);
+		}
+		// Add the old versions of these elements
+		for(LxComponent newComp : componentsToAdd) {
+            lxGraph.add(newComp);
+        }
 		
 		getLxView().setSize( getMetaElement().getDrawingWidth(), getMetaElement().getDrawingHeight());
 	}

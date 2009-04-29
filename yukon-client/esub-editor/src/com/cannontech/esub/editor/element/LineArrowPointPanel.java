@@ -4,13 +4,11 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -35,7 +33,7 @@ public class LineArrowPointPanel extends DataInputPanel implements ActionListene
     private javax.swing.JPanel buttonGroup = null;
     private PointSelectionPanel pointSelectionPanel = null;
     private LineElement lineElement;
-    private HashMap map = new HashMap();
+    private HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
     private JButton okButton;
     private JLabel rawStateLabel;
     private JLabel arrowLabel;
@@ -245,7 +243,7 @@ public PointSelectionPanel getPointSelectionPanel() {
     return pointSelectionPanel;
 }
 
-public HashMap getCustomArrowMap() {
+public HashMap<Integer, Integer> getCustomArrowMap() {
     return map;
 }
 
@@ -458,7 +456,7 @@ public void setPreviewPanelValues(LitePoint p)
         
         if(!(map.get(rawStateNumber) == null))
         {
-            int arrowNumber = new Integer( (Integer) map.get(rawStateNumber)).intValue();
+            int arrowNumber = new Integer( map.get(rawStateNumber)).intValue();
             if(arrowNumber == 5 || arrowNumber == 6 || arrowNumber == 7) {
                 arrowNumber = arrowNumber - 4;
             }else if(arrowNumber == 12) {
@@ -877,7 +875,6 @@ private JButton getResetButton()
     return resetButton;
 }
 
-@SuppressWarnings("unchecked")
 public void actionPerformed(ActionEvent e) {
     Object source = e.getSource();
     if (source == getResetButton()) {

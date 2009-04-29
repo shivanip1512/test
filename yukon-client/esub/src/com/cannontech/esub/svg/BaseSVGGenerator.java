@@ -42,11 +42,11 @@ import com.cannontech.esub.util.DrawingUpdater;
 import com.cannontech.esub.util.JS;
 import com.cannontech.esub.util.Util;
 import com.cannontech.util.ServletUtil;
+import com.loox.jloox.LxAbstractRectangle;
 import com.loox.jloox.LxAbstractStyle;
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;
 import com.loox.jloox.LxLine;
-import com.loox.jloox.LxRectangle;
 
 /**
  * Generates an svg document given an Esub drawing
@@ -177,8 +177,8 @@ public abstract class BaseSVGGenerator implements ISVGGenerator {
                 elem = createLxLine (doc, (LxLine) comp);
             }
             else            
-            if( comp instanceof LxRectangle ) {
-                elem = createRectangle(doc, (LxRectangle) comp);
+            if( comp instanceof LxAbstractRectangle) {
+                elem = createRectangle(doc, (LxAbstractRectangle) comp);
             }
             else
             if( comp instanceof StaticImage ) {
@@ -251,6 +251,7 @@ public abstract class BaseSVGGenerator implements ISVGGenerator {
         return lineElem;            
     }
 
+    @SuppressWarnings("unchecked")
     private Element createDynamicText(SVGDocument doc, DynamicText text)  {
         
         int x = (int) Math.round(text.getBaseLinePoint1().getX());
@@ -294,29 +295,29 @@ public abstract class BaseSVGGenerator implements ISVGGenerator {
         
         if(text.getColorPointID() > 0) {
             
-            List colors = text.getColors();
+            List<Color> colors = text.getColors();
             for(int i = 0; i < colors.size(); i++) {
                 
-                String colorString = ((Color)colors.get(i)).getRed() +"," + ((Color)colors.get(i)).getGreen() + "," + ((Color)colors.get(i)).getBlue();
+                String colorString = colors.get(i).getRed() +"," + colors.get(i).getGreen() + "," + colors.get(i).getBlue();
                 textElem.setAttributeNS(null, "color" + i, colorString);
             }
         }
         
         if( (text.getDisplayAttribs() & PointAttributes.STATE_TEXT) != 0 ) {
             
-            List strings = text.getTextStrings();
+            List<String> strings = text.getTextStrings();
             for(int i = 0; i < strings.size(); i++) {
                 
-                String textString = (String)strings.get(i);
+                String textString = strings.get(i);
                 textElem.setAttributeNS(null, "string" + i, textString);
             }
         }
         if(text.getBlinkPointID() > 0) {
             
-            List blinks = text.getBlinks();
+            List<Integer> blinks = text.getBlinks();
             for(int i = 0; i < blinks.size(); i++) {
                 
-                String blinkString = ((Integer)blinks.get(i)).toString();
+                String blinkString = blinks.get(i).toString();
                 textElem.setAttributeNS(null, "blink" + i, blinkString);
             }
         }
@@ -337,9 +338,9 @@ public abstract class BaseSVGGenerator implements ISVGGenerator {
         return textElem;                    
     }
 
-    private Element createRectangle(SVGDocument doc, LxRectangle rect) {
+    private Element createRectangle(SVGDocument doc, LxAbstractRectangle rect) {
         
-        Color c = rect.getStyle().getLineColor();
+        Color borderColor = rect.getStyle().getLineColor();
         Shape[] s = rect.getShape();
         float opacity = rect.getStyle().getTransparency();
     
@@ -355,7 +356,7 @@ public abstract class BaseSVGGenerator implements ISVGGenerator {
 
         Element rectElem = doc.createElementNS(svgNS, "path");
         rectElem.setAttributeNS(null, "id", rect.getName());
-        rectElem.setAttributeNS(null, "style", "fill: " + fillStr + ";opacity:" + opacity + ";stroke:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + "); stroke-width:" + width);
+        rectElem.setAttributeNS(null, "style", "fill: " + fillStr + ";opacity:" + opacity + ";stroke:rgb(" + borderColor.getRed() + "," + borderColor.getGreen() + "," + borderColor.getBlue() + "); stroke-width:" + width);
         rectElem.setAttributeNS(null, "d", pathStr);
         
         return rectElem;
@@ -382,50 +383,50 @@ public abstract class BaseSVGGenerator implements ISVGGenerator {
         lineElem.setAttributeNS(null, "blink", Integer.toString(blink));
         if(line.getColorPointID() > 0) {
             
-            List colors = line.getColors();
+            List<Color> colors = line.getColors();
             for(int i = 0; i < colors.size(); i++) {
                 
-                String colorString = ((Color)colors.get(i)).getRed() +"," + ((Color)colors.get(i)).getGreen() + "," + ((Color)colors.get(i)).getBlue();
+                String colorString = colors.get(i).getRed() +"," + colors.get(i).getGreen() + "," + colors.get(i).getBlue();
                 lineElem.setAttributeNS(null, "color" + i, colorString);
             }
         }
         
         if(line.getThicknessPointID() > 0) {
             
-            List widths = line.getWidths();
+            List<Float> widths = line.getWidths();
             for(int i = 0; i < widths.size(); i++) {
                 
-                String widthString = ((Float)widths.get(i)).toString();
+                String widthString = widths.get(i).toString();
                 lineElem.setAttributeNS(null, "width" + i, widthString);
             }
         }
         
         if(line.getArrowPointID() > 0) {
             
-            List arrows = line.getArrows();
+            List<String> arrows = line.getArrows();
             for(int i = 0; i < arrows.size(); i++) {
                 
-                String arrowString = (String)arrows.get(i);
+                String arrowString = arrows.get(i);
                 lineElem.setAttributeNS(null, "d" + i, arrowString);
             }
         }
         
         if(line.getOpacityPointID() > 0) {
             
-            List opacities = line.getOpacities();
+            List<Float> opacities = line.getOpacities();
             for(int i = 0; i < opacities.size(); i++) {
                 
-                String opacityString = ((Float)opacities.get(i)).toString();
+                String opacityString = opacities.get(i).toString();
                 lineElem.setAttributeNS(null, "opacity" + i, opacityString);
             }
         }
         
         if(line.getBlinkPointID() > 0) {
             
-            List blinks = line.getBlinks();
+            List<Integer> blinks = line.getBlinks();
             for(int i = 0; i < blinks.size(); i++) {
                 
-                String blinkString = ((Integer)blinks.get(i)).toString();
+                String blinkString = blinks.get(i).toString();
                 lineElem.setAttributeNS(null, "blink" + i, blinkString);
             }
         }
@@ -536,9 +537,9 @@ public abstract class BaseSVGGenerator implements ISVGGenerator {
         imgElem.setAttributeNS(null, "width", Integer.toString(width));
         imgElem.setAttributeNS(null, "height", Integer.toString(height));
         
-        List imageNames = img.getImageNames();
+        List<String> imageNames = img.getImageNames();
         for(int i = 0; i < imageNames.size(); i++) {
-            String imageName = (String) imageNames.get(i);
+            String imageName = imageNames.get(i);
             imgElem.setAttributeNS(null, "image" + i, imageName);
         }
         

@@ -43,17 +43,17 @@ public class LineElement extends LxAbstractLine implements DrawingElement {
     private int arrowPointID = -1;
     private int opacityPointID = -1;
     private int blinkPointID = -1;
-    private Map customColorMap = new HashMap(13);
-    private Map customThicknessMap = new HashMap(13);
-    private Map customArrowMap = new HashMap(13);
-    private Map customOpacityMap = new HashMap(13);
-    private Map customBlinkMap = new HashMap(13);
+    private Map<Integer, Color> customColorMap = new HashMap<Integer, Color>(13);
+    private Map<Integer, Float> customThicknessMap = new HashMap<Integer, Float>(13);
+    private Map<Integer, Integer> customArrowMap = new HashMap<Integer, Integer>(13);
+    private Map<Integer, Float> customOpacityMap = new HashMap<Integer, Float>(13);
+    private Map<Integer, Integer> customBlinkMap = new HashMap<Integer, Integer>(13);
     private LiteState currentColorState;
     private LiteState currentThicknessState;
     private LiteState currentArrowState;
     private LiteState currentOpacityState;
     private LiteState currentBlinkState;
-    private HashMap oldColorMap = new HashMap(11);
+    private HashMap<Integer, Color> oldColorMap = new HashMap<Integer, Color>(11);
     
     
     /**
@@ -64,7 +64,6 @@ public class LineElement extends LxAbstractLine implements DrawingElement {
         initialize();
     }
    
-    @SuppressWarnings("unchecked")
     private void initialize() {
         setColor(color);
         setLineColor(color);
@@ -110,9 +109,8 @@ public class LineElement extends LxAbstractLine implements DrawingElement {
         return isNew;
     }
     
-    @SuppressWarnings("unchecked")
-    public List getColors() {
-        List lineColors = new ArrayList(6);
+    public List<Color> getColors() {
+        List<Color> lineColors = new ArrayList<Color>(6);
         LitePoint point = null;
         try {
             point = DaoFactory.getPointDao().getLitePoint(getColorPointID());
@@ -125,15 +123,15 @@ public class LineElement extends LxAbstractLine implements DrawingElement {
         }else {
         
             LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(point.getStateGroupID());
-            List states = lsg.getStatesList();
+            List<LiteState> states = lsg.getStatesList();
             for(int i = 0; i < states.size(); i++) {
-                Color colorObj = (Color) customColorMap.get(new Integer(i));
+                Color colorObj = customColorMap.get(new Integer(i));
                 Color color; 
                 if(colorObj != null) {
                     color = colorObj;
                 } 
                 else {
-                    color = (Color) oldColorMap.get(((LiteState) states.get(i)).getFgColor());
+                    color = oldColorMap.get(states.get(i).getFgColor());
                 }
                 lineColors.add(color);
             }
@@ -141,9 +139,8 @@ public class LineElement extends LxAbstractLine implements DrawingElement {
         return lineColors;
     }
     
-    @SuppressWarnings("unchecked")
-    public List getWidths() {
-        List lineWidths = new ArrayList(6);
+    public List<Float> getWidths() {
+        List<Float> lineWidths = new ArrayList<Float>(6);
         
         LitePoint point = null;
         try {
@@ -158,9 +155,9 @@ public class LineElement extends LxAbstractLine implements DrawingElement {
         }else {
         
             LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(point.getStateGroupID());
-            List states = lsg.getStatesList();
+            List<LiteState> states = lsg.getStatesList();
             for(int i = 0; i < states.size(); i++) {
-                Float widthObj = (Float) customThicknessMap.get(new Integer(i));
+                Float widthObj = customThicknessMap.get(new Integer(i));
                 Float width; 
                 if(widthObj != null) {
                     width = widthObj;
@@ -174,9 +171,8 @@ public class LineElement extends LxAbstractLine implements DrawingElement {
         return lineWidths;
     }
     
-    @SuppressWarnings("unchecked")
-    public List getArrows() {
-        List lineArrows = new ArrayList(6);
+    public List<String> getArrows() {
+        List<String> lineArrows = new ArrayList<String>(6);
         
         LitePoint point = null;
         try {
@@ -191,9 +187,9 @@ public class LineElement extends LxAbstractLine implements DrawingElement {
         }else {
             int originalArrowInt = getLineArrow();
             LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(point.getStateGroupID());
-            List states = lsg.getStatesList();
+            List<LiteState> states = lsg.getStatesList();
             for(int i = 0; i < states.size(); i++) {
-                Integer arrowObj = (Integer) customArrowMap.get(new Integer(i));
+                Integer arrowObj = customArrowMap.get(new Integer(i));
                 Integer arrow; 
                 if(arrowObj != null) {
                     arrow = arrowObj;
@@ -212,9 +208,8 @@ public class LineElement extends LxAbstractLine implements DrawingElement {
         return lineArrows;
     }
     
-    @SuppressWarnings("unchecked")
-    public List getOpacities() {
-        List lineOpacities = new ArrayList(6);
+    public List<Float> getOpacities() {
+        List<Float> lineOpacities = new ArrayList<Float>(6);
         
         LitePoint point = null;
         try {
@@ -230,9 +225,9 @@ public class LineElement extends LxAbstractLine implements DrawingElement {
         }else {
         
             LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(point.getStateGroupID());
-            List states = lsg.getStatesList();
+            List<LiteState> states = lsg.getStatesList();
             for(int i = 0; i < states.size(); i++) {
-                Float opacityObj = (Float) customOpacityMap.get(new Integer(i));
+                Float opacityObj = customOpacityMap.get(new Integer(i));
                 Float opacity; 
                 if(opacityObj != null) {
                     opacity = opacityObj;
@@ -246,9 +241,8 @@ public class LineElement extends LxAbstractLine implements DrawingElement {
         return lineOpacities;
     }
     
-    @SuppressWarnings("unchecked")
-    public List getBlinks() {
-        List lineBlinks = new ArrayList(6);
+    public List<Integer> getBlinks() {
+        List<Integer> lineBlinks = new ArrayList<Integer>(6);
         
         LitePoint point = null;
         try {
@@ -263,9 +257,9 @@ public class LineElement extends LxAbstractLine implements DrawingElement {
         }else {
         
             LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(point.getStateGroupID());
-            List states = lsg.getStatesList();
+            List<LiteState> states = lsg.getStatesList();
             for(int i = 0; i < states.size(); i++) {
-                Integer blinkObj = (Integer)customBlinkMap.get(new Integer(i));
+                Integer blinkObj = customBlinkMap.get(new Integer(i));
                 Integer blink; 
                 if(blinkObj != null) {
                     blink =blinkObj;
@@ -405,43 +399,43 @@ public synchronized void saveAsJLX(OutputStream out) throws IOException
         return ELEMENT_ID;
     }
     
-    public Map getCustomColorMap() {
+    public Map<Integer, Color> getCustomColorMap() {
         return customColorMap;
     }
     
-    public void setCustomColorMap(Map m) {
+    public void setCustomColorMap(Map<Integer, Color> m) {
         customColorMap = m;
     }
     
-    public Map getCustomThicknessMap() {
+    public Map<Integer, Float> getCustomThicknessMap() {
         return customThicknessMap;
     }
     
-    public void setCustomThicknessMap(Map m) {
+    public void setCustomThicknessMap(Map<Integer, Float> m) {
         customThicknessMap = m;
     }
     
-    public Map getCustomArrowMap() {
+    public Map<Integer, Integer> getCustomArrowMap() {
         return customArrowMap;
     }
     
-    public void setCustomArrowMap(Map m) {
+    public void setCustomArrowMap(Map<Integer, Integer> m) {
         customArrowMap = m;
     }
     
-    public Map getCustomOpacityMap() {
+    public Map<Integer, Float> getCustomOpacityMap() {
         return customOpacityMap;
     }
     
-    public void setCustomOpacityMap(Map m) {
+    public void setCustomOpacityMap(Map<Integer, Float> m) {
         customOpacityMap = m;
     }
     
-    public Map getCustomBlinkMap() {
+    public Map<Integer, Integer> getCustomBlinkMap() {
         return customBlinkMap;
     }
     
-    public void setCustomBlinkMap(Map m) {
+    public void setCustomBlinkMap(Map<Integer, Integer> m) {
         customBlinkMap = m;
     }
     
@@ -533,7 +527,7 @@ public synchronized void saveAsJLX(OutputStream out) throws IOException
         LiteState state = getCurrentColorState();
         if(state != null) {
             color = com.cannontech.common.gui.util.Colors.getColor(state.getFgColor());
-            Color customColor = (java.awt.Color) customColorMap.get(new Integer(state.getStateRawState()));
+            Color customColor = customColorMap.get(new Integer(state.getStateRawState()));
             if(customColor != null) {
                 color = customColor;
             }
@@ -549,7 +543,7 @@ public synchronized void saveAsJLX(OutputStream out) throws IOException
         LiteState state = getCurrentThicknessState();
         float thickness = 1f;
         if(state != null) {
-            Float customThickness = (Float)customThicknessMap.get(new Integer(state.getStateRawState()));
+            Float customThickness = customThicknessMap.get(new Integer(state.getStateRawState()));
             if(customThickness != null) {
                 thickness = customThickness;
             }
@@ -562,7 +556,7 @@ public synchronized void saveAsJLX(OutputStream out) throws IOException
         LiteState state = getCurrentArrowState();
         int arrow = 0;
         if(state != null) {
-            Integer customArrow = (Integer)customArrowMap.get(new Integer(state.getStateRawState()));
+            Integer customArrow = customArrowMap.get(new Integer(state.getStateRawState()));
             if(customArrow != null) {
                 arrow = customArrow;
             }
@@ -575,7 +569,7 @@ public synchronized void saveAsJLX(OutputStream out) throws IOException
         LiteState state = getCurrentOpacityState();
         float opacity = 1.0f;
         if(state != null) {
-            Float customOpacity= (Float)customOpacityMap.get(new Integer(state.getStateRawState()));
+            Float customOpacity= customOpacityMap.get(new Integer(state.getStateRawState()));
             if(customOpacity != null) {
                 opacity = customOpacity;
             }
@@ -588,7 +582,7 @@ public synchronized void saveAsJLX(OutputStream out) throws IOException
         LiteState state = getCurrentBlinkState();
         int blink = 0;
         if(state != null) {
-            Integer customBlink = (Integer)customBlinkMap.get(new Integer(state.getStateRawState()));
+            Integer customBlink = customBlinkMap.get(new Integer(state.getStateRawState()));
             if(customBlink != null) {
                 blink = customBlink;
             }

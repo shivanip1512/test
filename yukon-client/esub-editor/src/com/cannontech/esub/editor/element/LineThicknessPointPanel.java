@@ -4,19 +4,16 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.SwingConstants;
-import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.TreeSelectionEvent;
@@ -38,7 +35,7 @@ public class LineThicknessPointPanel extends DataInputPanel implements ActionLis
     private javax.swing.JPanel buttonGroup = null;
     private PointSelectionPanel ivjPointSelectionPanel = null;
     private LineElement lineElement;
-    private HashMap map = new HashMap();
+    private HashMap<Integer, Float> map = new HashMap<Integer, Float>();
     private JButton okButton;
     private JLabel rawStateLabel;
     private JLabel thicknessLabel;
@@ -248,7 +245,7 @@ public PointSelectionPanel getPointSelectionPanel() {
     return ivjPointSelectionPanel;
 }
 
-public HashMap getCustomThicknessMap() {
+public HashMap<Integer, Float> getCustomThicknessMap() {
     return map;
 }
 
@@ -257,7 +254,6 @@ public HashMap getCustomThicknessMap() {
  * @return java.lang.Object
  * @param o java.lang.Object
  */
-@SuppressWarnings("unchecked")
 public Object getValue(Object o) {
     // save slider values to custom map
     for(int i = 0; i < 11; i++) {
@@ -410,15 +406,15 @@ public void valueChanged(TreeSelectionEvent evt)
 
 public void resetPreviewPanelValues(LitePoint p)
 {
-    List values = new ArrayList(12);
+    List<JSlider> values = new ArrayList<JSlider>(12);
     if(p != null)
     {
         LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(p.getStateGroupID());
-        List states = lsg.getStatesList();
+        List<LiteState> states = lsg.getStatesList();
         
         for(int i = 0; i < states.size(); i++) 
         {
-            LiteState state = (LiteState)states.get(i);
+            LiteState state = states.get(i);
             int rawStateNumber = state.getStateRawState();
            
             sliders[rawStateNumber].setValue(1);
@@ -452,20 +448,20 @@ public void resetPreviewPanelValues(LitePoint p)
 
 public void setPreviewPanelValues(LitePoint p) 
 {
-    List values = new ArrayList(12);
+    List<JSlider> values = new ArrayList<JSlider>(12);
     LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(p.getStateGroupID());
-    List states = lsg.getStatesList();
+    List<LiteState> states = lsg.getStatesList();
     
     for(int i = 0; i < states.size(); i++) 
     {
         
-        LiteState state = (LiteState)states.get(i);
+        LiteState state = states.get(i);
         int rawStateNumber = state.getStateRawState();
         
         if(!(map.get(rawStateNumber) == null))
         {
             
-            sliders[rawStateNumber].setValue(new Float((Float)map.get(rawStateNumber)).intValue());
+            sliders[rawStateNumber].setValue(new Float(map.get(rawStateNumber)).intValue());
             
         }else {
        
@@ -869,7 +865,6 @@ private JButton getResetButton()
     return resetButton;
 }
 
-@SuppressWarnings("unchecked")
 public void actionPerformed(ActionEvent e) {
     Object source = e.getSource();
     if (source == getResetButton()) {
@@ -882,8 +877,5 @@ public void actionPerformed(ActionEvent e) {
     }
 }
 
-public void stateChanged(ChangeEvent e) {
-    Object source = e.getSource();
-    
-}
+public void stateChanged(ChangeEvent e) {}
 }

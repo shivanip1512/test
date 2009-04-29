@@ -23,8 +23,12 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.activity.ActivityLog;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.DynamicGraphElement;
+import com.cannontech.esub.element.LineElement;
+import com.cannontech.esub.element.RectangleElement;
 import com.cannontech.user.SystemUserContext;
 import com.loox.jloox.LxGraph;
+import com.loox.jloox.LxLine;
+import com.loox.jloox.LxRectangle;
 import com.loox.jloox.LxRotatable;
 
 /**
@@ -38,142 +42,13 @@ public class Util {
 	
 	// The grey X that is displayed in place of an image that couldn't be found
 	public static byte[] DEFAULT_IMAGE_BYTES =
-		{
-				71,
-				73,
-				70,
-				56,
-				57,
-				97,
-				20,
-				0,
-				20,
-				0,
-				-62,
-				0,
-				0,
-				0,
-				0,
-				0,
-				-52,
-				-52,
-				-52,
-				51,
-				51,
-				51,
-				-46,
-				-46,
-				-46,
-				-1,
-				-1,
-				-1,
-				66,
-				66,
-				66,
-				-38,
-				-38,
-				-38,
-				-1,
-				-1,
-				-1,
-				44,
-				0,
-				0,
-				0,
-				0,
-				20,
-				0,
-				20,
-				0,
-				0,
-				3,
-				83,
-				8,
-				-70,
-				-36,
-				78,
-				38,
-				-56,
-				73,
-				-87,
-				33,
-				-22,
-				-42,
-				61,
-				-95,
-				-110,
-				16,
-				55,
-				105,
-				-63,
-				23,
-				-112,
-				98,
-				88,
-				2,
-				-108,
-				106,
-				17,
-				-108,
-				41,
-				-95,
-				93,
-				52,
-				-55,
-				-11,
-				12,
-				87,
-				-72,
-				14,
-				-38,
-				49,
-				22,
-				-121,
-				-80,
-				-37,
-				-12,
-				58,
-				69,
-				-98,
-				-16,
-				-11,
-				51,
-				46,
-				115,
-				-89,
-				-92,
-				4,
-				71,
-				107,
-				-34,
-				-98,
-				-82,
-				81,
-				-46,
-				84,
-				-83,
-				-88,
-				76,
-				-39,
-				13,
-				41,
-				35,
-				21,
-				5,
-				60,
-				-128,
-				-80,
-				-7,
-				2,
-				16,
-				56,
-				-34,
-				13,
-				65,
-				2,
-				0,
-				59
-				 	};
+		{ 71, 73, 70, 56, 57, 97, 20, 0, 20, 0, -62, 0, 0, 0, 0, 0, -52, -52, -52, 51, 51, 51, -46, -46, -46, -1,
+	       -1, -1, 66, 66, 66, -38, -38, -38, -1, -1, -1, 44, 0, 0, 0, 0, 20, 0, 20, 0, 0, 3, 83, 8, -70, -36, 78,
+           38, -56, 73, -87, 33, -22, -42, 61, -95, -110, 16, 55, 105, -63, 23, -112, 98, 88, 2, -108, 106, 17, 
+           -108, 41, -95, 93, 52, -55, -11, 12, 87, -72, 14, -38, 49, 22, -121, -80, -37, -12, 58, 69, -98, -16,
+           -11, 51, 46, 115, -89, -92, 4, 71, 107, -34, -98, -82, 81, -46, 84, -83, -88, 76, -39, 13, 41, 35, 21,
+           5, 60, -128, -80, -7, 2, 16, 56, -34, 13, 65, 2, 0, 59
+        };
 
 	/**
 	 * Util constructor comment.
@@ -398,10 +273,49 @@ public class Util {
 			al.setUserID(userID);
 			al.setAction(action);
 			al.setDescription(description);
-			Transaction t = Transaction.createTransaction(Transaction.INSERT, al);
+			Transaction<ActivityLog> t = Transaction.createTransaction(Transaction.INSERT, al);
 			t.execute(); 
 		} catch(TransactionException te) {
 			te.printStackTrace();
 		}		
 	}
+	
+	/**
+	 * Creates a new LineElement Object and sets it's attributes with
+	 * those of the LxLine passed in. Used for loading drawings with 
+     * old versions of lines and saving them as the new version.
+	 * @param lxLine
+	 * @return line
+	 */
+	public static LineElement convertToLineElement(LxLine lxLine) {
+	    LineElement line = new LineElement();
+	    line.setX(lxLine.getX());
+	    line.setY(lxLine.getY());
+	    line.setPoint1(lxLine.getPoint1());
+	    line.setPoint2(lxLine.getPoint2());
+	    line.setLineColor(lxLine.getLineColor());
+	    line.setTransparency(lxLine.getTransparency());
+	    line.setLineThickness(lxLine.getLineThickness());
+	    line.setLineArrow(lxLine.getLineArrow());
+	    return line;
+	}
+	
+	/**
+	 * Creates a new RectangleElement Object and sets it's attributes with
+     * those of the LxRectangle passed in. Used for loading drawings with 
+     * old versions of recangles and saving them as the new version.
+	 * @param lxRectangle
+	 * @return rectangle
+	 */
+	public static RectangleElement convertToRectangleElement(LxRectangle lxRectangle) {
+	    RectangleElement rectangle = new RectangleElement();
+	    rectangle.setX(lxRectangle.getX());
+	    rectangle.setY(lxRectangle.getY());
+	    rectangle.setSize(lxRectangle.getSize());
+	    rectangle.setPaint(lxRectangle.getPaint());
+        rectangle.setLineColor(lxRectangle.getLineColor());
+        rectangle.setTransparency(lxRectangle.getTransparency());
+        rectangle.setLineThickness(lxRectangle.getLineThickness());
+        return rectangle;
+    }
 }

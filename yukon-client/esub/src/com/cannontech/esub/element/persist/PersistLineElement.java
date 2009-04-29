@@ -1,7 +1,6 @@
 package com.cannontech.esub.element.persist;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -53,19 +52,19 @@ public class PersistLineElement extends BasePersistElement {
                     
                     Color c = PersistUtils.readColor(in);
                     int colorPointID = LxSaveUtils.readInt(in);
-                    Map customColorMap = PersistUtils.readIntColorMap(in);
+                    Map<Integer, Color> customColorMap = PersistUtils.readIntColorMap(in);
                     int thickness = LxSaveUtils.readInt(in);
                     int thicknessPointID = LxSaveUtils.readInt(in);
-                    Map customThicknessMap = PersistUtils.readIntFloatMap(in);
+                    Map<Integer, Float> customThicknessMap = PersistUtils.readIntFloatMap(in);
                     int arrow = LxSaveUtils.readInt(in);
                     int arrowPointID = LxSaveUtils.readInt(in);
-                    Map customArrowMap = PersistUtils.readIntIntMap(in);
+                    Map<Integer, Integer> customArrowMap = PersistUtils.readIntIntMap(in);
                     float opacity = LxSaveUtils.readFloat(in);
                     int opacityPointID = LxSaveUtils.readInt(in);
-                    Map customOpacityMap = PersistUtils.readIntFloatMap(in);
+                    Map<Integer, Float> customOpacityMap = PersistUtils.readIntFloatMap(in);
                     int blink = LxSaveUtils.readInt(in);
                     int blinkPointID = LxSaveUtils.readInt(in);
-                    Map customBlinkMap = PersistUtils.readIntIntMap(in);
+                    Map<Integer, Integer> customBlinkMap = PersistUtils.readIntIntMap(in);
                     elem.setPaint(c);
                     elem.setColorPointID(colorPointID);
                     elem.setCustomColorMap(customColorMap);

@@ -37,14 +37,10 @@ public void addToToolBar(LxAbstractAction action, JToolBar toolBar) {
 				
 		toolBar = new javax.swing.JToolBar(JToolBar.VERTICAL);
 
+		addToToolBar( actions.getAction(EditorActions.RECTANGLE_ELEMENT ), toolBar);
 		addToToolBar( actions.getAction(EditorActions.LINE_ELEMENT ), toolBar);
-//        addToToolBar( actions.getAction(EditorActions.CREATE_LINE ), toolBar);
-		addToToolBar( actions.getAction(EditorActions.CREATE_RECTANGLE), toolBar);
 		addToToolBar( actions.getAction(EditorActions.STATIC_IMAGE), toolBar);
 		addToToolBar( actions.getAction(EditorActions.STATIC_TEXT), toolBar);
-		//addToToolBar( actions.getAction(EditorActions.CREATE_IMAGE), toolBar);
-		//addToToolBar( actions.getAction(EditorActions.CREATE_TEXT), toolBar);		
-		//addToToolBar( actions.getAction(EditorActions.CREATE_LINK), toolBar);
 		addToToolBar( actions.getAction(EditorActions.DYNAMIC_TEXT), toolBar);
 		addToToolBar( actions.getAction(EditorActions.STATE_IMAGE), toolBar);
 		addToToolBar( actions.getAction(EditorActions.DYNAMIC_GRAPH), toolBar);

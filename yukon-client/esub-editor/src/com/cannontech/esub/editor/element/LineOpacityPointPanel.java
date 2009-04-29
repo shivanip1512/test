@@ -4,21 +4,16 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.SwingConstants;
-import javax.swing.border.EtchedBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 
@@ -38,7 +33,7 @@ public class LineOpacityPointPanel extends DataInputPanel implements ActionListe
     private javax.swing.JPanel buttonGroup = null;
     private PointSelectionPanel pointSelectionPanel = null;
     private LineElement lineElement;
-    private HashMap map = new HashMap();
+    private HashMap<Integer, Float> map = new HashMap<Integer, Float>();
     private JButton okButton;
     private JLabel rawStateLabel;
     private JLabel opacityLabel;
@@ -248,7 +243,7 @@ public PointSelectionPanel getPointSelectionPanel() {
     return pointSelectionPanel;
 }
 
-public HashMap getCustomOpacityMap() {
+public HashMap<Integer, Float> getCustomOpacityMap() {
     return map;
 }
 
@@ -257,7 +252,6 @@ public HashMap getCustomOpacityMap() {
  * @return java.lang.Object
  * @param o java.lang.Object
  */
-@SuppressWarnings("unchecked")
 public Object getValue(Object o) {
     
     
@@ -456,7 +450,7 @@ public void setPreviewPanelValues(LitePoint p)
         
         if(!(map.get(rawStateNumber) == null))
         {
-            float f = new Float((Float)map.get(rawStateNumber)) * 100;
+            float f = new Float(map.get(rawStateNumber)) * 100;
             sliders[rawStateNumber].setValue(new Float(f).intValue());
             
         }else {
@@ -859,7 +853,6 @@ private JButton getResetButton()
     return resetButton;
 }
 
-@SuppressWarnings("unchecked")
 public void actionPerformed(ActionEvent e) {
     Object source = e.getSource();
     if (source == getResetButton()) {

@@ -45,7 +45,6 @@ import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.debug.gui.AboutDialog;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.editor.element.ElementEditorFactory;
-import com.cannontech.esub.editor.element.LineElementEditor;
 import com.cannontech.esub.element.AlarmTextElement;
 import com.cannontech.esub.element.CurrentAlarmsTable;
 import com.cannontech.esub.element.DrawingElement;
@@ -54,6 +53,7 @@ import com.cannontech.esub.element.DynamicGraphElement;
 import com.cannontech.esub.element.DynamicText;
 import com.cannontech.esub.element.FunctionElement;
 import com.cannontech.esub.element.LineElement;
+import com.cannontech.esub.element.RectangleElement;
 import com.cannontech.esub.element.StateImage;
 import com.cannontech.esub.element.StaticImage;
 import com.cannontech.esub.element.StaticText;
@@ -78,7 +78,6 @@ import com.loox.jloox.LxView;
 public class Editor extends JPanel {
 	
 	private static final String APPLICATION_NAME = "eSubstation Editor";
-	private static final Dimension defaultSize = new Dimension(800, 600);
 	
     public static final URL ESUBEDITOR_IMG_16 = Editor.class.getResource("/Esubstation16.gif");
     public static final URL ESUBEDITOR_IMG_24 = Editor.class.getResource("/Esubstation24.gif");
@@ -99,15 +98,15 @@ public class Editor extends JPanel {
     }
     
     private static JFrame frame;
-    final PropertyPanel lineEditor;
-	// the drawing to edit
-	// Synchronize on the drawing to stop any updates
-	// from happening 
+	/*
+	 * The drawing to edit.
+	 * Synchronize on the drawing to stop any updates from happening.
+	 */
 	private Drawing drawing;
 	
 	private UndoManager undoManager;
 	
-	// timer to update the drawing
+	// Timer to update the drawing
 	private Timer drawingUpdateTimer;
 	private ESubDrawingUpdater drawingUpdater;
 	
@@ -119,8 +118,9 @@ public class Editor extends JPanel {
 
 	// All the actions for this editor
 	EditorActions editorActions;
-	boolean placingLine = false;
-    boolean drawingLine = false;
+	boolean placingObject = false;
+    boolean drawingObject = false;
+    private static final int UPATE_TIMER = 15000;
     
 	// Handles clicks on the LxView	
 	private final MouseListener viewMouseListener = new MouseAdapter() {
@@ -131,23 +131,23 @@ public class Editor extends JPanel {
 				elementPlacer.setXPosition(evt.getX());
 				elementPlacer.setYPosition(evt.getY());
 				configureObject(elementPlacer);
-			}else if( placingLine == true) {
+			}else if( placingObject == true) {
                 
                 elementPlacer.setXPosition(evt.getX());
                 elementPlacer.setYPosition(evt.getY());
-                configureLine(elementPlacer);
+                configureDrawableObject(elementPlacer);
                 
             }
 		}
 
         @Override
         public void mouseReleased(MouseEvent e) {
-            if(drawingLine == true){
+            if(drawingObject == true){
                 
-                drawingLine = false;
+                drawingObject = false;
                 elementPlacer.setXPosition(e.getX());
                 elementPlacer.setYPosition(e.getY());
-                drawingLine(elementPlacer);
+                drawingObject(elementPlacer);
             }
         }
     };
@@ -165,9 +165,14 @@ public class Editor extends JPanel {
     private final MouseMotionListener mouseMotionListener = new MouseMotionListener()
     {
         public void mouseDragged(MouseEvent evt) {
-            if(drawingLine) {
-                LineElement elem =  (LineElement) elementPlacer.getElement();
-                elem.setPoint2(evt.getX(), evt.getY());
+            if(drawingObject) {
+                if(elementPlacer.getElement() instanceof LineElement) {
+                    LineElement elem =  (LineElement) elementPlacer.getElement();
+                    elem.setPoint2(evt.getX(), evt.getY());
+                } else {
+                   RectangleElement elem = (RectangleElement) elementPlacer.getElement();
+                   elem.setSize(Math.abs(evt.getX() - elem.getX()),Math.abs(evt.getY() - elem.getY()));
+                }
             }
         }
         public void mouseMoved(MouseEvent evt) {}
@@ -185,7 +190,6 @@ public class Editor extends JPanel {
 	 */
 	public Editor() {
 		super();
-        lineEditor = ElementEditorFactory.getInstance().createEditorPanel(LineElement.class);
 		initEditor(this);
 	}
     
@@ -226,7 +230,7 @@ public class Editor extends JPanel {
 		});
 	}
     
-    void configureLine(final ElementPlacer placer) {
+    void configureDrawableObject(final ElementPlacer placer) {
 
         SwingUtilities.invokeLater(new Runnable() {
 
@@ -235,21 +239,29 @@ public class Editor extends JPanel {
                 synchronized(getDrawing()) {
 
                     try {
-                        LineElement elem = (LineElement) placer.getElement();
-                        elem.setPoint1(
-                            placer.getXPosition(),
-                            placer.getYPosition());
-                        
-                        elem.setPoint2(
-                            placer.getXPosition(),
-                            placer.getYPosition());
-    
-                        ((DrawingElement) elem).setDrawing(getDrawing());
-                        
-                        getDrawing().getLxGraph().add(elem);
+                        if(placer.getElement() instanceof LineElement) {
+                            LineElement elem = (LineElement) placer.getElement();
+                            elem.setPoint1(
+                                placer.getXPosition(),
+                                placer.getYPosition());
+                            
+                            elem.setPoint2(
+                                placer.getXPosition(),
+                                placer.getYPosition());
         
-                        placingLine = false;
-                        drawingLine = true;
+                            ((DrawingElement) elem).setDrawing(getDrawing());
+                            
+                            getDrawing().getLxGraph().add(elem);
+                        } else {
+                            RectangleElement elem = (RectangleElement) placer.getElement();
+                            elem.setX(placer.getXPosition());
+                            elem.setY(placer.getYPosition());
+                            ((DrawingElement) elem).setDrawing(getDrawing());
+                            getDrawing().getLxGraph().add(elem);
+                        }
+        
+                        placingObject = false;
+                        drawingObject = true;
                         getDrawing().getLxView().addMouseMotionListener(mouseMotionListener);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -259,7 +271,7 @@ public class Editor extends JPanel {
         });
     }
     
-    void drawingLine(final ElementPlacer placer) {
+    void drawingObject(final ElementPlacer placer) {
 
         SwingUtilities.invokeLater(new Runnable() {
 
@@ -268,15 +280,17 @@ public class Editor extends JPanel {
                 synchronized(getDrawing()) {
 
                     try {
-                        LineElement elem = (LineElement) placer.getElement();
-                        elem.setPoint2(
-                            placer.getXPosition(),
-                            placer.getYPosition());
-        
-                        placingLine = false;
-                        drawingLine = false;
+                        if(placer.getElement() instanceof LineElement) {
+                            LineElement elem = (LineElement) placer.getElement();
+                            elem.setPoint2(placer.getXPosition(), placer.getYPosition());
+                        } else {
+                            RectangleElement elem = (RectangleElement) placer.getElement();
+                            elem.setSize(Math.abs(placer.getXPosition() - elem.getX()), Math.abs(placer.getYPosition() - elem.getY()));
+                        }
+                        placer.getElement().setSelected(true);
+                        placingObject = false;
+                        drawingObject = false;
                         getDrawing().getLxView().removeMouseMotionListener(mouseMotionListener);
-                        elem.setSelected(true);
                         getDrawing().getLxView().lassoSetDisplayed(true);
                         
                     } catch (Exception e) {
@@ -302,52 +316,29 @@ public class Editor extends JPanel {
         if (propertyDialog == null){
 			propertyDialog = new JDialog(CtiUtilities.getParentFrame(getDrawing().getLxView()), true);
         }
-        if (elem instanceof LineElement) {
-            if( lineEditor != null ) {
-                
-                
-                getDrawing().getLxGraph().startUndoEdit("edit object");
-                lineEditor.getPropertyButtonPanel().getApplyJButton().setVisible(false);
-                lineEditor.setValue(elem);
-                propertyDialog.setContentPane(lineEditor);      
-                propertyDialog.pack();
-                propertyDialog.setLocationRelativeTo(CtiUtilities.getParentFrame(getDrawing().getLxView()));
-                propertyDialog.setVisible(true);
-    
-                getDrawing().getLxGraph().cancelUndoEdit();
-                
-                // start the updates again
-                startUpdating();
-            }
-        }else {
-            final PropertyPanel editor = ElementEditorFactory.getInstance().createEditorPanel(elem.getClass());
-            
-    		if( editor != null ) {
-    			editor.addPropertyPanelListener(new PropertyPanelListener() {
-    				public void selectionPerformed(PropertyPanelEvent e) {
-    					if (e.getID() == PropertyPanelEvent.CANCEL_SELECTION) {
-    						
-    					} else if (e.getID() == PropertyPanelEvent.OK_SELECTION) {
-    						editor.getValue(elem);						
-    					}
-    					propertyDialog.setVisible(false);								
-    				}
-    			});
-    			
-    			getDrawing().getLxGraph().startUndoEdit("edit object");
-    			editor.getPropertyButtonPanel().getApplyJButton().setVisible(false);
-    			editor.setValue(elem);
-                propertyDialog.setContentPane(editor);		
-    			propertyDialog.pack();
-    			propertyDialog.setLocationRelativeTo(CtiUtilities.getParentFrame(getDrawing().getLxView()));
-    			propertyDialog.setVisible(true);
-    
-    			getDrawing().getLxGraph().cancelUndoEdit();
-    			
-    			// start the updates again
-    			startUpdating();
-            }
-		}
+        final PropertyPanel editor = ElementEditorFactory.getInstance().createEditorPanel(elem.getClass());
+        
+		if( editor != null ) {
+			editor.addPropertyPanelListener(new PropertyPanelListener() {
+				public void selectionPerformed(PropertyPanelEvent e) {
+					if (e.getID() == PropertyPanelEvent.CANCEL_SELECTION) {}
+					else if (e.getID() == PropertyPanelEvent.OK_SELECTION) {
+						editor.getValue(elem);
+					}
+					propertyDialog.setVisible(false);
+				}
+			});
+			getDrawing().getLxGraph().startUndoEdit("edit object");
+			editor.getPropertyButtonPanel().getApplyJButton().setVisible(false);
+			editor.setValue(elem);
+			propertyDialog.setTitle("Edit Element Settings");
+            propertyDialog.setContentPane(editor);		
+			propertyDialog.pack();
+			propertyDialog.setLocationRelativeTo(CtiUtilities.getParentFrame(getDrawing().getLxView()));
+			propertyDialog.setVisible(true);
+			getDrawing().getLxGraph().cancelUndoEdit();
+			startUpdating();
+        }
 	}
 
 	/**
@@ -363,9 +354,6 @@ public class Editor extends JPanel {
 	 * Creation date: (12/11/2001 3:59:21 PM)
 	 */
 	private void initEditor(final JPanel p) {
-		//editPopup.add(deletePopupItem);
-		//	Lx.setActionProcessor(actionProcessor);
-
 		final EditorPrefs prefs = EditorPrefs.getPreferences();
 		
 		drawing = new Drawing();
@@ -375,7 +363,7 @@ public class Editor extends JPanel {
 		undoManager = new UndoManager() {
 			@Override
             public boolean addEdit(UndoableEdit e) {
-// uncomment for debugging	System.out.println(e.getPresentationName());
+			    CTILogger.debug(e.getPresentationName());
 				return super.addEdit(e);
 			}			
 		};
@@ -400,7 +388,7 @@ public class Editor extends JPanel {
 		editorActions = new EditorActions(this);
 		EditorMenus editorMenus = new EditorMenus(editorActions);
 		EditorToolBar editorToolBar = new EditorToolBar(editorActions);
-		EditorKeys editorKeys = new EditorKeys(editorActions);
+		EditorKeys.registerKeysForActions(editorActions);
 		
 		final JMenuBar menuBar = editorMenus.getMenuBar();
 		final JPopupMenu popupMenu = editorMenus.getPopupMenu();
@@ -427,17 +415,6 @@ public class Editor extends JPanel {
 				}
 			}
 		});
-        
-        lineEditor.addPropertyPanelListener(new PropertyPanelListener() {
-            public void selectionPerformed(PropertyPanelEvent e) {
-                if (e.getID() == PropertyPanelEvent.CANCEL_SELECTION) {
-                    
-                } else if (e.getID() == PropertyPanelEvent.OK_SELECTION) {
-                    ((LineElementEditor)lineEditor).selectionPerformed();
-                }
-                propertyDialog.setVisible(false);                               
-            }
-        });
         
 		updateSize();
 		updateColor();
@@ -490,7 +467,6 @@ public class Editor extends JPanel {
 		dme.setDrawingWidth(prefs.getDefaultDrawingWidth());
 		dme.setDrawingHeight(prefs.getDefaultDrawingHeight());
 		dme.setDrawingRgbColor(prefs.getDefaultDrawingRGBColor());
-		//getUndoManager().discardAllEdits();  
 		setFrameTitle("Untitled");
 	}
 
@@ -510,6 +486,8 @@ public class Editor extends JPanel {
 		for (int i = 0; i < comps.length; i++) {
             if(comps[i] instanceof LineElement) {
                 ((LineElement)comps[i]).setIsNew(false);
+            }else if(comps[i] instanceof RectangleElement) {
+                ((RectangleElement)comps[i]).setIsNew(false);
             }
 			setBehavior(comps[i]);
 		}
@@ -557,10 +535,9 @@ public class Editor extends JPanel {
                     // Ugly cast. We want to call disconnect though so that our
                     // shutdown message gets
                     // written out.
-                    ClientConnection conn = (ClientConnection) ConnPool.getInstance()
-                                                                       .getDefDispatchConn();
-                    if (conn != null && conn.isValid()) { // free up Dispatchs
-                                                          // resources
+                    ClientConnection conn = (ClientConnection) ConnPool.getInstance().getDefDispatchConn();
+                    if (conn != null && conn.isValid()) { 
+                        // Free up Dispatchs resources
                         Command comm = new Command();
                         comm.setPriority(15);
                         comm.setOperation(Command.CLIENT_APP_SHUTDOWN);
@@ -590,7 +567,7 @@ public class Editor extends JPanel {
             DefaultDatabaseCache.getInstance().getAllDevices();
             DefaultDatabaseCache.getInstance().getAllStateGroupMap();
         } catch (Exception e) {
-            CTILogger.error(e);
+            CTILogger.error(e.getMessage(), e);
         }
 	}
     
@@ -613,7 +590,6 @@ public class Editor extends JPanel {
 			
 			getDrawing().setFileName(selectedFile);
 			saveDrawing();
-			//getDrawing().save(selectedFile);
 			setFrameTitle(getDrawing().getFileName());
 
 			try {
@@ -670,7 +646,7 @@ public class Editor extends JPanel {
 				saveAsDrawing();
 		}
 		return result;
-	} // saveOption()
+	}
 
 	/**
 	 * Addes gui related interaction to an element
@@ -692,7 +668,8 @@ public class Editor extends JPanel {
 		
 		if( elem instanceof DynamicGraphElement 
             || elem instanceof CurrentAlarmsTable
-            || elem instanceof LineElement) {
+            || elem instanceof LineElement
+            || elem instanceof RectangleElement) {
             elem.removeDefaultDoubleClickBehavior();
 			elem.removeMouseListener(editElementMouseListener);	
 			elem.addMouseListener(editElementMouseListener);	
@@ -779,10 +756,11 @@ public class Editor extends JPanel {
 	public void pasteSelection() {
 		getDrawing().getLxGraph().pasteFromClipboard();
 		
-		// add behavior back to all these elements
-		// would be nice to find a way to get at all the elemnts
-		// just created!
-		// visit here if paste gets slow!!!
+		/*
+		 *  Add behavior back to all these elements.
+		 *  Would be nice to find a way to get at all the elements just created!
+		 *  Visit here if paste gets slow!!!
+		 */
 		Object[] all = getDrawing().getLxGraph().getComponents();
 		for(int i = 0; i < all.length; i++) {					
 			if (all[i] instanceof DrawingElement) {
@@ -800,7 +778,7 @@ public class Editor extends JPanel {
 		drawingUpdater.setDrawing( getDrawing() );
 		drawingUpdater.setUserContext(new SystemUserContext());
 		drawingUpdateTimer = new Timer();
-		drawingUpdateTimer.schedule(drawingUpdater, 0, 15000);
+		drawingUpdateTimer.schedule(drawingUpdater, 0, UPATE_TIMER);
 	}
 	
 	private void stopUpdating() {
@@ -871,6 +849,6 @@ public class Editor extends JPanel {
             }
         }
         ChangeDeviceDialog cd = new ChangeDeviceDialog(frame ,textElems, stateImageElems);
-        cd.show();
+        cd.setVisible(true);
     }
 }

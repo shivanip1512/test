@@ -13,10 +13,10 @@ import com.loox.jloox.LxView;
  */
 public class EditorKeys {
 	public EditorKeys(EditorActions e) {
-		initialize(e);
+	    registerKeysForActions(e);
 	}
 	
-	private void initialize(EditorActions editorActions) {
+	public static void registerKeysForActions(EditorActions editorActions) {
 		LxView lxView = editorActions.getEditor().getDrawing().getLxView();
 		
 		lxView.registerKeyboardAction(

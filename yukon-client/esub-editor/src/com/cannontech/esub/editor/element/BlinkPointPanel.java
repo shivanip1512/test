@@ -34,7 +34,7 @@ public class BlinkPointPanel extends DataInputPanel implements ActionListener, T
     private javax.swing.JPanel buttonGroup = null;
     private PointSelectionPanel pointSelectionPanel = null;
     private DrawingElement elem;
-    private HashMap map = new HashMap();
+    private HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
     private JButton okButton;
     private JLabel rawStateLabel;
     private JLabel blinkLabel;
@@ -284,7 +284,7 @@ public PointSelectionPanel getPointSelectionPanel() {
     return pointSelectionPanel;
 }
 
-public HashMap getCustomBlinkMap() {
+public HashMap<Integer, Integer> getCustomBlinkMap() {
     return map;
 }
 
@@ -869,7 +869,6 @@ private JButton getResetButton()
     return resetButton;
 }
 
-@SuppressWarnings("unchecked")
 public void actionPerformed(ActionEvent e) {
     Object source = e.getSource();
     if (source == getResetButton()) {
