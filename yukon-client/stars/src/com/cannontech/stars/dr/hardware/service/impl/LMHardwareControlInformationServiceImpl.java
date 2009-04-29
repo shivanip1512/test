@@ -63,6 +63,19 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
                     existingEnrollment.setUserIdSecondAction(currentUser.getUserID());
                     lmHardwareControlGroupDao.update(existingEnrollment);
                 }
+                
+                /* Cleans up any issues of an enrollment having the same information 
+                 * except for a relay.
+                 */
+                if(existingProgramIds.contains(newProgramIds.get(0)) &&
+                    existingEnrollment.getLmGroupId() == loadGroupId &&
+                    existingEnrollment.getRelay() != relay && 
+                    existingEnrollment.getGroupEnrollStop() == null) {
+                     /*This entry already has a start date, has no stop date, and is on the same relay: better register a stop.*/
+                     existingEnrollment.setGroupEnrollStop(now);
+                     existingEnrollment.setUserIdSecondAction(currentUser.getUserID());
+                     lmHardwareControlGroupDao.update(existingEnrollment);
+                 }
             }
 
             /*Do the start*/

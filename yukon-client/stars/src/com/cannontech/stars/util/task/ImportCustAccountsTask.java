@@ -57,6 +57,8 @@ import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.dr.account.service.AccountService;
+import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
+import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.service.StarsControllableDeviceDTOConverter;
@@ -1477,7 +1479,8 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
         Program program = programDao.getByProgramId(programs[0][0]);
         
         List<int[]> programList = new ArrayList<int[]>();
-        programList.add(programs[0]);
+        boolean addedThroughExistingEnrollment = false;
+        
         for (int i = 0; i < currentNumberOfAppliances; i++) {
             LiteStarsAppliance liteApp = liteAcctInfo.getAppliances().get(i);
             if(liteApp.getInventoryID() == liteInv.getInventoryID()) {
@@ -1488,20 +1491,33 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 	                    	if(liteApp.getAddressingGroupID() == programs[0][2] || programs[0][2] == -1) {
 	                    		return;
 	                    	} else {
-	                    		int[] previousEnrollment = {liteApp.getProgramID(),
-                                                           	liteApp.getApplianceCategoryID(),
-                                                           	programs[0][2],
-                                                           	programs[0][3]};
+	                    		int[] previousEnrollment;
+	                    		if (relay != -1) {
+	                                int[] temp = {liteApp.getProgramID(),
+                                                  liteApp.getApplianceCategoryID(),
+                                                  programs[0][2],
+                                                  programs[0][3]};
+	                                previousEnrollment = temp;
+	                    		} else {
+	                    			int[] temp = {liteApp.getProgramID(),
+                                                  liteApp.getApplianceCategoryID(),
+                                                  programs[0][2],
+                                                  0};
+	                                previousEnrollment = temp;
+	                    		}
                     			programList.add(previousEnrollment);
+                    			addedThroughExistingEnrollment = true;
                     			continue;
 	                    	}
 	           		    } else {
-	                        int[] previousEnrollment = {program.getProgramId(),
-        		                                        liteApp.getApplianceCategoryID(),
-        		                                        programs[0][2],
-        		                                        programs[0][3]};
-                            programList.add(previousEnrollment);
-	                        continue;
+	           		    	if (relay != -1) {
+	                            int[] previousEnrollment = {program.getProgramId(),
+        		                                            liteApp.getApplianceCategoryID(),
+        		                                            programs[0][2],
+        		                                            programs[0][3]};
+                                programList.add(previousEnrollment);
+	                            continue;
+	           		    	}
 	                    }
                     } else {
                     	if (liteApp.getProgramID() == program.getProgramId()) {
@@ -1510,7 +1526,8 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
                                                         programs[0][2],
                                                         programs[0][3]};
                             programList.add(previousEnrollment);
-                            continue;
+                            addedThroughExistingEnrollment = true;
+                			continue;
 	           		    }
                     }
                 }
@@ -1522,9 +1539,13 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
             }
         }
 		
+        if(!addedThroughExistingEnrollment){
+        	programList.add(programs[0]);
+        }
+        
         int[][] enrollmentPrograms = new int[programList.size()][4];
         for (int i = 0; i < programList.size(); i++) {
-            enrollmentPrograms[i] = programList.get(i);
+        	enrollmentPrograms[i] = programList.get(i);
         }
         
 
