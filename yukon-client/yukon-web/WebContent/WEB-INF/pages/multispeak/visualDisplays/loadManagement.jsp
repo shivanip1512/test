@@ -78,9 +78,9 @@
 				<td colspan="2" align="center" nowrap>
 					<span style="font-weight:bold;"><cti:msg key="yukon.web.modules.visualDisplays.loadManagement.peakDayLabel"/></span>
 					<br>
-					<cti:pointValue format="{time|MM/dd/yyyy}" pointId="${peakIhLoadPointId}"/>
+					<cti:pointValue format="{time|MM/dd/yyyy}" pointId="${powerSupplier.peakIhLoadPointId}"/>
 					<br>
-					<cti:msg key="yukon.web.modules.visualDisplays.loadManagement.hrLabel"/> <cti:pointValue format="{time|HH zz}" pointId="${peakIhLoadPointId}"/>
+					<cti:msg key="yukon.web.modules.visualDisplays.loadManagement.hrLabel"/> <cti:pointValue format="{time|HH zz}" pointId="${powerSupplier.peakIhLoadPointId}"/>
 				</td>
 		
 			</c:forEach>	  
