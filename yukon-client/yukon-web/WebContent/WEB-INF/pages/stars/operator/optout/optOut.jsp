@@ -12,7 +12,7 @@
     <cti:msg key="yukon.dr.operator.optout.noOptOutsAvailable"/>
 </c:if>
 
-<c:if test="${!allOptedOut && optOutsAvailable}">
+<c:if test="${!allOptedOut}">
 	<cti:msg key="yukon.dr.operator.optout.description"/><br><br>
 
 	<form action="/spring/stars/operator/optout/optout2" method="POST">
