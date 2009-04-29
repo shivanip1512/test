@@ -802,38 +802,9 @@ double CtiAnsiTable23::getDemandValue ( int index, int dataBlock )
 {
     switch (dataBlock)
     {
-        case 0:
-        {
-            if (_tot_data_block.demands[index].demand != NULL)
-            {
-                return  *(_tot_data_block.demands[index].demand);
-            }
-            break;
-        }
         case 1:
-        {
-            if (_tier_data_block[dataBlock -1].demands[index].demand != NULL)
-            {
-                return  *(_tier_data_block[dataBlock -1].demands[index].demand);
-            }
-            break;
-        }
         case 2:
-        {
-            if (_tier_data_block[dataBlock -1].demands[index].demand != NULL)
-            {
-                return  *(_tier_data_block[dataBlock -1].demands[index].demand);
-            }
-            break;
-        }
         case 3:
-        {
-            if (_tier_data_block[dataBlock -1].demands[index].demand != NULL)
-            {
-                return  *(_tier_data_block[dataBlock -1].demands[index].demand);
-            }
-            break;
-        }
         case 4:
         {
             if (_tier_data_block[dataBlock -1].demands[index].demand != NULL)
@@ -842,6 +813,7 @@ double CtiAnsiTable23::getDemandValue ( int index, int dataBlock )
             }
             break;
         }
+        case 0:
         default:
         {
             if (_tot_data_block.demands[index].demand != NULL)
