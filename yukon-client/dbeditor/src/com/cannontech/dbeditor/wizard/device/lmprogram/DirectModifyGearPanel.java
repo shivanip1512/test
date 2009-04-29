@@ -372,6 +372,10 @@ public Object getValue(Object o)
 	    	obj = getIvjSmartGearPanel1().getValue(gear);
 	    	break;
 	    }
+	    case TrueCycle: {// True cycle is a smart cycle.
+	    	obj = getIvjSmartGearPanel1().getValue(gear);
+	    	break;
+	    }
 	    case MasterCycle: {
 	    	obj = getIvjMasterGearPanel1().getValue(gear);
 	    	break;
