@@ -1,6 +1,7 @@
 package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashMap;
@@ -10,10 +11,15 @@ import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowCallbackHandler;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SqlFragmentSource;
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 
@@ -110,62 +116,57 @@ public class MeterOutageCountModel extends ReportModelBase
 	/**
 	 * Add MissedMeter objects to data, retrieved from rset.
 	 * @param ResultSet rset
+	 * @throws SQLException 
 	 */
 	@SuppressWarnings("unchecked")
-    public void addDataRow(ResultSet rset)
+    public void addDataRow(ResultSet rset) throws SQLException
 	{
-		try
-		{
-            OutageCountRow outageCountRow;
-			String paoName = rset.getString(1);
-            String pointName = rset.getString(2);
-            Timestamp timestamp = rset.getTimestamp(3);
-            Integer reading = new Integer(rset.getInt(4));
-            Integer paobjectId = new Integer(rset.getInt(5));
-            
-            if( previousPaobjectId != null) {
-                
-                if( previousPaobjectId.intValue() != paobjectId.intValue()) {
-                    // new device
-                	if( timestamp == null )	//data from the outer join was returned
-                		outageCountRow = new OutageCountRow(paobjectId, paoName, pointName);
-                	else 
-                		outageCountRow = new OutageCountRow(paobjectId, paoName, pointName, new Date(timestamp.getTime()), reading);
+	    OutageCountRow outageCountRow;
+	    String paoName = rset.getString(1);
+	    String pointName = rset.getString(2);
+	    Timestamp timestamp = rset.getTimestamp(3);
+	    Integer reading = new Integer(rset.getInt(4));
+	    Integer paobjectId = new Integer(rset.getInt(5));
 
-                	previousReading = reading;
-                    previousPaobjectId = paobjectId;
-                    totalOutageCount = 0; //reset the total                    
-                }else {
-                    //same device
-                    int intervalDif = reading - previousReading;
-                    totalOutageCount += intervalDif;
-                    
-                    outageCountRow = new OutageCountRow( paobjectId, paoName, pointName, 
-                                              new Date(timestamp.getTime()),
-                                              reading, intervalDif);
-                    
-                    //put the "new" grand total in the map every time we have more than one entry.
-                    paoIdToGrandOutageTotalMap.put(paobjectId, totalOutageCount);
-                    previousReading = reading;
-                    previousPaobjectId = paobjectId;
-                }
-            }else {
-                // first result
-            	if( timestamp == null )	//data from the outer join was returned
-            		outageCountRow = new OutageCountRow(paobjectId, paoName, pointName);
-            	else 
-            		outageCountRow = new OutageCountRow(paobjectId, paoName, pointName, new Date(timestamp.getTime()), reading);
-            	
-            	previousReading = reading;
-                previousPaobjectId = paobjectId;
-            	//Don't have an intervalDif to calculate...can't add it to lookup map
-            }
-			
-			allData.add(outageCountRow);
-		}
-		catch(java.sql.SQLException e) {
-		    CTILogger.error(e);
-		}
+	    if( previousPaobjectId != null) {
+
+	        if( previousPaobjectId.intValue() != paobjectId.intValue()) {
+	            // new device
+	            if( timestamp == null )	//data from the outer join was returned
+	                outageCountRow = new OutageCountRow(paobjectId, paoName, pointName);
+	            else 
+	                outageCountRow = new OutageCountRow(paobjectId, paoName, pointName, new Date(timestamp.getTime()), reading);
+
+	            previousReading = reading;
+	            previousPaobjectId = paobjectId;
+	            totalOutageCount = 0; //reset the total                    
+	        }else {
+	            //same device
+	            int intervalDif = reading - previousReading;
+	            totalOutageCount += intervalDif;
+
+	            outageCountRow = new OutageCountRow( paobjectId, paoName, pointName, 
+	                                                 new Date(timestamp.getTime()),
+	                                                 reading, intervalDif);
+
+	            //put the "new" grand total in the map every time we have more than one entry.
+	            paoIdToGrandOutageTotalMap.put(paobjectId, totalOutageCount);
+	            previousReading = reading;
+	            previousPaobjectId = paobjectId;
+	        }
+	    }else {
+	        // first result
+	        if( timestamp == null )	//data from the outer join was returned
+	            outageCountRow = new OutageCountRow(paobjectId, paoName, pointName);
+	        else 
+	            outageCountRow = new OutageCountRow(paobjectId, paoName, pointName, new Date(timestamp.getTime()), reading);
+
+	        previousReading = reading;
+	        previousPaobjectId = paobjectId;
+	        //Don't have an intervalDif to calculate...can't add it to lookup map
+	    }
+
+	    allData.add(outageCountRow);
 	}
     
     /**
@@ -249,28 +250,32 @@ public class MeterOutageCountModel extends ReportModelBase
 	 * Build the SQL statement to retrieve PowerFail data.
 	 * @return StringBuffer  an sqlstatement
 	 */
-	public StringBuffer buildSQLStatement()
+	public SqlFragmentSource buildSQLStatement()
 	{
-		StringBuffer sql = new StringBuffer	("SELECT DISTINCT PAO.PAONAME, P.POINTNAME, RPH.TIMESTAMP, RPH.VALUE, PAO.PAOBJECTID " + 
-			" FROM YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG, " +
-			" POINT P "  + (isIncompleteDataReport() ? " left outer " : "") + " join RAWPOINTHISTORY RPH "+
-			" ON P.POINTID = RPH.POINTID AND RPH.TIMESTAMP > ? AND TIMESTAMP <= ? " + //this is the join clause
-			" WHERE PAO.PAOBJECTID = DMG.DEVICEID "+
-			" AND P.PAOBJECTID = PAO.PAOBJECTID " + 
-			" AND P.POINTOFFSET = 20 " + 
-			" AND P.POINTTYPE = 'PulseAccumulator' ");
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DISTINCT PAO.PAONAME, P.POINTNAME, RPH.TIMESTAMP, RPH.VALUE, PAO.PAOBJECTID ");
+        sql.append(" FROM YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG, ");
+        sql.append(" POINT P ");
+        sql.append((isIncompleteDataReport() ? " left outer " : ""));
+        sql.append(" join RAWPOINTHISTORY RPH ");
+        sql.append(" ON P.POINTID = RPH.POINTID AND RPH.TIMESTAMP > ").appendArgument(getStartDate());
+        sql.append(" AND TIMESTAMP <= ").appendArgument(getStopDate()); //this is the join clause
+        sql.append(" WHERE PAO.PAOBJECTID = DMG.DEVICEID ");
+        sql.append(" AND P.PAOBJECTID = PAO.PAOBJECTID ");
+        sql.append(" AND P.POINTOFFSET = 20 ");
+        sql.append(" AND P.POINTTYPE = 'PulseAccumulator' ");
 			
 		// RESTRICT BY DEVICE/METER PAOID (if any)
 		String paoIdWhereClause = getPaoIdWhereClause("PAO.PAOBJECTID");
 		if (!StringUtils.isBlank(paoIdWhereClause)) {
-		    sql.append(" AND " + paoIdWhereClause);
+		    sql.append(" AND ", paoIdWhereClause);
 		}
 		
 		// RESTRICT BY GROUPS (if any)
         final String[] groups = getBillingGroups();
         if (groups != null && groups.length > 0) {
-            String deviceGroupSqlWhereClause = getGroupSqlWhereClause("PAO.PAOBJECTID");
-            sql.append(" AND " + deviceGroupSqlWhereClause);
+            SqlFragmentSource deviceGroupSqlWhereClause = getGroupSqlWhereClause("PAO.PAOBJECTID");
+            sql.append(" AND ", deviceGroupSqlWhereClause);
         }
 					
 		sql.append("ORDER BY PAO.PAONAME, P.POINTNAME, TIMESTAMP");
@@ -284,44 +289,18 @@ public class MeterOutageCountModel extends ReportModelBase
 		//Reset all objects, new data being collected!
 		setData(null);
 
-		StringBuffer sql = buildSQLStatement();
-		CTILogger.info(sql.toString());
-		
-		java.sql.Connection conn = null;
-		java.sql.PreparedStatement pstmt = null;
-		java.sql.ResultSet rset = null;
-
-		try
-		{
-			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-
-			if( conn == null )
-			{
-				CTILogger.error(getClass() + ":  Error getting database connection.");
-				return;
-			}
-			else
-			{
-				pstmt = conn.prepareStatement(sql.toString());
-				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime()));
-				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime()));
-				CTILogger.info("START DATE > " + getStartDate() + " - STOP DATE <= " + getStopDate());
-				rset = pstmt.executeQuery();
-				
-				while( rset.next())
-				{
-					addDataRow(rset);
-				}
-			}
-		}
-			
-		catch( java.sql.SQLException e ) {
-			CTILogger.error(e);
-		}
-		finally {
-			SqlUtils.close(rset, pstmt, conn );
-		}
-		
+        SqlFragmentSource sql = buildSQLStatement();
+        CTILogger.info(sql.toString()); 
+        CTILogger.info("START DATE > " + getStartDate() + " - STOP DATE <= " + getStopDate());
+        
+        JdbcOperations template = JdbcTemplateHelper.getYukonTemplate();
+        template.query(sql.getSql(), sql.getArguments(), new RowCallbackHandler() {
+            @Override
+            public void processRow(ResultSet rs) throws SQLException {
+                addDataRow(rs);
+            }
+        });
+        
 		if (isIncompleteDataReport())
 			loadIncompleteData();
 		else

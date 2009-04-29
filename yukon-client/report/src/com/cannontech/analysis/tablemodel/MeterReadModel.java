@@ -1,7 +1,5 @@
 package com.cannontech.analysis.tablemodel;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -12,15 +10,17 @@ import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowCallbackHandler;
 
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.PoolManager;
-import com.cannontech.database.SqlUtils;
+import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.util.NaturalOrderComparator;
 
@@ -159,13 +159,13 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 	 * Build the SQL statement to retrieve MissedMeter data.
 	 * @return StringBuffer  an sqlstatement
 	 */
-	public String buildSQLStatement() {
+	public SqlFragmentSource buildSQLStatement() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT");
         sql.append("  PAO.PAOBJECTID, PAO.PAONAME, PAO.TYPE, PAO.DISABLEFLAG, DMG.METERNUMBER, DCS.ADDRESS,");
         sql.append("  ROUTE.PAOBJECTID as routeId, ROUTE.PAONAME as routeName");
 
-		if( getMeterReadType() == SUCCESS_METER_READ_TYPE) {
+		if (getMeterReadType() == SUCCESS_METER_READ_TYPE) {
             sql.append(", RPH.maxTime as TIMESTAMP");
         }
 
@@ -180,8 +180,9 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
             sql.append("    SELECT sP.paobjectid, max(sRPH.timestamp) maxTime");
             sql.append("    FROM RawPointHistory sRPH");
             sql.append("      JOIN Point sP on sRPH.pointId = sP.pointId");
-            sql.append("    WHERE timestamp > ? AND timestamp <= ?");
-            sql.append("      ", buildWhereClause("sP.paobjectId"));
+            sql.append("    WHERE timestamp > ").appendArgument(getStartDate());
+            sql.append("      AND timestamp <= ").appendArgument(getStopDate());
+            sql.appendFragment(buildWhereClause("sP.paobjectId"));
             sql.append("    GROUP BY sP.paobjectid");
             sql.append("  ) RPH on RPH.paobjectid = PAO.paobjectid");
         } else {
@@ -190,23 +191,24 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
             sql.append("    SELECT distinct sP.paobjectid " );
             sql.append("    FROM RawPointHistory sRPH" );
             sql.append("      JOIN Point sP on sRPH.pointId = sP.pointId" );
-            sql.append("    WHERE timestamp > ? AND timestamp <= ? ");
+            sql.append("    WHERE timestamp > ").appendArgument(getStartDate());
+            sql.append("      AND timestamp <= ").appendArgument(getStopDate());
             sql.append("  )");
-            sql.append("  ", buildWhereClause("pao.paobjectid"));
+            sql.appendFragment(buildWhereClause("pao.paobjectid"));
         }
         
-		return sql.toString();
+		return sql;
 	}
 
     private SqlStatementBuilder buildWhereClause(String columnName) {
         SqlStatementBuilder sqlWhere = new SqlStatementBuilder();
         if (getPaoIDs() != null && getPaoIDs().length > 0) {
-        	sqlWhere.append(" AND ",columnName, "IN (", getPaoIDs(), ") ");
+        	sqlWhere.append(" AND ", columnName, "IN (", getPaoIDs(), ") ");
         }
         
         if (getBillingGroups() != null && getBillingGroups().length > 0) {
-            String deviceGroupSqlWhereClause = getGroupSqlWhereClause(columnName);
-            sqlWhere.append(" AND " + deviceGroupSqlWhereClause);
+            SqlFragmentSource deviceGroupSqlWhereClause = getGroupSqlWhereClause(columnName);
+            sqlWhere.append(" AND ", deviceGroupSqlWhereClause);
         }
         return sqlWhere;
     }
@@ -217,48 +219,23 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 		//Reset all objects, new data being collected!
 		setData(null);
 				
-		String sql = buildSQLStatement();
+		SqlFragmentSource sql = buildSQLStatement();
 		CTILogger.info("SQL for MeterReadModel: " + sql.toString());
-		
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rset = null;
+		CTILogger.info("START DATE >= " + getStartDate() + " - STOP DATE < " + getStopDate());
+		JdbcOperations template = JdbcTemplateHelper.getYukonTemplate();
+		template.query(sql.getSql(), sql.getArguments(), new RowCallbackHandler() {
+		    @Override
+		    public void processRow(ResultSet rset) throws SQLException {
+		        addDataRow(rset);
+		    }
+		});
 
-		try
+		if (getData() != null)
 		{
-			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-
-			if( conn == null )
-			{
-			    CTILogger.error(getClass() + ":  Error getting database connection.");
-			    return;
-			}
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime() ));
-			pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime() ));				
-			CTILogger.info("START DATE >= " + getStartDate() + " - STOP DATE < " + getStopDate());
-			rset = pstmt.executeQuery();
-
-			while( rset.next())
-			{
-			    addDataRow(rset);
-			}
-			if(getData() != null)
-			{
-//			    Order the records
-			    Collections.sort(getData(), this);
-			    if( getSortOrder() == DESCENDING)
-			        Collections.reverse(getData());				
-			}
-		}
-			
-		catch( SQLException e )
-		{
-			throw new RuntimeException("Unable to collect data", e);
-		}
-		finally
-		{
-			SqlUtils.close(rset, pstmt, conn );
+		    // Order the records
+		    Collections.sort(getData(), this);
+		    if (getSortOrder() == DESCENDING)
+		        Collections.reverse(getData());				
 		}
 		CTILogger.info("Report Records Collected from Database: " + getData().size());
 		return;

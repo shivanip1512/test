@@ -1,6 +1,7 @@
 package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Comparator;
@@ -9,17 +10,14 @@ import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowCallbackHandler;
 
 import com.cannontech.analysis.ColumnProperties;
-import com.cannontech.analysis.data.device.LPMeterData;
-import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.device.groups.service.DeviceGroupService;
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.PoolManager;
-import com.cannontech.database.SqlUtils;
-import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.common.util.SqlFragmentSource;
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.util.NaturalOrderComparator;
 
 public class ScheduledMeterReadModel extends ReportModelBase<ScheduledMeterReadModel.ScheduledMeterReadRow>
@@ -152,103 +150,87 @@ public class ScheduledMeterReadModel extends ReportModelBase<ScheduledMeterReadM
 	/**
 	 * Add MissedMeter objects to data, retrieved from rset.
 	 * @param ResultSet rset
+	 * @throws SQLException 
 	 */
-	public void addDataRow(ResultSet rset) {
-		try {
-			String scheduleName = rset.getString(1);
-			Timestamp timestamp = rset.getTimestamp(2);
-		    Date schedStartTime = new Date(timestamp.getTime());
-		    timestamp = rset.getTimestamp(3);
-		    Date schedStopTime = new Date(timestamp.getTime());
-		    int requestID = rset.getInt(4);
-		    String command = rset.getString(5);
-		    timestamp = rset.getTimestamp(6);
-		    Date reqStartTime = new Date(timestamp.getTime());
-		    timestamp = rset.getTimestamp(7);
-		    Date reqStopTime = new Date(timestamp.getTime());
-		    			
-			timestamp = rset.getTimestamp(8);
-		    Date readTimestamp = new Date(timestamp.getTime());
-			Integer statusCode = new Integer(rset.getInt(9));
-			String paoName = rset.getString(10);
-			int address = rset.getInt(11);
-			String meterNumber = rset.getString(12);
-			String routeName = rset.getString(13);
+	public void addDataRow(ResultSet rset) throws SQLException {
+	    String scheduleName = rset.getString(1);
+	    Timestamp timestamp = rset.getTimestamp(2);
+	    Date schedStartTime = new Date(timestamp.getTime());
+	    timestamp = rset.getTimestamp(3);
+	    Date schedStopTime = new Date(timestamp.getTime());
+	    int requestID = rset.getInt(4);
+	    String command = rset.getString(5);
+	    timestamp = rset.getTimestamp(6);
+	    Date reqStartTime = new Date(timestamp.getTime());
+	    timestamp = rset.getTimestamp(7);
+	    Date reqStopTime = new Date(timestamp.getTime());
 
-			ScheduledMeterReadRow row = new ScheduledMeterReadRow();
-			row.scheduleName = scheduleName;
-	    	row.scheduleStartTime = schedStartTime;
-	    	row.scheduleStopTime = schedStopTime;
-	    	row.requestID = String.valueOf(requestID);
-	    	row.command = command;
-	    	row.requestStartTime = reqStartTime;
-	    	row.requestStopTime = reqStopTime;
-	    	row.readTimestamp = readTimestamp;
-			row.statusCode = statusCode;
-			row.paoName = paoName;
-			row.address = String.valueOf(address);
-			row.meterNumber = meterNumber;
-			row.routeName = routeName;
-			
-			getData().add(row);
-		}
-		catch(java.sql.SQLException e) {
-			CTILogger.error(e);
-		}
+	    timestamp = rset.getTimestamp(8);
+	    Date readTimestamp = new Date(timestamp.getTime());
+	    Integer statusCode = new Integer(rset.getInt(9));
+	    String paoName = rset.getString(10);
+	    int address = rset.getInt(11);
+	    String meterNumber = rset.getString(12);
+	    String routeName = rset.getString(13);
+
+	    ScheduledMeterReadRow row = new ScheduledMeterReadRow();
+	    row.scheduleName = scheduleName;
+	    row.scheduleStartTime = schedStartTime;
+	    row.scheduleStopTime = schedStopTime;
+	    row.requestID = String.valueOf(requestID);
+	    row.command = command;
+	    row.requestStartTime = reqStartTime;
+	    row.requestStopTime = reqStopTime;
+	    row.readTimestamp = readTimestamp;
+	    row.statusCode = statusCode;
+	    row.paoName = paoName;
+	    row.address = String.valueOf(address);
+	    row.meterNumber = meterNumber;
+	    row.routeName = routeName;
+
+	    getData().add(row);
 	}
 
 	/**
 	 * Build the SQL statement to retrieve MissedMeter data.
 	 * @return StringBuffer  an sqlstatement
 	 */
-	public StringBuffer buildSQLStatement() {
-		StringBuffer sql = new StringBuffer	("SELECT SCHEDULE.PAONAME, DRJL.STARTTIME, DRJL.STOPTIME, " +
-											" DRRL.REQUESTID, DRRL.COMMAND, DRRL.STARTTIME, DRRL.STOPTIME, " +
-											" DRL.TIMESTAMP, DRL.STATUSCODE, " +
-											" PAO.PAONAME, DCS.ADDRESS, DMG.METERNUMBER, ROUTE.PAONAME " + 
-											" FROM DEVICEREADLOG DRL, DEVICEREADREQUESTLOG DRRL, DEVICEREADJOBLOG DRJL, " + 
-											" YUKONPAOBJECT PAO, DEVICECARRIERSETTINGS DCS, DEVICEMETERGROUP DMG, " +
-											" YUKONPAOBJECT ROUTE, DEVICEROUTES DR, YUKONPAOBJECT SCHEDULE " + 
-											" WHERE DRL.DEVICEID = PAO.PAOBJECTID " +
-											" AND DRL.DeviceReadRequestLogID = DRRL.DeviceReadRequestLogID " +
-											" AND DRRL.DeviceReadJobLogID = DRJL.DeviceReadJobLogID " +
-											" AND PAO.PAOBJECTID = DMG.DEVICEID " +
-											" AND DMG.DEVICEID = DCS.DEVICEID " + 
-											" AND PAO.PAOBJECTID = DR.DEVICEID " +
-											" AND DR.ROUTEID = ROUTE.PAOBJECTID " +
-											" AND SCHEDULE.PAOBJECTID = DRJL.ScheduleID " + 
-											" AND TIMESTAMP > ? AND TIMESTAMP <= ? ");
+	public SqlFragmentSource buildSQLStatement() {
+	    SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT SCHEDULE.PAONAME, DRJL.STARTTIME, DRJL.STOPTIME, ");
+        sql.append(" DRRL.REQUESTID, DRRL.COMMAND, DRRL.STARTTIME, DRRL.STOPTIME, ");
+        sql.append(" DRL.TIMESTAMP, DRL.STATUSCODE, ");
+        sql.append(" PAO.PAONAME, DCS.ADDRESS, DMG.METERNUMBER, ROUTE.PAONAME ");
+        sql.append(" FROM DEVICEREADLOG DRL, DEVICEREADREQUESTLOG DRRL, DEVICEREADJOBLOG DRJL, ");
+        sql.append(" YUKONPAOBJECT PAO, DEVICECARRIERSETTINGS DCS, DEVICEMETERGROUP DMG, ");
+        sql.append(" YUKONPAOBJECT ROUTE, DEVICEROUTES DR, YUKONPAOBJECT SCHEDULE ");
+        sql.append(" WHERE DRL.DEVICEID = PAO.PAOBJECTID ");
+        sql.append(" AND DRL.DeviceReadRequestLogID = DRRL.DeviceReadRequestLogID ");
+        sql.append(" AND DRRL.DeviceReadJobLogID = DRJL.DeviceReadJobLogID ");
+        sql.append(" AND PAO.PAOBJECTID = DMG.DEVICEID ");
+        sql.append(" AND DMG.DEVICEID = DCS.DEVICEID ");
+        sql.append(" AND PAO.PAOBJECTID = DR.DEVICEID ");
+        sql.append(" AND DR.ROUTEID = ROUTE.PAOBJECTID ");
+        sql.append(" AND SCHEDULE.PAOBJECTID = DRJL.ScheduleID ");
+        sql.append(" AND TIMESTAMP > ").appendArgument(getStartDate());
+        sql.append(" AND TIMESTAMP <= ").appendArgument(getStopDate());
 		
-        final StringBuilder sb = new StringBuilder();
 //		Use paoIDs in query if they exist
 		if( getFilterModelType().equals(ReportFilter.SCHEDULE)) {
 			if( getPaoIDs() != null && getPaoIDs().length > 0) {
-                for (final int i : getPaoIDs()) {
-                    sb.append(i + ",");
-                }
-                sql.append(" AND DRJL.ScheduleID IN (" + StringUtils.chop(sb.toString()) + ") ");
+                sql.append(" AND DRJL.ScheduleID IN (", getPaoIDs(), ") ");
 			}
 		} else if (getFilterModelType().equals(ReportFilter.METER) | getFilterModelType().equals(ReportFilter.DEVICE)) {
 			if( getPaoIDs() != null && getPaoIDs().length > 0) {
-                for (final int i : getPaoIDs()) {
-                    sb.append(i + ",");
-                }
-                sql.append(" AND PAO.PAOBJECTID IN (" + StringUtils.chop(sb.toString()) + ") ");
+                sql.append(" AND PAO.PAOBJECTID IN (" , getPaoIDs(), ") ");
 			}
 		}
 		
-        final DeviceGroupService deviceGroupService = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
-        final String[] groups = getBillingGroups();
-        
-        if (groups != null && groups.length > 0) {
-            String deviceGroupSqlWhereClause = getGroupSqlWhereClause("PAO.PAOBJECTID");
-            sql.append(" AND " + deviceGroupSqlWhereClause);
+		if (getStatusCodeType() == StatusCodeType.ERROR_METER_READ_TYPE) {
+            sql.append(" AND DRL.STATUSCODE > 0");
+        } else if(getStatusCodeType() == StatusCodeType.SUCCESS_METER_READ_TYPE) {
+            sql.append(" AND DRL.STATUSCODE = 0");
         }
-        
-		if( getStatusCodeType() == StatusCodeType.ERROR_METER_READ_TYPE)
-			sql.append(" AND DRL.STATUSCODE > 0");
-		else if( getStatusCodeType() == StatusCodeType.SUCCESS_METER_READ_TYPE)
-			sql.append(" AND DRL.STATUSCODE = 0");
 
 		return sql;
 	}	
@@ -349,49 +331,27 @@ public class ScheduledMeterReadModel extends ReportModelBase<ScheduledMeterReadM
         }
     };
     
-	@Override
+	
+    @Override
 	public void collectData() {
 		//Reset all objects, new data being collected!
 		setData(null);
 		totals = null;
-				
-		StringBuffer sql = buildSQLStatement();
-		CTILogger.info("SQL for MeterReadModel: " + sql.toString());
 		
-		java.sql.Connection conn = null;
-		java.sql.PreparedStatement pstmt = null;
-		java.sql.ResultSet rset = null;
+		SqlFragmentSource sql = buildSQLStatement();
+		CTILogger.info("SQL for MeterReadModel: " + sql.toString());
+		CTILogger.info("START DATE >= " + getStartDate() + " - STOP DATE < " + getStopDate());
+		JdbcOperations template = JdbcTemplateHelper.getYukonTemplate();
+		template.query(sql.getSql(), sql.getArguments(), new RowCallbackHandler() {
+		    @Override
+		    public void processRow(ResultSet rs) throws SQLException {
+		        addDataRow(rs);
+		    }
+		});
 
-		try {
-			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-
-			if( conn == null ) {
-				CTILogger.error(getClass() + ":  Error getting database connection.");
-				return;
-			}
-			else {
-				pstmt = conn.prepareStatement(sql.toString());
-				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime() ));
-				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime() ));				
-				CTILogger.info("START DATE >= " + getStartDate() + " - STOP DATE < " + getStopDate());
-				rset = pstmt.executeQuery();
-				
-				while( rset.next()) {
-					addDataRow(rset);
-				}
-
-                Collections.sort(getData(), scheduledMeterReadComparator);
-			}
-		}
-		catch( java.sql.SQLException e ) {
-			CTILogger.error(e);
-		}
-		finally
-		{
-			SqlUtils.close(rset, pstmt, conn );
-		}
+		Collections.sort(getData(), scheduledMeterReadComparator);
+		
 		CTILogger.info("Report Records Collected from Database: " + getData().size());
-		return;
 	}
 
 	/* (non-Javadoc)

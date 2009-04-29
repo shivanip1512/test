@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.common.device.YukonDevice;
@@ -14,13 +13,16 @@ import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.util.MappingSet;
 import com.cannontech.common.util.ObjectMapper;
+import com.cannontech.common.util.SqlFragmentCollection;
+import com.cannontech.common.util.SimpleSqlFragment;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.core.dao.NotFoundException;
 
 /**
  * Provides a base implementation of DeviceGroupProvider. For the most part, each of 
  * the "child" methods is abstract. This class then implements the recursive part (e.g. 
  * getDevices() is implemented on top of getChildGroups() and getChildDevices()). One
- * important aspect of this class is that whenever it calls getChildDevices(), it uses
+ * important aspect of this class is that whenever it calls getChildGroups(), it uses
  * the mainDelegator process the result. This is because classes that extends this class
  * will be written for a specific DeviceGroupType, but they may contain sub groups
  * of another type. For this reason, the mainDelegator must be used to ensure that 
@@ -34,7 +36,7 @@ public abstract class DeviceGroupProviderBase implements DeviceGroupProvider {
     
     public abstract void collectChildDevices(DeviceGroup group, Set<YukonDevice> deviceSet, int MaxSize);
     
-    public abstract String getChildDeviceGroupSqlWhereClause(DeviceGroup group, String identifier);
+    public abstract SqlFragmentSource getChildDeviceGroupSqlWhereClause(DeviceGroup group, String identifier);
 
     public abstract List<DeviceGroup> getChildGroups(DeviceGroup group);
     
@@ -63,15 +65,14 @@ public abstract class DeviceGroupProviderBase implements DeviceGroupProvider {
         return getChildDevices(group).size();
     }
     
-    public String getDeviceGroupSqlWhereClause(DeviceGroup group, String identifier) {
-        List<String> whereClauseList = new ArrayList<String>();
-        whereClauseList.add(getChildDeviceGroupSqlWhereClause(group, identifier));
+    public SqlFragmentSource getDeviceGroupSqlWhereClause(DeviceGroup group, String identifier) {
+        SqlFragmentCollection whereClause = SqlFragmentCollection.newOrCollection();
+        whereClause.add(getChildDeviceGroupSqlWhereClause(group, identifier));
         
         List<? extends DeviceGroup> childGroups = getChildGroups(group);
         for (DeviceGroup childGroup : childGroups) {
-            whereClauseList.add(mainDelegator.getDeviceGroupSqlWhereClause(childGroup, identifier));
+            whereClause.add(mainDelegator.getDeviceGroupSqlWhereClause(childGroup, identifier));
         }
-        String whereClause = StringUtils.join(whereClauseList, " OR ");
         return whereClause;
     }
     

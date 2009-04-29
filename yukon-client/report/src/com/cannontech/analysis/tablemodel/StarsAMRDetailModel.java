@@ -1,26 +1,27 @@
 package com.cannontech.analysis.tablemodel;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowCallbackHandler;
+
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.analysis.data.stars.StarsAMRDetail;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.PoolManager;
-import com.cannontech.database.SqlUtils;
+import com.cannontech.common.util.SqlFragmentSource;
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.NaturalOrderComparator;
 
 public class StarsAMRDetailModel extends ReportModelBase<StarsAMRDetail> implements Comparator<StarsAMRDetail> {
@@ -97,48 +98,45 @@ public class StarsAMRDetailModel extends ReportModelBase<StarsAMRDetail> impleme
     /**
      * Add MissedMeter objects to data, retrieved from rset.
      * @param ResultSet rset
+     * @throws SQLException 
      */
-    public void addDataRow(ResultSet rs) {
-        try {
-            final Meter meter = new Meter();
-            meter.setDeviceId(rs.getInt("PAOBJECTID"));
-            meter.setName(rs.getString("PAONAME"));
-            meter.setTypeStr(rs.getString("TYPE"));
-            meter.setType(PAOGroups.getDeviceType(rs.getString("TYPE")));
-            meter.setDisabled(CtiUtilities.isTrue(rs.getString("DISABLEFLAG").charAt(0)));
-            meter.setMeterNumber(rs.getString("METERNUMBER"));
-            meter.setAddress(rs.getString("ADDRESS"));
-            meter.setRouteId(rs.getInt("ROUTEPAOBJECTID"));
-            meter.setRoute(rs.getString("ROUTEPAONAME"));
+    public void addDataRow(ResultSet rs) throws SQLException {
+        final Meter meter = new Meter();
+        meter.setDeviceId(rs.getInt("PAOBJECTID"));
+        meter.setName(rs.getString("PAONAME"));
+        meter.setTypeStr(rs.getString("TYPE"));
+        meter.setType(PAOGroups.getDeviceType(rs.getString("TYPE")));
+        meter.setDisabled(CtiUtilities.isTrue(rs.getString("DISABLEFLAG").charAt(0)));
+        meter.setMeterNumber(rs.getString("METERNUMBER"));
+        meter.setAddress(rs.getString("ADDRESS"));
+        meter.setRouteId(rs.getInt("ROUTEPAOBJECTID"));
+        meter.setRoute(rs.getString("ROUTEPAONAME"));
 
-            final MeterAndPointData mpData = 
-                new MeterAndPointData(
-                    meter,
-                    rs.getInt("POINTID"),
-                    rs.getString("POINTNAME"),
-                    rs.getTimestamp("TIMESTAMP"),
-                    rs.getDouble("VALUE")
-                );
-            
-            getData().add(
-                new StarsAMRDetail(
-                    mpData,
-                    rs.getString("ACCOUNTNUMBER"),
-                    rs.getInt("CUSTOMERID"),
-                    rs.getString("SITENUMBER")
-                ));
-            
-        } catch(java.sql.SQLException e) {
-            e.printStackTrace();
-        }
+        final MeterAndPointData mpData = 
+            new MeterAndPointData(
+                                  meter,
+                                  rs.getInt("POINTID"),
+                                  rs.getString("POINTNAME"),
+                                  rs.getTimestamp("TIMESTAMP"),
+                                  rs.getDouble("VALUE")
+            );
+
+        getData().add(
+                      new StarsAMRDetail(
+                                         mpData,
+                                         rs.getString("ACCOUNTNUMBER"),
+                                         rs.getInt("CUSTOMERID"),
+                                         rs.getString("SITENUMBER")
+                      ));
+
     }
 
     /**
      * Build the SQL statement to retrieve MissedMeter data.
      * @return StringBuffer  an sqlstatement
      */
-    public StringBuilder buildSQLStatement() {
-        final StringBuilder sql = new StringBuilder();
+    public SqlFragmentSource buildSQLStatement() {
+        final SqlStatementBuilder sql = new SqlStatementBuilder();
         //SELECT
         sql.append("SELECT DISTINCT PAO.PAOBJECTID, PAO.PAONAME, PAO.TYPE, PAO.DISABLEFLAG, ");
         sql.append("DMG.METERNUMBER, DCS.ADDRESS, ROUTE.PAOBJECTID as ROUTEPAOBJECTID, ROUTE.PAONAME as ROUTEPAONAME, ");
@@ -152,13 +150,13 @@ public class StarsAMRDetailModel extends ReportModelBase<StarsAMRDetail> impleme
 
         //WHERE
         
-        sql.append(" WHERE CUST.CUSTOMERID = CA.CUSTOMERID ");
+        sql.append("WHERE CUST.CUSTOMERID = CA.CUSTOMERID ");
         sql.append("AND CA.ACCOUNTSITEID = SITE.ACCOUNTSITEID ");
         sql.append("AND IB.ACCOUNTID = CA.ACCOUNTID ");
         sql.append("AND IB.DEVICEID > 0 ");
         sql.append("AND IB.DEVICEID = PAO.PAOBJECTID ");
         sql.append("AND P.PAOBJECTID = PAO.PAOBJECTID ");
-        sql.append("AND P.POINTTYPE = '" + PointTypes.getType(PointTypes.PULSE_ACCUMULATOR_POINT) + "' ");
+        sql.append("AND P.POINTTYPE = ").appendArgument(PointTypes.getType(PointTypes.PULSE_ACCUMULATOR_POINT));
         sql.append("AND P.POINTOFFSET = 1 ");
         sql.append("AND P.POINTID = RPH1.POINTID ");
         sql.append("AND PAO.PAOBJECTID = DMG.DEVICEID ");
@@ -168,17 +166,18 @@ public class StarsAMRDetailModel extends ReportModelBase<StarsAMRDetail> impleme
         sql.append("AND RPH1.TIMESTAMP = ( SELECT MAX(RPH2.TIMESTAMP) FROM RAWPOINTHISTORY RPH2 ");
         sql.append("WHERE RPH1.POINTID = RPH2.POINTID ");
 
-        if( isShowHistory())
-            sql.append(" AND TIMESTAMP > ? AND TIMESTAMP <= ? ");
+        if( isShowHistory()) {
+            sql.append(" AND TIMESTAMP > ").appendArgument(getStartDate());
+            sql.append("AND TIMESTAMP <= ").appendArgument(getStopDate());
+        }
 
         sql.append(") ");
         
-        final DeviceGroupService deviceGroupService = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
         final String[] groups = getBillingGroups();
         
         if (groups != null && groups.length > 0) {
-            String deviceGroupSqlWhereClause = getGroupSqlWhereClause("PAO.PAOBJECTID");
-            sql.append(" AND " + deviceGroupSqlWhereClause);
+            SqlFragmentSource deviceGroupSqlWhereClause = getGroupSqlWhereClause("PAO.PAOBJECTID");
+            sql.append(" AND ", deviceGroupSqlWhereClause);
         }
 
         if (getPaoIDs() != null && getPaoIDs().length > 0)
@@ -186,10 +185,7 @@ public class StarsAMRDetailModel extends ReportModelBase<StarsAMRDetail> impleme
             if(getFilterModelType().equals(ReportFilter.ROUTE))//these are Route IDS
             {
                 sql.append(" AND DR.ROUTEID = PAO2.PAOBJECTID ");
-                sql.append(" AND PAO2.PAOBJECTID IN ('" + getPaoIDs()[0]);
-                for (int i = 1; i < getPaoIDs().length; i++)
-                    sql.append("', '" + getPaoIDs()[i]);
-                sql.append("') ");
+                sql.append(" AND PAO2.PAOBJECTID IN (", getPaoIDs(), ")");
             }
         }
         return sql;
@@ -200,46 +196,17 @@ public class StarsAMRDetailModel extends ReportModelBase<StarsAMRDetail> impleme
     {
         //Reset all objects, new data being collected!
         setData(null);
-
-        StringBuilder sql = buildSQLStatement();
-        CTILogger.info(sql.toString());
-
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        ResultSet rset = null;
-
-        try
-        {
-            conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-
-            if( conn == null )
-            {
-                CTILogger.error(getClass() + ":  Error getting database connection.");
-                return;
+        
+        SqlFragmentSource sql = buildSQLStatement();
+        CTILogger.info("SQL for MeterReadModel: " + sql.toString());
+        CTILogger.info("START DATE >= " + getStartDate() + " - STOP DATE < " + getStopDate());
+        JdbcOperations template = JdbcTemplateHelper.getYukonTemplate();
+        template.query(sql.getSql(), sql.getArguments(), new RowCallbackHandler() {
+            @Override
+            public void processRow(ResultSet rs) throws SQLException {
+                addDataRow(rs);
             }
-            pstmt = conn.prepareStatement(sql.toString());
-            if(isShowHistory())
-            {
-                pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime() ));
-                pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime() ));				
-                CTILogger.info("START DATE > " + getStartDate() + " - STOP DATE <= " + getStopDate());
-            }
-            rset = pstmt.executeQuery();
-
-            while( rset.next())
-            {
-                addDataRow(rset);
-            }
-        }
-
-        catch( java.sql.SQLException e )
-        {
-            e.printStackTrace();
-        }
-        finally
-        {
-        	SqlUtils.close(rset, pstmt, conn );
-        }
+        });
         
         if( getData() != null)
         {

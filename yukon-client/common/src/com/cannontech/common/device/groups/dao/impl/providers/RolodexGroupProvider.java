@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.util.SimpleSqlFragment;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -21,29 +23,29 @@ public class RolodexGroupProvider extends BinningDeviceGroupProviderBase<Charact
         sql.append("select distinct SUBSTRING(ypo.PAOName, 1, 1)");
         sql.append("from YukonPaObject ypo");
         sql.append("order by SUBSTRING(ypo.PAOName, 1, 1)");
-        List<Character> leadCharacters = getJdbcTemplate().query(sql.toString(), new ParameterizedRowMapper<Character>() {
+        List<Character> leadCharacters = getJdbcTemplate().query(sql.getSql(), new ParameterizedRowMapper<Character>() {
             public Character mapRow(ResultSet rs, int rowNum) throws SQLException {
                 return rs.getString(1).toUpperCase().charAt(0);
             }
-        });
+        }, sql.getArguments() );
         
         return leadCharacters;
     }
     
     @Override
-    protected String getChildSqlSelectForBin(Character bin) {
+    protected SqlFragmentSource getChildSqlSelectForBin(Character bin) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select ypo.paobjectid");
         sql.append("from Device d");
         sql.append("join YukonPaObject ypo on d.deviceid = ypo.paobjectid");
         sql.append("where upper(SUBSTRING(ypo.PAOName, 1, 1)) = ");
-        sql.appendQuotedString(bin);
-        return sql.toString();
+        sql.appendArgument(String.valueOf(bin)); // get JDBC error if this is passed in as a Character
+        return sql;
     }
     
     @Override
-    protected String getAllBinnedDeviceSqlSelect() {
-        return "SELECT ypo.paobjectid FROM YukonPaObject ypo";
+    protected SqlFragmentSource getAllBinnedDeviceSqlSelect() {
+        return new SimpleSqlFragment("SELECT ypo.paobjectid FROM YukonPaObject ypo");
     }
     
     @Override

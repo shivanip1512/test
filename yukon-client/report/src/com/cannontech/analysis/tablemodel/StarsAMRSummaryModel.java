@@ -1,26 +1,27 @@
 package com.cannontech.analysis.tablemodel;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowCallbackHandler;
+
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.analysis.data.stars.StarsAMRDetail;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.PoolManager;
-import com.cannontech.database.SqlUtils;
+import com.cannontech.common.util.SqlFragmentSource;
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.NaturalOrderComparator;
 
 public class StarsAMRSummaryModel extends ReportModelBase<StarsAMRDetail> implements Comparator<StarsAMRDetail>
@@ -141,102 +142,75 @@ public class StarsAMRSummaryModel extends ReportModelBase<StarsAMRDetail> implem
 	 * Build the SQL statement to retrieve MissedMeter data.
 	 * @return StringBuffer  an sqlstatement
 	 */
-	public StringBuilder buildSQLStatement() {
-		final StringBuilder sql = new StringBuilder();
-        //SELECT
-        sql.append("SELECT DISTINCT PAO.PAOBJECTID, PAO.PAONAME, PAO.TYPE, PAO.DISABLEFLAG, ");
-        sql.append("DMG.METERNUMBER, DCS.ADDRESS, ROUTE.PAOBJECTID as ROUTEPAOBJECTID, ROUTE.PAONAME as ROUTEPAONAME, ");
-        sql.append("P.POINTID, P.POINTNAME, RPH1.TIMESTAMP, RPH1.VALUE, ");
-        sql.append("CA.ACCOUNTNUMBER, SITE.SITENUMBER, CUST.CUSTOMERID ");
-		
-        //FROM
-        sql.append("FROM YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG, DEVICECARRIERSETTINGS DCS, ");
-        sql.append("POINT P, DEVICEROUTES DR, YUKONPAOBJECT ROUTE, RAWPOINTHISTORY RPH1, ");
-        sql.append("CUSTOMERACCOUNT CA, ACCOUNTSITE SITE, CUSTOMER CUST, INVENTORYBASE IB");
-        
-        //WHERE
-        sql.append("WHERE CUST.CUSTOMERID = CA.CUSTOMERID ");
-        sql.append("AND CA.ACCOUNTSITEID = SITE.ACCOUNTSITEID ");
-        sql.append("AND PAO.PAOBJECTID = DMG.DEVICEID ");
-        sql.append("AND PAO.PAOBJECTID = DCS.DEVICEID ");
-        sql.append("AND PAO.PAOBJECTID = DR.DEVICEID ");
-        sql.append("AND ROUTE.PAOBJECTID = DR.ROUTEID ");
-        sql.append("AND IB.ACCOUNTID = CA.ACCOUNTID ");
-        sql.append("AND IB.DEVICEID > 0 ");
-        sql.append("AND IB.DEVICEID = PAO.PAOBJECTID ");
-        sql.append("AND P.PAOBJECTID = PAO.PAOBJECTID ");
-        sql.append("AND P.POINTTYPE = '" + PointTypes.getType(PointTypes.PULSE_ACCUMULATOR_POINT) +"' ");
-        sql.append("AND P.POINTOFFSET = 1 ");
-        sql.append("AND P.POINTID = RPH1.POINTID ");
-        sql.append("AND RPH1.TIMESTAMP = ( SELECT MAX(RPH2.TIMESTAMP) FROM RAWPOINTHISTORY RPH2 ");
-        sql.append("WHERE RPH1.POINTID = RPH2.POINTID) ");
-				
-//				TODO ??? sql.append(" AND P.POINTID " + getInclusiveSQLString() +
-//				" (SELECT DISTINCT POINTID FROM RAWPOINTHISTORY WHERE TIMESTAMP > ? AND TIMESTAMP <= ? )");
+	public SqlFragmentSource buildSQLStatement() {
+	    final SqlStatementBuilder sql = new SqlStatementBuilder();
+	    //SELECT
+	    sql.append("SELECT DISTINCT PAO.PAOBJECTID, PAO.PAONAME, PAO.TYPE, PAO.DISABLEFLAG, ");
+	    sql.append("DMG.METERNUMBER, DCS.ADDRESS, ROUTE.PAOBJECTID as ROUTEPAOBJECTID, ROUTE.PAONAME as ROUTEPAONAME, ");
+	    sql.append("P.POINTID, P.POINTNAME, RPH1.TIMESTAMP, RPH1.VALUE, ");
+	    sql.append("CA.ACCOUNTNUMBER, SITE.SITENUMBER, CUST.CUSTOMERID ");
 
-        final DeviceGroupService deviceGroupService = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
-        final String[] groups = getBillingGroups();                
-                
-		if (groups != null && groups.length > 0) {
-            String deviceGroupSqlWhereClause = getGroupSqlWhereClause("PAO.PAOBJECTID");
-            sql.append(" AND " + deviceGroupSqlWhereClause);
-        }
-        
-		return sql;
+	    //FROM
+	    sql.append("FROM YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG, DEVICECARRIERSETTINGS DCS, ");
+	    sql.append("POINT P, DEVICEROUTES DR, YUKONPAOBJECT ROUTE, RAWPOINTHISTORY RPH1, ");
+	    sql.append("CUSTOMERACCOUNT CA, ACCOUNTSITE SITE, CUSTOMER CUST, INVENTORYBASE IB");
+
+	    //WHERE
+	    sql.append("WHERE CUST.CUSTOMERID = CA.CUSTOMERID ");
+	    sql.append("AND CA.ACCOUNTSITEID = SITE.ACCOUNTSITEID ");
+	    sql.append("AND PAO.PAOBJECTID = DMG.DEVICEID ");
+	    sql.append("AND PAO.PAOBJECTID = DCS.DEVICEID ");
+	    sql.append("AND PAO.PAOBJECTID = DR.DEVICEID ");
+	    sql.append("AND ROUTE.PAOBJECTID = DR.ROUTEID ");
+	    sql.append("AND IB.ACCOUNTID = CA.ACCOUNTID ");
+	    sql.append("AND IB.DEVICEID > 0 ");
+	    sql.append("AND IB.DEVICEID = PAO.PAOBJECTID ");
+	    sql.append("AND P.PAOBJECTID = PAO.PAOBJECTID ");
+	    sql.append("AND P.POINTTYPE = ").appendArgument(PointTypes.getType(PointTypes.PULSE_ACCUMULATOR_POINT));
+	    sql.append("AND P.POINTOFFSET = 1 ");
+	    sql.append("AND P.POINTID = RPH1.POINTID ");
+	    sql.append("AND RPH1.TIMESTAMP = ( SELECT MAX(RPH2.TIMESTAMP) FROM RAWPOINTHISTORY RPH2 ");
+	    sql.append("WHERE RPH1.POINTID = RPH2.POINTID) ");
+
+	    //				TODO ??? sql.append(" AND P.POINTID " + getInclusiveSQLString() +
+	    //				" (SELECT DISTINCT POINTID FROM RAWPOINTHISTORY WHERE TIMESTAMP > ? AND TIMESTAMP <= ? )");
+
+	    final String[] groups = getBillingGroups();                
+
+	    if (groups != null && groups.length > 0) {
+	        SqlFragmentSource deviceGroupSqlWhereClause = getGroupSqlWhereClause("PAO.PAOBJECTID");
+	        sql.append(" AND ", deviceGroupSqlWhereClause);
+	    }
+
+	    return sql;
 	}
 	
 	@Override
 	public void collectData()
 	{
-		//Reset all objects, new data being collected!
-		setData(null);
-				
-		StringBuilder sql = buildSQLStatement();
-		CTILogger.info(sql.toString());
-		
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rset = null;
+	    //Reset all objects, new data being collected!
+	    setData(null);
 
-		try
-		{
-			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+	    SqlFragmentSource sql = buildSQLStatement();
+	    CTILogger.info("SQL for MeterReadModel: " + sql.toString());
+	    CTILogger.info("START DATE >= " + getStartDate() + " - STOP DATE < " + getStopDate());
+	    JdbcOperations template = JdbcTemplateHelper.getYukonTemplate();
+	    template.query(sql.getSql(), sql.getArguments(), new RowCallbackHandler() {
+	        @Override
+	        public void processRow(ResultSet rs) throws SQLException {
+	            addDataRow(rs);
+	        }
+	    });
 
-			if( conn == null )
-			{
-			    CTILogger.error(getClass() + ":  Error getting database connection.");
-			    return;
-			}
-			pstmt = conn.prepareStatement(sql.toString());
-//			pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime() ));
-//			pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime() ));				
-//			CTILogger.info("START DATE >= " + getStartDate() + " - STOP DATE < " + getStopDate());
-			rset = pstmt.executeQuery();
+	    if (getData() != null) {
+	        Collections.sort(getData(), this);
+	        if (getOrderBy() == DESCENDING) {
+	            Collections.reverse(getData());
+	        }
+	    }
 
-			while( rset.next())
-			{
-			    addDataRow(rset);
-			}
-		}
-			
-		catch( java.sql.SQLException e )
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			SqlUtils.close(rset, pstmt, conn);
-		}
-        
-        if( getData() != null)
-        {
-            Collections.sort(getData(), this);
-            if( getOrderBy() == DESCENDING)
-                Collections.reverse(getData());
-        }
-        
-		CTILogger.info("Report Records Collected from Database: " + getData().size());
-		return;
+	    CTILogger.info("Report Records Collected from Database: " + getData().size());
+	    return;
 	}
 	 
 	/* (non-Javadoc)

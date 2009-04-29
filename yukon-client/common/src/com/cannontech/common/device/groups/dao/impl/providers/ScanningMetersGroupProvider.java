@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Required;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.dao.impl.providers.helpers.ScanIndicatingDevice;
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 
 public class ScanningMetersGroupProvider extends DeviceGroupProviderSqlBase {
@@ -20,10 +21,10 @@ public class ScanningMetersGroupProvider extends DeviceGroupProviderSqlBase {
         // is this device scanning? if so, it belongs to the base group
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(*) AS c");
-        sql.append("FROM (" + scanIndicatingDevice.getDeviceIdSql() + ") ypo ");
-        sql.append("WHERE ypo.deviceid = ?");
+        sql.append("FROM (" , scanIndicatingDevice.getDeviceIdSql(), ") ypo ");
+        sql.append("WHERE ypo.deviceid = ").appendArgument(device.getDeviceId());
         
-        Integer deviceCount = getSimpleJdbcTemplate().queryForInt(sql.toString(), device.getDeviceId());
+        Integer deviceCount = getSimpleJdbcTemplate().queryForInt(sql.getSql(), sql.getArguments());
         
         return deviceCount > 0;
     }
@@ -45,9 +46,10 @@ public class ScanningMetersGroupProvider extends DeviceGroupProviderSqlBase {
     }
     
 	@Override
-    public String getChildDeviceGroupSqlWhereClause(DeviceGroup group, String identifier) {
-	    String whereString = identifier + " IN ( " +  scanIndicatingDevice.getDeviceIdSql()  + ") ";
-	    return whereString;
+    public SqlFragmentSource getChildDeviceGroupSqlWhereClause(DeviceGroup group, String identifier) {
+	    SqlStatementBuilder sql = new SqlStatementBuilder();
+	    sql.append(identifier, "in (", scanIndicatingDevice.getDeviceIdSql(), ")");
+	    return sql;
     }
 
 	@Required

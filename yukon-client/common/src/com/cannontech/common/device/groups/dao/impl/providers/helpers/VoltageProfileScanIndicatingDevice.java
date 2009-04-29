@@ -1,21 +1,21 @@
 package com.cannontech.common.device.groups.dao.impl.providers.helpers;
 
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 
 public class VoltageProfileScanIndicatingDevice implements ScanIndicatingDevice {
 
-    private String sql;
+    private SqlStatementBuilder sql;
     
     VoltageProfileScanIndicatingDevice() {
         
-        SqlStatementBuilder builder = new SqlStatementBuilder();
-        builder.append("SELECT DeviceLoadProfile.DeviceId");
-        builder.append("FROM DeviceLoadProfile");
-        builder.append("WHERE DeviceLoadProfile.LoadProfileCollection LIKE '___Y'");
-        this.sql = builder.toString();
+        sql = new SqlStatementBuilder();
+        sql.append("SELECT DeviceLoadProfile.DeviceId");
+        sql.append("FROM DeviceLoadProfile");
+        sql.append("WHERE DeviceLoadProfile.LoadProfileCollection LIKE '___Y'");
     }
     
-    public String getDeviceIdSql() {
+    public SqlFragmentSource getDeviceIdSql() {
         return this.sql;
     }
 }

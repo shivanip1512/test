@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -29,28 +30,28 @@ public class DeviceTypeGroupProvider extends BinningDeviceGroupProviderBase<Stri
                 return rs.getString("type");
             }
         };
-        List<String> resultList = getJdbcTemplate().query(sql.toString(), mapper);
+        List<String> resultList = getJdbcTemplate().query(sql.getSql(), mapper, sql.getArguments());
         return resultList;
     }
     
     @Override
-    protected String getChildSqlSelectForBin(String bin) {
+    protected SqlFragmentSource getChildSqlSelectForBin(String bin) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ypo.paobjectid");
         sql.append("FROM DeviceMeterGroup d");
         sql.append("JOIN YukonPaObject ypo ON (d.deviceid = ypo.paobjectid)");
         sql.append("WHERE ypo.type = ");
-        sql.appendQuotedString(bin);
-        return sql.toString();
+        sql.appendArgument(bin);
+        return sql;
     }
     
     @Override
-    protected String getAllBinnedDeviceSqlSelect() {
+    protected SqlFragmentSource getAllBinnedDeviceSqlSelect() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ypo.paobjectid");
         sql.append("FROM DeviceMeterGroup d");
         sql.append("JOIN YukonPaObject ypo ON (d.deviceid = ypo.paobjectid)");
-        return sql.toString();
+        return sql;
     }
 
     @Override

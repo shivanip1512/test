@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -24,25 +25,25 @@ public class RouteGroupProvider extends BinningDeviceGroupProviderBase<LiteYukon
     }
     
     @Override
-    protected String getChildSqlSelectForBin(LiteYukonPAObject bin) {
+    protected SqlFragmentSource getChildSqlSelectForBin(LiteYukonPAObject bin) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ypo.paobjectid");
         sql.append("FROM DeviceMeterGroup d");
         sql.append("JOIN YukonPaObject ypo ON (d.deviceid = ypo.paobjectid)");
         sql.append("JOIN DeviceRoutes dr ON (d.deviceid = dr.deviceid)");
-        sql.append("WHERE dr.routeid = ", bin.getLiteID());
-        return sql.toString();
+        sql.append("WHERE dr.routeid = ").appendArgument(bin.getLiteID());
+        return sql;
     }
     
     @Override
-    protected String getAllBinnedDeviceSqlSelect() {
+    protected SqlFragmentSource getAllBinnedDeviceSqlSelect() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ypo.paobjectid");
         sql.append("FROM DeviceMeterGroup d");
         sql.append("JOIN YukonPaObject ypo ON (d.deviceid = ypo.paobjectid)");
         sql.append("JOIN DeviceRoutes dr ON (d.deviceid = dr.deviceid)");
         sql.append("WHERE dr.routeid > 0");
-        return sql.toString();
+        return sql;
     }
     
     @Override

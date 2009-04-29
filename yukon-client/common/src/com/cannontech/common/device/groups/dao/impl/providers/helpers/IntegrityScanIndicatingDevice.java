@@ -1,21 +1,21 @@
 package com.cannontech.common.device.groups.dao.impl.providers.helpers;
 
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 
 public class IntegrityScanIndicatingDevice implements ScanIndicatingDevice {
 
-    private String sql;
+    private SqlStatementBuilder sql;
     
     IntegrityScanIndicatingDevice() {
         
-        SqlStatementBuilder builder = new SqlStatementBuilder();
-        builder.append("SELECT DeviceScanRate.DeviceId");
-        builder.append("FROM DeviceScanRate");
-        builder.append("WHERE DeviceScanRate.ScanType='Integrity'");
-        this.sql = builder.toString();
+        sql = new SqlStatementBuilder();
+        sql.append("SELECT DeviceScanRate.DeviceId");
+        sql.append("FROM DeviceScanRate");
+        sql.append("WHERE DeviceScanRate.ScanType='Integrity'");
     }
     
-    public String getDeviceIdSql() {
+    public SqlFragmentSource getDeviceIdSql() {
         return this.sql;
     }
 }

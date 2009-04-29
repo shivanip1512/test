@@ -5,6 +5,7 @@ import java.util.Set;
 
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.core.dao.NotFoundException;
 
 /**
@@ -110,9 +111,9 @@ public interface DeviceGroupProvider {
      * 
      * @param group - The device group that the devices must be a immediate child of
      * @param identifier - The local name for the deviceId/yukonPaobjectId column
-     * @return - An SQL WHERE clause fragment
+     * @return - An SqlFragmentSource representing an SQL WHERE clause fragment
      */
-    public String getChildDeviceGroupSqlWhereClause(DeviceGroup group, String identifier);    
+    public SqlFragmentSource getChildDeviceGroupSqlWhereClause(DeviceGroup group, String identifier);    
     
     /**
      * Returns an SQL fragment that can be added to the middle of an existing SQL WHERE 
@@ -133,9 +134,9 @@ public interface DeviceGroupProvider {
      * 
      * @param group - The device group that the devices must be a descendant of
      * @param identifier - The local name for the deviceId/yukonPaobjectId column
-     * @return - An SQL WHERE clause fragment
+     * @return - An SqlFragmentSource representing an SQL WHERE clause fragment
      */
-    public String getDeviceGroupSqlWhereClause(DeviceGroup group, String identifier);
+    public SqlFragmentSource getDeviceGroupSqlWhereClause(DeviceGroup group, String identifier);
     
     /**
      * Returns a list of all groups that are direct children of the given group.
@@ -184,7 +185,7 @@ public interface DeviceGroupProvider {
      * The following should always be true if no Exception is thrown for any DeviceGroup i
      * and any String j:
      * 
-     * getGroup(i,j).equals(i.getFullNameInternal() + "/" + j);
+     * getGroup(i,j).getFullName().equals(i.getFullNameInternal() + "/" + j);
      * getGroup(i,j).getName().equals(j);
      * getGroup(i,j).getParent.equals(i);
      * 
@@ -210,7 +211,7 @@ public interface DeviceGroupProvider {
     /**
      * Returns a Set of DeviceGroups that are isEqualToOrDescendantOf of base and contain the device.
      * Implementations of this method should just return DeviceGroups of which the device
-     * is a direct child. If the device is a child of base, base may be returned.
+     * is a direct child. If the device is a child of base, base will be returned.
      * 
      * @param base - The group to look under
      * @param device - The device

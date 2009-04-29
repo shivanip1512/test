@@ -16,6 +16,7 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 
 public class StaticDeviceGroupProvider extends DeviceGroupProviderSqlBase {
@@ -60,17 +61,18 @@ public class StaticDeviceGroupProvider extends DeviceGroupProviderSqlBase {
     }
     
     @Override
-    public String getChildDeviceGroupSqlWhereClause(DeviceGroup group, String identifier) {
+    public SqlFragmentSource getChildDeviceGroupSqlWhereClause(DeviceGroup group, String identifier) {
         StoredDeviceGroup sdg = getStoredGroup(group);
-        String whereString = identifier + " IN ( " +
-                            " SELECT DISTINCT YUKONPAOID FROM DEVICEGROUPMEMBER " + 
-                            " WHERE DEVICEGROUPID = " + 
-                            sdg.getId() + ") ";
-        return whereString;
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(identifier, " IN ( ");
+        sql.append("SELECT DISTINCT YUKONPAOID FROM DEVICEGROUPMEMBER ");
+        sql.append("WHERE DEVICEGROUPID = ").appendArgument(sdg.getId());
+        sql.append(") ");
+        return sql;
     }
     
     @Override
-    public String getDeviceGroupSqlWhereClause(DeviceGroup group,
+    public SqlFragmentSource getDeviceGroupSqlWhereClause(DeviceGroup group,
             String identifier) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         // find all static groups
@@ -92,11 +94,11 @@ public class StaticDeviceGroupProvider extends DeviceGroupProviderSqlBase {
         // now handle the dynamic ones by delegating back to main
         List<StoredDeviceGroup> nonStaticGroups = deviceGroupEditorDao.getNonStaticGroups(sdg);
         for (StoredDeviceGroup nonStaticGroup : nonStaticGroups) {
-            String whereFragment = getMainDelegator().getDeviceGroupSqlWhereClause(nonStaticGroup, identifier);
+            SqlFragmentSource whereFragment = getMainDelegator().getDeviceGroupSqlWhereClause(nonStaticGroup, identifier);
             sql.append("OR", whereFragment);
         }
 
-        return sql.toString();
+        return sql;
     }
     
     private StoredDeviceGroup getStoredGroup(DeviceGroup group) {

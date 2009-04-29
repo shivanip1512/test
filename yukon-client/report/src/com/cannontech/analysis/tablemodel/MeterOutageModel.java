@@ -1,21 +1,25 @@
 package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowCallbackHandler;
 
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SqlFragmentSource;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.util.TimeUtil;
-import com.cannontech.database.PoolManager;
-import com.cannontech.database.SqlUtils;
+import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.data.pao.PAOGroups;
 
 /**
@@ -90,74 +94,70 @@ public class MeterOutageModel extends ReportModelBase<MeterAndPointData>
 	/**
 	 * Add MissedMeter objects to data, retrieved from rset.
 	 * @param ResultSet rset
+	 * @throws SQLException 
 	 */
-	public void addDataRow(ResultSet rset)
+	public void addDataRow(ResultSet rset) throws SQLException
 	{
-		try
-		{
-		    Meter meter = new Meter();
-            
-            int paobjectID = rset.getInt(1);
-            meter.setDeviceId(paobjectID);
-            String paoName = rset.getString(2);
-            meter.setName(paoName);
-            String type = rset.getString(3);
-            int deviceType = PAOGroups.getDeviceType(type);
-            meter.setType(deviceType);
-            meter.setTypeStr(type);
-            boolean disabled = CtiUtilities.isTrue(rset.getString(4).charAt(0));
-            meter.setDisabled(disabled);
-            String meterNumber = rset.getString(5);
-            meter.setMeterNumber(meterNumber);
-            String address = rset.getString(6);
-            meter.setAddress(address);
-            int routeID = rset.getInt(7);
-            meter.setRouteId(routeID);
-            String routeName = rset.getString(8);
-            meter.setRoute(routeName);
-            int pointID = rset.getInt(9);
-            String pointName = rset.getString(10);
-            
-            Date ts = null;
-            Double value = null;
-            Timestamp timestamp = rset.getTimestamp(11);
-            ts = new Date(timestamp.getTime());
-            value = new Double(rset.getDouble(12));
-            
-			MeterAndPointData meterAndPointData = new MeterAndPointData(meter, pointID, pointName, ts, value);
+	    Meter meter = new Meter();
 
-			getData().add(meterAndPointData);
-		}
-		catch(java.sql.SQLException e)
-		{
-			e.printStackTrace();
-		}
+	    int paobjectID = rset.getInt(1);
+	    meter.setDeviceId(paobjectID);
+	    String paoName = rset.getString(2);
+	    meter.setName(paoName);
+	    String type = rset.getString(3);
+	    int deviceType = PAOGroups.getDeviceType(type);
+	    meter.setType(deviceType);
+	    meter.setTypeStr(type);
+	    boolean disabled = CtiUtilities.isTrue(rset.getString(4).charAt(0));
+	    meter.setDisabled(disabled);
+	    String meterNumber = rset.getString(5);
+	    meter.setMeterNumber(meterNumber);
+	    String address = rset.getString(6);
+	    meter.setAddress(address);
+	    int routeID = rset.getInt(7);
+	    meter.setRouteId(routeID);
+	    String routeName = rset.getString(8);
+	    meter.setRoute(routeName);
+	    int pointID = rset.getInt(9);
+	    String pointName = rset.getString(10);
+
+	    Date ts = null;
+	    Double value = null;
+	    Timestamp timestamp = rset.getTimestamp(11);
+	    ts = new Date(timestamp.getTime());
+	    value = new Double(rset.getDouble(12));
+
+	    MeterAndPointData meterAndPointData = new MeterAndPointData(meter, pointID, pointName, ts, value);
+
+	    getData().add(meterAndPointData);
 	}
 
 	/**
 	 * Build the SQL statement to retrieve MissedMeter data.
 	 * @return StringBuffer  an sqlstatement
 	 */
-	public StringBuffer buildSQLStatement()
+	public SqlFragmentSource buildSQLStatement()
 	{
 
-        StringBuffer sql = new StringBuffer("SELECT DISTINCT PAO.PAOBJECTID, PAO.PAONAME, PAO.TYPE, PAO.DISABLEFLAG, " +
-                                            " DMG.METERNUMBER, DCS.ADDRESS, ROUTE.PAOBJECTID, ROUTE.PAONAME, " +
-                                            " P.POINTID, P.POINTNAME, TIMESTAMP, VALUE ");
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DISTINCT PAO.PAOBJECTID, PAO.PAONAME, PAO.TYPE, PAO.DISABLEFLAG, ");
+        sql.append(" DMG.METERNUMBER, DCS.ADDRESS, ROUTE.PAOBJECTID, ROUTE.PAONAME, ");
+        sql.append(" P.POINTID, P.POINTNAME, TIMESTAMP, VALUE ");
 
-        sql.append(" FROM YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG, DEVICECARRIERSETTINGS DCS, " + 
-                   " DEVICEROUTES DR, YUKONPAOBJECT ROUTE, POINT P , RAWPOINTHISTORY RPH");
+        sql.append(" FROM YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG, DEVICECARRIERSETTINGS DCS, ");
+        sql.append(" DEVICEROUTES DR, YUKONPAOBJECT ROUTE, POINT P , RAWPOINTHISTORY RPH");
         
-        sql.append(" WHERE PAO.PAOBJECTID = DMG.DEVICEID " + 
-                    " AND PAO.PAOBJECTID = DCS.DEVICEID " + 
-                    " AND PAO.PAOBJECTID = DR.DEVICEID " +
-                    " AND ROUTE.PAOBJECTID = DR.ROUTEID " +
-                    " AND P.POINTID = RPH.POINTID " +
-                    " AND PAO.PAOBJECTID = P.PAOBJECTID "); 
+        sql.append(" WHERE PAO.PAOBJECTID = DMG.DEVICEID ");
+        sql.append(" AND PAO.PAOBJECTID = DCS.DEVICEID ");
+        sql.append(" AND PAO.PAOBJECTID = DR.DEVICEID ");
+        sql.append(" AND ROUTE.PAOBJECTID = DR.ROUTEID ");
+        sql.append(" AND P.POINTID = RPH.POINTID ");
+        sql.append(" AND PAO.PAOBJECTID = P.PAOBJECTID "); 
 
-        sql.append(" AND P.POINTOFFSET = 100 AND P.POINTTYPE = 'Analog' " +	// OUTAGE POINT OFFSET and POINTTYPE
-					" AND VALUE >= " + getMinOutageSecs() +
-                    " AND TIMESTAMP > ? AND TIMESTAMP <= ? ");
+        sql.append(" AND P.POINTOFFSET = 100 AND P.POINTTYPE = 'Analog' ");	// OUTAGE POINT OFFSET and POINTTYPE
+        sql.append(" AND VALUE >= ").appendArgument(getMinOutageSecs());
+        sql.append(" AND TIMESTAMP > ").appendArgument(getStartDate());
+        sql.append(" AND TIMESTAMP <= ").appendArgument(getStopDate());
 		
         // RESTRICT BY DEVICE/METER PAOID (if any)
         String paoIdWhereClause = getPaoIdWhereClause("PAO.PAOBJECTID");
@@ -168,8 +168,8 @@ public class MeterOutageModel extends ReportModelBase<MeterAndPointData>
         // RESTRICT BY GROUPS (if any)
         final String[] groups = getBillingGroups();
         if (groups != null && groups.length > 0) {
-            String deviceGroupSqlWhereClause = getGroupSqlWhereClause("PAO.PAOBJECTID");
-            sql.append(" AND " + deviceGroupSqlWhereClause);
+            SqlFragmentSource deviceGroupSqlWhereClause = getGroupSqlWhereClause("PAO.PAOBJECTID");
+            sql.append(" AND ", deviceGroupSqlWhereClause);
         }
         
 		sql.append(" ORDER BY ");	//TODO what to order by?
@@ -194,46 +194,18 @@ public class MeterOutageModel extends ReportModelBase<MeterAndPointData>
 		//Reset all objects, new data being collected!
 		setData(null);
 				
-		int rowCount = 0;
-		StringBuffer sql = buildSQLStatement();
-		CTILogger.info(sql.toString());
+        SqlFragmentSource sql = buildSQLStatement();
+        CTILogger.info(sql.toString()); 
+        CTILogger.info("START DATE > " + getStartDate() + " - STOP DATE <= " + getStopDate());
+        
+        JdbcOperations template = JdbcTemplateHelper.getYukonTemplate();
+        template.query(sql.getSql(), sql.getArguments(), new RowCallbackHandler() {
+            @Override
+            public void processRow(ResultSet rs) throws SQLException {
+                addDataRow(rs);
+            }
+        });
 		
-		java.sql.Connection conn = null;
-		java.sql.PreparedStatement pstmt = null;
-		java.sql.ResultSet rset = null;
-
-		try
-		{
-			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-
-			if( conn == null )
-			{
-				CTILogger.error(getClass() + ":  Error getting database connection.");
-				return;
-			}
-			else
-			{
-				pstmt = conn.prepareStatement(sql.toString());
-				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime() ));
-				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime() ));				
-				CTILogger.info("START DATE >= " + getStartDate() + " - STOP DATE < " + getStopDate());
-				rset = pstmt.executeQuery();
-				
-				while( rset.next())
-				{
-					addDataRow(rset);
-				}
-			}
-		}
-			
-		catch( java.sql.SQLException e )
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			SqlUtils.close(rset, pstmt, conn );
-		}
 		CTILogger.info("Report Records Collected from Database: " + getData().size());
 		return;
 	}

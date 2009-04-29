@@ -1,13 +1,20 @@
 package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
+
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowCallbackHandler;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SqlFragmentSource;
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.spring.YukonSpringHook;
@@ -74,71 +81,63 @@ public class MeterUsageModel extends ReportModelBase
 	/**
 	 * Add MissedMeter objects to data, retrieved from rset.
 	 * @param ResultSet rset
+	 * @throws SQLException 
 	 */
 	@SuppressWarnings("unchecked")
-    public void addDataRow(ResultSet rset)
-	{
-		try
-		{
-            MeterUsageRow meterUsage = new MeterUsageRow();
-            meterUsage.deviceName = rset.getString(1);
-            meterUsage.meterNumber = rset.getString(2);
-            meterUsage.timestamp = rset.getTimestamp(3);
-            meterUsage.reading = new Double(rset.getInt(4));
-            
-            if(previousDevice != null) {
-                if( !meterUsage.deviceName.equals(previousDevice)) {
-                    previousReading = null;
-                }
-            }
-            
-            meterUsage.previousReading = previousReading;
-            
-            if(previousReading != null) {
-                meterUsage.totalUsage = meterUsage.reading - previousReading;
-            }else {
-                meterUsage.totalUsage = null;
-            }
-            
-            getData().add(meterUsage);
-            previousReading = meterUsage.reading;
-            previousDevice = meterUsage.deviceName;
-        }
-		catch(java.sql.SQLException e)
-		{
-			e.printStackTrace();
-		}
-	}
+    public void addDataRow(ResultSet rset) throws SQLException
+    {
+	    MeterUsageRow meterUsage = new MeterUsageRow();
+	    meterUsage.deviceName = rset.getString(1);
+	    meterUsage.meterNumber = rset.getString(2);
+	    meterUsage.timestamp = rset.getTimestamp(3);
+	    meterUsage.reading = new Double(rset.getInt(4));
+
+	    if(previousDevice != null) {
+	        if( !meterUsage.deviceName.equals(previousDevice)) {
+	            previousReading = null;
+	        }
+	    }
+
+	    meterUsage.previousReading = previousReading;
+
+	    if(previousReading != null) {
+	        meterUsage.totalUsage = meterUsage.reading - previousReading;
+	    }else {
+	        meterUsage.totalUsage = null;
+	    }
+
+	    getData().add(meterUsage);
+	    previousReading = meterUsage.reading;
+	    previousDevice = meterUsage.deviceName;
+    }
     
     /**
 	 * Build the SQL statement to retrieve PowerFail data.
 	 * @return StringBuffer  an sqlstatement
 	 */
-	public StringBuffer buildSQLStatement()
+	public SqlFragmentSource buildSQLStatement()
 	{
-		StringBuffer sql = new StringBuffer	("SELECT DISTINCT PAO.PAONAME,  DMG.METERNUMBER, RPH.TIMESTAMP, RPH.VALUE" + 
-			" FROM YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG, " +
-			" POINT P join RAWPOINTHISTORY RPH "+
-			" ON P.POINTID = RPH.POINTID AND RPH.TIMESTAMP > ? AND TIMESTAMP <= ? " + //this is the join clause
-			" WHERE PAO.PAOBJECTID = DMG.DEVICEID "+
-			" AND P.PAOBJECTID = PAO.PAOBJECTID " + 
-			" AND P.POINTOFFSET = 1 " + 
-			" AND P.POINTTYPE = 'PulseAccumulator' ");
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		sql.append("SELECT DISTINCT PAO.PAONAME,  DMG.METERNUMBER, RPH.TIMESTAMP, RPH.VALUE");
+		sql.append(" FROM YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG, ");
+		sql.append(" POINT P join RAWPOINTHISTORY RPH ");
+		sql.append(" ON P.POINTID = RPH.POINTID AND RPH.TIMESTAMP > ").appendArgument(getStartDate());
+		sql.append(" AND TIMESTAMP <= ").appendArgument(getStopDate()); //this is the join clause
+		sql.append(" WHERE PAO.PAOBJECTID = DMG.DEVICEID ");
+		sql.append(" AND P.PAOBJECTID = PAO.PAOBJECTID ");
+		sql.append(" AND P.POINTOFFSET = 1 ");
+		sql.append(" AND P.POINTTYPE = 'PulseAccumulator' ");
 			
-//		Use paoIDs in query if they exist			
-		if( getPaoIDs() != null && getPaoIDs().length > 0)
-		{
-			sql.append(" AND PAO.PAOBJECTID IN (" + getPaoIDs()[0]);
-			for (int i = 1; i < getPaoIDs().length; i++)
-				sql.append(", " + getPaoIDs()[i]);
-			sql.append(") ");
+		// Use paoIDs in query if they exist			
+		if( getPaoIDs() != null && getPaoIDs().length > 0) {
+			sql.append(" AND PAO.PAOBJECTID IN (", getPaoIDs(), ")");
 		} 	
 					
         final String[] groups = getBillingGroups();
         
 		if (groups != null && groups.length > 0) {
-            String deviceGroupSqlWhereClause = getGroupSqlWhereClause("PAO.PAOBJECTID");
-            sql.append(" AND " + deviceGroupSqlWhereClause);
+            SqlFragmentSource deviceGroupSqlWhereClause = getGroupSqlWhereClause("PAO.PAOBJECTID");
+            sql.append(" AND ", deviceGroupSqlWhereClause);
 		}
 
 		sql.append("ORDER BY PAO.PAONAME, TIMESTAMP");
@@ -152,46 +151,18 @@ public class MeterUsageModel extends ReportModelBase
 		//Reset all objects, new data being collected!
 		setData(null);
 				
-		StringBuffer sql = buildSQLStatement();
-		CTILogger.info(sql.toString());
-		
-		java.sql.Connection conn = null;
-		java.sql.PreparedStatement pstmt = null;
-		java.sql.ResultSet rset = null;
+        SqlFragmentSource sql = buildSQLStatement();
+        CTILogger.info(sql.toString()); 
+        CTILogger.info("START DATE > " + getStartDate() + " - STOP DATE <= " + getStopDate());
+        
+        JdbcOperations template = JdbcTemplateHelper.getYukonTemplate();
+        template.query(sql.getSql(), sql.getArguments(), new RowCallbackHandler() {
+            @Override
+            public void processRow(ResultSet rs) throws SQLException {
+                addDataRow(rs);
+            }
+        });
 
-		try
-		{
-			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-
-			if( conn == null )
-			{
-				CTILogger.error(getClass() + ":  Error getting database connection.");
-				return;
-			}
-			else
-			{
-				pstmt = conn.prepareStatement(sql.toString());
-				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime()));
-				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime()));
-				CTILogger.info("START DATE > " + getStartDate() + " - STOP DATE <= " + getStopDate());
-				rset = pstmt.executeQuery();
-				
-				while( rset.next())
-				{
-					addDataRow(rset);
-				}
-			}
-		}
-			
-		catch( java.sql.SQLException e )
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			SqlUtils.close(rset, pstmt, conn );
-		}
-		
 		CTILogger.info("Report Records Collected from Database: " + getData().size());
 		return;
 	}

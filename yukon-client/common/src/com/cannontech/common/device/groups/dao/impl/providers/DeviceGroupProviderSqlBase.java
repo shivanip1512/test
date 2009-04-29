@@ -16,6 +16,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.CollectionRowCallbackHandler;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
@@ -46,15 +47,20 @@ public abstract class DeviceGroupProviderSqlBase extends DeviceGroupProviderBase
 
     @Override
     public int getChildDeviceCount(DeviceGroup group) {
-        String sql = countSql + getChildDeviceGroupSqlWhereClause(group, "d.deviceId");
-        int result = simpleJdbcTemplate.queryForInt(sql);
+        
+        SqlFragmentSource childDeviceGroupSqlWhereClause = getChildDeviceGroupSqlWhereClause(group, "d.deviceId");
+        SqlStatementBuilder sql = new SqlStatementBuilder(countSql);
+        sql.appendFragment(childDeviceGroupSqlWhereClause);
+        int result = simpleJdbcTemplate.queryForInt(sql.getSql(), sql.getArguments());
         return result;
     }
     
     @Override
     public int getDeviceCount(DeviceGroup group) {
-        String sql = countSql + getDeviceGroupSqlWhereClause(group, "d.deviceId");
-        int result = simpleJdbcTemplate.queryForInt(sql);
+        SqlFragmentSource deviceGroupSqlWhereClause = getDeviceGroupSqlWhereClause(group, "d.deviceId");
+        SqlStatementBuilder sql = new SqlStatementBuilder(countSql);
+        sql.appendFragment(deviceGroupSqlWhereClause);
+        int result = simpleJdbcTemplate.queryForInt(sql.getSql(), sql.getArguments());
         return result;
     }
     
@@ -75,8 +81,8 @@ public abstract class DeviceGroupProviderSqlBase extends DeviceGroupProviderBase
         else {
             log.debug("Collecting all child devices from group " + group.getFullName() + ".");
         }
-        
-        String sql = deviceSql + getChildDeviceGroupSqlWhereClause(group, "ypo.paobjectId");
+        SqlStatementBuilder sql = new SqlStatementBuilder(deviceSql);
+        sql.appendFragment(getChildDeviceGroupSqlWhereClause(group, "ypo.paobjectId"));
         
         final ParameterizedRowMapper<YukonDevice> mapper = new YukonDeviceRowMapper(paoGroupsWrapper);
         
@@ -96,15 +102,16 @@ public abstract class DeviceGroupProviderSqlBase extends DeviceGroupProviderBase
 
         };
         
-        simpleJdbcTemplate.getJdbcOperations().query(sql, rse);
+        simpleJdbcTemplate.getJdbcOperations().query(sql.getSql(), sql.getArguments(), rse);
     }
     
     @Override
     public Set<YukonDevice> getDevices(DeviceGroup group) {
-        String sql = deviceSql + getDeviceGroupSqlWhereClause(group, "ypo.paobjectId");
+        SqlStatementBuilder sql = new SqlStatementBuilder(deviceSql);
+        sql.appendFragment(getDeviceGroupSqlWhereClause(group, "ypo.paobjectId"));
         Set<YukonDevice> result = new HashSet<YukonDevice>();
         CollectionRowCallbackHandler<YukonDevice> rch = new CollectionRowCallbackHandler<YukonDevice>(new YukonDeviceRowMapper(paoGroupsWrapper), result);
-        simpleJdbcTemplate.getJdbcOperations().query(sql, rch);
+        simpleJdbcTemplate.getJdbcOperations().query(sql.getSql(), sql.getArguments(), rch);
         return result;
     }
     

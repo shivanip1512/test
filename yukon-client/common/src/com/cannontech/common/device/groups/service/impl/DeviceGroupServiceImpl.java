@@ -21,25 +21,29 @@ import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.util.SimpleSqlFragment;
+import com.cannontech.common.util.SqlFragmentCollection;
+import com.cannontech.common.util.SqlFragmentSource;
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.common.util.predicate.Predicate;
 import com.cannontech.core.dao.NotFoundException;
 
 public class DeviceGroupServiceImpl implements DeviceGroupService {
     private DeviceGroupProviderDao deviceGroupDao;
     private Logger log = YukonLogManager.getLogger(DeviceGroupServiceImpl.class);
     
-    public String getDeviceGroupSqlWhereClause(Collection<? extends DeviceGroup> groups, String identifier) {
+    public SqlFragmentSource getDeviceGroupSqlWhereClause(Collection<? extends DeviceGroup> groups, String identifier) {
 
         if (groups.isEmpty()) {
-            return "1=0";
+            return new SimpleSqlFragment("1=0");
         } else {
-            String whereClause = "(";
-            List<String> whereClauseList = new ArrayList<String>();
+            SqlFragmentCollection whereClauseList = SqlFragmentCollection.newOrCollection();
             groups = removeDuplicates(groups);
             for (DeviceGroup group : groups) {
                 whereClauseList.add(deviceGroupDao.getDeviceGroupSqlWhereClause(group, identifier));
             }
-            whereClause += StringUtils.join(whereClauseList, " OR ");
-            whereClause += ")";
+            SqlStatementBuilder whereClause = new SqlStatementBuilder();
+            whereClause.append("(", whereClauseList, ")");
             return whereClause;
         }
     }

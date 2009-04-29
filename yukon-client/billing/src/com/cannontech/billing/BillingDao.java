@@ -20,6 +20,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
+
 import com.cannontech.billing.device.BillableDeviceFactory;
 import com.cannontech.billing.device.base.BillableDevice;
 import com.cannontech.billing.device.base.DeviceData;
@@ -30,6 +34,8 @@ import com.cannontech.common.device.definition.model.DevicePointIdentifier;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SqlFragmentSource;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.point.PointTypes;
@@ -47,7 +53,7 @@ public class BillingDao {
      * @param multiplier - Reading value multiplier
      * @return A list of BillableDevices
      */
-    public static List<BillableDevice> retrieveBillingData(BillingFileDefaults defaults) {
+    public static List<BillableDevice> retrieveBillingData(final BillingFileDefaults defaults) {
 
         if( defaults.getFormatID() == FileFormatTypes.NISC_INTERVAL_READINGS) {
             return retrieveIntervalReadingsData(defaults);
@@ -55,90 +61,80 @@ public class BillingDao {
         
         long timer = System.currentTimeMillis();
 
-        List<BillableDevice> deviceList = null;
 
-        String sql = "SELECT                                                            "
-                + "     dmg.meternumber,                                                "
-                + "     p.pointid,                                                      "
-                + "     p.pointoffset,                                                  "
-                + "     p.pointtype,                                                    "
-                + "     p.pointname,                                                    "
-                + "     rph.timestamp,                                                  "
-                + "     rph.value,                                                      "
-                + "     dmg.deviceid,                                                   "
-                + "     ypo.type,                                                       "
-                + "     ypo.category,                                                   "
-                + "     uom.uomid,                                                      "
-                + "     ypo.paoname,                                                    "
-                + "     dcs.address                                                     "
-                + " FROM                                                                "
-                + "     devicemetergroup dmg,                                           "
-                + "     point p,                                                        "
-                + "     rawpointhistory rph,                                            "
-                + "     yukonpaobject ypo                                               "
-                + "     LEFT JOIN devicecarriersettings dcs                             "
-                + "         ON ypo.paobjectid = dcs.deviceid,                           "
-                + "     unitmeasure uom,                                                "
-                + "     pointunit pu,                                                   "
-                + "     (SELECT                                                         "
-                + "         r.pointid,                                                  "
-                + "         max(r.timestamp) AS rDate                                   "
-                + "     FROM                                                            "
-                + "         (SELECT                                                     "
-                + "             *                                                       "
-                + "         FROM                                                        "
-                + "             rawpointhistory                                         "
-                + "         WHERE                                                       "
-                + "             timestamp > ?                                           "
-                + "             AND timestamp <= ?) r                                   "
-                + "     GROUP BY                                                        "
-                + "         pointid) irph                                               "
-                + " WHERE                                                               "
-                + "     p.pointid = irph.pointid                                        "
-                + "     AND pu.pointid = p.pointid                                      "
-                + "     AND uom.uomid = pu.uomid                                        "
-                + "     AND rph.pointid = irph.pointid                                  "
-                + "     AND rph.timestamp = irph.rDate                                  "
-                + "     AND ypo.paobjectid = p.paobjectid                               "
-                + "     AND dmg.deviceid = ypo.paobjectid                               "
-                + getDeviceMeterGroupWhereClause(defaults)
-                + " ORDER BY                                                            "
-                + "     dmg.meternumber,                                                "
-                + "     dmg.deviceid,                                                   "
-                + "     p.pointoffset,                                                  "
-                + "     rph.timestamp DESC                                              ";
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT");
+        sql.append("     dmg.meternumber,");
+        sql.append("     p.pointid,");
+        sql.append("     p.pointoffset,");
+        sql.append("     p.pointtype,");
+        sql.append("     p.pointname,");
+        sql.append("     rph.timestamp,");
+        sql.append("     rph.value,");
+        sql.append("     dmg.deviceid,");
+        sql.append("     ypo.type,");
+        sql.append("     ypo.category,");
+        sql.append("     uom.uomid,");
+        sql.append("     ypo.paoname,");
+        sql.append("     dcs.address");
+        sql.append(" FROM");
+        sql.append("     devicemetergroup dmg,");
+        sql.append("     point p,");
+        sql.append("     rawpointhistory rph,");
+        sql.append("     yukonpaobject ypo");
+        sql.append("     LEFT JOIN devicecarriersettings dcs");
+        sql.append("         ON ypo.paobjectid = dcs.deviceid,");
+        sql.append("     unitmeasure uom,");
+        sql.append("     pointunit pu,");
+        sql.append("     (SELECT");
+        sql.append("         r.pointid,");
+        sql.append("         max(r.timestamp) AS rDate");
+        sql.append("     FROM");
+        sql.append("         (SELECT");
+        sql.append("             *");
+        sql.append("         FROM");
+        sql.append("             rawpointhistory");
+        sql.append("         WHERE");
+        sql.append("             timestamp > ").appendArgument(defaults.getEarliestStartDate());
+        sql.append("             AND timestamp <= ").appendArgument(defaults.getEndDate()).append(") r");
+        sql.append("     GROUP BY");
+        sql.append("         pointid) irph");
+        sql.append(" WHERE");
+        sql.append("     p.pointid = irph.pointid");
+        sql.append("     AND pu.pointid = p.pointid");
+        sql.append("     AND uom.uomid = pu.uomid");
+        sql.append("     AND rph.pointid = irph.pointid");
+        sql.append("     AND rph.timestamp = irph.rDate");
+        sql.append("     AND ypo.paobjectid = p.paobjectid");
+        sql.append("     AND dmg.deviceid = ypo.paobjectid");
+        sql.appendFragment(getDeviceMeterGroupWhereClause(defaults));
+        sql.append(" ORDER BY");
+        sql.append("     dmg.meternumber,");
+        sql.append("     dmg.deviceid,");
+        sql.append("     p.pointoffset,");
+        sql.append("     rph.timestamp DESC");
 
-        Connection con = null;
-        PreparedStatement stmt = null;
-        ResultSet rset = null;
+        CTILogger.info("SQL Statement: " + sql);
 
-        try {
-            CTILogger.info("SQL Statement: " + sql.replaceAll(" {2,}", " "));
+        JdbcTemplate jdbcTemplate = YukonSpringHook.getBean("jdbcTemplate", JdbcTemplate.class);
 
-            con = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
 
-            if (con == null) {
-                CTILogger.info(BillingDao.class + ":  Error getting database connection.");
-                return null;
-            } else {
-                stmt = con.prepareStatement(sql);
-                stmt.setTimestamp(1, new Timestamp(defaults.getEarliestStartDate().getTime()));
-                stmt.setTimestamp(2, new Timestamp(defaults.getEndDate().getTime()));
+        final List<BillableDevice> deviceList = new ArrayList<BillableDevice>();
+        jdbcTemplate.query(sql.getSql(), sql.getArguments(), new ResultSetExtractor() {
+            @Override
+            public Object extractData(ResultSet rset) throws SQLException, DataAccessException {
 
-                rset = stmt.executeQuery();
-
-                deviceList = new ArrayList<BillableDevice>();
                 Map<String, String> accountNumberMap = null;
-                if( defaults.getFormatID() == FileFormatTypes.CADP ||
-               		defaults.getFormatID() == FileFormatTypes.CADPXL2 ) {
-	                accountNumberMap = retrieveAccountNumbers();
+                if (defaults.getFormatID() == FileFormatTypes.CADP ||
+                        defaults.getFormatID() == FileFormatTypes.CADPXL2 ) {
+                    accountNumberMap = retrieveAccountNumbers();
                 }
 
                 Map<String, Integer> meterPositionNumberMap = new HashMap<String, Integer>();
                 Hashtable<Integer, Double> pointIdMultiplierHashTable = new Hashtable<Integer, Double>();
                 if (defaults.isRemoveMultiplier()) {
-                	//Don't do all the work against the point tables if we don't need to 
-                	pointIdMultiplierHashTable = retrievePointIDMultiplierHashTable();
+                    //Don't do all the work against the point tables if we don't need to 
+                    pointIdMultiplierHashTable = retrievePointIDMultiplierHashTable();
                 }
 
                 int currentPointID = 0;
@@ -157,10 +153,10 @@ public class BillingDao {
 
                     double multiplier = 1;
                     if (defaults.isRemoveMultiplier()) {
-                    	Double pointIdMult = pointIdMultiplierHashTable.get(new Integer(currentPointID));
-                    	if ( pointIdMult != null) {	//Possibility that status points might be returned...which don't have multipliers!
-                    		multiplier = pointIdMult;
-                    	}
+                        Double pointIdMult = pointIdMultiplierHashTable.get(new Integer(currentPointID));
+                        if ( pointIdMult != null) {	//Possibility that status points might be returned...which don't have multipliers!
+                            multiplier = pointIdMult;
+                        }
                     }
 
                     double reading = rset.getDouble(7) / multiplier;
@@ -174,7 +170,7 @@ public class BillingDao {
                     int pointType = PointTypes.getType(ptType);
                     DevicePointIdentifier devicePointIdentifier = new DevicePointIdentifier(pointType, ptOffset);
                     java.util.Date tsDate = new java.util.Date(ts.getTime());
-                    
+
                     String accountNumber = (accountNumberMap == null ? paoName : accountNumberMap.get(meterNumber));
 
                     if (currentPointID != lastPointID) {
@@ -183,16 +179,16 @@ public class BillingDao {
                         if (currentDeviceID == lastDeviceID) {
 
                             if (device != null) {
-                                
+
                                 if( (device.isEnergy(devicePointIdentifier) &&  !tsDate.before(defaults.getEnergyStartDate()) )  || 
-                                    (device.isDemand(devicePointIdentifier) &&  !tsDate.before(defaults.getDemandStartDate()) ) ) { 
-                                    
+                                        (device.isDemand(devicePointIdentifier) &&  !tsDate.before(defaults.getDemandStartDate()) ) ) { 
+
                                     DeviceData meterData = new DeviceData(meterNumber,
                                                                           getMeterPositionNumber(meterPositionNumberMap,
                                                                                                  accountNumber),
-                                                                          String.valueOf(address),
-                                                                          accountNumber,
-                                                                          paoName);
+                                                                                                 String.valueOf(address),
+                                                                                                 accountNumber,
+                                                                                                 paoName);
                                     device.populate(devicePointIdentifier,
                                                     ts,
                                                     reading,
@@ -207,23 +203,23 @@ public class BillingDao {
                             device = BillableDeviceFactory.createBillableDevice(category, paoType);
 
                             if (device != null) {
-                                
+
                                 if( (device.isEnergy(devicePointIdentifier) &&  !tsDate.before(defaults.getEnergyStartDate()) )  || 
-                                    (device.isDemand(devicePointIdentifier) &&  !tsDate.before(defaults.getDemandStartDate()) ) ) { 
-    
+                                        (device.isDemand(devicePointIdentifier) &&  !tsDate.before(defaults.getDemandStartDate()) ) ) { 
+
                                     DeviceData meterData = new DeviceData(meterNumber,
                                                                           getMeterPositionNumber(meterPositionNumberMap,
                                                                                                  accountNumber),
-                                                                          String.valueOf(address),
-                                                                          accountNumber,
-                                                                          paoName);
+                                                                                                 String.valueOf(address),
+                                                                                                 accountNumber,
+                                                                                                 paoName);
                                     device.populate(devicePointIdentifier,
                                                     ts,
                                                     reading,
                                                     unitOfMeasure,
                                                     pointName,
                                                     meterData);
-    
+
                                     lastDeviceID = currentDeviceID;
                                     deviceList.add(device);
                                 }
@@ -231,14 +227,12 @@ public class BillingDao {
                         }
                     }
                 }
+                return null;
             }
-        } catch (SQLException e) {
-            CTILogger.error(e);
-        } finally {
-            SqlUtils.close(rset, stmt, con );
-        }
+        });
+
         CTILogger.info("@" + BillingDao.class.toString() + " Data Collection : Took "
-                + (System.currentTimeMillis() - timer));
+                       + (System.currentTimeMillis() - timer));
         return deviceList;
     }
 
@@ -348,21 +342,21 @@ public class BillingDao {
      * @param defaults - Information about the billing data to be retrieved
      * @return String where clause
      */
-    private static String getDeviceMeterGroupWhereClause(BillingFileDefaults defaults) {
+    private static SqlFragmentSource getDeviceMeterGroupWhereClause(BillingFileDefaults defaults) {
         DeviceGroupService deviceGroupService = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
 
-        StringBuffer where = new StringBuffer(" AND ");
+        SqlStatementBuilder where = new SqlStatementBuilder(" AND ");
         
         List<String> deviceGroupNames = defaults.getDeviceGroups();
         Set<? extends DeviceGroup> deviceGroups = deviceGroupService.resolveGroupNames(deviceGroupNames);
-        String deviceGroupSqlWhereClause = deviceGroupService.getDeviceGroupSqlWhereClause(deviceGroups, "YPO.PAOBJECTID");
-        where.append(deviceGroupSqlWhereClause);
+        SqlFragmentSource deviceGroupSqlWhereClause = deviceGroupService.getDeviceGroupSqlWhereClause(deviceGroups, "YPO.PAOBJECTID");
+        where.appendFragment(deviceGroupSqlWhereClause);
 
-        return where.toString();
+        return where;
     }
 
     /**
-     * Helper method to get a meter number postition from a map based on the
+     * Helper method to get a meter number position from a map based on the
      * account number. The meter number position is basically a count of meters
      * for the given account. If the map contains the account number, the value
      * is incremented and then returned, if the map does not contain the account

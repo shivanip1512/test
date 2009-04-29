@@ -3,12 +3,15 @@ package com.cannontech.analysis.tablemodel;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Comparator;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowCallbackHandler;
 
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.analysis.ColumnProperties;
@@ -16,6 +19,9 @@ import com.cannontech.analysis.data.device.LPMeterData;
 import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SqlFragmentSource;
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -87,47 +93,44 @@ public class LPSetupDBModel extends ReportModelBase<LPMeterData> implements Comp
 	/**
 	 * Add LPMeterData objects to data, retrieved from rset.
 	 * @param ResultSet rset
+	 * @throws SQLException 
 	 */
-	public void addDataRow(ResultSet rs) {
-		try {
+	public void addDataRow(ResultSet rs) throws SQLException {
 		    
-            final Meter meter = new Meter();
-            meter.setDeviceId(rs.getInt("PAOBJECTID"));
-            meter.setName(rs.getString("PAONAME"));
-            meter.setTypeStr(rs.getString("TYPE"));
-            meter.setType(PAOGroups.getDeviceType(meter.getTypeStr()));
-            meter.setDisabled(CtiUtilities.isTrue(rs.getString("DISABLEFLAG").charAt(0)));
-            meter.setMeterNumber(rs.getString("METERNUMBER"));
-            meter.setAddress(rs.getString("ADDRESS"));
-            meter.setRouteId(rs.getInt("ROUTEPAOBJECTID"));
-            meter.setRoute(rs.getString("ROUTEPAONAME"));
+	    final Meter meter = new Meter();
+	    meter.setDeviceId(rs.getInt("PAOBJECTID"));
+	    meter.setName(rs.getString("PAONAME"));
+	    meter.setTypeStr(rs.getString("TYPE"));
+	    meter.setType(PAOGroups.getDeviceType(meter.getTypeStr()));
+	    meter.setDisabled(CtiUtilities.isTrue(rs.getString("DISABLEFLAG").charAt(0)));
+	    meter.setMeterNumber(rs.getString("METERNUMBER"));
+	    meter.setAddress(rs.getString("ADDRESS"));
+	    meter.setRouteId(rs.getInt("ROUTEPAOBJECTID"));
+	    meter.setRoute(rs.getString("ROUTEPAONAME"));
 
-            final MeterAndPointData mpData = 
-                new MeterAndPointData(
-                    meter
-                );
+	    final MeterAndPointData mpData = 
+	        new MeterAndPointData(
+	                              meter
+	        );
 
-			
-            getData().add(
-                new LPMeterData(
-                    mpData,
-                    rs.getString("LASTINTERVALDEMANDRATE"),
-                    rs.getString("VOLTAGEDMDINTERVAL"),
-                    rs.getString("LOADPROFILEDEMANDRATE"),
-                    rs.getString("VOLTAGEDMDRATE")
-                ));
-            
-		} catch(java.sql.SQLException e) {
-			e.printStackTrace();
-		}
+
+	    getData().add(
+	                  new LPMeterData(
+	                                  mpData,
+	                                  rs.getString("LASTINTERVALDEMANDRATE"),
+	                                  rs.getString("VOLTAGEDMDINTERVAL"),
+	                                  rs.getString("LOADPROFILEDEMANDRATE"),
+	                                  rs.getString("VOLTAGEDMDRATE")
+	                  ));
+
 	}
 
 	/**
 	 * Build the SQL statement to retrieve DatabaseModel data.
 	 * @return StringBuffer  an sqlstatement
 	 */
-	public StringBuilder buildSQLStatement() {
-		final StringBuilder sql = new StringBuilder();
+	public SqlFragmentSource buildSQLStatement() {
+		final SqlStatementBuilder sql = new SqlStatementBuilder();
         //SELECT
         sql.append(" SELECT DISTINCT PAO.PAOBJECTID, PAO.PAONAME, PAO.TYPE, PAO.DISABLEFLAG, ");
         sql.append(" DMG.METERNUMBER, DCS.ADDRESS, ROUTE.PAOBJECTID as ROUTEPAOBJECTID, ROUTE.PAONAME as ROUTEPAONAME, ");
@@ -148,14 +151,14 @@ public class LPSetupDBModel extends ReportModelBase<LPMeterData> implements Comp
         // RESTRICT BY DEVICE/METER PAOID (if any)
         String paoIdWhereClause = getPaoIdWhereClause("PAO.PAOBJECTID");
         if (!StringUtils.isBlank(paoIdWhereClause)) {
-            sql.append(" AND " + paoIdWhereClause);
+            sql.append(" AND ", paoIdWhereClause);
         }
         
         // RESTRICT BY GROUPS (if any)
         String[] groups = getBillingGroups();
         if (groups != null && groups.length > 0) {
-            String deviceGroupSqlWhereClause = getGroupSqlWhereClause("PAO.PAOBJECTID");
-            sql.append(" AND " + deviceGroupSqlWhereClause);
+            SqlFragmentSource deviceGroupSqlWhereClause = getGroupSqlWhereClause("PAO.PAOBJECTID");
+            sql.append(" AND ", deviceGroupSqlWhereClause);
         }
         
         //ORDER
@@ -169,38 +172,16 @@ public class LPSetupDBModel extends ReportModelBase<LPMeterData> implements Comp
 		//Reset all objects, new data being collected!
 		setData(null);
 		
-		StringBuilder sql = buildSQLStatement();
+		SqlFragmentSource sql = buildSQLStatement();
 		CTILogger.info(sql.toString());	
 		
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rset = null;
-
-		try
-		{
-		    conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-
-		    if( conn == null )
-		    {
-		        CTILogger.error(getClass() + ":  Error getting database connection.");
-		        return;
+		JdbcOperations template = JdbcTemplateHelper.getYukonTemplate();
+		template.query(sql.getSql(), sql.getArguments(), new RowCallbackHandler() {
+		    @Override
+		    public void processRow(ResultSet rs) throws SQLException {
+		        addDataRow(rs);
 		    }
-		    pstmt = conn.prepareStatement(sql.toString());
-		    rset = pstmt.executeQuery();
-		    while( rset.next())
-		    {
-		        addDataRow(rset);
-		    }
-		}
-			
-		catch( java.sql.SQLException e )
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			SqlUtils.close(rset, pstmt, conn );
-		}
+		});
         
         if(getData() != null) {
             //Order the records

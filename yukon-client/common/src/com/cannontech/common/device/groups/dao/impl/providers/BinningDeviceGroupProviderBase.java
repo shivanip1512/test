@@ -14,6 +14,8 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.model.MutableDeviceGroup;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
+import com.cannontech.common.util.SimpleSqlFragment;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 
 /**
@@ -54,7 +56,7 @@ public abstract class BinningDeviceGroupProviderBase<T> extends DeviceGroupProvi
         sql.append(getChildWhereForBin(bin, "ypo.paobjectid"));
         
         YukonDeviceRowMapper mapper = new YukonDeviceRowMapper(getPaoGroupsWrapper());
-        List<YukonDevice> devices = jdbcTemplate.query(sql.toString(), mapper);
+        List<YukonDevice> devices = jdbcTemplate.query(sql.getSql(), mapper, sql.getArguments());
         
         return new HashSet<YukonDevice>(devices);
     }
@@ -192,34 +194,36 @@ public abstract class BinningDeviceGroupProviderBase<T> extends DeviceGroupProvi
     }
 
 	@Override
-    public String getChildDeviceGroupSqlWhereClause(DeviceGroup group, String identifier) {
+    public SqlFragmentSource getChildDeviceGroupSqlWhereClause(DeviceGroup group, String identifier) {
 	    
 	    if (group instanceof BinningDeviceGroupProviderBase.BinnedDeviceGroup) {
 	        BinnedDeviceGroup bdg = (BinnedDeviceGroup) group;
-    	    String whereString = getChildWhereForBin(bdg.bin, identifier);
-    	    return whereString;
+    	    SqlFragmentSource whereClause = getChildWhereForBin(bdg.bin, identifier);
+    	    return whereClause;
 	    } else {
     	    // because there are no child devices under this dynamic group
-    	    return "0 = 1";
+    	    return new SimpleSqlFragment("0 = 1");
 	    }
     }
 	
 	/**
-	 * This method should return an SQL select statement as a String that selects 
+	 * This method should return an SQL select statement as a SqlFragmentSource that selects 
 	 * a single column that represents the PAObjectId of every device within the 
 	 * given bin.
 	 * 
 	 * Example:
 	 *   SELECT ypo.paobjectId from YukonPaobject ypo where ...
 	 * 
-	 * @param bin The bin underwhich the returned paobjectids should exist
+	 * @param bin The bin under which the returned paobjectids should exist
 	 * @return a valid SQL select statement
 	 */
-	protected abstract String getChildSqlSelectForBin(T bin);
+	protected abstract SqlFragmentSource getChildSqlSelectForBin(T bin);
 
-    protected String getChildWhereForBin(T bin, String identifier) {
-        String whereString = identifier + " IN ( " + getChildSqlSelectForBin(bin) + ") ";
-        return whereString;
+    protected SqlFragmentSource getChildWhereForBin(T bin, String identifier) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(identifier);
+        sql.append(" IN (", getChildSqlSelectForBin(bin), ")"); 
+        return sql;
     } 
 	
 	/**
@@ -228,15 +232,17 @@ public abstract class BinningDeviceGroupProviderBase<T> extends DeviceGroupProvi
 	 * bin. This may be every device in the system or it could be a subset.
 	 * @return
 	 */
-	protected abstract String getAllBinnedDeviceSqlSelect();
+	protected abstract SqlFragmentSource getAllBinnedDeviceSqlSelect();
 
-	protected String getAllBinnedDeviceSqlWhere(String identifier) {
-	    String whereString = identifier + " IN ( " + getAllBinnedDeviceSqlSelect() + ") ";
-	    return whereString;
+	protected SqlFragmentSource getAllBinnedDeviceSqlWhere(String identifier) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(identifier);
+        sql.append(" IN (", getAllBinnedDeviceSqlSelect(), ")"); 
+        return sql;
 	} 
 	
     @Override
-	public String getDeviceGroupSqlWhereClause(DeviceGroup group, String identifier) {
+	public SqlFragmentSource getDeviceGroupSqlWhereClause(DeviceGroup group, String identifier) {
 	    
 	    if (group instanceof BinningDeviceGroupProviderBase.BinnedDeviceGroup) {
 	        return getChildDeviceGroupSqlWhereClause(group, identifier);

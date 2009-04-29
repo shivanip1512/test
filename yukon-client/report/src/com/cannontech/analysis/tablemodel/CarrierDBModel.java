@@ -1,9 +1,19 @@
 package com.cannontech.analysis.tablemodel;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.ResultSetExtractor;
+
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SqlFragmentSource;
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -58,96 +68,73 @@ public class CarrierDBModel extends ReportModelBase<Meter>
 	 * Build the SQL statement to retrieve DatabaseModel data.
 	 * @return StringBuffer  an sqlstatement
 	 */
-	public StringBuffer buildSQLStatement()
+	public SqlFragmentSource buildSQLStatement()
 	{
-		StringBuffer sql = new StringBuffer("SELECT DISTINCT PAO.PAOBJECTID, PAO.PAONAME, PAO.TYPE, PAO.DISABLEFLAG, " +
-                                            " DMG.METERNUMBER, DCS.ADDRESS, ROUTE.PAOBJECTID, ROUTE.PAONAME ");	
-			sql.append(" FROM YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG, DEVICECARRIERSETTINGS DCS, DEVICEROUTES DR, YUKONPAOBJECT ROUTE " );
-            sql.append(" WHERE PAO.PAOBJECTID = DMG.DEVICEID " + 
-                       " AND PAO.PAOBJECTID = DCS.DEVICEID " + 
-                       " AND PAO.PAOBJECTID = DR.DEVICEID " +
-                       " AND ROUTE.PAOBJECTID = DR.ROUTEID "); 
+		SqlStatementBuilder sql = new SqlStatementBuilder("SELECT DISTINCT PAO.PAOBJECTID, PAO.PAONAME, PAO.TYPE, PAO.DISABLEFLAG, ");
+		sql.append(" DMG.METERNUMBER, DCS.ADDRESS, ROUTE.PAOBJECTID, ROUTE.PAONAME ");	
+		sql.append(" FROM YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG, DEVICECARRIERSETTINGS DCS, DEVICEROUTES DR, YUKONPAOBJECT ROUTE " );
+		sql.append(" WHERE PAO.PAOBJECTID = DMG.DEVICEID ");
+		sql.append(" AND PAO.PAOBJECTID = DCS.DEVICEID "); 
+		sql.append(" AND PAO.PAOBJECTID = DR.DEVICEID ");
+		sql.append(" AND ROUTE.PAOBJECTID = DR.ROUTEID "); 
 			
-            // Use paoIDs from group if they exist
-			if( getBillingGroups() != null && getBillingGroups().length > 0) {
-                String deviceGroupSqlWhereClause = getGroupSqlWhereClause("PAO.PAOBJECTID");
-                sql.append(" AND " + deviceGroupSqlWhereClause);
-			}
-			
-			//Use paoIDs in query if they exist
-			if( getPaoIDs() != null && getPaoIDs().length > 0)  {
-				sql.append(" AND PAO.PAOBJECTID IN (" + getPaoIDs()[0]);
-				for (int i = 1; i < getPaoIDs().length; i++)
-					sql.append(", " + getPaoIDs()[i]);
-				sql.append(") ");
-			}
+		// Use paoIDs from group if they exist
+		if( getBillingGroups() != null && getBillingGroups().length > 0) {
+		    SqlFragmentSource deviceGroupSqlWhereClause = getGroupSqlWhereClause("PAO.PAOBJECTID");
+		    sql.append(" AND ", deviceGroupSqlWhereClause);
+		}
+
+		//Use paoIDs in query if they exist
+		if( getPaoIDs() != null && getPaoIDs().length > 0)  {
+		    sql.append(" AND PAO.PAOBJECTID IN (", getPaoIDs(), ")");
+		}
 		return sql;
 	}
 		
 	@Override
 	public void collectData()
 	{
-		//Reset all objects, new data being collected!
-		setData(null);
-		
-		StringBuffer sql = buildSQLStatement();
-		CTILogger.info(sql.toString());	
-		
-		java.sql.Connection conn = null;
-		java.sql.PreparedStatement pstmt = null;
-		java.sql.ResultSet rset = null;
+	    //Reset all objects, new data being collected!
+	    setData(null);
 
-		try
-		{
-			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+	    SqlFragmentSource sql = buildSQLStatement();
+	    CTILogger.info(sql.getSql());	
 
-			if( conn == null )
-			{
-				CTILogger.error(getClass() + ":  Error getting database connection.");
-				return;
-			}
-			else
-			{
-				pstmt = conn.prepareStatement(sql.toString());
-				rset = pstmt.executeQuery();
-				while( rset.next())
-				{
-                    Meter meter = new Meter();
- 
-					int paobjectID = rset.getInt(1);
-                    meter.setDeviceId(paobjectID);
-                    String paoName = rset.getString(2);
-                    meter.setName(paoName);
-                    String type = rset.getString(3);
-                    int deviceType = PAOGroups.getDeviceType(type);
-                    meter.setType(deviceType);
-                    meter.setTypeStr(type);
-                    String disabledStr = rset.getString(4);
-                    boolean disabled = CtiUtilities.isTrue(disabledStr.charAt(0));
-                    meter.setDisabled(disabled);
-                    String meterNumber = rset.getString(5);
-                    meter.setMeterNumber(meterNumber);
-                    String address = rset.getString(6);
-                    meter.setAddress(address);
-                    int routeID = rset.getInt(7);
-                    meter.setRouteId(routeID);
-                    String routeName = rset.getString(8);
-                    meter.setRoute(routeName);
-					getData().add(meter);
-				}
-			}
-		}
-			
-		catch( java.sql.SQLException e )
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			SqlUtils.close(rset, pstmt, conn );
-		}
-		CTILogger.info("Report Records Collected from Database: " + getData().size());
-		return;
+	    JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
+	    yukonTemplate.query(sql.getSql(), sql.getArguments(), new ResultSetExtractor() {
+	        @Override
+	        public Object extractData(ResultSet rset) throws SQLException, DataAccessException {
+
+	            while( rset.next())
+	            {
+	                Meter meter = new Meter();
+
+	                int paobjectID = rset.getInt(1);
+	                meter.setDeviceId(paobjectID);
+	                String paoName = rset.getString(2);
+	                meter.setName(paoName);
+	                String type = rset.getString(3);
+	                int deviceType = PAOGroups.getDeviceType(type);
+	                meter.setType(deviceType);
+	                meter.setTypeStr(type);
+	                String disabledStr = rset.getString(4);
+	                boolean disabled = CtiUtilities.isTrue(disabledStr.charAt(0));
+	                meter.setDisabled(disabled);
+	                String meterNumber = rset.getString(5);
+	                meter.setMeterNumber(meterNumber);
+	                String address = rset.getString(6);
+	                meter.setAddress(address);
+	                int routeID = rset.getInt(7);
+	                meter.setRouteId(routeID);
+	                String routeName = rset.getString(8);
+	                meter.setRoute(routeName);
+	                getData().add(meter);
+	            }
+	            return null;
+	        }
+	    });
+	    CTILogger.info("Report Records Collected from Database: " + getData().size());
+	    return;
 	}
 	
 	@Override

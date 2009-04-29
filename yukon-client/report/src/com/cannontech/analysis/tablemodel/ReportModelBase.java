@@ -21,6 +21,7 @@ import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.Reportable;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.spring.YukonSpringHook;
@@ -665,7 +666,7 @@ public abstract class ReportModelBase<E> extends javax.swing.table.AbstractTable
         return offset;
     }
     
-    protected String getGroupSqlWhereClause(String identifier) {
+    protected SqlFragmentSource getGroupSqlWhereClause(String identifier) {
         DeviceGroupService deviceGroupService = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
         Set<? extends DeviceGroup> deviceGroups = deviceGroupService.resolveGroupNames(Arrays.asList(getBillingGroups()));
         return deviceGroupService.getDeviceGroupSqlWhereClause(deviceGroups, identifier);

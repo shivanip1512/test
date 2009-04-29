@@ -1,6 +1,7 @@
 package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -9,16 +10,18 @@ import java.util.GregorianCalendar;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowCallbackHandler;
+
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.point.PointQuality;
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.PoolManager;
+import com.cannontech.common.util.SqlFragmentSource;
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.spring.YukonSpringHook;
 
 /**
  *  WARNING!!! LiteRawPointHistory objects created in this report are NOT intended to be changed into RawPointHistory DBPersistent objects
@@ -130,106 +133,91 @@ public class PointDataIntervalModel extends ReportModelBase
 	/**
 	 * Add CarrierData objects to data, retrieved from rset.
 	 * @param ResultSet rset
+	 * @throws SQLException 
 	 */
-	public void addDataRow(ResultSet rset)
+	public void addDataRow(ResultSet rset) throws SQLException
 	{
-		try
-		{
-			int pointID = rset.getInt(1);
-			Timestamp ts = rset.getTimestamp(2);
-			GregorianCalendar cal = new GregorianCalendar();
-			cal.setTimeInMillis(ts.getTime());
-			int quality = rset.getInt(3);
-			double value = rset.getDouble(4);
-            String pointName = rset.getString(5);
-            String paoName = rset.getString(6);
-            int paobjectID = rset.getInt(7);
-					
-			//Using only a partially loaded lPao because that is all the information this report cares about.  Maybe a bad decision?!
-            Meter meter = new Meter();
-            meter.setDeviceId(paobjectID);
-            meter.setName(paoName);
-            MeterAndPointData mpData = new MeterAndPointData(meter, new Integer(pointID), pointName, 
-                                                             cal.getTime(), new Double(value), new Integer(quality));
-			getData().add(mpData);	
-		}
-		catch(java.sql.SQLException e)
-		{
-			e.printStackTrace();
-		}
+	    int pointID = rset.getInt(1);
+	    Timestamp ts = rset.getTimestamp(2);
+	    GregorianCalendar cal = new GregorianCalendar();
+	    cal.setTimeInMillis(ts.getTime());
+	    int quality = rset.getInt(3);
+	    double value = rset.getDouble(4);
+	    String pointName = rset.getString(5);
+	    String paoName = rset.getString(6);
+	    int paobjectID = rset.getInt(7);
+
+	    //Using only a partially loaded lPao because that is all the information this report cares about.  Maybe a bad decision?!
+	    Meter meter = new Meter();
+	    meter.setDeviceId(paobjectID);
+	    meter.setName(paoName);
+	    MeterAndPointData mpData = new MeterAndPointData(meter, new Integer(pointID), pointName, 
+	                                                     cal.getTime(), new Double(value), new Integer(quality));
+	    getData().add(mpData);	
 	}
 
 	/**
 	 * Build the SQL statement to retrieve DatabaseModel data.
 	 * @return StringBuffer  an sqlstatement
 	 */
-	public StringBuffer buildSQLStatement()
+	public SqlFragmentSource buildSQLStatement()
 	{
-		StringBuffer sql = new StringBuffer	("SELECT DISTINCT RPH.POINTID, RPH.TIMESTAMP, RPH.QUALITY, RPH.VALUE, P.POINTNAME, PAO.PAONAME, PAO.PAOBJECTID " + 
-			" FROM RAWPOINTHISTORY RPH, POINT P, YUKONPAOBJECT PAO ");
-			
-			if( getBillingGroups() != null && getBillingGroups().length > 0 ) //NO BILLING Group, we must want other devices too!
-			    sql.append(", DEVICEMETERGROUP DMG ");
-		
-			sql.append(" WHERE P.POINTID = RPH.POINTID " +
-			" AND P.PAOBJECTID = PAO.PAOBJECTID " +
-			" AND TIMESTAMP > ? AND TIMESTAMP <= ? ");
+	    SqlStatementBuilder sql = new SqlStatementBuilder();
+	    sql.append("SELECT DISTINCT RPH.POINTID, RPH.TIMESTAMP, RPH.QUALITY, RPH.VALUE, P.POINTNAME, PAO.PAONAME, PAO.PAOBJECTID ");
+	    sql.append(" FROM RAWPOINTHISTORY RPH, POINT P, YUKONPAOBJECT PAO ");
 
-			//Use billing groups in query if they exist
-            final DeviceGroupService deviceGroupService = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
-            final String[] groups = getBillingGroups();
-            
-			if (groups != null && groups.length > 0) {
-			    sql.append(" AND PAO.PAOBJECTID = DMG.DEVICEID ");
+	    if (getBillingGroups() != null && getBillingGroups().length > 0 ) {
+            sql.append(", DEVICEMETERGROUP DMG ");
+        }
 
-                String deviceGroupSqlWhereClause = getGroupSqlWhereClause("PAO.PAOBJECTID");
-                sql.append(" AND " + deviceGroupSqlWhereClause);
-			}
-			//Use paoIDs in query if they exist			
-			if( getPaoIDs() != null && getPaoIDs().length > 0)
-			{
-				sql.append(" AND PAO.PAOBJECTID IN (" + getPaoIDs()[0]);
-				for (int i = 1; i < getPaoIDs().length; i++)
-					sql.append(", " + getPaoIDs()[i]);
-				sql.append(") ");
-			}
-			if(getPointType() == LOAD_PROFILE_POINT_TYPE )
-			{
-				sql.append(" AND P.POINTTYPE = '" + PointTypes.getType(PointTypes.DEMAND_ACCUMULATOR_POINT) + "' " + 
-					" AND (P.POINTOFFSET >= " + PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND + " AND P.POINTOFFSET <= " + PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND + ") ");
-			}
-			else if ( getPointType() == STATUS_POINT_TYPE )
-			{
-				sql.append(" AND P.POINTTYPE = '" + PointTypes.getType(PointTypes.STATUS_POINT) + "' ");
-			}
-			else if ( getPointType() == DEMAND_ACC_POINT_TYPE)
-			{
-				sql.append(" AND P.POINTTYPE = '" + PointTypes.getType(PointTypes.DEMAND_ACCUMULATOR_POINT) + "' ");
-	            //Do not allow LP data, those points fall into the LP point type option.
-	            sql.append(" AND (P.POINTOFFSET < " + PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND + " OR P.POINTOFFSET > " + PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND + ") ");				
-			}
-			else if ( getPointType() == PULSE_ACC_POINT_TYPE)
-			{
-				sql.append(" AND P.POINTTYPE = '" + PointTypes.getType(PointTypes.PULSE_ACCUMULATOR_POINT) + "' ");
-			}
-			else if ( getPointType() == ANALOG_POINT_TYPE )
-			{
-				sql.append(" AND P.POINTTYPE = '" + PointTypes.getType(PointTypes.ANALOG_POINT) + "' ");
-			}
-			else if ( getPointType() == CALC_POINT_TYPE)
-			{
-				sql.append(" AND (P.POINTTYPE = '" + PointTypes.getType(PointTypes.CALCULATED_POINT) + "' " +
-					" OR P.POINTTYPE = '" + PointTypes.getType(PointTypes.CALCULATED_STATUS_POINT) + "' )");
-			}
-			
-			sql.append(" ORDER BY PAO.PAOBJECTID, P.POINTNAME ");
-			if (getOrderBy() == ORDER_BY_VALUE)
-				sql.append(", VALUE " );
-			else
-				sql.append(", TIMESTAMP " );
-			if( getSortOrder() == DESCENDING )
-					sql.append(" DESC " );
-		return sql;
+	    sql.append(" WHERE P.POINTID = RPH.POINTID ");
+	    sql.append(" AND P.PAOBJECTID = PAO.PAOBJECTID ");
+	    sql.append(" AND TIMESTAMP > ").appendArgument(getStartDate());
+	    sql.append(" AND TIMESTAMP <= ").appendArgument(getStopDate());
+
+	    //Use billing groups in query if they exist
+	    final String[] groups = getBillingGroups();
+
+	    if (groups != null && groups.length > 0) {
+	        sql.append(" AND PAO.PAOBJECTID = DMG.DEVICEID ");
+
+	        SqlFragmentSource deviceGroupSqlWhereClause = getGroupSqlWhereClause("PAO.PAOBJECTID");
+	        sql.append(" AND ", deviceGroupSqlWhereClause);
+	    }
+	    //Use paoIDs in query if they exist			
+	    if (getPaoIDs() != null && getPaoIDs().length > 0) {
+	        sql.append(" AND PAO.PAOBJECTID IN (", getPaoIDs(), ")");
+	    }
+	    if (getPointType() == LOAD_PROFILE_POINT_TYPE ) {
+	        sql.append(" AND P.POINTTYPE = ").appendArgument(PointTypes.getType(PointTypes.DEMAND_ACCUMULATOR_POINT));
+	        sql.append(" AND (P.POINTOFFSET >= ").appendArgument(PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND);
+	        sql.append(" AND P.POINTOFFSET <= ").appendArgument(PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND).append(")");
+	    } else if ( getPointType() == STATUS_POINT_TYPE ) {
+	        sql.append(" AND P.POINTTYPE = ").appendArgument(PointTypes.getType(PointTypes.STATUS_POINT));
+	    } else if ( getPointType() == DEMAND_ACC_POINT_TYPE) {
+	        sql.append(" AND P.POINTTYPE = ").appendArgument(PointTypes.getType(PointTypes.DEMAND_ACCUMULATOR_POINT));
+	        //Do not allow LP data, those points fall into the LP point type option.
+	        sql.append(" AND (P.POINTOFFSET < ").appendArgument(PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND);
+	        sql.append( " OR P.POINTOFFSET > ").appendArgument(PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND).append(") ");				
+	    } else if ( getPointType() == PULSE_ACC_POINT_TYPE) {
+	        sql.append(" AND P.POINTTYPE = ").appendArgument(PointTypes.getType(PointTypes.PULSE_ACCUMULATOR_POINT));
+	    } else if ( getPointType() == ANALOG_POINT_TYPE ) {
+	        sql.append(" AND P.POINTTYPE = ").appendArgument(PointTypes.getType(PointTypes.ANALOG_POINT));
+	    } else if ( getPointType() == CALC_POINT_TYPE) {
+	        sql.append(" AND (P.POINTTYPE = ").appendArgument(PointTypes.getType(PointTypes.CALCULATED_POINT));
+	        sql.append(" OR P.POINTTYPE = ").appendArgument(PointTypes.getType(PointTypes.CALCULATED_STATUS_POINT)).append(")");
+	    }
+
+	    sql.append(" ORDER BY PAO.PAOBJECTID, P.POINTNAME ");
+	    if (getOrderBy() == ORDER_BY_VALUE) {
+            sql.append(", VALUE " );
+        } else {
+            sql.append(", TIMESTAMP " );
+        }
+	    if (getSortOrder() == DESCENDING ) {
+            sql.append(" DESC " );
+        }
+	    return sql;
 	}
 	@Override
 	public void collectData()
@@ -237,58 +225,18 @@ public class PointDataIntervalModel extends ReportModelBase
 		//Reset all objects, new data being collected!
 		setData(null);
 
-		StringBuffer sql = buildSQLStatement();
-		CTILogger.info(sql.toString());	
-		
-		java.sql.Connection conn = null;
-		java.sql.PreparedStatement pstmt = null;
-		java.sql.ResultSet rset = null;
-		int rowCount = 0;
-
-		try
-		{
-			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-
-			if( conn == null )
-			{
-				CTILogger.error(getClass() + ":  Error getting database connection.");
-				return;
-			}
-			else
-			{
-				pstmt = conn.prepareStatement(sql.toString());
-				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime() ));
-				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime()));
-				CTILogger.info("START DATE > " + getStartDate() + "  -  STOP DATE <= " + getStopDate());
-				rset = pstmt.executeQuery();
-				while( rset.next())
-				{
-					addDataRow(rset);
-				}
-			}
-		}
-			
-		catch( java.sql.SQLException e )
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			try
-			{
-				CTILogger.info("ROWCOUNT: " + rowCount);
-				if( rset != null)
-					rset.close();
-				if( pstmt != null )
-					pstmt.close();
-				if( conn != null )
-					conn.close();
-			}
-			catch( java.sql.SQLException e )
-			{
-				e.printStackTrace();
-			}
-		}
+        SqlFragmentSource sql = buildSQLStatement();
+        CTILogger.info(sql.toString()); 
+        CTILogger.info("START DATE > " + getStartDate() + " - STOP DATE <= " + getStopDate());
+        
+        JdbcOperations template = JdbcTemplateHelper.getYukonTemplate();
+        template.query(sql.getSql(), sql.getArguments(), new RowCallbackHandler() {
+            @Override
+            public void processRow(ResultSet rs) throws SQLException {
+                addDataRow(rs);
+            }
+        });
+        
 		CTILogger.info("Report Records Collected from Database: " + getData().size());
 		return;
 	}

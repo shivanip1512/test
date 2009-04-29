@@ -5,6 +5,9 @@ import java.util.List;
 
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.util.SimpleSqlFragment;
+import com.cannontech.common.util.SqlFragmentSource;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
@@ -34,14 +37,14 @@ public class DisabledGroupProvider extends DeviceGroupProviderSqlBase {
     }
 
     @Override
-	public String getChildDeviceGroupSqlWhereClause(DeviceGroup group, String identifier) {
-	    
-        String whereString = identifier + " IN ( " +
-                            " SELECT ypo.PAObjectID " +
-                            " FROM YukonPAObject ypo " + 
-                            " JOIN DeviceMeterGroup dmg ON ypo.PAObjectID = dmg.DEVICEID " +
-                            " WHERE ypo.DisableFlag = '" + disableFlag + "') "; 
-        return whereString;
+	public SqlFragmentSource getChildDeviceGroupSqlWhereClause(DeviceGroup group, String identifier) {
+	    SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(identifier, " IN ( ");
+        sql.append("SELECT ypo.PAObjectID ");
+        sql.append("FROM YukonPAObject ypo ");
+        sql.append("JOIN DeviceMeterGroup dmg ON ypo.PAObjectID = dmg.DEVICEID ");
+        sql.append("WHERE ypo.DisableFlag = ").appendArgument(disableFlag).append(") ");
+        return sql;
 	    
 	}
 	

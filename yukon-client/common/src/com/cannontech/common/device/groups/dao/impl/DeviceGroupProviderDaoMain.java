@@ -15,6 +15,7 @@ import com.cannontech.common.device.groups.dao.impl.providers.StaticDeviceGroupP
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.util.CaseInsensitiveMap;
+import com.cannontech.common.util.SqlFragmentSource;
 
 /**
  * This class serves as a delegation point between the DeviceGroupProviderDao
@@ -41,11 +42,11 @@ public class DeviceGroupProviderDaoMain implements DeviceGroupProviderDao {
         return getProvider(group).getChildGroups(group);
     }
 
-    public String getDeviceGroupSqlWhereClause(DeviceGroup group, String identifier) {
+    public SqlFragmentSource getDeviceGroupSqlWhereClause(DeviceGroup group, String identifier) {
         return getProvider(group).getDeviceGroupSqlWhereClause(group, identifier);
     }
 
-    public String getChildDeviceGroupSqlWhereClause(DeviceGroup group, String identifier) {
+    public SqlFragmentSource getChildDeviceGroupSqlWhereClause(DeviceGroup group, String identifier) {
         return getProvider(group).getChildDeviceGroupSqlWhereClause(group, identifier);
     }
 

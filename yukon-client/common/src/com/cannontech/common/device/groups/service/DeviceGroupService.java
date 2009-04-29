@@ -5,6 +5,9 @@ import java.util.Set;
 
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
+import com.cannontech.common.util.SqlFragmentSource;
+import com.cannontech.common.util.predicate.Predicate;
 import com.cannontech.core.dao.NotFoundException;
 
 /**
@@ -74,9 +77,9 @@ public interface DeviceGroupService {
     public int getDeviceCount(Collection<? extends DeviceGroup> groups);
     
     /**
-     * Returns a String that can be placed in an SQL WHERE clause
+     * Returns an SqlFragmentSource that can be placed in an SQL WHERE clause
      * for the identifier field. 
-     * The identifier field MUST BE of type PaobjectID or an extension of.
+     * The identifier field MUST BE of type PAObjectID or an extension of.
      * The whole SQL statement might look something like:
      *   select * from device where <identifier> in (select distinct paobjectid from yukonpaobject)
      * In the above sql, "<identifier> in (select distinct paobjectid from yukonpaobject)" may be the returned string.
@@ -91,6 +94,6 @@ public interface DeviceGroupService {
      * @param group
      * @return
      */
-    public String getDeviceGroupSqlWhereClause(Collection<? extends DeviceGroup> group, String identifier);
+    public SqlFragmentSource getDeviceGroupSqlWhereClause(Collection<? extends DeviceGroup> group, String identifier);
 
 }

@@ -3,6 +3,7 @@ package com.cannontech.analysis.tablemodel;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -10,6 +11,9 @@ import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.ResultSetExtractor;
 
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.analysis.ColumnProperties;
@@ -17,8 +21,11 @@ import com.cannontech.analysis.data.device.DisconnectMeterAndPointData;
 import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SqlFragmentSource;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateDao;
+import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LitePoint;
@@ -132,47 +139,22 @@ public class DisconnectModel extends ReportModelBase<DisconnectMeterAndPointData
         //Reset all objects, new data being collected!
         setData(null);
 
-        StringBuilder sql = buildSQLStatement();
+        SqlFragmentSource sql = buildSQLStatement();
         CTILogger.info(sql.toString());
+        JdbcOperations template = JdbcTemplateHelper.getYukonTemplate();
+        template.query(sql.getSql(), sql.getArguments(), new ResultSetExtractor() {
+            @Override
+            public Object extractData(ResultSet rset) throws SQLException, DataAccessException {
 
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        ResultSet rset = null;
+                while( rset.next())
+                {
+                    addDataRow(rset);
+                }
 
-        try
-        {
-            conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-
-            if( conn == null )
-            {
-                CTILogger.error(getClass() + ":  Error getting database connection.");
-                return;
+                return null;
             }
-            pstmt = conn.prepareStatement(sql.toString());
-            if( isShowHistory())
-            {
-                pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime() ));
-                pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime() ));
-                CTILogger.info("START DATE > " + getStartDate());
-                CTILogger.info("STOP DATE <= " + getStopDate());
-            }
-            rset = pstmt.executeQuery();
+        });
 
-            while( rset.next())
-            {
-                addDataRow(rset);
-            }
-
-        }
-
-        catch( java.sql.SQLException e )
-        {
-            e.printStackTrace();
-        }
-        finally
-        {
-        	SqlUtils.close(rset, pstmt, conn );
-        }
 
         //Order the records
         if(getData() != null) {
@@ -190,8 +172,8 @@ public class DisconnectModel extends ReportModelBase<DisconnectMeterAndPointData
      * Build the SQL statement to retrieve <StatisticDeviceDataBase> data.
      * @return StringBuffer  an sqlstatement
      */
-    public StringBuilder buildSQLStatement() {
-        final StringBuilder sql = new StringBuilder();
+    public SqlFragmentSource buildSQLStatement() {
+        final SqlStatementBuilder sql = new SqlStatementBuilder();
         //SELECT
         sql.append("SELECT DISTINCT PAO.PAOBJECTID, PAO.PAONAME, PAO.TYPE, PAO.DISABLEFLAG, ");
         sql.append("DMG.METERNUMBER, DCS.ADDRESS, ROUTE.PAOBJECTID as ROUTEPAOID, ROUTE.PAONAME as ROUTEPAONAME, ");
@@ -210,7 +192,7 @@ public class DisconnectModel extends ReportModelBase<DisconnectMeterAndPointData
         sql.append("AND ROUTE.PAOBJECTID = DR.ROUTEID ");
         sql.append("AND P.POINTID = RPH1.POINTID ");
         sql.append("AND P.POINTOFFSET = 1 ");
-        sql.append("AND P.POINTTYPE = '" + PointTypes.getType(PointTypes.STATUS_POINT) + "' ");
+        sql.append("AND P.POINTTYPE = ").appendArgument(PointTypes.getType(PointTypes.STATUS_POINT));
         sql.append(" AND ( PAO.TYPE in ('" + DeviceTypes.STRING_MCT_213[0] + "', ");
         sql.append("'" + DeviceTypes.STRING_MCT_310ID[0] + "', ");
         sql.append("'" + DeviceTypes.STRING_MCT_310IDL[0] + "') ");
@@ -218,7 +200,8 @@ public class DisconnectModel extends ReportModelBase<DisconnectMeterAndPointData
 
         if( isShowHistory())
         {
-            sql.append(" AND RPH1.TIMESTAMP > ? AND RPH1.TIMESTAMP <= ? " );
+           sql.append(" AND RPH1.TIMESTAMP > ").appendArgument(getStartDate());
+           sql.append("AND RPH1.TIMESTAMP <= ").appendArgument(getStopDate());
         }
         else		
         {
@@ -246,8 +229,8 @@ public class DisconnectModel extends ReportModelBase<DisconnectMeterAndPointData
         // RESTRICT BY GROUPS (if any)
         String[] groups = getBillingGroups();
         if (groups != null && groups.length > 0) {
-            String deviceGroupSqlWhereClause = getGroupSqlWhereClause("PAO.PAOBJECTID");
-            sql.append(" AND " + deviceGroupSqlWhereClause);
+            SqlFragmentSource deviceGroupSqlWhereClause = getGroupSqlWhereClause("PAO.PAOBJECTID");
+            sql.append(" AND ", deviceGroupSqlWhereClause);
         }
         
         return sql;

@@ -1,6 +1,7 @@
 package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Comparator;
@@ -12,19 +13,21 @@ import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.ResultSetExtractor;
+
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.LPMeterData;
 import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.device.groups.service.DeviceGroupService;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SqlFragmentSource;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.database.PoolManager;
-import com.cannontech.database.SqlUtils;
+import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.NaturalOrderComparator;
 
 @SuppressWarnings("unchecked")
@@ -295,75 +298,63 @@ public class PointDataSummaryModel extends ReportModelBase
 	 * Build the SQL statement to retrieve DatabaseModel data.
 	 * @return StringBuffer  an sqlstatement
 	 */
-    public StringBuffer buildSQLStatement()
+    public SqlFragmentSource buildSQLStatement()
     {
-        StringBuffer sql = new StringBuffer ("SELECT DISTINCT PAO.PAOBJECTID, PAO.PAONAME, PAO.CATEGORY, PAO.TYPE, DMG.METERNUMBER, DCS.ADDRESS, " + 
-                                             " P.POINTNAME, RPH.POINTID, TIMESTAMP, VALUE, QUALITY ");
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DISTINCT PAO.PAOBJECTID, PAO.PAONAME, PAO.CATEGORY, PAO.TYPE, DMG.METERNUMBER, DCS.ADDRESS, ");
+        sql.append(" P.POINTNAME, RPH.POINTID, TIMESTAMP, VALUE, QUALITY ");
 		
-		if(getPointType() == LOAD_PROFILE_POINT_TYPE || getPointType() == DEMAND_ACC_POINT_TYPE)
-			sql.append(", DLP.LOADPROFILEDEMANDRATE, DLP.VOLTAGEDMDRATE, DLP.LASTINTERVALDEMANDRATE, DLP.VOLTAGEDMDINTERVAL ");
+		if (getPointType() == LOAD_PROFILE_POINT_TYPE || getPointType() == DEMAND_ACC_POINT_TYPE) {
+            sql.append(", DLP.LOADPROFILEDEMANDRATE, DLP.VOLTAGEDMDRATE, DLP.LASTINTERVALDEMANDRATE, DLP.VOLTAGEDMDINTERVAL ");
+        }
 		
-        sql.append(" FROM RAWPOINTHISTORY RPH, POINT P, YUKONPAOBJECT PAO " + 
-        		" left outer join DEVICEMETERGROUP DMG on PAO.PAOBJECTID = DMG.DEVICEID " + 
-        		" left outer join DEVICECARRIERSETTINGS DCS on PAO.PAOBJECTID = DCS.DEVICEID ");
-		if(getPointType() == LOAD_PROFILE_POINT_TYPE || getPointType() == DEMAND_ACC_POINT_TYPE)//catch kwLP, voltageLP, kW
-		    sql.append(", DEVICELOADPROFILE DLP ");
+        sql.append(" FROM RAWPOINTHISTORY RPH, POINT P, YUKONPAOBJECT PAO ");
+        sql.append(" left outer join DEVICEMETERGROUP DMG on PAO.PAOBJECTID = DMG.DEVICEID ");
+        sql.append(" left outer join DEVICECARRIERSETTINGS DCS on PAO.PAOBJECTID = DCS.DEVICEID ");
+		if (getPointType() == LOAD_PROFILE_POINT_TYPE || getPointType() == DEMAND_ACC_POINT_TYPE) {
+            sql.append(", DEVICELOADPROFILE DLP ");
+        }
 				
-//		if( getBillingGroups() != null && getBillingGroups().length > 0 ) //Have a BILLING Group, can limit query to meters.
-//		    sql.append(", DEVICEMETERGROUP DMG ");
-			
-		sql.append(" WHERE P.POINTID = RPH.POINTID " +
-        " AND P.PAOBJECTID = PAO.PAOBJECTID ");  //Use PAO for ordering
+		sql.append(" WHERE P.POINTID = RPH.POINTID AND P.PAOBJECTID = PAO.PAOBJECTID ");  //Use PAO for ordering
 		
-		sql.append(" AND TIMESTAMP > ? AND TIMESTAMP <= ? ");
+		sql.append(" AND TIMESTAMP > ").appendArgument(getStartDate());
+		sql.append(" AND TIMESTAMP <= ").appendArgument(getStopDate());
 		
-		if(getPointType() == LOAD_PROFILE_POINT_TYPE )
-		{
+		if (getPointType() == LOAD_PROFILE_POINT_TYPE ) {
 		    sql.append(" AND PAO.PAOBJECTID = DLP.DEVICEID ");
-			sql.append(" AND P.POINTTYPE = '" + PointTypes.getType(PointTypes.DEMAND_ACCUMULATOR_POINT) + "' " + 
-				" AND (P.POINTOFFSET >= " + PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND + " AND P.POINTOFFSET <= " + PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND + ") ");
-		}
-		else if ( getPointType() == STATUS_POINT_TYPE )
-		{
-			sql.append(" AND P.POINTTYPE = '" + PointTypes.getType(PointTypes.STATUS_POINT) + "' ");
-		}
-		else if ( getPointType() == DEMAND_ACC_POINT_TYPE )
-		{
+			sql.append(" AND P.POINTTYPE = ").appendArgument(PointTypes.getType(PointTypes.DEMAND_ACCUMULATOR_POINT));
+			sql.append(" AND (P.POINTOFFSET >= ").appendArgument(PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND);
+			sql.append(" AND P.POINTOFFSET <= ").appendArgument(PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND);
+			sql.append(") ");
+		} else if ( getPointType() == STATUS_POINT_TYPE ) {
+			sql.append(" AND P.POINTTYPE = ").appendArgument(PointTypes.getType(PointTypes.STATUS_POINT));
+		} else if ( getPointType() == DEMAND_ACC_POINT_TYPE ) {
 		    sql.append(" AND PAO.PAOBJECTID = DLP.DEVICEID ");
-			sql.append(" AND P.POINTTYPE = '" + PointTypes.getType(PointTypes.DEMAND_ACCUMULATOR_POINT) + "' " +
+			sql.append(" AND P.POINTTYPE = ").appendArgument(PointTypes.getType(PointTypes.DEMAND_ACCUMULATOR_POINT));
 			//Do not allow LP data, those points fall into the LP point type option.
-			" AND (P.POINTOFFSET < " + PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND + " OR P.POINTOFFSET > " + PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND + ") ");			
-		}
-        else if ( getPointType() == PULSE_ACC_POINT_TYPE )
-        {
-        	sql.append(" AND P.POINTTYPE = '" + PointTypes.getType(PointTypes.PULSE_ACCUMULATOR_POINT) + "' ");
-        }        
-		else if ( getPointType() == ANALOG_POINT_TYPE )
-		{
-			sql.append(" AND P.POINTTYPE = '" + PointTypes.getType(PointTypes.ANALOG_POINT) + "' ");
-		}
-		else if ( getPointType() == CALC_POINT_TYPE)
-		{
-			sql.append(" AND (P.POINTTYPE = '" + PointTypes.getType(PointTypes.CALCULATED_POINT) + "' " +
-				" OR P.POINTTYPE = '" + PointTypes.getType(PointTypes.CALCULATED_STATUS_POINT) + "' )");
+			sql.append(" AND (P.POINTOFFSET < ").appendArgument(PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND);
+			sql.append(" OR P.POINTOFFSET > ").appendArgument(PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND);
+			sql.append(")");			
+		} else if ( getPointType() == PULSE_ACC_POINT_TYPE ) {
+        	sql.append(" AND P.POINTTYPE = ").appendArgument(PointTypes.getType(PointTypes.PULSE_ACCUMULATOR_POINT));
+        } else if ( getPointType() == ANALOG_POINT_TYPE ) {
+			sql.append(" AND P.POINTTYPE = ").appendArgument(PointTypes.getType(PointTypes.ANALOG_POINT));
+		} else if ( getPointType() == CALC_POINT_TYPE) {
+			sql.append(" AND (P.POINTTYPE = ").appendArgument(PointTypes.getType(PointTypes.CALCULATED_POINT));
+			sql.append(" OR P.POINTTYPE = ").appendArgument(PointTypes.getType(PointTypes.CALCULATED_STATUS_POINT));
+			sql.append(" )");
 		}
 		//Use paoIDs in query if they exist
-        @SuppressWarnings("unused")
-        final DeviceGroupService deviceGroupService = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
         final String[] groups = getBillingGroups();
         
 		if (groups != null && groups.length > 0) {
 			sql.append(" AND PAO.PAOBJECTID = DMG.DEVICEID ");
 			
-            String deviceGroupSqlWhereClause = getGroupSqlWhereClause("PAO.PAOBJECTID");
-            sql.append(" AND " + deviceGroupSqlWhereClause);
+            SqlFragmentSource deviceGroupSqlWhereClause = getGroupSqlWhereClause("PAO.PAOBJECTID");
+            sql.append(" AND ", deviceGroupSqlWhereClause);
 		}
-		if( getPaoIDs() != null && getPaoIDs().length > 0)
-		{
-			sql.append(" AND P.PAOBJECTID IN (" + getPaoIDs()[0]);
-			for (int i = 1; i < getPaoIDs().length; i++)
-				sql.append(", " + getPaoIDs()[i]);
-			sql.append(") ");
+		if( getPaoIDs() != null && getPaoIDs().length > 0) {
+			sql.append(" AND P.PAOBJECTID IN (", getPaoIDs(), ")");
 		}
 		
          sql.append(" ORDER BY PAO.PAOBJECTID, P.POINTNAME, TIMESTAMP ");
@@ -371,52 +362,33 @@ public class PointDataSummaryModel extends ReportModelBase
 		return sql;
 	}
 		
-	@SuppressWarnings({ "unchecked", "unchecked" })
     @Override
-	public void collectData()
-	{
-		//Reset all objects, new data being collected!
-		setData(null);
-		allMPDataLows = new HashMap();
-		allMPDataPeaks = new HashMap();
-		allMissingData = new HashMap();
-		
-		@SuppressWarnings("unused")
-        int rowCount = 0;
-		StringBuffer sql = buildSQLStatement();
-		CTILogger.info(sql.toString());	
-		
-		java.sql.Connection conn = null;
-		java.sql.PreparedStatement pstmt = null;
-		java.sql.ResultSet rset = null;
+    public void collectData()
+    {
+        //Reset all objects, new data being collected!
+        setData(null);
+        allMPDataLows = new HashMap();
+        allMPDataPeaks = new HashMap();
+        allMissingData = new HashMap();
 
-		try
-		{
-			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+        SqlFragmentSource sql = buildSQLStatement();
+        CTILogger.info(sql.toString());	
+        CTILogger.info("START DATE > " + getStartDate() + "  -  STOP DATE <= " + getStopDate());
 
-			if( conn == null )
-			{
-				CTILogger.error(getClass() + ":  Error getting database connection.");
-				return;
-			}
-			else
-			{
-				pstmt = conn.prepareStatement(sql.toString());
-				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime() ));
-				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime()));
-				CTILogger.info("START DATE > " + getStartDate() + "  -  STOP DATE <= " + getStopDate());
-				rset = pstmt.executeQuery();
-				
-				int currentPointid = -1;
-				int countData = 0;
-				String lpDemandRate = null;
-				String voltageDemandRate = null;
-				String liDemandRate = null;
-				String voltageDemandInterval = null;
-				Vector tempMPDataVector = new Vector();	//Vector of MeterAndPointData
-				while( rset.next())
-				{
-					Integer paobjectID = new Integer(rset.getInt(1));
+        JdbcOperations template = JdbcTemplateHelper.getYukonTemplate();
+        template.query(sql.getSql(), sql.getArguments(), new ResultSetExtractor() {
+            @Override
+            public Object extractData(ResultSet rset) throws SQLException, DataAccessException {
+
+                int currentPointid = -1;
+                int countData = 0;
+                String lpDemandRate = null;
+                String voltageDemandRate = null;
+                String liDemandRate = null;
+                String voltageDemandInterval = null;
+                Vector tempMPDataVector = new Vector();	//Vector of MeterAndPointData
+                while( rset.next()) {
+                    Integer paobjectID = new Integer(rset.getInt(1));
                     String paoName = rset.getString(2);
                     @SuppressWarnings("unused")
                     String paoCategory = rset.getString(3);
@@ -425,111 +397,105 @@ public class PointDataSummaryModel extends ReportModelBase
                     String address = rset.getString(6);
                     String pointName = rset.getString(7);
                     Integer pointID = new Integer(rset.getInt(8));
+
+                    if (pointID.intValue() != currentPointid) { //enter all
                     
-					if( pointID.intValue() != currentPointid)	//enter all
-					{
-						if( currentPointid != -1)	//not the first time
-						{
-							loadSummaryData(new Integer(currentPointid), tempMPDataVector);
-							tempMPDataVector = new Vector();  //get ready for the next PointID
-							//verify all data exists, count should be equal to timeInMillis/interval
-							long nowTime = new Date().getTime();							
-							long endTime = (getStopDate().getTime() > nowTime ? nowTime:getStopDate().getTime());
-							long totalTime  = (endTime - getStartDate().getTime())/1000; //convert to seconds
-							int intervals = 0;
-							
-							LitePoint lp = DaoFactory.getPointDao().getLitePoint(currentPointid);
-							if( lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND && voltageDemandRate != null)
-							    intervals = (int) (totalTime / Integer.valueOf(voltageDemandRate).intValue());
-							else if( lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND && lpDemandRate != null)
-							    intervals = (int) (totalTime / Integer.valueOf(lpDemandRate).intValue());
-							else if( lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT&& liDemandRate != null)
-							    intervals = (int) (totalTime / Integer.valueOf(liDemandRate).intValue());
-//							else if( pointOffset == PointTypes.PT_OFFSET_VOLTAGE_DEMAND && voltageDemandInterval != null)
-//							    intervals = (int) (totalTime / Integer.valueOf(voltageDemandInterval).intValue());
-							
-							
-							if( countData < intervals)
-							    getAllMissingDataPointIDs().put(new Integer(currentPointid), new Integer(intervals - countData));
-							countData = 0;
-						}
-					}
+                        if (currentPointid != -1) {	//not the first time
+                            loadSummaryData(new Integer(currentPointid), tempMPDataVector);
+                            tempMPDataVector = new Vector();  //get ready for the next PointID
+                            //verify all data exists, count should be equal to timeInMillis/interval
+                            long nowTime = new Date().getTime();							
+                            long endTime = (getStopDate().getTime() > nowTime ? nowTime:getStopDate().getTime());
+                            long totalTime  = (endTime - getStartDate().getTime())/1000; //convert to seconds
+                            int intervals = 0;
+
+                            LitePoint lp = DaoFactory.getPointDao().getLitePoint(currentPointid);
+                            if (lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND && voltageDemandRate != null) {
+                                intervals = (int) (totalTime / Integer.valueOf(voltageDemandRate).intValue());
+                            } else if (lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND && lpDemandRate != null) {
+                                intervals = (int) (totalTime / Integer.valueOf(lpDemandRate).intValue());
+                            } else if (lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT&& liDemandRate != null) {
+                                intervals = (int) (totalTime / Integer.valueOf(liDemandRate).intValue());
+                            }
+                            // else if( pointOffset == PointTypes.PT_OFFSET_VOLTAGE_DEMAND && voltageDemandInterval != null)
+                            //     intervals = (int) (totalTime / Integer.valueOf(voltageDemandInterval).intValue());
+
+
+                            if (countData < intervals) {
+                                getAllMissingDataPointIDs().put(new Integer(currentPointid), new Integer(intervals - countData));
+                            }
+                            countData = 0;
+                        }
+                    }
                     Timestamp ts = rset.getTimestamp(9);
                     Double value = new Double(rset.getDouble(10));
                     Integer quality = new Integer(rset.getInt(11));
-					
-					lpDemandRate = null;
-					voltageDemandRate = null;
-					liDemandRate = null;
-					voltageDemandInterval = null;
-					if(getPointType() == LOAD_PROFILE_POINT_TYPE || getPointType() == DEMAND_ACC_POINT_TYPE)					
-					{
-					    lpDemandRate = String.valueOf( rset.getInt(12));
-					    voltageDemandRate = String.valueOf(rset.getInt(13));
-					    liDemandRate = String.valueOf(rset.getInt(14));
-					    voltageDemandInterval = String.valueOf(rset.getInt(15));
-					}
-								
+
+                    lpDemandRate = null;
+                    voltageDemandRate = null;
+                    liDemandRate = null;
+                    voltageDemandInterval = null;
+                    if (getPointType() == LOAD_PROFILE_POINT_TYPE || getPointType() == DEMAND_ACC_POINT_TYPE)					
+                    {
+                        lpDemandRate = String.valueOf( rset.getInt(12));
+                        voltageDemandRate = String.valueOf(rset.getInt(13));
+                        liDemandRate = String.valueOf(rset.getInt(14));
+                        voltageDemandInterval = String.valueOf(rset.getInt(15));
+                    }
+
                     Meter meter = new Meter();
                     meter.setDeviceId(paobjectID);
                     meter.setName(paoName);
-                    if( address != null)
-                    	meter.setAddress(address);
+                    if (address != null)
+                        meter.setAddress(address);
                     meter.setTypeStr(paoType);
 
                     if (meterNumber != null) {
                         meter.setMeterNumber(meterNumber);
                     }
-                    
+
                     MeterAndPointData mpData = new MeterAndPointData(meter, pointID, pointName, new Date(ts.getTime()), value, quality);
 
-					LPMeterData lpMeterData = new LPMeterData(mpData, liDemandRate, voltageDemandInterval, lpDemandRate, voltageDemandRate);
-					getData().add(lpMeterData);
-					tempMPDataVector.add(mpData);
-					currentPointid = pointID.intValue();
-					countData++;
-				}
-				//Add last PointID's summary data
-				loadSummaryData(new Integer(currentPointid), tempMPDataVector);
-				//Load the last missing data
-				long nowTime = new Date().getTime();							
-				long endTime = (getStopDate().getTime() > nowTime ? nowTime:getStopDate().getTime());
-				long totalTime  = (endTime - getStartDate().getTime())/1000; //convert to seconds
-				int intervals = 0;
-				
-				LitePoint lp = DaoFactory.getPointDao().getLitePoint(currentPointid);							
-				if( lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND && voltageDemandRate != null)
-				    intervals = (int) (totalTime / Integer.valueOf(voltageDemandRate).intValue());
-				else if( lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND && lpDemandRate != null)
-				    intervals = (int) (totalTime / Integer.valueOf(lpDemandRate).intValue());
-				else if( lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT&& liDemandRate != null)
-				    intervals = (int) (totalTime / Integer.valueOf(liDemandRate).intValue());
-//				else if( pointOffset == PointTypes.PT_OFFSET_VOLTAGE_DEMAND && voltageDemandInterval != null)
-//				    intervals = (int) (totalTime / Integer.valueOf(voltageDemandInterval).intValue());
+                    LPMeterData lpMeterData = new LPMeterData(mpData, liDemandRate, voltageDemandInterval, lpDemandRate, voltageDemandRate);
+                    getData().add(lpMeterData);
+                    tempMPDataVector.add(mpData);
+                    currentPointid = pointID.intValue();
+                    countData++;
+                }
+                //Add last PointID's summary data
+                loadSummaryData(new Integer(currentPointid), tempMPDataVector);
+                //Load the last missing data
+                long nowTime = new Date().getTime();							
+                long endTime = (getStopDate().getTime() > nowTime ? nowTime:getStopDate().getTime());
+                long totalTime  = (endTime - getStartDate( ).getTime())/1000; //convert to seconds
+                int intervals = 0;
 
-				if( countData < intervals)
-				    getAllMissingDataPointIDs().put(new Integer(currentPointid), new Integer(intervals - countData));
-				
-				if( getData() != null)
-				{
-				    Collections.sort(getData(), lpDataSummaryComparator);
-				    if( getOrderBy() == DESCENDING)
-				        Collections.reverse(getData());
-				}
-			}
-		}
-			
-		catch( java.sql.SQLException e )
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			SqlUtils.close(rset, pstmt, conn );
-		}
-		CTILogger.info("Report Records Collected from Database: " + getData().size());
-		return;
-	}
+                LitePoint lp = DaoFactory.getPointDao().getLitePoint(currentPointid);							
+                if( lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND && voltageDemandRate != null)
+                    intervals = (int) (totalTime / Integer.valueOf(voltageDemandRate).intValue());
+                else if( lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND && lpDemandRate != null)
+                    intervals = (int) (totalTime / Integer.valueOf(lpDemandRate).intValue());
+                else if( lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT&& liDemandRate != null)
+                    intervals = (int) (totalTime / Integer.valueOf(liDemandRate).intValue());
+                //				else if( pointOffset == PointTypes.PT_OFFSET_VOLTAGE_DEMAND && voltageDemandInterval != null)
+                //				    intervals = (int) (totalTime / Integer.valueOf(voltageDemandInterval).intValue());
+
+                if( countData < intervals)
+                    getAllMissingDataPointIDs().put(new Integer(currentPointid), new Integer(intervals - countData));
+
+                if( getData() != null)
+                {
+                    Collections.sort(getData(), lpDataSummaryComparator);
+                    if( getOrderBy() == DESCENDING)
+                        Collections.reverse(getData());
+                }
+                return null;
+            }
+        });
+
+        CTILogger.info("Report Records Collected from Database: " + getData().size());
+        return;
+    }
 	
 	/**
 	 * @param pointid
