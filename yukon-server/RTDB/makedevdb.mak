@@ -2632,7 +2632,7 @@ slctdev.obj:	yukon.h precompiled.h ctidbgmem.h dev_710.h dev_idlc.h \
 		dev_sixnet.h prot_sixnet.h dev_foreignporter.h rte_macro.h \
 		tbl_rtmacro.h rte_versacom.h tbl_rtversacom.h master.h \
 		rte_expresscom.h dev_fmu.h dev_xml.h prot_xml.h xml_object.h \
-		rtdb.h slctdev.h ObjectPool.h
+		rtdb.h slctdev.h
 slctpnt.obj:	yukon.h precompiled.h ctidbgmem.h rtdb.h dlldefs.h \
 		hashkey.h hash_functions.h utility.h ctitime.h queues.h \
 		cticalls.h os2_2w32.h types.h numstr.h sorted_vector.h \
