@@ -171,7 +171,7 @@ public class StarsEnrLMProgram {
         return programOrder;
     }
 
-    public void setProgramOrder(int i) {
-        programOrder = i;
+    public void setProgramOrder(int programOrder) {
+        this.programOrder = programOrder;
     }    
 }
