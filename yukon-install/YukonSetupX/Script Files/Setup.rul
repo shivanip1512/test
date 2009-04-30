@@ -293,63 +293,76 @@ end;
 // program...endprogram style setup.
 //---------------------------------------------------------------------------
 function OnFirstUIAfter()
-    STRING szTitle, szMsg1, szMsg2, szOpt1, szOpt2, szMsg;
-    NUMBER bvOpt1, bvOpt2;
-	NUMBER bShowUpdateServiceDlg;
-	
-	STRING  szServicesMsg, macsText, notifText, scanText,
+    STRING szTitle, szMsg1, szMsg2, szOpt1, szOpt2, szMsg,
+    szServiceMsg1, szServiceMsg2, macsText, notifText, scanText,
 	smText, fdrText, ccText, lmText, calcText, StartServicesMsg,
-	porterText, dispatchText, webText; 
+	porterText, dispatchText, webText, wdbuTitle, wdbuMsg;
+    
+    NUMBER bvOpt1, bvOpt2, bShowUpdateServiceDlg, nResult;
+	
 	BOOL nValue, macsCheck, notifCheck, scanCheck, smCheck, fdrCheck,
 	ccCheck, lmCheck, calcCheck, porterCheck, dispatchCheck, webCheck;
-	NUMBER nResult;
-	 
+
+	
 begin
-    
     nValue = NONEXCLUSIVE;
-	szServicesMsg = "Select Yukon services to set automatic startup and restart on fail.\n(Porter, Dispatch and Web Applications are always set to automatic.)";
+	szServiceMsg1 = "Select Yukon services to set automatic startup and restart on fail.\n(More on next page.)";
+	szServiceMsg2 = "Select Yukon services to set automatic startup and restart on fail.";
 	porterText = "Port Control";
-	porterCheck = TRUE;
+	porterCheck = FeatureIsItemSelected(MEDIA, "Yukon Server\\Porter");;
 	dispatchText = "Dispatch";
-	dispatchCheck = TRUE;
+	dispatchCheck = FeatureIsItemSelected(MEDIA, "Yukon Server\\Message Dispatcher");;
 	webText = "Web Applications";
-	webCheck = TRUE;
+	webCheck = FeatureIsItemSelected(MEDIA, "Yukon Server\\Web Server");;
 	macsText = "Metering and Control Scheduler (MACS)";
-	macsCheck = TRUE;
+	macsCheck = FeatureIsItemSelected(MEDIA, "Yukon Server\\MACS");;
 	notifText = "Notification";
-	notifCheck = TRUE;
+	notifCheck = FeatureIsItemSelected(MEDIA, "Yukon Server\\Notification Server");;
 	scanText = "Real-Time Scanner";
-	scanCheck = TRUE;
+	scanCheck = FeatureIsItemSelected(MEDIA, "Yukon Server\\Scanner");;
 	smText = "Service Manager";
-	smCheck = TRUE;
-	fdrText = "Foreign Data Router (FDR)";;
-	fdrCheck = TRUE;
+	smCheck = FeatureIsItemSelected(MEDIA, "Yukon Server\\Client Service Manager");;
+	fdrText = "Foreign Data Router (FDR)";
+	fdrCheck = FeatureIsItemSelected(MEDIA, "Yukon Server\\Foreign Data Router");;
 	ccText = "Capacitor Control";
-	ccCheck = TRUE;
+	ccCheck = FeatureIsItemSelected(MEDIA, "Yukon Server\\Cap Control");;
 	lmText = "Load Management";
-	lmCheck = TRUE;
+	lmCheck = FeatureIsItemSelected(MEDIA, "Yukon Server\\Load Management");;
 	calcText = "Calc Logic";
-	calcCheck = TRUE;
+	calcCheck = FeatureIsItemSelected(MEDIA, "Yukon Server\\Calculation Server");;
     
-    Dlg_SetServices:
+    Dlg_SetServices1:
 		//There's no going back now!
 		Disable(BACKBUTTON);
+		Disable(CANCELBUTTON);
 		//get user input
-		AskOptions(nValue, szServicesMsg, macsText, macsCheck, notifText, notifCheck,
+		AskOptions(nValue, szServiceMsg1, porterText, porterCheck, dispatchText,
+				dispatchCheck, webText, webCheck);
+	
+	Dlg_SetServices2:	
+		Enable(BACKBUTTON);
+		//get more user input
+		nResult = AskOptions(nValue, szServiceMsg2, macsText, macsCheck, notifText, notifCheck,
 				scanText, scanCheck, smText, smCheck, fdrText, fdrCheck,
 	            ccText, ccCheck, lmText, lmCheck, calcText, calcCheck);
+    	if(nResult = BACK) goto Dlg_SetServices1;
+    	
     	//set up yukon services according to what the user checked
     	//dispatch
-    	LaunchAppAndWait("", "cmd.exe /c sc failure \"Yukon Dispatch Service\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
-    	LaunchAppAndWait("", "cmd.exe /c sc config \"Yukon Dispatch Service\" start= auto", LAAW_OPTION_WAIT); 
+    	if(dispatchCheck) then
+    		LaunchAppAndWait("", "cmd.exe /c sc failure \"Yukon Dispatch Service\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
+    		LaunchAppAndWait("", "cmd.exe /c sc config \"Yukon Dispatch Service\" start= auto", LAAW_OPTION_WAIT); 
+        endif;
         //porter
-    	LaunchAppAndWait("", "cmd.exe /c sc failure \"Yukon Port Control Service\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
-    	LaunchAppAndWait("", "cmd.exe /c sc config \"Yukon Port Control Service\" start= auto", LAAW_OPTION_WAIT); 
+    	if(porterCheck) then
+    		LaunchAppAndWait("", "cmd.exe /c sc failure \"Yukon Port Control Service\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
+    		LaunchAppAndWait("", "cmd.exe /c sc config \"Yukon Port Control Service\" start= auto", LAAW_OPTION_WAIT); 
+        endif;
         //web
-    	LaunchAppAndWait("", "cmd.exe /c sc failure \"YukonWebApplicationService\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
-    	LaunchAppAndWait("", "cmd.exe /c sc config \"YukonWebApplicationService\" start= auto", LAAW_OPTION_WAIT); 
-    	
-    	//TODO:
+    	if(webCheck) then
+    		LaunchAppAndWait("", "cmd.exe /c sc failure \"YukonWebApplicationService\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
+    		LaunchAppAndWait("", "cmd.exe /c sc config \"YukonWebApplicationService\" start= auto", LAAW_OPTION_WAIT); 
+    	endif;
     	//macs
     	if(macsCheck) then
     		LaunchAppAndWait("", "cmd.exe /c sc failure \"Yukon MAC Scheduler Service\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
@@ -390,18 +403,40 @@ begin
     		LaunchAppAndWait("", "cmd.exe /c sc failure \"Yukon Calc-Logic Service\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
     		LaunchAppAndWait("", "cmd.exe /c sc config \"Yukon Calc-Logic Service\" start= auto", LAAW_OPTION_WAIT); 
         endif;
+    
+    Dlg_WarnDBUpdate:
+    	//Warn them - run updates before starting services to avoid Yukon Armageddon
+    	wdbuTitle = "Run database updates";
+    	wdbuMsg = "If you are upgrading the Yukon installation, please run DBToolsFrame at this time.\nDB updates must be complete before starting services.";
+    	nResult = SdDisplayTopics (wdbuTitle, wdbuMsg, ListCreate(STRINGLIST), ListCreate(STRINGLIST), 0);
+    	if (nResult = BACK) goto Dlg_SetServices1;
             
     Dlg_StartPortDispWeb:
+    	porterCheck = FALSE;
+		dispatchCheck = FALSE;
+		webCheck = FALSE;
+		macsCheck = FALSE;
+		notifCheck = FALSE;
+		scanCheck = FALSE;
+		smCheck = FALSE;
+		fdrCheck = FALSE;
+		ccCheck = FALSE;
+		lmCheck = FALSE;
+		calcCheck = FALSE;
     	StartServicesMsg = "Select Yukon services to start at this time.\n(More options on next page)";
     	//get user input
-    	AskOptions(nValue, StartServicesMsg, porterText, porterCheck, dispatchText,
+    	nResult = AskOptions(nValue, StartServicesMsg, porterText, porterCheck, dispatchText,
     			dispatchCheck, webText, webCheck);  
-    
+        if (nResult = BACK) goto Dlg_SetServices1;
+        
     Dlg_StartServices:
     	StartServicesMsg = "Select Yukon services to start at this time.";
-    	AskOptions(nValue, StartServicesMsg, macsText, macsCheck, notifText, notifCheck,
+    	//get more input
+    	nResult = AskOptions(nValue, StartServicesMsg, macsText, macsCheck, notifText, notifCheck,
 				scanText, scanCheck, smText, smCheck, fdrText, fdrCheck,
 	            ccText, ccCheck, lmText, lmCheck, calcText, calcCheck); 
+    	if (nResult = BACK) goto Dlg_StartPortDispWeb;
+    	
     	//start  services according to what the user checked
     	if(dispatchCheck) then
     		LaunchAppAndWait("", "cmd.exe /c sc start \"Yukon Dispatch Service\"", LAAW_OPTION_WAIT);
