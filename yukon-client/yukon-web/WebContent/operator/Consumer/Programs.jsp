@@ -81,7 +81,7 @@
               <table width="450" border="1" cellspacing="0" align="center" cellpadding="3">
                 <tr> 
                   <td class="HeaderCell" width="130" >Date</td>
-                  <td class="HeaderCell" width="120" >Type - Duration</td>
+                  <td class="HeaderCell" width="120" >Type</td>
                   <td class="HeaderCell" width="145" >Program</td>
                 </tr>
 <%
@@ -89,14 +89,6 @@
 		int eventCnt = programHistory.getStarsLMProgramEventCount();
 		for (int i = eventCnt - 1; i >= 0 && i >= eventCnt - 3; i--) {
 			StarsLMProgramEvent event = programHistory.getStarsLMProgramEvent(i);
-			
-			String durationStr = "";
-			if (event.hasDuration())
-				durationStr = ServletUtils.getDurationFromHours(event.getDuration());
-			
-			String scheduledStr = "";
-			if (event.hasDuration() && event.getEventDateTime().after(new Date()))
-				scheduledStr = "(Scheduled)";
 			
 			String progNames = "";
 			for (int j = 0; j < event.getProgramIDCount(); j++) {
@@ -108,11 +100,7 @@
 %>
                 <tr> 
                   <td class="TableCell" width="130" ><cti:formatDate value="<%=event.getEventDateTime()%>" type="BOTH"/></td>
-                  <td class="TableCell" width="120" ><%= event.getEventAction() %> 
-                    <% if (event.hasDuration()) { %>
-                    - <%= durationStr %> 
-                    <% } %>
-                    <%= scheduledStr %> </td>
+                  <td class="TableCell" width="120" ><%= event.getEventAction() %></td> 
                   <td class="TableCell" width="145" ><%= progNames %></td>
                 </tr>
 <%
