@@ -5,14 +5,12 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.DateTimeZone;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 
 import com.cannontech.cc.dao.ProgramDao;
 import com.cannontech.cc.dao.ProgramNotificationGroupDao;
 import com.cannontech.cc.model.Program;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.database.data.lite.*;
 import com.cannontech.database.data.notification.NotifType;
@@ -75,19 +73,18 @@ public class ProgramActionMessageHandler extends NotifHandler {
                 synchronized (_dateFormatter) {
                     _timeFormatter.setTimeZone(timeZone);
                     _dateFormatter.setTimeZone(timeZone);
-                    DateTimeFormatter _dateTimeFormatter = ISODateTimeFormat.dateTimeNoMillis().withZone(DateTimeZone.forTimeZone(timeZone));
                     
                     notif.addData("timezone", timeZone.getDisplayName());
                     
                     notif.addData("starttime", _timeFormatter.format(msg.startTime));
                     notif.addData("startdate", _dateFormatter.format(msg.startTime));
-                    notif.addData("startdatetime", _dateTimeFormatter.print(msg.startTime.getTime()));
+                    notif.addData("startdatetime", CtiUtilities.makeISO8601Formttedstring(msg.startTime, timeZone));
                     notif.addData("stoptime", _timeFormatter.format(msg.stopTime));
                     notif.addData("stopdate", _dateFormatter.format(msg.stopTime));
-                    notif.addData("stopdatetime", _dateTimeFormatter.print(msg.stopTime.getTime()));
+                    notif.addData("stopdatetime", CtiUtilities.makeISO8601Formttedstring(msg.stopTime, timeZone));
                     notif.addData("notiftime", _timeFormatter.format(msg.notificationTime));
                     notif.addData("notifdate", _dateFormatter.format(msg.notificationTime));
-                    notif.addData("notifdatetime", _dateTimeFormatter.print(msg.notificationTime.getTime()));
+                    notif.addData("notifdatetime", CtiUtilities.makeISO8601Formttedstring(msg.notificationTime, timeZone));
                 }
                 
                 notif.addData("durationminutes", durationMinutesStr);

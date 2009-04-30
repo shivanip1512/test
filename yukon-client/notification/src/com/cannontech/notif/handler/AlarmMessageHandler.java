@@ -7,13 +7,11 @@ import java.util.TimeZone;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
-import org.joda.time.DateTimeZone;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.tags.AlarmUtils;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dynamic.PointValueHolder;
@@ -103,11 +101,10 @@ public class AlarmMessageHandler extends NotifHandler {
                 TimeZone timeZone = contact.getTimeZone();
                 timeFormatter.setTimeZone(timeZone);
                 dateFormatter.setTimeZone(timeZone);
-                DateTimeFormatter dateTimeFormatter = ISODateTimeFormat.dateTimeNoMillis().withZone(DateTimeZone.forTimeZone(timeZone));
                 
                 notif.addData("alarmtime", timeFormatter.format(msg.alarmTimestamp));
                 notif.addData("alarmdate", dateFormatter.format(msg.alarmTimestamp));
-                notif.addData("alarmdatetime", dateTimeFormatter.print(msg.alarmTimestamp.getTime()));
+                notif.addData("alarmdatetime", CtiUtilities.makeISO8601Formttedstring(msg.alarmTimestamp, timeZone));
                 
                 String uofm = "";
                 if (point.getPointType() == PointTypes.STATUS_POINT) {

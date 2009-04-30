@@ -4,13 +4,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import org.joda.time.DateTimeZone;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
-
 import com.cannontech.cc.model.BaseEvent;
 import com.cannontech.cc.model.EventNotif;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.enums.NotificationState;
@@ -108,15 +105,14 @@ public abstract class EventScheduler {
             // we will use _dateFormatter as if we'd explicitly synched on it too
             _timeFormatter.setTimeZone(timeZone);
             _dateFormatter.setTimeZone(timeZone);
-            DateTimeFormatter _dateTimeFormatter = ISODateTimeFormat.dateTimeNoMillis().withZone(DateTimeZone.forTimeZone(timeZone));
             
             notif.addData("timezone", timeZone.getDisplayName());
             notif.addData("starttime", _timeFormatter.format(event.getStartTime()));
             notif.addData("startdate", _dateFormatter.format(event.getStartTime()));
-            notif.addData("startdatetime", _dateTimeFormatter.print(event.getStartTime().getTime()));
+            notif.addData("startdatetime", CtiUtilities.makeISO8601Formttedstring(event.getStartTime(), timeZone));
             notif.addData("stoptime", _timeFormatter.format(event.getStopTime()));
             notif.addData("stopdate", _dateFormatter.format(event.getStopTime()));
-            notif.addData("stopdatetime", _dateTimeFormatter.print(event.getStopTime().getTime()));
+            notif.addData("stopdatetime", CtiUtilities.makeISO8601Formttedstring(event.getStopTime(), timeZone));
         }
     }
 

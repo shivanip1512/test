@@ -49,6 +49,9 @@ import javax.swing.text.BadLocationException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.util.FileCopyUtils;
 
 import com.cannontech.clientutils.CTILogger;
@@ -1848,6 +1851,16 @@ public static double convertTemperature(double temperature, String fromUnit, Str
         SimpleDateFormat df = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
         return df.parse(javaDateStr);
     }
+     
+     public static String makeISO8601Formttedstring(Date date, TimeZone tz) {
+
+     	DateTimeFormatter dateTimeFormatter = ISODateTimeFormat.dateTimeNoMillis().withZone(DateTimeZone.forTimeZone(tz));
+
+     	String formattedString = dateTimeFormatter.print(date.getTime());
+     	formattedString = formattedString.substring(0, 19);
+
+     	return formattedString;
+ 	}
 }
 
 
