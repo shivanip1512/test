@@ -1441,6 +1441,11 @@ private void queueDBChangeMsgs(com.cannontech.database.db.DBPersistent object, i
 		com.cannontech.database.data.lite.LiteBase lBase = 
 				com.cannontech.database.cache.DefaultDatabaseCache.getInstance().handleDBChangeMessage(dbChange[i]);
 
+		//if cache isn't able to return us the liteBase, then build it from the DBPersistent itself
+		if (lBase == null) {
+			lBase = LiteFactory.createLite(object);
+		}
+
         // Special case for point deletion
         if (lBase == null && dbChange[i].getDatabase() == DBChangeMsg.CHANGE_POINT_DB
 		        && changeType == DBChangeMsg.CHANGE_TYPE_DELETE && object instanceof PointBase) {
