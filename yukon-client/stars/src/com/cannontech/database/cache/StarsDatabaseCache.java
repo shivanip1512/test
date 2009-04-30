@@ -23,7 +23,6 @@ import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteLMControlHistory;
 import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
@@ -39,7 +38,6 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
-import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.util.ECUtils;
@@ -51,7 +49,6 @@ import com.cannontech.stars.web.util.StarsAdminUtil;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsEnrLMProgram;
 import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
-import com.cannontech.stars.xml.serialize.StarsInventory;
 
 /**
  * 
@@ -357,7 +354,6 @@ public class StarsDatabaseCache implements DBChangeListener {
 	    				}
     				}
     			}
-    			// nothing to do for MCT devices, DeviceTypesFuncs.isMCT(litePao.getType())
     		}
     	}
 		else if (msg.getDatabase() == DBChangeMsg.CHANGE_YUKON_USER_DB) {

@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
@@ -17,7 +18,7 @@ public interface StarsInventoryBaseDao {
 	 * @return LiteInventoryBase
 	 * @throws NotFoundException
 	 */
-    public LiteInventoryBase getByInventoryId(int inventoryId);
+    public LiteInventoryBase getByInventoryId(int inventoryId) throws NotFoundException;
     
     /**
      * Finds Inventory by Device Id. Throws NotFoundException if the Inventory is not in the database.
@@ -26,7 +27,7 @@ public interface StarsInventoryBaseDao {
      * @return LiteInventoryBase
      * @throws NotFoundException
      */
-    public LiteInventoryBase getByDeviceId(int deviceId);
+    public LiteInventoryBase getByDeviceId(int deviceId) throws NotFoundException;
     
     public List<LiteInventoryBase> getByIds(Collection<Integer> inventoryIds);
 

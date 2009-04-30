@@ -15,9 +15,7 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.FieldMapper;
@@ -78,7 +76,7 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
 
     @Override
     @Transactional(readOnly = true)
-    public LiteInventoryBase getByInventoryId(final int inventoryId) {
+    public LiteInventoryBase getByInventoryId(final int inventoryId) throws NotFoundException {
     	SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(selectInventorySql);
         sql.append("WHERE ib.InventoryId = ").appendArgument(inventoryId);
@@ -97,7 +95,7 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
     
     @Override
     @Transactional(readOnly = true)
-    public LiteInventoryBase getByDeviceId(final int deviceId) {
+    public LiteInventoryBase getByDeviceId(final int deviceId) throws NotFoundException {
     	SqlStatementBuilder sql = new SqlStatementBuilder();
     	sql.append(selectInventorySql);
     	sql.append("WHERE ib.DeviceId = ").appendArgument(deviceId);
