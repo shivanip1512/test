@@ -710,7 +710,9 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 				event.setInventory(inventory);
 				
 				List<Program> programList = 
-					enrollmentDao.getCurrentlyEnrolledProgramsByInventoryId(inventoryId);
+					enrollmentDao.getEnrolledProgramIdsByInventory(inventoryId,
+					                                               event.getStartDate(),
+					                                               event.getStopDate());
 				event.setProgramList(programList);
 				
 				eventList.add(event);
@@ -748,7 +750,9 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 			event.setInventory(inventory);
 			
 			List<Program> programList = 
-				enrollmentDao.getCurrentlyEnrolledProgramsByInventoryId(inventoryId);
+				enrollmentDao.getEnrolledProgramIdsByInventory(inventoryId,
+                                                               event.getStartDate(),
+                                                               event.getStopDate());
 			event.setProgramList(programList);
 			
 				
