@@ -10,7 +10,7 @@ public enum Permission {
     CONTROL_COMMAND("control command", false, false), 
     OTHER_COMMAND("Unrecognized device command", false, false), 
     LM_VISIBLE("Load Management Visibility", false, true), 
-    ALLOWED_COMMAND("Allowed Command", false, false),
+    ALLOWED_COMMAND("Allowed Command", true, false),
     PAO_VISIBLE("Object Visibility", true, true),
     DEFAULT_ROUTE("Default Route", false, true);
 

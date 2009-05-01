@@ -205,7 +205,7 @@
 			    
 			    
 			    <!-- Catch all - checks permissions default value -->			    
-			    <bean class="com.cannontech.core.authorization.support.pao.PaoDefaultAuthorization" />
+			    <bean class="com.cannontech.core.authorization.support.DefaultAuthorization" />
 			    
         	</list>
         </property>
@@ -354,7 +354,7 @@
 			    </bean>
 			    
 			    <!-- Catch all - checks permissions default value -->	
-			    <bean class="com.cannontech.core.authorization.support.pao.PaoDefaultAuthorization" />
+			    <bean class="com.cannontech.core.authorization.support.DefaultAuthorization" />
 			    			    
 		    </list>
 	    </property>
