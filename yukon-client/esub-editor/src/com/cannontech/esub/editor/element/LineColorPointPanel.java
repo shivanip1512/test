@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
@@ -37,7 +38,7 @@ public class LineColorPointPanel extends DataInputPanel implements ActionListene
     private PointSelectionPanel pointSelectionPanel = null;
     private javax.swing.JPanel buttonGroup = null;
     private LineElement lineElement;
-    private HashMap<Integer, Color> map = new HashMap<Integer, Color>();
+    private Map<Integer, Color> map = new HashMap<Integer, Color>();
     private JButton okButton;
     
     private JLabel rawStateLabel;
@@ -298,7 +299,7 @@ public PointSelectionPanel getPointSelectionPanel() {
     return pointSelectionPanel;
 }
 
-public HashMap<Integer, Color> getCustomColorMap() {
+public Map<Integer, Color> getCustomColorMap() {
     return map;
 }
 
@@ -329,7 +330,6 @@ private void handleException(java.lang.Throwable e) {
 /**
  * Initialize the class.
  */
-@SuppressWarnings("unchecked")
 private void initialize() {
     try {
         setName("ColorPointPanel");
@@ -412,7 +412,7 @@ private void initialize() {
          
         colorChooser = Util.getJColorChooser();
         
-        oldColorMap = new HashMap(11);
+        oldColorMap = new HashMap<Integer, Color>(11);
         oldColorMap.put(0, java.awt.Color.green);
         oldColorMap.put(1, java.awt.Color.red);
         oldColorMap.put(2, java.awt.Color.white);
@@ -446,12 +446,11 @@ public boolean isInputValid() {
  * This method was created in VisualAge.
  * @param o java.lang.Object
  */
-@SuppressWarnings("unchecked")
 public void setValue(Object o) 
 {
     lineElement = (LineElement) o;
     if(!lineElement.isNew()) {
-        map = new HashMap( lineElement.getCustomColorMap());
+        map = new HashMap<Integer, Color>( lineElement.getCustomColorMap());
         getPointSelectionPanel().refresh();
     
         // Set selected point 
@@ -482,19 +481,18 @@ public void valueChanged(TreeSelectionEvent evt)
     fireInputUpdate();
 }
 
-@SuppressWarnings("unchecked")
 public void resetPreviewPanelColors(LitePoint p)
 {
-    List colors = new ArrayList(12);
+    List<JLabel> colors = new ArrayList<JLabel>(12);
     if(p != null)
     {
         LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(p.getStateGroupID());
-        List states = lsg.getStatesList();
+        List<LiteState> states = lsg.getStatesList();
         
         for(int i = 0; i < states.size(); i++) 
         {
-            int color = ((LiteState) states.get(i)).getFgColor();
-            LiteState state = (LiteState)states.get(i);
+            int color = states.get(i).getFgColor();
+            LiteState state = states.get(i);
             int rawStateNumber = state.getStateRawState();
            
             colorLabels[rawStateNumber].setForeground(oldColorMap.get(color));
@@ -531,18 +529,17 @@ public void resetPreviewPanelColors(LitePoint p)
     }
 }
 
-@SuppressWarnings("unchecked")
 public void setPreviewPanelColors(LitePoint p) 
 {
-    List colors = new ArrayList(12);
+    List<JLabel> colors = new ArrayList<JLabel>(12);
     LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(p.getStateGroupID());
-    List states = lsg.getStatesList();
+    List<LiteState> states = lsg.getStatesList();
     
     for(int i = 0; i < states.size(); i++) 
     {
         
-        int color = ((LiteState) states.get(i)).getFgColor();
-        LiteState state = (LiteState)states.get(i);
+        int color = states.get(i).getFgColor();
+        LiteState state = states.get(i);
         int rawStateNumber = state.getStateRawState();
         
         if(!(map.get(rawStateNumber) == null))

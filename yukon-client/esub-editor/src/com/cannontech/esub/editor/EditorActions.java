@@ -9,8 +9,6 @@ import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.geom.Point2D;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
 import javax.swing.JOptionPane;
 import javax.swing.undo.CannotRedoException;
@@ -991,13 +989,6 @@ class EditorActions {
 
 	LxAbstractAction getAction(String actionName) {
 		return (LxAbstractAction) actionMap.get(actionName);
-	}
-	
-	LxAbstractAction[] getAllActions() {
-		Set<Map.Entry<String, Object>> s = actionMap.entrySet();
-		LxAbstractAction allActions[] = new LxAbstractAction[s.size()];
-		s.toArray(allActions);
-		return allActions;
 	}
 	
 	/**

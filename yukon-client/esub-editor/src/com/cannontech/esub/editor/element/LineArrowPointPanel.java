@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -33,7 +34,7 @@ public class LineArrowPointPanel extends DataInputPanel implements ActionListene
     private javax.swing.JPanel buttonGroup = null;
     private PointSelectionPanel pointSelectionPanel = null;
     private LineElement lineElement;
-    private HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
+    private Map<Integer, Integer> map = new HashMap<Integer, Integer>();
     private JButton okButton;
     private JLabel rawStateLabel;
     private JLabel arrowLabel;
@@ -243,7 +244,7 @@ public PointSelectionPanel getPointSelectionPanel() {
     return pointSelectionPanel;
 }
 
-public HashMap<Integer, Integer> getCustomArrowMap() {
+public Map<Integer, Integer> getCustomArrowMap() {
     return map;
 }
 
@@ -364,11 +365,10 @@ public boolean isInputValid() {
  * This method was created in VisualAge.
  * @param o java.lang.Object
  */
-@SuppressWarnings("unchecked")
 public void setValue(Object o) 
 {
     lineElement = (LineElement) o;
-    map = new HashMap( lineElement.getCustomArrowMap());
+    map = new HashMap<Integer, Integer>( lineElement.getCustomArrowMap());
 
     getPointSelectionPanel().refresh();
 
@@ -398,18 +398,17 @@ public void valueChanged(TreeSelectionEvent evt)
     fireInputUpdate();
 }
 
-@SuppressWarnings("unchecked")
 public void resetPreviewPanelValues(LitePoint p)
 {
-    List values = new ArrayList(12);
+    List<JComboBox> values = new ArrayList<JComboBox>(12);
     if(p != null)
     {
         LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(p.getStateGroupID());
-        List states = lsg.getStatesList();
+        List<LiteState> states = lsg.getStatesList();
         
         for(int i = 0; i < states.size(); i++) 
         {
-            LiteState state = (LiteState)states.get(i);
+            LiteState state = states.get(i);
             int rawStateNumber = state.getStateRawState();
            
             comboBoxes[rawStateNumber].setSelectedIndex(0);
@@ -441,17 +440,16 @@ public void resetPreviewPanelValues(LitePoint p)
     }
 }
 
-@SuppressWarnings("unchecked")
 public void setPreviewPanelValues(LitePoint p) 
 {
-    List values = new ArrayList(12);
+    List<JComboBox> values = new ArrayList<JComboBox>(12);
     LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(p.getStateGroupID());
-    List states = lsg.getStatesList();
+    List<LiteState> states = lsg.getStatesList();
     
     for(int i = 0; i < states.size(); i++) 
     {
         
-        LiteState state = (LiteState)states.get(i);
+        LiteState state = states.get(i);
         int rawStateNumber = state.getStateRawState();
         
         if(!(map.get(rawStateNumber) == null))

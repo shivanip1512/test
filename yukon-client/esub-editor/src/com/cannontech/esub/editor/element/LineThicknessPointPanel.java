@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -35,7 +36,7 @@ public class LineThicknessPointPanel extends DataInputPanel implements ActionLis
     private javax.swing.JPanel buttonGroup = null;
     private PointSelectionPanel ivjPointSelectionPanel = null;
     private LineElement lineElement;
-    private HashMap<Integer, Float> map = new HashMap<Integer, Float>();
+    private Map<Integer, Float> map = new HashMap<Integer, Float>();
     private JButton okButton;
     private JLabel rawStateLabel;
     private JLabel thicknessLabel;
@@ -245,7 +246,7 @@ public PointSelectionPanel getPointSelectionPanel() {
     return ivjPointSelectionPanel;
 }
 
-public HashMap<Integer, Float> getCustomThicknessMap() {
+public Map<Integer, Float> getCustomThicknessMap() {
     return map;
 }
 
@@ -370,11 +371,10 @@ public boolean isInputValid() {
  * This method was created in VisualAge.
  * @param o java.lang.Object
  */
-@SuppressWarnings("unchecked")
 public void setValue(Object o) 
 {
     lineElement = (LineElement) o;
-    map = new HashMap( lineElement.getCustomThicknessMap());
+    map = new HashMap<Integer, Float>( lineElement.getCustomThicknessMap());
 
     getPointSelectionPanel().refresh();
 
