@@ -10,11 +10,12 @@ import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.util.CancelStatus;
 import com.cannontech.common.util.Completable;
+import com.cannontech.common.util.ExceptionStatus;
 import com.cannontech.common.util.MapList;
 import com.cannontech.core.dynamic.PointValueHolder;
 
 public class GroupCommandCompletionCallback implements
-        CommandCompletionCallback<CommandRequestDevice>, Completable, CancelStatus, MultipleDeviceResultHolder {
+        CommandCompletionCallback<CommandRequestDevice>, Completable, CancelStatus, ExceptionStatus, MultipleDeviceResultHolder {
     
     private Map<YukonDevice,DeviceErrorDescription> errors = new ConcurrentHashMap<YukonDevice, DeviceErrorDescription>(100, .75f, 1);
     private Map<YukonDevice,String> resultStrings = new ConcurrentHashMap<YukonDevice, String>(100, .75f, 1);
@@ -23,6 +24,8 @@ public class GroupCommandCompletionCallback implements
     private MapList<YukonDevice,PointValueHolder> receivedValues = new MapList<YukonDevice, PointValueHolder>();
     private boolean complete = false;
     private boolean canceled = false;
+    private boolean processingErrorOccured = false;
+    private String processingErrorReason = "";
     
     @Override
     public void receivedIntermediateError(CommandRequestDevice command, DeviceErrorDescription error) {
@@ -105,6 +108,12 @@ public class GroupCommandCompletionCallback implements
     }
     
     @Override
+    final public void processingExceptionOccured(String reason) {
+    	processingErrorReason = reason;
+    	processingErrorOccured = true;
+    }
+    
+    @Override
     public boolean isComplete() {
         return complete;
     }
@@ -116,6 +125,16 @@ public class GroupCommandCompletionCallback implements
 
     protected void doComplete() {
         // noop
+    }
+    
+    @Override
+    public boolean hasException() {
+    	return processingErrorOccured;
+    }
+    
+    @Override
+    public String getExceptionReason() {
+    	return processingErrorReason;
     }
 
     public Map<YukonDevice, DeviceErrorDescription> getErrors() {

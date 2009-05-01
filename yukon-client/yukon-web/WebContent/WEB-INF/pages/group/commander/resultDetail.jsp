@@ -88,7 +88,9 @@
                                 totalCount="${totalCount}" 
                                 countKey="COMMANDER/${result.key}/COMPLETED_ITEMS"
                                 completeKey="COMMANDER/${result.key}/IS_COMPLETE"
-                                canceledKey="COMMANDER/${result.key}/IS_CANCELED" >
+                                canceledKey="COMMANDER/${result.key}/IS_CANCELED"
+                                hasExceptionKey="COMMANDER/${result.key}/HAS_EXCEPTION"
+                                exceptionReasonKey="COMMANDER/${result.key}/EXCEPTION_REASON" >
                     
             <%-- cancel commands --%>
             <div id="cancelCommandsDiv">
@@ -160,5 +162,8 @@
     
     <cti:dataUpdaterCallback function="toggleElementsOnComplete(['allDevicesActionsDiv','successActionsDiv','errorActionsDiv'],true)" initialize="true" isComplete="COMMANDER/${result.key}/IS_COMPLETE" />
     <cti:dataUpdaterCallback function="toggleElementsOnComplete(['cancelCommandsDiv'],false)" initialize="true" isComplete="COMMANDER/${result.key}/IS_COMPLETE" />
+    
+    <cti:dataUpdaterCallback function="toggleElementsOnComplete(['allDevicesActionsDiv','successActionsDiv','errorActionsDiv'],true)" initialize="true" isComplete="COMMANDER/${result.key}/HAS_EXCEPTION" />
+    <cti:dataUpdaterCallback function="toggleElementsOnComplete(['cancelCommandsDiv'],false)" initialize="true" isComplete="COMMANDER/${result.key}/HAS_EXCEPTION" />
       
 </cti:standardPage>

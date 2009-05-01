@@ -25,7 +25,7 @@ function cancelProgressBar(pbarId) {
 
     return function(data) {
 
-        if (data['isCanceled'] == 'true') {
+        if (data['isCanceled'] == 'true' || data['hasException'] == 'true') {
             $('progressBorder_' + pbarId).style.backgroundColor = '#CC0000';
         }
     };
@@ -35,9 +35,15 @@ function updateProgressDescription(pDescId, text) {
 
     return function(data) {
     
+    	var hasExceptionCondition = data['hasExceptionCondition'];
         var isCompleteCondition = data['isCompleteCondition'];
-        
-        if (isCompleteCondition == 'true') {
+
+        if (hasExceptionCondition == 'true') {
+        	var exceptionReasonText = data['exceptionReasonText'];
+        	$('progressDescription_' + pDescId).addClassName('errorRed');
+        	$('progressDescription_' + pDescId).innerHTML = exceptionReasonText;
+        	
+        } else if (isCompleteCondition == 'true') {
             $('progressDescription_' + pDescId).innerHTML = text;
         }
     };

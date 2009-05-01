@@ -36,4 +36,7 @@ public class CommandCompletionCallbackAdapter<T> implements
     public void cancel() {
     }
 
+    @Override
+    public void processingExceptionOccured(String reason) {
+    }
 }

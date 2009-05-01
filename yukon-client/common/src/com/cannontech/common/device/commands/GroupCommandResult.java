@@ -3,8 +3,9 @@ package com.cannontech.common.device.commands;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.util.CancelStatus;
 import com.cannontech.common.util.Completable;
+import com.cannontech.common.util.ExceptionStatus;
 
-public class GroupCommandResult implements Completable, CancelStatus {
+public class GroupCommandResult implements Completable, CancelStatus, ExceptionStatus {
     private String key;
     private String command;
     private DeviceCollection deviceCollection;
@@ -69,5 +70,15 @@ public class GroupCommandResult implements Completable, CancelStatus {
     @Override
     public boolean isCanceled() {
         return resultHolder.isCanceled();
+    }
+    
+    @Override
+    public boolean hasException() {
+    	return callback.hasException();
+    }
+    
+    @Override
+    public String getExceptionReason() {
+    	return callback.getExceptionReason();
     }
 }

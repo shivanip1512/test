@@ -7,6 +7,21 @@
 
     <cti:standardMenu menuSelection="devicegroups|commander"/>
     
+    	<cti:msg var="HAS_EXCEPTION_TEXT" key="yukon.common.device.commander.groupCommandExecutor.HAS_EXCEPTION_TEXT"/>
+    	<script type="text/javascript">
+
+    		
+    		function setExceptionStatus(divId) {
+
+    			return function(data) {
+        			if (data['hasException'] == 'true') {
+            			$(divId).addClassName('errorRed');
+    					$(divId).innerHTML = '${HAS_EXCEPTION_TEXT}';
+        			}
+    			}
+    		}
+    	</script>
+    
        	<cti:breadCrumbs>
     	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
             
@@ -46,12 +61,14 @@
                     <td><div style="width:20px;"></div></td>
                     <td><a href="${resultDetailUrl}">View</a></td>
                     <td>
-                        <cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/IS_COMPLETE_TEXT"/>
-                        <cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/IS_CANCELED_TEXT"/>
+                    	<div id="statusDiv_${result.key}">
+	                        <cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/IS_COMPLETE_TEXT"/>
+	                        <cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/IS_CANCELED_TEXT"/>
+                        </div>
                     </td>
                 </tr>
+                <cti:dataUpdaterCallback function="setExceptionStatus('statusDiv_${result.key}')" initialize="true" hasException="COMMANDER/${result.key}/HAS_EXCEPTION" exceptionReason="COMMANDER/${result.key}/EXCEPTION_REASON" />
             </c:forEach>
-            
         </table>
         
     </tags:boxContainer>

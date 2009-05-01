@@ -37,7 +37,7 @@ public enum GroupCommandResultFieldEnum {
         public Object getValue(GroupCommandResult groupCommandResult) {
             
             ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.device.commander.groupCommandExecutor.IS_COMPLETE_TEXT");
-            resolvableTemplate.addData("isComplete", groupCommandResult.isComplete());
+            resolvableTemplate.addData("isComplete", groupCommandResult.isComplete() && !groupCommandResult.hasException());
             
             return resolvableTemplate;
         }
@@ -54,6 +54,28 @@ public enum GroupCommandResultFieldEnum {
             
             ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.device.commander.groupCommandExecutor.IS_CANCELED_TEXT");
             resolvableTemplate.addData("isCanceled", groupCommandResult.isCanceled());
+            
+            return resolvableTemplate;
+        }
+    }),
+    
+    HAS_EXCEPTION(new ResultAccessor<GroupCommandResult>() {
+        public Object getValue(GroupCommandResult groupCommandResult) {
+            return groupCommandResult.hasException();
+        }
+    }),
+    
+    EXCEPTION_REASON(new ResultAccessor<GroupCommandResult>() {
+        public Object getValue(GroupCommandResult groupCommandResult) {
+            return groupCommandResult.getExceptionReason();
+        }
+    }),
+    
+    HAS_EXCEPTION_TEXT(new ResultAccessor<GroupCommandResult>() {
+        public Object getValue(GroupCommandResult groupCommandResult) {
+            
+            ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.device.commander.groupCommandExecutor.HAS_EXCEPTION_TEXT");
+            resolvableTemplate.addData("hasException", groupCommandResult.hasException());
             
             return resolvableTemplate;
         }

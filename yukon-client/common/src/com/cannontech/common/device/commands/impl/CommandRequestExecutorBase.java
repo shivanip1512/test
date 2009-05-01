@@ -40,6 +40,7 @@ import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.SystemLogHelper;
 import com.cannontech.message.porter.message.Request;
 import com.cannontech.message.porter.message.Return;
+import com.cannontech.message.util.ConnectionException;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
@@ -303,7 +304,18 @@ public abstract class CommandRequestExecutorBase<T> implements
 		            	}
 		            }
 		            log.debug("Finished commandRequests loop. groupMessageId = " + groupMessageId);
-		            
+		        
+		        } catch (Exception e) {
+		        	
+		        	String exceptionReason = e.getMessage();
+		        	if (e instanceof ConnectionException) {
+		        		exceptionReason = "No porter connection.";
+		        	}
+		        	callback.processingExceptionOccured(exceptionReason);
+		        	
+		        	log.debug("Removing porter message listener because an exception occured: " + messageListener);
+		        	messageListener.removeListener();
+		        	
 		        } finally {
 		            if (nothingWritten && !messageListener.isCanceled()) {
 		                log.debug("Removing porter message listener because nothing was written: " + messageListener);

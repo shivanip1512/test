@@ -6,16 +6,19 @@ import java.util.List;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.common.util.CancelStatus;
 import com.cannontech.common.util.Completable;
+import com.cannontech.common.util.ExceptionStatus;
 import com.cannontech.core.dynamic.PointValueHolder;
 
 public class CollectingCommandCompletionCallback implements
-        CommandCompletionCallback<Object>, CommandResultHolder, Completable, CancelStatus {
+        CommandCompletionCallback<Object>, CommandResultHolder, Completable, CancelStatus, ExceptionStatus {
     
     private List<DeviceErrorDescription> errors = new ArrayList<DeviceErrorDescription>();
     private List<PointValueHolder> values = new ArrayList<PointValueHolder>();
     private List<String> resultStrings = new ArrayList<String>();
     private boolean complete = false;
     private boolean canceled = false;
+    private boolean processingErrorOccured = false;
+    private String processingErrorReason = "";
 
     @Override
     public void receivedIntermediateError(Object command, DeviceErrorDescription error) {
@@ -80,6 +83,12 @@ public class CollectingCommandCompletionCallback implements
     }
     
     @Override
+    final public void processingExceptionOccured(String reason) {
+    	processingErrorReason = reason;
+    	processingErrorOccured = true;
+    }
+    
+    @Override
     public boolean isComplete() {
         return complete;
     }
@@ -92,4 +101,15 @@ public class CollectingCommandCompletionCallback implements
     protected void doComplete() {
         // noop
     }
+    
+    @Override
+    public boolean hasException() {
+    	return processingErrorOccured;
+    }
+    
+    @Override
+    public String getExceptionReason() {
+    	return processingErrorReason;
+    }
+    
 }

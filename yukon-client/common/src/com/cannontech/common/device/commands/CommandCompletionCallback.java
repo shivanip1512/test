@@ -11,4 +11,5 @@ public interface CommandCompletionCallback<T> {
     public void receivedLastResultString(T command, String value);
     public void complete();
     public void cancel();
+    public void processingExceptionOccured(String reason);
 }

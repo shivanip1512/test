@@ -9,6 +9,9 @@
 <%@ attribute name="completeKey" required="true" type="java.lang.String"%>
 <%@ attribute name="canceledKey" required="false" type="java.lang.String"%>
 
+<%@ attribute name="hasExceptionKey" required="false" type="java.lang.String"%>
+<%@ attribute name="exceptionReasonKey" required="false" type="java.lang.String"%>
+
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
@@ -28,13 +31,17 @@
 
 <div style="padding:10px;">
 
-    <tags:updateableProgressBar totalCount="${totalCount}" countKey="${countKey}" canceledKey="${canceledKey}"/>
+    <tags:updateableProgressBar totalCount="${totalCount}" countKey="${countKey}" canceledKey="${canceledKey}" hasExceptionKey="${hasExceptionKey}"/>
 
     <jsp:doBody />
    
 </div>
 
 <cti:dataUpdaterCallback function="updateProgressDescription('${pDescId}', '${completeText}')" initialize="true" isCompleteCondition="${completeKey}" />
+
+<c:if test="${not empty hasExceptionKey && not empty exceptionReasonKey}">
+	<cti:dataUpdaterCallback function="updateProgressDescription('${pDescId}', '')" initialize="true" hasExceptionCondition="${hasExceptionKey}" exceptionReasonText="${exceptionReasonKey}" />
+</c:if>
 
 <c:if test="${not empty canceledKey}">
     <cti:dataUpdaterCallback function="updateProgressDescription('${pDescId}', '${canceledText}')" initialize="true" isCompleteCondition="${canceledKey}" />
