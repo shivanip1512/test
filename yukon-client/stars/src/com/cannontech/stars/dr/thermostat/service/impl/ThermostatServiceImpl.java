@@ -13,6 +13,8 @@ import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -52,6 +54,7 @@ public class ThermostatServiceImpl implements ThermostatService {
     private ECMappingDao ecMappingDao;
     private ThermostatScheduleDao thermostatScheduleDao;
     private CommandRequestHardwareExecutor commandRequestHardwareExecutor;
+    private RolePropertyDao rolePropertyDao;
 
     private SimpleDateFormat SCHEDULE_START_TIME_FORMAT = new SimpleDateFormat("HH:mm");
 
@@ -78,9 +81,14 @@ public class ThermostatServiceImpl implements ThermostatService {
 
     @Autowired
     public void setCommandRequestHardwareExecutor(
-                        CommandRequestHardwareExecutor commandRequestHardwareExecutor) {
-                this.commandRequestHardwareExecutor = commandRequestHardwareExecutor;
-        }
+                    CommandRequestHardwareExecutor commandRequestHardwareExecutor) {
+        this.commandRequestHardwareExecutor = commandRequestHardwareExecutor;
+    }
+    
+    @Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+		this.rolePropertyDao = rolePropertyDao;
+	}
 
     @Override
     @Transactional
@@ -195,10 +203,11 @@ public class ThermostatServiceImpl implements ThermostatService {
         LiteYukonUser yukonUser = userContext.getYukonUser();
 
         // Make sure the device is available
-        if (!thermostat.isAvailable()) {
+        boolean isOperator = StarsUtils.isOperator(yukonUser);
+		if (!thermostat.isAvailable()) {
 
             ThermostatScheduleUpdateResult error;
-            if (StarsUtils.isOperator(yukonUser)) {
+            if (isOperator) {
                 error = ThermostatScheduleUpdateResult.OPERATOR_UNAVAILABLE_ERROR;
             } else {
                 error = ThermostatScheduleUpdateResult.CONSUMER_UPDATE_SCHEDULE_ERROR;
@@ -212,7 +221,7 @@ public class ThermostatServiceImpl implements ThermostatService {
         if (StringUtils.isBlank(serialNumber)) {
 
             ThermostatScheduleUpdateResult error;
-            if (StarsUtils.isOperator(yukonUser)) {
+            if (isOperator) {
                 error = ThermostatScheduleUpdateResult.OPERATOR_NO_SERIAL_ERROR;
             } else {
                 error = ThermostatScheduleUpdateResult.CONSUMER_NO_SERIAL_ERROR;
@@ -223,8 +232,15 @@ public class ThermostatServiceImpl implements ThermostatService {
         HardwareType type = thermostat.getType();
 
         // We have to update the schedule mode for Utility Pro thermostats every
-        // time we update the schedule
-        if(HardwareType.UTILITY_PRO.equals(type)) {
+        // time we update the schedule if 5-2 mode is enabled
+        YukonRoleProperty modeProperty;
+        if(isOperator) {
+			modeProperty = YukonRoleProperty.OPERATOR_THERMOSTAT_SCHEDULE_5_2;
+        } else {
+        	modeProperty = YukonRoleProperty.RESIDENTIAL_THERMOSTAT_SCHEDULE_5_2;
+        }
+        boolean mode52Enabled = rolePropertyDao.checkProperty(modeProperty, yukonUser);
+        if(HardwareType.UTILITY_PRO.equals(type) && mode52Enabled) {
                 try {
                         
                         String serialString = " serial " + thermostat.getSerialNumber();
