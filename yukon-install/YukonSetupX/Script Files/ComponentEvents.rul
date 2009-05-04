@@ -144,9 +144,6 @@ string szServPath, szPath, TomcatPath, JavaPath;
 string szAppPath, szName, szKey, szEnv, szTargetFile, szSrcFile, szValue, dateString, targetString;
 number nvResult, nvType, nvSize, foundVal, dirSearch, nSize;
 pointer pEnv;
-
-string szCparm, szInsertText, szFileName, szGrepReturn;
-number nResult, nGrepLine;
         
 begin
 
@@ -213,28 +210,6 @@ RegDBSetKeyValueEx ( szKey , szName , REGDB_STRING , szValue , nSize );
 //we no longer want the web application service to start right away
 /*szCmdLine = 'start "Yukon Web Application Service"';
 LaunchAppAndWait ("net.exe" , szCmdLine, WAIT );  */
-
-//master.cfg YUKON_BASE setup
-//this cparm needs to be set to the dir where yukon is installed
-//we need this to update before the user sees the master.cfg
-szCparm = "YUKON_BASE";
-szInsertText = "YUKON_BASE  :  " + TARGETDIR + "   # Yukon installation directory.  Base for other cparm file paths.";
-szFileName = TARGETDIR ^ "Server\\Config\\master.cfg";
-    
-//check to see if YUKON_BASE already exists in the master.cfg
-nResult = FileGrep (szFileName, szCparm, szGrepReturn, nGrepLine, RESTART);
-if(nResult < 0) then
-    //if it doesn't exist, we try to insert it below LOG_DIRECTORY
-    szCparm = "YUKON_LOG";
-    nResult = FileGrep (szFileName, szCparm, szGrepReturn, nGrepLine, RESTART);
-    if(nResult < 0) then
-       	//we can't find LOG_DIRECTORY, just put it at the top
-       	FileInsertLine (szFileName, szInsertText, 0, BEFORE);
-    else
-       	//found LOG_DIRECTORY, insert below
-       	FileInsertLine (szFileName, szInsertText, nGrepLine+1, RESTART);
-    endif;
-endif;
 
 configMsg1 = "To configure Yukon, please verify the following:";
 configMsg2 = "\n  1.) That master.cfg file contains the correct database connection information.";
