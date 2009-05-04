@@ -45,6 +45,7 @@ public class SqlStatementBuilder implements SqlFragmentSource {
 
     public SqlStatementBuilder(String initial) {
         statement = new StringBuilder(initial);
+        appendSpace();
     }
 
     /**
