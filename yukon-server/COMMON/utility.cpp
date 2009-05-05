@@ -494,6 +494,7 @@ INT SynchronizedIdGen(string name, int count)
         updater.where( yukonSequenceTable["sequencename"] == name.c_str() );
         updater << yukonSequenceTable["lastvalue"].assign( yukonSequenceTable["lastvalue"] + count );
 
+        conn.beginTransaction();
         status = (ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok ? NORMAL: UnknownError);
 
         if(status == NORMAL)
@@ -514,6 +515,8 @@ INT SynchronizedIdGen(string name, int count)
                 dout << CtiTime() << " **** Checkpoint **** Problem reading sequence number: " << name << endl;
             }
         }
+
+        conn.commitTransaction();
     }
 
     return(last);
