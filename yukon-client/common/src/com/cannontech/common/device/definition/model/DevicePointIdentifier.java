@@ -2,7 +2,7 @@ package com.cannontech.common.device.definition.model;
 
 import org.springframework.core.style.ToStringCreator;
 
-public class DevicePointIdentifier {
+public class DevicePointIdentifier implements Comparable<DevicePointIdentifier> {
     private int offset;
     private int type;
     
@@ -48,6 +48,17 @@ public class DevicePointIdentifier {
         tsc.append("type", getType());
         tsc.append("offset", getOffset());
         return tsc.toString();
+    }
+    
+    public int compareTo(DevicePointIdentifier o) {
+
+        if (o == null) {
+            return 0;
+        }
+    	if( o.getType() == getType()) {	//compare type
+   			return ( getOffset() < o.getOffset()? -1 : (getOffset()==o.getOffset()? 0 : 1));//compare offset
+    	}
+		return ( getType() < o.getType()? -1 : (getType()==o.getType()? 0 : 1));
     }
     
     /**

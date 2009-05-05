@@ -24,11 +24,11 @@ import org.exolab.castor.xml.ValidationException;
 import org.xml.sax.ContentHandler;
 
 /**
- * Class AttributesType.
+ * Class FeaturesType.
  * 
  * @version $Revision$ $Date$
  */
-public class AttributesType implements java.io.Serializable {
+public class FeaturesType implements java.io.Serializable {
 
 
       //--------------------------/
@@ -36,20 +36,20 @@ public class AttributesType implements java.io.Serializable {
     //--------------------------/
 
     /**
-     * Field _attributeList
+     * Field _featureList
      */
-    private java.util.ArrayList _attributeList;
+    private java.util.ArrayList _featureList;
 
 
       //----------------/
      //- Constructors -/
     //----------------/
 
-    public AttributesType() 
+    public FeaturesType() 
      {
         super();
-        _attributeList = new ArrayList();
-    } //-- com.cannontech.common.device.definition.model.castor.AttributesType()
+        _featureList = new ArrayList();
+    } //-- com.cannontech.common.device.definition.model.castor.FeaturesType()
 
 
       //-----------/
@@ -57,100 +57,100 @@ public class AttributesType implements java.io.Serializable {
     //-----------/
 
     /**
-     * Method addAttribute
+     * Method addFeature
      * 
      * 
      * 
-     * @param vAttribute
+     * @param vFeature
      */
-    public void addAttribute(com.cannontech.common.device.definition.model.castor.Attribute vAttribute)
+    public void addFeature(com.cannontech.common.device.definition.model.castor.Feature vFeature)
         throws java.lang.IndexOutOfBoundsException
     {
-        _attributeList.add(vAttribute);
-    } //-- void addAttribute(com.cannontech.common.device.definition.model.castor.Attribute) 
+        _featureList.add(vFeature);
+    } //-- void addFeature(com.cannontech.common.device.definition.model.castor.Feature) 
 
     /**
-     * Method addAttribute
+     * Method addFeature
      * 
      * 
      * 
      * @param index
-     * @param vAttribute
+     * @param vFeature
      */
-    public void addAttribute(int index, com.cannontech.common.device.definition.model.castor.Attribute vAttribute)
+    public void addFeature(int index, com.cannontech.common.device.definition.model.castor.Feature vFeature)
         throws java.lang.IndexOutOfBoundsException
     {
-        _attributeList.add(index, vAttribute);
-    } //-- void addAttribute(int, com.cannontech.common.device.definition.model.castor.Attribute) 
+        _featureList.add(index, vFeature);
+    } //-- void addFeature(int, com.cannontech.common.device.definition.model.castor.Feature) 
 
     /**
-     * Method clearAttribute
+     * Method clearFeature
      * 
      */
-    public void clearAttribute()
+    public void clearFeature()
     {
-        _attributeList.clear();
-    } //-- void clearAttribute() 
+        _featureList.clear();
+    } //-- void clearFeature() 
 
     /**
-     * Method enumerateAttribute
+     * Method enumerateFeature
      * 
      * 
      * 
      * @return Enumeration
      */
-    public java.util.Enumeration enumerateAttribute()
+    public java.util.Enumeration enumerateFeature()
     {
-        return new org.exolab.castor.util.IteratorEnumeration(_attributeList.iterator());
-    } //-- java.util.Enumeration enumerateAttribute() 
+        return new org.exolab.castor.util.IteratorEnumeration(_featureList.iterator());
+    } //-- java.util.Enumeration enumerateFeature() 
 
     /**
-     * Method getAttribute
+     * Method getFeature
      * 
      * 
      * 
      * @param index
-     * @return Attribute
+     * @return Feature
      */
-    public com.cannontech.common.device.definition.model.castor.Attribute getAttribute(int index)
+    public com.cannontech.common.device.definition.model.castor.Feature getFeature(int index)
         throws java.lang.IndexOutOfBoundsException
     {
         //-- check bounds for index
-        if ((index < 0) || (index > _attributeList.size())) {
+        if ((index < 0) || (index > _featureList.size())) {
             throw new IndexOutOfBoundsException();
         }
         
-        return (com.cannontech.common.device.definition.model.castor.Attribute) _attributeList.get(index);
-    } //-- com.cannontech.common.device.definition.model.castor.Attribute getAttribute(int) 
+        return (com.cannontech.common.device.definition.model.castor.Feature) _featureList.get(index);
+    } //-- com.cannontech.common.device.definition.model.castor.Feature getFeature(int) 
 
     /**
-     * Method getAttribute
+     * Method getFeature
      * 
      * 
      * 
-     * @return Attribute
+     * @return Feature
      */
-    public com.cannontech.common.device.definition.model.castor.Attribute[] getAttribute()
+    public com.cannontech.common.device.definition.model.castor.Feature[] getFeature()
     {
-        int size = _attributeList.size();
-        com.cannontech.common.device.definition.model.castor.Attribute[] mArray = new com.cannontech.common.device.definition.model.castor.Attribute[size];
+        int size = _featureList.size();
+        com.cannontech.common.device.definition.model.castor.Feature[] mArray = new com.cannontech.common.device.definition.model.castor.Feature[size];
         for (int index = 0; index < size; index++) {
-            mArray[index] = (com.cannontech.common.device.definition.model.castor.Attribute) _attributeList.get(index);
+            mArray[index] = (com.cannontech.common.device.definition.model.castor.Feature) _featureList.get(index);
         }
         return mArray;
-    } //-- com.cannontech.common.device.definition.model.castor.Attribute[] getAttribute() 
+    } //-- com.cannontech.common.device.definition.model.castor.Feature[] getFeature() 
 
     /**
-     * Method getAttributeCount
+     * Method getFeatureCount
      * 
      * 
      * 
      * @return int
      */
-    public int getAttributeCount()
+    public int getFeatureCount()
     {
-        return _attributeList.size();
-    } //-- int getAttributeCount() 
+        return _featureList.size();
+    } //-- int getFeatureCount() 
 
     /**
      * Method isValid
@@ -199,52 +199,52 @@ public class AttributesType implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
-     * Method removeAttribute
+     * Method removeFeature
      * 
      * 
      * 
-     * @param vAttribute
+     * @param vFeature
      * @return boolean
      */
-    public boolean removeAttribute(com.cannontech.common.device.definition.model.castor.Attribute vAttribute)
+    public boolean removeFeature(com.cannontech.common.device.definition.model.castor.Feature vFeature)
     {
-        boolean removed = _attributeList.remove(vAttribute);
+        boolean removed = _featureList.remove(vFeature);
         return removed;
-    } //-- boolean removeAttribute(com.cannontech.common.device.definition.model.castor.Attribute) 
+    } //-- boolean removeFeature(com.cannontech.common.device.definition.model.castor.Feature) 
 
     /**
-     * Method setAttribute
+     * Method setFeature
      * 
      * 
      * 
      * @param index
-     * @param vAttribute
+     * @param vFeature
      */
-    public void setAttribute(int index, com.cannontech.common.device.definition.model.castor.Attribute vAttribute)
+    public void setFeature(int index, com.cannontech.common.device.definition.model.castor.Feature vFeature)
         throws java.lang.IndexOutOfBoundsException
     {
         //-- check bounds for index
-        if ((index < 0) || (index > _attributeList.size())) {
+        if ((index < 0) || (index > _featureList.size())) {
             throw new IndexOutOfBoundsException();
         }
-        _attributeList.set(index, vAttribute);
-    } //-- void setAttribute(int, com.cannontech.common.device.definition.model.castor.Attribute) 
+        _featureList.set(index, vFeature);
+    } //-- void setFeature(int, com.cannontech.common.device.definition.model.castor.Feature) 
 
     /**
-     * Method setAttribute
+     * Method setFeature
      * 
      * 
      * 
-     * @param attributeArray
+     * @param featureArray
      */
-    public void setAttribute(com.cannontech.common.device.definition.model.castor.Attribute[] attributeArray)
+    public void setFeature(com.cannontech.common.device.definition.model.castor.Feature[] featureArray)
     {
         //-- copy array
-        _attributeList.clear();
-        for (int i = 0; i < attributeArray.length; i++) {
-            _attributeList.add(attributeArray[i]);
+        _featureList.clear();
+        for (int i = 0; i < featureArray.length; i++) {
+            _featureList.add(featureArray[i]);
         }
-    } //-- void setAttribute(com.cannontech.common.device.definition.model.castor.Attribute) 
+    } //-- void setFeature(com.cannontech.common.device.definition.model.castor.Feature) 
 
     /**
      * Method unmarshal
@@ -257,7 +257,7 @@ public class AttributesType implements java.io.Serializable {
     public static java.lang.Object unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        return (com.cannontech.common.device.definition.model.castor.AttributesType) Unmarshaller.unmarshal(com.cannontech.common.device.definition.model.castor.AttributesType.class, reader);
+        return (com.cannontech.common.device.definition.model.castor.FeaturesType) Unmarshaller.unmarshal(com.cannontech.common.device.definition.model.castor.FeaturesType.class, reader);
     } //-- java.lang.Object unmarshal(java.io.Reader) 
 
     /**

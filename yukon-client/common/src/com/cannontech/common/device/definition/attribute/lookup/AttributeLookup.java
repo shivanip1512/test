@@ -7,7 +7,7 @@ import org.springframework.core.style.ToStringCreator;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.Attribute;
 
-public abstract class AttributeLookup {
+public abstract class AttributeLookup implements Comparable<AttributeLookup> {
 
     private Attribute attribute = null;
         
@@ -40,6 +40,14 @@ public abstract class AttributeLookup {
     public int hashCode() {
         return new HashCodeBuilder(17, 39).append(getAttribute())
                                           .toHashCode();
+    }
+    
+    public int compareTo(AttributeLookup o) {
+
+        if (o == null) {
+            return 0;
+        }
+		return this.attribute.getKey().compareTo(o.getAttribute().getKey());
     }
     
     @Override

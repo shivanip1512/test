@@ -11,8 +11,15 @@ package com.cannontech.common.device.definition.model.castor;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Serializable;
+import java.io.Writer;
+import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
+import org.exolab.castor.xml.ValidationException;
+import org.xml.sax.ContentHandler;
 
 /**
  * Class Attribute.
@@ -30,6 +37,11 @@ public class Attribute implements java.io.Serializable {
      * Field _name
      */
     private java.lang.String _name;
+
+    /**
+     * Field _enabled
+     */
+    private java.lang.Boolean _enabled = new java.lang.Boolean("true");
 
     /**
      * Internal choice value storage
@@ -79,6 +91,17 @@ public class Attribute implements java.io.Serializable {
     {
         return this._choiceValue;
     } //-- java.lang.Object getChoiceValue() 
+
+    /**
+     * Returns the value of field 'enabled'.
+     * 
+     * @return Boolean
+     * @return the value of field 'enabled'.
+     */
+    public java.lang.Boolean getEnabled()
+    {
+        return this._enabled;
+    } //-- java.lang.Boolean getEnabled() 
 
     /**
      * Returns the value of field 'name'.
@@ -147,6 +170,16 @@ public class Attribute implements java.io.Serializable {
         this._basicLookup = basicLookup;
         this._choiceValue = basicLookup;
     } //-- void setBasicLookup(com.cannontech.common.device.definition.model.castor.BasicLookup) 
+
+    /**
+     * Sets the value of field 'enabled'.
+     * 
+     * @param enabled the value of field 'enabled'.
+     */
+    public void setEnabled(java.lang.Boolean enabled)
+    {
+        this._enabled = enabled;
+    } //-- void setEnabled(java.lang.Boolean) 
 
     /**
      * Sets the value of field 'name'.

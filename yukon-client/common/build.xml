@@ -68,7 +68,8 @@
                           todir="src"
                           package="com.cannontech.common.device.definition.model.castor"
                           types="j2"
-                          warnings="true" />
+                          warnings="true" 
+        				  properties="src/com/cannontech/common/device/definition/dao/deviceDefinitionBuild.properties"/>
     </target>
 
     <!-- Run unit tests - will stop running if a failure or error occurs during a test -->

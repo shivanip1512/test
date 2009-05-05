@@ -11,8 +11,15 @@ package com.cannontech.common.device.definition.model.castor;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Serializable;
+import java.io.Writer;
+import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
+import org.exolab.castor.xml.ValidationException;
+import org.xml.sax.ContentHandler;
 
 /**
  * Class DeviceType.
@@ -27,34 +34,44 @@ public class DeviceType implements java.io.Serializable {
     //--------------------------/
 
     /**
+     * Field _id
+     */
+    private java.lang.String _id;
+
+    /**
+     * Field _enabled
+     */
+    private java.lang.Boolean _enabled = new java.lang.Boolean("true");
+
+    /**
+     * Field _abstract
+     */
+    private java.lang.Boolean _abstract = new java.lang.Boolean("false");
+
+    /**
+     * Field _inherits
+     */
+    private java.lang.String _inherits;
+
+    /**
      * Field _type
      */
-    private com.cannontech.common.device.definition.model.castor.Type _type;
+    private java.lang.Integer _type;
 
     /**
      * Field _displayName
      */
-    private com.cannontech.common.device.definition.model.castor.DisplayName _displayName;
+    private java.lang.String _displayName;
 
     /**
      * Field _displayGroup
      */
-    private com.cannontech.common.device.definition.model.castor.DisplayGroup _displayGroup;
+    private java.lang.String _displayGroup;
 
     /**
-     * Field _paoClass
+     * Field _changeGroup
      */
-    private com.cannontech.common.device.definition.model.castor.PaoClass _paoClass;
-
-    /**
-     * Field _paoCategory
-     */
-    private com.cannontech.common.device.definition.model.castor.PaoCategory _paoCategory;
-
-    /**
-     * Field _javaClass
-     */
-    private com.cannontech.common.device.definition.model.castor.JavaClass _javaClass;
+    private java.lang.String _changeGroup;
 
     /**
      * Field _points
@@ -70,6 +87,11 @@ public class DeviceType implements java.io.Serializable {
      * Field _attributes
      */
     private com.cannontech.common.device.definition.model.castor.Attributes _attributes;
+
+    /**
+     * Field _features
+     */
+    private com.cannontech.common.device.definition.model.castor.Features _features;
 
 
       //----------------/
@@ -87,6 +109,17 @@ public class DeviceType implements java.io.Serializable {
     //-----------/
 
     /**
+     * Returns the value of field 'abstract'.
+     * 
+     * @return Boolean
+     * @return the value of field 'abstract'.
+     */
+    public java.lang.Boolean getAbstract()
+    {
+        return this._abstract;
+    } //-- java.lang.Boolean getAbstract() 
+
+    /**
      * Returns the value of field 'attributes'.
      * 
      * @return Attributes
@@ -96,6 +129,17 @@ public class DeviceType implements java.io.Serializable {
     {
         return this._attributes;
     } //-- com.cannontech.common.device.definition.model.castor.Attributes getAttributes() 
+
+    /**
+     * Returns the value of field 'changeGroup'.
+     * 
+     * @return String
+     * @return the value of field 'changeGroup'.
+     */
+    public java.lang.String getChangeGroup()
+    {
+        return this._changeGroup;
+    } //-- java.lang.String getChangeGroup() 
 
     /**
      * Returns the value of field 'commands'.
@@ -111,57 +155,68 @@ public class DeviceType implements java.io.Serializable {
     /**
      * Returns the value of field 'displayGroup'.
      * 
-     * @return DisplayGroup
+     * @return String
      * @return the value of field 'displayGroup'.
      */
-    public com.cannontech.common.device.definition.model.castor.DisplayGroup getDisplayGroup()
+    public java.lang.String getDisplayGroup()
     {
         return this._displayGroup;
-    } //-- com.cannontech.common.device.definition.model.castor.DisplayGroup getDisplayGroup() 
+    } //-- java.lang.String getDisplayGroup() 
 
     /**
      * Returns the value of field 'displayName'.
      * 
-     * @return DisplayName
+     * @return String
      * @return the value of field 'displayName'.
      */
-    public com.cannontech.common.device.definition.model.castor.DisplayName getDisplayName()
+    public java.lang.String getDisplayName()
     {
         return this._displayName;
-    } //-- com.cannontech.common.device.definition.model.castor.DisplayName getDisplayName() 
+    } //-- java.lang.String getDisplayName() 
 
     /**
-     * Returns the value of field 'javaClass'.
+     * Returns the value of field 'enabled'.
      * 
-     * @return JavaClass
-     * @return the value of field 'javaClass'.
+     * @return Boolean
+     * @return the value of field 'enabled'.
      */
-    public com.cannontech.common.device.definition.model.castor.JavaClass getJavaClass()
+    public java.lang.Boolean getEnabled()
     {
-        return this._javaClass;
-    } //-- com.cannontech.common.device.definition.model.castor.JavaClass getJavaClass() 
+        return this._enabled;
+    } //-- java.lang.Boolean getEnabled() 
 
     /**
-     * Returns the value of field 'paoCategory'.
+     * Returns the value of field 'features'.
      * 
-     * @return PaoCategory
-     * @return the value of field 'paoCategory'.
+     * @return Features
+     * @return the value of field 'features'.
      */
-    public com.cannontech.common.device.definition.model.castor.PaoCategory getPaoCategory()
+    public com.cannontech.common.device.definition.model.castor.Features getFeatures()
     {
-        return this._paoCategory;
-    } //-- com.cannontech.common.device.definition.model.castor.PaoCategory getPaoCategory() 
+        return this._features;
+    } //-- com.cannontech.common.device.definition.model.castor.Features getFeatures() 
 
     /**
-     * Returns the value of field 'paoClass'.
+     * Returns the value of field 'id'.
      * 
-     * @return PaoClass
-     * @return the value of field 'paoClass'.
+     * @return String
+     * @return the value of field 'id'.
      */
-    public com.cannontech.common.device.definition.model.castor.PaoClass getPaoClass()
+    public java.lang.String getId()
     {
-        return this._paoClass;
-    } //-- com.cannontech.common.device.definition.model.castor.PaoClass getPaoClass() 
+        return this._id;
+    } //-- java.lang.String getId() 
+
+    /**
+     * Returns the value of field 'inherits'.
+     * 
+     * @return String
+     * @return the value of field 'inherits'.
+     */
+    public java.lang.String getInherits()
+    {
+        return this._inherits;
+    } //-- java.lang.String getInherits() 
 
     /**
      * Returns the value of field 'points'.
@@ -177,13 +232,13 @@ public class DeviceType implements java.io.Serializable {
     /**
      * Returns the value of field 'type'.
      * 
-     * @return Type
+     * @return Integer
      * @return the value of field 'type'.
      */
-    public com.cannontech.common.device.definition.model.castor.Type getType()
+    public java.lang.Integer getType()
     {
         return this._type;
-    } //-- com.cannontech.common.device.definition.model.castor.Type getType() 
+    } //-- java.lang.Integer getType() 
 
     /**
      * Method isValid
@@ -232,6 +287,17 @@ public class DeviceType implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
+     * Sets the value of field 'abstract'.
+     * 
+     * @param _abstract
+     * @param abstract the value of field 'abstract'.
+     */
+    public void setAbstract(java.lang.Boolean _abstract)
+    {
+        this._abstract = _abstract;
+    } //-- void setAbstract(java.lang.Boolean) 
+
+    /**
      * Sets the value of field 'attributes'.
      * 
      * @param attributes the value of field 'attributes'.
@@ -240,6 +306,16 @@ public class DeviceType implements java.io.Serializable {
     {
         this._attributes = attributes;
     } //-- void setAttributes(com.cannontech.common.device.definition.model.castor.Attributes) 
+
+    /**
+     * Sets the value of field 'changeGroup'.
+     * 
+     * @param changeGroup the value of field 'changeGroup'.
+     */
+    public void setChangeGroup(java.lang.String changeGroup)
+    {
+        this._changeGroup = changeGroup;
+    } //-- void setChangeGroup(java.lang.String) 
 
     /**
      * Sets the value of field 'commands'.
@@ -256,50 +332,60 @@ public class DeviceType implements java.io.Serializable {
      * 
      * @param displayGroup the value of field 'displayGroup'.
      */
-    public void setDisplayGroup(com.cannontech.common.device.definition.model.castor.DisplayGroup displayGroup)
+    public void setDisplayGroup(java.lang.String displayGroup)
     {
         this._displayGroup = displayGroup;
-    } //-- void setDisplayGroup(com.cannontech.common.device.definition.model.castor.DisplayGroup) 
+    } //-- void setDisplayGroup(java.lang.String) 
 
     /**
      * Sets the value of field 'displayName'.
      * 
      * @param displayName the value of field 'displayName'.
      */
-    public void setDisplayName(com.cannontech.common.device.definition.model.castor.DisplayName displayName)
+    public void setDisplayName(java.lang.String displayName)
     {
         this._displayName = displayName;
-    } //-- void setDisplayName(com.cannontech.common.device.definition.model.castor.DisplayName) 
+    } //-- void setDisplayName(java.lang.String) 
 
     /**
-     * Sets the value of field 'javaClass'.
+     * Sets the value of field 'enabled'.
      * 
-     * @param javaClass the value of field 'javaClass'.
+     * @param enabled the value of field 'enabled'.
      */
-    public void setJavaClass(com.cannontech.common.device.definition.model.castor.JavaClass javaClass)
+    public void setEnabled(java.lang.Boolean enabled)
     {
-        this._javaClass = javaClass;
-    } //-- void setJavaClass(com.cannontech.common.device.definition.model.castor.JavaClass) 
+        this._enabled = enabled;
+    } //-- void setEnabled(java.lang.Boolean) 
 
     /**
-     * Sets the value of field 'paoCategory'.
+     * Sets the value of field 'features'.
      * 
-     * @param paoCategory the value of field 'paoCategory'.
+     * @param features the value of field 'features'.
      */
-    public void setPaoCategory(com.cannontech.common.device.definition.model.castor.PaoCategory paoCategory)
+    public void setFeatures(com.cannontech.common.device.definition.model.castor.Features features)
     {
-        this._paoCategory = paoCategory;
-    } //-- void setPaoCategory(com.cannontech.common.device.definition.model.castor.PaoCategory) 
+        this._features = features;
+    } //-- void setFeatures(com.cannontech.common.device.definition.model.castor.Features) 
 
     /**
-     * Sets the value of field 'paoClass'.
+     * Sets the value of field 'id'.
      * 
-     * @param paoClass the value of field 'paoClass'.
+     * @param id the value of field 'id'.
      */
-    public void setPaoClass(com.cannontech.common.device.definition.model.castor.PaoClass paoClass)
+    public void setId(java.lang.String id)
     {
-        this._paoClass = paoClass;
-    } //-- void setPaoClass(com.cannontech.common.device.definition.model.castor.PaoClass) 
+        this._id = id;
+    } //-- void setId(java.lang.String) 
+
+    /**
+     * Sets the value of field 'inherits'.
+     * 
+     * @param inherits the value of field 'inherits'.
+     */
+    public void setInherits(java.lang.String inherits)
+    {
+        this._inherits = inherits;
+    } //-- void setInherits(java.lang.String) 
 
     /**
      * Sets the value of field 'points'.
@@ -316,10 +402,10 @@ public class DeviceType implements java.io.Serializable {
      * 
      * @param type the value of field 'type'.
      */
-    public void setType(com.cannontech.common.device.definition.model.castor.Type type)
+    public void setType(java.lang.Integer type)
     {
         this._type = type;
-    } //-- void setType(com.cannontech.common.device.definition.model.castor.Type) 
+    } //-- void setType(java.lang.Integer) 
 
     /**
      * Method unmarshal

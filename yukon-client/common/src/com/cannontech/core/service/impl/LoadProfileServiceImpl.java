@@ -16,9 +16,12 @@ import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.math.RandomUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
+import com.cannontech.common.device.definition.model.DeviceFeature;
 import com.cannontech.common.exception.InitiateLoadProfileRequestException;
 import com.cannontech.common.util.MapQueue;
 import com.cannontech.common.util.ScheduledExecutor;
@@ -30,7 +33,6 @@ import com.cannontech.core.service.PorterQueueDataService;
 import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.core.service.SystemDateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.activity.ActivityLogActions;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -53,6 +55,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
     private ActivityLoggerService activityLoggerService = null;
     private Logger log = YukonLogManager.getLogger(LoadProfileServiceImpl.class);
     private ScheduledExecutor executor;
+    private DeviceDefinitionDao deviceDefinitionDao;
     
     private Map<Long, Integer> outstandingCancelRequestIds = new HashMap<Long, Integer>();
     private Map<Long, Long> recentlyCanceledRequestIds = new HashMap<Long, Long>();
@@ -83,7 +86,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
     public synchronized void initiateLoadProfile(LiteYukonPAObject device, int channel, Date start, Date stop, LoadProfileService.CompletionCallback runner, YukonUserContext userContext) {
         Validate.isTrue(channel <= 4, "channel must be less than or equal to 4");
         Validate.isTrue(channel > 0, "channel must be greater than 0");
-        Validate.isTrue(DeviceTypesFuncs.isLoadProfile4Channel(device.getType()), "Device must support 4 channel load profile (DeviceTypesFuncs.isLoadProfile4Channel)");
+        Validate.isTrue(deviceDefinitionDao.isFeatureSupported(device, DeviceFeature.LOAD_PROFILE), "Device must support 4 channel load profile (DeviceTypesFuncs.isLoadProfile4Channel)");
 
         // build command
         Request req = new Request();
@@ -586,4 +589,9 @@ public class LoadProfileServiceImpl implements LoadProfileService {
     public void setActivityLoggerService(ActivityLoggerService activityLoggerService) {
         this.activityLoggerService = activityLoggerService;
     }
+    
+    @Autowired
+    public void setDeviceDefinitionDao(DeviceDefinitionDao deviceDefinitionDao) {
+		this.deviceDefinitionDao = deviceDefinitionDao;
+	}
 }

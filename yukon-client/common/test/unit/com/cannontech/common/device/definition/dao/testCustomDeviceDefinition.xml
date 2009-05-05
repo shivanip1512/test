@@ -7,20 +7,22 @@ This file contains a custom device definition.
 
 <deviceDefinitions>
     
-    <device>
-        <type value="1019" javaConstant="MCT310" changeGroup="customChange1" />
-        <displayName value="Custom Device 1"/>
-        <displayGroup value="customDisplay1"/>
+    <device id="MCT310">
+    	<type>1019</type>
+        <displayName>Custom Device 1</displayName>
+        <displayGroup>customDisplay1</displayGroup>
+        <changeGroup>customChange1</changeGroup>
         <points>
-            <point init="true" type="PulseAccumulator">
+            <point type="PulseAccumulator" offset="2">
+            	<init>true</init>
                 <name>customPulse1</name>
-                <offset value="2"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="measure1"/>
             </point>
         </points>
         <commands>
-        	<command name="customCommand1">
+        	<command id="CUSTOM_COMMAND_1">
+        		<name>customCommand1</name>
         		<cmd text="do custom command1" />
         		<pointRef name="customPulse1"/>
         	</command>

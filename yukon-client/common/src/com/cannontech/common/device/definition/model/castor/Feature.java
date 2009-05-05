@@ -22,28 +22,79 @@ import org.exolab.castor.xml.ValidationException;
 import org.xml.sax.ContentHandler;
 
 /**
- * Class Commands.
+ * Class Feature.
  * 
  * @version $Revision$ $Date$
  */
-public class Commands extends CommandsType 
-implements java.io.Serializable
-{
+public class Feature implements java.io.Serializable {
+
+
+      //--------------------------/
+     //- Class/Member Variables -/
+    //--------------------------/
+
+    /**
+     * Field _name
+     */
+    private java.lang.String _name;
+
+    /**
+     * Field _enabled
+     */
+    private java.lang.Boolean _enabled = new java.lang.Boolean("true");
+
+    /**
+     * Field _value
+     */
+    private java.lang.Boolean _value = new java.lang.Boolean("false");
 
 
       //----------------/
      //- Constructors -/
     //----------------/
 
-    public Commands() 
+    public Feature() 
      {
         super();
-    } //-- com.cannontech.common.device.definition.model.castor.Commands()
+    } //-- com.cannontech.common.device.definition.model.castor.Feature()
 
 
       //-----------/
      //- Methods -/
     //-----------/
+
+    /**
+     * Returns the value of field 'enabled'.
+     * 
+     * @return Boolean
+     * @return the value of field 'enabled'.
+     */
+    public java.lang.Boolean getEnabled()
+    {
+        return this._enabled;
+    } //-- java.lang.Boolean getEnabled() 
+
+    /**
+     * Returns the value of field 'name'.
+     * 
+     * @return String
+     * @return the value of field 'name'.
+     */
+    public java.lang.String getName()
+    {
+        return this._name;
+    } //-- java.lang.String getName() 
+
+    /**
+     * Returns the value of field 'value'.
+     * 
+     * @return Boolean
+     * @return the value of field 'value'.
+     */
+    public java.lang.Boolean getValue()
+    {
+        return this._value;
+    } //-- java.lang.Boolean getValue() 
 
     /**
      * Method isValid
@@ -92,6 +143,36 @@ implements java.io.Serializable
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
+     * Sets the value of field 'enabled'.
+     * 
+     * @param enabled the value of field 'enabled'.
+     */
+    public void setEnabled(java.lang.Boolean enabled)
+    {
+        this._enabled = enabled;
+    } //-- void setEnabled(java.lang.Boolean) 
+
+    /**
+     * Sets the value of field 'name'.
+     * 
+     * @param name the value of field 'name'.
+     */
+    public void setName(java.lang.String name)
+    {
+        this._name = name;
+    } //-- void setName(java.lang.String) 
+
+    /**
+     * Sets the value of field 'value'.
+     * 
+     * @param value the value of field 'value'.
+     */
+    public void setValue(java.lang.Boolean value)
+    {
+        this._value = value;
+    } //-- void setValue(java.lang.Boolean) 
+
+    /**
      * Method unmarshal
      * 
      * 
@@ -102,7 +183,7 @@ implements java.io.Serializable
     public static java.lang.Object unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        return (com.cannontech.common.device.definition.model.castor.Commands) Unmarshaller.unmarshal(com.cannontech.common.device.definition.model.castor.Commands.class, reader);
+        return (com.cannontech.common.device.definition.model.castor.Feature) Unmarshaller.unmarshal(com.cannontech.common.device.definition.model.castor.Feature.class, reader);
     } //-- java.lang.Object unmarshal(java.io.Reader) 
 
     /**

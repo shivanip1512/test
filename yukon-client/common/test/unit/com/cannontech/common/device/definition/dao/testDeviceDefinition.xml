@@ -8,52 +8,53 @@ This file contains default device and point information for all of the devices i
 <deviceDefinitions>
     
     <!-- Group 1 -->
-    <device>
-        <type value="1019" javaConstant="MCT310" changeGroup="change1" />
-        <displayName value="Device 1"/>
-        <displayGroup value="display1"/>
+    <device id="MCT310">
+        <type>1019</type>
+        <displayName>Device 1</displayName>
+        <displayGroup>display1</displayGroup>
+        <changeGroup>change1</changeGroup>
         <points>
-            <point init="true" type="PulseAccumulator">
+            <point type="PulseAccumulator" offset="2">
+            	<init>true</init>
                 <name>pulse1</name>
-                <offset value="2"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="measure1"/>
             </point>
 
-            <point type="PulseAccumulator">
+            <point type="PulseAccumulator" offset="4">
                 <name>pulse2</name>
-                <offset value="4"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="measure1"/>
             </point>
             
-            <point init="true" type="DemandAccumulator">
+            <point type="DemandAccumulator" offset="1">
+            	<init>true</init>
                 <name>demand1</name>
-                <offset value="1"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="measure0"/>
             </point>
             
-            <point init="true" type="Analog">
+            <point type="Analog" offset="1">
+            	<init>true</init>
                 <name>analog1</name>
-                <offset value="1"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="measure1"/>
                 
             </point>
-            <point type="Status">
+            <point type="Status" offset="1">
                 <name>status1</name>
-                <offset value="1"/>
                 <stategroup value="state0"/>
             </point>
             
         </points>
         <commands>
-        	<command name="command1">
+        	<command id="COMMAND_1">
+        		<name>command1</name>
         		<cmd text="do command1" />
         		<pointRef name="pulse1"/>
         	</command>
-        	<command name="command2">
+        	<command id="COMMAND_2">
+        		<name>command2</name>
         		<cmd text="do command2" />
         		<cmd text="continue command2" />
         		<pointRef name="pulse1"/>
@@ -72,20 +73,20 @@ This file contains default device and point information for all of the devices i
         	</attribute>
         </attributes>      
     </device>
-    <device>
-        <type value="1022" javaConstant="MCT370" changeGroup="change1" />
-        <displayName value="Device 2"/>
-        <displayGroup value="display1"/>
+    <device id="MCT370">
+        <type>1022</type>
+        <displayName>Device 2</displayName>
+        <displayGroup>display1</displayGroup>
+        <changeGroup>change1</changeGroup>
         <points>
-            <point type="PulseAccumulator">
+            <point type="PulseAccumulator" offset="3">
                 <name>pulse2</name>
-                <offset value="3"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="measure1"/>
             </point>
-            <point init="true" type="Analog">
+            <point type="Analog" offset="1">
+            	<init>true</init>
                 <name>analog1</name>
-                <offset value="1"/>
                 <multiplier value=".0001"/>
                 <unitofmeasure value="measure1"/>
             </point>
@@ -102,14 +103,13 @@ This file contains default device and point information for all of the devices i
     
     
     <!-- Group 2 -->
-    <device>
-        <type value="1036" javaConstant="MCT318L" />
-        <displayName value="Device 3"/>
-        <displayGroup value="display2"/>
+    <device id="MCT318L">
+        <type>1036</type>
+        <displayName>Device 3</displayName>
+        <displayGroup>display2</displayGroup>
         <points>
-            <point type="Status">
+            <point type="Status" offset="2000">
                 <name>status1</name>
-                <offset value="2000"/>
                 <stategroup value="state0"/>
             </point>
         </points>

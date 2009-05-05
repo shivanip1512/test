@@ -11,8 +11,15 @@ package com.cannontech.common.device.definition.model.castor;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Serializable;
+import java.io.Writer;
+import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
+import org.exolab.castor.xml.ValidationException;
+import org.xml.sax.ContentHandler;
 
 /**
  * Class Point.
@@ -32,14 +39,19 @@ public class Point implements java.io.Serializable {
     private java.lang.String _type;
 
     /**
-     * Field _init
+     * Field _offset
      */
-    private boolean _init = false;
+    private java.lang.Integer _offset;
 
     /**
-     * keeps track of state for field: _init
+     * Field _enabled
      */
-    private boolean _has_init;
+    private java.lang.Boolean _enabled = new java.lang.Boolean("true");
+
+    /**
+     * Field _init
+     */
+    private java.lang.Boolean _init = new java.lang.Boolean("false");
 
     /**
      * Field _name
@@ -50,11 +62,6 @@ public class Point implements java.io.Serializable {
      * Field _description
      */
     private java.lang.String _description;
-
-    /**
-     * Field _offset
-     */
-    private com.cannontech.common.device.definition.model.castor.Offset _offset;
 
     /**
      * Field _pointChoice
@@ -77,15 +84,6 @@ public class Point implements java.io.Serializable {
     //-----------/
 
     /**
-     * Method deleteInit
-     * 
-     */
-    public void deleteInit()
-    {
-        this._has_init= false;
-    } //-- void deleteInit() 
-
-    /**
      * Returns the value of field 'description'.
      * 
      * @return String
@@ -97,15 +95,26 @@ public class Point implements java.io.Serializable {
     } //-- java.lang.String getDescription() 
 
     /**
+     * Returns the value of field 'enabled'.
+     * 
+     * @return Boolean
+     * @return the value of field 'enabled'.
+     */
+    public java.lang.Boolean getEnabled()
+    {
+        return this._enabled;
+    } //-- java.lang.Boolean getEnabled() 
+
+    /**
      * Returns the value of field 'init'.
      * 
-     * @return boolean
+     * @return Boolean
      * @return the value of field 'init'.
      */
-    public boolean getInit()
+    public java.lang.Boolean getInit()
     {
         return this._init;
-    } //-- boolean getInit() 
+    } //-- java.lang.Boolean getInit() 
 
     /**
      * Returns the value of field 'name'.
@@ -121,13 +130,13 @@ public class Point implements java.io.Serializable {
     /**
      * Returns the value of field 'offset'.
      * 
-     * @return Offset
+     * @return Integer
      * @return the value of field 'offset'.
      */
-    public com.cannontech.common.device.definition.model.castor.Offset getOffset()
+    public java.lang.Integer getOffset()
     {
         return this._offset;
-    } //-- com.cannontech.common.device.definition.model.castor.Offset getOffset() 
+    } //-- java.lang.Integer getOffset() 
 
     /**
      * Returns the value of field 'pointChoice'.
@@ -150,18 +159,6 @@ public class Point implements java.io.Serializable {
     {
         return this._type;
     } //-- java.lang.String getType() 
-
-    /**
-     * Method hasInit
-     * 
-     * 
-     * 
-     * @return boolean
-     */
-    public boolean hasInit()
-    {
-        return this._has_init;
-    } //-- boolean hasInit() 
 
     /**
      * Method isValid
@@ -220,15 +217,24 @@ public class Point implements java.io.Serializable {
     } //-- void setDescription(java.lang.String) 
 
     /**
+     * Sets the value of field 'enabled'.
+     * 
+     * @param enabled the value of field 'enabled'.
+     */
+    public void setEnabled(java.lang.Boolean enabled)
+    {
+        this._enabled = enabled;
+    } //-- void setEnabled(java.lang.Boolean) 
+
+    /**
      * Sets the value of field 'init'.
      * 
      * @param init the value of field 'init'.
      */
-    public void setInit(boolean init)
+    public void setInit(java.lang.Boolean init)
     {
         this._init = init;
-        this._has_init = true;
-    } //-- void setInit(boolean) 
+    } //-- void setInit(java.lang.Boolean) 
 
     /**
      * Sets the value of field 'name'.
@@ -245,10 +251,10 @@ public class Point implements java.io.Serializable {
      * 
      * @param offset the value of field 'offset'.
      */
-    public void setOffset(com.cannontech.common.device.definition.model.castor.Offset offset)
+    public void setOffset(java.lang.Integer offset)
     {
         this._offset = offset;
-    } //-- void setOffset(com.cannontech.common.device.definition.model.castor.Offset) 
+    } //-- void setOffset(java.lang.Integer) 
 
     /**
      * Sets the value of field 'pointChoice'.

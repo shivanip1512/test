@@ -4,20 +4,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.core.io.Resource;
-
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.definition.model.CommandDefinition;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
+import com.cannontech.common.device.definition.model.DeviceFeature;
 import com.cannontech.common.device.definition.model.DevicePointIdentifier;
 import com.cannontech.common.device.definition.model.PointTemplate;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 /**
  * Data access object for device definition information
  */
 public interface DeviceDefinitionDao {
 
+	// ATTRIBUTES
+	//============================================
     /**
      * Method to get a set of attributes defined for a given device
      * @param device - Device to get attributes for
@@ -25,13 +27,17 @@ public interface DeviceDefinitionDao {
      * @throws IllegalArgumentException - If the device is not supported
      */
     public abstract Set<Attribute> getAvailableAttributes(YukonDevice meter);
+    public abstract Set<Attribute> getAvailableAttributes(DeviceDefinition deviceDefinition);
 
+    // POINTS
+    //============================================
     /**
      * Method to get a set of point templates for a given device and set of attributes
      * @param device - Device to get set of point templates for
      * @param attributes - Attributes to get set of point templates for
      * @return The Set of DevicePointIdentifier for the device and Attribute Set
      */
+    @Deprecated
     public abstract Set<DevicePointIdentifier> getDevicePointIdentifierForAttributes(YukonDevice device, Set<? extends Attribute> attributes);
     
     /**
@@ -76,7 +82,44 @@ public interface DeviceDefinitionDao {
      *         initialized (returns a new copy each time the method is called)
      */
     public abstract Set<PointTemplate> getInitPointTemplates(DeviceDefinition newDefinition);
+    
+    /**
+     * Method to get a point template for a device based on point type and offset
+     * @param device - Device to get point template for
+     * @param offset - Offset of point template
+     * @param pointType - Type of point template
+     * @return Point template for device
+     */
+    public abstract PointTemplate getPointTemplateByTypeAndOffset(YukonDevice device, Integer offset, Integer pointType);
 
+    // COMMANDS
+    //============================================
+    /**
+     * Method to get a list of command definitions for the given device which
+     * affect one or more of the points in the given set of points
+     * @param device - Device to get commands for
+     * @param pointSet - Set of points to get affecting commands for
+     * @return The set of commands affecting one or more of the points
+     */
+    public Set<CommandDefinition> getCommandsThatAffectPoints(YukonDevice device, Set<? extends DevicePointIdentifier> pointSet);
+    
+    public Set<CommandDefinition> getAvailableCommands(DeviceDefinition newDefinition);
+    
+    // FEATURES
+    //============================================
+    public abstract Set<DeviceFeature> getSupportedFeatures(YukonDevice device);
+    public abstract Set<DeviceFeature> getSupportedFeatures(DeviceDefinition deviceDefiniton);
+    
+    public abstract Set<DeviceDefinition> getDevicesThatSupportFeature(DeviceFeature feature);
+    
+    public abstract boolean isFeatureSupported(YukonDevice device, DeviceFeature feature);
+    public abstract boolean isFeatureSupported(DeviceDefinition deviceDefiniton, DeviceFeature feature);
+    public abstract boolean isFeatureSupported(LiteYukonPAObject litePao, DeviceFeature feature);
+    
+    // DEFINITIONS
+    //============================================
+    public abstract Set<DeviceDefinition> getAllDeviceDefinitions();
+    
     /**
      * Method to get a map of device display groups and their associated device
      * types
@@ -105,33 +148,11 @@ public interface DeviceDefinitionDao {
      * @return A set of device definitions (returns a new copy each time the
      *         method is called)
      */
-    public abstract Set<DeviceDefinition> getChangeableDevices(DeviceDefinition deviceDefinition);
-
-    /**
-     * Method to get a list of command definitions for the given device which
-     * affect one or more of the points in the given set of points
-     * @param device - Device to get commands for
-     * @param pointSet - Set of points to get affecting commands for
-     * @return The set of commands affecting one or more of the points
-     */
-    public Set<CommandDefinition> getAffected(YukonDevice device, Set<? extends DevicePointIdentifier> pointSet);
+    //TODO rename me
+    public abstract Set<DeviceDefinition> getDevicesThatDeviceCanChangeTo(DeviceDefinition deviceDefinition);
     
+    // MISC
+    //============================================
     public String getPointLegendHtml(String displayGroup);
-    
-    /**
-     * Method to get the resource that is currently being used as the
-     * deviceDefinition.xml file.
-     * @return The resource
-     */
-    public Resource getCurrentDefinitionResource();
-
-    /**
-     * Method to get a point template for a device based on point type and offset
-     * @param device - Device to get point template for
-     * @param offset - Offset of point template
-     * @param pointType - Type of point template
-     * @return Point template for device
-     */
-    public PointTemplate getPointTemplateByTypeAndOffset(YukonDevice device, Integer offset, Integer pointType);
 
 }

@@ -9,7 +9,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.springframework.core.style.ToStringCreator;
 
-public class CommandDefinition {
+public class CommandDefinition implements Comparable<CommandDefinition> {
 
 	String name = null;
     List<String> commandStringList = new ArrayList<String>();
@@ -59,6 +59,14 @@ public class CommandDefinition {
 				return true;
 		}
 		return false;
+    }
+	
+	public int compareTo(CommandDefinition o) {
+
+        if (o == null) {
+            return 0;
+        }
+        return getName().compareTo(o.getName());
     }
 
     public boolean equals(Object obj) {

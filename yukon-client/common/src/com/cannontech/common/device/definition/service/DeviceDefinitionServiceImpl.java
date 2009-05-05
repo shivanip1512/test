@@ -83,7 +83,7 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
         DeviceDefinition deviceDefinition = deviceDefinitionDao.getDeviceDefinition(meter);
 
         // Get all of the devices in the device's change group
-        Set<DeviceDefinition> devices = deviceDefinitionDao.getChangeableDevices(deviceDefinition);
+        Set<DeviceDefinition> devices = deviceDefinitionDao.getDevicesThatDeviceCanChangeTo(deviceDefinition);
 
         // Remove the current device
         devices.remove(deviceDefinition);

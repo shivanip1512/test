@@ -17,11 +17,11 @@ import org.exolab.castor.xml.XMLFieldDescriptor;
 import org.exolab.castor.xml.validators.*;
 
 /**
- * Class DeviceDefinitionsDescriptor.
+ * Class FeaturesDescriptor.
  * 
  * @version $Revision$ $Date$
  */
-public class DeviceDefinitionsDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class FeaturesDescriptor extends FeaturesTypeDescriptor {
 
 
       //--------------------------/
@@ -53,56 +53,12 @@ public class DeviceDefinitionsDescriptor extends org.exolab.castor.xml.util.XMLC
      //- Constructors -/
     //----------------/
 
-    public DeviceDefinitionsDescriptor() 
+    public FeaturesDescriptor() 
      {
         super();
-        xmlName = "deviceDefinitions";
-        
-        //-- set grouping compositor
-        setCompositorAsSequence();
-        org.exolab.castor.xml.util.XMLFieldDescriptorImpl  desc           = null;
-        org.exolab.castor.mapping.FieldHandler             handler        = null;
-        org.exolab.castor.xml.FieldValidator               fieldValidator = null;
-        //-- initialize attribute descriptors
-        
-        //-- initialize element descriptors
-        
-        //-- _deviceList
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(com.cannontech.common.device.definition.model.castor.Device.class, "_deviceList", "device", org.exolab.castor.xml.NodeType.Element);
-        handler = new org.exolab.castor.xml.XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                DeviceDefinitions target = (DeviceDefinitions) object;
-                return target.getDevice();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    DeviceDefinitions target = (DeviceDefinitions) object;
-                    target.addDevice( (com.cannontech.common.device.definition.model.castor.Device) value);
-                }
-                catch (java.lang.Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new com.cannontech.common.device.definition.model.castor.Device();
-            }
-        };
-        desc.setHandler(handler);
-        desc.setRequired(true);
-        desc.setMultivalued(true);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _deviceList
-        fieldValidator = new org.exolab.castor.xml.FieldValidator();
-        fieldValidator.setMinOccurs(1);
-        { //-- local scope
-        }
-        desc.setValidator(fieldValidator);
-    } //-- com.cannontech.common.device.definition.model.castor.DeviceDefinitionsDescriptor()
+        setExtendsWithoutFlatten(new FeaturesTypeDescriptor());
+        xmlName = "features";
+    } //-- com.cannontech.common.device.definition.model.castor.FeaturesDescriptor()
 
 
       //-----------/
@@ -130,7 +86,7 @@ public class DeviceDefinitionsDescriptor extends org.exolab.castor.xml.util.XMLC
      */
     public org.exolab.castor.mapping.ClassDescriptor getExtends()
     {
-        return null;
+        return super.getExtends();
     } //-- org.exolab.castor.mapping.ClassDescriptor getExtends() 
 
     /**
@@ -142,6 +98,8 @@ public class DeviceDefinitionsDescriptor extends org.exolab.castor.xml.util.XMLC
      */
     public org.exolab.castor.mapping.FieldDescriptor getIdentity()
     {
+        if (identity == null)
+            return super.getIdentity();
         return identity;
     } //-- org.exolab.castor.mapping.FieldDescriptor getIdentity() 
 
@@ -154,7 +112,7 @@ public class DeviceDefinitionsDescriptor extends org.exolab.castor.xml.util.XMLC
      */
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.common.device.definition.model.castor.DeviceDefinitions.class;
+        return com.cannontech.common.device.definition.model.castor.Features.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

@@ -114,7 +114,7 @@ public class MeterReadServiceImpl implements MeterReadService {
     }
     
     private Set<CommandWrapper> getMinimalCommandSet(Meter device, Set<DevicePointIdentifier> pointSet) {
-        Set<CommandDefinition> allPossibleCommands = deviceDefinitionDao.getAffected(device, pointSet);
+        Set<CommandDefinition> allPossibleCommands = deviceDefinitionDao.getCommandsThatAffectPoints(device, pointSet);
         
         Set<CommandWrapper> wrappedCommands = new HashSet<CommandWrapper>(allPossibleCommands.size());
         for (CommandDefinition definition : allPossibleCommands) {

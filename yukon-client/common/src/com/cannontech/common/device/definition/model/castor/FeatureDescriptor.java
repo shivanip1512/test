@@ -17,11 +17,11 @@ import org.exolab.castor.xml.XMLFieldDescriptor;
 import org.exolab.castor.xml.validators.*;
 
 /**
- * Class DeviceDefinitionsDescriptor.
+ * Class FeatureDescriptor.
  * 
  * @version $Revision$ $Date$
  */
-public class DeviceDefinitionsDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class FeatureDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -53,10 +53,10 @@ public class DeviceDefinitionsDescriptor extends org.exolab.castor.xml.util.XMLC
      //- Constructors -/
     //----------------/
 
-    public DeviceDefinitionsDescriptor() 
+    public FeatureDescriptor() 
      {
         super();
-        xmlName = "deviceDefinitions";
+        xmlName = "feature";
         
         //-- set grouping compositor
         setCompositorAsSequence();
@@ -65,44 +65,118 @@ public class DeviceDefinitionsDescriptor extends org.exolab.castor.xml.util.XMLC
         org.exolab.castor.xml.FieldValidator               fieldValidator = null;
         //-- initialize attribute descriptors
         
-        //-- initialize element descriptors
-        
-        //-- _deviceList
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(com.cannontech.common.device.definition.model.castor.Device.class, "_deviceList", "device", org.exolab.castor.xml.NodeType.Element);
+        //-- _name
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.String.class, "_name", "name", org.exolab.castor.xml.NodeType.Attribute);
+        desc.setImmutable(true);
         handler = new org.exolab.castor.xml.XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                DeviceDefinitions target = (DeviceDefinitions) object;
-                return target.getDevice();
+                Feature target = (Feature) object;
+                return target.getName();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    DeviceDefinitions target = (DeviceDefinitions) object;
-                    target.addDevice( (com.cannontech.common.device.definition.model.castor.Device) value);
+                    Feature target = (Feature) object;
+                    target.setName( (java.lang.String) value);
                 }
                 catch (java.lang.Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new com.cannontech.common.device.definition.model.castor.Device();
+                return null;
             }
         };
         desc.setHandler(handler);
         desc.setRequired(true);
-        desc.setMultivalued(true);
+        desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _deviceList
+        //-- validation code for: _name
         fieldValidator = new org.exolab.castor.xml.FieldValidator();
         fieldValidator.setMinOccurs(1);
         { //-- local scope
+            StringValidator typeValidator = new StringValidator();
+            typeValidator.setWhiteSpace("preserve");
+            fieldValidator.setValidator(typeValidator);
         }
         desc.setValidator(fieldValidator);
-    } //-- com.cannontech.common.device.definition.model.castor.DeviceDefinitionsDescriptor()
+        //-- _enabled
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.Boolean.class, "_enabled", "enabled", org.exolab.castor.xml.NodeType.Attribute);
+        handler = new org.exolab.castor.xml.XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                Feature target = (Feature) object;
+                return target.getEnabled();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    Feature target = (Feature) object;
+                    target.setEnabled( (java.lang.Boolean) value);
+                }
+                catch (java.lang.Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        };
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _enabled
+        fieldValidator = new org.exolab.castor.xml.FieldValidator();
+        { //-- local scope
+            BooleanValidator typeValidator = new BooleanValidator();
+            fieldValidator.setValidator(typeValidator);
+        }
+        desc.setValidator(fieldValidator);
+        //-- initialize element descriptors
+        
+        //-- _value
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.Boolean.class, "_value", "value", org.exolab.castor.xml.NodeType.Element);
+        handler = new org.exolab.castor.xml.XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                Feature target = (Feature) object;
+                return target.getValue();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    Feature target = (Feature) object;
+                    target.setValue( (java.lang.Boolean) value);
+                }
+                catch (java.lang.Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        };
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _value
+        fieldValidator = new org.exolab.castor.xml.FieldValidator();
+        { //-- local scope
+            BooleanValidator typeValidator = new BooleanValidator();
+            fieldValidator.setValidator(typeValidator);
+        }
+        desc.setValidator(fieldValidator);
+    } //-- com.cannontech.common.device.definition.model.castor.FeatureDescriptor()
 
 
       //-----------/
@@ -154,7 +228,7 @@ public class DeviceDefinitionsDescriptor extends org.exolab.castor.xml.util.XMLC
      */
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.common.device.definition.model.castor.DeviceDefinitions.class;
+        return com.cannontech.common.device.definition.model.castor.Feature.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

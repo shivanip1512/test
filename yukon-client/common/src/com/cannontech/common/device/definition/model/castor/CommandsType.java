@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://www.castor.org">Castor 0.9.7</a>, using an XML
  * Schema.
- * $Id: CommandsType.java,v 1.4 2007/12/26 17:53:34 tmack Exp $
+ * $Id$
  */
 
 package com.cannontech.common.device.definition.model.castor;
@@ -11,15 +11,22 @@ package com.cannontech.common.device.definition.model.castor;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Serializable;
+import java.io.Writer;
 import java.util.ArrayList;
-
+import java.util.Enumeration;
+import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
+import org.exolab.castor.xml.ValidationException;
+import org.xml.sax.ContentHandler;
 
 /**
  * Class CommandsType.
  * 
- * @version $Revision: 1.4 $ $Date: 2007/12/26 17:53:34 $
+ * @version $Revision$ $Date$
  */
 public class CommandsType implements java.io.Serializable {
 

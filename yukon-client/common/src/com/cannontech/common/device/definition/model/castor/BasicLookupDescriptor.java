@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://www.castor.org">Castor 0.9.7</a>, using an XML
  * Schema.
- * $Id: BasicLookupDescriptor.java,v 1.2 2007/12/26 17:53:34 tmack Exp $
+ * $Id$
  */
 
 package com.cannontech.common.device.definition.model.castor;
@@ -11,12 +11,15 @@ package com.cannontech.common.device.definition.model.castor;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import org.exolab.castor.xml.validators.StringValidator;
+import org.exolab.castor.mapping.AccessMode;
+import org.exolab.castor.xml.TypeValidator;
+import org.exolab.castor.xml.XMLFieldDescriptor;
+import org.exolab.castor.xml.validators.*;
 
 /**
  * Class BasicLookupDescriptor.
  * 
- * @version $Revision: 1.2 $ $Date: 2007/12/26 17:53:34 $
+ * @version $Revision$ $Date$
  */
 public class BasicLookupDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 

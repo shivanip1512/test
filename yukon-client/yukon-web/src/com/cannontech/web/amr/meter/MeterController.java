@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -24,9 +23,8 @@ import com.cannontech.amr.meter.search.model.OrderBy;
 import com.cannontech.amr.meter.search.service.MeterSearchService;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.device.YukonDevice;
-import com.cannontech.common.device.attribute.model.Attribute;
-import com.cannontech.common.device.attribute.model.BuiltInAttribute;
-import com.cannontech.common.device.attribute.service.AttributeService;
+import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
+import com.cannontech.common.device.definition.model.DeviceFeature;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PointDao;
@@ -50,13 +48,13 @@ import com.cannontech.web.updater.point.PointUpdateBackingService;
 public class MeterController extends MultiActionController {
 
     private MeterSearchService meterSearchService = null;
-    private AttributeService attributeService = null;
     private DeviceDao deviceDao = null;
     private PointDao pointDao = null;
     private DeviceFilterCollectionHelper filterCollectionHelper = null;
     private CachingPointFormattingService cachingPointFormattingService = null;
     private PointUpdateBackingService pointUpdateBackingService = null;
     private RolePropertyDao rolePropertyDao = null;
+    private DeviceDefinitionDao deviceDefinitionDao = null;
 
     public MeterController() {
         super();
@@ -65,11 +63,6 @@ public class MeterController extends MultiActionController {
     @Autowired
     public void setMeterSearchService(MeterSearchService meterSearchService) {
         this.meterSearchService = meterSearchService;
-    }
-
-    @Autowired
-    public void setAttributeService(AttributeService attributeService) {
-        this.attributeService = attributeService;
     }
 
     @Autowired
@@ -102,6 +95,11 @@ public class MeterController extends MultiActionController {
     @Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
 		this.rolePropertyDao = rolePropertyDao;
+	}
+    
+    @Autowired
+    public void setDeviceDefinitionDao(DeviceDefinitionDao deviceDefinitionDao) {
+		this.deviceDefinitionDao = deviceDefinitionDao;
 	}
     
     public ModelAndView start(HttpServletRequest request, HttpServletResponse response) {
@@ -241,13 +239,10 @@ public class MeterController extends MultiActionController {
 
         LiteYukonUser user = ServletUtil.getYukonUser(request);
         
-        boolean highBillSupported = DeviceTypesFuncs.isMCT410(device.getType());
-
+        boolean highBillSupported = deviceDefinitionDao.isFeatureSupported(device, DeviceFeature.HIGH_BILL);
         mav.addObject("highBillSupported", highBillSupported);
 
-        Set<Attribute> availableAttributes = attributeService.getAvailableAttributes(device);
-
-        boolean outageSupported = (availableAttributes.contains(BuiltInAttribute.OUTAGE_LOG) || availableAttributes.contains(BuiltInAttribute.BLINK_COUNT));
+        boolean outageSupported = deviceDefinitionDao.isFeatureSupported(device, DeviceFeature.OUTAGE);
         mav.addObject("outageSupported", outageSupported);
 
         // account information widget
@@ -268,23 +263,24 @@ public class MeterController extends MultiActionController {
         boolean disconnectSupported = DeviceTypesFuncs.isDisconnectMCTOrHasCollar(device);
         mav.addObject("disconnectSupported", disconnectSupported);
 
-        boolean touSupported = DeviceTypesFuncs.isTouMCT(device.getType());
+        boolean touSupported = deviceDefinitionDao.isFeatureSupported(device, DeviceFeature.TOU);
         mav.addObject("touSupported", touSupported);
 
-        boolean moveSupported = DeviceTypesFuncs.isMCT410(device.getType());
+        boolean moveSupported = deviceDefinitionDao.isFeatureSupported(device, DeviceFeature.MOVE_SUPPORTED);
         boolean moveEnabled = rolePropertyDao.checkProperty(YukonRoleProperty.MOVE_IN_MOVE_OUT, user);
         mav.addObject("moveSupported", (moveSupported && moveEnabled));
 
-        boolean lpSupported = DeviceTypesFuncs.isLoadProfile4Channel(device.getType());
+        boolean lpSupported = deviceDefinitionDao.isFeatureSupported(device, DeviceFeature.LOAD_PROFILE);
         mav.addObject("lpSupported", lpSupported);
 
-        boolean peakReportSupported = DeviceTypesFuncs.isMCT410(device.getType());
+        boolean peakReportSupported = deviceDefinitionDao.isFeatureSupported(device, DeviceFeature.PEAK_REPORT);
         mav.addObject("peakReportSupported", peakReportSupported);
 
         boolean isMCT4XX = DeviceTypesFuncs.isMCT4XX(device.getType());
         mav.addObject("isMCT4XX", isMCT4XX);
         
-        mav.addObject("voltageSupported", availableAttributes.contains(BuiltInAttribute.VOLTAGE));
+        boolean voltageSupported = deviceDefinitionDao.isFeatureSupported(device, DeviceFeature.VOLTAGE);
+        mav.addObject("voltageSupported", voltageSupported);
 
         return mav;
     }

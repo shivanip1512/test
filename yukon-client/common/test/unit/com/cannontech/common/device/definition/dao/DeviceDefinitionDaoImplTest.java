@@ -278,7 +278,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
                                                                    "test",
                                                                    "test",
                                                                    "change1");
-        Set<DeviceDefinition> actualDeviceTypesList = dao.getChangeableDevices(definition);
+        Set<DeviceDefinition> actualDeviceTypesList = dao.getDevicesThatDeviceCanChangeTo(definition);
 
         assertEquals("Incorrect device type list for change group: change1",
                      expectedDeviceTypesList,
@@ -287,7 +287,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         // Test with invalid change group
         try {
             definition.setChangeGroup("invalid");
-            dao.getChangeableDevices(definition);
+            dao.getDevicesThatDeviceCanChangeTo(definition);
             fail("Exception should be thrown for invalid paoClass");
         } catch (IllegalArgumentException e) {
             // expected exception
@@ -323,7 +323,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         
         // Test with no expected commands
         points.add(status1);
-        Set<CommandDefinition> actualCommands = dao.getAffected(device, points);
+        Set<CommandDefinition> actualCommands = dao.getCommandsThatAffectPoints(device, points);
         assertEquals("Expected no commands", expectedCommandSet, actualCommands);
 
         // Test with one expected command
@@ -331,7 +331,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         points.add(pulse2);
         expectedCommandSet.add(command2);
 
-        actualCommands = dao.getAffected(device, points);
+        actualCommands = dao.getCommandsThatAffectPoints(device, points);
         assertEquals("Expected 1 command", expectedCommandSet, actualCommands);
 
         // Test with two expected commands
@@ -339,7 +339,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         points.add(pulse1);
         expectedCommandSet.add(command1);
 
-        actualCommands = dao.getAffected(device, points);
+        actualCommands = dao.getCommandsThatAffectPoints(device, points);
         assertEquals("Expected 2 commands", expectedCommandSet, actualCommands);
 
     }

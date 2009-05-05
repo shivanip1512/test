@@ -4,148 +4,146 @@
     <xs:element name="deviceDefinitions">
         <xs:complexType>
             <xs:sequence>
-              <xs:element name="device" type="deviceType"
-                maxOccurs="unbounded" />
-            </xs:sequence>
+              <xs:element name="device" type="deviceType" maxOccurs="unbounded">
+              </xs:element>
+            </xs:sequence>
         </xs:complexType>
     </xs:element>
 
-    <xs:complexType name="deviceType">
-      <xs:sequence minOccurs="1" maxOccurs="1">
-        <xs:element name="type" minOccurs="1" maxOccurs="1">
-          <xs:complexType>
-            <xs:attributeGroup ref="typeAttributes" />
-          </xs:complexType>
-        </xs:element>
-        <xs:element name="displayName" minOccurs="0" maxOccurs="1">
-          <xs:complexType>
-            <xs:attribute name="value" type="xs:string" />
-          </xs:complexType>
-        </xs:element>
-        <xs:element name="displayGroup" minOccurs="0" maxOccurs="1">
-          <xs:complexType>
-            <xs:attribute name="value" type="xs:string" />
-          </xs:complexType>
-        </xs:element>
-        <xs:element name="paoClass" minOccurs="0" maxOccurs="1">
-          <xs:complexType>
-            <xs:attribute name="value" type="xs:string" />
-          </xs:complexType>
-        </xs:element>
-        <xs:element name="paoCategory" minOccurs="0" maxOccurs="1">
-          <xs:complexType>
-            <xs:attribute name="value" type="xs:string" />
-          </xs:complexType>
-        </xs:element>
-        <xs:element name="javaClass" minOccurs="0" maxOccurs="1">
-          <xs:complexType>
-            <xs:attribute name="value" type="xs:string" />
-          </xs:complexType>
-        </xs:element>
-        <xs:element name="points" type="pointsType" minOccurs="0"
-          maxOccurs="1" />
-        <xs:element name="commands" type="commandsType" minOccurs="0"
-          maxOccurs="1" />
-        <xs:element name="attributes" type="attributesType"
-          minOccurs="0" maxOccurs="1" />
-      </xs:sequence>
-    </xs:complexType>
-
-    <xs:attributeGroup name="typeAttributes">
-        <xs:attribute name="value" type="xs:integer" use="required" />
-        <xs:attribute name="javaConstant" type="xs:string" use="required" />
-        <xs:attribute name="changeGroup" type="xs:string" />
-    </xs:attributeGroup>    
-
-    <xs:complexType name="pointsType">
-            <xs:sequence>
-                <xs:element name="point" minOccurs="0" maxOccurs="unbounded">
-                    <xs:complexType>
-                        <xs:sequence>
-                            <xs:element name="name" type="xs:string" maxOccurs="1" />
-                            <xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1" />
-                            <xs:element name="offset" maxOccurs="1">
-                                <xs:complexType>
-                                    <xs:attribute name="value" type="xs:positiveInteger" use="required" />
-                                </xs:complexType>
-                            </xs:element>
-                            <xs:choice>
-                                <xs:sequence>
-                                    <xs:element name="multiplier" maxOccurs="1">
-                                        <xs:complexType>
-                                            <xs:attribute name="value" type="xs:decimal" use="required" />
-                                        </xs:complexType>
-                                    </xs:element>
-                                    <xs:element name="unitofmeasure" maxOccurs="1">
-                                        <xs:complexType>
-                                            <xs:attribute name="value" type="xs:string" use="required" />
-                                        </xs:complexType>
-                                    </xs:element>
-                                </xs:sequence>
-                                <xs:element name="stategroup" maxOccurs="1">
-                                    <xs:complexType>
-                                        <xs:attribute name="value" type="xs:string" use="required" />
-                                    </xs:complexType>
-                                </xs:element>
-                            </xs:choice>
-                        </xs:sequence>
-                        <xs:attributeGroup ref="pointAttributes" />
-                    </xs:complexType>
-                </xs:element>
-            </xs:sequence>
-        <xs:attribute name="id" type="xs:string" />
-    </xs:complexType>
-    
-    <xs:attributeGroup name="pointAttributes">
-        <xs:attribute name="type" type="xs:string"  />
-        <xs:attribute name="init" type="xs:boolean" default="false"/>
+	<!-- DEVICE -->
+	<xs:attributeGroup name="deviceAttributes">
+		<xs:attribute name="id" type="xs:string" use="required" /> <!-- Unique identifier for parser. Must be DeviceTypes Java constant for non-abstract devices. -->
+		<xs:attribute name="enabled" type="xs:boolean" default="true" />
+		<xs:attribute name="abstract" type="xs:boolean" default="false" />
+	    <xs:attribute name="inherits" type="xs:string" />
     </xs:attributeGroup>
     
-    
-        <xs:complexType name="attributesType">
-            <xs:sequence>
-                <xs:element name="attribute" minOccurs="0" maxOccurs="unbounded">
-                    <xs:complexType>
-                    	<xs:sequence>
-                    		<xs:choice>
-                    			<xs:element name="basicLookup" maxOccurs="1">
-                    				<xs:complexType>
-                    					<xs:attribute name="point" type="xs:string" use="required" />
-                    				</xs:complexType>
-                    			</xs:element>
-                    		</xs:choice>
-
-                    	</xs:sequence>
-                    	<xs:attributeGroup ref="attributeAttributes" />
-                    </xs:complexType>
-                </xs:element>
-            </xs:sequence>
+    <xs:complexType name="deviceType">
+      <xs:sequence minOccurs="1" maxOccurs="1">
+        <xs:element name="type" type="xs:integer" minOccurs="0" /> <!-- Must be set for non-abstract devices -->
+        <xs:element name="displayName" type="xs:string" minOccurs="0" />
+        <xs:element name="displayGroup" type="xs:string" minOccurs="0" />
+        <xs:element name="changeGroup" type="xs:string" minOccurs="0" />
+        <xs:element name="points" type="pointsType" minOccurs="0" />
+        <xs:element name="commands" type="commandsType" minOccurs="0" />
+        <xs:element name="attributes" type="attributesType" minOccurs="0" />
+        <xs:element name="features" type="featuresType" minOccurs="0" />
+      </xs:sequence>
+      <xs:attributeGroup ref="deviceAttributes" />
     </xs:complexType>
     
+    <xs:attributeGroup name="featureAttributes">
+		<xs:attribute name="name" type="xs:string" use="required" />
+        <xs:attribute name="enabled" type="xs:boolean" default="true" />
+    </xs:attributeGroup>
+    
+    <xs:complexType name="featuresType">
+	    <xs:sequence>
+	        <xs:element name="feature" minOccurs="0" maxOccurs="unbounded">
+	            <xs:complexType>
+	                <xs:sequence>
+	                    <xs:element name="value" type="xs:boolean" minOccurs="0" default="false" />
+	                </xs:sequence>
+	                <xs:attributeGroup ref="featureAttributes" />
+	            </xs:complexType>
+	        </xs:element>
+	    </xs:sequence>
+    </xs:complexType>
+
+	<!-- POINTS -->
+	<xs:attributeGroup name="pointAttributes">
+		<xs:attribute name="type" type="xs:string" use="required" /> <!-- Type and offset together is the unique identifier for points for the parser. -->
+        <xs:attribute name="offset" type="xs:positiveInteger" use="required" />
+        <xs:attribute name="enabled" type="xs:boolean" default="true" />
+    </xs:attributeGroup>
+    
+    <xs:complexType name="pointsType">
+	    <xs:sequence>
+	        <xs:element name="point" minOccurs="0" maxOccurs="unbounded">
+	            <xs:complexType>
+	                <xs:sequence>
+	                    <xs:element name="init" type="xs:boolean" minOccurs="0" default="false" />
+	                    <xs:element name="name" type="xs:string" minOccurs="0" />
+	                    <xs:element name="description" type="xs:string" minOccurs="0" />
+	                    <xs:choice>
+	                        <xs:sequence>
+	                            <xs:element name="multiplier">
+	                                <xs:complexType>
+	                                    <xs:attribute name="value" type="xs:decimal" use="required" />
+	                                </xs:complexType>
+	                            </xs:element>
+	                            <xs:element name="unitofmeasure">
+	                                <xs:complexType>
+	                                    <xs:attribute name="value" type="xs:string" use="required" />
+	                                </xs:complexType>
+	                            </xs:element>
+	                        </xs:sequence>
+	                        <xs:element name="stategroup">
+	                            <xs:complexType>
+	                                <xs:attribute name="value" type="xs:string" use="required" />
+	                            </xs:complexType>
+	                        </xs:element>
+	                    </xs:choice>
+	                </xs:sequence>
+	                <xs:attributeGroup ref="pointAttributes" />
+	            </xs:complexType>
+	        </xs:element>
+	    </xs:sequence>
+    </xs:complexType>
+    
+    
+    <!-- ATTRIBUTES -->
     <xs:attributeGroup name="attributeAttributes">
-        <xs:attribute name="name" type="xs:string" />
+        <xs:attribute name="name" type="xs:string" use="required"/> <!-- Attribute name is the unique identifier for the parser. -->
+        <xs:attribute name="enabled" type="xs:boolean" default="true" />
+    </xs:attributeGroup>
+    
+    <xs:complexType name="attributesType">
+        <xs:sequence>
+            <xs:element name="attribute" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                	<xs:sequence>
+                		<xs:choice>
+                			<xs:element name="basicLookup" maxOccurs="1">
+                				<xs:complexType>
+                					<xs:attribute name="point" type="xs:string" use="required" />
+                				</xs:complexType>
+                			</xs:element>
+                		</xs:choice>
+                	</xs:sequence>
+                	<xs:attributeGroup ref="attributeAttributes" />
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- COMMANDS -->
+    <xs:attributeGroup name="commandAttributes">
+        <xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="enabled" type="xs:boolean" default="true" />
     </xs:attributeGroup>
     
     <xs:complexType name="commandsType">
-            <xs:sequence>
-                <xs:element name="command" minOccurs="0" maxOccurs="unbounded">
-                    <xs:complexType>
-                        <xs:sequence>
-                            <xs:element name="cmd" minOccurs="1" maxOccurs="unbounded">
-                                <xs:complexType>
-			                        <xs:attribute name="text" type="xs:string" use="required" />
-                                </xs:complexType>
-                            </xs:element>
-                            <xs:element name="pointRef" minOccurs="0" maxOccurs="unbounded">
-                                <xs:complexType>
-			                        <xs:attribute name="name" type="xs:string" use="required" />
-                                </xs:complexType>
-                            </xs:element>
-                        </xs:sequence>
-                        <xs:attribute name="name" type="xs:string" use="required" />
-                    </xs:complexType>
-                </xs:element>
-            </xs:sequence>
+	    <xs:sequence>
+	        <xs:element name="command" minOccurs="0" maxOccurs="unbounded">
+	            <xs:complexType>
+	                <xs:sequence>
+	                	<xs:element name="name" type="xs:string"/>
+	                    <xs:element name="cmd" minOccurs="1" maxOccurs="unbounded">
+	                        <xs:complexType>
+	                   <xs:attribute name="text" type="xs:string" use="required" />
+	                        </xs:complexType>
+	                    </xs:element>
+	                    <xs:element name="pointRef" minOccurs="0" maxOccurs="unbounded">
+	                        <xs:complexType>
+	                   <xs:attribute name="name" type="xs:string" use="required" />
+	                        </xs:complexType>
+	                    </xs:element>
+	                </xs:sequence>
+	                <xs:attributeGroup ref="commandAttributes" />
+	            </xs:complexType>
+	        </xs:element>
+	    </xs:sequence>
     </xs:complexType>
 
 </xs:schema>

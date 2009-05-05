@@ -60,9 +60,6 @@
         <property name="schemaFile" value="classpath:com/cannontech/common/device/definition/dao/deviceDefinition.xsd" />
         <property name="pointLegendFile" value="classpath:com/cannontech/common/device/definition/dao/pointOffset.xsl" />
         <property name="javaConstantClassName" value="com.cannontech.database.data.pao.DeviceTypes" />
-        <property name="paoGroupsWrapper" ref="paoGroupsWrapper" />
-        <property name="unitMeasureDao" ref="unitMeasureDao" />
-        <property name="stateDao" ref="stateDao" />
     </bean>
     
 	<bean id="paoGroupsWrapper" class="com.cannontech.database.data.pao.PaoGroupsWrapperImpl" scope="singleton" />

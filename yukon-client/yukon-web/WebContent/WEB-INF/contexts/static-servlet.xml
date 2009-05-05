@@ -5,7 +5,7 @@
     <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
         <property name="mappings">
             <value>
-                /deviceDefinition.xml=deviceDefinitionXmlController
+                /deviceDefinition.xml=deviceDefinitionViewerController
                 /deviceDefinition.xsl=deviceBaseController
                 /error-code.xml=friendlyErrorBaseController
                 /porter_error.xsl=friendlyErrorBaseController
@@ -32,11 +32,7 @@
         </property>
     </bean>
     
-    <bean id="deviceDefinitionXmlController" class="com.cannontech.web.util.StaticResourceController">
-        <property name="resource">
-        	<bean factory-bean="deviceDefinitionDao" factory-method="getCurrentDefinitionResource" />
-        </property>
+    <bean id="deviceDefinitionViewerController" class="com.cannontech.web.util.DeviceDefinitionViewerController">
     </bean>
-    
   
 </beans>

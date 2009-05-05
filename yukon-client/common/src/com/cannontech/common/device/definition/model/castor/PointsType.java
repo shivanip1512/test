@@ -11,10 +11,17 @@ package com.cannontech.common.device.definition.model.castor;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Serializable;
+import java.io.Writer;
 import java.util.ArrayList;
-
+import java.util.Enumeration;
+import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
+import org.exolab.castor.xml.ValidationException;
+import org.xml.sax.ContentHandler;
 
 /**
  * Class PointsType.
@@ -27,11 +34,6 @@ public class PointsType implements java.io.Serializable {
       //--------------------------/
      //- Class/Member Variables -/
     //--------------------------/
-
-    /**
-     * Field _id
-     */
-    private java.lang.String _id;
 
     /**
      * Field _pointList
@@ -101,17 +103,6 @@ public class PointsType implements java.io.Serializable {
     {
         return new org.exolab.castor.util.IteratorEnumeration(_pointList.iterator());
     } //-- java.util.Enumeration enumeratePoint() 
-
-    /**
-     * Returns the value of field 'id'.
-     * 
-     * @return String
-     * @return the value of field 'id'.
-     */
-    public java.lang.String getId()
-    {
-        return this._id;
-    } //-- java.lang.String getId() 
 
     /**
      * Method getPoint
@@ -220,16 +211,6 @@ public class PointsType implements java.io.Serializable {
         boolean removed = _pointList.remove(vPoint);
         return removed;
     } //-- boolean removePoint(com.cannontech.common.device.definition.model.castor.Point) 
-
-    /**
-     * Sets the value of field 'id'.
-     * 
-     * @param id the value of field 'id'.
-     */
-    public void setId(java.lang.String id)
-    {
-        this._id = id;
-    } //-- void setId(java.lang.String) 
 
     /**
      * Method setPoint

@@ -22,11 +22,11 @@ import org.exolab.castor.xml.ValidationException;
 import org.xml.sax.ContentHandler;
 
 /**
- * Class Commands.
+ * Class Features.
  * 
  * @version $Revision$ $Date$
  */
-public class Commands extends CommandsType 
+public class Features extends FeaturesType 
 implements java.io.Serializable
 {
 
@@ -35,10 +35,10 @@ implements java.io.Serializable
      //- Constructors -/
     //----------------/
 
-    public Commands() 
+    public Features() 
      {
         super();
-    } //-- com.cannontech.common.device.definition.model.castor.Commands()
+    } //-- com.cannontech.common.device.definition.model.castor.Features()
 
 
       //-----------/
@@ -102,7 +102,7 @@ implements java.io.Serializable
     public static java.lang.Object unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        return (com.cannontech.common.device.definition.model.castor.Commands) Unmarshaller.unmarshal(com.cannontech.common.device.definition.model.castor.Commands.class, reader);
+        return (com.cannontech.common.device.definition.model.castor.Features) Unmarshaller.unmarshal(com.cannontech.common.device.definition.model.castor.Features.class, reader);
     } //-- java.lang.Object unmarshal(java.io.Reader) 
 
     /**

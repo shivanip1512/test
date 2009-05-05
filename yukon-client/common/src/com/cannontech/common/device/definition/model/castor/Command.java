@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://www.castor.org">Castor 0.9.7</a>, using an XML
  * Schema.
- * $Id: Command.java,v 1.4 2007/12/26 17:53:34 tmack Exp $
+ * $Id$
  */
 
 package com.cannontech.common.device.definition.model.castor;
@@ -11,15 +11,22 @@ package com.cannontech.common.device.definition.model.castor;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Serializable;
+import java.io.Writer;
 import java.util.ArrayList;
-
+import java.util.Enumeration;
+import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
+import org.exolab.castor.xml.ValidationException;
+import org.xml.sax.ContentHandler;
 
 /**
  * Class Command.
  * 
- * @version $Revision: 1.4 $ $Date: 2007/12/26 17:53:34 $
+ * @version $Revision$ $Date$
  */
 public class Command implements java.io.Serializable {
 
@@ -27,6 +34,16 @@ public class Command implements java.io.Serializable {
       //--------------------------/
      //- Class/Member Variables -/
     //--------------------------/
+
+    /**
+     * Field _id
+     */
+    private java.lang.String _id;
+
+    /**
+     * Field _enabled
+     */
+    private java.lang.Boolean _enabled = new java.lang.Boolean("true");
 
     /**
      * Field _name
@@ -205,6 +222,28 @@ public class Command implements java.io.Serializable {
     } //-- int getCmdCount() 
 
     /**
+     * Returns the value of field 'enabled'.
+     * 
+     * @return Boolean
+     * @return the value of field 'enabled'.
+     */
+    public java.lang.Boolean getEnabled()
+    {
+        return this._enabled;
+    } //-- java.lang.Boolean getEnabled() 
+
+    /**
+     * Returns the value of field 'id'.
+     * 
+     * @return String
+     * @return the value of field 'id'.
+     */
+    public java.lang.String getId()
+    {
+        return this._id;
+    } //-- java.lang.String getId() 
+
+    /**
      * Returns the value of field 'name'.
      * 
      * @return String
@@ -370,6 +409,26 @@ public class Command implements java.io.Serializable {
             _cmdList.add(cmdArray[i]);
         }
     } //-- void setCmd(com.cannontech.common.device.definition.model.castor.Cmd) 
+
+    /**
+     * Sets the value of field 'enabled'.
+     * 
+     * @param enabled the value of field 'enabled'.
+     */
+    public void setEnabled(java.lang.Boolean enabled)
+    {
+        this._enabled = enabled;
+    } //-- void setEnabled(java.lang.Boolean) 
+
+    /**
+     * Sets the value of field 'id'.
+     * 
+     * @param id the value of field 'id'.
+     */
+    public void setId(java.lang.String id)
+    {
+        this._id = id;
+    } //-- void setId(java.lang.String) 
 
     /**
      * Sets the value of field 'name'.
