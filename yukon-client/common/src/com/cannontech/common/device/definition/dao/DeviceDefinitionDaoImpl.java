@@ -1,6 +1,5 @@
 package com.cannontech.common.device.definition.dao;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -83,7 +82,7 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
 
     private Resource inputFile = null;
     private Resource schemaFile = null;
-    private File customInputFile = new File(CtiUtilities.getYukonBase() + "\\Server\\Config\\deviceDefinition.xml");
+    private Resource customInputFile = new FileSystemResource(CtiUtilities.getYukonBase() + "\\Server\\Config\\deviceDefinition.xml");
     private Resource pointLegendFile = null;
     private PaoGroupsWrapper paoGroupsWrapper = null;
     private String javaConstantClassName = null;
@@ -107,8 +106,8 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
     public void setSchemaFile(Resource schemaFile) {
         this.schemaFile = schemaFile;
     }
-    public void setCustomInputFile(File customInputFile) {
-        this.customInputFile = customInputFile;
+    public void setCustomInputFile(Resource customInputResource) {
+        this.customInputFile = customInputResource;
     }
     @Autowired
     public void setPaoGroupsWrapper(PaoGroupsWrapper paoGroupsWrapper) {
@@ -455,7 +454,7 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         // definition resources (in order from lowest level overrides to highest)
         List<Resource> definitionResources = new ArrayList<Resource>();
         if (customInputFile != null && customInputFile.exists()) {
-        	definitionResources.add(new FileSystemResource(customInputFile));
+        	definitionResources.add(customInputFile);
         }
         definitionResources.add(inputFile);
         
@@ -752,7 +751,7 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         PointRef[] pointRefs = command.getPointRef();
         for (PointRef pointRef : pointRefs) {
             if (!pointNameTemplateMap.containsKey(pointRef.getName())) {
-                throw new RuntimeException("Point name: " + pointRef.getName() + " not found for device: " + deviceName + ".  command pointRefs must reference a point name from the same device in the deviceDefinition.xml file.");
+                throw new RuntimeException("Point name: " + pointRef.getName() + " not found for device: " + deviceName + ".  command pointRefs must reference a point name from the same device in the deviceDefinition.xml file. Point is not on device, or point has been named incorrectly in a custom file.");
             }
             PointTemplate template = pointNameTemplateMap.get(pointRef.getName());
             DevicePointIdentifier dpi = new DevicePointIdentifier(template.getType(), template.getOffset());

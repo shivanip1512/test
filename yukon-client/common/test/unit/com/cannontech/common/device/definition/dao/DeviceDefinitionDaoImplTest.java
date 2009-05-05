@@ -1,6 +1,5 @@
 package com.cannontech.common.device.definition.dao;
 
-import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -360,7 +359,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         URL schemaResource = classLoader.getResource("com/cannontech/common/device/definition/dao/deviceDefinition.xsd");
         dao.setSchemaFile(new UrlResource(schemaResource));
 
-        dao.setCustomInputFile(new File(customFileUrl.getFile()));
+        dao.setCustomInputFile(new UrlResource(customFileUrl));
         dao.setPaoGroupsWrapper(new DeviceDefinitionDaoImplTest().new MockPaoGroups());
         dao.setJavaConstantClassName(DeviceTypes.class.getName());
         dao.setStateDao(new DeviceDefinitionDaoImplTest().new MockStateDao());
@@ -370,21 +369,55 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         
         // Test that the point templates are custom
         
-        // Test with supported device type
-        Set<PointTemplate> expectedTemplates = new HashSet<PointTemplate>();
-        expectedTemplates.add(new PointTemplate("customPulse1",
-                                                2,
-                                                2,
-                                                1.0,
-                                                1,
-                                                0,
-                                                true));
+        // Test custom definition overrides standard definition - point
+        PointTemplate expectedPulse1PointTemplate = new PointTemplate("pulse1",
+		                                                2,
+		                                                2,
+		                                                2.5,
+		                                                0,
+		                                                0,
+		                                                false);
+        
+        PointTemplate actualPulse1PointTemplate = dao.getPointTemplateByTypeAndOffset(device, 2, 2);
+        assertEquals("Expected point customizations do not match: ", expectedPulse1PointTemplate, actualPulse1PointTemplate);
 
-        Set<PointTemplate> actualTemplates = dao.getAllPointTemplates(device);
-        assertEquals("Expected custom all point templates did not match: ",
-                     this.getSortedList(expectedTemplates),
-                     this.getSortedList(actualTemplates));
+        // Test custom definition overrides standard definition - command
+        DevicePointIdentifier pulse1 = new DevicePointIdentifier(2, 2);
+        DevicePointIdentifier pulse2 = new DevicePointIdentifier(2, 4);
+        Set<DevicePointIdentifier> points = new HashSet<DevicePointIdentifier>();
+        Set<CommandDefinition> expectedCommandSet = new HashSet<CommandDefinition>();
+        
+        CommandDefinition command1 = new CommandDefinition("command1");
+        command1.addCommandString("do custom command1");
+        command1.addAffectedPoint(pulse2);
 
+        points.add(pulse2);
+        expectedCommandSet.add(command1);
+        
+        CommandDefinition command2 = new CommandDefinition("command2");
+        command2.addCommandString("do command2");
+        command2.addCommandString("continue command2");
+        command2.addAffectedPoint(pulse1);
+        command2.addAffectedPoint(pulse2);
+        
+        expectedCommandSet.add(command2);
+
+        Set<CommandDefinition> actualCommands = dao.getCommandsThatAffectPoints(device, points);
+        assertEquals("Expected command customizations do not match:", expectedCommandSet, actualCommands);
+        
+        // Test custom definition overrides standard definition - attribute
+        PointTemplate expectedTemplate = new PointTemplate("pulse2",
+													                2,
+													                4,
+													                1.0,
+													                1,
+													                0,
+													                false);
+
+		PointTemplate actualTemplate = dao.getPointTemplateForAttribute(device, BuiltInAttribute.USAGE);
+		
+		assertEquals("Expected point template did not match: ", expectedTemplate, actualTemplate);
+        
         // Test with unsupported device type
         try {
             device.setType(-1);
