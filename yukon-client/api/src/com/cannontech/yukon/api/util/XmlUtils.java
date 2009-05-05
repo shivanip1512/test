@@ -23,16 +23,14 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.jdom.transform.JDOMSource;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.core.io.Resource;
 import org.springframework.ws.WebServiceMessage;
 import org.springframework.ws.soap.SoapHeader;
 import org.springframework.ws.soap.SoapHeaderElement;
 import org.springframework.ws.soap.SoapMessage;
 import org.w3c.dom.Node;
+
+import com.cannontech.common.util.Iso8601DateUtil;
 
 public class XmlUtils {
 
@@ -92,7 +90,7 @@ public class XmlUtils {
     public static Element createDateElement(String name, Namespace namespace, Date value) {
         Element element = new Element(name, namespace);
         
-        String dateStr = formatDate(value);
+        String dateStr = Iso8601DateUtil.formatIso8601Date(value);
         
         element.setText(dateStr);
         
@@ -120,36 +118,6 @@ public class XmlUtils {
         }
         
         return element;
-    }
-    
-    /**
-     * Returns date formatted as ISO with UTC zone.
-     * Ex: 2008-10-13T12:30:00Z
-     * @param d
-     * @return
-     */
-    public static String formatDate(Date date) {
-        
-        DateTime dt = new DateTime(date, DateTimeZone.UTC);
-        DateTimeFormatter fmt = ISODateTimeFormat.dateTimeNoMillis();
-        String dateStr = fmt.print(dt);
-        return dateStr;
-    }
-    
-    /**
-     * Parses ISO date string into a Date.
-     * The ISO string may either contain a UTC zone indicator of "Z"
-     * Ex: 2008-10-13T12:30:00Z
-     * Or a time zone offset in the format "+|-HH:mm"
-     * Ex: 2008-10-13T06:30:00-06:00
-     * @param str
-     * @return
-     */
-    public static Date parseDate(String str) {
-        
-        DateTimeFormatter fmt = ISODateTimeFormat.dateTimeNoMillis();
-        DateTime dt = fmt.parseDateTime(str);
-        return dt.toDate();
     }
     
     public static Element createElementFromResource(Resource resource) throws JDOMException, IOException {

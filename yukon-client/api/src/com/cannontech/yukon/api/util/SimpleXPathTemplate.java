@@ -16,7 +16,6 @@
 
 package com.cannontech.yukon.api.util;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -34,7 +33,6 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 import javax.xml.xpath.XPathFactoryConfigurationException;
 
-import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.transform.JDOMSource;
 import org.springframework.xml.namespace.SimpleNamespaceContext;
@@ -52,6 +50,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
+import com.cannontech.common.util.Iso8601DateUtil;
 import com.cannontech.common.util.ObjectMapper;
 
 /**
@@ -256,7 +255,7 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
         }
         
         if (dateStr != null) {
-            return XmlUtils.parseDate(dateStr.trim());
+            return Iso8601DateUtil.parseIso8601Date(dateStr.trim());
         }
         
         return null;

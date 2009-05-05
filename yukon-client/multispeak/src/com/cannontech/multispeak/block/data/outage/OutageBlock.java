@@ -2,7 +2,6 @@ package com.cannontech.multispeak.block.data.outage;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.text.ParseException;
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
@@ -11,6 +10,7 @@ import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
+import com.cannontech.common.util.Iso8601DateUtil;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LitePoint;
@@ -47,13 +47,14 @@ public class OutageBlock implements Block{
             return meterNumber;
         
         else if (syntaxItem.equals(SyntaxItem.BLINK_COUNT)) {
-            if( blinkCount != null)
+            if( blinkCount != null) {
                 return String.valueOf(blinkCount);
+            }
         }
             
         else if (syntaxItem.equals(SyntaxItem.BLINK_COUNT_DATETIME)){
             if( blinkCountDateTime != null) {
-                return blockDateFormat.format(blinkCountDateTime);
+	    		return Iso8601DateUtil.formatIso8601Date(blinkCountDateTime);
             }
         }
         else {
@@ -101,13 +102,14 @@ public class OutageBlock implements Block{
 	    	if (values.length == FIELD_COUNT){
 	    		meterNumber = values[0];
 	    		blinkCount = StringUtils.isBlank(values[1]) ? null : Double.valueOf(values[1]);
-	    		blinkCountDateTime = StringUtils.isBlank(values[2]) ? null : blockDateFormat.parse(values[2]);
+
+	    		blinkCountDateTime = StringUtils.isBlank(values[2]) ? null : Iso8601DateUtil.parseIso8601Date(values[2]);
 	    	}else {
 	    		CTILogger.error("OutageBlock could not be parsed (" + stringReader.toString() + ").  Incorrect number of expected fields.");
 	    	}
     	} catch (IOException e) {
     		CTILogger.warn(e);
-    	} catch (ParseException e) {
+    	} catch (UnsupportedOperationException e) {
     		CTILogger.warn(e);
     	}
     }

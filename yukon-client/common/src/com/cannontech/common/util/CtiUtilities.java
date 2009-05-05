@@ -1851,16 +1851,6 @@ public static double convertTemperature(double temperature, String fromUnit, Str
         SimpleDateFormat df = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
         return df.parse(javaDateStr);
     }
-     
-     public static String makeISO8601Formttedstring(Date date, TimeZone tz) {
-
-     	DateTimeFormatter dateTimeFormatter = ISODateTimeFormat.dateTimeNoMillis().withZone(DateTimeZone.forTimeZone(tz));
-
-     	String formattedString = dateTimeFormatter.print(date.getTime());
-     	formattedString = formattedString.substring(0, 19);
-
-     	return formattedString;
- 	}
 }
 
 

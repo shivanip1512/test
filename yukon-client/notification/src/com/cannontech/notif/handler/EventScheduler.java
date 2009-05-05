@@ -7,7 +7,7 @@ import java.util.*;
 import com.cannontech.cc.model.BaseEvent;
 import com.cannontech.cc.model.EventNotif;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.Iso8601DateUtil;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.enums.NotificationState;
@@ -109,10 +109,10 @@ public abstract class EventScheduler {
             notif.addData("timezone", timeZone.getDisplayName());
             notif.addData("starttime", _timeFormatter.format(event.getStartTime()));
             notif.addData("startdate", _dateFormatter.format(event.getStartTime()));
-            notif.addData("startdatetime", CtiUtilities.makeISO8601Formttedstring(event.getStartTime(), timeZone));
+            notif.addData("startdatetime", Iso8601DateUtil.formatIso8601Date(event.getStartTime(), timeZone));
             notif.addData("stoptime", _timeFormatter.format(event.getStopTime()));
             notif.addData("stopdate", _dateFormatter.format(event.getStopTime()));
-            notif.addData("stopdatetime", CtiUtilities.makeISO8601Formttedstring(event.getStopTime(), timeZone));
+            notif.addData("stopdatetime", Iso8601DateUtil.formatIso8601Date(event.getStopTime(), timeZone));
         }
     }
 

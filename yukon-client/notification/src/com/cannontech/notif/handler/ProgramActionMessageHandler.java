@@ -10,7 +10,7 @@ import com.cannontech.cc.dao.ProgramDao;
 import com.cannontech.cc.dao.ProgramNotificationGroupDao;
 import com.cannontech.cc.model.Program;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.Iso8601DateUtil;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.database.data.lite.*;
 import com.cannontech.database.data.notification.NotifType;
@@ -78,13 +78,13 @@ public class ProgramActionMessageHandler extends NotifHandler {
                     
                     notif.addData("starttime", _timeFormatter.format(msg.startTime));
                     notif.addData("startdate", _dateFormatter.format(msg.startTime));
-                    notif.addData("startdatetime", CtiUtilities.makeISO8601Formttedstring(msg.startTime, timeZone));
+                    notif.addData("startdatetime", Iso8601DateUtil.formatIso8601Date(msg.startTime, timeZone));
                     notif.addData("stoptime", _timeFormatter.format(msg.stopTime));
                     notif.addData("stopdate", _dateFormatter.format(msg.stopTime));
-                    notif.addData("stopdatetime", CtiUtilities.makeISO8601Formttedstring(msg.stopTime, timeZone));
+                    notif.addData("stopdatetime", Iso8601DateUtil.formatIso8601Date(msg.stopTime, timeZone));
                     notif.addData("notiftime", _timeFormatter.format(msg.notificationTime));
                     notif.addData("notifdate", _dateFormatter.format(msg.notificationTime));
-                    notif.addData("notifdatetime", CtiUtilities.makeISO8601Formttedstring(msg.notificationTime, timeZone));
+                    notif.addData("notifdatetime", Iso8601DateUtil.formatIso8601Date(msg.notificationTime, timeZone));
                 }
                 
                 notif.addData("durationminutes", durationMinutesStr);

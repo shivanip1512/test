@@ -12,6 +12,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.util.Iso8601DateUtil;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.service.data.ProgramControlHistory;
@@ -59,15 +60,15 @@ public class ProgramControlHistoryRequestEndpointTest {
             if (!programName.equals(EMTPY_RETURN)){            
                 ProgramControlHistory h1 = new ProgramControlHistory();
                 h1.setProgramName("Program1");
-                h1.setStartDateTime(XmlUtils.parseDate("2008-10-13T12:30:00Z"));
+                h1.setStartDateTime(Iso8601DateUtil.parseIso8601Date("2008-10-13T12:30:00Z"));
                 h1.setStopDateTime(null);
                 h1.setGearName("Gear1");
                 histList.add(h1);
 
                 ProgramControlHistory h2 = new ProgramControlHistory();
                 h2.setProgramName("Program2");
-                h2.setStartDateTime(XmlUtils.parseDate("2008-10-13T12:30:00Z"));
-                h2.setStopDateTime(XmlUtils.parseDate("2008-10-13T21:49:01Z"));
+                h2.setStartDateTime(Iso8601DateUtil.parseIso8601Date("2008-10-13T12:30:00Z"));
+                h2.setStopDateTime(Iso8601DateUtil.parseIso8601Date("2008-10-13T21:49:01Z"));
                 h2.setGearName("Gear2");
                 histList.add(h2);
             }
@@ -107,7 +108,7 @@ public class ProgramControlHistoryRequestEndpointTest {
         
         Assert.assertEquals("Incorrect number of controlHistoryEntries nodes.", 0, outputTemplate.evaluateAsLong("count(/y:programControlHistoryResponse/y:controlHistoryEntries/y:programControlHistory)").longValue());
         
-        Assert.assertEquals("Incorrect startDateTime.", "2008-10-13T12:30:00Z", XmlUtils.formatDate(mockService.getStartTime()));
+        Assert.assertEquals("Incorrect startDateTime.", "2008-10-13T12:30:00Z", Iso8601DateUtil.formatIso8601Date(mockService.getStartTime()));
         Assert.assertEquals("Incorrect stopDateTime.", null, mockService.getStopTime());
         
         // start time, no stop time
@@ -123,10 +124,10 @@ public class ProgramControlHistoryRequestEndpointTest {
         
         Assert.assertEquals("Incorrect programName.", "Program1", outputTemplate.evaluateAsString("/y:programControlHistoryResponse/y:controlHistoryEntries/y:programControlHistory[1]/y:programName"));
         Assert.assertEquals("Incorrect startGearName.", "Gear1", outputTemplate.evaluateAsString("/y:programControlHistoryResponse/y:controlHistoryEntries/y:programControlHistory[1]/y:gearName"));
-        Assert.assertEquals("Incorrect startDateTime.", "2008-10-13T12:30:00Z", XmlUtils.formatDate(outputTemplate.evaluateAsDate("/y:programControlHistoryResponse/y:controlHistoryEntries/y:programControlHistory[1]/y:startDateTime")));
+        Assert.assertEquals("Incorrect startDateTime.", "2008-10-13T12:30:00Z", Iso8601DateUtil.formatIso8601Date(outputTemplate.evaluateAsDate("/y:programControlHistoryResponse/y:controlHistoryEntries/y:programControlHistory[1]/y:startDateTime")));
         Assert.assertEquals("Incorrect stopDateTime.", null, outputTemplate.evaluateAsDate("/y:programControlHistoryResponse/y:controlHistoryEntries/y:programControlHistory[1]/y:stopDateTime"));
         
-        Assert.assertEquals("Incorrect startDateTime.", "2008-10-13T12:30:00Z", XmlUtils.formatDate(mockService.getStartTime()));
+        Assert.assertEquals("Incorrect startDateTime.", "2008-10-13T12:30:00Z", Iso8601DateUtil.formatIso8601Date(mockService.getStartTime()));
         Assert.assertEquals("Incorrect stopDateTime.", null, mockService.getStopTime());
         
         // start time, stop time
@@ -142,11 +143,11 @@ public class ProgramControlHistoryRequestEndpointTest {
         
         Assert.assertEquals("Incorrect programName.", "Program2", outputTemplate.evaluateAsString("/y:programControlHistoryResponse/y:controlHistoryEntries/y:programControlHistory[2]/y:programName"));
         Assert.assertEquals("Incorrect startGearName.", "Gear2", outputTemplate.evaluateAsString("/y:programControlHistoryResponse/y:controlHistoryEntries/y:programControlHistory[2]/y:gearName"));
-        Assert.assertEquals("Incorrect startDateTime.", "2008-10-13T12:30:00Z", XmlUtils.formatDate(outputTemplate.evaluateAsDate("/y:programControlHistoryResponse/y:controlHistoryEntries/y:programControlHistory[2]/y:startDateTime")));
-        Assert.assertEquals("Incorrect stopDateTime.", "2008-10-13T21:49:01Z", XmlUtils.formatDate(outputTemplate.evaluateAsDate("/y:programControlHistoryResponse/y:controlHistoryEntries/y:programControlHistory[2]/y:stopDateTime")));
+        Assert.assertEquals("Incorrect startDateTime.", "2008-10-13T12:30:00Z", Iso8601DateUtil.formatIso8601Date(outputTemplate.evaluateAsDate("/y:programControlHistoryResponse/y:controlHistoryEntries/y:programControlHistory[2]/y:startDateTime")));
+        Assert.assertEquals("Incorrect stopDateTime.", "2008-10-13T21:49:01Z", Iso8601DateUtil.formatIso8601Date(outputTemplate.evaluateAsDate("/y:programControlHistoryResponse/y:controlHistoryEntries/y:programControlHistory[2]/y:stopDateTime")));
         
-        Assert.assertEquals("Incorrect startDateTime.", "2008-10-13T12:30:00Z", XmlUtils.formatDate(mockService.getStartTime()));
-        Assert.assertEquals("Incorrect stopDateTime.", "2008-10-13T21:49:01Z", XmlUtils.formatDate(mockService.getStopTime()));
+        Assert.assertEquals("Incorrect startDateTime.", "2008-10-13T12:30:00Z", Iso8601DateUtil.formatIso8601Date(mockService.getStartTime()));
+        Assert.assertEquals("Incorrect stopDateTime.", "2008-10-13T21:49:01Z", Iso8601DateUtil.formatIso8601Date(mockService.getStopTime()));
         
         // not found
         //==========================================================================================

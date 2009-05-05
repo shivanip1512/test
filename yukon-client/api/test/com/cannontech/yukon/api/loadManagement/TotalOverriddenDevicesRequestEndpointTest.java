@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
+import com.cannontech.common.util.Iso8601DateUtil;
 import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -89,8 +90,8 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         //verify mockService was called with correct params
         Assert.assertEquals("Incorrect accountNumber.", ACCOUNT1, mockOptOutService.getAccountNumber());
         Assert.assertNull("Incorrect programName", mockOptOutService.getProgramName());
-        Assert.assertEquals("Incorrect startDateTime.", START_DATE_VALID, XmlUtils.formatDate(mockOptOutService.getStartTime()));
-        Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, XmlUtils.formatDate(mockOptOutService.getStopTime()));
+        Assert.assertEquals("Incorrect startDateTime.", START_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStartTime()));
+        Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()));
 
         // create template and parse response data
         outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);
@@ -115,8 +116,8 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         //verify mockService was called with correct params
         Assert.assertEquals("Incorrect accountNumber.", INVALID_ACCOUNT, mockOptOutService.getAccountNumber());
         Assert.assertNull("Incorrect programName", mockOptOutService.getProgramName());
-        Assert.assertEquals("Incorrect startDateTime.", START_DATE_VALID, XmlUtils.formatDate(mockOptOutService.getStartTime()));
-        Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, XmlUtils.formatDate(mockOptOutService.getStopTime()));
+        Assert.assertEquals("Incorrect startDateTime.", START_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStartTime()));
+        Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()));
         
         outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);
         TestUtils.runFailureAssertions(outputTemplate, "totalOverriddenDevicesByAccountNumberResponse", "InvalidAccountNumber");
@@ -135,8 +136,8 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         //verify mockService was called with correct params
         Assert.assertEquals("Incorrect accountNumber.", ACCOUNT1, mockOptOutService.getAccountNumber());
         Assert.assertEquals("Incorrect accountNumber.", PROGRAM1, mockOptOutService.getProgramName());
-        Assert.assertEquals("Incorrect startDateTime.", START_DATE_VALID, XmlUtils.formatDate(mockOptOutService.getStartTime()));
-        Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, XmlUtils.formatDate(mockOptOutService.getStopTime()));
+        Assert.assertEquals("Incorrect startDateTime.", START_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStartTime()));
+        Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()));
         
         // create template and parse response data
         outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);
@@ -161,8 +162,8 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         //verify mockService was called with correct params
         Assert.assertEquals("Incorrect accountNumber.", ACCOUNT1, mockOptOutService.getAccountNumber());
         Assert.assertEquals("Incorrect accountNumber.", INVALID_PROGRAM, mockOptOutService.getProgramName());
-        Assert.assertEquals("Incorrect startDateTime.", START_DATE_VALID, XmlUtils.formatDate(mockOptOutService.getStartTime()));
-        Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, XmlUtils.formatDate(mockOptOutService.getStopTime()));
+        Assert.assertEquals("Incorrect startDateTime.", START_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStartTime()));
+        Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()));
        
         outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);
         TestUtils.runFailureAssertions(outputTemplate, "totalOverriddenDevicesByAccountNumberResponse", "InvalidProgramName");
@@ -205,8 +206,8 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         
         //verify mockService was called with correct params
         Assert.assertEquals("Incorrect programName.", PROGRAM1, mockOptOutService.getProgramName());
-        Assert.assertEquals("Incorrect startDateTime.", START_DATE_VALID, XmlUtils.formatDate(mockOptOutService.getStartTime()));
-        Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, XmlUtils.formatDate(mockOptOutService.getStopTime()));
+        Assert.assertEquals("Incorrect startDateTime.", START_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStartTime()));
+        Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()));
 
         // create template and parse response data
         outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);
@@ -229,8 +230,8 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         
         //verify mockService was called with correct params
         Assert.assertEquals("Incorrect programName.", INVALID_PROGRAM, mockOptOutService.getProgramName());
-        Assert.assertEquals("Incorrect startDateTime.", START_DATE_VALID, XmlUtils.formatDate(mockOptOutService.getStartTime()));
-        Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, XmlUtils.formatDate(mockOptOutService.getStopTime()));
+        Assert.assertEquals("Incorrect startDateTime.", START_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStartTime()));
+        Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()));
         
         // create template and parse response data
         outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);

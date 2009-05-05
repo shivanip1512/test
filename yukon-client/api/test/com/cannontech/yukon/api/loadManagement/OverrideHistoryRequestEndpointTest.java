@@ -13,6 +13,7 @@ import org.springframework.core.io.Resource;
 import org.w3c.dom.Node;
 
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
+import com.cannontech.common.util.Iso8601DateUtil;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
@@ -77,9 +78,9 @@ public class OverrideHistoryRequestEndpointTest {
         history1.setProgramName(PROGRAM1);
         history1.setAccountNumber(ACCOUNT1);
         history1.setStatus(OverrideStatus.Active);
-        history1.setScheduledDate(XmlUtils.parseDate(SCHEDULED_DATE_VALID));
-        history1.setStartDate(XmlUtils.parseDate(START_DATE_VALID));
-        history1.setStopDate(XmlUtils.parseDate(STOP_DATE_VALID));
+        history1.setScheduledDate(Iso8601DateUtil.parseIso8601Date(SCHEDULED_DATE_VALID));
+        history1.setStartDate(Iso8601DateUtil.parseIso8601Date(START_DATE_VALID));
+        history1.setStopDate(Iso8601DateUtil.parseIso8601Date(STOP_DATE_VALID));
         history1.setUserName("user1");
         history1.setOverrideNumber(1);
         history1.setCountedAgainstLimit(true);
@@ -89,9 +90,9 @@ public class OverrideHistoryRequestEndpointTest {
         history2.setProgramName(PROGRAM2);
         history2.setAccountNumber(ACCOUNT1);
         history2.setStatus(OverrideStatus.Active);
-        history2.setScheduledDate(XmlUtils.parseDate(SCHEDULED_DATE_VALID));
-        history2.setStartDate(XmlUtils.parseDate(START_DATE_VALID));
-        history2.setStopDate(XmlUtils.parseDate(STOP_DATE_VALID));
+        history2.setScheduledDate(Iso8601DateUtil.parseIso8601Date(SCHEDULED_DATE_VALID));
+        history2.setStartDate(Iso8601DateUtil.parseIso8601Date(START_DATE_VALID));
+        history2.setStopDate(Iso8601DateUtil.parseIso8601Date(STOP_DATE_VALID));
         history2.setUserName("user1");
         history2.setOverrideNumber(2);
         history2.setCountedAgainstLimit(true);
@@ -101,9 +102,9 @@ public class OverrideHistoryRequestEndpointTest {
         history3.setProgramName(PROGRAM1);
         history3.setAccountNumber(ACCOUNT2);
         history3.setStatus(OverrideStatus.Active);
-        history3.setScheduledDate(XmlUtils.parseDate(SCHEDULED_DATE_VALID));
-        history3.setStartDate(XmlUtils.parseDate(START_DATE_VALID));
-        history3.setStopDate(XmlUtils.parseDate(STOP_DATE_VALID));
+        history3.setScheduledDate(Iso8601DateUtil.parseIso8601Date(SCHEDULED_DATE_VALID));
+        history3.setStartDate(Iso8601DateUtil.parseIso8601Date(START_DATE_VALID));
+        history3.setStopDate(Iso8601DateUtil.parseIso8601Date(STOP_DATE_VALID));
         history3.setUserName("user1");
         history3.setOverrideNumber(2);
         history3.setCountedAgainstLimit(true);
@@ -147,8 +148,8 @@ public class OverrideHistoryRequestEndpointTest {
         //verify mockService was called with correct params
         Assert.assertEquals("Incorrect accountNumber.", EMTPY_RETURN, mockOptOutService.getAccountNumber());
         Assert.assertNull(mockOptOutService.getProgramName());
-        Assert.assertEquals("Incorrect startDateTime.", START_DATE_VALID, XmlUtils.formatDate(mockOptOutService.getStartTime()));
-        Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, XmlUtils.formatDate(mockOptOutService.getStopTime()));
+        Assert.assertEquals("Incorrect startDateTime.", START_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStartTime()));
+        Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()));
 
         // create template and parse response data
         outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);
@@ -174,8 +175,8 @@ public class OverrideHistoryRequestEndpointTest {
         //verify mockService was called with correct params
         Assert.assertEquals("Incorrect accountNumber.", ACCOUNT1, mockOptOutService.getAccountNumber());
         Assert.assertNull(mockOptOutService.getProgramName());
-        Assert.assertEquals("Incorrect startDateTime.", START_DATE_VALID, XmlUtils.formatDate(mockOptOutService.getStartTime()));
-        Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, XmlUtils.formatDate(mockOptOutService.getStopTime()));
+        Assert.assertEquals("Incorrect startDateTime.", START_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStartTime()));
+        Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()));
 
         // create template and parse response data
         outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);
@@ -203,8 +204,8 @@ public class OverrideHistoryRequestEndpointTest {
         //verify mockService was called with correct params
         Assert.assertEquals("Incorrect accountNumber.", ACCOUNT1, mockOptOutService.getAccountNumber());
         Assert.assertEquals("Incorrect programName", PROGRAM1, mockOptOutService.getProgramName());
-        Assert.assertEquals("Incorrect startDateTime.", START_DATE_VALID, XmlUtils.formatDate(mockOptOutService.getStartTime()));
-        Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, XmlUtils.formatDate(mockOptOutService.getStopTime()));
+        Assert.assertEquals("Incorrect startDateTime.", START_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStartTime()));
+        Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()));
 
         // create template and parse response data
         outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);
@@ -230,8 +231,8 @@ public class OverrideHistoryRequestEndpointTest {
         //verify mockService was called with correct params
         Assert.assertEquals("Incorrect accountNumber.", INVALID_ACCOUNT, mockOptOutService.getAccountNumber());
         Assert.assertNull("Incorrect programName", mockOptOutService.getProgramName());
-        Assert.assertEquals("Incorrect startDateTime.", START_DATE_VALID, XmlUtils.formatDate(mockOptOutService.getStartTime()));
-        Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, XmlUtils.formatDate(mockOptOutService.getStopTime()));
+        Assert.assertEquals("Incorrect startDateTime.", START_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStartTime()));
+        Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()));
         
         // create template and parse response data
         outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);
@@ -250,8 +251,8 @@ public class OverrideHistoryRequestEndpointTest {
         //verify mockService was called with correct params
         Assert.assertEquals("Incorrect accountNumber.", ACCOUNT1, mockOptOutService.getAccountNumber());
         Assert.assertEquals("Incorrect programName", INVALID_PROGRAM, mockOptOutService.getProgramName());
-        Assert.assertEquals("Incorrect startDateTime.", START_DATE_VALID, XmlUtils.formatDate(mockOptOutService.getStartTime()));
-        Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, XmlUtils.formatDate(mockOptOutService.getStopTime()));
+        Assert.assertEquals("Incorrect startDateTime.", START_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStartTime()));
+        Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()));
         
         // create template and parse response data
         outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);

@@ -7,7 +7,7 @@ import java.util.TimeZone;
 import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.Iso8601DateUtil;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.*;
 import com.cannontech.database.data.notification.NotifType;
@@ -84,10 +84,10 @@ public class LoadManagementMessageHandler extends NotifHandler {
                     
                     notif.addData("starttime", _timeFormatter.format(msg.startTime));
                     notif.addData("startdate", _dateFormatter.format(msg.startTime));
-                    notif.addData("startdatetime", CtiUtilities.makeISO8601Formttedstring(msg.startTime, timeZone));
+                    notif.addData("startdatetime", Iso8601DateUtil.formatIso8601Date(msg.startTime, timeZone));
                     notif.addData("stoptime", _timeFormatter.format(msg.stopTime));
                     notif.addData("stopdate", _dateFormatter.format(msg.stopTime));
-                    notif.addData("stopdatetime", CtiUtilities.makeISO8601Formttedstring(msg.stopTime, timeZone));
+                    notif.addData("stopdatetime", Iso8601DateUtil.formatIso8601Date(msg.stopTime, timeZone));
                 }
                 
                 notif.addData("durationminutes", durationMinutesStr);

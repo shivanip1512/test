@@ -10,6 +10,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.util.Iso8601DateUtil;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.service.data.ScenarioStatus;
@@ -104,7 +105,7 @@ public class ScenarioStopRequestEndpointTest {
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
         Assert.assertEquals("Incorrect scenarioName", "Scenario1", mockService.getScenarioName());
-        Assert.assertEquals("Incorrect stopDateTime", "2008-10-13T21:49:01Z", XmlUtils.formatDate(mockService.getStopTime()));
+        Assert.assertEquals("Incorrect stopDateTime", "2008-10-13T21:49:01Z", Iso8601DateUtil.formatIso8601Date(mockService.getStopTime()));
         
         TestUtils.runSuccessAssertion(outputTemplate, "scenarioStopResponse");
         

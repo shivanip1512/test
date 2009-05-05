@@ -2,9 +2,9 @@ package com.cannontech.yukon.api.loadManagement;
 
 import java.util.Date;
 
+import com.cannontech.common.util.Iso8601DateUtil;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
-import com.cannontech.yukon.api.util.XmlUtils;
 
 public class MockProgramStatus extends ProgramStatus {
 
@@ -18,10 +18,10 @@ public class MockProgramStatus extends ProgramStatus {
         super(null);
         this.programName = programName;
         this.programStatus = programStatus;
-        this.startDateTime = XmlUtils.parseDate(startDateTimeStr);
+        this.startDateTime = Iso8601DateUtil.parseIso8601Date(startDateTimeStr);
         this.stopDateTime = null;
         if (stopDateTimeStr != null) {
-            this.stopDateTime = XmlUtils.parseDate(stopDateTimeStr);
+            this.stopDateTime = Iso8601DateUtil.parseIso8601Date(stopDateTimeStr);
         }
         this.gearName = gearName;
     }

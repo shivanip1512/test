@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.tags.AlarmUtils;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.Iso8601DateUtil;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dynamic.PointValueHolder;
@@ -104,7 +104,7 @@ public class AlarmMessageHandler extends NotifHandler {
                 
                 notif.addData("alarmtime", timeFormatter.format(msg.alarmTimestamp));
                 notif.addData("alarmdate", dateFormatter.format(msg.alarmTimestamp));
-                notif.addData("alarmdatetime", CtiUtilities.makeISO8601Formttedstring(msg.alarmTimestamp, timeZone));
+                notif.addData("alarmdatetime", Iso8601DateUtil.formatIso8601Date(msg.alarmTimestamp, timeZone));
                 
                 String uofm = "";
                 if (point.getPointType() == PointTypes.STATUS_POINT) {
