@@ -18,8 +18,27 @@ public interface ProgramDao {
     
     public List<Program> getByProgramIds(List<Integer> programIdList);
     
+    /**
+     * Gets a program by its by its program name.  It will through an exception if it Doesn't
+     * find it and will also throw an exception if it finds more than one.
+     * 
+     * @param programName
+     * @param energyCompanyIds
+     * @return
+     */
     public Program getByProgramName(String programName,
                                     List<Integer> energyCompanyIds);
+    
+    /**
+     * Gets a program by its by its alternate program name.  It will through an exception if it Doesn't
+     * find it and will also throw an exception if it finds more than one.
+     * 
+     * @param alternateProgramName
+     * @param energyCompanyIds
+     * @return
+     */
+    public Program getByAlternateProgramName(String alternateProgramName,
+                                             List<Integer> energyCompanyIds);
     
     public List<Integer> getDistinctGroupIdsByYukonProgramIds(final Set<Integer> programIds);
 

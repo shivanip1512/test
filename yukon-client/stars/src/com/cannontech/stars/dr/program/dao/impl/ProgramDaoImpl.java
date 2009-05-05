@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
@@ -20,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.stars.dr.appliance.model.Appliance;
@@ -151,8 +149,32 @@ public class ProgramDaoImpl implements ProgramDao {
         programQuery.append("                                        AND ECTGM.mappingCategory = 'ApplianceCategory')");
         programQuery.append("WHERE PAO.paoClass = ?");
         programQuery.append("AND PAO.category = ?");
-        programQuery.append("AND (PAO.paoName = ?");
-        programQuery.append("     OR YWC.alternateDisplayName = ?");
+        programQuery.append("AND PAO.paoName = ?");
+        programQuery.append("AND ECTGM.energyCompanyId in (", energyCompanyIds, ")");
+        
+        try {
+            return simpleJdbcTemplate.queryForObject(programQuery.toString(), 
+            										 new ProgramRowMapper(simpleJdbcTemplate),
+                                                     DeviceClasses.STRING_CLASS_LOADMANAGER,
+                                                     PAOGroups.STRING_CAT_LOADMANAGEMENT,
+                                                     programName);
+        } catch(IncorrectResultSizeDataAccessException ex){
+            throw new IllegalArgumentException("The program name supplied returned too many results or none at all.");
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Program getByAlternateProgramName(String alternateProgramName,
+                                             List<Integer> energyCompanyIds) {
+        
+        final SqlStatementBuilder programQuery = new SqlStatementBuilder();
+        programQuery.append(selectSQLHeader);
+        programQuery.append("INNER JOIN ECToGenericMapping ECTGM ON (ECTGM.itemId = LMPWP.applianceCategoryId");
+        programQuery.append("                                        AND ECTGM.mappingCategory = 'ApplianceCategory')");
+        programQuery.append("WHERE PAO.paoClass = ?");
+        programQuery.append("AND PAO.category = ?");
+        programQuery.append("AND (YWC.alternateDisplayName = ?");
         programQuery.append("     OR YWC.alternateDisplayName like ?");
         programQuery.append("     OR YWC.alternateDisplayName like ?)");
         programQuery.append("AND ECTGM.energyCompanyId in (", energyCompanyIds, ")");
@@ -162,16 +184,14 @@ public class ProgramDaoImpl implements ProgramDao {
             										 new ProgramRowMapper(simpleJdbcTemplate),
                                                      DeviceClasses.STRING_CLASS_LOADMANAGER,
                                                      PAOGroups.STRING_CAT_LOADMANAGEMENT,
-                                                     programName,
-                                                     programName,
-                                                     programName+",%",
-                                                     "%,"+programName);
-        } catch(EmptyResultDataAccessException ex){
-            throw new NotFoundException("The program name supplied does not exist: " + programName);
+                                                     alternateProgramName,
+                                                     alternateProgramName+",%",
+                                                     "%,"+alternateProgramName);
         } catch(IncorrectResultSizeDataAccessException ex){
-            throw new IllegalArgumentException("The program name supplied returned too many results.  This is normally an indicator of the same program being a part of two separate, but available appliance categories.  Please check your appliance categories.");            
+            throw new IllegalArgumentException("The alternate program name supplied returned too many results.");            
         }
     }
+
     
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)

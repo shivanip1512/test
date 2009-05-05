@@ -145,8 +145,17 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
 	         * methods also take care of the validation for these three types and
 	         * includes checking to see if they belong to one another.
 	         */
-	        Program program = programDao.getByProgramName(enrollmentHelper.getProgramName(),
-	                                                      energyCompanyIds);
+        	Program program; 
+        	try {
+                program = programDao.getByProgramName(enrollmentHelper.getProgramName(),
+                                                      energyCompanyIds);
+        	} catch(IllegalArgumentException e) {
+                /* Since we couldn't find the program by the program name lets try finding the program
+                 * by its alternate name.
+                 */
+            	program = programDao.getByAlternateProgramName(enrollmentHelper.getProgramName(),
+                                                               energyCompanyIds);
+            }
 	        ApplianceCategory applianceCategory = getApplianceCategoryByName(enrollmentHelper.getApplianceCategoryName(), 
 	                                                                         program,
 	                                                                         energyCompanyIds);
