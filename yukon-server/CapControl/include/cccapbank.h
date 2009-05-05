@@ -159,6 +159,7 @@ public:
     const CtiTime& getUnsolicitedChangeTimeUpdated() const;
     BOOL getUnsolicitedPendingFlag() const;
     const string&  getPartialPhaseInfo() const;
+    LONG getActionId() const;
 
 
     int  getVCtrlIndex() const;
@@ -245,6 +246,7 @@ public:
     CtiCCCapBank& setUnsolicitedChangeTimeUpdated(const CtiTime& timestamp);
     CtiCCCapBank& setUnsolicitedPendingFlag(BOOL flag);
     CtiCCCapBank& setPartialPhaseInfo(const string& info);
+    CtiCCCapBank& setActionId(LONG actionId);
 
     CtiCCCapBank& setVCtrlIndex(int vCtrlIndex);
     CtiCCCapBank& setAssumedOrigVerificationState(int assumedOrigCapBankPos);
@@ -402,6 +404,8 @@ private:
 
     CtiCCOperationStats _operationStats;
     CtiCCConfirmationStats _confirmationStats;
+
+    LONG _actionId;
     
     //don't stream
     BOOL _insertDynamicDataFlag;

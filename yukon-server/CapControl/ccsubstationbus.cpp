@@ -5164,7 +5164,6 @@ void CtiCCSubstationBus::createStatusUpdateMessages(CtiMultiMsg_vec& pointChange
     ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(2);
     capBank->setLastStatusChangeTime(CtiTime());
 
-    INT actionId = CCEventActionIdGen(capBank->getStatusPointId());
     string stateInfo = capBank->getControlStatusQualityString();
     LONG stationId, areaId, spAreaId;
     store->getSubBusParentInfo(this, spAreaId, areaId, stationId);
@@ -5172,7 +5171,7 @@ void CtiCCSubstationBus::createStatusUpdateMessages(CtiMultiMsg_vec& pointChange
                                             getPAOId(), feeder->getPAOId(), capBankStateUpdate,
                                             getEventSequence(), capBank->getControlStatus(), text,
                                             user, before, after, change,
-                                            capBank->getIpAddress(), actionId, stateInfo,
+                                            capBank->getIpAddress(), capBank->getActionId(), stateInfo,
                                             phaseA, phaseB, phaseC));
 
 

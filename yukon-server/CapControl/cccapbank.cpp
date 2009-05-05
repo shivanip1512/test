@@ -249,6 +249,13 @@ const string& CtiCCCapBank::getPercentChangeString() const
 {
     return _sPercentChange;
 }
+LONG CtiCCCapBank::getActionId() const
+{
+    if (_actionId != -1) 
+        return _actionId;
+    else
+        return CCEventActionIdGen(getStatusPointId());
+}
 
 
 /*---------------------------------------------------------------------------
@@ -1678,6 +1685,13 @@ CtiCCCapBank& CtiCCCapBank::setPercentChangeString(const string& percent)
     return *this;
 }
 
+CtiCCCapBank& CtiCCCapBank::setActionId(LONG actionId)
+{
+    _actionId = actionId;
+    return *this;
+}
+
+
 CtiCCCapBank& CtiCCCapBank::setSendAllCommandFlag(BOOL flag)
 {
     _sendAllCommandFlag = flag;
@@ -2518,6 +2532,8 @@ void CtiCCCapBank::setDynamicData(RWDBReader& rdr)
     rdr["changevar"] >> _sPercentChange;
     rdr["twowaycbclastcontrol"] >> _reportedCBCLastControlReason;
     rdr["partialphaseinfo"] >> _partialPhaseInfo;
+
+    _actionId = -1;
 
     _insertDynamicDataFlag = FALSE;
     _dirty = FALSE;

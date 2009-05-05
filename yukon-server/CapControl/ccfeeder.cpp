@@ -2265,13 +2265,12 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiM
         ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(2);
         capBank->setLastStatusChangeTime(CtiTime());
 
-        //setEventSequence(getEventSequence() + 1);
-        INT actionId = CCEventActionIdGen(capBank->getStatusPointId()) + 1;
+        capBank->setActionId( CCEventActionIdGen(capBank->getStatusPointId()) + 1);
         string stateInfo = capBank->getControlStatusQualityString();
         LONG stationId, areaId, spAreaId;
         store->getFeederParentInfo(this, spAreaId, areaId, stationId);
         ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), spAreaId, areaId, stationId, getParentId(), getPAOId(), capControlCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control", kvarBefore, kvarBefore, 0,
-                                                capBank->getIpAddress(), actionId, stateInfo, varAValue, varBValue, varCValue));
+                                                capBank->getIpAddress(), capBank->getActionId(), stateInfo, varAValue, varBValue, varCValue));
     }
     else
     {
@@ -2368,10 +2367,10 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* c
 
         LONG stationId, areaId, spAreaId;
         store->getFeederParentInfo(this, spAreaId, areaId, stationId);
-        INT actionId = CCEventActionIdGen(capBank->getStatusPointId()) + 1;
+        capBank->setActionId( CCEventActionIdGen(capBank->getStatusPointId()) + 1);
         string stateInfo = capBank->getControlStatusQualityString();
         ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), spAreaId, areaId, stationId, getParentId(), getPAOId(), capControlCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control verification", kvarBefore, kvarBefore, 0,
-                                                capBank->getIpAddress(), actionId, stateInfo, varAValue, varBValue, varCValue));
+                                                capBank->getIpAddress(), capBank->getActionId(), stateInfo, varAValue, varBValue, varCValue));
     }
     else
     {
@@ -2459,10 +2458,10 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* c
 
         LONG stationId, areaId, spAreaId;
         store->getFeederParentInfo(this, spAreaId, areaId, stationId);
-        INT actionId = CCEventActionIdGen(capBank->getStatusPointId()) + 1;
+        capBank->setActionId( CCEventActionIdGen(capBank->getStatusPointId()) + 1);
         string stateInfo = capBank->getControlStatusQualityString();
         ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), spAreaId, areaId, stationId, getParentId(), getPAOId(), capControlCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control verification", kvarBefore, kvarBefore, 0, 
-                                                capBank->getIpAddress(), actionId, stateInfo, varAValue, varBValue, varCValue));
+                                                capBank->getIpAddress(), capBank->getActionId(), stateInfo, varAValue, varBValue, varCValue));
     }
     else
     {
@@ -2556,10 +2555,10 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiM
 
         LONG stationId, areaId, spAreaId;
         store->getFeederParentInfo(this, spAreaId, areaId, stationId);
-        INT actionId = CCEventActionIdGen(capBank->getStatusPointId()) + 1;
+        capBank->setActionId( CCEventActionIdGen(capBank->getStatusPointId()) + 1);
         string stateInfo = capBank->getControlStatusQualityString();
         ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), spAreaId, areaId, stationId, getParentId(), getPAOId(), capControlCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control", kvarBefore, kvarBefore, 0,
-                                                capBank->getIpAddress(), actionId, stateInfo, varAValue, varBValue, varCValue));
+                                                capBank->getIpAddress(), capBank->getActionId(), stateInfo, varAValue, varBValue, varCValue));
     }
     else
     {
@@ -2671,9 +2670,9 @@ CtiRequestMsg* CtiCCFeeder::createForcedVarRequest(CtiCCCapBank* capBank, CtiMul
 
         LONG stationId, areaId, spAreaId;
         store->getFeederParentInfo(this, spAreaId, areaId, stationId);
-        INT actionId = CCEventActionIdGen(capBank->getStatusPointId()) + 1;
+        capBank->setActionId( CCEventActionIdGen(capBank->getStatusPointId()) + 1);
         string stateInfo = capBank->getControlStatusQualityString();
-        ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), spAreaId, areaId, stationId, getParentId(), getPAOId(), capControlCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control", getCurrentVarLoadPointValue(), getCurrentVarLoadPointValue(), 0, capBank->getIpAddress(), actionId, stateInfo));
+        ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), spAreaId, areaId, stationId, getParentId(), getPAOId(), capControlCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control", getCurrentVarLoadPointValue(), getCurrentVarLoadPointValue(), 0, capBank->getIpAddress(), capBank->getActionId(), stateInfo));
     }
     else
     {
@@ -2726,9 +2725,8 @@ void CtiCCFeeder::createForcedVarConfirmation(CtiCCCapBank* capBank, CtiMultiMsg
     capBank->setControlRecentlySentFlag(TRUE);
     LONG stationId, areaId, spAreaId;
     store->getFeederParentInfo(this, spAreaId, areaId, stationId);
-    INT actionId = CCEventActionIdGen(capBank->getStatusPointId());
     string stateInfo = capBank->getControlStatusQualityString();
-    ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), spAreaId, areaId, stationId, getParentId(), getPAOId(), capBankStateUpdate, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control", getCurrentVarLoadPointValue(), getCurrentVarLoadPointValue(), 0, capBank->getIpAddress(), actionId, stateInfo));
+    ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), spAreaId, areaId, stationId, getParentId(), getPAOId(), capBankStateUpdate, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control", getCurrentVarLoadPointValue(), getCurrentVarLoadPointValue(), 0, capBank->getIpAddress(), capBank->getActionId(), stateInfo));
 
 }
 

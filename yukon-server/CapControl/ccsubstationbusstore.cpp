@@ -2607,7 +2607,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                 LONG stationId, areaId, spAreaId;
                                 getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
                                 CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::CloseQuestionable, "Var: Multiple banks pending, CloseQuestionable", "cap control");
-                                eventMsg->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()));
+                                eventMsg->setActionId(currentCapBank->getActionId());
                                 eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
                                 CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMsg);
 
@@ -2629,7 +2629,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                 LONG stationId, areaId, spAreaId;
                                 getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
                                 CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::OpenQuestionable, "Var: Multiple banks pending, OpenQuestionable", "cap control");
-                                eventMsg->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()));
+                                eventMsg->setActionId(currentCapBank->getActionId());
                                 eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
                                 CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMsg);
                             }
@@ -2672,7 +2672,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                             LONG stationId, areaId, spAreaId;
                             getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
                             CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::CloseQuestionable, "Var: Feeder not recently controlled, CloseQuestionable", "cap control");
-                            eventMsg->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()));
+                            eventMsg->setActionId(currentCapBank->getActionId());
                             eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
                             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMsg);
                         }
@@ -2693,7 +2693,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                             LONG stationId, areaId, spAreaId;
                             getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
                             CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::OpenQuestionable, "Var: Feeder not recently controlled, OpenQuestionable", "cap control");
-                            eventMsg->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()));
+                            eventMsg->setActionId(currentCapBank->getActionId());
                             eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
                             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMsg);
                         }
@@ -2762,7 +2762,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                             getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
 
                             CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::CloseQuestionable, "Var: Sub not recently controlled, CloseQuestionable", "cap control");
-                            eventMsg->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()));
+                            eventMsg->setActionId(currentCapBank->getActionId());
                             eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
                             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMsg);
 
@@ -2785,7 +2785,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                             getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
 
                             CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::OpenQuestionable, "Var: Sub not recently controlled, OpenQuestionable", "cap control");
-                            eventMsg->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()));
+                            eventMsg->setActionId(currentCapBank->getActionId());
                             eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
                             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMsg);
                         }
