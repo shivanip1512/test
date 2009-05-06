@@ -22,6 +22,7 @@ import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.core.roleproperties.UserNotInRoleException;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -141,7 +142,9 @@ public class LoginServiceImpl implements LoginService {
             }
         } catch (NotLoggedInException e) {
             redirect = ServletUtil.createSafeUrl(request, LoginController.LOGIN_URL);
-        }
+        } catch (UserNotInRoleException e) {
+            redirect = ServletUtil.createSafeUrl(request, LoginController.LOGIN_URL);
+        }        
 
         response.sendRedirect(redirect);
     }

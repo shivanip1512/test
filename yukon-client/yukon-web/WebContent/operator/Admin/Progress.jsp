@@ -1,9 +1,27 @@
-<%@ include file="../Consumer/include/StarsHeader.jsp" %>
+<%@ page import="com.cannontech.util.ServletUtil" %>
+<%@ page import="com.cannontech.stars.util.ServletUtils" %>
 <%@ page import="com.cannontech.stars.util.ProgressChecker" %>
 <%@ page import="com.cannontech.stars.util.task.TimeConsumingTask" %>
 <%@ page import="com.cannontech.stars.util.task.ImportCustAccountsTask" %>
 <%@ page import="com.cannontech.stars.util.task.DeleteEnergyCompanyTask" %>
+<%@ page import="com.cannontech.roles.application.WebClientRole" %>
+<%@ page import="com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany" %>
+<%@ page import="com.cannontech.stars.web.StarsYukonUser" %>
+<%@ page import="com.cannontech.common.version.VersionTools" %>
+<%@ page import="com.cannontech.database.cache.StarsDatabaseCache"%>
 <%
+
+    LiteStarsEnergyCompany liteEC = null;
+    final StarsYukonUser user = ServletUtils.getStarsYukonUser(session);
+	boolean starsExists = false;
+	try {
+	    starsExists = VersionTools.starsExists(); 
+	} catch (RuntimeException ignore) { }
+	
+	if ((starsExists) && (user != null)) {
+	    liteEC = StarsDatabaseCache.getInstance().getEnergyCompany(user.getEnergyCompanyID());
+	}
+	
 	long id = Long.parseLong(request.getParameter("id"));
 	TimeConsumingTask task = ProgressChecker.getTask(id);
 	

@@ -74,11 +74,12 @@ public class ActivityLogger {
 			if(energyCompanyID == -1)
 			{	
 				LiteYukonUser liteUser = DaoFactory.getYukonUserDao().getLiteYukonUser( userID );
-				
-				LiteEnergyCompany liteComp = DaoFactory.getEnergyCompanyDao().getEnergyCompany( liteUser );
-				if (liteComp != null)
-				{ 			
-					energyCompanyID = liteComp.getEnergyCompanyID();
+				if (liteUser != null) {
+				    LiteEnergyCompany liteComp = DaoFactory.getEnergyCompanyDao().getEnergyCompany( liteUser );
+				    if (liteComp != null)
+				    { 			
+				        energyCompanyID = liteComp.getEnergyCompanyID();
+				    }
 				}
 			}
 			
