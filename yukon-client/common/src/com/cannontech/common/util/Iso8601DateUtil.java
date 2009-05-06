@@ -40,6 +40,7 @@ public class Iso8601DateUtil {
     
     /**
      * Helper method to format date into Iso8601 string with timezone.
+     * Used to output a date as local time with no time zone suffix.  
      * @param date
      * @param tz
      * @return
