@@ -2316,7 +2316,7 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
             int channels = ChannelCount;
 
             //  cheaper than looking for parse.getFlags() & CMD_FLAG_GV_KWH
-            if( strstr(InMessage->Return.CommandStr, " kwh") )
+            if( stringContainsIgnoreCase(InMessage->Return.CommandStr, " kwh") )
             {
                 channels = 1;
             }
