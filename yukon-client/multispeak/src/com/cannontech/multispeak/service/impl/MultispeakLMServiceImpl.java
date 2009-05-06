@@ -1,7 +1,6 @@
 package com.cannontech.multispeak.service.impl;
 
 import java.math.BigInteger;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -38,6 +37,7 @@ import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.loadcontrol.service.data.ScenarioStatus;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.util.TimeoutException;
+import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspLMGroupDao;
 import com.cannontech.multispeak.dao.MspLMInterfaceMappingDao;
 import com.cannontech.multispeak.dao.MspObjectDao;
@@ -76,9 +76,7 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
     private List<? extends String> strategiesToExcludeInReport;
 	
 	@Override
-	public MspLoadControl buildMspLoadControl(LoadManagementEvent loadManagementEvent) throws RemoteException {
-
-		MspLoadControl mspLoadControl = new MspLoadControl();
+	public ErrorObject[] buildMspLoadControl(LoadManagementEvent loadManagementEvent, MspLoadControl mspLoadControl, MultispeakVendor vendor) {
 
 		//Set the start date
 		Calendar scheduleDateTime = loadManagementEvent.getScheduleDateTime();
@@ -106,20 +104,23 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
         String strategyName = loadManagementEvent.getStrategy().getStrategyName();
         List<MspLMInterfaceMapping> lmInterfaces = new ArrayList<MspLMInterfaceMapping>();
         ObjectRef[] substations = loadManagementEvent.getStrategy().getApplicationPointList();
-        try { 
-	    	for (ObjectRef substationRef : substations) {
-				String substationName = substationRef.getName();
-	    		MspLMInterfaceMapping lmInterface = new MspLMInterfaceMapping();
-	    		lmInterface = mspLMInterfaceMappingDao.getForStrategyAndSubstation(strategyName, substationName);
-	    		lmInterfaces.add(lmInterface);
-			}
-        } catch (NotFoundException e) {
-        	mspObjectDao.logMSPActivity("buildMspLoadControl", e.getMessage(), null);
-        	throw new RemoteException(e.getMessage());
-        }
+        
+        Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
+    	for (ObjectRef substationRef : substations) {
+			String substationName = substationRef.getName();
+    		MspLMInterfaceMapping lmInterface = new MspLMInterfaceMapping();
+    		try {
+    			lmInterface = mspLMInterfaceMappingDao.getForStrategyAndSubstation(strategyName, substationName);
+    			lmInterfaces.add(lmInterface);
+            } catch (NotFoundException e) {
+            	mspObjectDao.logMSPActivity("buildMspLoadControl", e.getMessage(), vendor.getCompanyName());
+            	ErrorObject err = mspObjectDao.getErrorObject(loadManagementEvent.getObjectID(), e.getMessage(), "loadManagementEvent", "buildMspLoadControl", vendor.getCompanyName());
+            	errorObjects.add(err);
+            }
+		}
     	mspLoadControl.setMspLmInterfaceMappings(lmInterfaces);
     	
-        return mspLoadControl;
+        return mspObjectDao.toErrorObject(errorObjects);
 	}
 	
 	@Override

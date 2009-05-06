@@ -1,6 +1,5 @@
 package com.cannontech.multispeak.service;
 
-import java.rmi.RemoteException;
 import java.util.Date;
 
 import com.cannontech.common.exception.NotAuthorizedException;
@@ -11,13 +10,13 @@ import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.loadcontrol.service.data.ScenarioStatus;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.util.TimeoutException;
+import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.db.MspLoadControl;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
 import com.cannontech.multispeak.deploy.service.LoadManagementEvent;
 import com.cannontech.multispeak.deploy.service.QualityDescription;
 import com.cannontech.multispeak.deploy.service.ScadaAnalog;
 import com.cannontech.multispeak.deploy.service.SubstationLoadControlStatus;
-import com.cannontech.multispeak.deploy.service.SubstationLoadControlStatusControlledItemsControlItem;
 
 public interface MultispeakLMService {
 
@@ -26,12 +25,14 @@ public interface MultispeakLMService {
 	 * If a startDate is not supplied, now will be used.
 	 * If a duration is not supplied, no stop time will be calculated (null will be used).
 	 * The substation name and strategy name values are used to lookup and return the 
-	 *  corresponding MspLMInterfaceMapping values.
+	 *  corresponding MspLMInterfaceMapping values.  If combination not found, ErrorObject is returned for each occurance.
 	 * @param loadManagementEvent
+	 * @param mspLoadControl
+	 * @param vendor
 	 * @return
-	 * @throws RemoteException
 	 */
-	public MspLoadControl buildMspLoadControl( LoadManagementEvent loadManagementEvent) throws RemoteException;
+	public ErrorObject[] buildMspLoadControl(LoadManagementEvent loadManagementEvent, MspLoadControl mspLoadControl, MultispeakVendor vendor);
+
 
 	/**
 	 * Start (ControlEventType.INITIATE) or Stop (ControlEventType.RESTORE) control for the "controllable"

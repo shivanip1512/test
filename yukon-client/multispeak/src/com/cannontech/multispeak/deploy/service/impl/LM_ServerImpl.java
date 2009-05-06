@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
+import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.db.MspLoadControl;
 import com.cannontech.multispeak.deploy.service.Customer;
@@ -209,9 +210,17 @@ public class LM_ServerImpl implements LM_ServerSoap_PortType
             throws RemoteException {
 
         LiteYukonUser liteYukonUser = init();
+        
+    	MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+    	
         ErrorObject errorObject = mspValidationService.isValidLoadManagementEvent(theLMEvent);
     	if (errorObject == null) {
-            MspLoadControl mspLoadControl = multispeakLMService.buildMspLoadControl(theLMEvent);
+    		MspLoadControl mspLoadControl = new MspLoadControl();
+            ErrorObject[] errorObject2 = multispeakLMService.buildMspLoadControl(theLMEvent, mspLoadControl, vendor);
+            if (errorObject2.length > 0) {
+            	//We may have more than one error possibly, just return the first error.
+            	return errorObject2[0];
+            }
             errorObject = multispeakLMService.control(mspLoadControl, liteYukonUser);
     	} 
         return errorObject;
@@ -222,18 +231,24 @@ public class LM_ServerImpl implements LM_ServerSoap_PortType
             throws RemoteException {
         LiteYukonUser liteYukonUser = init();
         
+    	MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        
         Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
         
-    	//Need to figure out some transactional way of thinking about this.  Rollbacks on starting control?
         for (LoadManagementEvent loadManagementEvent : theLMEvents) {
         	ErrorObject errorObject = mspValidationService.isValidLoadManagementEvent(loadManagementEvent);
         	if (errorObject == null) {
-	            MspLoadControl mspLoadControl = multispeakLMService.buildMspLoadControl(loadManagementEvent);
+        		MspLoadControl mspLoadControl = new MspLoadControl();
+        		//If errorObjects are returned, we still continue on and control what we can.  
+        		ErrorObject[] errorObject2 = multispeakLMService.buildMspLoadControl(loadManagementEvent, mspLoadControl, vendor);
+        		for (ErrorObject err : errorObject2) {
+        			errorObjects.add(err);					
+            	}
 	            errorObject = multispeakLMService.control(mspLoadControl, liteYukonUser);
         	} 
         	if (errorObject != null) {
-           		errorObjects.add(errorObject);
-           	}
+        		errorObjects.add(errorObject);
+        	}
 		}
         return mspObjectDao.toErrorObject(errorObjects);
     }
