@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     4/28/2009 10:33:51 AM                        */
+/* Created on:     5/6/2009 11:07:35 AM                         */
 /*==============================================================*/
 
 
@@ -5878,36 +5878,37 @@ create table DYNAMICBILLINGFIELD (
    PadChar              char(1)              not null,
    PadSide              varchar(5)           not null,
    ReadingType          varchar(12)          not null,
+   RoundingMode         varchar(20)          not null,
    constraint PK_DYNAMICBILLINGFIELD primary key (id)
 )
 go
 
 /* STANDARD */
-insert into DynamicBillingField values(1, 31,'Plain Text', 0, 'M', 0, ' ','none','ELECTRIC');
-insert into DynamicBillingField values(2, 31, 'meterNumber', 1, ' ', 0, ' ','none','ELECTRIC');
-insert into DynamicBillingField values(3, 31, 'totalConsumption - reading',2,'#####', 0, ' ','none','ELECTRIC');
-insert into DynamicBillingField values(4, 31, 'totalConsumption - timestamp', 3, 'HH:mm', 0, ' ','none','ELECTRIC');
-insert into DynamicBillingField values(5, 31, 'totalConsumption - timestamp', 4, 'MM/dd/yyyy', 0, ' ','none','ELECTRIC');
-insert into DynamicBillingField values(6, 31, 'totalPeakDemand - reading', 5, '##0.000', 0, ' ','none','ELECTRIC');
-insert into DynamicBillingField values(7, 31, 'totalPeakDemand - timestamp', 6, 'HH:mm', 0, ' ','none','ELECTRIC');
-insert into DynamicBillingField values(8, 31, 'totalPeakDemand - timestamp', 7, 'MM/dd/yyyy', 0, ' ','none','ELECTRIC');
+insert into DynamicBillingField values(1, 31,'Plain Text', 0, 'M', 0, ' ','none','ELECTRIC','HALF_EVEN');
+insert into DynamicBillingField values(2, 31, 'meterNumber', 1, ' ', 0, ' ','none','ELECTRIC','HALF_EVEN');
+insert into DynamicBillingField values(3, 31, 'totalConsumption - reading',2,'#####', 0, ' ','none','ELECTRIC','HALF_EVEN');
+insert into DynamicBillingField values(4, 31, 'totalConsumption - timestamp', 3, 'HH:mm', 0, ' ','none','ELECTRIC','HALF_EVEN');
+insert into DynamicBillingField values(5, 31, 'totalConsumption - timestamp', 4, 'MM/dd/yyyy', 0, ' ','none','ELECTRIC','HALF_EVEN');
+insert into DynamicBillingField values(6, 31, 'totalPeakDemand - reading', 5, '##0.000', 0, ' ','none','ELECTRIC','HALF_EVEN');
+insert into DynamicBillingField values(7, 31, 'totalPeakDemand - timestamp', 6, 'HH:mm', 0, ' ','none','ELECTRIC','HALF_EVEN');
+insert into DynamicBillingField values(8, 31, 'totalPeakDemand - timestamp', 7, 'MM/dd/yyyy', 0, ' ','none','ELECTRIC','HALF_EVEN');
 
 /* SimpleTOU */
-insert into DynamicBillingField values(10, 21, 'meterNumber', 0, ' ', 0, ' ','none','ELECTRIC');
-insert into DynamicBillingField values(11, 21, 'totalConsumption - reading' ,1, '#####', 0, ' ','none','ELECTRIC');
-insert into DynamicBillingField values(12, 21, 'totalConsumption - timestamp', 2, 'HH:mm', 0, ' ','none','ELECTRIC');
-insert into DynamicBillingField values(13, 21, 'totalConsumption - timestamp', 3, 'MM/dd/yyyy', 0, ' ','none','ELECTRIC');
-insert into DynamicBillingField values(14, 21, 'totalPeakDemand - reading', 4, '##0.000', 0, ' ','none','ELECTRIC');
-insert into DynamicBillingField values(15, 21, 'totalPeakDemand - timestamp', 5, 'HH:mm', 0, ' ','none','ELECTRIC');
-insert into DynamicBillingField values(16, 21, 'totalPeakDemand - timestamp', 6, 'MM/dd/yyyy', 0, ' ','none','ELECTRIC');
-insert into DynamicBillingField values(17, 21, 'rateAConsumption - reading', 7, '#####', 0, ' ','none','ELECTRIC');
-insert into DynamicBillingField values(18, 21, 'rateADemand - reading', 8, '##0.000', 0, ' ','none','ELECTRIC');
-insert into DynamicBillingField values(19, 21, 'rateADemand - timestamp', 9, 'HH:mm', 0, ' ','none','ELECTRIC');
-insert into DynamicBillingField values(20, 21, 'rateADemand - timestamp', 10, 'MM/dd/yyyy', 0, ' ','none','ELECTRIC');
-insert into DynamicBillingField values(21, 21, 'rateBConsumption - reading', 11, '#####', 0, ' ','none','ELECTRIC');
-insert into DynamicBillingField values(22, 21, 'rateBDemand - reading', 12, '##0.000', 0, ' ','none','ELECTRIC');
-insert into DynamicBillingField values(23, 21, 'rateBDemand - timestamp', 13, 'HH:mm', 0, ' ','none','ELECTRIC');
-insert into DynamicBillingField values(24, 21, 'rateBDemand - timestamp', 14, 'MM/dd/yyyy', 0, ' ','none','ELECTRIC'); 
+insert into DynamicBillingField values(10, 21, 'meterNumber', 0, ' ', 0, ' ','none','ELECTRIC','HALF_EVEN');
+insert into DynamicBillingField values(11, 21, 'totalConsumption - reading' ,1, '#####', 0, ' ','none','ELECTRIC','HALF_EVEN');
+insert into DynamicBillingField values(12, 21, 'totalConsumption - timestamp', 2, 'HH:mm', 0, ' ','none','ELECTRIC','HALF_EVEN');
+insert into DynamicBillingField values(13, 21, 'totalConsumption - timestamp', 3, 'MM/dd/yyyy', 0, ' ','none','ELECTRIC','HALF_EVEN');
+insert into DynamicBillingField values(14, 21, 'totalPeakDemand - reading', 4, '##0.000', 0, ' ','none','ELECTRIC','HALF_EVEN');
+insert into DynamicBillingField values(15, 21, 'totalPeakDemand - timestamp', 5, 'HH:mm', 0, ' ','none','ELECTRIC','HALF_EVEN');
+insert into DynamicBillingField values(16, 21, 'totalPeakDemand - timestamp', 6, 'MM/dd/yyyy', 0, ' ','none','ELECTRIC','HALF_EVEN');
+insert into DynamicBillingField values(17, 21, 'rateAConsumption - reading', 7, '#####', 0, ' ','none','ELECTRIC','HALF_EVEN');
+insert into DynamicBillingField values(18, 21, 'rateADemand - reading', 8, '##0.000', 0, ' ','none','ELECTRIC','HALF_EVEN');
+insert into DynamicBillingField values(19, 21, 'rateADemand - timestamp', 9, 'HH:mm', 0, ' ','none','ELECTRIC','HALF_EVEN');
+insert into DynamicBillingField values(20, 21, 'rateADemand - timestamp', 10, 'MM/dd/yyyy', 0, ' ','none','ELECTRIC','HALF_EVEN');
+insert into DynamicBillingField values(21, 21, 'rateBConsumption - reading', 11, '#####', 0, ' ','none','ELECTRIC','HALF_EVEN');
+insert into DynamicBillingField values(22, 21, 'rateBDemand - reading', 12, '##0.000', 0, ' ','none','ELECTRIC','HALF_EVEN');
+insert into DynamicBillingField values(23, 21, 'rateBDemand - timestamp', 13, 'HH:mm', 0, ' ','none','ELECTRIC','HALF_EVEN');
+insert into DynamicBillingField values(24, 21, 'rateBDemand - timestamp', 14, 'MM/dd/yyyy', 0, ' ','none','ELECTRIC','HALF_EVEN'); 
 
 /*==============================================================*/
 /* Table: DYNAMICBILLINGFORMAT                                  */
@@ -10831,14 +10832,14 @@ insert into YukonGroupRole values(-210,-1,-105,-10500,'(none)');
 insert into YukonGroupRole values(-211,-1,-105,-10501,'(none)');
 
 /* Billing for Yukon Group */
-insert into YukonGroupRole values(-230,-1,-6,-1500,'(none)');
-insert into YukonGroupRole values(-231,-1,-6,-1501,'(none)');
-
-insert into YukonGroupRole values(-233,-1,-6,-1503,'(none)');
-insert into YukonGroupRole values(-234,-1,-6,-1504,'(none)');
-insert into YukonGroupRole values(-235,-1,-6,-1505,'(none)');
-insert into YukonGroupRole values(-236,-1,-6,-1506,'(none)');
-insert into YukonGroupRole values(-237,-1,-6,-1507,'(none)');
+INSERT INTO YukonGroupRole VALUES(-230,-1,-6,-1500,'(none)');
+INSERT INTO YukonGroupRole VALUES(-231,-1,-6,-1501,'(none)');
+INSERT INTO YukonGroupRole VALUES(-233,-1,-6,-1503,'(none)');
+INSERT INTO YukonGroupRole VALUES(-234,-1,-6,-1504,'(none)');
+INSERT INTO YukonGroupRole VALUES(-235,-1,-6,-1505,'(none)');
+INSERT INTO YukonGroupRole VALUES(-236,-1,-6,-1506,'(none)');
+INSERT INTO YukonGroupRole VALUES(-237,-1,-6,-1507,'(none)');
+INSERT INTO YukonGroupRole VALUES(-239,-1,-6,-1509,'(none)'); 
 
 /* MultiSpeak */
 insert into YukonGroupRole values(-270,-1,-7,-1600,'0');
@@ -11958,6 +11959,7 @@ INSERT INTO YukonRoleProperty VALUES(-1505,-6,'Energy Days Previous','7','Intege
 INSERT INTO YukonRoleProperty VALUES(-1506,-6,'Append To File','false','Append to existing file.');
 INSERT INTO YukonRoleProperty VALUES(-1507,-6,'Remove Multiplier','false','Remove the multiplier value from the reading.');
 INSERT INTO YukonRoleProperty VALUES(-1508,-6,'Coop ID - CADP Only','(none)','CADP format requires a coop id number.');
+INSERT INTO YukonRoleProperty VALUES(-1509,-6,'Rounding Mode','HALF_EVEN','Rounding Mode used when formatting value data in billing formats. Available placeholders: HALF_EVEN, CEILING, FLOOR, UP, DOWN, HALF_DOWN, HALF_UP'); 
 
 /* Database Editor Role */
 INSERT INTO YukonRoleProperty VALUES(-10000,-100,'point_id_edit','false','Controls whether point ids can be edited');
