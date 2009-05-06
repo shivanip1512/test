@@ -11,12 +11,14 @@ import java.util.Map;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.Pair;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.customer.CustomerTypes;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.customer.Address;
@@ -407,10 +409,10 @@ public class CustomerAccount extends DBPersistent {
     	return customerAccts;
     }
     
-    public static List<Integer> searchByCompanyName(String searchName, List<Integer> energyCompanyIdList) 
+    public static List<Pair<Integer, LiteStarsEnergyCompany>> searchByCompanyName(String searchName, List<Integer> energyCompanyIdList) 
     {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DISTINCT ACCT.AccountId, CICB.CompanyName ");
+        sql.append("SELECT DISTINCT ACCT.AccountId, CICB.CompanyName, MAP.EnergyCompanyId ");
         sql.append("FROM ECToAccountMapping MAP, CustomerAccount ACCT, CICustomerBase CICB ");
         sql.append("WHERE MAP.EnergyCompanyID IN (",energyCompanyIdList,") ");
         sql.append("AND MAP.AccountId = ACCT.AccountId ");
@@ -427,13 +429,17 @@ public class CustomerAccount extends DBPersistent {
             
             pstmt = conn.prepareStatement(sql.toString());
             pstmt.setString(1, searchName);
-
+            
             rset = pstmt.executeQuery();
             
-            ArrayList<Integer> accountIds = new ArrayList<Integer>();
-            while(rset.next())
-                accountIds.add(rset.getInt(1));
-            return accountIds;
+            ArrayList<Pair<Integer, LiteStarsEnergyCompany>> accountECPairs = new ArrayList<Pair<Integer, LiteStarsEnergyCompany>>();
+            while(rset.next()) {
+            	int accountId = rset.getInt(1);
+            	int energyCompanyId = rset.getInt(3);
+            	LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany(energyCompanyId);
+            	accountECPairs.add(new Pair<Integer, LiteStarsEnergyCompany>(accountId, energyCompany));
+            }
+            return accountECPairs;
             
         }
         catch (Exception e) {
