@@ -283,18 +283,7 @@ public class StarsDatabaseCache implements DBChangeListener {
 		
         List<LiteStarsEnergyCompany> companies = getAllEnergyCompanies();
 		
-		if (msg.getDatabase() == DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB) {
-            ECMappingDao ecMappingDao = YukonSpringHook.getBean("ecMappingDao", ECMappingDao.class);
-            LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(msg.getId());
-            if( energyCompany.getEnergyCompanyID().intValue() != EnergyCompany.DEFAULT_ENERGY_COMPANY_ID) {				
-                LiteStarsCustAccountInformation liteAcctInfo = starsCustAccountInformationDao.getById(msg.getId(), energyCompany.getEnergyCompanyID());
-            	if (liteAcctInfo != null) {
-            		handleCustomerAccountChange( msg, energyCompany, liteAcctInfo );
-            		return;
-            	}
-            }
-		}
-		else if (msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB) {
+        if (msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB) {
 		    LiteYukonPAObject litePao = null;
             
             /*
