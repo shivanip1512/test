@@ -9,9 +9,10 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.clientutils.ActivityLogger;
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.exception.AuthenticationThrottleException;
-import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -44,7 +45,12 @@ public class YukonLoginController extends MultiActionController {
             success = loginService.login(request, username, password);
         } catch (AuthenticationThrottleException e) {
             retrySeconds = e.getThrottleSeconds();
+        } catch (NotAuthorizedException e) {
+        	CTILogger.info("Unable to log user in. Reason: " + e.getMessage());
+        	redirect = LoginController.LOGIN_URL + "?" + LoginController.INVALID_URL_ACCESS_PARAM;
+        	return new ModelAndView("redirect:" + redirect);
         }
+        
         if (success) {
             LiteYukonUser user = ServletUtil.getYukonUser(request);
 
@@ -54,32 +60,24 @@ public class YukonLoginController extends MultiActionController {
             		"User " + user.getUsername() + " (userid=" + user.getUserID() + 
             			") has logged in from " + request.getRemoteAddr());
             
-            boolean hasWebClientRole = rolePropertyDao.checkRole(YukonRole.WEB_CLIENT, user);
-            
-            if (hasWebClientRole) {
-            
-	            if (createRememberMeCookie) {
-	                String value = loginCookieHelper.createCookieValue(username, password);
-	                ServletUtil.createCookie(request, response, LoginController.REMEMBER_ME_COOKIE, value);
-	            }
-
-	            if (redirectedFrom != null && !redirectedFrom.equals("")) {
-	                redirect = redirectedFrom;
-	            } else {
-	        		String homeUrl = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, user);
-	        		redirect = ServletUtil.createSafeUrl(request, homeUrl);
-	            }
-            
-	            boolean hasUrlAccess = urlAccessChecker.hasUrlAccess(redirect, user);
-	            if (!hasUrlAccess) {
-	            	loginService.invalidateSession(request, "No access to URL (" + redirect + ")");
-	                redirect = LoginController.LOGIN_URL + "?" + LoginController.INVALID_URL_ACCESS_PARAM;
-	            }
-	          
-            } else {
-            	loginService.invalidateSession(request, "Not in WEB_CLIENT role.");
-            	redirect = LoginController.LOGIN_URL + "?" + LoginController.INVALID_URL_ACCESS_PARAM;
+            if (createRememberMeCookie) {
+                String value = loginCookieHelper.createCookieValue(username, password);
+                ServletUtil.createCookie(request, response, LoginController.REMEMBER_ME_COOKIE, value);
             }
+
+            if (redirectedFrom != null && !redirectedFrom.equals("")) {
+                redirect = redirectedFrom;
+            } else {
+        		String homeUrl = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, user);
+        		redirect = ServletUtil.createSafeUrl(request, homeUrl);
+            }
+        
+            boolean hasUrlAccess = urlAccessChecker.hasUrlAccess(redirect, user);
+            if (!hasUrlAccess) {
+            	loginService.invalidateSession(request, "No access to URL (" + redirect + ")");
+                redirect = LoginController.LOGIN_URL + "?" + LoginController.INVALID_URL_ACCESS_PARAM;
+            }
+	          
 	            
         } else {
             ServletUtil.deleteAllCookies(request, response);

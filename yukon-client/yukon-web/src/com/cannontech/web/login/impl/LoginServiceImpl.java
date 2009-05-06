@@ -22,9 +22,11 @@ import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.roles.application.WebClientRole;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.login.LoginService;
@@ -53,13 +55,16 @@ public class LoginServiceImpl implements LoginService {
     private ContactDao contactDao;
     private YukonUserDao yukonUserDao;
     private List<SessionInitializer> sessionInitializers;
-
+    private RolePropertyDao rolePropertyDao;
 
     @Override
     public boolean login(HttpServletRequest request, String username, String password) 
         throws AuthenticationThrottleException {
         try {
             final LiteYukonUser user = authenticationService.login(username, password);
+            
+            rolePropertyDao.verifyRole(YukonRole.WEB_CLIENT, user);
+            
             createSession(request, user);
 
             return true;
@@ -117,7 +122,7 @@ public class LoginServiceImpl implements LoginService {
             Pair p = (Pair) session.getAttribute(SAVED_YUKON_USERS);
             session.invalidate();
             
-            redirect = authDao.getRolePropertyValue(user, WebClientRole.LOG_IN_URL);
+            redirect = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.LOG_IN_URL, user);
             ActivityLogger.logEvent(user.getUserID(),LOGOUT_ACTIVITY_LOG, "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged out from " + request.getRemoteAddr());
 
             if (p != null) {
@@ -165,8 +170,8 @@ public class LoginServiceImpl implements LoginService {
 
             response.sendRedirect(
                                   request.getContextPath() + 
-                                  authDao.getRolePropertyValue(user.getUserID(), 
-                                                               WebClientRole.INBOUND_VOICE_HOME_URL));
+                                  rolePropertyDao.getPropertyStringValue(
+                                		  YukonRoleProperty.INBOUND_VOICE_HOME_URL, user));
         } else {
 
             ActivityLogger.logEvent(
@@ -235,7 +240,7 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public LiteYukonUser internalLogin(HttpServletRequest request, HttpSession session, String username, boolean saveCurrentUser) {
         LiteYukonUser user = yukonUserDao.getLiteYukonUser(username);
-        if (user == null || StringUtils.isBlank(authDao.getRolePropertyValue(user,WebClientRole.HOME_URL)))
+        if (user == null || StringUtils.isBlank(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, user)))
             return null;
         
         Properties oldContext = null;
@@ -254,7 +259,7 @@ public class LoginServiceImpl implements LoginService {
         
         String referer = this.getReferer(request);
         if(referer == null)
-            referer = authDao.getRolePropertyValue(user,WebClientRole.HOME_URL);
+            referer = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, user);
         
         // Save the old session context and where to direct the browser when the new user logs off
         if (oldContext != null)
@@ -308,5 +313,9 @@ public class LoginServiceImpl implements LoginService {
     public void setAuthenticationService(AuthenticationService authenticationService) {
         this.authenticationService = authenticationService;
     }
+    
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+		this.rolePropertyDao = rolePropertyDao;
+	}
 
 }

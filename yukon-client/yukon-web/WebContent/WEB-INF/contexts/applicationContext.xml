@@ -911,6 +911,7 @@
         <property name="authDao" ref="authDao" />
         <property name="contactDao" ref="contactDao" />
         <property name="yukonUserDao" ref="yukonUserDao" />
+        <property name="rolePropertyDao" ref="rolePropertyDao" />
         <property name="sessionInitializers">
             <list>
                 <ref bean="starsSessionInitializer"/>   
