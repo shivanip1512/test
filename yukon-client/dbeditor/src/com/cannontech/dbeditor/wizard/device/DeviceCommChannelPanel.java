@@ -291,10 +291,13 @@ private void checkAddress()
                 Integer devID = ((DeviceBase) val).getDevice().getDeviceID();
                 ((Series5Base) val).setVerification(new DeviceVerification(devID, devID, "N", "N"));
                 routeType = RouteTypes.STRING_SERIES_5_LMI_ROUTE;
-            } else if (devType == PAOGroups.RTC)
+            } else if (devType == PAOGroups.RTC) {
                 routeType = RouteTypes.STRING_RTC_ROUTE;
-            else
+        	} else if (devType == PAOGroups.XML_TRANSMITTER) {
+        		routeType = RouteTypes.STRING_XML;
+        	} else {
                 return val;
+        	}
 
             // A route is automatically added to each transmitter
             // create new route to be added
