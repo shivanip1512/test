@@ -51,6 +51,7 @@ import com.cannontech.database.db.device.DeviceDirectCommSettings;
 import com.cannontech.database.db.device.DeviceIDLCRemote;
 import com.cannontech.dbeditor.DatabaseEditorOptionPane;
 import com.cannontech.device.range.DeviceAddressRange;
+import com.cannontech.device.range.RangeBase;
 import com.cannontech.yukon.IDatabaseCache;
 
 
@@ -2634,7 +2635,9 @@ private void setRemoteBaseValue( RemoteBase rBase, int intType )
 		getSlaveAddressComboBox().setEditable( true );
 		getSlaveAddressComboBox().removeAllItems();
 		JTextFieldComboEditor editor = new JTextFieldComboEditor();
-		editor.setDocument( new LongRangeDocument(0L, 128L));
+		int devType = PAOGroups.getDeviceType( rBase.getPAOType() );
+		RangeBase rangeBase = DeviceAddressRange.getRangeBase(devType);
+		editor.setDocument( new LongRangeDocument(0L, rangeBase.getUpperRange()));
       	editor.addCaretListener(this);  //be sure to fireInputUpdate() messages!
       	getSlaveAddressComboBox().setEditor( editor );
       	getSlaveAddressComboBox().addItem( ((CCU721)rBase).getDeviceAddress().getSlaveAddress() );
@@ -2680,9 +2683,9 @@ public void setValue(Object val)
 	CtiUtilities.setCheckBoxState(getDisableFlagCheckBox(), deviceBase.getPAODisableFlag());
 	CtiUtilities.setCheckBoxState( getControlInhibitCheckBox(), deviceBase.getDevice().getControlInhibit());
 
-	//	CCU's cannot have addresses larger than 128
 	if (DeviceTypesFuncs.isCCU(deviceType)) {
-		getPhysicalAddressTextField().setDocument( new LongRangeDocument(0L, 128L) );
+		RangeBase rangeBase = DeviceAddressRange.getRangeBase(deviceType);
+		getPhysicalAddressTextField().setDocument( new LongRangeDocument(0L, rangeBase.getUpperRange()) );
 	}
 
 	//This is a bit ugly

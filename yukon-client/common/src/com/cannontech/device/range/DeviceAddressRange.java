@@ -59,10 +59,10 @@ public class DeviceAddressRange
         new RangeBase( 0, 127, DeviceTypes.CCU710A);
    	
    	private static final RangeBase RANGE_CCU711 = 
-        new RangeBase( 0, 127, DeviceTypes.CCU711);
+        new RangeBase( 0, 126, DeviceTypes.CCU711);
    	
    	private static final RangeBase RANGE_CCU721 = 
-   	    new RangeBase( 0, 127, DeviceTypes.CCU721);
+   	    new RangeBase( 0, 126, DeviceTypes.CCU721);
 
    	private static final RangeBase RANGE_RTU_WELCO = 
         new RangeBase( 0, 127, DeviceTypes.RTUWELCO);
