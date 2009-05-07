@@ -47,7 +47,7 @@ ALL:            $(CTIPROGS)
 
 
 tcpsup.dll:    $(TCPOBJS) $(COMPILEBASE)\lib\ctidbsrc.lib Makefile
-                @$(MAKE) -nologo -f $(_InputFile) id
+                @build -nologo -f $(_InputFile) id
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
@@ -76,7 +76,7 @@ deps:
 
 # The lines below accomplish the ID'ing of the project!
 id:
-            @$(MAKE) -nologo -f $(_InputFile) id_tcpdll.obj
+            @build -nologo -f $(_InputFile) id_tcpdll.obj
 
 id_tcpdll.obj:    id_tcpdll.cpp include\id_tcpdll.h id_vinfo.h
 

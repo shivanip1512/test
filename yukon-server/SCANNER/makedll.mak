@@ -45,7 +45,7 @@ ALL:            scansup.dll
 
 
 scansup.dll:   $(DLLOBJS) Makedll.mak
-               @$(MAKE) -nologo -f $(_InputFile) id
+               @build -nologo -f $(_InputFile) id
                @echo Building  ..\$@
                @%cd $(OBJ)
                $(CC) $(DLLFLAGS) $(DLLOBJS) id_sgdll.obj $(INCLPATHS) $(RWLIBS) $(BOOSTLIBS) $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\clrdump.lib /Fe..\$@
@@ -77,7 +77,7 @@ deps:
 
 # The lines below accomplish the ID'ing of the project!
 id:
-            @$(MAKE) -nologo -f $(_InputFile) id_sgdll.obj
+            @build -nologo -f $(_InputFile) id_sgdll.obj
 
 id_sgdll.obj:    id_sgdll.cpp include\id_sgdll.h id_vinfo.h
 

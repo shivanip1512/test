@@ -3,10 +3,10 @@
 
 
 ALL:
-            @$(MAKE) -nologo -f makepch.mak
-            @$(MAKE) -nologo -f makedll.mak
-            @$(MAKE) -nologo -f makecdll.mak
-            @$(MAKE) -nologo -f makeexe.mak
+            @build -nologo -f makepch.mak
+            @build -nologo -f makedll.mak
+            @build -nologo -f makecdll.mak
+            @build -nologo -f makeexe.mak
 
 
 clean:
@@ -29,10 +29,10 @@ allclean:   clean all
 
 
 copy:
-            @$(MAKE) -nologo -f makepch.mak $@
-            @$(MAKE) -nologo -f makedll.mak $@
-            @$(MAKE) -nologo -f makecdll.mak $@
-            @$(MAKE) -nologo -f makeexe.mak $@
+            @build -nologo -f makepch.mak $@
+            @build -nologo -f makedll.mak $@
+            @build -nologo -f makecdll.mak $@
+            @build -nologo -f makeexe.mak $@
 
 
 

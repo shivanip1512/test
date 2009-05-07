@@ -66,7 +66,7 @@ ctimsg.dll
 ALL:           $(CTIPROGS)
 
 ctimsg.dll:    $(OBJS) Makefile
-                @$(MAKE) -nologo -f $(_InputFile) id
+                @build -nologo -f $(_InputFile) id
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
@@ -106,7 +106,7 @@ $(BIN)\*.exe
 
 # The lines below accomplish the ID'ing of the project!
 id:
-            @$(MAKE) -nologo -f $(_InputFile) id_ctimsg.obj
+            @build -nologo -f $(_InputFile) id_ctimsg.obj
 
 id_ctimsg.obj:    id_ctimsg.cpp include\id_ctimsg.h id_vinfo.h
 

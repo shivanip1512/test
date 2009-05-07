@@ -2,20 +2,20 @@
 !include ..\common\rwglobal.inc
 
 all:
-        @$(MAKE) -nologo -f makepch.mak
-        @$(MAKE) -nologo -f makedll.mak
-        @$(MAKE) -nologo -f makeexe.mak
+        @build -nologo -f makepch.mak
+        @build -nologo -f makedll.mak
+        @build -nologo -f makeexe.mak
 
-#        @$(MAKE) -nologo -f makescn.mak
+#        @build -nologo -f makescn.mak
 
 copy:
-        @$(MAKE) -nologo -f makepch.mak $@
-        @$(MAKE) -nologo -f makedll.mak $@
-        @$(MAKE) -nologo -f makeexe.mak $@
+        @build -nologo -f makepch.mak $@
+        @build -nologo -f makedll.mak $@
+        @build -nologo -f makeexe.mak $@
 
 deps:
-        @$(MAKE) -nologo -f makedll.mak $@
-        @$(MAKE) -nologo -f makeexe.mak $@
+        @build -nologo -f makedll.mak $@
+        @build -nologo -f makeexe.mak $@
 
 clean:
         -del \

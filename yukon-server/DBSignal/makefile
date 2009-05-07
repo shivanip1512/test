@@ -3,17 +3,17 @@ include ..\common\rwglobal.inc
 
 
 all:
-            @$(MAKE) -nologo -f makepch.mak
-            @$(MAKE) -nologo -f makedll.mak
-            @$(MAKE) -nologo -f makeexe.mak
+            @build -nologo -f makepch.mak
+            @build -nologo -f makedll.mak
+            @build -nologo -f makeexe.mak
 
 copy:
-            @$(MAKE) -nologo -f makepch.mak $@
-            @$(MAKE) -nologo -f makedll.mak $@
-            @$(MAKE) -nologo -f makeexe.mak $@
+            @build -nologo -f makepch.mak $@
+            @build -nologo -f makedll.mak $@
+            @build -nologo -f makeexe.mak $@
 
 deps:
-            @$(MAKE) -nologo -nologo  -f makedll.mak $@
+            @build -nologo -nologo  -f makedll.mak $@
 
 
 

@@ -54,7 +54,7 @@ ALL:            ctisvr.dll
 
 
 ctisvr.dll:     $(SERVEROBJS) makesvr.mak
-                @$(MAKE) -nologo -f $(_InputFile) id
+                @build -nologo -f $(_InputFile) id
                 @echo Building  $@
                 @%cd $(OBJ)
                 $(CC) $(DLLFLAGS) $(SERVEROBJS) $(INCLPATHS) $(RWLIBS) $(BOOSTLIBS) $(SVRLIBS) /Fe..\$@ -link $(COMPILEBASE)\lib\clrdump.lib
@@ -81,7 +81,7 @@ deps:
 # The lines below accomplish the ID'ing of the project!
 id:
 #            @cid .\include\id_svr.h id_vinfo.h
-#            @$(MAKE) -nologo -f $(_InputFile) id_svr.obj
+#            @build -nologo -f $(_InputFile) id_svr.obj
 #
 #id_svr.obj:    id_svr.cpp include\id_svr.h id_vinfo.h
 

@@ -72,7 +72,7 @@ vgexe_factory.obj \
 ALL:            ctivg.dll
 
 ctivg.dll:      $(DLLOBJS) Makedll.mak
-                @$(MAKE) -nologo -f $(_InputFile) id
+                @build -nologo -f $(_InputFile) id
                 @echo Building  ..\$@
                 @%cd $(OBJ)
                 $(CC) $(DLLFLAGS) $(DLLOBJS) id_vgdll.obj $(INCLPATHS) $(RWLIBS) $(BOOSTLIBS) $(CTIVGLIBS) /Fe..\$@
@@ -107,7 +107,7 @@ deps:
 
 # The lines below accomplish the ID'ing of the project!
 id:
-            @$(MAKE) -nologo -f $(_InputFile) id_vgdll.obj
+            @build -nologo -f $(_InputFile) id_vgdll.obj
 
 id_vgdll.obj:    id_vgdll.cpp include\id_vgdll.h id_vinfo.h
 

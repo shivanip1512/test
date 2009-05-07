@@ -50,7 +50,7 @@ ALL:            portglob.dll
 
 
 portglob.dll:  $(DLLOBJS) Makedll.mak
-               @$(MAKE) -nologo -f $(_InputFile) id
+               @build -nologo -f $(_InputFile) id
                @echo Building  ..\$@
                @%cd $(OBJ)
                $(CC) $(RWCPPFLAGS) $(DLLFLAGS) $(DLLOBJS) id_pgdll.obj $(INCLPATHS) /Fe..\$@ -link $(LIBS) $(COMPILEBASE)\lib\tcpsup.lib $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\clrdump.lib $(COMPILEBASE)\lib\ctiprtdb.lib $(COMPILEBASE)\lib\ctidbsrc.lib $(COMPILEBASE)\lib\cticparms.lib $(RWLIBS) $(BOOSTLIBS)
@@ -81,7 +81,7 @@ deps:
 
 # The lines below accomplish the ID'ing of the project!
 id:
-            @$(MAKE) -nologo -f $(_InputFile) id_pgdll.obj
+            @build -nologo -f $(_InputFile) id_pgdll.obj
 
 id_pgdll.obj:    id_pgdll.cpp include\id_pgdll.h id_vinfo.h
 

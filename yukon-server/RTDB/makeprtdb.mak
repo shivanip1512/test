@@ -67,7 +67,7 @@ ALL:            $(CTIPROGS)
 
 
 ctiprtdb.dll:   $(YUKONPORTDLLOBJS) Makefile
-                @$(MAKE) -nologo -f $(_InputFile) id
+                @build -nologo -f $(_InputFile) id
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
@@ -107,7 +107,7 @@ $(BIN)\*.exe
 
 # The lines below accomplish the ID'ing of the project!
 id:
-            @$(MAKE) -nologo -f $(_InputFile) id_prtdll.obj
+            @build -nologo -f $(_InputFile) id_prtdll.obj
 
 id_prtdll.obj:    id_prtdll.cpp include\id_prtdll.h id_vinfo.h
 

@@ -102,7 +102,7 @@ ALL:            $(EXECS)
                 -@if exist $(COMPILEBASE)\porter\lib\ssleay32.dll copy $(COMPILEBASE)\porter\lib\ssleay32.dll $(YUKONOUTPUT)
 
 porter.exe:     $(BASEOBJS) Makefile
-                @$(MAKE) -nologo -f $(_InputFile) id
+                @build -nologo -f $(_InputFile) id
                 @echo:
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
@@ -152,7 +152,7 @@ deps:
 
 # The lines below accomplish the ID'ing of the project!
 id:
-            @$(MAKE) -nologo -f $(_InputFile) id_porter.obj
+            @build -nologo -f $(_InputFile) id_porter.obj
 
 id_porter.obj:    id_porter.cpp include\id_porter.h id_vinfo.h
 

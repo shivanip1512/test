@@ -61,7 +61,7 @@ $(COMPILEBASE)\lib\ctidbsrc.lib
 ALL:            scanner.exe
 
 scanner.exe:    $(BASEOBJS) makeexe.mak
-                @$(MAKE) -nologo -f $(_InputFile) id
+                @build -nologo -f $(_InputFile) id
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
@@ -110,7 +110,7 @@ deps:
 
 # The lines below accomplish the ID'ing of the project!
 id:
-            @$(MAKE) -nologo -f $(_InputFile) id_scanner.obj
+            @build -nologo -f $(_InputFile) id_scanner.obj
 
 id_scanner.obj:    id_scanner.cpp include\id_scanner.h id_vinfo.h
 

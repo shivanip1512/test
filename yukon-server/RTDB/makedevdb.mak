@@ -154,7 +154,7 @@ ALL:            $(CTIPROGS)
 
 
 ctidevdb.dll:   $(YUKONDEVDLLOBJS) Makefile
-                @$(MAKE) -nologo -f $(_InputFile) id
+                @build -nologo -f $(_InputFile) id
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
@@ -194,7 +194,7 @@ $(BIN)\*.exe
 
 # The lines below accomplish the ID'ing of the project!
 id:
-            @$(MAKE) -nologo -f $(_InputFile) id_devdll.obj
+            @build -nologo -f $(_InputFile) id_devdll.obj
 
 id_devdll.obj:    id_devdll.cpp include\id_devdll.h id_vinfo.h
 

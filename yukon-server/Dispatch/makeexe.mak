@@ -110,7 +110,7 @@ $(COMPILEBASE)\lib\ctipntdb.lib \
 ALL:            $(CTIPROGS)
 
 dispatch.exe:   $(VGOBJS) makeexe.mak
-                @$(MAKE) -nologo -f $(_InputFile) id
+                @build -nologo -f $(_InputFile) id
                 @echo:
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
@@ -213,7 +213,7 @@ $(CMDTESTOBJS) -link $(RWLIBS) $(BOOSTLIBS) $(TESTLIBS)
                 @%cd $(CWD)
 
 tstest.exe:     $(TSTEST) makeexe.mak
-                @$(MAKE) -nologo -f $(_InputFile) id
+                @build -nologo -f $(_InputFile) id
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
@@ -244,7 +244,7 @@ clean:
 
 # The lines below accomplish the ID'ing of the project!
 id:
-            @$(MAKE) -nologo -f $(_InputFile) id_vg.obj
+            @build -nologo -f $(_InputFile) id_vg.obj
 
 id_vg.obj:    id_vg.cpp include\id_vg.h id_vinfo.h
 

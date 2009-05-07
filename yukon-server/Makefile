@@ -5,206 +5,206 @@ all:
 	@echo Building in $(COMPILEBASE)\tcl
         @echo:
 	@%cd $(COMPILEBASE)\tcl
-        @$(MAKE) -nologo
+        @build -nologo
         echo:
         @title Building in $(COMPILEBASE)\cparms
         @echo Building in $(COMPILEBASE)\cparms
         @echo:
         @%cd $(COMPILEBASE)\cparms
-        @$(MAKE) -nologo
+        @build -nologo
         @%cd $(COMPILEBASE)\common
         # @cid .\include\id_build.h #TEMPORARILY COMMENT OUT
         @echo:
         @title Building in $(COMPILEBASE)\common
         @echo Building in $(COMPILEBASE)\common
         @echo:
-        @$(MAKE) -nologo
+        @build -nologo
         @%cd $(COMPILEBASE)\message
         @echo:
         @title Building in $(COMPILEBASE)\message
         @echo Building in $(COMPILEBASE)\message
         @echo:
-        @$(MAKE) -nologo
+        @build -nologo
         @%cd $(COMPILEBASE)\server
         @echo:
         @title Building in $(COMPILEBASE)\server
         @echo Building in $(COMPILEBASE)\server
         @echo:
-        @$(MAKE) -nologo
+        @build -nologo
         @%cd $(COMPILEBASE)\protocol
         @echo:
         @title Building in $(COMPILEBASE)\protocol
         @echo Building in $(COMPILEBASE)\protocol
         @echo:
-        @$(MAKE) -nologo
+        @build -nologo
         @%cd $(COMPILEBASE)\database
         @echo:
         @title Building in $(COMPILEBASE)\database
         @echo Building in $(COMPILEBASE)\database
 	@echo:
-        @$(MAKE) -nologo
+        @build -nologo
 	@%cd $(COMPILEBASE)\DeviceConfiguration
         @echo:
         @title Building in $(COMPILEBASE)\deviceconfiguration
         @echo Building in $(COMPILEBASE)\deviceconfiguration
         @echo:
-        @$(MAKE) -nologo
+        @build -nologo
         @%cd $(COMPILEBASE)\rtdb
         @echo:
         @title Building in $(COMPILEBASE)\rtdb
         @echo Building in $(COMPILEBASE)\rtdb
         @echo:
-        @$(MAKE) -nologo
+        @build -nologo
         @%cd $(COMPILEBASE)\dbsignal
         @echo:
         @title Building in $(COMPILEBASE)\dbsignal
         @echo Building in $(COMPILEBASE)\dbsignal
         @echo:
-        @$(MAKE) -nologo
+        @build -nologo
         @%cd $(COMPILEBASE)\service
         @echo:
         @title Building in $(COMPILEBASE)\service
         @echo Building in $(COMPILEBASE)\service
         @echo:
-        @$(MAKE) -nologo
+        @build -nologo
         @%cd $(COMPILEBASE)\dispatch
         @echo:
         @title Building in $(COMPILEBASE)\dispatch
         @echo Building in $(COMPILEBASE)\dispatch
         @echo:
-        @$(MAKE) -nologo
+        @build -nologo
         @%cd $(COMPILEBASE)\pil
         @echo:
         @title Building in $(COMPILEBASE)\pil
         @echo Building in $(COMPILEBASE)\pil
         @echo:
-        @$(MAKE) -nologo
+        @build -nologo
         @%cd $(COMPILEBASE)\porter
         @echo:
         @title Building in $(COMPILEBASE)\porter
         @echo Building in $(COMPILEBASE)\porter
         @echo:
-        @$(MAKE) -nologo
+        @build -nologo
         @%cd $(COMPILEBASE)\scanner
         @echo:
         @title Building in $(COMPILEBASE)\scanner
         @echo Building in $(COMPILEBASE)\scanner
         @echo:
-        @$(MAKE) -nologo
+        @build -nologo
 
         @%cd $(COMPILEBASE)\Simulator
         @echo:
         @title Building in $(COMPILEBASE)\Simulator
         @echo Building in $(COMPILEBASE)\Simulator
         @echo:
-        @$(MAKE) -nologo
+        @build -nologo
 
         @%cd $(COMPILEBASE)\interp
         @echo:
         @title Building in $(COMPILEBASE)\interp
         @echo Building in $(COMPILEBASE)\interp
         @echo:
-        @$(MAKE) -nologo
+        @build -nologo
 
         @%cd $(COMPILEBASE)\mccmd
         @echo:
         @title Building in $(COMPILEBASE)\mccmd
         @echo Building in $(COMPILEBASE)\mccmd
         @echo:
-        @$(MAKE) -nologo
+        @build -nologo
 
         @%cd $(COMPILEBASE)\logic
         @echo:
         @title Building in $(COMPILEBASE)\logic
         @echo Building in $(COMPILEBASE)\logic
         @echo:
-        @$(MAKE) -nologo
+        @build -nologo
 
         @%cd $(COMPILEBASE)\macs
         @echo:
         @title Building in $(COMPILEBASE)\macs
         @echo Building in $(COMPILEBASE)\macs
         @echo:
-        @$(MAKE) -nologo
+        @build -nologo
         @%cd $(COMPILEBASE)\fdr
         @echo:
         @title Building in $(COMPILEBASE)\fdr
         @echo Building in $(COMPILEBASE)\fdr
         @echo:
-        @$(MAKE) -nologo
+        @build -nologo
         @%cd $(COMPILEBASE)\calc
         @echo:
         @title Building in $(COMPILEBASE)\calc
         @echo Building in $(COMPILEBASE)\calc
 
         @echo:
-        @$(MAKE) -nologo
+        @build -nologo
         @%cd $(COMPILEBASE)\capcontrol
         @echo:
         @title Building in $(COMPILEBASE)\capcontrol
         @echo Building in $(COMPILEBASE)\capcontrol
         @echo:
-        @$(MAKE) -nologo
+        @build -nologo
         @%cd $(COMPILEBASE)\loadmanagement
         @echo:
         @title Building in $(COMPILEBASE)\loadmanagement
         @echo Building in $(COMPILEBASE)\loadmanagement
         @echo:
-        @$(MAKE) -nologo
+        @build -nologo
         @%cd $(CWD)
 
 
 allclean:
-        @$(MAKE) clean all
+        @build clean all
 
 
 clean:
         @%cd cparms
-        @$(MAKE) -nologo  $@
+        @build -nologo  $@
         @%cd $(COMPILEBASE)\protocol
-        @$(MAKE) -nologo  $@
+        @build -nologo  $@
         @%cd $(COMPILEBASE)\server
-        @$(MAKE) -nologo  $@
+        @build -nologo  $@
         @%cd $(COMPILEBASE)\database
-	@$(MAKE) -nologo  $@
+	@build -nologo  $@
 	@%cd $(COMPILEBASE)\deviceconfiguration
-        @$(MAKE) -nologo  $@
+        @build -nologo  $@
         @%cd $(COMPILEBASE)\rtdb
-        @$(MAKE) -nologo  $@
+        @build -nologo  $@
         @%cd $(COMPILEBASE)\dbsignal
-        @$(MAKE) -nologo  $@
+        @build -nologo  $@
         @%cd $(COMPILEBASE)\common
-        @$(MAKE) -nologo  $@
+        @build -nologo  $@
         @%cd $(COMPILEBASE)\message
-        @$(MAKE) -nologo  $@
+        @build -nologo  $@
         @%cd $(COMPILEBASE)\dispatch
-        @$(MAKE) -nologo  $@
+        @build -nologo  $@
         @%cd $(COMPILEBASE)\porter
-        @$(MAKE) -nologo  $@
+        @build -nologo  $@
         @%cd $(COMPILEBASE)\scanner
-        @$(MAKE) -nologo  $@
+        @build -nologo  $@
 	@%cd $(COMPILEBASE)\Simulator
-	@$(MAKE) -nologo  $@
+	@build -nologo  $@
         @%cd $(COMPILEBASE)\pil
-        @$(MAKE) -nologo  $@
+        @build -nologo  $@
         @%cd $(COMPILEBASE)\service
-        @$(MAKE) -nologo  $@
+        @build -nologo  $@
         @%cd $(COMPILEBASE)\fdr
-        @$(MAKE) -nologo  $@
+        @build -nologo  $@
         @%cd $(COMPILEBASE)\calc
-        @$(MAKE) -nologo  $@
+        @build -nologo  $@
         @%cd $(COMPILEBASE)\interp
-        @$(MAKE) -nologo  $@
+        @build -nologo  $@
         @%cd $(COMPILEBASE)\mccmd
-        @$(MAKE) -nologo  $@
+        @build -nologo  $@
         @%cd $(COMPILEBASE)\macs
-        @$(MAKE) -nologo  $@
+        @build -nologo  $@
         @%cd $(COMPILEBASE)\logic
-        @$(MAKE) -nologo  $@
+        @build -nologo  $@
         @%cd $(COMPILEBASE)\capcontrol
-        @$(MAKE) -nologo  $@
+        @build -nologo  $@
         @%cd $(COMPILEBASE)\loadmanagement
-        @$(MAKE) -nologo  $@
+        @build -nologo  $@
         @%cd $(COMPILEBASE)\lib
        -del *.obj *.dll *.ilk *.pdb *.lib *.exp
         @%cd $(COMPILEBASE)\bin
@@ -216,111 +216,111 @@ clean:
 deps:
         %cd $(COMPILEBASE)\protocol
         title %cd%
-        $(MAKE) -nologo  $@
+        build -nologo  $@
         %cd $(COMPILEBASE)\server
         title %cd%
-        $(MAKE) -nologo  $@
+        build -nologo  $@
         %cd $(COMPILEBASE)\database
 	title %cd%
-        $(MAKE) -nologo  $@
+        build -nologo  $@
 	%cd $(COMPILEBASE)\deviceconfiguration
 	title %cd%
-        $(MAKE) -nologo  $@
+        build -nologo  $@
 	%cd $(COMPILEBASE)\rtdb
         title %cd%
-        $(MAKE) -nologo  $@
+        build -nologo  $@
         %cd $(COMPILEBASE)\dbsignal
         title %cd%
-        $(MAKE) -nologo  $@
+        build -nologo  $@
         %cd $(COMPILEBASE)\common
         title %cd%
-        $(MAKE) -nologo  $@
+        build -nologo  $@
         %cd $(COMPILEBASE)\message
         title %cd%
-        $(MAKE) -nologo  $@
+        build -nologo  $@
         %cd $(COMPILEBASE)\dispatch
         title %cd%
-        $(MAKE) -nologo  $@
+        build -nologo  $@
         %cd $(COMPILEBASE)\porter
         title %cd%
-        $(MAKE) -nologo  $@
+        build -nologo  $@
         %cd $(COMPILEBASE)\scanner
         title %cd%
-        $(MAKE) -nologo  $@
+        build -nologo  $@
 	@%cd $(COMPILEBASE)\Simulator
 	title %cd%
-        $(MAKE) -nologo  $@
+        build -nologo  $@
         %cd $(COMPILEBASE)\pil
         title %cd%
-        $(MAKE) -nologo  $@
+        build -nologo  $@
         %cd $(COMPILEBASE)\service
         title %cd%
-        $(MAKE) -nologo  $@
+        build -nologo  $@
         %cd $(COMPILEBASE)\fdr
         title %cd%
-        $(MAKE) -nologo  $@
+        build -nologo  $@
         %cd $(COMPILEBASE)\calc
         title %cd%
-        $(MAKE) -nologo  $@
+        build -nologo  $@
         %cd $(COMPILEBASE)\interp
         title %cd%
         %cd $(COMPILEBASE)\mccmd
         title %cd%
-        $(MAKE) -nologo  $@
+        build -nologo  $@
         %cd $(COMPILEBASE)\macs
         title %cd%
-        $(MAKE) -nologo  $@
+        build -nologo  $@
         %cd $(COMPILEBASE)\capcontrol
         title %cd%
-        $(MAKE) -nologo  $@
+        build -nologo  $@
         %cd $(COMPILEBASE)\loadmanagement
         title %cd%
-        $(MAKE) -nologo  $@
+        build -nologo  $@
         %cd $(CWD)
 
 copy:
         @%cd cparms
-        @$(MAKE) -nologo  $@
+        @build -nologo  $@
         @%cd $(COMPILEBASE)\server
-        @$(MAKE) -nologo  $@
+        @build -nologo  $@
         @%cd $(COMPILEBASE)\database
-        @$(MAKE) -nologo  $@
+        @build -nologo  $@
         @%cd $(COMPILEBASE)\deviceconfiguration
-	@$(MAKE) -nologo  $@
+	@build -nologo  $@
 	@%cd $(COMPILEBASE)\rtdb
-        @$(MAKE) -nologo  $@
+        @build -nologo  $@
         @%cd $(COMPILEBASE)\common
-        @$(MAKE) -nologo  $@
+        @build -nologo  $@
         @%cd $(COMPILEBASE)\message
-        @$(MAKE) -nologo  $@
+        @build -nologo  $@
         @%cd $(COMPILEBASE)\protocol
-        @$(MAKE) -nologo  $@
+        @build -nologo  $@
         @%cd $(COMPILEBASE)\dispatch
-        @$(MAKE) -nologo  $@
+        @build -nologo  $@
         @%cd $(COMPILEBASE)\porter
-        @$(MAKE) -nologo  $@
+        @build -nologo  $@
         @%cd $(COMPILEBASE)\scanner
-        @$(MAKE) -nologo  $@
+        @build -nologo  $@
         @%cd $(COMPILEBASE)\pil
-        @$(MAKE) -nologo  $@
+        @build -nologo  $@
         @%cd $(COMPILEBASE)\fdr
-        @$(MAKE) -nologo  $@
+        @build -nologo  $@
         @%cd $(COMPILEBASE)\calc
-        @$(MAKE) -nologo  $@
+        @build -nologo  $@
         @%cd $(COMPILEBASE)\service
-        @$(MAKE) -nologo  $@
+        @build -nologo  $@
         @%cd $(COMPILEBASE)\interp
-        @$(MAKE) -nologo  $@
+        @build -nologo  $@
         @%cd $(COMPILEBASE)\mccmd
-        @$(MAKE) -nologo  $@
+        @build -nologo  $@
         @%cd $(COMPILEBASE)\macs
-        @$(MAKE) -nologo  $@
+        @build -nologo  $@
         @%cd $(COMPILEBASE)\capcontrol
-        @$(MAKE) -nologo  $@
+        @build -nologo  $@
         @%cd $(COMPILEBASE)\loadmanagement
-        @$(MAKE) -nologo  $@
+        @build -nologo  $@
         @%cd $(COMPILEBASE)\dbsignal
-        @$(MAKE) -nologo  $@
+        @build -nologo  $@
         @%cd $(CWD)
 
 

@@ -101,7 +101,7 @@ ALL:            $(CTIPROGS)
                 -@if exist $(BOOST)\stage\lib\boost_thread-vc6-mt-gd-1_31.dll copy $(BOOST)\stage\lib\boost_thread-vc6-mt-gd-1_31.dll $(YUKONOUTPUT)
 
 ctibase.dll:    $(BASEOBJS) Makefile
-                @$(MAKE) -nologo -f $(_InputFile) id
+                @build -nologo -f $(_InputFile) id
                 @%cd $(OBJ)
                 $(CC) $(BASEOBJS) id_ctibase.obj $(WINLIBS) $(DLLFLAGS) $(RWLIBS) $(BOOSTLIBS) $(COMPILEBASE)\lib\cticparms.lib $(COMPILEBASE)\lib\clrdump.lib /Fe..\$@ $(LINKFLAGS)
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
@@ -150,7 +150,7 @@ allclean:   clean all
 # The lines below accomplish the ID'ing of the project!
 id:
             # @cid .\include\id_ctibase.h id_vinfo.h
-            @$(MAKE) -nologo -f $(_InputFile) id_ctibase.obj
+            @build -nologo -f $(_InputFile) id_ctibase.obj
 
 id_ctibase.obj:    id_ctibase.cpp include\id_ctibase.h id_vinfo.h
 

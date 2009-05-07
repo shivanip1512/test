@@ -51,7 +51,7 @@ ALL:            $(CTIPROGS)
 
 
 cticonfig.dll:   $(DLLOBJS) Makedll.mak
-                @$(MAKE) -nologo -f $(_InputFile) id
+                @build -nologo -f $(_InputFile) id
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
@@ -81,7 +81,7 @@ deps:
 
 # The lines below accomplish the ID'ing of the project!
 id:
-            @$(MAKE) -nologo -f $(_InputFile) id_dcdll.obj
+            @build -nologo -f $(_InputFile) id_dcdll.obj
 
 id_dcdll.obj:    id_dcdll.cpp include\id_dcdll.h id_vinfo.h
 

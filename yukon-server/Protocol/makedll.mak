@@ -151,7 +151,7 @@ ctiprot.dll
 ALL:           $(CTIPROGS)
 
 ctiprot.dll:   $(OBJS) Makefile
-                @$(MAKE) -nologo -f $(_InputFile) id
+                @build -nologo -f $(_InputFile) id
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
@@ -201,7 +201,7 @@ $(BIN)\*.exe
 
 # The lines below accomplish the ID'ing of the project!
 id:
-            @$(MAKE) -nologo -f $(_InputFile) id_ctiprot.obj
+            @build -nologo -f $(_InputFile) id_ctiprot.obj
 
 id_ctiprot.obj:    id_ctiprot.cpp include\id_ctiprot.h id_vinfo.h
 
