@@ -370,22 +370,6 @@ public class StarsDatabaseCache implements DBChangeListener {
 		}
 	}
 	
-	private void handleCustomerAccountChange( DBChangeMsg msg, LiteStarsEnergyCompany energyCompany, LiteStarsCustAccountInformation liteAcctInfo )
-	{
-		switch( msg.getTypeOfChange() )
-		{
-			case DBChangeMsg.CHANGE_TYPE_ADD:
-				// Don't need to do anything, since customer account information is load-on-demand
-				break;
-				
-			case DBChangeMsg.CHANGE_TYPE_UPDATE:
-			case DBChangeMsg.CHANGE_TYPE_DELETE:
-				energyCompany.deleteCustAccountInformation( liteAcctInfo );
-				break;
-		}
-	}
-	
-	
 	private void handleLMProgramChange(DBChangeMsg msg, LiteStarsEnergyCompany energyCompany, LiteLMProgramWebPublishing liteProg) {
 		switch( msg.getTypeOfChange() )
 		{
