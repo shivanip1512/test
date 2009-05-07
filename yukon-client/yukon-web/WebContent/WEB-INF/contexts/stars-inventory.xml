@@ -126,10 +126,8 @@
           parent="starsInventoryActionController"/>
 	
 	<bean id="inventoryManipulateSelectedResults" class="com.cannontech.web.stars.action.inventory.ManipulateSelectedResultsController"
-          parent="starsInventoryActionController">
-		<property name="manipulateInventoryResults" ref="inventoryManipulateInventoryResults"/>
-	</bean>
-	
+          parent="starsInventoryActionController"/>
+
 	<bean id="inventoryConfigureInventoryResults" class="com.cannontech.web.stars.action.inventory.ConfigureInventoryResultsController"
           parent="starsInventoryActionController"/>
 	

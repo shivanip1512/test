@@ -57,7 +57,7 @@ public class ApplyActionsController extends StarsInventoryActionController {
             ManipulationBean mBean = (ManipulationBean) session.getAttribute("manipBean");
             mBean.setActionsApplied(appliedActions);
             List<LiteInventoryBase> theWares = iBean.getSelectedInventoryList();
-            if(theWares.size() < 1)
+            if (theWares == null || theWares.size() < 1)
             {
                 session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "There is no selected inventory on which to apply actions.");
                 String redirect = this.getReferer(request);

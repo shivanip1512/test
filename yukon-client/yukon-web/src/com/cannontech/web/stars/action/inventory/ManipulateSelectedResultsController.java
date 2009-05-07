@@ -17,12 +17,6 @@ import com.cannontech.stars.web.bean.InventoryBean;
 import com.cannontech.web.stars.action.StarsInventoryActionController;
 
 public class ManipulateSelectedResultsController extends StarsInventoryActionController {
-    private ManipulateInventoryResultsController manipulateInventoryResults;
-    
-    public void setManipulateInventoryResults(final ManipulateInventoryResultsController manipulateInventoryResults) {
-        this.manipulateInventoryResults = manipulateInventoryResults;
-    }
-    
     @Override
     public void doAction(final HttpServletRequest request, final HttpServletResponse response,
             final HttpSession session, final StarsYukonUser user, 
@@ -54,7 +48,8 @@ public class ManipulateSelectedResultsController extends StarsInventoryActionCon
         iBean.setInventoryList(inventoryList);
         iBean.setNumberOfRecords(String.valueOf((iBeanInventoryList.size())));
 
-        this.manipulateInventoryResults.doAction(request, response, session, user, energyCompany);
+        String redirect = request.getContextPath() + "/operator/Hardware/ChangeInventory.jsp";
+        response.sendRedirect(redirect);
     }
     
     private Map<Integer, LiteInventoryBase> toInventoryIdMap(List<LiteInventoryBase> list) {

@@ -742,7 +742,7 @@ public class InventoryBean {
     }
     
     public String getNumberOfRecordsSelected() {
-        return Integer.toString(inventorySet.size());
+        return Integer.toString(inventorySet == null ? 0 : inventorySet.size());
     }
     
     public void setInternalRequest(HttpServletRequest req)
