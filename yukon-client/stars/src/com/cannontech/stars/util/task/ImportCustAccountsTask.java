@@ -57,8 +57,6 @@ import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.dr.account.service.AccountService;
-import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
-import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.service.StarsControllableDeviceDTOConverter;
@@ -1469,22 +1467,23 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
         int currentNumberOfAppliances = liteAcctInfo.getAppliances().size();
         if(appFields == null)
             appFields = ImportManagerUtil.prepareFields( ImportManagerUtil.NUM_APP_FIELDS );
-        if(appFields[ImportManagerUtil.IDX_RELAY_NUM].trim().length() > 0)
+        if(appFields[ImportManagerUtil.IDX_RELAY_NUM].trim().length() > 0 )
         {
             relay = Integer.parseInt(appFields[ImportManagerUtil.IDX_RELAY_NUM]);
-            programs[0][3] = relay; // LoadNumber (optional)
+            if(!forcedUnenroll) {
+                programs[0][3] = relay; // LoadNumber (optional)
+            }
         }
         
         ProgramDao programDao = YukonSpringHook.getBean("starsProgramDao", ProgramDao.class);
-        Program program = programDao.getByProgramId(programs[0][0]);
-        
         List<int[]> programList = new ArrayList<int[]>();
         boolean addedThroughExistingEnrollment = false;
         
         for (int i = 0; i < currentNumberOfAppliances; i++) {
             LiteStarsAppliance liteApp = liteAcctInfo.getAppliances().get(i);
-            if(liteApp.getInventoryID() == liteInv.getInventoryID()) {
-                Program existingProgram = programDao.getByProgramId(liteApp.getProgramID());
+            if(liteApp.getInventoryID() == liteInv.getInventoryID() && !forcedUnenroll) {
+            	Program existingProgram = programDao.getByProgramId(liteApp.getProgramID());
+                Program program = programDao.getByProgramId(programs[0][0]);
                 if(existingProgram.getApplianceCategoryId() == program.getApplianceCategoryId()){
                     if((liteApp.getLoadNumber() == relay || relay == -1)) {
 	                    if (liteApp.getProgramID() == program.getProgramId()) {
@@ -1539,7 +1538,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
             }
         }
 		
-        if(!addedThroughExistingEnrollment){
+        if(!addedThroughExistingEnrollment && !forcedUnenroll){
         	programList.add(programs[0]);
         }
         
