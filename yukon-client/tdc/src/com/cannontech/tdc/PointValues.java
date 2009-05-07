@@ -12,6 +12,7 @@ import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
@@ -297,10 +298,16 @@ public synchronized void setCurrentForegroundColor( int i )
 
 private LitePoint getLitePoint()
 {
-	if( getPointID() == TDCDefines.ROW_BREAK_ID )
-		return LitePoint.NONE_LITE_PT;
-	else
-		return DaoFactory.getPointDao().getLitePoint( getPointID() );
+	LitePoint litePoint = LitePoint.NONE_LITE_PT;
+	if( getPointID() != TDCDefines.ROW_BREAK_ID ) {
+		try {
+			litePoint = DaoFactory.getPointDao().getLitePoint( getPointID() );
+		} catch (NotFoundException e) {
+			// This case occurs when a Device is deleted and one of it's points was in a display
+			// ignore and return the default NONE_LITE_PT object
+		}
+	}
+	return litePoint;
 }
 
 private LiteStateGroup getLiteStateGroup()
