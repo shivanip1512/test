@@ -168,7 +168,7 @@
 			      	</select>
 			    </span>   
 			    <span class="filterButtons">
-					<input type="submit" name="Submit" value="Show" onClick="setFilterValue(this.form);">
+					<input type="button" name="Submit" value="Show" onClick="setFilterValue(this.form);">
 					<input type="button" name="ShowAll" value="Show All" onClick="showAll(this.form)">
 				</span>
 				

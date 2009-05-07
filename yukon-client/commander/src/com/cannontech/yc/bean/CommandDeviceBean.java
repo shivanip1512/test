@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
@@ -1192,8 +1191,6 @@ public class CommandDeviceBean implements DBChangeListener
 	{
 		if (loadGroupIDToLiteLoadGroupsMap == null)
 		{
-		    //loadGroupIDToLiteLoadGroupsMap = new HashMap<Integer, YCLiteLoadGroup>();
-		    HashMap<Integer, YCLiteLoadGroup> tempMap = new HashMap<Integer, YCLiteLoadGroup>();
 			//Vector of Integer values(loadGroup or loadgroup(from within a macroGroup) ids)
 			Vector<Integer> groupIDs = null; 
 
@@ -1241,6 +1238,7 @@ public class CommandDeviceBean implements DBChangeListener
 					if( stmt != null )	//close the statement after every use.
 						stmt.close();
 
+					loadGroupIDToLiteLoadGroupsMap = new HashMap<Integer, YCLiteLoadGroup>(groupIDs.size());
 					//Load all serial numbers for versacom and expresscom					
 					sql = new StringBuffer(" SELECT DISTINCT LMGV.DEVICEID, ROUTEID, KWCAPACITY, SERIALADDRESS " +
 							" FROM " + LMGroupVersacom.TABLE_NAME + " LMGV, " + LMGroup.TABLE_NAME + " LMG " +
@@ -1256,7 +1254,7 @@ public class CommandDeviceBean implements DBChangeListener
 							double capacity = rset.getDouble(3);
 							String serial = rset.getString(4);
 							YCLiteLoadGroup llg = new YCLiteLoadGroup(deviceID.intValue(), capacity, routeID, serial);
-							tempMap.put(deviceID, llg);
+							loadGroupIDToLiteLoadGroupsMap.put(deviceID, llg);
 						}
 					}
 
@@ -1277,7 +1275,7 @@ public class CommandDeviceBean implements DBChangeListener
 							double capacity = rset.getDouble(3);
 							String serial = rset.getString(4);
 							YCLiteLoadGroup llg = new YCLiteLoadGroup(deviceID.intValue(), capacity, routeID, serial);
-							tempMap.put(deviceID, llg);
+							loadGroupIDToLiteLoadGroupsMap.put(deviceID, llg);
 						}
 					}
 				}
@@ -1290,8 +1288,6 @@ public class CommandDeviceBean implements DBChangeListener
 			{
 				SqlUtils.close(rset, stmt, conn );
 			}
-			loadGroupIDToLiteLoadGroupsMap = tempMap;
-			return tempMap;
 		}
 		return loadGroupIDToLiteLoadGroupsMap;
 	}
