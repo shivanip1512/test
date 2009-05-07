@@ -572,13 +572,16 @@ public class UpdateCustAccountAction implements ActionBase {
                 custAcctChanged = true;
 			}
 			
-			if (primContChanged) ServerUtils.handleDBChange( litePrimContact, DBChangeMsg.CHANGE_TYPE_UPDATE );
-			//if (ciCustChanged || altCustFieldChanged) ServerUtils.handleDBChange( liteCustomer, DBChangeMsg.CHANGE_TYPE_UPDATE );
-			/*this had been commented out.  Looks like Yao took this out in '03.  Why?  I think this might account for 
-            the problem with multiple webservers not staying synced up on account information during imports and other changes!*/
-            if (ciCustChanged || altCustFieldChanged || custAcctChanged) ServerUtils.handleDBChange( liteAcctInfo, DBChangeMsg.CHANGE_TYPE_UPDATE );
-		}
-		catch (java.sql.SQLException e) {
+			if (primContChanged) {
+			    ServerUtils.handleDBChange( litePrimContact, DBChangeMsg.CHANGE_TYPE_UPDATE );
+			}
+			if (ciCustChanged || altCustFieldChanged) {
+			    ServerUtils.handleDBChange( liteCustomer, DBChangeMsg.CHANGE_TYPE_UPDATE );
+			}
+            if (ciCustChanged || altCustFieldChanged || custAcctChanged) {
+                ServerUtils.handleDBChange( liteAcctInfo, DBChangeMsg.CHANGE_TYPE_UPDATE );
+            }
+		} catch (java.sql.SQLException e) {
 		    CTILogger.error(e);
 		    throw new WebClientException( "Failed to update the customer account information", e );
 		} finally {

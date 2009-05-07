@@ -766,6 +766,11 @@ public class AccountServiceImpl implements AccountService {
                 customerDao.updateCustomer(liteCustomer);
             }
         }
+        dbPersistantDao.processDBChange(new DBChangeMsg(liteCustomer.getLiteID(),
+                                                        DBChangeMsg.CHANGE_CUSTOMER_DB,
+                                                        DBChangeMsg.CAT_CUSTOMER,
+                                                        DBChangeMsg.CAT_CUSTOMER,
+                                                        DBChangeMsg.CHANGE_TYPE_UPDATE));
         
         /*
          * Update account site
