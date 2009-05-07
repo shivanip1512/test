@@ -315,6 +315,7 @@ int IDLC::generate_control( CtiXfer &xfer )
 int IDLC::decode( CtiXfer &xfer, int status )
 {
     int retval = NoError;
+    _in_data.clear();
 
     if( control_pending() )
     {
@@ -466,7 +467,10 @@ int IDLC::process_control( frame in_frame )
     }
     else if( (in_frame.header.control.code & 0x1f) == ControlCode_RejectWithRestart )
     {
+        // The end device is unhappy with us, we submit our new request with 
+        // the slave and master it asked for.
         _master_sequence = in_frame.header.control.code >> 5;
+        _slave_sequence  = _master_sequence;
         _protocol_errors++;
 
         _control_state = Control_State_OK;

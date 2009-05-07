@@ -230,6 +230,7 @@ INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg            *pReq,
 
                         /***** FALL THROUGH ** FALL THROUGH *****/
                     }
+                case TYPE_CCU721:
                 case TYPE_CCU711:
                     {
                         /* check if queing is allowed */
@@ -559,6 +560,7 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg          *pReq,
 
                         /***** FALL THROUGH ** FALL THROUGH *****/
                     }
+                case TYPE_CCU721:
                 case TYPE_CCU711:
                     {
                         /* check if queing is allowed */
@@ -678,6 +680,7 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg          *pReq,
 
                             /***** FALL THROUGH ** FALL THROUGH *****/
                         }
+                    case TYPE_CCU721:
                     case TYPE_CCU711:
                         {
                             /* check if queing is allowed */

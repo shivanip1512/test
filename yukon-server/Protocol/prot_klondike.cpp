@@ -592,7 +592,7 @@ int Klondike::decode( CtiXfer &xfer, int status )
                                           << inbound.size() << " > " << WrapLengthMaximum
                                           << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
-                    else
+                    else if( inbound.size() > 0 )
                     {
                         processResponse(inbound);
                     }
@@ -892,7 +892,7 @@ void Klondike::processResponse(const byte_buffer_t &inbound)
                 for( int entry = 0; entry < queue_entries_read; entry++ )
                 {
                     //  queue_response_t's constructor increments the inbound iterator
-                    queue_response_t q( (const unsigned char *&)inbound_itr);
+                    queue_response_t q(inbound_itr);
 
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);

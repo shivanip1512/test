@@ -157,7 +157,7 @@ INT CCU721::ResultDecode( INMESS *InMessage, CtiTime &Now, list<CtiMessage *> &v
     {
         retList.push_back(CTIDBG_new CtiReturnMsg(getID(),
                                                   string(InMessage->Return.CommandStr),
-                                                  string((char *)(InMessage->Buffer.InMessage + 96), 4000),
+                                                  string((char *)(InMessage->Buffer.InMessage + InMessage_StringOffset)),
                                                   InMessage->EventCode & 0x7fff,
                                                   InMessage->Return.RouteID,
                                                   InMessage->Return.MacroOffset,
@@ -217,8 +217,9 @@ INT CCU721::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
 {
     int retval = NORMAL;
 
-    if( OutMessage->TargetID &&
-        OutMessage->TargetID != OutMessage->DeviceID &&
+    // If they are the same, it is a message to the CCU and should not be queued
+    // Instead of checking this, should all messages to the CCU be marked DTRAN?
+    if( OutMessage->TargetID != OutMessage->DeviceID &&
         !(OutMessage->EventCode & DTRAN) )
     {
         vector<unsigned char> queued_message;
@@ -324,6 +325,7 @@ bool CCU721::buildCommand(CtiOutMessage *&OutMessage, Commands command)
         if( command_built )
         {
             OutMessage->DeviceID = getID();
+            OutMessage->TargetID = getID();
             OutMessage->Port     = getPortID();
         }
     }
@@ -483,8 +485,6 @@ int CCU721::sendCommResult(INMESS *InMessage)
 
                     _statistics.push_back(statistics_report);
 
-                    //  I don't think this is needed - investigate and remove at a later date
-                    im->EventCode |= DECODED;
                     if( (socket_error = im->ReturnNexus->CTINexusWrite(im, sizeof(INMESS), &bytes_written, 60L)) != NORMAL )
                     {
                         {

@@ -1085,7 +1085,6 @@ INT CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage
                         }
                     }
                     /* this is a completed result so send it to originating process */
-                    ResultMessage.EventCode |= DECODED;
                     if( (SocketError = ResultMessage.ReturnNexus->CTINexusWrite(&ResultMessage, sizeof (ResultMessage), &BytesWritten, 60L)) != NORMAL)
                     {
                         {
@@ -1898,7 +1897,7 @@ INT DeQueue (INMESS *InMessage)
                         ResultMessage.SaveNexus = pInfo->QueTable[i].SaveNexus;
                         ResultMessage.Return = pInfo->QueTable[i].Request;
                         ResultMessage.MessageFlags = pInfo->QueTable[i].MessageFlags;
-                        ResultMessage.EventCode = InMessage->EventCode | DECODED;
+                        ResultMessage.EventCode = InMessage->EventCode;
                         ResultMessage.Time = InMessage->Time;
                         ResultMessage.MilliTime = InMessage->MilliTime;
                         if(pInfo->QueTable[i].EventCode & BWORD)
@@ -2021,7 +2020,7 @@ int ReturnQueuedResult(CtiDeviceSPtr Dev, CtiTransmitter711Info *pInfo, USHORT Q
             InMessage.MessageFlags  = pInfo->QueTable[QueTabEnt].MessageFlags;
             InMessage.Time          = LongTime();
             InMessage.MilliTime     = 0;
-            InMessage.EventCode     = QUEUEFLUSHED | DECODED;                 // Indicates the result of the request.. The CCU queue was blown away!
+            InMessage.EventCode     = QUEUEFLUSHED;                 // Indicates the result of the request.. The CCU queue was blown away!
         }
         catch(...)
         {

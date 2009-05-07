@@ -152,7 +152,7 @@ private:
         unsigned char  result;
         byte_buffer_t  message;
 
-        queue_response_t(const unsigned char *&buf)
+        queue_response_t(byte_buffer_t::const_iterator &buf)
         {
             sequence         = *buf++;
             sequence        |= *buf++ <<  8;
