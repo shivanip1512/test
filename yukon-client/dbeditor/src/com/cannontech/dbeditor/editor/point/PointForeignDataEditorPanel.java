@@ -20,12 +20,14 @@ public class PointForeignDataEditorPanel extends com.cannontech.common.gui.util.
 	private javax.swing.JComboBox ivjJComboBoxOption3 = null;
 	private javax.swing.JComboBox ivjJComboBoxOption4 = null;
 	private javax.swing.JComboBox ivjJComboBoxOption5 = null;
+	private javax.swing.JComboBox ivjJComboBoxOption6 = null;
 	private javax.swing.JLabel ivjJLabelOption4 = null;
 	private javax.swing.JLabel ivjJLabelOption5 = null;
+	private javax.swing.JLabel ivjJLabelOption6 = null;
 	private javax.swing.JPanel ivjJPanelDataParameters = null;
 	private javax.swing.JComboBox ivjJComboBoxDirection = null;
 	private javax.swing.JComboBox ivjJComboBoxInterface = null;
-	public static final int MAX_DATA_PROPERTIES = 5;
+	public static final int MAX_DATA_PROPERTIES = 6;
 	//dataOptions[][] 
 	// 	--[x][0] is the OptionJLabel
 	//		--[x][1] is the OptionJComboBox
@@ -294,6 +296,9 @@ private javax.swing.JComponent[][] getDataOptions()
 		getDataOptions()[3][1] = getJComboBoxOption4();
 		getDataOptions()[4][0] = getJLabelOption5();
 		getDataOptions()[4][1] = getJComboBoxOption5();
+		getDataOptions()[5][0] = getJLabelOption6();
+		getDataOptions()[5][1] = getJComboBoxOption6();
+
 	}
 	
 	return dataOptions;
@@ -665,6 +670,27 @@ private javax.swing.JComboBox getJComboBoxOption5() {
 	}
 	return ivjJComboBoxOption5;
 }
+
+private javax.swing.JComboBox getJComboBoxOption6() {
+	if (ivjJComboBoxOption6 == null) {
+		try {
+			ivjJComboBoxOption6 = new javax.swing.JComboBox();
+			ivjJComboBoxOption6.setName("JComboBoxOption6");
+			ivjJComboBoxOption6.setOpaque(true);
+			ivjJComboBoxOption6.setMaximumSize(new java.awt.Dimension(130, 30));
+			ivjJComboBoxOption6.setPreferredSize(new java.awt.Dimension(130, 30));
+			ivjJComboBoxOption6.setFont(new java.awt.Font("dialog", 0, 14));
+			ivjJComboBoxOption6.setMinimumSize(new java.awt.Dimension(130, 30));
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJComboBoxOption6;
+}
 /**
  * Return the TranslationLabel property value.
  * @return javax.swing.JLabel
@@ -778,6 +804,25 @@ private javax.swing.JLabel getJLabelOption5() {
 		}
 	}
 	return ivjJLabelOption5;
+}
+
+private javax.swing.JLabel getJLabelOption6() {
+	if (ivjJLabelOption6 == null) {
+		try {
+			ivjJLabelOption6 = new javax.swing.JLabel();
+			ivjJLabelOption6.setName("JLabelOption6");
+			ivjJLabelOption6.setFont(new java.awt.Font("dialog", 0, 12));
+			ivjJLabelOption6.setAlignmentX(java.awt.Component.CENTER_ALIGNMENT);
+			ivjJLabelOption6.setText("Option6:");
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJLabelOption6;
 }
 /**
  * Return the JPanelDataParameters property value.
