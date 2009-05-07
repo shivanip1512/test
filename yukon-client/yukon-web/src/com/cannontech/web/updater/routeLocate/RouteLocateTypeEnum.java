@@ -31,12 +31,7 @@ public enum RouteLocateTypeEnum {
             
             ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.web.modules.amr.routeLocateHome.recentRouteLocateResults.STOP_TIME");
             resolvableTemplate.addData("stopTime", routeLocateResult.getStopTime());
-            
-            boolean finished = false;
-            if (routeLocateResult.isComplete()) {
-                finished = true;
-            }
-            resolvableTemplate.addData("finished", finished);
+            resolvableTemplate.addData("finished", routeLocateResult.isComplete());
             
             return resolvableTemplate;
         }
@@ -48,12 +43,17 @@ public enum RouteLocateTypeEnum {
         }
     }),
     
-    IS_COMPLETE_TEXT(new ResultAccessor<RouteLocateResult>() {
+    STATUS_TEXT(new ResultAccessor<RouteLocateResult>() {
         public Object getValue(RouteLocateResult routeLocateResult) {
             
-            ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.web.modules.amr.routeLocateHome.recentRouteLocateResults.IS_COMPLETE_TEXT");
-            resolvableTemplate.addData("isComplete", routeLocateResult.isComplete());
-            
+        	ResolvableTemplate resolvableTemplate = null;
+        	
+        	if (routeLocateResult.isComplete()) {
+        		resolvableTemplate = new ResolvableTemplate("yukon.web.modules.amr.routeLocateHome.recentRouteLocateResults.IS_COMPLETE_TEXT");
+        	} else {
+        		resolvableTemplate = new ResolvableTemplate("yukon.web.modules.amr.routeLocateHome.recentRouteLocateResults.IS_IN_PROGRESS_TEXT");
+        	}
+        	
             return resolvableTemplate;
         }
     }),

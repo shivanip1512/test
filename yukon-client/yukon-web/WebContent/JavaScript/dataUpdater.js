@@ -33,6 +33,21 @@ function initiateCannonDataUpdate(url, delayMs) {
            
         });
         
+        // update the classes
+        var updatableClassElements = $$('span[cannonClassUpdater]');
+        updatableClassElements.each(function(it) {
+            var id = it.readAttribute('cannonClassUpdater');
+            // use the cannonUpdater "id" to look up value in response
+            var newData = responseStruc.data[id];
+            if (newData && it.className != newData) {
+                // data was sent and is different than current
+            	it.className = newData;
+                it.childElements().each(function(child) {
+                	child.className = newData;
+                });
+            }
+        });
+        
         // update the colors
         var updatableColorElements = $$('span[cannonColorUpdater]');
         updatableColorElements.each(function(it) {
@@ -98,6 +113,9 @@ function initiateCannonDataUpdate(url, delayMs) {
         // create an array of strings, with the value of the cannonUpdater attribute for each element
         // use readAttribute to avoid IE weirdness
         requestData.data = updatableElements.invoke('readAttribute', 'cannonUpdater');
+        
+        var updatableClassElements = $$('span[cannonClassUpdater]');
+        requestData.data = requestData.data.concat(updatableClassElements.invoke('readAttribute', 'cannonClassUpdater'));
         
         var updatableColorElements = $$('span[cannonColorUpdater]');
         requestData.data = requestData.data.concat(updatableColorElements.invoke('readAttribute', 'cannonColorUpdater'));

@@ -111,6 +111,7 @@ public class GroupCommandCompletionCallback implements
     final public void processingExceptionOccured(String reason) {
     	processingErrorReason = reason;
     	processingErrorOccured = true;
+    	complete();
     }
     
     @Override
@@ -128,7 +129,7 @@ public class GroupCommandCompletionCallback implements
     }
     
     @Override
-    public boolean hasException() {
+    public boolean isExceptionOccured() {
     	return processingErrorOccured;
     }
     

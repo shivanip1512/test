@@ -73,12 +73,20 @@ public class GroupCommandResult implements Completable, CancelStatus, ExceptionS
     }
     
     @Override
-    public boolean hasException() {
-    	return callback.hasException();
+    public boolean isExceptionOccured() {
+    	return callback.isExceptionOccured();
     }
     
     @Override
     public String getExceptionReason() {
     	return callback.getExceptionReason();
+    }
+    
+    public boolean isSuccessfullyComplete() {
+    	return callback.isComplete() && !(callback.isCanceled() || callback.isExceptionOccured());
+    }
+    
+    public boolean isAborted() {
+    	return callback.isCanceled() || callback.isExceptionOccured();
     }
 }

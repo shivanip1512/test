@@ -150,7 +150,7 @@
                         
                         <%-- COMPLETE? --%>
                         <td align="right">
-                            <cti:dataUpdaterValue type="ROUTELOCATE" identifier="${b.resultId}/IS_COMPLETE_TEXT"/>
+                            <cti:dataUpdaterValue type="ROUTELOCATE" identifier="${b.resultId}/STATUS_TEXT"/>
                         </td>
                     </tr>
                 

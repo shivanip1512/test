@@ -1,9 +1,9 @@
 <%--  updateCallback is the name of  js function that will be passed the values of --%>
 <%--  completedItems and totalItems as parameters after they have been used to update the bar --%>
+<%--  abortedKey should a boolean updater key, if true, the progress bar will be filled in red for remaining percentage --%>
 <%@ attribute name="countKey" required="true" type="java.lang.String"%>
 <%@ attribute name="totalCount" required="true" type="java.lang.Integer"%>
-<%@ attribute name="canceledKey" required="false" type="java.lang.String"%>
-<%@ attribute name="hasExceptionKey" required="false" type="java.lang.String"%>
+<%@ attribute name="isAbortedKey" required="false" type="java.lang.String"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
@@ -30,10 +30,6 @@
 
 <cti:dataUpdaterCallback function="updateProgressBar('${pbarId}', ${totalCount})" initialize="true" completedCount="${countKey}" />
 
-<c:if test="${not empty canceledKey}">
-    <cti:dataUpdaterCallback function="cancelProgressBar('${pbarId}')" initialize="true" isCanceled="${canceledKey}"/>
-</c:if>
-
-<c:if test="${not empty hasExceptionKey}">
-    <cti:dataUpdaterCallback function="cancelProgressBar('${pbarId}')" initialize="true" hasException="${hasExceptionKey}"/>
+<c:if test="${not empty isAbortedKey}">
+    <cti:dataUpdaterCallback function="abortProgressBar('${pbarId}')" initialize="true" isAborted="${isAbortedKey}"/>
 </c:if>

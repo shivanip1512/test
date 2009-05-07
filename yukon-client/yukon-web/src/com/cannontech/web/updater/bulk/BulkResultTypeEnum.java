@@ -31,12 +31,7 @@ public enum BulkResultTypeEnum {
             
             ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.device.bulk.bulkHome.recentBulkOperations.STOP_TIME");
             resolvableTemplate.addData("stopTime", bulkOperationCallbackResults.getStopTime());
-            
-            boolean finished = false;
-            if (bulkOperationCallbackResults.isComplete()) {
-                finished = true;
-            }
-            resolvableTemplate.addData("finished", finished);
+            resolvableTemplate.addData("finished", bulkOperationCallbackResults.isComplete());
             
             return resolvableTemplate;
         }
@@ -48,12 +43,17 @@ public enum BulkResultTypeEnum {
         }
     }),
     
-    IS_COMPLETE_TEXT(new ResultAccessor<BulkOperationCallbackResults<?>>() {
+    STATUS_TEXT(new ResultAccessor<BulkOperationCallbackResults<?>>() {
         public Object getValue(BulkOperationCallbackResults<?> bulkOperationCallbackResults) {
             
-            ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.device.bulk.bulkHome.recentBulkOperations.IS_COMPLETE_TEXT");
-            resolvableTemplate.addData("isComplete", bulkOperationCallbackResults.isComplete());
-            
+        	ResolvableTemplate resolvableTemplate = null;
+        	
+        	if (bulkOperationCallbackResults.isComplete()) {
+        		resolvableTemplate = new ResolvableTemplate("yukon.common.device.bulk.bulkHome.recentBulkOperations.IS_COMPLETE_TEXT");
+        	} else {
+        		resolvableTemplate = new ResolvableTemplate("yukon.common.device.bulk.bulkHome.recentBulkOperations.IS_IN_PROGRESS_TEXT");
+        	}
+        	
             return resolvableTemplate;
         }
     }),

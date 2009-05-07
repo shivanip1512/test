@@ -2,9 +2,10 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
     
-    <entry key="yukon.common.device.commander.groupCommandExecutor.IS_COMPLETE_TEXT">{isComplete|Complete|In Progress}</entry>
-    <entry key="yukon.common.device.commander.groupCommandExecutor.IS_CANCELED_TEXT">{isCanceled|(Canceled)| }</entry>
-    <entry key="yukon.common.device.commander.groupCommandExecutor.HAS_EXCEPTION_TEXT">Error</entry>
+    <entry key="yukon.common.device.commander.groupCommandExecutor.IS_SUCCESSFULLY_COMPLETE_TEXT">Complete</entry>
+    <entry key="yukon.common.device.commander.groupCommandExecutor.IS_CANCELED_TEXT">Canceled</entry>
+    <entry key="yukon.common.device.commander.groupCommandExecutor.IS_EXCEPTION_OCCURED_TEXT">Error: {exceptionReason}</entry>
+    <entry key="yukon.common.device.commander.groupCommandExecutor.IS_IN_PROGRESS_TEXT">In Progress</entry>
     
     <entry key="yukon.common.device.commander.collectionActionOnDevicesLabel.allResults">Choose New Operation For All Devices</entry>
     

@@ -86,6 +86,7 @@ public class CollectingCommandCompletionCallback implements
     final public void processingExceptionOccured(String reason) {
     	processingErrorReason = reason;
     	processingErrorOccured = true;
+    	complete();
     }
     
     @Override
@@ -103,7 +104,7 @@ public class CollectingCommandCompletionCallback implements
     }
     
     @Override
-    public boolean hasException() {
+    public boolean isExceptionOccured() {
     	return processingErrorOccured;
     }
     

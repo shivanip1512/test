@@ -21,41 +21,32 @@ function updateProgressBar(pbarId, totalCount) {
     };
 }
 
-function cancelProgressBar(pbarId) {
+function abortProgressBar(pbarId) {
 
     return function(data) {
 
-        if (data['isCanceled'] == 'true' || data['hasException'] == 'true') {
+        if (data['isAborted'] == 'true') {
             $('progressBorder_' + pbarId).style.backgroundColor = '#CC0000';
         }
     };
 }
 
-function updateProgressDescription(pDescId, text) {
+function updateProgressStatus(pDescId) {
 
     return function(data) {
     
-    	var hasExceptionCondition = data['hasExceptionCondition'];
-        var isCompleteCondition = data['isCompleteCondition'];
-
-        if (hasExceptionCondition == 'true') {
-        	var exceptionReasonText = data['exceptionReasonText'];
-        	$('progressDescription_' + pDescId).addClassName('errorRed');
-        	$('progressDescription_' + pDescId).innerHTML = exceptionReasonText;
-        	
-        } else if (isCompleteCondition == 'true') {
-            $('progressDescription_' + pDescId).innerHTML = text;
-        }
+    	var statusText = data['statusText'];
+    	$('progressStatus_' + pDescId).innerHTML = statusText;
     };
 }
 
-function toggleElementsOnComplete(elementsToToggle, show) {
+function toggleElementsWhenTrue(elementsToToggle, show) {
     
     return function(data) {
         
-        var isComplete = data['isComplete'];
+        var value = data['value'];
         
-        if (isComplete == 'true') {
+        if (value == 'true') {
             
             $A(elementsToToggle).each(function(el) {
                 if (show) {

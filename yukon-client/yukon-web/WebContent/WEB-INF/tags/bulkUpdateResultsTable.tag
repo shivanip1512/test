@@ -56,14 +56,10 @@
 
 
 <%-- PROGRESS --%>
-<tags:bulkResultProgress progressLabelTextKey="yukon.common.device.bulk.${resultsTypeMsgKey}Results.progressLabel" 
-                        inProgressTextKey="yukon.common.device.bulk.${resultsTypeMsgKey}Results.inProgress" 
-                        completeTextKey="yukon.common.device.bulk.${resultsTypeMsgKey}Results.complete"
-                        totalCount="${totalCount}" 
-                        countKey="BULKRESULT/${resultsId}/COMPLETED_LINES"
-                        completeKey="BULKRESULT/${resultsId}/IS_COMPLETE">
-                        
-</tags:bulkResultProgress>
+<tags:bulkResultProgress totalCount="${totalCount}"
+    					countKey="BULKRESULT/${resultsId}/COMPLETED_LINES"
+						progressLabelTextKey="yukon.common.device.bulk.${resultsTypeMsgKey}Results.progressLabel"
+						statusTextKey="BULKRESULT/${resultsId}/STATUS_TEXT" />
 
       
 <%-- SUCCESS (mass delete has no success group containing devices) --%>
@@ -82,7 +78,7 @@
     
     </div>
     
-    <cti:dataUpdaterCallback function="toggleElementsOnComplete(['successActionsDiv'],true)" initialize="true" isComplete="BULKRESULT/${resultsId}/IS_COMPLETE" />
+    <cti:dataUpdaterCallback function="toggleElementsWhenTrue(['successActionsDiv'],true)" initialize="true" value="BULKRESULT/${resultsId}/IS_COMPLETE" />
 
 </c:if>
 
@@ -125,4 +121,4 @@
 
 </div>
 
-<cti:dataUpdaterCallback function="toggleElementsOnComplete(['errorActionsDiv'],true)" initialize="true" isComplete="BULKRESULT/${resultsId}/IS_COMPLETE" />
+<cti:dataUpdaterCallback function="toggleElementsWhenTrue(['errorActionsDiv'],true)" initialize="true" value="BULKRESULT/${resultsId}/IS_COMPLETE" />

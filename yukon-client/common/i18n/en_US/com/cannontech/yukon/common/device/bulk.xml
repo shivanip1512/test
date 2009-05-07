@@ -19,7 +19,8 @@
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.status">Status</entry>
     
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.STOP_TIME">{finished|{stopTime|BOTH}|In Progress...}</entry>
-    <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.IS_COMPLETE_TEXT">{isComplete|Complete|In Progress}</entry>
+    <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.IS_COMPLETE_TEXT">Complete</entry>
+    <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.IS_IN_PROGRESS_TEXT">In Progress</entry>
     
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.performNewActionLinkTitle">Perform another action on these devices</entry>
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.downloadErrorFileLabel">Download</entry>

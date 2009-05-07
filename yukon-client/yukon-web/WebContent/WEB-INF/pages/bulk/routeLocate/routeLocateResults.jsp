@@ -66,14 +66,10 @@
     <tags:bulkActionContainer key="yukon.web.modules.amr.routeLocateResults"
                               deviceCollection="${result.deviceCollection}">
         
-        
-        
-        <tags:bulkResultProgress progressLabelTextKey="yukon.web.modules.amr.routeLocateResults.progressLabel" 
-                                inProgressTextKey="yukon.web.modules.amr.routeLocateResults.inProgress" 
-                                completeTextKey="yukon.web.modules.amr.routeLocateResults.complete"
-                                totalCount="${deviceCount}" 
-                                countKey="ROUTELOCATE/${resultId}/COMPLETED_COUNT"
-                                completeKey="ROUTELOCATE/${resultId}/IS_COMPLETE">
+        <tags:bulkResultProgress totalCount="${deviceCount}"
+        						 countKey="ROUTELOCATE/${resultId}/COMPLETED_COUNT"
+        						 progressLabelTextKey="yukon.web.modules.amr.routeLocateResults.progressLabel"
+        						 statusTextKey="ROUTELOCATE/${resultId}/STATUS_TEXT">
                                 
             <%-- set/view routes --%>
             <br>
@@ -127,6 +123,6 @@
     </tags:bulkActionContainer>
     
     <cti:dataUpdaterCallback function="enableButton()" initialize="true" isComplete="ROUTELOCATE/${resultId}/IS_COMPLETE" />
-    <cti:dataUpdaterCallback function="toggleElementsOnComplete(['successActionsDiv','errorActionsDiv'],true)" initialize="true" isComplete="ROUTELOCATE/${resultId}/IS_COMPLETE" />
+    <cti:dataUpdaterCallback function="toggleElementsWhenTrue(['successActionsDiv','errorActionsDiv'],true)" initialize="true" value="ROUTELOCATE/${resultId}/IS_COMPLETE" />
     
  </cti:standardPage>

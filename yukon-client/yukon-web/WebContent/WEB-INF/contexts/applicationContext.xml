@@ -652,6 +652,10 @@
     <bean id="dataUpdaterValueTagPrototype" class="com.cannontech.web.taglib.DataUpdaterValueTag">
         <property name="dataUpdaterService" ref="dataUpdaterService"/>
     </bean>
+    
+    <bean id="classUpdaterTagPrototype" class="com.cannontech.web.taglib.ClassUpdaterTag">
+        <property name="dataUpdaterService" ref="dataUpdaterService"/>
+    </bean>
 
     <bean id="pointValueTagPrototype" class="com.cannontech.web.updater.point.PointValueTag">
         <property name="registrationService" ref="pointDataUpdateRegistrationService"/>

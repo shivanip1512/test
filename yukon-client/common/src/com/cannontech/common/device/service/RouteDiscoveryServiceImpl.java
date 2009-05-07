@@ -71,7 +71,13 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
 
                     // callback
                     CommandCompletionCallbackAdapter<CommandRequestRouteAndDevice> callback = new CommandCompletionCallbackAdapter<CommandRequestRouteAndDevice>() {
-
+                    	
+                    	@Override
+                        public void processingExceptionOccured(String reason) {
+                        
+                    		runCallbackWithNull(state, "Processing exception: " + reason, deviceLogStr, "", null);
+                    	}
+                    	
                         @Override
                         public void receivedLastError(CommandRequestRouteAndDevice command, DeviceErrorDescription error) {
 

@@ -81,16 +81,12 @@
 
         <%-- PROGRESS --%>
         <c:set var="totalCount" value="${result.deviceCollection.deviceCount}" />
-        <tags:bulkResultProgress progressLabelTextKey="yukon.common.device.commander.results.progressLabel" 
-                                inProgressTextKey="yukon.common.device.commander.results.inProgress" 
-                                completeTextKey="yukon.common.device.commander.results.complete"
-                                canceledTextKey="yukon.common.device.commander.results.canceled"
-                                totalCount="${totalCount}" 
-                                countKey="COMMANDER/${result.key}/COMPLETED_ITEMS"
-                                completeKey="COMMANDER/${result.key}/IS_COMPLETE"
-                                canceledKey="COMMANDER/${result.key}/IS_CANCELED"
-                                hasExceptionKey="COMMANDER/${result.key}/HAS_EXCEPTION"
-                                exceptionReasonKey="COMMANDER/${result.key}/EXCEPTION_REASON" >
+        <tags:bulkResultProgress totalCount="${totalCount}"
+        						 countKey="COMMANDER/${result.key}/COMPLETED_ITEMS"
+        						 progressLabelTextKey="yukon.common.device.commander.results.progressLabel"
+        						 statusTextKey="COMMANDER/${result.key}/STATUS_TEXT"
+        						 statusClassKey="COMMANDER/${result.key}/STATUS_CLASS"
+        						 isAbortedKey="COMMANDER/${result.key}/IS_ABORTED">
                     
             <%-- cancel commands --%>
             <div id="cancelCommandsDiv">
@@ -160,10 +156,7 @@
         
     </tags:boxContainer>
     
-    <cti:dataUpdaterCallback function="toggleElementsOnComplete(['allDevicesActionsDiv','successActionsDiv','errorActionsDiv'],true)" initialize="true" isComplete="COMMANDER/${result.key}/IS_COMPLETE" />
-    <cti:dataUpdaterCallback function="toggleElementsOnComplete(['cancelCommandsDiv'],false)" initialize="true" isComplete="COMMANDER/${result.key}/IS_COMPLETE" />
-    
-    <cti:dataUpdaterCallback function="toggleElementsOnComplete(['allDevicesActionsDiv','successActionsDiv','errorActionsDiv'],true)" initialize="true" isComplete="COMMANDER/${result.key}/HAS_EXCEPTION" />
-    <cti:dataUpdaterCallback function="toggleElementsOnComplete(['cancelCommandsDiv'],false)" initialize="true" isComplete="COMMANDER/${result.key}/HAS_EXCEPTION" />
+    <cti:dataUpdaterCallback function="toggleElementsWhenTrue(['allDevicesActionsDiv','successActionsDiv','errorActionsDiv'],true)" initialize="true" value="COMMANDER/${result.key}/IS_COMPLETE" />
+    <cti:dataUpdaterCallback function="toggleElementsWhenTrue(['cancelCommandsDiv'],false)" initialize="true" value="COMMANDER/${result.key}/IS_COMPLETE" />
       
 </cti:standardPage>

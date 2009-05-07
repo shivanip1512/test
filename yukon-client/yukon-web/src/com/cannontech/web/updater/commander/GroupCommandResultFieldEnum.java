@@ -33,51 +33,55 @@ public enum GroupCommandResultFieldEnum {
         }
     }),
     
-    IS_COMPLETE_TEXT(new ResultAccessor<GroupCommandResult>() {
-        public Object getValue(GroupCommandResult groupCommandResult) {
-            
-            ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.device.commander.groupCommandExecutor.IS_COMPLETE_TEXT");
-            resolvableTemplate.addData("isComplete", groupCommandResult.isComplete() && !groupCommandResult.hasException());
-            
-            return resolvableTemplate;
-        }
-    }),
-    
     IS_CANCELED(new ResultAccessor<GroupCommandResult>() {
         public Object getValue(GroupCommandResult groupCommandResult) {
             return groupCommandResult.isCanceled();
         }
     }),
     
-    IS_CANCELED_TEXT(new ResultAccessor<GroupCommandResult>() {
+    IS_ABORTED(new ResultAccessor<GroupCommandResult>() {
         public Object getValue(GroupCommandResult groupCommandResult) {
-            
-            ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.device.commander.groupCommandExecutor.IS_CANCELED_TEXT");
-            resolvableTemplate.addData("isCanceled", groupCommandResult.isCanceled());
-            
+            return groupCommandResult.isAborted();
+        }
+    }),
+    
+    IS_EXCEPTION_OCCURED(new ResultAccessor<GroupCommandResult>() {
+        public Object getValue(GroupCommandResult groupCommandResult) {
+            return groupCommandResult.isExceptionOccured();
+        }
+    }),
+    
+    STATUS_TEXT(new ResultAccessor<GroupCommandResult>() {
+        public Object getValue(GroupCommandResult groupCommandResult) {
+        	
+        	ResolvableTemplate resolvableTemplate = null;
+        	
+        	if (groupCommandResult.isSuccessfullyComplete()) {
+        		resolvableTemplate = new ResolvableTemplate("yukon.common.device.commander.groupCommandExecutor.IS_SUCCESSFULLY_COMPLETE_TEXT");
+        	} else if (groupCommandResult.isCanceled()) {
+        		resolvableTemplate = new ResolvableTemplate("yukon.common.device.commander.groupCommandExecutor.IS_CANCELED_TEXT");
+        	} else if (groupCommandResult.isExceptionOccured()) {
+        		resolvableTemplate = new ResolvableTemplate("yukon.common.device.commander.groupCommandExecutor.IS_EXCEPTION_OCCURED_TEXT");
+        		resolvableTemplate.addData("exceptionReason", groupCommandResult.getExceptionReason());
+        	} else {
+        		resolvableTemplate = new ResolvableTemplate("yukon.common.device.commander.groupCommandExecutor.IS_IN_PROGRESS_TEXT");
+        	}
+        	
             return resolvableTemplate;
         }
     }),
     
-    HAS_EXCEPTION(new ResultAccessor<GroupCommandResult>() {
+    STATUS_CLASS(new ResultAccessor<GroupCommandResult>() {
         public Object getValue(GroupCommandResult groupCommandResult) {
-            return groupCommandResult.hasException();
-        }
-    }),
-    
-    EXCEPTION_REASON(new ResultAccessor<GroupCommandResult>() {
-        public Object getValue(GroupCommandResult groupCommandResult) {
-            return groupCommandResult.getExceptionReason();
-        }
-    }),
-    
-    HAS_EXCEPTION_TEXT(new ResultAccessor<GroupCommandResult>() {
-        public Object getValue(GroupCommandResult groupCommandResult) {
-            
-            ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.device.commander.groupCommandExecutor.HAS_EXCEPTION_TEXT");
-            resolvableTemplate.addData("hasException", groupCommandResult.hasException());
-            
-            return resolvableTemplate;
+        	
+        	String className = "";
+        	if (groupCommandResult.isCanceled() || groupCommandResult.isExceptionOccured()) {
+        		className = "errorRed";
+        	} else {
+        		className = "";
+        	}
+        	
+        	return className;
         }
     }),
     

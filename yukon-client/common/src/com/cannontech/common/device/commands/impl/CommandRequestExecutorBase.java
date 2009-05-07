@@ -292,28 +292,31 @@ public abstract class CommandRequestExecutorBase<T> implements
 		            	if (!messageListener.isCanceled()) {
 		            	
 			                porterConnection.write(requestHolder.request);
+			                nothingWritten = false;
+			                
 			                if (commandRequiresLogging(requestHolder.request)) {
 			                    logCommand(requestHolder.request, user);
 			                }
 			                if (log.isDebugEnabled()) {
 			                    log.debug("Sent request to porter: " + requestHolder.request);
 			                }
-			                nothingWritten = false;
+			                
 		            	} else {
 		            		log.debug("Not sending request due to cancel: " + requestHolder.request);
 		            	}
 		            }
 		            log.debug("Finished commandRequests loop. groupMessageId = " + groupMessageId);
 		        
+		        } catch (ConnectionException e) {
+		        	
+		        	callback.processingExceptionOccured("No porter connection.");
+		        	log.debug("Removing porter message listener because an exception occured: " + messageListener);
+		        	messageListener.removeListener();
+		        	
 		        } catch (Exception e) {
 		        	
-		        	String exceptionReason = e.getMessage();
-		        	if (e instanceof ConnectionException) {
-		        		exceptionReason = "No porter connection.";
-		        	}
-		        	callback.processingExceptionOccured(exceptionReason);
-		        	
-		        	log.debug("Removing porter message listener because an exception occured: " + messageListener);
+		        	callback.processingExceptionOccured(e.getMessage());
+		        	log.debug("Removing porter message listener because an exception occured (" + e.getMessage() + "): " + messageListener);
 		        	messageListener.removeListener();
 		        	
 		        } finally {

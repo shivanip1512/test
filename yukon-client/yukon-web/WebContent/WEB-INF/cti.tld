@@ -1272,6 +1272,38 @@
     </tag>
     
     <tag>
+        <name>classUpdater</name>
+        <tag-class>com.cannontech.web.taglib.ClassUpdaterTag</tag-class>
+        <body-content>scriptless</body-content>
+        <description>
+        	Creates a span that updates it's class name.
+        	Use by passing an updater type/identifier pair, or a full type+identifier key.
+        	type/identifier pair will be used if they are passed in (over key if it also happens to be passed).
+        	If a value is unavailable at render time, initialClassName will be used if passed.
+        </description>
+        <attribute>
+            <name>type</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>identifier</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>key</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>initialClassName</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+    
+    <tag>
         <name>link</name>
         <tag-class>com.cannontech.web.i18n.LinkTag</tag-class>
         <body-content>scriptless</body-content>
