@@ -183,7 +183,7 @@ public class LoadBlock implements Block{
 	    	}
     	} catch (IOException e) {
     		CTILogger.warn(e);
-    	} catch (UnsupportedOperationException e) {
+    	} catch (IllegalArgumentException e) {
     		CTILogger.warn(e);
     	}
     }
