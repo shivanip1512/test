@@ -409,7 +409,7 @@ public class CustomerAccount extends DBPersistent {
     	return customerAccts;
     }
     
-    public static List<Pair<Integer, LiteStarsEnergyCompany>> searchByCompanyName(String searchName, List<Integer> energyCompanyIdList) 
+    public static List<Object> searchByCompanyName(String searchName, List<Integer> energyCompanyIdList, boolean searchMembers) 
     {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DISTINCT ACCT.AccountId, CICB.CompanyName, MAP.EnergyCompanyId ");
@@ -432,14 +432,18 @@ public class CustomerAccount extends DBPersistent {
             
             rset = pstmt.executeQuery();
             
-            ArrayList<Pair<Integer, LiteStarsEnergyCompany>> accountECPairs = new ArrayList<Pair<Integer, LiteStarsEnergyCompany>>();
+            ArrayList<Object> accountIds = new ArrayList<Object>();
             while(rset.next()) {
             	int accountId = rset.getInt(1);
             	int energyCompanyId = rset.getInt(3);
-            	LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany(energyCompanyId);
-            	accountECPairs.add(new Pair<Integer, LiteStarsEnergyCompany>(accountId, energyCompany));
+            	LiteStarsEnergyCompany liteSarsEC = StarsDatabaseCache.getInstance().getEnergyCompany(energyCompanyId);
+            	
+            	 if (searchMembers)
+            		 accountIds.add(new Pair<Integer,LiteStarsEnergyCompany>(accountId, liteSarsEC) );
+                 else
+                	 accountIds.add(accountId);
             }
-            return accountECPairs;
+            return accountIds;
             
         }
         catch (Exception e) {

@@ -1342,7 +1342,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
         	energyCompanyIdList.add(getLiteID());
         }
         
-        accountList.addAll(CustomerAccount.searchByCompanyName( searchName + "%", energyCompanyIdList));
+        accountList.addAll(CustomerAccount.searchByCompanyName( searchName + "%", energyCompanyIdList, searchMembers));
        return accountList;
    }
     
