@@ -467,7 +467,7 @@ int CtiFDRDnpSlave::processScanSlaveRequest (CtiFDRClientServerConnection& conne
             }
             else if (dnpId.PointType == AnalogPointType )
             {
-                iPoint.ain.value =  (fdrPoint->getValue() * fdrPoint->getMultiplier());
+                iPoint.ain.value =  (fdrPoint->getValue() * dnpId.Multiplier);
                 iPoint.type = Cti::Protocol::DNPSlaveInterface::AnalogInputType;
             }
             else if (dnpId.PointType == PulseAccumulatorPointType )
@@ -535,6 +535,7 @@ CtiDnpId CtiFDRDnpSlave::ForeignToYukonId(CtiFDRDestination pointDestination)
     string slaveId   = pointDestination.getTranslationValue(dnpSlaveId);
     string pointType = pointDestination.getTranslationValue(dnpPointType);
     string dnpOffset = pointDestination.getTranslationValue(dnpPointOffset);
+    string dnpMultiplier = pointDestination.getTranslationValue(dnpPointMultiplier);
 
     if (masterId.empty() || slaveId.empty() || pointType.empty() || dnpOffset.empty() || dnpMultiplier.empty())
     {
