@@ -16,7 +16,7 @@
 <cti:standardMenu/>
 
 <cti:breadCrumbs>
-  	<cti:crumbLink url="/capcontrol/subareas.jsp" title="Home" />
+  	<cti:crumbLink url="/spring/capcontrol/tier/areas" title="Home" />
   	<cti:crumbLink url="${baseAddress}" title="${baseTitle}" />
     <cti:crumbLink url="${areaAddress}" title="${areaTitle}" />
     <cti:crumbLink url="${stationAddress}" title="${stationTitle}" />
@@ -33,7 +33,7 @@
 				<th>Address</th>
 				<th>Driving Directions</th>
 			</tr>
-			</thead>
+		</thead>
 			<tbody id="tableBody">
 			<c:forEach var="bank" items="${capBankList}" varStatus="i">
 				<tr class="altRow" >

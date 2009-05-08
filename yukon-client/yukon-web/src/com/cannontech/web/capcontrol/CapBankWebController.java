@@ -47,19 +47,22 @@ public class CapBankWebController {
 		mav.addAttribute("capBankList", deviceList);
 		mav.addAttribute("addList",additionalList);
 		
+		String specialAreaParameters = "";
+		
 		//Bread Crumb Work
 		if (specialArea) { 
 			mav.addAttribute("baseTitle", "Special Substation Areas");
-			mav.addAttribute("baseAddress","/capcontrol/subareas.jsp");
+			specialAreaParameters = "?isSpecialArea=true";
 		} else {
 			mav.addAttribute("baseTitle", "Substation Areas");
-			mav.addAttribute("baseAddress","/capcontrol/subareas.jsp");
 		}
-
+		
+		mav.addAttribute("baseAddress","/spring/capcontrol/tier/areas" + specialAreaParameters);
+		
 		String areaTitle = "";
-		String areaAddress = "/capcontrol/substations.jsp";
+		String areaAddress = "/spring/capcontrol/tier/substations";
 		String stationTitle = "";
-		String stationAddress = "/capcontrol/feeders.jsp";
+		String stationAddress = "/spring/capcontrol/tier/feeders";
 		String assetTitle = "";
 		
 		StreamableCapObject area;
@@ -82,13 +85,18 @@ public class CapBankWebController {
 			assetTitle = station.getCcName();
 		}
 		
-		area = cache.getArea(station.getParentID());		
+		if(specialArea) {
+			area = cache.getCBCSpecialArea(station.getSpecialAreaId());
+		} else {
+			area = cache.getCBCArea(station.getParentID());
+		}
+		
 		areaTitle = area.getCcName();
 		stationTitle = station.getCcName();
 
-		areaAddress += "?" + CCSessionInfo.STR_CC_AREAID + "=" + area.getCcId();
-		stationAddress += "?" + CCSessionInfo.STR_SUBID + "=" + station.getCcId() 
-		               + "&specialArea=" + specialArea;
+		areaAddress += "?areaId=" + area.getCcId() + "&isSpecialArea=" + specialArea;;
+		stationAddress += "?subStationId=" + station.getCcId() + "&areaId=" + area.getCcId() 
+		               + "&isSpecialArea=" + specialArea;
 		
 		mav.addAttribute("areaAddress",areaAddress);
 		mav.addAttribute("areaTitle",areaTitle);

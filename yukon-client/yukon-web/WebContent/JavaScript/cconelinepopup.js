@@ -266,16 +266,10 @@ function closePopupWindow() {
 
 function showPointTimestamps (cbcID) {
 	
-	var pointDataUrl = '/spring/capcontrol/oneline/popupmenu';
-	var params = { 'menu' : 'pointTimestamp', 'cbcID': cbcID, 'oneline' : 'true' };
-	new Ajax.Request (pointDataUrl, {
-        method: 'POST', 
-        parameters: params, 
-	    onSuccess: function (transport) {
-            var html = transport.responseText;  
-		    showPopup(html);
-		}
-	});
+	var url = '/spring/capcontrol/oneline/popupmenu?menu=pointTimestamp&cbcID=';
+	url += cbcID;
+
+	return GB_show('', url, 500, 600);
 }
 
 //over-ridden function from PopupWindow.js

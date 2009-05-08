@@ -34,7 +34,6 @@ public class CtiNavActionListener implements ActionListener {
 				HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
                 
 			    red = CBCNavigationUtil.goBack(session);
-
 			    
 			    if (ctiNav.getModuleRedirectPage() != null) {
                     //redirect to our module redirect page first, if it set, else
@@ -47,7 +46,7 @@ public class CtiNavActionListener implements ActionListener {
 				}
 
 			    if( "".equalsIgnoreCase(red) ) {
-					red = "/capcontrol/subareas.jsp";
+					red = "/spring/capcontrol/tier/areas";
 				}
 			    
 				if (red.equalsIgnoreCase(ctiNav.getModuleExitPage()) && ctiNav.getPreservedAddress() != null) {

@@ -132,7 +132,7 @@ function initiateCannonDataUpdate(url, delayMs) {
         
         if (requestData.data.length == 0) {
             // schedule next update
-            setTimeout(this, delayMs);
+            setTimeout(doUpdate, delayMs);
             return;
         }
         

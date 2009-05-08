@@ -64,7 +64,7 @@ public class DefineCollectableCBCArea extends
         CCArea area = (CCArea) obj;
 
         int paoId = (int) vstr.extractUnsignedInt();
-        area.setPaoID(paoId);
+        area.setPaoId(paoId);
         area.setCcId(paoId);
         
         String newCcCategory = (String) vstr.restoreObject(SimpleMappings.CString);
@@ -109,7 +109,7 @@ public class DefineCollectableCBCArea extends
         //super.saveGuts(obj, vstr, polystr);
 
         CCArea area = (CCArea) obj;
-        vstr.insertUnsignedInt(area.getPaoID().intValue());
+        vstr.insertUnsignedInt(area.getPaoId().intValue());
         vstr.saveObject(area.getPaoCategory(), SimpleMappings.CString);
         vstr.saveObject(area.getPaoClass(), SimpleMappings.CString);
         vstr.saveObject(area.getPaoName(), SimpleMappings.CString);

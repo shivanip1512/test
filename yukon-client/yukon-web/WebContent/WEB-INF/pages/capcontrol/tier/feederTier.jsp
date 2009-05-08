@@ -18,111 +18,41 @@
 
 <!-- necessary DIV element for the OverLIB popup library -->
 
-
-<%
-    PaoDao paoDao = YukonSpringHook.getBean("paoDao", PaoDao.class);
-    AuthDao authDao = YukonSpringHook.getBean("authDao", AuthDao.class);
-    PointDao pointDao = YukonSpringHook.getBean("pointDao", PointDao.class);
-    CapControlCache capControlCache = YukonSpringHook.getBean("capControlCache", CapControlCache.class);
-    FilterCacheFactory cacheFactory = YukonSpringHook.getBean("filterCacheFactory", FilterCacheFactory.class);
-    
-    LiteYukonUser user = ServletUtil.getYukonUser(request);
-    CapControlCache filterCapControlCache = cacheFactory.createUserAccessFilteredCache(user);
-    
-    String currentPageURL = request.getRequestURL().toString();
-    
-    String url = request.getRequestURL().toString();
-    String urlParams = request.getQueryString();
-    String fullURL = url + ((urlParams != null) ? "?" + urlParams : "");
-    
-    fullURL = ServletUtil.urlEncode(fullURL);
-    
-    Integer subStationId = ServletRequestUtils.getIntParameter(request, CCSessionInfo.STR_SUBID);
-    if (subStationId == null || subStationId.intValue() <= 0) {
-        String location = ServletUtil.createSafeUrl(request, "/capcontrol/subareas.jsp");
-        response.sendRedirect(location);
-        return;
-    }
-    
-    SubStation substation = filterCapControlCache.getSubstation(subStationId);
-    if (substation == null) {
-        String location = ServletUtil.createSafeUrl(request, "/capcontrol/invalidAccessErrorPage.jsp");
-        response.sendRedirect(location);
-        return;
-    }
-    
-	String popupEvent = authDao.getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
-    boolean hideOneLine = Boolean.valueOf(authDao.getRolePropertyValue(user, CBCSettingsRole.HIDE_ONELINE));
-	
-    boolean showFlip = Boolean.valueOf(authDao.getRolePropertyValue(user, CBCSettingsRole.SHOW_FLIP_COMMAND)).booleanValue();
-    if (popupEvent == null) popupEvent = "onmouseover";
-    
-	String specialParam = ServletRequestUtils.getStringParameter(request, "specialArea", "false");
-	boolean special = false;
-	if("true".equalsIgnoreCase(specialParam)) {
-		special = true;
-	}
-	Integer areaId;
-	StreamableCapObject area = null;
-	if(!special) {
-    	areaId = substation.getParentID();
-    	area = filterCapControlCache.getArea(areaId);
-    } else {
-    	areaId = substation.getSpecialAreaId();
-    	area = filterCapControlCache.getArea(areaId);
-    }
-
-	
-    List<SubBus> subBuses = capControlCache.getSubBusesBySubStation(substation);
-    Collections.sort(subBuses, CBCUtils.SUB_DISPLAY_COMPARATOR);
-	List<Feeder> feeders = capControlCache.getFeedersBySubStation(substation);
-	List<CapBankDevice> capBanks = capControlCache.getCapBanksBySubStation(substation);
-	
-	String lastStr = (String) request.getSession(false).getAttribute("lastAccessed");
-	int lastAccessed = (lastStr == null) ? -1:Integer.parseInt(lastStr);
-	boolean hasSubstationControl = CBCWebUtils.hasSubstationControlRights(session);
-	boolean hasSubBusControl = CBCWebUtils.hasSubstationBusControlRights(session);
-	boolean hasFeederControl = CBCWebUtils.hasFeederControlRights(session);
-	boolean hasCapbankControl = CBCWebUtils.hasCapbankControlRights(session);
-	
-	String mainTitle = substation.getCcName() + " - Feeders";
-	String substationAddess = "substations.jsp?" + CCSessionInfo.STR_CC_AREAID + "=" + areaId;
-%>
-
 <cti:url var="onelineCBCServlet" value="/capcontrol/oneline/OnelineCBCServlet"/>
-<cti:standardPage title="<%=mainTitle %>" module="capcontrol">
+<cti:standardPage title="${substation.ccName}" module="capcontrol">
+<%@include file="/capcontrol/cbc_inc.jspf"%>
+
+
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
-<%@include file="cbc_inc.jspf"%>
-<c:set var="hasSubstationControl" value="<%=CBCWebUtils.hasSubstationControlRights(session)%>"/>
-<c:set var="hasSubstationBusControl" value="<%=CBCWebUtils.hasSubstationBusControlRights(session)%>"/>
-<c:set var="hasSubstationFeederControl" value="<%=CBCWebUtils.hasFeederControlRights(session)%>"/>
-<c:set var="hasCapbankControl" value="<%=CBCWebUtils.hasCapbankControlRights(session)%>"/>
-<c:set var="areaId" value="<%=areaId%>"/>
-<c:set var="subStationId" value="<%=subStationId%>"/>
 
 <cti:standardMenu/>
 
-<c:set var="substationAddress" value="<%=substationAddess %>"/>
+<cti:url value="/spring/capcontrol/tier/substations" var="substationAddress">
+	<cti:param name="areaId" value="${areaId}"/>
+	<cti:param name="isSpecialArea" value="${isSpecialArea}"/>
+</cti:url>
 
 <cti:breadCrumbs>
-	<cti:crumbLink url="subareas.jsp" title="Home" />
+	<cti:crumbLink url="/spring/capcontrol/tier/areas" title="Home" />
 
-<% if (special){ %>
-  	<cti:crumbLink url="specialSubAreas.jsp" title="Special Substation Areas" />
-    <cti:crumbLink url="${substationAddress}" title="<%=area.getCcName()%>" />
-    <cti:crumbLink title="<%=substation.getCcName()%>" />
-<% } else{ %>
-	<cti:crumbLink url="subareas.jsp" title="Substation Areas" />
-    <cti:crumbLink url="${substationAddress}" title="<%=area.getCcName()%>" />
-    <cti:crumbLink title="<%=substation.getCcName()%>" />	
-<% } %>
+	<c:choose>
+		<c:when test="${isSpecialArea}">
+		  	<cti:crumbLink url="/spring/capcontrol/tier/areas?isSpecialArea=${isSpecialArea}" title="Special Substation Areas" />
+		</c:when>
+		<c:otherwise>
+			<cti:crumbLink url="/spring/capcontrol/tier/areas?isSpecialArea=${isSpecialArea}" title="Substation Areas" />
+		</c:otherwise>
+	</c:choose>
+
+    <cti:crumbLink url="${substationAddress}" title="${areaName}" />
+    <cti:crumbLink title="${substation.ccName}" />	
 
 </cti:breadCrumbs>
 
 <script type="text/javascript">
    	Event.observe(window, 'load', function () {highlightLast();});
     Event.observe(window, 'load', checkPageExpire);
-
+    
     // These two functions are neccessary since IE does not support css :hover
     function highLightRow(row) {
         row = $(row);
@@ -134,8 +64,6 @@
         row.removeClassName('hover');
     }   
     
-    GreyBox.preloadGreyBoxImages();
-
 	function highlightLast()
 	{
 		var id = $("lastAccessedID").value;
@@ -195,14 +123,21 @@
 	}
 	
    	function onGreyBoxClose () {
-   	   window.parent.location.replace('feeders.jsp');
+   		window.location.href = window.location.href;
    	}
 
+   	function getCapBankTempMoveBack(id){
+   	    var url = '/spring/capcontrol/tier/popupmenu?menu=capBankTempMoveBack&id=' + id;
+   	    var redirect = window.location.href;
+		url += '&redirectURL=' + escape(redirect);
+
+   	    getMenuFromURL(url);
+   	}
+   	
  </script>
-<%
-String css = "tableCell";
-%>
-<input type="hidden" id="lastAccessedID" value="<%= lastAccessed %>">
+
+<input type="hidden" id="lastAccessedID" value="${lastAccessed}">
+<input type="hidden" id="fullURL" value="${fullURL}">
 
 	<cti:titledContainer title="Substation">
 		<table id="substationTable" width="100%" cellspacing="0" cellpadding="0">
@@ -211,44 +146,44 @@ String css = "tableCell";
 
 				<th class="lAlign">State</th>
 			</tr>
-            <% if (substation != null) { %>
-                <c:set var="thisSubStationId" value="<%=substation.getCcId()%>"/>
-                <input type="hidden" id="paoId_${thisSubStationId}" value="${thisSubStationId}"></input>
+
+                <input type="hidden" id="paoId_${substation.ccId}" value="${substation.ccId}"/>
                 
-                <tr class="altTableCell" id="tr_substation_${thisSubStationId}">
+                <tr class="altTableCell" id="tr_substation_${substation.ccId}">
                     <td id="anc_${thisSubStationId}">
 		                <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
-	                        <a title="Edit" class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=<%=substation.getCcId()%>&ignoreBookmark=true">
+	                        <a title="Edit" class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${substation.ccId}&ignoreBookmark=true">
 	                            <img class="rAlign editImg" src="/editor/images/edit_item.gif"/>
 		                    </a>
-		                    <a title="Delete" class="editImg" href="/editor/deleteBasePAO.jsf?value=<%=substation.getCcId()%>">
+		                    <a title="Delete" class="editImg" href="/editor/deleteBasePAO.jsf?value=${substation.ccId}">
 		                        <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
 		                    </a>
 	                    </cti:checkProperty>
-                    	<a title="Bank Locations" class="editImg" href="/spring/capcontrol/capbank/capBankLocations?value=<%=substation.getCcId()%>&specialArea=<%=special %>">
+                    	<a title="Bank Locations" class="editImg" href="/spring/capcontrol/capbank/capBankLocations?value=${substation.ccId}&specialArea=${isSpecialArea}">
 	                        <img class="rAlign editImg" src="/capcontrol/images/compass.gif"/>
 	                    </a>
-                        <%=substation.getCcName()%>
+                        ${substation.ccName}
                         <font color="red">
-                            <cti:capControlValue paoId="${thisSubStationId}" type="SUBSTATION" format="SA_ENABLED" />
+                            <cti:capControlValue paoId="${substation.ccId}" type="SUBSTATION" format="SA_ENABLED" />
                         </font>
                     </td>
                     
                     
                     <td>
-                    	<capTags:warningImg paoId="${thisSubStationId}" type="SUBSTATION"/>
-                        <a id="substation_state_${thisSubStationId}"
-                            <% if (hasSubstationControl) { %>
+                    	<capTags:warningImg paoId="${substation.ccId}" type="SUBSTATION"/>
+                        <a id="substation_state_${substation.ccId}"
+                            <c:if test="${hasSubstationControl}">
                                 href="javascript:void(0);"
-                                <%=popupEvent%>="getSubstationMenu('${thisSubStationId}');">
-                            <% } %>
-                            <cti:capControlValue paoId="${thisSubStationId}" type="SUBSTATION" format="STATE" />
+                                ${popupEvent}="getSubstationMenu('${substation.ccId}');"
+                            </c:if> 
+                        >
+                            <cti:capControlValue paoId="${substation.ccId}" type="SUBSTATION" format="STATE" />
                         </a>
-                        <cti:dataUpdaterCallback function="updateStateColorGenerator('substation_state_${thisSubStationId}')" 
-                            initialize="true" value="SUBSTATION/${thisSubStationId}/STATE"/>
+                        <cti:dataUpdaterCallback function="updateStateColorGenerator('substation_state_${substation.ccId}')" 
+                            initialize="true" value="SUBSTATION/${substation.ccId}/STATE"/>
                     </td>
                 </tr>
-			<% } %>
+
 		</table>
 	</cti:titledContainer>
 	
@@ -263,9 +198,9 @@ String css = "tableCell";
 				<td id="subSelect">
 				    <select id='subBusFilter' onchange='applySubBusFilter(this);'>
 				    <option>All SubBuses</option>
-				    <% for (SubBus sub: subBuses) {%>
-					   <option><%=sub.getCcName()%></option>
-				    <% } %>
+				    <c:forEach var="sub" items="${subBusList}" >
+					   <option>${sub.subBus.ccName}</option>
+				    </c:forEach>
 				    </select>
 				</td>
 				<td width="2%"></td>
@@ -278,40 +213,40 @@ String css = "tableCell";
 				<td>Daily / Max Ops</td>
 			</tr>
 
-<%
-css = "tableCell";
-for( SubBus subBus: subBuses ) {
-	css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
-%>
-            <c:set var="thisSubBusId" value="<%=subBus.getCcId()%>"/>
-            <input type="hidden" id="paoId_${thisSubBusId}" value="${thisSubBusId}"></input>
+
+	<c:forEach var="viewableSubBus" items="${subBusList}">
+			<c:set var="thisSubBusId" value="${viewableSubBus.subBus.ccId}"/>
+            <input type="hidden" id="paoId_${subBus.ccId}" value="${thisSubBusId}"></input>
             
-			<tr class="<%=css%>" id="tr_sub_${thisSubBusId}">
+			<tr class="<ct:alternateRow odd="altTableCell" even="tableCell"/>"  id="tr_sub_${thisSubBusId}">
 				
                 <td id="anc_${thisSubBusId}"><input type="checkbox" name="cti_chkbxSubBuses" value="${thisSubBusId}"/>
-					<input type="image" id="showSnap${thisSubBusId}" src="images/nav-plus.gif" 
+					<input type="image" id="showSnap${thisSubBusId}" src="/capcontrol/images/nav-plus.gif" 
 					   onclick="showRowElems( 'subSnapShot${thisSubBusId}', 'showSnap${thisSubBusId}'); return false;"/>
 				</td>
                 
 				<td id="subName">
 				    <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
-					    <a title="Edit" class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=<%=subBus.getCcId()%>&ignoreBookmark=true">
+					    <a title="Edit" class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${thisSubBusId}&ignoreBookmark=true">
 	                        <img class="rAlign editImg" src="/editor/images/edit_item.gif"/>
 	                    </a>
 	                    
-	                    <a title="Delete" class="editImg" href="/editor/deleteBasePAO.jsf?value=<%=subBus.getCcId()%>">
+	                    <a title="Delete" class="editImg" href="/editor/deleteBasePAO.jsf?value=${thisSubBusId}">
 	                        <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
 	                    </a>
                     </cti:checkProperty>
-                   	<a title="Bank Locations" class="editImg" href="/spring/capcontrol/capbank/capBankLocations?value=<%=subBus.getCcId()%>&specialArea=<%=special %>">
+                   	<a title="Bank Locations" class="editImg" href="/spring/capcontrol/capbank/capBankLocations?value=${thisSubBusId}&specialArea=${isSpecialArea}">
                         <img class="rAlign editImg" src="/capcontrol/images/compass.gif"/>
                     </a>
                 </td>
                 <td>
                     <a
-                        <% if (!hideOneLine) { %>
-				            href="${onelineCBCServlet}?id=${thisSubBusId}&redirectURL=<%=fullURL %>" title="Click to view One-Line"
-                        <% } %> ><%=subBus.getCcName()%></a>
+                        <c:if test="${!hideOneLine}">
+				            href="${onelineCBCServlet}?id=${thisSubBusId}&redirectURL=${fullURL}" title="Click to view One-Line"
+                        </c:if>
+                    >
+                    ${viewableSubBus.subBus.ccName}
+                    </a>
                     <capTags:verificationImg paoId="${thisSubBusId}" type="SUBBUS"/>
 				</td>
                 
@@ -321,10 +256,11 @@ for( SubBus subBus: subBuses ) {
 				
 				<td>
 					<a id="subbus_state_${thisSubBusId}"
-    				    <% if (hasSubBusControl) { %>
+    				    <c:if test="${hasSubBusControl}">
 						  href="javascript:void(0);"
-						  <%=popupEvent%>="getSubBusMenu('${thisSubBusId}');" 
-				        <% } %> >
+						  ${popupEvent}="getSubBusMenu('${thisSubBusId}');"  
+				        </c:if>
+				    >
                         <cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="STATE" />
 					</a>
                     <cti:dataUpdaterCallback function="updateStateColorGenerator('subbus_state_${thisSubBusId}')" 
@@ -332,7 +268,7 @@ for( SubBus subBus: subBuses ) {
 				</td>
                 
 				<td>
-                    <c:set var="isPowerFactorControlled" value="<%=CBCUtils.isPowerFactorControlled(subBus.getControlUnits())%>"/>
+                    <c:set var="isPowerFactorControlled" value="${subBus.powerFactorControlled}"/>
                     <a onmouseover="showDynamicPopup($('subPFPopup_${thisSubBusId}_${isPowerFactorControlled}'))"
 						onmouseout="nd();"
 					   	id="${thisSubBusId}">
@@ -343,13 +279,16 @@ for( SubBus subBus: subBuses ) {
 					</div>
 				</td>
 				<td>
-				<%if(subBus.getUsePhaseData() == true) { %>
-                    	<a onmouseover="showDynamicPopup($('subVarLoadPopup_${thisSubBusId}'));" 
-					       onmouseout="nd();"
-						   id="${thisSubBusId}">
-				   <%} else { %>
-					   <a id="${thisSubBusId}">
-				   <%} %>
+				<c:choose>
+					<c:when test="${subBus.usePhaseData}">
+						<a onmouseover="showDynamicPopup($('subVarLoadPopup_${thisSubBusId}'));" 
+						onmouseout="nd();"
+						id="${thisSubBusId}">
+					</c:when>
+					<c:otherwise>
+						<a id="${thisSubBusId}">
+					</c:otherwise>
+				</c:choose>
                         <cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="KVAR_LOAD"/>   
                     </a>
 				    <div class="ccVarLoadPopup" id="subVarLoadPopup_${thisSubBusId}" style="display: none;" > 
@@ -373,17 +312,6 @@ for( SubBus subBus: subBuses ) {
 				<td colspan="11">
 				<table id="subSnapShot${thisSubBusId}">
 				
-					<%
-				if (subBus != null) {
-				    String areaName = "";
-			        try{
-			            areaName = CBCUtils.getAreaNameForSubStationBusIdFromCache(subBus.getCcId().intValue());
-			        }catch (NotFoundException nfe){
-			            areaName = "(none)";
-			        }
-					int varPoint = subBus.getCurrentVarLoadPointID().intValue();
-					int wattPoint = subBus.getCurrentWattLoadPointID().intValue();
-					int voltPoint = subBus.getCurrentVoltLoadPointID().intValue();%>
 			        <tr class="tableCellSnapShot" style="display: none;">
 				        <td colspan="2">
 				        <b><u>Substation Info</u></b>
@@ -391,47 +319,49 @@ for( SubBus subBus: subBuses ) {
 			        </tr>
 			        <tr class="tableCellSnapShot" style="display: none;">
 				        <td><b><font class="lIndent">Area: </font></b></td>
-	                    <td><b><font class="lIndent"><%=areaName%></font>
+	                    <td><b><font class="lIndent">${areaName}</font>
 					        <font color="red">
-		                        <cti:capControlValue paoId="${thisSubStationId}" type="SUBSTATION" format="SA_ENABLED" />
+		                        <cti:capControlValue paoId="${substation.ccId}" type="SUBSTATION" format="SA_ENABLED" />
 		                    </font></b>
 				        </td>
 					</tr>
 			        <tr class="tableCellSnapShot" style="display: none;">
 				        <td><b><font class="lIndent">Control Method: </font></b></td>
-				        <td><b><font class="lIndent"><%=subBus.getControlMethod()%> (<%=subBus.getControlUnits()%>)</font></b></td>
+				        <td><b><font class="lIndent">${viewableSubBus.subBus.controlMethod} (${viewableSubBus.subBus.controlUnits})</font></b></td>
 					</tr>
 			        <tr class="tableCellSnapShot" style="display: none;">
-			     	<%
-			   	        String vrPoint = "(none)";
-			   	        if (varPoint != 0) vrPoint = pointDao.getPointName(varPoint);
-			     	%>
 				        <td><b><font class="lIndent">Var Point: </font></b></td>
-				        <td><b><font class="lIndent"><%=vrPoint%></font></b></td>
+				        <td><b><font class="lIndent">
+				        <c:choose>
+					        <c:when test="${viewableSubBus.varPoint != null}">${viewableSubBus.varPoint.pointName}</c:when>
+					        <c:otherwise>(none)</c:otherwise>
+				        </c:choose>
+				        </font></b></td>
 					</tr>
 				    <tr class="tableCellSnapShot" style="display: none;">
-			      	<%
-			    	        String wPoint = "(none)";
-			    	        if (wattPoint != 0) wPoint = pointDao.getPointName(wattPoint);
-			      	%>
                         <td><b><font class="lIndent">Watt Point: </font></b></td>
-                        <td><b><font class="lIndent"><%=wPoint%></font></b></td>
+                        <td><b><font class="lIndent">
+			        	<c:choose>
+					        <c:when test="${viewableSubBus.wattPoint != null}">${viewableSubBus.wattPoint.pointName}</c:when>
+					        <c:otherwise>(none)</c:otherwise>
+				        </c:choose>
+                        </font></b></td>
 					</tr>
 				    <tr class="tableCellSnapShot" style="display: none;">
-			        <%
-			 		        String vPoint = "(none)";
-			 		        if (voltPoint != 0) vPoint = pointDao.getPointName(voltPoint);
-			        %>
                         <td><b><font class="lIndent">Volt Point: </font></b></td>
-                        <td><b><font class="lIndent"><%=vPoint%></font></b></td>
+                        <td><b><font class="lIndent">
+			        	<c:choose>
+					        <c:when test="${viewableSubBus.voltPoint != null}">${viewableSubBus.voltPoint.pointName}</c:when>
+					        <c:otherwise>(none)</c:otherwise>
+				        </c:choose>
+                        </font></b></td>
 			        </tr>
-			<%	 }%>
 				
 				</table>
 				</td>
 			</tr>
 
-<%}%>
+		</c:forEach>
 		</table>
 	</cti:titledContainer>
 
@@ -444,9 +374,9 @@ for( SubBus subBus: subBuses ) {
          		<td><input type="checkbox" name="chkAllFdrsBx" onclick="checkAll(this, 'cti_chkbxFdrs');" />
          			<select id='feederFilter' onchange='applyFeederSelectFilter(this);'>
 						<option>All Feeders</option>
-						<% for( Feeder feeder: feeders) {%>
-						<option><%=feeder.getCcName()%></option>
-						<%}%>
+						<c:forEach var="feeder" items="${feederList}">
+							<option>${feeder.feeder.ccName}</option>
+						</c:forEach>
 					</select>
 				</td>
 				<td></td>
@@ -458,31 +388,26 @@ for( SubBus subBus: subBuses ) {
          		<td>kW / Volts</td>
          		<td>Daily/Max Ops</td>
          	</tr>
-<%
-css = "tableCell";
-for (int i = 0; i < feeders.size(); i++ ) {
-	css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
-	Feeder feeder = feeders.get(i);
-%>
-                <c:set var="thisFeederId" value="<%=feeder.getCcId()%>"/>
+			<c:forEach var="viewfeeder" items="${feederList}">
+                <c:set var="thisFeederId" value="${viewfeeder.feeder.ccId}"/>
                 <input type="hidden" id="paoId_${thisFeederId}" value="${thisFeederId}"></input>
                 
-				<tr class="<%=css%>">
+				<tr class="<ct:alternateRow odd="altTableCell" even="tableCell"/>" >
 					<td>
 						<input type="checkbox" name="cti_chkbxFdrs" value="${thisFeederId}"/>
 						<cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
-							<a title="Edit" class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=<%=feeder.getCcId()%>&ignoreBookmark=true">
+							<a title="Edit" class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${thisFeederId}&ignoreBookmark=true">
 	                            <img class="rAlign editImg" src="/editor/images/edit_item.gif"/>
 	                        </a>
 	                        
-	                        <a title="Delete" class="editImg" href="/editor/deleteBasePAO.jsf?value=<%=feeder.getCcId()%>">
+	                        <a title="Delete" class="editImg" href="/editor/deleteBasePAO.jsf?value=${thisFeederId}">
 	                            <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
 	                        </a>
                         </cti:checkProperty>
-                    	<a title="Bank Locations" class="editImg" href="/spring/capcontrol/capbank/capBankLocations?value=<%=feeder.getCcId()%>&specialArea=<%=special %>">
+                    	<a title="Bank Locations" class="editImg" href="/spring/capcontrol/capbank/capBankLocations?value=${thisFeederId}&specialArea=${isSpecialArea}">
 	                        <img class="rAlign editImg" src="/capcontrol/images/compass.gif"/>
 	                    </a>
-						<span><%=feeder.getCcName()%></span>
+						<span>${viewfeeder.feeder.ccName}</span>
 					</td>
 					
 					<td>        
@@ -491,10 +416,11 @@ for (int i = 0; i < feeders.size(); i++ ) {
 					
 					<td>
                         <a id="feeder_state_${thisFeederId}"    
-                            <% if (hasFeederControl) { %>
+                            <c:if test="${hasFeederControl}">
                                 href="javascript:void(0);"
-                                <%=popupEvent%>="getFeederMenu('${thisFeederId}');" 
-                            <% } %> >
+                                ${popupEvent}="getFeederMenu('${thisFeederId}');" 
+                            </c:if> 
+                        >
                             <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="STATE"/>    
 						</a>
                         <cti:dataUpdaterCallback function="updateStateColorGenerator('feeder_state_${thisFeederId}')" 
@@ -502,7 +428,7 @@ for (int i = 0; i < feeders.size(); i++ ) {
 					</td>
                     
 					<td>
-                        <c:set var="isPowerFactorControlled" value="<%=CBCUtils.isPowerFactorControlled(feeder.getControlUnits())%>"/>
+                        <c:set var="isPowerFactorControlled" value="${viewfeeder.feeder.powerFactorControlled}"/>
                         <a onmouseover="showDynamicPopup($('feederPFPopup_${thisFeederId}_${isPowerFactorControlled}'));"
 						   onmouseout="nd();"
 						   id="${isPowerFactorControlled}">
@@ -514,13 +440,16 @@ for (int i = 0; i < feeders.size(); i++ ) {
 					</td>
                     
 					<td>
-					<%if(feeder.getUsePhaseData() == true) { %>
-                        <a onmouseover="showDynamicPopup($('feederVarLoadPopup_${thisFeederId}'));" 
-					       onmouseout="nd();"
-						  id="${thisFeederId}">
-					  <%} else  {%>
-						  <a id="${thisFeederId}">
-					  <%} %>
+					<c:choose>
+						<c:when test="${viewfeeder.feeder.usePhaseData}">
+	                        <a onmouseover="showDynamicPopup($('feederVarLoadPopup_${thisFeederId}'));" 
+						       onmouseout="nd();"
+							  id="${thisFeederId}">
+					  	</c:when>
+					  	<c:otherwise>
+							<a id="${thisFeederId}">
+					  	</c:otherwise>
+					</c:choose>
                             <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="KVAR_LOAD"/>
                         </a>
                         <div class="ccVarLoadPopup" id="feederVarLoadPopup_${thisFeederId}" style="display: none;">
@@ -540,15 +469,15 @@ for (int i = 0; i < feeders.size(); i++ ) {
 					<td>
                         <a id="dailyMaxOps_${thisFeederId}"><cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="DAILY_MAX_OPS"/></a>
 					</td>
-					<td id="hiddenSubName" style="display: none;"><%=capControlCache.getSubBusNameForFeeder(feeder)%></td>
+					<td id="hiddenSubName" style="display: none;"> ${viewfeeder.subBusName}</td>
 				</tr>
-<% } %>
+			</c:forEach>
 		</table>
 
     </cti:titledContainer>
 
 	<br>
-
+	
 	<cti:titledContainer title="Capacitor Banks" id="last_titled_container">
 		<!--  <table id="capBankHeaderTable" width="100%" border="0" cellspacing="0" cellpadding="0">-->
         <div id="capBankDiv">
@@ -574,91 +503,86 @@ for (int i = 0; i < feeders.size(); i++ ) {
                 <td>Parent Feeder</td>
                 <td>Daily/Max/Total Op</td>
 			</tr>              
-<%
-css = "tableCell";
-for( int i = 0; i < capBanks.size(); i++ ) {
-	CapBankDevice capBank = capBanks.get(i);
-	css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
-	int deviceID = capBank.getControlDeviceID().intValue();
-    LiteYukonPAObject obj = paoDao.getLiteYukonPAO(deviceID);
-    String rowColor = ((i % 2) == 0) ? "#eeeeee" : "white";
-    
-%>
-            <c:set var="thisCapBankId" value="<%=capBank.getCcId()%>"/>
-            <c:set var="rowColor" value="<%=rowColor%>"/>
+	
+		<c:forEach var="viewableCapBank" items="${capBankList}">
+            <c:set var="thisCapBankId" value="${viewableCapBank.capBankDevice.ccId}"/>
             <input type="hidden" id="paoId_${thisCapBankId}" value="${thisCapBankId}"></input>            
 
-			<tr class="<%=css%>" id="tr_cap_${thisCapBankId}" onmouseover="highLightRow(this)"  onmouseout="unHighLightRow(this)">
+			<tr id="tr_cap_${thisCapBankId}" onmouseover="highLightRow(this)" onmouseout="unHighLightRow(this)"  
+			    class="<ct:alternateRow odd="altTableCell" even="tableCell"/>" >
 				
                 <td>
                     <input type="checkbox" name="cti_chkbxBanks" value="${thisCapBankId}"/>
                 </td>
                 
 				<td>
-				    <%
-				    String name = "---";
-				    Integer cdId = capBank.getControlDeviceID();
-				    if (cdId.intValue() != 0) {
-				        name = paoDao.getYukonPAOName(cdId);%>
-				        <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
-					        <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=<%=capBank.getControlDeviceID()%>">
-	                            <img class="rAlign editImg" src="/editor/images/edit_item.gif"/>
-	                        </a>
-	                        <a href="/editor/copyBase.jsf?itemid=<%=capBank.getControlDeviceID()%>&type=1>">
-                               <img src="/editor/images/page_copy.gif" border="0" height="15" width="15"/>
-                            </a>
-                        </cti:checkProperty>
-                    <%
-				    }
-				    %> 
-				    <%=name%>
-				    <% if (CBCUtils.isTwoWay(obj)) { %>                 
-                        <a href="#" onclick="return GB_show('Device <%=obj.getPaoName()%>', 
-                            '/spring/capcontrol/oneline/popupmenu?menu=pointTimestamp&cbcID=<%=obj.getLiteID()%>',
+					<c:choose>
+						<c:when test="${viewableCapBank.capBankDevice.controlDeviceID != 0}">
+					        <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
+						        <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${viewableCapBank.capBankDevice.controlDeviceID}">
+		                            <img class="rAlign editImg" src="/editor/images/edit_item.gif"/>
+		                        </a>
+		                        <a href="/editor/copyBase.jsf?itemid=${viewableCapBank.capBankDevice.controlDeviceID}&type=1>">
+	                               <img src="/editor/images/page_copy.gif" border="0" height="15" width="15"/>
+	                            </a>
+	                        </cti:checkProperty>
+							${viewableCapBank.controlDevice.paoName}
+					    </c:when>
+					    <c:otherwise>
+					    ---
+					    </c:otherwise>
+				    </c:choose>
+
+					<c:if test="${viewableCapBank.twoWayCbc}">
+                        <a href="#" onclick="return GB_show(' ', 
+                            '/spring/capcontrol/oneline/popupmenu?menu=pointTimestamp&cbcID=${viewableCapBank.controlDevice.liteID}',
                              500, 600)" >
                             <img class="rAlign magnifierImg" 
-                                src="images/magnifier.gif" 
+                                src="/capcontrol/images/magnifier.gif" 
                                 onmouseover="statusMsg(this,'Click here to see the timestamp information for the cap bank controller device.');" />
                        </a>
-                    <% } %>
+                    </c:if>
 				</td>
 				
                 <td>
-				    <% if (hasCapbankControl) { %>
-                        <!--2-way device designator-->
-                        <input id="2_way_${thisCapBankId}" type="hidden" value="<%=CBCUtils.isTwoWay(obj)%>"/>
-                        <input id="showFlip_${thisCapBankId}" type="hidden" value="<%=showFlip%>"/>
-                        <input id="is701x_${thisCapBankId}" type="hidden" value="<%=CBCUtils.is701xDevice(obj)%>"/>
-                        <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
-	                        <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=<%=capBank.getCcId()%>&ignoreBookmark=true">
-	                            <img class="rAlign editImg" src="/editor/images/edit_item.gif"/>
+                	<c:choose>
+	                	<c:when test="${hasCapbankControl}">
+	                        <!--2-way device designator-->
+	                        <input id="2_way_${thisCapBankId}" type="hidden" value="${viewableCapBank.twoWayCbc}"/>
+	                        <input id="showFlip_${thisCapBankId}" type="hidden" value="${showFlip}"/>
+	                        <input id="is701x_${thisCapBankId}" type="hidden" value="${viewableCapBank.device701x}"/>
+	                        <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
+		                        <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${thisCapBankId}&ignoreBookmark=true">
+		                            <img class="rAlign editImg" src="/editor/images/edit_item.gif"/>
+		                        </a>
+		                        
+		                        <a class="editImg" href="/editor/deleteBasePAO.jsf?value=${thisCapBankId}">
+		                            <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
+		                        </a>
+	                        </cti:checkProperty>
+	                        <a href="javascript:void(0);"
+	                           ${popupEvent}="getCapBankMenu('${thisCapBankId}');" 
+	                           >
+	                            <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_NAME"/>
 	                        </a>
-	                        
-	                        <a class="editImg" href="/editor/deleteBasePAO.jsf?value=<%=capBank.getCcId()%>">
-	                            <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
-	                        </a>
-                        </cti:checkProperty>
-                        <a href="javascript:void(0);"
-                           <%=popupEvent%> ="getCapBankMenu('${thisCapBankId}');" 
-                           >
-                            <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_NAME"/>
-                        </a>
-					<% } else { %>
-                        <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
-	                        <a href="/editor/cbcBase.jsf?type=2&itemid=<%=capBank.getCcId()%>&ignoreBookmark=true">
-	                            <img class="rAlign editImg" src="/editor/images/edit_item.gif"/>
-	                        </a>
-	                        
-	                        <a href="/editor/deleteBasePAO.jsf?value=<%=capBank.getCcId()%>">
-	                            <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
-	                        </a>
-                        </cti:checkProperty>
-                        <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_NAME"/>
-					<% } %>
+						</c:when>
+						<c:otherwise>
+	                        <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
+		                        <a href="/editor/cbcBase.jsf?type=2&itemid=${thisCapBankId}&ignoreBookmark=true">
+		                            <img class="rAlign editImg" src="/editor/images/edit_item.gif"/>
+		                        </a>
+		                        
+		                        <a href="/editor/deleteBasePAO.jsf?value=${thisCapBankId}">
+		                            <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
+		                        </a>
+	                        </cti:checkProperty>
+	                        <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_NAME"/>
+						</c:otherwise>
+					</c:choose>
 					<cti:checkProperty property="CBCSettingsRole.SHOW_CB_ADDINFO">
 					   <a href="#" onclick="return GB_show('<center> Cap Bank Additional Information </center>', 
 					       '/spring/capcontrol/capAddInfo?paoID=${thisCapBankId}', 500, 600)" >
-					       <img class="rAlign magnifierImg" src="images/magnifier.gif" 
+					       <img class="rAlign magnifierImg" src="/capcontrol/images/magnifier.gif" 
 					           onmouseover="statusMsg(this, 'Click to see additional information for the cap bank.');" />
 					   </a>
 					</cti:checkProperty>
@@ -704,18 +628,21 @@ for( int i = 0; i < capBanks.size(); i++ ) {
                 
                 <td>
                     <a href="javascript:void(0);"
-                    <% if (hasCapbankControl) { %>
-	                    <% if (capBank.isBankMoved()) { %>
-		                    class="warning" 
-		                    <%=popupEvent%>="getCapBankTempMoveBack('${thisCapBankId}');" 
-	                    <% } else { %>
-	                        onmouseover="statusMsg(this, 'Click here to temporarily move this CapBank from its current parent feeder');"
-	                        onmouseout="nd();"
-	                        onclick="return GB_show('CapBank Temp Move for <%=capBank.getCcName()%> (Pick feeder by clicking on name)',
-	                            'tempmove.jsp?bankid=<%=capBank.getCcId()%>', 500, 710, onGreyBoxClose);"
-	                    <% } %>
-	                <% } %>
-                    	>
+	                    <c:if test="${hasCapbankControl}">
+							<c:choose>
+							<c:when test="${viewableCapBank.capBankDevice.bankMoved}">
+			                    class="warning" 
+			                    ${popupEvent}="getCapBankTempMoveBack('${thisCapBankId}');" 
+		                    </c:when>
+		                    <c:otherwise>
+		                        onmouseover="statusMsg(this, 'Click here to temporarily move this CapBank from its current parent feeder');"
+		                        onmouseout="nd();"
+		                        onclick="return GB_show('CapBank Temp Move for ${viewableCapBank.capBankDevice.ccName} (Pick feeder by clicking on name)',
+		                            '/capcontrol/tempmove.jsp?bankid=${thisCapBankId}', 500, 710, onGreyBoxClose);"
+		                    </c:otherwise>
+		                    </c:choose>
+		                </c:if>
+                    >
                             <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PARENT"/>
                     	</a>                    
                     </td>
@@ -725,13 +652,14 @@ for( int i = 0; i < capBanks.size(); i++ ) {
                         </a>
 					</td>
 				</tr>
-				<% } %>
+			</c:forEach>
 			</table>
 		</div>
 		<input type="hidden" id="lastUpdate" value="">
         
 	</cti:titledContainer>
     
+
 <capTags:commandMsgDiv/>
 
     <ct:disableUpdaterHighlights/>

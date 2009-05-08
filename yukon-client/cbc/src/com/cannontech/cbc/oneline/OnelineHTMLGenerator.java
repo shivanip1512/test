@@ -23,7 +23,9 @@ public class OnelineHTMLGenerator extends HTMLGenerator {
             "prototype150.js",
             "scriptaculous/scriptaculous.js",
             "cc.js",
-            "cconelinepopup.js"
+            "cconelinepopup.js",
+            "GreyBox/AmiJS.js",
+            "GreyBox/greybox.js"
     };
 
     public OnelineHTMLGenerator() {
@@ -36,8 +38,12 @@ public class OnelineHTMLGenerator extends HTMLGenerator {
         for (int i = 0; i < files.length; i++) {
             sb.append("<script type=\"text/JavaScript\" src=\"" + files[i] + "\"></script>" + NEW_LINE);
         }
-        
+
+        sb.append("<link href=\"/editor/css/greybox/greybox.css\" rel=\"stylesheet\" type=\"text/css\" media=\"all\" />");
+        sb.append(NEW_LINE);
         sb.append("<script type=\"text/javascript\" language=\"JavaScript\">" + NEW_LINE);
+        sb.append("var GB_IMG_DIR = \"/editor/css/greybox/\";");
+        sb.append("GreyBox.preloadGreyBoxImages();");
         sb.append("var x;" + NEW_LINE);
         sb.append("var y;" + NEW_LINE);
         sb.append("Event.observe(document, 'mousemove', function(event) {" + NEW_LINE);
@@ -63,14 +69,16 @@ public class OnelineHTMLGenerator extends HTMLGenerator {
         sb.append("    });" + NEW_LINE);    
         sb.append("}" + NEW_LINE);
         sb.append("</script>" + NEW_LINE);
-       
+        sb.append(NEW_LINE);
+
+        
         return sb.toString();
     }
     
     @Override
     public void writeAdditionalFields(Writer w) {
         try {
-            w.write("<DIV ID=\"cmdMessageDiv\" STYLE=\"position:absolute;visibility:hidden;background-color:#000000;\"></DIV>");
+            w.write("\n<DIV ID=\"cmdMessageDiv\" STYLE=\"position:absolute;visibility:hidden;background-color:#000000;\"></DIV>\n");
         } catch (IOException e) {
             CTILogger.error(e);
         }

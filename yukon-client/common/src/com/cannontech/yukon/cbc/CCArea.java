@@ -9,7 +9,7 @@ public class CCArea extends StreamableCapObject {
     private String paoType;
     private String paoName;
     private String paoCategory;
-    private Integer paoID;
+    private Integer paoId;
     private String paoClass;
     int[] stations = null;
     private Double powerFactorValue = null;
@@ -25,8 +25,8 @@ public class CCArea extends StreamableCapObject {
 		this.stations = stations;
 	}
 
-	public void setPaoID(Integer integer) {
-        paoID = integer;
+	public void setPaoId(Integer integer) {
+        paoId = integer;
     }
 
     public void setPaoCategory(String string) {
@@ -61,8 +61,8 @@ public class CCArea extends StreamableCapObject {
         return paoDescription;
     }
 
-    public Integer getPaoID() {
-        return paoID;
+    public Integer getPaoId() {
+        return paoId;
     }
 
     public String getPaoName() {
@@ -85,14 +85,14 @@ public class CCArea extends StreamableCapObject {
     public boolean equals(Object obj) {
         if (obj instanceof CCArea) {
             CCArea area = (CCArea) obj;
-            return area.getPaoID().equals(getPaoID());
+            return area.getPaoId().equals(getPaoId());
         }
         return false;
     }
 
     public CCArea copy() {
         CCArea copy = new CCArea();
-        copy.setPaoID(getPaoID());
+        copy.setPaoId(getPaoId());
         copy.setPaoCategory(getPaoCategory());
         copy.setPaoClass(getPaoClass());
         copy.setPaoName(getPaoName());

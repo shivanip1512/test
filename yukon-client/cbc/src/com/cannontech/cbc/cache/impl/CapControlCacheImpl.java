@@ -302,7 +302,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     public synchronized boolean isSpecialCBCArea(int deviceID) {
         List<CCSpecialArea> areaList = getSpecialCbcAreas();
         for (final CCSpecialArea area : areaList) {
-            boolean result = area.getPaoID().equals(deviceID);
+            boolean result = area.getPaoId().equals(deviceID);
             if (result) return true;
         }
         return false;
@@ -591,7 +591,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         
         List<CCSpecialArea> list = areas.getAreas();
         for (final CCSpecialArea area : list) {
-        	int areaId = area.getPaoID();
+        	int areaId = area.getPaoId();
             cbcSpecialAreaMap.put(areaId, area);
             getUpdatedObjMap().handleCBCChangeEvent(area);
         }

@@ -87,7 +87,7 @@
 
 %>
     <cti:breadCrumbs>
-	   <cti:crumbLink url="subareas.jsp" title="Home" /> 
+	   <cti:crumbLink url="/spring/capcontrol/tier/areas" title="Home" /> 
 	   <cti:crumbLink title="Events" />
 	</cti:breadCrumbs>
 

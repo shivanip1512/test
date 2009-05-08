@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Vector;
 
 import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 
 /**
  * Insert the type's description here. Creation date: (8/18/00 4:23:32 PM)
@@ -771,5 +772,9 @@ public class SubBus extends StreamableCapObject implements PointQualityCheckable
 	public void setUsePhaseData(Boolean usePhaseData) {
 		this.usePhaseData = usePhaseData;
 	}
-
+	
+	public boolean isPowerFactorControlled() {
+        return (CalcComponentTypes.PFACTOR_KW_KVAR_FUNCTION.equalsIgnoreCase(controlUnits) || 
+        		CalcComponentTypes.PFACTOR_KW_KQ_FUNCTION.equalsIgnoreCase(controlUnits));
+	}
 }

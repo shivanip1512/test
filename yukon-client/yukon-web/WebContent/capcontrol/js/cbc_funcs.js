@@ -1,5 +1,4 @@
 var manMsgID = 0;
-var GB_IMG_DIR = "../../editor/css/greybox/";
 
 function checkPageExpire() {
     var inputElements = $$('input');
@@ -63,13 +62,6 @@ function getCapBankChangeOpStateMenu(id) {
 function getCapBankSystemMenu(id) {
     var url = '/spring/capcontrol/tier/popupmenu?menu=capBankSystemMenu&id=' + id;
     getMenuFromURLAbove(url); 
-}
-
-function getCapBankTempMoveBack(id, redirectURL){
-    var url = '/spring/capcontrol/tier/popupmenu?menu=capBankTempMoveBack&id=' + id;
-    if (redirectURL) url += '&redirectURL=' + redirectURL;
-    
-    getMenuFromURL(url);
 }
 
 function getMenuFromURL(url) {
@@ -696,12 +688,12 @@ function createIFrame(src, width, height, name, frameborder) {
 function toggleImg( imgID ) {   
     var imgElem = document.getElementById(imgID);
 
-    if( imgElem.src.indexOf('images/nav-minus.gif') > 0 ) {
-        imgElem.src='images/nav-plus.gif';
+    if( imgElem.src.indexOf('/capcontrol/images/nav-minus.gif') > 0 ) {
+        imgElem.src='/capcontrol/images/nav-plus.gif';
         return false;
     }
     else {
-        imgElem.src = 'images/nav-minus.gif';
+        imgElem.src = '/capcontrol/images/nav-minus.gif';
         return true;
     }
 }
@@ -854,6 +846,7 @@ function pause(numberMillis) {
 	            var sub = cells[2];
 	            var anchor = sub.getElementsByTagName('a')[0];
 	            var subName = anchor.innerHTML;
+	            
 	            var selectedSubBus = new String (select.options[select.selectedIndex].text);
 	            //displayed name always contains a white space at the end
 	            if (trim(subName) == trim (selectedSubBus)){
@@ -871,6 +864,7 @@ function pause(numberMillis) {
 		var rows = $$('#fdrTable tr.altTableCell', '#fdrTable tr.tableCell');
         var feederNames = new Array();
         var selectedFeeder = new String (select.options[select.selectedIndex].text);
+        
         if(selectedFeeder == 'All Feeders'){
         	for (var i=0; i < rows.length; i++) {
 	            var row = rows[i];
@@ -907,8 +901,10 @@ function pause(numberMillis) {
             var row = rows[i];
             var cells = row.getElementsByTagName('td');
             var sub = cells[9];
+            
             var subBusName = new String (sub.innerHTML);
-			var index = subBusNames.indexOf(subBusName);
+            var index = subBusNames.indexOf(trim(subBusName));
+
 			if(index > -1){
 				row.setStyle({'display' : ''});
 				var fdr = cells[0];

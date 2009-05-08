@@ -22,8 +22,8 @@ public class ParentStringPrinter {
     private HttpServletRequest request;
     private static final String ORPH_STRING = "---";
     private static final String FEEDER_URL = "javascript:postMany('parentForm', '" + CCSessionInfo.STR_SUBID +"', 'paoId');";
-    private static final String AREA_URL = "/capcontrol/subareas.jsp";
-    private static final String SPECIAL_AREA_URL = "/capcontrol/specialSubAreas.jsp";
+    private static final String AREA_URL = "/spring/capcontrol/tier/areas";
+    private static final String SPECIAL_AREA_URL = "/spring/capcontrol/tier/areas?isSpecialArea=true";
     private CapbankDao capbankDao = YukonSpringHook.getBean("capbankDao",CapbankDao.class);
     private PointDao pointDao;
     private PaoDao paoDao;

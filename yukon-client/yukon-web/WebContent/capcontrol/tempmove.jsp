@@ -140,7 +140,7 @@ int z = 0;
 String indent = "\t";
 for( CCArea area : allAreas )
 {
-	List<SubStation> stationsOnArea = filterCapControlCache.getSubstationsByArea( area.getPaoID() );
+	List<SubStation> stationsOnArea = filterCapControlCache.getSubstationsByArea( area.getPaoId() );
 	%>
 	
 	<div>		

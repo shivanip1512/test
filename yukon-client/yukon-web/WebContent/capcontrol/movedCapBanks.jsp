@@ -27,7 +27,7 @@
 <cti:standardMenu menuSelection="view|recentcapbankmoves"/>
 
 <cti:breadCrumbs>
-	<cti:crumbLink url="subareas.jsp" title="Home" />
+	<cti:crumbLink url="/spring/capcontrol/tier/areas" title="Home" />
 </cti:breadCrumbs>
 
 <%
@@ -47,7 +47,7 @@ if (popupEvent == null) {
 List<CCArea> areas = capControlCache.getCbcAreas();
 List<CapBankDevice> movedCaps = new ArrayList<CapBankDevice>(10);   
 for (CCArea area : areas) {
-	List<CapBankDevice> capBanks = capControlCache.getCapBanksByArea(area.getPaoID());
+	List<CapBankDevice> capBanks = capControlCache.getCapBanksByArea(area.getPaoId());
 	for (CapBankDevice capBank : capBanks) {
 		if (capBank.isBankMoved()) {
 			movedCaps.add(capBank);

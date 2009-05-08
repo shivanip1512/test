@@ -691,4 +691,8 @@ public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) 
 	public void setUsePhaseData(Boolean usePhaseData) {
 		this.usePhaseData = usePhaseData;
 	}
+	public boolean isPowerFactorControlled() {
+		return (CalcComponentTypes.PFACTOR_KW_KVAR_FUNCTION.equalsIgnoreCase(controlUnits) || 
+				CalcComponentTypes.PFACTOR_KW_KQ_FUNCTION.equalsIgnoreCase(controlUnits));
+	}
 }

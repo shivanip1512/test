@@ -137,10 +137,6 @@ public final class CBCUtils {
         }
     };
 
-    public static final boolean isPowerFactorControlled(String controlUnits) {
-        return (CalcComponentTypes.PFACTOR_KW_KVAR_FUNCTION.equalsIgnoreCase(controlUnits) || CalcComponentTypes.PFACTOR_KW_KQ_FUNCTION.equalsIgnoreCase(controlUnits));
-    }
-    
     /**
      * Calculates the average PowerFactor for an array of SubBuses that have
      * valid PowerFactor values.

@@ -445,7 +445,7 @@
        		<link>/capcontrol/movedCapBanks.jsp</link>  
        	  </option>
        	  <option id="specialareas">
-       		<link>/capcontrol/specialSubAreas.jsp</link>  
+       		<link>/spring/capcontrol/tier/areas?isSpecialArea=true</link>  
        	  </option>
 
         </links>

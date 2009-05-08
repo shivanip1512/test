@@ -434,10 +434,6 @@ public class OnelinePopupMenuController extends MultiActionController {
         cachingPointFormattingService.addLitePointsToCache(pointList);
         pointUpdateBackingService.notifyOfImminentPoints(pointList);
         
-        // Hack to change jsp content for oneline popup
-        boolean isOneline = ServletRequestUtils.getBooleanParameter(request, "oneline", false);
-        mav.addObject("isOneline", isOneline);
-
         return mav;
     }
     

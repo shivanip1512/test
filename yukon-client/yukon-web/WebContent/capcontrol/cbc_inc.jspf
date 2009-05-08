@@ -28,20 +28,22 @@
 	</jsp:forward>	
 </cti:isPropertyFalse>
 
-<script type="text/JavaScript" src="../JavaScript/cc_command_menu.js"></script>
-<script type="text/JavaScript" src="js/cbc_funcs.js"></script>
-<script type="text/JavaScript" src="../JavaScript/cconelinepopup.js"></script>
-<script type="text/JavaScript" src="../JavaScript/scriptaculous/scriptaculous.js"></script>
+<script type="text/JavaScript" src="/JavaScript/cc_command_menu.js"></script>
+<script type="text/JavaScript" src="/capcontrol/js/cbc_funcs.js"></script>
+<script type="text/JavaScript" src="/JavaScript/cconelinepopup.js"></script>
+<script type="text/JavaScript" src="/JavaScript/scriptaculous/scriptaculous.js"></script>
 
-<script type="text/JavaScript" src="../JavaScript/xmlhttp.js"></script>
-<script type="text/JavaScript" src="../JavaScript/ol/overlib_mini.js"></script>
-<script type="text/JavaScript" src="../JavaScript/validation.js"></script>
-<script type="text/JavaScript" src="../JavaScript/capcontrol/filter.js"></script>
+<script type="text/JavaScript" src="/JavaScript/xmlhttp.js"></script>
+<script type="text/JavaScript" src="/JavaScript/ol/overlib_mini.js"></script>
+<script type="text/JavaScript" src="/JavaScript/validation.js"></script>
+<script type="text/JavaScript" src="/JavaScript/capcontrol/filter.js"></script>
 
- <link href="../editor/css/greybox/greybox.css" rel="stylesheet" type="text/css" media="all" /> 
-<script type="text/javascript" src="../JavaScript/GreyBox/AmiJS.js"></script>
-<script type="text/javascript" src="../JavaScript/GreyBox/greybox.js"></script>
+<link href="/editor/css/greybox/greybox.css" rel="stylesheet" type="text/css" media="all" /> 
+<script type="text/javascript" src="/JavaScript/GreyBox/AmiJS.js"></script>
+<script type="text/javascript" src="/JavaScript/GreyBox/greybox.js"></script>
 
+<!-- Adding since modules_config css/base.css isn't an absolute path -->
+<link href="/capcontrol/css/base.css" rel="stylesheet" type="text/css" media="all" />
 
 <jsp:useBean id="ccSession"
 	class="com.cannontech.cbc.web.CCSessionInfo"
@@ -49,11 +51,17 @@
 </jsp:useBean>
 
 
-<%
-	if(ccSession != null)
-		ccSession.updateState( request );
-
-%>
+<script type="text/javascript" language="JavaScript">
+	//These two lines are needed in every page to use Greybox.
+	var GB_IMG_DIR = "/editor/css/greybox/";
+	GreyBox.preloadGreyBoxImages();
+	
+	Event.observe(window, 'load', function () { 
+       new Ajax.Request('/spring/capcontrol/tier/updateSession', 
+           {onComplete: function(transport, json){}}
+		);
+   	});
+</script>
 
 <jsp:useBean id="CtiNavObject"
 	class="com.cannontech.web.navigation.CtiNavObject"

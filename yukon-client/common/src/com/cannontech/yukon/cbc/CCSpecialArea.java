@@ -9,15 +9,13 @@ public class CCSpecialArea extends StreamableCapObject {
     private String paoType;
     private String paoName;
     private String paoCategory;
-    private Integer paoID;
+    private Integer paoId;
     private String paoClass;
 	//should only contain objects of type integer
 	private int[] ccSubIds = null;
     private Double powerFactorValue = null;
     private Double estimatedPFValue = null;
     
-
-
     public int[] getCcSubIds() {
 		return ccSubIds;
 	}
@@ -26,8 +24,8 @@ public class CCSpecialArea extends StreamableCapObject {
 		this.ccSubIds = ccSubIds;
 	}
 
-	public void setPaoID(Integer integer) {
-        paoID = integer;
+	public void setPaoId(Integer integer) {
+        paoId = integer;
     }
 
     public void setPaoCategory(String string) {
@@ -62,8 +60,8 @@ public class CCSpecialArea extends StreamableCapObject {
         return paoDescription;
     }
 
-    public Integer getPaoID() {
-        return paoID;
+    public Integer getPaoId() {
+        return paoId;
     }
 
     public String getPaoName() {
@@ -86,14 +84,14 @@ public class CCSpecialArea extends StreamableCapObject {
     public boolean equals(Object obj) {
         if (obj instanceof CCSpecialArea) {
             CCSpecialArea area = (CCSpecialArea) obj;
-            return area.getPaoID().equals(getPaoID());
+            return area.getPaoId().equals(getPaoId());
         }
         return false;
     }
 
     public CCSpecialArea copy() {
         CCSpecialArea copy = new CCSpecialArea();
-        copy.setPaoID(getPaoID());
+        copy.setPaoId(getPaoId());
         copy.setPaoCategory(getPaoCategory());
         copy.setPaoClass(getPaoClass());
         copy.setPaoName(getPaoName());

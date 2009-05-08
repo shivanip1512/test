@@ -6,25 +6,11 @@
 
 <cti:standardPage title="Cap Bank Controller Points and TS" module="capcontrol_internal">
 
-	<c:if test="${isOneline}">
-		<table width="475px">
-	        <tr>
-	            <td align="center" style="color:#9FBBAC; font-weight: bold; font-size: 16;">${paoName}</td>
-	            <td align="right">
-	                <a href="javascript:void(0);" style="color: gray; font-weight: bold; font-size: 16;" title="Click To Close" onclick="closePopupWindow();">x</a>
-	            </td>
-	        </tr>
-	        <tr>
-	            <td  colspan="2">
-	                <hr style="color: gray;"/>
-	            </td>
-	        </tr>
-		</table>
-	</c:if>
+	<center><span style="font-weight: bold; font-size: 16;">${paoName}</span></center>
 	
-	<div style="<c:if test="${isOneline}">width: 475px; height: 400px;</c:if> overflow: auto;">
+	<div style="overflow: auto;">
 
-        <table <c:if test="${isOneline}">style="color: white;"</c:if> width="95%" border="0" cellspacing="0" cellpadding="0">
+        <table width="95%" border="0" cellspacing="0" cellpadding="0">
 			<tr style="text-align: left;">
 				<th>Point Name</th>
 				<th>Value</th>

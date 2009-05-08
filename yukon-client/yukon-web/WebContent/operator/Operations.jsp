@@ -173,7 +173,7 @@
 	<tags:operationSection sectionName="Distribution Automation" sectionImageName="DistributionAutomationLogo">
 	    <cti:checkRolesAndProperties value="CAP_CONTROL_ACCESS">
 		    <tags:sectionLink>
-		    	<a href="../capcontrol/subareas.jsp">Cap Control</a>
+		    	<a href="/spring/capcontrol/tier/areas?isSpecialArea=false">Cap Control</a>
 		    </tags:sectionLink>
 	    </cti:checkRolesAndProperties>
 	    <cti:checkRolesAndProperties value="OPERATOR_ESUBSTATION_DRAWINGS_VIEW"> 

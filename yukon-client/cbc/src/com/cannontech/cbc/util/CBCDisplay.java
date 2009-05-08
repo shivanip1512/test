@@ -489,7 +489,7 @@ public class CBCDisplay {
                 return CtiUtilities.STRING_NONE;
             } else if (subBus.getPeakTimeFlag().booleanValue()) {
 
-                if (CBCUtils.isPowerFactorControlled(subBus.getControlUnits())) {
+                if (subBus.isPowerFactorControlled()) {
 
                     return CommonUtils.formatDecimalPlaces(subBus.getPeakLag().doubleValue(),0) + "%C : " 
                     + num.format(subBus.getPeakPFSetPoint() ) + " : " 
@@ -498,7 +498,7 @@ public class CBCDisplay {
                     return CommonUtils.formatDecimalPlaces(subBus.getPeakLead().doubleValue(),0) 
                     + " to " + CommonUtils.formatDecimalPlaces(subBus.getPeakLag().doubleValue(),0) + " Pk";
             } else {
-                if (CBCUtils.isPowerFactorControlled(subBus.getControlUnits())) {
+                if (subBus.isPowerFactorControlled()) {
 
                     return CommonUtils.formatDecimalPlaces(subBus.getOffPkLag().doubleValue(),0) 
                     + "%C : " + num.format(subBus.getOffpeakPFSetPoint()) 
@@ -693,7 +693,7 @@ public class CBCDisplay {
             } else if (feeder.getControlmethod().equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
                 return CtiUtilities.STRING_NONE;
             } else if (feeder.getPeakTimeFlag().booleanValue()) {
-                if (CBCUtils.isPowerFactorControlled(feeder.getControlUnits())) {
+                if (feeder.isPowerFactorControlled()) {
                     return CommonUtils.formatDecimalPlaces(feeder.getPeakLag().doubleValue(), 0) 
                     + "%C : " 
                     + num.format( feeder.getPeakPFSetPoint() ) 
@@ -706,7 +706,7 @@ public class CBCDisplay {
                     + CommonUtils.formatDecimalPlaces(feeder.getPeakLag().doubleValue(), 0) 
                     + " Pk";
             } else {
-                if (CBCUtils.isPowerFactorControlled(feeder.getControlUnits())) {
+                if (feeder.isPowerFactorControlled()) {
                     return CommonUtils.formatDecimalPlaces(feeder.getOffPkLag().doubleValue(), 0) 
                     + "%C : " 
                     + num.format( feeder.getOffpeakPFSetPoint() ) 
@@ -1037,7 +1037,7 @@ public class CBCDisplay {
 
             if (subBus.getPeakTimeFlag().booleanValue()) {
 
-                if (CBCUtils.isPowerFactorControlled(subBus.getControlUnits())) {
+                if (subBus.isPowerFactorControlled()) {
 
                     return CommonUtils.formatDecimalPlaces(subBus.getPeakLag().doubleValue(),0) 
                     + "%C : " + num.format(subBus.getPeakPFSetPoint()) + " : " 
@@ -1047,7 +1047,7 @@ public class CBCDisplay {
                     + " to " 
                     + CommonUtils.formatDecimalPlaces(subBus.getPeakLag().doubleValue(),0) + " Pk";
             } else {
-                if (CBCUtils.isPowerFactorControlled(subBus.getControlUnits())) {
+                if (subBus.isPowerFactorControlled()) {
 
                     return CommonUtils.formatDecimalPlaces(subBus.getOffPkLag().doubleValue(),0) 
                     + "%C : " + num.format(subBus.getOffpeakPFSetPoint()) + " : " 
