@@ -17,7 +17,7 @@
 			    not configured
 	    		</ct:nameValue>
     		</c:when>
-            <c:when test="${supportedAttributes[attribute]}">
+            <c:otherwise>
             	<ct:nameValue name="${attribute.description}">
                     <ct:attributeValue device="${device}"
                         attribute="${attribute}" />
@@ -36,10 +36,13 @@
                         <div id="${widgetParameters.widgetId}_totalConsumption"></div>
                     </ct:nameValue>
                 </c:if>
-            </c:when>
+            </c:otherwise>
         </c:choose>
     </c:forEach>
 </ct:nameValueContainer>
+
+<%-- The following js and dataUpdaters are for updating the USAGE values, don't write unless USAGE is supported and exists --%>
+<c:if test="${supportedAttributes['USAGE'] && existingAttributes['USAGE']}">
 
 <script type="text/javascript">
 <%--
@@ -96,6 +99,8 @@ ${widgetParameters.widgetId}_updateDifference();
     function="${widgetParameters.widgetId}_updateCurrent"
     initialize="true"
     valueIdentifier="POINT/${pointId}/{value}"/>
+    
+</c:if>
 
 <br>
 <div id="${widgetParameters.widgetId}_results"></div>
