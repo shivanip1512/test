@@ -1,6 +1,7 @@
 package com.cannontech.tdc.template;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -51,15 +52,16 @@ public class TemplateDisplay {
     /**
      * retrieve method comment.
      */
-    public void retrieve() throws java.sql.SQLException {
+	@SuppressWarnings("unchecked")
+	public void retrieve() throws java.sql.SQLException {
         String sqlStmt = "SELECT * FROM " + TABLE_NAME + " WHERE DisplayNum = ?";
         JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
-        LinkedList<Map> l = (LinkedList) yukonTemplate.queryForList(sqlStmt, new Integer[] {getDisplayNum()});
-        if (l.size() > 0)
+        ArrayList<Map<String, Object>> rowList = (ArrayList<Map<String, Object>>) yukonTemplate.queryForList(sqlStmt, new Integer[] {getDisplayNum()});
+        if (rowList.size() > 0)
         {
-            Integer dispNum = ((BigDecimal) l.get(0).get("DisplayNum")).intValue();
+            Integer dispNum = ((BigDecimal) rowList.get(0).get("DisplayNum")).intValue();
             setDisplayNum(  dispNum );
-            Integer tempNum = ((BigDecimal) l.get(0).get("TemplateNum")).intValue();
+            Integer tempNum = ((BigDecimal) rowList.get(0).get("TemplateNum")).intValue();
             setTemplateNum( tempNum );
         }
         else
