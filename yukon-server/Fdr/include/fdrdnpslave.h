@@ -60,6 +60,7 @@ struct IM_EX_FDRBASE CtiDnpId
     USHORT SlaveId;
     UINT   PointType;
     USHORT Offset;
+    FLOAT  Multiplier;
     BOOL valid;
     
 
@@ -156,6 +157,7 @@ class IM_EX_FDRDNPSLAVE CtiFDRDnpSlave : public CtiFDRSocketServer
         static const string dnpPointStatusString;
         static const string dnpPointAnalogString;
         static const string dnpPointCounterString;
+        static const string dnpPointMultiplier; 
 
         static const string CtiFdrDNPInMessageString;
         static const string CtiFdrDNPOutMessageString;

@@ -89,6 +89,8 @@ const string CtiFDRDnpSlave::dnpPointOffset="Offset";
 const string CtiFDRDnpSlave::dnpPointStatusString="Status";
 const string CtiFDRDnpSlave::dnpPointAnalogString="Analog";
 const string CtiFDRDnpSlave::dnpPointCounterString="PulseAccumulator";
+const string CtiFDRDnpSlave::dnpPointMultiplier="Multiplier";
+
 
 const string CtiFDRDnpSlave::CtiFdrDNPInMessageString="DNP InMessage";
 const string CtiFDRDnpSlave::CtiFdrDNPOutMessageString="DNP OutMessage";
@@ -470,7 +472,7 @@ int CtiFDRDnpSlave::processScanSlaveRequest (CtiFDRClientServerConnection& conne
             }
             else if (dnpId.PointType == PulseAccumulatorPointType )
             {
-                iPoint.counterin.value =  (fdrPoint->getValue() * fdrPoint->getMultiplier());
+                iPoint.counterin.value =  (fdrPoint->getValue() * dnpId.Multiplier);
                 iPoint.type = Cti::Protocol::DNPSlaveInterface::Counters;
             }
             else 
@@ -534,7 +536,7 @@ CtiDnpId CtiFDRDnpSlave::ForeignToYukonId(CtiFDRDestination pointDestination)
     string pointType = pointDestination.getTranslationValue(dnpPointType);
     string dnpOffset = pointDestination.getTranslationValue(dnpPointOffset);
 
-    if (masterId.empty() || slaveId.empty() || pointType.empty() || dnpOffset.empty())
+    if (masterId.empty() || slaveId.empty() || pointType.empty() || dnpOffset.empty() || dnpMultiplier.empty())
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         logNow() << "Unable to add destination " << pointDestination
@@ -542,6 +544,7 @@ CtiDnpId CtiFDRDnpSlave::ForeignToYukonId(CtiFDRDestination pointDestination)
         dnpId.valid = false;
         return dnpId;
     }
+
 
     dnpId.MasterId = atoi(masterId.c_str());
     dnpId.SlaveId = atoi(slaveId.c_str());
@@ -565,6 +568,7 @@ CtiDnpId CtiFDRDnpSlave::ForeignToYukonId(CtiFDRDestination pointDestination)
 
     dnpId.Offset = atoi(dnpOffset.c_str());
     dnpId.MasterServerName = pointDestination.getDestination();
+    dnpId.Multiplier = atof(dnpMultiplier.c_str());
     dnpId.valid = true;
 
     return dnpId;
