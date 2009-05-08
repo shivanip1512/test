@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <vxml version="2.0">
-
 <%@ include file="include/StarsHeader.jsp" %>
-
+<%@ page import="com.cannontech.stars.dr.optout.service.OptOutService" %>
+<%@ page import="com.cannontech.spring.YukonSpringHook" %>
 <%
 
 	String action = "OptOutProgram";
@@ -55,11 +55,13 @@
 <%
 	int option = 1;
 	
-	StarsCustSelectionList optOutList = (StarsCustSelectionList) selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD);
-	for (int i = 0; i < optOutList.getStarsSelectionListEntryCount(); i++) {
-		StarsSelectionListEntry entry = optOutList.getStarsSelectionListEntry(i);
+   OptOutService optOutService = (OptOutService) YukonSpringHook.getBean("optOutService");
+   List<Integer> optOutPeriodList = optOutService.getAvailableOptOutPeriods(lYukonUser);
+   
+	for (Integer optOutPeriod : optOutPeriodList) {
+		String period = (optOutPeriod == 1) ? "Day" : "Days";
 %>
-			<option dtmf="<%= option %>" value="<%= entry.getYukonDefID() %>"> <%= option++ %> for <%= entry.getContent() %> </option>
+			<option dtmf="<%= option %>" value="<%= optOutPeriod %>"> <%= option++ %> for <%= optOutPeriod %> <%= period %> </option>
 <%
 	}
 %>
@@ -91,11 +93,10 @@
 <%
     option = 1;
     
-    optOutList = (StarsCustSelectionList) selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD);
-    for (int i = 0; i < optOutList.getStarsSelectionListEntryCount(); i++) {
-        StarsSelectionListEntry entry = optOutList.getStarsSelectionListEntry(i);
+    for (Integer optOutPeriod : optOutPeriodList) {
+        String period = (optOutPeriod == 1) ? "Day" : "Days";
 %>
-                    <if cond="Duration == <%= entry.getYukonDefID() %>"><%= entry.getContent() %></if>
+                    <if cond="Duration == <%= optOutPeriod %>"><%= optOutPeriod %> <%= period %></if>
 <%
     }
 %>

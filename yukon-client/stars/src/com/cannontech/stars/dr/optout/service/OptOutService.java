@@ -97,6 +97,15 @@ public interface OptOutService {
 	 */
 	public List<OptOutLimit> getAllOptOutLimits(LiteYukonGroup group);
 	
+   /**
+     * Method to get allowed Opt out periods for a given user based on the
+     * OptOutPeriod role property. Defaults to 1 day if role property value is
+     * not set.
+     * @param user
+     * @return List of allowed opt out period values
+     */
+    public List<Integer> getAvailableOptOutPeriods(LiteYukonUser user);
+	
 	/**
 	 * Method to get the current opt out limit for an account
 	 * @param customerAccountId - Account to get limit for

@@ -33,7 +33,7 @@ public interface ConsumerInfoRole {
 	public static final int AUTOMATIC_CONFIGURATION = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 54;
 	public static final int ORDER_NUMBER_AUTO_GEN = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 55;
 	public static final int CALL_NUMBER_AUTO_GEN = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 56;
-	public static final int OPT_OUT_RULES = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 57;
+	public static final int OPT_OUT_PERIOD = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 57;
     public static final int DISABLE_SWITCH_SENDING = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 58;
     public static final int METER_SWITCH_ASSIGNMENT = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 59;
     public static final int CREATE_LOGIN_FOR_ACCOUNT = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 60;

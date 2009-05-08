@@ -62,7 +62,6 @@ import com.cannontech.database.db.stars.ECToGenericMapping;
 import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.YukonGroupRoleDefs;
-import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.operator.InventoryRole;
@@ -80,7 +79,6 @@ import com.cannontech.stars.web.action.UpdateLMHardwareAction;
 import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsInventory;
-import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * @author yao
@@ -1159,10 +1157,6 @@ public class StarsAdminUtil {
 				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_CALL_TYPE,
 					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CALL_TYPE) );
 			
-			if (DaoFactory.getAuthDao().checkRoleProperty(user.getYukonUser(), ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPT_OUT))
-				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD,
-					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD) );
-			
 			if (DaoFactory.getAuthDao().checkRoleProperty(user.getYukonUser(), ConsumerInfoRole.CONSUMER_INFO_APPLIANCES) ||
 				DaoFactory.getAuthDao().checkRoleProperty(user.getYukonUser(), ConsumerInfoRole.CONSUMER_INFO_APPLIANCES_CREATE))
 			{
@@ -1335,11 +1329,6 @@ public class StarsAdminUtil {
 		}
 		else if (StarsUtils.isResidentialCustomer( user.getYukonUser() )) {
 			userLists.add( energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL) );
-			
-			if (DaoFactory.getAuthDao().checkRoleProperty(user.getYukonUser(), ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT)) {
-				YukonSelectionList list = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD);
-				if (list != null) userLists.add( list );
-			}
 		}
 		
 		return userLists;

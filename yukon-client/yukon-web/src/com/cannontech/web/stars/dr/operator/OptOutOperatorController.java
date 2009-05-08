@@ -22,18 +22,14 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.cannontech.common.constants.YukonSelectionList;
-import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
-import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -65,7 +61,6 @@ public class OptOutOperatorController {
 	private StarsInventoryBaseDao starsInventoryBaseDao;
 	private DisplayableInventoryDao displayableInventoryDao;
 	private DateFormattingService dateFormattingService;
-	private ECMappingDao ecMappingDao;
 	protected YukonUserContextMessageSourceResolver messageSourceResolver;
 
     private static class StartDateException extends Exception {
@@ -93,6 +88,7 @@ public class OptOutOperatorController {
     public String view(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
     		Integer eventId, YukonUserContext yukonUserContext, ModelMap map) {
     	
+        LiteYukonUser user = yukonUserContext.getYukonUser();        
     	Calendar cal = Calendar.getInstance(yukonUserContext.getTimeZone());
     	Date currentDate = cal.getTime();
     	map.addAttribute("currentDate", currentDate);
@@ -146,13 +142,8 @@ public class OptOutOperatorController {
     	map.addAttribute("allOptedOut", allOptedOut);
         map.addAttribute("optOutsAvailable", optOutsAvailable);
     	
-    	// The following is a hack and will be fixed by YUK-7269
-    	LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(customerAccount);
-    	YukonSelectionList optOutPeriodList = 
-    		energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD);
-    	int maxOptOutDays = optOutPeriodList.getYukonListEntries().size();
-    	map.addAttribute("maxOptOutDays", maxOptOutDays);
-    	// end hack
+        List<Integer> optOutPeriodList = optOutService.getAvailableOptOutPeriods(user);
+        map.addAttribute("optOutPeriodList", optOutPeriodList);
 
     	return "operator/optout/optOut.jsp";
     }
@@ -477,11 +468,6 @@ public class OptOutOperatorController {
     public void setDateFormattingService(
 			DateFormattingService dateFormattingService) {
 		this.dateFormattingService = dateFormattingService;
-	}
-    
-    @Autowired
-    public void setEcMappingDao(ECMappingDao ecMappingDao) {
-		this.ecMappingDao = ecMappingDao;
 	}
     
     @Autowired

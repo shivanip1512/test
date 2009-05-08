@@ -720,6 +720,21 @@ public class OptOutServiceImpl implements OptOutService {
 		return this.getCurrentOptOutLimit(user);
 	};
 	
+	@Override
+	public List<Integer> getAvailableOptOutPeriods(LiteYukonUser user) {
+	    
+        String optOutPeriodString = null;
+        if (StarsUtils.isOperator(user)) {
+            optOutPeriodString = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.OPERATOR_OPT_OUT_PERIOD,
+                                                                        user);
+        } else {
+            optOutPeriodString = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.RESIDENTIAL_OPT_OUT_PERIOD,
+                                                                        user);
+        }
+        List<Integer> availOptOutPeriods = parseOptOutPeriodString(optOutPeriodString);
+        return availOptOutPeriods;
+    }
+	
 	private  OptOutLimit getCurrentOptOutLimit(LiteYukonUser user) {
 		
 		DateTime dateTime = new DateTime();
@@ -842,6 +857,23 @@ public class OptOutServiceImpl implements OptOutService {
 		
 	}
 	
+    private List<Integer> parseOptOutPeriodString(String optOutPeriodString) {
+
+        List<Integer> optOutPeriodInts = new ArrayList<Integer>();
+        if (!StringUtils.isBlank(optOutPeriodString)) {
+            String[] optOutPeriodStrs = StringUtils.split(optOutPeriodString, ',');
+            for (String optOutPeriodStr : optOutPeriodStrs) {
+                optOutPeriodInts.add(Integer.valueOf(optOutPeriodStr.trim()));
+            }
+        }
+        // default to 1 day, if value not set
+        if (optOutPeriodInts.isEmpty()) {
+            optOutPeriodInts.add(1);
+        }
+
+        return optOutPeriodInts;
+    }
+    
 	/**
 	 * Helper method to send the opt out command out to the device
 	 * 

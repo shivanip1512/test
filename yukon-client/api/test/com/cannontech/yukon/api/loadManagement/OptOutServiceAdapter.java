@@ -59,6 +59,11 @@ public class OptOutServiceAdapter implements OptOutService {
 	}
 
 	@Override
+	public List<Integer> getAvailableOptOutPeriods(LiteYukonUser user) {
+	    throw new UnsupportedOperationException("not implemented");
+	}
+	
+	@Override
 	public OptOutCountHolder getCurrentOptOutCount(int inventoryId,
 			int customerAccountId) {
 		throw new UnsupportedOperationException("not implemented");

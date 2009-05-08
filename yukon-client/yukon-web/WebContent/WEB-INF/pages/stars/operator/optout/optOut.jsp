@@ -37,11 +37,11 @@
 	            <td align="left">
 	                <select name="durationInDays">
 	                    
-	                    <c:forEach var="x" begin="1" end="${maxOptOutDays}" step="1">
+	                    <c:forEach var="optOutPeriod" items="${optOutPeriodList}">
 	                    
-	                       <c:set var="key" value="${(x == 1) ? 'yukon.dr.operator.optout.day' : 'yukon.dr.operator.optout.days' }"/>
+	                       <c:set var="key" value="${(optOutPeriod == 1) ? 'yukon.dr.operator.optout.day' : 'yukon.dr.operator.optout.days' }"/>
 	                    
-	                       <option value="${x}">${x} <cti:msg key="${key}"/></option>
+	                       <option value="${optOutPeriod}">${optOutPeriod} <cti:msg key="${key}"/></option>
 	                    
 	                    </c:forEach>
 	                    
