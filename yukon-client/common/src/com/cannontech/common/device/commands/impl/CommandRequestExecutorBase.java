@@ -284,6 +284,7 @@ public abstract class CommandRequestExecutorBase<T> implements
 		        porterConnection.addMessageListener(messageListener);
 		
 		        boolean nothingWritten = true;
+		        boolean completeAndRemoveListener = false;
 		        try {
 		            // write requests
 		        	log.debug("Starting commandRequests loop. groupMessageId = " + groupMessageId);
@@ -310,19 +311,24 @@ public abstract class CommandRequestExecutorBase<T> implements
 		        } catch (ConnectionException e) {
 		        	
 		        	callback.processingExceptionOccured("No porter connection.");
+		        	completeAndRemoveListener = true;
 		        	log.debug("Removing porter message listener because an exception occured: " + messageListener);
-		        	messageListener.removeListener();
 		        	
 		        } catch (Exception e) {
 		        	
 		        	callback.processingExceptionOccured(e.getMessage());
+		        	completeAndRemoveListener = true;
 		        	log.debug("Removing porter message listener because an exception occured (" + e.getMessage() + "): " + messageListener);
-		        	messageListener.removeListener();
 		        	
 		        } finally {
 		            if (nothingWritten && !messageListener.isCanceled()) {
+		            	completeAndRemoveListener = true;
 		                log.debug("Removing porter message listener because nothing was written: " + messageListener);
-		                messageListener.removeListener();
+		            }
+		            
+		            if (completeAndRemoveListener) {
+		            	callback.complete();
+		            	messageListener.removeListener();
 		            }
 		            
 		            messageListener.getCommandsAreWritingLatch().countDown();
@@ -362,6 +368,7 @@ public abstract class CommandRequestExecutorBase<T> implements
         // cancel callback
         log.debug("Calling callback. groupMessageId = " + messageListener.getGroupMessageId());
         callback.cancel();
+        callback.complete();
         
         // remove listener
         log.debug("Removing porter message listener due to cancel: " + messageListener);

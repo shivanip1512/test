@@ -79,14 +79,12 @@ public class CollectingCommandCompletionCallback implements
     @Override
     final public void cancel() {
         canceled = true;
-        complete();
     }
     
     @Override
     final public void processingExceptionOccured(String reason) {
     	processingErrorReason = reason;
     	processingErrorOccured = true;
-    	complete();
     }
     
     @Override

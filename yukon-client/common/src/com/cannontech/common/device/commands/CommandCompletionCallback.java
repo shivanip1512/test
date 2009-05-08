@@ -20,20 +20,16 @@ public interface CommandCompletionCallback<T> {
     
     /**
      * Called when after the process has completed.
-     * A process may be marked completed due to a cancel() or a processingExceptionOccured().
      */
     public void complete();
     
     /**
      * Called when a request is made to cancel the command(s).
-     * The executor does not call this until all commands have been written, and after the cancel command has been sent and responded to.
-     * After a cancel(), the complete() method is called.
      */
     public void cancel();
     
     /**
      * Called when an exception occurs during the processing.
-     * After a processingExceptionOccured(), the complete() method is called.
      * @param reason
      */
     public void processingExceptionOccured(String reason);
