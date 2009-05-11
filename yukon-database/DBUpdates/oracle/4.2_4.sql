@@ -21,7 +21,7 @@ ALTER TABLE LMThermostatSeasonEntry
          ON DELETE CASCADE;
          
 /* Index added to LMThermostatSeasonEntry (SeasonId) */
-CREATE INDEX INDX_LMThermSeaEnt_SeaId ON LMThermostatSeasonEntry (
+CREATE INDEX INDX_LMThermSeaEntry_SeaId ON LMThermostatSeasonEntry (
    SeasonId ASC
 );
 
