@@ -21,6 +21,8 @@ import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -492,30 +494,33 @@ public class YukonSwitchCommandAction implements ActionBase {
 		{
 			// Send an in service command first
 			sendEnableCommand( energyCompany, liteHw, optRouteID );
-			
-			// Send the config command a while later
-			final int routeID2 = routeID;
-			
-			TimerTask sendCfgTask = new TimerTask() {
-				public void run() {
-                    /*
-                     * With permissions now necessary to send commands, we'll use the admin user
-                     * for automated STARS sends.
-                     */
-                    YukonUserDao yukonUserDao = DaoFactory.getYukonUserDao();
-                    LiteYukonUser adminUser = yukonUserDao.getLiteYukonUser(UserUtils.USER_ADMIN_ID);
-                    
-                    try {
-						for (int i = 0; i < cfgCmds.length; i++)
-							ServerUtils.sendSerialCommand( cfgCmds[i], routeID2, adminUser );
+			RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
+			if((StarsUtils.isOperator(user) && rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_AUTOMATIC_CONFIGURATION, user)) ||
+			   (StarsUtils.isResidentialCustomer(user) && rolePropertyDao.checkProperty(YukonRoleProperty.RESIDENTIAL_AUTOMATIC_CONFIGURATION, user))) {
+				// Send the config command a while later
+				final int routeID2 = routeID;
+				
+				TimerTask sendCfgTask = new TimerTask() {
+					public void run() {
+	                    /*
+	                     * With permissions now necessary to send commands, we'll use the admin user
+	                     * for automated STARS sends.
+	                     */
+	                    YukonUserDao yukonUserDao = DaoFactory.getYukonUserDao();
+	                    LiteYukonUser adminUser = yukonUserDao.getLiteYukonUser(UserUtils.USER_ADMIN_ID);
+	                    
+	                    try {
+							for (int i = 0; i < cfgCmds.length; i++)
+								ServerUtils.sendSerialCommand( cfgCmds[i], routeID2, adminUser );
+						}
+						catch (WebClientException e) {}
+						CTILogger.info( "*** Config command sent ***" );
 					}
-					catch (WebClientException e) {}
-					CTILogger.info( "*** Config command sent ***" );
-				}
-			};
-			
-			YukonSpringHook.getGlobalTimer().schedule( sendCfgTask, 300 * 1000 );
-			CTILogger.info( "*** Send config command a while later ***" );
+				};
+				
+				YukonSpringHook.getGlobalTimer().schedule( sendCfgTask, 300 * 1000 );
+				CTILogger.info( "*** Send config command a while later ***" );
+	        }
 		}
 		else {
 			// Only send the config command

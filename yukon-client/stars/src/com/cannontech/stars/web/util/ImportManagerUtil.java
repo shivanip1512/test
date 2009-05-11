@@ -16,8 +16,6 @@ import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteYukonGroup;
@@ -935,25 +933,21 @@ public class ImportManagerUtil {
 		progSignUp.setStarsSULMPrograms( suPrograms );
 	    
 		List<LiteStarsLMHardware> hwsToConfig = ProgramSignUpAction.updateProgramEnrollment( progSignUp, liteAcctInfo, liteInv, energyCompany, currentUser );
-        
-		RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
-		if(rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_AUTOMATIC_CONFIGURATION, currentUser)){
-            //Send out the config/disable command
-            for (int i = 0; i < hwsToConfig.size(); i++) {
-                LiteStarsLMHardware liteHw = hwsToConfig.get(i);
-                boolean toConfig = UpdateLMHardwareConfigAction.isToConfig( liteHw, liteAcctInfo );
-                
-                if (toConfig) {
-                    // Send the reenable command if hardware status is unavailable,
-                    // whether to send the config command is controlled by the AUTOMATIC_CONFIGURATION role property
-                    YukonSwitchCommandAction.sendConfigCommand( energyCompany, liteHw, true, null );
-                }
-                else {
-                    // Send disable command to hardware
-                    YukonSwitchCommandAction.sendDisableCommand( energyCompany, liteHw, null );
-                }
-            }
-        }
+
+		//Send out the config/disable command  
+		for (int i = 0; i < hwsToConfig.size(); i++) {  
+		    LiteStarsLMHardware liteHw = hwsToConfig.get(i);  
+		    boolean toConfig = UpdateLMHardwareConfigAction.isToConfig( liteHw, liteAcctInfo );  
+		
+		    if (toConfig) {  
+		        // Send the reenable command if hardware status is unavailable,  
+		        // whether to send the config command is controlled by the AUTOMATIC_CONFIGURATION role property  
+		    	YukonSwitchCommandAction.sendConfigCommand(energyCompany, liteHw, true, null );  
+		    } else {  
+		        // Send disable command to hardware  
+		        YukonSwitchCommandAction.sendDisableCommand(energyCompany, liteHw, null );  
+            }  
+        }  
 	}
 	
     public static boolean isValidLocationForImport(LiteStarsEnergyCompany energyCompany, boolean automatedTask) {
