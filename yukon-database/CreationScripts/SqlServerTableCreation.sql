@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     5/6/2009 11:07:35 AM                         */
+/* Created on:     5/11/2009 3:54:06 PM                         */
 /*==============================================================*/
 
 
@@ -7916,6 +7916,7 @@ INSERT INTO FDRInterfaceOption VALUES(28, 'MasterId', 1, 'Text', '(none)');
 INSERT INTO FDRInterfaceOption VALUES(28, 'SlaveId', 2, 'Text', '(none)');
 INSERT INTO FDRInterfaceOption VALUES(28, 'Offset', 3, 'Text', '(none)');
 INSERT INTO FDRInterfaceOption VALUES(28, 'Destination/Source', 4, 'Text', '(none)');
+INSERT INTO FDRInterfaceOption VALUES(28, 'Multiplier', 5, 'Text', '1.0');
 
 /*==============================================================*/
 /* Table: FDRTRANSLATION                                        */

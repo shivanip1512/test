@@ -20,6 +20,25 @@ CREATE INDEX INDX_LMThermSeaEntry_SeaId ON LMThermostatSeasonEntry (
 /* @error ignore-end */
 /* End YUK-7257 */
 
+/* Start YUK-7452 */
+INSERT INTO FDRInterfaceOption VALUES(28, 'Multiplier', 5, 'Text', '1.0');
+
+UPDATE FDRTranslation 
+SET Translation = CONCAT(SUBSTR(Translation, 1, (LENGTH(translation) - LENGTH('POINTTYPE:Analog;'))), 'Multiplier:1.0;POINTTYPE:Analog;')
+WHERE InterfaceType = 'DNPSLAVE' 
+AND Translation like '%Type:Analog;%';
+
+UPDATE FDRTranslation 
+SET Translation = CONCAT(SUBSTR(Translation, 1, (LENGTH(translation) - LENGTH('POINTTYPE:PulseAccumulator;'))), 'Multiplier:1.0;POINTTYPE:PulseAccumulator;')
+WHERE InterfaceType = 'DNPSLAVE'
+AND Translation LIKE '%Type:PulseAccumulator;%';
+
+UPDATE FDRTranslation 
+SET Translation = CONCAT(SUBSTR(Translation, 1, (LENGTH(Translation) - LENGTH('POINTTYPE:Status;'))), 'Multiplier:1.0;POINTTYPE:Status;')
+WHERE InterfaceType = 'DNPSLAVE'
+AND Translation LIKE '%Type:Status;%';
+/* End YUK-7452 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
