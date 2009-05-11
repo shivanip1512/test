@@ -209,6 +209,11 @@ public class DeleteCustAccountAction implements ActionBase {
 			contact = (com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( liteContact );
 			Transaction.createTransaction( Transaction.DELETE, contact ).execute();
 			ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_DELETE );
+			int userId = liteContact.getLoginID();
+			if (userId != UserUtils.USER_DEFAULT_ID &&
+			        userId != UserUtils.USER_ADMIN_ID &&
+			        userId != UserUtils.USER_YUKON_ID)
+		            UpdateLoginAction.deleteLogin( userId );
 		}
 		
 		// Delete login
