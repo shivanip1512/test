@@ -39,11 +39,11 @@
       <links>  
         <option id="newAccount">
           <requireRoleProperty value="OPERATOR_NEW_ACCOUNT_WIZARD"/>
-          <link>Consumer/New.jsp?Init=true&amp;Wizard=true</link>
+          <link>/operator/Consumer/New.jsp?Init=true&amp;Wizard=true</link>
         </option>
         <option id="newAccount">
           <requireRoleProperty value="!OPERATOR_NEW_ACCOUNT_WIZARD"/>
-          <link>Consumer/New.jsp?Init=true</link>
+          <link>/operator/Consumer/New.jsp?Init=true</link>
         </option>
         <option id="optOutAdmin">
           <link>/spring/stars/operator/optOut/admin</link>
