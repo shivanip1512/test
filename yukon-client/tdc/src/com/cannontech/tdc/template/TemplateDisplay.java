@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 
 import com.cannontech.database.JdbcTemplateHelper;
@@ -52,23 +53,16 @@ public class TemplateDisplay {
     /**
      * retrieve method comment.
      */
-	@SuppressWarnings("unchecked")
 	public void retrieve() throws java.sql.SQLException {
-        String sqlStmt = "SELECT * FROM " + TABLE_NAME + " WHERE DisplayNum = ?";
+        String sqlStmt = "SELECT TemplateNum FROM " + TABLE_NAME + " WHERE DisplayNum = ?";
         JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
-        ArrayList<Map<String, Object>> rowList = (ArrayList<Map<String, Object>>) yukonTemplate.queryForList(sqlStmt, new Integer[] {getDisplayNum()});
-        if (rowList.size() > 0)
-        {
-            Integer dispNum = ((BigDecimal) rowList.get(0).get("DisplayNum")).intValue();
-            setDisplayNum(  dispNum );
-            Integer tempNum = ((BigDecimal) rowList.get(0).get("TemplateNum")).intValue();
-            setTemplateNum( tempNum );
-        }
-        else
-        {
+        try {
+            Integer templateNum = yukonTemplate.queryForInt(sqlStmt, new Integer[] {getDisplayNum()});
+            setDisplayNum(  getDisplayNum() );
+            setTemplateNum(templateNum);
+        } catch (EmptyResultDataAccessException e){
             setDisplayNum(INITVAL);
             setTemplateNum(INITVAL);
-            
         }
     }
 
