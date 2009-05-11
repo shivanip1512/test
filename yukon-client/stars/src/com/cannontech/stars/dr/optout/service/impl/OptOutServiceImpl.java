@@ -860,12 +860,17 @@ public class OptOutServiceImpl implements OptOutService {
     private List<Integer> parseOptOutPeriodString(String optOutPeriodString) {
 
         List<Integer> optOutPeriodInts = new ArrayList<Integer>();
-        if (!StringUtils.isBlank(optOutPeriodString)) {
-            String[] optOutPeriodStrs = StringUtils.split(optOutPeriodString, ',');
-            for (String optOutPeriodStr : optOutPeriodStrs) {
-                optOutPeriodInts.add(Integer.valueOf(optOutPeriodStr.trim()));
+        try {
+            if (!StringUtils.isBlank(optOutPeriodString)) {
+                String[] optOutPeriodStrs = StringUtils.split(optOutPeriodString, ',');
+                for (String optOutPeriodStr : optOutPeriodStrs) {
+                    optOutPeriodInts.add(Integer.valueOf(optOutPeriodStr.trim()));
+                }
             }
+        } catch (NumberFormatException e) {
+            throw new RuntimeException("Can't parse OptOutPeriod role property value [" + optOutPeriodString + "]", e);
         }
+        
         // default to 1 day, if value not set
         if (optOutPeriodInts.isEmpty()) {
             optOutPeriodInts.add(1);
