@@ -154,6 +154,7 @@ public class NewCustAccountAction implements ActionBase {
             
 			LiteStarsEnergyCompany liteEC = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 			com.cannontech.database.data.lite.LiteYukonGroup[] custGroups = liteEC.getResidentialCustomerGroups();
+			List<String> usedNames = new ArrayList<String>();
 			for (int i = 2; i <= 4; i++) {
 				String lastName = req.getParameter("LastName" + i);
 				String firstName = req.getParameter("FirstName" + i);
@@ -161,11 +162,11 @@ public class NewCustAccountAction implements ActionBase {
 				if (lastName != null && lastName.trim().length() > 0
 					|| firstName != null && firstName.trim().length() > 0) {
 					
-					List<String> usedNames = new ArrayList<String>();
+					
 					String primaryContactFirstName = primContact.getFirstName();
 					String primaryContactLastName = primContact.getLastName();
 					String primFirstInitial = StringUtils.isBlank(primaryContactFirstName) ? "" : primaryContactFirstName.toLowerCase().substring(0,1);
-					usedNames.add(primFirstInitial + (StringUtils.isBlank(primaryContactLastName)? "" : primaryContactLastName));
+					usedNames.add(primFirstInitial + (StringUtils.isBlank(primaryContactLastName)? "" : primaryContactLastName.toLowerCase()));
 					
 					AdditionalContact contact = new AdditionalContact();
 					contact.setLastName( lastName );
