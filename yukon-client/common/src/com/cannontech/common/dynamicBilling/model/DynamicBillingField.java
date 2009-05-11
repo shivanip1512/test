@@ -1,5 +1,7 @@
 package com.cannontech.common.dynamicBilling.model;
 
+import java.math.RoundingMode;
+
 import com.cannontech.common.dynamicBilling.ReadingType;
 
 /**
@@ -16,6 +18,7 @@ public class DynamicBillingField {
     private String padChar = " ";
     private String padSide = "none";
     private ReadingType readingType = ReadingType.ELECTRIC;
+    private RoundingMode roundingMode = null;	//RoundingMode.HALF_EVEN;
 
     public String getFormat() {
         return format;
@@ -92,4 +95,12 @@ public class DynamicBillingField {
     public void setReadingType(ReadingType readingType) {
         this.readingType = readingType;
     }
+    
+    public RoundingMode getRoundingMode() {
+		return roundingMode;
+	}
+    
+    public void setRoundingMode(RoundingMode roundingMode) {
+		this.roundingMode = roundingMode;
+	}
 }

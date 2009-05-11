@@ -59,10 +59,13 @@ public class NCDC_Handheld implements BillingRecordBase
 			writeToFile.append(" ");
 		}
 		
+		//Rounding Mode is not taken into affect
 		writeToFile.append(KWH_FORMAT_7.format(getKwhReading()));
 		
+		//Rounding Mode is not taken into affect
 		writeToFile.append(KW_KVA_FORMAT_6v5.format(getKwReading()));
 
+		//Rounding Mode is not taken into affect
 		writeToFile.append(KW_KVA_FORMAT_6v5.format(getKvaReading()));
 
 		writeToFile.append(getReadDate());

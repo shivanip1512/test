@@ -4,7 +4,7 @@ var prevHighlight = new Date(); //this is to indicate when is the last preview h
 var errorHighlight = new Date(); //this is to indicate when is the last error highlighting done
 
 // Method to add fields to the selected fields select input
-function addToSelected(){
+function addToSelected(roundingMode){
 	
 	var field = $F('availableFields');
 	var selectedFields = $('selectedFields');
@@ -23,6 +23,7 @@ function addToSelected(){
         }
     }
     newOpt.setAttribute("readingType", "ELECTRIC");
+    newOpt.setAttribute("roundingMode", roundingMode);
 	newOpt.setAttribute("maxLength","0");
     newOpt.setAttribute("padChar"," ");
     newOpt.setAttribute("padSide","none");
@@ -204,6 +205,7 @@ function save(){
         currentField.padChar = getAttributeValue(currentOption, 'padChar');
         currentField.padSide = getAttributeValue(currentOption, 'padSide');
         currentField.readingType = getAttributeValue(currentOption, 'readingType');
+        currentField.roundingMode = getAttributeValue(currentOption, 'roundingMode');
 		
 		fieldArray.push(currentField);
 	}
@@ -310,6 +312,10 @@ function updateFormat(headerText, method){
             case "readingType":
                 var attributeValue = $(headerText+'ReadingType').value;
                 option.setAttribute('readingType', attributeValue);
+                break;
+            case "roundingMode":
+                var attributeValue = $(headerText+'RoundingMode').value;
+                option.setAttribute('roundingMode', attributeValue);
                 break;
             case "formatWithSelect":
                 var attributeValue = getAttributeValue(option, 'format');
@@ -507,6 +513,10 @@ function updateReadingFormatFields(option){
     var readingTypeValue = getAttributeValue(option, 'readingType');
     $('readingReadingType').value = readingTypeValue;
 
+    // gets the initial roundingMode value
+    var roundingModeValue = getAttributeValue(option, 'roundingMode');
+    $('readingRoundingMode').value = roundingModeValue;
+    
     // gets the initial format value
     var format = getAttributeValue(option, 'format');
     $('readingFormat').value = format;

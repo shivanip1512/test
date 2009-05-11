@@ -23,6 +23,8 @@ public interface BillingRole {
 	public static final int REMOVE_MULTIPLIER = YukonRoleDefs.BILLING_PROPERTYID_BASE - 7;
 	//CADP format takes a coop ID
 	public static final int COOP_ID_CADP_ONLY = YukonRoleDefs.BILLING_PROPERTYID_BASE - 8;
+
+	public static final int DEFAULT_ROUNDING_MODE = YukonRoleDefs.BILLING_PROPERTYID_BASE - 9;
 	
 //	public static final int LOG_LEVEL = ApplicationRoleDefs.BILLING_PROPERTYID_BASE - 2;
 }

@@ -3,6 +3,8 @@ package com.cannontech.core.roleproperties;
 import static com.cannontech.core.roleproperties.YukonRole.*;
 import static com.cannontech.core.roleproperties.InputTypeFactory.*;
 
+import java.math.RoundingMode;
+
 import org.apache.commons.lang.Validate;
 
 import com.cannontech.amr.meter.dao.impl.MeterDisplayFieldEnum;
@@ -380,6 +382,7 @@ public enum YukonRoleProperty {
     APPEND_TO_FILE(SYSTEM_BILLING, com.cannontech.roles.yukon.BillingRole.APPEND_TO_FILE, stringType()),
     REMOVE_MULTIPLIER(SYSTEM_BILLING, com.cannontech.roles.yukon.BillingRole.REMOVE_MULTIPLIER, stringType()),
     COOP_ID_CADP_ONLY(SYSTEM_BILLING, com.cannontech.roles.yukon.BillingRole.COOP_ID_CADP_ONLY, stringType()),
+    DEFAULT_ROUNDING_MODE(SYSTEM_BILLING, com.cannontech.roles.yukon.BillingRole.DEFAULT_ROUNDING_MODE, InputTypeFactory.enumType(RoundingMode.class)),
     
     DEVICE_DISPLAY_TEMPLATE(SYSTEM_CONFIGURATION, com.cannontech.roles.yukon.ConfigurationRole.DEVICE_DISPLAY_TEMPLATE, InputTypeFactory.enumType(MeterDisplayFieldEnum.class)),
     ALERT_TIMEOUT_HOURS(SYSTEM_CONFIGURATION, com.cannontech.roles.yukon.ConfigurationRole.ALERT_TIMEOUT_HOURS, stringType()),

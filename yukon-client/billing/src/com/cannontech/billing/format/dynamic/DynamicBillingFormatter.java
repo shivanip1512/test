@@ -95,7 +95,9 @@ public class DynamicBillingFormatter extends BillingFormatterBase {
 									formatter = new DecimalFormat(formatString);
 								}
 							}
-
+							
+							formatter.setRoundingMode(field.getRoundingMode());
+							
 							valueString = formatter.format(value);
 							valueString = processValueString(field, valueString);
 

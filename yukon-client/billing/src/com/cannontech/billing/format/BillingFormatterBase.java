@@ -2,6 +2,7 @@ package com.cannontech.billing.format;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.Format;
 import java.text.SimpleDateFormat;
@@ -11,6 +12,10 @@ import java.util.List;
 import com.cannontech.billing.BillingDao;
 import com.cannontech.billing.device.base.BillableDevice;
 import com.cannontech.billing.format.simple.SimpleBillingFormatBase;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.user.SystemUserContext;
 
 public abstract class BillingFormatterBase extends SimpleBillingFormatBase {
 
@@ -187,6 +192,13 @@ public abstract class BillingFormatterBase extends SimpleBillingFormatBase {
 
         if (value == null) {
             return null;
+        }
+        
+        //Default the rounding mode to the Billing System default property.
+        if (format instanceof DecimalFormat) {
+        	RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
+        	RoundingMode roundingMode = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.DEFAULT_ROUNDING_MODE, RoundingMode.class, null);
+        	((DecimalFormat)format).setRoundingMode(roundingMode);
         }
 
         return format.format(value);

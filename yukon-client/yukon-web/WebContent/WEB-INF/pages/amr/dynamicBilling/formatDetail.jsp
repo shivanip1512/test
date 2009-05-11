@@ -16,6 +16,11 @@
     Event.observe(window,'load', function() {selectedFieldsChanged();});
 </script>
 
+<ct:simplePopup id="roundingHelper" title="Rounding Mode Help" onClose="toggleHelperPopup('roundingHelper');">
+    <cti:url var="roundingHelperUrl" value="/WEB-INF/pages/amr/dynamicBilling/roundingHelper.jsp"/>
+    <jsp:include page="${roundingHelperUrl}"/>
+</ct:simplePopup>
+
 <ct:simplePopup id="valueHelper" title="Format Help" onClose="toggleHelperPopup('valueHelper');">
     <cti:url var="valueHelperUrl" value="/WEB-INF/pages/amr/dynamicBilling/valueHelper.jsp"/>
     <jsp:include page="${valueHelperUrl}"/>
@@ -106,7 +111,7 @@
                                         <c:if test="${status.count == 1}">
                                             <c:set var="selected" value="selected"/>
                                         </c:if>
-                                        <option ${selected} format="<c:out value="${field.format}" />" maxLength="<c:out value="${field.maxLength}" />" padChar="<c:out value="${field.padChar}" />" padSide="<c:out value="${field.padSide}" />" readingType="<c:out value="${field.readingType}" />" >${field.name}</option>
+                                        <option ${selected} format="<c:out value="${field.format}" />" maxLength="<c:out value="${field.maxLength}" />" padChar="<c:out value="${field.padChar}" />" padSide="<c:out value="${field.padSide}" />" readingType="<c:out value="${field.readingType}" />" roundingMode="<c:out value="${field.roundingMode}" />" >${field.name}</option>
                                     </c:forEach>
                                 </select>
                             </td>
@@ -132,7 +137,7 @@
                                             <option>${field}</option>
                                         </c:forEach>
                                     </select>&nbsp;
-                                    <input type="button" onclick="addToSelected();" value="Add" style="width:55px;">
+                                    <input type="button" onclick="addToSelected('<cti:getProperty property="yukon.BillingRole.DEFAULT_ROUNDING_MODE"/>');" value="Add" style="width:55px;">
                                     <input type="button" onclick="addFieldButton();" value="Done" style="width:59px;">
                                 </div>
                             
@@ -164,6 +169,14 @@
                                                     <option value="${readingTypeValue}">${readingTypeValue}</option>
                                                 </c:forEach>
                                             </select>
+                                        </ct:nameValue>
+                                        <ct:nameValue name="Rounding Mode">
+                                            <select id="readingRoundingMode" onchange="updateFormat('reading', 'roundingMode');">
+                                                <c:forEach var="roundingModeValue" items="${roundingModes}">
+                                                    <option value="${roundingModeValue}">${roundingModeValue}</option>
+                                                </c:forEach>
+                                            </select>
+                                            <a href="javascript:void(0);" onclick="toggleHelperPopup('roundingHelper');">Help with Rounding</a>
                                         </ct:nameValue>
                                         <ct:nameValue name="Reading Pattern">
                                             <select id="readingFormatSelect" onchange="updateFormat('reading', 'formatWithSelect');">

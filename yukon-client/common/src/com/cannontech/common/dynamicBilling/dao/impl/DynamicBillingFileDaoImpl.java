@@ -1,5 +1,6 @@
 package com.cannontech.common.dynamicBilling.dao.impl;
 
+import java.math.RoundingMode;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -125,8 +126,8 @@ public final class DynamicBillingFileDaoImpl implements DynamicBillingFileDao {
 		for (DynamicBillingField field : format.getFieldList()) {
 			int currentId = nextValueHelper.getNextValue("DynamicBillingField");
 			simpleJdbcTemplate.update(
-					"INSERT INTO DynamicBillingField (id, FormatID, FieldName, FieldOrder, FieldFormat, MaxLength, PadChar, PadSide, ReadingType) "
-						+ "VALUES(?,?,?,?,?,?,?,?,?)", 
+					"INSERT INTO DynamicBillingField (id, FormatID, FieldName, FieldOrder, FieldFormat, MaxLength, PadChar, PadSide, ReadingType, RoundingMode) "
+						+ "VALUES(?,?,?,?,?,?,?,?,?,?)", 
 					currentId, 
 					format.getFormatId(),
 					field.getName(), 
@@ -135,7 +136,8 @@ public final class DynamicBillingFileDaoImpl implements DynamicBillingFileDao {
                     field.getMaxLength(),
                     field.getPadChar(),
                     field.getPadSide(),
-                    field.getReadingType().toString());
+                    field.getReadingType().toString(),
+                    field.getRoundingMode().toString());
 		}
 	}
 
@@ -198,6 +200,7 @@ public final class DynamicBillingFileDaoImpl implements DynamicBillingFileDao {
 			field.setPadChar(rs.getString("PadChar"));
 			field.setPadSide(rs.getString("PadSide"));
 			field.setReadingType(ReadingType.valueOf(rs.getString("ReadingType")));
+			field.setRoundingMode(RoundingMode.valueOf(rs.getString("RoundingMode")));
 			return field;
 		}
 

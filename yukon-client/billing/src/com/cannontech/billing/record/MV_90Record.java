@@ -86,6 +86,8 @@ public class MV_90Record implements BillingRecordBase
 		if( getReadingKWVector() != null)
 		{
 			Double value = getReadingKWVector().get(0);
+
+			//Rounding Mode is not taken into affect
 			writeToFile.append(KW_FORMAT_8v1.format(value.doubleValue()));
 			
 			for( int i = 1; i < getReadingKWVector().size(); i++)
@@ -97,6 +99,7 @@ public class MV_90Record implements BillingRecordBase
 	//					writeToFile.append(" ");
 	//				}
 				}
+				//Rounding Mode is not taken into affect
 				writeToFile.append(',' + KW_FORMAT_8v1.format(value.doubleValue()));
 			}
 		}

@@ -411,6 +411,7 @@ public final String processReadingRecord(String buffer) {
 	catch (SQLException e1)	{ }
 	if( dummyRPH != null)
 	{
+		//Rounding Mode is not taken into affect
 		storage.append(READING_FORMAT.format(dummyRPH.getValue()));	//N10 Reading
 		storage.append("0000");	//N4 Read Order
 		storage.append(DATE_FORMAT.format(dummyRPH.getTimeStamp().getTime()));	//D8 Read Date

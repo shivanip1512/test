@@ -436,7 +436,7 @@ div.widgetPopup {
 	height:3000px/*must have for any big value*/;
 }
 
-#timestampHelper, #valueHelper {
+#roundingHelper, #timestampHelper, #valueHelper {
 	background-color:#FFFFCC;
 }
 

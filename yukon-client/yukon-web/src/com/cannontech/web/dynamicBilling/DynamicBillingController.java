@@ -1,5 +1,6 @@
 package com.cannontech.web.dynamicBilling;
 
+import java.math.RoundingMode;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -68,6 +69,9 @@ public class DynamicBillingController extends MultiActionController {
 		List<String> readingTypes = getValidReadingTypes();
 		mav.addObject("readingTypes", readingTypes);
 
+		List<String> roundingModes = getValidRoundingModes();
+		mav.addObject("roundingModes", roundingModes);
+
 		DynamicFormat format = new DynamicFormat();
 		format.setDelim(",");
 		mav.addObject("format", format);
@@ -133,6 +137,8 @@ public class DynamicBillingController extends MultiActionController {
 	    List<String> readingTypes = getValidReadingTypes();
 	    mav.addObject("readingTypes", readingTypes);
 
+	    List<String> roundingModes = getValidRoundingModes();
+	    mav.addObject("roundingModes", roundingModes);
 		
 		mav.addObject("title", "Edit Format");
 
@@ -182,6 +188,9 @@ public class DynamicBillingController extends MultiActionController {
 		List<String> readingTypes = getValidReadingTypes();
 		mav.addObject("readingTypes", readingTypes);
 		
+	    List<String> roundingModes = getValidRoundingModes();
+	    mav.addObject("roundingModes", roundingModes);
+
 		mav.addObject("title", "Edit Format");
 
 		return mav;
@@ -358,6 +367,12 @@ public class DynamicBillingController extends MultiActionController {
                 field.setReadingType(readingType);
             }
             
+            String roundingModeStr = object.getString("roundingMode");
+            if(!StringUtils.isEmpty(roundingModeStr)){
+            	RoundingMode roundingMode = RoundingMode.valueOf(roundingModeStr);
+                field.setRoundingMode(roundingMode);
+            }
+            
             fieldList.add(i, field);
 		}
 		format.setFieldList(fieldList);
@@ -410,7 +425,7 @@ public class DynamicBillingController extends MultiActionController {
 		// Add total consumption
 		BillingData data = new BillingData();
 		data.setData("total kWh");
-		data.setValue(123456789.0123);
+		data.setValue(123456789.0123456);
 		data.setUnitOfMeasure(1);
 		data.setTimestamp(new Timestamp(new Date().getTime()));
 
@@ -530,6 +545,20 @@ public class DynamicBillingController extends MultiActionController {
 	    return readingTypeStrs;
 	}
 	
+    private List<String> getValidRoundingModes(){
+        List<String> roundingModeStrs = new ArrayList<String>();
+        
+        Set<RoundingMode> roundingModeExcludeList = Collections.singleton(RoundingMode.UNNECESSARY);
+        RoundingMode[] roundingModes = RoundingMode.values();
+        for (RoundingMode roundingMode : roundingModes) {
+	        if(!roundingModeExcludeList.contains(roundingMode)){
+	            roundingModeStrs.add(roundingMode.toString());
+	        }
+	    }
+	    
+	    return roundingModeStrs;
+	}
+    
 	public DynamicBillingFileDao getDynamicBillingFileDao() {
 		return dynamicBillingFileDao;
 	}
