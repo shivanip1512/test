@@ -96,7 +96,7 @@ connection.obj:	yukon.h precompiled.h ctidbgmem.h collectable.h \
 		CtiPCPtrQueue.h utility.h queues.h sorted_vector.h message.h \
 		rwutil.h boost_time.h boostutil.h msg_multi.h msg_pdata.h \
 		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h queue.h \
-		cparms.h configkey.h configval.h msg_cmd.h
+		cparms.h configkey.h configval.h
 dll_msg.obj:	yukon.h precompiled.h ctidbgmem.h dsm2.h mutex.h \
 		dlldefs.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
 		os2_2w32.h types.h cticalls.h connection.h exchange.h \

@@ -522,7 +522,7 @@ prot_klondike.obj:	yukon.h precompiled.h ctidbgmem.h logger.h \
 		counter.h dev_exclusion.h tbl_paoexclusion.h rte_base.h \
 		dbmemobject.h ctibase.h ctinexus.h dllbase.h tbl_pao_lite.h \
 		tbl_rtcomm.h dbaccess.h sema.h resolvers.h db_entry_defines.h \
-		desolvers.h msg_signal.h tbl_base.h tbl_2way.h tbl_stats.h \
+		desolvers.h msg_signal.h tbl_base.h tbl_stats.h \
 		tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h pt_dyn_base.h \
 		tbl_pt_base.h tbl_pt_property.h tbl_pt_trigger.h \
 		msg_pcrequest.h smartmap.h readers_writer_lock.h \
@@ -769,8 +769,8 @@ test_prot_klondike.obj:	boostutil.h utility.h ctitime.h dlldefs.h \
 		ctibase.h ctinexus.h dllbase.h tbl_pao_lite.h tbl_rtcomm.h \
 		dbaccess.h sema.h resolvers.h db_entry_defines.h desolvers.h \
 		logger.h thread.h CtiPCPtrQueue.h msg_signal.h tbl_base.h \
-		tbl_2way.h tbl_stats.h tbl_scanrate.h tbl_dyn_paoinfo.h \
-		pt_base.h pt_dyn_base.h tbl_pt_base.h tbl_pt_property.h \
+		tbl_stats.h tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h \
+		pt_dyn_base.h tbl_pt_base.h tbl_pt_property.h \
 		tbl_pt_trigger.h msg_pcrequest.h smartmap.h \
 		readers_writer_lock.h critical_section.h tbl_rtcarrier.h \
 		tbl_rtrepeater.h fifo_multiset.h dev_ccu721.h dev_remote.h \

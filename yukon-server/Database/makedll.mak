@@ -32,7 +32,6 @@ INCLPATHS+= \
 
 YUKONDLLOBJS=\
 dllyukon.obj \
-tbl_2way.obj \
 tbl_alm_ndest.obj \
 tbl_alm_ngroup.obj \
 tbl_base.obj \
@@ -207,13 +206,6 @@ tabletest.obj:	yukon.h precompiled.h ctidbgmem.h tbl_pthist.h \
 tbl.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h dlldefs.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
 		guard.h numstr.h clrdump.h cticonnect.h netports.h sema.h
-tbl_2way.obj:	yukon.h precompiled.h ctidbgmem.h tbl_2way.h \
-		dbmemobject.h dbaccess.h dlldefs.h dllbase.h os2_2w32.h \
-		types.h cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
-		cticonnect.h netports.h sema.h resolvers.h pointtypes.h \
-		db_entry_defines.h logger.h thread.h ctitime.h \
-		CtiPCPtrQueue.h utility.h queues.h sorted_vector.h rwutil.h \
-		boost_time.h boostutil.h
 tbl_alm_ndest.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
 		mutex.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
@@ -225,11 +217,6 @@ tbl_alm_ngroup.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		sema.h tbl_alm_ngroup.h tbl_alm_ndest.h logger.h thread.h \
 		ctitime.h CtiPCPtrQueue.h utility.h queues.h sorted_vector.h \
 		rwutil.h boost_time.h boostutil.h
-tbl_alm_nloc.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
-		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
-		sema.h tbl_alm_nloc.h logger.h thread.h ctitime.h \
-		CtiPCPtrQueue.h utility.h queues.h sorted_vector.h
 tbl_base.obj:	yukon.h precompiled.h ctidbgmem.h tbl_base.h dllbase.h \
 		os2_2w32.h dlldefs.h types.h cticalls.h dsm2.h mutex.h \
 		guard.h numstr.h clrdump.h cticonnect.h netports.h logger.h \
@@ -296,11 +283,6 @@ tbl_dv_cbc.obj:	yukon.h precompiled.h ctidbgmem.h tbl_dv_cbc.h \
 		dbmemobject.h dbaccess.h sema.h resolvers.h pointtypes.h \
 		db_entry_defines.h logger.h thread.h ctitime.h \
 		CtiPCPtrQueue.h utility.h queues.h sorted_vector.h
-tbl_dv_cicust.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
-		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
-		sema.h logger.h thread.h ctitime.h CtiPCPtrQueue.h utility.h \
-		queues.h sorted_vector.h tbl_dv_cicust.h
 tbl_dv_emetcon.obj:	yukon.h precompiled.h ctidbgmem.h tbl_dv_emetcon.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
 		mutex.h guard.h numstr.h clrdump.h cticonnect.h netports.h \

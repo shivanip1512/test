@@ -100,7 +100,7 @@ mgr_device_scannable.obj:	yukon.h precompiled.h ctidbgmem.h \
 		dbmemobject.h ctibase.h ctinexus.h message.h collectable.h \
 		rwutil.h boost_time.h tbl_pao_lite.h tbl_rtcomm.h dbaccess.h \
 		sema.h resolvers.h pointtypes.h db_entry_defines.h \
-		desolvers.h msg_signal.h tbl_base.h tbl_2way.h tbl_stats.h \
+		desolvers.h msg_signal.h tbl_base.h tbl_stats.h \
 		tbl_scanrate.h tbl_dyn_paoinfo.h pointdefs.h pt_base.h \
 		pt_dyn_base.h tbl_pt_base.h tbl_pt_property.h \
 		tbl_pt_trigger.h slctdev.h smartmap.h readers_writer_lock.h \
@@ -132,16 +132,16 @@ scanner.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		ctinexus.h message.h collectable.h rwutil.h boost_time.h \
 		tbl_pao_lite.h tbl_rtcomm.h resolvers.h pointtypes.h \
 		db_entry_defines.h desolvers.h msg_signal.h tbl_base.h \
-		tbl_2way.h tbl_stats.h tbl_scanrate.h tbl_dyn_paoinfo.h \
-		pointdefs.h pt_base.h pt_dyn_base.h tbl_pt_base.h \
-		tbl_pt_property.h tbl_pt_trigger.h slctdev.h smartmap.h \
-		readers_writer_lock.h critical_section.h mgr_point.h \
-		fifo_multiset.h dev_single.h msg_pcrequest.h msg_pcreturn.h \
-		msg_multi.h msg_pdata.h tbl_dv_scandata.h tbl_dv_wnd.h \
-		connection.h exchange.h msg_ptreg.h msg_reg.h queue.h \
-		cparms.h configkey.h configval.h prot_base.h xfer.h dev_mct.h \
-		dev_carrier.h dev_dlcbase.h tbl_route.h tbl_carrier.h \
-		prot_emetcon.h tbl_metergrp.h vcomdefs.h tbl_loadprofile.h \
+		tbl_stats.h tbl_scanrate.h tbl_dyn_paoinfo.h pointdefs.h \
+		pt_base.h pt_dyn_base.h tbl_pt_base.h tbl_pt_property.h \
+		tbl_pt_trigger.h slctdev.h smartmap.h readers_writer_lock.h \
+		critical_section.h mgr_point.h fifo_multiset.h dev_single.h \
+		msg_pcrequest.h msg_pcreturn.h msg_multi.h msg_pdata.h \
+		tbl_dv_scandata.h tbl_dv_wnd.h connection.h exchange.h \
+		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
+		configval.h prot_base.h xfer.h dev_mct.h dev_carrier.h \
+		dev_dlcbase.h tbl_route.h tbl_carrier.h prot_emetcon.h \
+		tbl_metergrp.h vcomdefs.h tbl_loadprofile.h \
 		tbl_dv_mctiedport.h pt_numeric.h tbl_pt_unit.h \
 		tbl_unitmeasure.h dev_welco.h dev_idlc.h dev_remote.h \
 		tbl_dialup.h tbl_direct.h tbl_dv_idlcremote.h trx_info.h \

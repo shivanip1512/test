@@ -117,7 +117,7 @@ exe_pcreq.obj:	yukon.h precompiled.h ctidbgmem.h message.h \
 		parsevalue.h counter.h dev_exclusion.h tbl_paoexclusion.h \
 		config_device.h rte_base.h dbmemobject.h tbl_pao_lite.h \
 		tbl_rtcomm.h dbaccess.h sema.h resolvers.h db_entry_defines.h \
-		desolvers.h msg_signal.h tbl_base.h tbl_2way.h tbl_stats.h \
+		desolvers.h msg_signal.h tbl_base.h tbl_stats.h \
 		tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h pt_dyn_base.h \
 		tbl_pt_base.h tbl_pt_property.h tbl_pt_trigger.h slctdev.h \
 		mgr_point.h fifo_multiset.h mgr_route.h repeaterrole.h \
@@ -141,26 +141,26 @@ pilserver.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		collectable.h rwutil.h boost_time.h tbl_pao_lite.h \
 		tbl_rtcomm.h dbaccess.h sema.h resolvers.h pointtypes.h \
 		db_entry_defines.h desolvers.h msg_signal.h tbl_base.h \
-		tbl_2way.h tbl_stats.h tbl_scanrate.h tbl_dyn_paoinfo.h \
-		pointdefs.h pt_base.h pt_dyn_base.h tbl_pt_base.h \
-		tbl_pt_property.h tbl_pt_trigger.h dev_grp.h cparms.h \
-		configkey.h configval.h msg_lmcontrolhistory.h \
-		msg_pcrequest.h msg_pdata.h msg_multi.h pt_status.h \
-		tbl_pt_status.h pt_analog.h pt_numeric.h tbl_pt_unit.h \
-		tbl_unitmeasure.h tbl_pt_analog.h tbl_dv_versacom.h \
-		vcomdefs.h dev_grp_point.h tbl_lmg_point.h dev_mct.h \
-		dev_carrier.h dev_dlcbase.h dev_single.h msg_pcreturn.h \
-		tbl_dv_scandata.h tbl_dv_wnd.h connection.h exchange.h \
-		msg_ptreg.h msg_reg.h queue.h prot_base.h xfer.h tbl_route.h \
-		tbl_carrier.h prot_emetcon.h tbl_metergrp.h tbl_loadprofile.h \
-		tbl_dv_mctiedport.h CtiLocalConnect.h critical_section.h \
-		fifo_multiset.h porter.h dsm2err.h devicetypes.h queent.h \
-		pil_conmgr.h con_mgr.h pil_exefct.h executorfactory.h \
-		executor.h exe_cmd.h exe_reg.h pilserver.h server_b.h \
-		cmdopts.h argkey.h argval.h smartmap.h readers_writer_lock.h \
-		mgr_device.h rtdb.h slctdev.h mgr_point.h mgr_route.h \
-		repeaterrole.h mgr_config.h msg_cmd.h rte_ccu.h rte_xcu.h \
-		tbl_rtcarrier.h tbl_rtrepeater.h ctistring.h
+		tbl_stats.h tbl_scanrate.h tbl_dyn_paoinfo.h pointdefs.h \
+		pt_base.h pt_dyn_base.h tbl_pt_base.h tbl_pt_property.h \
+		tbl_pt_trigger.h dev_grp.h cparms.h configkey.h configval.h \
+		msg_lmcontrolhistory.h msg_pcrequest.h msg_pdata.h \
+		msg_multi.h pt_status.h tbl_pt_status.h pt_analog.h \
+		pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_analog.h \
+		tbl_dv_versacom.h vcomdefs.h dev_grp_point.h tbl_lmg_point.h \
+		dev_mct.h dev_carrier.h dev_dlcbase.h dev_single.h \
+		msg_pcreturn.h tbl_dv_scandata.h tbl_dv_wnd.h connection.h \
+		exchange.h msg_ptreg.h msg_reg.h queue.h prot_base.h xfer.h \
+		tbl_route.h tbl_carrier.h prot_emetcon.h tbl_metergrp.h \
+		tbl_loadprofile.h tbl_dv_mctiedport.h CtiLocalConnect.h \
+		critical_section.h fifo_multiset.h porter.h dsm2err.h \
+		devicetypes.h queent.h pil_conmgr.h con_mgr.h pil_exefct.h \
+		executorfactory.h executor.h exe_cmd.h exe_reg.h pilserver.h \
+		server_b.h cmdopts.h argkey.h argval.h smartmap.h \
+		readers_writer_lock.h mgr_device.h rtdb.h slctdev.h \
+		mgr_point.h mgr_route.h repeaterrole.h mgr_config.h msg_cmd.h \
+		rte_ccu.h rte_xcu.h tbl_rtcarrier.h tbl_rtrepeater.h \
+		ctistring.h
 piltest.obj:	yukon.h precompiled.h ctidbgmem.h queue.h cparms.h \
 		rwutil.h ctitime.h dlldefs.h boost_time.h boostutil.h \
 		utility.h queues.h cticalls.h os2_2w32.h types.h numstr.h \

@@ -178,7 +178,7 @@ ctivangogh.obj:	yukon.h precompiled.h ctidbgmem.h collectable.h \
 		tbl_pt_accumhistory.h pt_analog.h tbl_pt_analog.h dev_base.h \
 		cmdparse.h ctitokenizer.h parsevalue.h dev_exclusion.h \
 		tbl_paoexclusion.h config_device.h rte_base.h tbl_pao_lite.h \
-		tbl_rtcomm.h tbl_base.h tbl_2way.h tbl_stats.h tbl_scanrate.h \
+		tbl_rtcomm.h tbl_base.h tbl_stats.h tbl_scanrate.h \
 		tbl_dyn_paoinfo.h tbl_dyn_ptalarming.h thread_monitor.h \
 		thread_register_data.h mgr_ptclients.h ptconnect.h slctpnt.h \
 		dllvg.h dllyukon.h ctidate.h debug_timer.h

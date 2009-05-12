@@ -27,7 +27,6 @@
 
 #include "dev_base.h"
 #include "tbl_base.h"
-#include "tbl_2way.h"
 #include "tbl_stats.h"
 #include "tbl_scanrate.h"
 #include "yukon.h"
@@ -153,11 +152,6 @@ public:
     virtual ~CtiDeviceSingle();
 
     CtiDeviceSingle& operator=(const CtiDeviceSingle& aRef);
-
-    CtiTableDevice2Way    getTwoWay() const;
-    CtiTableDevice2Way&   getTwoWay();
-
-    CtiDeviceSingle& setTwoWay( const CtiTableDevice2Way & aTwoWay );
 
     BOOL isStatValid(const INT stat) const;
 
