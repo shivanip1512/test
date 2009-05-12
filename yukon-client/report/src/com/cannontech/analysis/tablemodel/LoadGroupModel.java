@@ -1,24 +1,36 @@
 package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+
+
 import com.cannontech.analysis.ColumnProperties;
+import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.common.util.StringUtils;
 import com.cannontech.common.util.TimeUtil;
+import com.cannontech.core.authorization.service.PaoPermissionService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.database.db.device.lm.LMProgramDirectGroup;
 import com.cannontech.database.db.macro.GenericMacro;
 import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.database.db.pao.LMControlHistory;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.util.ServletUtil;
 
 /**
  * Created on Dec 15, 2003
@@ -88,6 +100,7 @@ public class LoadGroupModel extends ReportModelBase<LoadGroupModel.TempLMControl
 	private boolean showSeasonalTotal = true;
 	private static final String ATT_SHOW_ANNUAL_TOTAL = "showAnnualTotal";
 	private boolean showAnnualTotal = true;
+	private LiteYukonUser liteUser;
 	
     class TempLMControlHistory
     {
@@ -211,8 +224,8 @@ public class LoadGroupModel extends ReportModelBase<LoadGroupModel.TempLMControl
 	 * Build the SQL statement to retrieve LoadGroup Accounting data.
 	 * @return StringBuffer  an sqlstatement
 	 */
-	public StringBuffer buildSQLStatement()
-	{
+	public StringBuffer buildSQLStatement() {
+		List<LiteYukonPAObject> restrictedGroups = ReportFuncs.getRestrictedLMGroups(liteUser);
 		StringBuffer sql = new StringBuffer("SELECT LMCH.LMCTRLHISTID, LMCH.PAOBJECTID, LMCH.STARTDATETIME, LMCH.STOPDATETIME, "+
 				" LMCH.CONTROLDURATION, LMCH.CONTROLTYPE, "+
 				" LMCH.CURRENTDAILYTIME, LMCH.CURRENTMONTHLYTIME, "+
@@ -220,86 +233,48 @@ public class LoadGroupModel extends ReportModelBase<LoadGroupModel.TempLMControl
 				" FROM LMCONTROLHISTORY LMCH, YUKONPAOBJECT PAO " + 
 				" WHERE LMCH.PAOBJECTID = PAO.PAOBJECTID " + 
                 " AND LMCH.StartDateTime > ? AND LMCH.StopDateTime <= ? ");
-				if(!isShowAllActiveRestore())
+				if(!isShowAllActiveRestore()){
 					sql.append(" AND LMCH.ACTIVERESTORE IN ('R', 'T', 'O', 'M') ");
-				if(isIgnoreZeroDuration())
-					sql.append(" AND LMCH.ControlDuration > 0 ");
-//				20060110 - SN Doing this again, sorting data using the SOE tag did not work...back to R, T, O, M records!
-//				" AND LMCH.ACTIVERESTORE NOT IN ('C', 'L') ");
-				
-//				NOT DOING THIS HERE ANYMORE, Parsing the data in addDataRow instead!!! 
-//				DAVID - 7/29/04 I think the only records you need are the ones with a T, M, O or R.  The N or C (which are the other options I think) aren't necessary				
-//				if(!isShowAllActiveRestore())
-//					sql.append(" AND LMCH.ActiveRestore IN ('R', 'T', 'O', 'M') ");
-
-				
-                /*
-                 * We should not get in the habit of calling directly into the UserPaoPermission table
-                 * This should only be considered a cowboy strategy
-                 * Calls for permissions should always be done through the PaoPermissionService
-                 */
-                if( getEnergyCompanyID() != null && getEnergyCompanyID().intValue() != EnergyCompany.DEFAULT_ENERGY_COMPANY_ID )
-				{
-					sql.append("AND (LMCH.PAOBJECTID IN " +
-					"(SELECT DISTINCT DG.LMGROUPDEVICEID " +
-					" FROM UserPaoPermission us, GroupPaoPermission gs, " +
-					LMProgramDirectGroup.TABLE_NAME + " DG " +
-					" WHERE (us.PaoID = DG.LMGROUPDEVICEID " +
-                    " AND us.permission = '" + Permission.LM_VISIBLE + "'" +
-					" AND us.userID IN (SELECT DISTINCT ECLL.OPERATORLOGINID " +
-					" FROM ENERGYCOMPANYOPERATORLOGINLIST ECLL " +
-					" WHERE ECLL.ENERGYCOMPANYID = " + getEnergyCompanyID().intValue() + " ) )" +
-					" OR " +
-					"( " +
-					"    gs.paoid = dg.lmgroupdeviceid " +
-					"    and gs.permission = 'LM_VISIBLE' " +
-					"    and gs.groupid in (select groupid from yukonusergroup where userid = " + getUserID() + ") " +
-					" )) ");
-
-					//Get all groups that are part of a macroGroup
-					sql.append("OR LMCH.PAOBJECTID IN " +
-					"(SELECT DISTINCT GM.CHILDID " +
-					" FROM UserPaoPermission us, GroupPaoPermission gs, " +
-					GenericMacro.TABLE_NAME + " GM " +
-					" WHERE (US.PAOID = GM.OWNERID " +
-                    " AND us.permission = '" + Permission.LM_VISIBLE + "'" +
-					" AND GM.MACROTYPE = '" + MacroTypes.GROUP + "' " +  
-					" AND US.USERID IN (SELECT DISTINCT ECLL.OPERATORLOGINID " +
-					" FROM ENERGYCOMPANYOPERATORLOGINLIST ECLL " +
-					" WHERE ECLL.ENERGYCOMPANYID = " + getEnergyCompanyID().intValue() + " ) )" +
-					" OR " +
-					" ( " +
-					"     gs.paoid = gm.ownerid " +
-					"     and gs.permission = 'LM_VISIBLE' " +
-					"     and gs.groupid in (select groupid from yukonusergroup where userid = " + getUserID() + ") " +
-					" ) " +
-					" ) )");
 				}
-				if( getPaoIDs()!= null)	//null load groups means ALL groups!
-				{
+				if(isIgnoreZeroDuration()){
+					sql.append(" AND LMCH.ControlDuration > 0 ");
+				}
+				/*
+				 *  Restrict results based on PaoPermissions of LM Groups.
+				 *  An empty list means let them see everything.
+				 */
+				if(!restrictedGroups.isEmpty()){
+					List<String> groupIds = new ArrayList<String>();
+					for(LiteYukonPAObject group : restrictedGroups){
+						groupIds.add(String.valueOf(group.getLiteID()));
+					}
+					String sqlList = SqlStatementBuilder.convertToSqlLikeList(groupIds);
+					sql.append(" AND LMCH.PAOBJECTID in (" + sqlList + ")"); 
+				}
+				if( getPaoIDs()!= null){	// null load groups means ALL groups!
 					sql.append(" AND (LMCH.PAOBJECTID in (" + getPaoIDs()[0] ); 
-					for (int i = 1; i < getPaoIDs().length; i++)
-					{
-						sql.append(", " + getPaoIDs()[i]+" ");
+					for (Integer paoId :  getPaoIDs()) {
+						sql.append(", " + paoId + " ");
 					}
 					sql.append(") ");
-					sql.append("OR LMCH.PAOBJECTID IN " +
-							"(SELECT DISTINCT GM.CHILDID " +
-							" FROM " + GenericMacro.TABLE_NAME + " GM " +
-							" WHERE GM.MACROTYPE = '" + MacroTypes.GROUP + "' ");
-							sql.append(" AND OWNERID in (" + getPaoIDs()[0] ); 
-							for (int i = 1; i < getPaoIDs().length; i++) {
-								sql.append(", " + getPaoIDs()[i]+" ");
-							}
-							sql.append(") "); 
-							sql.append(") ) ");
+					sql.append("OR LMCH.PAOBJECTID IN "
+                    + "(SELECT DISTINCT GM.CHILDID " 
+                    + " FROM " + GenericMacro.TABLE_NAME + " GM " 
+                    + " WHERE GM.MACROTYPE = '" + MacroTypes.GROUP + "' ");
+					sql.append(" AND OWNERID in (" + getPaoIDs()[0] ); 
+					for (Integer paoId :  getPaoIDs()) {
+						sql.append(", " + paoId + " ");
+					}
+					sql.append(") "); 
+					sql.append(") ) ");
 				}
-				sql.append(" ORDER BY LMCH.PAOBJECTID, LMCH.StartDateTime, LMCTRLHISTID ");	//, LMCH.StopDateTime");
-				if (!isShowAllActiveRestore())
+				sql.append(" ORDER BY LMCH.PAOBJECTID, LMCH.StartDateTime, LMCTRLHISTID ");
+				if (!isShowAllActiveRestore()){
 					sql.append(" DESC ");  // order desc so we can parse for the most recent soe_tag per control
-
+				}
 		return sql;
 	}	
+	
 	@Override
 	public void collectData()
 	{
@@ -663,6 +638,8 @@ public class LoadGroupModel extends ReportModelBase<LoadGroupModel.TempLMControl
 				setShowAnnualTotal(Boolean.valueOf(param).booleanValue());
 			else 
 				setShowAnnualTotal(false);
+			
+			setLiteUser(ServletUtil.getYukonUser(req));
 		}
 	}
     
@@ -704,5 +681,12 @@ public class LoadGroupModel extends ReportModelBase<LoadGroupModel.TempLMControl
 	    return restore;
 	    
 	}
+	
+	public LiteYukonUser getLiteUser() {
+        return liteUser;
+    }
+    public void setLiteUser(LiteYukonUser liteUser) {
+        this.liteUser = liteUser;
+    }
 }
 	

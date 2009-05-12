@@ -443,6 +443,7 @@ public class ReportFuncs
     
     /**
      * Returns the a List<LiteYukonPAObject> of lm groups that the user or their usergroups is allowed to see. 
+     * If none, an empty list is returned.
      * @param user
      * @return
      */
@@ -466,7 +467,8 @@ public class ReportFuncs
     }
     
     /**
-     * Returns a subset of the ProgramLoadGroup List that the user is allowed to view
+     * Returns a subset of the ProgramLoadGroup List that the user is allowed to view.
+     * If none, an empty list is returned.
      * @param programAndGroupList
      * @param restrictedPrograms
      * @return
