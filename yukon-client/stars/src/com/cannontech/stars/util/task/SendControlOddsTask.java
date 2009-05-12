@@ -108,7 +108,7 @@ public class SendControlOddsTask implements Runnable {
 					String[] to = toList.toArray(new String[]{});
 					
 					Map<String, String> programOddsMap = new HashMap<String, String>();
-					int maxProgramNameLength = 0;
+					int maxProgramNameLength = 18; // length of 'Program Enrollment' header
 					for (int j = 0; j < activeProgs.size(); j++) {
 						LiteStarsLMProgram program = (LiteStarsLMProgram) activeProgs.get(j);
 						String progName = StarsUtils.getPublishedProgramName( program.getPublishedProgram() );
