@@ -686,6 +686,11 @@ public class OptOutServiceImpl implements OptOutService {
 					" could not be found.");
 		}
 		
+		if(inventory.getAccountID() != account.getAccountId()) {
+			throw new IllegalArgumentException("The inventory with serial number: " + serialNumber + 
+					" is not associated with the account with account number: " + accountNumber);
+		}
+		
 		optOutAdditionalDao.addAdditonalOptOuts(
 				inventory.getInventoryID(), account.getAccountId(), additionalOptOuts);
 		
