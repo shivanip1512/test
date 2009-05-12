@@ -467,7 +467,11 @@ public class WorkOrderBean {
 	public int getNumberOfRecords() {
 	    return getSimpleCollection().getCount();
 	}
-
+	
+	public boolean isInitialized() {
+		return filters != null;
+	}
+	
 	public String getStart() {
 		return start;
 	}
