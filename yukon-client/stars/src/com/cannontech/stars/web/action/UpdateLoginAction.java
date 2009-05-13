@@ -264,11 +264,12 @@ public class UpdateLoginAction implements ActionBase {
 		}
         
 		com.cannontech.database.data.user.YukonUser yukonUser = new com.cannontech.database.data.user.YukonUser();
+		LiteYukonUser liteUser = DaoFactory.getYukonUserDao().getLiteYukonUser(userID);
 		yukonUser.setUserID( new Integer(userID) );
 		Transaction.createTransaction(Transaction.DELETE, yukonUser).execute();
 		
 		StarsDatabaseCache.getInstance().deleteStarsYukonUser( userID );
-		ServerUtils.handleDBChange( DaoFactory.getYukonUserDao().getLiteYukonUser(userID), DBChangeMsg.CHANGE_TYPE_DELETE );
+		ServerUtils.handleDBChange(liteUser , DBChangeMsg.CHANGE_TYPE_DELETE );
 	}
 	
 	public static void updateLogin(StarsUpdateLogin updateLogin, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany, boolean authTypeChanged)
