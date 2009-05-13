@@ -33,20 +33,20 @@ public class ManipulateSelectedResultsController extends StarsInventoryActionCon
         int [] selectionIDs = new int[selections.length];
         for ( int i = 0; i < selections.length; i++)
             selectionIDs[i] = Integer.valueOf(selections[i]).intValue();
-        
-        InventoryBean iBean = (InventoryBean) session.getAttribute("inventoryBean");
-        List<LiteInventoryBase> iBeanInventoryList = iBean.getInventoryList(request);
-        Map<Integer, LiteInventoryBase> inventoryIdMap = toInventoryIdMap(iBeanInventoryList);
-        
-        List<LiteInventoryBase> inventoryList = new ArrayList<LiteInventoryBase>(inventoryIdMap.size());
-        
+
+        InventoryBean inventoryBean = (InventoryBean) session.getAttribute("inventoryBean");
+        List<LiteInventoryBase> inventoryList = inventoryBean.getInventoryList(request);
+        Map<Integer, LiteInventoryBase> inventoryIdMap = toInventoryIdMap(inventoryList);
+
+        List<LiteInventoryBase> selectedInventoryList = new ArrayList<LiteInventoryBase>(inventoryIdMap.size());
+
         for (final Integer selectionId : selectionIDs) {
             LiteInventoryBase inventory = inventoryIdMap.get(selectionId);
-            if (inventory != null) inventoryList.add(inventory);
+            if (inventory != null) selectedInventoryList.add(inventory);
         }
 
-        iBean.setInventoryList(inventoryList);
-        iBean.setNumberOfRecords(String.valueOf((iBeanInventoryList.size())));
+        inventoryBean.setInventoryList(selectedInventoryList);
+        inventoryBean.setNumberOfRecords(String.valueOf((inventoryList.size())));
 
         String redirect = request.getContextPath() + "/operator/Hardware/ChangeInventory.jsp";
         response.sendRedirect(redirect);
@@ -62,5 +62,4 @@ public class ManipulateSelectedResultsController extends StarsInventoryActionCon
         
         return resultMap;
     }
-    
 }

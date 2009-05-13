@@ -20,15 +20,14 @@ public class ManipulateInventoryResultsController extends StarsInventoryActionCo
             final HttpSession session, final StarsYukonUser user, 
                 final LiteStarsEnergyCompany energyCompany) throws Exception {
 
-        InventoryBean iBean = (InventoryBean) session.getAttribute("inventoryBean");
-        List<LiteInventoryBase> iBeanInventoryList = iBean.getInventoryList(request);
-        List<LiteInventoryBase> inventoryList = Collections.unmodifiableList(iBeanInventoryList);
+        InventoryBean inventoryBean = (InventoryBean) session.getAttribute("inventoryBean");
+        List<LiteInventoryBase> inventoryList = inventoryBean.getInventoryList(request);
+        List<LiteInventoryBase> selectedInventoryList = Collections.unmodifiableList(inventoryList);
 
-        iBean.setInventoryList(inventoryList);
-        iBean.setNumberOfRecords(String.valueOf((iBeanInventoryList.size())));
+        inventoryBean.setInventoryList(selectedInventoryList);
+        inventoryBean.setNumberOfRecords(String.valueOf((inventoryList.size())));
 
         String redirect = request.getContextPath() + "/operator/Hardware/ChangeInventory.jsp";
         response.sendRedirect(redirect);
     }
-    
 }
