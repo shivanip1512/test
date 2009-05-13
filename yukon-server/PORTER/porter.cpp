@@ -1369,19 +1369,7 @@ INT RefreshPorterRTDB(void *ptr)
     // Reload the globals used by the porter app too.
     InitYukonBaseGlobals();
     LoadPorterGlobals();
-/*
-    if(!PorterQuit && (pChg == NULL || pChg->getDatabase() == ChangePointDb))
-    {
-        if(pChg == NULL)
-        {
-            LoadCommFailPoints();
-        }
-        else
-        {
-            LoadCommFailPoints(pChg->getId());
-        }
-    }
-*/
+
     if( !PorterQuit && (pChg == NULL || (pChg->getDatabase() == ChangeStateGroupDb)) )
     {
         ReloadStateNames();
@@ -1541,11 +1529,12 @@ INT RefreshPorterRTDB(void *ptr)
             }
 
             // We also need to reload all the point groups to make certain the control strings get updated.
-            if(pChg != NULL && pChg->getId() != 0 )
+            if( pChg->getId() != 0 )
             {
                 if(pChg->getObjectType() == "Status") // only status points can be in point groups.
                 {
                     DeviceManager.refreshPointGroups();
+                    LoadCommFailPoints(pChg->getId());
                 }
             }
             else
@@ -1559,6 +1548,7 @@ INT RefreshPorterRTDB(void *ptr)
     {
         try
         {
+            LoadCommFailPoints();
             PortManager.apply( applyNewLoad, NULL );
         }
         catch(...)
@@ -2272,7 +2262,10 @@ void commFail(CtiDeviceSPtr &Device)
 
 void LoadCommFailPoints(LONG ptid)
 {
-    commFailDeviceIDToPointIDMap.clear();       // No more map.
+    if(ptid == 0)
+    {
+        commFailDeviceIDToPointIDMap.clear();       // No more map.
+    }
 
     LONG did, pid;
     string sql = string("select paobjectid, pointid from point where pointoffset = ") + CtiNumStr(COMM_FAIL_OFFSET) + string(" and pointtype = 'Status'");

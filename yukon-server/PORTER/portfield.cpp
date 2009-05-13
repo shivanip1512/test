@@ -3265,6 +3265,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                     InMessage->Buffer.DSt.DSTFlag  = InMessage->MilliTime & DSTACTIVE;
 
                     //  NOTE that if we have a comm error, we will break out of the switch statement at this point...  this seems to break stats?
+                    addCommResult(InMessage->TargetID, CommResult != NORMAL, OutMessage->Retry > 0);
                     break;
                 }
 
