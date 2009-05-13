@@ -105,7 +105,7 @@ CtiFDRPiBase* CtiFDRPiBase::createInstance()
 {
   // can't check debuglevel in this function because it is static
 
-  string tempStr = iConfigParameters.getValueAsString( KEY_FLAVOR, "POLL" );
+  string tempStr = gConfigParms.getValueAsString( KEY_FLAVOR, "POLL" );
   if (tempStr == "POLL")
   {
     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -217,7 +217,7 @@ void CtiFDRPiBase::processNewPoint(CtiFDRPointSPtr ctiPoint)
 
   // we're interested in the first (and only) destination
   string tagName = ctiPoint->getDestinationList()[0].getTranslationValue("Tag Name");
-  
+
   PiPointId piId;
   int err = getPiPointIdFromTag(tagName,piId);
   if (err != 0)
@@ -416,11 +416,11 @@ void CtiFDRPiBase::readThisConfig()
 {
   CtiFDRSimple::readThisConfig();
 
-  _serverNodeName = iConfigParameters.getValueAsString( KEY_SERVER_NODE_NAME, "" );
+  _serverNodeName = gConfigParms.getValueAsString( KEY_SERVER_NODE_NAME, "" );
 
-  _serverUsername = iConfigParameters.getValueAsString( KEY_SERVER_USERNAME, "" );
+  _serverUsername = gConfigParms.getValueAsString( KEY_SERVER_USERNAME, "" );
 
-  _serverPassword = iConfigParameters.getValueAsString( KEY_SERVER_PASSWORD, "" );
+  _serverPassword = gConfigParms.getValueAsString( KEY_SERVER_PASSWORD, "" );
 
 
 

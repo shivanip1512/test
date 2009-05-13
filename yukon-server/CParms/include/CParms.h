@@ -14,7 +14,7 @@
 #define MAX_CONFIG_VALUE   ((MAX_CONFIG_BUFFER) - (MAX_CONFIG_KEY))
 
 using std::string;
-using std::map; 
+using std::map;
 
 typedef std::map<string,CtiConfigValue*>::iterator mHash_itr2;
 typedef std::pair<std::map<string,CtiConfigValue*>::iterator,bool> mHash_pair2;
@@ -22,8 +22,6 @@ typedef std::pair<std::map<string,CtiConfigValue*>::iterator,bool> mHash_pair2;
 // Forward decls.
 class CtiConfigParameters;
 
-IM_EX_CPARM extern string DefaultMasterConfigFileName;
-IM_EX_CPARM extern string ConfKeyRefreshRate;
 IM_EX_CPARM extern CtiConfigParameters gConfigParms;
 
 template<class T>
@@ -118,7 +116,7 @@ private:
    int               RefreshRate;
    time_t            LastRefresh;
    string         FileName;
-   string         BaseDir;
+   string         YukonBase;
    #ifdef USE_RECURSIVE_MUX
    RWRecursiveLock<RWMutexLock> mutex;
    #else
@@ -128,12 +126,12 @@ private:
 
 public:
 
-   CtiConfigParameters(const string& strName = DefaultMasterConfigFileName);
+   CtiConfigParameters();
    virtual ~CtiConfigParameters();
 
-   CtiConfigParameters& setConfigFile(const string& strName = DefaultMasterConfigFileName);
+   void setYukonBase(const string& strName);
 
-   string getYukonBaseDir() const;
+   string getYukonBase() const;
 
    BOOL isOpt(const string& key);
    bool isOpt(const string& key, const string& isEqualThisValue);
@@ -150,6 +148,7 @@ public:
    void              HeadAndTail(char *source, char *dest, size_t len);
 
    string            getValueAsString (const string& Key, const string& defaultval = "");
+   string            getValueAsPath   (const string& Key, const string& defaultval = "");
    int               getValueAsInt    (const string& key, int defaultval = 0);
    double            getValueAsDouble (const string& key, double defaultval = 0.0) ;
    ULONG             getValueAsULong  (const string& key, ULONG defaultval = 0L, int base = 10);

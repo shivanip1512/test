@@ -107,8 +107,6 @@ private:
     // pool of interpreters to use
     mutable CtiInterpreterPool _interp_pool;
 
-    CtiConfigParameters _cparms;
-
     bool _debug;
 
     bool init();

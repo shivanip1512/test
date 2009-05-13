@@ -67,7 +67,7 @@
 #define FTP_DELETE_ON_START "FTP_DELETE_ON_START"
 
 #define DEFAULT_MC_DEBUG_LEVEL 0x00000000
-#define DEFAULT_MC_FTP_INTERFACE_DIR "c:\\yukon\\server\\macsftp"
+#define DEFAULT_MC_FTP_INTERFACE_DIR "server\\macsftp"
 #define DEFAULT_MC_FTP_INTERFACE_EXT ".ctl"
 
 #define MC_EXCLUSION_EVENT "macs"

@@ -7,17 +7,14 @@
 
 #include "cparms.h"
 #include "utility.h"
+#include "shlwapi.h"
+
 using namespace std;
 
-CtiConfigParameters::CtiConfigParameters(const string& strName) :
-FileName(strName),
+CtiConfigParameters::CtiConfigParameters() :
 RefreshRate(900),
 LastRefresh(::time(NULL))
 {
-    if(!FileName.empty())
-    {
-        RefreshConfigParameters();
-    }
 }
 
 CtiConfigParameters::~CtiConfigParameters()
@@ -33,32 +30,20 @@ CtiConfigParameters::~CtiConfigParameters()
     mHash.clear();
 }
 
-CtiConfigParameters& CtiConfigParameters::setConfigFile(const string& strName)
+void CtiConfigParameters::setYukonBase(const string& strName)
 {
-    FileName = strName;
-    return *this;
+    YukonBase = strName;
+
+    char buf[MAX_PATH];
+
+    PathCombine(buf, YukonBase.c_str(), "server\\config\\master.cfg");
+
+    FileName = buf;
 }
 
-string CtiConfigParameters::getYukonBaseDir() const
+string CtiConfigParameters::getYukonBase() const
 {
-    char buf[2048] = "c:\\yukon";
-    char* pos;
-
-    //Assume the master.cfg is in the normal place
-    //x:\\yukon\\server\\config\\master.cfg
-    int n = GetFullPathName(FileName.c_str(), 2048, buf, &pos);
-    if(n != 0 && n < 1000)
-    {
-        for(int i = 0; i < 3; i++)
-        {
-            if((pos = strrchr(buf, '\\')) != NULL)
-                *pos = NULL;
-            else
-                break;
-        }
-    }
-
-    return string(buf);
+    return YukonBase;
 }
 
 int CtiConfigParameters::RefreshConfigParameters()
@@ -116,7 +101,7 @@ int CtiConfigParameters::RefreshConfigParameters()
                                 HeadAndTail(pch, chValue, MAX_CONFIG_VALUE);
 
                                 //CtiConfigKey   *Key = new CtiConfigKey(string(chKey));
-                                
+
                                 CtiConfigValue *Val = new CtiConfigValue(string(chValue));
                                 mHash_pair2 p = mHash.insert( std::make_pair(string(chKey), Val) );
                                 if( !p.second )
@@ -142,6 +127,8 @@ int CtiConfigParameters::RefreshConfigParameters()
 
         fclose(fp);
     }
+
+    static const string ConfKeyRefreshRate("CONFIG_REFRESHRATE");
 
     if(isOpt(ConfKeyRefreshRate))
     {
@@ -199,7 +186,7 @@ BOOL CtiConfigParameters::isOpt(const string& key)
     CtiParmLockGuard< CtiParmCriticalSection > cs_lock(crit_sctn);
     #endif
     mHash_itr2 itr = mHash.find(key);
-    
+
 
     if( itr != mHash.end() )
         return TRUE;
@@ -264,10 +251,47 @@ CtiConfigParameters::getValueAsString(const string& key, const string& defaultva
     mHash_itr2 itr = mHash.find(key);
 
     if( itr != mHash.end() )
-    {   
+    {
         Value = (CtiConfigValue*)(*itr).second;
         retStr = Value->getValue();
     }
+    return retStr;
+}
+
+string
+CtiConfigParameters::getValueAsPath(const string& key, const string& defaultval)
+{
+    BOOL           bRet = TRUE;
+    //CtiConfigKey   Key(key);
+    CtiConfigValue *Value;
+
+    string retStr = defaultval;      // A Null string.
+
+    checkForRefresh();
+
+    #ifdef USE_RECURSIVE_MUX
+    RWRecursiveLock<RWMutexLock>::LockGuard gaurd(mutex);
+    #else
+    CtiParmLockGuard< CtiParmCriticalSection > cs_lock(crit_sctn);
+    #endif
+
+    mHash_itr2 itr = mHash.find(key);
+
+    if( itr != mHash.end() )
+    {
+        Value = (CtiConfigValue*)(*itr).second;
+        retStr = Value->getValue();
+    }
+
+    if( PathIsRelative(retStr.c_str()) )
+    {
+        char buf[MAX_PATH];
+
+        PathCombine(buf, YukonBase.c_str(), retStr.c_str());
+
+        retStr = buf;
+    }
+
     return retStr;
 }
 
@@ -400,7 +424,7 @@ void CtiConfigParameters::HeadAndTail(char *source, char *dest, size_t len)
             }
             break;
         }
-        if (source[i] == '\0') 
+        if (source[i] == '\0')
         {
             break;
         }

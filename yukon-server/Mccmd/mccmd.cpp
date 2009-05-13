@@ -565,7 +565,15 @@ int Mccmd_Init(Tcl_Interp* interp)
     /* Load up the initialization script */
     string init_script;
 
-    init_script = gConfigParms.getValueAsString(MCCMD_CTL_SCRIPTS_DIR, "c:/yukon/server/macsscripts");
+    init_script = gConfigParms.getValueAsPath(MCCMD_CTL_SCRIPTS_DIR, "server\\macsscripts");
+
+    //  convert the string to forward slashes
+    int pos = 0;
+    while( (pos = init_script.find_first_of('\\', pos)) != string::npos )
+    {
+        init_script[pos] = '/';
+    }
+
     init_script += "/";
     init_script += gConfigParms.getValueAsString(MCCMD_INIT_SCRIPT, "init.tcl");
 
@@ -1562,7 +1570,7 @@ int formatError(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[
 
 int getYukonBaseDir(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
-  string base_dir = gConfigParms.getYukonBaseDir();
+  string base_dir = gConfigParms.getYukonBase();
   Tcl_Obj* tcl_str = Tcl_NewStringObj(base_dir.c_str(), -1);
   Tcl_SetObjResult(interp, tcl_str);
   return TCL_OK;

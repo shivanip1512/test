@@ -36,6 +36,7 @@
 #include <utility.h>
 
 #include "tbl_devicereadjoblog.h"
+#include "boost/scoped_array.hpp"
 
 using namespace std;
 
@@ -485,7 +486,7 @@ void CtiMCServer::postScriptFunction(CtiInterpreter *interp)
             jobId = atoi(jobIdStr);
             Tcl_UnsetVar(tclInterpreter, "DeviceReadLogId", 0 );
         }
-    
+
         if( jobId != 0 )
         {
             CtiTblDeviceReadJobLog jobLogTable(jobId);
@@ -493,8 +494,8 @@ void CtiMCServer::postScriptFunction(CtiInterpreter *interp)
             jobLogTable.UpdateStopTime();
         }
     }
-    
-    
+
+
 }
 
  /*----------------------------------------------------------------------------
@@ -1156,22 +1157,13 @@ bool CtiMCServer::loadCParms()
        result = false;
    }
 
-   strcpy(var, FTP_INTERFACE_DIR );
-   if( !(str = gConfigParms.getValueAsString(var)).empty() )
-   {
-       string consumed(str);
-       consumed += "\\processed";
+   str = gConfigParms.getValueAsPath(FTP_INTERFACE_DIR, DEFAULT_MC_FTP_INTERFACE_DIR);
 
-       _file_interface.setDirectory(str);
-       _file_interface.setConsumedDirectory(consumed);
-   }
-   else
-   {
-       string consumed(DEFAULT_MC_FTP_INTERFACE_DIR);
-       consumed += "\\processed";
+   _file_interface.setDirectory(str);
+   _file_interface.setConsumedDirectory(str + "\\processed");
 
-       _file_interface.setDirectory(DEFAULT_MC_FTP_INTERFACE_DIR);
-       _file_interface.setConsumedDirectory(consumed);
+   if( !gConfigParms.isOpt(FTP_INTERFACE_DIR) )
+   {
        {
             CtiLockGuard< CtiLogger > guard(dout);
             dout << CtiTime() << " " << FTP_INTERFACE_DIR << " not found in master.cfg" << endl;

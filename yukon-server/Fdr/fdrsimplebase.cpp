@@ -386,9 +386,9 @@ void CtiFDRSimple::readThisConfig()
   string  keyDbReloadRate = "FDR_" + getInterfaceName() + "_DB_RELOAD_RATE";
   string  keyDebugMode = "FDR_" + getInterfaceName() + "_DB_DEBUG_MODE";
 
-  setReloadRate( iConfigParameters.getValueAsInt( keyDbReloadRate, 86400 ) );
+  setReloadRate( gConfigParms.getValueAsInt( keyDbReloadRate, 86400 ) );
 
-  string   tempStr = iConfigParameters.getValueAsString( keyDebugMode );
+  string   tempStr = gConfigParms.getValueAsString( keyDebugMode );
 
   setInterfaceDebugMode( tempStr.length() > 0 );
 

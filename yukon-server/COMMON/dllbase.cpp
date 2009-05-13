@@ -170,7 +170,7 @@ DLLEXPORT void InitYukonBaseGlobals(void)
         if(DebugLevel & 0x0001) cout << "Configuration Parameter NOTIFICATION_PORT   failed : " << endl;
     }
 
-    if(!(str = gConfigParms.getValueAsString("DB_TYPE")).empty() || 
+    if(!(str = gConfigParms.getValueAsString("DB_TYPE")).empty() ||
        !(str = gConfigParms.getValueAsString("DB_RWDBDLL")).empty() )
     {
         if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_RWDBDLL/DB_TYPE found : " << str << endl;
@@ -349,17 +349,8 @@ DLLEXPORT void InitYukonBaseGlobals(void)
         if(DebugLevel & 0x0001) cout << "  Use YUKON_EMAIL_FROM to set reply address" << endl;
     }
 
-    if( !(str = gConfigParms.getValueAsString("LOG_DIRECTORY")).empty() )
-    {
-        gLogDirectory = str.c_str();
-        if(DebugLevel & 0x0001) cout << "Yukon Log Directory " << gLogDirectory << endl;
-    }
-    else
-    {
-        gLogDirectory = "\\yukon\\server\\log";
-        if(DebugLevel & 0x0001) cout << "Yukon Log Directory " << gLogDirectory << endl;
-        if(DebugLevel & 0x0001) cout << "  Use LOG_DIRECTORY to set Log Directory" << endl;
-    }
+    gLogDirectory = gConfigParms.getValueAsPath("LOG_DIRECTORY", "server\\log");
+    if(DebugLevel & 0x0001) cout << "Yukon Log Directory " << gLogDirectory << endl;
 
     if(gConfigParms.isOpt("PORTER_ADD_TAP_PREFIX"))
     {

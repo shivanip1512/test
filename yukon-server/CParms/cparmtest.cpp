@@ -17,8 +17,8 @@ void main(int argc, char **argv)
       return;
    }
    #if 1
-   string base_dir = gConfigParms.getYukonBaseDir();
-   cout << "Yukon base dir: " << base_dir << endl;
+   string yukon_base = gConfigParms.getYukonBase();
+   cout << "Yukon base: " << yukon_base << endl;
 
    for(int i = 0; i < atoi(argv[1]); i++)
    {

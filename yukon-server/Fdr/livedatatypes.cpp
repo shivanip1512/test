@@ -19,7 +19,6 @@
 
 
 
-CtiConfigParameters  LiveDataTypes::IccpBase::_configParameters;
 bool LiveDataTypes::IccpBase::_initialized;
 std::vector<unsigned char> LiveDataTypes::IccpBase::_qualityMasks;
 std::vector<unsigned char> LiveDataTypes::IccpBase::_qualityPatterns;
@@ -115,9 +114,9 @@ void LiveDataTypes::IccpBase::setupQualityData()
   _qualityClasses.clear();
 
   // read in the strings from CPARMS
-  std::string strMasks = _configParameters.getValueAsString("FDR_LIVEDATA_ICCP_QUALITY_MASKS","0x00").c_str();
-  std::string strPatterns = _configParameters.getValueAsString("FDR_LIVEDATA_ICCP_QUALITY_PATTERNS","0x00").c_str();
-  std::string strClasses = _configParameters.getValueAsString("FDR_LIVEDATA_ICCP_QUALITY_CLASSES","NormalQuality").c_str();
+  std::string strMasks = gConfigParms.getValueAsString("FDR_LIVEDATA_ICCP_QUALITY_MASKS","0x00").c_str();
+  std::string strPatterns = gConfigParms.getValueAsString("FDR_LIVEDATA_ICCP_QUALITY_PATTERNS","0x00").c_str();
+  std::string strClasses = gConfigParms.getValueAsString("FDR_LIVEDATA_ICCP_QUALITY_CLASSES","NormalQuality").c_str();
 
   // strings are delimited by a comma (and possibly some space)
   const std::string delimiters = ", ";

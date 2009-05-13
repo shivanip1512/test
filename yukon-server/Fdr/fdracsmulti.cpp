@@ -173,21 +173,21 @@ int CtiFDRAcsMulti::readConfig()
     int         successful = TRUE;
     string   tempStr;
 
-    setPortNumber(iConfigParameters.getValueAsInt( KEY_LISTEN_PORT_NUMBER, ACS_PORTNUMBER));
+    setPortNumber(gConfigParms.getValueAsInt( KEY_LISTEN_PORT_NUMBER, ACS_PORTNUMBER));
 
-    setTimestampReasonabilityWindow(iConfigParameters.getValueAsInt(KEY_TIMESTAMP_WINDOW, 120));
+    setTimestampReasonabilityWindow(gConfigParms.getValueAsInt(KEY_TIMESTAMP_WINDOW, 120));
 
-    setReloadRate(iConfigParameters.getValueAsInt(KEY_DB_RELOAD_RATE, 86400));
+    setReloadRate(gConfigParms.getValueAsInt(KEY_DB_RELOAD_RATE, 86400));
 
-    setQueueFlushRate(iConfigParameters.getValueAsInt(KEY_QUEUE_FLUSH_RATE, 1));
+    setQueueFlushRate(gConfigParms.getValueAsInt(KEY_QUEUE_FLUSH_RATE, 1));
 
-    setOutboundSendRate(iConfigParameters.getValueAsInt(KEY_OUTBOUND_SEND_RATE, 1));
+    setOutboundSendRate(gConfigParms.getValueAsInt(KEY_OUTBOUND_SEND_RATE, 1));
 
-    setOutboundSendInterval(iConfigParameters.getValueAsInt(KEY_OUTBOUND_SEND_INTERVAL, 0));
+    setOutboundSendInterval(gConfigParms.getValueAsInt(KEY_OUTBOUND_SEND_INTERVAL, 0));
 
-    setLinkTimeout(iConfigParameters.getValueAsInt(KEY_LINK_TIMEOUT, 60));
+    setLinkTimeout(gConfigParms.getValueAsInt(KEY_LINK_TIMEOUT, 60));
 
-    setTimeSyncVariation(iConfigParameters.getValueAsInt(KEY_TIMESYNC_VARIATION, 30));
+    setTimeSyncVariation(gConfigParms.getValueAsInt(KEY_TIMESYNC_VARIATION, 30));
     if (getTimeSyncVariation() < 5)
     {
         {
@@ -201,17 +201,17 @@ int CtiFDRAcsMulti::readConfig()
         setTimeSyncVariation(5);
     }
 
-    setPointTimeVariation (iConfigParameters.getValueAsInt(KEY_POINT_TIME_VARIATION, 0));
+    setPointTimeVariation (gConfigParms.getValueAsInt(KEY_POINT_TIME_VARIATION, 0));
 
     // default to true
     setUpdatePCTimeFlag (true);
-    tempStr = iConfigParameters.getValueAsString(KEY_TIMESYNC_UPDATE, "true");
+    tempStr = gConfigParms.getValueAsString(KEY_TIMESYNC_UPDATE, "true");
     if (!stringCompareIgnoreCase (tempStr,"false"))
     {
         setUpdatePCTimeFlag (false);
     }
 
-    tempStr = iConfigParameters.getValueAsString(KEY_DEBUG_MODE);
+    tempStr = gConfigParms.getValueAsString(KEY_DEBUG_MODE);
     if (tempStr.length() > 0)
     {
         setInterfaceDebugMode (true);
@@ -221,7 +221,7 @@ int CtiFDRAcsMulti::readConfig()
         setInterfaceDebugMode (false);
     }
 
-    tempStr = iConfigParameters.getValueAsString(KEY_FDR_ACS_SERVER_NAMES);
+    tempStr = gConfigParms.getValueAsString(KEY_FDR_ACS_SERVER_NAMES);
     std::string serverNames = tempStr;
     typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
     boost::char_separator<char> sep(",");

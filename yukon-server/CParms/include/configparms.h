@@ -9,7 +9,6 @@ extern "C" {
 #endif
 
 IM_EX_C_CPARM BOOL            isConfigOpt(const string& key);
-IM_EX_C_CPARM int             RefreshConfigParameters(const string& FileName = DefaultMasterConfigFileName);
 IM_EX_C_CPARM void            DumpConfigParms();
 IM_EX_C_CPARM BOOL            getConfigValueAsString(const string& Key, char *targ, int len);
 

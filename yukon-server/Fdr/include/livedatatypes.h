@@ -30,7 +30,7 @@ public:
    * This ABC acts as an interface between the code in
    * fdrlivedata.cpp and the actual LiveData types.
    * To add a new type, create a class that extends this one,
-   * ensure that the string returned by getName is added to 
+   * ensure that the string returned by getName is added to
    * the approriate row in the FDRInterfaceOption table, and
    * add a line to the Factory class' initialize method.
    */
@@ -44,12 +44,12 @@ public:
     virtual time_t getTimestamp(char *buffer) {return 0;};
     virtual bool hasQuality() {return false;};
     virtual PointQuality_t getQuality(char *buffer) {return NormalQuality;};
-  
+
   protected:
     // there is no good time to delete these,
     // they will just live as long as the program runs
     virtual ~Base() {};
-  
+
   };
 
 private:
@@ -69,18 +69,17 @@ private:
   protected:
     virtual unsigned char getRawQuality(char *buffer) {return 0;};
     static void setupQualityData();
-    static CtiConfigParameters  _configParameters;
     static bool _initialized;
     static std::vector<unsigned char> _qualityMasks;
     static std::vector<unsigned char> _qualityPatterns;
     static std::vector<PointQuality_t> _qualityClasses;
-  
+
   };
 
 
   /**
    * LiveData Data_RealExtended Data Type.
-   * 
+   *
    * Timestamp: yes
    * Quality: yes
    */
@@ -100,7 +99,7 @@ private:
    * LiveData Data_RealQTimeTag Data Type.
    * For our purposes this class is identical to Data_RealExtended
    * (it omits the COV counter, which we ignore anyways).
-   * 
+   *
    * Timestamp: yes
    * Quality: yes
    */
@@ -112,7 +111,7 @@ private:
 
   /**
    * LiveData Data_RealQ Data Type.
-   * 
+   *
    * Timestamp: no
    * Quality: yes
    */
@@ -128,7 +127,7 @@ private:
 
   /**
    * LiveData Data_Real Data Type.
-   * 
+   *
    * Timestamp: no
    * Quality: no
    */
@@ -142,7 +141,7 @@ private:
 
   /**
    * LiveData Data_StateExtended Data Type.
-   * 
+   *
    * Timestamp: yes
    * Quality: yes
    */
@@ -160,7 +159,7 @@ private:
 
   /**
    * LiveData Data_State Data Type.
-   * 
+   *
    * Timestamp: no
    * Quality: yes
    */
@@ -176,7 +175,7 @@ private:
 
   /**
    * LiveData Data_StateQTimeTag Data Type.
-   * 
+   *
    * Timestamp: yes
    * Quality: yes
    */
@@ -188,7 +187,7 @@ private:
 
   /**
    * LiveData Data_DiscreteExtended Data Type.
-   * 
+   *
    * Timestamp: yes
    * Quality: yes
    */
@@ -206,7 +205,7 @@ private:
 
   /**
    * LiveData Data_DiscreteQ Data Type.
-   * 
+   *
    * Timestamp: no
    * Quality: yes
    */
@@ -224,7 +223,7 @@ private:
    * LiveData Data_DiscreteQTimeTag Data Type.
    * For our purposes this class is identical to Data_DiscreteExtended
    * (it omits the COV counter, which we ignore anyways).
-   * 
+   *
    * Timestamp: yes
    * Quality: yes
    */
@@ -236,7 +235,7 @@ private:
 
   /**
    * LiveData Data_Discrete Data Type.
-   * 
+   *
    * Timestamp: no
    * Quality: no
    */
@@ -251,12 +250,12 @@ private:
 public:
   /**
    * LiveData Data Type Factory.
-   * This class is used to reteive instances of the 
+   * This class is used to reteive instances of the
    * specific Data Type classes defined above.
-   * A instance of each of the Data Type classes is 
+   * A instance of each of the Data Type classes is
    * new'd when the class is initialized, the Factory
    * will return a pointer to one of those instances
-   * each time getDataType is called. The instances 
+   * each time getDataType is called. The instances
    * and the Factory itself are never deleted.
    */
   class Factory
@@ -264,7 +263,7 @@ public:
   public:
     static Factory*  getInstance();
     Base*     getDataType(std::string  typeName);
-  
+
   protected:
     void initialize()
     {
@@ -281,12 +280,12 @@ public:
       _lookup.push_back( new Data_Discrete );
     };
     std::vector<Base*> _lookup;
-  
+
     // I'm a singleton
     Factory();
     ~Factory();
     static Factory *myself;
-  
+
   };
 
 };

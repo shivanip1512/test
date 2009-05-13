@@ -149,18 +149,16 @@ void CtiFDRService::Init( )
     int         count;
 
 
-    CtiConfigParameters configParameters;
-
     try
     {
-        if ( !(configParameters.isOpt(CPARM_NAME_FDR_INTERFACES)) )
+        if ( !(gConfigParms.isOpt(CPARM_NAME_FDR_INTERFACES)) )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << "No interfaces specified in config file " << CPARM_NAME_FDR_INTERFACES << endl;
             return;
         }
 
-        interfaces = configParameters.getValueAsString(CPARM_NAME_FDR_INTERFACES);
+        interfaces = gConfigParms.getValueAsString(CPARM_NAME_FDR_INTERFACES);
         if(interfaces.length() == 0)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -170,8 +168,8 @@ void CtiFDRService::Init( )
 
         boost::char_separator<char> sep(",");
         Boost_char_tokenizer next(interfaces, sep);
-        Boost_char_tokenizer::iterator tok_iter = next.begin(); 
-        
+        Boost_char_tokenizer::iterator tok_iter = next.begin();
+
         string       myInterfaceName;
         string       tempString;
 
@@ -250,7 +248,7 @@ void CtiFDRService::OnStop( )
              );
 
     // stop all threads
-    stopInterfaces();   
+    stopInterfaces();
 
     SetStatus( SERVICE_STOP_PENDING,
                66,       // check point??
@@ -260,7 +258,7 @@ void CtiFDRService::OnStop( )
     //complete
     //UserQuit = true;
     SetEvent(iShutdown);
-    
+
     // stop dout thread
     dout.interrupt(CtiThread::SHUTDOWN);
     dout.join();
@@ -284,7 +282,7 @@ void CtiFDRService::Run( )
     {
         //call run method to start interfaces
         startInterfaces();
-                        
+
         // set service as running
         SetStatus(SERVICE_RUNNING, 0, 0,
                   SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN );
@@ -330,7 +328,7 @@ void CtiFDRService::stopInterfaces( )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Stopping All FDR Interfaces" << endl;
-    }   
+    }
 
     for (int i=0; i < iInterfaceCount; i++)
     {

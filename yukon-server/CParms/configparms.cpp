@@ -25,15 +25,6 @@ extern "C" {
       return b;
    }
 
-   IM_EX_C_CPARM int RefreshConfigParameters(const string& FileName)
-   {
-      int status = !0;
-
-      status = gConfigParms.RefreshConfigParameters();
-
-      return status;
-   }
-
    IM_EX_C_CPARM void DumpConfigParms()
    {
       gConfigParms.Dump();

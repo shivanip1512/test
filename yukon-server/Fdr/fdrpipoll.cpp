@@ -42,7 +42,7 @@ const CHAR * CtiFDRPiPoll::KEY_DEFAULT_PERIOD           = "FDR_PI_DEFAULT_PERIOD
 
 /**
  * Constructor.
- */ 
+ */
 CtiFDRPiPoll::CtiFDRPiPoll()
 {
   readThisConfig();
@@ -50,14 +50,14 @@ CtiFDRPiPoll::CtiFDRPiPoll()
 
 /**
  * Destructor.
- */ 
+ */
 CtiFDRPiPoll::~CtiFDRPiPoll()
 {
 }
 
 /**
  * Begin receiving new point notifications.
- */ 
+ */
 void CtiFDRPiPoll::removeAllPoints()
 {
   _pollData.clear();
@@ -66,15 +66,15 @@ void CtiFDRPiPoll::removeAllPoints()
 
 /**
  * Notification of new point.
- */ 
-void CtiFDRPiPoll::processNewPiPoint(PiPointInfoStruct &info) 
+ */
+void CtiFDRPiPoll::processNewPiPoint(PiPointInfoStruct &info)
 {
 
   string periodStr = info.ctiPoint->getDestinationList()[0].getTranslationValue("Period (sec)");
   info.period = atoi(periodStr.c_str());
   if (info.period <= 0)
   {
-    info.period = _defaultPeriod; 
+    info.period = _defaultPeriod;
   }
 
   unsigned int period = info.period;
@@ -95,7 +95,7 @@ void CtiFDRPiPoll::cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, b
 
   if (period <= 0)
   {
-    period = _defaultPeriod; 
+    period = _defaultPeriod;
   }
 
   string tagName = translationPoint->getDestinationList()[0].getTranslationValue("Tag Name");
@@ -150,7 +150,7 @@ void CtiFDRPiPoll::handleNewPoint(CtiFDRPointSPtr ctiPoint)
 
   if (period <= 0)
   {
-    period = _defaultPeriod; 
+    period = _defaultPeriod;
   }
 
   //No good way to update the single point, so every point in the period is being updated.
@@ -171,14 +171,14 @@ void CtiFDRPiPoll::handleNewPoint(CtiFDRPointSPtr ctiPoint)
     int secondsPastHour;
     secondsPastHour = now_local->tm_min * 60;
     secondsPastHour += now_local->tm_sec;
-  
+
     time_t topOfThisHour = now - secondsPastHour;
     if (pollPeriod < 60 * 60)
     {
       // Set next update to be one period ago, forces all points to get
       // updated immediately.
       int periodsToAdd = secondsPastHour / pollPeriod;
-      pollInfo.nextUpdate = topOfThisHour + periodsToAdd * pollPeriod; 
+      pollInfo.nextUpdate = topOfThisHour + periodsToAdd * pollPeriod;
     }
     else
     {
@@ -187,7 +187,7 @@ void CtiFDRPiPoll::handleNewPoint(CtiFDRPointSPtr ctiPoint)
     if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
     {
       CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << pollInfo.pointList.size() << 
+      logNow() << pollInfo.pointList.size() <<
         " points will update every " << pollPeriod << " seconds" << endl;
     }
   }
@@ -203,7 +203,7 @@ void CtiFDRPiPoll::handleNewPoint(CtiFDRPointSPtr ctiPoint)
 
 /**
  * Setup receiving new point notifications.
- */ 
+ */
 void CtiFDRPiPoll::handleNewPoints()
 {
   // loop through all the points we were notified of in the processNewPiPoint call
@@ -223,14 +223,14 @@ void CtiFDRPiPoll::handleNewPoints()
     int secondsPastHour;
     secondsPastHour = now_local->tm_min * 60;
     secondsPastHour += now_local->tm_sec;
-  
+
     time_t topOfThisHour = now - secondsPastHour;
     if (pollPeriod < 60 * 60)
     {
       // Set next update to be one period ago, forces all points to get
       // updated immediately.
       int periodsToAdd = secondsPastHour / pollPeriod;
-      pollInfo.nextUpdate = topOfThisHour + periodsToAdd * pollPeriod; 
+      pollInfo.nextUpdate = topOfThisHour + periodsToAdd * pollPeriod;
     }
     else
     {
@@ -239,7 +239,7 @@ void CtiFDRPiPoll::handleNewPoints()
     if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
     {
       CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << pollInfo.pointList.size() << 
+      logNow() << pollInfo.pointList.size() <<
         " points will update every " << pollPeriod << " seconds" << endl;
     }
 
@@ -249,7 +249,7 @@ void CtiFDRPiPoll::handleNewPoints()
 
 /**
  * Get values of all points in any over due polling period.
- */ 
+ */
 void CtiFDRPiPoll::doUpdates()
 {
   time_t now;
@@ -274,14 +274,14 @@ void CtiFDRPiPoll::doUpdates()
 
       int pointCount = pollInfo.pointList.size(); //all sizes should be identical
 
-      // the following is supposed to be legit 
+      // the following is supposed to be legit
       //    (http://www.parashift.com/c++-faq-lite/containers-and-templates.html#faq-34.3)
-      PiPointId *piIdArray = &pollInfo.pointList[0];                                                                       
+      PiPointId *piIdArray = &pollInfo.pointList[0];
       float *rvalArray = &pollInfo.rvalList[0];
       int32 *istatArray = &pollInfo.istatList[0];
       int32 *timeArray = &pollInfo.timeList[0];
       int32 *errorArray = &pollInfo.errorList[0];
-    
+
       int err = pisn_getsnapshots(piIdArray, rvalArray, istatArray, timeArray, errorArray, pointCount);
       if (err != 0)
       {
@@ -293,7 +293,7 @@ void CtiFDRPiPoll::doUpdates()
         }
         throw PiException(err);
       }
-    
+
       for (int i = 0; i < pointCount; ++i)
       {
         // remove local offset (might not be thread-safe)
@@ -307,14 +307,14 @@ void CtiFDRPiPoll::doUpdates()
       }
 
       // calculate next update time
-      // Should only need to go through loop once, but allows 
+      // Should only need to go through loop once, but allows
       // for "catch-up" if thread gets stalled.
       do
       {
         pollInfo.nextUpdate += pollPeriod;
       }
       while (pollInfo.nextUpdate < now);
-    
+
     }
   }
 
@@ -322,17 +322,17 @@ void CtiFDRPiPoll::doUpdates()
 
 /**
  * Read the configuration file.
- */ 
+ */
 void CtiFDRPiPoll::readThisConfig()
 {
   CtiFDRPiBase::readThisConfig();
 
   string   tempStr;
 
-  tempStr = iConfigParameters.getValueAsString( KEY_ALWAYS_SEND, "FALSE" );
+  tempStr = gConfigParms.getValueAsString( KEY_ALWAYS_SEND, "FALSE" );
   _alwaysSendValues = findStringIgnoreCase(tempStr,"TRUE");
 
-  _defaultPeriod = iConfigParameters.getValueAsInt( KEY_DEFAULT_PERIOD, 60);
+  _defaultPeriod = gConfigParms.getValueAsInt( KEY_DEFAULT_PERIOD, 60);
 
 
   if( getDebugLevel() & STARTUP_FDR_DEBUGLEVEL )

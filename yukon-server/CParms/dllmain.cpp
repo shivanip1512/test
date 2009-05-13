@@ -1,70 +1,65 @@
 #include "yukon.h"
 
-#include <winsock.h>
-
-#include <winreg.h>
-
 #include <iostream>
 
 using namespace std;
 
+#include "shlwapi.h"
 #include "cparms.h"
+#include "boost/scoped_array.hpp"
 
-IM_EX_CPARM string DefaultMasterConfigFileName("..\\config\\master.cfg");
-IM_EX_CPARM string ConfKeyRefreshRate("CONFIG_REFRESHRATE");
+IM_EX_CPARM CtiConfigParameters gConfigParms;
 
-//The location and name of the configuration file is
-//determined by a value in the registry
-//the following is the name of the key
-LPTSTR lpSubKey = "SOFTWARE\\Cannon Technologies\\CParms";
-LPTSTR lpValueName = "Config";
-
-IM_EX_CPARM CtiConfigParameters gConfigParms;   
+string getYukonBase();
 
 BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
 {
+    if( ul_reason_for_call == DLL_PROCESS_ATTACH )
+    {
+        gConfigParms.setYukonBase(getYukonBase());
+        gConfigParms.RefreshConfigParameters();
+    }
 
-   switch( ul_reason_for_call )
-   {
-   case DLL_PROCESS_ATTACH:
-      {
-         BYTE buf[200];
-         DWORD len = 200;
+    return TRUE;
+}
 
-         HKEY key;
+string getYukonBase()
+{
+    char yukon_base_env[MAX_PATH];
 
-         if( RegOpenKeyEx( HKEY_LOCAL_MACHINE, lpSubKey, 0, KEY_READ, &key ) == ERROR_SUCCESS )
-         {
-            if( RegQueryValueEx( key, lpValueName, NULL, NULL, (unsigned char*)&buf, &len) == ERROR_SUCCESS )
-            {
-               DefaultMasterConfigFileName = (char*) buf;
-            }
+    DWORD result = GetEnvironmentVariable("YUKON_BASE", yukon_base_env, MAX_PATH);
 
-            RegCloseKey( key );
-         }
-         else
-         {
-            cout << "Unable to open subkey " << lpSubKey << endl;
-            cout << " Configuration file is " << DefaultMasterConfigFileName << endl;
-         }
+    PathUnquoteSpaces(yukon_base_env);
+    PathRemoveBlanks(yukon_base_env);
 
-         gConfigParms.setConfigFile(DefaultMasterConfigFileName).RefreshConfigParameters();
+    if( !result )
+    {
+        if( GetLastError() == ERROR_ENVVAR_NOT_FOUND )
+        {
+            cout << "Environment variable YUKON_BASE is missing" << endl;
+        }
+        else
+        {
+            cout << "Environment variable YUKON_BASE is empty" << endl;
+        }
+    }
+    else if( result >= MAX_PATH )
+    {
+        cout << "Environment variable YUKON_BASE is too long (" << result << ")" << endl;
+    }
+    else if( !PathIsDirectory(yukon_base_env) )
+    {
+        cout << "Environment variable YUKON_BASE is not a directory" << endl;
+    }
+    else
+    {
+        return yukon_base_env;
+    }
 
-         break;
-      }
-   case DLL_THREAD_ATTACH:
-      {
-         break;
-      }
-   case DLL_THREAD_DETACH:
-      {
-         break;
-      }
-   case DLL_PROCESS_DETACH:
-      {
-         break;
-      }
-   }
-   return TRUE;
+    const char *yukon_base_default = "c:\\yukon";
+
+    cout << "YUKON_BASE defaulting to " << yukon_base_default << endl;
+
+    return yukon_base_default;
 }
 

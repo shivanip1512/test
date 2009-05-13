@@ -122,8 +122,6 @@
 #include "utility.h"
 
 /** local definitions **/
-CtiConfigParameters CtiFDRInterface::iConfigParameters;
-
 const CHAR * CtiFDRInterface::KEY_DISPATCH_NAME = "DISPATCH_MACHINE";
 const CHAR * CtiFDRInterface::KEY_DEBUG_LEVEL = "_DEBUGLEVEL";
 
@@ -723,10 +721,10 @@ string CtiFDRInterface::getCparmValueAsString(string key)
     string   myTempStr("");
 
     // invokes cparm method
-    if (iConfigParameters.isOpt(key))
+    if (gConfigParms.isOpt(key))
     {
         // string existed so load it
-        myTempStr = iConfigParameters.getValueAsString(key);
+        myTempStr = gConfigParms.getValueAsString(key);
     }
 
     return myTempStr;
@@ -1002,7 +1000,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
                             if (changeType == ChangeTypeDelete)
                                 processFDRPointChange(changeId, true);
                             else
-                            {    
+                            {
                                 processFDRPointChange(changeId, false);
                                 reRegisterWithDispatch();
 
@@ -1722,7 +1720,7 @@ void CtiFDRInterface::removeTranslationPoint(long pointId)
         {
             inRecv = recvMgr->removeFDRPointID(pointId);
             if (inRecv.get() != NULL)
-            {    
+            {
                 cleanupTranslationPoint(inRecv,true);
             }
 
@@ -1730,8 +1728,8 @@ void CtiFDRInterface::removeTranslationPoint(long pointId)
         if (sendMgr != NULL)
         {
             inSend = sendMgr->removeFDRPointID(pointId);
-            if (inSend.get() != NULL) 
-            {    
+            if (inSend.get() != NULL)
+            {
                 cleanupTranslationPoint(inSend,false);
             }
 

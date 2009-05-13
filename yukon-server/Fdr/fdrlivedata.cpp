@@ -69,7 +69,7 @@ const CHAR * CtiFDRLiveData::KEY_SERVER_PORT         = "FDR_LIVEDATA_SERVER_SERV
 
 /**
  * Default Constructor.
- */ 
+ */
 CtiFDRLiveData::CtiFDRLiveData() : CtiFDRSimple( "LIVEDATA" )
 {
   readThisConfig();
@@ -80,7 +80,7 @@ CtiFDRLiveData::CtiFDRLiveData() : CtiFDRSimple( "LIVEDATA" )
 
 /**
  * Destructor.
- */ 
+ */
 CtiFDRLiveData::~CtiFDRLiveData()
 {
   delete _liveDataConnection;
@@ -89,7 +89,7 @@ CtiFDRLiveData::~CtiFDRLiveData()
 
 /**
  * Initialize connection
- */ 
+ */
 void CtiFDRLiveData::startup()
 {
 
@@ -106,7 +106,7 @@ void CtiFDRLiveData::startup()
 
 /**
  * Shutdown connection
- */ 
+ */
 void CtiFDRLiveData::shutdown()
 {
   if( isDebugLevel( DETAIL_FDR_DEBUGLEVEL ) )
@@ -116,13 +116,13 @@ void CtiFDRLiveData::shutdown()
   }
 
   _okayToWrite = false;
-  _liveDataConnection->exit(); 
+  _liveDataConnection->exit();
 
 }
 
 /**
  * Open a connection to the remote system.
- */ 
+ */
 bool CtiFDRLiveData::connect()
 {
 
@@ -139,7 +139,7 @@ bool CtiFDRLiveData::connect()
 
 /**
  * Open a connection to the remote system.
- */ 
+ */
 void CtiFDRLiveData::testConnection()
 {
   setConnected( _liveDataConnection->isConnected() );
@@ -148,7 +148,7 @@ void CtiFDRLiveData::testConnection()
 
 /**
  * Add a new point to the appropriate lists.
- */ 
+ */
 void CtiFDRLiveData::processNewPoint(CtiFDRPointSPtr ctiPoint)
 {
   PointInfo info;
@@ -166,15 +166,15 @@ void CtiFDRLiveData::processNewPoint(CtiFDRPointSPtr ctiPoint)
   try
   {
     info.liveDataType = typeFactory->getDataType(dataTypeStr.c_str());
-  
+
     _pointMap.insert(PointMap::value_type(info.pointAddress, info));
-  
+
     if( isDebugLevel( DETAIL_FDR_DEBUGLEVEL ) )
     {
       CtiLockGuard<CtiLogger> doubt_guard( dout );
       logNow() << "Added point " << address << " of type " << dataTypeStr << endl;
     }
-  
+
   }
   catch (std::exception& e)
   {
@@ -201,7 +201,7 @@ void CtiFDRLiveData::cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint,
 
 /**
  * Clear out data about existing points.
- */ 
+ */
 void CtiFDRLiveData::removeAllPoints() {
   _okayToWrite = false;
   _pointMap.clear();
@@ -209,7 +209,7 @@ void CtiFDRLiveData::removeAllPoints() {
 
 /**
  * Set next update time for the new points.
- */ 
+ */
 void CtiFDRLiveData::handleNewPoints()
 {
   _okayToWrite = true;
@@ -217,7 +217,7 @@ void CtiFDRLiveData::handleNewPoints()
 
 /**
  * Check if any points need to be updated.
- */ 
+ */
 void CtiFDRLiveData::doUpdates()
 {
   testConnection();
@@ -244,15 +244,15 @@ bool CtiFDRLiveData::LiveDataWriteCallback::write(unsigned long address, unsigne
   fdrInterface->setConnected(true);
 
   CtiFDRPointList &aList = fdrInterface->getReceiveFromList();
-  CtiLockGuard<CtiMutex> guard(aList.getMutex());  
+  CtiLockGuard<CtiMutex> guard(aList.getMutex());
 
   if (fdrInterface->_okayToWrite)
   {
     time_t updateTime;
     ::time(&updateTime);
-  
-    
-  
+
+
+
     pair<PointMap::const_iterator,PointMap::const_iterator> foundRangePair = fdrInterface->_pointMap.equal_range(address);
 
     if (foundRangePair.first == foundRangePair.second && fdrInterface->isDebugLevel( DETAIL_FDR_DEBUGLEVEL ) )
@@ -265,19 +265,19 @@ bool CtiFDRLiveData::LiveDataWriteCallback::write(unsigned long address, unsigne
       CtiLockGuard<CtiLogger> doubt_guard( dout );
       fdrInterface->logNow() << "Got write for address " << address << endl;
     }
-  
+
     for (PointMap::const_iterator infoIter = foundRangePair.first;
           infoIter != foundRangePair.second;
           ++infoIter) {
       const PointInfo &info = (*infoIter).second;
-  
+
       if (info.liveDataType->getSize() == length)
       {
         if (info.liveDataType->hasTimestamp())
         {
           updateTime = info.liveDataType->getTimestamp((char*)buffer);
         }
-          
+
         fdrInterface->handleUpdate(info.ctiPoint,
                                    info.liveDataType->getData((char*)buffer),
                                    updateTime,
@@ -290,11 +290,11 @@ bool CtiFDRLiveData::LiveDataWriteCallback::write(unsigned long address, unsigne
         {
           unsigned int expectedLength = info.liveDataType->getSize();
           CtiLockGuard<CtiLogger> doubt_guard( dout );
-          fdrInterface->logNow() << "Got bad length for address " << address 
+          fdrInterface->logNow() << "Got bad length for address " << address
             << ", expected " << expectedLength << " got " << length << endl;
         }
       }
-      
+
     }
   }
   else
@@ -312,14 +312,14 @@ bool CtiFDRLiveData::LiveDataWriteCallback::write(unsigned long address, unsigne
 
 /**
  * Read our configuration file.
- */ 
+ */
 void CtiFDRLiveData::readThisConfig()
 {
   CtiFDRSimple::readThisConfig();
 
 
-  _serverIpAddress = iConfigParameters.getValueAsString( KEY_SERVER_IP_ADDRESS, "127.0.0.1" );
-  _serverPort = atoi( iConfigParameters.getValueAsString( KEY_SERVER_PORT, "2000" ).c_str() );
+  _serverIpAddress = gConfigParms.getValueAsString( KEY_SERVER_IP_ADDRESS, "127.0.0.1" );
+  _serverPort = atoi( gConfigParms.getValueAsString( KEY_SERVER_PORT, "2000" ).c_str() );
 
 
   if( isDebugLevel( STARTUP_FDR_DEBUGLEVEL ) )
@@ -352,11 +352,11 @@ extern "C" {
   {
       // make a point to the interface
       myInterface = new CtiFDRLiveData();
-  
+
       // now start it up
       return myInterface->run();
   }
-  
+
   /**
    * This is used to Stop the Interface from the Main()
    * of FDR.EXE. Each interface i2 Dynamically loaded and
@@ -368,10 +368,10 @@ extern "C" {
       myInterface->stop();
       delete myInterface;
       myInterface = 0;
-  
+
       return 0;
   }
-  
+
 }
 
 

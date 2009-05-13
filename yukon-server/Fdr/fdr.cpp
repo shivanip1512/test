@@ -154,12 +154,11 @@ int main( int argc, char *argv[] )
 
 int install( DWORD dwStart )
 {
-    CtiConfigParameters configParameters;
     string           depends;
 
-    if ( configParameters.isOpt(CPARM_NAME_SRV_DEPENDENCIES) )
+    if ( gConfigParms.isOpt(CPARM_NAME_SRV_DEPENDENCIES) )
     {
-        depends = configParameters.getValueAsString(CPARM_NAME_FDR_INTERFACES);
+        depends = gConfigParms.getValueAsString(CPARM_NAME_FDR_INTERFACES);
         cout << "FDR Services Dependencies specified: " << depends << endl;
     }
 

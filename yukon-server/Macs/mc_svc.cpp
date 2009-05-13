@@ -114,21 +114,11 @@ void CtiMCService::Run()
 
     hShutdown = CreateEvent(NULL,TRUE,FALSE,NULL);
 
-    CtiConfigParameters configParameters;
-
-    if( configParameters.isOpt("CTL_SCRIPTS_DIR") )
-    {
-        string path = configParameters.getValueAsString("CTL_SCRIPTS_DIR");
-        CtiMCScript::setScriptPath( path );
-    }
-    else
-    {
-        CtiMCScript::setScriptPath("c:\\yukon\\server\\macsscripts");
-    }
+    CtiMCScript::setScriptPath(gConfigParms.getValueAsPath("CTL_SCRIPTS_DIR", "server\\macsscripts"));
 
     // sets a simple debug level if MACS_DEBUG exists
     bool macs_debug = false;
-    if( configParameters.isOpt("MACS_DEBUG") )
+    if( gConfigParms.isOpt("MACS_DEBUG") )
     {
         macs_debug = true;
     }

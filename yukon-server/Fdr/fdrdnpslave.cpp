@@ -94,7 +94,7 @@ const string CtiFDRDnpSlave::dnpPointMultiplier="Multiplier";
 
 const string CtiFDRDnpSlave::CtiFdrDNPInMessageString="DNP InMessage";
 const string CtiFDRDnpSlave::CtiFdrDNPOutMessageString="DNP OutMessage";
-    
+
 
 // Constructors, Destructor, and Operators
 CtiFDRDnpSlave::CtiFDRDnpSlave()
@@ -124,16 +124,16 @@ int CtiFDRDnpSlave::readConfig()
     int         successful = TRUE;
     string   tempStr;
 
-    setPortNumber(iConfigParameters.getValueAsInt( KEY_LISTEN_PORT_NUMBER, DNPSLAVE_PORTNUMBER));
+    setPortNumber(gConfigParms.getValueAsInt( KEY_LISTEN_PORT_NUMBER, DNPSLAVE_PORTNUMBER));
 
-    setReloadRate(iConfigParameters.getValueAsInt(KEY_DB_RELOAD_RATE, 86400));
+    setReloadRate(gConfigParms.getValueAsInt(KEY_DB_RELOAD_RATE, 86400));
 
-    setLinkTimeout(iConfigParameters.getValueAsInt(KEY_LINK_TIMEOUT, 60));
+    setLinkTimeout(gConfigParms.getValueAsInt(KEY_LINK_TIMEOUT, 60));
 
-    _staleDataTimeOut = iConfigParameters.getValueAsInt(KEY_STALEDATA_TIMEOUT, 3600);
+    _staleDataTimeOut = gConfigParms.getValueAsInt(KEY_STALEDATA_TIMEOUT, 3600);
 
-    
-    tempStr = iConfigParameters.getValueAsString(KEY_DEBUG_MODE);
+
+    tempStr = gConfigParms.getValueAsString(KEY_DEBUG_MODE);
     if (tempStr.length() > 0)
     {
         setInterfaceDebugMode (true);
@@ -143,7 +143,7 @@ int CtiFDRDnpSlave::readConfig()
         setInterfaceDebugMode (false);
     }
 
-    tempStr = iConfigParameters.getValueAsString(KEY_FDR_DNPSLAVE_SERVER_NAMES);
+    tempStr = gConfigParms.getValueAsString(KEY_FDR_DNPSLAVE_SERVER_NAMES);
     std::string serverNames = tempStr;
     typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
     boost::char_separator<char> sep(",");
@@ -238,7 +238,7 @@ bool CtiFDRDnpSlave::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bo
 
         CtiDnpId dnpId = ForeignToYukonId(pointDestination);
         if (!dnpId.valid)
-        {    
+        {
             return foundPoint;
         }
 
@@ -253,7 +253,7 @@ bool CtiFDRDnpSlave::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bo
 void CtiFDRDnpSlave::cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool recvList)
 {
     if (recvList)
-    {    
+    {
         return;
     }
     for (int x = 0; x < translationPoint->getDestinationList().size(); x++)
@@ -261,10 +261,10 @@ void CtiFDRDnpSlave::cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint,
         CtiFDRDestination pointDestination = translationPoint->getDestinationList()[x];
         // translate and put the point id the list
 
-              
+
         CtiDnpId dnpId = ForeignToYukonId(pointDestination);
         if (!dnpId.valid)
-        {    
+        {
             return;
         }
 
@@ -272,7 +272,7 @@ void CtiFDRDnpSlave::cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint,
         {
             return;
         }
-        
+
         if (!recvList)
         {
             _helper->removeSendMapping(dnpId, pointDestination);
@@ -280,7 +280,7 @@ void CtiFDRDnpSlave::cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint,
     }
 }
 
-/******************************************************************************************************** 
+/********************************************************************************************************
   not used intentionally
 *********************************************************************************************************/
 bool CtiFDRDnpSlave::buildForeignSystemMessage(const CtiFDRDestination& destination,
@@ -306,12 +306,12 @@ int CtiFDRDnpSlave::processMessageFromForeignSystem (CtiFDRClientServerConnectio
         }
         case SINGLE_SOCKET_DNP_READ:
         {
-            /******************************************************************************************************** 
+            /********************************************************************************************************
               here should add something to _dnpData.slaveDecode()  However, for now, this will process any read command
               as a scan1230 request.
               NOTE:  scan integrity dnp message
                 05 64 17 c4 1e 00 02 00 78 b5 c0 ca 01 32 01 06 3c 02 06 3c 03 06 3c 04 06 3c 9d f5 01 06 75 e1
-             
+
                 SCAN INTEGRITY:
                 05 64 17 c4 1e 00 01 00 d3 05
                 c0 c3
@@ -327,7 +327,7 @@ int CtiFDRDnpSlave::processMessageFromForeignSystem (CtiFDRClientServerConnectio
                 3c <ce 3c - 16byte CRC> 01 - data object 60 variation 1 - class 0 data
                 06 - qualifier - no index, packed.  no range field
                 75 e1 - CRC
-             
+
                 SCAN GENERAL
                 05 64 14 c4 1e 00 01 00 83 96
                 c0 c9
@@ -352,11 +352,11 @@ int CtiFDRDnpSlave::processMessageFromForeignSystem (CtiFDRClientServerConnectio
             }
             break;
         }
-        case SINGLE_SOCKET_DNP_CONFIRM:  
-        case SINGLE_SOCKET_DNP_WRITE:    
+        case SINGLE_SOCKET_DNP_CONFIRM:
+        case SINGLE_SOCKET_DNP_WRITE:
         case SINGLE_SOCKET_DNP_DIRECT_OP:
         default:
-        { 
+        {
             if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
             {
                 CtiLockGuard<CtiLogger> dout_guard(dout);
@@ -386,7 +386,7 @@ int CtiFDRDnpSlave::processDataLinkConfirmationRequest(CtiFDRClientServerConnect
 
         std::memcpy(buffer, data, bufferSize);
 
-        buffer[2] = 5; 
+        buffer[2] = 5;
         buffer[3] = 0x0B;
 
         buffer[4] = data[6]; //swap source to destination
@@ -419,7 +419,7 @@ int CtiFDRDnpSlave::processDataLinkConfirmationRequest(CtiFDRClientServerConnect
         retVal = -1;
     }
     return retVal;
-    
+
 
 }
 
@@ -428,7 +428,7 @@ int CtiFDRDnpSlave::processScanSlaveRequest (CtiFDRClientServerConnection& conne
 {
 
     int retVal = 0;
-    
+
     CtiXfer xfer = CtiXfer(NULL, 0, (BYTE*)data, getMessageSize(data));
     if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
     {
@@ -436,7 +436,7 @@ int CtiFDRDnpSlave::processScanSlaveRequest (CtiFDRClientServerConnection& conne
         logNow() << " "<< getInterfaceName() <<" received DNP scan request message."<< endl;
         dumpDNPMessage(CtiFdrDNPInMessageString, data, size);
     }
-    
+
     BYTEUSHORT dest, src;
     dest.ch[0] = data[4];
     dest.ch[1] = data[5];
@@ -458,11 +458,11 @@ int CtiFDRDnpSlave::processScanSlaveRequest (CtiFDRClientServerConnection& conne
             iPoint.online = YukonToForeignQuality(fdrPoint->getQuality(), fdrPoint->getLastTimeStamp());
             iPoint.control_offset = dnpId.Offset;
             iPoint.includeTime = includeTime;
-            iPoint.timestamp = fdrPoint->getLastTimeStamp();    
+            iPoint.timestamp = fdrPoint->getLastTimeStamp();
 
             if (dnpId.PointType == StatusPointType )
             {
-                iPoint.din.trip_close = (fdrPoint->getValue() == 0)?(DNP::BinaryOutputControl::Trip):(DNP::BinaryOutputControl::Close); 
+                iPoint.din.trip_close = (fdrPoint->getValue() == 0)?(DNP::BinaryOutputControl::Trip):(DNP::BinaryOutputControl::Close);
                 iPoint.type = Cti::Protocol::DNPSlaveInterface::DigitalInput;
             }
             else if (dnpId.PointType == AnalogPointType )
@@ -475,10 +475,10 @@ int CtiFDRDnpSlave::processScanSlaveRequest (CtiFDRClientServerConnection& conne
                 iPoint.counterin.value =  (fdrPoint->getValue() * dnpId.Multiplier);
                 iPoint.type = Cti::Protocol::DNPSlaveInterface::Counters;
             }
-            else 
+            else
             {
                 continue;
-                    
+
             }
             _dnpData.addInputPoint(iPoint);
         }
@@ -487,11 +487,11 @@ int CtiFDRDnpSlave::processScanSlaveRequest (CtiFDRClientServerConnection& conne
     _dnpData.setAddresses(src.sh, dest.sh);
     _dnpData.setSlaveCommand(DNPSlaveInterface::Command_Class1230Read);
 
-    
+
     if (_dnpData.slaveGenerate(xfer) == 0)
     {
         bool status = true;
-        
+
         if (xfer.getOutBuffer() != NULL && xfer.getOutCount() > 0)
         {
             char* buffer = NULL;
@@ -504,7 +504,7 @@ int CtiFDRDnpSlave::processScanSlaveRequest (CtiFDRClientServerConnection& conne
                 logNow() << " "<< getInterfaceName() <<" sending DNP scan response message."<< endl;
                 dumpDNPMessage(CtiFdrDNPOutMessageString, buffer, bufferSize);
             }
-            connection.queueMessage(buffer, xfer.getOutCount(), MAXPRIORITY - 1); 
+            connection.queueMessage(buffer, xfer.getOutCount(), MAXPRIORITY - 1);
         }
     }
     else
@@ -514,7 +514,7 @@ int CtiFDRDnpSlave::processScanSlaveRequest (CtiFDRClientServerConnection& conne
             CtiLockGuard<CtiLogger> dout_guard(dout);
             logNow() << " "<< getInterfaceName() <<" was not able to generate scan response. "<< endl;
         }
-        
+
     }
 
     _dnpData.slaveTransactionComplete();
@@ -525,7 +525,7 @@ int CtiFDRDnpSlave::processScanSlaveRequest (CtiFDRClientServerConnection& conne
 
 
 
-        
+
 
 CtiDnpId CtiFDRDnpSlave::ForeignToYukonId(CtiFDRDestination pointDestination)
 {
@@ -550,20 +550,20 @@ CtiDnpId CtiFDRDnpSlave::ForeignToYukonId(CtiFDRDestination pointDestination)
     dnpId.MasterId = atoi(masterId.c_str());
     dnpId.SlaveId = atoi(slaveId.c_str());
 
-    if (!stringCompareIgnoreCase(pointType, dnpPointStatusString)) 
-    {    
+    if (!stringCompareIgnoreCase(pointType, dnpPointStatusString))
+    {
         dnpId.PointType = StatusPointType;
     }
-    else if (!stringCompareIgnoreCase(pointType, dnpPointAnalogString)) 
-    {    
+    else if (!stringCompareIgnoreCase(pointType, dnpPointAnalogString))
+    {
         dnpId.PointType = AnalogPointType;
     }
-    else if (!stringCompareIgnoreCase(pointType, dnpPointCounterString)) 
-    {    
+    else if (!stringCompareIgnoreCase(pointType, dnpPointCounterString))
+    {
         dnpId.PointType = PulseAccumulatorPointType;
     }
     else
-    { 
+    {
         dnpId.PointType = InvalidPointType;
     }
 
@@ -602,7 +602,7 @@ unsigned long CtiFDRDnpSlave::getHeaderBytes(const char* data, unsigned int size
     {
         if (data[0] == FDR_DNP_HEADER_BYTE1 &&
             data[1] == FDR_DNP_HEADER_BYTE2 )
-        { 
+        {
             long function = (BYTE)* (data + FDR_DNP_REQ_FUNC_LOCATION);
             retVal = function;
         }
@@ -615,7 +615,7 @@ unsigned long CtiFDRDnpSlave::getHeaderBytes(const char* data, unsigned int size
     }
 
     return retVal;
-    
+
 }
 
 unsigned int CtiFDRDnpSlave::getMessageSize(const char* data)
@@ -627,7 +627,7 @@ unsigned int CtiFDRDnpSlave::getMessageSize(const char* data)
         msgLength =  (BYTE)*(data + 2);
 
         msgSize += msgLength;
-        msgSize += 5; //x05 x64 Len(1) headerCRC(2)  
+        msgSize += 5; //x05 x64 Len(1) headerCRC(2)
 
         if (msgLength > 5)
         {
@@ -658,13 +658,13 @@ bool CtiFDRDnpSlave::isScanIntegrityRequest(const char* data, unsigned int size)
           75 e1 - CRC
     */
     bool retVal = false;
-    if (size > FDR_DNP_HEADER_SIZE && size > FDR_DNP_REQ_FUNC_LOCATION + 17) 
+    if (size > FDR_DNP_HEADER_SIZE && size > FDR_DNP_REQ_FUNC_LOCATION + 17)
     {
-       
+
         if (data[FDR_DNP_REQ_FUNC_LOCATION + 13] == 0x3c &&
             data[FDR_DNP_REQ_FUNC_LOCATION + 16] == 0x01 &&
             data[FDR_DNP_REQ_FUNC_LOCATION + 17] == 0x06 )
-        {    
+        {
             retVal = true;
         }
     }
@@ -677,7 +677,7 @@ void CtiFDRDnpSlave::dumpDNPMessage(const string direction, const char* data, un
 {
     CtiLockGuard<CtiLogger> dout_guard(dout);
     logNow() << " "<< getInterfaceName() <<" "<<direction<<" message:"<< endl;
-    for (int x=0; x < size; x++ ) 
+    for (int x=0; x < size; x++ )
     {
         dout <<" " + CtiNumStr(data[x]).hex().zpad(2).toString();
     }

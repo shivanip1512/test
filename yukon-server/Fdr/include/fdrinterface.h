@@ -94,8 +94,6 @@ class IM_EX_FDRBASE CtiFDRInterface
         virtual BOOL        run( void );
         virtual BOOL        stop( void );
 
-        // load a single copy of the cparms
-        static CtiConfigParameters  iConfigParameters;
         virtual int processMessageFromForeignSystem (CHAR *data) = 0;
 
         bool reloadTranslationLists(void);
@@ -106,7 +104,7 @@ class IM_EX_FDRBASE CtiFDRInterface
         virtual bool loadTranslationPoint(long pointId);
         //remove single point maintaining current lists
         void removeTranslationPoint(long pointId);
-        //This is the interfaces hook to know when a point is removed. Most do not care so a default was written. 
+        //This is the interfaces hook to know when a point is removed. Most do not care so a default was written.
         virtual void cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool recvList);
 
         CtiFDRPointList   getSendToList () const;
