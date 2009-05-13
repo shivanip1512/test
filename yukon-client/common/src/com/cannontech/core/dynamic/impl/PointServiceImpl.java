@@ -5,16 +5,17 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Required;
 
+import com.cannontech.clientutils.tags.AlarmUtils;
+import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.clientutils.tags.TagUtils;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointService;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
+import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.message.Signal;
-import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Implementation of PointService
@@ -49,9 +50,18 @@ public class PointServiceImpl implements PointService
                 if(TagUtils.isConditionActive(sig.getTags()))
                 {
                     int nextCondition = sig.getCondition();
+                    String conditionText = AlarmUtils.getAlarmConditionText(nextCondition,lp); 
+                    if((lp.getPointType() == PointTypes.ANALOG_POINT && conditionText.equalsIgnoreCase(IAlarmDefs.OTHER_ALARM_STATES[10]))
+                    		|| (lp.getPointType() == PointTypes.STATUS_POINT && conditionText.equalsIgnoreCase(IAlarmDefs.STATUS_ALARM_STATES[4]))){
+                    	/*
+                    	 *  Skip the stale state since it's not a real state in the stategroup.
+                    	 *  This will need to change if we decide that the stale alarm condition 
+                    	 *  should actually be the state the point is currently in.
+                    	 */
+                    	continue;
+                    }
                     
-                    if(nextCondition > highestPriorityCondition)
-                    {
+                    if(nextCondition > highestPriorityCondition) {
                         highestPriorityCondition = nextCondition;
                     }
                 }
