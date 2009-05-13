@@ -17,6 +17,9 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.definition.dao.DeviceDefinitionDaoAdapter;
+import com.cannontech.common.device.definition.model.DeviceFeature;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.util.ScheduledExecutorMock;
 import com.cannontech.core.dao.DBPersistentDao;
@@ -179,6 +182,14 @@ public class LongLoadProfileServiceImplTest {
             public void logEvent(int userID, String action, String description){
                 // do nothing
             }
+            
+        });
+        
+        serviceDebug.setDeviceDefinitionDao(new DeviceDefinitionDaoAdapter(){
+        	@Override
+        	public boolean isFeatureSupported(LiteYukonPAObject litePao, DeviceFeature feature) {
+        		return true;
+        	}
             
         });
         
