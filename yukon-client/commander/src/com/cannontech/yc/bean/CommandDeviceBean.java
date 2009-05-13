@@ -29,6 +29,7 @@ import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.capcontrol.DeviceCBC;
 import com.cannontech.database.db.device.lm.LMGroup;
+import com.cannontech.database.db.device.lm.LMGroupEmetcon;
 import com.cannontech.database.db.device.lm.LMGroupExpressCom;
 import com.cannontech.database.db.device.lm.LMGroupVersacom;
 import com.cannontech.database.db.macro.GenericMacro;
@@ -1260,7 +1261,7 @@ public class CommandDeviceBean implements DBChangeListener
 
 					if( stmt != null )	//close the statement after every use.
 						stmt.close();
-
+					
 					sql = new StringBuffer(" SELECT DISTINCT LMGROUPID, ROUTEID, KWCAPACITY, SERIALNUMBER " +
 							" FROM " + LMGroupExpressCom.TABLE_NAME + " LMGE, " + LMGroup.TABLE_NAME + " LMG " +
 							" WHERE LMGE.LMGROUPID = LMG.DEVICEID");
@@ -1278,6 +1279,28 @@ public class CommandDeviceBean implements DBChangeListener
 							loadGroupIDToLiteLoadGroupsMap.put(deviceID, llg);
 						}
 					}
+					
+					if( stmt != null )	//close the statement after every use.
+						stmt.close();
+					
+					sql = new StringBuffer(" SELECT DISTINCT LME.DEVICEID, ROUTEID, KWCAPACITY " +
+							" FROM " + LMGroupEmetcon.tableName + " LME, " + LMGroup.TABLE_NAME + " LMG " +
+							" WHERE LME.DEVICEID = LMG.DEVICEID");
+					stmt = conn.prepareStatement(sql.toString());
+					rset = stmt.executeQuery();
+					while (rset.next())
+					{
+						Integer deviceID = new Integer(rset.getInt(1));
+						if (groupIDs.contains(deviceID))
+						{
+							int routeID = rset.getInt(2);
+							double capacity = rset.getDouble(3);
+							String serial = "0";	//no serial for emetcon
+							YCLiteLoadGroup llg = new YCLiteLoadGroup(deviceID.intValue(), capacity, routeID, serial);
+							loadGroupIDToLiteLoadGroupsMap.put(deviceID, llg);
+						}
+					}
+					
 				}
 			}
 			catch( java.sql.SQLException e )
