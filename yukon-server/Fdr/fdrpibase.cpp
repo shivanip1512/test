@@ -222,10 +222,6 @@ void CtiFDRPiBase::processNewPoint(CtiFDRPointSPtr ctiPoint)
   int err = getPiPointIdFromTag(tagName,piId);
   if (err != 0)
   {
-    info.piPointId = piId;
-  }
-  else
-  {
     //if( getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL )
     {
       std::string piError = getPiErrorDescription(err, "pipt_findpoint");
@@ -236,6 +232,7 @@ void CtiFDRPiBase::processNewPoint(CtiFDRPointSPtr ctiPoint)
     }
     return;
   }
+  info.piPointId = piId;
 
   char type = '\0';
   err = pipt_pointtype(piId, &type);
