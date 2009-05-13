@@ -236,21 +236,19 @@ function updateAlarmsTable(node,url) {
 } // end updateAlarmsTable
 
 function blinkBlinker(node){
-//	alert("node: " +node);
-//	alert("isBlinking" + node.getAttribute('isBlinking'));
 	var isBlinking = node.getAttribute('isBlinking');
 	if(isBlinking == "yes"){
 		var displayState = node.getAttribute('displayState');
 		if ( displayState == "none" ) {
-			//node.getStyle().setProperty('display', 'inline');
-			//node.setAttribute('displayState', 'inline');
+			node.getStyle().setProperty('display', 'inline');
+			node.setAttribute('displayState', 'inline');
 		}else {
-			//node.getStyle().setProperty('display', 'none');
-			//node.setAttribute('displayState', 'none');
+			node.getStyle().setProperty('display', 'none');
+			node.setAttribute('displayState', 'none');
 		}
 	}else{
-		//node.getStyle().setProperty('display', 'inline');
-		//node.setAttribute('displayState', 'inline');
+		node.getStyle().setProperty('display', 'inline');
+		node.setAttribute('displayState', 'inline');
 	}
 }
 
