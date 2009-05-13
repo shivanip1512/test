@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     5/11/2009 3:54:06 PM                         */
+/* Created on:     5/13/2009 2:47:37 PM                         */
 /*==============================================================*/
 
 
@@ -255,6 +255,51 @@ if exists (select 1
             and   indid > 0
             and   indid < 255)
    drop index CAPCONTROLSUBSTATIONBUS.Indx_CSUBVPT
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('CCEventLog')
+            and   name  = 'INDX_CCEventLog_ActId'
+            and   indid > 0
+            and   indid < 255)
+   drop index CCEventLog.INDX_CCEventLog_ActId
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('CCEventLog')
+            and   name  = 'INDX_CCEventLog_FeedId'
+            and   indid > 0
+            and   indid < 255)
+   drop index CCEventLog.INDX_CCEventLog_FeedId
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('CCEventLog')
+            and   name  = 'INDX_CCEventLog_PointId'
+            and   indid > 0
+            and   indid < 255)
+   drop index CCEventLog.INDX_CCEventLog_PointId
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('CCEventLog')
+            and   name  = 'INDX_CCEventLog_PointId_ActId'
+            and   indid > 0
+            and   indid < 255)
+   drop index CCEventLog.INDX_CCEventLog_PointId_ActId
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('CCEventLog')
+            and   name  = 'INDX_CCEventLog_SubId'
+            and   indid > 0
+            and   indid < 255)
+   drop index CCEventLog.INDX_CCEventLog_SubId
 go
 
 if exists (select 1
@@ -3972,6 +4017,47 @@ create table CCEventLog (
    AreaID               numeric              not null,
    SpAreaID             numeric              not null,
    constraint PK_CCEventLog primary key (LogID)
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_CCEventLog_PointId_ActId                         */
+/*==============================================================*/
+create index INDX_CCEventLog_PointId_ActId on CCEventLog (
+PointID ASC,
+actionId ASC
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_CCEventLog_ActId                                 */
+/*==============================================================*/
+create index INDX_CCEventLog_ActId on CCEventLog (
+actionId ASC
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_CCEventLog_PointId                               */
+/*==============================================================*/
+create index INDX_CCEventLog_PointId on CCEventLog (
+PointID ASC
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_CCEventLog_FeedId                                */
+/*==============================================================*/
+create index INDX_CCEventLog_FeedId on CCEventLog (
+FeederID ASC
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_CCEventLog_SubId                                 */
+/*==============================================================*/
+create index INDX_CCEventLog_SubId on CCEventLog (
+SubID ASC
 )
 go
 
@@ -12792,9 +12878,10 @@ go
 /*==============================================================*/
 go
 create view CCOperationsASent_View as
-SELECT logId, pointId, dateTime, text, feederId, subId, additionalInfo
+SELECT LogId, PointId, ActionId, DateTime, Text, FeederId, SubId, AdditionalInfo
 FROM CCEventLog
-WHERE text LIKE '%Close sent,%' OR text LIKE '%Open sent,%'
+WHERE EventType = 1
+AND ActionId > -1
 go
 
 /*==============================================================*/
@@ -12802,9 +12889,10 @@ go
 /*==============================================================*/
 go
 create view CCOperationsBConfirmed_View as
-SELECT logId, pointId, dateTime, text, kvarBefore, kvarAfter, kvarChange
+SELECT LogId, PointId, ActionId, DateTime, Text, KvarBefore, KvarAfter, KvarChange, CapBankStateInfo
 FROM CCEventLog
-WHERE text LIKE 'Var: %'
+WHERE EventType = 0
+AND ActionId > -1
 go
 
 /*==============================================================*/
@@ -12861,23 +12949,23 @@ WHERE OpId NOT IN (SELECT OperationLogId
 /*==============================================================*/
 go
 create view CCOperations_View as
-SELECT YP3.PAObjectid AS CBCId, YP3.PAOName AS CBCName, YP.PAObjectid AS CapBankId, 
-       YP.PAOName AS CapBankName, EL.DateTime AS OpTime, EL.Text AS Operation, 
-       EL2.DateTime AS ConfTime, EL2.Text AS ConfStatus, YP1.PAOName AS FeederName, 
-       YP1.PAObjectId AS FeederId, YP2.PAOName AS SubBusName, YP2.PAObjectId AS SubBusId, 
-       YP5.PAOName AS SubstationName, YP5.PAObjectId AS SubstationId, 
-       YP4.PAOName AS Region, YP4.PAObjectId AS AreaId, CB.BankSize, CB.ControllerType, 
-       EL.AdditionalInfo AS IPAddress, CBC.SerialNumber AS SerialNum, DA.SlaveAddress, 
-       EL2.KvarAfter, EL2.KvarChange, EL2.KvarBefore 
-FROM CCOperationsASent_View EL
-JOIN CCOperationLogCache OpConf ON EL.LogId = OpConf.OperationLogId        
-LEFT JOIN CCOperationsBConfirmed_view EL2 ON EL2.LogId = OpConf.ConfirmationLogId 
-LEFT JOIN CCOperationsCOrphanedConf_view Orphs ON EL.logid = Orphs.opid       
-JOIN Point ON Point.PointId = EL.PointId        
+SELECT YP3.PAObjectId AS CBCId, YP3.PAOName AS CBCName, YP.PAObjectId AS CapBankId, YP.PAOName AS CapBankName, 
+       CCOAS.PointId, CCOAS.LogId AS OpLogId, CCOAS.ActionId, CCOAS.DateTime AS OpTime, CCOAS.Text AS Operation, 
+       CCOBC.LogId AS ConfLogId, CCOBC.ActionId AS ActionId2, CCOBC.DateTime AS ConfTime, CCOBC.Text AS ConfStatus, 
+       YP1.PAOName AS FeederName, YP1.PAObjectId AS FeederId, YP2.PAOName AS SubBusName, YP2.PAObjectId AS SubBusId, 
+       YP5.PAOName AS SubstationName, YP5.PAObjectId AS SubstationId, YP4.PAOName AS Region, YP4.PAObjectId AS AreaId,
+       CB.BankSize, CB.ControllerType, CCOAS.AdditionalInfo AS IPAddress, CBC.SerialNumber AS SerialNum, DA.SlaveAddress, 
+       CCOBC.KvarAfter, CCOBC.KvarChange, CCOBC.KvarBefore
+FROM CCOperationsASent_View CCOAS
+JOIN CCOperationsBConfirmed_view CCOBC ON CCOBC.ActionId = CCOAS.ActionId 
+AND CCOBC.PointId = CCOAS.PointId 
+AND CCOAS.ActionId >= 0
+AND CCOBC.ActionId >= 0
+JOIN Point ON Point.PointId = CCOAS.PointId        
 JOIN DynamicCCCapBank ON DynamicCCCapBank.CapBankId = Point.PAObjectId        
 JOIN YukonPAObject YP ON YP.PAObjectId = DynamicCCCapBank.CapBankId        
-JOIN YukonPAObject YP1 ON YP1.PAObjectId = EL.FeederId        
-JOIN YukonPAObject YP2 ON YP2.PAObjectId = EL.SubId        
+JOIN YukonPAObject YP1 ON YP1.PAObjectId = CCOAS.FeederId        
+JOIN YukonPAObject YP2 ON YP2.PAObjectId = CCOAS.SubId        
 JOIN CapBank CB ON CB.DeviceId = DynamicCCCapBank.CapBankId        
 LEFT JOIN DeviceDirectCommSettings DDCS ON DDCS.DeviceId = CB.ControlDeviceId        
 LEFT JOIN DeviceAddress DA ON DA.DeviceId = CB.ControlDeviceId        
@@ -12886,7 +12974,7 @@ LEFT JOIN DeviceCBC CBC ON CBC.DeviceId = CB.ControlDeviceId
 LEFT JOIN (SELECT EntryId, PAObjectId, Owner, InfoKey, Value, UpdateTime                        
            FROM DynamicPAOInfo                         
            WHERE (InfoKey LIKE '%udp ip%')) P ON P.PAObjectId = CB.ControlDeviceId        
-LEFT JOIN CCSubstationSubbusList SSL ON SSL.SubstationBusId = EL.SubId         
+LEFT JOIN CCSubstationSubbusList SSL ON SSL.SubstationBusId = CCOAS.SubId         
 LEFT JOIN YukonPAObject YP5 ON YP5.PAObjectId =  SSL.SubstationBusId        
 LEFT JOIN CCSubAreaAssignment CSA ON CSA.SubstationBusId = SSL.SubstationId        
 LEFT JOIN YukonPAObject YP4 ON YP4.PAObjectId = CSA.AreaId
@@ -13404,6 +13492,11 @@ go
 
 alter table CAPCONTROLSUBSTATIONBUS
    add constraint SYS_C0013479 foreign key (CurrentVarLoadPointID)
+      references POINT (POINTID)
+go
+
+alter table CCEventLog
+   add constraint FK_CCEventLog_Point foreign key (PointID)
       references POINT (POINTID)
 go
 

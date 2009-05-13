@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     5/11/2009 3:30:23 PM                         */
+/* Created on:     5/13/2009 2:45:36 PM                         */
 /*==============================================================*/
 
 
@@ -76,6 +76,16 @@ drop index Indx_ClcBaseUpdTyp;
 drop index Indx_CalcCmpCmpType;
 
 drop index Indx_CSUBVPT;
+
+drop index INDX_CCEventLog_ActId;
+
+drop index INDX_CCEventLog_FeedId;
+
+drop index INDX_CCEventLog_PointId;
+
+drop index INDX_CCEventLog_PointId_ActId;
+
+drop index INDX_CCEventLog_SubId;
 
 drop index INDX_CCURTCEPART_EVTID_CUSTID;
 
@@ -1486,6 +1496,42 @@ create table CCEventLog  (
    AreaID               NUMBER                          not null,
    SpAreaID             NUMBER                          not null,
    constraint PK_CCEventLog primary key (LogID)
+);
+
+/*==============================================================*/
+/* Index: INDX_CCEventLog_PointId_ActId                         */
+/*==============================================================*/
+create index INDX_CCEventLog_PointId_ActId on CCEventLog (
+   PointID ASC,
+   actionId ASC
+);
+
+/*==============================================================*/
+/* Index: INDX_CCEventLog_ActId                                 */
+/*==============================================================*/
+create index INDX_CCEventLog_ActId on CCEventLog (
+   actionId ASC
+);
+
+/*==============================================================*/
+/* Index: INDX_CCEventLog_PointId                               */
+/*==============================================================*/
+create index INDX_CCEventLog_PointId on CCEventLog (
+   PointID ASC
+);
+
+/*==============================================================*/
+/* Index: INDX_CCEventLog_FeedId                                */
+/*==============================================================*/
+create index INDX_CCEventLog_FeedId on CCEventLog (
+   FeederID ASC
+);
+
+/*==============================================================*/
+/* Index: INDX_CCEventLog_SubId                                 */
+/*==============================================================*/
+create index INDX_CCEventLog_SubId on CCEventLog (
+   SubID ASC
 );
 
 /*==============================================================*/
@@ -9891,17 +9937,19 @@ LEFT OUTER JOIN DynamicCCTwoWayCBC DTWC ON CB.ControlDeviceId = DTWC.DeviceId;
 /* View: CCOperationsASent_View                                 */
 /*==============================================================*/
 create or replace view CCOperationsASent_View as
-SELECT logId, pointId, dateTime, text, feederId, subId, additionalInfo
+SELECT LogId, PointId, ActionId, DateTime, Text, FeederId, SubId, AdditionalInfo
 FROM CCEventLog
-WHERE text LIKE '%Close sent,%' OR text LIKE '%Open sent,%';
+WHERE EventType = 1
+AND ActionId > -1;
 
 /*==============================================================*/
 /* View: CCOperationsBConfirmed_View                            */
 /*==============================================================*/
 create or replace view CCOperationsBConfirmed_View as
-SELECT logId, pointId, dateTime, text, kvarBefore, kvarAfter, kvarChange
+SELECT LogId, PointId, ActionId, DateTime, Text, KvarBefore, KvarAfter, KvarChange, CapBankStateInfo
 FROM CCEventLog
-WHERE text LIKE 'Var: %';
+WHERE EventType = 0
+AND ActionId > -1;
 
 /*==============================================================*/
 /* View: CCOperationsCOrphanedConf_View                         */
@@ -9950,23 +9998,23 @@ WHERE OpId NOT IN (SELECT OperationLogId
 /* View: CCOperations_View                                      */
 /*==============================================================*/
 create or replace view CCOperations_View as
-SELECT YP3.PAObjectid AS CBCId, YP3.PAOName AS CBCName, YP.PAObjectid AS CapBankId, 
-       YP.PAOName AS CapBankName, EL.DateTime AS OpTime, EL.Text AS Operation, 
-       EL2.DateTime AS ConfTime, EL2.Text AS ConfStatus, YP1.PAOName AS FeederName, 
-       YP1.PAObjectId AS FeederId, YP2.PAOName AS SubBusName, YP2.PAObjectId AS SubBusId, 
-       YP5.PAOName AS SubstationName, YP5.PAObjectId AS SubstationId, 
-       YP4.PAOName AS Region, YP4.PAObjectId AS AreaId, CB.BankSize, CB.ControllerType, 
-       EL.AdditionalInfo AS IPAddress, CBC.SerialNumber AS SerialNum, DA.SlaveAddress, 
-       EL2.KvarAfter, EL2.KvarChange, EL2.KvarBefore 
-FROM CCOperationsASent_View EL
-JOIN CCOperationLogCache OpConf ON EL.LogId = OpConf.OperationLogId        
-LEFT JOIN CCOperationsBConfirmed_view EL2 ON EL2.LogId = OpConf.ConfirmationLogId 
-LEFT JOIN CCOperationsCOrphanedConf_view Orphs ON EL.logid = Orphs.opid       
-JOIN Point ON Point.PointId = EL.PointId        
+SELECT YP3.PAObjectId AS CBCId, YP3.PAOName AS CBCName, YP.PAObjectId AS CapBankId, YP.PAOName AS CapBankName, 
+       CCOAS.PointId, CCOAS.LogId AS OpLogId, CCOAS.ActionId, CCOAS.DateTime AS OpTime, CCOAS.Text AS Operation, 
+       CCOBC.LogId AS ConfLogId, CCOBC.ActionId AS ActionId2, CCOBC.DateTime AS ConfTime, CCOBC.Text AS ConfStatus, 
+       YP1.PAOName AS FeederName, YP1.PAObjectId AS FeederId, YP2.PAOName AS SubBusName, YP2.PAObjectId AS SubBusId, 
+       YP5.PAOName AS SubstationName, YP5.PAObjectId AS SubstationId, YP4.PAOName AS Region, YP4.PAObjectId AS AreaId,
+       CB.BankSize, CB.ControllerType, CCOAS.AdditionalInfo AS IPAddress, CBC.SerialNumber AS SerialNum, DA.SlaveAddress, 
+       CCOBC.KvarAfter, CCOBC.KvarChange, CCOBC.KvarBefore
+FROM CCOperationsASent_View CCOAS
+JOIN CCOperationsBConfirmed_view CCOBC ON CCOBC.ActionId = CCOAS.ActionId 
+AND CCOBC.PointId = CCOAS.PointId 
+AND CCOAS.ActionId >= 0
+AND CCOBC.ActionId >= 0
+JOIN Point ON Point.PointId = CCOAS.PointId        
 JOIN DynamicCCCapBank ON DynamicCCCapBank.CapBankId = Point.PAObjectId        
 JOIN YukonPAObject YP ON YP.PAObjectId = DynamicCCCapBank.CapBankId        
-JOIN YukonPAObject YP1 ON YP1.PAObjectId = EL.FeederId        
-JOIN YukonPAObject YP2 ON YP2.PAObjectId = EL.SubId        
+JOIN YukonPAObject YP1 ON YP1.PAObjectId = CCOAS.FeederId        
+JOIN YukonPAObject YP2 ON YP2.PAObjectId = CCOAS.SubId        
 JOIN CapBank CB ON CB.DeviceId = DynamicCCCapBank.CapBankId        
 LEFT JOIN DeviceDirectCommSettings DDCS ON DDCS.DeviceId = CB.ControlDeviceId        
 LEFT JOIN DeviceAddress DA ON DA.DeviceId = CB.ControlDeviceId        
@@ -9975,7 +10023,7 @@ LEFT JOIN DeviceCBC CBC ON CBC.DeviceId = CB.ControlDeviceId
 LEFT JOIN (SELECT EntryId, PAObjectId, Owner, InfoKey, Value, UpdateTime                        
            FROM DynamicPAOInfo                         
            WHERE (InfoKey LIKE '%udp ip%')) P ON P.PAObjectId = CB.ControlDeviceId        
-LEFT JOIN CCSubstationSubbusList SSL ON SSL.SubstationBusId = EL.SubId         
+LEFT JOIN CCSubstationSubbusList SSL ON SSL.SubstationBusId = CCOAS.SubId         
 LEFT JOIN YukonPAObject YP5 ON YP5.PAObjectId =  SSL.SubstationBusId        
 LEFT JOIN CCSubAreaAssignment CSA ON CSA.SubstationBusId = SSL.SubstationId        
 LEFT JOIN YukonPAObject YP4 ON YP4.PAObjectId = CSA.AreaId;
@@ -10397,6 +10445,10 @@ alter table CAPCONTROLSUBSTATIONBUS
 
 alter table CAPCONTROLSUBSTATIONBUS
    add constraint SYS_C0013479 foreign key (CurrentVarLoadPointID)
+      references POINT (POINTID);
+
+alter table CCEventLog
+   add constraint FK_CCEventLog_Point foreign key (PointID)
       references POINT (POINTID);
 
 alter table CCFeederBankList
