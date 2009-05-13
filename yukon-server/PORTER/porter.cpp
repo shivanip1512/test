@@ -1534,7 +1534,7 @@ INT RefreshPorterRTDB(void *ptr)
                 if(pChg->getObjectType() == "Status") // only status points can be in point groups.
                 {
                     DeviceManager.refreshPointGroups();
-                    LoadCommFailPoints(pChg->getId());
+                    LoadCommFailPoints(pChg->getId()); // only status points can be comm fail points
                 }
             }
             else
