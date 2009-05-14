@@ -97,10 +97,10 @@ class IM_EX_FDRBEPC CtiFDR_BEPC : public CtiFDRTextFileBase
 
 public:
     // constructors and destructors
-    CtiFDR_BEPC(); 
+    CtiFDR_BEPC();
 
     virtual ~CtiFDR_BEPC();
-    virtual BOOL    init( void );   
+    virtual BOOL    init( void );
     virtual BOOL    run( void );
     virtual BOOL    stop( void );
 
@@ -114,31 +114,22 @@ public:
     bool shouldAppendToFile() const;
     CtiFDR_BEPC &setAppendToFile (bool aFlag);
 
-    string & getCoopID();
-    string  getCoopID() const;
-    CtiFDR_BEPC &setCoopID (string aID);
-
     void threadFunctionWriteToFile( void );
     virtual bool loadTranslationLists(void);
     virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send=false);
+    virtual void cleanupTranslationPoint(CtiFDRPointSPtr &translationPoint, bool recvList);
 
     // ddefine these for each interface type
     static const CHAR * KEY_INTERVAL;
-    static const CHAR * KEY_FILENAME;
     static const CHAR * KEY_DRIVE_AND_PATH;
     static const CHAR * KEY_DB_RELOAD_RATE;
     static const CHAR * KEY_QUEUE_FLUSH_RATE;
     static const CHAR * KEY_APPEND_FILE;
-    static const CHAR * KEY_COOP_ID;
-
-    static const CHAR * KEY_TOTAL_LOAD_KW;
-
-
 
 private:
-    RWThreadFunction    _threadWriteToFile;
-    bool                _appendFlag;
-    string           _coopid;
+    RWThreadFunction _threadWriteToFile;
+    bool _appendFlag;
+    std::map<string,string> coopIdToFileName;
 };
 
 #endif

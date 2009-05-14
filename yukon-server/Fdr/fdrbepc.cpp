@@ -115,21 +115,17 @@ using std::string;
 CtiFDR_BEPC * textExportInterface;
 
 const CHAR * CtiFDR_BEPC::KEY_INTERVAL = "FDR_BEPC_INTERVAL";
-const CHAR * CtiFDR_BEPC::KEY_FILENAME = "FDR_BEPC_FILENAME";
 const CHAR * CtiFDR_BEPC::KEY_DRIVE_AND_PATH = "FDR_BEPC_DRIVE_AND_PATH";
 const CHAR * CtiFDR_BEPC::KEY_DB_RELOAD_RATE = "FDR_BEPC_DB_RELOAD_RATE";
 const CHAR * CtiFDR_BEPC::KEY_QUEUE_FLUSH_RATE = "FDR_BEPC_QUEUE_FLUSH_RATE";
 const CHAR * CtiFDR_BEPC::KEY_APPEND_FILE = "FDR_BEPC_APPEND_FILE";
-const CHAR * CtiFDR_BEPC::KEY_COOP_ID = "FDR_BEPC_COOP_ID";
-
-const CHAR * CtiFDR_BEPC::KEY_TOTAL_LOAD_KW = "TOTAL LOAD KW";
 
 // Constructors, Destructor, and Operators
 CtiFDR_BEPC::CtiFDR_BEPC()
 : CtiFDRTextFileBase(string("BEPC"))
-{  
+{
     // init these lists so they have something
-    CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),string(FDR_INTERFACE_SEND)); 
+    CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),string(FDR_INTERFACE_SEND));
     getSendToList().setPointList (recList);
     recList = NULL;
     init();
@@ -138,22 +134,6 @@ CtiFDR_BEPC::CtiFDR_BEPC()
 
 CtiFDR_BEPC::~CtiFDR_BEPC()
 {
-}
-
-string & CtiFDR_BEPC::getCoopID()
-{
-    return _coopid;
-}
-
-string  CtiFDR_BEPC::getCoopID() const
-{
-    return _coopid;
-}
-
-CtiFDR_BEPC &CtiFDR_BEPC::setCoopID (string aID)
-{
-    _coopid = aID;
-    return *this;
 }
 
 bool CtiFDR_BEPC::shouldAppendToFile() const
@@ -170,8 +150,8 @@ CtiFDR_BEPC &CtiFDR_BEPC::setAppendToFile (bool aFlag)
 BOOL CtiFDR_BEPC::init( void )
 {
     // init the base class
-    Inherited::init();    
-    _threadWriteToFile = rwMakeThreadFunction(*this, 
+    Inherited::init();
+    _threadWriteToFile = rwMakeThreadFunction(*this,
                                                &CtiFDR_BEPC::threadFunctionWriteToFile);
 
     if (!readConfig( ))
@@ -186,7 +166,7 @@ BOOL CtiFDR_BEPC::init( void )
 * Function Name: CtiFDR_BEPC::run()
 *
 * Description: runs the interface
-* 
+*
 **************************************************
 */
 BOOL CtiFDR_BEPC::run( void )
@@ -204,8 +184,8 @@ BOOL CtiFDR_BEPC::run( void )
 /*************************************************
 * Function Name: CtiFDR_BEPC::stop()
 *
-* Description: stops all threads 
-* 
+* Description: stops all threads
+*
 **************************************************
 */
 BOOL CtiFDR_BEPC::stop( void )
@@ -261,10 +241,9 @@ CHAR CtiFDR_BEPC::YukonToForeignDST (bool aFlag)
 }
 
 int CtiFDR_BEPC::readConfig( void )
-{    
-    int         successful = TRUE;
-    string   tempStr;
-    bool        defaultID=true;
+{
+    int successful = TRUE;
+    string tempStr;
 
     tempStr = getCparmValueAsString(KEY_INTERVAL);
     if (tempStr.length() > 0)
@@ -314,32 +293,11 @@ int CtiFDR_BEPC::readConfig( void )
         setQueueFlushRate (1);
     }
 
-
-    tempStr = getCparmValueAsString(KEY_COOP_ID);
-    if (tempStr.length() > 0)
-    {
-        defaultID=false;
-        setCoopID(tempStr);
-    }
-    else
-    {
-        setCoopID(string ("CTI"));
-    }
-    setFileName (string(getCoopID())+string("_total.txt"));
-
-
-    // we build this to coopid_total.  If different, we can change here
-    tempStr = getCparmValueAsString(KEY_FILENAME);
-    if (tempStr.length() > 0)
-    {
-        setFileName(tempStr);
-    }
-
     setAppendToFile(false);
     tempStr = getCparmValueAsString(KEY_APPEND_FILE);
     if (tempStr.length() > 0)
     {
-        if (stringCompareIgnoreCase("true", tempStr) )
+        if (!stringCompareIgnoreCase("true", tempStr) )
         {
             setAppendToFile(true);
         }
@@ -347,37 +305,17 @@ int CtiFDR_BEPC::readConfig( void )
 
     if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
     {
-        if (defaultID)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << "---------------------------------------------" << endl;
-            dout << CtiTime() << "---------------------------------------------" << endl;
-            dout << CtiTime() << "---------------------------------------------" << endl;
-            dout << CtiTime() << "---------------------------------------------" << endl;
-            dout << CtiTime() << endl << endl << "Coop ID has not been defined !!!" << endl << endl;
-            dout << CtiTime() << "---------------------------------------------" << endl;
-            dout << CtiTime() << "---------------------------------------------" << endl;
-            dout << CtiTime() << "---------------------------------------------" << endl;
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " BEPC directory " << getDriveAndPath() << endl;
+        dout << CtiTime() << " BEPC interval " << getInterval() << endl;
+        dout << CtiTime() << " BEPC dispatch queue flush rate " << getQueueFlushRate() << endl;
+        dout << CtiTime() << " BPEC db reload rate " << getReloadRate() << endl;
 
-        }
+        if (shouldAppendToFile())
+            dout << CtiTime() << " Export will append to existing" << endl;
         else
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " BEPC Coop ID " << getCoopID() << endl;
-            dout << CtiTime() << " BEPC file name " << getFileName() << endl;
-            dout << CtiTime() << " BEPC directory " << getDriveAndPath() << endl;
-            dout << CtiTime() << " BEPC interval " << getInterval() << endl;
-            dout << CtiTime() << " BEPC dispatch queue flush rate " << getQueueFlushRate() << endl;
-            dout << CtiTime() << " BPEC db reload rate " << getReloadRate() << endl;
-
-            if (shouldAppendToFile())
-                dout << CtiTime() << " Export will append to existing" << endl;
-            else
-                dout << CtiTime() << " Export will overwrite existing file" << endl;
-        }
+            dout << CtiTime() << " Export will overwrite existing file" << endl;
     }
-
-
 
     return successful;
 }
@@ -386,21 +324,21 @@ int CtiFDR_BEPC::readConfig( void )
 /************************************************************************
 * Function Name: CtiFDRTextFileBase::loadTranslationLists()
 *
-* Description: Creates a collection of points and their translations for the 
-*				specified direction
-* 
+* Description: Creates a collection of points and their translations for the
+*                               specified direction
+*
 *************************************************************************
 */
 bool CtiFDR_BEPC::loadTranslationLists()
 {
     bool successful = false;
     bool foundPoint = false;
-    RWDBStatus          listStatus;   
+    RWDBStatus          listStatus;
 
     try
     {
         // make a list with all received points
-        CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(), 
+        CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(),
                                                        string (FDR_INTERFACE_SEND));
 
         // keep the status
@@ -423,8 +361,8 @@ bool CtiFDR_BEPC::loadTranslationLists()
                 // get iterator on send list
                 CtiFDRManager::coll_type pointMap = pointList->getMap();
                 CtiFDRManager::spiterator myIterator = pointMap.begin();
-                //no reader/writer lock because this is the only copy of this so far.
-                
+
+                coopIdToFileName.clear();
                 for ( ; myIterator != pointMap.end(); ++myIterator)
                 {
                     foundPoint = true;
@@ -433,7 +371,7 @@ bool CtiFDR_BEPC::loadTranslationLists()
 
                 {
                     // lock the send list and remove the old one
-                    CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());  
+                    CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());
                     if (getSendToList().getPointList() != NULL)
                     {
                         getSendToList().deletePointList();
@@ -493,41 +431,67 @@ bool CtiFDR_BEPC::loadTranslationLists()
 bool CtiFDR_BEPC::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send)
 {
     bool successful = false;
+    string fileName;
+    string coopId;
 
-    string           tempString1;
-    string           tempString2;
-    string           translationName;
+    int size = translationPoint->getDestinationList().size();
 
-    for ( int x = 0; x < translationPoint->getDestinationList().size(); x++)
+    for ( int x = 0; x < size; x++)
     {
         if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Parsing Yukon Point ID " << translationPoint->getPointID();
+            dout << "Parsing " << x << "/" << size << ". Yukon Point ID "  << translationPoint->getPointID();
             dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
         }
-        CtiTokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation());
 
-        if (!(tempString1 = nextTranslate(";")).empty())
+        coopId = translationPoint->getDestinationList()[x].getTranslationValue("Coop Id");
+        if ( !coopId.empty() )
         {
-            CtiTokenizer nextTempToken(tempString1);
+            successful = true;
 
-            // do not care about the first part
-            nextTempToken(":");
-            if(!(tempString2 = nextTempToken(";")).empty())
-            {    
-                tempString2 = tempString2.substr(1,(tempString2.length()-1));
 
-                // now we have a point id
-                if ( !tempString2.empty() )
-                {
-                    translationPoint->getDestinationList()[x].setTranslation (tempString2.c_str());
-                    successful = true;
-                }
+            fileName = translationPoint->getDestinationList()[x].getTranslationValue("Filename");
+            if (!fileName.empty())
+            {
+                coopIdToFileName.insert(std::pair<string,string>(coopId,fileName));
+                translationPoint->getDestinationList()[x].setTranslation (coopId.c_str());
             }
-        }   // first token invalid
+            else
+            {
+                successful = false;
+            }
+        }
+        else
+        {
+            successful = false;
+        }
     }
+
     return successful;
+}
+
+void CtiFDR_BEPC::cleanupTranslationPoint(CtiFDRPointSPtr &translationPoint, bool recvList)
+{
+    if (!recvList)
+    {
+        if (translationPoint.get() == NULL)
+        {
+            return;
+        }
+
+        int size = translationPoint->getDestinationList().size();
+        for ( int i = 0 ; i < size; i++) {
+            string coopId = translationPoint->getDestinationList()[i].getTranslation();
+            if (coopId != "")
+            {
+                std::transform(coopId.begin(), coopId.end(), coopId.begin(), toupper);
+
+
+                coopIdToFileName.erase(coopId);
+            }
+        }
+    }
 }
 
 bool CtiFDR_BEPC::sendMessageToForeignSys ( CtiMessage *aMessage )
@@ -582,66 +546,67 @@ void CtiFDR_BEPC::threadFunctionWriteToFile( void )
             // now is the time to write the file
             if (timeNow >= refreshTime)
             {
-//                {
-//                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-//                    dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << " **** Checkpoint **** dumping file" << endl;
-//                }
+                std::map<string,string>::iterator itr = coopIdToFileName.begin();
 
-                _snprintf (fileName, 200, "%s\\%s",getDriveAndPath().c_str(),getFileName().c_str());
+                for ( ; itr != coopIdToFileName.end(); itr++)
+                {
+                    string fName = (*itr).second;
+                    string coopId = (*itr).first;
+                    _snprintf (fileName, 200, "%s\\%s",getDriveAndPath().c_str(),fName.c_str());
 
-                // check if we need to append
-                if (shouldAppendToFile())
-                {
-                    fptr = fopen( fileName, "a");
-                }
-                else
-                {
-                    fptr = fopen( fileName, "w");
-                }
-
-                if ( fptr == NULL )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << getInterfaceName() << "'s file " << string (fileName) << " could not be opened" << endl;
-                }
-                else
-                {
-                    bool flag = false;
-
+                    if (shouldAppendToFile())
                     {
-                        CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());  
-                        flag = findTranslationNameInList (string (KEY_TOTAL_LOAD_KW), getSendToList(), translationPoint);
+                        fptr = fopen( fileName, "a");
+                    }
+                    else
+                    {
+                        fptr = fopen( fileName, "w");
                     }
 
-                    if (flag)
+                    if ( fptr == NULL )
                     {
-                        // if data is older than 2001, it can't be valid
-                        if (translationPoint.getLastTimeStamp() < CtiTime(CtiDate(1,1,2001)))
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " " << getInterfaceName() << "'s file " << string (fileName) << " could not be opened" << endl;
+                    }
+                    else
+                    {
+                        bool flag = false;
+
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " PointId " << translationPoint.getPointID();
-                                dout << " was not exported to  " << string (fileName) << " because the timestamp (" << translationPoint.getLastTimeStamp() << ") was out of range " << endl;
-                            }
+                            CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());
+                            flag = findTranslationNameInList (coopId, getSendToList(), translationPoint);
                         }
-                        else
-                        {   
-                            // value is expected to be an integer so cast the float
-                            _snprintf (workBuffer,500,"%s,%s,%d,0,0,0\n",
-                                       getCoopID().c_str(),
-                                       YukonToForeignTime(translationPoint.getLastTimeStamp()).c_str(),
-                                       (int)translationPoint.getValue());
 
-                            if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+                        if (flag)
+                        {
+                            // if data is older than 2001, it can't be valid
+                            if (translationPoint.getLastTimeStamp() < CtiTime(CtiDate(1,1,2001)))
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Exporting pointid " << translationPoint.getDestinationList()[0].getTranslation() ;
-                                dout << " value " << (int)translationPoint.getValue() << " to file " << string(fileName) << endl;
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << CtiTime() << " PointId " << translationPoint.getPointID();
+                                    dout << " was not exported to  " << string (fileName) << " because the timestamp (" << translationPoint.getLastTimeStamp() << ") was out of range " << endl;
+                                }
                             }
-                            fprintf (fptr,workBuffer);
+                            else
+                            {
+                                // value is expected to be an integer so cast the float
+                                _snprintf (workBuffer,500,"%s,%s,%d,0,0,0\n",
+                                           coopId.c_str(),
+                                           YukonToForeignTime(translationPoint.getLastTimeStamp()).c_str(),
+                                           (int)translationPoint.getValue());
+
+                                if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << CtiTime() << " Exporting pointid " << translationPoint.getDestinationList()[0].getTranslation() ;
+                                    dout << " value " << (int)translationPoint.getValue() << " to file " << string(fileName) << endl;
+                                }
+                                fprintf (fptr,workBuffer);
+                            }
                         }
+                        fclose(fptr);
                     }
-                    fclose(fptr);
                 }
                 refreshTime = CtiTime() - (CtiTime::now().seconds() % getInterval()) + getInterval();
             }
