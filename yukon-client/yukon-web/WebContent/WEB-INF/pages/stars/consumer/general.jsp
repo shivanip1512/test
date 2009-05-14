@@ -7,6 +7,24 @@
 <cti:standardPage module="consumer" page="general">
     <cti:standardMenu />
 
+<cti:msg var="emailWarning" key="yukon.dr.consumer.general.oddsForControlEmailWarning" />
+<script type="text/javascript">
+
+    function checkOddsForControlEmail() {
+
+	    var enabled = $F('oddsForControlNotification');
+	    var email = $F('oddsForControlEmail');
+	    if(enabled && email.empty()) {
+		    alert(${emailWarning});
+		    return false;
+	    } else {
+		    return true;
+	    }
+	}
+	
+</script>
+
+
     <h3><cti:msg key="yukon.dr.consumer.general.header" /></h3>
     <br>
     <div id="description"><cti:msg key="yukon.dr.consumer.general.description" /></div>
@@ -72,6 +90,32 @@
             </c:choose>
         </ct:boxContainer>
         <br>
+        <br>
+        <c:if test="${showNotification}">
+	        <cti:msg key="yukon.dr.consumer.general.oddsForControlTitle" var="oddsTitle" />
+	        <ct:boxContainer title="${oddsTitle}" hideEnabled="false">
+	            <form action="/spring/stars/consumer/general/updateOddsForControlNotification" method="post" onsubmit="checkOddsForControlEmail()">
+	                <input id="oddsForControlNotification" type="checkbox" name="oddsForControlNotification" ${(emailEnabled)?'checked':''}/>
+	                <label for="oddsForControlNotification">
+				        <cti:msg key="yukon.dr.consumer.general.enableOddsForControl"/>
+	                </label>
+	                <br>
+			        <cti:msg key="yukon.dr.consumer.general.oddsForControlEmail"/>
+			        <c:set var="emailText">
+			            <spring:escapeBody htmlEscape="true">${email}</spring:escapeBody>
+			        </c:set>
+		            <input type="text" name="oddsForControlEmail" value="${emailText}" size="50"/>
+			        <br><br>
+			        <center>
+				        <cti:msg key="yukon.dr.consumer.general.updateOddsForControl" var="oddsUpdate" />
+	    		        <input type="submit" value="${oddsUpdate}"/>
+			        </center>
+	            </form>
+	        </ct:boxContainer>        
+	        <br>
+	        <br>
+	    </c:if>
+        
         <c:if test="${not empty scheduledOptOuts}">
             <i>
 	            <c:forEach var="event" items="${scheduledOptOuts}">

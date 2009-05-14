@@ -27,6 +27,11 @@
     <entry key="yukon.dr.consumer.general.enrolledProgramsTitle">Your Enrolled Programs</entry>
     <entry key="yukon.dr.consumer.general.notEnrolledMessage">You are not enrolled in any viewable programs.</entry>
     <entry key="yukon.dr.consumer.general.scheduledoptout.fromMessage">You have an opt out event scheduled from {0} to {1}.</entry>
+    <entry key="yukon.dr.consumer.general.oddsForControlTitle">Odds for Control Notification</entry>
+    <entry key="yukon.dr.consumer.general.enableOddsForControl">I would like to be notified by e-mail of the odds for control.</entry>
+    <entry key="yukon.dr.consumer.general.oddsForControlEmail">My e-mail address is:</entry>
+    <entry key="yukon.dr.consumer.general.updateOddsForControl">Update</entry>
+    <entry key="yukon.dr.consumer.general.oddsForControlEmailWarning">You must provide an email address.</entry>
     
     <!--  contacts.jsp -->
     <entry key="yukon.dr.consumer.contacts.header">Account - Contacts</entry>
