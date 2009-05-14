@@ -13,6 +13,7 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.device.lm.IGroupRoute;
 import com.cannontech.database.data.device.lm.LMGroup;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -504,17 +505,18 @@ public void setValue(Object o)
 		getJComboBoxRoutes().setVisible(true);
 		getJLabelRoute().setVisible(true);
 		
+		int groupRouteId = ((IGroupRoute) group).getRouteID();
 		IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 		synchronized(cache)
 		{
-			java.util.List routes = cache.getAllRoutes();
-
-			for( int i = 0 ; i < routes.size(); i++ )
-				getJComboBoxRoutes().addItem( routes.get(i) );
+			java.util.List<LiteYukonPAObject> routes = cache.getAllRoutes();
+			for( LiteYukonPAObject route : routes ) {
+			    getJComboBoxRoutes().addItem(route);
+			    if (route.getYukonID() == groupRouteId) {
+			        getJComboBoxRoutes().setSelectedItem(route);
+			    }
+			}
 		}
-		
-		((IGroupRoute) group).setRouteID( 
-			new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)getJComboBoxRoutes().getSelectedItem()).getYukonID()) );
 	}
 	else
 	{
