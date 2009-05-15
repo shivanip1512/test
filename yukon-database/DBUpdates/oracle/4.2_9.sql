@@ -300,4 +300,4 @@ INSERT INTO FDRInterfaceOption Values(20, 'Filename', 2, 'Text','(none)');
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
-INSERT INTO CTIDatabase VALUES('4.2', 'Matt K', '13-MAY-2009', 'Latest Update', 9);
+INSERT INTO CTIDatabase VALUES('4.2', 'Matt K', '15-MAY-2009', 'Latest Update', 9);
