@@ -20,8 +20,14 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
+import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
-import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
+import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
+import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
+import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
+import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
+import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
@@ -106,13 +112,14 @@ public class DeleteLMHardwareAction implements ActionBase {
 						StarsConstants.FAILURE_CODE_OPERATION_FAILED, "The hardware doesn't belong to any customer account") );
 				return SOAPUtil.buildSOAPMessage( respOper );
 			}
-			//Use account in session, if inventory belongs to it
-			//else retreive account (ex. inventory deleted from inventory list)
+            
+            //Use account in session, if inventory belongs to it
+            //else retreive account (ex. inventory deleted from inventory list)
             LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) session.getAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
             if (liteAcctInfo == null || liteAcctInfo.getAccountID() != liteInv.getAccountID()) {
                 liteAcctInfo = energyCompany.getCustAccountInformation( liteInv.getAccountID(), true );    
-            }
-		
+            }			
+			
 			removeInventory( delHw, liteAcctInfo, energyCompany );
         	
         	// Response will be handled here, instead of in parse()
@@ -191,11 +198,24 @@ public class DeleteLMHardwareAction implements ActionBase {
         ApplianceDao applianceDao = YukonSpringHook.getBean("applianceDao", ApplianceDao.class);
 	    
 		try {
-		    LMHardwareControlGroupDao lmHardwareControlGroupDao = YukonSpringHook.getBean("lmHardwareControlGroupDao", LMHardwareControlGroupDao.class);
 			StarsInventoryBaseDao starsInventoryBaseDao = 
 				YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
 			LiteInventoryBase liteInv = starsInventoryBaseDao.getByInventoryId(deleteHw.getInventoryID());
         	
+			// Unenrolls the inventory from all its programs
+			EnrollmentHelperService enrollmentHelperService = YukonSpringHook.getBean("enrollmentService", EnrollmentHelperService.class);
+			EnrollmentHelper enrollmentHelper = new EnrollmentHelper();
+			
+			CustomerAccountDao customerAccountDao = YukonSpringHook.getBean("customerAccountDao", CustomerAccountDao.class);
+			CustomerAccount customerAccount = customerAccountDao.getById(liteAcctInfo.getAccountID());
+			enrollmentHelper.setAccountNumber(customerAccount.getAccountNumber());
+
+			LMHardwareBaseDao lmHardwareBaseDao = YukonSpringHook.getBean("hardwareBaseDao", LMHardwareBaseDao.class);
+			LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(deleteHw.getInventoryID());
+			enrollmentHelper.setSerialNumber(lmHardwareBase.getManufacturerSerialNumber());
+			
+			enrollmentHelperService.doEnrollment(enrollmentHelper, EnrollmentEnum.UNENROLL, energyCompany.getUser());
+			
 			if (deleteHw.getDeleteFromInventory()) {
 				InventoryManagerUtil.deleteInventory( liteInv, energyCompany, deleteHw.getDeleteFromYukon() );
 			}
@@ -220,9 +240,6 @@ public class DeleteLMHardwareAction implements ActionBase {
 				event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
 				
 				event = Transaction.createTransaction( Transaction.INSERT, event ).execute();
-				
-				// Unenrolls the inventory from all its programs
-				lmHardwareControlGroupDao.unenrollHardware(liteInv.getInventoryID());
 				
 				if (liteInv instanceof LiteStarsLMHardware)
 					applianceDao.deleteAppliancesByAccountIdAndInventoryId(liteAcctInfo.getAccountID(), liteInv.getInventoryID());
