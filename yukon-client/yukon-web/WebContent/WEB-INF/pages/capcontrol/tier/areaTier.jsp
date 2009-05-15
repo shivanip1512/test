@@ -72,7 +72,7 @@
 							<input type="image" id="showAreas${thisAreaId}" src="/capcontrol/images/nav-plus.gif"
 								 onclick="showRowElems( 'allAreas${thisAreaId}', 'showAreas${thisAreaId}'); return false;"/>
 	        				<cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
-		                        <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${thisAreaId}%>&ignoreBookmark=true">
+		                        <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${thisAreaId}&ignoreBookmark=true">
 		                            <img class="rAlign editImg" src="/editor/images/edit_item.gif"/>
 		                        </a>
 		                        <a class="editImg" href="/editor/deleteBasePAO.jsf?value=${thisAreaId}">

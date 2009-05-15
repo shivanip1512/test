@@ -216,8 +216,7 @@
 
 	<c:forEach var="viewableSubBus" items="${subBusList}">
 			<c:set var="thisSubBusId" value="${viewableSubBus.subBus.ccId}"/>
-            <input type="hidden" id="paoId_${subBus.ccId}" value="${thisSubBusId}"></input>
-            
+            <input type="hidden" id="paoId_${viewableSubBus.subBus.ccId}" value="${thisSubBusId}"></input>
 			<tr class="<ct:alternateRow odd="altTableCell" even="tableCell"/>"  id="tr_sub_${thisSubBusId}">
 				
                 <td id="anc_${thisSubBusId}"><input type="checkbox" name="cti_chkbxSubBuses" value="${thisSubBusId}"/>
@@ -268,19 +267,26 @@
 				</td>
                 
 				<td>
-                    <c:set var="isPowerFactorControlled" value="${subBus.powerFactorControlled}"/>
-                    <a onmouseover="showDynamicPopup($('subPFPopup_${thisSubBusId}_${isPowerFactorControlled}'))"
-						onmouseout="nd();"
-					   	id="${thisSubBusId}">
-						<cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="TARGET"/>
-					</a>
+                    <c:set var="isPowerFactorControlled" value="${viewableSubBus.subBus.powerFactorControlled}"/>
+                    <c:choose>
+                        <c:when test="${viewableSubBus.subBus.controlMethod == cti:constantValue('com.cannontech.database.db.capcontrol.CapControlStrategy.CNTRL_SUBSTATION_BUS')}">
+		                    <a onmouseover="showDynamicPopup($('subPFPopup_${thisSubBusId}_${isPowerFactorControlled}'))"
+								onmouseout="nd();"
+							   	id="${thisSubBusId}">
+								<cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="TARGET"/>
+							</a>
+                        </c:when>
+                        <c:otherwise>
+                            <cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="TARGET"/>
+                        </c:otherwise>
+					</c:choose>
 					<div class="ccPFPopup" id="subPFPopup_${thisSubBusId}_${isPowerFactorControlled}" style="display: none;" >
                         <cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="TARGET_MESSAGE"/>     
 					</div>
 				</td>
 				<td>
 				<c:choose>
-					<c:when test="${subBus.usePhaseData}">
+					<c:when test="${viewableSubBus.subBus.usePhaseData}">
 						<a onmouseover="showDynamicPopup($('subVarLoadPopup_${thisSubBusId}'));" 
 						onmouseout="nd();"
 						id="${thisSubBusId}">
@@ -429,11 +435,18 @@
                     
 					<td>
                         <c:set var="isPowerFactorControlled" value="${viewfeeder.feeder.powerFactorControlled}"/>
-                        <a onmouseover="showDynamicPopup($('feederPFPopup_${thisFeederId}_${isPowerFactorControlled}'));"
-						   onmouseout="nd();"
-						   id="${isPowerFactorControlled}">
-                            <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="TARGET"/>
-                        </a>
+                        <c:choose>
+                            <c:when test="${viewfeeder.feeder.controlmethod == cti:constantValue('com.cannontech.database.db.capcontrol.CapControlStrategy.CNTRL_INDIVIDUAL_FEEDER')}">
+		                        <a onmouseover="showDynamicPopup($('feederPFPopup_${thisFeederId}_${isPowerFactorControlled}'));"
+								   onmouseout="nd();"
+								   id="${isPowerFactorControlled}">
+		                            <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="TARGET"/>
+		                        </a>
+	                        </c:when>
+	                        <c:otherwise>
+	                           <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="TARGET"/>
+	                        </c:otherwise>
+                        </c:choose>
                         <div class="ccPFPopup" id="feederPFPopup_${thisFeederId}_${isPowerFactorControlled}" style="display: none;">
                             <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="TARGET_MESSAGE"/>    
 					   </div>
