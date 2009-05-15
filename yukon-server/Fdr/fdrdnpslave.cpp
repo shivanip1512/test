@@ -244,6 +244,7 @@ bool CtiFDRDnpSlave::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bo
 
         if (isSend)
         {
+            _helper->removeSendMapping(dnpId, pointDestination);
             _helper->addSendMapping(dnpId, pointDestination);
         }
     }
@@ -450,8 +451,11 @@ int CtiFDRDnpSlave::processScanSlaveRequest (CtiFDRClientServerConnection& conne
         CtiDnpId dnpId = iter->second;
         if (dnpId.SlaveId == dest.sh && dnpId.MasterId == src.sh )
         {
-            CtiFDRDestination dest = iter->first;
-            CtiFDRPoint* fdrPoint = dest.getParentPoint();
+            CtiFDRDestination fdrdest = iter->first;
+            CtiFDRPoint* fdrPoint = fdrdest.getParentPoint();
+            CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());  
+            if (!findPointIdInList(fdrPoint->getPointID(),getSendToList(),*fdrPoint) )
+                continue;
 
             Cti::Protocol::DNPSlaveInterface::input_point iPoint;
 
