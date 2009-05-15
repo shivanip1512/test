@@ -269,7 +269,8 @@
 				<td>
                     <c:set var="isPowerFactorControlled" value="${viewableSubBus.subBus.powerFactorControlled}"/>
                     <c:choose>
-                        <c:when test="${viewableSubBus.subBus.controlMethod == cti:constantValue('com.cannontech.database.db.capcontrol.CapControlStrategy.CNTRL_SUBSTATION_BUS')}">
+                        <c:when test="${viewableSubBus.subBus.controlMethod == cti:constantValue('com.cannontech.database.db.capcontrol.CapControlStrategy.CNTRL_SUBSTATION_BUS') ||
+                                                viewableSubBus.subBus.controlMethod == cti:constantValue('com.cannontech.database.db.capcontrol.CapControlStrategy.CNTRL_BUSOPTIMIZED_FEEDER')}">
 		                    <a onmouseover="showDynamicPopup($('subPFPopup_${thisSubBusId}_${isPowerFactorControlled}'))"
 								onmouseout="nd();"
 							   	id="${thisSubBusId}">
