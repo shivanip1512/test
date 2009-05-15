@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     5/13/2009 2:47:37 PM                         */
+/* Created on:     5/15/2009 11:00:30 AM                        */
 /*==============================================================*/
 
 
@@ -7981,7 +7981,8 @@ INSERT INTO FDRInterfaceOption VALUES(17, 'Filename',4,'Text','(none)');
 INSERT INTO FDRInterfaceOption VALUES(18, 'Option Number', 1, 'Combo', '1');
 INSERT INTO FDRInterfaceOption VALUES(18, 'Point ID', 2, 'Text', '(none)');
 INSERT INTO FDRInterfaceOption VALUES(19, 'Translation', 1, 'Text', '(none)' );
-INSERT INTO FDRInterfaceOption VALUES(20, 'Point', 1, 'Combo', 'TOTAL LOAD KW' );
+INSERT INTO FDRInterfaceOption Values(20, 'Coop Id', 1, 'Text','(none)');
+INSERT INTO FDRInterfaceOption Values(20, 'Filename', 2, 'Text','(none)');
 INSERT INTO FDRInterfaceOption VALUES(21, 'Tag Name', 1, 'Text', '(none)' );
 INSERT INTO FDRInterfaceOption VALUES(21, 'Period (sec)', 2, 'Text', '(none)' );
 INSERT INTO FDRInterfaceOption VALUES(22, 'Address', 1, 'Text', '(none)' );

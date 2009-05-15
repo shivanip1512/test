@@ -289,6 +289,13 @@ DROP TABLE TempOrigCCOpView;
 DROP TABLE TempOrderedOpView;
 /* End YUK-6565 */
 
+/* Start YUK-7477 */
+DELETE FROM FDRInterfaceOption WHERE InterfaceId = 20;
+
+INSERT INTO FDRInterfaceOption Values(20, 'Coop Id', 1, 'Text','(none)');
+INSERT INTO FDRInterfaceOption Values(20, 'Filename', 2, 'Text','(none)');
+/* End YUK-7477 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
