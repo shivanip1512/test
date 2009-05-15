@@ -96,16 +96,16 @@ SET Text = CONCAT('Var: ',Text)
 WHERE Text LIKE 'Non%Questionable';
 
 UPDATE CCEventLog 
-SET Text = 'Close sent, CBC Local Change' 
-WHERE Text = 'ClosePending sent, CBC Local Change' 
-OR Text = 'CloseFail sent, CBC Local Change' 
-OR Text = 'CloseQuestionable sent, CBC Local Change';
+SET Text = 'Close Sent, CBC Local Change' 
+WHERE Text = 'ClosePending Sent, CBC Local Change' 
+OR Text = 'CloseFail Sent, CBC Local Change' 
+OR Text = 'CloseQuestionable Sent, CBC Local Change';
 
 UPDATE CCEventLog 
-SET Text = 'Open sent, CBC Local Change' 
-WHERE Text = 'OpenPending sent, CBC Local Change' 
-OR Text = 'OpenFail sent, CBC Local Change' 
-OR Text = 'OpenQuestionable sent, CBC Local Change';
+SET Text = 'Open Sent, CBC Local Change' 
+WHERE Text = 'OpenPending Sent, CBC Local Change' 
+OR Text = 'OpenFail Sent, CBC Local Change' 
+OR Text = 'OpenQuestionable Sent, CBC Local Change';
 
 INSERT INTO CCOperationLogCache
 SELECT OpId, ConfId
