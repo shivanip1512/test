@@ -125,13 +125,13 @@ public class ProgramSignUpAction implements ActionBase {
                         programs.addSULMProgram( program );
 					}
 				}
-			}
-			else if (Boolean.valueOf( notEnrolled ).booleanValue()) {
+			} else if (notEnrolled.equalsIgnoreCase( "Resend" )){
+				// Resend the not enrolled command
+				progSignUp.setStarsSULMPrograms(null);
+			} else if (Boolean.valueOf( notEnrolled ).booleanValue()) {
 				StarsSULMPrograms programs = new StarsSULMPrograms();
 				progSignUp.setStarsSULMPrograms( programs );
 			}
-			// else if (notEnrolled.equalsIgnoreCase( "Resend" ))
-				// Resend the not enrolled command
 			
 			StarsOperation operation = new StarsOperation();
 			operation.setStarsProgramSignUp( progSignUp );
@@ -640,21 +640,25 @@ public class ProgramSignUpAction implements ActionBase {
 						{
 							if (liteApp == null) {
 								liteApp = lApp;
-							}
-							else if (liteApp.getInventoryID() == 0) {
+							} else if (liteApp.getInventoryID() == 0) {
 								if (lApp.getInventoryID() > 0 || lApp.getProgramID() == program.getProgramID())
 									liteApp = lApp;
-							}
-							else {
+							} else {
 								if (lApp.getInventoryID() > 0 && lApp.getProgramID() == program.getProgramID())
 									liteApp = lApp;
 							}
 						}
 					}
 					
-					// We only need to update the database once for this appliance
-					if (liteApp != null && appsToUpdate.contains( liteApp ))
-						appsToUpdate.remove( liteApp );
+					// We found an existing appliance.  Remove it from the appLists so it can't be used by another enrollment.
+					if (liteApp != null) {
+						appList.remove(liteApp);
+						
+						// We only need to update the database once for this appliance
+						if (appsToUpdate.contains( liteApp )) {
+							appsToUpdate.remove( liteApp );
+						}
+					}
     			}
 				
 				com.cannontech.database.data.stars.appliance.ApplianceBase app = null;
