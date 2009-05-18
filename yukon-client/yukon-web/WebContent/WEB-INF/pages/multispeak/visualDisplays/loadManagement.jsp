@@ -16,7 +16,15 @@
 	    <cti:crumbLink title="${pageTitle}"  />
 	</cti:breadCrumbs>
 	
+	<cti:includeScript link="/JavaScript/visualDisplays.js"/>
+	
 	<h2>${pageTitle}</h2>
+    <br>
+    
+    <%-- LAST TRANSMITTED --%>
+    <div class="normalBoldLabel">
+    	Last Transmitted: <span id="lastTransmitted"><cti:formatDate type="BOTH" value="${now}"/></span>
+    </div>
     <br>
 
 	<%-- POWER SUPPLIER DATA TABLE: Current Load, Currnt IH, Load To Peak, Peak IH Load --%>

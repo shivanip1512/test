@@ -1,6 +1,7 @@
 package com.cannontech.web.multispeak.visualDisplays;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -9,17 +10,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
-import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.web.multispeak.visualDisplays.model.PowerSupplier;
 import com.cannontech.web.multispeak.visualDisplays.model.PowerSuppliersEnum;
 import com.cannontech.web.multispeak.visualDisplays.service.PowerSupplierFactory;
 import com.cannontech.web.multispeak.visualDisplays.service.VisualDisplaysService;
-import com.cannontech.web.security.annotation.CheckRoleProperty;
 
-@CheckRoleProperty(YukonRoleProperty.MSP_LM_MAPPING_SETUP)
-public class VisualDisplaysProbabilityForPeakLoadController extends MultiActionController {
+public class VisualDisplaysProbabilityForPeakLoadController extends VisualDisplaysBaseController {
 
 	
 	private VisualDisplaysService visualDisplaysService;
@@ -39,6 +36,10 @@ public class VisualDisplaysProbabilityForPeakLoadController extends MultiActionC
         	powerSuppliers.add(powerSupplier);
         }
         mav.addObject("powerSuppliers", powerSuppliers);
+        
+        // current time
+        Date now  = new Date();
+        mav.addObject("now", now);
         
         return mav;
     }

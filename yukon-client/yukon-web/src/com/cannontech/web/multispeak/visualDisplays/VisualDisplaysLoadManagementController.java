@@ -10,17 +10,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
-import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.web.multispeak.visualDisplays.model.PowerSupplier;
 import com.cannontech.web.multispeak.visualDisplays.model.PowerSuppliersEnum;
 import com.cannontech.web.multispeak.visualDisplays.service.PowerSupplierFactory;
 import com.cannontech.web.multispeak.visualDisplays.service.VisualDisplaysService;
-import com.cannontech.web.security.annotation.CheckRoleProperty;
 
-@CheckRoleProperty(YukonRoleProperty.MSP_LM_MAPPING_SETUP)
-public class VisualDisplaysLoadManagementController extends MultiActionController {
+public class VisualDisplaysLoadManagementController extends VisualDisplaysBaseController {
 
 	private VisualDisplaysService visualDisplaysService;
 	private PowerSupplierFactory powerSupplierFactory;
