@@ -14,6 +14,41 @@
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 <script language="JavaScript">
+
+if(typeof HTMLElement!="undefined" && !HTMLElement.prototype.insertAdjacentElement){
+    HTMLElement.prototype.insertAdjacentElement = function(where,parsedNode){
+        switch (where){
+		    case 'beforeBegin':
+		        this.parentNode.insertBefore(parsedNode,this)
+		        break;
+	        case 'afterBegin':
+	            this.insertBefore(parsedNode,this.firstChild);
+	            break;
+	        case 'beforeEnd':
+	            this.appendChild(parsedNode);
+	            break;
+	        case 'afterEnd':
+	            if (this.nextSibling) 
+	                this.parentNode.insertBefore(parsedNode,this.nextSibling);
+	            else 
+		            this.parentNode.appendChild(parsedNode);
+	            break;
+	    }
+	}
+
+    HTMLElement.prototype.insertAdjacentHTML = function(where,htmlStr){
+        var r = this.ownerDocument.createRange();
+        r.setStartBefore(this);
+        var parsedHTML = r.createContextualFragment(htmlStr);
+        this.insertAdjacentElement(where,parsedHTML)
+    }
+
+    HTMLElement.prototype.insertAdjacentText = function(where,txtStr){
+        var parsedText = document.createTextNode(txtStr)
+        this.insertAdjacentElement(where,parsedText)
+    }
+}
+
 var dftEntryTexts = new Array();
 var dftEntryYukDefIDs = new Array();
 <%
@@ -90,8 +125,8 @@ function showEntry(form) {
 
 function showDefaultEntry(form) {
 	var dftEntries = form.DefaultListEntries;
-	if (dftEntries.selectedIndex >= 0) {
-		form.YukonDefID.value = dftEntryYukDefIDs[dftEntries.selectedIndex];
+    if (dftEntries.selectedIndex >= 0) {
+        form.YukonDefID.value = dftEntryYukDefIDs[dftEntries.selectedIndex];
 		form.EntryText.value = dftEntryTexts[dftEntries.selectedIndex].replace(/&quot;/g, '"');
 	}
 }
@@ -101,25 +136,27 @@ function saveEntry(form) {
 	entryTexts[curIdx] = form.EntryText.value.replace(/"/g, '&quot;');
 	entryYukDefIDs[curIdx] = form.YukonDefID.value;
 	dftListIndices[curIdx] = getDefaultListIndex(entryTexts[curIdx], entryYukDefIDs[curIdx]);
-	
 	var entries = form.ListEntries;
 	if (curIdx == entries.options.length - 1) {
-		var oOption = document.createElement("OPTION");
+		var oOption = new Option(entryTexts[curIdx],curIdx);
 		entries.options.add(oOption, curIdx);
-		entries.selectedIndex = curIdx;
+	} else {
+		var oOption = new Option(form.EntryText.value,entries.options[curIdx].value);
+		entries.options[curIdx] = oOption;
 	}
-	entries.options[curIdx].innerText = form.EntryText.value;
+	entries.selectedIndex = curIdx;
 	showEntry(form);
-	setContentChanged(true);
+    setContentChanged(true);
 }
 
 function moveUp(form) {
 	var entries = form.ListEntries;
 	var idx = entries.selectedIndex;
 	if (idx > 0 && idx < entries.options.length - 1) {
-		var oOption = entries.options[idx];
-		entries.options.remove(idx);
-		entries.options.add(oOption, idx-1);
+		var prevOption = new Option(entries.options[idx-1].text, idx-1);
+        var oOption = new Option(entries.options[idx].text, idx);
+        entries.options[idx] = prevOption;
+        entries.options[idx-1] = oOption;
 		var value = entryIDs[idx];
 		entryIDs[idx] = entryIDs[idx-1];
 		entryIDs[idx-1] = value;
@@ -133,7 +170,8 @@ function moveUp(form) {
 		dftListIndices[idx] = dftListIndices[idx-1];
 		dftListIndices[idx-1] = value;
 		curIdx--;
-		setContentChanged(true);
+		entries.selectedIndex = idx-1;
+        setContentChanged(true);
 	}
 }
 
@@ -141,9 +179,11 @@ function moveDown(form) {
 	var entries = form.ListEntries;
 	var idx = entries.selectedIndex;
 	if (idx >= 0 && idx < entries.options.length - 2) {
-		var oOption = entries.options[idx];
-		entries.options.remove(idx);
-		entries.options.add(oOption, idx+1);
+
+		var oOption = new Option(entries.options[idx].text, idx);
+		var nextOption = new Option(entries.options[idx+1].text, idx+1);
+        entries.options[idx] = nextOption;
+ 		entries.options[idx+1] = oOption;
 		var value = entryIDs[idx];
 		entryIDs[idx] = entryIDs[idx+1];
 		entryIDs[idx+1] = value;
@@ -157,6 +197,7 @@ function moveDown(form) {
 		dftListIndices[idx] = dftListIndices[idx+1];
 		dftListIndices[idx+1] = value;
 		curIdx++;
+		entries.selectedIndex = idx+1;
 		setContentChanged(true);
 	}
 }
@@ -166,7 +207,7 @@ function deleteEntry(form) {
 	var idx = entries.selectedIndex;
 	if (idx >= 0 && idx < entries.options.length - 1) {
 		if (!confirm("Are you sure you want to delete this entry?")) return;
-		entries.options.remove(idx);
+		entries.removeChild(entries.options[idx]);
 		entryIDs.splice(idx, 1);
 		entryTexts.splice(idx, 1);
 		entryYukDefIDs.splice(idx, 1);
@@ -182,7 +223,7 @@ function deleteAllEntries(form) {
 	if (entries.options.length > 1) {
 		if (!confirm("Are you sure you want to delete all entries?")) return;
 		for (idx = entries.options.length - 2; idx >= 0; idx--)
-			entries.options.remove(idx);
+			entries.removeChild(entries.options[idx]);
 		entryIDs.splice(0, entryIDs.length);
 		entryTexts.splice(0, entryTexts.length);
 		entryYukDefIDs.splice(0, entryYukDefIDs.length);
@@ -241,9 +282,8 @@ function changeOrdering(form) {
 function populateDefaultList(form) {
 	var entries = form.DefaultListEntries;
 	for (i = 0; i < dftEntryTexts.length; i++) {
-		var oOption = document.createElement("OPTION");
+        var oOption = new Option(dftEntryTexts[i],i);
 		entries.options.add(oOption, i);
-		oOption.innerText = dftEntryTexts[i];
 	}
 }
 
@@ -445,8 +485,7 @@ function init() {
                             </tr>
                             <tr class="TableCell" valign="top"> 
                               <td width="50%"> 
-                                <select name="DefaultListEntries" size="7" style="width:200" onclick="showDefaultEntry(this.form)">
-                                </select>
+                                <select name="DefaultListEntries" size="7" style="width:200" onclick="showDefaultEntry(this.form)"></select>
                                 <br>
                                 <%	if (list.getListID() != LiteStarsEnergyCompany.FAKE_LIST_ID) { %>
                                 <input type="button" name="Default" value="Restore Default List" onclick="restoreDefault(this.form)">
