@@ -12,6 +12,8 @@ import java.util.Map;
 
 import com.cannontech.common.bulk.BulkDataContainer;
 import com.cannontech.common.bulk.service.BulkMeterDeleterService;
+import com.cannontech.core.dao.PointDao;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -80,12 +82,25 @@ public class BulkMeterDeleter {
         System.out.println(" -Number of elements to be deleted = "+yukonPAList.size()+"\n");
     }
     
-    private void sendDBChangeMsg(){
-        IServerConnection connToDispatch = ConnPool.getInstance().getDefDispatchConn();
-        DBChangeMsg changeMsgPao = new DBChangeMsg(0, DBChangeMsg.CHANGE_PAO_DB, PAOGroups.STRING_CAT_DEVICE, DBChangeMsg.CHANGE_TYPE_DELETE);
-        DBChangeMsg changeMsgPoints = new DBChangeMsg(0, DBChangeMsg.CHANGE_POINT_DB, DBChangeMsg.CAT_POINT, DBChangeMsg.CHANGE_TYPE_DELETE);
-        connToDispatch.write(changeMsgPao);
-        connToDispatch.write(changeMsgPoints);
+    private void sendDBChangeMsg(BulkDataContainer bulkDataContainer){
+    	
+    	PointDao pointDao = YukonSpringHook.getBean("pointDao", PointDao.class);
+    	IServerConnection connToDispatch = ConnPool.getInstance().getDefDispatchConn();
+    	
+    	for (LiteYukonPAObject pao : bulkDataContainer.getYukonPAObjects()) {
+    		
+    		int paoId = pao.getLiteID();
+    		DBChangeMsg changeMsgPao = new DBChangeMsg(paoId, DBChangeMsg.CHANGE_PAO_DB, PAOGroups.STRING_CAT_DEVICE, DBChangeMsg.CHANGE_TYPE_DELETE);
+    		connToDispatch.write(changeMsgPao);
+    		
+    		List<LitePoint> paoPoints = pointDao.getLitePointsByPaObjectId(paoId);
+    		for (LitePoint point : paoPoints) {
+    			
+    			int pointId = point.getPointID();
+    			DBChangeMsg changeMsgPoints = new DBChangeMsg(pointId, DBChangeMsg.CHANGE_POINT_DB, DBChangeMsg.CAT_POINT, DBChangeMsg.CHANGE_TYPE_DELETE);
+                connToDispatch.write(changeMsgPoints);
+    		}
+    	}
     }
     
     private BulkDataContainer runArgs(String[] args, BulkMeterDeleterService bulkMeterDeleterService){
@@ -198,7 +213,7 @@ public class BulkMeterDeleter {
                 // Removes all the yukonPAObjects after confirmed by the user
                 if (deleter.confirmationCommandLine()) {
                     bulkMeterDeleterService.remove(bulkDataContainer);
-                    deleter.sendDBChangeMsg();
+                    deleter.sendDBChangeMsg(bulkDataContainer);
                 }
             
                 System.out.println("-- Process Complete --");

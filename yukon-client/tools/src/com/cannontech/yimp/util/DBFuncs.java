@@ -213,22 +213,6 @@ public class DBFuncs {
         }
 	}
 	
-	/*
-	 * If the servers receive a device or point DBChangeMsg with an id of zero, then
-	 * they do a full reload of the database.
-	 * This is a poor man's RELOAD_ALL DBChangeMsg.
-	 */
-	public static void generateBulkDBChangeMsg(int dbField, String objCategory, String objType, IServerConnection dispatchConnection  ) {
-		DBChangeMsg chumpChange = new com.cannontech.message.dispatch.message.DBChangeMsg(
-			0,
-			dbField,
-			objCategory,
-			objType,
-			DBChangeMsg.CHANGE_TYPE_ADD );
-		
-		dispatchConnection.write(chumpChange);
-	}
-	
 	public static List<Integer> getRouteIDsFromSubstationName(String name) {
         String stmt = "SELECT ROUTEID FROM SUBSTATIONTOROUTEMAPPING WHERE SUBSTATIONID IN " +
                 "(SELECT SUBSTATIONID FROM SUBSTATION WHERE SUBSTATIONNAME  = '" 

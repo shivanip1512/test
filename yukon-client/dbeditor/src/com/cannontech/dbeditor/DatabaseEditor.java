@@ -697,8 +697,9 @@ private boolean executeChangeObjectType(WizardPanelEvent event)
 	WizardPanel p = (WizardPanel) event.getSource();
 
 	DefaultMutableTreeNode node = getTreeViewPanel().getSelectedNode();
+	com.cannontech.database.data.lite.LiteBase liteObject = (com.cannontech.database.data.lite.LiteBase) node.getUserObject();
 	com.cannontech.database.db.DBPersistent selectedObject =
-		com.cannontech.database.data.lite.LiteFactory.createDBPersistent((com.cannontech.database.data.lite.LiteBase) node.getUserObject());
+		com.cannontech.database.data.lite.LiteFactory.createDBPersistent(liteObject);
 
 	try
 	{
@@ -795,7 +796,7 @@ private boolean executeChangeObjectType(WizardPanelEvent event)
 			if(com.cannontech.database.data.device.DeviceTypesFuncs.isMCT4XX(newType))
 			{
 				DBChangeMsg ptChange = new com.cannontech.message.dispatch.message.DBChangeMsg(
-					0,
+					liteObject.getLiteID(),
 					DBChangeMsg.CHANGE_POINT_DB,
 					DBChangeMsg.CAT_POINT, 
 					PointTypes.getType(PointTypes.ACCUMULATOR_DEMAND),

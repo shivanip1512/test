@@ -4546,19 +4546,23 @@ public void resetFilter()
  */
 private void setUpMainFrame( String previousItem )
 {
-	//fire a DBChange to allow other TDC's to refresh their display data from the DB
-	DBChangeMsg dbChange =
-			new DBChangeMsg(
-				0,
-				DBChangeMsg.CHANGE_TDC_DB,
-				"ALL",
-				"ALL",
-				DBChangeMsg.CHANGE_TYPE_UPDATE );
-
-            
-	//tell our tree we may need to change the display	
-	getTdcClient().write( dbChange );
 	
+	Long[] allPointIDs = getMainPanel().getTableDataModel().getAllPointIDs();
+	for (long pointId : allPointIDs) {
+		
+		//fire a DBChange to allow other TDC's to refresh their display data from the DB
+		DBChangeMsg dbChange =
+				new DBChangeMsg(
+					(int)pointId,
+					DBChangeMsg.CHANGE_TDC_DB,
+					"ALL",
+					"ALL",
+					DBChangeMsg.CHANGE_TYPE_UPDATE );
+
+	            
+		//tell our tree we may need to change the display	
+		getTdcClient().write( dbChange );
+	}
 	
 	getMainPanel().initComboCurrentDisplay();
 
