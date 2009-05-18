@@ -304,9 +304,14 @@ CREATE INDEX INDX_CCEventLog_SubId ON CCEventLog (
 );
 GO
 
+DELETE FROM CCEventLog
+WHERE PointId IS NULL;
+GO
+
 ALTER TABLE CCEventlog 
     ADD CONSTRAINT FK_CCEventLog_Point FOREIGN KEY(PointId) 
-        REFERENCES Point (PointId);
+        REFERENCES Point (PointId)
+            ON DELETE CASCADE;
 GO
 
 CREATE VIEW CCOperations_View

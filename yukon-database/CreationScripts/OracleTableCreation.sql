@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     5/15/2009 11:02:25 AM                        */
+/* Created on:     5/18/2009 3:35:53 PM                         */
 /*==============================================================*/
 
 
@@ -10450,7 +10450,8 @@ alter table CAPCONTROLSUBSTATIONBUS
 
 alter table CCEventLog
    add constraint FK_CCEventLog_Point foreign key (PointID)
-      references POINT (POINTID);
+      references POINT (POINTID)
+      on delete cascade;
 
 alter table CCFeederBankList
    add constraint FK_CB_CCFeedLst foreign key (DeviceID)

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     5/15/2009 11:00:30 AM                        */
+/* Created on:     5/18/2009 3:38:05 PM                         */
 /*==============================================================*/
 
 
@@ -13499,6 +13499,7 @@ go
 alter table CCEventLog
    add constraint FK_CCEventLog_Point foreign key (PointID)
       references POINT (POINTID)
+         on delete cascade
 go
 
 alter table CCFeederBankList
