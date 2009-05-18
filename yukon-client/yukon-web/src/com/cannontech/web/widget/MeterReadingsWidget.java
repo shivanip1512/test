@@ -66,7 +66,7 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         mav.addObject("existingAttributes", existingAttributes);
         
         // don't attempt unless USAGE is supported and exists
-        if (supportedAttributes.containsKey(BuiltInAttribute.USAGE) && existingAttributes.containsKey(BuiltInAttribute.USAGE)) {
+        if (existingAttributes.containsKey(BuiltInAttribute.USAGE)) {
 	        LitePoint lp = attributeService.getPointForAttribute(meter, BuiltInAttribute.USAGE);
 	        fillInPreviousReadings(mav, lp, "VALUE");
         }
