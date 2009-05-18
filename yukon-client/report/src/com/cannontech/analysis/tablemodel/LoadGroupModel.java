@@ -9,27 +9,19 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-
-
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.common.util.StringUtils;
 import com.cannontech.common.util.TimeUtil;
-import com.cannontech.core.authorization.service.PaoPermissionService;
-import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.db.company.EnergyCompany;
-import com.cannontech.database.db.device.lm.LMProgramDirectGroup;
 import com.cannontech.database.db.macro.GenericMacro;
 import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.database.db.pao.LMControlHistory;
-import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
 
 /**
