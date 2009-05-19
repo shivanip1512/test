@@ -85,8 +85,8 @@
                 <f:facet name="footer">
                     <x:panelGroup>
                         <f:verbatim><br/><hr/><br/></f:verbatim>
-                        <x:commandButton value="Submit" action="#{ptEditorForm.update}" styleClass="stdButton" />
-                        <x:commandButton value="Reset" action="#{ptEditorForm.resetForm}" styleClass="stdButton" />
+                        <x:commandButton value="Submit" action="#{ptEditorForm.update}" styleClass="stdButton" rendered="#{capControlForm.editingAuthorized}"/>
+                        <x:commandButton value="Reset" action="#{ptEditorForm.resetForm}" styleClass="stdButton" rendered="#{capControlForm.editingAuthorized}"/>
                         <x:commandButton value="Return" action="none" styleClass="stdButton" immediate="true" title="Returns to the last module page that was used to enter this editor" >
                             <f:actionListener type="com.cannontech.web.editor.CtiNavActionListener" />
                         </x:commandButton>

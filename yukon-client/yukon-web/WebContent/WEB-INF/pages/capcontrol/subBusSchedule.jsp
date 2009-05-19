@@ -25,6 +25,7 @@
 			<x:htmlTag value="fieldSet" styleClass="fieldSet">
 				<x:htmlTag value="legend"><x:outputText value="Scheduled Tasks" /></x:htmlTag>
 				<h:commandButton id="addAction" value="Add" styleClass="submenuLink"
+                    rendered="#{capControlForm.editingAuthorized}"
 					action="#{capControlForm.addSchedule}"
 					onclick="lockButtonsPerSubmit('hdr_buttons'); lockButtonsPerSubmit('foot_buttons')"
 					title="Adds an existing schedule to the list below" />

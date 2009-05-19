@@ -32,6 +32,7 @@
 			
 					<x:outputLabel for="Control_Type" value="Control Type: " title="Specifies the type of control this point will do" />
 					<x:selectOneMenu id="Control_Type" onchange="submit();"
+                            disabled="#{!capControlForm.editingAuthorized}"
 							value="#{ptEditorForm.pointBase.pointStatus.controlType}" >
 						<f:selectItems value="#{selLists.ptControlTypes}" />
 					</x:selectOneMenu>
@@ -106,6 +107,7 @@
                 <x:htmlTag value="legend"><x:outputText value="Stale Data"/></x:htmlTag>
                 
                 <h:selectBooleanCheckbox id="enableStaleData" onclick="submit();"
+                            disabled="#{!capControlForm.editingAuthorized}"
                             valueChangeListener="#{ptEditorForm.staleData.enableClick}"
                             value="#{ptEditorForm.staleData.enabled}"
                             immediate="true" />

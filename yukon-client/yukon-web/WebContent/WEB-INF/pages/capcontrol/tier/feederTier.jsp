@@ -138,7 +138,14 @@
 
 <input type="hidden" id="lastAccessedID" value="${lastAccessed}">
 <input type="hidden" id="fullURL" value="${fullURL}">
-
+<c:choose>
+    <c:when test="${hasEditingRole}">
+        <c:set var="editInfoImage" value="/editor/images/edit_item.gif"/>
+    </c:when>
+    <c:otherwise>
+        <c:set var="editInfoImage" value="/editor/images/info_item.gif"/>
+    </c:otherwise>
+</c:choose>
 	<cti:titledContainer title="Substation">
 		<table id="substationTable" width="100%" cellspacing="0" cellpadding="0">
 			<tr class="columnHeader">
@@ -151,14 +158,14 @@
                 
                 <tr class="altTableCell" id="tr_substation_${substation.ccId}">
                     <td id="anc_${thisSubStationId}">
-		                <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
-	                        <a title="Edit" class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${substation.ccId}&ignoreBookmark=true">
-	                            <img class="rAlign editImg" src="/editor/images/edit_item.gif"/>
-		                    </a>
+                        <a title="Edit" class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${substation.ccId}&ignoreBookmark=true">
+                            <img class="rAlign editImg" src="${editInfoImage}">
+	                    </a>
+	                    <c:if test="${hasEditingRole}">
 		                    <a title="Delete" class="editImg" href="/editor/deleteBasePAO.jsf?value=${substation.ccId}">
 		                        <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
 		                    </a>
-	                    </cti:checkProperty>
+	                    </c:if>
                     	<a title="Bank Locations" class="editImg" href="/spring/capcontrol/capbank/capBankLocations?value=${substation.ccId}&specialArea=${isSpecialArea}">
 	                        <img class="rAlign editImg" src="/capcontrol/images/compass.gif"/>
 	                    </a>
@@ -225,15 +232,14 @@
 				</td>
                 
 				<td id="subName">
-				    <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
-					    <a title="Edit" class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${thisSubBusId}&ignoreBookmark=true">
-	                        <img class="rAlign editImg" src="/editor/images/edit_item.gif"/>
-	                    </a>
-	                    
+				    <a title="Edit" class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${thisSubBusId}&ignoreBookmark=true">
+                        <img class="rAlign editImg" src="${editInfoImage}"/>
+                    </a>
+	                <c:if test="${hasEditingRole}">
 	                    <a title="Delete" class="editImg" href="/editor/deleteBasePAO.jsf?value=${thisSubBusId}">
 	                        <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
 	                    </a>
-                    </cti:checkProperty>
+	                </c:if>
                    	<a title="Bank Locations" class="editImg" href="/spring/capcontrol/capbank/capBankLocations?value=${thisSubBusId}&specialArea=${isSpecialArea}">
                         <img class="rAlign editImg" src="/capcontrol/images/compass.gif"/>
                     </a>
@@ -402,15 +408,15 @@
 				<tr class="<ct:alternateRow odd="altTableCell" even="tableCell"/>" >
 					<td>
 						<input type="checkbox" name="cti_chkbxFdrs" value="${thisFeederId}"/>
-						<cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
-							<a title="Edit" class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${thisFeederId}&ignoreBookmark=true">
-	                            <img class="rAlign editImg" src="/editor/images/edit_item.gif"/>
-	                        </a>
-	                        
+						
+						<a title="Edit" class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${thisFeederId}&ignoreBookmark=true">
+                            <img class="rAlign editImg" src="${editInfoImage}"/>
+                        </a>
+	                    <c:if test="${hasEditingRole}">
 	                        <a title="Delete" class="editImg" href="/editor/deleteBasePAO.jsf?value=${thisFeederId}">
 	                            <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
 	                        </a>
-                        </cti:checkProperty>
+                        </c:if>
                     	<a title="Bank Locations" class="editImg" href="/spring/capcontrol/capbank/capBankLocations?value=${thisFeederId}&specialArea=${isSpecialArea}">
 	                        <img class="rAlign editImg" src="/capcontrol/images/compass.gif"/>
 	                    </a>
@@ -532,14 +538,15 @@
 				<td>
 					<c:choose>
 						<c:when test="${viewableCapBank.capBankDevice.controlDeviceID != 0}">
-					        <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
-						        <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${viewableCapBank.capBankDevice.controlDeviceID}">
-		                            <img class="rAlign editImg" src="/editor/images/edit_item.gif"/>
-		                        </a>
+					        
+					        <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${viewableCapBank.capBankDevice.controlDeviceID}">
+	                            <img class="rAlign editImg" src="${editInfoImage}"/>
+	                        </a>
+	                        <c:if test="${hasEditingRole}">
 		                        <a href="/editor/copyBase.jsf?itemid=${viewableCapBank.capBankDevice.controlDeviceID}&type=1>">
 	                               <img src="/editor/images/page_copy.gif" border="0" height="15" width="15"/>
 	                            </a>
-	                        </cti:checkProperty>
+	                        </c:if>
 							${viewableCapBank.controlDevice.paoName}
 					    </c:when>
 					    <c:otherwise>
@@ -565,15 +572,15 @@
 	                        <input id="2_way_${thisCapBankId}" type="hidden" value="${viewableCapBank.twoWayCbc}"/>
 	                        <input id="showFlip_${thisCapBankId}" type="hidden" value="${showFlip}"/>
 	                        <input id="is701x_${thisCapBankId}" type="hidden" value="${viewableCapBank.device701x}"/>
-	                        <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
-		                        <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${thisCapBankId}&ignoreBookmark=true">
-		                            <img class="rAlign editImg" src="/editor/images/edit_item.gif"/>
-		                        </a>
-		                        
+	                        
+	                        <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${thisCapBankId}&ignoreBookmark=true">
+	                            <img class="rAlign editImg" src="${editInfoImage}"/>
+	                        </a>
+		                    <c:if test="${hasEditingRole}">
 		                        <a class="editImg" href="/editor/deleteBasePAO.jsf?value=${thisCapBankId}">
 		                            <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
 		                        </a>
-	                        </cti:checkProperty>
+	                        </c:if>
 	                        <a href="javascript:void(0);"
 	                           ${popupEvent}="getCapBankMenu('${thisCapBankId}');" 
 	                           >
@@ -581,15 +588,15 @@
 	                        </a>
 						</c:when>
 						<c:otherwise>
-	                        <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
-		                        <a href="/editor/cbcBase.jsf?type=2&itemid=${thisCapBankId}&ignoreBookmark=true">
-		                            <img class="rAlign editImg" src="/editor/images/edit_item.gif"/>
-		                        </a>
-		                        
+	                        
+	                        <a href="/editor/cbcBase.jsf?type=2&itemid=${thisCapBankId}&ignoreBookmark=true">
+	                            <img class="rAlign editImg" src="${editInfoImage}"/>
+	                        </a>
+		                    <c:if test="${hasEditingRole}">
 		                        <a href="/editor/deleteBasePAO.jsf?value=${thisCapBankId}">
 		                            <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
 		                        </a>
-	                        </cti:checkProperty>
+	                        </c:if>
 	                        <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_NAME"/>
 						</c:otherwise>
 					</c:choose>

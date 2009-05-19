@@ -12,6 +12,7 @@
 	   	<h:commandButton id="addAction" value="New Routing" styleClass="submenuLink"
 	   		action="#{ptEditorForm.pointFDREntry.addTranslation}"
 	   		disabled="#{ptEditorForm.pointFDREntry.FDRTransSize >= 5}"
+	   		rendered="#{capControlForm.editingAuthorized}"
 	   		title="Adds a new FDR entry to this point" />
 		<x:outputText id="addWarn" styleClass="alert"
 			rendered="#{ptEditorForm.pointFDREntry.FDRTransSize >= 5}" value="  (You have reached the maximum allowed FDR translation entries)"/>
@@ -29,6 +30,7 @@
 					<x:outputText value="Interface" title="Foreign system this data is interfacing to" />
 				</f:facet>
 				<x:selectOneMenu id="Interface" onchange="submit();"
+                        disabled="#{!capControlForm.editingAuthorized}"
 						valueChangeListener="#{ptEditorForm.pointFDREntry.interfaceChange}"
 						value="#{fdrTranslation.interfaceType}" >
 					<f:selectItems value="#{ptEditorForm.pointFDREntry.FDRInterfaces}"/>
@@ -57,6 +59,7 @@
 	
 			<h:column>
 				<x:commandLink id="Translation_Edit" styleClass="stdButton"
+                            disabled="#{!capControlForm.editingAuthorized}"
 							title="Edit this FDR translation entry"
 							action="#{ptEditorForm.pointFDREntry.showTranslation}" >
 	              	<x:graphicImage value="/editor/images/edit_item.gif" height="15" width="15" border="0" />
@@ -64,6 +67,7 @@
 					<f:param name="rowNumber" value="#{rowNum}" />
 				</x:commandLink>
 				<x:commandLink id="Translation_Delete" styleClass="stdButton"
+                            disabled="#{!capControlForm.editingAuthorized}"
 							title="Delete this FDR translation entry"
 							action="#{ptEditorForm.pointFDREntry.deleteTranslation}" >
 	              	<x:graphicImage value="/editor/images/delete_item.gif" height="15" width="15" border="0" />

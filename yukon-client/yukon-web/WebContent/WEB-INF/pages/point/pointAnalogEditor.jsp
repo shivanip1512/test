@@ -59,6 +59,7 @@
                 <x:htmlTag value="legend"><x:outputText value="Stale Data"/></x:htmlTag>
                 
                 <h:selectBooleanCheckbox id="enableStaleData" onclick="submit();"
+                            disabled="#{!capControlForm.editingAuthorized}"
                             valueChangeListener="#{ptEditorForm.staleData.enableClick}"
                             value="#{ptEditorForm.staleData.enabled}"
                             immediate="true" />
@@ -73,7 +74,7 @@
                     </x:inputText>
                     
                     <x:outputLabel for="staleDataUpdateStyle" value="Update Style:"/>
-                    <x:selectOneMenu id="staleDataUpdateStyle" value="#{ptEditorForm.staleData.updateStyle}" disabled="#{!ptEditorForm.staleData.enabled}">
+                    <x:selectOneMenu id="staleDataUpdateStyle" value="#{ptEditorForm.staleData.updateStyle}" disabled="#{!ptEditorForm.staleData.enabled || !capControlForm.editingAuthorized}">
 			            <f:selectItems value="#{ptEditorForm.staleData.updateStyles}"/>
 			        </x:selectOneMenu>
                 </x:panelGrid>
@@ -92,6 +93,7 @@
 		            <h:column>
 		            
 				        <h:selectBooleanCheckbox id="Limit_One" onclick="submit();"
+                            disabled="#{!capControlForm.editingAuthorized}"
 							valueChangeListener="#{ptEditorForm.pointLimitEntry.showLimit}"
 							value="#{ptEditorForm.pointLimitEntry.editingLimitOne}"
 							immediate="true" />
@@ -140,6 +142,7 @@
 					<h:column>
 					
 						<h:selectBooleanCheckbox id="Limit_Two" onclick="submit();"
+                            disabled="#{!capControlForm.editingAuthorized}"
 							valueChangeListener="#{ptEditorForm.pointLimitEntry.showLimit}"
 							value="#{ptEditorForm.pointLimitEntry.editingLimitTwo}"
 							immediate="true" />
@@ -190,6 +193,7 @@
 		        <x:panelGrid columns="2">
 			        <x:panelGroup>
 				        <h:selectBooleanCheckbox id="Reasonability_High" onclick="submit();"
+                          disabled="#{!capControlForm.editingAuthorized}"
 						  valueChangeListener="#{ptEditorForm.pointLimitEntry.showReasonabilityLimit}"
 						  value="#{ptEditorForm.pointLimitEntry.highReasonabilityValid}" />
 						  
@@ -208,6 +212,7 @@
 	                
 	                <x:panelGroup>
 				        <h:selectBooleanCheckbox id="Reasonability_Low" onclick="submit();"
+                          disabled="#{!capControlForm.editingAuthorized}"
 						  valueChangeListener="#{ptEditorForm.pointLimitEntry.showReasonabilityLimit}"
 						  value="#{ptEditorForm.pointLimitEntry.lowReasonabilityValid}" />
 						  

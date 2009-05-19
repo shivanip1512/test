@@ -74,15 +74,15 @@
 
 				<x:htmlTag value="br"/>
 
-				<h:outputText styleClass="tableHeader" value="Point Editor: " />
+				<h:outputText styleClass="tableHeader" value="Point Editor: " rendered="#{capControlForm.editingAuthorized}"/>
 
-				<x:commandLink id="addPtLnk" value="Add Point" actionListener="#{capControlForm.pointTreeForm.addPointClick}">
+				<x:commandLink id="addPtLnk" value="Add Point" actionListener="#{capControlForm.pointTreeForm.addPointClick}" rendered="#{capControlForm.editingAuthorized}">
 					<f:param name="parentId" value="#{capControlForm.pointTreeForm.pao.PAObjectID}" />
 				</x:commandLink>
 
-                <x:outputText value=" | "/>
+                <x:outputText value=" | " rendered="#{capControlForm.editingAuthorized}"/>
 
-				<x:commandLink id="deletePtLnk" value="Delete Point" actionListener="#{capControlForm.pointTreeForm.deletePointClick}"/>
+				<x:commandLink id="deletePtLnk" value="Delete Point" actionListener="#{capControlForm.pointTreeForm.deletePointClick}" rendered="#{capControlForm.editingAuthorized}"/>
 
 			</h:column>
 
@@ -93,10 +93,12 @@
 
 					<x:div id="feederVarDiv" forceId="true">
 						<h:selectBooleanCheckbox id="usePhaseDataCheckbox"
+                            rendered="#{capControlForm.editingAuthorized}"
 							onclick="submit();"
 							valueChangeListener="#{capControlForm.usePhaseDataClicked}"
 							value="#{capControlForm.PAOBase.capControlFeeder.usePhaseDataBoolean}" />
 						<x:outputLabel for="usePhaseDataCheckbox"
+                            rendered="#{capControlForm.editingAuthorized}"
 							value="Use Per Phase Var Data"
 							title="Check this box to use 3 phase var data."
 							styleClass="smallStaticLabel" />
@@ -107,7 +109,7 @@
 						<h:selectBooleanCheckbox id="Use_Totalized_Value_Checkbox"
 							onclick="submit();"
 							value="#{capControlForm.PAOBase.capControlFeeder.controlFlagBoolean}"
-							rendered="#{capControlForm.PAOBase.capControlFeeder.usePhaseDataBoolean}" />
+							rendered="#{capControlForm.PAOBase.capControlFeeder.usePhaseDataBoolean && capControlForm.editingAuthorized}" />
 						<x:outputLabel for="Use_Totalized_Value_Checkbox"
 							value="Use Totalized Values"
 							title="Check this box to use totalized phase values for control."
@@ -137,7 +139,7 @@
 	
 						<x:htmlTag value="br"/>
 	
-						<h:outputLink value="javascript:feederVarPointPicker.showPicker()">
+						<h:outputLink value="javascript:feederVarPointPicker.showPicker()" rendered="#{capControlForm.editingAuthorized}">
 							<h:outputText value="Select point for Phase A"
 								rendered="#{capControlForm.PAOBase.capControlFeeder.usePhaseDataBoolean}" />
 							<h:outputText value="Select point"
@@ -166,6 +168,7 @@
 							<x:htmlTag value="br"/>
 	
 							<h:outputLink
+                                rendered="#{capControlForm.editingAuthorized}"
 								value="javascript:feederVarPhaseBPointPicker.showPicker()">
 								<h:outputText value="Select point for Phase B" />
 							</h:outputLink>
@@ -189,6 +192,7 @@
 							<x:htmlTag value="br"/>
 	
 							<h:outputLink
+                                rendered="#{capControlForm.editingAuthorized}"
 								value="javascript:feederVarPhaseCPointPicker.showPicker()">
 								<h:outputText value="Select point for Phase C" />
 							</h:outputLink>
@@ -199,6 +203,7 @@
 					<x:htmlTag value="br"/>
 					
 					<x:commandLink id="varPointSetNone"
+                        rendered="#{capControlForm.editingAuthorized}"
 						title="Do not use a point for the VAR value"
 						styleClass="medStaticLabel" value="No Var Point"
 						actionListener="#{capControlForm.varPtTeeClick}">
@@ -226,7 +231,7 @@
 						
 	                    <x:htmlTag value="br"/>
 	
-						<h:outputLink value="javascript:feederWattPointPicker.showPicker()">
+						<h:outputLink value="javascript:feederWattPointPicker.showPicker()" rendered="#{capControlForm.editingAuthorized}">
 							<h:outputText value="Select point..." />
 						</h:outputLink>
 					</x:div>
@@ -234,6 +239,7 @@
 					<x:htmlTag value="br"/>
 					
 					<x:commandLink id="wattPointSetNone"
+                        rendered="#{capControlForm.editingAuthorized}"
 						title="Do not use a point for the WATT value"
 						styleClass="medStaticLabel" value="No WATT Point"
 						actionListener="#{capControlForm.wattPtTeeClick}">
@@ -260,7 +266,7 @@
 						
 						<x:htmlTag value="br"/>
 						
-						<h:outputLink value="javascript:feederVoltPointPicker.showPicker()">
+						<h:outputLink value="javascript:feederVoltPointPicker.showPicker()" rendered="#{capControlForm.editingAuthorized}">
 							<h:outputText value="Select point..." />
 						</h:outputLink>
 					</x:div>
@@ -268,6 +274,7 @@
 					<x:htmlTag value="br"/>
 					
 					<x:commandLink id="voltPointSetNone"
+                        rendered="#{capControlForm.editingAuthorized}"
 						title="Do not use a point for the VOLT value"
 						styleClass="medStaticLabel" value="No VOLT Point"
 						actionListener="#{capControlForm.voltPtTeeClick}">

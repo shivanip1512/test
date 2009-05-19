@@ -47,6 +47,15 @@
 	}
 </script>
 
+<c:choose>
+    <c:when test="${hasEditingRole}">
+        <c:set var="editInfoImage" value="/editor/images/edit_item.gif"/>
+    </c:when>
+    <c:otherwise>
+        <c:set var="editInfoImage" value="/editor/images/info_item.gif"/>
+    </c:otherwise>
+</c:choose>
+
 <cti:titledContainer title="${containerTitle}" id="last_titled_container">
           
 	          
@@ -76,14 +85,14 @@
 			        <tr class="<ct:alternateRow odd="altRow" even=""/>" >
 						<td>
 						    <input type="checkbox" name="cti_chkbxSubStation" value="${subStation.ccId}" />
-						    <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
-		                        <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${subStation.ccId}&ignoreBookmark=true">
-		                            <img class="rAlign editImg" src="/editor/images/edit_item.gif"/>
-		                        </a>
+	                        <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${subStation.ccId}&ignoreBookmark=true">
+	                            <img class="rAlign editImg" src="${editInfoImage}"/>
+	                        </a>
+	                        <c:if test="${hasEditingRole}">
 		                        <a class="editImg" href="/editor/deleteBasePAO.jsf?value=${subStation.ccId}">
 		                            <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
 		                        </a>
-		                    </cti:checkProperty>
+		                    </c:if>
 
 						    <cti:url value="/spring/capcontrol/tier/feeders" var="myLink">
 						    	<cti:param name="areaId" value="${areaId}"/>

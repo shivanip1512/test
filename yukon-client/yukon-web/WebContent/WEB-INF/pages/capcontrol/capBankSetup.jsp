@@ -116,6 +116,7 @@
 					<x:outputLabel for="bankOperation" value="Operation Method: "
 						title="How this CapBank should operate in the field" />
 					<x:selectOneMenu id="bankOperation"
+                        disabled="#{!capControlForm.editingAuthorized}"
 						value="#{capBankEditor.capBank.capBank.operationalState}"
 						onchange="submit()">
 						<f:selectItems value="#{selLists.capBankOpStates}" />
@@ -127,6 +128,7 @@
                     <x:panelGroup>
                     
 						<x:selectOneMenu id="bankSizeSelect"
+                            disabled="#{!capControlForm.editingAuthorized}"
 							value="#{capBankEditor.capBank.capBank.bankSize}"
 							onchange="submit()" rendered="#{!capBankEditor.customSize}">
 							<f:selectItems value="#{selLists.addCapBankSizes}" />
@@ -142,9 +144,10 @@
 						<x:outputText id="bankSizeDesc" value="kVar" />
 						<f:verbatim>&nbsp;&nbsp;</f:verbatim>
 		
-						<x:outputLabel for="isCustomSize" value="Custom Bank Size?"
+						<x:outputLabel for="isCustomSize" value="Custom Bank Size?" 
 							title="The total size of the CapBank" />
 						<x:selectBooleanCheckbox id="isCustomSize"
+                            disabled="#{!capControlForm.editingAuthorized}"
 							value="#{capBankEditor.customSize}" onclick="submit()" />
 					</x:panelGroup>
 	
@@ -178,6 +181,7 @@
 					<x:htmlTag value="br" />
 
 					<h:outputLink value="javascript:void(0);"
+                        rendered="#{capControlForm.editingAuthorized}"
 						onclick="showOrphanedCBCPopup();">
 						<h:outputText value="Select point..." />
 					</h:outputLink>
@@ -186,6 +190,7 @@
 				<x:htmlTag value="br" />
 
 				<x:commandLink id="cbcPoint_setNone"
+                    rendered="#{capControlForm.editingAuthorized}"
 					title="Do not use a point to control cap bank"
 					styleClass="medStaticLabel" value="No Control Point"
 					actionListener="#{capBankEditor.capBankTeeClick}">
@@ -243,15 +248,15 @@
 
 			<x:htmlTag value="br" />
 
-			<h:outputText styleClass="tableHeader" value="Point Editor: " />
+			<h:outputText styleClass="tableHeader" value="Point Editor: " rendered="#{capControlForm.editingAuthorized}"/>
 
-			<x:commandLink id="addPtLnk" value="Add Point" actionListener="#{capControlForm.pointTreeForm.addPointClick}">
+			<x:commandLink id="addPtLnk" value="Add Point" actionListener="#{capControlForm.pointTreeForm.addPointClick}" rendered="#{capControlForm.editingAuthorized}">
 				<f:param name="parentId" value="#{capControlForm.pointTreeForm.pao.PAObjectID}" />
 			</x:commandLink>
 
-			<x:outputText value=" | " />
+			<x:outputText value=" | " rendered="#{capControlForm.editingAuthorized}"/>
 
-			<x:commandLink id="deletePtLnk" value="Delete Point" actionListener="#{capControlForm.pointTreeForm.deletePointClick}"/>
+			<x:commandLink id="deletePtLnk" value="Delete Point" actionListener="#{capControlForm.pointTreeForm.deletePointClick}" rendered="#{capControlForm.editingAuthorized}"/>
 
 		</x:column>
 		<x:column>
@@ -271,6 +276,7 @@
 				<x:htmlTag value="br" />
 				
 				<x:selectBooleanCheckbox id="disabledOps"
+				    disabled="#{!capControlForm.editingAuthorized}"
 					value="#{capBankEditor.capBank.capBank.maxOperationDisabled}" />
 				<x:outputLabel for="disabledOps"
 					value="Disable upon reaching max operations"

@@ -46,9 +46,12 @@ import com.cannontech.cbc.model.ICapControlModel;
 import com.cannontech.cbc.point.CBCPointFactory;
 import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.core.dao.*;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.capcontrol.*;
 import com.cannontech.database.data.device.DeviceBase;
@@ -163,6 +166,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     private static SubstationBusDao substationBusDao = YukonSpringHook.getBean("substationBusDao", SubstationBusDao.class);
     private static PointDao pointDao = YukonSpringHook.getBean("pointDao",PointDao.class);
     private static PaoDao paoDao = YukonSpringHook.getBean("paoDao",PaoDao.class);
+    private static RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao",RolePropertyDao.class);
     
     /**
 	 * default constructor
@@ -798,7 +802,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	 * labels based on type of object. DO NOT access the DB persitent object in
 	 * this method since it may be null in the case of a Wizard.
 	 */
-	@SuppressWarnings("unchecked")
     private void initPanels(int paoType) {
 
 		// all panels that are always displayed
@@ -956,6 +959,9 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     }
     
 	public void update() throws SQLException {
+	    if(!isEditingAuthorized()) {
+	        throw new NotAuthorizedException("User " + JSFParamUtil.getYukonUser() + " is not authorized to edit this object.");
+	    }
 		FacesMessage facesMsg = new FacesMessage();
         facesMsg.setDetail(CBCExceptionMessages.DB_UPDATE_SUCCESS);
         Connection connection = getDbPersistent().getDbConnection();
@@ -1858,7 +1864,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         }
 	}
 
-	@SuppressWarnings("unchecked")
     public LiteYukonPAObject[] getSubBusList() {
 		if (subBusList == null) {
 			//subBusList = PAOFuncs.getAllCapControlSubBuses();			
@@ -1963,12 +1968,10 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         setDualSubBusEdited(true);
     }
     
-	@SuppressWarnings("unchecked")
     private void resetCurrentDivOffset() {
         offsetMap.put("currentTwoWayPointDivOffset","0");
 	}
 
-	@SuppressWarnings("unchecked")
     private void resetCurrentAltSubDivOffset ()  {
 		offsetMap.put("currentAltSubDivOffset","0");
 	}
@@ -2327,6 +2330,14 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             return true;
         }
         return false;
+    }
+    
+    /**
+     * Returns true if the user has the CapControl Settings > Database Editing role property.
+     * @return
+     */
+    public boolean isEditingAuthorized() {
+        return rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, JSFParamUtil.getYukonUser());
     }
     
     public CCStrategyTimeOfDaySet getStrategyTimeOfDay() {

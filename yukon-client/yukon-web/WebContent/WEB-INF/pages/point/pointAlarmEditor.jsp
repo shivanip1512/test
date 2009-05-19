@@ -32,6 +32,7 @@
 			<x:htmlTag value="fieldset" styleClass="fieldSet">
                 <x:htmlTag value="legend"><x:outputText value="Alarming"/></x:htmlTag>
 				<h:selectBooleanCheckbox id="disableAlarmsCheckBox" onclick="submit();" immediate="true"
+                        disabled="#{!capControlForm.editingAuthorized}"
 						value="#{ptEditorForm.pointBase.point.alarmsDisabled}"/>
 				<x:outputLabel for="disableAlarmsCheckBox" value="Disable All Alarms"/>
 				

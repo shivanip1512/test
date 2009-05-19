@@ -3,7 +3,6 @@ package com.cannontech.database.db.capcontrol;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;

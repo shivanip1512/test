@@ -45,6 +45,7 @@
 
 				<x:panelGroup id="editCBCCheck">
 					<h:selectBooleanCheckbox id="editCntrl"
+                        disabled="#{!capControlForm.editingAuthorized}"
 						value="#{capControlForm.CBControllerEditor.editingController}"
 						onclick="submit();" />
 					<x:outputLabel for="editCntrl" value="Edit Controller" title="Allows editing of the controller this CapBank currently uses" />
@@ -106,7 +107,7 @@
 						<h:selectBooleanCheckbox id="scanIntegrityChk" onclick="submit();"
 							valueChangeListener="#{capControlForm.showScanRate}"
 							value="#{capControlForm.CBControllerEditor.editingIntegrity}"
-							disabled="#{!capControlForm.CBControllerEditor.editingController}" />
+							disabled="#{!capControlForm.CBControllerEditor.editingController || capControlForm.editingAuthorized}" />
 						
 						<x:htmlTag value="br"/>
 						
@@ -153,7 +154,7 @@
 							valueChangeListener="#{capControlForm.showScanRate}"
 							value="#{capControlForm.CBControllerEditor.editingException}"
 							immediate="true"
-							disabled="#{!capControlForm.CBControllerEditor.editingController}" />
+							disabled="#{!capControlForm.CBControllerEditor.editingController || capControlForm.editingAuthorized}" />
 						
 						<x:htmlTag value="br"/>
 						
@@ -245,14 +246,16 @@
 				</x:htmlTag>
 			</x:panelGroup>
 			<x:htmlTag value="br"/>
-			<h:outputText styleClass="tableHeader" value="Point Editor" />
+			<h:outputText styleClass="tableHeader" value="Point Editor" rendered="#{capControlForm.editingAuthorized}"/>
 			<x:commandLink id="addPtLnk" value="Add Point"
+                rendered="#{capControlForm.editingAuthorized}"
 				actionListener="#{capControlForm.CBControllerEditor.addPointClick}">
 				<f:param name="parentId"
 					value="#{capControlForm.CBControllerEditor.paoCBC.PAObjectID}" />
 			</x:commandLink>
-			<x:outputText value=" | "/>
+			<x:outputText value=" | " rendered="#{capControlForm.editingAuthorized}"/>
 			<x:commandLink id="deletePtLnk" value="Delete Point"
+                rendered="#{capControlForm.editingAuthorized}"
 				actionListener="#{capControlForm.CBControllerEditor.deletePointClick}">
 			</x:commandLink>
 

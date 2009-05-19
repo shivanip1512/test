@@ -30,12 +30,14 @@
 				</x:inputText>
 	
 				<x:outputLabel for="SelectConfig" value="Config " title="Select Cap Bank Configuration" />
-				<x:selectOneMenu id="SelectConfig" value="#{capBankEditor.additionalInfo.capBankConfig}" onchange="submit();">
+				<x:selectOneMenu id="SelectConfig" value="#{capBankEditor.additionalInfo.capBankConfig}" onchange="submit();"
+				    disabled="#{!capControlForm.editingAuthorized}">
 					<f:selectItems id="ConfigList" value="#{selLists.capBankConfigs}" />
 				</x:selectOneMenu>
 				
 				<x:outputLabel for="SelectPotentTrans" value="Potential Transformer " title="Select Cap Bank Potential Transformer" />
-				<x:selectOneMenu id="SelectPotentTrans" value="#{capBankEditor.additionalInfo.potentTransformer}" onchange="submit();">
+				<x:selectOneMenu id="SelectPotentTrans" value="#{capBankEditor.additionalInfo.potentTransformer}" onchange="submit();"
+				    disabled="#{!capControlForm.editingAuthorized}">
 					<f:selectItems id="PotentTransList" value="#{selLists.potentialTransformer}" />
 				</x:selectOneMenu>
 			
@@ -50,6 +52,7 @@
                                 
 					<x:outputLabel for="SelectCommMed" value="Comm. Medium " title="" />
 					<x:selectOneMenu id="SelectCommMed"
+                        disabled="#{!capControlForm.editingAuthorized}"
 						value="#{capBankEditor.additionalInfo.commMedium}"
 						onchange="submit();">
 						<f:selectItems id="CommMedList"
@@ -63,14 +66,14 @@
 					</x:inputText>
 					
 					<x:outputLabel for="CapBank_ExtAntenna" value="External Antenna " title="" />
-					<x:selectBooleanCheckbox id="CapBank_ExtAntenna" value="#{capBankEditor.additionalInfo.extAnt}" onclick="submit()">
-					</x:selectBooleanCheckbox>
+					<x:selectBooleanCheckbox id="CapBank_ExtAntenna" value="#{capBankEditor.additionalInfo.extAnt}" onclick="submit()"
+                        disabled="#{!capControlForm.editingAuthorized}"/>
 					
 					<x:outputLabel for="SelectAntType" value="Antenna Type " title="" />
 					<x:selectOneMenu id="SelectAntType"
 						value="#{capBankEditor.additionalInfo.antennaType}"
 						onchange="submit();"
-						disabled="#{!capBankEditor.additionalInfo.extAnt}">
+						disabled="#{!capBankEditor.additionalInfo.extAnt || !capControlForm.editingAuthorized}">
 						<f:selectItems id="AntTypeList" value="#{selLists.capBankAntennaType}" />
 					</x:selectOneMenu>
 	
@@ -120,8 +123,8 @@
 					<x:inputDate id="CapBank_LastOpcntReset" value="#{capBankEditor.additionalInfo.opCountResetDate}" type="both" popupCalendar="true" />
 					
 					<x:outputLabel for="CapBank_ReqPend" value="Request Pending " title="" />
-					<x:selectBooleanCheckbox id="CapBank_ReqPend" value="#{capBankEditor.additionalInfo.reqPend}" onclick="submit()">
-					</x:selectBooleanCheckbox>
+					<x:selectBooleanCheckbox id="CapBank_ReqPend" value="#{capBankEditor.additionalInfo.reqPend}" onclick="submit()"
+                        disabled="#{!capControlForm.editingAuthorized}"/>
 					
 					<x:outputLabel for="CapBank_OthrComments" value="Other Comments " title="" />
 					<x:inputText id="CapBank_OthrComments" value="#{capBankEditor.additionalInfo.otherComments}" required="true" maxlength="150" size="50">

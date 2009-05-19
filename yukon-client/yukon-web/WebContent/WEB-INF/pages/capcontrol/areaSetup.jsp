@@ -69,15 +69,15 @@
     
                 <x:htmlTag value="br"/>    
                 
-                <h:outputText styleClass="tableHeader" value="Point Editor: " />
+                <h:outputText styleClass="tableHeader" value="Point Editor: " rendered="#{capControlForm.editingAuthorized}"/>
     
-                <x:commandLink id="addPtLnk" value="Add Point" actionListener="#{capControlForm.pointTreeForm.addPointClick}">
+                <x:commandLink id="addPtLnk" value="Add Point" actionListener="#{capControlForm.pointTreeForm.addPointClick}" rendered="#{capControlForm.editingAuthorized}">
                     <f:param name="parentId" value="#{capControlForm.pointTreeForm.pao.PAObjectID}" />
                 </x:commandLink>
     
-			    <x:outputText value=" | " />
+			    <x:outputText value=" | " rendered="#{capControlForm.editingAuthorized}"/>
     
-                <x:commandLink id="deletePtLnk" value="Delete Point" actionListener="#{capControlForm.pointTreeForm.deletePointClick}"/>
+                <x:commandLink id="deletePtLnk" value="Delete Point" actionListener="#{capControlForm.pointTreeForm.deletePointClick}" rendered="#{capControlForm.editingAuthorized}"/>
     
             </h:column>
             
@@ -96,7 +96,7 @@
     
                         <x:htmlTag value="br"/>
                             
-                        <h:outputLink  value="javascript:areaVoltReductionPointPicker.showPicker()" >
+                        <h:outputLink  value="javascript:areaVoltReductionPointPicker.showPicker()" rendered="#{capControlForm.editingAuthorized}">
                             <h:outputText value="Select point"/>
                         </h:outputLink>
                  
@@ -107,7 +107,8 @@
                             title="Do not use a point for control." 
                             styleClass="medStaticLabel"
                             value="No Volt Reduction Point" 
-                            actionListener="#{capControlForm.areaNoVoltReductionPointClicked}">
+                            actionListener="#{capControlForm.areaNoVoltReductionPointClicked}"
+                            rendered="#{capControlForm.editingAuthorized}">
                             <f:param name="ptId" value="0"/>
                         </x:commandLink>
 

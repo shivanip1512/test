@@ -30,7 +30,7 @@
 	
 	                    <h:column>
 	                        <f:facet name="header"></f:facet>
-	                        <x:commandLink value="Add >>" action="#{capControlForm.dataModel.add}">
+	                        <x:commandLink value="Add >>" action="#{capControlForm.dataModel.add}" rendered="#{capControlForm.editingAuthorized}">
 	                            <f:param name="id" value="#{sub.subID}"/>
 	                        </x:commandLink>
 	                    </h:column>
@@ -52,7 +52,7 @@
 	                
 	                    <f:facet name="header"></f:facet>
 	                
-	                    <x:commandLink value="<< Remove" action="#{capControlForm.dataModel.remove}">
+	                    <x:commandLink value="<< Remove" action="#{capControlForm.dataModel.remove}" rendered="#{capControlForm.editingAuthorized}">
 	                        <f:param name="id" value="#{sub.subID}"/>
 	                    </x:commandLink>
 	                
@@ -82,7 +82,7 @@
 	
 	            <x:htmlTag value="br"/>
 	            <x:htmlTag value="br"/>
-	            <x:htmlTag value="fieldset" styleClass="fieldSet">
+	            <x:htmlTag value="fieldset" styleClass="fieldSet" rendered="#{capControlForm.editingAuthorized}">
 	               <x:htmlTag value="legend"><x:outputText value="Links"/></x:htmlTag> 
 	     
 	                <x:commandLink action="#{capControlForm.dataModel.createWizardLink}" 

@@ -23,6 +23,7 @@ var switchPointPicker = new PointPicker(
             <x:htmlTag value="legend"><x:outputText value="Dual Bus Setup"/></x:htmlTag>
 
 			<x:selectBooleanCheckbox forceId="true"  styleClass="lAlign" id="enableDualBus" title="Disable Dual Bus" 
+                rendered="#{capControlForm.editingAuthorized}"
                 value="#{capControlForm.enableDualBus}" onclick="submit();">
 				<h:outputText value="Enable Dual Bus" />
 			</x:selectBooleanCheckbox>
@@ -31,9 +32,11 @@ var switchPointPicker = new PointPicker(
 				<x:panelGroup forceId="true" id="altSubBusPanel">
 		
 					<h:outputText styleClass="tableHeader" value="Selected Alternate SubBus: " rendered="#{capControlForm.enableDualBus}"/>
-					<x:commandLink actionListener="#{capControlForm.selectedAltSubBusClick}" rendered="#{capControlForm.enableDualBus}">
+					<x:commandLink actionListener="#{capControlForm.selectedAltSubBusClick}" rendered="#{capControlForm.enableDualBus && capControlForm.editingAuthorized}">
                         <h:outputText value="#{capControlForm.selectedSubBusFormatString}" rendered="#{capControlForm.enableDualBus}"/>
 					</x:commandLink>
+					
+					<h:outputText value="#{capControlForm.selectedSubBusFormatString}" rendered="#{capControlForm.enableDualBus && !capControlForm.editingAuthorized}"/>
 				
 					<x:htmlTag value="fieldSet" styleClass="fieldSet">
                         <x:htmlTag value="legend"><x:outputText value="Alternate Substation Bus"/></x:htmlTag>
@@ -64,13 +67,15 @@ var switchPointPicker = new PointPicker(
                             <x:outputText id="switchPointName" forceId="true" value="#{capControlForm.pointNameMap[capControlForm.PAOBase.capControlSubstationBus.switchPointID]}" /> 
                             
                             <x:htmlTag value="br"/>
-		                    <h:outputLink  value="javascript:switchPointPicker.showPicker()" >
+		                    <h:outputLink  value="javascript:switchPointPicker.showPicker()" rendered="#{capControlForm.editingAuthorized}">
                                 <h:outputText value="Select point..."/>
 		                    </h:outputLink>
 		                </x:div>
 		                <x:htmlTag value="br"/>
 		                <x:htmlTag value="br"/>
-                        <x:commandLink id="switchPoint_setNone" title="Do not use a switch point." styleClass="medStaticLabel" value="No Switch Point" actionListener="#{capControlForm.twoWayPtsTeeClick}">
+                        <x:commandLink id="switchPoint_setNone" 
+                            rendered="#{capControlForm.editingAuthorized}"
+                            title="Do not use a switch point." styleClass="medStaticLabel" value="No Switch Point" actionListener="#{capControlForm.twoWayPtsTeeClick}">
                             <f:param name="ptID" value="0"/>
                         </x:commandLink>
                     </x:htmlTag>

@@ -38,6 +38,7 @@
 	            <x:panelGrid columns="2">
 					<x:outputLabel for="Archive_Type" value="Archive Data: "/>
 					<x:selectOneMenu id="Archive_Type" value="#{ptEditorForm.pointBase.point.archiveType}"
+                            disabled="#{!capControlForm.editingAuthorized}"
 							onchange="submit();" valueChangeListener="#{ptEditorForm.archiveTypeChanged}">
 						<f:selectItems value="#{selLists.ptArchiveType}"/>
 					</x:selectOneMenu>
@@ -83,6 +84,7 @@
 	            <x:panelGrid columns="2">
 					<x:outputLabel for="stateGroups" value="State Group: "/>
 					<x:selectOneMenu id="stateGroups" value="#{ptEditorForm.pointBase.point.stateGroupID}"
+                            disabled="#{!capControlForm.editingAuthorized}"
 							onchange="submit();" valueChangeListener="#{ptEditorForm.stateGroupChanged}">
 						<f:selectItems value="#{ptEditorForm.stateGroups}"/>
 					</x:selectOneMenu>
@@ -102,6 +104,7 @@
 	            <x:panelGrid columns="2">
 					<x:outputLabel for="updateType" value="Update Type: "/>
 					<x:selectOneMenu id="updateType" value="#{ptEditorForm.pointBase.calcBase.updateType}"
+                            disabled="#{!capControlForm.editingAuthorized}"
 							onchange="submit();" valueChangeListener="#{ptEditorForm.updateTypeChanged}" >
 						<f:selectItems value="#{selLists.ptUpdateType}"/>
 					</x:selectOneMenu>

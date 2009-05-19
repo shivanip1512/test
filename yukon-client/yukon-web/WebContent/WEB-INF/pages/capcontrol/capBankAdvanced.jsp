@@ -53,7 +53,7 @@
 						</f:facet>
 						<x:commandLink value="Add >>"
 							action="#{capBankEditor.treeSwapAddAction}"
-							rendered="#{not empty capBankEditor.unassignedPoints}">
+							rendered="#{not empty capBankEditor.unassignedPoints && capControlForm.editingAuthorized}">
 							<f:param name="swapType" value="CapBankPoint" />
 							<f:param name="id" value="#{point.pointId}" />
 						</x:commandLink>
@@ -124,7 +124,7 @@
 						</f:facet>
 						<x:commandLink value="<< Remove"
 							action="#{capBankEditor.treeSwapRemoveAction}"
-							rendered="#{not empty capBankEditor.assignedPoints}">
+							rendered="#{not empty capBankEditor.assignedPoints && capControlForm.editingAuthorized}">
 							<f:param name="swapType" value="CapBankPoint" />
 							<f:param name="id" value="#{point.pointId}" />
 						</x:commandLink>
@@ -182,7 +182,7 @@
 						</f:verbatim>
 						<x:outputText value="Override feeder limits:" />
 						<x:selectBooleanCheckbox id="inheritFdr1"
-							value="#{point.overrideFdrLimits}" onclick="submit();" />
+							value="#{point.overrideFdrLimits}" onclick="submit();" disabled="#{!capControlForm.editingAuthorized}"/>
 						<x:outputText value="Upper Bandwidth: " />
 						<x:inputText value="#{point.upperBandwidth}"
 							disabled="#{!point.overrideFdrLimits}" />
@@ -190,7 +190,7 @@
 						<x:inputText value="#{point.lowerBandwidth}"
 							disabled="#{!point.overrideFdrLimits}" />
 						<x:outputText value="Initiate scan on unsolicited: " />
-						<x:selectBooleanCheckbox id="scanable1" value="#{point.initScan}"
+						<x:selectBooleanCheckbox id="scanable1" value="#{point.initScan}" disabled="#{!capControlForm.editingAuthorized}"
 							onclick="submit();" />
 						<x:outputText value="Adaptive Count: " />
 						<x:inputText value="#{point.NINAvg}"

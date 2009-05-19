@@ -39,6 +39,7 @@
 							<f:facet name="header">
 							</f:facet>
 							<x:commandLink value="Add >>"
+                                rendered="#{capControlForm.editingAuthorized}"
 								action="#{capControlForm.treeSwapAddAction}">
 								<f:param name="swapType" value="SubstationBus" />
 								<f:param name="id" value="#{subBus.liteID}" />
@@ -110,6 +111,7 @@
 							<f:facet name="header">
 							</f:facet>
 							<x:commandLink value="<< Remove"
+                                rendered="#{capControlForm.editingAuthorized}"
 								action="#{capControlForm.treeSwapRemoveAction}">
 								<f:param name="swapType" value="SubstationBus" />
 								<f:param name="id" value="#{subBus.substationBusID}" />
@@ -140,12 +142,13 @@
 
 					<x:htmlTag value="br" />
 					<x:htmlTag value="br" />
-					<x:htmlTag value="fieldset" styleClass="fieldSet">
+					<x:htmlTag value="fieldset" styleClass="fieldSet" rendered="#{capControlForm.editingAuthorized}">
 						<x:htmlTag value="legend">
 							<x:outputText value="Links" />
 						</x:htmlTag>
 						<x:commandLink
 							action="#{capControlForm.dataModel.createWizardLink}"
+							rendered="#{capControlForm.editingAuthorized}"
 							value="Create Substation Bus"
 							title="Click here to create a Substation Bus. Return after creation to assign the Substation Bus.">
 							<f:param name="type" id="type"
@@ -196,6 +199,7 @@
 							<f:facet name="header">
 							</f:facet>
 							<x:commandLink value="Add >>"
+                                rendered="#{capControlForm.editingAuthorized}"
 								action="#{capControlForm.treeSwapAddAction}">
 								<f:param name="swapType" value="Feeder" />
 								<f:param name="id" value="#{feeder.liteID}" />
@@ -265,6 +269,7 @@
 							<f:facet name="header">
 							</f:facet>
 							<x:commandLink value="<< Remove"
+                                rendered="#{capControlForm.editingAuthorized}"
 								action="#{capControlForm.treeSwapRemoveAction}">
 								<f:param name="swapType" value="Feeder" />
 								<f:param name="id" value="#{feeder.feederID}" />
@@ -294,7 +299,7 @@
 					</h:dataTable>
 					<x:htmlTag value="br" />
 					<x:htmlTag value="br" />
-					<x:htmlTag value="fieldset" styleClass="fieldSet">
+					<x:htmlTag value="fieldset" styleClass="fieldSet" rendered="#{capControlForm.editingAuthorized}">
 						<x:htmlTag value="legend">
 							<x:outputText value="Links" />
 						</x:htmlTag>
@@ -344,6 +349,7 @@
 							<f:facet name="header">
 							</f:facet>
 							<x:commandLink value="Add >>"
+                                rendered="#{capControlForm.editingAuthorized}"
 								action="#{capControlForm.treeSwapAddAction}">
 								<f:param name="swapType" value="CapBank" />
 								<f:param name="id" value="#{capBank.liteID}" />
@@ -415,6 +421,7 @@
 							<f:facet name="header">
 							</f:facet>
 							<x:commandLink value="<< Remove"
+                                rendered="#{capControlForm.editingAuthorized}"
 								action="#{capControlForm.treeSwapRemoveAction}">
 								<f:param name="swapType" value="CapBank" />
 								<f:param name="id" value="#{capBank.deviceID}" />
@@ -466,7 +473,7 @@
 					</h:dataTable>
 					<x:htmlTag value="br" />
 					<x:htmlTag value="br" />
-					<x:htmlTag value="fieldset" styleClass="fieldSet">
+					<x:htmlTag value="fieldset" styleClass="fieldSet" rendered="#{capControlForm.editingAuthorized}">
 						<x:htmlTag value="legend">
 							<x:outputText value="Links" />
 						</x:htmlTag>

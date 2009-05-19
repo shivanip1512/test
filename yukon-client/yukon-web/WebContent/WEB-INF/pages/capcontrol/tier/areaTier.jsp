@@ -44,6 +44,15 @@
 		</cti:checkProperty>
 	</c:if>
 	
+	<c:choose>
+	    <c:when test="${hasEditingRole}">
+	        <c:set var="editInfoImage" value="/editor/images/edit_item.gif"/>
+	    </c:when>
+	    <c:otherwise>
+	        <c:set var="editInfoImage" value="/editor/images/info_item.gif"/>
+	    </c:otherwise>
+    </c:choose>
+	
 	<cti:titledContainer title="${title}" id="last_titled_container">
 		<form id="areaForm" action="" method="get">
 		<input type="hidden" name="CCSessionInfo.STR_CC_AREA" />
@@ -71,14 +80,14 @@
 	        				<input type="checkbox" name="cti_chkbxAreas" value="${thisAreaId}"/>
 							<input type="image" id="showAreas${thisAreaId}" src="/capcontrol/images/nav-plus.gif"
 								 onclick="showRowElems( 'allAreas${thisAreaId}', 'showAreas${thisAreaId}'); return false;"/>
-	        				<cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
 		                        <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${thisAreaId}&ignoreBookmark=true">
-		                            <img class="rAlign editImg" src="/editor/images/edit_item.gif"/>
+		                            <img class="rAlign editImg" src="${editInfoImage}"/>
 		                        </a>
-		                        <a class="editImg" href="/editor/deleteBasePAO.jsf?value=${thisAreaId}">
-		                            <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
-		                        </a>
-		                    </cti:checkProperty>
+		                        <c:if test="${hasEditingRole}">
+			                        <a class="editImg" href="/editor/deleteBasePAO.jsf?value=${thisAreaId}">
+			                            <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
+			                        </a>
+                                </c:if>
 	        				<a href="/spring/capcontrol/tier/substations?areaId=${thisAreaId}&isSpecialArea=${isSpecialArea}">
 	        					<c:out value="${viewableArea.area.ccName}"/>
 	        				</a>

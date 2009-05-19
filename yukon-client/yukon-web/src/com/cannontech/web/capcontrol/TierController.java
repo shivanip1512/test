@@ -19,15 +19,13 @@ import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.cbc.web.CBCWebUtils;
 import com.cannontech.cbc.web.CCSessionInfo;
-import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.roles.application.WebClientRole;
-import com.cannontech.roles.capcontrol.CBCSettingsRole;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.capcontrol.models.ViewableArea;
 import com.cannontech.web.capcontrol.models.ViewableCapBank;
@@ -48,7 +46,7 @@ import com.cannontech.yukon.cbc.SubStation;
 public class TierController {
 
 	private FilterCacheFactory filterCacheFactory;
-	private AuthDao authDao;
+	private RolePropertyDao rolePropertyDao;
 	private PointDao pointDao;
 	private PaoDao paoDao;
 	
@@ -76,7 +74,10 @@ public class TierController {
 		
 		List<ViewableArea> viewableAreas = createViewableArea(ccAreas, cache, isSpecialArea);
 		mav.addAttribute("ccAreas", viewableAreas);
-
+		
+		boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
+        mav.addAttribute("hasEditingRole", hasEditingRole);
+        
 		return "tier/areaTier";
     }
 		
@@ -88,7 +89,7 @@ public class TierController {
 		//2 fail points. Area does not exist. and No Access. 
 		//add redirect here if they fail
 		
-		String popupEvent = authDao.getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
+		String popupEvent = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.POPUP_APPEAR_STYLE, user);
 		if (popupEvent == null) {
 			popupEvent = "onmouseover";
 		}
@@ -116,6 +117,9 @@ public class TierController {
 	    mav.addAttribute("mainTitle", mainTitle);
 	    mav.addAttribute("subStations", subStations);
 	    mav.addAttribute("subStationParam", CCSessionInfo.STR_SUBID);
+	    
+	    boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
+        mav.addAttribute("hasEditingRole", hasEditingRole);
 	    
 		return "tier/substationTier";
     }
@@ -165,18 +169,20 @@ public class TierController {
 		boolean hasCapbankControl = CBCWebUtils.hasCapbankControlRights(session);
 		mav.addAttribute("hasCapbankControl", hasCapbankControl);
 		
-		boolean hideOneLine = Boolean.valueOf(authDao.getRolePropertyValue(user, CBCSettingsRole.HIDE_ONELINE));
+		boolean hideOneLine = rolePropertyDao.checkProperty(YukonRoleProperty.HIDE_ONELINE, user);
 		mav.addAttribute("hideOneLine", hideOneLine);
 		
-		boolean showFlip = Boolean.valueOf(authDao.getRolePropertyValue(user, CBCSettingsRole.SHOW_FLIP_COMMAND)).booleanValue();
+		boolean showFlip = rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_FLIP_COMMAND, user);
 		mav.addAttribute("showFlip", showFlip);
 		
-		String popupEvent = authDao.getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
+		String popupEvent = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.POPUP_APPEAR_STYLE, user);
 		if (popupEvent == null) { 
 			popupEvent = "onmouseover";
 		}		
 		mav.addAttribute("popupEvent", popupEvent);
-	    
+		
+		boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
+		mav.addAttribute("hasEditingRole", hasEditingRole);
 
 	    //Security risk? They can change the link if they intercept
 	    String url = request.getRequestURL().toString();
@@ -306,9 +312,9 @@ public class TierController {
 	}
 	
 	@Autowired
-	public void setAuthDao (AuthDao authDao) {
-		this.authDao = authDao;
-	}
+    public void setRolePropertyDao (RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
+    }
 	
 	@Autowired
 	public void setPointDao (PointDao pointDao) {

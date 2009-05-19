@@ -43,7 +43,7 @@
                             <h:outputText value="" />
                         </f:facet>
                         <x:commandLink
-                            action="#{capControlForm.dataModel.createEditorLink}" value="Edit"
+                            action="#{capControlForm.dataModel.createEditorLink}" value="Edit" rendered="#{capControlForm.editingAuthorized}"
                             title="Click here to edit this strategy.">
                             <f:param name="strattype" id="stratType" value="#{selLists.strategyEditorType}" />
                             <f:param name="stratitemid" id="stratItemid" value="#{capControlForm.assignedStratMap[season]}" />
@@ -81,9 +81,9 @@
 					    <f:selectItems value="#{capControlForm.cbcHolidayStrategies}" />
 	                </x:selectOneMenu> 
 	                <x:commandLink
-					    action="#{capControlForm.dataModel.createEditorLink}"
+					    action="#{capControlForm.dataModel.createEditorLink}" 
 					    value="Edit" title="Click here to edit this strategy."
-					    rendered="#{capControlForm.holidayScheduleId > 0}">
+					    rendered="#{capControlForm.holidayScheduleId > 0 && capControlForm.editingAuthorized}">
 					    <f:param name="strattype" id="stratType" value="#{selLists.strategyEditorType}" />
 					    <f:param name="stratitemid" id="stratItemid" value="#{capControlForm.holidayStrategyId}" />
 	                </x:commandLink>
