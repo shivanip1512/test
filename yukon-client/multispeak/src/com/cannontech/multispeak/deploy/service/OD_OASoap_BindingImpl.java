@@ -10,11 +10,10 @@ package com.cannontech.multispeak.deploy.service;
 import java.rmi.RemoteException;
 import java.util.Calendar;
 
-import com.cannontech.multispeak.deploy.service.impl.OD_ServerImpl;
 import com.cannontech.spring.YukonSpringHook;
 
 public class OD_OASoap_BindingImpl implements com.cannontech.multispeak.deploy.service.OD_OASoap_PortType{
-    private OD_ServerSoap_PortType od_server = YukonSpringHook.getBean("od_server", OD_ServerImpl.class);
+	private OD_ServerSoap_PortType od_server = YukonSpringHook.getBean("od_server", OD_ServerSoap_PortType.class);
 
     public ErrorObject[] cancelODMonitoringRequestByObject(ObjectRef[] objectRef, Calendar requestDate)
             throws RemoteException {
