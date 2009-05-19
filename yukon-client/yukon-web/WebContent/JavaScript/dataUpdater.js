@@ -42,9 +42,6 @@ function initiateCannonDataUpdate(url, delayMs) {
             if (newData && it.className != newData) {
                 // data was sent and is different than current
             	it.className = newData;
-                it.childElements().each(function(child) {
-                	child.className = newData;
-                });
             }
         });
         
