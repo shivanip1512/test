@@ -77,10 +77,6 @@
 		
 				<td colspan="2" align="center" nowrap>
 					<span style="font-weight:bold;"><cti:msg key="yukon.web.modules.visualDisplays.loadManagement.currentDayLabel"/></span>
-					<br>
-					<cti:formatDate type="DATE" value="${now}"/>
-					<br>
-					<cti:msg key="yukon.web.modules.visualDisplays.loadManagement.hrLabel"/> <cti:formatDate type="HOUR" value="${now}"/>
 				</td>
 				
 				<td colspan="2" align="center" nowrap>
