@@ -29,7 +29,6 @@ import com.cannontech.database.data.device.IDLCBase;
 import com.cannontech.database.data.device.PagingTapTerminal;
 import com.cannontech.database.data.device.RemoteBase;
 import com.cannontech.database.data.device.Series5Base;
-import com.cannontech.database.data.device.TwoWayDevice;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -260,9 +259,6 @@ private void checkAddress()
                 ((IDLCBase) val).getDeviceIDLCRemote().setPostCommWait(new Integer(0));
         } else
             throw new Error("What kind of device is this?");
-
-        // default the threshold
-        ((TwoWayDevice) val).getDeviceTwoWayFlags().setPerformThreshold(new Integer(90));
 
         // transmitter is a special case
 

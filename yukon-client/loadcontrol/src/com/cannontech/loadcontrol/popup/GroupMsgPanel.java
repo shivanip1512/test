@@ -34,27 +34,6 @@ public GroupMsgPanel() {
 	initialize();
 }
 
-
-/**
- * connEtoC4:  (PerformanceThresholdTextField.caret.caretUpdate(javax.swing.event.CaretEvent) --> DeviceAlarmEditorPanel.fireInputUpdate()V)
- * @param arg1 javax.swing.event.CaretEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC4(javax.swing.event.CaretEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.fireInputUpdate();
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
-
-
 /**
  * 
  */
@@ -96,25 +75,6 @@ private static void getBuilderData() {
 	88G10F81DAE94D107127497GGA4CAGG8CGGGGGGGGGGGGGGGGGE2F5E9ECE4E5F2A0E4E1F4E1D0CB8586GGGG81G81GBAGGGAE98GGGG
 **end of data**/
 }
-
-/**
- * Return the CommAlarmingPanelTitleBorder property value.
- * @return com.cannontech.common.gui.util.TitleBorder
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private com.cannontech.common.gui.util.TitleBorder getCommAlarmingPanelTitleBorder() {
-	com.cannontech.common.gui.util.TitleBorder ivjCommAlarmingPanelTitleBorder = null;
-	try {
-		/* Create part */
-		ivjCommAlarmingPanelTitleBorder = new com.cannontech.common.gui.util.TitleBorder();
-		ivjCommAlarmingPanelTitleBorder.setTitleFont(new java.awt.Font("dialog.bold", 1, 14));
-		ivjCommAlarmingPanelTitleBorder.setTitle("Communications");
-	} catch (java.lang.Throwable ivjExc) {
-		handleException(ivjExc);
-	};
-	return ivjCommAlarmingPanelTitleBorder;
-}
-
 
 /**
  * Return the JComboBoxAltRoute property value.
