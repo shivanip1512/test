@@ -33,19 +33,19 @@
 #include "rwutil.h"
 #include "utility.h"
 #include "errno.h"
-                  
+
 #include <rw/re.h>
 
 using namespace std;
 
 /*
     Directory where processed files go
-*/    
+*/
 const string CtiMCFileInterface::getConsumedDirectory() const
 {
     return _consumed_dir;
 }
-    
+
 CtiMCFileInterface& CtiMCFileInterface::setConsumedDirectory(const string& dir)
 {
     _consumed_dir = dir;
@@ -53,13 +53,13 @@ CtiMCFileInterface& CtiMCFileInterface::setConsumedDirectory(const string& dir)
 }
 
 /*
-*/        
+*/
 void CtiMCFileInterface::start()
-{   
+{
     if( mkdir(_consumed_dir.c_str()) < 0 ) {
-        if( errno != EEXIST ) {            
+        if( errno != EEXIST ) {
             CtiLockGuard< CtiLogger > guard(dout);
-            dout << CtiTime() << " File Interface: An error occured creating directory:  " << _consumed_dir << endl;    
+            dout << CtiTime() << " File Interface: An error occured creating directory:  " << _consumed_dir << endl;
             dout << CtiTime() << " File Interface: Processed/consumed files will be deleted " << endl;
         }
     }
@@ -88,7 +88,7 @@ void CtiMCFileInterface::handleFile(const string& filename )
 
         return;
     }
-   
+
     while( !feof(fptr) )
     {
         fgets( buf, MC_FILE_BUF_SIZE, fptr);
@@ -123,44 +123,48 @@ void CtiMCFileInterface::handleFile(const string& filename )
             }
             continue;
         }
-         
+
 
         *sep_ptr = NULL;
 
         string function(buf);
         string name(sep_ptr+1);
-               
+
         name = trim(name);
 
         execute( function, name );
 
         //sometimes fgets returns without affecting buf
         //this causes some lines to be interpreted twice -
-        //zeroing out buf will avoid this 
+        //zeroing out buf will avoid this
         memset( buf, 0, MC_FILE_BUF_SIZE );
     }
-                   
+
     fclose( fptr );
 
-    // Attempt to copy the file into the consumed directory
-    string consume_file(_consumed_dir);
-    consume_file += "\\";
-    consume_file += filename;
-    consume_file += " ";
-   
     CtiTime now_time;
     CtiDate now_date(now_time);
-  
-    consume_file += now_date.asString();
-    consume_file += " ";
-    consume_file += now_time.asString();
 
-    if( CopyFile(filename.c_str(), consume_file.c_str(), FALSE) == 0 ) {
+    // Attempt to copy the file into the consumed directory
+    ostringstream consume_file;
+
+    consume_file << _consumed_dir << "\\" << filename;
+
+    consume_file << setfill('0');
+    consume_file << " ";
+    consume_file << setw(2) << now_date.month();
+    consume_file << setw(2) << now_date.dayOfMonth();
+    consume_file << " ";
+    consume_file << setw(2) << now_time.hour();
+    consume_file << setw(2) << now_time.minute();
+    consume_file << setw(2) << now_time.second();
+
+    if( CopyFile(filename.c_str(), consume_file.str().c_str(), FALSE) == 0 ) {
         CtiLockGuard< CtiLogger > guard(dout);
         dout << CtiTime() << " File Interface:  failed copying processed file " << filename << endl;
-        dout << CtiTime() << " to " << consume_file << endl;        
+        dout << CtiTime() << " to " << consume_file.str() << endl;
     }
-    
+
     return;
 }
 /*----------------------------------------------------------------------------
@@ -205,7 +209,7 @@ void CtiMCFileInterface::execute(const string& function, const string& name )
     CtiMCOverrideRequest* msg = NULL;
     string lower_function = function;
     std::transform(lower_function.begin(), lower_function.end(), lower_function.begin(), tolower);
-    
+
 
     if( lower_function == "start" ||
         lower_function == "$start" )
