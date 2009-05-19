@@ -2,6 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <f:view>
 <cti:standardPage title="CapControl Wizard" module="capcontrol">
 
@@ -43,7 +44,7 @@
 
             <h:outputText styleClass="editorHeader" value="Schedules"/>
             <f:verbatim><br/><br/></f:verbatim>
-            <x:commandButton value="Submit" action="#{paoDeleteForm.update}" styleClass="stdButton" title="Writes this item to the database" />
+            <x:commandButton value="Submit" action="#{paoDeleteForm.update}" styleClass="stdButton" title="Writes this item to the database" rendered="#{paoScheduleForm.editingAuthorized}"/>
             <x:commandButton value="Return" action="none" styleClass="stdButton" immediate="true" title="Returns to the last module page that was used to enter this editor" >
             	<f:actionListener type="com.cannontech.web.editor.CtiNavActionListener" />
             </x:commandButton>
@@ -122,17 +123,18 @@
                                 title="Edit the schedules attributes"
                                 actionListener="#{paoScheduleForm.edit}"
                                 action="#{paoScheduleForm.goto_edit}" >
-                            <x:graphicImage value="/editor/images/edit_item.gif" height="15" width="15" border="0" />
+                                <x:graphicImage value="/editor/images/edit_item.gif" height="15" width="15" border="0" rendered="#{paoScheduleForm.editingAuthorized}"/>
+                                <x:graphicImage value="/editor/images/info_item.gif" height="15" width="15" border="0" rendered="#{!paoScheduleForm.editingAuthorized}"/>
                             <f:param name="schedID" value="#{paoSched.scheduleID}" />
                         </h:commandLink>                        
                    </h:column>
 
                    <h:column>
                         <h:commandButton id="delAction" value="Delete" styleClass="submenuLink"
+                            rendered="#{paoScheduleForm.editingAuthorized}"
                             title="Remove the schedule from the system"
                             onclick="confirmDelete( '#{paoSched.scheduleName}' );" 
-                            actionListener="#{paoScheduleForm.delete}"
-                            title=" #{paoSched.scheduleID}" >
+                            actionListener="#{paoScheduleForm.delete}">
                                 <f:param name="schedID" value="#{paoSched.scheduleID}" />
                         </h:commandButton>
 
@@ -146,7 +148,7 @@
                 <f:facet name="footer">
                     <x:panelGroup>
                         <f:verbatim><br/><hr/><br/></f:verbatim>
-                        <x:commandButton value="Submit" action="#{paoDeleteForm.update}" styleClass="stdButton" title="Writes this item to the database" />
+                        <x:commandButton value="Submit" action="#{paoDeleteForm.update}" styleClass="stdButton" title="Writes this item to the database" rendered="#{paoScheduleForm.editingAuthorized}"/>
                         <x:commandButton value="Return" action="none" styleClass="stdButton" immediate="true" title="Returns to the last module page that was used to enter this editor" >
                             <f:actionListener type="com.cannontech.web.editor.CtiNavActionListener" />
                         </x:commandButton>

@@ -137,14 +137,16 @@ Event.observe(window, 'load', function() {
 		<form id="myForm" method="post" action="addPao">
 			
 			<span id="pickerDisabled">Select a Schedule and Command to continue.</span>
-			<span id="pickerEnabled">
-				<cti:multiPaoPicker 
-				     paoIdField="paoIdList"
-				     constraint="com.cannontech.common.search.criteria.CBCSubBusCriteria"
-				     finalTriggerAction="addPao" 
-				     >Choose Devices</cti:multiPaoPicker> to add this Schedule/Command.
-	            <input id="paoIdList" name="paoIdList" type="hidden">
-            </span>
+			<cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
+				<span id="pickerEnabled">
+					<cti:multiPaoPicker 
+					     paoIdField="paoIdList"
+					     constraint="com.cannontech.common.search.criteria.CBCSubBusCriteria"
+					     finalTriggerAction="addPao" 
+					     >Choose Devices</cti:multiPaoPicker> to add this Schedule/Command.
+		            <input id="paoIdList" name="paoIdList" type="hidden">
+	            </span>
+            </cti:checkProperty>
 			<br>
 			
 			<SELECT name="scheduleSelection" id="schedSelect" onChange="selectionChange()" >
@@ -205,7 +207,9 @@ Event.observe(window, 'load', function() {
 					<td><c:out value="${item.commandName}" /></td>
 					<td><c:out value="${item.deviceName}" /></td>
 					<td align="center">
-                        <img src="/WebConfig/yukon/Icons/cancel.gif" class="pointer" onclick="removeScheduleCommand(${item.eventId})">
+                        <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
+                            <img src="/WebConfig/yukon/Icons/cancel.gif" class="pointer" onclick="removeScheduleCommand(${item.eventId})">
+                        </cti:checkProperty>
 					</td>
 				</tr>
 				

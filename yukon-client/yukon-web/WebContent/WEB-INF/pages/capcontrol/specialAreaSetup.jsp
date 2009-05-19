@@ -44,7 +44,7 @@
     
                         <x:htmlTag value="br"/>
     
-                        <h:outputLink  value="javascript:specAreaVoltReductionPointPicker.showPicker()" >
+                        <h:outputLink  value="javascript:specAreaVoltReductionPointPicker.showPicker()" rendered="#{capControlForm.editingAuthorized}">
                             <h:outputText value="Select point"/>
                         </h:outputLink>
                  
@@ -52,6 +52,7 @@
                         <x:htmlTag value="br"/>
                         
                         <x:commandLink id="specialAreaVoltReductionPoint_setNone" 
+                            rendered="#{capControlForm.editingAuthorized}"
                             title="Do not use a point for control." 
                             styleClass="medStaticLabel"
                             value="No Volt Reduction Point" 

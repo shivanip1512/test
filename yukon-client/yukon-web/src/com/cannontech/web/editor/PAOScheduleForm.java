@@ -9,9 +9,13 @@ import javax.faces.model.SelectItem;
 
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.db.pao.PAOSchedule;
 import com.cannontech.servlet.nav.DBEditorNav;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.web.navigation.CtiNavObject;
+import com.cannontech.web.util.JSFParamUtil;
 
 /**
  * Offers methods to acces/use PAOSchedules
@@ -123,6 +127,15 @@ public class PAOScheduleForm extends DBEditorForm {
 	public void setCurrentSchedID(Integer i) {
 		currentSchedID = i;
 	}
+	
+	/**
+     * Returns true if the user has the CapControl Settings > Database Editing role property.
+     * @return
+     */
+    public boolean isEditingAuthorized() {
+        RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
+        return rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, JSFParamUtil.getYukonUser());
+    }
 
     protected void checkForErrors() throws Exception {
         // TODO Auto-generated method stub
