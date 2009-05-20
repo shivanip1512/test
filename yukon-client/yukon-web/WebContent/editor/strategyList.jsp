@@ -74,14 +74,15 @@
 								<x:panelGrid columns="2">
 								    
 								    <x:panelGroup>
-										<cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
 		                                    <h:commandLink id="editAction" style="margin: 2px;"
 		                                        title="Edit the schedules attributes"
 		                                        actionListener="#{capControlForm.editCBCStrat}">
-		                                        <x:graphicImage value="/editor/images/edit_item.gif" height="15" width="15" border="0" />
+		                                        <x:graphicImage value="/editor/images/edit_item.gif" height="15" width="15" border="0" rendered="#{capControlForm.editingAuthorized}"/>
+		                                        <x:graphicImage value="/editor/images/info_item.gif" height="15" width="15" border="0" rendered="#{!capControlForm.editingAuthorized}"/>
 		                                        <f:param name="stratID" value="#{cbcStrat.strategyID}" />
 		                                    </h:commandLink>
 		                                    <h:commandLink id="delAction" style="margin: 2px;"
+                                                rendered="#{capControlForm.editingAuthorized}"
 		                                        title="Remove the schedule from the system"
 		                                        onclick="confirmDelete( '#{cbcStrat.strategyID}' );"
 		                                        actionListener="#{capControlForm.deleteStrat}"
@@ -89,7 +90,6 @@
 		                                        <x:graphicImage value="/editor/images/delete_item.gif" height="15" width="15" border="0" />
 		                                        <f:param name="stratID" value="#{cbcStrat.strategyID}" />
 		                                    </h:commandLink>
-		                                </cti:checkProperty>
 									</x:panelGroup>
 									
 									<h:outputText value="#{cbcStrat.strategyName}" />
