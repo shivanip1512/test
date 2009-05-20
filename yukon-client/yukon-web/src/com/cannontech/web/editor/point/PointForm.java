@@ -14,9 +14,12 @@ import javax.servlet.http.HttpSession;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
@@ -43,10 +46,12 @@ import com.cannontech.database.db.point.Point;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.database.db.point.PointLimit;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.web.editor.DBEditorForm;
 import com.cannontech.web.exceptions.InvalidPointLimits;
 import com.cannontech.web.exceptions.InvalidPointOffsetException;
 import com.cannontech.web.util.CBCSelectionLists;
+import com.cannontech.web.util.JSFParamUtil;
 import com.cannontech.web.wizard.PointWizardModel;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -355,6 +360,9 @@ public class PointForm extends DBEditorForm
     
     
     public String create() {
+        if(!isEditingAuthorized()) {
+            throw new NotAuthorizedException("The user is not authorized to perform this action.");
+        }
         String edType = "pointEditor";
         FacesMessage fcsMessage = new FacesMessage();
         int pointType = getWizData().getPointType().intValue();
@@ -601,6 +609,9 @@ public class PointForm extends DBEditorForm
      * 
      */
     public void update() {
+        if(!isEditingAuthorized()) {
+            throw new NotAuthorizedException("The user is not authorized to perform this action.");
+        }
         
         String alarmStates = "";
         String exclNotify = "";
@@ -782,7 +793,14 @@ public class PointForm extends DBEditorForm
         }
      }
 
-
+    /**
+     * Returns true if the user has the CapControl Settings > Database Editing role property.
+     * @return
+     */
+    public boolean isEditingAuthorized() {
+        RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
+        return rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, JSFParamUtil.getYukonUser());
+    }
 
     private boolean checkPointLimits() {
         if (getPointBase() instanceof AnalogPoint) {

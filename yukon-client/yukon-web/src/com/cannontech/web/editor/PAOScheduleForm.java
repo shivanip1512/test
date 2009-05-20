@@ -9,6 +9,7 @@ import javax.faces.model.SelectItem;
 
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.db.pao.PAOSchedule;
@@ -42,7 +43,10 @@ public class PAOScheduleForm extends DBEditorForm {
 	 * Edit a schedule with the given id
 	 */
 	public void edit( ActionEvent ev ) {
-
+	    if(!isEditingAuthorized()) {
+            throw new NotAuthorizedException("The user is not authorized to perform this action.");
+        }
+	    
 		FacesContext context = FacesContext.getCurrentInstance();
 		Map paramMap = context.getExternalContext().getRequestParameterMap();
 		int elemID = Integer.parseInt( (String)paramMap.get("schedID") );
@@ -76,6 +80,9 @@ public class PAOScheduleForm extends DBEditorForm {
 	 * 		when the bug is fixed
 	 */
 	public String delete( ActionEvent ev ) {
+	    if(!isEditingAuthorized()) {
+	        throw new NotAuthorizedException("The user is not authorized to perform this action.");
+	    }
 
 		int elemID = Integer.parseInt(
 			ev.getComponent().getAttributes().get("title").toString().trim() );
