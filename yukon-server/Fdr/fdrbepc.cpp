@@ -100,6 +100,7 @@
 #include "cparms.h"
 #include "msg_cmd.h"
 #include "pointtypes.h"
+#include "numstr.h"
 
 #include "dllbase.h"
 #include "logger.h"
@@ -516,14 +517,18 @@ bool CtiFDR_BEPC::sendMessageToForeignSys ( CtiMessage *aMessage )
 void CtiFDR_BEPC::threadFunctionWriteToFile( void )
 {
     RWRunnableSelf  pSelf = rwRunnable( );
-    INT retVal=0,tries=0;
-    CtiTime         timeNow;
-    CtiTime         refreshTime(PASTDATE);
+
+    int retVal = 0;
+    int tries = 0;
+    CtiTime timeNow;
+    CtiTime refreshTime(PASTDATE);
+    CtiFDRPoint translationPoint;
+
     string action,desc;
-    CHAR fileName[200];
+    string fileName;
+    string workBuffer;
+
     FILE* fptr;
-    char workBuffer[500];  // not real sure how long each line possibly is
-    CtiFDRPoint        translationPoint;
 
     try
     {
@@ -552,15 +557,16 @@ void CtiFDR_BEPC::threadFunctionWriteToFile( void )
                 {
                     string fName = (*itr).second;
                     string coopId = (*itr).first;
-                    _snprintf (fileName, 200, "%s\\%s",getDriveAndPath().c_str(),fName.c_str());
+
+                    fileName = getDriveAndPath() + "\\" + fName;
 
                     if (shouldAppendToFile())
                     {
-                        fptr = fopen( fileName, "a");
+                        fptr = fopen( fileName.c_str(), "a");
                     }
                     else
                     {
-                        fptr = fopen( fileName, "w");
+                        fptr = fopen( fileName.c_str(), "w");
                     }
 
                     if ( fptr == NULL )
@@ -591,10 +597,8 @@ void CtiFDR_BEPC::threadFunctionWriteToFile( void )
                             else
                             {
                                 // value is expected to be an integer so cast the float
-                                _snprintf (workBuffer,500,"%s,%s,%d,0,0,0\n",
-                                           coopId.c_str(),
-                                           YukonToForeignTime(translationPoint.getLastTimeStamp()).c_str(),
-                                           (int)translationPoint.getValue());
+                                (int)translationPoint.getValue();
+                                workBuffer = coopId + "," +  YukonToForeignTime(translationPoint.getLastTimeStamp()) + "," + CtiNumStr((int)translationPoint.getValue()).toString() + ",0,0,0\n";
 
                                 if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                                 {
@@ -602,7 +606,8 @@ void CtiFDR_BEPC::threadFunctionWriteToFile( void )
                                     dout << CtiTime() << " Exporting pointid " << translationPoint.getDestinationList()[0].getTranslation() ;
                                     dout << " value " << (int)translationPoint.getValue() << " to file " << string(fileName) << endl;
                                 }
-                                fprintf (fptr,workBuffer);
+
+                                fprintf (fptr,workBuffer.c_str());
                             }
                         }
                         fclose(fptr);
