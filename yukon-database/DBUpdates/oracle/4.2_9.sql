@@ -250,7 +250,8 @@ CREATE INDEX INDX_CCEventLog_SubId ON CCEventLog (
 );
 
 DELETE FROM CCEventLog
-WHERE PointId IS NULL;
+WHERE PointId NOT IN (Select PointId 
+                      From Point);
 
 ALTER TABLE CCEventlog 
     ADD CONSTRAINT FK_CCEventLog_Point FOREIGN KEY(PointId) 
