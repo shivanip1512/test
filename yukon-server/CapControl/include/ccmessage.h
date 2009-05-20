@@ -192,13 +192,14 @@ public:
 
     virtual ~CtiCCSubstationVerificationMsg();
 
-    CtiCCSubstationVerificationMsg(LONG action, LONG id, LONG strategy) : _action(action), _id(id), _strategy(strategy), _cbInactivityTime(-1) { }; //provided for polymorphic persitence only
-    CtiCCSubstationVerificationMsg(LONG action, LONG id, LONG strategy, LONG inactivityTime) : _action(action), _id(id), _strategy(strategy), _cbInactivityTime(inactivityTime) { };
+    CtiCCSubstationVerificationMsg(LONG action, LONG id, LONG strategy) : _action(action), _id(id), _strategy(strategy), _cbInactivityTime(-1), _disableOvUvFlag(FALSE) { }; //provided for polymorphic persitence only
+    CtiCCSubstationVerificationMsg(LONG action, LONG id, LONG strategy, LONG inactivityTime, BOOL flag) : _action(action), _id(id), _strategy(strategy), _cbInactivityTime(inactivityTime), _disableOvUvFlag(flag) { };
 
     LONG getStrategy() const { return _strategy; };
     LONG getAction() const { return _action; };
     LONG getSubBusId() const { return _id; };
     LONG getInactivityTime() const {return _cbInactivityTime; };
+    BOOL getDisableOvUvFlag() const {return _disableOvUvFlag;};
 
     void restoreGuts(RWvistream&);
     void saveGuts(RWvostream&) const;
@@ -214,6 +215,7 @@ private:
     LONG _id; //subBusID
     LONG _strategy;
     LONG _cbInactivityTime;
+    BOOL _disableOvUvFlag;
 
 };
 

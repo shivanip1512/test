@@ -7102,7 +7102,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::analyzeVerificationByFeeder(const CtiTim
         setBusUpdatedFlag(TRUE);
 
         setVerificationFlag(FALSE);
-        capMessages.push_back(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::DISABLE_SUBSTATION_BUS_VERIFICATION, getPAOId(),0, -1));
+        capMessages.push_back(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::DISABLE_SUBSTATION_BUS_VERIFICATION, getPAOId(),0, -1, getVerificationDisableOvUvFlag()));
         capMessages.push_back(new CtiCCCommand(CtiCCCommand::ENABLE_SUBSTATION_BUS, getPAOId()));
 
         if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
@@ -7433,13 +7433,14 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
             addFlags[13] = (_likeDayControlFlag?'Y':'N');
             addFlags[14] = (_voltReductionFlag?'Y':'N');
             addFlags[15] = (_sendMoreTimeControlledCommandsFlag?'Y':'N');
+            addFlags[16] = (_disableOvUvVerificationFlag?'Y':'N');
             _additionalFlags = string(char2string(*addFlags) + char2string(*(addFlags+1)) + char2string(*(addFlags+2))+
                                          char2string(*(addFlags+3)) + char2string(*(addFlags+4)) +  char2string(*(addFlags+5)) +
                                          char2string(*(addFlags+6)) + char2string(*(addFlags+7)) + char2string(*(addFlags+8)) +
                                          char2string(*(addFlags+9)) + char2string(*(addFlags+10)) + char2string(*(addFlags+11)) +
                                          char2string(*(addFlags+12)) +char2string(*(addFlags+13)) +char2string(*(addFlags+14))
-                                        +char2string(*(addFlags+15)));
-            _additionalFlags.append("NNNN");
+                                        +char2string(*(addFlags+15)) +char2string(*(addFlags+16)));
+            _additionalFlags.append("NNN");
 
             //storing current and before var values in the same db column CURRENTVALUE.BEFOREVALUE
             double hijackedPhaseABeforeAndAfter = (INT)_phaseAvalue + (_phaseAvalueBeforeControl/BEFOREPHASEMULTIPLIER);
@@ -7750,6 +7751,24 @@ void CtiCCSubstationBus::setVerificationStrategy(int verificationStrategy)
 int CtiCCSubstationBus::getVerificationStrategy(void) const
 {
     return _verificationStrategy;
+}
+
+void CtiCCSubstationBus::setVerificationDisableOvUvFlag(BOOL flag)
+{
+    if( _disableOvUvVerificationFlag != flag )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
+    _disableOvUvVerificationFlag = flag;
+}
+
+BOOL CtiCCSubstationBus::getVerificationDisableOvUvFlag(void) const
+{
+    return _disableOvUvVerificationFlag;
 }
 
 
@@ -10525,6 +10544,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::operator=(const CtiCCSubstationBus& righ
         _currentVerificationCapBankId = right._currentVerificationCapBankId;
         _currentVerificationFeederId = right._currentVerificationFeederId;
         _verificationStrategy = right._verificationStrategy;
+        _disableOvUvVerificationFlag = right._disableOvUvVerificationFlag;
         _capBankToVerifyInactivityTime = right._capBankToVerifyInactivityTime;
         _verificationFlag = right._verificationFlag;
         delete_container(_ccfeeders);
@@ -10759,6 +10779,7 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
     setCurrentVerificationFeederId(-1);
     setCurrentVerificationCapBankState(0);
     setVerificationStrategy(-1);
+    setVerificationDisableOvUvFlag(FALSE);
     setCapBankInactivityTime(-1);
 
     setSwitchOverStatus(FALSE);
@@ -10931,6 +10952,7 @@ void CtiCCSubstationBus::setDynamicData(RWDBReader& rdr)
         _likeDayControlFlag = (_additionalFlags[13]=='y'?TRUE:FALSE);
         _voltReductionFlag = (_additionalFlags[14]=='y'?TRUE:FALSE);
         _sendMoreTimeControlledCommandsFlag  = (_additionalFlags[15]=='y'?TRUE:FALSE);
+        _disableOvUvVerificationFlag = (_additionalFlags[16]=='y'?TRUE:FALSE); 
 
         if (!_TIME_OF_DAY_VAR_CONF)
         {

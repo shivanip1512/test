@@ -327,7 +327,8 @@ void CtiCCSubstationVerificationMsg::restoreGuts(RWvistream& strm)
     strm >> _action
          >> _id
          >>_strategy
-         >>_cbInactivityTime;
+         >>_cbInactivityTime
+         >> _disableOvUvFlag;
 
       return;
 }
@@ -344,7 +345,8 @@ void CtiCCSubstationVerificationMsg::saveGuts(RWvostream& strm) const
     strm <<  _action
          <<  _id
          << _strategy
-         << _cbInactivityTime;
+         << _cbInactivityTime
+         << _disableOvUvFlag;
 
     return;
 }
@@ -361,6 +363,7 @@ CtiCCSubstationVerificationMsg& CtiCCSubstationVerificationMsg::operator=(const 
         _strategy         = right._strategy;
         _id               = right._id;
         _cbInactivityTime = right._cbInactivityTime;
+        _disableOvUvFlag  = right._disableOvUvFlag;
     }
 
     return *this;

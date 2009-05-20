@@ -388,6 +388,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setVerificationAlreadyStartedFlag(BOOL verificationFlag);
     void setVerificationStrategy(int verificationStrategy);
     int getVerificationStrategy(void) const;
+    void setVerificationDisableOvUvFlag(BOOL flag);
+    BOOL getVerificationDisableOvUvFlag(void) const;
     string getVerificationString();
     void setCapBankInactivityTime(LONG capBankToVerifyInactivityTime);
     LONG getCapBankInactivityTime(void) const;
@@ -548,6 +550,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     LONG _voltReductionControlId;
     LONG _currentCapBankToVerifyAssumedOrigState;
     int _verificationStrategy;
+    BOOL _disableOvUvVerificationFlag;
     LONG _capBankToVerifyInactivityTime;
 
     DOUBLE _targetvarvalue;

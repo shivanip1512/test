@@ -536,7 +536,7 @@ void CtiCapController::controlLoop()
                                                             //reset VerificationFlag
                                                             currentSubstationBus->setVerificationFlag(FALSE);
                                                             currentSubstationBus->setBusUpdatedFlag(TRUE);
-                                                            capMessages.push_back(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::DISABLE_SUBSTATION_BUS_VERIFICATION, currentSubstationBus->getPAOId(),0, -1));
+                                                            capMessages.push_back(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::DISABLE_SUBSTATION_BUS_VERIFICATION, currentSubstationBus->getPAOId(),0, -1, currentSubstationBus->getVerificationDisableOvUvFlag()));
                                                             capMessages.push_back(new CtiCCCommand(CtiCCCommand::ENABLE_SUBSTATION_BUS, currentSubstationBus->getPAOId()));
                                                             if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
                                                             {
@@ -627,7 +627,7 @@ void CtiCapController::controlLoop()
                                                         //reset VerificationFlag
                                                         currentSubstationBus->setVerificationFlag(FALSE);
                                                         currentSubstationBus->setBusUpdatedFlag(TRUE);
-                                                        capMessages.push_back(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::DISABLE_SUBSTATION_BUS_VERIFICATION, currentSubstationBus->getPAOId(),0, -1));
+                                                        capMessages.push_back(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::DISABLE_SUBSTATION_BUS_VERIFICATION, currentSubstationBus->getPAOId(),0, -1, currentSubstationBus->getVerificationDisableOvUvFlag()));
                                                         capMessages.push_back(new CtiCCCommand(CtiCCCommand::ENABLE_SUBSTATION_BUS, currentSubstationBus->getPAOId()));
 
                                                         if (_CC_DEBUG & CC_DEBUG_VERIFICATION)

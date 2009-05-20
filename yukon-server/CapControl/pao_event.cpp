@@ -25,21 +25,28 @@ CtiPAOEvent::CtiPAOEvent()
 }
 
 
-CtiPAOEvent::CtiPAOEvent(long eventId, long schedId, long paoId, const string& command)
+CtiPAOEvent::CtiPAOEvent(long eventId, long schedId, long paoId, const string& command, BOOL disableOvUv)
 {
     _eventId = eventId;
     _scheduleId = schedId;
     _paoId = paoId;
     _eventCommand = command;
+    _disableOvUvFlag = disableOvUv;
 }
 
 
 CtiPAOEvent::CtiPAOEvent(RWDBReader& rdr)
 {
+    string tempBoolString;
+
     rdr["eventid"] >> _eventId;
     rdr["scheduleid"] >> _scheduleId;
     rdr["paoid"] >> _paoId;
     rdr["command"] >> _eventCommand;
+    rdr["disableovuv"] >> tempBoolString;
+    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
+    setDisableOvUvFlag(tempBoolString=="y"?TRUE:FALSE);
+
 
     _dirty = false;
 }
@@ -57,6 +64,7 @@ CtiPAOEvent& CtiPAOEvent::operator=(const CtiPAOEvent& right)
     _scheduleId   = right._scheduleId;
     _paoId        = right._paoId;
     _eventCommand = right._eventCommand;
+    _disableOvUvFlag = right._disableOvUvFlag;
 
     _dirty = right._dirty;
     
@@ -89,6 +97,11 @@ long CtiPAOEvent::getPAOId() const
 const string& CtiPAOEvent::getEventCommand() const
 {
     return _eventCommand;
+}
+
+BOOL CtiPAOEvent::getDisableOvUvFlag() const
+{
+    return _disableOvUvFlag;
 }
 
 void CtiPAOEvent::setEventId(long eventId)
@@ -125,6 +138,15 @@ void CtiPAOEvent::setEventCommand(const string& eventCommand)
         _dirty = true;
     }
     _eventCommand = eventCommand;
+    return;
+}
+void CtiPAOEvent::setDisableOvUvFlag(BOOL flag)
+{
+    if (_disableOvUvFlag != flag)
+    {
+        _dirty = true;
+    }
+    _disableOvUvFlag = flag;
     return;
 }
 

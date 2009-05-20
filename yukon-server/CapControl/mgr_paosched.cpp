@@ -392,7 +392,7 @@ void CtiPAOScheduleManager::runScheduledEvent(CtiPAOEvent *event)
         case CapControlVerification:
             {
                 CtiCCExecutorFactory f;
-                CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::ENABLE_SUBSTATION_BUS_VERIFICATION, event->getPAOId(), strategy, secsSinceLastOp));
+                CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::ENABLE_SUBSTATION_BUS_VERIFICATION, event->getPAOId(), strategy, secsSinceLastOp, event->getDisableOvUvFlag()));
                 executor->Execute();
                 delete executor;
             }
@@ -428,6 +428,7 @@ int CtiPAOScheduleManager::parseEvent(const string& _command, int &strategy, lon
     string command = _command;
     string tempCommand;
     LONG multiplier = 0;
+    BOOL disableOvUvFlag = false;
     
     int retVal = SomethingElse; //0 capbank event...future use could include other devices??  dunno..open to expand on.
                              
@@ -656,7 +657,8 @@ bool CtiPAOScheduleManager::getEventsBySchedId(long id, std::list<CtiPAOEvent*> 
                 CtiPAOEvent* thisEvent = new CtiPAOEvent((*iter)->getEventId(),
                                                          (*iter)->getScheduleId(),
                                                          (*iter)->getPAOId(),
-                                                         (*iter)->getEventCommand());
+                                                         (*iter)->getEventCommand(),
+                                                         (*iter)->getDisableOvUvFlag());
                 events.push_back(thisEvent);
                 retVal = true;
             }
@@ -757,7 +759,7 @@ void CtiPAOScheduleManager::refreshSchedulesFromDB()
             while (iter != _schedules.end())
             {
                 CtiPAOSchedule *schedToDelete  = *iter;
-				iter++;
+                iter++;
                 if (schedToDelete != NULL)
                 {
                     delete schedToDelete;
@@ -815,7 +817,8 @@ void CtiPAOScheduleManager::refreshEventsFromDB()
                         selector << paoEventTable["eventid"]
                         << paoEventTable["scheduleid"]
                         << paoEventTable["paoid"]
-                        << paoEventTable["command"];
+                        << paoEventTable["command"]
+                        << paoEventTable["disableovuv"];
 
 
                         selector.from(paoEventTable);
@@ -860,7 +863,7 @@ void CtiPAOScheduleManager::refreshEventsFromDB()
             while (iter != _events.end())
             {
                 CtiPAOEvent *evtToDelete = *iter;
-				iter++;
+                iter++;
                 if (evtToDelete != NULL)
                 {
                     delete evtToDelete;

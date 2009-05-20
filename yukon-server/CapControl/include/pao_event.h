@@ -27,7 +27,7 @@ class CtiPAOEvent  : public CtiMemDBObject
 public:
 
     CtiPAOEvent();
-    CtiPAOEvent(long eventId, long schedId, long paoId, const string& command);
+    CtiPAOEvent(long eventId, long schedId, long paoId, const string& command, BOOL disableOvUv);
     CtiPAOEvent(RWDBReader& rdr);
     virtual ~CtiPAOEvent();
 
@@ -35,11 +35,13 @@ public:
     long getScheduleId()const;
     long getPAOId()const;
     const string& getEventCommand() const;
+    BOOL getDisableOvUvFlag() const;
 
     void setEventId(long eventId);
     void setScheduleId(long schedId);
     void setPAOId(long paoId);
     void setEventCommand(const string& eventCommand);
+    void setDisableOvUvFlag(BOOL flag);
 
     CtiPAOEvent& operator=(const CtiPAOEvent& right);
     int operator==(const CtiPAOEvent& right) const;
@@ -56,7 +58,8 @@ private:
     long         _eventId;
     long         _scheduleId;
     long         _paoId;
-    string    _eventCommand;
+    string       _eventCommand;
+    BOOL         _disableOvUvFlag;
     
 };
 #endif

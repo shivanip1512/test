@@ -248,10 +248,10 @@ void CtiCCSubstationVerificationExecutor::EnableSubstationBusVerification()
                     
                     currentSubstationBus->setVerificationFlag(TRUE);
                     currentSubstationBus->setVerificationStrategy(_subVerificationMsg->getStrategy());
+                    currentSubstationBus->setVerificationDisableOvUvFlag(_subVerificationMsg->getDisableOvUvFlag());
                     currentSubstationBus->setCapBankInactivityTime(_subVerificationMsg->getInactivityTime());
                     currentSubstationBus->setBusUpdatedFlag(TRUE);
-                   //store->UpdateBusVerificationFlagInDB(currentSubstationBus);
-                    //string text("Substation Bus Verification Enabled");
+
                     string text = currentSubstationBus->getVerificationString();
                     text += " Starting";
                     string additional("Bus: ");
@@ -273,10 +273,16 @@ void CtiCCSubstationVerificationExecutor::EnableSubstationBusVerification()
                     CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), 0, capControlEnableVerification, currentSubstationBus->getEventSequence(), 1, text, "cap control"));
 
                     CtiCCExecutorFactory f;
-
+                    CtiCCExecutor* executor;
+                    if (currentSubstationBus->getVerificationDisableOvUvFlag())
+                    {
+                        executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentSubstationBus->getPAOId()));
+                        executor->Execute();
+                        delete executor;
+                    }
                     CtiCCCommand* cmdMsg = new CtiCCCommand(CtiCCCommand::DISABLE_SUBSTATION_BUS, currentSubstationBus->getPAOId());
                     cmdMsg->setUser(_subVerificationMsg->getUser());
-                    CtiCCExecutor* executor = f.createExecutor(cmdMsg);
+                    executor = f.createExecutor(cmdMsg);
                     executor->Execute();
                     delete executor;
 
@@ -289,6 +295,7 @@ void CtiCCSubstationVerificationExecutor::EnableSubstationBusVerification()
                     {
                         currentSubstationBus->setOverlappingVerificationFlag( TRUE );
                         currentSubstationBus->setVerificationStrategy(_subVerificationMsg->getStrategy());
+                        currentSubstationBus->setVerificationDisableOvUvFlag(_subVerificationMsg->getDisableOvUvFlag());
                         currentSubstationBus->setCapBankInactivityTime(_subVerificationMsg->getInactivityTime());
                         currentSubstationBus->setBusUpdatedFlag(TRUE);
                        //store->UpdateBusVerificationFlagInDB(currentSubstationBus);
@@ -451,8 +458,16 @@ void CtiCCSubstationVerificationExecutor::DisableSubstationBusVerification()
                 currentSubstationBus->setPerformingVerificationFlag(FALSE);
                 currentSubstationBus->setOverlappingVerificationFlag( FALSE );
                 currentSubstationBus->setVerificationDoneFlag(FALSE);
-
                 currentSubstationBus->setWaitToFinishRegularControlFlag(FALSE);
+
+                if (currentSubstationBus->getVerificationDisableOvUvFlag())
+                {
+                    CtiCCExecutorFactory f;
+                    CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentSubstationBus->getPAOId()));
+                    executor->Execute();
+                    delete executor;
+                    currentSubstationBus->setVerificationDisableOvUvFlag(FALSE);
+                }
 
                 currentSubstationBus->setBusUpdatedFlag(TRUE);
 
