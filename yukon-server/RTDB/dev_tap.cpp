@@ -343,6 +343,10 @@ INT CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer,INT commRe
             else // We will look for more chars.
             {
                 setCurrentState( StateAbsorb );
+                if(xfer.getInCountActual() == 0)
+                {
+                    setAttemptsRemaining( getAttemptsRemaining() - 1 );
+                }
                 if(xfer.doTrace(commReturnValue))
                 {
                     traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, FALSE);
@@ -629,16 +633,13 @@ INT CtiDeviceTapPagingTerminal::generateCommandHandshake(CtiXfer  &xfer, list< C
              * Identify happy.
              */
 
-            if( getAttemptsRemaining() - 1 <= 0 )
+            if( getAttemptsRemaining() <= 0 )
             {
                 status = ErrorPageNoResponse;
                 setCurrentState( StateHandshakeAbort );
             }
             else
             {
-                // Rely upon the already set up machinery, and just decrement the remaining trys
-                setAttemptsRemaining( getAttemptsRemaining() - 1 );               // Repeat this operation this many times before err-abort
-
                 xfer.setOutCount( 0 );              // Nothing new here..
 
                 xfer.setInCountExpected(1);
