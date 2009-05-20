@@ -15,10 +15,10 @@
 *
 *    PURPOSE:  ascii export
 *
-*    DESCRIPTION: 
+*    DESCRIPTION:
 *
 *    ---------------------------------------------------
-*    History: 
+*    History:
       $Log: fdrbepc.cpp,v $
       Revision 1.10.2.1  2008/11/13 17:23:46  jmarks
       YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
@@ -496,7 +496,7 @@ void CtiFDR_BEPC::cleanupTranslationPoint(CtiFDRPointSPtr &translationPoint, boo
 }
 
 bool CtiFDR_BEPC::sendMessageToForeignSys ( CtiMessage *aMessage )
-{   
+{
     bool retVal = true;
     CtiPointDataMsg     *localMsg = (CtiPointDataMsg *)aMessage;
     CtiFDRPoint point;
@@ -511,7 +511,7 @@ bool CtiFDR_BEPC::sendMessageToForeignSys ( CtiMessage *aMessage )
 * Function Name: CtiFDRT_BEPC::threadFunctionWriteToFile (void )
 *
 * Description: thread that waits and then grabs the file for processing
-* 
+*
 ***************************************************************************
 */
 void CtiFDR_BEPC::threadFunctionWriteToFile( void )
@@ -597,7 +597,6 @@ void CtiFDR_BEPC::threadFunctionWriteToFile( void )
                             else
                             {
                                 // value is expected to be an integer so cast the float
-                                (int)translationPoint.getValue();
                                 workBuffer = coopId + "," +  YukonToForeignTime(translationPoint.getLastTimeStamp()) + "," + CtiNumStr((int)translationPoint.getValue()).toString() + ",0,0,0\n";
 
                                 if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
@@ -634,8 +633,8 @@ void CtiFDR_BEPC::threadFunctionWriteToFile( void )
 
 /****************************************************************************************
 *
-*      Here Starts some C functions that are used to Start the 
-*      Interface and Stop it from the Main() of FDR.EXE.  
+*      Here Starts some C functions that are used to Start the
+*      Interface and Stop it from the Main() of FDR.EXE.
 *
 */
 
@@ -646,11 +645,11 @@ extern "C" {
 /************************************************************************
 * Function Name: Extern C int RunInterface(void)
 *
-* Description: This is used to Start the Interface from the Main() 
-*              of FDR.EXE. Each interface it Dynamicly loaded and 
+* Description: This is used to Start the Interface from the Main()
+*              of FDR.EXE. Each interface it Dynamicly loaded and
 *              this function creates a global FDRCygnet Object and then
 *              calls its run method to cank it up.
-* 
+*
 *************************************************************************
 */
 
@@ -667,11 +666,11 @@ extern "C" {
 /************************************************************************
 * Function Name: Extern C int StopInterface(void)
 *
-* Description: This is used to Stop the Interface from the Main() 
-*              of FDR.EXE. Each interface it Dynamicly loaded and 
+* Description: This is used to Stop the Interface from the Main()
+*              of FDR.EXE. Each interface it Dynamicly loaded and
 *              this function stops a global FDRCygnet Object and then
 *              deletes it.
-* 
+*
 *************************************************************************
 */
     DLLEXPORT int StopInterface( void )
