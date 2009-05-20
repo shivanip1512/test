@@ -340,8 +340,10 @@ INT CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer,INT commRe
                     traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, FALSE);
                 }
             }
-            else // We will look for more chars.
+            else // We will look for more chars until we find what we want or no more chars come.
             {
+                // Note that this never stops if we always get more data back. 
+                // It is expected that no system will ever do this. There are always pauses.
                 setCurrentState( StateAbsorb );
                 if(xfer.getInCountActual() == 0)
                 {
