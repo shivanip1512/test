@@ -104,7 +104,11 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         try {
             liteInv = starsSearchDao.searchLMHardwareBySerialNumber(enrollmentHelper.getSerialNumber(), energyCompany);
         } catch (ObjectInOtherEnergyCompanyException e) {
-            throw new RuntimeException(e);
+            if(enrollmentEnum.equals(EnrollmentEnum.UNENROLL)) {
+                liteInv = (LiteInventoryBase) e.getObject();
+            } else {
+                throw new RuntimeException(e);
+            }
         }
         if (liteInv == null) {
             throw new IllegalArgumentException("The supplied piece of hardware was not found: " + enrollmentHelper.getSerialNumber());

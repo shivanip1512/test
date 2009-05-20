@@ -27,7 +27,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.db.stars.hardware.StaticLoadGroupMapping;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.service.StarsTwoWayLcrYukonDeviceAssignmentService;
 import com.cannontech.stars.dr.hardware.exception.StarsTwoWayLcrYukonDeviceAssignmentException;
 import com.cannontech.stars.dr.hardware.model.HardwareType;
@@ -35,6 +35,7 @@ import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.model.ThermostatSchedule;
 import com.cannontech.stars.dr.util.YukonListEntryHelper;
 import com.cannontech.stars.util.InventoryUtils;
+import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -287,12 +288,15 @@ public class CreateLMHardwareAction implements ActionBase {
 				}
 			}
 			else {
-				
-				StarsInventoryBaseDao starsInventoryBaseDao = 
-					YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+			    StarsSearchDao starsSearchDao = 
+					YukonSpringHook.getBean("starsSearchDao", StarsSearchDao.class);
 				
 				// Add hardware in the inventory to customer account
-				liteInv = starsInventoryBaseDao.getByInventoryId(invID);
+			    try {
+			        liteInv = starsSearchDao.getById(invID, energyCompany);
+			    } catch (ObjectInOtherEnergyCompanyException e) {
+			        throw new WebClientException("The hardware is found in another energy company [" + e.getEnergyCompany().getName() + "]");
+			    }
 				
 				if (liteInv.getAccountID() > 0) {
 					// Remove hardware from previous account
@@ -305,7 +309,7 @@ public class CreateLMHardwareAction implements ActionBase {
 					DeleteLMHardwareAction.removeInventory(deleteHw, litePrevAccount, energyCompany);
 					
 					// The liteInv object is changed in the method above, so we need to retrieve it again
-					liteInv = starsInventoryBaseDao.getByInventoryId(invID);
+					liteInv = starsSearchDao.getById(invID, energyCompany);
 					
 					StarsCustAccountInformation starsPrevAccount = energyCompany.getStarsCustAccountInformation( litePrevAccount.getAccountID() );
 					if (starsPrevAccount != null)

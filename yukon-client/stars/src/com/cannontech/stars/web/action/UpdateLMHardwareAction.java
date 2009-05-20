@@ -23,7 +23,6 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.service.StarsTwoWayLcrYukonDeviceAssignmentService;
 import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
@@ -132,11 +131,11 @@ public class UpdateLMHardwareAction implements ActionBase {
 				}
 			}
 			else {
-				
-				StarsInventoryBaseDao starsInventoryBaseDao = 
-					YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
-				
-				liteInv = starsInventoryBaseDao.getByInventoryId(updateHw.getInventoryID());
+                try {
+                    liteInv = starsSearchDao.getById(updateHw.getInventoryID(), energyCompany);
+                } catch (ObjectInOtherEnergyCompanyException e) {
+                    throw new WebClientException("The hardware is found in another energy company [" + e.getEnergyCompany().getName() + "]");
+                }			    
 				origInvID = updateHw.getInventoryID();
 				
 				if (liteInv.getAccountID() == 0) {
@@ -182,7 +181,7 @@ public class UpdateLMHardwareAction implements ActionBase {
             
 			try {
 				respOper.setStarsFailure( StarsFactory.newStarsFailure(
-						StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot update the hardware information") );
+						StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot update the hardware information. " + e.getMessage()));
 				return SOAPUtil.buildSOAPMessage( respOper );
 			}
 			catch (Exception e2) {
@@ -246,6 +245,9 @@ public class UpdateLMHardwareAction implements ActionBase {
 		throws WebClientException
 	{
 		try {
+		    //verify inventory exists in the same energyCompany
+            starsSearchDao.getById(updateHw.getInventoryID(), energyCompany);
+            
 			if (liteInv instanceof LiteStarsLMHardware) {
 				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) liteInv;
 				String serialNo = updateHw.getLMHardware().getManufacturerSerialNumber();
@@ -253,15 +255,11 @@ public class UpdateLMHardwareAction implements ActionBase {
 				if (serialNo.equals(""))
 					throw new WebClientException( "Failed to update the hardware, serial # cannot be empty" );
 				
-				try {
-					if (!liteHw.getManufacturerSerialNumber().equals(serialNo) &&
-							starsSearchDao.searchLMHardwareBySerialNumber(serialNo, energyCompany) != null)
-						throw new WebClientException( "Failed to update the hardware, serial # already exists" );
+				if (!liteHw.getManufacturerSerialNumber().equals(serialNo) &&
+				        starsSearchDao.searchLMHardwareBySerialNumber(serialNo, energyCompany) != null) {
+				    throw new WebClientException( "Failed to update the hardware, serial # already exists" );
 				}
-				catch (ObjectInOtherEnergyCompanyException e) {
-					throw new WebClientException( "The hardware is found in another energy company. Please contact " + energyCompany.getParent().getName() + " for more information." );
-				}
-				
+
 				com.cannontech.database.data.stars.hardware.LMHardwareBase hw =
 						new com.cannontech.database.data.stars.hardware.LMHardwareBase();
 				StarsLiteFactory.setLMHardwareBase( hw, liteHw );
@@ -324,7 +322,9 @@ public class UpdateLMHardwareAction implements ActionBase {
 			throw new WebClientException( "Failed to update the hardware information" );
 		} catch (StarsTwoWayLcrYukonDeviceAssignmentException e) {
 			throw new WebClientException(e.getMessage(), e);
-		}
+        } catch (ObjectInOtherEnergyCompanyException e) {
+            throw new WebClientException("The hardware is found in another energy company [" + e.getEnergyCompany().getName() + "]");
+        }
 	}
 	
 	public static LiteInventoryBase updateInventory(StarsUpdateLMHardware updateHw, StarsDeleteLMHardware deleteHw,
