@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpSession;
 
 import com.cannontech.cbc.exceptions.CBCExceptionMessages;
 import com.cannontech.clientutils.CTILogger;
@@ -13,7 +12,6 @@ import com.cannontech.database.data.capcontrol.*;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.web.editor.DBEditorForm;
 import com.cannontech.web.util.CBCCopyUtils;
 
@@ -147,26 +145,13 @@ public class DBCopyForm extends DBEditorForm {
      * @param copyPaobjectID
      */
     private void routeToCBCEditor(int copyPaobjectID) {
-        String red = "cbcBase.jsf?type=2&itemid=" + copyPaobjectID;
+        String red = "cbcBase.jsf?type=2&itemid=" + copyPaobjectID + "&copySuccess=true";
         try {
-            FacesContext.getCurrentInstance()
-                        .getExternalContext()
-                        .redirect(red);
-            FacesContext.getCurrentInstance().responseComplete();
+            FacesContext currentContext = FacesContext.getCurrentInstance();
+            currentContext.getExternalContext().redirect(red);
+            currentContext.responseComplete();
         } catch (Exception e) {
             CTILogger.error("DBCopyForm.routeToEditor. ERROR - " + e.getMessage());
-        } finally {
-            bookmarkURL(red);
-
-        }
-    }
-
-    private void bookmarkURL(String red) {
-        if (FacesContext.getCurrentInstance() != null) {
-            HttpSession session = (HttpSession) FacesContext.getCurrentInstance()
-                                                            .getExternalContext()
-                                                            .getSession(false);
-            String url = "/editor/" + red;
         }
     }
 
@@ -182,9 +167,6 @@ public class DBCopyForm extends DBEditorForm {
             FacesContext.getCurrentInstance().responseComplete();
         } catch (IOException e) {
             CTILogger.error("DBCopyForm.routeToEditor. ERROR - " + e.getMessage());
-        } finally {
-            bookmarkURL(red);
-
         }
     }
 

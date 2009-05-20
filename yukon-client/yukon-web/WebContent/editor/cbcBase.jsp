@@ -1,7 +1,10 @@
-<%@ page import="com.cannontech.database.data.pao.*" %>
-<%@ page import="com.cannontech.util.*" %>
-<%@ page import="com.cannontech.web.util.*" %>
-<%@ page import="com.cannontech.web.editor.*" %>
+<%@ page import="com.cannontech.database.data.pao.*"%>
+<%@ page import="com.cannontech.util.*"%>
+<%@ page import="com.cannontech.web.util.*"%>
+<%@ page import="com.cannontech.web.editor.*"%>
+<%@ page import="org.apache.commons.lang.StringUtils"%>
+<%@ page import="javax.faces.application.FacesMessage"%>
+<%@ page import="com.cannontech.cbc.exceptions.CBCExceptionMessages"%>
 
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
@@ -9,7 +12,8 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
-<f:view>
+
+<%@page import="javax.faces.context.FacesContext"%><f:view>
 
 <cti:standardPage title="CapControl Wizard" module="capcontrol">
 <cti:includeScript link="/JavaScript/itemPicker.js"/>
@@ -27,6 +31,7 @@
     //****
     int type = ParamUtil.getInteger(request, "type", PAOGroups.INVALID);
     int id = ParamUtil.getInteger(request, "itemid", PAOGroups.INVALID);
+    String copySuccess = ParamUtil.getString(request, "copySuccess", null);
     CapControlForm capControlForm = (CapControlForm)JSFParamUtil.getJSFVar( "capControlForm" );
     if( id != PAOGroups.INVALID ) {
         JSFUtil.resetBackingBean("capControlForm");
@@ -38,6 +43,11 @@
         CapControlForm.setupFacesNavigation();
 
         capControlForm.initItem( id, type );
+        if(!StringUtils.isBlank(copySuccess)){
+            FacesMessage message = new FacesMessage();
+            message.setDetail(CBCExceptionMessages.DB_UPDATE_SUCCESS);
+            FacesContext.getCurrentInstance().addMessage("copy_object", message);
+        }
     }
 %>
 <f:verbatim>
@@ -69,7 +79,7 @@
                     <x:panelGroup>
                     </x:panelGroup>
                 </f:facet>
-                <x:panelTabbedPane id="tabPane" activeTabStyleClass="activeTab" style="width: 100%; vertical-align: top;" selectedIndex="#{capControlForm.selectedPanelIndex}" serverSideTabSwitch="#{true}">
+                <x:panelTabbedPane id="tabPane" activeTabStyleClass="activeTab" style="width: 100%; vertical-align: top;" selectedIndex="#{capControlForm.selectedPanelIndex}" serverSideTabSwitch="#{false}">
                 
                 	<x:tabChangeListener type="com.cannontech.web.editor.model.CCTabChangeListener"/>
                 	
