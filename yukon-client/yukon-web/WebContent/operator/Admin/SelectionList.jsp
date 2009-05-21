@@ -141,7 +141,7 @@ function saveEntry(form) {
 		var oOption = new Option(entryTexts[curIdx],curIdx);
 		entries.options.add(oOption, curIdx);
 	} else {
-		var oOption = new Option(form.EntryText.value,entries.options[curIdx].value);
+		var oOption = new Option(form.EntryText.value,curIdx);
 		entries.options[curIdx] = oOption;
 	}
 	entries.selectedIndex = curIdx;
@@ -239,16 +239,16 @@ function restoreDefault(form) {
 	
 	var entries = form.ListEntries;
 	for (idx = entries.options.length - 2; idx >= 0; idx--)
-		entries.options.remove(idx);
+		entries.removeChild(entries.options[idx]);
 	entryIDs.splice(0, entryIDs.length);
 	entryTexts.splice(0, entryTexts.length);
 	entryYukDefIDs.splice(0, entryYukDefIDs.length);
 	dftListIndices.splice(0, dftListIndices.length);
 	
 	for (idx = 0; idx < dftEntryTexts.length; idx++) {
-		var oOption = document.createElement("OPTION");
+		var oOption = new Option(dftEntryTexts[idx],idx);;
 		entries.options.add(oOption, idx);
-		oOption.innerText = dftEntryTexts[idx].replace(/&quot;/g, '"');
+		oOption.value = dftEntryTexts[idx].replace(/&quot;/g, '"');
 		entryIDs[idx] = 0;
 		entryTexts[idx] = dftEntryTexts[idx];
 		entryYukDefIDs[idx] = dftEntryYukDefIDs[idx];
