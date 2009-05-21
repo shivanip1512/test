@@ -142,6 +142,7 @@ void readers_writer_lock_t::releaseRead()
     }
 }
 
+//  Tracks writer recursion so we know when to release the lock
 void readers_writer_lock_t::add_writer()
 {
     if( !_writer_recursion++ )
@@ -150,6 +151,7 @@ void readers_writer_lock_t::add_writer()
     }
 }
 
+//  Tracks writer recursion so we know when to release the lock
 void readers_writer_lock_t::add_reader()
 {
     const thread_id_t tid = GetCurrentThreadId();
@@ -180,6 +182,7 @@ void readers_writer_lock_t::add_reader()
 }
 
 
+//  Return value indicates if we still hold a recursive lock
 bool readers_writer_lock_t::remove_reader()
 {
     const thread_id_t tid = GetCurrentThreadId();
@@ -204,6 +207,7 @@ bool readers_writer_lock_t::remove_reader()
 }
 
 
+//  Return value indicates if we still hold a recursive lock
 bool readers_writer_lock_t::remove_writer()
 {
     if( !--_writer_recursion )
@@ -264,12 +268,12 @@ bool readers_writer_lock_t::current_thread_owns_any() const
     return current_thread_owns_writer() || current_thread_owns_reader();
 }
 
-readers_writer_lock_t::thread_id_t readers_writer_lock_t::lastAcquiredByTID() const
+string readers_writer_lock_t::lastAcquiredByTID() const
 {
-    return _writer_id;
+    return *this;
 }
 
-readers_writer_lock_t::operator string()
+readers_writer_lock_t::operator string() const
 {
     stringstream s;
 

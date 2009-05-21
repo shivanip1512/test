@@ -65,9 +65,9 @@ public:
                 wchar_t buff[20];
                 _itow( GetCurrentThreadId(), buff, 10);
                 file += buff;
-                file += L"-";
+                /*file += L"-";
                 _itow( _res.lastAcquiredByTID(), buff, 10);
-                file += buff;
+                file += buff;*/
                 file += L".DMP";
                 /// CreateDump(GetCurrentProcessId(), file.c_str(), (unsigned long) 0, (unsigned long) NULL, (EXCEPTION_POINTERS*) NULL); //I would like a MiniDumpWithDataSegs but I think it would be too large.
             }
@@ -121,9 +121,9 @@ public:
                 wchar_t buff[20];
                 _itow( GetCurrentThreadId(), buff, 10);
                 file += buff;
-                file += L"-";
+                /*file += L"-";
                 _itow( _res.lastAcquiredByTID(), buff, 10);
-                file += buff;
+                file += buff;*/
                 file += L".DMP";
                 ///CreateDump(GetCurrentProcessId(), file.c_str(), (unsigned long) 0, (unsigned long) NULL, (EXCEPTION_POINTERS*) NULL); //I would like a MiniDumpWithDataSegs but I think it would be too large.
             }

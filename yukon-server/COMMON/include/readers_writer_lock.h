@@ -76,9 +76,9 @@ public:
 
     void release();
 
-    operator std::string();
+    operator std::string() const;
 
-    thread_id_t lastAcquiredByTID() const;
+    std::string lastAcquiredByTID() const;
 };
 
 };
