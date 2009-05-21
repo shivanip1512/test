@@ -35,6 +35,7 @@ import javax.swing.JSplitPane;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.tree.TreeModel;
 
 import org.jfree.chart.JFreeChart;
 
@@ -689,7 +690,12 @@ public void refresh( )
 		// Check that a trend from the tree has been selected.
 		if ( getTreeViewPanel().getSelectedItem() == null)
 		{
-			showPopupMessage("Please select a Trend from the list", javax.swing.JOptionPane.WARNING_MESSAGE);
+			//Only tell the user to select a trend if there are trends to select
+			TreeModel model = getTreeViewPanel().getTree().getModel();
+			Object parent = getTreeViewPanel().getTree().getModel().getRoot();
+			if(model.getChildCount(parent) > 0) {
+				showPopupMessage("Please select a Trend from the list", javax.swing.JOptionPane.WARNING_MESSAGE);
+			}
 			return;
 		}
 
@@ -2329,7 +2335,12 @@ public void stateChanged(javax.swing.event.ChangeEvent event)
 				getGraph().setViewType(savedViewType);
 				if( getTreeViewPanel().getSelectedNode().getParent() == null)	//has no parent, therefore is the root.
 				{
-					showPopupMessage("Please Select a Trend From the list", javax.swing.JOptionPane.WARNING_MESSAGE);
+					//Only tell the user to select a trend if there are trends to select
+					TreeModel model = getTreeViewPanel().getTree().getModel();
+					Object parent = getTreeViewPanel().getTree().getModel().getRoot();
+					if(model.getChildCount(parent) > 0) {
+						showPopupMessage("Please Select a Trend From the list", javax.swing.JOptionPane.WARNING_MESSAGE);
+					}
 				}
 				getGraph().update();
 				getFreeChartPanel().setChart(getFreeChart());
