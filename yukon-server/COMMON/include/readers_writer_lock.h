@@ -9,6 +9,8 @@
 #include "critical_section.h"
 #include "guard.h"
 
+#include "boost/thread/shared_mutex.hpp"
+
 namespace Cti {
 
 class IM_EX_CTIBASE readers_writer_lock_t
@@ -24,29 +26,20 @@ private:
         MaxThreadCount = 1024
     };
 
-    typedef std::map<thread_id_t, unsigned> id_coll_t;
-
-    RWReadersWriterLock _lock;
+    boost::shared_mutex _lock;
 
     thread_id_t _reader_ids[MaxThreadCount];
     unsigned    _reader_recursion[MaxThreadCount];
     thread_id_t _writer_id;
     unsigned    _writer_recursion;
 
-    enum LockType_t
-    {
-        LockType_None,
-        LockType_Reader,
-        LockType_Writer,
-    };
-
     //  thread ID reporting for deadlock debugging
-    void set_tid(LockType_t lock_type);
-    void clear_tid();
+    void add_reader();
+    void add_writer();
+    bool remove_reader();
+    bool remove_writer();
 
-    void set_reader_id  (thread_id_t tid);
-    void clear_reader_id(thread_id_t tid);
-    int  find_reader_id (thread_id_t tid) const;
+    unsigned find_reader_index(thread_id_t tid) const;
 
     bool current_thread_owns_writer() const;
     bool current_thread_owns_reader() const;
@@ -69,7 +62,10 @@ public:
     bool tryAcquireRead();
     bool tryAcquireWrite();
 
-    //  convenience functions - all delegate to acquireWrite()
+    void releaseRead();
+    void releaseWrite();
+
+    //  convenience functions - all delegate to ...Write()
     void acquire();
     bool acquire(unsigned long milliseconds);
     bool tryAcquire();

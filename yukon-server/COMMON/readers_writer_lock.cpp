@@ -1,8 +1,14 @@
 #include "yukon.h"
 
-#include "logger.h"
-
 #include "readers_writer_lock.h"
+
+#include "boost/date_time/microsec_time_clock.hpp"
+
+#include "utility.h"
+
+#include <sstream>
+
+using namespace std;
 
 namespace Cti {
 
@@ -10,8 +16,8 @@ readers_writer_lock_t::readers_writer_lock_t() :
     _writer_id(0),
     _writer_recursion(0)
 {
-    std::fill(_reader_ids,       _reader_ids       + MaxThreadCount, 0);
-    std::fill(_reader_recursion, _reader_recursion + MaxThreadCount, 0);
+    fill(_reader_ids,       _reader_ids       + MaxThreadCount,  0);
+    fill(_reader_recursion, _reader_recursion + MaxThreadCount,  0);
 }
 
 inline void readers_writer_lock_t::acquire()                  {  acquireWrite();  }
@@ -22,10 +28,10 @@ void readers_writer_lock_t::acquireRead()
 {
     if( !current_thread_owns_any() )
     {
-        _lock.acquireRead();
+        _lock.lock_shared();
     }
 
-    set_tid(LockType_Reader);
+    add_reader();
 }
 
 void readers_writer_lock_t::acquireWrite()
@@ -39,23 +45,23 @@ void readers_writer_lock_t::acquireWrite()
             throw;
         }
 
-        _lock.acquireWrite();
+        _lock.lock();
     }
 
-    set_tid(LockType_Writer);
+    add_writer();
 }
 
 bool readers_writer_lock_t::acquireRead(unsigned long milliseconds)
 {
     if( !current_thread_owns_any() )
     {
-        if( !_lock.acquireRead(milliseconds) )
+        if( !_lock.timed_lock_shared(boost::posix_time::milliseconds(milliseconds)) )
         {
             return false;
         }
     }
 
-    set_tid(LockType_Reader);
+    add_reader();
 
     return true;
 }
@@ -71,25 +77,25 @@ bool readers_writer_lock_t::acquireWrite(unsigned long milliseconds)
             throw;
         }
 
-        if( !_lock.acquireWrite(milliseconds) )
+        if( !_lock.timed_lock(boost::posix_time::milliseconds(milliseconds)) )
         {
             return false;
         }
     }
 
-    set_tid(LockType_Writer);
+    add_writer();
 
     return true;
 }
 
 bool readers_writer_lock_t::tryAcquireRead()
 {
-    if( !current_thread_owns_any() && !_lock.tryAcquireRead() )
+    if( !current_thread_owns_any() && !_lock.try_lock_shared() )
     {
         return false;
     }
 
-    set_tid(LockType_Reader);
+    add_reader();
 
     return true;
 }
@@ -105,131 +111,131 @@ bool readers_writer_lock_t::tryAcquireWrite()
             throw;
         }
 
-        if( !_lock.tryAcquireWrite() )
+        if( !_lock.try_lock() )
         {
             return false;
         }
     }
 
-    set_tid(LockType_Writer);
+    add_writer();
 
     return true;
 }
 
-void readers_writer_lock_t::release()
-{
-    clear_tid();
+inline void readers_writer_lock_t::release()  {  releaseWrite();  }
 
-    //  if it's the last reader OR it's the last writer, release the lock
-    if( !current_thread_owns_any() )
+void readers_writer_lock_t::releaseWrite()
+{
+    //  if this is the last recursive writer lock, release the exclusive lock
+    if( !remove_writer() )
     {
-        _lock.release();
+        _lock.unlock();
     }
 }
 
-void readers_writer_lock_t::set_tid(LockType_t lock_type)
+void readers_writer_lock_t::releaseRead()
 {
-    if( _writer_id )
+    //  if this is the last recursive reader lock, release the shared lock
+    if( !remove_reader() )
     {
-        //  if we own the writer lock, we treat every acquisition afterward as a writer lock
-        _writer_recursion++;
+        _lock.unlock_shared();
     }
-    else if( lock_type == LockType_Reader )
-    {
-        set_reader_id(GetCurrentThreadId());
-    }
-    else if( lock_type == LockType_Writer )
+}
+
+void readers_writer_lock_t::add_writer()
+{
+    if( !_writer_recursion++ )
     {
         _writer_id = GetCurrentThreadId();
     }
 }
 
-void readers_writer_lock_t::clear_tid()
+void readers_writer_lock_t::add_reader()
 {
-    if( _writer_id )
-    {
-        if( _writer_recursion )
-        {
-            _writer_recursion--;
-        }
-        else
-        {
-            _writer_id = 0;
-        }
-    }
-    else
-    {
-        clear_reader_id(GetCurrentThreadId());
-    }
-}
+    const thread_id_t tid = GetCurrentThreadId();
 
+    unsigned reader_index = find_reader_index(tid);
 
-int readers_writer_lock_t::find_reader_id(thread_id_t tid) const
-{
-    int i = 0;
-
-    for( ; i < MaxThreadCount; ++i )
+    if( _reader_ids[reader_index] != tid )
     {
-        if( !_reader_ids[i] || _reader_ids[i] == tid )
+        //  we aren't in the list yet, so we need to add ourselves
+        //
+        //  try to insert our id to the list - if someone else got there first, the exchange will fail and the return will be nonzero
+        while( reader_index < MaxThreadCount
+               && InterlockedCompareExchange(reinterpret_cast<volatile LONG *>(_reader_ids + reader_index), tid, 0L) )
         {
-            break;
+            //  insert failed, try the next index
+            ++reader_index;
         }
     }
 
-    return i;
-}
-
-
-void readers_writer_lock_t::set_reader_id(thread_id_t tid)
-{
-    int i = find_reader_id(tid);
-
-    //  wasn't in the list
-    if( _reader_ids[i] != tid )
+    if( reader_index == MaxThreadCount )
     {
-        //  find the first available entry
-        for( ; i < MaxThreadCount; ++i )
-        {
-            //  try to exchange - if someone else got there first, the exchange will fail and the return will be nonzero
-            if( !InterlockedCompareExchange(reinterpret_cast<volatile LONG *>(_reader_ids + i),
-                                            (long)(tid),
-                                            (long)(0)) )
-            {
-                break;
-            }
-        }
-    }
-
-    if( i == MaxThreadCount )
-    {
-        //  out of threads
+        //  Out of thread storage space!
         autopsy(__FILE__, __LINE__);
         throw;
     }
 
-    ++_reader_recursion[i];
+    ++_reader_recursion[reader_index];
 }
 
 
-void readers_writer_lock_t::clear_reader_id(thread_id_t tid)
+bool readers_writer_lock_t::remove_reader()
 {
-    int i = find_reader_id(tid);
+    const thread_id_t tid = GetCurrentThreadId();
 
-    if( i == MaxThreadCount )
+    unsigned reader_index = find_reader_index(tid);
+
+    if( _reader_ids[reader_index] != tid )
     {
         //  It wasn't in the list - never inserted?
         autopsy(__FILE__, __LINE__);
         throw;
     }
 
-    if( !_reader_recursion[i] )
+    if( !_reader_recursion[reader_index] )
     {
         //  clear_tid() called one too many times
         autopsy(__FILE__, __LINE__);
         throw;
     }
 
-    --_reader_recursion[i];
+    return --_reader_recursion[reader_index];
+}
+
+
+bool readers_writer_lock_t::remove_writer()
+{
+    if( !--_writer_recursion )
+    {
+        _writer_id = 0;
+    }
+
+    return _writer_id;
+}
+
+
+unsigned readers_writer_lock_t::find_reader_index(thread_id_t tid) const
+{
+    unsigned reader_index = 0;
+
+    for( ; reader_index < MaxThreadCount; ++reader_index )
+    {
+        //  break on first empty OR if we found our thread id
+        if( !_reader_ids[reader_index] || _reader_ids[reader_index] == tid )
+        {
+            break;
+        }
+    }
+
+    if( reader_index == MaxThreadCount )
+    {
+        //  Out of thread storage space!
+        autopsy(__FILE__, __LINE__);
+        throw;
+    }
+
+    return reader_index;
 }
 
 
@@ -241,16 +247,11 @@ bool readers_writer_lock_t::current_thread_owns_writer() const
 
 bool readers_writer_lock_t::current_thread_owns_reader() const
 {
-    thread_id_t tid = GetCurrentThreadId();
+    const thread_id_t tid = GetCurrentThreadId();
 
-    int i = find_reader_id(tid);
+    unsigned reader_index = find_reader_index(tid);
 
-    if( i < MaxThreadCount && _reader_ids[i] == tid && _reader_recursion[i] )
-    {
-        return true;
-    }
-
-    return false;
+    return _reader_ids[reader_index] == tid && _reader_recursion[reader_index];
 }
 
 bool readers_writer_lock_t::current_thread_owns_both() const
@@ -268,45 +269,51 @@ readers_writer_lock_t::thread_id_t readers_writer_lock_t::lastAcquiredByTID() co
     return _writer_id;
 }
 
-readers_writer_lock_t::operator std::string()
+readers_writer_lock_t::operator string()
 {
-    std::string str;
+    stringstream s;
 
-    if( _writer_id )
+    s << "[";
+
+    if( _writer_recursion )
     {
-        str  = "w:";
-        str += CtiNumStr(_writer_id).hex();
-
-        if( _writer_recursion )
-        {
-            str += "/";
-            str += CtiNumStr(_writer_recursion);
-        }
+        s << "w:" << hex << _writer_id << "," << dec << _writer_recursion;
     }
-    else
+
+    bool readers = false;
+
+    for( unsigned i = 0; i < MaxThreadCount && _reader_ids[i]; ++i )
     {
-        int i = 0;
-
-        str = "r:";
-
-        for( ; i < MaxThreadCount && _reader_ids[i]; ++i )
+        if( _reader_recursion[i] )
         {
-            if( _reader_recursion[i] )
+            if( readers )
             {
-                str += CtiNumStr(_reader_ids[i]).hex();
-                str += "/";
-                str += CtiNumStr(_reader_recursion[i]);
-                str += ",";
+                s << ",";
             }
-        }
+            else
+            {
+                if( _writer_recursion )
+                {
+                    s << "/";
+                }
 
-        if( !i )
-        {
-            str = "(no reader thread ids!)";
+                s << "r:";
+
+                readers = true;
+            }
+
+            s << hex << _reader_ids[i] << "," << dec << _reader_recursion[i];
         }
     }
 
-    return str;
+    if( !_writer_recursion && !readers )
+    {
+        s << "unlocked";
+    }
+
+    s << "]";
+
+    return s.str();
 }
 
 };

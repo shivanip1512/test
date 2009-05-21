@@ -44,7 +44,7 @@
 //#include "dbghelp.h"
 extern "C"
 {
-	#include "clrdump.h"
+    #include "clrdump.h"
 }
 
 #pragma pack(push, LockGuardPack, 8)
@@ -139,7 +139,7 @@ public:
     ~CtiReadLockGuard()
     {
         if(_acquired)
-            _res.release();
+            _res.releaseRead();
     }
 
     bool isAcquired() const { return _acquired;}

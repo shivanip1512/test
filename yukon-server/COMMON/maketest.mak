@@ -32,6 +32,7 @@ test_numstr.obj \
 test_queue.obj \
 test_resolvers.obj \
 test_rwutil.obj \
+test_readers_writer_lock.obj \
 test_utility.obj \
 test_xmlobject.obj \
 
