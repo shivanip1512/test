@@ -611,28 +611,6 @@ INT OverrideOutMessagePriority(OUTMESS *Out, INT priority)
 
 #define  VERIFY_RET_VAL( arg )  { int nRet = arg; if( nRet ) return nRet; }
 
-// private functions - used internally //////////////////////////
-
-int Send( SOCKET s, const char *lpszBuff, int nLen, int nFlags );
-int Receive( SOCKET s, LPTSTR lpszBuff, int nLenMax, int nFlags, LPCTSTR lpszReplyCode );
-void LogMessage( LPCTSTR lpszMsg );
-
-// Static variables /////////////////////////////////////////////
-
-static BOOL   gbLog  = FALSE;
-static HANDLE ghFile = INVALID_HANDLE_VALUE;
-static char   gszMailerID[] = "X-Mailer: CtiMail DLL V1.0\r\n";
-static char   gszLogFile[]  = "ctimail.log";
-
-// LogMessage - log messages to log file.
-/////////////////////////////////////////////////////////////////
-void LogMessage( LPCTSTR lpszMsg )
-{
-    DWORD dwRet;
-    if( ghFile != INVALID_HANDLE_VALUE ) WriteFile( ghFile, lpszMsg, ::strlen(lpszMsg), &dwRet, NULL );
-}
-
-
 
 void identifyProject(const compileinfo_t &Info)
 {
@@ -728,130 +706,6 @@ INT convertHumanFormAddressToVersacom(INT address)
     }
 
     return num;
-}
-
-
-bool pokeDigiPortserver(CHAR *server, INT port)
-{
-    bool Success = false;
-
-    CTINEXUS telnetNexus;
-
-    if(telnetNexus.CTINexusOpen(server, port, CTINEXUS_FLAG_READANY) == NORMAL)
-    {
-        char buffer[120];
-        ULONG cnt = 0;
-
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Connected to " << server << " on port " << port << endl;
-        }
-
-        ::memset(buffer, '\0', 120);
-
-        for(int i = 0; i < 5; i++)
-        {
-            telnetNexus.CTINexusWrite("\r", 1, &cnt, 1);
-
-            ::memset(buffer, '\0', 120);
-            cnt = 0;
-            Sleep(1000);
-
-            telnetNexus.CTINexusRead( buffer, 75, &cnt, 2);
-
-            if( cnt > 0)
-            {
-
-                // We got some bytes back!
-                CHAR *chptr = NULL;
-
-                if((chptr = strstr(buffer, "login:" )) != NULL)
-                {
-                    break;
-                }
-            }
-
-            Sleep(1000);
-
-        }
-
-        if( cnt > 0)
-        {
-            // We got some bytes back!
-            CHAR *chptr = NULL;
-
-            if((chptr = strstr(buffer, "login:" )) != NULL)
-            {
-                // we found the login prompt.
-                cnt = 0;
-                ::memset(buffer, '\0', 120);
-
-                telnetNexus.CTINexusWrite("root\r", 5, &cnt, 0);
-
-                Sleep(5000);
-
-                telnetNexus.CTINexusRead( buffer, 50, &cnt, 10);
-                if( cnt > 0)
-                {
-                    if((chptr = strstr(buffer, "passwd:" )) != NULL)
-                    {
-                        // we found the password prompt.
-                        telnetNexus.CTINexusWrite("dbps\r", 5, &cnt, 0);
-
-                        cnt = 0;
-                        ::memset(buffer, '\0', 120);
-                        telnetNexus.CTINexusRead( buffer, 5, &cnt, 2);
-                        if( cnt > 0)
-                        {
-                            CHAR reboot[] = {"boot action=reset\r"};
-                            // Assume we just read out the prompt... sent the reboot sequence!
-                            telnetNexus.CTINexusWrite(reboot, ::strlen(reboot) , &cnt, 0);
-
-                            Success = true;
-
-                            /*
-                             *  User should sleep awhile before re-initing the device!
-                             */
-                        }
-                        else
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << buffer << endl;
-                        }
-                    }
-                    else
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << buffer << endl;
-                    }
-                }
-                else
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << buffer << endl;
-                }
-            }
-            else
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << buffer << endl;
-            }
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-
-        telnetNexus.CTINexusClose();
-    }
-    else
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-    return Success;
 }
 
 bool isION(INT type)
@@ -1216,9 +1070,6 @@ HANDLE hTapTapTap = NULL;
 
 void ShowStack( HANDLE hThread, CONTEXT& c ); // dump a stack
 DWORD __stdcall TargetThread( void *arg );
-void ThreadFunc1();
-void ThreadFunc2();
-DWORD Filter( EXCEPTION_POINTERS *ep );
 void enumAndLoadModuleSymbols( HANDLE hProcess, DWORD pid );
 bool fillModuleList( ModuleList& modules, DWORD pid, HANDLE hProcess );
 bool fillModuleListTH32( ModuleList& modules, DWORD pid );

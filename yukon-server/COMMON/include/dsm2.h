@@ -1022,15 +1022,6 @@ typedef struct _STATS
    ULONG   Error24Roll[24][ERRLOGENTS + 1];
 } STATS;
 
-#define LASTGOODDSTMASK             0x0001
-#define ERRORRESETDSTMASK           0x0002
-#define ERROR24RESETDSTMASK         0x0004
-#define ERRORPREV24RESETDSTMASK     0x0008
-#define ERROR24ROLLDSTMASK          0x0010
-#define CONSECUTIVEFAILURE          0X0020
-#define PERCENTLOW                  0x0040
-#define PERCENT24LOW                0x0080
-#define FIRSTPROCESSED              0X0100
 
 /* Prototypes from UCTTime.C */
 IM_EX_CTIBASE int            UCTFTime (struct timeb *);
@@ -1044,11 +1035,6 @@ IM_EX_CTIBASE ULONG          setNextInterval(time_t, ULONG);
 IM_EX_CTIBASE int            FindMidNight (time_t *, USHORT, time_t *);
 IM_EX_CTIBASE time_t         MidNight (time_t, USHORT);
 IM_EX_CTIBASE time_t         MidNightWas (time_t, USHORT);
-
-/* load control season defines for UCTTime function */
-#define SEASON_SUMMER  1
-#define SEASON_WINTER  2
-#define SEASON_FILE_NAME "DATA\\SEASON.DAT"
 
 typedef struct _DSM2_SEASON
 {
@@ -1071,33 +1057,8 @@ int            IM_EX_CTIBASE RollOverPlotData (PCHAR, PCHAR);
 #define RETURN_THREAD_STACK_SIZE 8192
 
 /* Prototypes from PEXEC.C */
-void  IM_EX_CTIBASE resetOutMess(OUTMESS*);
-
-int   IM_EX_CTIBASE xIOInit (PCHAR);
 int   IM_EX_CTIBASE PortPipeInit (USHORT);
 void  IM_EX_CTIBASE PortPipeCleanup (ULONG Reason);
-
-int   IM_EX_CTIBASE nrexec (RSTRUCT *);
-int   IM_EX_CTIBASE nvexec (VSTRUCT *);
-int   IM_EX_CTIBASE naexec (ASTRUCT *);
-int   IM_EX_CTIBASE nb1exec (BSTRUCT *);
-int   IM_EX_CTIBASE nb2exec (BSTRUCT *, DSTRUCT *);
-int   IM_EX_CTIBASE nb2execsq (BSTRUCT *);
-int   IM_EX_CTIBASE nb2execs (BSTRUCT *);
-int   IM_EX_CTIBASE nd2execs (DIALUPSTRUCT *DUPOst);
-int   IM_EX_CTIBASE nd2execr (DSTRUCT *DSt, DIALUPSTRUCT *DUPst);
-int   IM_EX_CTIBASE nd1execx (DIALUPSTRUCT *);
-int   IM_EX_CTIBASE QueueFunctionRead (BSTRUCT *, USHORT CCUQFlag);
-int   IM_EX_CTIBASE QueueFunctionWrite (BSTRUCT *);
-int   IM_EX_CTIBASE nb2execr (DSTRUCT *);
-int   IM_EX_CTIBASE nb2query (VOID);
-VOID  IM_EX_CTIBASE ReturnThread (PVOID);
-INT   IM_EX_CTIBASE LoopBack (USHORT, USHORT);
-int   IM_EX_CTIBASE CCUReset (USHORT, USHORT);
-int   IM_EX_CTIBASE SwitchControl (CSTRUCT *);
-int   IM_EX_CTIBASE LCULockOutset (USHORT, USHORT);
-int   IM_EX_CTIBASE LCULockOutReset (USHORT, USHORT);
-int   IM_EX_CTIBASE DecodeDialupData(INMESS *InMessage, DIALUPSTRUCT *DUPst);
 
 /* Prototypes for WORDS.C */
 int   IM_EX_CTIBASE A_Word  (PBYTE, const ASTRUCT &, BOOL Double = FALSE);

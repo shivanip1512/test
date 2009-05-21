@@ -231,35 +231,4 @@ struct REMOTESEQUENCE
 #define INUSE           0x0001
 #define INCCU           0x0002
 
-/* This information chokes the compiler and isn't needed to compile Windows apps */
-/* Information on CCU 711's*/
-struct  CCUINFO
-{
-    HANDLE           StatusSem;
-    HCTIQUEUE        QueueHandle;
-    HCTIQUEUE        ActinQueueHandle;
-    USHORT           Type;
-    USHORT           Status;
-
-    USHORT           PortQueueEnts;
-    USHORT           PortQueueConts;
-    USHORT           RContInLength;
-    USHORT           ReadyN;
-    USHORT           NCsets;
-    USHORT           NCOcts;
-    USHORT           FreeSlots;
-    USHORT           RColQMin;
-    QUEENT           QueTable[MAXQUEENTRIES];
-
-    REMOTESEQUENCE   RemoteSequence;
-    USHORT           FiveMinuteCount;
-    ULONG            StageTime;
-    ULONG            NextCommandTime;
-    ULONG            LCUFlags;
-    OUTMESS          *ControlOutMessage;
-    STATS            Stats;
-};
-
-typedef CCUINFO *PCCUINFO;
-
 #endif

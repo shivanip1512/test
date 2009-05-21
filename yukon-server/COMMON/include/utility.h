@@ -55,8 +55,6 @@ IM_EX_CTIBASE BOOL OutEchoToIN(const CtiOutMessage *Out, INMESS *In);
 IM_EX_CTIBASE string convertVersacomAddressToHumanForm(INT address);
 IM_EX_CTIBASE INT    convertHumanFormAddressToVersacom(INT address);
 
-IM_EX_CTIBASE bool   pokeDigiPortserver(CHAR *server, INT port = 23);
-
 IM_EX_CTIBASE string& traceBuffer(string &str, BYTE *Message, ULONG Length);
 
 IM_EX_CTIBASE CtiTime nextScheduledTimeAlignedOnRate( const CtiTime &origin, LONG rate );
