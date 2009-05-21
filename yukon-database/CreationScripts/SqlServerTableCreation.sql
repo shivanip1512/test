@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     5/18/2009 3:38:05 PM                         */
+/* Created on:     5/21/2009 3:10:12 PM                         */
 /*==============================================================*/
 
 
@@ -7930,7 +7930,7 @@ INSERT INTO FDRInterface VALUES (22, 'LIVEDATA','Receive', 'f' );
 INSERT INTO FDRInterface VALUES (23, 'ACSMULTI', 'Send,Send for control,Receive,Receive for control', 't' );
 INSERT INTO FDRInterface VALUES (24, 'WABASH', 'Send', 'f' );
 INSERT INTO FDRInterface VALUES (25, 'TRISTATESUB', 'Receive,Send', 'f' );
-INSERT INTO FDRInterface VALUES (26, 'OPC', 'Receive', 'f');
+INSERT INTO FDRInterface VALUES (26, 'OPC', 'Receive,Send', 'f');
 INSERT INTO FDRInterface VALUES (27, 'MULTISPEAK_LM', 'Receive', 'f'); 
 INSERT INTO FDRInterface VALUES (28, 'DNPSLAVE', 'Send', 't');
 
