@@ -23,11 +23,15 @@ private:
 
     enum
     {
+        //  This is a hard-coded limit on the number of threads that may ever access this lock.
+        //    Note that if we create and destroy many threads, we will quickly run out of space for thread IDs.
         MaxThreadCount = 1024
     };
 
     boost::shared_mutex _lock;
 
+    //  We could extend this to a linked-list implementation if necessary,
+    //    but we should probably rethink this whole class if we ever get to that scale.
     thread_id_t _reader_ids[MaxThreadCount];
     unsigned    _reader_recursion[MaxThreadCount];
     thread_id_t _writer_id;
