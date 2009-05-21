@@ -168,6 +168,7 @@ function openPopupWin(elem, compositeIdType) {
 	}
 	else if (type == ALL_POPUP_TYPES.capCommand) {
         menuName = 'capBankMenu';
+        currentPopup.offsetX = x - 250;
 	}
 	else if (type == ALL_POPUP_TYPES.subTag) {
         menuName = 'subTagMenu';
@@ -177,6 +178,7 @@ function openPopupWin(elem, compositeIdType) {
 	}
 	else if (type == ALL_POPUP_TYPES.capTag) {
         menuName = 'capTagMenu';
+        currentPopup.offsetX = x - 300;
 	}
 	else if (type == ALL_POPUP_TYPES.capInfo) {
         menuName = 'capInfoMenu';
@@ -193,6 +195,7 @@ function openPopupWin(elem, compositeIdType) {
 	}
 	else if (type == ALL_POPUP_TYPES.varChangePopup) {
         menuName ='varChangePopup';
+        currentPopup.offsetX = x - 300;
     }
     else if (type == ALL_POPUP_TYPES.bankMoveBack) {
     	menuName ='moveBankBackPopup';
@@ -244,6 +247,7 @@ function getFromURL(url) {
 }
 
 function showPopup(html) {
+	
 	currentPopup.populate(html);
 	//over-ride this function since we
 	//need to adjust table headers
