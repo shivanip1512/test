@@ -93,7 +93,7 @@ public class OnelinePopupMenuController extends MultiActionController {
         
         mav.addObject("isCapBank", false);
         mav.addObject("controlType", type);
-        mav.setViewName("oneline/popupmenu/tagMenu");
+        mav.setViewName("oneline/popupmenu/tagMenu.jsp");
         return mav;
     }
     
@@ -142,7 +142,7 @@ public class OnelinePopupMenuController extends MultiActionController {
         infoMap.put("Driving Directions:", info.getDriveDir()); 
         mav.addObject("infoMap", infoMap);
         
-        mav.setViewName("oneline/popupmenu/capInfoMenu");
+        mav.setViewName("oneline/popupmenu/capInfoMenu.jsp");
         return mav;
     }
     
@@ -177,7 +177,7 @@ public class OnelinePopupMenuController extends MultiActionController {
         
         mav.addObject("isCapBank", false);
         mav.addObject("controlType", type);
-        mav.setViewName("oneline/popupmenu/tagMenu");
+        mav.setViewName("oneline/popupmenu/tagMenu.jsp");
         return mav;
     }
     
@@ -225,7 +225,7 @@ public class OnelinePopupMenuController extends MultiActionController {
         	mav.addObject("refusedReason",CapBankDevice.getIgnoreReason( capBank.getIgnoreReason()));
         }
         
-        mav.setViewName("oneline/popupmenu/tagMenu");
+        mav.setViewName("oneline/popupmenu/tagMenu.jsp");
         return mav;
     }
     
@@ -260,7 +260,7 @@ public class OnelinePopupMenuController extends MultiActionController {
         mav.addObject("childCapDBChangePaoId", childCapDBChangePaoId);
         
         mav.addObject("controlType", CapControlType.CAPBANK);
-        mav.setViewName("oneline/popupmenu/capBankMenu");
+        mav.setViewName("oneline/popupmenu/capBankMenu.jsp");
         return mav;
     }
     
@@ -299,7 +299,7 @@ public class OnelinePopupMenuController extends MultiActionController {
         mav.addObject("sendTimeSyncFdr", sendTimeSyncFdr);
         
         mav.addObject("controlType", CapControlType.FEEDER);
-        mav.setViewName("oneline/popupmenu/feederMenu");
+        mav.setViewName("oneline/popupmenu/feederMenu.jsp");
         return mav;
     }
     
@@ -359,7 +359,7 @@ public class OnelinePopupMenuController extends MultiActionController {
         mav.addObject("verifyStop", verifyStop);
         
         mav.addObject("controlType", CapControlType.SUBBUS);
-        mav.setViewName("oneline/popupmenu/subMenu");
+        mav.setViewName("oneline/popupmenu/subMenu.jsp");
         return mav;
     }
     
@@ -387,7 +387,7 @@ public class OnelinePopupMenuController extends MultiActionController {
         mav.addObject("sendTimeSyncCmdId", sendTimeSyncCmdId);
         
         mav.addObject("controlType", CapControlType.CAPBANK);
-        mav.setViewName("oneline/popupmenu/capBankMaint");
+        mav.setViewName("oneline/popupmenu/capBankMaint.jsp");
         return mav;
     }
 
@@ -408,13 +408,13 @@ public class OnelinePopupMenuController extends MultiActionController {
         mav.addObject("states", states);
         
         mav.addObject("controlType", CapControlType.CAPBANK);
-        mav.setViewName("oneline/popupmenu/capBankDBChange");
+        mav.setViewName("oneline/popupmenu/capBankDBChange.jsp");
         return mav;
     }
     
     public ModelAndView pointTimestamp(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
-        ModelAndView mav = new ModelAndView("cbcPointTimestamps");
+        ModelAndView mav = new ModelAndView("cbcPointTimestamps.jsp");
         int cbcId = ServletRequestUtils.getRequiredIntParameter(request, "cbcID");
         
         LiteYukonPAObject cbc = paoDao.getLiteYukonPAO(cbcId);
@@ -521,7 +521,7 @@ public class OnelinePopupMenuController extends MultiActionController {
         mav.addObject("beforeRow", beforeRow);
         mav.addObject("afterRow", afterRow);
         mav.addObject("changeRow", changeRow);
-        mav.setViewName("oneline/popupmenu/varChangePopup");
+        mav.setViewName("oneline/popupmenu/varChangePopup.jsp");
         return mav;
     }
     
@@ -535,7 +535,7 @@ public class OnelinePopupMenuController extends MultiActionController {
         mav.addObject("paoId", id);
         mav.addObject("cmdId", cmdId);
         mav.addObject("returnUrl", returnUrl);
-        mav.setViewName("oneline/popupmenu/moveBankBackPopup");
+        mav.setViewName("oneline/popupmenu/moveBankBackPopup.jsp");
         return mav;
     }
 
@@ -556,7 +556,7 @@ public class OnelinePopupMenuController extends MultiActionController {
         
         mav.addObject("infoList", infoList);
         
-        mav.setViewName("oneline/popupmenu/warningInfoPopup");
+        mav.setViewName("oneline/popupmenu/warningInfoPopup.jsp");
         return mav;
     }
 
@@ -564,7 +564,7 @@ public class OnelinePopupMenuController extends MultiActionController {
         final ModelAndView mav = new ModelAndView();
         final Integer id = ServletRequestUtils.getRequiredIntParameter(request, "id");       
         mav.addObject("paoId", id);
-        mav.setViewName("oneline/popupmenu/moveBankPopup");
+        mav.setViewName("oneline/popupmenu/moveBankPopup.jsp");
         return mav;
     }
 

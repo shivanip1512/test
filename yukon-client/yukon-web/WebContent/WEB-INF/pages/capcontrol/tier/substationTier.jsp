@@ -58,7 +58,6 @@
 
 <cti:titledContainer title="${containerTitle}" id="last_titled_container">
           
-	          
 	<table id="subHeaderTable" width="100%" cellspacing="0" cellpadding="0" >
 	  <tr class="columnHeader lAlign">              
 	    <td>

@@ -28,22 +28,19 @@
 	</jsp:forward>	
 </cti:isPropertyFalse>
 
-<script type="text/JavaScript" src="/JavaScript/cc_command_menu.js"></script>
-<script type="text/JavaScript" src="/capcontrol/js/cbc_funcs.js"></script>
-<script type="text/JavaScript" src="/JavaScript/cconelinepopup.js"></script>
-<script type="text/JavaScript" src="/JavaScript/scriptaculous/scriptaculous.js"></script>
+<cti:includeScript link="/JavaScript/cc_command_menu.js"/>
+<cti:includeScript link="/capcontrol/js/cbc_funcs.js"/>
+<cti:includeScript link="/JavaScript/cconelinepopup.js"/>
+<cti:includeScript link="/JavaScript/scriptaculous/scriptaculous.js"/>
+<cti:includeScript link="/JavaScript/xmlhttp.js"/>
+<cti:includeScript link="/JavaScript/ol/overlib_mini.js"/>
+<cti:includeScript link="/JavaScript/validation.js"/>
+<cti:includeScript link="/JavaScript/capcontrol/filter.js"/>
+<cti:includeScript link="/JavaScript/GreyBox/AmiJS.js"/>
+<cti:includeScript link="/JavaScript/GreyBox/greybox.js"/>
 
-<script type="text/JavaScript" src="/JavaScript/xmlhttp.js"></script>
-<script type="text/JavaScript" src="/JavaScript/ol/overlib_mini.js"></script>
-<script type="text/JavaScript" src="/JavaScript/validation.js"></script>
-<script type="text/JavaScript" src="/JavaScript/capcontrol/filter.js"></script>
-
-<link href="/editor/css/greybox/greybox.css" rel="stylesheet" type="text/css" media="all" /> 
-<script type="text/javascript" src="/JavaScript/GreyBox/AmiJS.js"></script>
-<script type="text/javascript" src="/JavaScript/GreyBox/greybox.js"></script>
-
-<!-- Adding since modules_config css/base.css isn't an absolute path -->
-<link href="/capcontrol/css/base.css" rel="stylesheet" type="text/css" media="all" />
+<cti:includeCss link="/editor/css/greybox/greybox.css"/>     
+<cti:includeCss link="/capcontrol/css/base.css"/>     
 
 <jsp:useBean id="ccSession"
 	class="com.cannontech.cbc.web.CCSessionInfo"

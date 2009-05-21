@@ -16,13 +16,12 @@
 
 <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value=""/>
 
-<!-- necessary DIV element for the OverLIB popup library -->
 
 <cti:url var="onelineCBCServlet" value="/capcontrol/oneline/OnelineCBCServlet"/>
 <cti:standardPage title="${substation.ccName}" module="capcontrol">
 <%@include file="/capcontrol/cbc_inc.jspf"%>
 
-
+<!-- necessary DIV element for the OverLIB popup library -->
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
 
 <cti:standardMenu/>
@@ -78,7 +77,7 @@
 		}
 	}
     
-    // gathers ids of selected subbuses and feeders, appendeds to url as target param
+    // gathers ids of selected subbuses and feeders, appends to url as target param
     // triggers call to greybox containing point chart(s)
     function loadPointChartGreyBox(title, url) {
         
@@ -499,7 +498,6 @@
 	<br>
 	
 	<cti:titledContainer title="Capacitor Banks" id="last_titled_container">
-		<!--  <table id="capBankHeaderTable" width="100%" border="0" cellspacing="0" cellpadding="0">-->
         <div id="capBankDiv">
 		<table id="capBankTable" width="100%" cellspacing="0" cellpadding="0" >
             <tr class="columnHeader lAlign">

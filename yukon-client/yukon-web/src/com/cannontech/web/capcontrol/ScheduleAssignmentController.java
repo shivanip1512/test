@@ -43,7 +43,7 @@ public class ScheduleAssignmentController {
 		Collections.sort(paosOnSchedule);
 		mav.addAttribute("itemList",paosOnSchedule);
         
-		return "scheduleassignment";
+		return "scheduleassignment.jsp";
     }
 
 	@RequestMapping(method=RequestMethod.POST)

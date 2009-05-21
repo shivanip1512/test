@@ -3,13 +3,8 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 <%@ taglib tagdir="/WEB-INF/tags/capcontrol" prefix="capTags"%>
 
-<!-- Layout CSS files -->
-<link rel="stylesheet" type="text/css" href="/WebConfig/yukon/CannonStyle.css" >
-<link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/StandardStyles.css" >
-<link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/YukonGeneralStyles.css" >
-<link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/InnerStyles.css" >
 
-	<cti:standardPage title="${title}" module="capcontrol">
+<cti:standardPage title="${title}" module="capcontrol">
 	
 	<%@include file="/capcontrol/cbc_inc.jspf"%>
 	<script type="text/javascript" language="JavaScript">

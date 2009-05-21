@@ -57,36 +57,15 @@
 		</property>
 		<property name="order" value="1"/>
 	</bean>
+	
 	<!-- View Resolvers -->
 	<bean id="viewResolverJSFPages"
 		class="org.springframework.web.servlet.view.UrlBasedViewResolver">
 		<property name="viewClass"
 			value="org.springframework.web.servlet.view.JstlView" />
 		<property name="prefix" value="/WEB-INF/pages/capcontrol/" />
-		<property name="suffix" value=".jsp" />
 		<property name="order">
 			<value>1</value>
-		</property>
-	</bean>
-
-	<bean id="viewResolver3Tier"
-		class="org.springframework.web.servlet.view.UrlBasedViewResolver">
-		<property name="viewClass"
-			value="org.springframework.web.servlet.view.JstlView" />
-		<property name="prefix" value="/capcontrol/" />
-		<property name="suffix" value=".jsp" />
-		<property name="order">
-			<value>2</value>
-		</property>
-	</bean>
-	<bean id="viewResolverInclude"
-		class="org.springframework.web.servlet.view.UrlBasedViewResolver">
-		<property name="viewClass"
-			value="org.springframework.web.servlet.view.JstlView" />
-		<property name="prefix" value="/WEB-INF/pages/capcontrol/include/" />
-		<property name="suffix" value=".jsp" />
-		<property name="order">
-			<value>3</value>
 		</property>
 	</bean>
 

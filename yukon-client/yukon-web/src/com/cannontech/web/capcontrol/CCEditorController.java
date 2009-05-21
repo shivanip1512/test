@@ -23,7 +23,7 @@ public class CCEditorController implements Controller {
         List<OrphanCBC> orphans = cbcDao.getOrphanedCBCs();
         mav.addObject("orphans", orphans);
         
-        mav.setViewName("tier/popupmenu/orphanedCBCPopup");
+        mav.setViewName("tier/popupmenu/orphanedCBCPopup.jsp");
         return mav;
     }
 

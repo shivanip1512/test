@@ -104,7 +104,7 @@ public class CapBankWebController {
 		mav.addAttribute("stationTitle",stationTitle);
 		mav.addAttribute("assetTitle",assetTitle);
 		
-		return "capBankLocations";
+		return "capBankLocations.jsp";
 	}
 	
 	@Autowired

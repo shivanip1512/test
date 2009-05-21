@@ -49,7 +49,7 @@ public class OnelineLegendController implements Controller {
         mav.addObject("imageNameMap", imageNameMap);
         mav.addObject("capBankStateList", capBankStateList);
         mav.addObject("onelineStateList", onelineStateList);
-        mav.setViewName("oneline/cbcOnelineLegend");
+        mav.setViewName("oneline/cbcOnelineLegend.jsp");
         return mav;
     }
 

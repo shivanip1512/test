@@ -53,7 +53,7 @@ public class TierController {
 	@RequestMapping
 	public String areas(HttpServletRequest request, LiteYukonUser user, Boolean isSpecialArea, ModelMap mav) {
 		if(isSpecialArea == null) {
-			isSpecialArea = new Boolean(false);
+			isSpecialArea = false;
 		}
 		
 		CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
@@ -78,14 +78,18 @@ public class TierController {
 		boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
         mav.addAttribute("hasEditingRole", hasEditingRole);
         
-		return "tier/areaTier";
+		return "tier/areaTier.jsp";
     }
 		
 	@RequestMapping
 	public String substations(HttpServletRequest request, HttpSession session, LiteYukonUser user, 
-			                  Integer areaId, Boolean isSpecialArea, ModelMap mav) {
+			                  int areaId, Boolean isSpecialArea, ModelMap mav) {
 		CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
-
+		
+		if(isSpecialArea == null) {
+			isSpecialArea = false;
+		}
+		
 		//2 fail points. Area does not exist. and No Access. 
 		//add redirect here if they fail
 		
@@ -121,7 +125,7 @@ public class TierController {
 	    boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
         mav.addAttribute("hasEditingRole", hasEditingRole);
 	    
-		return "tier/substationTier";
+		return "tier/substationTier.jsp";
     }
 	
 	@RequestMapping
@@ -195,7 +199,7 @@ public class TierController {
 		int lastAccessed = (lastStr == null) ? -1:Integer.parseInt(lastStr);
 	    mav.addAttribute("lastAccessed", lastAccessed);
 	    
-		return "tier/feederTier";
+		return "tier/feederTier.jsp";
     }
 	
 	private List<ViewableSubBus> createViewableSubBus(List<SubBus> subBusList) {

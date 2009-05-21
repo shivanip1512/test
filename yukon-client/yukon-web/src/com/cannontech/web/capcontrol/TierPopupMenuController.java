@@ -120,7 +120,7 @@ public class TierPopupMenuController extends MultiActionController {
         mav.addObject("list", list);
         
         mav.addObject("controlType", CapControlType.SUBSTATION);
-        mav.setViewName("tier/popupmenu/menu");
+        mav.setViewName("tier/popupmenu/menu.jsp");
         return mav;
     }
     
@@ -175,7 +175,7 @@ public class TierPopupMenuController extends MultiActionController {
         mav.addObject("list", list);
         
         mav.addObject("controlType", CapControlType.SUBBUS);
-        mav.setViewName("tier/popupmenu/menu");
+        mav.setViewName("tier/popupmenu/menu.jsp");
         return mav;
     }
     
@@ -220,7 +220,7 @@ public class TierPopupMenuController extends MultiActionController {
         mav.addObject("list", list);
         
         mav.addObject("controlType", CapControlType.FEEDER);
-        mav.setViewName("tier/popupmenu/menu");
+        mav.setViewName("tier/popupmenu/menu.jsp");
         return mav;
     }
     
@@ -273,7 +273,7 @@ public class TierPopupMenuController extends MultiActionController {
         mav.addObject("list", list);
         
         mav.addObject("controlType", CapControlType.CAPBANK);
-        mav.setViewName("tier/popupmenu/menu");
+        mav.setViewName("tier/popupmenu/menu.jsp");
         return mav;
     }
     
@@ -311,7 +311,7 @@ public class TierPopupMenuController extends MultiActionController {
 
         mav.addObject("isCapBankSystemMenu", true);
         mav.addObject("controlType", CapControlType.CAPBANK);
-        mav.setViewName("tier/popupmenu/menu");
+        mav.setViewName("tier/popupmenu/menu.jsp");
         return mav;    
     }
     
@@ -341,7 +341,7 @@ public class TierPopupMenuController extends MultiActionController {
         
         mav.addObject("operationalStateReason", operationalStateReason);
         mav.addObject("controlType", CapControlType.CAPBANK);
-        mav.setViewName("tier/popupmenu/opStateChangeMenu");
+        mav.setViewName("tier/popupmenu/opStateChangeMenu.jsp");
         return mav;    
     }
     
@@ -365,7 +365,7 @@ public class TierPopupMenuController extends MultiActionController {
         String displayName = "Temp Move Back";
         mav.addObject("displayName", displayName);
         
-        mav.setViewName("tier/popupmenu/tempMoveMenu");
+        mav.setViewName("tier/popupmenu/tempMoveMenu.jsp");
         return mav;
     }
     
@@ -388,7 +388,7 @@ public class TierPopupMenuController extends MultiActionController {
         List<String> comments = capControlCommentService.getComments(paoId, 15);
         mav.addObject("comments", comments);
         
-        mav.setViewName("tier/popupmenu/reasonMenu");
+        mav.setViewName("tier/popupmenu/reasonMenu.jsp");
         return mav;
     }
     
@@ -429,7 +429,7 @@ public class TierPopupMenuController extends MultiActionController {
         mav.addObject("list", list);
         
         mav.addObject("controlType", controlType);
-        mav.setViewName("tier/popupmenu/menu");
+        mav.setViewName("tier/popupmenu/menu.jsp");
         return mav;
     }
     
