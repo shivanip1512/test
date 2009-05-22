@@ -13,7 +13,7 @@ CREATE INDEX INDX_LMThermSeaEntry_SeaId ON LMThermostatSeasonEntry (
 /* End YUK-7257 */
 
 /* Start YUK-7503 */
-UPDATE FDRInteface 
+UPDATE FDRInterface 
 SET PossibleDirections = 'Receive,Send' 
 WHERE InterfaceId = 26;
 /* End YUK-7503 */
