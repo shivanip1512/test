@@ -1058,7 +1058,8 @@ void CtiLMProgramBase::createControlStatusPointUpdates(CtiMultiMsg* multiDispatc
     {
         if( getProgramState() == CtiLMProgramBase::ActiveState ||
             getProgramState() == CtiLMProgramBase::FullyActiveState ||
-            getProgramState() == CtiLMProgramBase::ManualActiveState )//controlling
+            getProgramState() == CtiLMProgramBase::ManualActiveState ||
+            getProgramState() == CtiLMProgramBase::TimedActiveState )//controlling
         {
             if( _lastsentstate != STATEONE )
             {
