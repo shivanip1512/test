@@ -99,8 +99,11 @@ public class CICustomerLoader implements Runnable
         // Because the customers were ordered by their id, we can look at the last
         // one to determine the max customerId that was loaded. This will then be used
         // to limit how much is loaded in the following queries.
-        LiteCustomer lastCustomer = allCICustomers.get(allCICustomers.size() - 1);
-        int maxCustomerID = lastCustomer.getCustomerID();
+        int maxCustomerID = 0;
+        if(allCICustomers.size() > 0){
+        	LiteCustomer lastCustomer = allCICustomers.get(allCICustomers.size() - 1);
+        	maxCustomerID = lastCustomer.getCustomerID();
+        }
         
         // Select the additional contact for each of the customers that we have loaded so far.
         sqlString = 
