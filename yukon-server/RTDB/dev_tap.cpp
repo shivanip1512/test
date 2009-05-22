@@ -342,7 +342,7 @@ INT CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer,INT commRe
             }
             else // We will look for more chars until we find what we want or no more chars come.
             {
-                // Note that this never stops if we always get more data back. 
+                // Note that this never stops if we always get more data back.
                 // It is expected that no system will ever do this. There are always pauses.
                 setCurrentState( StateAbsorb );
                 if(xfer.getInCountActual() == 0)
@@ -1697,7 +1697,7 @@ CtiMessage* CtiDeviceTapPagingTerminal::rsvpToDispatch(bool clearMessage)
         PValue = (FLOAT) pAccumPoint->getPointHistory().getPresentPulseCount() * pAccumPoint->getMultiplier();
         PValue += pAccumPoint->getDataOffset();
 
-        _snprintf(tStr, 126, "%s point %s = %f", getName().c_str(), pAccumPoint->getName()/*TSFLAG*/, PValue);
+        _snprintf(tStr, 126, "%s point %s = %f", getName().c_str(), pAccumPoint->getName().c_str(), PValue);
 
         pData = CTIDBG_new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, PulseAccumulatorPointType, tStr);
 
@@ -1717,7 +1717,7 @@ CtiMessage* CtiDeviceTapPagingTerminal::rsvpToDispatch(bool clearMessage)
         /* Apply offset */
         PValue += pAccumPoint->getDataOffset();
 
-        _snprintf(tStr, 126, "%s point %s = %f", getName().c_str(), pAccumPoint->getName()/*TSFLAG*/, PValue);
+        _snprintf(tStr, 126, "%s point %s = %f", getName().c_str(), pAccumPoint->getName().c_str(), PValue);
 
         pData = CTIDBG_new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, PulseAccumulatorPointType, tStr);
 

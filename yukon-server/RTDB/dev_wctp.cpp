@@ -53,7 +53,7 @@ UINT numSpecialChars = 6;
 CHAR *toBeReplaced[] = {"&", "\033", "\"", "'", "<", ">"};
 CHAR *replaceWith[]  = {"&amp;", "&lt;esc&gt;", "&quot;", "&apos;", "&lt;", "&gt;"};
 
-/* 
+/*
     Xerces wants XMLPlatformUtils::Terminate() to be the absolute last thing to be called when using
      the library.  This includes destructors.  We enforce by only calling it once on object destruction
      after the handler and parser have been deleted.
@@ -428,7 +428,7 @@ void CtiDeviceWctpTerminal::destroyBuffers()
 /*
     Xerces expects that XMLPlatformUtils::Initialize() will be called before any part of the library
      is actually used.  We enforce this by calling only once when we first try to grab a parser.
- 
+
      Note: We need to get the parser before we get the handler...
 */
 SAX2XMLReader* CtiDeviceWctpTerminal::getSAXParser()
@@ -1743,7 +1743,7 @@ CtiMessage* CtiDeviceWctpTerminal::rsvpToDispatch(bool clearMessage)
         PValue = (FLOAT) pAccumPoint->getPointHistory().getPresentPulseCount() * pAccumPoint->getMultiplier();
         PValue += pAccumPoint->getDataOffset();
 
-        _snprintf(tStr, 126, "%s point %s = %f", getName().c_str(), pAccumPoint->getName()/*TSFLAG*/, PValue);
+        _snprintf(tStr, 126, "%s point %s = %f", getName().c_str(), pAccumPoint->getName().c_str(), PValue);
 
         pData = CTIDBG_new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, PulseAccumulatorPointType, tStr);
 
@@ -1763,7 +1763,7 @@ CtiMessage* CtiDeviceWctpTerminal::rsvpToDispatch(bool clearMessage)
         /* Apply offset */
         PValue += pAccumPoint->getDataOffset();
 
-        _snprintf(tStr, 126, "%s point %s = %f", getName().c_str(), pAccumPoint->getName()/*TSFLAG*/, PValue);
+        _snprintf(tStr, 126, "%s point %s = %f", getName().c_str(), pAccumPoint->getName().c_str(), PValue);
 
         pData = CTIDBG_new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, PulseAccumulatorPointType, tStr);
 
