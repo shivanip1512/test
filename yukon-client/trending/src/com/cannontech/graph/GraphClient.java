@@ -691,9 +691,7 @@ public void refresh( )
 		if ( getTreeViewPanel().getSelectedItem() == null)
 		{
 			//Only tell the user to select a trend if there are trends to select
-			TreeModel model = getTreeViewPanel().getTree().getModel();
-			Object parent = getTreeViewPanel().getTree().getModel().getRoot();
-			if(model.getChildCount(parent) > 0) {
+			if(getTrendCount() > 0) {
 				showPopupMessage("Please select a Trend from the list", javax.swing.JOptionPane.WARNING_MESSAGE);
 			}
 			return;
@@ -948,6 +946,12 @@ public void exit() {
     prefs.put("LAST_HEIGHT", new Integer(this.getGraphParentFrame().getHeight()).toString());
 	getTrendProperties().writeDefaultsFile();
 	System.exit(0);
+}
+
+private int getTrendCount() {
+	TreeModel model = getTreeViewPanel().getTree().getModel();
+	Object parent = getTreeViewPanel().getTree().getModel().getRoot();
+	return model.getChildCount(parent);
 }
 
 /**
@@ -2336,9 +2340,7 @@ public void stateChanged(javax.swing.event.ChangeEvent event)
 				if( getTreeViewPanel().getSelectedNode().getParent() == null)	//has no parent, therefore is the root.
 				{
 					//Only tell the user to select a trend if there are trends to select
-					TreeModel model = getTreeViewPanel().getTree().getModel();
-					Object parent = getTreeViewPanel().getTree().getModel().getRoot();
-					if(model.getChildCount(parent) > 0) {
+					if(getTrendCount() > 0) {
 						showPopupMessage("Please Select a Trend From the list", javax.swing.JOptionPane.WARNING_MESSAGE);
 					}
 				}
