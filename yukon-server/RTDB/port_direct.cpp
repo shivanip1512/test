@@ -864,7 +864,7 @@ INT CtiPortDirect::readPort(PVOID pBuf, ULONG BufLen, ULONG timeout, PULONG pByt
     return CTIRead(getHandle(),pBuf,BufLen,pBytesRead);
 }
 
-bool CtiPortDirect::isViable() const
+bool CtiPortDirect::isViable()
 {
     return(getHandle() != NULL);
 }

@@ -41,6 +41,10 @@ private:
     void RefreshDialableEntries(bool &rowFound, RWDBReader& rdr, CtiPort* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiPort*,void*), void *arg);
     void RefreshEntries(bool &rowFound, RWDBReader& rdr, CtiPort* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiPort*,void*),void *arg);
 
+protected:
+
+    void RefreshPooledPortEntries(bool &rowFound, RWDBReader& rdr, CtiPort* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiPort*,void*), void *arg);
+
 public:
 
     typedef CtiLockGuard<CtiMutex>              LockGuard;
@@ -55,10 +59,7 @@ public:
 
     virtual ~CtiPortManager();
 
-    void RefreshPooledPortEntries(bool &rowFound, RWDBReader& rdr, CtiPort* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiPort*,void*), void *arg);
     void RefreshList(CtiPort* (*Factory)(RWDBReader &) = PortFactory, BOOL (*fn)(CtiPort*,void*) = isAPort, void *d = NULL);
-    void DumpList(void);
-    void DeleteList(void);
 
     void apply(void (*applyFun)(const long, ptr_type, void*), void* d);
     ptr_type  find(bool (*findFun)(const long, ptr_type, void*), void* d);
@@ -66,8 +67,6 @@ public:
     ptr_type PortGetEqual(LONG pid);
 
     INT writeQueue(INT pid, ULONG Request, ULONG DataSize, PVOID Data, ULONG Priority);
-
-    CTI_PORTTHREAD_FUNC_FACTORY_PTR setPortThreadFunc(CTI_PORTTHREAD_FUNC_FACTORY_PTR aFn);  // Assign this entry to every (new) entry.  Return the old entry.
 
     void haltLogs();
 

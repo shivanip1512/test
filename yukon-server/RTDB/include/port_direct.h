@@ -59,7 +59,7 @@ public:
 
    CtiPortDirect& setLocalSerial(const CtiTablePortLocalSerial& aRef);
 
-   virtual bool      isViable() const;
+   virtual bool      isViable();
    virtual string getPhysicalPort() const;
 
    virtual HANDLE  getHandle() const;

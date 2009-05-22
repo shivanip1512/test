@@ -103,7 +103,7 @@ public:
     CtiLogger& getPortLog() { return _portLog; }
 
     /* virtuals to make the world all fat and happy */
-    virtual bool   isViable() const;
+    virtual bool   isViable();
 
     virtual INT    ctsTest() const;
     virtual INT    dcdTest() const;
@@ -139,7 +139,6 @@ public:
     void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
     virtual void DecodeDatabaseReader(RWDBReader &rdr);
     virtual void DecodeDialableDatabaseReader(RWDBReader &rdr);
-    virtual void Dump() const;
 
     HCTIQUEUE&  getPortQueueHandle();
     INT writeQueue(ULONG Request, LONG  DataSize, PVOID Data, ULONG Priority, HANDLE hQuit = NULL);

@@ -177,21 +177,6 @@
 
 using namespace std;
 
-void CtiPort::Dump() const
-{
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << "Port \"" << _tblPAO.getID( ) << "\" Definition" << endl;;
-    dout << " Description                       = " << getName() << endl;
-    dout << " Protocol wrap                     = " << _tblPortBase.getProtocol() << endl;
-    dout << " Performance threashold            = " << _tblPortBase.getPerformanceThreshold() << endl;
-    dout << " AlarmInhibit                      = " << (_tblPortBase.getAlarmInhibit() ? "Y" : "N") << endl;
-    dout << " Shared Port Type                  = " << _tblPortBase.getSharedPortType() << endl;
-    dout << " Shared socket Number              = " << _tblPortBase.getSharedSocketNumber() << endl;
-
-    return;
-}
-
-
 INT CtiPort::traceIn(CtiXfer& Xfer, list< CtiMessage* > &traceList, CtiDeviceSPtr  Dev, INT ErrorCode) const
 {
     INT status = NORMAL;
@@ -1112,7 +1097,7 @@ INT CtiPort::readPort(PVOID pBuf, ULONG BufLen, ULONG timeout, PULONG pBytesRead
     return NORMAL;
 }
 
-bool CtiPort::isViable() const
+bool CtiPort::isViable()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);

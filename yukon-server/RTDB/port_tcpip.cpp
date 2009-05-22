@@ -17,11 +17,14 @@
 
 #include <iostream>
 
-
 #include "cparms.h"
 #include "logger.h"
 #include "port_tcpip.h"
 #include "utility.h"
+
+#include "boost/scoped_array.hpp"
+
+using namespace boost;
 
 CtiPortTCPIPDirect::CtiPortTCPIPDirect() :
 _dialable(0),
@@ -32,10 +35,6 @@ _failed(false),
 _busy(false),
 _baud(0)
 {
-    if(_dialable != 0)
-    {
-        _dialable->setSuperPort(this);
-    }
 }
 
 CtiPortTCPIPDirect::CtiPortTCPIPDirect(CtiPortDialable *dial) :
@@ -196,6 +195,14 @@ INT CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
                     dout << CtiTime() << " Error setting Linger Mode (Hard) for Terminal Server Socket:  " << WSAGetLastError() << " " << getName() << endl;
                 }
 
+                unsigned long nonblocking = 1;
+
+                if(ioctlsocket(_socket, FIONBIO, &nonblocking))
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " Error setting nonblocking mode for Terminal Server Socket:  " << WSAGetLastError() << " " << getName() << endl;
+                }
+
                 _connected   = true;
                 _baud        = getBaudRate();
             }
@@ -231,45 +238,46 @@ INT CtiPortTCPIPDirect::close(INT trace)
 
 INT CtiPortTCPIPDirect::inClear() const
 {
-    INT status = NORMAL;
-    PBYTE Buffer;
-    ULONG ulTemp;
-
-    if(_socket != INVALID_SOCKET)
+    if( _socket == INVALID_SOCKET )
     {
-        // How many are available ??
-        if( ioctlsocket(_socket, FIONREAD, &ulTemp) == SOCKET_ERROR )
-        {
-            return SOCKET_ERROR;
-        }
-        else
-        {
-            if(ulTemp == 0)
-            {
-                return(NORMAL);
-            }
-
-            if((Buffer = (PBYTE)malloc(ulTemp)) == NULL)
-            {
-                return(MEMORY);
-            }
-
-            if(recv (_socket, (PCHAR)Buffer, (int)ulTemp, 0) <= 0 )
-            {
-                status = TCPREADERROR;
-            }
-
-            free (Buffer);
-        }
+        return NORMAL;
     }
 
-    return status;
+    fd_set read_sockets;
+
+    FD_ZERO(&read_sockets);
+    FD_SET(_socket, &read_sockets);
+
+    timeval tv = {0, 0};
+
+    switch( select(0, &read_sockets, 0, 0, &tv) )
+    {
+        case 0:             return NORMAL;
+        case 1:             break;
+
+        default:
+        case SOCKET_ERROR:  return SOCKET_ERROR;
+    }
+
+    // How many are available ??
+    ULONG ulTemp;
+    if( ioctlsocket(_socket, FIONREAD, &ulTemp) == SOCKET_ERROR )
+    {
+        return SOCKET_ERROR;
+    }
+
+    scoped_array<char> buf(new char[ulTemp]);
+
+    if( recv(_socket, buf.get(), (int)ulTemp, 0) <= 0 )
+    {
+        return TCPREADERROR;
+    }
+
+    return NORMAL;
 }
 
 INT CtiPortTCPIPDirect::outClear() const
 {
-    INT status = NORMAL;
-
     return NORMAL;
 }
 
@@ -315,13 +323,6 @@ INT CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list< CtiMessa
                     ioctlsocket (_socket, FIONREAD, &bytesavail);
                 }
 
-                if(0) // Was (0)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "   There are " << bytesavail << " on the port..  I wanted " << expected << "  I waited " << lpcnt << " 1/4 seconds " << endl;
-                }
-
                 if( (expected > 0 && bytesavail >= expected) ||  (expected == 0 && bytesavail > 0) )
                 {
                     /*
@@ -357,7 +358,7 @@ INT CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list< CtiMessa
                 CTISleep ((ULONG) getDelay(DATA_OUT_TO_INBUFFER_FLUSH_DELAY));
                 status = inClear();
 
-                if( status == TCPREADERROR )
+                if( status != NORMAL )
                 {
                     shutdownClose(__FILE__, __LINE__);
                 }
@@ -651,24 +652,12 @@ INT CtiPortTCPIPDirect::shutdownClose(PCHAR Label, ULONG Line)
     return(iRet);
 }
 
-INT CtiPortTCPIPDirect::queryBytesAvailable()
-{
-    ULONG ReceiveLength = 0;
-
-    if(ioctlsocket(_socket, FIONREAD, &ReceiveLength))
-    {
-        return(-1);
-    }
-
-    return((INT)ReceiveLength);
-}
-
 
 INT CtiPortTCPIPDirect::receiveData(PBYTE Message, LONG Length, ULONG TimeOut, PLONG ReceiveLength)
 {
     INT status = NORMAL;
     int WaitCount = 0;
-    ULONG ulTemp = 0;
+    ULONG bytes_available = 0;
 
 
     *ReceiveLength = 0;  // no lies here
@@ -679,12 +668,12 @@ INT CtiPortTCPIPDirect::receiveData(PBYTE Message, LONG Length, ULONG TimeOut, P
         while((ULONG)WaitCount++ <= ((TimeOut * 1000L) / 50L))
         {
             /* Find out if we have any bytes */
-            ioctlsocket (_socket, FIONREAD, &ulTemp);
+            ioctlsocket (_socket, FIONREAD, &bytes_available);
 
             /* if a specific length specified wait for at least that much */
             if(Length > 0)
             {
-                if((LONG)ulTemp < Length)
+                if((LONG)bytes_available < Length)
                 {
                     CTISleep (50L);
                 }
@@ -695,7 +684,7 @@ INT CtiPortTCPIPDirect::receiveData(PBYTE Message, LONG Length, ULONG TimeOut, P
             }
             else                             // Otherwise any length will do
             {
-                if(ulTemp == 0)               // Wait for something, or the timeout.
+                if(bytes_available == 0)               // Wait for something, or the timeout.
                 {
                     CTISleep (50L);
                 }
@@ -706,7 +695,7 @@ INT CtiPortTCPIPDirect::receiveData(PBYTE Message, LONG Length, ULONG TimeOut, P
             }
         }
 
-        if(ulTemp == 0)
+        if(bytes_available == 0)
         {
             return(READTIMEOUT);
         }
@@ -726,7 +715,7 @@ INT CtiPortTCPIPDirect::receiveData(PBYTE Message, LONG Length, ULONG TimeOut, P
 
             if(*ReceiveLength < Length)
             {
-                if(ulTemp >= Length)     // The stupid thing told us the bytes were there!
+                if(bytes_available >= Length)     // The stupid thing told us the bytes were there!
                 {
                     int bytesrecv = 0;
 
@@ -780,11 +769,6 @@ INT CtiPortTCPIPDirect::sendData(PBYTE Message, ULONG Length, PULONG Written)
     INT retval;
     ULONG ulTemp;
 
-    if( ioctlsocket(_socket, FIONREAD, &ulTemp) == SOCKET_ERROR )
-    {
-        close(FALSE);  //  will set _socket to INVALID_SOCKET
-    }
-
     if(_socket == INVALID_SOCKET)
     {
         openPort();
@@ -806,17 +790,6 @@ INT CtiPortTCPIPDirect::sendData(PBYTE Message, ULONG Length, PULONG Written)
 
     /* On normal terminal server it does not matter if we sit */
     return status;
-}
-
-void CtiPortTCPIPDirect::Dump() const
-{
-    Inherited::Dump();
-
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << " IP Address                        = " << getIPAddress() << endl;
-    dout << " IP Port                           = " << getIPPort() << endl;
-
-    return;
 }
 
 void CtiPortTCPIPDirect::DecodeDatabaseReader(RWDBReader &rdr)
@@ -880,11 +853,59 @@ INT CtiPortTCPIPDirect::readPort(PVOID pBuf, ULONG BufLen, ULONG timeout, PULONG
     return status;
 }
 
-bool CtiPortTCPIPDirect::isViable() const
+bool CtiPortTCPIPDirect::isViable()
 {
-    bool valid = _socket != INVALID_SOCKET;
-    if( isSimulated() ) valid = true;
-    return valid;
+    if( isSimulated() )
+    {
+        return true;
+    }
+
+    if( isSocketBroken() )
+    {
+        shutdownClose(__FILE__, __LINE__);
+    }
+
+    return _socket != INVALID_SOCKET;
+}
+
+bool CtiPortTCPIPDirect::isSocketBroken() const
+{
+    if( _socket == INVALID_SOCKET )
+    {
+        return false;
+    }
+
+    fd_set read_sockets;
+
+    FD_ZERO(&read_sockets);
+    FD_SET(_socket, &read_sockets);
+
+    timeval tv = {0, 0};
+
+    switch( select(0, &read_sockets, 0, 0, &tv) )
+    {
+        case 0:             return false;
+        case 1:             break;
+
+        default:
+        case SOCKET_ERROR:  return true;
+    }
+
+    // How many are available ??
+    ULONG ulTemp;
+    if( ioctlsocket(_socket, FIONREAD, &ulTemp) == SOCKET_ERROR )
+    {
+        return true;
+    }
+
+    scoped_array<char> buf(new char[ulTemp]);
+
+    if( recv(_socket, buf.get(), (int)ulTemp, MSG_PEEK) <= 0 )
+    {
+        return true;
+    }
+
+    return false;
 }
 
 INT CtiPortTCPIPDirect::reset(INT trace)

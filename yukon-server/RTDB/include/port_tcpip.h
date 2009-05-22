@@ -44,6 +44,8 @@ private:
 
    CtiPortDialable      *_dialable;
 
+   bool isSocketBroken() const;
+
 public:
 
    typedef CtiPortSerial Inherited;
@@ -63,7 +65,7 @@ public:
    virtual void DecodeDatabaseReader(RWDBReader &rdr);
    virtual void DecodeDialableDatabaseReader(RWDBReader &rdr);
 
-   virtual bool isViable() const;
+   virtual bool isViable();
    virtual INT openPort(INT rate = 0, INT bits = 8, INT parity = NOPARITY, INT stopbits = ONESTOPBIT);
    virtual INT reset(INT trace);
    virtual INT setup(INT trace);
@@ -77,7 +79,6 @@ public:
 
    virtual INT inClear() const;
    virtual INT outClear() const;
-   virtual void Dump() const;
    virtual BOOL shouldDisconnect() const;
    virtual CtiPort& setShouldDisconnect(BOOL b = TRUE);
 

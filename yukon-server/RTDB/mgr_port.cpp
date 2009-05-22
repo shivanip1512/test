@@ -140,12 +140,6 @@ inline void ApplyResetUpdated(const long key, CtiPortSPtr Port, void* d)
     return;
 }
 
-inline void ApplyDump(const long key, CtiPortSPtr Port, void* d)
-{
-    Port->Dump();
-    return;
-}
-
 void ApplyInvalidateNotUpdated(const long key, CtiPortSPtr Port, void* d)
 {
     if(!Port->getUpdatedFlag())
@@ -470,35 +464,6 @@ CtiPortManager::ptr_type CtiPortManager::find(bool (*findFun)(const long, ptr_ty
 }
 
 
-void CtiPortManager::DumpList(void)
-{
-    try
-    {
-        coll_type::reader_lock_guard_t guard(getLock(), 30000);
-
-        while(!guard.isAcquired())
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint: Unable to lock port mutex **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-            guard.tryAcquire(30000);
-        }
-
-        spiterator itr, itr_end = end();
-
-        for(itr = begin(); itr != itr_end; itr++)
-        {
-            itr->second->Dump();
-        }
-    }
-    catch(...)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-}
-
 CtiPortManager::ptr_type CtiPortManager::PortGetEqual(LONG pid)
 {
     ptr_type p;
@@ -649,15 +614,6 @@ INT CtiPortManager::writeQueue(INT pid, ULONG Request, ULONG DataSize, PVOID Dat
     return status;
 }
 
-
-CTI_PORTTHREAD_FUNC_FACTORY_PTR CtiPortManager::setPortThreadFunc(CTI_PORTTHREAD_FUNC_FACTORY_PTR aFn)
-{
-    CTI_PORTTHREAD_FUNC_FACTORY_PTR oldFn = _portThreadFuncFactory;
-
-    _portThreadFuncFactory = aFn;
-
-    return oldFn;
-}
 
 void CtiPortManager::haltLogs()
 {

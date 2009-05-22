@@ -33,9 +33,6 @@ INCLPATHS+= \
 
 
 
-TESTOBJS=\
-porttest.obj
-
 RTPTTESTOBJS=\
 rtpointtest.obj
 
@@ -53,7 +50,6 @@ conntest.obj
 
 
 CTIPROGS=\
-porttest.exe \
 pointtest.exe \
 routetest.exe \
 devtest.exe \
@@ -62,21 +58,6 @@ conntest.exe
 
 
 ALL:            $(CTIPROGS)
-
-porttest.exe:   $(TESTOBJS) makeexe.mak
-                @echo:
-                @echo Compiling $@
-                @%cd $(OBJ)
-                $(RWCPPINVOKE) $(CFLAGS) $(RWLINKFLAGS) $(INCLPATHS) /Fe..\$@ \
-$(TESTOBJS) \
--link $(COMPILEBASE)\lib\cticparms.lib $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\ctiprtdb.lib $(COMPILEBASE)\lib\ctisvr.lib $(COMPILEBASE)\lib\clrdump.lib $(RWLIBS) $(BOOSTLIBS)
-               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-               mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
-               -@copy ..\$@ $(YUKONOUTPUT)
-                @echo:
-                @echo Done building Target ..\$@
-                @echo:
-                @%cd $(CWD)
 
 rtpttest.exe:  $(RTPTTESTOBJS) makeexe.mak
                 @echo:
@@ -2168,22 +2149,6 @@ pointtest.obj:	yukon.h precompiled.h ctidbgmem.h logger.h dlldefs.h \
 		db_entry_defines.h pointdefs.h pt_dyn_base.h tbl_pt_base.h \
 		dbaccess.h sema.h desolvers.h tbl_pt_property.h \
 		tbl_pt_trigger.h rtdb.h hashkey.h hash_functions.h
-porttest.obj:	yukon.h precompiled.h ctidbgmem.h dllbase.h os2_2w32.h \
-		dlldefs.h types.h cticalls.h dsm2.h mutex.h guard.h numstr.h \
-		clrdump.h cticonnect.h netports.h mgr_port.h smartmap.h \
-		boostutil.h utility.h ctitime.h queues.h sorted_vector.h \
-		readers_writer_lock.h critical_section.h port_base.h \
-		dev_base.h cmdparse.h ctitokenizer.h parsevalue.h counter.h \
-		dev_exclusion.h tbl_paoexclusion.h config_device.h logger.h \
-		thread.h CtiPCPtrQueue.h hashkey.h hash_functions.h \
-		rte_base.h dbmemobject.h ctibase.h ctinexus.h message.h \
-		collectable.h rwutil.h boost_time.h tbl_pao_lite.h \
-		tbl_rtcomm.h dbaccess.h sema.h resolvers.h pointtypes.h \
-		db_entry_defines.h desolvers.h msg_signal.h tbl_base.h \
-		tbl_stats.h tbl_scanrate.h tbl_dyn_paoinfo.h pointdefs.h \
-		pt_base.h pt_dyn_base.h tbl_pt_base.h tbl_pt_property.h \
-		tbl_pt_trigger.h tbl_port_base.h xfer.h tbl_port_statistics.h \
-		slctprt.h rtdb.h
 port_base.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h rwutil.h \
 		ctitime.h dlldefs.h boost_time.h boostutil.h utility.h \
 		queues.h cticalls.h os2_2w32.h types.h numstr.h \
