@@ -44,30 +44,25 @@ public class UpdateSNRangeController extends StarsInventoryActionController {
             newDevTypeID = null;
         }
         
-        String fromStr = request.getParameter("From");
-        String toStr = request.getParameter("To");
-        Integer snFrom = null;
-        Integer snTo = null;
-
-        if (!fromStr.equals("*")) {
-            try {
-                snFrom = Integer.valueOf( fromStr );
-                if (!toStr.equals("*")) {
-                    snTo = Integer.valueOf( toStr );
-                    if (snFrom.intValue() > snTo.intValue()) {
-                        session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "The 'From' value is greater than the 'To' value");
-                        String redirect = this.getReferer(request);
-                        response.sendRedirect(redirect);
-                        return;
-                    }
-                }
-            }
-            catch (NumberFormatException nfe) {
-                session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invalid number format in the SN range");
-                String redirect = this.getReferer(request);
-                response.sendRedirect(redirect);
-                return;
-            }
+        long snFrom = 0, snTo = 0;
+        try {
+            snFrom = Long.parseLong( request.getParameter("From") );
+            if (request.getParameter("To").length() > 0)
+                snTo = Long.parseLong( request.getParameter("To") );
+            else
+                snTo = snFrom;
+        }
+        catch (NumberFormatException nfe) {
+            session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invalid number format in the Serial range");
+            String redirect = this.getReferer(request);
+            response.sendRedirect(redirect);
+            return;
+        }
+        if (snFrom > snTo) {
+            session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "The Serial range 'from' value cannot be greater than the 'to' value");
+            String redirect = this.getReferer(request);
+            response.sendRedirect(redirect);
+            return;
         }
 
         Integer voltageID = ServletRequestUtils.getIntParameter(request, "Voltage");

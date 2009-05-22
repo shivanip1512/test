@@ -19,8 +19,8 @@
 	}
 	else if (invToConfig.size() > 0) {
 		int devTypeID = 0;
-		if (invToConfig.get(0) instanceof Integer[])
-			devTypeID = ((Integer[])invToConfig.get(0))[0].intValue();
+		if (invToConfig.get(0) instanceof Long[])
+			devTypeID = ((Long[])invToConfig.get(0))[0].intValue();
 		else if (invToConfig.get(0) instanceof Pair)
 			devTypeID = ((LiteStarsLMHardware)((Pair)invToConfig.get(0)).getFirst()).getLmHardwareTypeID();
 		else
@@ -40,27 +40,30 @@
 		}
 		else {
 			try {
-				Integer snFrom = Integer.valueOf(request.getParameter("From"));
-				Integer snTo = Integer.valueOf(request.getParameter("To"));
-				
-				boolean foundRange = false;
-				for (int i = 0; i < invToConfig.size(); i++) {
-					if (invToConfig.get(i) instanceof Integer[]) {
-						Integer[] snRange = (Integer[]) invToConfig.get(i);
-						if (snRange[0].intValue() == devTypeID.intValue() && snRange[1].intValue() == snFrom.intValue() && snRange[2].intValue() == snTo.intValue()) {
-							foundRange = true;
-							break;
+			    Long snFrom = Long.valueOf(request.getParameter("From"));
+			    Long snTo = Long.valueOf(request.getParameter("To"));
+				if (snFrom > snTo) {
+				    errorMsg = "The Serial range 'from' value cannot be greater than the 'to' value";   
+				} else {
+					boolean foundRange = false;
+					for (int i = 0; i < invToConfig.size(); i++) {
+						if (invToConfig.get(i) instanceof Long[]) {
+						    Long[] snRange = (Long[]) invToConfig.get(i);
+							if (snRange[0].intValue() == devTypeID.intValue() && snRange[1].longValue() == snFrom.longValue() && snRange[2].longValue() == snTo.longValue()) {
+								foundRange = true;
+								break;
+							}
 						}
 					}
-				}
-				
-				if (!foundRange) {
-					invToConfig.add(new Integer[] {devTypeID, snFrom, snTo});
-					hwConfigType = newHwConfigType;
+					
+					if (!foundRange) {
+						invToConfig.add(new Long[] {devTypeID.longValue(), snFrom, snTo});
+						hwConfigType = newHwConfigType;
+					}
 				}
 			}
 			catch (NumberFormatException e) {
-				errorMsg = "Invalid number format in the SN range";
+				errorMsg = "Invalid number format in the Serial range";
 			}
 		}
 	}
@@ -120,7 +123,7 @@
 <script language="Javascript">
 function addConfigRange(form) {
 	if (form.From.value == "" || form.To.value == "") {
-		alert("The 'From' and 'To' field cannot be empty");
+		alert("The Serial range 'From' and 'To' fields cannot be empty");
 		return;
 	}
 	form.attributes["action"].value = "ConfigSN.jsp?AddRange";
@@ -196,9 +199,9 @@ function removeAllConfig(form) {
                                   <div align="right">Range:</div>
                                 </td>
                                 <td width="75%"> 
-                                  <input type="text" name="From" size="10" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("From")) %>">
+                                  <input type="text" name="From" size="19" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("From")) %>">
                                   &nbsp;to&nbsp; 
-                                  <input type="text" name="To" size="10" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("To")) %>">
+                                  <input type="text" name="To" size="19" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("To")) %>">
                                 </td>
                               </tr>
                               <tr> 
@@ -257,8 +260,8 @@ function removeAllConfig(form) {
 	for (int i = 0; i < invToConfig.size(); i++) {
 		int devTypeID = 0;
 		String serialNo = null;
-		if (invToConfig.get(i) instanceof Integer[]) {
-			Integer[] snRange = (Integer[]) invToConfig.get(i);
+		if (invToConfig.get(i) instanceof Long[]) {
+		    Long[] snRange = (Long[]) invToConfig.get(i);
 			devTypeID = snRange[0].intValue();
 			serialNo = snRange[1].toString() + " to " + snRange[2].toString();
 		}

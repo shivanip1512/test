@@ -38,8 +38,8 @@ import com.cannontech.stars.web.util.InventoryManagerUtil;
 public class DeleteSNRangeTask extends TimeConsumingTask {
 	
 	private final LiteStarsEnergyCompany energyCompany;
-	private final Integer snFrom;
-	private final Integer snTo;
+	private final long snFrom;
+	private final long snTo;
 	private final Integer devTypeID;
 	private final boolean confirmOnMessagePage;
 	private final String redirect;
@@ -49,7 +49,7 @@ public class DeleteSNRangeTask extends TimeConsumingTask {
 	int numSuccess = 0, numFailure = 0;
 	int numToBeDeleted = 0;
 	
-	public DeleteSNRangeTask(LiteStarsEnergyCompany energyCompany, Integer snFrom, Integer snTo, Integer devTypeID, 
+	public DeleteSNRangeTask(LiteStarsEnergyCompany energyCompany, long snFrom, long snTo, Integer devTypeID, 
 	        boolean confirmOnMessagePage, String redirect, HttpSession session) {
 		this.energyCompany = energyCompany;
 		this.snFrom = snFrom;

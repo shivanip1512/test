@@ -39,8 +39,8 @@ import com.cannontech.stars.xml.serialize.StarsInventory;
 public class UpdateSNRangeTask extends TimeConsumingTask {
 	
 	LiteStarsEnergyCompany energyCompany = null;
-	Integer snFrom = null;
-	Integer snTo = null;
+	long snFrom = 0;
+	long snTo = 0;
 	Integer devTypeID = null;
 	Integer newDevTypeID = null;
 	Date recvDate = null;
@@ -55,7 +55,7 @@ public class UpdateSNRangeTask extends TimeConsumingTask {
 	int numSuccess = 0, numFailure = 0;
 	int numToBeUpdated = 0;
 	
-	public UpdateSNRangeTask(LiteStarsEnergyCompany energyCompany, Integer snFrom, Integer snTo, Integer devTypeID, Integer newDevTypeID,
+	public UpdateSNRangeTask(LiteStarsEnergyCompany energyCompany, long snFrom, long snTo, Integer devTypeID, Integer newDevTypeID,
 		Date recvDate, Integer voltageID, Integer companyID, Integer routeID, 
 		    boolean confirmOnMessagePage, String redirect, HttpSession session)
 	{

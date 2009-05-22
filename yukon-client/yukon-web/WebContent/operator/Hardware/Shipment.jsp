@@ -80,9 +80,9 @@
 				            	<div align="right">Serial Number Range:</div>
 				                </td>
 				            <td width="80%"> 
-				                <input type="text" name="serialStart" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentShipment.serialNumberStart}"/>' onchange="setContentChanged(true)">
+				                <input type="text" name="serialStart" maxlength="19" size="19" value='<c:out value="${purchaseBean.currentShipment.serialNumberStart}"/>' onchange="setContentChanged(true)">
 				            	<div> to </div>
-				            	<input type="text" name="serialEnd" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentShipment.serialNumberEnd}"/>' onchange="setContentChanged(true)">
+				            	<input type="text" name="serialEnd" maxlength="19" size="19" value='<c:out value="${purchaseBean.currentShipment.serialNumberEnd}"/>' onchange="setContentChanged(true)">
 				            </td>
 			        	</tr>
 					</c:when>

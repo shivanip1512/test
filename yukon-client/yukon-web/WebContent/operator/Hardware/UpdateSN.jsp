@@ -43,6 +43,14 @@ function init() {
 	form.ServiceCompany.disabled = !form.UpdateSrvCompany.checked;
 	form.Route.disabled = !form.UpdateRoute.checked;
 }
+
+function validate(form) {
+    if (form.From.value == "" || form.To.value == "") {
+        alert("The Serial range 'From' and 'To' fields cannot be empty");
+        return false;
+    }
+    return true;
+}
 </script>
 </head>
 
@@ -74,7 +82,7 @@ function init() {
               <%@ include file="include/SearchBar.jspf" %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
-              <form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/InventoryManager">
+              <form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/InventoryManager" onsubmit="return validate(this)">
 			    <input type="hidden" name="action" value="UpdateSNRange">
 			    <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>">
 			    <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?failed">
@@ -113,9 +121,9 @@ function init() {
                             <div align="left">Range:</div>
                           </td>
                           <td width="70%"> 
-                            <input type="text" name="From" size="10" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("From")) %>">
+                            <input type="text" name="From" size="19" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("From")) %>">
                             &nbsp;to&nbsp; 
-                            <input type="text" name="To" size="10" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("To")) %>">
+                            <input type="text" name="To" size="19" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("To")) %>">
                           </td>
                         </tr>
                         <tr> 

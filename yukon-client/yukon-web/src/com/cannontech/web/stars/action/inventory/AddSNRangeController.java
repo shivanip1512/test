@@ -37,23 +37,23 @@ public class AddSNRangeController extends StarsInventoryActionController {
         LiteStarsEnergyCompany member = (memberId != null) ?
                 this.starsDatabaseCache.getEnergyCompany(memberId) : this.starsDatabaseCache.getEnergyCompany( user.getEnergyCompanyID());
 
-        int snFrom = 0, snTo = 0;
+        long snFrom = 0, snTo = 0;
         try {
-            snFrom = Integer.parseInt( request.getParameter("From") );
+            snFrom = Long.parseLong( request.getParameter("From") );
             if (request.getParameter("To").length() > 0)
-                snTo = Integer.parseInt( request.getParameter("To") );
+                snTo = Long.parseLong( request.getParameter("To") );
             else
                 snTo = snFrom;
         }
         catch (NumberFormatException nfe) {
-            session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invalid number format in the SN range");
+            session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invalid number format in the Serial range");
             String redirect = this.getReferer(request);
             response.sendRedirect(redirect);
             return;
         }
 
         if (snFrom > snTo) {
-            session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "The 'from' value cannot be greater than the 'to' value");
+            session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "The Serial range 'from' value cannot be greater than the 'to' value");
             String redirect = this.getReferer(request);
             response.sendRedirect(redirect);
             return;

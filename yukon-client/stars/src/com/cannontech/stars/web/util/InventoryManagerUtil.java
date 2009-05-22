@@ -527,7 +527,7 @@ public class InventoryManagerUtil {
 		}
 	}
 	
-	public static String getSNRange(Integer snFrom, Integer snTo) {
+	public static String getSNRange(Long snFrom, Long snTo) {
 		if (snFrom == null && snTo == null)
 			return null;
 		else if (snFrom == null)

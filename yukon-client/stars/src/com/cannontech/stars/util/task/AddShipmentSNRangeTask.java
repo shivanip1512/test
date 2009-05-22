@@ -37,7 +37,7 @@ public class AddShipmentSNRangeTask extends TimeConsumingTask {
 	/*TODO: We have a problem if they want to bring in non-numeric serial numbers as an add.
      * 
 	 */
-    int snFrom = 0, snTo = 0;
+    long snFrom = 0, snTo = 0;
 	Integer devTypeID = null;
     Integer devStateID = null;
 	Date recvDate = null;
@@ -53,8 +53,8 @@ public class AddShipmentSNRangeTask extends TimeConsumingTask {
 	public AddShipmentSNRangeTask(LiteStarsEnergyCompany energyCompany, String snFrom, String snTo, Integer devTypeID, Integer devStateID, Integer warehouseID, HttpSession session)
 	{
 		this.energyCompany = energyCompany;
-		this.snFrom = Integer.valueOf(snFrom).intValue();
-		this.snTo = Integer.valueOf(snTo).intValue();
+		this.snFrom = Long.parseLong(snFrom);
+		this.snTo = Long.parseLong(snTo);
 		this.devTypeID = devTypeID;
         this.devStateID = devStateID;
         this.warehouseID = warehouseID;
@@ -63,7 +63,7 @@ public class AddShipmentSNRangeTask extends TimeConsumingTask {
 
 	@Override
     public String getProgressMsg() {
-		int numTotal = snTo - snFrom + 1;
+		long numTotal = snTo - snFrom + 1;
 		if (status == STATUS_FINISHED && numFailure == 0) {
 			return "The serial numbers " + snFrom + " to " + snTo + " have been added successfully.";
 		}	
@@ -86,7 +86,7 @@ public class AddShipmentSNRangeTask extends TimeConsumingTask {
 		
 		Integer categoryID = new Integer( InventoryUtils.getInventoryCategoryID(devTypeID.intValue(), energyCompany) );
 		
-		for (int sn = snFrom; sn <= snTo; sn++) {
+		for (long sn = snFrom; sn <= snTo; sn++) {
 			String serialNo = String.valueOf(sn);
 			
 			try 

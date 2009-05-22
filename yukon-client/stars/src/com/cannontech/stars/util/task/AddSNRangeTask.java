@@ -41,7 +41,7 @@ import com.cannontech.stars.web.util.InventoryManagerUtil;
 public class AddSNRangeTask extends TimeConsumingTask {
 
 	LiteStarsEnergyCompany energyCompany = null;
-	int snFrom = 0, snTo = 0;
+	long snFrom = 0, snTo = 0;
 	Integer devTypeID = null;
     Integer devStateID = null;
 	Date recvDate = null;
@@ -56,7 +56,7 @@ public class AddSNRangeTask extends TimeConsumingTask {
 	List<String> serialNoSet = new ArrayList<String>();
 	int numSuccess = 0, numFailure = 0;
 	
-	public AddSNRangeTask(LiteStarsEnergyCompany energyCompany, int snFrom, int snTo, Integer devTypeID, Integer devStateID,
+	public AddSNRangeTask(LiteStarsEnergyCompany energyCompany, long snFrom, long snTo, Integer devTypeID, Integer devStateID,
 		Date recvDate, Integer voltageID, Integer companyID, Integer routeID, boolean confirmOnMessagePage, 
 		    String redirect, HttpSession session) {
 		this.energyCompany = energyCompany;
@@ -75,7 +75,7 @@ public class AddSNRangeTask extends TimeConsumingTask {
 
 	@Override
 	public String getProgressMsg() {
-		int numTotal = snTo - snFrom + 1;
+		long numTotal = snTo - snFrom + 1;
 		if (status == STATUS_FINISHED && numFailure == 0) {
 			return "The serial numbers " + snFrom + " to " + snTo + " have been added successfully.";
 		}
@@ -118,7 +118,7 @@ public class AddSNRangeTask extends TimeConsumingTask {
         }
         
         // Create a piece of hardware for each sn in the range
-		for (int sn = snFrom; sn <= snTo; sn++) {
+		for (long sn = snFrom; sn <= snTo; sn++) {
 			String serialNo = String.valueOf(sn);
 			
 			LiteStarsLMHardware existingHw = foundMap.get(serialNo);

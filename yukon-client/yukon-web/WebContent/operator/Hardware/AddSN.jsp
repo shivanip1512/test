@@ -29,6 +29,14 @@ function changeMember(form) {
 	form.attributes["action"].value = "AddSN.jsp";
 	form.submit();
 }
+
+function validate(form) {
+    if (form.From.value == "" || form.To.value == "") {
+        alert("The Serial range 'From' and 'To' fields cannot be empty");
+        return false;
+    }
+    return true;
+}
 </script>
 </head>
 
@@ -61,7 +69,7 @@ function changeMember(form) {
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
-              <form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/InventoryManager">
+              <form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/InventoryManager" onsubmit="return validate(this)">
 			    <input type="hidden" name="action" value="AddSNRange">
 			    <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>">
 			    <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?failed">
@@ -99,9 +107,9 @@ function changeMember(form) {
                             <div align="right">Range:</div>
                           </td>
                           <td width="75%"> 
-                            <input type="text" name="From" size="10" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("From")) %>">
+                            <input type="text" name="From" size="19" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("From")) %>">
                             &nbsp;to&nbsp; 
-                            <input type="text" name="To" size="10" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("To")) %>">
+                            <input type="text" name="To" size="19" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("To")) %>">
                           </td>
                         </tr>
                         <tr> 

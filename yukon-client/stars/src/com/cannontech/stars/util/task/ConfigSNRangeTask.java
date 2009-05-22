@@ -61,8 +61,8 @@ public class ConfigSNRangeTask extends TimeConsumingTask {
     public String getProgressMsg() {
 		if (dto.isConfigNow()) {
 			if (status == STATUS_FINISHED && numFailure == 0) {
-				if (invToConfig.size() == 1 && invToConfig.get(0) instanceof Integer[]) {
-					Integer[] snRange = (Integer[]) invToConfig.get(0);
+				if (invToConfig.size() == 1 && invToConfig.get(0) instanceof Long[]) {
+				    Long[] snRange = (Long[]) invToConfig.get(0);
 					return "The serial numbers " + snRange[1] + " to " + snRange[2] + " have been configured successfully.";
 				}
 				else
@@ -73,8 +73,8 @@ public class ConfigSNRangeTask extends TimeConsumingTask {
 		}
 		else {
 			if (status == STATUS_FINISHED && numFailure == 0) {
-				if (invToConfig.size() == 1 && invToConfig.get(0) instanceof Integer[]) {
-					Integer[] snRange = (Integer[]) invToConfig.get(0);
+				if (invToConfig.size() == 1 && invToConfig.get(0) instanceof Long[]) {
+				    Long[] snRange = (Long[]) invToConfig.get(0);
 					return "The serial numbers " + snRange[1] + " to " + snRange[2] + " have been saved to batch.";
 				}
 				else
@@ -105,8 +105,8 @@ public class ConfigSNRangeTask extends TimeConsumingTask {
 		hwsToConfig = new ArrayList();
 		
 		for (int i = 0; i < invToConfig.size(); i++) {
-			if (invToConfig.get(i) instanceof Integer[]) {
-				Integer[] snRange = (Integer[]) invToConfig.get(i);
+			if (invToConfig.get(i) instanceof Long[]) {
+			    Long[] snRange = (Long[]) invToConfig.get(i);
 				int devTypeDefID = DaoFactory.getYukonListDao().getYukonListEntry(snRange[0].intValue()).getYukonDefID();
 				
 				if (!searchMembers) {
@@ -224,8 +224,8 @@ public class ConfigSNRangeTask extends TimeConsumingTask {
 		
 		String logMsg = "Serial Range:";
 		for (int i = 0; i < invToConfig.size(); i++) {
-			if (invToConfig.get(i) instanceof Integer[]) {
-				Integer[] snRange = (Integer[]) invToConfig.get(i);
+			if (invToConfig.get(i) instanceof Long[]) {
+			    Long[] snRange = (Long[]) invToConfig.get(i);
 				logMsg += snRange[1] + " - " + snRange[2] + ",";
 			}
 			else {

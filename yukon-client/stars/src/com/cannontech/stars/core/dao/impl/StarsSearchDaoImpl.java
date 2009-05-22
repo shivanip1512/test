@@ -304,7 +304,7 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 
 	@Override
 	public List<LiteStarsLMHardware> searchLMHardwareBySerialNumberRange(
-			int startSerialNumber, int endSerialNumber,
+			long startSerialNumber, long endSerialNumber,
 			int deviceTypeDefinitionId,
 			List<LiteStarsEnergyCompany> energyCompanyList) {
 

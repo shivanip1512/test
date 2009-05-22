@@ -115,8 +115,8 @@ public interface StarsSearchDao {
 	 * @return List of hardware found
 	 */
 	public List<LiteStarsLMHardware> searchLMHardwareBySerialNumberRange(
-			int startSerialNumber, 
-			int endSerialNumber, 
+			long startSerialNumber, 
+			long endSerialNumber, 
 			int deviceTypeDefinitionId, 
 			List<LiteStarsEnergyCompany> energyCompanyList);
 	

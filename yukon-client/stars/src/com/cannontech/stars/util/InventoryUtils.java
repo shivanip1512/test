@@ -148,18 +148,10 @@ public class InventoryUtils {
 			|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA_SIMPLE);
 	}
 	
-	public static List<LiteStarsLMHardware> getLMHardwareInRange(LiteStarsEnergyCompany energyCompany, int devTypeDefID, Integer snFrom, Integer snTo) {
+	public static List<LiteStarsLMHardware> getLMHardwareInRange(LiteStarsEnergyCompany energyCompany, int devTypeDefID, long snFrom, long snTo) {
 		
 		StarsSearchDao starsSearchDao = 
 			YukonSpringHook.getBean("starsSearchDao", StarsSearchDao.class);
-		
-		// If either end of the range is null - there is no limit on that end
-		if(snFrom == null) {
-			snFrom = Integer.MIN_VALUE;
-		}
-		if(snTo == null) {
-			snTo = Integer.MAX_VALUE;
-		}
 		
 		List<LiteStarsLMHardware> hwList = starsSearchDao.searchLMHardwareBySerialNumberRange(
 														snFrom, 

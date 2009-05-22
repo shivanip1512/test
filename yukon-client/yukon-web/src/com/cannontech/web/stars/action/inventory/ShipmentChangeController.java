@@ -71,6 +71,30 @@ public class ShipmentChangeController extends StarsInventoryActionController {
         if(serialEnd != null)
             currentShipment.setSerialNumberEnd(serialEnd);
         
+        if(serialStart != null && serialEnd != null)
+        {
+            long snFrom = 0, snTo = 0;
+            try {
+                snFrom = Long.parseLong( serialStart );
+                if (serialEnd.length() > 0)
+                    snTo = Long.parseLong( serialEnd );
+                else
+                    snTo = snFrom;
+            }
+            catch (NumberFormatException nfe) {
+                session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invalid number format in the Serial range");
+                redirect = request.getContextPath() + "/operator/Hardware/Shipment.jsp";
+                response.sendRedirect(redirect);
+                return;
+            }
+            if (snFrom > snTo) {
+                session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "The Serial range 'from' value cannot be greater than the 'to' value");
+                redirect = request.getContextPath() + "/operator/Hardware/Shipment.jsp";
+                response.sendRedirect(redirect);
+                return;
+            }
+        }
+        
         try
         {
             /**
