@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
@@ -61,6 +62,7 @@ public class OptOutOperatorController {
 	private StarsInventoryBaseDao starsInventoryBaseDao;
 	private DisplayableInventoryDao displayableInventoryDao;
 	private DateFormattingService dateFormattingService;
+	private RolePropertyDao rolePropertyDao;
 	protected YukonUserContextMessageSourceResolver messageSourceResolver;
 
     private static class StartDateException extends Exception {
@@ -418,6 +420,18 @@ public class OptOutOperatorController {
         if (startTime > yearInFuture) {
             throw new StartDateException("yukon.dr.operator.optout.startDateTooLate");
         }
+        
+        boolean optOutTodayOnly = rolePropertyDao.getPropertyBooleanValue(
+        		YukonRoleProperty.OPERATOR_OPT_OUT_TODAY_ONLY, userContext.getYukonUser());
+        if(optOutTodayOnly) {
+        	cal.setTime(todayDate);
+            cal.add(Calendar.DAY_OF_YEAR, 1);
+        	long dayInFuture = cal.getTimeInMillis();
+        	
+        	if (startTime > dayInFuture) {
+                throw new IllegalArgumentException("Start date must be today");
+            }
+        }
     }
 
     private Map<Integer, OptOutCountHolder> getOptOutCountsForInventories(
@@ -474,6 +488,11 @@ public class OptOutOperatorController {
     public void setMessageSourceResolver(
 			YukonUserContextMessageSourceResolver messageSourceResolver) {
 		this.messageSourceResolver = messageSourceResolver;
+	}
+    
+    @Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+		this.rolePropertyDao = rolePropertyDao;
 	}
     
 }

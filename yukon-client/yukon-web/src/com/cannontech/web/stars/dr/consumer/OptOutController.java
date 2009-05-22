@@ -316,6 +316,19 @@ public class OptOutController extends AbstractConsumerController {
         if (startTime > yearInFuture) {
             throw new StartDateException("yukon.dr.consumer.optout.startDateTooLate");
         }
+        
+        boolean optOutTodayOnly = rolePropertyDao.getPropertyBooleanValue(
+        		YukonRoleProperty.RESIDENTIAL_OPT_OUT_TODAY_ONLY, userContext.getYukonUser());
+        if(optOutTodayOnly) {
+        	cal.setTime(todayDate);
+            cal.add(Calendar.DAY_OF_YEAR, 1);
+        	long dayInFuture = cal.getTimeInMillis();
+        	
+        	if (startTime > dayInFuture) {
+                throw new IllegalArgumentException("Start date must be today");
+            }
+        }
+        
 }
 
     /**

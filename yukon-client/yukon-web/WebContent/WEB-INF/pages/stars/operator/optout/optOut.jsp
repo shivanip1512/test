@@ -24,9 +24,19 @@
 
 	            <cti:formatDate  value="${currentDate}" type="DATE" var="formattedDate"/>
 
-	            <td align="left">
-	                <ct:dateInputCalendar fieldName="startDate" fieldValue="${formattedDate}"/>
-	            </td>
+	            <cti:getProperty var="optOutTodayOnly" property="ConsumerInfoRole.OPT_OUT_TODAY_ONLY" />
+
+                <td align="left">
+                    <c:choose>
+                        <c:when test="${optOutTodayOnly}">
+                            <input type="hidden" name="startDate" value="${formattedDate}" />
+                            ${formattedDate}
+                        </c:when>
+                        <c:otherwise>
+                            <ct:dateInputCalendar fieldName="startDate" fieldValue="${formattedDate}"/>
+                        </c:otherwise>
+                    </c:choose>
+                </td>
 	        </tr>
 
 	        <tr>
