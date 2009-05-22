@@ -79,7 +79,7 @@ function check_and_submit ()
     for (i=0; i < cells.length; i++) 
     {
          cell = parseInt(cells[i].value);
-         if (!((80 <= cell) && (cell <=120))) 
+         if (!((0 <= cell) && (cell <= 250))) 
          {
             cells[i].style.backgroundColor = 'red';
             wrong++;

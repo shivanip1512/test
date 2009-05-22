@@ -84,7 +84,7 @@ public class TargetCycleConfigPanel extends JPanel implements ActionListener{
         constraintsJTextGearAdjustFields.ipadx = 10;
         constraintsJTextGearAdjustFields.insets = new java.awt.Insets(2, 2, 3, 1);
         
-        JLabel trgtAdjHdr = createHdrLabel ("Adjustment(80%-120%)");
+        JLabel trgtAdjHdr = createHdrLabel ("Adjustment(0%-250%)");
         this.add (trgtAdjHdr, constraintsJTextGearAdjustFields);    
         constraintsJTextGearAdjustFields.gridy ++;
         
@@ -148,14 +148,14 @@ public class TargetCycleConfigPanel extends JPanel implements ActionListener{
                 for (int i = 0; i < getTimeSlots(); i++) {
                     final JTextField adjustment = new JTextField();
                     adjustment.setName("JCheckBoxTargetAdjust_" + i);
-                    adjustment.setToolTipText("Enter the number from 80 to 120");
+                    adjustment.setToolTipText("Enter the number from 0 to 250");
                     adjustment.setMaximumSize(new java.awt.Dimension(10, 22));
                     adjustment.setActionCommand("Target Adjust");
                     adjustment.setMinimumSize(new java.awt.Dimension(10, 22));
                     adjustment.setText("100");
-                    JTextFieldRangeListener from80to120 = new JTextFieldRangeListener (adjustment, 80, 120);
-                    from80to120.setControl(getOkButton());
-                    adjustment.addFocusListener(from80to120);
+                    JTextFieldRangeListener from0to250 = new JTextFieldRangeListener (adjustment, 0, 250);
+                    from0to250.setControl(getOkButton());
+                    adjustment.addFocusListener(from0to250);
                     fields [i] = adjustment;
                 }
                 // user code begin {1}
@@ -179,7 +179,7 @@ public class TargetCycleConfigPanel extends JPanel implements ActionListener{
                     int hours = c.get(Calendar.HOUR_OF_DAY) + i;
                     String labelString = (hours)+ ":00-" +(hours + 1)+ ":00";
                     label.setText(labelString);
-                    label.setToolTipText("Enter the number from 80 to 120");
+                    label.setToolTipText("Enter the number from 0 to 250");
                     label.setMaximumSize(new java.awt.Dimension(50, 22));
                     label.setMinimumSize(new java.awt.Dimension(50, 22));
                     labels [i] = label;
