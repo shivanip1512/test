@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -40,7 +41,7 @@ public class AddSNRangeController extends StarsInventoryActionController {
         long snFrom = 0, snTo = 0;
         try {
             snFrom = Long.parseLong( request.getParameter("From") );
-            if (request.getParameter("To").length() > 0)
+            if (StringUtils.isNotBlank(request.getParameter("To")))
                 snTo = Long.parseLong( request.getParameter("To") );
             else
                 snTo = snFrom;
