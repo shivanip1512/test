@@ -53,7 +53,7 @@
         <property name="dataSource" ref="yukonDataSource" />
     </bean>
 
-    <bean id="simpleJdbcTemplate" class="org.springframework.jdbc.core.simple.SimpleJdbcTemplate"
+    <bean id="simpleJdbcTemplate" class="com.cannontech.database.YukonJdbcTemplate"
         scope="prototype">
         <constructor-arg ref="jdbcTemplate"/>
     </bean>
