@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     5/21/2009 3:10:12 PM                         */
+/* Created on:     5/26/2009 10:46:47 AM                        */
 /*==============================================================*/
 
 
@@ -12353,6 +12353,7 @@ INSERT INTO YukonRoleProperty VALUES(-40133,-400,'Label Thermostat Schedule','Sc
 INSERT INTO YukonRoleProperty VALUES(-40134,-400,'Label Thermostat Manual','Manual','Text of the thermostat manual link');
 INSERT INTO YukonRoleProperty VALUES(-40172,-400,'Description Enrollment','Select the check boxes and corresponding radio button of the programs you would like to be enrolled in.','Description on the program enrollment page');
 INSERT INTO YukonRoleProperty VALUES(-40197,-400,'Contacts Access','false','Turns residential side contact access on or off.');
+INSERT INTO YukonRoleProperty VALUES(-40198,-400,'Opt Out Today Only','false','Prevents residential side opt outs from being available for scheduling beyond the current day.');
 INSERT INTO YukonRoleProperty VALUES(-40199,-400,'Sign Out Enabled','true','Allows end-users to see a sign-out link when accessing their account pages.'); 
 INSERT INTO YukonRoleProperty VALUES(-40200,-400,'Create Login For Account','false','Allows a new login to be automatically created for each contact on a customer account.'); 
 INSERT INTO YukonRoleProperty VALUES(-40201,-400,'Opt Out Device Selection','false','Displays a second web page that allows for specific device selection when performing an opt out.'); 
