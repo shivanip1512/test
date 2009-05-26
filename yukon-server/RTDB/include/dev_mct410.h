@@ -237,8 +237,8 @@ protected:
         FuncRead_PeakDemandPos    = 0x93,
         FuncRead_PeakDemandLen    =    9,  //  peak demand, time of peak, current meter reading
 
-        FuncRead_FrozenPos        = 0x94,
-        FuncRead_FrozenLen        =   10,
+        FuncRead_FrozenPeakDemandPos = 0x94,
+        FuncRead_FrozenPeakDemandLen =   10,
 
         FuncRead_VoltagePos       = 0x95,
         FuncRead_VoltageLen       =   12,  //  max and min voltages

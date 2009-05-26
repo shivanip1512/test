@@ -400,7 +400,7 @@ CtiDeviceMCT410::CommandSet CtiDeviceMCT410::initCommandStore()
     cs.insert(CommandStore(Emetcon::GetValue_LoadProfilePeakReport, Emetcon::IO_Function_Read, 0,                             0));
     cs.insert(CommandStore(Emetcon::GetValue_Demand,                Emetcon::IO_Function_Read, FuncRead_DemandPos,            FuncRead_DemandLen));
     cs.insert(CommandStore(Emetcon::GetValue_PeakDemand,            Emetcon::IO_Function_Read, FuncRead_PeakDemandPos,        FuncRead_PeakDemandLen));
-    cs.insert(CommandStore(Emetcon::GetValue_FrozenPeakDemand,      Emetcon::IO_Function_Read, FuncRead_FrozenPos,            FuncRead_FrozenLen));
+    cs.insert(CommandStore(Emetcon::GetValue_FrozenPeakDemand,      Emetcon::IO_Function_Read, FuncRead_FrozenPeakDemandPos,  FuncRead_FrozenPeakDemandLen));
     cs.insert(CommandStore(Emetcon::GetValue_Voltage,               Emetcon::IO_Function_Read, FuncRead_VoltagePos,           FuncRead_VoltageLen));
     cs.insert(CommandStore(Emetcon::GetValue_FrozenVoltage,         Emetcon::IO_Function_Read, FuncRead_FrozenVoltagePos,     FuncRead_FrozenVoltageLen));
     cs.insert(CommandStore(Emetcon::GetValue_Outage,                Emetcon::IO_Function_Read, FuncRead_OutagePos,            FuncRead_OutageLen));
@@ -1331,7 +1331,15 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
     }
     else if( parse.getFlags() & CMD_FLAG_GV_PEAK )
     {
-        function = Emetcon::GetValue_PeakDemand;
+        if( parse.getFlags() & CMD_FLAG_FROZEN )
+        {
+            function = Emetcon::GetValue_FrozenPeakDemand;
+        }
+        else
+        {
+            function = Emetcon::GetValue_PeakDemand;
+        }
+
         found = getOperation(function, OutMessage->Buffer.BSt);
 
         if( parse.isKeyValid("channel") )
@@ -1345,15 +1353,9 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
                 case 2:     OutMessage->Buffer.BSt.Function += 5;   break;  //  0x98
                 case 3:     OutMessage->Buffer.BSt.Function += 7;   break;  //  0x9a
 
-                //  anything outside the range from 0-4 is invalid
+                //  anything outside the range from 0-3 is invalid
                 default:    found = false;  break;
             }
-        }
-
-        if( parse.getFlags() & CMD_FLAG_FROZEN )
-        {
-            //  magic number
-            OutMessage->Buffer.BSt.Function += 1;
         }
     }
     else if( parse.isKeyValid(str_daily_read) )
