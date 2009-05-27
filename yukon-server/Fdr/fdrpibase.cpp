@@ -338,7 +338,7 @@ void CtiFDRPiBase::handlePiUpdate(const PiPointInfo info,
     {
       CtiLockGuard<CtiLogger> doubt_guard( dout );
       logNow() << "Handling PI_REAL_POINT update for " << info.ctiPoint->getPointID()
-        << ", rval=" << rval << endl;
+        << ", rval=" << rval <<", UTC timestamp="<<timestamp_utc<<", CtiTimeStamp="<< CtiTime(timestamp_utc)<< endl;
     }
     handleUpdate(info.ctiPoint, rval, timestamp_utc);
   }
@@ -348,7 +348,7 @@ void CtiFDRPiBase::handlePiUpdate(const PiPointInfo info,
     {
       CtiLockGuard<CtiLogger> doubt_guard( dout );
       logNow() << "Handling PI_INTEGER_POINT update for " << info.ctiPoint->getPointID()
-        << ", rval=" << rval << ", istat=" << istat << endl;
+        << ", rval=" << rval << ", istat=" << istat <<", UTC timestamp="<<timestamp_utc<<", CtiTimeStamp="<< CtiTime(timestamp_utc)<< endl;
     }
     handleUpdate(info.ctiPoint, istat, timestamp_utc);
   }
@@ -386,7 +386,7 @@ void CtiFDRPiBase::handlePiUpdate(const PiPointInfo info,
         logNow() << "Handling PI_DIGITAL_POINT update for " << info.ctiPoint->getPointID()
           << ", rval=" << rval << ", istat=" << istat << ", state=" << state
           << ", offset=" << info.digitalOffset << ", lastIndex=" << info.digitalLastIndex
-          << "digstate=" << buf << endl;
+          << "digstate=" << buf <<", UTC timestamp="<<timestamp_utc<<", CtiTimeStamp="<< CtiTime(timestamp_utc)<< endl;
       }
       handleUpdate(info.ctiPoint, state, timestamp_utc);
     }

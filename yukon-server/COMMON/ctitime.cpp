@@ -376,6 +376,7 @@ string CtiTime::asString()  const
 struct tm* CtiTime::gmtime_r(const time_t *tod){
     struct thread_tm* ss = new thread_tm(thread_tm::gm, tod);
     tm_value.reset(ss);
+    tm_value->ctm->tm_isdst = CtiTime().isDST();
     return tm_value->ctm;
 }
 

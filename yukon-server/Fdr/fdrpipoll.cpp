@@ -298,7 +298,8 @@ void CtiFDRPiPoll::doUpdates()
       {
         // remove local offset (might not be thread-safe)
         struct tm *temp = NULL;
-        temp = CtiTime::gmtime_r(reinterpret_cast<const time_t *> (&timeArray[i]) );
+        LONG longTime = timeArray[i];
+        temp = CtiTime::gmtime_r(reinterpret_cast<const time_t *> (&longTime) );
         time_t timeStamp = mktime(temp);
         // if 'alwaysSendValues' send the time we were supposed to poll, this has the
         // effect of always sending the values

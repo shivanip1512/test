@@ -317,7 +317,8 @@ void CtiFDRPiNotify::doUpdates()
   
           // remove local offset (might not be thread-safe)
           struct tm *temp = NULL;
-          temp = CtiTime::gmtime_r(reinterpret_cast<const time_t *> (timeArray[i]));
+          LONG longTime = timeArray[i];
+          temp = CtiTime::gmtime_r(reinterpret_cast<const time_t *> (&longTime) );
           time_t timeStamp = mktime(temp);
           // pisn_evmesceptions doesn't return error codes per point, default to 0
           handlePiUpdate(info, rvalArray[i], istatArray[i], timeStamp, 0);
