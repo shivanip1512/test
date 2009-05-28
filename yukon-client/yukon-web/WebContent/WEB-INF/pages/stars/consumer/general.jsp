@@ -15,7 +15,7 @@
 	    var enabled = $F('oddsForControlNotification');
 	    var email = $F('oddsForControlEmail');
 	    if(enabled && email.empty()) {
-		    alert(${emailWarning});
+		    alert('${emailWarning}');
 		    return false;
 	    } else {
 		    return true;
