@@ -23,6 +23,25 @@
 
 <!-- necessary DIV element for the OverLIB popup library -->
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
+<!-- DIV element for the non flyover type popups -->
+<div id="popupContent" class="popUpDiv simplePopupNoWidth" style="display: none; top: 150px; left: 75px; width: 288px">
+    <!--  fix for IE6 bug (see itemPicker.css for more info) -->
+    <!--[if lte IE 6.5]><iframe></iframe><![endif]-->
+    <div class="titledContainer boxContainer">
+
+        <div class="titleBar boxContainer_titleBar">
+            <div class="controls" onclick="closeTierPopup()">
+                <img class="minMax" alt="close" src="/WebConfig/yukon/Icons/close_x.gif">
+            </div>
+            <div id="popupTitle" class="title boxContainer_title"></div>
+        </div>
+
+        <div class="content boxContainer_content">
+            <div id="popupBody"></div>
+        </div>
+
+    </div>
+</div>
 
 <cti:standardMenu/>
 
@@ -117,7 +136,6 @@
 
 	//returned when a cap bank menu is triggered to appear
 	function popupWithHiLite (html, width, height, offsetx, offsety, rowID, color) {
-		
 		return overlib (html, STICKY, WIDTH, width, HEIGHT, height, OFFSETX, offsetx, OFFSETY, offsety, MOUSEOFF, FULLHTML, ABOVE);
 	}
 	
@@ -125,12 +143,12 @@
    		window.location.href = window.location.href;
    	}
 
-   	function getCapBankTempMoveBack(id){
+   	function getCapBankTempMoveBack(id, event){
    	    var url = '/spring/capcontrol/tier/popupmenu?menu=capBankTempMoveBack&id=' + id;
    	    var redirect = window.location.href;
 		url += '&redirectURL=' + escape(redirect);
 
-   	    getMenuFromURL(url);
+   	    getMenuFromURL(url, event);
    	}
    	
  </script>
@@ -180,7 +198,7 @@
                         <a id="substation_state_${substation.ccId}"
                             <c:if test="${hasSubstationControl}">
                                 href="javascript:void(0);"
-                                ${popupEvent}="getSubstationMenu('${substation.ccId}');"
+                                ${popupEvent}="getSubstationMenu('${substation.ccId}', event);"
                             </c:if> 
                         >
                             <cti:capControlValue paoId="${substation.ccId}" type="SUBSTATION" format="STATE" />
@@ -261,8 +279,7 @@
 				<td>
 					<a id="subbus_state_${thisSubBusId}"
     				    <c:if test="${hasSubBusControl}">
-						  href="javascript:void(0);"
-						  ${popupEvent}="getSubBusMenu('${thisSubBusId}');"  
+						  href="javascript:void(0);" ${popupEvent}="getSubBusMenu('${thisSubBusId}', event);"  
 				        </c:if>
 				    >
                         <cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="STATE" />
@@ -429,8 +446,7 @@
 					<td>
                         <a id="feeder_state_${thisFeederId}"    
                             <c:if test="${hasFeederControl}">
-                                href="javascript:void(0);"
-                                ${popupEvent}="getFeederMenu('${thisFeederId}');" 
+                                href="javascript:void(0);" ${popupEvent}="getFeederMenu('${thisFeederId}', event);" 
                             </c:if> 
                         >
                             <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="STATE"/>    
@@ -461,9 +477,7 @@
 					<td>
 					<c:choose>
 						<c:when test="${viewfeeder.feeder.usePhaseData}">
-	                        <a onmouseover="showDynamicPopup($('feederVarLoadPopup_${thisFeederId}'));" 
-						       onmouseout="nd();"
-							  id="${thisFeederId}">
+	                        <a onmouseover="showDynamicPopup($('feederVarLoadPopup_${thisFeederId}'));" onmouseout="nd();" id="${thisFeederId}">
 					  	</c:when>
 					  	<c:otherwise>
 							<a id="${thisFeederId}">
@@ -505,13 +519,13 @@
                 <td>CBC Name</td>
                 <td>CB Name (Order) 
                     <img class="rAlign popupImg" 
-                        src="images\question.gif" 
+                        src="/capcontrol/images/question.gif" 
                         onmouseover="statusMsg(this, 'Order is the order the CapBank will control in. Commands that can be sent to a field device are initiated from this column');" />
                 </td>                    
                 <td width="2%"></td>    
                 <td>State 
                     <img class="rAlign popupImg" 
-                        src="images\question.gif"
+                        src="/capcontrol/images/question.gif"
                         onmouseover="statusMsgAbove(this,'System Commands, those commands that do NOT send out a message to a field device, can be initiated from this column.<br> -V : Auto Volt Control (ovUv) is Disabled.<br> -U: CBC reported unsolicited state change.<br> -Q: CapBank state reflects abnormal data quality.<br> -CF: Communications Failure.<br> -P: Partial - phase imbalance.<br> -S: Significant - questionable var response on all phases.');"/>  
                         <span id="cb_state_td_hdr2" style="display:none" >[Op Count Value]</span> 
                 </td>
@@ -579,9 +593,7 @@
 		                            <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
 		                        </a>
 	                        </c:if>
-	                        <a href="javascript:void(0);"
-	                           ${popupEvent}="getCapBankMenu('${thisCapBankId}');" 
-	                           >
+	                        <a href="javascript:void(0);" ${popupEvent}="getCapBankMenu('${thisCapBankId}', event);">
 	                            <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_NAME"/>
 	                        </a>
 						</c:when>
@@ -616,8 +628,7 @@
                     <cti:capBankStateColor paoId="${thisCapBankId}" type="CAPBANK" format="CB_STATUS_COLOR">
                         <a id="capbank_status_${thisCapBankId}"
                             <c:if test="${hasCapbankControl}">
-                                href="javascript:void(0);"
-                                onclick ="getCapBankSystemMenu('${thisCapBankId}');"
+                                href="javascript:void(0);" onclick ="getCapBankSystemMenu('${thisCapBankId}', event);"
                             </c:if> 
                         >
 					       <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_STATUS"/>
@@ -650,8 +661,7 @@
 	                    <c:if test="${hasCapbankControl}">
 							<c:choose>
 							<c:when test="${viewableCapBank.capBankDevice.bankMoved}">
-			                    class="warning" 
-			                    ${popupEvent}="getCapBankTempMoveBack('${thisCapBankId}');" 
+			                    class="warning" ${popupEvent}="getCapBankTempMoveBack('${thisCapBankId}', event);" 
 		                    </c:when>
 		                    <c:otherwise>
 		                        onmouseover="statusMsg(this, 'Click here to temporarily move this CapBank from its current parent feeder');"

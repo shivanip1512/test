@@ -8,14 +8,11 @@
 
 <script language="JavaScript" type="text/javascript" src="/JavaScript/cconelinepopup.js"></script>
 
-<div style="background: white; border: 1px solid black;">
+<div style="background: white;">
+    <input type="hidden" id="commentPaoName" value="${paoName}"/>
     <table width="295px">
         <tr>
-            <td align="center" class="top">${paoName}</td>
-            <td align="center" class='top' onclick='cClick()'><a href='javascript:void(0)'>X</a></td>
-        </tr>
-        <tr>
-            <td colspan="2">
+            <td>
                 <div>
                     <span >Operational State</span>
                     <select id="operationalStateValue" size="1">
@@ -32,7 +29,7 @@
             </td>
         </tr>
         <tr>
-            <td colspan="2">
+            <td>
                 <select onchange="$('operationalStateReason').value = this.options[this.selectedIndex].value;">
                     <option>&lt;Choose a previously entered comment&gt;</option>
                     <c:forEach var="comment" items="${comments}">
@@ -52,7 +49,7 @@
         </tr>
         <tr>
             <td>
-                <input type="button" name="execute" value="Execute" onclick="submitChangeOpStateMenu();" />
+                <input type="button" name="execute" value="Execute" onclick="closeTierPopup(); submitChangeOpStateMenu();" />
            </td>
         </tr>
     </table>

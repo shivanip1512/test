@@ -14,7 +14,7 @@
 
 <%@page import="com.cannontech.common.util.CtiUtilities" %>
 <%@page import="com.cannontech.database.data.point.SystemLogData" %>
-
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <!--
 -
 - Login and scope variables init
@@ -52,12 +52,6 @@
 	//These two lines are needed in every page to use Greybox.
 	var GB_IMG_DIR = "/editor/css/greybox/";
 	GreyBox.preloadGreyBoxImages();
-	
-	Event.observe(window, 'load', function () { 
-       new Ajax.Request('/spring/capcontrol/tier/updateSession', 
-           {onComplete: function(transport, json){}}
-		);
-   	});
 </script>
 
 <jsp:useBean id="CtiNavObject"

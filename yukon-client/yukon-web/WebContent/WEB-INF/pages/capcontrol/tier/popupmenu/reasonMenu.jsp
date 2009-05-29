@@ -3,22 +3,19 @@
 
 <c:set var="maxCommentLength" value="40"/>
 
-<div style="background: white; border: 1px solid black;">
-    <table>
+<div style="background: white;">
+    <input type="hidden" id="commentPaoName" value="${paoName}"/>
+    <table width="295px">
         <tr>
-            <td align="center" class="top">${paoName}</td>
-            <td align="center" class='top' onclick='cClick()'><a href='javascript:void(0)'>X</a></td>
+            <td>Enter a comment for this operation.</td>
         </tr>
         <tr>
-            <td colspan="2">Enter a comment for this operation.</td>
-        </tr>
-        <tr>
-            <td colspan="2">
+            <td>
                 <textarea id="textAreaElement" style="width: 98%;"></textarea>
             </td>
         </tr>
         <tr>
-            <td colspan="2">
+            <td>
                 <select onchange="$('textAreaElement').value = this.options[this.selectedIndex].value;">
                     <option>&lt;Choose a previously entered comment&gt;</option>
                     <c:forEach var="comment" items="${comments}">
@@ -37,8 +34,8 @@
             </td>
         </tr>
         <tr>
-            <td align="right" colspan="2">
-                <input type="button" value="Submit" onclick="cClick(); executeCommandController('${paoId}', '${cmdId}', '${commandName}', '${controlType}', $('textAreaElement').value);"></input>
+            <td align="right">
+                <input type="button" value="Submit" onclick="closeTierPopup(); executeCommandController('${paoId}', '${cmdId}', '${commandName}', '${controlType}', $('textAreaElement').value);"></input>
             </td>
         </tr>
     </table>

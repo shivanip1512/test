@@ -17,6 +17,25 @@
 <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value=""/>
 <!-- necessary DIV element for the OverLIB popup library -->
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
+<!-- DIV element for the non flyover type popups -->
+<div id="popupContent" class="popUpDiv simplePopupNoWidth" style="display: none; top: 150px; left: 75px; width: 288px">
+    <!--  fix for IE6 bug (see itemPicker.css for more info) -->
+    <!--[if lte IE 6.5]><iframe></iframe><![endif]-->
+    <div class="titledContainer boxContainer">
+
+        <div class="titleBar boxContainer_titleBar">
+            <div class="controls" onclick="closeTierPopup()">
+                <img class="minMax" alt="close" src="/WebConfig/yukon/Icons/close_x.gif">
+            </div>
+            <div id="popupTitle" class="title boxContainer_title"></div>
+        </div>
+
+        <div class="content boxContainer_content">
+            <div id="popupBody"></div>
+        </div>
+
+    </div>
+</div>
 
 <cti:standardMenu/>
 <cti:breadCrumbs>
@@ -113,7 +132,7 @@
 						<td>
 		                    <a id="substation_state_${subStation.ccId}" style=""
 			                    <c:if test="${hasSubstationControl}">
-								   href="javascript:void(0);" ${popupEvent}="getSubstationMenu('${subStation.ccId}');"
+								   href="javascript:void(0);" ${popupEvent}="getSubstationMenu('${subStation.ccId}', event);"
 			                    </c:if> 
 			                >
 		                        <cti:capControlValue paoId="${subStation.ccId}" type="SUBSTATION" format="STATE" />

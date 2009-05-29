@@ -3,57 +3,54 @@
 
 <cti:url var="commentsUrl" value="/capcontrol/capcontrolcomments.jsp?paoID="/>
 
-<div style="background: white; border: 1px solid black;">
+<div style="background: white;">
+    <input id="menuPaoName" type="hidden" value="${paoName}"/>
     <table>
-        <tr>
-            <td align="center" class="top">${paoName}</td>
-            <td align="center" class='top' onclick='cClick()'><a href='javascript:void(0)'>X</a></td>
-        </tr>
         <c:forEach var="cmdHolder" items="${list}">
             <tr>
                 <c:set var="isReasonRequired" value="${(cmdHolder.reasonRequired && allowAddComments)}"/>
-                <td colspan="2">
+                <td>
                     <a href="javascript:void(0);" 
                        class="optDeselect"
                        onmouseover="changeOptionStyle(this);"
-                       onclick="cClick(); executeCommand('${paoId}','${cmdHolder.cmdId}', '${cmdHolder.commandName}', '${controlType}', '${isReasonRequired}', <cti:getProperty property='CBCSettingsRole.CONTROL_WARNING'/>);" >${cmdHolder.commandName}</a>
+                       onclick="closeTierPopup(); executeCommand('${paoId}','${cmdHolder.cmdId}', '${cmdHolder.commandName}', '${controlType}', '${isReasonRequired}', <cti:getProperty property='CBCSettingsRole.CONTROL_WARNING'/>, event);" >${cmdHolder.commandName}</a>
                 </td>
             </tr>    
         </c:forEach>
         <c:if test="${isCapBankSystemMenu}">
             <tr>
-                <td colspan="2">
+                <td>
                     <a href="javascript:void(0);" 
                        class="optDeselect"
                        onmouseover="changeOptionStyle(this);"
-                       onclick="cClick(); showResetOpCountSpan('${paoId}');">${resetOpsCmdHolder.commandName}</a>
+                       onclick="closeTierPopup(); showResetOpCountSpan('${paoId}');">${resetOpsCmdHolder.commandName}</a>
                 </td>
             </tr> 
             <tr>
-                <td colspan="2">
+                <td>
                     <a href="javascript:void(0);" 
                        class="optDeselect"
                        onmouseover="changeOptionStyle(this);"
-                       onclick="cClick(); showChangeOpStateMenu('${paoId}');">${changeOpStateCmdHolder.commandName}</a>
+                       onclick="closeTierPopup(); showChangeOpStateMenu('${paoId}', event);">${changeOpStateCmdHolder.commandName}</a>
                 </td>
             </tr> 
             <c:forEach var="state" items="${states}">
                 <tr>
-                    <td colspan="2">
+                    <td>
                         <a href="javascript:void(0);" 
                            class="optDeselect"
                            onmouseover="changeOptionStyle(this);"
-                           onclick="cClick(); executeCBCommand('${paoId}', '${state.stateText}', '${state.stateRawState}');">${state.stateText}</a>
+                           onclick="closeTierPopup(); executeCBCommand('${paoId}', '${state.stateText}', '${state.stateRawState}');">${state.stateText}</a>
                     </td>    
                 </tr>
             </c:forEach>
         </c:if>
         <tr>
-            <td colspan="2">
+            <td>
                 <a href="javascript:void(0);"
                    class="optDeselect"
                    onmouseover="changeOptionStyle(this);"
-                   onclick="cClick(); GB_show('CapControl Comments (${paoName})','${commentsUrl}${paoId}', 500, 800);">View Comments</a>
+                   onclick="closeTierPopup(); GB_show('CapControl Comments (${paoName})','${commentsUrl}${paoId}', 500, 800);">View Comments</a>
             </td>
         </tr>
      </table>

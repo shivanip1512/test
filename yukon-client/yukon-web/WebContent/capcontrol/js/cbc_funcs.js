@@ -24,66 +24,136 @@ function checkPageExpire() {
     });    
 }
 
-function getAreaMenu(id) {
+function getAreaMenu(id, event) {
     var url = '/spring/capcontrol/tier/popupmenu?menu=areaMenu&id=' + id;
-    getMenuFromURL(url);
+    getMenuFromURL(url, event);
 }
 
-function getSpecialAreaMenu(id){
+function getSpecialAreaMenu(id, event){
     var url = '/spring/capcontrol/tier/popupmenu?menu=specialAreaMenu&id=' + id;
-    getMenuFromURL(url); 
+    getMenuFromURL(url, event); 
 }
 
-function getSubstationMenu(id) {
+function getSubstationMenu(id, event) {
     var url = '/spring/capcontrol/tier/popupmenu?menu=subStationMenu&id=' + id;
-    getMenuFromURL(url);
+    getMenuFromURL(url, event);
 }
 
-function getSubBusMenu(id) {
+function getSubBusMenu(id, event) {
    var url = '/spring/capcontrol/tier/popupmenu?menu=subBusMenu&id=' + id;
-   getMenuFromURL(url);
+   getMenuFromURL(url, event);
 }
 
-function getFeederMenu(id) {
+function getFeederMenu(id, event) {
     var url = '/spring/capcontrol/tier/popupmenu?menu=feederMenu&id=' + id;
-    getMenuFromURL(url);    
+    getMenuFromURL(url, event);    
 }
 
-function getCapBankMenu(id) {
+function getCapBankMenu(id, event) {
     var url = '/spring/capcontrol/tier/popupmenu?menu=capBankMenu&id=' + id;
-    getMenuFromURLAbove(url); 
+    getMenuFromURLAbove(url, event); 
 }
 
-function getCapBankChangeOpStateMenu(id) {
+function getCapBankChangeOpStateMenu(id, event) {
     var url = '/spring/capcontrol/tier/popupmenu?menu=capBankChangeOpStateMenu&id=' + id;
-    getMenuFromURLAbove(url); 
+    getMenuFromURLAbove(url, event); 
 }
 
-function getCapBankSystemMenu(id) {
+function getCapBankSystemMenu(id, event) {
     var url = '/spring/capcontrol/tier/popupmenu?menu=capBankSystemMenu&id=' + id;
-    getMenuFromURLAbove(url); 
+    getMenuFromURLAbove(url, event); 
 }
 
-function getMenuFromURL(url) {
-        new Ajax.Request(url, {
+function getMenuFromURL(url, event) {
+	/*
+	 *  In IE the event does not pass through the ajax request
+	 *  so the attributes of the event need to be set and passed
+	 *  as variables.
+	 */
+	var x = event.clientX;
+	var y = event.clientY;
+    new Ajax.Request(url, {
         method: 'POST',
         onSuccess: function(transport) {
             var html = transport.responseText;
-            //alert(html);
-            overlib(html, FULLHTML, STICKY, OFFSETX, -5, OFFSETY, -5);
+            showMenuPopup(html, false, x, y);
         }
     });
 }
 
-function getMenuFromURLAbove(url) {
-        new Ajax.Request(url, {
-        method: 'POST',
-        onSuccess: function(transport) {
-            var html = transport.responseText;
-            //alert(html);
-            overlib(html, FULLHTML, STICKY, ABOVE, OFFSETX, -5, OFFSETY, -5);
-        }
-    });
+function getMenuFromURLAbove(url, event) {
+	/*
+	 *  In IE the event does not pass through the ajax request
+	 *  so the attributes of the event need to be set and passed
+	 *  as variables.
+	 */
+	var x = event.clientX;
+	var y = event.clientY;
+    new Ajax.Request(url, {
+	    method: 'POST',
+	    onSuccess: function(transport) {
+	        var html = transport.responseText;
+	        showMenuPopup(html, true, x, y);
+	    }
+	});
+}
+
+function getReasonMenuFromURL(url, event) {
+	/*
+	 *  In IE the event does not pass through the ajax request
+	 *  so the attributes of the event need to be set and passed
+	 *  as variables.
+	 */
+	var x = event.clientX;
+    var y = event.clientY;
+    new Ajax.Request(url, {
+	    method: 'POST',
+	    onSuccess: function(transport) {
+	        var html = transport.responseText;
+	        showReasonPopup(html, true, x, y);
+	    }
+	});
+}
+
+function showReasonPopup(html, up, x, y) {
+	var body = $('popupBody');
+	body.innerHTML = html;
+	var popupDiv = $('popupContent');
+	var paoName = $('commentPaoName');
+	var titleDiv = $('popupTitle');
+	titleDiv.innerHTML = 'Comments: ' + paoName.value;
+	popupDiv.show();
+	if(up == true){
+		y = y - popupDiv.clientHeight;
+	}
+	popupDiv.setStyle({
+		top: y + "px",
+		left: x + "px",
+		width: 307 + "px"
+	});
+}
+
+function showMenuPopup(html, up, x, y) {
+	var body = $('popupBody');
+	body.innerHTML = html;
+	var popupDiv = $('popupContent');
+	var paoName = $('menuPaoName');
+	var titleDiv = $('popupTitle');
+	titleDiv.innerHTML = paoName.value;
+	popupDiv.show();
+	if(up == true){
+		y = y - popupDiv.clientHeight;
+	}
+	popupDiv.setStyle({
+		top: y + "px",
+		left: x + "px",
+		width: 150 + "px"
+	});
+}
+
+function closeTierPopup() {
+	var reasonDiv = $('popupContent');
+	reasonDiv.hide();
 }
 
 function updateStateColorGenerator(id) {

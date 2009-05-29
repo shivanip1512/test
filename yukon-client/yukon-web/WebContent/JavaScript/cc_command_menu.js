@@ -4,14 +4,14 @@ var reasonMenuURL = '/spring/capcontrol/tier/popupmenu?menu=reasonMenu';
 var reasonForOpStateChangeMenuURL = '/spring/capcontrol/tier/popupmenu?menu=opStateChangeMenu';
 var tempMoveBackURL = executeURL + 'executeTempMoveBack';
 
-function showChangeOpStateMenu(paoId) {
+function showChangeOpStateMenu(paoId, event) {
     var url = reasonForOpStateChangeMenuURL +
     '&id=' + paoId +
     '&cmdId=35' +
     '&controlType=CAPBANK' +
     '&commandName=Change Operational State';
      
-    getMenuFromURL(url);
+    getReasonMenuFromURL(url, event);
 }
 
 function showResetOpCountSpan(paoId) {
@@ -44,6 +44,10 @@ function executeCommand(paoId, cmdId, commandName, controlType, reasonRequired) 
 }
 
 function executeCommand(paoId, cmdId, commandName, controlType, reasonRequired, warn) {
+	executeCommand(paoId, cmdId, commandName, controlType, reasonRequired, warn, null);
+}
+
+function executeCommand(paoId, cmdId, commandName, controlType, reasonRequired, warn, event) {
     var isReasonRequired = eval(reasonRequired);
     if (!isReasonRequired) {
         if(warn){
@@ -56,14 +60,12 @@ function executeCommand(paoId, cmdId, commandName, controlType, reasonRequired, 
         }
         return;
     }
-
     var url = reasonMenuURL +
      '&paoId=' + paoId +
      '&cmdId=' + cmdId +
      '&controlType=' + controlType +
      '&commandName=' + commandName;
-     
-    getMenuFromURL(url);
+    getReasonMenuFromURL(url,event);
 }
 
 function executeCommandController(paoId, commandId, commandName, controlType, reason, opt) {
@@ -116,8 +118,6 @@ function execute_CapBankMoveBack (paoId, cmdId, redirectURL) {
         }
 	});
 } 
-
-///////////////////////////////////////////////
 
 //attempt to use the current ctiTitledContainer tag
 function CTITitledContainer (t) {
