@@ -1,6 +1,5 @@
 package com.cannontech.core.dao.impl;
 
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.RandomStringUtils;
@@ -18,7 +17,6 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.authorization.dao.PaoPermissionDao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.YukonUserDao;
-import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.MappingRowCallbackHandler;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteContact;
@@ -94,16 +92,6 @@ public class YukonUserDaoImpl implements YukonUserDao {
     	    sql.append(")");
     	    
     	    simpleJdbcTemplate.update(sql.toString());
-	    }
-	    
-	    if( energyCompanyId > -2 ) { // default energy company starts at -1 
-	        sql = new SqlStatementBuilder();
-	        sql.append("INSERT INTO EnergyCompanyOperatorLoginList VALUES (");
-	        sql.append(energyCompanyId);
-	        sql.append(", ");
-	        sql.append(user.getUserID());
-	        sql.append(")");
-	        simpleJdbcTemplate.update(sql.toString());
 	    }
 	}
 	
