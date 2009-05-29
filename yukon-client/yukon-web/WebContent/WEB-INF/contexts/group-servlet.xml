@@ -47,6 +47,8 @@
     
     <bean class="com.cannontech.web.group.GroupCommanderController" />
     
+    <bean class="com.cannontech.web.group.DeviceGroupUpdaterController" />
+    
 	<bean id="bulkDeviceAdd" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
     	<property name="viewName" value="bulkDeviceAdd.jsp"/>
     </bean>

@@ -297,6 +297,9 @@
               <link>/spring/group/commander/groupProcessing</link>
               <requireRoleProperty value="GROUP_COMMANDER"/>
             </option>
+            <option id="updater">
+              <link>/spring/group/updater/upload</link>
+            </option>
           </links>
 	    </option>
   	</links>  
