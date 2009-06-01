@@ -541,7 +541,7 @@ CtiDnpId CtiFDRDnpSlave::ForeignToYukonId(CtiFDRDestination pointDestination)
     string dnpOffset = pointDestination.getTranslationValue(dnpPointOffset);
     string dnpMultiplier = pointDestination.getTranslationValue(dnpPointMultiplier);
 
-    if (masterId.empty() || slaveId.empty() || pointType.empty() || dnpOffset.empty() || dnpMultiplier.empty())
+    if (masterId.empty() || slaveId.empty() || pointType.empty() || dnpOffset.empty())
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         logNow() << "Unable to add destination " << pointDestination
@@ -549,8 +549,7 @@ CtiDnpId CtiFDRDnpSlave::ForeignToYukonId(CtiFDRDestination pointDestination)
         dnpId.valid = false;
         return dnpId;
     }
-
-
+    
     dnpId.MasterId = atoi(masterId.c_str());
     dnpId.SlaveId = atoi(slaveId.c_str());
 
@@ -573,12 +572,18 @@ CtiDnpId CtiFDRDnpSlave::ForeignToYukonId(CtiFDRDestination pointDestination)
 
     dnpId.Offset = atoi(dnpOffset.c_str());
     dnpId.MasterServerName = pointDestination.getDestination();
-    dnpId.Multiplier = atof(dnpMultiplier.c_str());
+    if (dnpMultiplier.empty())
+    {    
+        dnpId.Multiplier = 1;
+    }
+    else
+    {    
+        dnpId.Multiplier = atof(dnpMultiplier.c_str());
+    }
     dnpId.valid = true;
 
     return dnpId;
 }
-
 
 bool CtiFDRDnpSlave::YukonToForeignQuality(USHORT aQuality, CtiTime lastTimeStamp)
 {
