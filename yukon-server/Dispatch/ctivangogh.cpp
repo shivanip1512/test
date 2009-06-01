@@ -6755,7 +6755,7 @@ void CtiVanGogh::checkStatusState(int alarm, CtiPointDataMsg *pData, CtiMultiWra
         {
             if( PointMgr.getAlarming(point).getAlarmCategory(stateverify) > SignalEvent)
             {
-                signal = ((int)val == stateverify);
+                signal = ((int)val == statelimit);
             }
         }
 
