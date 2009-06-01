@@ -4,8 +4,7 @@ package com.cannontech.dbeditor.editor.port;
  * This type was created in VisualAge.
  */
 
- import com.cannontech.common.gui.unchanging.StringRangeDocument;
-import com.cannontech.common.util.CtiUtilities;
+ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.port.DirectPort;
 import com.cannontech.database.data.port.LocalDirectPort;
 import com.cannontech.database.data.port.PooledPort;
