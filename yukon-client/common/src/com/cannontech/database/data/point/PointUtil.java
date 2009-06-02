@@ -133,51 +133,65 @@ public class PointUtil {
 	public static PointBase changePointType(PointBase pointBase, PointTemplate newPointTemplate) throws TransactionException {
 	
 		int oldType = PointTypes.getType(pointBase.getPoint().getPointType());
-		if (oldType == newPointTemplate.getType()) {
-			return pointBase;
-		}
+		int oldOffset = pointBase.getPoint().getPointOffset();
 		
-		pointBase.getPoint().setPointType(PointTypes.getType(newPointTemplate.getType()));
-		PointAlarming savePointAlarming = pointBase.getPointAlarming();
-		Point savePoint = pointBase.getPoint();
-	
-		// Delete partial point data so type can be changed.
-		Transaction<PointBase> t = Transaction.createTransaction(
-				Transaction.DELETE_PARTIAL,
-				pointBase);
-		pointBase = t.execute();
+		// actual changing of point type/offset, delete the old point and re-add it with new type and/or offset.
+		if (oldType != newPointTemplate.getType() || oldOffset != newPointTemplate.getOffset()) {
+			
+			pointBase.getPoint().setPointType(PointTypes.getType(newPointTemplate.getType()));
+			PointAlarming savePointAlarming = pointBase.getPointAlarming();
+			Point savePoint = pointBase.getPoint();
 		
+			// Delete partial point data so type can be changed.
+			Transaction<PointBase> t = Transaction.createTransaction(
+					Transaction.DELETE_PARTIAL,
+					pointBase);
+			pointBase = t.execute();
+			
+			
+			//Create a new point for new point type
+			pointBase = PointFactory.createPoint(newPointTemplate.getType());
 		
-		//Create a new point for new point type
-		pointBase = PointFactory.createPoint(newPointTemplate.getType());
-	
-		//Set old point data that can transfer over to new point
-		pointBase.setPoint(savePoint);
-		pointBase.setPointAlarming(savePointAlarming);
-		pointBase.setPointID(savePoint.getPointID());
-	
-		//Set new point defaults from tempalte
-		pointBase.getPoint().setStateGroupID(newPointTemplate.getStateGroupId());
-		pointBase.getPoint().setPointOffset(newPointTemplate.getOffset());
-		pointBase.getPoint().setPointType(PointTypes.getType(newPointTemplate.getType()));
-	
-	    if (pointBase instanceof AccumulatorPoint) {
-	        AccumulatorPoint accPoint = (AccumulatorPoint) pointBase;
-	        accPoint.getPointAccumulator().setMultiplier(newPointTemplate.getMultiplier());
-	    } else if (pointBase instanceof AnalogPoint) {
-	        AnalogPoint analogPoint = (AnalogPoint) pointBase;
-	        analogPoint.getPointAnalog().setMultiplier(newPointTemplate.getMultiplier());
-	    }
-	
-		// Add the updated (partial) point information.
-		t = Transaction.createTransaction(
-				Transaction.ADD_PARTIAL,
-				pointBase);
+			//Set old point data that can transfer over to new point
+			pointBase.setPoint(savePoint);
+			pointBase.setPointAlarming(savePointAlarming);
+			pointBase.setPointID(savePoint.getPointID());
+		
+			//Set new point defaults from tempalte
+			pointBase.getPoint().setPointOffset(newPointTemplate.getOffset());
+			pointBase.getPoint().setPointType(PointTypes.getType(newPointTemplate.getType()));
+			
+			// Add the updated (partial) point information.
+		    t = Transaction.createTransaction(
+					Transaction.ADD_PARTIAL,
+					pointBase);
 
-		pointBase = t.execute();
+			pointBase = t.execute();
+		}
+	
+		// always update the values of the additional point data (multipier/uom, etc), even if the point type/offset are the same
+		if (pointBase instanceof AnalogPoint) {
+        	
+        	AnalogPoint analogPoint = (AnalogPoint)pointBase;
+        	analogPoint.getPointAnalog().setMultiplier(newPointTemplate.getMultiplier());
+        	analogPoint.getPointUnit().setUomID(newPointTemplate.getUnitOfMeasure());
+        	analogPoint.getPoint().setStateGroupID(newPointTemplate.getStateGroupId());
+        	
+        } else if (pointBase instanceof StatusPoint) {
+        	
+        	StatusPoint statusPoint = (StatusPoint)pointBase;
+        	statusPoint.getPoint().setStateGroupID(newPointTemplate.getStateGroupId());
+        	
+        } else if (pointBase instanceof AccumulatorPoint) {
+        	
+        	AccumulatorPoint accumulatorPoint = (AccumulatorPoint)pointBase;
+        	accumulatorPoint.getPointAccumulator().setMultiplier(newPointTemplate.getMultiplier());
+        	accumulatorPoint.getPointUnit().setUomID(newPointTemplate.getUnitOfMeasure());
+        	accumulatorPoint.getPoint().setStateGroupID(newPointTemplate.getStateGroupId());
+        }
 		
 		//Have to perform the update also to commit the object CHANGES.
-        t = Transaction.createTransaction(Transaction.UPDATE, pointBase);
+	    Transaction<PointBase> t = Transaction.createTransaction(Transaction.UPDATE, pointBase);
         pointBase = t.execute();
 
         return pointBase;

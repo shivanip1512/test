@@ -326,6 +326,8 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         for (DevicePointIdentifier identifier : removeTemplates) {
             LitePoint litePoint = pointService.getPointForDevice(meter, identifier);
 
+            log.debug("Remove point: deviceId=" + device.getPAObjectID() + litePoint.getPointName() + " type=" + litePoint.getPointType() + " offset=" + litePoint.getPointOffset());
+            
             PointBase point = (PointBase) LiteFactory.convertLiteToDBPers(litePoint);
             Transaction<?> t = Transaction.createTransaction(Transaction.DELETE, point);
             t.execute();
@@ -345,6 +347,9 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     	YukonDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
         Set<PointTemplate> addTemplates = deviceDefinitionService.getPointTemplatesToAdd(yukonDevice, newDefinition);
         for (PointTemplate template : addTemplates) {
+        	
+        	log.debug("Add point: deviceId=" + device.getPAObjectID() + " point name=" + template.getName() + " type=" + template.getType() + " offset=" + template.getOffset());
+        	
             PointBase point = pointService.createPoint(device.getDevice().getDeviceID(), template);
 
             Transaction<?> t = Transaction.createTransaction(Transaction.INSERT, point);
@@ -370,6 +375,12 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         YukonDevice meter = deviceDao.getYukonDeviceForDevice(device);
 
         for (PointTemplateTransferPair pair : transferTemplates) {
+        	
+        	log.debug("Transfer point: deviceId=" + device.getPAObjectID() +
+        			" oldType=" + pair.oldDefinitionTemplate.getType() + 
+        			" old offset=" + pair.oldDefinitionTemplate.getOffset() + 
+        			" new type=" + pair.newDefinitionTemplate.getType() +
+        			" new offset=" + pair.newDefinitionTemplate.getOffset());
             
             LitePoint litePoint = pointService.getPointForDevice(meter, pair.oldDefinitionTemplate);
             PointBase point = (PointBase) LiteFactory.convertLiteToDBPers(litePoint);
