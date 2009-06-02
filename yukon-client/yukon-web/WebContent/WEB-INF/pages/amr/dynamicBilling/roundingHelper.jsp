@@ -17,13 +17,13 @@ greater than one.
 		<th colspan="7">Rounding Modes</th>
 	</tr>
 	<tr>
-		<th>HALF_EVEN</th>
-		<th>CEILING</th>
-		<th>FLOOR</th>
 		<th>UP</th>
 		<th>DOWN</th>
+		<th>CEILING</th>
+		<th>FLOOR</th>
 		<th>HALF_UP</th>
 		<th>HALF_DOWN</th>
+		<th>HALF_EVEN</th>
 	</tr>
 	<tr align=right>
 		<td>5.5</td>
