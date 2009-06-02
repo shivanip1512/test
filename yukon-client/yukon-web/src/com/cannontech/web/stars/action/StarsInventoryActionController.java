@@ -61,7 +61,8 @@ public abstract class StarsInventoryActionController extends AbstractBaseActionC
         
         if (referer == null) {
             HttpSession session = request.getSession(false);
-            referer = ((CtiNavObject) session.getAttribute(ServletUtils.NAVIGATE)).getPreviousPage();
+            CtiNavObject navigator = (CtiNavObject) session.getAttribute(ServletUtils.NAVIGATE);
+            referer = navigator.getCurrentPage();
         }
         
         return referer;
