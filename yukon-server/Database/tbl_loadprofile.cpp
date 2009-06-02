@@ -111,7 +111,7 @@ void CtiTableDeviceLoadProfile::DecodeDatabaseReader(RWDBReader &rdr)
             }
             else
             {
-                _channelsValid.set(i);
+                _channelsValid.reset(i);
             }
         }
     }
