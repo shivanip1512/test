@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     5/26/2009 10:45:28 AM                        */
+/* Created on:     5/28/2009 9:54:02 AM                         */
 /*==============================================================*/
 
 
@@ -86,6 +86,8 @@ drop index INDX_CCEventLog_PointId;
 drop index INDX_CCEventLog_PointId_ActId;
 
 drop index INDX_CCEventLog_SubId;
+
+drop index INDX_CCEventLog_Text;
 
 drop index INDX_CCURTCEPART_EVTID_CUSTID;
 
@@ -1532,6 +1534,13 @@ create index INDX_CCEventLog_FeedId on CCEventLog (
 /*==============================================================*/
 create index INDX_CCEventLog_SubId on CCEventLog (
    SubID ASC
+);
+
+/*==============================================================*/
+/* Index: INDX_CCEventLog_Text                                  */
+/*==============================================================*/
+create index INDX_CCEventLog_Text on CCEventLog (
+   Text ASC
 );
 
 /*==============================================================*/

@@ -35,6 +35,27 @@ GO
 DROP VIEW CCOperations_View;
 GO
 
+CREATE INDEX INDX_CCEventLog_PointId_ActId ON CCEventLog (
+    PointId ASC, 
+    ActionId ASC
+);
+CREATE INDEX INDX_CCEventLog_ActId ON CCEventLog (
+    ActionId ASC
+);
+CREATE INDEX INDX_CCEventLog_PointId ON CCEventLog (
+    PointId ASC
+);
+CREATE INDEX INDX_CCEventLog_FeedId ON CCEventLog (
+    FeederId ASC
+);
+CREATE INDEX INDX_CCEventLog_SubId ON CCEventLog (
+    SubId ASC
+);
+CREATE INDEX INDX_CCEventLog_Text ON CCEventLog (
+    Text ASC
+);
+GO
+
 UPDATE CCEventLog 
 SET Text = 'Var: , Open' 
 WHERE Value = 0 
@@ -138,6 +159,17 @@ FROM CCEventLog
 WHERE Text LIKE 'Var: %';
 GO
 
+SELECT CCOAS.LogId AS OpId, MIN(CCOBC.LogId) AS ConfId 
+INTO #CCOpCOrphanConfTemp 
+FROM CCOperationsASent_View CCOAS 
+JOIN CCOperationsBConfirmed_view CCOBC ON CCOBC.PointId = CCOAS.PointId AND CCOAS.LogId < CCOBC.LogId 
+LEFT JOIN (SELECT A.LogId AS AId, MIN(B.LogID) AS NextAId 
+           FROM CCOperationsASent_View A 
+           JOIN CCOperationsASent_View B ON A.PointId = B.PointId AND A.LogId < B.LogId 
+           GROUP BY A.LogId) EL3 ON EL3.AId = CCOAS.LogId 
+WHERE EL3.NextAId IS NULL
+GROUP BY CCOAS.LogId;
+
 INSERT INTO CCOperationLogCache
 SELECT OpId, ConfId
 FROM CCOperationsDSentAndValid_view
@@ -158,7 +190,7 @@ INTO #originalCCoperationsView
 FROM CCOperationsASent_view  CCOAS
 JOIN CCOperationLogCache OpConf ON CCOAS.LogId = OpConf.OperationLogId        
 LEFT JOIN CCOperationsBConfirmed_view CCOBC ON CCOBC.LogId = OpConf.ConfirmationLogId 
-LEFT JOIN CCOperationsCOrphanedConf_View Orphs ON CCOAS.LogId = Orphs.OpId       
+LEFT JOIN #CCOpCOrphanConfTemp Orphs ON CCOAS.LogId = Orphs.OpId       
 JOIN Point ON Point.PointId = CCOAS.PointId        
 JOIN DynamicCCCapBank ON DynamicCCCapBank.CapBankId = Point.PAObjectId        
 JOIN YukonPAObject YP ON YP.PAObjectId = DynamicCCCapBank.CapBankId        
@@ -258,51 +290,7 @@ FROM CCEventLog
 WHERE EventType = 0
 AND ActionId > -1;
 GO
-
-CREATE UNIQUE CLUSTERED INDEX INDX_CCOperASent_LogId ON CCOperationsASent_View (
-	LogId ASC
-);
-CREATE UNIQUE CLUSTERED INDEX INDX_CCOperBConf_LogId ON CCOperationsBConfirmed_View (
-	LogId ASC
-);
-CREATE INDEX INDX_CCOperASent_PointId ON CCOperationsASent_View (
-	PointId ASC
-);
-CREATE INDEX INDX_CCOperBConf_PointId ON CCOperationsBConfirmed_View (
-	PointId ASC
-);
-CREATE INDEX INDX_CCOperASent_ActId ON CCOperationsASent_View (
-	ActionId ASC
-);
-CREATE INDEX INDX_CCOperBConf_ActId ON CCOperationsBConfirmed_View (
-	ActionId ASC
-);
-CREATE INDEX INDX_CCOperASent_FeedId ON CCOperationsASent_View (
-	FeederId ASC
-);
-CREATE INDEX INDX_CCOperASent_SubId ON CCOperationsASent_View (
-	SubId ASC
-);
-GO
 /* @error ignore-end */
-
-CREATE INDEX INDX_CCEventLog_PointId_ActId ON CCEventLog (
-	PointId ASC, 
-	ActionId ASC
-);
-CREATE INDEX INDX_CCEventLog_ActId ON CCEventLog (
-	ActionId ASC
-);
-CREATE INDEX INDX_CCEventLog_PointId ON CCEventLog (
-	PointId ASC
-);
-CREATE INDEX INDX_CCEventLog_FeedId ON CCEventLog (
-	FeederId ASC
-);
-CREATE INDEX INDX_CCEventLog_SubId ON CCEventLog (
-	SubId ASC
-);
-GO
 
 DELETE FROM CCEventLog
 WHERE PointId NOT IN (Select PointId 

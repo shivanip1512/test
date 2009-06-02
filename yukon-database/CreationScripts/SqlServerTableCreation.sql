@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     5/26/2009 10:46:47 AM                        */
+/* Created on:     5/28/2009 9:52:52 AM                         */
 /*==============================================================*/
 
 
@@ -300,6 +300,15 @@ if exists (select 1
             and   indid > 0
             and   indid < 255)
    drop index CCEventLog.INDX_CCEventLog_SubId
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('CCEventLog')
+            and   name  = 'INDX_CCEventLog_Text'
+            and   indid > 0
+            and   indid < 255)
+   drop index CCEventLog.INDX_CCEventLog_Text
 go
 
 if exists (select 1
@@ -4058,6 +4067,14 @@ go
 /*==============================================================*/
 create index INDX_CCEventLog_SubId on CCEventLog (
 SubID ASC
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_CCEventLog_Text                                  */
+/*==============================================================*/
+create index INDX_CCEventLog_Text on CCEventLog (
+Text ASC
 )
 go
 
