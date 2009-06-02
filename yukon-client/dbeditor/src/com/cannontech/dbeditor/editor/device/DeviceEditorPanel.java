@@ -107,14 +107,14 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 		{	//10 - PAOExclusionEditorPanel
 			PAOGroups.CCU710A, PAOGroups.CCU711, PAOGroups.CCU721, PAOGroups.TCU5000, PAOGroups.TCU5500, 
 			PAOGroups.LCU415, PAOGroups.LCU_T3026, PAOGroups.LCULG, PAOGroups.LCU_ER, 
-			PAOGroups.REPEATER, PAOGroups.REPEATER_902, PAOGroups.REPEATER_800, PAOGroups.REPEATER_801, PAOGroups.REPEATER_921, PAOGroups.TAPTERMINAL, PAOGroups.WCTP_TERMINAL,
+			PAOGroups.TAPTERMINAL, PAOGroups.WCTP_TERMINAL,
 			PAOGroups.SERIES_5_LMI, PAOGroups.RTC, PAOGroups.SNPP_TERMINAL
 			
 		},
 		{	//11 - ExclusionTimingEditorPanel
 			PAOGroups.CCU710A, PAOGroups.CCU711, PAOGroups.CCU721, PAOGroups.TCU5000, PAOGroups.TCU5500, 
 			PAOGroups.LCU415, PAOGroups.LCU_T3026, PAOGroups.LCULG, PAOGroups.LCU_ER, 
-			PAOGroups.REPEATER, PAOGroups.REPEATER_902, PAOGroups.REPEATER_800, PAOGroups.REPEATER_801, PAOGroups.REPEATER_921, PAOGroups.TAPTERMINAL, PAOGroups.WCTP_TERMINAL,
+			PAOGroups.TAPTERMINAL, PAOGroups.WCTP_TERMINAL,
 			PAOGroups.SERIES_5_LMI, PAOGroups.RTC, PAOGroups.SNPP_TERMINAL
 		},
 		{	//12 - DeviceVerificationAssignmentPanel
