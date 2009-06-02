@@ -1,5 +1,6 @@
 package com.cannontech.esub.web.servlet;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Iterator;
@@ -10,6 +11,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import net.sf.json.JSONObject;
+
+import org.springframework.util.FileCopyUtils;
 
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.util.StringUtils;
@@ -35,30 +40,25 @@ import com.cannontech.message.dispatch.message.Signal;
  * @author alauinger
  */
 public class AlarmTextStyleServlet extends HttpServlet {
-
-	private static final String DEVICE_ID_KEY = "deviceid";
-	private static final String POINT_ID_KEY = "pointid";
-	private static final String ALARMCATEGORY_ID_KEY = "alarmcategoryid";
-	private static final String FILL1_KEY = "fill1";
-	private static final String FILL2_KEY = "fill2";
-		
 	/**
 	 * TODO: combine this updating code and the same in DrawingUpdater
 	 * @see javax.servlet.http.HttpServlet#service(HttpServletRequest, HttpServletResponse)
 	 */
-	protected void service(HttpServletRequest req, HttpServletResponse resp)
-		throws ServletException, IOException {
+	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		
-		String deviceIdStr = req.getParameter(DEVICE_ID_KEY);
-		String pointIdStr = req.getParameter(POINT_ID_KEY);
-		String alarmCategoryStr = req.getParameter(ALARMCATEGORY_ID_KEY);
-		String fill1 = req.getParameter(FILL1_KEY);
-		String fill2 = req.getParameter(FILL2_KEY);
+	    BufferedReader jsonDataReader = req.getReader();
+        String jsonData = FileCopyUtils.copyToString(jsonDataReader);
+        JSONObject object = new JSONObject(jsonData);
+        String deviceIdStr = object.getString("deviceIds");
+        String pointIdStr = object.getString("pointIds");
+        String alarmCategoryIdStr = object.getString("alarmCategoryIds");
+        String fill1 = object.getString("fill1");
+        String fill2 = object.getString("fill2");
 	
 		/* check if any of the points are in alarm*/		
 		int[] deviceIds = StringUtils.parseIntString(deviceIdStr);
 		int[] pointIds = StringUtils.parseIntString(pointIdStr);	
-		int[] alarmCategoryIds = StringUtils.parseIntString(alarmCategoryStr);
+		int[] alarmCategoryIds = StringUtils.parseIntString(alarmCategoryIdStr);
 		
 		boolean inAlarm = false;
 		

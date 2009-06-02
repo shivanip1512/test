@@ -1,5 +1,6 @@
 package com.cannontech.esub.web.servlet;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Date;
@@ -12,6 +13,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import net.sf.json.JSONObject;
+
+import org.springframework.util.FileCopyUtils;
 
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.util.StringUtils;
@@ -26,21 +31,14 @@ import com.cannontech.message.dispatch.message.Signal;
 public class AlarmAudioServlet extends HttpServlet {
 
     public static final String PARAM_MUTE_ARG = "mute";
-    
     public static final String PARAM_DISPLAY_NAME_ARG = "display";
-    
-    private static final String PARAM_DEVICE_ID = "deviceid";
-    private static final String PARAM_POINT_ID = "pointid";
-    private static final String PARAM_ALARMCATEGORY_ID = "alarmcategoryid";
-    
     private static String MUTE_TIMESTAMP_SESSION_KEY = "MUTED_DISPLAYS";
 
     /**
      * @see javax.servlet.http.HttpServlet#service(HttpServletRequest,
      *      HttpServletResponse)
      */
-    protected void service(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         HttpSession session = req.getSession(false);
 
@@ -60,9 +58,12 @@ public class AlarmAudioServlet extends HttpServlet {
             return;
         }
         
-        String deviceIdStr = req.getParameter(PARAM_DEVICE_ID);
-        String pointIdStr = req.getParameter(PARAM_POINT_ID);
-        String alarmCategoryIdStr = req.getParameter(PARAM_ALARMCATEGORY_ID);
+        BufferedReader jsonDataReader = req.getReader();
+        String jsonData = FileCopyUtils.copyToString(jsonDataReader);
+        JSONObject object = new JSONObject(jsonData);
+        String deviceIdStr = object.getString("deviceIds");
+        String pointIdStr = object.getString("pointIds");
+        String alarmCategoryIdStr = object.getString("alarmCategoryIds");
 
         int[] deviceIds = StringUtils.parseIntString(deviceIdStr);
         int[] pointIds = StringUtils.parseIntString(pointIdStr);

@@ -154,21 +154,16 @@ function updateAllTables() {
 } //end updateTables
 
 function checkAlarmAudio(deviceIds, pointIds, alarmCategoryIds) {
-	var url = 	"/servlet/AlarmAudioServlet?" +
-			"deviceid=" + deviceIds +
-			"&pointid=" + pointIds +
-			"&alarmcategoryid=" + alarmCategoryIds;
-
-	getCtiURL(url, fn3);
-
-	function fn3(obj) {
+	var dataStr = '{\'deviceIds\': \'' + deviceIds + '\' ,\'pointIds\': \'' + pointIds + '\' ,\'alarmCategoryIds\': \'' + alarmCategoryIds + '\'}';
+	
+	postURL("/servlet/AlarmAudioServlet", dataStr, function(obj) {
 		if(obj.content == 'true') {
 			playAlarmAudio();
 		}
 		else {
 			stopAlarmAudio();
 		}
-	}	 
+	}); 
 }
 
 /* update an individual graph */
@@ -420,57 +415,18 @@ function updateLine(node) {
 
 /* update a single alarm text element */
 function updateAlarmText(node) {
-
 	var deviceIds = node.getAttribute('deviceid');
 	var pointIds = node.getAttribute('pointid');
-	var pointIdsArray = new Array();
-	var batchArray = new Array();
-	if(pointIds.length > 4) {
-		// Batch them so the url is within the maximum length limits.(2083 for IE)
-		pointIdsArray = pointIds.split(',');
-		var pointIdsString = new String();
-		for(i = 0; i < pointIdsArray.length; i++){
-			pointIdsString += pointIdsArray[i] + ',';
-			if(pointIdsString.length > 12 ){
-				//Chop off the last comma and batch the string
-				batchArray[batchArray.length] = pointIdsString.substring(0, pointIdsString.length-1);
-				pointIdsString = new String();
-			}
-		}
-	}
 	var alarmCategoryIds = node.getAttribute('alarmcategoryid');
-
 	var fill1 = node.getAttribute('fill1'); // not alarming
 	var fill2 = node.getAttribute('fill2'); // alarming
+	var dataStr = '{\'deviceIds\': \'' + deviceIds + '\', \'pointIds\': \'' + pointIds + '\', \'alarmCategoryIds\': \'' + alarmCategoryIds + '\', \'fill1\': \'' + fill1 + '\', \'fill2\': \'' + fill2 + '\'}';
 	
-	if(batchArray.length > 0){
-		node.getStyle().setProperty('fill', fill1);
-		var alarm = false;
-		for(i = 0; i < batchArray.length; i++){
-			if(alarm == true){
-				break;
-			}
-			url = encodeURI('/servlet/AlarmTextStyleServlet' + '?' + 'deviceid=' + deviceIds + '&pointid=' + batchArray[i] + '&alarmcategoryid=' + alarmCategoryIds + '&fill1=' + fill1 + '&fill2=' + fill2);
-			getCtiURL(url, function(obj) {
-				if(obj.content){
-					if(obj.content == fill2){
-						node.getStyle().setProperty('fill', obj.content);
-						alarm = true;
-					}
-				}
-			});
-		}
-	} else {
-		url = encodeURI('/servlet/AlarmTextStyleServlet' + '?' + 'deviceid=' + deviceIds + '&pointid=' + pointIds + '&alarmcategoryid=' + alarmCategoryIds + '&fill1=' + fill1 + '&fill2=' + fill2);
-        getCtiURL(url,fn);
-	}
-	
-	/* Handle the getURL to the AlarmTextStyleServlet */
-	function fn(obj) {
+	postURL("/servlet/AlarmTextStyleServlet", dataStr, function(obj) {
 		if(obj.content) {
 			node.getStyle().setProperty('fill', obj.content);			
 		}
-	}
+	});
 }
 
 /**
