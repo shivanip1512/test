@@ -317,8 +317,8 @@ void CtiFDRPiNotify::doUpdates()
   
           // remove local offset (might not be thread-safe)
           struct tm *temp = NULL;
-          LONG longTime = timeArray[i];
-          temp = CtiTime::gmtime_r(reinterpret_cast<const time_t *> (&longTime) );
+          time_t tTime = timeArray[i];
+          temp = CtiTime::gmtime_r(&tTime);
           time_t timeStamp = mktime(temp);
           // pisn_evmesceptions doesn't return error codes per point, default to 0
           handlePiUpdate(info, rvalArray[i], istatArray[i], timeStamp, 0);
@@ -383,7 +383,8 @@ void CtiFDRPiNotify::forceUpdateAllPoints()
     for (int i = 0; i < pointCount; ++i)
     {
       // remove local offset (might not be thread-safe)
-      time_t timeToSend = mktime(std::gmtime(reinterpret_cast<const time_t *> (&timeArray[i])) );
+      time_t tTime = timeArray[i];
+      time_t timeToSend = mktime(std::gmtime(&tTime) );
 
       PiPointId thisPoint = piIdArray[i];
 
