@@ -6740,7 +6740,7 @@ void CtiVanGogh::checkStatusState(int alarm, CtiPointDataMsg *pData, CtiMultiWra
 {
     string action;
     double val = pData->getValue();
-    INT statelimit = (alarm - CtiTablePointAlarming::state0);
+    INT alarmValue = (alarm - CtiTablePointAlarming::state0); // The value we want to alarm on
 
     // Value or quality must have been changed to look at this stuff again!
     // if( (pDyn->getValue() != pData->getValue() || pDyn->getQuality() != pData->getQuality()))
@@ -6749,13 +6749,13 @@ void CtiVanGogh::checkStatusState(int alarm, CtiPointDataMsg *pData, CtiMultiWra
         INT exceeds = LIMIT_IN_RANGE;
 
         bool signal = false;
-        int stateverify = CtiTablePointAlarming::state0 + statelimit;
 
-        if(CtiTablePointAlarming::state0 <= stateverify && stateverify <= CtiTablePointAlarming::state9)
+        if(CtiTablePointAlarming::state0 <= alarm && alarm <= CtiTablePointAlarming::state9)
         {
-            if( PointMgr.getAlarming(point).getAlarmCategory(stateverify) > SignalEvent)
+            if( PointMgr.getAlarming(point).getAlarmCategory(alarm) > SignalEvent)
             {
-                signal = ((int)val == statelimit);
+                // check if our value == the value we want to alarm on
+                signal = ((int)val == alarmValue);
             }
         }
 
