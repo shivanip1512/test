@@ -1397,21 +1397,8 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
         found = getOperation(function, OutMessage->Buffer.BSt);
 
         if( getType() == TYPEMCT318 || getType() == TYPEMCT318L ||
-            getType() == TYPEMCT360 || getType() == TYPEMCT370 )
-        {
-            //  if pulse input 3 isn't defined
-            if( !getDevicePointOffsetTypeEqual(3, DemandAccumulatorPointType ) )
-            {
-                OutMessage->Buffer.BSt.Length -= 3;
-
-                //  if pulse input 2 isn't defined
-                if( !getDevicePointOffsetTypeEqual(2, DemandAccumulatorPointType ) )
-                {
-                    OutMessage->Buffer.BSt.Length -= 3;
-                }
-            }
-        }
-        else if( getType() == TYPEMCT410 )
+            getType() == TYPEMCT360 || getType() == TYPEMCT370 ||
+            getType() == TYPEMCT410 )
         {
             //  if pulse input 3 isn't defined
             if( !getDevicePointOffsetTypeEqual(3, DemandAccumulatorPointType ) )
