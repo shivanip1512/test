@@ -368,11 +368,10 @@ public Object getValue(Object o)
     gear.setControlMethod(method);
     
     switch (method) {
+        case TrueCycle:// All of these are 'smart' gears
+        case MagnitudeCycle:
+        case TargetCycle:
 	    case SmartCycle: {
-	    	obj = getIvjSmartGearPanel1().getValue(gear);
-	    	break;
-	    }
-	    case TrueCycle: {// True cycle is a smart cycle.
 	    	obj = getIvjSmartGearPanel1().getValue(gear);
 	    	break;
 	    }
