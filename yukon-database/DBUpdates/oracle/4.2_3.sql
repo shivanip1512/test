@@ -2,10 +2,44 @@
 /**** Oracle DBupdates                 ****/
 /******************************************/
 
-/* Start YUK-7122 */
+/* Start YUK-7122, YUK-7548 */
+ALTER TABLE CCurtEEParticipantWindow DROP CONSTRAINT FK_CCRTEEPRTWN_CCRTEEPRIWN;
+ALTER TABLE CCurtEEPricingWindow DROP CONSTRAINT FK_CCURTEEPRWIN_CCURTEEPR; 
+
+ALTER TABLE CCurtEEPricingWindow RENAME TO CCurtEEPricingWindowTemp;
+ALTER TABLE CCurtEEPricingWindowTemp DROP CONSTRAINT PK_CCURTEEPRICINGWINDOW;
+DROP INDEX INDX_CCURTEEPRWIN;
+/* @error ignore-begin */
+DROP INDEX PK_CCURTEEPRICINGWINDOW;
+/* @error ignore-end */
+
+CREATE TABLE CCurtEEPricingWindow  (
+   CCurtEEPricingWindowID NUMBER                        not null,
+   EnergyPrice          NUMBER(19,6)                    not null,
+   Offset               NUMBER                          not null,
+   CCurtEEPricingID     NUMBER                          not null,
+   constraint PK_CCURTEEPRICINGWINDOW primary key (CCurtEEPricingWindowID)
+);
+
+CREATE UNIQUE INDEX INDX_CCURTEEPRWIN on CCurtEEPricingWindow (
+   Offset ASC,
+   CCurtEEPricingID ASC
+);
+
+INSERT INTO CCurtEEPricingWindow
+SELECT CCurtEEPricingWindowId, EnergyPrice, Offset, CCurtEEPricingID
+FROM CCurtEEPricingWindowTemp;
+
+ALTER TABLE CCurtEEParticipantWindow
+   ADD CONSTRAINT FK_CCRTEEPRTWN_CCRTEEPRIWN FOREIGN KEY (CCurtEEPricingWindowId)
+      REFERENCES CCurtEEPricingWindow (CCurtEEPricingWindowId);
+
 ALTER TABLE CCurtEEPricingWindow
-MODIFY EnergyPrice NUMBER(19,6);
-/* End YUK-7122 */
+   ADD CONSTRAINT FK_CCURTEEPRWIN_CCURTEEPR FOREIGN KEY (CCurtEEPricingId)
+      REFERENCES CCurtEEPricing (CCurtEEPricingId);
+
+DROP TABLE CCurtEEPricingWindowTemp;
+/* End YUK-7122, YUK-7548 */
 
 /* Start YUK-7167 */
 INSERT INTO YukonRoleProperty VALUES(-80004,-800,'IVR URL Dialer Template','http://127.0.0.1:9998/VoiceXML.start?tokenid=yukon-{MESSAGE_TYPE}&numbertodial={PHONE_NUMBER}','The URL used to initiate a call, see documentation for allowed variables'); 
