@@ -4,7 +4,10 @@ import java.util.Date;
 
 import com.cannontech.capcontrol.CapBankOperationalState;
 import com.cannontech.cbc.cache.CapControlCache;
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.point.PointQuality;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.point.PointTypes;
@@ -26,6 +29,7 @@ public class CapControlCommandExecutor
 {
     public static final int defaultOperationalState = -1;
 	private final CapControlCache capControlCache;
+	private RolePropertyDao rolePropertyDao;
 	private final LiteYukonUser user;
 	
 	public CapControlCommandExecutor(final CapControlCache capControlCache, LiteYukonUser user) {	
@@ -33,37 +37,55 @@ public class CapControlCommandExecutor
 	    this.user = user;
 	}
 	
-	public void execute(CapControlType controlType, int cmdId, int paoId) throws UnsupportedOperationException {
-	    execute(controlType, cmdId, paoId, null, null);
+	public void execute(CapControlType controlType, int cmdId, int paoId, LiteYukonUser user) throws UnsupportedOperationException {
+	    execute(controlType, cmdId, paoId, null, null, user);
 	}
 	
     public void execute(CapControlType controlType, int cmdId, int paoId, 
-    		float[] optParams, String operationalState) throws UnsupportedOperationException {
+    		float[] optParams, String operationalState, LiteYukonUser user) throws UnsupportedOperationException {
     
         switch (controlType) {
             case AREA :
             case SPECIAL_AREA : {
+                if(!rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_AREA_CONTROLS, user)) {
+                    throw new NotAuthorizedException("The user is not authorized to submit area commands.");
+                }
                 executeSubAreaCommand(cmdId, paoId);
                 break;
             }
             case SUBSTATION : {
+                if(!rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_SUBSTATION_CONTROLS, user)) {
+                    throw new NotAuthorizedException("The user is not authorized to submit substation commands.");
+                }
                 executeSubStationCommand(cmdId, paoId);
                 break;
             }
             case SUBBUS : {
+                if(!rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_SUBBUS_CONTROLS, user)) {
+                    throw new NotAuthorizedException("The user is not authorized to submit subbus commands.");
+                }
                 executeSubBusCommand(cmdId, paoId);
                 break;
             }
             case FEEDER : {
+                if(!rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_FEEDER_CONTROLS, user)) {
+                    throw new NotAuthorizedException("The user is not authorized to submit feeder commands.");
+                }
                 executeFeederCommand(cmdId, paoId);
                 break;
             }
             case CAPBANK : {
+                if(!rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CAPBANK_CONTROLS, user)) {
+                    throw new NotAuthorizedException("The user is not authorized to submit capbank/cbc commands.");
+                }
                 int operationalStateValue = getOperationalState(operationalState);
                 executeCapBankCommand(cmdId, paoId, optParams, operationalStateValue);
                 break;
             }
             case CBC : {
+                if(!rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CAPBANK_CONTROLS, user)) {
+                    throw new NotAuthorizedException("The user is not authorized to submit capbank/cbc commands.");
+                }
                 executeCBCCommand(paoId, optParams);
                 break;
             }
@@ -84,13 +106,13 @@ public class CapControlCommandExecutor
         }
     }
     
-    public void executeSubAreaCommand(int cmdId, int paoId) {
+    private void executeSubAreaCommand(int cmdId, int paoId) {
         CapControlCommand cmd = new CapControlCommand (cmdId, paoId);
         cmd.setUserName(getUserName());
         capControlCache.getConnection().write(cmd);
     }
     
-    public void executeSubStationCommand(int cmdId, int paoId) {
+    private void executeSubStationCommand(int cmdId, int paoId) {
         if( cmdId == CapControlCommand.CONFIRM_CLOSE || cmdId == CapControlCommand.CONFIRM_OPEN ) {
             executeConfirmSubstation( paoId );
         }
@@ -106,7 +128,7 @@ public class CapControlCommandExecutor
         }
     }
 
-    public void executeSubBusCommand(int cmdId, int paoId) {
+    private void executeSubBusCommand(int cmdId, int paoId) {
 		if (cmdId == CapControlCommand.CONFIRM_CLOSE || cmdId == CapControlCommand.CONFIRM_OPEN ) {
 			executeConfirmSub( paoId );
 		}
@@ -145,7 +167,7 @@ public class CapControlCommandExecutor
 		capControlCache.getConnection().write(msg);
 	}
 
-	public void executeFeederCommand( int cmdId, int paoId) {
+	private void executeFeederCommand( int cmdId, int paoId) {
 		if (cmdId == CapControlCommand.CONFIRM_CLOSE || cmdId == CapControlCommand.CONFIRM_OPEN ) {
 			executeConfirmFeeder( paoId );
 		}
@@ -181,11 +203,7 @@ public class CapControlCommandExecutor
 	    
 	}
 	
-	public void executeCapBankCommand(int _cmdID, int _paoID, float[] _optionalParams) {
-	    executeCapBankCommand(_cmdID, _paoID, _optionalParams, defaultOperationalState);
-	}
-	
-	public void executeCapBankCommand(int cmdId, int paoId, float[] optionalParams, int operationalState) {
+	private void executeCapBankCommand(int cmdId, int paoId, float[] optionalParams, int operationalState) {
 	    switch (cmdId) {
 	        case CapControlCommand.CONFIRM_CLOSE : {
 	            executeCapBankCmdConfirm(paoId, defaultOperationalState);
@@ -389,7 +407,7 @@ public class CapControlCommandExecutor
         executeCommand(paoId, cmdOperation, CapControlCommandExecutor.defaultOperationalState);
     }
     
-	public void executeCommand(int paoId, int cmdOperation, int operationalState) {
+    private void executeCommand(int paoId, int cmdOperation, int operationalState) {
 		CapControlCommand cmd = new CapControlCommand();
 		cmd.setDeviceID( paoId );
 		cmd.setCommand( cmdOperation );
@@ -399,4 +417,7 @@ public class CapControlCommandExecutor
 		capControlCache.getConnection().sendCommand( cmd );
 	}
 
+	public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
+    }
 }

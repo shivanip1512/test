@@ -3,6 +3,7 @@ package com.cannontech.cbc.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.dao.DataRetrievalFailureException;
 
 import com.cannontech.cbc.dao.CapControlCommentDao;
@@ -44,6 +45,9 @@ public class CapControlCommentServiceImpl implements CapControlCommentService {
         return defaultReason;
     }
     
+    /**
+     * Returns a list of hmtl escaped comment strings.
+     */
     public List<String> getComments(final int paoId, final int size) {
         final List<String> list = new ArrayList<String>(size);
         final List<CapControlComment> commentList = capControlCommentDao.getAllCommentsByPao(paoId);
@@ -51,7 +55,7 @@ public class CapControlCommentServiceImpl implements CapControlCommentService {
         for (int x = 0; x < size && x < commentList.size(); x++) {
             CapControlComment comment = commentList.get(x);
             String text = comment.getComment();
-            list.add(text);
+            list.add(StringEscapeUtils.escapeHtml(text));
         }
         return list;
     }

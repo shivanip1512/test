@@ -120,7 +120,7 @@
         <property name="methodNameResolver" ref="methodNameResolver"/>
         <property name="commentDao" ref="capCommentDao" />
         <property name="capControlCache" ref="capControlCache" />
-        <property name="authDao" ref="authDao" />
+        <property name="rolePropertyDao" ref="rolePropertyDao" />
         <property name="stateDao" ref="stateDao"/>
     </bean>
 

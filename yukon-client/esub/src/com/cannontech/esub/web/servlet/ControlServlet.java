@@ -13,11 +13,13 @@ import javax.servlet.http.HttpServletResponse;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.util.UpdateUtil;
 import com.cannontech.message.util.Command;
-import com.cannontech.roles.operator.EsubDrawingsRole;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
 
@@ -44,8 +46,8 @@ public class ControlServlet extends HttpServlet {
 		
 		LiteYukonUser user = (LiteYukonUser) req.getSession(false).getAttribute(LoginController.YUKON_USER);
 		Writer out = resp.getWriter();
-		
-		if(!DaoFactory.getAuthDao().checkRoleProperty(user, EsubDrawingsRole.CONTROL)) {
+		RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
+		if(!rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ESUBSTATION_DRAWINGS_CONTROL, user)) {
 			CTILogger.info("Control request received by user without CONTROL role, ip: " + req.getRemoteAddr());
 			out.write("error");
 			return;

@@ -1,6 +1,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 
 <%@page import="java.util.List"%>
 <%@page import="java.text.SimpleDateFormat"%>
@@ -177,7 +178,7 @@ function unHighlightAllRows(){
                         <td>
                             <c:choose>
                                 <c:when test="${modifyPermission}">
-                                    <input type="hidden" id="commentInput_${commentId}" value="${comment.comment}"></input>
+                                    <input type="hidden" id="commentInput_${commentId}" value="<spring:escapeBody>${comment.comment}</spring:escapeBody>"></input>
                                     <img src="/editor/images/edit_item.gif" border="0" height="15" width="15"  onclick="selectComment(${commentId}, $('commentInput_${commentId}'));highlightRow('commentRow_${commentId}');"/>
                                     <img src="/editor/images/delete_item.gif" border="0" height="15" width="15" onclick="removeComment(${commentId});" />
                                 </c:when>
@@ -187,7 +188,7 @@ function unHighlightAllRows(){
                                 </c:otherwise>
                             </c:choose>
                         </td>
-                        <td>${comment.comment}</td>   
+                        <td><spring:escapeBody htmlEscape="true">${comment.comment}</spring:escapeBody></td>
                         <td><%=yukonUserDao.getLiteYukonUser(comment.getUserId()).getUsername() %></td>
                         <td><%= formatter.format(comment.getTime()) %></td>
                         <td>

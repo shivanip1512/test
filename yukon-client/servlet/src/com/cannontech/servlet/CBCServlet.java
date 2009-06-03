@@ -529,7 +529,6 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
      * 
      * /servlet/CBCServlet?type=nav&pageType=editor&modType=capcontrol
      */
-    @SuppressWarnings("static-access")
     private String createNavigation( HttpServletRequest req ) {
         String pageType = ParamUtil.getString( req, "pageType" );
         String modType = ParamUtil.getString( req, "modType", "" );
@@ -596,7 +595,7 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
                 	final CapControlCommandExecutor cbcExecutor = new CapControlCommandExecutor(cbcCache, user);
                 
                 	//send the command
-                	cbcExecutor.execute(controlType, cmdID, paoID, optParams, operationalState);
+                	cbcExecutor.execute(controlType, cmdID, paoID, optParams, operationalState, user);
             	}
             
             
@@ -635,7 +634,7 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
             	}
             
             	//send the command
-            	cbcExecutor.execute(controlType, cmdID, paoID, optParams, operationalState);
+            	cbcExecutor.execute(controlType, cmdID, paoID, optParams, operationalState, user);
             }
         }
     }
