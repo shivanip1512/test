@@ -121,19 +121,23 @@ RWDBStatus CtiTableDynamicPointAlarming::Insert(RWDBConnection &conn)
 
     if(DebugLevel & DEBUGLEVEL_LUDICROUS)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << endl << CtiTime() << " **** INSERT Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << inserter.asString() << endl << endl;
+        string loggedSQLstring = inserter.asString();
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << endl << CtiTime() << " **** INSERT Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << loggedSQLstring << endl << endl;
+        }
     }
 
     ExecuteInserter(conn,inserter,__FILE__,__LINE__);
 
     if(inserter.status().errorCode() != RWDBStatus::ok)    // No error occured!
     {
+        string loggedSQLstring = inserter.asString();
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << "**** SQL FAILED Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << inserter.asString() << endl;
+            dout << loggedSQLstring << endl;
         }
     }
     else
@@ -202,16 +206,22 @@ RWDBStatus CtiTableDynamicPointAlarming::Update(RWDBConnection &conn)
 
     if(DebugLevel & DEBUGLEVEL_LUDICROUS)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << endl << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << updater.asString() << endl << endl;
+        string loggedSQLstring = updater.asString();
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << endl << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << loggedSQLstring << endl << endl;
+        }
     }
 
     if( stat.errorCode() != RWDBStatus::ok )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << "Error Code = " << stat.errorCode() << endl;
-        dout << updater.asString() << endl;
+        string loggedSQLstring = updater.asString();
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << "Error Code = " << stat.errorCode() << endl;
+            dout << loggedSQLstring << endl;
+        }
     }
 
     if( stat.errorCode() == RWDBStatus::ok && rowsAffected > 0)
@@ -278,9 +288,12 @@ RWDBStatus CtiTableDynamicPointAlarming::Delete()
 
     if(DebugLevel & DEBUGLEVEL_LUDICROUS)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << endl << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << deleter.asString() << endl << endl;
+        string loggedSQLstring = deleter.asString();
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << endl << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << loggedSQLstring << endl << endl;
+        }
     }
 
     return deleter.execute( conn ).status();
@@ -298,9 +311,12 @@ RWDBStatus CtiTableDynamicPointAlarming::Delete(long pointid, int alarm_conditio
 
     if(DebugLevel & DEBUGLEVEL_LUDICROUS)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << endl << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << deleter.asString() << endl << endl;
+        string loggedSQLstring = deleter.asString();
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << endl << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << loggedSQLstring << endl << endl;
+        }
     }
 
     return deleter.execute( conn ).status();

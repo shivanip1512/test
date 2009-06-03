@@ -142,16 +142,22 @@ void CtiTableSignal::Insert(RWDBConnection &conn)
 
     if(stat.vendorError1() == 1401)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << "Error Code = " << stat.errorCode() << endl;
-        dout << inserter.asString() << endl;
+        string loggedSQLstring = inserter.asString();
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << "Error Code = " << stat.errorCode() << endl;
+            dout << loggedSQLstring << endl;
+        }
     }
 
     if( stat.errorCode() != RWDBStatus::ok )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << "Error Code = " << stat.errorCode() << endl;
-        dout << inserter.asString() << endl;
+        string loggedSQLstring = inserter.asString();
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << "Error Code = " << stat.errorCode() << endl;
+            dout << loggedSQLstring << endl;
+        }
     }
 }
 

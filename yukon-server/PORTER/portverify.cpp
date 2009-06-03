@@ -666,9 +666,12 @@ void CtiPorterVerification::writeUnknown(const CtiVerificationReport &report)
 
     if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << inserter.asString() << endl;
+        string loggedSQLstring = inserter.asString();
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << loggedSQLstring << endl;
+        }
     }
 
 
@@ -699,9 +702,12 @@ void CtiPorterVerification::pruneEntries(const ptime::time_duration_type &age)
 
     if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Beginning DynamicVerification prune. " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << deleter.asString() << endl;
+        string loggedSQLstring = deleter.asString();
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Beginning DynamicVerification prune. " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << loggedSQLstring << endl;
+        }
     }
     if( e = deleter.execute(conn).status().errorCode() )
     {

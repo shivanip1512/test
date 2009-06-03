@@ -347,32 +347,38 @@ RWDBStatus::ErrorCode ExecuteUpdater(RWDBConnection& conn, RWDBUpdater &updater,
 
     if(DebugLevel & DEBUGLEVEL_LUDICROUS)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << endl << CtiTime() << " **** Checkpoint **** ";
-        if(file != 0) dout << file << " (" << line << ")";
-        dout << endl << updater.asString() << endl;
+        string loggedSQLstring = updater.asString();
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << endl << CtiTime() << " **** Checkpoint **** ";
+            if(file != 0) dout << file << " (" << line << ")";
+            dout << endl << loggedSQLstring << endl;
+        }
     }
 
     if( ec != RWDBStatus::ok )
     {
-        CtiTime Now;
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " Error Code = " << stat.errorCode() << ". ";
-        if(file != 0) dout << file << " (" << line << ")";
-        dout << endl << endl << updater.asString() << endl << endl;
-
-
-        if(stat.vendorError1() != 0)
+        string loggedSQLstring = updater.asString();
         {
-            dout << Now << " Thread id:        " << rwThreadId() << endl
-            << Now << " Error code:       " << (int) stat.errorCode() << endl
-            << Now << " Error message     " << stat.message() << endl
-            << Now << " Is terminal:      " << (stat.isTerminal() ? "Yes" : "No") << endl
-            << Now << " Vendor error 1:   " << stat.vendorError1() << endl
-            << Now << " Vendor error 2:   " << stat.vendorError2() << endl
-            << Now << " Vendor message 1: " << stat.vendorMessage1() << endl
-            << Now << " Vendor message 2: " << stat.vendorMessage2() << endl << endl;
-            if(rowsAffected) dout << Now << " Rows Updated      " << *rowsAffected << endl;
+            CtiTime Now;
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " Error Code = " << stat.errorCode() << ". ";
+            if(file != 0) dout << file << " (" << line << ")";
+            dout << endl << endl << loggedSQLstring << endl << endl;
+    
+    
+            if(stat.vendorError1() != 0)
+            {
+                dout << Now << " Thread id:        " << rwThreadId() << endl
+                << Now << " Error code:       " << (int) stat.errorCode() << endl
+                << Now << " Error message     " << stat.message() << endl
+                << Now << " Is terminal:      " << (stat.isTerminal() ? "Yes" : "No") << endl
+                << Now << " Vendor error 1:   " << stat.vendorError1() << endl
+                << Now << " Vendor error 2:   " << stat.vendorError2() << endl
+                << Now << " Vendor message 1: " << stat.vendorMessage1() << endl
+                << Now << " Vendor message 2: " << stat.vendorMessage2() << endl << endl;
+                if(rowsAffected) dout << Now << " Rows Updated      " << *rowsAffected << endl;
+            }
         }
     }
 
@@ -387,31 +393,37 @@ RWDBStatus ExecuteInserter(RWDBConnection& conn, RWDBInserter &inserter, const c
 
     if(DebugLevel & DEBUGLEVEL_LUDICROUS)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << endl << CtiTime() << " **** Checkpoint **** ";
-        if(file != 0) dout << file << " (" << line << ")";
-        dout << endl << inserter.asString() << endl;
+        string loggedSQLstring = inserter.asString();
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << endl << CtiTime() << " **** Checkpoint **** ";
+            if(file != 0) dout << file << " (" << line << ")";
+            dout << endl << loggedSQLstring << endl;
+        }
     }
 
     if( stat.errorCode() != RWDBStatus::ok )
     {
-        CtiTime Now;
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << Now << " Error Code = " << stat.errorCode() << ". ";
-
-        if(file != 0) dout << file << " (" << line << ")";
-        dout << endl << endl << inserter.asString() << endl << endl;
-
-        if(stat.vendorError1() != 0)
+        string loggedSQLstring = inserter.asString();
         {
-            dout << Now << " Thread id:        " << rwThreadId() << endl
-            << Now << " Error code:       " << (int) stat.errorCode() << endl
-            << Now << " Error message     " << stat.message() << endl
-            << Now << " Is terminal:      " << (stat.isTerminal() ? "Yes" : "No") << endl
-            << Now << " Vendor error 1:   " << stat.vendorError1() << endl
-            << Now << " Vendor error 2:   " << stat.vendorError2() << endl
-            << Now << " Vendor message 1: " << stat.vendorMessage1() << endl
-            << Now << " Vendor message 2: " << stat.vendorMessage2() << endl << endl;
+            CtiTime Now;
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << Now << " Error Code = " << stat.errorCode() << ". ";
+    
+            if(file != 0) dout << file << " (" << line << ")";
+            dout << endl << endl << loggedSQLstring << endl << endl;
+    
+            if(stat.vendorError1() != 0)
+            {
+                dout << Now << " Thread id:        " << rwThreadId() << endl
+                << Now << " Error code:       " << (int) stat.errorCode() << endl
+                << Now << " Error message     " << stat.message() << endl
+                << Now << " Is terminal:      " << (stat.isTerminal() ? "Yes" : "No") << endl
+                << Now << " Vendor error 1:   " << stat.vendorError1() << endl
+                << Now << " Vendor error 2:   " << stat.vendorError2() << endl
+                << Now << " Vendor message 1: " << stat.vendorMessage1() << endl
+                << Now << " Vendor message 2: " << stat.vendorMessage2() << endl << endl;
+            }
         }
     }
 

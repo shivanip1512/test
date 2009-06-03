@@ -1469,9 +1469,12 @@ bool CtiPendingOpThread::loadICControlMap()
 
         if(rdr.status().errorCode() != RWDBStatus::ok)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << selector.asString() << endl;
+            string loggedSQLstring = selector.asString();
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << loggedSQLstring << endl;
+            }
         }
 
         CtiTime now;

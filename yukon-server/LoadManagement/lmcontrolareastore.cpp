@@ -341,8 +341,11 @@ void CtiLMControlAreaStore::reset()
 
                         if( _LM_DEBUG & LM_DEBUG_DATABASE )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                            string loggedSQLstring = selector.asString();
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                            }
                         }
 
                         RWDBReader rdr = selector.reader(conn);
@@ -392,8 +395,11 @@ void CtiLMControlAreaStore::reset()
 
                         if( _LM_DEBUG & LM_DEBUG_DATABASE )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                            string loggedSQLstring = selector.asString();
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                            }
                         }
 
                         CtiLMGroupFactory lm_group_factory;
@@ -505,8 +511,11 @@ void CtiLMControlAreaStore::reset()
 
                         if( _LM_DEBUG & LM_DEBUG_DATABASE )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                            string loggedSQLstring = selector.asString();
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                            }
                         }
 
                         RWDBReader rdr = selector.reader(conn);
@@ -672,8 +681,11 @@ void CtiLMControlAreaStore::reset()
 
                         if( _LM_DEBUG & LM_DEBUG_DATABASE )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                            string loggedSQLstring = selector.asString();
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                            }
                         }
 
                         RWDBReader rdr = selector.reader(conn);
@@ -713,8 +725,11 @@ void CtiLMControlAreaStore::reset()
 
                         if( _LM_DEBUG & LM_DEBUG_DATABASE )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                            string loggedSQLstring = selector.asString();
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                            }
                         }
 
                         RWDBReader rdr = selector.reader(conn);
@@ -873,8 +888,11 @@ void CtiLMControlAreaStore::reset()
 
                         if( _LM_DEBUG & LM_DEBUG_DATABASE )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                            string loggedSQLstring = selector.asString();
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                            }
                         }
 
                         CtiLMProgramDirectSPtr currentLMProgramDirect;
@@ -945,8 +963,11 @@ void CtiLMControlAreaStore::reset()
 
                         if( _LM_DEBUG & LM_DEBUG_DATABASE )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                            string loggedSQLstring = selector.asString();
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                            }
                         }
 
                         RWDBReader rdr = selector.reader(conn);
@@ -1045,8 +1066,11 @@ void CtiLMControlAreaStore::reset()
 
                         if( _LM_DEBUG & LM_DEBUG_DATABASE )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                            string loggedSQLstring = selector.asString();
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                            }
                         }
 
                         RWDBReader rdr = ExecuteQuery( conn, makeLeftOuterJoinSQL92Compliant( string( selector.asString() ) ) );
@@ -1095,8 +1119,11 @@ void CtiLMControlAreaStore::reset()
 
                         if( _LM_DEBUG & LM_DEBUG_DATABASE )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                            string loggedSQLstring = selector.asString();
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                            }
                         }
 
                         RWDBReader rdr = selector.reader(conn);
@@ -1190,8 +1217,11 @@ void CtiLMControlAreaStore::reset()
 
                         if( _LM_DEBUG & LM_DEBUG_DATABASE )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                            string loggedSQLstring = selector.asString();
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                            }
                         }
 
                         CtiLMProgramCurtailmentSPtr currentLMProgramCurtailment;
@@ -1265,8 +1295,11 @@ void CtiLMControlAreaStore::reset()
 
                             if( _LM_DEBUG & LM_DEBUG_DATABASE )
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - " << selector.asString().data() << endl;
+                                string loggedSQLstring = selector.asString();
+                                {
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << CtiTime() << " - " << loggedSQLstring << endl;
+                                }
                             }
 
                             vector<CtiLMCurtailCustomer*>& lmProgramCurtailmentCustomers = currentLMProgramCurtailment->getLMProgramCurtailmentCustomers();
@@ -1355,8 +1388,11 @@ void CtiLMControlAreaStore::reset()
 
                         if( _LM_DEBUG & LM_DEBUG_DATABASE )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                            string loggedSQLstring = selector.asString();
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                            }
                         }
 
                         CtiLMProgramBaseSPtr currentLMProgramEnergyExchange;
@@ -1423,8 +1459,11 @@ void CtiLMControlAreaStore::reset()
 
                                 if( _LM_DEBUG & LM_DEBUG_DATABASE )
                                 {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " - " << selector.asString().data() << endl;
+                                    string loggedSQLstring = selector.asString();
+                                    {
+                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                        dout << CtiTime() << " - " << loggedSQLstring << endl;
+                                    }
                                 }
 
                                 RWDBReader rdr = selector.reader(conn);
@@ -1455,8 +1494,11 @@ void CtiLMControlAreaStore::reset()
 
                                     if( _LM_DEBUG & LM_DEBUG_DATABASE )
                                     {
-                                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                                        dout << CtiTime() << " - " << selector.asString().data() << endl;
+                                        string loggedSQLstring = selector.asString();
+                                        {
+                                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                                            dout << CtiTime() << " - " << loggedSQLstring << endl;
+                                        }
                                     }
 
                                     RWDBReader rdr = selector.reader(conn);
@@ -1487,8 +1529,11 @@ void CtiLMControlAreaStore::reset()
 
                                         if( _LM_DEBUG & LM_DEBUG_DATABASE )
                                         {
-                                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                                            string loggedSQLstring = selector.asString();
+                                            {
+                                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                                            }
                                         }
 
                                         RWDBReader rdr = selector.reader(conn);
@@ -1527,8 +1572,11 @@ void CtiLMControlAreaStore::reset()
 
                                 if( _LM_DEBUG & LM_DEBUG_DATABASE )
                                 {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " - " << selector.asString().data() << endl;
+                                    string loggedSQLstring = selector.asString();
+                                    {
+                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                        dout << CtiTime() << " - " << loggedSQLstring << endl;
+                                    }
                                 }
 
                                 std::vector<CtiLMEnergyExchangeCustomer*>& lmEnergyExchangeCustomers = currentLMProgramEnergyExchange->getLMEnergyExchangeCustomers();
@@ -1572,8 +1620,11 @@ void CtiLMControlAreaStore::reset()
 
                                         if( _LM_DEBUG & LM_DEBUG_DATABASE )
                                         {
-                                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                                            string loggedSQLstring = selector.asString();
+                                            {
+                                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                                            }
                                         }
 
                                         RWDBReader rdr = selector.reader(conn);
@@ -1614,8 +1665,11 @@ void CtiLMControlAreaStore::reset()
 
                                             if( _LM_DEBUG & LM_DEBUG_DATABASE )
                                             {
-                                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                dout << CtiTime() << " - " << selector.asString().data() << endl;
+                                                string loggedSQLstring = selector.asString();
+                                                {
+                                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                                    dout << CtiTime() << " - " << loggedSQLstring << endl;
+                                                }
                                             }
 
                                             RWDBReader rdr = selector.reader(conn);
@@ -1656,8 +1710,11 @@ void CtiLMControlAreaStore::reset()
 
                         if( _LM_DEBUG & LM_DEBUG_DATABASE )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                            string loggedSQLstring = selector.asString();
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                            }
                         }
 
                         RWDBReader rdr = selector.reader(conn);
@@ -1743,8 +1800,11 @@ void CtiLMControlAreaStore::reset()
 
                         if( _LM_DEBUG & LM_DEBUG_DATABASE )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                            string loggedSQLstring = selector.asString();
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                            }
                         }
 
                         RWDBReader rdr = ExecuteQuery( conn, makeLeftOuterJoinSQL92Compliant( string( selector.asString() ) ) );
@@ -1887,8 +1947,11 @@ void CtiLMControlAreaStore::reset()
 
                         if( _LM_DEBUG & LM_DEBUG_DATABASE )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                            string loggedSQLstring = selector.asString();
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                            }
                         }
 
                         RWDBReader rdr = ExecuteQuery( conn, makeLeftOuterJoinSQL92Compliant( string( selector.asString() ) ) );
@@ -2228,8 +2291,11 @@ bool CtiLMControlAreaStore::UpdateControlAreaDisableFlagInDB(CtiLMControlArea* c
 
         if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << updater.asString().data() << endl;
+            string loggedSQLstring = updater.asString();
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - " << loggedSQLstring << endl;
+            }
         }
 
         updater.execute( conn );
@@ -2267,8 +2333,11 @@ bool CtiLMControlAreaStore::UpdateProgramDisableFlagInDB(CtiLMProgramBaseSPtr pr
 
         if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << updater.asString().data() << endl;
+            string loggedSQLstring = updater.asString();
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - " << loggedSQLstring << endl;
+            }
         }
 
         updater.execute( conn );
@@ -2306,8 +2375,11 @@ bool CtiLMControlAreaStore::UpdateGroupDisableFlagInDB(CtiLMGroupPtr& group)
 
         if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << updater.asString().data() << endl;
+            string loggedSQLstring = updater.asString();
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - " << loggedSQLstring << endl;
+            }
         }
 
         updater.execute( conn );
@@ -2347,8 +2419,11 @@ bool CtiLMControlAreaStore::UpdateTriggerInDB(CtiLMControlArea* controlArea, Cti
 
         if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << updater.asString().data() << endl;
+            string loggedSQLstring = updater.asString();
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - " << loggedSQLstring << endl;
+            }
         }
 
         updater.execute( conn );

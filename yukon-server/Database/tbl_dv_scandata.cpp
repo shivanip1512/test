@@ -181,10 +181,11 @@ RWDBStatus CtiTableDeviceScanData::Restore()
 
     if( selector.execute( conn ).status().errorCode() != RWDBStatus::ok )
     {
+        string loggedSQLstring = selector.asString();
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << selector.asString() << endl;
+            dout << loggedSQLstring << endl;
         }
     }
 

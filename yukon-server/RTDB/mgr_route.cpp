@@ -154,7 +154,11 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(RWDBReader &), BOOL (
                 RWDBReader rdr = ExecuteQuery( conn, makeLeftOuterJoinSQL92Compliant( string( selector.asString() ) ) );
                 if(DebugLevel & 0x00040000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                    string loggedSQLstring = selector.asString();
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << loggedSQLstring << endl;
+                    }
                 }
                 RefreshRoutes(rowFound, rdr, Factory, testFunc, arg);
                 if(DebugLevel & 0x00040000)
@@ -181,7 +185,11 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(RWDBReader &), BOOL (
                 RWDBReader  rdr = selector.reader(conn);
                 if(DebugLevel & 0x00040000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                    string loggedSQLstring = selector.asString();
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << loggedSQLstring << endl;
+                    }
                 }
                 RefreshVersacomRoutes(rowFound, rdr, testFunc, arg);
                 if(DebugLevel & 0x00040000)
@@ -208,7 +216,11 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(RWDBReader &), BOOL (
                 RWDBReader  rdr = selector.reader(conn);
                 if(DebugLevel & 0x00040000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                    string loggedSQLstring = selector.asString();
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << loggedSQLstring << endl;
+                    }
                 }
                 RefreshRepeaterRoutes(rowFound, rdr, testFunc, arg);
                 if(DebugLevel & 0x00040000)
@@ -234,7 +246,11 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(RWDBReader &), BOOL (
                 RWDBReader  rdr = selector.reader(conn);
                 if(DebugLevel & 0x00040000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                    string loggedSQLstring = selector.asString();
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << loggedSQLstring << endl;
+                    }
                 }
                 RefreshMacroRoutes(rowFound, rdr, testFunc, arg);
                 if(DebugLevel & 0x00040000)

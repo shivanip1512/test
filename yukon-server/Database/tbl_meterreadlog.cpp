@@ -62,9 +62,12 @@ void CtiTableMeterReadLog::Insert(RWDBConnection &conn)
 
             if( stat.errorCode() != RWDBStatus::ok )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Unable to insert log for device id " << getDeviceID() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "   " << inserter.asString() << endl;
+                string loggedSQLstring = inserter.asString();
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " Unable to insert log for device id " << getDeviceID() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "   " << loggedSQLstring << endl;
+                }
             }
         }
     }

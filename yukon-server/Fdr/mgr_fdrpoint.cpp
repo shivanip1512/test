@@ -133,8 +133,11 @@ RWDBStatus CtiFDRManager::loadPointList()
 
         if(getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << selector.asString() << endl;
+            string loggedSQLstring = selector.asString();
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " " << loggedSQLstring << endl;
+            }
         }
         
         std::map<long,CtiFDRPointSPtr> fdrTempMap;
@@ -210,8 +213,11 @@ RWDBStatus CtiFDRManager::loadPoint(long pointId)
 
         if(getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << selector.asString() << endl;
+            string loggedSQLstring = selector.asString();
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " " << loggedSQLstring << endl;
+            }
         }
     }
     catch(RWExternalErr e )

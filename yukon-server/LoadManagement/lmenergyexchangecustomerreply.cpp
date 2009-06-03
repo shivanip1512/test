@@ -443,8 +443,11 @@ void CtiLMEnergyExchangeCustomerReply::addLMEnergyExchangeCustomerReplyTable()
 
             if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << inserter.asString().data() << endl;
+                string loggedSQLstring = inserter.asString();
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - " << loggedSQLstring << endl;
+                }
             }
 
             inserter.execute( conn );
@@ -489,8 +492,11 @@ void CtiLMEnergyExchangeCustomerReply::updateLMEnergyExchangeCustomerReplyTable(
 
             if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << updater.asString().data() << endl;
+                string loggedSQLstring = updater.asString();
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - " << loggedSQLstring << endl;
+                }
             }
 
             updater.execute( conn );

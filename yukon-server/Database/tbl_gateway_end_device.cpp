@@ -170,16 +170,20 @@ RWDBStatus CtiTableGatewayEndDevice::Insert(RWDBConnection &conn)
 
         if( stat.errorCode() != RWDBStatus::ok )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Unable to insert GatewayEndDevice for serial number " << getSerialNumber() << ". " << __FILE__ << " (" << __LINE__ << ") " << stat.errorCode() << endl;
-            dout << "   " << inserter.asString() << endl;
+            string loggedSQLstring = inserter.asString();
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Unable to insert GatewayEndDevice for serial number " << getSerialNumber() << ". " << __FILE__ << " (" << __LINE__ << ") " << stat.errorCode() << endl;
+                dout << "   " << loggedSQLstring << endl;
+            }
         }
         else
         {
+            string loggedSQLstring = inserter.asString();
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " InsertedGatewayEndDevice for serial number " << getSerialNumber() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "   " << inserter.asString() << endl;
+                dout << "   " << loggedSQLstring << endl;
             }
             setDirty(false);
         }

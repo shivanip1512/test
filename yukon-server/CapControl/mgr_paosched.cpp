@@ -720,8 +720,11 @@ void CtiPAOScheduleManager::refreshSchedulesFromDB()
                         selector.from(paoScheduleTable);
                         if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                            string loggedSQLstring = selector.asString();
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                            }
                         }
                         RWDBReader rdr = selector.reader(conn);
                         CtiPAOSchedule* currentPAOSchedule = NULL;
@@ -824,8 +827,11 @@ void CtiPAOScheduleManager::refreshEventsFromDB()
                         selector.from(paoEventTable);
                         if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                            string loggedSQLstring = selector.asString();
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                            }
                         }
                         RWDBReader rdr = selector.reader(conn);
                         CtiPAOEvent* currentPAOEvent = NULL;
@@ -936,9 +942,12 @@ void CtiPAOScheduleManager::updateDataBaseSchedules(std::list<CtiPAOSchedule*> &
                         {
                             currentSchedule->setDirty(TRUE);
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                dout << "  " << updater.asString() << endl;
+                                string loggedSQLstring = updater.asString();
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    dout << "  " << loggedSQLstring << endl;
+                                }
                             }
                         }
 

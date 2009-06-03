@@ -310,9 +310,12 @@ RWDBStatus CtiTableCommErrorHistory::Insert(RWDBConnection &conn)
 #if 1
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Unable to insert Comm Error History for PAO id " << getPAOID() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << inserter.asString() << endl;
+        string loggedSQLstring = inserter.asString();
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Unable to insert Comm Error History for PAO id " << getPAOID() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << loggedSQLstring << endl;
+        }
     }
 #else
     else

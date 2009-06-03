@@ -3095,9 +3095,12 @@ INT CtiVanGogh::loadPendingSignals()
 
         if(rdr.status().errorCode() != RWDBStatus::ok)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << selector.asString() << endl;
+            string loggedSQLstring = selector.asString();
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << loggedSQLstring << endl;
+            }
         }
 
         while( rdr() )
@@ -4105,9 +4108,12 @@ void CtiVanGogh::loadAlarmToDestinationTranslation()
             RWDBReader  rdr = selector.reader( conn );
             if(rdr.status().errorCode() != RWDBStatus::ok)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << selector.asString() << endl;
+                string loggedSQLstring = selector.asString();
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << loggedSQLstring << endl;
+                }
             }
 
             while( rdr() ) // there better be Only one in there!
@@ -7344,9 +7350,12 @@ int CtiVanGogh::loadPendingControls()
 
         if(rdr.status().errorCode() != RWDBStatus::ok)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << selector.asString() << endl;
+            string loggedSQLstring = selector.asString();
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << loggedSQLstring << endl;
+            }
         }
 
         LMCHMap_t dynCtrlMap;
@@ -7441,9 +7450,12 @@ int CtiVanGogh::loadPendingControls()
 
         if(rdr.status().errorCode() != RWDBStatus::ok)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << selector.asString() << endl;
+            string loggedSQLstring = selector.asString();
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << loggedSQLstring << endl;
+            }
         }
 
 

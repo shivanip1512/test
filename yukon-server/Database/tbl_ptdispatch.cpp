@@ -191,10 +191,11 @@ RWDBStatus CtiTablePointDispatch::Update(RWDBConnection &conn)
         }
         else
         {
+            string loggedSQLstring = updater.asString();
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "  " << updater.asString() << endl;
+                dout << "  " << loggedSQLstring << endl;
             }
         }
     }catch(...)
@@ -234,10 +235,11 @@ RWDBStatus CtiTablePointDispatch::Insert(RWDBConnection &conn)
 
     if(inserter.status().errorCode() != RWDBStatus::ok)    // No error occured!
     {
+        string loggedSQLstring = inserter.asString();
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << "**** SQL FAILED Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << inserter.asString() << endl;
+            dout << loggedSQLstring << endl;
         }
     }
     else

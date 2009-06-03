@@ -376,9 +376,12 @@ void CtiPointClientManager::refreshProperties(LONG pntID, LONG paoID, const set<
 
     if( rdr.status().errorCode() != RWDBStatus::ok)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << selector.asString() << endl;
+        string loggedSQLstring = selector.asString();
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << loggedSQLstring << endl;
+        }
     }
 
     std::list<CtiTablePointProperty*> tempList;
@@ -459,9 +462,12 @@ void CtiPointClientManager::refreshArchivalList(LONG pntID, LONG paoID, const se
 
     if( rdr.status().errorCode() != RWDBStatus::ok)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << selector.asString() << endl;
+        string loggedSQLstring = selector.asString();
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << loggedSQLstring << endl;
+        }
     }
 
     std::list<CtiTablePointProperty*> tempList;
@@ -984,7 +990,11 @@ void CtiPointClientManager::RefreshDynamicData(LONG id, const set<long> &pointId
 
     if(DebugLevel & DEBUGLEVEL_MGR_POINT || selector.status().errorCode() != RWDBStatus::ok)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+        string loggedSQLstring = selector.asString();
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << loggedSQLstring << endl;
+        }
     }
 
     start = start.now();

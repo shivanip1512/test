@@ -140,7 +140,11 @@ void CtiDisabledManager::RefreshList(CtiDBChangeMsg *pChg)
                 RWDBReader  rdr = selector.reader(conn);
                 if(DebugLevel & 0x00040000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                    string loggedSQLstring = selector.asString();
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << loggedSQLstring << endl;
+                    }
                 }
                 loadPaoObjects(rdr);
                 if(DebugLevel & 0x00040000)
@@ -176,7 +180,11 @@ void CtiDisabledManager::RefreshList(CtiDBChangeMsg *pChg)
                 RWDBReader  rdr = selector.reader(conn);
                 if(DebugLevel & 0x00040000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                    string loggedSQLstring = selector.asString();
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << loggedSQLstring << endl;
+                    }
                 }
                 appendDependencies(rdr);
                 if(DebugLevel & 0x00040000)
@@ -212,7 +220,11 @@ void CtiDisabledManager::RefreshList(CtiDBChangeMsg *pChg)
                 RWDBReader  rdr = selector.reader(conn);
                 if(DebugLevel & 0x00040000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                    string loggedSQLstring = selector.asString();
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << loggedSQLstring << endl;
+                    }
                 }
                 appendDependencies(rdr);
                 if(DebugLevel & 0x00040000)
@@ -248,7 +260,11 @@ void CtiDisabledManager::RefreshList(CtiDBChangeMsg *pChg)
                 RWDBReader  rdr = selector.reader(conn);
                 if(DebugLevel & 0x00040000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                    string loggedSQLstring = selector.asString();
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << loggedSQLstring << endl;
+                    }
                 }
                 appendDependencies(rdr);
                 if(DebugLevel & 0x00040000)
@@ -287,7 +303,11 @@ void CtiDisabledManager::RefreshList(CtiDBChangeMsg *pChg)
                 RWDBReader  rdr = selector.reader(conn);
                 if(DebugLevel & 0x00040000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                    string loggedSQLstring = selector.asString();
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << loggedSQLstring << endl;
+                    }
                 }
                 appendDependencies(rdr);
                 if(DebugLevel & 0x00040000)
@@ -323,7 +343,11 @@ void CtiDisabledManager::RefreshList(CtiDBChangeMsg *pChg)
                 RWDBReader  rdr = selector.reader(conn);
                 if(DebugLevel & 0x00040000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                    string loggedSQLstring = selector.asString();
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << loggedSQLstring << endl;
+                    }
                 }
                 appendMacroDependencies(rdr);
                 if(DebugLevel & 0x00040000)

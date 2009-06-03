@@ -75,7 +75,11 @@ void CtiPointTriggerManager::refreshList(long ptID, CtiPointManager& pointMgr)
             rdr = selector.reader(conn);
             if(DebugLevel & 0x00010000 || selector.status().errorCode() != RWDBStatus::ok)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                string loggedSQLstring = selector.asString();
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << loggedSQLstring << endl;
+                }
             }
             refreshTriggerData(ptID, rdr, pointMgr);
             if(DebugLevel & 0x00010000)

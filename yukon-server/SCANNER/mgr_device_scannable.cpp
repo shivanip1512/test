@@ -57,9 +57,11 @@ void ScannableDeviceManager::refresh(LONG paoID, string category, string devicet
             selector.where(tbl_paobject["paobjectid"].in(scanrate_selector.union_(loadprofile_selector)));
 
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-
-                dout << selector.asString() << endl;
+                string loggedSQLstring = selector.asString();
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << loggedSQLstring << endl;
+                }
             }
 
             RWDBReader  rdr = selector.reader(conn);
@@ -123,7 +125,11 @@ void ScannableDeviceManager::refreshScanRates(id_range_t &paoids)
 
     if( DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+        string loggedSQLstring = selector.asString();
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << loggedSQLstring << endl;
+        }
     }
 
     if( setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok)
@@ -216,8 +222,11 @@ void ScannableDeviceManager::refreshDeviceWindows(id_range_t &paoids)
 
     if( DebugLevel & 0x00020000 )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << selector.asString() << endl;
+        string loggedSQLstring = selector.asString();
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << loggedSQLstring << endl;
+        }
     }
 
     RWDBReader rdr = selector.reader(conn);

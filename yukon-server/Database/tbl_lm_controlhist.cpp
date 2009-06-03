@@ -428,9 +428,12 @@ RWDBStatus CtiTableLMControlHistory::updateCompletedOutstandingControls()
 
 
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << updater.asString() << endl;
+        string loggedSQLstring = updater.asString();
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << loggedSQLstring << endl;
+        }
     }
 
     if( ExecuteUpdater(conn,updater,__FILE__,__LINE__) != RWDBStatus::ok )
@@ -611,19 +614,23 @@ RWDBStatus CtiTableLMControlHistory::Insert(RWDBConnection &conn)
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Unable to insert LM Control History for PAO id " << getPAOID() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "   " << inserter.asString() << endl;
+            string loggedSQLstring = inserter.asString();
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Unable to insert LM Control History for PAO id " << getPAOID() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "   " << loggedSQLstring << endl;
+            }
         }
 
         dbstat = inserter.status();
     }
     else
     {
+        string loggedSQLstring = inserter.asString();
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** LMControlHistory cannot record negative control times. **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << inserter.asString() << endl;
+            dout << loggedSQLstring << endl;
             dump();
         }
     }
@@ -997,17 +1004,21 @@ RWDBStatus CtiTableLMControlHistory::InsertDynamic(RWDBConnection &conn)
     {
         if( (dbstat = ExecuteInserter(conn,inserter,__FILE__,__LINE__)).errorCode() != RWDBStatus::ok)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Unable to insert Dynamic LM Control History for PAO id " << getPAOID() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "   " << inserter.asString() << endl;
+            string loggedSQLstring = inserter.asString();
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Unable to insert Dynamic LM Control History for PAO id " << getPAOID() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "   " << loggedSQLstring << endl;
+            }
         }
     }
     else
     {
+        string loggedSQLstring = inserter.asString();
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** DynamicLMControlHistory cannot record negative control times. **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << inserter.asString() << endl;
+            dout << loggedSQLstring << endl;
             dump();
         }
     }

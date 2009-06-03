@@ -289,8 +289,11 @@ void CtiLMCurtailCustomer::addLMCurtailCustomerActivityTable()
 
             if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << inserter.asString().data() << endl;
+                string loggedSQLstring = inserter.asString();
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - " << loggedSQLstring << endl;
+                }
             }
 
             inserter.execute( conn );
@@ -331,8 +334,11 @@ void CtiLMCurtailCustomer::updateLMCurtailCustomerActivityTable(RWDBConnection& 
 
             if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << updater.asString().data() << endl;
+                string loggedSQLstring = updater.asString();
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - " << loggedSQLstring << endl;
+                }
             }
 
             updater.execute( conn );
@@ -400,8 +406,11 @@ void CtiLMCurtailCustomer::restoreDynamicData(RWDBReader& rdr)
 
             if( _LM_DEBUG & LM_DEBUG_DATABASE )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << selector.asString().data() << endl;
+                string loggedSQLstring = selector.asString();
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - " << loggedSQLstring << endl;
+                }
             }
 
             RWDBReader rdr = selector.reader(conn);

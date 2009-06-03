@@ -1495,7 +1495,11 @@ int CtiPILServer::getDeviceGroupMembers( string groupname, vector<long> &paoids 
 
     if( DebugLevel & 0x00020000 || selector.status().errorCode() != RWDBStatus::ok )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+        string loggedSQLstring = selector.asString();
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << loggedSQLstring << endl;
+        }
     }
 
     while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )

@@ -162,7 +162,11 @@ void CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType_t pntType
                 rdr = selector.reader(conn);
                 if(DebugLevel & 0x00010000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                    string loggedSQLstring = selector.asString();
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << loggedSQLstring << endl;
+                    }
                 }
                 refreshPoints(rowFound, rdr);
                 if(DebugLevel & 0x00010000)
@@ -198,7 +202,11 @@ void CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType_t pntType
                 rdr = selector.reader(conn);
                 if(DebugLevel & 0x00010000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                    string loggedSQLstring = selector.asString();
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << loggedSQLstring << endl;
+                    }
                 }
                 refreshPoints(rowFound, rdr);
                 if(DebugLevel & 0x00010000)
@@ -230,7 +238,11 @@ void CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType_t pntType
                 rdr = selector.reader(conn);
                 if(DebugLevel & 0x00010000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                    string loggedSQLstring = selector.asString();
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << loggedSQLstring << endl;
+                    }
                 }
                 refreshPoints(rowFound, rdr);
                 if(DebugLevel & 0x00010000)
@@ -306,7 +318,11 @@ void CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType_t pntType
                 rdr = selector.reader(conn);
                 if(DebugLevel & 0x00010000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                    string loggedSQLstring = selector.asString();
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << loggedSQLstring << endl;
+                    }
                 }
                 refreshPoints(rowFound, rdr);
                 if(DebugLevel & 0x00010000)
@@ -479,12 +495,20 @@ void CtiPointManager::refreshListByIDs(const set<long> &id_list, bool paoids)
 
         if( DebugLevel & 0x00010000 )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << selector_accum .asString() << endl;
-            dout << selector_analog.asString() << endl;
-            dout << selector_calc  .asString() << endl;
-            dout << selector_status.asString() << endl;
-            dout << selector_system.asString() << endl;
+            string loggedSQLaccum  = selector_accum.asString();
+            string loggedSQLanalog = selector_analog.asString();
+            string loggedSQLcalc   = selector_calc.asString();
+            string loggedSQLstatus = selector_status.asString();
+            string loggedSQLsystem = selector_system.asString();
+            {
+    
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << loggedSQLaccum  << endl;
+                dout << loggedSQLanalog << endl;
+                dout << loggedSQLcalc   << endl;
+                dout << loggedSQLstatus << endl;
+                dout << loggedSQLsystem << endl;
+            }
         }
 
         bool rowFound;  //  placeholder

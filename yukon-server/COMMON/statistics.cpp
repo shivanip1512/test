@@ -504,9 +504,12 @@ RWDBStatus::ErrorCode  CtiStatistics::Insert(RWDBConnection &conn, int counter)
 
         if( stat.errorCode() != RWDBStatus::ok )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << "Statistics Insert Error Code = " << stat.errorCode() << endl;
-            dout << ins.asString() << endl;
+            string loggedSQLstring = ins.asString();
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << "Statistics Insert Error Code = " << stat.errorCode() << endl;
+                dout << loggedSQLstring << endl;
+            }
         }
     }
 
@@ -589,9 +592,12 @@ RWDBStatus::ErrorCode  CtiStatistics::InsertDaily(RWDBConnection &conn)
 
         if( stat.errorCode() != RWDBStatus::ok )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << "Statistics Insert Error Code = " << stat.errorCode() << endl;
-            dout << inserter.asString() << endl;
+            string loggedSQLstring = inserter.asString();
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << "Statistics Insert Error Code = " << stat.errorCode() << endl;
+                dout << loggedSQLstring << endl;
+            }
         }
     }
 

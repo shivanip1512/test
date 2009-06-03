@@ -210,8 +210,11 @@ void CtiLMEnergyExchangeOffer::addLMEnergyExchangeProgramOfferTable()
 
                 if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << selector.asString().data() << endl;
+                    string loggedSQLstring = selector.asString();
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - " << loggedSQLstring << endl;
+                    }
                 }
 
                 RWDBReader rdr = selector.reader(conn);
@@ -243,8 +246,11 @@ void CtiLMEnergyExchangeOffer::addLMEnergyExchangeProgramOfferTable()
 
                 if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << inserter.asString().data() << endl;
+                    string loggedSQLstring = inserter.asString();
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - " << loggedSQLstring << endl;
+                    }
                 }
 
                 inserter.execute( conn );
@@ -281,8 +287,11 @@ void CtiLMEnergyExchangeOffer::updateLMEnergyExchangeProgramOfferTable(RWDBConne
 
             if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << updater.asString().data() << endl;
+                string loggedSQLstring = updater.asString();
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - " << loggedSQLstring << endl;
+                }
             }
 
             updater.execute( conn );
@@ -298,8 +307,11 @@ void CtiLMEnergyExchangeOffer::updateLMEnergyExchangeProgramOfferTable(RWDBConne
 
                 if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << selector.asString().data() << endl;
+                    string loggedSQLstring = selector.asString();
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - " << loggedSQLstring << endl;
+                    }
                 }
 
                 RWDBReader rdr = selector.reader(conn);
@@ -329,8 +341,11 @@ void CtiLMEnergyExchangeOffer::updateLMEnergyExchangeProgramOfferTable(RWDBConne
 
                 if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << inserter.asString().data() << endl;
+                    string loggedSQLstring = inserter.asString();
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - " << loggedSQLstring << endl;
+                    }
                 }
 
                 inserter.execute( conn );

@@ -151,19 +151,23 @@ RWDBStatus CtiTableTagLog::Insert(RWDBConnection &conn)
 
     if(DebugLevel & DEBUGLEVEL_LUDICROUS)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << endl << CtiTime() << " **** INSERT Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << inserter.asString() << endl << endl;
+        string loggedSQLstring = inserter.asString();
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << endl << CtiTime() << " **** INSERT Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << loggedSQLstring << endl << endl;
+        }
     }
 
     ExecuteInserter(conn,inserter,__FILE__,__LINE__);
 
     if(inserter.status().errorCode() != RWDBStatus::ok)    // No error occured!
     {
+        string loggedSQLstring = inserter.asString();
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << "**** SQL FAILED Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << inserter.asString() << endl;
+            dout << loggedSQLstring << endl;
         }
     }
     else
@@ -281,9 +285,12 @@ RWDBStatus CtiTableTagLog::Delete()
 
     if(DebugLevel & DEBUGLEVEL_LUDICROUS)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << endl << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << deleter.asString() << endl << endl;
+        string loggedSQLstring = deleter.asString();
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << endl << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << loggedSQLstring << endl << endl;
+        }
     }
 
     return deleter.execute( conn ).status();
@@ -301,9 +308,12 @@ RWDBStatus CtiTableTagLog::Delete(int log)
 
     if(DebugLevel & DEBUGLEVEL_LUDICROUS)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << endl << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << deleter.asString() << endl << endl;
+        string loggedSQLstring = deleter.asString();
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << endl << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << loggedSQLstring << endl << endl;
+        }
     }
 
     return deleter.execute( conn ).status();

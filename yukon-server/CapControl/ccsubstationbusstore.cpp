@@ -1270,8 +1270,11 @@ void CtiCCSubstationBusStore::checkAMFMSystemForUpdates()
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << RW2String(selector.asString()) << endl;
+                string loggedSQLstring = selector.asString();
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - " << loggedSQLstring << endl;
+                }
             }
 
             RWDBReader rdr = selector.reader(amfmConn);
@@ -3328,8 +3331,11 @@ bool CtiCCSubstationBusStore::InsertCCEventLogInDB(CtiCCEventLogMsg* msg)
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << inserter.asString().data() << endl;
+                string loggedSQLstring = inserter.asString();
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - " << loggedSQLstring << endl;
+                }
             }
 
             inserter.execute( conn );
@@ -3450,8 +3456,11 @@ void CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId, map< l
 
                 if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << selector.asString().data() << endl;
+                    string loggedSQLstring = selector.asString();
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - " << loggedSQLstring << endl;
+                    }
                 }
                 RWDBReader rdr = selector.reader(conn);
 
@@ -3530,8 +3539,11 @@ void CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId, map< l
 
                              if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                              {
-                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                 dout << CtiTime() << " - " << selector.asString().data() << endl;
+                                 string loggedSQLstring = selector.asString();
+                                 {
+                                     CtiLockGuard<CtiLogger> logger_guard(dout);
+                                     dout << CtiTime() << " - " << loggedSQLstring << endl;
+                                 }
                              }
                              RWDBReader rdr = selector.reader(conn);
                              while ( rdr() )
@@ -3821,8 +3833,11 @@ void CtiCCSubstationBusStore::reloadAndAssignHolidayStrategysFromDatabase(long s
 
                              if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                              {
-                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                 dout << CtiTime() << " - " << selector.asString().data() << endl;
+                                 string loggedSQLstring = selector.asString();
+                                 {
+                                     CtiLockGuard<CtiLogger> logger_guard(dout);
+                                     dout << CtiTime() << " - " << loggedSQLstring << endl;
+                                 }
                              }
                              RWDBReader rdr = selector.reader(conn);
                              while ( rdr() )
@@ -4066,8 +4081,11 @@ void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDatabase(long strategyI
 
                 if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << selector.asString().data() << endl;
+                    string loggedSQLstring = selector.asString();
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - " << loggedSQLstring << endl;
+                    }
                 }
                 RWDBReader rdr = selector.reader(conn);
 
@@ -4149,8 +4167,11 @@ void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDatabase(long strategyI
 
                            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                            {
-                               CtiLockGuard<CtiLogger> logger_guard(dout);
-                               dout << CtiTime() << " - " << selector.asString().data() << endl;
+                               string loggedSQLstring = selector.asString();
+                               {
+                                   CtiLockGuard<CtiLogger> logger_guard(dout);
+                                   dout << CtiTime() << " - " << loggedSQLstring << endl;
+                               }
                            }
                            RWDBReader rdr = selector.reader(conn);
                            while ( rdr() )
@@ -4387,8 +4408,11 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
 
                         if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                            string loggedSQLstring = selector.asString();
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                            }
                         }
                         RWDBReader rdr = selector.reader(conn);
                         while ( rdr() )
@@ -4425,8 +4449,11 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
 
                         if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                            string loggedSQLstring = selector.asString();
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                            }
                         }
                         RWDBReader rdr = selector.reader(conn);
 
@@ -4463,8 +4490,11 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
 
                         if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                            string loggedSQLstring = selector.asString();
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                            }
                         }
                         RWDBReader rdr = selector.reader(conn);
 
@@ -4521,8 +4551,11 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
 
                         if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                            string loggedSQLstring = selector.asString();
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                            }
                         }
                         RWDBReader rdr = selector.reader(conn);
                         long currentSubId;
@@ -4593,8 +4626,11 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
 
                         if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                            string loggedSQLstring = selector.asString();
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                            }
                         }
 
                         RWDBReader rdr = selector.reader(conn);
@@ -4663,8 +4699,11 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
 
                         if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                            string loggedSQLstring = selector.asString();
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                            }
                         }
                         RWDBReader rdr = selector.reader(conn);
                         long currentSubBusId;
@@ -4769,8 +4808,11 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId, map< long, Cti
 
                         if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                            string loggedSQLstring = selector.asString();
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                            }
                         }
                         RWDBReader rdr = selector.reader(conn);
                         while ( rdr() )
@@ -4897,8 +4939,11 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId, map< long, Cti
 
                          if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                          {
-                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                             dout << CtiTime() << " - " << selector.asString().data() << endl;
+                             string loggedSQLstring = selector.asString();
+                             {
+                                 CtiLockGuard<CtiLogger> logger_guard(dout);
+                                 dout << CtiTime() << " - " << loggedSQLstring << endl;
+                             }
                          }
                          RWDBReader rdr = selector.reader(conn);
                          while ( rdr() )
@@ -4967,8 +5012,11 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId, map< long, Cti
 
                         if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                            string loggedSQLstring = selector.asString();
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                            }
                         }
                         RWDBReader rdr = selector.reader(conn);
 
@@ -5008,8 +5056,11 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId, map< long, Cti
 
                         if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                            string loggedSQLstring = selector.asString();
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                            }
                         }
 
                         RWDBReader rdr = selector.reader(conn);
@@ -5078,8 +5129,11 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId, map< long, Cti
 
                         if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                            string loggedSQLstring = selector.asString();
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                            }
                         }
                         RWDBReader rdr = selector.reader(conn);
                         long currentSubstationId;
@@ -5189,8 +5243,11 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId, map< lo
 
                         if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                            string loggedSQLstring = selector.asString();
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                            }
                         }
                         RWDBReader rdr = selector.reader(conn);
                         while ( rdr() )
@@ -5237,8 +5294,11 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId, map< lo
                                            ccScheduleStrat["seasonname"] == dateOfSeason["seasonname"]);
                          if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                          {
-                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                             dout << CtiTime() << " - " << selector.asString().data() << endl;
+                             string loggedSQLstring = selector.asString();
+                             {
+                                 CtiLockGuard<CtiLogger> logger_guard(dout);
+                                 dout << CtiTime() << " - " << loggedSQLstring << endl;
+                             }
                          }
                          RWDBReader rdr = selector.reader(conn);
                          while ( rdr() )
@@ -5321,8 +5381,11 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId, map< lo
 
                          if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                          {
-                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                             dout << CtiTime() << " - " << selector.asString().data() << endl;
+                             string loggedSQLstring = selector.asString();
+                             {
+                                 CtiLockGuard<CtiLogger> logger_guard(dout);
+                                 dout << CtiTime() << " - " << loggedSQLstring << endl;
+                             }
                          }
                          RWDBReader rdr = selector.reader(conn);
                          while ( rdr() )
@@ -5384,8 +5447,11 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId, map< lo
 
                         if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                            string loggedSQLstring = selector.asString();
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                            }
                         }
                         RWDBReader rdr = selector.reader(conn);
 
@@ -5424,8 +5490,11 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId, map< lo
 
                         if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                            string loggedSQLstring = selector.asString();
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                            }
                         }
 
                         RWDBReader rdr = selector.reader(conn);
@@ -5494,8 +5563,11 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId, map< lo
 
                         if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                            string loggedSQLstring = selector.asString();
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                            }
                         }
                         RWDBReader rdr = selector.reader(conn);
                         long currentSubId, currentSpAreaId;
@@ -5638,8 +5710,11 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
 
                         if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                            string loggedSQLstring = selector.asString();
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                            }
                         }
                         RWDBReader rdr = selector.reader(conn);
 
@@ -5719,8 +5794,11 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
 
                             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - " << selector.asString().data() << endl;
+                                string loggedSQLstring = selector.asString();
+                                {
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << CtiTime() << " - " << loggedSQLstring << endl;
+                                }
                             }
                             RWDBReader rdr = selector.reader(conn);
 
@@ -5908,8 +5986,11 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
 
                              if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                              {
-                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                 dout << CtiTime() << " - " << selector.asString().data() << endl;
+                                 string loggedSQLstring = selector.asString();
+                                 {
+                                     CtiLockGuard<CtiLogger> logger_guard(dout);
+                                     dout << CtiTime() << " - " << loggedSQLstring << endl;
+                                 }
                              }
                              RWDBReader rdr = selector.reader(conn);
                              while ( rdr() )
@@ -6061,8 +6142,11 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
 
                         if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                            string loggedSQLstring = selector.asString();
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                            }
                         }
                         RWDBReader rdr = selector.reader(conn);
 
@@ -6140,8 +6224,11 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
 
                         if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                            string loggedSQLstring = selector.asString();
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                            }
                         }
                         RWDBReader rdr = selector.reader(conn);
 
@@ -6173,8 +6260,11 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
 
                         if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                            string loggedSQLstring = selector.asString();
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                            }
                         }
                         RWDBReader rdr = selector.reader(conn);
                         long currentFeederId;
@@ -6211,8 +6301,11 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
 
                         if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                            string loggedSQLstring = selector.asString();
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                            }
                         }
 
                         RWDBReader rdr = selector.reader(conn);
@@ -6389,8 +6482,11 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
 
                         if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                            string loggedSQLstring = selector.asString();
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                            }
                         }
                         RWDBReader rdr = selector.reader(conn);
 
@@ -6446,8 +6542,11 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
 
                         if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                            string loggedSQLstring = selector.asString();
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                            }
                         }
                         RWDBReader rdr = selector.reader(conn);
 
@@ -6647,8 +6746,11 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
 
                          if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                          {
-                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                             dout << CtiTime() << " - " << selector.asString().data() << endl;
+                             string loggedSQLstring = selector.asString();
+                             {
+                                 CtiLockGuard<CtiLogger> logger_guard(dout);
+                                 dout << CtiTime() << " - " << loggedSQLstring << endl;
+                             }
                          }
                          RWDBReader rdr = selector.reader(conn);
 
@@ -6731,8 +6833,11 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
 
                     if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << selector.asString().data() << endl;
+                        string loggedSQLstring = selector.asString();
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - " << loggedSQLstring << endl;
+                        }
                     }
 
                     RWDBReader rdr = selector.reader(conn);
@@ -6780,8 +6885,11 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
 
                     if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << selector.asString().data() << endl;
+                        string loggedSQLstring = selector.asString();
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - " << loggedSQLstring << endl;
+                        }
                     }
                     RWDBReader rdr = selector.reader(conn);
 
@@ -6852,8 +6960,11 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
 
                     if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << selector.asString().data() << endl;
+                        string loggedSQLstring = selector.asString();
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - " << loggedSQLstring << endl;
+                        }
                     }
 
                     RWDBReader rdr = selector.reader(conn);
@@ -6891,8 +7002,11 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
 
                     if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << selector.asString().data() << endl;
+                        string loggedSQLstring = selector.asString();
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - " << loggedSQLstring << endl;
+                        }
                     }
 
                     RWDBReader rdr = selector.reader(conn);
@@ -7068,8 +7182,11 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
 
                     if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << selector.asString().data() << endl;
+                        string loggedSQLstring = selector.asString();
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - " << loggedSQLstring << endl;
+                        }
                     }
 
                     RWDBReader rdr = selector.reader(conn);
@@ -7101,8 +7218,11 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
 
                     if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << selector.asString().data() << endl;
+                        string loggedSQLstring = selector.asString();
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - " << loggedSQLstring << endl;
+                        }
                     }
 
                     RWDBReader rdr = selector.reader(conn);
@@ -7150,8 +7270,11 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
 
                     if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << selector.asString().data() << endl;
+                        string loggedSQLstring = selector.asString();
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - " << loggedSQLstring << endl;
+                        }
                     }
 
                     RWDBReader rdr = selector.reader(conn);
@@ -7199,8 +7322,11 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
 
                     if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << selector.asString().data() << endl;
+                        string loggedSQLstring = selector.asString();
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - " << loggedSQLstring << endl;
+                        }
                     }
 
                     RWDBReader rdr = selector.reader(conn);
@@ -7280,8 +7406,11 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
 
                     if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << selector.asString().data() << endl;
+                        string loggedSQLstring = selector.asString();
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - " << loggedSQLstring << endl;
+                        }
                     }
                     RWDBReader rdr = selector.reader(conn);
 
@@ -7314,8 +7443,11 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
 
                     if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << selector.asString().data() << endl;
+                        string loggedSQLstring = selector.asString();
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - " << loggedSQLstring << endl;
+                        }
                     }
 
                     RWDBReader rdr = selector.reader(conn);
@@ -7413,8 +7545,11 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
 
                     if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << selector.asString().data() << endl;
+                        string loggedSQLstring = selector.asString();
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - " << loggedSQLstring << endl;
+                        }
                     }
 
                     RWDBReader rdr = selector.reader(conn);
@@ -7536,8 +7671,11 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
 
                     if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << selector.asString().data() << endl;
+                        string loggedSQLstring = selector.asString();
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - " << loggedSQLstring << endl;
+                        }
                     }
 
                     RWDBReader rdr = selector.reader(conn);
@@ -7631,8 +7769,11 @@ void CtiCCSubstationBusStore::reloadOperationStatsFromDatabase(RWDBConnection& c
 
                     if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << selector.asString().data() << endl;
+                        string loggedSQLstring = selector.asString();
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - " << loggedSQLstring << endl;
+                        }
                     }
 
                     RWDBReader rdr = selector.reader(conn);
@@ -7746,8 +7887,11 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long capBankId, ma
                     }
                     if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << selector.asString().data() << endl;
+                        string loggedSQLstring = selector.asString();
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - " << loggedSQLstring << endl;
+                        }
                     }
 
                     RWDBReader rdr = selector.reader(conn);
@@ -7851,8 +7995,11 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long capBankId, ma
 
                     if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << selector.asString().data() << endl;
+                        string loggedSQLstring = selector.asString();
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - " << loggedSQLstring << endl;
+                        }
                     }
 
                     RWDBReader rdr = selector.reader(conn);
@@ -7897,8 +8044,11 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long capBankId, ma
 
                     if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << selector.asString().data() << endl;
+                        string loggedSQLstring = selector.asString();
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - " << loggedSQLstring << endl;
+                        }
                     }
 
                     RWDBReader rdr = selector.reader(conn);
@@ -7982,8 +8132,11 @@ void CtiCCSubstationBusStore::reloadMiscFromDatabase()
 
                     if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << selector.asString().data() << endl;
+                        string loggedSQLstring = selector.asString();
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - " << loggedSQLstring << endl;
+                        }
                     }
 
                     RWDBReader rdr = selector.reader(conn);
@@ -8005,8 +8158,11 @@ void CtiCCSubstationBusStore::reloadMiscFromDatabase()
 
                     if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << selector.asString().data() << endl;
+                        string loggedSQLstring = selector.asString();
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - " << loggedSQLstring << endl;
+                        }
                     }
 
                     rdr = selector.reader(conn);
@@ -8030,8 +8186,11 @@ void CtiCCSubstationBusStore::reloadMiscFromDatabase()
 
                     if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << selector.asString().data() << endl;
+                        string loggedSQLstring = selector.asString();
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - " << loggedSQLstring << endl;
+                        }
                     }
 
                     rdr = selector.reader(conn);
@@ -8134,8 +8293,11 @@ void CtiCCSubstationBusStore::reloadMapOfBanksToControlByLikeDay(long subbusId, 
 
                     if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << selector.asString().data() << endl;
+                        string loggedSQLstring = selector.asString();
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - " << loggedSQLstring << endl;
+                        }
                     }
 
                     RWDBReader rdr = selector.reader(conn);
@@ -10857,8 +11019,11 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
 
                     if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << selector.asString().data() << endl;
+                        string loggedSQLstring = selector.asString();
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - " << loggedSQLstring << endl;
+                        }
                     }
 
                     if ( _CC_DEBUG & CC_DEBUG_OPSTATS )
@@ -10958,8 +11123,11 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
 
                     if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << selector.asString().data() << endl;
+                        string loggedSQLstring = selector.asString();
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - " << loggedSQLstring << endl;
+                        }
                     }
 
                     rdr = selector.reader(conn);
@@ -11072,8 +11240,11 @@ void CtiCCSubstationBusStore::reCalculateConfirmationStatsFromDatabase( )
 
                     if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << selector.asString().data() << endl;
+                        string loggedSQLstring = selector.asString();
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - " << loggedSQLstring << endl;
+                        }
                     }
 
                     RWDBReader rdr = selector.reader(conn);

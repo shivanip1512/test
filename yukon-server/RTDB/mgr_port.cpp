@@ -200,7 +200,11 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &), BOOL (*testF
                 RWDBReader  rdr = selector.reader( conn );
                 if(DebugLevel & 0x00080000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                    string loggedSQLstring = selector.asString();
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << loggedSQLstring << endl;
+                    }
                 }
 
                 RefreshEntries(rowFound, rdr, Factory, testFunc, arg);
@@ -227,7 +231,11 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &), BOOL (*testF
                 RWDBReader  rdr = selector.reader( conn );
                 if(DebugLevel & 0x00080000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                    string loggedSQLstring = selector.asString();
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << loggedSQLstring << endl;
+                    }
                 }
 
                 RefreshEntries(rowFound, rdr, Factory, testFunc, arg);
@@ -255,7 +263,11 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &), BOOL (*testF
                 RWDBReader  rdr = selector.reader( conn );
                 if(DebugLevel & 0x00080000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                    string loggedSQLstring = selector.asString();
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << loggedSQLstring << endl;
+                    }
                 }
 
                 RefreshDialableEntries(rowFound, rdr, Factory, testFunc, arg);
@@ -282,7 +294,11 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &), BOOL (*testF
                 RWDBReader  rdr = selector.reader( conn );
                 if(DebugLevel & 0x00080000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                    string loggedSQLstring = selector.asString();
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << loggedSQLstring << endl;
+                    }
                 }
 
                 RefreshEntries(rowFound, rdr, Factory, testFunc, arg);
@@ -311,7 +327,11 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &), BOOL (*testF
                 RWDBReader  rdr = selector.reader( conn );
                 if(DebugLevel & 0x00080000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                    string loggedSQLstring = selector.asString();
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << loggedSQLstring << endl;
+                    }
                 }
 
                 RefreshPooledPortEntries(rowFound, rdr, Factory, testFunc, arg);
@@ -871,7 +891,11 @@ void CtiPortManager::refreshExclusions(LONG id)
     RWDBReader  rdr = selector.reader( conn );
     if(DebugLevel & 0x00080000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+        string loggedSQLstring = selector.asString();
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << loggedSQLstring << endl;
+        }
     }
 
     while( (_smartMap.setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
