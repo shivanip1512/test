@@ -6,7 +6,20 @@
          http://www.springframework.org/schema/beans 
          http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
          
-    <bean id="handlerMapping" class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"/>
+    <bean id="handlerMapping" class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping">
+        <property name="interceptors">
+            <list>
+                <bean class="com.cannontech.web.login.RemoteRequestInterceptor">
+                    <property name="authenticationService" ref="authenticationService"/>
+                    <property name="userChecker">
+                        <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                             <constructor-arg value="DATABASE_EDITOR,TABULAR_DISPLAY_CONSOLE,COMMANDER,APPLICATION_ESUBSTATION_EDITOR,TRENDING" />
+                        </bean>
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
 
 	<bean id="remoteLogger" class="com.cannontech.clientutils.RemoteLoggerImpl"/>
 	
@@ -23,7 +36,7 @@
 	    <property name="localConfigurationSource" ref="localMasterConfig"/>
 	</bean>
 
-	<bean name="/MasterConfig" class="com.cannontech.spring.PermissionCheckingHttpInvokerServiceExporter">
+	<bean name="/MasterConfig" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
   		<property name="service" ref="standardLocalOrRemoteLocalMasterConfig"/>
   		<property name="serviceInterface" value="com.cannontech.common.config.ConfigurationSource"/>
 	</bean>
