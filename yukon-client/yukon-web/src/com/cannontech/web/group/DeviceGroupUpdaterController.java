@@ -97,11 +97,13 @@ public class DeviceGroupUpdaterController {
 		            	
 		            	String header = headerRow[columnIdx].trim();
 		            	
-	            		String[] parts = header.split(":");
-	            		String processorType = parts[0];
-	            		String groupName = parts[1];
+	            		String[] columnTypeParts = header.split(":");
+	            		String columnType = columnTypeParts[0];
+	            		String[] valueParts = columnTypeParts[1].split("=");
+	            		String dataName = valueParts[0];
+	            		String dataValue = valueParts[1];
 	            		
-	            		processors.add(deviceGroupProcessorFactory.getProcessor(processorType, groupName));
+	            		processors.add(deviceGroupProcessorFactory.getProcessor(columnType, dataName, dataValue));
 		            }
 		            
 		            // process rows
@@ -126,8 +128,8 @@ public class DeviceGroupUpdaterController {
 	            } catch (IndexOutOfBoundsException e) {
 	            	error = "Error (line " + currentLineNumber + "): Incompete row, each row must have a value for each header column.";
 	            } catch (IllegalArgumentException e) {
-	            	error = "Error (line 1): Invalid header column. Should begin with DEVICE_GROUP_PREFIX:, or DEVICE_GROUP_INCLUDE:";
-	        		
+	            	Set<BulkFieldColumnHeader> identifierFields = bulkFieldService.getUpdateIdentifierBulkFieldColumnHeaders();
+	            	error = "Error (line 1): Invalid header column. Identifier types: " + StringUtils.join(identifierFields, " ,") + ". Header types: " + StringUtils.join(DeviceGroupUpdaterColumn.values(), " ,");
 	        	} finally {
 	        		csvReader.close();
 	        	}
@@ -206,12 +208,14 @@ public class DeviceGroupUpdaterController {
 	
 	private class DeviceGroupProcessorFactory {
 		
-		public BulkFieldProcessor<YukonDevice, String> getProcessor(String processorType, String groupName) throws IllegalArgumentException {
+		public BulkFieldProcessor<YukonDevice, String> getProcessor(String columnType, String dataName, String dataValue) throws IllegalArgumentException {
 			
-			if ("DEVICE_GROUP_PREFIX".equals(processorType)) {
-				return new DeviceGroupPrefixProcessor(groupName); 
-			} else if ("DEVICE_GROUP_INCLUDE".equals(processorType)) {
-				return new DeviceGroupGroupProcessor(groupName);
+			DeviceGroupUpdaterColumn deviceGroupUpdaterColumn = DeviceGroupUpdaterColumn.valueOf(columnType);
+			
+			if (deviceGroupUpdaterColumn.equals(DeviceGroupUpdaterColumn.DEVICE_GROUP_PREFIX)) {
+				return new DeviceGroupPrefixProcessor(dataValue); 
+			} else if (deviceGroupUpdaterColumn.equals(DeviceGroupUpdaterColumn.DEVICE_GROUP_SET)) {
+				return new DeviceGroupGroupProcessor(dataValue);
 			} else {
 				throw new IllegalArgumentException("Invalid processorType");
 			}

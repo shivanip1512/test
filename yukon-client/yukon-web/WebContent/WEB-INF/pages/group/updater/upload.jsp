@@ -47,7 +47,7 @@
 						<li>The first column is always the Identifier Column.<br>It will be used to determine which device is to be updated.</li><br>
 						<li>One of the following column identifiers must be used in the Identifier Column:<br><span style="font-weight:bold;">ADDRESS, METER_NUMBER, NAME, or DEVICE_ID.</span></li><br>
 						<li>All column headers (besides the Identifier column) should be of the form<br>
-							<b>DEVICE_GROUP_PREFIX:&lt;<i>Group Name</i>&gt;</b> or <b>DEVICE_GROUP_INCLUDE:&lt;<i>Group Name</i>&gt;</b><br>
+							<b>DEVICE_GROUP_PREFIX:prefix=&lt;<i>Group Name</i>&gt;</b> or <b>DEVICE_GROUP_SET:group=&lt;<i>Group Name</i>&gt;</b><br>
 							Descriptions of the two column header types are listed in the table below.
 						</li><br>
 						<li>Rows are processed top to bottom, columns are processed left to right.</li><br>
@@ -78,15 +78,15 @@
                 		<tr>
                 			<td class="normalBoldLabel">DEVICE_GROUP_PREFIX</td>
                 			<td>The full path of the group to be prefixed to the group name value in each row.<br><br>
-                				Example: If the header is <b>DEVICE_GROUP_PREFIX:/Meter/Collection</b>, and the value in the row is <b>A</b>, then the device will be added to <b>/Meters/Collection/A</b>.<br><br>
+                				Example: If the header is <b>DEVICE_GROUP_PREFIX:prefix=/Meter/Collection</b>, and the value in the row is <b>A</b>, then the device will be added to <b>/Meters/Collection/A</b>.<br><br>
                 				In addition, the device will be removed from all other groups under <b>/Meters/Collection<b>.<br><br>
                 			</td>
                 		</tr>
                 		
                 		<tr>
-                			<td class="normalBoldLabel">DEVICE_GROUP_INCLUDE</td>
+                			<td class="normalBoldLabel">DEVICE_GROUP_SET</td>
                 			<td>The full path of a group to either add or remove the device from.<br><br>
-                				Example: If the header is <b>DEVICE_GROUP_INCLUDE:/Meters/Extra</b>, and the value in the row is <b>true</b>, then the device will be added to the group. If the value is <b>false</b>, it will be removed from the group.<br><br>
+                				Example: If the header is <b>DEVICE_GROUP_SET:group=/Meters/Extra</b>, and the value in the row is <b>true</b>, then the device will be added to the group. If the value is <b>false</b>, it will be removed from the group.<br><br>
                 			</td>
                 		</tr>
                 	</table>
