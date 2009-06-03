@@ -2510,3 +2510,4 @@ alter table WorkOrderBase
    add constraint FK_WrkOr_SrvC foreign key (ServiceCompanyID)
       references ServiceCompany (CompanyID)
 go
+;
