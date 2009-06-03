@@ -121,7 +121,9 @@ public class DeleteLMHardwareAction implements ActionBase {
             }			
 			
 			removeInventory( delHw, liteAcctInfo, energyCompany );
-        	
+			// Update session of the liteAcctInfo
+			session.setAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo);
+            
         	// Response will be handled here, instead of in parse()
 			StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteInv.getAccountID() );
 			if (starsAcctInfo != null)
@@ -270,6 +272,7 @@ public class DeleteLMHardwareAction implements ActionBase {
 								LiteStarsLMProgram liteProg = liteAcctInfo.getPrograms().get(j);
 								
 								if (liteProg.getProgramID() == liteApp.getProgramID()) {
+									liteApp.setProgramID(0);
 									liteProg.setGroupID( 0 );
 									break;
 								}
