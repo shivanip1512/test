@@ -457,8 +457,8 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
 
     // DR 2 way reads
     static const boost::regex   re_interval_demand(CtiString("interval last"));
-    static const boost::regex   re_load_runtime   (CtiString("runtime( load ")  + str_num + CtiString(")?( previous ") + str_num + CtiString(")?"));
-    static const boost::regex   re_load_shedtime  (CtiString("shedtime( load ") + str_num + CtiString(")?( previous ") + str_num + CtiString(")?"));
+    static const boost::regex   re_load_runtime   (CtiString("runtime(( load| relay) ")  + str_num + CtiString(")?( previous ") + str_num + CtiString(")?"));
+    static const boost::regex   re_load_shedtime  (CtiString("shedtime(( load| relay) ") + str_num + CtiString(")?( previous ") + str_num + CtiString(")?"));
     static const boost::regex   re_propcount      (CtiString("propcount"));
 
     CtiTokenizer   tok(CmdStr);
@@ -730,7 +730,7 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
 
             if(!(temp = cmdtok()).empty())
             {
-                if(temp.contains("load"))
+                if(temp.contains("load") || temp.contains("relay"))
                 {
                     _cmd["load"] = atoi(cmdtok().c_str());
                 }
@@ -746,7 +746,7 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
 
                 if(!(temp = cmdtok()).empty())
                 {
-                    if(temp.contains("load"))
+                    if(temp.contains("load") || temp.contains("relay"))
                     {
                         _cmd["load"] = atoi(cmdtok().c_str());
                     }
