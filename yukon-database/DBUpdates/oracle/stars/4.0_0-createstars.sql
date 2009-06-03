@@ -1871,4 +1871,4 @@ alter table WorkOrderBase
 
 alter table WorkOrderBase
    add constraint FK_WrkOr_SrvC foreign key (ServiceCompanyID)
-      references ServiceCompany (CompanyID);\ No newline at end of file
+      references ServiceCompany (CompanyID);
