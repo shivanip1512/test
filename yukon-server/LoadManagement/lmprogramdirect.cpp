@@ -4196,12 +4196,12 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
         }
         else if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::SimpleThermostatRampingMethod) )
         {
-            double dummyVariable;
+          /*double dummyVariable; BUMP_COMMAND_REMOVED
             bool didSendMessages = sendSimpleThermostatMessage(currentGearObject, secondsFrom1901, multiPilMsg, dummyVariable, true);
             if( didSendMessages && getProgramState() != CtiLMProgramBase::ManualActiveState )
             {
                 setProgramState(CtiLMProgramBase::FullyActiveState);
-            }
+            }*/
         }
         else if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::ThermostatRampingMethod) ||
                  !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::NoControlMethod) )
@@ -5947,7 +5947,7 @@ bool CtiLMProgramDirect::sendSimpleThermostatMessage(CtiLMProgramDirectGear* cur
                 // XXX thermostat constraints??
                 CtiRequestMsg* requestMsg = currentLMGroup->createSetPointSimpleMsg(settings, minValue, maxValue, precoolTemp, random, rampRate, precoolTime, precoolHoldTime, maxTempChange, totalControlMinutes, rampOutTime, minutesFromBegin, defaultLMStartPriority);
                 startGroupControl(currentLMGroup, requestMsg, multiPilMsg);
-                if( refreshRate > 0 )
+              /*if( refreshRate > 0 ) BUMP_COMMAND_REMOVED
                 {
                     currentLMGroup->setNextControlTime(CtiTime(now.seconds() + refreshRate));
                     if( _LM_DEBUG & LM_DEBUG_STANDARD )
@@ -5956,7 +5956,7 @@ bool CtiLMProgramDirect::sendSimpleThermostatMessage(CtiLMProgramDirectGear* cur
                         dout << CtiTime() << " LMProgram: " << getPAOName() << ", LMGroup: " << currentLMGroup->getPAOName() << " next at: " << currentLMGroup->getNextControlTime().asString() << endl;
                     }
                 }
-                else
+                else*/
                 {
                     currentLMGroup->setNextControlTime(gInvalidCtiTime);
                     if( _LM_DEBUG & LM_DEBUG_STANDARD )
