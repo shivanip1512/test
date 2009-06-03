@@ -722,7 +722,7 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
             {
                 flag |= CMD_FLAG_GV_SHEDTIME;
             }
-            
+
             //beyond this point, runtime and shedtime are identical
             CtiTokenizer cmdtok(token);
 
@@ -1755,7 +1755,7 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
 
 void  CtiCommandParser::doParsePutConfig(const string &_CmdStr)
 {
-    static const boost::regex  re_tou("tou [0-9]+( schedule [0-9]+( [a-z]/[0-9]+:[0-9]+)*)* default [a-z]");
+    static const boost::regex re_tou("tou [0-9]+( schedule [0-9]+( [a-z]/[0-9]+:[0-9]+)*)* default [a-z]");
 
     CtiString CmdStr(_CmdStr);
     CtiString   temp2;
@@ -1772,6 +1772,24 @@ void  CtiCommandParser::doParsePutConfig(const string &_CmdStr)
         if(CmdStr.contains(" timesync"))
         {
             _cmd["timesync"] = CtiParseValue("TRUE");
+        }
+
+        if(CmdStr.contains(" precanned"))
+        {
+            if(!(token = CmdStr.match("precanned table [0-9]+( read interval [0-9]+)?")).empty())   // get the template name...
+            {
+                CtiTokenizer cmdtok(token);
+                cmdtok();  //  go past "precanned"
+                cmdtok();  //  go past "table"
+
+                _cmd["precanned_table"] = atoi(cmdtok().c_str());
+
+                if( !cmdtok().empty() )  //  does "read" exist?
+                {
+                    cmdtok();  //  go past "interval"
+                    _cmd["read_interval"] = atoi(cmdtok().c_str());
+                }
+            }
         }
 
         if(CmdStr.contains(" unsolicited"))
@@ -3982,7 +4000,7 @@ void CtiCommandParser::doParseExpresscomAddressing(const string &_CmdStr)
     if(CmdStr.match(re_target).empty())
     {
         CtiString temp;
-    
+
         if( !(temp = CmdStr.match(re_serial)).empty() )   _cmd["xc_serial"]   = atoi(temp.match((const boost::regex)str_num).data());
         if( !(temp = CmdStr.match(re_spid)).empty() )     _cmd["xc_spid"]     = atoi(temp.match((const boost::regex)str_num).data());
         if( !(temp = CmdStr.match(re_geo)).empty() )      _cmd["xc_geo"]      = atoi(temp.match((const boost::regex)str_num).data());
@@ -6169,13 +6187,13 @@ void CtiCommandParser::doParseControlExpresscomCriticalPeakPricing(const string 
     }
     if(!(temp = CmdStr.match( (const boost::regex) (CtiString("(wake|leave|return|sleep)[ =]+") + str_signed_num ) )).empty())
     {
-    
+
         if(!(temp = CmdStr.match((const boost::regex) (CtiString("wake[ =]+") + str_signed_num) )).empty())
         {
             if(!(valStr = temp.match(re_signed_num)).empty())
             {
                 setpoint = atoi(valStr.c_str()) & 0xFF;
-                _cmd["xcwake"] = CtiParseValue(setpoint); 
+                _cmd["xcwake"] = CtiParseValue(setpoint);
             }
         }
         if(!(temp = CmdStr.match((const boost::regex) (CtiString("leave[ =]+") + str_signed_num) )).empty())
@@ -6183,7 +6201,7 @@ void CtiCommandParser::doParseControlExpresscomCriticalPeakPricing(const string 
             if(!(valStr = temp.match(re_signed_num)).empty())
             {
                 setpoint = atoi(valStr.c_str()) & 0xFF;
-                _cmd["xcleave"] = CtiParseValue(setpoint); 
+                _cmd["xcleave"] = CtiParseValue(setpoint);
             }
         }
         if(!(temp = CmdStr.match((const boost::regex) (CtiString("return[ =]+") + str_signed_num) )).empty())
@@ -6191,7 +6209,7 @@ void CtiCommandParser::doParseControlExpresscomCriticalPeakPricing(const string 
             if(!(valStr = temp.match(re_signed_num)).empty())
             {
                 setpoint = atoi(valStr.c_str()) & 0xFF;
-                _cmd["xcreturn"] = CtiParseValue(setpoint); 
+                _cmd["xcreturn"] = CtiParseValue(setpoint);
             }
         }
         if(!(temp = CmdStr.match((const boost::regex) (CtiString("sleep[ =]+") + str_signed_num) )).empty())
@@ -6199,7 +6217,7 @@ void CtiCommandParser::doParseControlExpresscomCriticalPeakPricing(const string 
             if(!(valStr = temp.match(re_signed_num)).empty())
             {
                 setpoint = atoi(valStr.c_str()) & 0xFF;
-                _cmd["xcsleep"] = CtiParseValue(setpoint); 
+                _cmd["xcsleep"] = CtiParseValue(setpoint);
             }
         }
     }

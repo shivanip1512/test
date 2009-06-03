@@ -30,6 +30,8 @@ std::string inputString[TEST_SIZE] = {
 "putconfig emetcon timesync",
 "getvalue voltage",
 "getvalue demand",
+"putconfig precanned table 11",
+"putconfig precanned table 11 read interval 800",
 "putconfig cold_load r1 10",
 "putconfig template '?LoadGroup'",
 "putconfig cycle r1 50",

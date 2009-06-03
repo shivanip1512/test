@@ -202,6 +202,7 @@ public:
         PutConfig_TOUEnable,
         PutConfig_TOUDisable,
         PutConfig_FreezeDay,
+        PutConfig_PrecannedTable,
 
         PutConfig_ARMC,
         PutConfig_ARML,

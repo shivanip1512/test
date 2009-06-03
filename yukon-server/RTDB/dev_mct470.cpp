@@ -1442,14 +1442,52 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
                     incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
                 }
             }
-
-            if( parse.getFlags() & CMD_FLAG_GV_DEMAND )
+            if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) )
             {
-                //  this will be for the real-time table
-                function = Emetcon::GetValue_IEDDemand;
+                //  we need to read the IED info byte out of the MCT
+                function = Emetcon::GetConfig_Model;
                 found = getOperation(function, OutMessage->Buffer.BSt);
+
+                if( found )
+                {
+                    OutMessage->DeviceID  = getID();
+                    OutMessage->TargetID  = getID();
+                    OutMessage->Port      = getPortID();
+                    OutMessage->Remote    = getAddress();
+                    OutMessage->TimeOut   = 2;
+                    OutMessage->Sequence  = function;         // Helps us figure it out later!
+                    OutMessage->Retry     = 2;
+                    OutMessage->Request.RouteID   = getRouteID();
+
+                    strncpy(OutMessage->Request.CommandStr, "getconfig model", COMMAND_STR_SIZE );
+                    outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
+                    incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
+                }
             }
-            else if( parse.isKeyValid("ied_dnp") )
+            if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableType) )
+            {
+                //  we need to read the IED precanned table type out of the MCT
+                function = Emetcon::GetConfig_Intervals;
+                found = getOperation(function, OutMessage->Buffer.BSt);
+
+                if( found )
+                {
+                    OutMessage->DeviceID  = getID();
+                    OutMessage->TargetID  = getID();
+                    OutMessage->Port      = getPortID();
+                    OutMessage->Remote    = getAddress();
+                    OutMessage->TimeOut   = 2;
+                    OutMessage->Sequence  = function;         // Helps us figure it out later!
+                    OutMessage->Retry     = 2;
+                    OutMessage->Request.RouteID   = getRouteID();
+
+                    strncpy(OutMessage->Request.CommandStr, "getconfig intervals", COMMAND_STR_SIZE );
+                    outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
+                    incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
+                }
+            }
+
+            if( parse.isKeyValid("ied_dnp") )
             {
                 int i = 0;
                 if( (i = parse.getiValue("collectionnumber")) != INT_MIN )
@@ -1512,7 +1550,28 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
                     found = true;
                 }
             }
-            // else if()  //  this is where the IED status would be handled
+            if( parse.getFlags() & CMD_FLAG_GV_PEAK )
+            {
+                //  these are the new Precanned Table 11 reads
+
+                function = Emetcon::GetValue_IED;
+                found = getOperation(function, OutMessage->Buffer.BSt);
+
+                if( parse.getCommandStr().find(" kva") != string::npos )
+                {
+                    OutMessage->Buffer.BSt.Function = FuncRead_IED_Peak_kM;
+                }
+                else
+                {
+                    OutMessage->Buffer.BSt.Function = FuncRead_IED_Peak_kW;
+                }
+            }
+            else if( parse.getFlags() & CMD_FLAG_GV_DEMAND )
+            {
+                //  this will be for the real-time table
+                function = Emetcon::GetValue_IEDDemand;
+                found = getOperation(function, OutMessage->Buffer.BSt);
+            }
             else
             {
                 function = Emetcon::GetValue_IED;
@@ -1534,6 +1593,7 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
                         OutMessage->Buffer.BSt.Function = FuncRead_IED_TOU_CurrentKWBase;
                     }
 
+                    //  note that rate D is not valid for precanned table 11, but we will detect that on decode instead of execute
                     if(      parse.getFlags() & CMD_FLAG_GV_RATEA )  OutMessage->Buffer.BSt.Function += 0;
                     else if( parse.getFlags() & CMD_FLAG_GV_RATEB )  OutMessage->Buffer.BSt.Function += 1;
                     else if( parse.getFlags() & CMD_FLAG_GV_RATEC )  OutMessage->Buffer.BSt.Function += 2;
@@ -1783,12 +1843,6 @@ INT CtiDeviceMCT470::executeGetConfig( CtiRequestMsg         *pReq,
     int function;
 
 
-/*
-    if( parse.isKeyValid("channels") )
-    {
-
-    }
-*/
     if(parse.isKeyValid("multiplier"))
     {
         function = Emetcon::GetConfig_Multiplier;
@@ -1852,7 +1906,6 @@ INT CtiDeviceMCT470::executeGetConfig( CtiRequestMsg         *pReq,
         }
         else if( parse.isKeyValid("dnp") )
         {
-
             if( parse.isKeyValid("start address") )
             {
                 function = Emetcon::PutConfig_Raw;
@@ -2011,7 +2064,19 @@ INT CtiDeviceMCT470::executePutConfig( CtiRequestMsg         *pReq,
                                                    OutMessage->Request.SOE,
                                                    CtiMultiMsg_vec( ));
 
-    if( parse.isKeyValid("channel_config") )
+    if( parse.isKeyValid("precanned_table") )
+    {
+        function = Emetcon::PutConfig_PrecannedTable;
+
+        if( found = getOperation(function, OutMessage->Buffer.BSt) )
+        {
+            OutMessage->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
+            OutMessage->Buffer.BSt.Message[1] = (parse.getiValue("read_interval", 120) + 14) / 15;  //  count of 15 second increments
+            OutMessage->Buffer.BSt.Message[2] = 0;
+            OutMessage->Buffer.BSt.Message[3] = parse.getiValue("precanned_table");
+        }
+    }
+    else if( parse.isKeyValid("channel_config") )
     {
         int channel, input, channel_config;
         unsigned numerator, denominator;
@@ -3686,11 +3751,10 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-
         bool dataInvalid = true;
         int  ied_data_end;
 
-        if( parse.getFlags() & CMD_FLAG_GV_DEMAND )
+        if( parse.getFlags() & CMD_FLAG_GV_DEMAND && !(parse.getFlags() & CMD_FLAG_GV_PEAK) )
         {
             //  Reads 0xd5-0xd9 have 12 bytes of IED data, then the status byte at the end
             //    Read 0xd4 has only 9 bytes of actual data, so when we do that read, it'll need to accomodate that
@@ -3738,9 +3802,64 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
             dataInvalid = true;
         }
 
-        //  should we archive non-frozen points?
+        //  this must be before CMD_FLAG_GV_DEMAND, since we are looking for peak demand
+        if( parse.getFlags() & CMD_FLAG_GV_PEAK )
+        {
+            if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) )
+            {
+                resultString += "Did not retrieve the IED type";
+                status = NoConfigData;
+            }
+            else if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableType) )
+            {
+                resultString += "Did not retrieve the precanned table type";
+                status = NoConfigData;
+            }
+            else if( (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableType) == 11)
+                     && ((getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) >> 4) == IED_Type_LG_S4) )
+            {
+                if( dataInvalid )
+                {
+                    //  If we are here, we believe the data is incorrect!
+                    resultString += "Device: " + getName() + "\nData buffer is bad, retry command" ;
+                    status = ALPHABUFFERERROR;
 
-        if( parse.getFlags() & CMD_FLAG_GV_DEMAND )
+                    if( parse.getCommandStr().find(" kva") != string::npos )
+                    {
+                        insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_PeakKM,  AnalogPointType);
+                        insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKM, AnalogPointType);
+                    }
+                    else
+                    {
+                        insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_PeakKW,  AnalogPointType);
+                        insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKW, AnalogPointType);
+                    }
+                }
+                else
+                {
+                    unsigned demand_offset, consumption_offset;
+                    string   demand_name,   consumption_name;
+
+                    if( parse.getCommandStr().find(" kva") != string::npos )
+                    {
+                        demand_offset      = PointOffset_PeakKM;
+                        demand_name        = "Peak kM";
+                        consumption_offset = PointOffset_TotalKM;
+                        consumption_name   = "kMh total";
+                    }
+                    else
+                    {
+                        demand_offset      = PointOffset_PeakKW;
+                        demand_name        = "Peak kW";
+                        consumption_offset = PointOffset_TotalKW;
+                        consumption_name   = "kWh total";
+                    }
+
+                    status = decodeGetValueIEDPrecannedTable11Peak(parse, *DSt, TimeNow, demand_offset, demand_name, consumption_offset, consumption_name, ReturnMsg);
+                }
+            }
+        }
+        else if( parse.getFlags() & CMD_FLAG_GV_DEMAND )
         {
             if( dataInvalid )
             {
@@ -3756,7 +3875,6 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
             }
             else
             {
-                CtiPointSPtr kw, km, volts;
                 bool send_outages = true;
 
                 //  get demand
@@ -3806,7 +3924,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
 
                 pi = getData(DSt->Message + 8, 2, ValueType_IED);
 
-                if( volts = getDevicePointOffsetTypeEqual(PointOffset_VoltsPhaseB, AnalogPointType) )
+                if( getDevicePointOffsetTypeEqual(PointOffset_VoltsPhaseB, AnalogPointType) )
                 {
                     send_outages = false;
 
@@ -3828,7 +3946,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
 
                 pi = getData(DSt->Message + 10, 2, ValueType_IED);
 
-                if(volts = getDevicePointOffsetTypeEqual(PointOffset_VoltsPhaseC, AnalogPointType))
+                if( getDevicePointOffsetTypeEqual(PointOffset_VoltsPhaseC, AnalogPointType))
                 {
                     send_outages = false;
 
@@ -3875,8 +3993,6 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
             }
             else
             {
-                CtiPointSPtr kwh, kmh;
-
                 pi = getData(DSt->Message, 5, ValueType_IED);
 
                 insertPointDataReport(AnalogPointType, PointOffset_TotalKWH,
@@ -3911,7 +4027,6 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
         else if( parse.isKeyValid("ied_dnp") )
         {
             int i = 0;
-            CtiPointSPtr tempPoint;
             int dnp_status = DSt->Message[12];  //  Applies only to precanned table reads.
 
             if( (i = parse.getiValue("collectionnumber")) != INT_MIN )
@@ -4064,17 +4179,59 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                     offset = PointOffset_TOU_KWBase;
                 }
 
-                if(      parse.getFlags() & CMD_FLAG_GV_RATEA )  rate = 0;
-                else if( parse.getFlags() & CMD_FLAG_GV_RATEB )  rate = 1;
-                else if( parse.getFlags() & CMD_FLAG_GV_RATEC )  rate = 2;
-                else if( parse.getFlags() & CMD_FLAG_GV_RATED )  rate = 3;
+                if(      parse.getFlags() & CMD_FLAG_GV_RATEA )   rate = 0;
+                else if( parse.getFlags() & CMD_FLAG_GV_RATEB )   rate = 1;
+                else if( parse.getFlags() & CMD_FLAG_GV_RATEC )   rate = 2;
+                else if( parse.getFlags() & CMD_FLAG_GV_RATED )   rate = 3;
 
                 insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, (offset + rate * 2 + 1), AnalogPointType);
                 insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, (offset + rate * 2), AnalogPointType);
             }
+            else if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) )
+            {
+                resultString += "Did not retrieve the IED type";
+                status = NoConfigData;
+            }
+            else if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableType) )
+            {
+                resultString += "Did not retrieve the precanned table type";
+                status = NoConfigData;
+            }
+            else if( (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableType) == 11)
+                     && ((getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) >> 4) == IED_Type_LG_S4) )
+            {
+                unsigned demand_offset, consumption_offset;
+                string   demand_name,   consumption_name;
+
+                if( parse.getFlags() & CMD_FLAG_GV_KVARH || parse.getFlags() & CMD_FLAG_GV_KVAH  )
+                {
+                    demand_offset      = PointOffset_TOU_KMBase;
+                    demand_name        = "kM ";
+                    consumption_offset = PointOffset_TOU_KMBase + 1;
+                    consumption_name   = "kMh ";
+                }
+                else
+                {
+                    demand_offset      = PointOffset_TOU_KWBase;
+                    demand_name        = "kM";
+                    consumption_offset = PointOffset_TOU_KWBase + 1;
+                    consumption_name   = "kMh rate ";
+                }
+
+                if(      parse.getFlags() & CMD_FLAG_GV_RATEA )  rate = 0;
+                else if( parse.getFlags() & CMD_FLAG_GV_RATEB )  rate = 1;
+                else if( parse.getFlags() & CMD_FLAG_GV_RATEC )  rate = 2;
+
+                consumption_name += string(1, (char)('A' + rate));
+                consumption_name += " total";
+
+                demand_name += string(1, (char)('A' + rate));
+                demand_name += " peak";
+
+                status = decodeGetValueIEDPrecannedTable11Peak(parse, *DSt, TimeNow, demand_offset, demand_name, consumption_offset, consumption_name, ReturnMsg);
+            }
             else
             {
-                CtiPointSPtr kwh, kw;
                 point_info time_info;
                 unsigned long peak_time;
                 string pointname;
@@ -4152,6 +4309,100 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
     }
 
     return status;
+}
+
+
+int CtiDeviceMCT470::decodeGetValueIEDPrecannedTable11Peak(const CtiCommandParser &parse, const DSTRUCT &DSt, const CtiTime &TimeNow, const unsigned demand_offset, const string &demand_name, const unsigned consumption_offset, const string &consumption_name, CtiReturnMsg *ReturnMsg)
+{
+    int status = NoError;
+
+    {
+        point_info consumption_value, consumption_time_info;
+
+        consumption_value     = getData(DSt.Message + 0, 5, ValueType_IED);
+        consumption_time_info = CtiDeviceMCT4xx::getData(DSt.Message + 10, 3, ValueType_Raw);
+
+        const unsigned long consumption_timestamp = convertTimestamp(consumption_time_info.value);
+
+        if( !is_valid_time(consumption_timestamp) )
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - invalid consumption timestamp (" << std::hex << consumption_timestamp << ") in IED peak decode for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            consumption_value.quality = InvalidQuality;
+            consumption_value.description = "Bad consumption timestamp";
+
+            status = NOTNORMAL;
+        }
+
+        insertPointDataReport(AnalogPointType, consumption_offset, ReturnMsg, consumption_value, consumption_name, consumption_timestamp, 1.0, TAG_POINT_MUST_ARCHIVE);
+    }
+
+    {
+        point_info demand_value, demand_time_info;
+
+        demand_value     = getData(DSt.Message + 5, 2, ValueType_IED);
+        demand_time_info = CtiDeviceMCT4xx::getData(DSt.Message +  7, 3, ValueType_Raw);
+
+        const unsigned long demand_timestamp = convertTimestamp(demand_time_info.value);
+
+        if( !is_valid_time(demand_timestamp) )
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - invalid peak demand timestamp (" << std::hex << demand_timestamp << ") in IED peak decode for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            demand_value.quality = InvalidQuality;
+            demand_value.description = "Bad peak demand timestamp";
+
+            status = NOTNORMAL;
+        }
+
+        insertPointDataReport(AnalogPointType, demand_offset, ReturnMsg, demand_value, demand_name, demand_timestamp);
+    }
+
+    return status;
+}
+
+
+unsigned long CtiDeviceMCT470::convertTimestamp(const unsigned long timestamp, const CtiDate &current_date) const
+{
+    CtiTime mct_year_end;
+
+    if( timestamp & 0x800000 == (current_date.year() % 2) )
+    {
+        mct_year_end = CtiDate(1, 1, current_date.year() + 1);
+    }
+    else
+    {
+        if( current_date.month() > 6 )
+        {
+            //  the year doesn't match, and it's the second half of the year, we assume the MCT is in next year
+            mct_year_end = CtiDate(1, 1, current_date.year() + 2);
+        }
+        else
+        {
+            //  the year doesn't match, and it's the first half of the year, we assume the MCT is in last year
+            mct_year_end = CtiDate(1, 1, current_date.year());
+        }
+    }
+
+    const int minutes_until_end_of_year = timestamp & 0x007fffff;
+
+    if( minutes_until_end_of_year > 0x007fff00 )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - invalid time (" << std::hex << minutes_until_end_of_year << ") in CtiDeviceMCT470::convertTimestamp() for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        return 0;
+    }
+
+    return mct_year_end.addMinutes(-minutes_until_end_of_year).seconds();
 }
 
 

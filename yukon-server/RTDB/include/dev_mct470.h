@@ -65,6 +65,8 @@ private:
         PointOffset_TotalKMH    = 11,
         PointOffset_TOU_KMBase  = 12,
         PointOffset_TotalKM     = 20,
+        PointOffset_PeakKW      = 21,
+        PointOffset_PeakKM      = 22,
 
         PointOffset_AveragePowerFactor = 31,
 
@@ -360,6 +362,9 @@ protected:
         FuncRead_IED_TOU_CurrentKMBase  = 0xc5,
         FuncRead_IED_TOU_CurrentTotals  = 0xc9,
 
+        FuncRead_IED_Peak_kW            = 0xc4,
+        FuncRead_IED_Peak_kM            = 0xc8,
+
         FuncRead_IED_TOU_PreviousOffset =    9,
 
         FuncRead_IED_TOU_MeterStatus    = 0xd3,
@@ -413,6 +418,10 @@ protected:
     INT decodeGetConfigChannelSetup( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigMultiplier  ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigModel       ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
+
+    int decodeGetValueIEDPrecannedTable11Peak(const CtiCommandParser &parse, const DSTRUCT &DSt, const CtiTime &TimeNow, const unsigned demand_offset, const string &demand_name, const unsigned consumption_offset, const string &consumption_name, CtiReturnMsg *ReturnMsg);
+
+    unsigned long convertTimestamp(unsigned long timestamp, const CtiDate &current_date=CtiDate()) const;
 
     enum
     {
