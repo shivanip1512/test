@@ -133,10 +133,9 @@ public class PointUtil {
 	public static PointBase changePointType(PointBase pointBase, PointTemplate newPointTemplate) throws TransactionException {
 	
 		int oldType = PointTypes.getType(pointBase.getPoint().getPointType());
-		int oldOffset = pointBase.getPoint().getPointOffset();
 		
-		// actual changing of point type/offset, delete the old point and re-add it with new type and/or offset.
-		if (oldType != newPointTemplate.getType() || oldOffset != newPointTemplate.getOffset()) {
+		// actual changing of point type, delete the old point and re-add it with new type
+		if (oldType != newPointTemplate.getType()) {
 			
 			pointBase.getPoint().setPointType(PointTypes.getType(newPointTemplate.getType()));
 			PointAlarming savePointAlarming = pointBase.getPointAlarming();
@@ -158,7 +157,6 @@ public class PointUtil {
 			pointBase.setPointID(savePoint.getPointID());
 		
 			//Set new point defaults from tempalte
-			pointBase.getPoint().setPointOffset(newPointTemplate.getOffset());
 			pointBase.getPoint().setPointType(PointTypes.getType(newPointTemplate.getType()));
 			
 			// Add the updated (partial) point information.
@@ -169,10 +167,18 @@ public class PointUtil {
 			pointBase = t.execute();
 		}
 	
-		// always update the values of the additional point data (multipier/uom, etc), even if the point type/offset are the same
+		// update additional point data (multipier/uom, etc)
+		boolean hasChange = false;
 		if (pointBase instanceof AnalogPoint) {
         	
-        	AnalogPoint analogPoint = (AnalogPoint)pointBase;
+			AnalogPoint analogPoint = (AnalogPoint)pointBase;
+			
+			hasChange = analogPoint.getPoint().getPointOffset() != newPointTemplate.getOffset()
+						|| analogPoint.getPointAnalog().getMultiplier() != newPointTemplate.getMultiplier()
+						|| analogPoint.getPointUnit().getUomID() != newPointTemplate.getUnitOfMeasure()
+						|| analogPoint.getPoint().getStateGroupID() != newPointTemplate.getStateGroupId();
+        	
+        	analogPoint.getPoint().setPointOffset(newPointTemplate.getOffset());
         	analogPoint.getPointAnalog().setMultiplier(newPointTemplate.getMultiplier());
         	analogPoint.getPointUnit().setUomID(newPointTemplate.getUnitOfMeasure());
         	analogPoint.getPoint().setStateGroupID(newPointTemplate.getStateGroupId());
@@ -180,20 +186,34 @@ public class PointUtil {
         } else if (pointBase instanceof StatusPoint) {
         	
         	StatusPoint statusPoint = (StatusPoint)pointBase;
+        	
+        	hasChange = statusPoint.getPoint().getPointOffset() != newPointTemplate.getOffset()
+						|| statusPoint.getPoint().getStateGroupID() != newPointTemplate.getStateGroupId();
+        	
+        	statusPoint.getPoint().setPointOffset(newPointTemplate.getOffset());
         	statusPoint.getPoint().setStateGroupID(newPointTemplate.getStateGroupId());
         	
         } else if (pointBase instanceof AccumulatorPoint) {
         	
         	AccumulatorPoint accumulatorPoint = (AccumulatorPoint)pointBase;
+        	
+        	hasChange = accumulatorPoint.getPoint().getPointOffset() != newPointTemplate.getOffset()
+						|| accumulatorPoint.getPointAccumulator().getMultiplier() != newPointTemplate.getMultiplier()
+						|| accumulatorPoint.getPointUnit().getUomID() != newPointTemplate.getUnitOfMeasure()
+						|| accumulatorPoint.getPoint().getStateGroupID() != newPointTemplate.getStateGroupId();
+        	
+        	accumulatorPoint.getPoint().setPointOffset(newPointTemplate.getOffset());
         	accumulatorPoint.getPointAccumulator().setMultiplier(newPointTemplate.getMultiplier());
         	accumulatorPoint.getPointUnit().setUomID(newPointTemplate.getUnitOfMeasure());
         	accumulatorPoint.getPoint().setStateGroupID(newPointTemplate.getStateGroupId());
         }
 		
-		//Have to perform the update also to commit the object CHANGES.
-	    Transaction<PointBase> t = Transaction.createTransaction(Transaction.UPDATE, pointBase);
-        pointBase = t.execute();
-
+		// update
+		if (hasChange) {
+		    Transaction<PointBase> t = Transaction.createTransaction(Transaction.UPDATE, pointBase);
+	        pointBase = t.execute();
+		}
+		
         return pointBase;
 	}
 }
