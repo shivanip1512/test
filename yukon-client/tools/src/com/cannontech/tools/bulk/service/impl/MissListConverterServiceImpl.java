@@ -17,6 +17,7 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
@@ -137,7 +138,13 @@ public class MissListConverterServiceImpl implements MissListConverterService {
 			if (routeName != null) {
 				tempData.setRouteName(routeName);
 			} else {
-				tempData.setRouteName(" ");
+				PaoDao paoDao = YukonSpringHook.getBean("paoDao", PaoDao.class);
+				LiteYukonPAObject liteDevice = paoDao.getLiteYukonPAO(liteYukonPAObject.getRouteID());
+				if(liteDevice != null) {
+					tempData.setRouteName(liteDevice.getPaoName());
+				} else {
+					tempData.setRouteName(" ");
+				}
 			}
 			tempData.setTemplateName(liteYukonPAObject.getPaoName());
 
