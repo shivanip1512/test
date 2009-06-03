@@ -118,9 +118,9 @@ function getReasonMenuFromURL(url, event) {
 function showReasonPopup(html, up, x, y) {
 	var body = $('popupBody');
 	body.innerHTML = html;
-	var popupDiv = $('popupContent');
+	var popupDiv = $('tierPopup');
 	var paoName = $('commentPaoName');
-	var titleDiv = $('popupTitle');
+	var titleDiv = popupDiv.getElementsByClassName('boxContainer_title')[0];
 	titleDiv.innerHTML = 'Comments: ' + paoName.value;
 	popupDiv.show();
 	if(up == true){
@@ -136,9 +136,9 @@ function showReasonPopup(html, up, x, y) {
 function showMenuPopup(html, up, x, y) {
 	var body = $('popupBody');
 	body.innerHTML = html;
-	var popupDiv = $('popupContent');
+	var popupDiv = $('tierPopup');
 	var paoName = $('menuPaoName');
-	var titleDiv = $('popupTitle');
+	var titleDiv = popupDiv.getElementsByClassName('boxContainer_title')[0];
 	titleDiv.innerHTML = paoName.value;
 	popupDiv.show();
 	if(up == true){
@@ -152,7 +152,7 @@ function showMenuPopup(html, up, x, y) {
 }
 
 function closeTierPopup() {
-	var reasonDiv = $('popupContent');
+	var reasonDiv = $('tierPopup');
 	reasonDiv.hide();
 }
 

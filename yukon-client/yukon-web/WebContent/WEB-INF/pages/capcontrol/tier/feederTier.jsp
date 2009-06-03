@@ -24,25 +24,9 @@
 <!-- necessary DIV element for the OverLIB popup library -->
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
 <!-- DIV element for the non flyover type popups -->
-<div id="popupContent" class="popUpDiv simplePopupNoWidth" style="display: none; top: 150px; left: 75px; width: 288px">
-    <!--  fix for IE6 bug (see itemPicker.css for more info) -->
-    <!--[if lte IE 6.5]><iframe></iframe><![endif]-->
-    <div class="titledContainer boxContainer">
-
-        <div class="titleBar boxContainer_titleBar">
-            <div class="controls" onclick="closeTierPopup()">
-                <img class="minMax" alt="close" src="/WebConfig/yukon/Icons/close_x.gif">
-            </div>
-            <div id="popupTitle" class="title boxContainer_title"></div>
-        </div>
-
-        <div class="content boxContainer_content">
-            <div id="popupBody"></div>
-        </div>
-
-    </div>
-</div>
-
+<ct:simplePopup onClose="closeTierPopup()" title="Comments:" id="tierPopup" styleClass="thinBorder">
+    <div id="popupBody"></div>
+</ct:simplePopup>
 <cti:standardMenu/>
 
 <cti:url value="/spring/capcontrol/tier/substations" var="substationAddress">

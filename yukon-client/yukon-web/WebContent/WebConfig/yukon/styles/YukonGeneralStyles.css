@@ -29,11 +29,8 @@ div.simplePopup {
   top: 150px;
 }
 
-div.simplePopupNoWidth {
-  border: 3px solid #666;
-  background-color: white;
-  left: 75px;
-  top: 150px;
+div.thinBorder {
+  border: 1px solid #666 !important;
 }
 
 div.deviceSelectionPopup {
