@@ -83,6 +83,12 @@ WHERE OperatorLoginId IN (SELECT DISTINCT ECOLL.OperatorLoginId
                           AND YR.RoleName = 'Residential Customer');
 /* End YUK-7537 */
 
+/* Start YUK-7561 */
+/* @error ignore-begin */
+INSERT INTO YukonRoleProperty VALUES(-1102,-2,'default_time_zone','CST','Default time zone of the energy company');
+/* @error ignore-end */
+/* End YUK-7561 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

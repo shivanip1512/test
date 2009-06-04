@@ -677,12 +677,6 @@ go
 /* End Yuk-5872 */ 
 
 /* Start YUK-5923 */
-DELETE FROM YukonGroupRole WHERE rolePropertyId = -1102;
-DELETE FROM YukonUserRole WHERE rolePropertyId = -1102;
-go
-DELETE FROM YukonRoleProperty WHERE rolePropertyId = -1102;
-go
-
 INSERT INTO YukonRoleProperty VALUES(-10819, -108, 'Default TimeZone',' ','Default TimeZone (e.g. America/Denver, America/Chicago, America/Los_Angeles, or America/New_York)'); 
 INSERT INTO YukonRoleProperty VALUES(-1703, -8, 'System Default TimeZone', ' ', 'System Default TimeZone (e.g. America/Denver, America/Chicago, America/Los_Angeles, or America/New_York)'); 
 /* End YUK-5923 */
