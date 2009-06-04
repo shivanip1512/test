@@ -45,7 +45,8 @@ const CtiDeviceMCT470::error_set CtiDeviceMCT470::_error_info_gekv      = CtiDev
 const CtiDeviceMCT470::error_set CtiDeviceMCT470::_error_info_sentinel  = CtiDeviceMCT470::initErrorInfoSentinel();
 
 CtiDeviceMCT470::CtiDeviceMCT470( ) :
-    _lastConfigRequest(0)
+    _lastConfigRequest(0),
+    _precannedTableCurrent(false)  //  default to false on each startup, since we don't persist this boolean
 {
 }
 
@@ -1237,7 +1238,12 @@ INT CtiDeviceMCT470::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
         case Emetcon::GetConfig_Model:          status = decodeGetConfigModel(InMessage, TimeNow, vgList, retList, outList);        break;
 
-        case Emetcon::PutConfig_PrecannedTable: status = decodePutConfig(InMessage, TimeNow, vgList, retList, outList);             break;
+        case Emetcon::PutConfig_PrecannedTable:
+        {
+            _precannedTableCurrent = false;
+            status = decodePutConfig(InMessage, TimeNow, vgList, retList, outList);
+            break;
+        }
 
         default:
         {
@@ -1379,6 +1385,13 @@ INT CtiDeviceMCT470::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
     return retVal;
 }
 
+
+bool CtiDeviceMCT470::isPrecannedTableCurrent() const
+{
+    return hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableType) && _precannedTableCurrent;
+}
+
+
 INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
                                       CtiCommandParser     &parse,
                                       OUTMESS             *&OutMessage,
@@ -1468,7 +1481,7 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
                     incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
                 }
             }
-            if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableType) )
+            if( !isPrecannedTableCurrent() )
             {
                 //  we need to read the IED precanned table type out of the MCT
                 function = Emetcon::GetConfig_Intervals;
@@ -2083,6 +2096,8 @@ INT CtiDeviceMCT470::executePutConfig( CtiRequestMsg         *pReq,
             OutMessage->Buffer.BSt.Message[1] = (parse.getiValue("read_interval", 120) + 14) / 15;  //  count of 15 second increments
             OutMessage->Buffer.BSt.Message[2] = 0;
             OutMessage->Buffer.BSt.Message[3] = parse.getiValue("precanned_table");
+
+            _precannedTableCurrent = false;
         }
     }
     else if( parse.isKeyValid("channel_config") )
@@ -3816,12 +3831,12 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
         {
             if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) )
             {
-                resultString += getName() + " / Peak reads require SSPEC rev 4.2 or higher; execute \"getconfig model\" to verify";
+                resultString += getName() + " / IED peak kW/kM reads require SSPEC rev 4.2 or higher; execute \"getconfig model\" to verify";
                 status = ErrorVerifySSPEC;
             }
             else if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < SspecRev_IED_Precanned11 )
             {
-                resultString += getName() + " / Daily read requires SSPEC rev 4.2 or higher; MCT reports " + CtiNumStr(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) / 10.0, 1);
+                resultString += getName() + " / IED peak kW/kM reads require SSPEC rev 4.2 or higher; MCT reports " + CtiNumStr(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) / 10.0, 1);
                 status = ErrorInvalidSSPEC;
             }
             else if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) )
@@ -3829,13 +3844,22 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 resultString += "Did not retrieve the IED type";
                 status = NoConfigData;
             }
-            else if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableType) )
+            else if( !isPrecannedTableCurrent() )
             {
                 resultString += "Did not retrieve the precanned table type";
                 status = NoConfigData;
             }
-            else if( (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableType) == 11)
-                     && ((getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) >> 4) == IED_Type_LG_S4) )
+            else if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableType) != 11 )
+            {
+                resultString += getName() + " / IED peak kW/kM reads require Precanned Table 11; MCT reports " + CtiNumStr(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableType));
+                status = NoMethod;
+            }
+            else if( (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) >> 4) != IED_Type_LG_S4 )
+            {
+                resultString += getName() + " / IED peak kW/kM reads require an S4; MCT reports " + resolveIEDName(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) >> 4);
+                status = NoMethod;
+            }
+            else
             {
                 if( dataInvalid )
                 {
@@ -4216,7 +4240,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 resultString += "Did not retrieve the IED type";
                 status = NoConfigData;
             }
-            else if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableType) )
+            else if( !isPrecannedTableCurrent() )
             {
                 resultString += "Did not retrieve the precanned table type";
                 status = NoConfigData;
@@ -4225,37 +4249,45 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                      && (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableType) == 11)
                      && ((getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) >> 4) == IED_Type_LG_S4) )
             {
-                unsigned demand_offset, consumption_offset;
-                string   demand_name,   consumption_name;
-
-                if( parse.getFlags() & CMD_FLAG_GV_KVARH || parse.getFlags() & CMD_FLAG_GV_KVAH  )
+                if( parse.getFlags() & CMD_FLAG_GV_RATED )
                 {
-                    demand_offset      = PointOffset_TOU_KMBase;
-                    demand_name        = "kM rate ";
-                    consumption_offset = PointOffset_TOU_KMBase + 1;
-                    consumption_name   = "kMh rate ";
+                    status = NoMethod;
+                    resultString = "Rate D not supported for Precanned Table 11";
                 }
                 else
                 {
-                    demand_offset      = PointOffset_TOU_KWBase;
-                    demand_name        = "kW rate ";
-                    consumption_offset = PointOffset_TOU_KWBase + 1;
-                    consumption_name   = "kWh rate ";
+                    if(      parse.getFlags() & CMD_FLAG_GV_RATEA )  rate = 0;
+                    else if( parse.getFlags() & CMD_FLAG_GV_RATEB )  rate = 1;
+                    else if( parse.getFlags() & CMD_FLAG_GV_RATEC )  rate = 2;
+
+                    unsigned demand_offset, consumption_offset;
+                    string   demand_name,   consumption_name;
+
+                    if( parse.getFlags() & CMD_FLAG_GV_KVARH || parse.getFlags() & CMD_FLAG_GV_KVAH  )
+                    {
+                        demand_offset      = PointOffset_TOU_KMBase;
+                        demand_name        = "kM rate ";
+                        consumption_offset = PointOffset_TOU_KMBase + 1;
+                        consumption_name   = "kMh rate ";
+                    }
+                    else
+                    {
+                        demand_offset      = PointOffset_TOU_KWBase;
+                        demand_name        = "kW rate ";
+                        consumption_offset = PointOffset_TOU_KWBase + 1;
+                        consumption_name   = "kWh rate ";
+                    }
+
+                    consumption_name += string(1, (char)('A' + rate));
+                    consumption_name += " total";
+                    consumption_offset += rate * 2;
+
+                    demand_name += string(1, (char)('A' + rate));
+                    demand_name += " peak";
+                    demand_offset += rate * 2;
+
+                    status = decodeGetValueIEDPrecannedTable11Peak(parse, *DSt, TimeNow, demand_offset, demand_name, consumption_offset, consumption_name, ReturnMsg);
                 }
-
-                if(      parse.getFlags() & CMD_FLAG_GV_RATEA )  rate = 0;
-                else if( parse.getFlags() & CMD_FLAG_GV_RATEB )  rate = 1;
-                else if( parse.getFlags() & CMD_FLAG_GV_RATEC )  rate = 2;
-
-                consumption_name += string(1, (char)('A' + rate));
-                consumption_name += " total";
-                consumption_offset += rate;
-
-                demand_name += string(1, (char)('A' + rate));
-                demand_name += " peak";
-                demand_offset += rate;
-
-                status = decodeGetValueIEDPrecannedTable11Peak(parse, *DSt, TimeNow, demand_offset, demand_name, consumption_offset, consumption_name, ReturnMsg);
             }
             else
             {
@@ -4399,7 +4431,7 @@ unsigned long CtiDeviceMCT470::convertTimestamp(const unsigned long timestamp, c
 {
     CtiTime mct_year_end;
 
-    if( timestamp & 0x800000 == (current_date.year() % 2) )
+    if( (timestamp & 0x800000) && (current_date.year() % 2) )
     {
         mct_year_end = CtiDate(1, 1, current_date.year() + 1);
     }
@@ -4983,6 +5015,8 @@ INT CtiDeviceMCT470::decodeGetConfigIntervals(INMESS *InMessage, CtiTime &TimeNo
 
         resultString += getName() + " / Precanned Meter Number: " + CtiNumStr(DSt->Message[4]) + "\n";
         resultString += getName() + " / Precanned Table Type: "   + CtiNumStr(DSt->Message[5]) + "\n";
+
+        _precannedTableCurrent = true;
 
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {

@@ -41,6 +41,8 @@ private:
     CtiTableDeviceMCTIEDPort _iedPort;
     CtiTime                  _iedTime;
 
+    bool _precannedTableCurrent;
+
     enum PointOffsets
     {
         PointOffset_MaxOffset = PointOffset_PeakOffset,      //  10
@@ -420,6 +422,8 @@ protected:
     INT decodeGetConfigModel       ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
 
     int decodeGetValueIEDPrecannedTable11Peak(const CtiCommandParser &parse, const DSTRUCT &DSt, const CtiTime &TimeNow, const unsigned demand_offset, const string &demand_name, const unsigned consumption_offset, const string &consumption_name, CtiReturnMsg *ReturnMsg);
+
+    bool isPrecannedTableCurrent() const;
 
     unsigned long convertTimestamp(unsigned long timestamp, const CtiDate &current_date=CtiDate()) const;
 
