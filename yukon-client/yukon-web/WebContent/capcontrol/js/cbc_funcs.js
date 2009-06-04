@@ -604,6 +604,10 @@ function showRecentCmds( baseUrl )
     window.location = url;
 }
 
+function showRecentCmds( baseUrl, id ){
+	window.location = baseUrl + '&value=' + id;
+}
+
 // -------------------------------------------
 //Shows a sticky popup for the given urlStr The returned
 // html is placed in the popup box and then the box is

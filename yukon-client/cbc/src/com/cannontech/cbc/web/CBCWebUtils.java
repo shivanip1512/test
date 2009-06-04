@@ -492,7 +492,7 @@ public static synchronized String genGraphWattURL(int id, CapControlCache capCon
 	}
 	
 	@SuppressWarnings("unchecked")
-    public static List getCCEventsForPAO (Long _paoId_, String type, CapControlCache theCache, int prevDaysCount) {
+    public static List<RecentControls> getCCEventsForPAO (Long _paoId_, String type, CapControlCache theCache, int prevDaysCount) {
         String sqlStmt ="SELECT * FROM " + CCEventLog.TABLE_NAME + " WHERE"; 
         List<RecentControls> ccEvents = new ArrayList<RecentControls>();
         long startTS = ServletUtil.getDate(- prevDaysCount).getTime();
@@ -503,6 +503,12 @@ public static synchronized String genGraphWattURL(int id, CapControlCache capCon
         }           
         else if (type.equalsIgnoreCase("CCSUBBUS")){
             sqlStmt += " SubId = ?";
+        }else if (type.equalsIgnoreCase("CCSUBSTATION")){
+            sqlStmt += " StationId = ?";
+        }else if (type.equalsIgnoreCase("CCAREA")){
+            sqlStmt += " areaId = ?";
+        }else if (type.equalsIgnoreCase("CCSPECIALAREA")){
+            sqlStmt += " SPAreaId = ?";
         }else if(type.equalsIgnoreCase("CAP BANK")) {
             sqlStmt += " PointId = ?";
             _paoId_ = new Long( getStatusPointFromPaoId(_paoId_, theCache));

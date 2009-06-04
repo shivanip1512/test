@@ -53,5 +53,13 @@
                    onclick="closeTierPopup(); GB_show('CapControl Comments (${paoName})','${commentsUrl}${paoId}', 500, 800);">View Comments</a>
             </td>
         </tr>
+        <tr>
+            <td>
+                <a href="javascript:void(0);"
+                   class="optDeselect"
+                   onmouseover="changeOptionStyle(this);"
+                   onclick="closeTierPopup(); showRecentCmds('/capcontrol/tabledata.jsp?type=RC', ${paoId});">View Recent Cmds</a>
+            </td>
+        </tr>
      </table>
 </div>     
