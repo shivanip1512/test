@@ -359,6 +359,9 @@ begin
     		LaunchAppAndWait("", "cmd.exe /c sc config \"Yukon Port Control Service\" start= auto", LAAW_OPTION_WAIT); 
         endif;
         //web
+        //the wrapper services start as automatic, we want them 
+    	//to start manually unless the user specifies otherwise
+    	LaunchAppAndWait("", "cmd.exe /c sc config \"YukonWebApplicationService\" start= demand", LAAW_OPTION_WAIT);
     	if(webCheck) then
     		LaunchAppAndWait("", "cmd.exe /c sc failure \"YukonWebApplicationService\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
     		LaunchAppAndWait("", "cmd.exe /c sc config \"YukonWebApplicationService\" start= auto", LAAW_OPTION_WAIT); 
@@ -369,6 +372,9 @@ begin
     		LaunchAppAndWait("", "cmd.exe /c sc config \"Yukon MAC Scheduler Service\" start= auto", LAAW_OPTION_WAIT); 
         endif;
         //notification
+        //the wrapper services start as automatic, we want them 
+    	//to start manually unless the user specifies otherwise
+    	LaunchAppAndWait("", "cmd.exe /c sc config \"YukonNotificationServer\" start= demand", LAAW_OPTION_WAIT);
     	if(notifCheck) then
     		LaunchAppAndWait("", "cmd.exe /c sc failure \"YukonNotificationServer\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
     		LaunchAppAndWait("", "cmd.exe /c sc config \"YukonNotificationServer\" start= auto", LAAW_OPTION_WAIT); 
@@ -379,6 +385,9 @@ begin
     		LaunchAppAndWait("", "cmd.exe /c sc config \"Yukon Real-Time Scan Service\" start= auto", LAAW_OPTION_WAIT); 
         endif;
         //service manager
+        //the wrapper services start as automatic, we want them 
+    	//to start manually unless the user specifies otherwise
+    	LaunchAppAndWait("", "cmd.exe /c sc config \"YukonServiceMgr\" start= demand", LAAW_OPTION_WAIT);
     	if(smCheck) then
     		LaunchAppAndWait("", "cmd.exe /c sc failure \"YukonServiceMgr\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
     		LaunchAppAndWait("", "cmd.exe /c sc config \"YukonServiceMgr\" start= auto", LAAW_OPTION_WAIT); 
