@@ -13,6 +13,7 @@ import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.cbc.CapControlCommand;
 import com.cannontech.yukon.cbc.TempMoveCapBank;
 import com.cannontech.yukon.cbc.CCVerifySubBus;
@@ -29,7 +30,6 @@ public class CapControlCommandExecutor
 {
     public static final int defaultOperationalState = -1;
 	private final CapControlCache capControlCache;
-	private RolePropertyDao rolePropertyDao;
 	private final LiteYukonUser user;
 	
 	public CapControlCommandExecutor(final CapControlCache capControlCache, LiteYukonUser user) {	
@@ -43,7 +43,9 @@ public class CapControlCommandExecutor
 	
     public void execute(CapControlType controlType, int cmdId, int paoId, 
     		float[] optParams, String operationalState, LiteYukonUser user) throws UnsupportedOperationException {
-    
+        
+        RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
+        
         switch (controlType) {
             case AREA :
             case SPECIAL_AREA : {
@@ -416,8 +418,4 @@ public class CapControlCommandExecutor
 		
 		capControlCache.getConnection().sendCommand( cmd );
 	}
-
-	public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
 }
