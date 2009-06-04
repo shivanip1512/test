@@ -41,9 +41,6 @@ public class CapControlCommandController extends MultiActionController {
     //4-Tier Version of the command executor
 	public void executeCommandTier(HttpServletRequest request, HttpServletResponse response) throws Exception {
 	    final LiteYukonUser user = ServletUtil.getYukonUser(request);
-        if(!rolePropertyDao.checkProperty(YukonRoleProperty.CONTROL_CAP_CONTROL_DEVICE, user)) {
-            throw new NotAuthorizedException("The user is not authorized to submit commands.");
-        }
 	    final CapControlCommandExecutor executor = createCapControlCommandExec(user);
 	    
 	    final Integer paoId = ServletRequestUtils.getRequiredIntParameter(request, "paoId");
@@ -95,7 +92,7 @@ public class CapControlCommandController extends MultiActionController {
 	        final CapControlCommandExecutor executor, final Integer paoId, final Integer cmdId,
 	        final float[] opt, final String reason) {
 	    LiteYukonUser user = ServletUtil.getYukonUser(request);
-	    if(!rolePropertyDao.checkProperty(YukonRoleProperty.CONTROL_CAP_CONTROL_DEVICE, user)) {
+	    if(!rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_AREA_CONTROLS, user)) {
             throw new NotAuthorizedException("The user is not authorized to submit commands.");
         }
 	    
@@ -120,7 +117,7 @@ public class CapControlCommandController extends MultiActionController {
 	
 	public void executeTempMoveBack(HttpServletRequest request, HttpServletResponse response) throws Exception {
 	    LiteYukonUser user = ServletUtil.getYukonUser(request);
-	    if(!rolePropertyDao.checkProperty(YukonRoleProperty.CONTROL_CAP_CONTROL_DEVICE, user)) {
+	    if(!rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CAPBANK_CONTROLS, user)) {
             throw new NotAuthorizedException("The user is not authorized to submit commands.");
         }
 	    final CapControlCommandExecutor executor = createCapControlCommandExecutor(request);
@@ -131,7 +128,7 @@ public class CapControlCommandController extends MultiActionController {
 	
 	public void executeManualStateChange(HttpServletRequest request, HttpServletResponse response) throws Exception {
 	    LiteYukonUser user = ServletUtil.getYukonUser(request);
-        if(!rolePropertyDao.checkProperty(YukonRoleProperty.CONTROL_CAP_CONTROL_DEVICE, user)) {
+        if(!rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CAPBANK_CONTROLS, user)) {
             throw new NotAuthorizedException("The user is not authorized to submit commands.");
         }
         final CapControlCommandExecutor exec = createCapControlCommandExecutor(request);
@@ -146,9 +143,6 @@ public class CapControlCommandController extends MultiActionController {
 	
 	public void executeCommandOneLine(HttpServletRequest request, HttpServletResponse response) throws Exception {
 	    final LiteYukonUser user = ServletUtil.getYukonUser(request);
-        if(!rolePropertyDao.checkProperty(YukonRoleProperty.CONTROL_CAP_CONTROL_DEVICE, user)) {
-            throw new NotAuthorizedException("The user is not authorized to submit commands.");
-        }
         //Generic One line for sending commands that are not in the tag menu.
         final CapControlCommandExecutor exec = new CapControlCommandExecutor(capControlCache, user);
         
@@ -163,9 +157,6 @@ public class CapControlCommandController extends MultiActionController {
 	
 	public void executeCommandOneLineTag(HttpServletRequest request, HttpServletResponse response) throws Exception {
         final LiteYukonUser user = ServletUtil.getYukonUser(request);
-        if(!rolePropertyDao.checkProperty(YukonRoleProperty.CONTROL_CAP_CONTROL_DEVICE, user)) {
-            throw new NotAuthorizedException("The user is not authorized to submit commands.");
-        }
         final CapControlCommandExecutor exec = new CapControlCommandExecutor(capControlCache, user);
         
         final Integer paoId = ServletRequestUtils.getRequiredIntParameter(request, "paoId");
