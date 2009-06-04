@@ -1509,13 +1509,26 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
                     			continue;
 	                    	}
 	           		    } else {
-	           		    	if (relay != -1) {
-	                            int[] previousEnrollment = {program.getProgramId(),
-        		                                            liteApp.getApplianceCategoryID(),
-        		                                            programs[0][2],
-        		                                            programs[0][3]};
-                                programList.add(previousEnrollment);
-	                            continue;
+	           		    	if (liteApp.getLoadNumber() == relay || 
+	           		    		(relay == -1 && liteApp.getLoadNumber() == 0)) {
+	           		    		
+	           		    		int[] previousEnrollment;
+	                    		if (relay != -1) {
+	                                int[] temp = {program.getProgramId(),
+                                                  liteApp.getApplianceCategoryID(),
+                                                  programs[0][2],
+                                                  programs[0][3]};
+	                                previousEnrollment = temp;
+	                    		} else {
+	                    			int[] temp = {program.getProgramId(),
+                                                  liteApp.getApplianceCategoryID(),
+                                                  programs[0][2],
+                                                  0};
+	                                previousEnrollment = temp;
+	                    		}
+                    			programList.add(previousEnrollment);
+                    			addedThroughExistingEnrollment = true;
+                    			continue;
 	           		    	}
 	                    }
                     } else {
@@ -1550,18 +1563,20 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 
         ImportManagerUtil.programSignUp( enrollmentPrograms, liteAcctInfo, liteInv, energyCompany, this.currentUser, automatedImport );
 		
-		if (appFields[ImportManagerUtil.IDX_APP_TYPE].trim().length() > 0) {
-			int appID = -1;
-			for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
-				LiteStarsAppliance liteApp = liteAcctInfo.getAppliances().get(j);
-				if (!forcedUnenroll && liteApp.getProgramID() == programs[0][0] && liteApp.getInventoryID() == liteInv.getInventoryID()) {
-					appID = liteApp.getApplianceID();
-					break;
+        if (!forcedUnenroll) {
+			if (appFields[ImportManagerUtil.IDX_APP_TYPE].trim().length() > 0) {
+				int appID = -1;
+				for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
+					LiteStarsAppliance liteApp = liteAcctInfo.getAppliances().get(j);
+					if (liteApp.getProgramID() == programs[0][0] && liteApp.getInventoryID() == liteInv.getInventoryID()) {
+						appID = liteApp.getApplianceID();
+						break;
+					}
 				}
+				
+				ImportManagerUtil.updateAppliance( appFields, appID, liteAcctInfo, energyCompany );
 			}
-			
-			ImportManagerUtil.updateAppliance( appFields, appID, liteAcctInfo, energyCompany );
-		}
+        }
 	}
 	
 	private void sendImportLog(File importLog, String email, LiteStarsEnergyCompany energyCompany) throws Exception {
