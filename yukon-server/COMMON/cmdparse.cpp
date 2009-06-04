@@ -593,10 +593,6 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
         {
             flag |= CMD_FLAG_GV_DEMAND;
         }
-        else if(CmdStr.contains(" peak"))
-        {
-            flag |= CMD_FLAG_GV_PEAK;
-        }
         else if(CmdStr.contains(" minmax"))
         {
             flag |= CMD_FLAG_GV_MINMAX;
@@ -806,6 +802,10 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
         if(CmdStr.contains(" tou"))
         {
             flag |= CMD_FLAG_GV_TOU;
+        }
+        if(CmdStr.contains(" peak"))
+        {
+            flag |= CMD_FLAG_GV_PEAK;
         }
 
         if(CmdStr.contains(" power"))

@@ -441,6 +441,7 @@ protected:
         SspecRev_IED_ZeroWriteMin    = 13,  //  rev 1.3
         SspecRev_IED_ErrorPadding    = 14,  //  rev 1.4
         SspecRev_IED_LPExtendedRange = 26,  //  rev 2.6
+        SspecRev_IED_Precanned11     = 42,  //  rev 4.2
     };
 
     virtual INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, list< OUTMESS* > &outList );

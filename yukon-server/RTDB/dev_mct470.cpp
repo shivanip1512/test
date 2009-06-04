@@ -126,6 +126,7 @@ CtiDeviceMCT470::CommandSet CtiDeviceMCT470::initCommandStore( )
     cs.insert(CommandStore(Emetcon::PutConfig_TimeZoneOffset,   Emetcon::IO_Write,          Memory_TimeZoneOffsetPos,     Memory_TimeZoneOffsetLen));
     cs.insert(CommandStore(Emetcon::PutConfig_Intervals,        Emetcon::IO_Function_Write, FuncWrite_IntervalsPos,       FuncWrite_IntervalsLen));
     cs.insert(CommandStore(Emetcon::GetConfig_Intervals,        Emetcon::IO_Read,           Memory_IntervalsPos,          Memory_IntervalsLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_PrecannedTable,   Emetcon::IO_Function_Write, FuncWrite_PrecannedTablePos,  FuncWrite_PrecannedTableLen));
     cs.insert(CommandStore(Emetcon::GetConfig_ChannelSetup,     Emetcon::IO_Function_Read,  FuncRead_ChannelSetupDataPos, FuncRead_ChannelSetupDataLen));
     cs.insert(CommandStore(Emetcon::PutConfig_ChannelSetup,     Emetcon::IO_Function_Write, FuncWrite_SetupLPChannelsPos, FuncWrite_SetupLPChannelLen));
     cs.insert(CommandStore(Emetcon::GetValue_LoadProfile,       Emetcon::IO_Function_Read,  0,                             0));
@@ -1236,6 +1237,8 @@ INT CtiDeviceMCT470::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
         case Emetcon::GetConfig_Model:          status = decodeGetConfigModel(InMessage, TimeNow, vgList, retList, outList);        break;
 
+        case Emetcon::PutConfig_PrecannedTable: status = decodePutConfig(InMessage, TimeNow, vgList, retList, outList);             break;
+
         default:
         {
             status = Inherited::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
@@ -1442,7 +1445,8 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
                     incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
                 }
             }
-            if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) )
+            if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) ||
+                !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) )
             {
                 //  we need to read the IED info byte out of the MCT
                 function = Emetcon::GetConfig_Model;
@@ -1564,6 +1568,11 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
                 else
                 {
                     OutMessage->Buffer.BSt.Function = FuncRead_IED_Peak_kW;
+                }
+
+                if( parse.getFlags() & CMD_FLAG_FROZEN )
+                {
+                    OutMessage->Buffer.BSt.Function += FuncRead_IED_TOU_PreviousOffset;
                 }
             }
             else if( parse.getFlags() & CMD_FLAG_GV_DEMAND )
@@ -3805,7 +3814,17 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
         //  this must be before CMD_FLAG_GV_DEMAND, since we are looking for peak demand
         if( parse.getFlags() & CMD_FLAG_GV_PEAK )
         {
-            if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) )
+            if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) )
+            {
+                resultString += getName() + " / Peak reads require SSPEC rev 4.2 or higher; execute \"getconfig model\" to verify";
+                status = ErrorVerifySSPEC;
+            }
+            else if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < SspecRev_IED_Precanned11 )
+            {
+                resultString += getName() + " / Daily read requires SSPEC rev 4.2 or higher; MCT reports " + CtiNumStr(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) / 10.0, 1);
+                status = ErrorInvalidSSPEC;
+            }
+            else if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) )
             {
                 resultString += "Did not retrieve the IED type";
                 status = NoConfigData;
@@ -3827,12 +3846,12 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                     if( parse.getCommandStr().find(" kva") != string::npos )
                     {
                         insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_PeakKM,  AnalogPointType);
-                        insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKM, AnalogPointType);
+                        insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKMH, AnalogPointType);
                     }
                     else
                     {
                         insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_PeakKW,  AnalogPointType);
-                        insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKW, AnalogPointType);
+                        insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKWH, AnalogPointType);
                     }
                 }
                 else
@@ -3844,14 +3863,14 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                     {
                         demand_offset      = PointOffset_PeakKM;
                         demand_name        = "Peak kM";
-                        consumption_offset = PointOffset_TotalKM;
+                        consumption_offset = PointOffset_TotalKMH;
                         consumption_name   = "kMh total";
                     }
                     else
                     {
                         demand_offset      = PointOffset_PeakKW;
                         demand_name        = "Peak kW";
-                        consumption_offset = PointOffset_TotalKW;
+                        consumption_offset = PointOffset_TotalKWH;
                         consumption_name   = "kWh total";
                     }
 
@@ -4187,6 +4206,11 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, (offset + rate * 2 + 1), AnalogPointType);
                 insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, (offset + rate * 2), AnalogPointType);
             }
+            else if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) )
+            {
+                resultString += getName() + " / Did not retrieve SSPEC revision";
+                status = ErrorVerifySSPEC;
+            }
             else if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) )
             {
                 resultString += "Did not retrieve the IED type";
@@ -4197,7 +4221,8 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 resultString += "Did not retrieve the precanned table type";
                 status = NoConfigData;
             }
-            else if( (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableType) == 11)
+            else if( (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= SspecRev_IED_Precanned11)
+                     && (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableType) == 11)
                      && ((getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) >> 4) == IED_Type_LG_S4) )
             {
                 unsigned demand_offset, consumption_offset;
@@ -4206,16 +4231,16 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 if( parse.getFlags() & CMD_FLAG_GV_KVARH || parse.getFlags() & CMD_FLAG_GV_KVAH  )
                 {
                     demand_offset      = PointOffset_TOU_KMBase;
-                    demand_name        = "kM ";
+                    demand_name        = "kM rate ";
                     consumption_offset = PointOffset_TOU_KMBase + 1;
-                    consumption_name   = "kMh ";
+                    consumption_name   = "kMh rate ";
                 }
                 else
                 {
                     demand_offset      = PointOffset_TOU_KWBase;
-                    demand_name        = "kM";
+                    demand_name        = "kW rate ";
                     consumption_offset = PointOffset_TOU_KWBase + 1;
-                    consumption_name   = "kMh rate ";
+                    consumption_name   = "kWh rate ";
                 }
 
                 if(      parse.getFlags() & CMD_FLAG_GV_RATEA )  rate = 0;
@@ -4224,9 +4249,11 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
 
                 consumption_name += string(1, (char)('A' + rate));
                 consumption_name += " total";
+                consumption_offset += rate;
 
                 demand_name += string(1, (char)('A' + rate));
                 demand_name += " peak";
+                demand_offset += rate;
 
                 status = decodeGetValueIEDPrecannedTable11Peak(parse, *DSt, TimeNow, demand_offset, demand_name, consumption_offset, consumption_name, ReturnMsg);
             }
@@ -4389,6 +4416,10 @@ unsigned long CtiDeviceMCT470::convertTimestamp(const unsigned long timestamp, c
             mct_year_end = CtiDate(1, 1, current_date.year());
         }
     }
+
+    //  we want to move from our local midnight to GMT midnight, so we subtract the difference between us and GMT
+    //  example:  1/1/2009 06:00 - 1/1/2009 00:00 = 06:00;  1/1/2009 00:00 - 06:00 = 12/31/2008 18:00
+    mct_year_end -= mct_year_end.asGMT().seconds() - mct_year_end.seconds();
 
     const int minutes_until_end_of_year = timestamp & 0x007fffff;
 
