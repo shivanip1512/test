@@ -26,7 +26,9 @@ inline bool readers_writer_lock_t::tryAcquire()               {  return tryAcqui
 
 void readers_writer_lock_t::acquireRead()
 {
-    if( !current_thread_owns_any() )
+    //  If we own a prior reader OR writer lock, we will inherit it
+    if( !current_thread_owns_reader() &&
+        !current_thread_owns_writer() )
     {
         _lock.lock_shared();
     }
@@ -53,7 +55,9 @@ void readers_writer_lock_t::acquireWrite()
 
 bool readers_writer_lock_t::acquireRead(unsigned long milliseconds)
 {
-    if( !current_thread_owns_any() )
+    //  If we own a prior reader OR writer lock, we will inherit it
+    if( !current_thread_owns_reader() &&
+        !current_thread_owns_writer() )
     {
         if( !_lock.timed_lock_shared(boost::posix_time::milliseconds(milliseconds)) )
         {
@@ -90,7 +94,10 @@ bool readers_writer_lock_t::acquireWrite(unsigned long milliseconds)
 
 bool readers_writer_lock_t::tryAcquireRead()
 {
-    if( !current_thread_owns_any() && !_lock.try_lock_shared() )
+    //  If we own a prior reader OR writer lock, we will inherit it
+    if( !current_thread_owns_reader() &&
+        !current_thread_owns_writer() &&
+        !_lock.try_lock_shared() )
     {
         return false;
     }
@@ -136,7 +143,8 @@ void readers_writer_lock_t::releaseWrite()
 void readers_writer_lock_t::releaseRead()
 {
     //  if this is the last recursive reader lock, release the shared lock
-    if( !remove_reader() )
+    //    Make sure we don't try to release the shared lock if we inherited from a writer!
+    if( !remove_reader() && !current_thread_owns_writer() )
     {
         _lock.unlock_shared();
     }
@@ -160,7 +168,7 @@ void readers_writer_lock_t::add_reader()
 
     if( _reader_ids[reader_index] != tid )
     {
-        //  we aren't in the list yet, so we need to add ourselves
+    //  we aren't in the list yet, so we need to add ourselves
         //
         //  try to insert our id to the list - if someone else got there first, the exchange will fail and the return will be nonzero
         while( reader_index < MaxThreadCount
