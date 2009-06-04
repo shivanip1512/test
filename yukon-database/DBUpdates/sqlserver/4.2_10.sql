@@ -72,6 +72,17 @@ GO
 /* @error ignore-end */
 /* End YUK-7529 */
 
+/* Start YUK-7537 */
+DELETE FROM EnergyCompanyOperatorLoginList
+WHERE OperatorLoginId IN (SELECT DISTINCT ECOLL.OperatorLoginId 
+                          FROM EnergyCompanyOperatorLoginList ECOLL, YukonUserGroup YUG, YukonGroupRole YGR, YukonRole YR
+                          WHERE ECOLL.OperatorLoginId = YUG.UserId
+                          AND YUG.GroupId = YGR.GroupId
+                          AND YGR.RoleId = YR.RoleId
+                          AND YR.Category = 'Consumer'
+                          AND YR.RoleName = 'Residential Customer');
+/* End YUK-7537 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
