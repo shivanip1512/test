@@ -8,6 +8,7 @@
 
    	<cti:breadCrumbs>
 	   <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
+	   <cti:crumbLink url="/spring/group/editor/home" title="Device Groups" />
 	   &gt; File Upload
   	</cti:breadCrumbs>
         
@@ -18,6 +19,30 @@
 				<td width="30%" style="padding-right:20px;">
 	
 					<form id="uploadForm" method="post" action="/spring/group/updater/parseUpload" enctype="multipart/form-data">
+					
+					<%-- options --%>
+                    <table>
+                        <tr>
+                            <td valign="top" class="smallBoldLabel">Options:</td>
+                            <td style="font-size:11px;">
+                                &nbsp;<label><input type="checkbox" name="createGroups"> Create groups if they don't already exist.</label>
+                                 <img src="<cti:url value="/WebConfig/yukon/Icons/help.gif"/>" onclick="$('createGroupsOptionInfoPopup').toggle();">
+                                <br>
+                            </td>
+                        </tr>
+                    </table>
+                    <br>
+                    
+                    <tags:simplePopup id="createGroupsOptionInfoPopup" title="Create Groups" onClose="$('createGroupsOptionInfoPopup').toggle();">
+					     <br>
+					     This option is not checked by default, an error will be displayed if any of the groups do not yet exist.
+					     <br><br>
+					     Do not use the Create Groups option if you expect the groups to already exists, this will prevent any misspellings from causing unwanted groups to be created.
+					     <br><br>
+					     When this option is checked, if any of the group names specified in the column headers does not yet exist, they will be created automatically.
+					     <br><br>
+					     
+					</tags:simplePopup>
 					
 						<%-- file select --%>
 			            <div class="normalBoldLabel" style="display:inline;">Update File:</div>
@@ -32,7 +57,7 @@
 							<div class="errorRed">${error}</div>
 						</c:when>
 						<c:when test="${success}">
-							<div class="okGreen">Successfully updated device groups.</div>
+							Successfully updated ${deviceCount} meter's device groups.
 						</c:when>
 					</c:choose>
 				
@@ -69,10 +94,42 @@
                 <td></td>
                 <td style="padding-top:20px;">
                 
+                	<cti:url var="check" value="/WebConfig/yukon/Icons/check.gif"/>
+                	
                 	<table class="miniResultsTable">
                 		<tr >
                 			<th style="width:20%;">Column Header</th>
                 			<th>Description</th>
+                			<th>Identifier</th>
+                		</tr>
+                		
+                		<tr>
+                			<td class="normalBoldLabel">ADDRESS</td>
+                			<td>
+                				Address of the device.
+                			</td>
+                			<td style="text-align:center;"><img src="${check}"></td>
+                		</tr>
+                		<tr>
+                			<td class="normalBoldLabel">METER_NUMBER</td>
+                			<td>
+                				Meter number of the device.
+                			</td>
+                			<td style="text-align:center;"><img src="${check}"></td>
+                		</tr>
+                		<tr>
+                			<td class="normalBoldLabel">NAME</td>
+                			<td>
+                				Name of the device.
+                			</td>
+                			<td style="text-align:center;"><img src="${check}"></td>
+                		</tr>
+                		<tr>
+                			<td class="normalBoldLabel">DEVICE_ID</td>
+                			<td>
+                				Device ID of the device.
+                			</td>
+                			<td style="text-align:center;"><img src="${check}"></td>
                 		</tr>
                 		
                 		<tr>
@@ -81,6 +138,7 @@
                 				Example: If the header is <b>DEVICE_GROUP_PREFIX:prefix=/Meter/Collection</b>, and the value in the row is <b>A</b>, then the device will be added to <b>/Meters/Collection/A</b>.<br><br>
                 				In addition, the device will be removed from all other groups under <b>/Meters/Collection<b>.<br><br>
                 			</td>
+                			<td></td>
                 		</tr>
                 		
                 		<tr>
@@ -88,6 +146,7 @@
                 			<td>The full path of a group to either add or remove the device from.<br><br>
                 				Example: If the header is <b>DEVICE_GROUP_SET:group=/Meters/Extra</b>, and the value in the row is <b>true</b>, then the device will be added to the group. If the value is <b>false</b>, it will be removed from the group.<br><br>
                 			</td>
+                			<td></td>
                 		</tr>
                 	</table>
                 	

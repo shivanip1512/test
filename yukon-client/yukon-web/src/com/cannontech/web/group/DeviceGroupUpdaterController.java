@@ -29,6 +29,7 @@ import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.tools.csv.CSVReader;
 
@@ -46,15 +47,20 @@ public class DeviceGroupUpdaterController {
 
 		String error = ServletRequestUtils.getStringParameter(request, "error", null);
 		boolean success = ServletRequestUtils.getBooleanParameter(request, "success", false);
+		int deviceCount = ServletRequestUtils.getIntParameter(request, "deviceCount", 0);
 		
 		model.addAttribute("error", error);
 		model.addAttribute("success", success);
+		model.addAttribute("deviceCount", deviceCount);
     }
 	
 	@RequestMapping
     public String parseUpload(HttpServletRequest request, LiteYukonUser user, ModelMap model) throws ServletException, IOException {
 
+		boolean createGroups = ServletRequestUtils.getBooleanParameter(request, "createGroups", false);
+		
 		String error = null;
+		int deviceCount = 0;
 		
 		MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest)request;
         MultipartFile dataFile = mRequest.getFile("dataFile");
@@ -97,13 +103,18 @@ public class DeviceGroupUpdaterController {
 		            	
 		            	String header = headerRow[columnIdx].trim();
 		            	
-	            		String[] columnTypeParts = header.split(":");
-	            		String columnType = columnTypeParts[0];
-	            		String[] valueParts = columnTypeParts[1].split("=");
-	            		String dataName = valueParts[0];
-	            		String dataValue = valueParts[1];
-	            		
-	            		processors.add(deviceGroupProcessorFactory.getProcessor(columnType, dataName, dataValue));
+		            	try {
+		            		String[] columnTypeParts = header.split(":");
+		            		String columnType = columnTypeParts[0];
+		            		String[] valueParts = columnTypeParts[1].split("=");
+		            		String dataName = valueParts[0];
+		            		String dataValue = valueParts[1];
+		            		
+		            		processors.add(deviceGroupProcessorFactory.getProcessor(columnType, dataName, dataValue, createGroups));
+		            		
+		            	} catch (IndexOutOfBoundsException e) {
+		            		throw new InvalidHeaderSyntax(header);
+		            	}
 		            }
 		            
 		            // process rows
@@ -121,16 +132,21 @@ public class DeviceGroupUpdaterController {
 		                }
 		                
 		                currentLineNumber++;
+		                deviceCount++;
 		            }
 		            
+            	} catch (InvalidHeaderSyntax e) {
+            		error = "Error (line 1): Invalid header: " + e.getBadHeader() + ".";
 	            } catch (ObjectMappingException e) {
 	            	error = "Error (line " + currentLineNumber + "): No device with " + identifierBulkField.getInputSource().getDisplayName() + ": " + currentIdentifier + ".";
 	            } catch (IndexOutOfBoundsException e) {
-	            	error = "Error (line " + currentLineNumber + "): Incompete row, each row must have a value for each header column.";
+	            	error = "Error (line " + currentLineNumber + "): Incomplete row, each row must have a value for each header column.";
 	            } catch (IllegalArgumentException e) {
 	            	Set<BulkFieldColumnHeader> identifierFields = bulkFieldService.getUpdateIdentifierBulkFieldColumnHeaders();
 	            	error = "Error (line 1): Invalid header column. Identifier types: " + StringUtils.join(identifierFields, " ,") + ". Header types: " + StringUtils.join(DeviceGroupUpdaterColumn.values(), " ,");
-	        	} finally {
+	            } catch (NotFoundException e) {
+	            	error = e.getMessage() + ". Check spelling, or use the the Create Groups option if you would like groups to be created if they do not yet exist.";
+	            } finally {
 	        		csvReader.close();
 	        	}
             }
@@ -138,18 +154,31 @@ public class DeviceGroupUpdaterController {
         
         model.addAttribute("error", error);
         model.addAttribute("success", error == null);
+        model.addAttribute("deviceCount", deviceCount);
         return "redirect:upload";
     }
 	
-	
+	@SuppressWarnings("unchecked")
+	private class InvalidHeaderSyntax extends RuntimeException {
+		
+		private String badHeader;
+		
+		public InvalidHeaderSyntax(String badHeader) {
+			this.badHeader = badHeader;
+		}
+		
+		public String getBadHeader() {
+			return badHeader;
+		}
+	}
 	
 	// PREFIX PROCESSOR
 	private class DeviceGroupPrefixProcessor implements BulkFieldProcessor<YukonDevice, String> {
 
 		private StoredDeviceGroup group;
 		
-		public DeviceGroupPrefixProcessor (String groupName) {
-			this.group = deviceGroupEditorDao.getStoredGroup(groupName, true);
+		public DeviceGroupPrefixProcessor (String groupName, boolean createGroups) {
+			this.group = deviceGroupEditorDao.getStoredGroup(groupName, createGroups);
 		}
 
 		@Override
@@ -185,8 +214,8 @@ public class DeviceGroupUpdaterController {
 		
 		private StoredDeviceGroup group;
 		
-		public DeviceGroupGroupProcessor (String groupName) {
-			this.group = deviceGroupEditorDao.getStoredGroup(groupName, true);
+		public DeviceGroupGroupProcessor (String groupName, boolean createGroups) {
+			this.group = deviceGroupEditorDao.getStoredGroup(groupName, createGroups);
 		}
 
 		@Override
@@ -208,14 +237,14 @@ public class DeviceGroupUpdaterController {
 	
 	private class DeviceGroupProcessorFactory {
 		
-		public BulkFieldProcessor<YukonDevice, String> getProcessor(String columnType, String dataName, String dataValue) throws IllegalArgumentException {
+		public BulkFieldProcessor<YukonDevice, String> getProcessor(String columnType, String dataName, String dataValue, boolean createGroups) throws IllegalArgumentException {
 			
 			DeviceGroupUpdaterColumn deviceGroupUpdaterColumn = DeviceGroupUpdaterColumn.valueOf(columnType);
 			
 			if (deviceGroupUpdaterColumn.equals(DeviceGroupUpdaterColumn.DEVICE_GROUP_PREFIX)) {
-				return new DeviceGroupPrefixProcessor(dataValue); 
+				return new DeviceGroupPrefixProcessor(dataValue, createGroups); 
 			} else if (deviceGroupUpdaterColumn.equals(DeviceGroupUpdaterColumn.DEVICE_GROUP_SET)) {
-				return new DeviceGroupGroupProcessor(dataValue);
+				return new DeviceGroupGroupProcessor(dataValue, createGroups);
 			} else {
 				throw new IllegalArgumentException("Invalid processorType");
 			}
