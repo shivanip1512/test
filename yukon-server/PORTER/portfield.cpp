@@ -3192,7 +3192,10 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                     }
                 }
 
-                addCommResult(InMessage->TargetID, CommResult != NORMAL, OutMessage->Retry > 0);
+                if( InMessage->TargetID != InMessage->DeviceID ) // The CCU itself is account for elsewhere
+                {
+                    addCommResult(InMessage->TargetID, CommResult != NORMAL, OutMessage->Retry > 0);
+                }
 
                 break;
             }
@@ -4700,7 +4703,8 @@ bool processCommResult(INT CommResult, LONG DeviceID, LONG TargetID, bool RetryG
     }
 
     USHORT deviceType = Device->getType();
-    if(TargetID != 0 && TargetID != DeviceID && deviceType != TYPE_CCU700 && deviceType != TYPE_CCU710 && deviceType != TYPE_CCU711 )
+    if(TargetID != 0 && TargetID != DeviceID &&
+       deviceType != TYPE_CCU700 && deviceType != TYPE_CCU710 && deviceType != TYPE_CCU711 && deviceType != TYPE_CCU721 )
     {
         // In this case, we need to account for the fail on the target device too..
         CtiDeviceSPtr pTarget = DeviceManager.getDeviceByID( TargetID );
