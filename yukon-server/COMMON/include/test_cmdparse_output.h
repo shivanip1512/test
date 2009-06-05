@@ -104,7 +104,7 @@ std::string parse_asString[TEST_SIZE] = {
 "command=5:flags=0::rawloc=(none),147,147.000:type=versacom,0,0.000",
 "command=5:flags=0::rawlen=(none),2,2.000:rawloc=(none),591922,591922.000:type=versacom,0,0.000",
 "command=6:flags=0::rawdata=ƒ92,-2147483648,0.000:rawloc=(none),38947,38947.000:type=emetcon,7,7.000",
-"command=1:flags=0::channel=(none),2,2.000:lp_channel=(none),2,2.000:lp_command=peak,-2147483648,0.000:lp_date_start=12/31/2003,-2147483648,0.000:lp_peaktype=interval,-2147483648,0.000:lp_range=(none),31,31.000:type=versacom,0,0.000",
+"command=1:flags=512::channel=(none),2,2.000:lp_channel=(none),2,2.000:lp_command=peak,-2147483648,0.000:lp_date_start=12/31/2003,-2147483648,0.000:lp_peaktype=interval,-2147483648,0.000:lp_range=(none),31,31.000:type=versacom,0,0.000",
 "command=4:flags=0::type=expresscom,8,8.000:xcproptest=(none),2,2.000",
 "command=4:flags=0::type=expresscom,8,8.000:xcproptest=(none),1,1.000",
 "command=4:flags=0::type=expresscom,8,8.000:xcproptest=(none),0,0.000",
