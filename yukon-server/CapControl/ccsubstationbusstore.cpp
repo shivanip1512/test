@@ -45,6 +45,7 @@
 #include <string>
 //#include <rwutil.h>
 
+#define HOURLY_RATE 3600
 
 extern ULONG _CC_DEBUG;
 extern ULONG _DB_RELOAD_WAIT;
@@ -55,6 +56,7 @@ extern ULONG _OP_STATS_REFRESH_RATE;
 extern string _MAXOPS_ALARM_CAT;
 extern LONG _MAXOPS_ALARM_CATID;
 extern BOOL _OP_STATS_DYNAMIC_UPDATE;
+
 
 using namespace std;
 
@@ -2085,6 +2087,8 @@ void CtiCCSubstationBusStore::doOpStatsThr()
     CtiTime currentTime;
     CtiTime opStatRefreshRate =  nextScheduledTimeAlignedOnRate( currentTime,  _OP_STATS_REFRESH_RATE );
 
+    CtiTime resetMemAllocRefreshRate =  nextScheduledTimeAlignedOnRate( currentTime,  HOURLY_RATE );
+
     ULONG secondsFrom1901 = 0;
 
     while(TRUE)
@@ -2100,6 +2104,17 @@ void CtiCCSubstationBusStore::doOpStatsThr()
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Controller refreshing OP STATS" << endl;
+            }
+            if( currentTime.seconds() > resetMemAllocRefreshRate.seconds())
+            {
+                LONG currentAllocations = ResetBreakAlloc();
+                if ( _CC_DEBUG & CC_DEBUG_EXTENDED )
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - Current Number of Historical Memory Allocations: " << currentAllocations << endl;
+                }
+
+                resetMemAllocRefreshRate =  nextScheduledTimeAlignedOnRate( currentTime,  HOURLY_RATE );
             }
 
             {
