@@ -62,6 +62,12 @@
 						<x:inputText size="70" id="schedCmdText" value="#{paoSched.command}" disabled="#{paoSched.scheduleID == -1}"/>
 
 					</h:column>
+					<h:column>
+					   <f:facet name="header">
+                            <x:outputText value="Disable OvUv"/>
+                        </f:facet>
+					   <h:selectBooleanCheckbox id="DisableOVUVCheckBox" value="#{paoSched.disableOvUvBoolean}"/>
+					</h:column>
 
 				</h:dataTable>
 

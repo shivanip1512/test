@@ -30,11 +30,11 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
 	static{
 		selectAllPaoSchedule = "SELECT ScheduleID,ScheduleName From PaoSchedule";
 		
-		selectAllAssignments = "SELECT sa.EventID, sa.ScheduleID, s.ScheduleName, s.NextRunTime, s.LastRunTime, sa.PaoID, po.PAOName, sa.Command " +
+		selectAllAssignments = "SELECT sa.EventID, sa.ScheduleID, s.ScheduleName, s.NextRunTime, s.LastRunTime, sa.PaoID, po.PAOName, sa.Command, sa.disableOvUv " +
 				               "FROM PAOScheduleAssignment sa, PAOSchedule s, YukonPAObject po " +
 				               "WHERE s.ScheduleID = sa.ScheduleID AND sa.PaoID = po.PAObjectID ";
 		
-		assignCommandToSchedule = "INSERT INTO PAOScheduleAssignment (EventID, ScheduleID, PaoID, Command) VALUES (?,?,?,?)";
+		assignCommandToSchedule = "INSERT INTO PAOScheduleAssignment (EventID, ScheduleID, PaoID, Command, disableOvUv) VALUES (?,?,?,?,?)";
 		
 		removeCommandFromScheduleByEventId = "DELETE FROM PAOScheduleAssignment WHERE EventID = ?";
 		
@@ -51,6 +51,7 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
             	assignment.setDeviceName(rs.getString("PaoName"));
             	assignment.setLastRunTime(rs.getTimestamp("LastRunTime"));
             	assignment.setNextRunTime(rs.getTimestamp("NextRunTime"));
+            	assignment.setDisableOvUv(rs.getString("disableOvUv"));
             	
                 return assignment;
             }
@@ -90,7 +91,8 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
 				 									  nextId,
 				 									  pao.getScheduleId(),
 				 									  pao.getPaoId(),
-				 									  pao.getCommandName()
+				 									  pao.getCommandName(),
+				 									  pao.getDisableOvUv()
 													);
 		return rowsAffected == 1;
 	}
@@ -114,14 +116,6 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
 		int rowsAffected = simpleJdbcTemplate.update(removeCommandFromScheduleByEventId, eventId);
 		
 		return rowsAffected == 1;
-	}
-	
-	private int getNextEventId() {
-		String sql = "SELECT Max(EventID)+1 FROM PAOScheduleAssignment"; 
-		
-		int id = simpleJdbcTemplate.queryForInt(sql);
-		
-		return id;
 	}
 	
 	@Autowired

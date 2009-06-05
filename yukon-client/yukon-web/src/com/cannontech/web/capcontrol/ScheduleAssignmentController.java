@@ -81,6 +81,7 @@ public class ScheduleAssignmentController {
 				newAssignment.setCommandName(cmd.getCommandName());
 				newAssignment.setPaoId(paoId);
 				newAssignment.setScheduleId(schedId);
+				newAssignment.setDisableOvUv("N");
 				
 				assignments.add(newAssignment);
 			}

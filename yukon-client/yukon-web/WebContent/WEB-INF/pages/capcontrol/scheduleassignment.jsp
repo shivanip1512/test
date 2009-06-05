@@ -194,6 +194,7 @@ Event.observe(window, 'load', function() {
 				<th>Next Run Time</th>
 				<th>Command</th>
 				<th>Device</th>
+				<th>Disable OvUv</th>
 				<th>Delete</th>
 			</tr>
 			</thead>
@@ -206,6 +207,7 @@ Event.observe(window, 'load', function() {
 					<td><cti:formatDate value="${item.nextRunTime}" type="DATEHM" /></td>
 					<td><c:out value="${item.commandName}" /></td>
 					<td><c:out value="${item.deviceName}" /></td>
+					<td><c:out value="${item.disableOvUv}"/></td>
 					<td align="center">
                         <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
                             <img src="/WebConfig/yukon/Icons/cancel.gif" class="pointer" onclick="removeScheduleCommand(${item.eventId})">

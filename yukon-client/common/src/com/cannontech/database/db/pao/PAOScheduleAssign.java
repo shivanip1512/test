@@ -18,10 +18,11 @@ public class PAOScheduleAssign extends DBPersistent
 	private Integer scheduleID = new Integer(INVALID_SCHEDULEID);
 	private Integer paoID = null;
 	private String command = CtiUtilities.STRING_NONE;
+	private String disableOvUv = "N";
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
-		"ScheduleID", "PaoID", "Command"
+		"ScheduleID", "PaoID", "Command", "DisableOvUv"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "EventID" };
@@ -36,7 +37,7 @@ public class PAOScheduleAssign extends DBPersistent
 
 
 	private static final String ALL_SCHEDULES_SQL = 
-			"select EventID, ScheduleID, PaoID, Command " +
+			"select EventID, ScheduleID, PaoID, Command, DisableOvUv " +
 			"FROM " + TABLE_NAME +
 			" where paoID = ? " +
 			"order by paoID"; 
@@ -69,7 +70,7 @@ public class PAOScheduleAssign extends DBPersistent
 
 		Object addValues[] = {
 			getEventID(), getScheduleID(), getPaoID(),
-			getCommand()
+			getCommand(), getDisableOvUv()
 		};
 	
 		add( TABLE_NAME, addValues );
@@ -116,6 +117,7 @@ public class PAOScheduleAssign extends DBPersistent
 					item.setScheduleID( new Integer(rset.getInt(2)) );
 					item.setPaoID( new Integer(rset.getInt(3)) );
 					item.setCommand( new String(rset.getString(4)) );
+					item.setDisableOvUv( new String(rset.getString(5)) );
 	
 					tmpList.add( item );
 				}
@@ -197,6 +199,7 @@ public class PAOScheduleAssign extends DBPersistent
 			setScheduleID( (Integer) results[0] );
 			setPaoID( (Integer)results[1] );
 			setCommand( (String)results[2] );
+			setDisableOvUv( (String)results[3] );
 		}
 
 	}
@@ -211,7 +214,7 @@ public class PAOScheduleAssign extends DBPersistent
 			return;
 
 		Object setValues[] = {
-			getScheduleID(), getPaoID(), getCommand()
+			getScheduleID(), getPaoID(), getCommand(), getDisableOvUv()
 		};
 						
 		Object constraintValues[] = { getEventID() };
@@ -274,6 +277,26 @@ public class PAOScheduleAssign extends DBPersistent
 	 */
 	public void setPaoID(Integer integer) {
 		paoID = integer;
+	}
+	
+	public void setDisableOvUv(String disableOvUv) {
+	    this.disableOvUv = disableOvUv;
+	}
+
+	public String getDisableOvUv() {
+	    return disableOvUv;
+	}
+	
+	public void setDisableOvUvBoolean(boolean disableOvUv) {
+	    if(disableOvUv) {
+	        this.disableOvUv = "Y";
+	    } else {
+	        this.disableOvUv = "N";
+	    }
+	}
+	
+	public boolean getDisableOvUvBoolean() {
+	    return disableOvUv.equalsIgnoreCase("N") ? false : true;
 	}
 
 }

@@ -13,6 +13,7 @@ public class PaoScheduleAssignment implements Comparable<PaoScheduleAssignment> 
 	private int commandId;
 	private Date lastRunTime;
 	private Date nextRunTime;
+	private String disableOvUv;
 	
 	
 	public PaoScheduleAssignment() {
@@ -86,6 +87,14 @@ public class PaoScheduleAssignment implements Comparable<PaoScheduleAssignment> 
 	public Date getNextRunTime() {
 		return nextRunTime;
 	}
+	
+	public String getDisableOvUv() {
+        return disableOvUv;
+    }
+
+    public void setDisableOvUv(String disableOvUv) {
+        this.disableOvUv = disableOvUv;
+    }
 
 	public void setNextRunTime(Date nextRunTime) {
 		this.nextRunTime = nextRunTime;
@@ -111,6 +120,8 @@ public class PaoScheduleAssignment implements Comparable<PaoScheduleAssignment> 
 				+ ((commandName == null) ? 0 : commandName.hashCode());
 		result = prime * result
 				+ ((deviceName == null) ? 0 : deviceName.hashCode());
+		result = prime * result
+		        + ((disableOvUv == null) ? 0 : disableOvUv.hashCode());
 		result = prime * result + eventId;
 		result = prime * result
 				+ ((lastRunTime == null) ? 0 : lastRunTime.hashCode());
@@ -144,6 +155,11 @@ public class PaoScheduleAssignment implements Comparable<PaoScheduleAssignment> 
 				return false;
 		} else if (!deviceName.equals(other.deviceName))
 			return false;
+		if (disableOvUv == null) {
+		    if (other.disableOvUv != null)
+		        return false;
+		} else if (!disableOvUv.equals(other.disableOvUv))
+		    return false;
 		if (eventId != other.eventId)
 			return false;
 		if (lastRunTime == null) {
