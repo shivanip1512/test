@@ -58,7 +58,7 @@
                 <a href="javascript:void(0);"
                    class="optDeselect"
                    onmouseover="changeOptionStyle(this);"
-                   onclick="closeTierPopup(); showRecentCmds('/capcontrol/tabledata.jsp?type=RC', ${paoId});">View Recent Cmds</a>
+                   onclick="closeTierPopup(); showRecentCmdsForSingle('/capcontrol/tabledata.jsp?type=RC', ${paoId});">View Recent Cmds</a>
             </td>
         </tr>
      </table>

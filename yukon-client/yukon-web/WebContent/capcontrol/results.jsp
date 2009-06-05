@@ -70,6 +70,7 @@
 
    <table id="headerTable" width="100%" border="0" cellspacing="0" cellpadding="0">
  	 <tr class="columnHeader lAlign">
+ 	 <td width="80px"></td>
  	 <td>Name</td>
      <td>Item Type</td>
      <td>Description</td>
@@ -77,7 +78,7 @@
      </tr>
  </table>
 <div class="scrollLarge">          
-<table id="resTable" width="98%" border="0" cellspacing="0" cellpadding="0">
+<table id="resTable" width="100%" border="0" cellspacing="0" cellpadding="0">
 
 <%
 for( int i = 0; i < items.length; i++ )
@@ -85,8 +86,8 @@ for( int i = 0; i < items.length; i++ )
 	String css = (i % 2 == 0 ? "tableCell" : "altTableCell");
 	LiteWrapper item = items[i];
 %>
-	        <tr class="<%=css%>">
-				<td>
+	        <tr class="<%=css%>" height="18px" valign="middle" style="vertical-align : middle;">
+				<td width="80px">
 		<% if( item.getLiteType() == LiteTypes.YUKON_PAOBJECT ) { %>
 				<input type="checkbox" name="cti_chkbxSubBuses" value="<%=item.getItemID()%>"/>
 				<cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
@@ -94,7 +95,7 @@ for( int i = 0; i < items.length; i++ )
                         <img class="rAlign editImg" src="/editor/images/edit_item.gif"/>
                     </a>
                     <a href="/editor/deleteBasePAO.jsf?value=<%=item.getItemID()%>" class="editImg">
-                        <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
+                        <img class="rAlign editImg" src="/editor/images/delete_item.gif" height="16" width="16"/>
                     </a>
                 </cti:checkProperty>
 		<% } else { %>
@@ -103,18 +104,18 @@ for( int i = 0; i < items.length; i++ )
                         <img class="rAlign editImg" src="/editor/images/edit_item.gif"/>
                     </a>
                     <a href="/editor/deleteBasePoint.jsf?value=<%=item.getItemID()%>" class="editImg">
-                        <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
+                        <img class="rAlign editImg" src="/editor/images/delete_item.gif" height="16" width="16"/>
                     </a>
                 </cti:checkProperty>
 		<% }  %>
 		<% if( CBCUtils.isController( item ) ) { %>
             <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
-                <a href="/editor/copyBase.jsf?itemid=<%=item.getItemID() %>&type=1>"><img src="/editor/images/page_copy.gif" border="0" height="15" width="15"/></a>
+                <a href="/editor/copyBase.jsf?itemid=<%=item.getItemID() %>&type=1>"><img src="/editor/images/page_copy.gif" border="0" height="16" width="16"/></a>
 			</cti:checkProperty>
 		<% }%>
-				<%=item.toString()%></td>
+		        </td>
+		        <td><%=item.toString()%></td>
 				<td><%=item.getItemType()%></td>
-
 				<td><%= item.getDescription()%></td>
 				<td>
 <% 

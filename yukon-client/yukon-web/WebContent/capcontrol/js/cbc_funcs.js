@@ -604,7 +604,7 @@ function showRecentCmds( baseUrl )
     window.location = url;
 }
 
-function showRecentCmds( baseUrl, id ){
+function showRecentCmdsForSingle( baseUrl, id ){
 	window.location = baseUrl + '&value=' + id;
 }
 
