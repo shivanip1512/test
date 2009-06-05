@@ -93,3 +93,4 @@ INSERT INTO YukonRoleProperty VALUES(-1102,-2,'default_time_zone','CST','Default
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
+INSERT INTO CTIDatabase VALUES('4.2', 'Matt K', '05-JUN-2009', 'Latest Update', 10);
