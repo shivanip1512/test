@@ -22,6 +22,7 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
@@ -33,6 +34,7 @@ import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
@@ -194,6 +196,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private YukonListDao yukonListDao;
     private ThermostatScheduleDao thermostatScheduleDao;
+    private RolePropertyDao rolePropertyDao;
+    private SystemDateFormattingService systemDateFormattingService;
     
     private class EnergyCompanyHierarchy {
         // Energy company hierarchy
@@ -367,7 +371,20 @@ public class LiteStarsEnergyCompany extends LiteBase {
     }
     
     public TimeZone getDefaultTimeZone() {
-        return DaoFactory.getAuthDao().getUserTimeZone(user);
+        TimeZone timeZone;
+        String timeZoneStr = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.ENERGY_COMPANY_DEFAULT_TIME_ZONE, user);
+        
+        if (StringUtils.isNotBlank(timeZoneStr)) {
+            try {
+                timeZone = CtiUtilities.getValidTimeZone(timeZoneStr);
+                CTILogger.debug("Energy Company Role Default TimeZone found: " + timeZone.getDisplayName());
+            } catch (BadConfigurationException e) {
+                throw new BadConfigurationException (e.getMessage() + ". Invalid value in Energy Company Role Default TimeZone property.");
+            }
+        } else {
+            timeZone = systemDateFormattingService.getSystemTimeZone();
+        }
+        return timeZone;
     }
     
     public String getAdminEmailAddress() {
@@ -477,8 +494,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
         
     	Iterable<LiteApplianceCategory> allApplianceCategories = getApplianceCategories();
         
-    	RolePropertyDao rolePropertyDao = 
-    		YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);        
         boolean inheritCats = 
         	rolePropertyDao.checkProperty(YukonRoleProperty.INHERIT_PARENT_APP_CATS, getUser());
         
@@ -2013,5 +2028,13 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			ThermostatScheduleDao thermostatScheduleDao) {
 		this.thermostatScheduleDao = thermostatScheduleDao;
 	}
-
+    
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+		this.rolePropertyDao = rolePropertyDao;
+	}
+    
+    public void setSystemDateFormattingService(
+			SystemDateFormattingService systemDateFormattingService) {
+		this.systemDateFormattingService = systemDateFormattingService;
+	}
 }

@@ -5,6 +5,8 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.YukonListDao;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
@@ -19,7 +21,9 @@ public class LiteStarsEnergyCompanyFactory {
     private SimpleJdbcTemplate simpleJdbcTemplate;
 	private YukonListDao yukonListDao;
 	private ThermostatScheduleDao thermostatScheduleDao;
-    
+	private RolePropertyDao rolePropertyDao;
+	private SystemDateFormattingService systemDateFormattingService;
+	
     public LiteStarsEnergyCompany createEnergyCompany(EnergyCompany energyCompany) {
         LiteStarsEnergyCompany liteStarsEnergyCompany = new LiteStarsEnergyCompany(energyCompany);
         applyPropertySetters(liteStarsEnergyCompany);
@@ -40,6 +44,8 @@ public class LiteStarsEnergyCompanyFactory {
         energyCompany.setSimpleJdbcTemplate(simpleJdbcTemplate);
         energyCompany.setYukonListDao(yukonListDao);
         energyCompany.setThermsotatScheduleDao(thermostatScheduleDao);
+        energyCompany.setRolePropertyDao(rolePropertyDao);
+        energyCompany.setSystemDateFormattingService(systemDateFormattingService);
         
         energyCompany.initialize();
     }
@@ -82,5 +88,15 @@ public class LiteStarsEnergyCompanyFactory {
 			ThermostatScheduleDao thermostatScheduleDao) {
 		this.thermostatScheduleDao = thermostatScheduleDao;
 	}
+
+    @Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+		this.rolePropertyDao = rolePropertyDao;
+	}
     
+    @Autowired
+    public void setSystemDateFormattingService(
+			SystemDateFormattingService systemDateFormattingService) {
+		this.systemDateFormattingService = systemDateFormattingService;
+	}
 }

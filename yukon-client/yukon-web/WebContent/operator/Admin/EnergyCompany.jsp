@@ -28,6 +28,7 @@
 		ecTemp.setMainPhoneNumber( ServletUtils.formatPhoneNumberForStorage(request.getParameter("PhoneNo")) );
 		ecTemp.setMainFaxNumber( ServletUtils.formatPhoneNumberForStorage(request.getParameter("FaxNo")) );
 		ecTemp.setEmail( request.getParameter("Email") );
+		ecTemp.setTimeZone( request.getParameter("TimeZone") );
 		ServletUtils.saveRequest(request, session, new String[] {"Route", "OperatorGroup", "CustomerGroup", "AdminEmail", "OptOutNotif"});
 		
 		response.sendRedirect("Address.jsp?referer=EnergyCompany.jsp");
@@ -209,6 +210,12 @@ function addCustomerGroup(form) {
                   <td height="67"> 
                     <table width="100%" border="0" cellspacing="0" cellpadding="5">
                       <tr> 
+						<td width="25%" align="right" class="TableCell">Time Zone:</td>
+						<td class="TableCell">
+						  <input type="text" name="TimeZone" value="<%= ec.getTimeZone() %>" size="14" onchange="setContentChanged(true)">
+						</td>
+					  </tr>
+					  <tr> 
                         <td width="25%" align="right" class="TableCell">Default 
                           Route:</td>
                         <td class="TableCell"> 
