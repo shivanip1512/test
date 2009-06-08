@@ -126,4 +126,4 @@ greater than one.
 		<td>-6</td>
 	</tr>
 </table>
-</div>\ No newline at end of file
+</div>
