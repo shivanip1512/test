@@ -137,7 +137,7 @@ BOOL CtiFDRTelegyr::init( void )
       }
 
       //this loads the data from the FDR table and sorts it all out into chunks we can use
-      loadTranslationLists();   
+      loadTranslationLists();
 
       // create a TelegyrGetData thread object
       _threadGetTelegyrData = rwMakeThreadFunction( *this, &CtiFDRTelegyr::threadFunctionGetDataFromTelegyr );
@@ -204,11 +204,11 @@ bool CtiFDRTelegyr::connect( int centerNumber, int &status )
    if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
    {
       CtiLockGuard< CtiLogger > doubt_guard( dout );
-      dout << CtiTime::now() << " id " << _controlCenter.getChannelID() 
-      << " operator " << op 
+      dout << CtiTime::now() << " id " << _controlCenter.getChannelID()
+      << " operator " << op
       << " password " << pw
       << " system name " << sn
-      << " access " << _controlCenter.getAccess() 
+      << " access " << _controlCenter.getAccess()
       << endl;
    }
 
@@ -217,7 +217,7 @@ bool CtiFDRTelegyr::connect( int centerNumber, int &status )
 
    {
       CtiLockGuard< CtiLogger > doubt_guard( dout );
-      dout << CtiTime::now() << " api_connect returned " << status << endl; 
+      dout << CtiTime::now() << " api_connect returned " << status << endl;
    }
 
    delete [] op;
@@ -310,7 +310,7 @@ bool CtiFDRTelegyr::loadTranslationLists()
 //====================================================================================================
 //this is our loop for getting data
 //we just look at the queue every second or so and look for messages
-//the telegyr server should be putting data in that queue for us to read as we requested in the 
+//the telegyr server should be putting data in that queue for us to read as we requested in the
 //buildAndRegisterGroups() method
 //====================================================================================================
 
@@ -384,7 +384,7 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
 
          pSelf.sleep( 1000 );
 
-         CtiLockGuard<CtiMutex> sendGuard( _controlCenter.getMutex() );         
+         CtiLockGuard<CtiMutex> sendGuard( _controlCenter.getMutex() );
 
          if( isConnected() )
          {
@@ -417,7 +417,7 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
                switch( reason )
                {
                   case API_DISC_NOTIFY:   //we've lost connection to the control center
-                  {  
+                  {
                      if( getDebugLevel() & STARTUP_FDR_DEBUGLEVEL )
                      {
                         CtiLockGuard<CtiLogger> doubt_guard( dout );
@@ -603,6 +603,11 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
             }
             else
             {
+               if( getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL )
+               {
+                  CtiLockGuard<CtiLogger> doubt_guard( dout );
+                  dout << CtiTime::now() << " Return Code not Normal. Got " << returnCode << endl;
+               }
                badMsgCount = noDataAction( badMsgCount );
             }
 
@@ -610,7 +615,7 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
             {
                //call delete groups, we've got a new list already
                deleteGroups();
-               _reloadTimer = CtiTime::now(); 
+               _reloadTimer = CtiTime::now();
             }
 
             if( timer >= 120 )
@@ -701,9 +706,9 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
 }
 
 //====================================================================================================
-//here we are yanking data out of our telegyr group list and setting up groups that the foreign system 
+//here we are yanking data out of our telegyr group list and setting up groups that the foreign system
 //will understand
-//we should only be here if we've gotten past the api_init() and api_connect() methods built into 
+//we should only be here if we've gotten past the api_init() and api_connect() methods built into
 //telegyr
 //====================================================================================================
 
@@ -792,20 +797,26 @@ void CtiFDRTelegyr::buildAndRegisterGroups( void )
       }
 
       group_number = _controlCenter.getTelegyrGroupList()[index].getGroupID();
-      persistence = API_GRP_NO_PERSISTENCE;                          
+      persistence = API_GRP_NO_PERSISTENCE;
       object_count = _controlCenter.getTelegyrGroupList()[index].getPointList().size();
 
       if( 0 != object_count )       //don't create empty groups
       {
          //make enough pointers for our pointnames
-         name_list = new char *[object_count];                    
+         name_list = new char *[object_count];
 
          for( cnt = 0; cnt < object_count; cnt++ )
          {
             //makes some space to copy our pointnames
             name_list[cnt] = new char[200];
             strcpy( name_list[cnt], _controlCenter.getTelegyrGroupList()[index].getPointList()[cnt].getTranslateName( 0 ).c_str() );
-         }                                                   
+
+            if( getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL )
+            {
+               CtiLockGuard<CtiLogger> doubt_guard( dout );
+               dout << CtiTime::now() << " Adding \"" << name_list[cnt] << "\" to " << group_number << endl;
+            }
+         }
 
          //do the api-registration of the group...
          if( isConnected() )
@@ -813,11 +824,11 @@ void CtiFDRTelegyr::buildAndRegisterGroups( void )
             if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
             {
                CtiLockGuard<CtiLogger> doubt_guard( dout );
-               dout << CtiTime::now() 
-                     << " Create ch_id " << channel_id 
-                     << " type " << group_type 
-                     << " num " << group_number 
-                     << " pers " << persistence 
+               dout << CtiTime::now()
+                     << " Create ch_id " << channel_id
+                     << " type " << group_type
+                     << " num " << group_number
+                     << " pers " << persistence
                      << " pri " << PRIORITY
                      << " objs " << object_count << endl;
             }
@@ -847,6 +858,8 @@ void CtiFDRTelegyr::buildAndRegisterGroups( void )
             }
             else
             {
+               CtiLockGuard<CtiLogger> doubt_guard( dout );
+               dout << CtiTime::now() << " Group number " << group_number << " registered successfully " << endl;
                created[index] = true;
             }
          }
@@ -902,7 +915,6 @@ void CtiFDRTelegyr::buildAndRegisterGroups( void )
          {
             group_type = API_GET_CYC_MEA;
          }
-            group_type = API_GET_SPO_MEA;
       }
       else//COUNTER_TYPE
       {
@@ -924,10 +936,16 @@ void CtiFDRTelegyr::buildAndRegisterGroups( void )
             //data back to use immediately
             retCode = api_enable_cyclic( channel_id, group_type, group_number, cycle_time, API_SECOND, API_ALIG_NOALIG );
 
-            if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
+            if (getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL)
             {
                CtiLockGuard<CtiLogger> doubt_guard( dout );
-               dout << CtiTime::now() << " api_enable_cyclic group_number " << group_number << " returned " << retCode << endl;
+               dout << CtiTime::now() << " api_enable_cyclic( channel_id, group_type, group_number, cycle_time, API_SECOND, API_ALIG_NOALIG );" << endl;
+               dout << CtiTime::now() << " api_enable_cyclic(" << channel_id << "," << group_type << "," << group_number << "," << cycle_time << "," << API_SECOND << "," << API_ALIG_NOALIG << ");" << endl;
+            }
+            if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
+            {
+               CtiLockGuard<CtiLogger> doubt_guard( dout );
+               dout << CtiTime::now() << " api_enable_cyclic for group_number " << group_number << " returned " << retCode << endl;
             }
 
             cyclic = false;
