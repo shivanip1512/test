@@ -66,6 +66,8 @@ public class MCT470 extends MeterReadBase {
                 case 17: // Rate C Consumption
                 case 18: // Rate D Demand
                 case 19: // Rate D Consumption
+                case 21: // Peak kW (IED)
+                case 22: // Peak kM (Coincidental) (IED)
                 }
                 break;
         }

@@ -79,11 +79,24 @@ public class BigRiversElecCoopFormatter extends BillingFormatterBase {
         addToStringBufferWithPrecedingFiller(writeToFile, value, 7, "0", false);
 
         // kVar time, date, reading (Use kVa time, date, reading if kVar is null)
-        //  - First... attempt to find the KVAR reading/timestamp, if not found attempt to find the KVA reading.
-        //  - The secondary lookup of kVa data is for Big Rivers (and Jackson Purchase) specfically.
-        Timestamp totalPeakDemandTS = device.getTimestamp(Channel.ONE,ReadingType.KVAR, BillableField.totalPeakDemand);
-        Double totalPeakDemand = device.getValue(Channel.ONE, ReadingType.KVAR, BillableField.totalPeakDemand);
-        
+        //  - First... attempt to find the Coincidental kM reading/timestamp, if not found attempt to find the KVAR reading.
+        //  - If not found... attempt to find the KVAR reading/timestamp, if not found attempt to find the KVA reading.
+        //  - The extra lookup of kVa data is for Big Rivers (and Jackson Purchase) specfically.
+        Timestamp totalPeakDemandTS = device.getTimestamp(Channel.ONE, ReadingType.KVAR, BillableField.coincidentalAtPeakDemand);
+        Double totalPeakDemand = device.getValue(Channel.ONE, ReadingType.KVAR, BillableField.coincidentalAtPeakDemand);
+
+        //If coincident at peak kW returned us nothing, then look for coincident at kVa
+        if (totalPeakDemandTS == null && totalPeakDemand == null) {
+            totalPeakDemandTS = device.getTimestamp(Channel.ONE,ReadingType.KVA, BillableField.coincidentalAtPeakDemand);
+            totalPeakDemand = device.getValue(Channel.ONE, ReadingType.KVA, BillableField.coincidentalAtPeakDemand);
+        }
+
+        //If coincident at peak kW for kVa returned us nothing, then look for kVar
+        if (totalPeakDemandTS == null && totalPeakDemand == null) {
+            totalPeakDemandTS = device.getTimestamp(Channel.ONE,ReadingType.KVAR, BillableField.totalPeakDemand);
+            totalPeakDemand = device.getValue(Channel.ONE, ReadingType.KVAR, BillableField.totalPeakDemand);
+        }
+
         //If Kvar returned us nothing, then look for kVa
         if (totalPeakDemandTS == null && totalPeakDemand == null) {
             totalPeakDemandTS = device.getTimestamp(Channel.ONE,ReadingType.KVA, BillableField.totalPeakDemand);

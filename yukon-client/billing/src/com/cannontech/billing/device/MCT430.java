@@ -111,6 +111,14 @@ public class MCT430 extends BillingDeviceBase {
                 addData(Channel.ONE, readingType, BillableField.rateDConsumption, data);
                 break;
 
+            case 21: // Peak kW (IED)
+                addData(Channel.ONE, readingType, BillableField.totalPeakDemand, data);
+                break;
+
+            case 22: // Peak kM (Coincidental) (IED)
+                addData(Channel.ONE, readingType, BillableField.coincidentalAtPeakDemand, data);
+                break;
+
             }
             break;
         }
@@ -164,6 +172,8 @@ public class MCT430 extends BillingDeviceBase {
             case 14: // Rate B Demand
             case 16: // Rate C Demand
             case 18: // Rate D Demand
+            case 21: // Peak kW (IED)
+            case 22: // Peak kM (Coincidental) (IED)
                 return true;
             }
 

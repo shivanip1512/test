@@ -382,6 +382,16 @@
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kVAr"/>
             </point>
+            <point type="Analog" offset="21">
+                <name>Peak kW (IED)</name>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point type="Analog" offset="22">
+                <name>Peak kM (Coincidental)</name>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kVar"/>
+            </point>
             <point type="Analog" offset="40">
             	<init>true</init>
                 <name>IED Blink Count</name>
@@ -775,6 +785,16 @@
                 <name>Last Interval kVAr</name>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kVAr"/>
+            </point>
+            <point type="Analog" offset="21">
+                <name>Peak kW (IED)</name>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point type="Analog" offset="22">
+                <name>Peak kM (Coincidental)</name>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kVar"/>
             </point>
             <point type="Analog" offset="40">
             	<init>true</init>
