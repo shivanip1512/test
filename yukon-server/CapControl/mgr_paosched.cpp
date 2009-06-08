@@ -107,7 +107,6 @@ void CtiPAOScheduleManager::stop()
 
 void CtiPAOScheduleManager::doResetThr()
 {
-    ThreadMonitor.start(); 
     Sleep(1000);
     CtiTime lastPeriodicDatabaseRefresh = CtiTime();
 
@@ -165,7 +164,6 @@ void CtiPAOScheduleManager::doResetThr()
 
 void CtiPAOScheduleManager::mainLoop()
 {
-    ThreadMonitor.start(); 
     try
     {
         {

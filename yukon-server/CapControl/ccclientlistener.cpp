@@ -278,7 +278,6 @@ void CtiCCClientListener::_listen()
 
 void CtiCCClientListener::_check()
 {
-    ThreadMonitor.start();
     CtiTime rwnow;
     CtiTime announceTime((unsigned long) 0);
     CtiTime tickleTime((unsigned long) 0);

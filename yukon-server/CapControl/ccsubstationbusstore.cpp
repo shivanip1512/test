@@ -2078,7 +2078,6 @@ void CtiCCSubstationBusStore::doOpStatsThr()
         dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
 
-    ThreadMonitor.start();
     BOOL startUpSendStats = TRUE;
     LONG lastOpStatsThreadPulse = 0;
     CtiTime rwnow;
@@ -2261,8 +2260,7 @@ void CtiCCSubstationBusStore::doAMFMThr()
     string str;
     char var[128];
     string amfm_interface = "NONE";
-    ThreadMonitor.start();
-
+    
     std::strcpy(var, "CAP_CONTROL_AMFM_INTERFACE");
     if( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
