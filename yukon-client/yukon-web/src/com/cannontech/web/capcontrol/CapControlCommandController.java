@@ -209,8 +209,8 @@ public class CapControlCommandController extends MultiActionController {
         	    reason = generateUpdateReason(cmdId, paoId, user.getUsername());
         	}
 
-        	insertComment(paoId, user.getUserID(), reason, cmdId);
             exec.execute(controlType, cmdId, paoId, null, operationalStateValue, user);
+            insertComment(paoId, user.getUserID(), reason, cmdId);
         }
 
 	}
