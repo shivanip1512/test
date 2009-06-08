@@ -11,7 +11,7 @@ import java.util.Map;
 
 import javax.faces.context.FacesContext;
 
-import com.cannontech.cbc.dao.CcSubstationDao;
+import com.cannontech.cbc.dao.SubstationDao;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.capcontrol.CapControlArea;
@@ -22,7 +22,7 @@ import com.cannontech.web.util.CBCDBUtil;
 
 public class CBCAreaDataModel extends EditorDataModelImpl {
     CapControlArea area;
-    CcSubstationDao substationDao = YukonSpringHook.getBean("ccSubstationDao", CcSubstationDao.class);
+    SubstationDao substationDao = YukonSpringHook.getBean("ccSubstationDao", SubstationDao.class);
     PaoDao paoDao = YukonSpringHook.getBean("paoDao", PaoDao.class);
     
     List<CBCAreaData> assignedSubstations = new ArrayList<CBCAreaData>();

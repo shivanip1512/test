@@ -17,6 +17,7 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.db.pao.YukonPAObject;
 
 /**
  * Test class for ObjectMapperFactoryImpl
@@ -329,6 +330,21 @@ public class ObjectMapperFactoryImplTest extends TestCase {
 				String paoClass) {
             throw new UnsupportedOperationException("Method not implemented");
         }
+
+		@Override
+		public boolean add(YukonPAObject pao) {
+			throw new UnsupportedOperationException("Method not implemented");
+		}
+
+		@Override
+		public boolean remove(YukonPAObject pao) {
+			throw new UnsupportedOperationException("Method not implemented");
+		}
+
+		@Override
+		public boolean update(YukonPAObject pao) {
+			throw new UnsupportedOperationException("Method not implemented");
+		}
     }
 
     /**

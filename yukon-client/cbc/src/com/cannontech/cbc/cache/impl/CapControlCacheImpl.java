@@ -21,7 +21,7 @@ import org.apache.commons.lang.Validate;
 
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.dao.CapbankDao;
-import com.cannontech.cbc.dao.CcSubstationDao;
+import com.cannontech.cbc.dao.SubstationDao;
 import com.cannontech.cbc.dao.FeederDao;
 import com.cannontech.cbc.dao.SubstationBusDao;
 import com.cannontech.cbc.util.CBCUtils;
@@ -75,7 +75,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
 
     private PaoDao paoDao;
     private StateDao stateDao;
-    private CcSubstationDao substationDao;
+    private SubstationDao substationDao;
     private FeederDao feederDao;
     private SubstationBusDao substationBusDao;
     private CapbankDao capbankDao;
@@ -1066,7 +1066,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         this.substationBusDao = substationBusDao;
     }
 
-    public void setSubstationDao(CcSubstationDao substationDao) {
+    public void setSubstationDao(SubstationDao substationDao) {
         this.substationDao = substationDao;
     }
     

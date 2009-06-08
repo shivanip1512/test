@@ -16,21 +16,15 @@
       <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
   </bean>
   
-  <bean id="substationBusDao" class="com.cannontech.cbc.dao.impl.SubstationBusDaoImpl">
-    <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
-  </bean>
+  <bean id="areaDao" class="com.cannontech.cbc.dao.impl.AreaDaoImpl"/>
   
-  <bean id="ccSubstationDao" class="com.cannontech.cbc.dao.impl.CcSubstationDaoImpl">
-    <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
-  </bean>
+  <bean id="substationBusDao" class="com.cannontech.cbc.dao.impl.SubstationBusDaoImpl"/>
   
-  <bean id="feederDao" class="com.cannontech.cbc.dao.impl.FeederDaoImpl">
-    <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
-  </bean> 
+  <bean id="ccSubstationDao" class="com.cannontech.cbc.dao.impl.SubstationDaoImpl"/>
   
-  <bean id="capbankDao" class="com.cannontech.cbc.dao.impl.CapbankDaoImpl">
-    <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
-  </bean>
+  <bean id="feederDao" class="com.cannontech.cbc.dao.impl.FeederDaoImpl"/> 
+  
+  <bean id="capbankDao" class="com.cannontech.cbc.dao.impl.CapbankDaoImpl"/>
   
   <bean id="capCommentDao" class="com.cannontech.cbc.dao.impl.CapControlCommentDaoImpl">
     <property name="nextValueHelper" ref="nextValueHelper"/>
@@ -64,5 +58,9 @@
     <property name="paoDao" ref="paoDao"/>
     <property name="pointDao" ref="pointDao"/>
   </bean> 
+
+	<bean id="capControlCreationService"
+	    class="com.cannontech.cbc.service.impl.CapControlCreationServiceImpl">
+	</bean>
 
 </beans>

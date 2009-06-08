@@ -6,6 +6,7 @@ import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.cbc.model.Capbank;
+import com.cannontech.cbc.model.Feeder;
 
 public interface CapbankDao {
     public boolean add( Capbank bank );
@@ -15,6 +16,8 @@ public interface CapbankDao {
     public boolean update( Capbank bank );
     
     public Capbank getById( int id );
+    
+    public int getParentId(Capbank capbank);
     
     public Capbank getByControlDeviceId(int controlDeviceId) throws DataRetrievalFailureException;
     
@@ -33,4 +36,10 @@ public interface CapbankDao {
     public int getParentFeederId( int capBankID )  throws EmptyResultDataAccessException;
     
     public boolean isSwitchedBank( Integer paoID );
+    
+    public boolean assignCapbank(Feeder feeder, Capbank capbank);
+    public boolean assignCapbank(int feederId, int capbankId);
+
+    public boolean unassignCapbank(Feeder feeder, Capbank capbank);
+    public boolean unassignCapbank(int feederId, int capbankId);
 }

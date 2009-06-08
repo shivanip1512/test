@@ -3,7 +3,9 @@ package com.cannontech.cbc.dao;
 import java.util.List;
 
 import org.springframework.dao.EmptyResultDataAccessException;
+
 import com.cannontech.cbc.model.Feeder;
+import com.cannontech.cbc.model.SubstationBus;
 
 public interface FeederDao {
 
@@ -14,7 +16,9 @@ public interface FeederDao {
     public boolean update( Feeder feeder );
     
     public Feeder getById( int id );
-
+    
+    public int getParentId(Feeder feeder);
+    
     /**
      * This method returns all the Feeder IDs that are not assigned
      *  to a SubBus.
@@ -27,5 +31,10 @@ public interface FeederDao {
      * 
      */
     public int getParentSubBusID( int feederID ) throws EmptyResultDataAccessException;
+    
+    public boolean assignFeeder(SubstationBus substationBus, Feeder feeder);
+    public boolean assignFeeder(int substationBusId, int feederId);
 
+    public boolean unassignFeeder(SubstationBus substationBus, Feeder feeder);
+    public boolean unassignFeeder(int substationBusId, int feederId);
 }

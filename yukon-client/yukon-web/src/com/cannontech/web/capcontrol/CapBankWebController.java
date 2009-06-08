@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cannontech.capcontrol.LiteCapBankAdditional;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
-import com.cannontech.cbc.web.CCSessionInfo;
 import com.cannontech.core.dao.CapControlDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.CapControlType;

@@ -1,7 +1,9 @@
-package com.cannontech.cbc.model;
+package com.cannontech.cbc.service;
+
+import com.cannontech.cbc.model.EditorDataModel;
 
 
-public interface CBCCreationModel extends EditorDataModel{
+public interface CapControlCreationModel extends EditorDataModel{
 
     /**
      * Returns the type that is selected based on on the fact that if the 
@@ -69,7 +71,7 @@ public interface CBCCreationModel extends EditorDataModel{
     /**
      * @return
      */
-    public abstract CBCCreationModel getNestedWizard();
+    public abstract CapControlCreationModel getNestedWizard();
 
     /**
      * @return

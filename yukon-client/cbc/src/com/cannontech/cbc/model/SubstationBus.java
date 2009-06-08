@@ -1,21 +1,32 @@
 package com.cannontech.cbc.model;
 
-public class SubstationBus {
+import com.cannontech.common.util.CtiUtilities;
 
+public class SubstationBus {
+	
+	private String name;
     private int id;
-    private int currentVarLoadPointId;
-    private int currentWattLoadPointId;
-    private String mapLocationId;
-    private int currentVoltLoadPointId;
-    private int altSubId;
-    private int switchPointId;
-    private char dualBusEnabled;
-    private char multiMonitorControl;
-    private char usephasedata;
-    private int phaseb;
-    private int phasec;
+    private int currentVarLoadPointId = CtiUtilities.NONE_ZERO_ID;
+    private int currentWattLoadPointId = CtiUtilities.NONE_ZERO_ID;
+    private String mapLocationId = "0";
+    private int currentVoltLoadPointId = CtiUtilities.NONE_ZERO_ID;
+    private int altSubId = CtiUtilities.NONE_ZERO_ID;
+    private int switchPointId = CtiUtilities.NONE_ZERO_ID;
+    private String dualBusEnabled = "N";
+    private String multiMonitorControl = "N";
+    private String usephasedata = "N";
+    private int phaseb = CtiUtilities.NONE_ZERO_ID;
+    private int phasec = CtiUtilities.NONE_ZERO_ID;
+    private String controlFlag = "N";
+    private int voltReductionPointId = 0;
     
-    public int getAltSubId() {
+    public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public int getAltSubId() {
         return altSubId;
     }
     public void setAltSubId(int altSubId) {
@@ -39,10 +50,10 @@ public class SubstationBus {
     public void setCurrentWattLoadPointId(int currentWattLoadPointId) {
         this.currentWattLoadPointId = currentWattLoadPointId;
     }
-    public char getDualBusEnabled() {
+    public String getDualBusEnabled() {
         return dualBusEnabled;
     }
-    public void setDualBusEnabled(char dualBusEnabled) {
+    public void setDualBusEnabled(String dualBusEnabled) {
         this.dualBusEnabled = dualBusEnabled;
     }
     public int getId() {
@@ -57,10 +68,10 @@ public class SubstationBus {
     public void setMapLocationId(String mapLocationId) {
         this.mapLocationId = mapLocationId;
     }
-    public char getMultiMonitorControl() {
+    public String getMultiMonitorControl() {
         return multiMonitorControl;
     }
-    public void setMultiMonitorControl(char multiMonitorControl) {
+    public void setMultiMonitorControl(String multiMonitorControl) {
         this.multiMonitorControl = multiMonitorControl;
     }
     public int getPhaseb() {
@@ -81,68 +92,114 @@ public class SubstationBus {
     public void setSwitchPointId(int switchPointId) {
         this.switchPointId = switchPointId;
     }
-    public char getUsephasedata() {
+    public String getUsephasedata() {
         return usephasedata;
     }
-    public void setUsephasedata(char usephasedata) {
+    public void setUsephasedata(String usephasedata) {
         this.usephasedata = usephasedata;
     }
 
-    @Override
-    public int hashCode() {
-        final int PRIME = 31;
-        int result = 1;
-        result = PRIME * result + altSubId;
-        result = PRIME * result + currentVarLoadPointId;
-        result = PRIME * result + currentVoltLoadPointId;
-        result = PRIME * result + currentWattLoadPointId;
-        result = PRIME * result + dualBusEnabled;
-        result = PRIME * result + id;
-        result = PRIME * result + ((mapLocationId == null) ? 0 : mapLocationId.hashCode());
-        result = PRIME * result + multiMonitorControl;
-        result = PRIME * result + phaseb;
-        result = PRIME * result + phasec;
-        result = PRIME * result + switchPointId;
-        result = PRIME * result + usephasedata;
-        return result;
-    }
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!super.equals(obj))
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        final SubstationBus other = (SubstationBus) obj;
-        if (altSubId != other.altSubId)
-            return false;
-        if (currentVarLoadPointId != other.currentVarLoadPointId)
-            return false;
-        if (currentVoltLoadPointId != other.currentVoltLoadPointId)
-            return false;
-        if (currentWattLoadPointId != other.currentWattLoadPointId)
-            return false;
-        if (dualBusEnabled != other.dualBusEnabled)
-            return false;
-        if (id != other.id)
-            return false;
-        if (mapLocationId == null) {
-            if (other.mapLocationId != null)
-                return false;
-        } else if (!mapLocationId.equals(other.mapLocationId))
-            return false;
-        if (multiMonitorControl != other.multiMonitorControl)
-            return false;
-        if (phaseb != other.phaseb)
-            return false;
-        if (phasec != other.phasec)
-            return false;
-        if (switchPointId != other.switchPointId)
-            return false;
-        if (usephasedata != other.usephasedata)
-            return false;
-        return true;
-    }
-
+    public String getControlFlag() {
+		return controlFlag;
+	}
+	
+    public void setControlFlag(String controlFlag) {
+		this.controlFlag = controlFlag;
+	}
+	
+	public int getVoltReductionPointId() {
+		return voltReductionPointId;
+	}
+	
+	public void setVoltReductionPointId(int voltReductionPointId) {
+		this.voltReductionPointId = voltReductionPointId;
+	}
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + altSubId;
+		result = prime * result
+				+ ((controlFlag == null) ? 0 : controlFlag.hashCode());
+		result = prime * result + currentVarLoadPointId;
+		result = prime * result + currentVoltLoadPointId;
+		result = prime * result + currentWattLoadPointId;
+		result = prime * result
+				+ ((dualBusEnabled == null) ? 0 : dualBusEnabled.hashCode());
+		result = prime * result + id;
+		result = prime * result
+				+ ((mapLocationId == null) ? 0 : mapLocationId.hashCode());
+		result = prime
+				* result
+				+ ((multiMonitorControl == null) ? 0 : multiMonitorControl
+						.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + phaseb;
+		result = prime * result + phasec;
+		result = prime * result + switchPointId;
+		result = prime * result
+				+ ((usephasedata == null) ? 0 : usephasedata.hashCode());
+		result = prime * result + voltReductionPointId;
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SubstationBus other = (SubstationBus) obj;
+		if (altSubId != other.altSubId)
+			return false;
+		if (controlFlag == null) {
+			if (other.controlFlag != null)
+				return false;
+		} else if (!controlFlag.equals(other.controlFlag))
+			return false;
+		if (currentVarLoadPointId != other.currentVarLoadPointId)
+			return false;
+		if (currentVoltLoadPointId != other.currentVoltLoadPointId)
+			return false;
+		if (currentWattLoadPointId != other.currentWattLoadPointId)
+			return false;
+		if (dualBusEnabled == null) {
+			if (other.dualBusEnabled != null)
+				return false;
+		} else if (!dualBusEnabled.equals(other.dualBusEnabled))
+			return false;
+		if (id != other.id)
+			return false;
+		if (mapLocationId == null) {
+			if (other.mapLocationId != null)
+				return false;
+		} else if (!mapLocationId.equals(other.mapLocationId))
+			return false;
+		if (multiMonitorControl == null) {
+			if (other.multiMonitorControl != null)
+				return false;
+		} else if (!multiMonitorControl.equals(other.multiMonitorControl))
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (phaseb != other.phaseb)
+			return false;
+		if (phasec != other.phasec)
+			return false;
+		if (switchPointId != other.switchPointId)
+			return false;
+		if (usephasedata == null) {
+			if (other.usephasedata != null)
+				return false;
+		} else if (!usephasedata.equals(other.usephasedata))
+			return false;
+		if (voltReductionPointId != other.voltReductionPointId)
+			return false;
+		return true;
+	}
+	
 }

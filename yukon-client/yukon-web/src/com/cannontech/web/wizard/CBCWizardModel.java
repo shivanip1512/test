@@ -1,7 +1,7 @@
 package com.cannontech.web.wizard;
 
 
-import com.cannontech.cbc.model.CBCCreationModel;
+import com.cannontech.cbc.service.CapControlCreationModel;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.pao.PAOGroups;
 
@@ -9,7 +9,7 @@ import com.cannontech.database.data.pao.PAOGroups;
  * Stores the sub types for wizards
  * @author ryan
  */
-public class CBCWizardModel implements CBCCreationModel{
+public class CBCWizardModel implements CapControlCreationModel{
 	
 	private String name = null;
 	private Boolean disabled = new Boolean(false);

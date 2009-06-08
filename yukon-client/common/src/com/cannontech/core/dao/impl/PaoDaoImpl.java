@@ -4,6 +4,7 @@ package com.cannontech.core.dao.impl;
  * Implementation of PaoDao Creation date: (7/1/2006 9:40:33 AM)
  * @author: alauinger
  */
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -20,12 +21,15 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.JdbcTemplateHelper;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -39,7 +43,9 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.yukon.IDatabaseCache;
 
 public final class PaoDaoImpl implements PaoDao {
-    private static final String yukonPaoSql = "SELECT y.PAObjectID, y.Category, y.Type " 
+    
+	
+	private static final String yukonPaoSql = "SELECT y.PAObjectID, y.Category, y.Type " 
         + "FROM yukonpaobject y ";
     
     private static final String litePaoSql = "SELECT y.PAObjectID, y.Category, y.PAOName, " 
@@ -48,7 +54,7 @@ public final class PaoDaoImpl implements PaoDao {
         + "left outer join devicedirectcommsettings d ON y.paobjectid = d.deviceid "
         + "left outer join devicecarriersettings DCS ON Y.PAOBJECTID = DCS.DEVICEID " 
         + "left outer join deviceroutes dr ON y.paobjectid = dr.deviceid ";
-
+    
     private final RowMapper yukonPaoRowMapper = new YukonPaoRowMapper();
     private final RowMapper litePaoRowMapper = new LitePaoRowMapper();
 
@@ -57,6 +63,52 @@ public final class PaoDaoImpl implements PaoDao {
     private NextValueHelper nextValueHelper;
     private AuthDao authDao;
 
+	@Override
+	public boolean add(YukonPAObject pao) {
+		int id = getNextPaoId();
+		pao.setPaObjectID(id);
+		Connection connection = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+		pao.setDbConnection(connection);
+		
+		try{
+			pao.add();
+		} catch (SQLException e) {
+			CTILogger.error("Error inserting, " + pao.getPaoName() + ", into YukonPAObject Table.");
+			return false;
+		}
+		
+		return true;
+	}
+
+	@Override
+	public boolean remove(YukonPAObject pao) {
+		try{
+			Connection connection = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+			pao.setDbConnection(connection);
+			pao.delete();
+		} catch (SQLException e) {
+			CTILogger.error("Error removing, " + pao.getPaoName() + ", from YukonPAObject Table.");
+			return false;
+		}
+		
+		return true;
+	}
+    
+	@Override
+	public boolean update(YukonPAObject pao) {
+		try{
+			Connection connection = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+			pao.setDbConnection(connection);
+			pao.update();
+		} catch (SQLException e) {
+			CTILogger.error("Error updating, " + pao.getPaoName() + ", in YukonPAObject Table.");
+			return false;
+		}
+		
+		return true;
+	}
+	
+	
     /*
      * (non-Javadoc)
      * @see com.cannontech.core.dao.PaoDao#getLiteYukonPAO(int)

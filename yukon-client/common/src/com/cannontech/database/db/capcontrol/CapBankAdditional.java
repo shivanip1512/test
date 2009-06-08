@@ -64,7 +64,7 @@ public class CapBankAdditional extends DBPersistent implements CTIDbChange{
         add(TABLE_NAME, values);
     }
 
-    private static Date getBeginningTime() {
+    public static Date getBeginningTime() {
         Calendar calendar = Calendar.getInstance();
         calendar.set(calendar.get(Calendar.YEAR), 0, 1, 0, 0, 0);
         return calendar.getTime();

@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
@@ -12,10 +13,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.cbc.dao.FeederDao;
 import com.cannontech.cbc.model.Feeder;
+import com.cannontech.cbc.model.SubstationBus;
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.pao.CapControlTypes;
+import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.util.Validator;
 
 public class FeederDaoImpl implements FeederDao {
-
+	
     private static final String insertSql;
     private static final String removeSql;
     private static final String updateSql;
@@ -24,26 +32,27 @@ public class FeederDaoImpl implements FeederDao {
     
     private static final ParameterizedRowMapper<Feeder> rowMapper;
     private SimpleJdbcTemplate simpleJdbcTemplate;
+    private PaoDao paoDao;
     
     static {
-            insertSql = "INSERT INTO CapControlFeeder (FeederID," + 
-            "CurrentVarLoadPointID,CurrentWattLoadPointID,MapLocationID,CurrentVoltLoadPointID," + 
-            "MultiMonitorControl,usephasedata,phaseb,phasec) VALUES (?,?,?,?,?,?,?,?,?)";
-            
-            removeSql = "DELETE FROM CapControlFeeder WHERE FeederID = ?";
-            
-            updateSql = "UPDATE CapControlFeeder SET CurrentVarLoadPointID = ?," + 
-            "CurrentWattLoadPointID = ?,MapLocationID = ?,CurrentVoltLoadPointID = ?, " + 
-            "MultiMonitorControl = ?, usephasedata = ?,phaseb = ?, phasec = ? WHERE FeederID = ?";
-            
-            selectAllSql = "SELECT FeederID,CurrentVarLoadPointID,CurrentWattLoadPointID," + 
-            "MapLocationID,CurrentVoltLoadPointID,MultiMonitorControl,usephasedata," + 
-            "phaseb,phasec FROM CapControlFeeder";
-            
-            selectByIdSql = selectAllSql + " WHERE FeederID = ?";
-            
-            rowMapper = FeederDaoImpl.createRowMapper();
-        }
+        insertSql = "INSERT INTO CapControlFeeder (FeederID," + 
+        "CurrentVarLoadPointID,CurrentWattLoadPointID,MapLocationID,CurrentVoltLoadPointID," + 
+        "MultiMonitorControl,usephasedata,phaseb,phasec, ControlFlag) VALUES (?,?,?,?,?,?,?,?,?,?)";
+        
+        removeSql = "DELETE FROM CapControlFeeder WHERE FeederID = ?";
+        
+        updateSql = "UPDATE CapControlFeeder SET CurrentVarLoadPointID = ?," + 
+        "CurrentWattLoadPointID = ?,MapLocationID = ?,CurrentVoltLoadPointID = ?, " + 
+        "MultiMonitorControl = ?, usephasedata = ?,phaseb = ?, phasec = ?, ControlFlag = ? WHERE FeederID = ?";
+        
+        selectAllSql = "SELECT yp.PAOName,FeederID,CurrentVarLoadPointID,CurrentWattLoadPointID," + 
+        "MapLocationID,CurrentVoltLoadPointID,MultiMonitorControl,usephasedata," + 
+        "phaseb,phasec,ControlFlag FROM CapControlFeeder, YukonPAObject yp ";
+        
+        selectByIdSql = selectAllSql + " WHERE FeederID = yp.PAObjectID AND FeederID = ?";
+        
+        rowMapper = FeederDaoImpl.createRowMapper();
+    }
 
     private static final ParameterizedRowMapper<Feeder> createRowMapper() {
         ParameterizedRowMapper<Feeder> rowMapper = new ParameterizedRowMapper<Feeder>() {
@@ -56,25 +65,52 @@ public class FeederDaoImpl implements FeederDao {
                 feeder.setCurrentVoltLoadPointId(rs.getInt("CurrentVoltLoadPointID"));
                 String data = rs.getString("MultiMonitorControl");
                 Validator.isNotNull(data);
-                feeder.setMultiMonitorControl(data.charAt(0));
+                feeder.setMultiMonitorControl(data);
                 data = rs.getString("usephasedata");
                 Validator.isNotNull(data);
-                feeder.setUsePhaseData(data.charAt(0));
+                feeder.setUsePhaseData(data);
                 feeder.setPhaseb(rs.getInt("phaseb"));
                 feeder.setPhasec(rs.getInt("phasec"));
+                data = rs.getString("ControlFlag");
+                Validator.isNotNull(data);
+                feeder.setControlFlag(data);
                 return feeder;
             }
         };
         return rowMapper;
     }
     
+    @Autowired
     public void setSimpleJdbcTemplate(final SimpleJdbcTemplate simpleJdbcTemplate) {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
 
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+    @Autowired
+    public void setPaoDao(PaoDao paoDao) {
+		this.paoDao = paoDao;
+	}
+
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean add(Feeder feeder) {
-        int rowsAffected = simpleJdbcTemplate.update(insertSql, feeder.getId(),
+		int rowsAffected = 0;
+		YukonPAObject pao = new YukonPAObject();
+		
+		pao.setCategory(PAOGroups.STRING_CAT_CAPCONTROL);
+		pao.setPaoClass(PAOGroups.STRING_CAT_CAPCONTROL);
+		pao.setPaoName(feeder.getName());
+		pao.setType(CapControlTypes.STRING_CAPCONTROL_FEEDER);
+		pao.setDescription("(none)");
+		
+		boolean ret = paoDao.add(pao);
+		
+		if (ret == false) {
+			CTILogger.debug("Insert of Feeder, " + feeder.getName() + ", in YukonPAObject table failed.");
+			return false;
+		}
+		
+		//Added to YukonPAObject table, now add to CapControlFeeder
+		feeder.setId(pao.getPaObjectID());
+		rowsAffected = simpleJdbcTemplate.update(insertSql, feeder.getId(),
                                                          feeder.getCurrentVarLoadPointId(),
                                                          feeder.getCurrentWattLoadPointId(),
                                                          feeder.getMapLocationId(),
@@ -82,8 +118,14 @@ public class FeederDaoImpl implements FeederDao {
                                                          feeder.getMultiMonitorControl(),
                                                          feeder.getUsePhaseData(),
                                                          feeder.getPhaseb(),
-                                                         feeder.getPhasec());
+                                                         feeder.getPhasec(),
+                                                         feeder.getControlFlag());
         boolean result = (rowsAffected == 1);
+        
+		if (result == false) {
+			CTILogger.debug("Insert of Feeder, " + feeder.getName() + ", in CapControlFeeder table failed.");
+		}
+		
         return result;
     }
     
@@ -95,13 +137,52 @@ public class FeederDaoImpl implements FeederDao {
     
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean remove(Feeder feeder) {
-        int rowsAffected = simpleJdbcTemplate.update(removeSql,feeder.getId() );
+        int rowsAffected = simpleJdbcTemplate.update(removeSql,feeder.getId());
         boolean result = (rowsAffected == 1);
+        
+        if (result) {
+    		YukonPAObject pao = new YukonPAObject();
+    		pao.setPaObjectID(feeder.getId());
+    		
+    		return paoDao.remove(pao);       	
+        }
+		
         return result;
     }
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean update(Feeder feeder) {
-        int rowsAffected = simpleJdbcTemplate.update(updateSql, feeder.getCurrentVarLoadPointId(),
+		int rowsAffected = 0;
+		YukonPAObject pao = new YukonPAObject();
+		
+		pao.setCategory(PAOGroups.STRING_CAT_CAPCONTROL);
+		pao.setPaoClass(PAOGroups.STRING_CAT_CAPCONTROL);
+		pao.setPaoName(feeder.getName());
+		pao.setType(CapControlTypes.STRING_CAPCONTROL_FEEDER);
+		pao.setDescription("(none)");
+    	
+		List<LiteYukonPAObject> paos = paoDao.getLiteYukonPaoByName(feeder.getName(), false);
+		
+		if (paos.size() == 0) {
+			CTILogger.debug("No results returned for Feeder, " + feeder.getName() + ", cannot update.");
+			return false;
+		}
+		if (paos.size() > 1) {
+			CTILogger.debug("Multiple paos with Feeder name: " + feeder.getName() + " cannot update.");
+			return false;
+		}
+		
+		//Added to YukonPAObject table, now add to CapControlFeeder
+		LiteYukonPAObject litePao = paos.get(0);
+		pao.setPaObjectID(litePao.getYukonID());
+		
+		boolean ret = paoDao.update(pao);
+		
+		if (ret == false) {
+			CTILogger.debug("Update of Feeder, " + feeder.getName() + ", in YukonPAObject table failed.");
+			return false;
+		}
+    	
+        rowsAffected = simpleJdbcTemplate.update(updateSql, feeder.getCurrentVarLoadPointId(),
                                                      feeder.getCurrentWattLoadPointId(),
                                                      feeder.getMapLocationId(),
                                                      feeder.getCurrentVoltLoadPointId(),
@@ -111,6 +192,11 @@ public class FeederDaoImpl implements FeederDao {
                                                      feeder.getPhasec(),
                                                      feeder.getId());
         boolean result = (rowsAffected == 1);
+        
+		if (result == false) {
+			CTILogger.debug("Insert of Feeder, " + feeder.getName() + ", in CapControlFeeder table failed.");
+		}
+		
         return result;
     }
 
@@ -142,5 +228,44 @@ public class FeederDaoImpl implements FeederDao {
 
         return simpleJdbcTemplate.queryForInt(sql,feederID);
     }
+    
+	@Override
+	public boolean assignFeeder(SubstationBus substationBus,Feeder feeder) {
+		return assignFeeder(substationBus.getId(),feeder.getId());
+	}
 
+	@Override
+	public boolean assignFeeder(int substationBusId, int feederId) {
+    	String getDisplayOrderSql = "SELECT max(DisplayOrder) FROM CCFeederSubAssignment WHERE SubStationBusID = ?";
+    	String insertAssignmentSql = "INSERT INTO CCFeederSubAssignment (SubStationBusID,FeederID,DisplayOrder) VALUES (?,?,?)";
+    	
+		int displayOrder = simpleJdbcTemplate.queryForInt(getDisplayOrderSql, substationBusId);
+		int rowsAffected = simpleJdbcTemplate.update(insertAssignmentSql, substationBusId,feederId,++displayOrder);
+		
+		boolean result = (rowsAffected == 1);
+		return result;
+	}
+
+	@Override
+	public boolean unassignFeeder(SubstationBus substationBus,Feeder feeder) {
+		return unassignFeeder(substationBus.getId(),feeder.getId());
+	}
+
+	@Override
+	public boolean unassignFeeder(int substationBusId, int feederId) {
+    	String deleteAssignmentSql = "DELETE FROM CCFeederSubAssignment WHERE SubstationBusID = ? AND FeederID = ?";
+    	
+		int rowsAffected = simpleJdbcTemplate.update(deleteAssignmentSql,substationBusId,feederId);
+		
+		boolean result = (rowsAffected == 1);
+		return result;
+	}
+
+	@Override
+	public int getParentId(Feeder feeder) {
+		String getParentSql = "SELECT SubStationBusID FROM CCFeederSubAssignment WHERE FeederID= ?";
+		
+		int id = simpleJdbcTemplate.queryForInt(getParentSql, feeder.getId());
+		return id;
+	}
 }

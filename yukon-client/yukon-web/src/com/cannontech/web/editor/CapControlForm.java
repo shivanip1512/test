@@ -39,11 +39,11 @@ import com.cannontech.cbc.exceptions.PAODoesntHaveNameException;
 import com.cannontech.cbc.exceptions.PortDoesntExistException;
 import com.cannontech.cbc.exceptions.SameMasterSlaveCombinationException;
 import com.cannontech.cbc.exceptions.SerialNumberExistsException;
-import com.cannontech.cbc.model.CBCCreationModel;
 import com.cannontech.cbc.model.EditorDataModel;
 import com.cannontech.cbc.model.ICBControllerModel;
 import com.cannontech.cbc.model.ICapControlModel;
 import com.cannontech.cbc.point.CBCPointFactory;
+import com.cannontech.cbc.service.CapControlCreationModel;
 import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.exception.NotAuthorizedException;
@@ -121,7 +121,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	private List<LiteYukonPAObject> unassignedFeeders = null;
 	private List<LiteYukonPAObject> unassignedSubBuses = null;
 	// possible selection types for every wizard panel
-	private CBCCreationModel wizData = null;
+	private CapControlCreationModel wizData = null;
 	// possible editor for the CBC a CapBank belongs to
 	private ICBControllerModel cbControllerEditor = null;
 	private PointTreeForm pointTreeForm = null;
@@ -1848,7 +1848,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		}
 	}
 
-	public CBCCreationModel getWizData() {
+	public CapControlCreationModel getWizData() {
 		if (wizData == null) {
 			wizData = new CBCWizardModel();
         }

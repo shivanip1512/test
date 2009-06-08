@@ -105,7 +105,7 @@ public class CBCAnalysisChartController extends MultiActionController  {
     	    		SubBus subBus_cache = capControlCache.getSubBus(targetId);
     	    		SubstationBus subBus_dao = substationBusDao.getById(targetId);
     	    		
-    	    		if (subBus_dao.getUsephasedata() == 'Y') {
+    	    		if ("".equalsIgnoreCase(subBus_dao.getUsephasedata())) {
     	    			
     	    			definitionName = "kVarPhaseWattRPHDefinition";
     	    			
@@ -133,7 +133,7 @@ public class CBCAnalysisChartController extends MultiActionController  {
     	    		com.cannontech.yukon.cbc.Feeder feeder_cache = capControlCache.getFeeder(targetId);
     	    		com.cannontech.cbc.model.Feeder feeder_dao = feederDao.getById(targetId);
     	    		
-    	    		if (feeder_dao.getUsePhaseData() == 'Y') {
+    	    		if ("Y".equalsIgnoreCase(feeder_dao.getUsePhaseData())) {
     	    			
     	    			definitionName = "kVarPhaseWattRPHDefinition";
     	    			
