@@ -48,7 +48,7 @@ public class ControlServlet extends HttpServlet {
 		Writer out = resp.getWriter();
 		RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
 		if(!rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ESUBSTATION_DRAWINGS_CONTROL, user)) {
-			CTILogger.info("Control request received by user without CONTROL role, ip: " + req.getRemoteAddr());
+			CTILogger.info("Control request received by user without "+ YukonRoleProperty.OPERATOR_ESUBSTATION_DRAWINGS_CONTROL.toString() + ", ip: " + req.getRemoteAddr());
 			out.write("error");
 			return;
 		}

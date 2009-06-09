@@ -16,7 +16,6 @@ import com.cannontech.cbc.dao.CommentAction;
 import com.cannontech.cbc.model.CapControlComment;
 import com.cannontech.cbc.web.CapControlCommandExecutor;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.StateDao;
@@ -57,10 +56,10 @@ public class CapControlCommandController extends MultiActionController {
 	    }
 	    
 	    executor.execute(controlType, cmdId, paoId, opt, null, user);
-	    String forceComment = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.FORCE_COMMENTS, user);
+	    boolean forceComment = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.FORCE_COMMENTS, user);
 	    if (reason != null) {
 	        insertComment(paoId, user.getUserID(), reason, cmdId);
-	    }else if(forceComment.equalsIgnoreCase("true")) {
+	    }else if(forceComment) {
 	        String commandName = CapControlCommand.getCommandString(cmdId);
 	        if(cmdId == 22 || cmdId == 23) {
 	            String firstChar = controlTypeString.substring(0,1);
@@ -92,15 +91,13 @@ public class CapControlCommandController extends MultiActionController {
 	        final CapControlCommandExecutor executor, final Integer paoId, final Integer cmdId,
 	        final float[] opt, final String reason) {
 	    LiteYukonUser user = ServletUtil.getYukonUser(request);
-	    if(!rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_AREA_CONTROLS, user)) {
-            throw new NotAuthorizedException("The user is not authorized to submit commands.");
-        }
+	    rolePropertyDao.verifyProperty(YukonRoleProperty.ALLOW_AREA_CONTROLS, user);
 	    
         executor.execute(CapControlType.SPECIAL_AREA, cmdId, paoId, opt, null, user);
-        String forceComment = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.FORCE_COMMENTS, user);
+        boolean forceComment = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.FORCE_COMMENTS, user);
         if (reason != null) {
             insertComment(paoId, user.getUserID(), reason, cmdId);
-        }else if(forceComment.equalsIgnoreCase("true")) {
+        }else if(forceComment) {
             String commandName = CapControlCommand.getCommandString(cmdId);
             if(cmdId == CapControlCommand.DISABLE_AREA || cmdId == CapControlCommand.ENABLE_AREA) {
                 commandName += " Special Area";
@@ -117,9 +114,7 @@ public class CapControlCommandController extends MultiActionController {
 	
 	public void executeTempMoveBack(HttpServletRequest request, HttpServletResponse response) throws Exception {
 	    LiteYukonUser user = ServletUtil.getYukonUser(request);
-	    if(!rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CAPBANK_CONTROLS, user)) {
-            throw new NotAuthorizedException("The user is not authorized to submit commands.");
-        }
+	    rolePropertyDao.verifyProperty(YukonRoleProperty.ALLOW_CAPBANK_CONTROLS, user);
 	    final CapControlCommandExecutor executor = createCapControlCommandExecutor(request);
 	    final Integer paoId = ServletRequestUtils.getRequiredIntParameter(request, "paoId");
 	    final Integer cmdId = ServletRequestUtils.getRequiredIntParameter(request, "cmdId");
@@ -128,9 +123,7 @@ public class CapControlCommandController extends MultiActionController {
 	
 	public void executeManualStateChange(HttpServletRequest request, HttpServletResponse response) throws Exception {
 	    LiteYukonUser user = ServletUtil.getYukonUser(request);
-        if(!rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CAPBANK_CONTROLS, user)) {
-            throw new NotAuthorizedException("The user is not authorized to submit commands.");
-        }
+	    rolePropertyDao.verifyProperty(YukonRoleProperty.ALLOW_CAPBANK_CONTROLS, user);
         final CapControlCommandExecutor exec = createCapControlCommandExecutor(request);
         
         final Integer paoId = ServletRequestUtils.getRequiredIntParameter(request, "paoId");

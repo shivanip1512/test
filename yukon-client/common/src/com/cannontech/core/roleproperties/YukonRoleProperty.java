@@ -144,7 +144,7 @@ public enum YukonRoleProperty {
     ADD_COMMENTS(CBC_SETTINGS, com.cannontech.roles.capcontrol.CBCSettingsRole.ADD_COMMENTS, booleanType()),
     MODIFY_COMMENTS(CBC_SETTINGS, com.cannontech.roles.capcontrol.CBCSettingsRole.MODIFY_COMMENTS, booleanType()),
     SYSTEM_WIDE_CONTROLS(CBC_SETTINGS, com.cannontech.roles.capcontrol.CBCSettingsRole.SYSTEM_WIDE_CONTROLS, stringType()),
-    FORCE_COMMENTS(CBC_SETTINGS, com.cannontech.roles.capcontrol.CBCSettingsRole.FORCE_COMMENTS, stringType()),
+    FORCE_COMMENTS(CBC_SETTINGS, com.cannontech.roles.capcontrol.CBCSettingsRole.FORCE_COMMENTS, booleanType()),
     ALLOW_AREA_CONTROLS(CBC_SETTINGS, com.cannontech.roles.capcontrol.CBCSettingsRole.ALLOW_AREA_CONTROLS, stringType()),
     ALLOW_SUBSTATION_CONTROLS(CBC_SETTINGS, com.cannontech.roles.capcontrol.CBCSettingsRole.ALLOW_SUBSTATION_CONTROLS, stringType()),
     ALLOW_SUBBUS_CONTROLS(CBC_SETTINGS, com.cannontech.roles.capcontrol.CBCSettingsRole.ALLOW_SUBBUS_CONTROLS, booleanType()),

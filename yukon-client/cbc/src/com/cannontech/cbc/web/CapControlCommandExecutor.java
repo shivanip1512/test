@@ -4,7 +4,6 @@ import java.util.Date;
 
 import com.cannontech.capcontrol.CapBankOperationalState;
 import com.cannontech.cbc.cache.CapControlCache;
-import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -49,45 +48,33 @@ public class CapControlCommandExecutor
         switch (controlType) {
             case AREA :
             case SPECIAL_AREA : {
-                if(!rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_AREA_CONTROLS, user)) {
-                    throw new NotAuthorizedException("The user is not authorized to submit area commands.");
-                }
+                rolePropertyDao.verifyProperty(YukonRoleProperty.ALLOW_AREA_CONTROLS, user);
                 executeSubAreaCommand(cmdId, paoId);
                 break;
             }
             case SUBSTATION : {
-                if(!rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_SUBSTATION_CONTROLS, user)) {
-                    throw new NotAuthorizedException("The user is not authorized to submit substation commands.");
-                }
+                rolePropertyDao.verifyProperty(YukonRoleProperty.ALLOW_SUBSTATION_CONTROLS, user);
                 executeSubStationCommand(cmdId, paoId);
                 break;
             }
             case SUBBUS : {
-                if(!rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_SUBBUS_CONTROLS, user)) {
-                    throw new NotAuthorizedException("The user is not authorized to submit subbus commands.");
-                }
+                rolePropertyDao.verifyProperty(YukonRoleProperty.ALLOW_SUBBUS_CONTROLS, user);
                 executeSubBusCommand(cmdId, paoId);
                 break;
             }
             case FEEDER : {
-                if(!rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_FEEDER_CONTROLS, user)) {
-                    throw new NotAuthorizedException("The user is not authorized to submit feeder commands.");
-                }
+                rolePropertyDao.verifyProperty(YukonRoleProperty.ALLOW_FEEDER_CONTROLS, user);
                 executeFeederCommand(cmdId, paoId);
                 break;
             }
             case CAPBANK : {
-                if(!rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CAPBANK_CONTROLS, user)) {
-                    throw new NotAuthorizedException("The user is not authorized to submit capbank/cbc commands.");
-                }
+                rolePropertyDao.verifyProperty(YukonRoleProperty.ALLOW_CAPBANK_CONTROLS, user);
                 int operationalStateValue = getOperationalState(operationalState);
                 executeCapBankCommand(cmdId, paoId, optParams, operationalStateValue);
                 break;
             }
             case CBC : {
-                if(!rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CAPBANK_CONTROLS, user)) {
-                    throw new NotAuthorizedException("The user is not authorized to submit capbank/cbc commands.");
-                }
+                rolePropertyDao.verifyProperty(YukonRoleProperty.ALLOW_CAPBANK_CONTROLS, user);
                 executeCBCCommand(paoId, optParams);
                 break;
             }
