@@ -27,13 +27,6 @@ addLockButtonForButtonGroup("buttons");
 </script>
 </f:verbatim>
 
-<%
-int value = ParamUtil.getInteger(request, "value", PAOGroups.INVALID);
-if (value != PAOGroups.INVALID)
-{
-	JSFUtil.resetBackingBean("paoDeleteForm");
-}
-%>
     <x:panelLayout id="page" styleClass="pageLayout" headerClass="pageHeader"
             navigationClass="pageNavigation" bodyClass="pageBody"
             footerClass="pageFooter" >

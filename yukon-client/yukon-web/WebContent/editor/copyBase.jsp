@@ -21,7 +21,6 @@
     int type = ParamUtil.getInteger(request, "type", PAOGroups.INVALID);
 	DBCopyForm cbcCopyForm = new DBCopyForm();
     if( id != PAOGroups.INVALID ) {
-        JSFUtil.resetBackingBean("cbcCopyForm");
         cbcCopyForm = (DBCopyForm)JSFParamUtil.getJSFVar( "cbcCopyForm" );
         cbcCopyForm.init(id, type);
         
