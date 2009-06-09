@@ -20,7 +20,6 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.editor.DBEditorForm;
 
 public abstract class JSFUtil {
 
@@ -78,7 +77,6 @@ public abstract class JSFUtil {
         return null;
     }
 
-    @SuppressWarnings("unchecked")
     public static SelectItem[] convertSelectionList(int selectionListId) {
         YukonSelectionList yukonSelectionList = DaoFactory.getYukonListDao()
                                                           .getYukonSelectionList(selectionListId);
@@ -93,17 +91,7 @@ public abstract class JSFUtil {
         return items;
     }
 
-    public static void resetBackingBean(String beanName) {
-
-        FacesContext currentInstance = FacesContext.getCurrentInstance();
-        if (currentInstance != null)
-        {
-            currentInstance
-                        .getApplication()
-                        .createValueBinding("#{" + beanName + "}")
-                        .setValue(FacesContext.getCurrentInstance(), null);
-        }
-    }
+    @SuppressWarnings("unchecked")
     public static LiteYukonUser getYukonUser() {
         FacesContext fc = FacesContext.getCurrentInstance();
         if( fc != null ){
@@ -122,13 +110,4 @@ public abstract class JSFUtil {
         HttpServletRequest request = (HttpServletRequest)context.getRequest();
         return YukonUserContextUtils.getYukonUserContext(request);
     }
-    public static void resetForm(String name) {
-        Object bean =  JSFParamUtil.getJSFVar(name);
-        if (bean instanceof DBEditorForm) {
-            DBEditorForm form = (DBEditorForm) bean;
-            form.resetForm();
-        }
-    
-    }
-
 }

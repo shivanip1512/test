@@ -159,7 +159,7 @@
                 
                 <tr class="altTableCell" id="tr_substation_${substation.ccId}">
                     <td id="anc_${thisSubStationId}">
-                        <a title="Edit" class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${substation.ccId}&ignoreBookmark=true">
+                        <a title="Edit" class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${substation.ccId}">
                             <img class="rAlign editImg" src="${editInfoImage}">
 	                    </a>
 	                    <c:if test="${hasEditingRole}">
@@ -233,7 +233,7 @@
 				</td>
                 
 				<td id="subName">
-				    <a title="Edit" class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${thisSubBusId}&ignoreBookmark=true">
+				    <a title="Edit" class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${thisSubBusId}">
                         <img class="rAlign editImg" src="${editInfoImage}"/>
                     </a>
 	                <c:if test="${hasEditingRole}">
@@ -409,7 +409,7 @@
 					<td>
 						<input type="checkbox" name="cti_chkbxFdrs" value="${thisFeederId}"/>
 						
-						<a title="Edit" class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${thisFeederId}&ignoreBookmark=true">
+						<a title="Edit" class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${thisFeederId}">
                             <img class="rAlign editImg" src="${editInfoImage}"/>
                         </a>
 	                    <c:if test="${hasEditingRole}">
@@ -569,7 +569,7 @@
 	                        <input id="showFlip_${thisCapBankId}" type="hidden" value="${showFlip}"/>
 	                        <input id="is701x_${thisCapBankId}" type="hidden" value="${viewableCapBank.device701x}"/>
 	                        
-	                        <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${thisCapBankId}&ignoreBookmark=true">
+	                        <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${thisCapBankId}">
 	                            <img class="rAlign editImg" src="${editInfoImage}"/>
 	                        </a>
 		                    <c:if test="${hasEditingRole}">
@@ -583,7 +583,7 @@
 						</c:when>
 						<c:otherwise>
 	                        
-	                        <a href="/editor/cbcBase.jsf?type=2&itemid=${thisCapBankId}&ignoreBookmark=true">
+	                        <a href="/editor/cbcBase.jsf?type=2&itemid=${thisCapBankId}">
 	                            <img class="rAlign editImg" src="${editInfoImage}"/>
 	                        </a>
 		                    <c:if test="${hasEditingRole}">

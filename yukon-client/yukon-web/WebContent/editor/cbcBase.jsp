@@ -34,10 +34,6 @@
     String copySuccess = ParamUtil.getString(request, "copySuccess", null);
     CapControlForm capControlForm = (CapControlForm)JSFParamUtil.getJSFVar( "capControlForm" );
     if( id != PAOGroups.INVALID ) {
-        JSFUtil.resetBackingBean("capControlForm");
-        JSFUtil.resetBackingBean("capBankEditor");
-        JSFUtil.resetBackingBean("cbcCopyForm");
-        
 		//This is needed because this was handled in the CBCSerlvet before entering faces pages.
 		//Since the servlet bypass, this static method will need to be called entering any faces page.
         CapControlForm.setupFacesNavigation();

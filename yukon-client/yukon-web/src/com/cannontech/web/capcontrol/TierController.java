@@ -26,6 +26,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.capcontrol.models.ViewableArea;
 import com.cannontech.web.capcontrol.models.ViewableCapBank;
@@ -78,6 +79,10 @@ public class TierController {
 		boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
         mav.addAttribute("hasEditingRole", hasEditingRole);
         
+        String urlParams = request.getQueryString();
+        String requestURI = request.getRequestURI() + ((urlParams != null) ? "?" + urlParams : "");
+        CBCNavigationUtil.setNavigation(requestURI , request.getSession());
+        
 		return "tier/areaTier.jsp";
     }
 		
@@ -124,6 +129,10 @@ public class TierController {
 	    
 	    boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
         mav.addAttribute("hasEditingRole", hasEditingRole);
+        
+        String urlParams = request.getQueryString();
+        String requestURI = request.getRequestURI() + ((urlParams != null) ? "?" + urlParams : "");
+        CBCNavigationUtil.setNavigation(requestURI , request.getSession());
 	    
 		return "tier/substationTier.jsp";
     }
@@ -192,12 +201,16 @@ public class TierController {
 	    String url = request.getRequestURL().toString();
 	    String urlParams = request.getQueryString();
 	    String fullURL = url + ((urlParams != null) ? "?" + urlParams : "");
+	    
 	    fullURL = ServletUtil.urlEncode(fullURL);
 	    mav.addAttribute("fullURL", fullURL);
 	    
 		String lastStr = (String) session.getAttribute("lastAccessed");
 		int lastAccessed = (lastStr == null) ? -1:Integer.parseInt(lastStr);
 	    mav.addAttribute("lastAccessed", lastAccessed);
+	    
+	    String requestURI = request.getRequestURI() + ((urlParams != null) ? "?" + urlParams : "");
+	    CBCNavigationUtil.setNavigation(requestURI , request.getSession());
 	    
 		return "tier/feederTier.jsp";
     }

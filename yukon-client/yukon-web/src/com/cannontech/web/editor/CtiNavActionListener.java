@@ -27,12 +27,12 @@ public class CtiNavActionListener implements ActionListener {
 
 			VariableResolver vr = context.getApplication().getVariableResolver();
 			CtiNavObject ctiNav = (CtiNavObject)vr.resolveVariable(context, "CtiNavObject");
-
+			boolean usingExitPage = false;
 			if ( ctiNav != null ) {
 				
 				String red = "";
 				HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
-                
+				CapControlForm form = (CapControlForm) session.getAttribute("capControlForm");      
 			    red = CBCNavigationUtil.goBack(session);
 			    
 			    if (ctiNav.getModuleRedirectPage() != null) {
@@ -42,6 +42,7 @@ public class CtiNavActionListener implements ActionListener {
                     ctiNav.setModuleRedirectPage( null );
 				} else if (red.equalsIgnoreCase("") ) {
 					red = ctiNav.getModuleExitPage();
+					usingExitPage = true;
 					ctiNav.setModuleExitPage( null );
 				}
 
@@ -49,13 +50,15 @@ public class CtiNavActionListener implements ActionListener {
 					red = "/spring/capcontrol/tier/areas";
 				}
 			    
-				if (red.equalsIgnoreCase(ctiNav.getModuleExitPage()) && ctiNav.getPreservedAddress() != null) {
+				if (usingExitPage && ctiNav.getPreservedAddress() != null) {
                     //This is here for when we are switching in and out of JSF pages, 
 				    // it preserves the return point since it will fall off of our 2 page history in CtiNav
 				    ctiNav.setCurrentPage(ctiNav.getPreservedAddress());
                     ctiNav.setPreservedAddress(null);
-                }else
+                    form.resetTabIndex();
+                }else {
                     ctiNav.setNavigation(red);
+                }
 			    
 				context.getExternalContext().redirect( red );
                 context.responseComplete();

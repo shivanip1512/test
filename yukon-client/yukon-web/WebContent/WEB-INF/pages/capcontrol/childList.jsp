@@ -148,11 +148,12 @@
 						</x:htmlTag>
 						<x:commandLink
 							action="#{capControlForm.dataModel.createWizardLink}"
+							actionListener="#{capControlForm.setSubstationTab}"
 							rendered="#{capControlForm.editingAuthorized}"
 							value="Create Substation Bus"
 							title="Click here to create a Substation Bus. Return after creation to assign the Substation Bus.">
-							<f:param name="type" id="type"
-								value="#{selLists.substationBusType}" />
+							<f:param name="type" id="type"value="#{selLists.substationBusType}" />
+							<f:param name="tabId" value="8"/>
 						</x:commandLink>
 					</x:htmlTag>
 
@@ -305,9 +306,11 @@
 						</x:htmlTag>
 						<x:commandLink
 							action="#{capControlForm.dataModel.createWizardLink}"
+							actionListener="#{capControlForm.setSubBusTab}"
 							value="Create Feeder"
 							title="Click here to create a feeder. Return after creation to assign the feeder.">
 							<f:param name="type" id="type" value="#{selLists.feederType}" />
+							<f:param name="tabId" value="8"/>
 						</x:commandLink>
 					</x:htmlTag>
 
@@ -479,9 +482,11 @@
 						</x:htmlTag>
 						<x:commandLink
 							action="#{capControlForm.dataModel.createWizardLink}"
+							actionListener="#{capControlForm.setFeederTab}"
 							value="Create CapBank"
 							title="Click here to create a CapBank. Return after creation to assign the CapBank.">
 							<f:param name="type" id="type" value="#{selLists.capType}" />
+							<f:param name="tabId" value="8"/>
 						</x:commandLink>
 					</x:htmlTag>
 				</x:panelGroup>

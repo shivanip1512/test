@@ -86,9 +86,11 @@
 	               <x:htmlTag value="legend"><x:outputText value="Links"/></x:htmlTag> 
 	     
 	                <x:commandLink action="#{capControlForm.dataModel.createWizardLink}" 
+	                   actionListener="#{capControlForm.setAreaTab}"
 	                    value="Create Substation" 
 	                    title="Click here to create a sub. Return after creation to assign the sub.">
 	                    <f:param  name="type" id="type" value="#{selLists.substationType}"/>
+	                    <f:param name="tabId" value="15"/>
 	                </x:commandLink>
 	     
 	            </x:htmlTag>

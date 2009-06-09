@@ -67,7 +67,6 @@ public class CBCNavigationUtil {
 	 * therefore they need to be skipped 
 	 * */
     private static String parseRedirect(String string, HttpSession session) {
-    	CtiNavObject navObject = (CtiNavObject) session.getAttribute(ServletUtil.NAVIGATE);	
     	for (int i = 0; i < PAGES_TO_SKIP.length; i++) {
 			String pageToSkip = PAGES_TO_SKIP[i];
 			if (string.indexOf(pageToSkip) != -1) {

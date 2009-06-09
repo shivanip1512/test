@@ -6,14 +6,17 @@
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x" %>
 <%@ page import="com.cannontech.web.util.*" %>
 <%@ page import="com.cannontech.web.editor.CapControlForm" %>
+<%@ page import="com.cannontech.web.editor.CapBankEditorForm" %>
 <cti:url var="orphanURL" value="/spring/capcontrol/tier/cceditorpopup"/>
 <%
 	CapControlForm capControlForm = (CapControlForm)JSFParamUtil.getJSFVar( "capControlForm" );
+    CapBankEditorForm capBankEditorForm = (CapBankEditorForm)JSFParamUtil.getJSFVar("capBankEditor");
 	String itemid = JSFParamUtil.getJSFReqParam("itemid");
 	String type = JSFParamUtil.getJSFReqParam("type");
 
 	if (itemid != null && type != null){
     	capControlForm.initItem(Integer.parseInt(itemid), Integer.parseInt(type));
+    	capBankEditorForm.init(capControlForm.getDbPersistent());
 	}
 %>
 <f:subview id="cbcCapBank" rendered="#{capControlForm.visibleTabs['CBCCapBank']}">

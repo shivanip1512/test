@@ -11,7 +11,6 @@ import javax.servlet.http.HttpSession;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
 
 /**

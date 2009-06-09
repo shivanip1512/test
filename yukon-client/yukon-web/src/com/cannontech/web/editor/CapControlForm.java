@@ -107,17 +107,20 @@ import com.cannontech.web.wizard.CBCWizardModel;
 import com.cannontech.yukon.cbc.SubStation;
 
 public class CapControlForm extends DBEditorForm implements ICapControlModel{
+    private int specialAreaTab = -1;
+    private int areaTab = -1;
+    private int substationTab = -1;
+    private int subBusTab = -1;
+    private int feederTab = -1;
+    private int capbankTab = -1;
     private String paoDescLabel = "Description";
 	private String childLabel = "Children";
 	private boolean editingCBCStrategy = false;
 	private boolean editingController = false;
 	private int itemID = -1;
-	// contains <Integer(stratID), CapControlStrategy>
 	private HashMap<Integer, CapControlStrategy> cbcStrategiesMap = null;
 	private HashMap<Integer, CapControlStrategy> cbcHolidayStrategiesMap = null;
-	// contains LiteYukonPAObject
 	private List<LiteYukonPAObject> unassignedBanks = null;
-	// contains LiteYukonPAObject
 	private List<LiteYukonPAObject> unassignedFeeders = null;
 	private List<LiteYukonPAObject> unassignedSubBuses = null;
 	// possible selection types for every wizard panel
@@ -628,7 +631,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	}
 	
 	public void initItem(int id, int type) {
-		
+	    resetForm();
 		DBPersistent dbObj = null;
         
 		switch (type) {
@@ -739,7 +742,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		resetCurrentDivOffset();
 		resetCurrentAltSubDivOffset();
 		resetUOFMTreeData();
-        resetCapBankEditor();
 		isDualSubBusEdited = false;
 		editingCBCStrategy = false;
 		unassignedBanks = null;
@@ -754,12 +756,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 
         initItem();
 	}
-
-	private void resetCapBankEditor() {
-	    if (getDbPersistent() instanceof CapBank) {
-	        JSFUtil.resetForm("capBankEditor");
-        }
-    }
 
     /**
      * Function that restores the setting of the dual bus ctl
@@ -776,7 +772,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	 * Reset CBC Strategy data, forcing them to be reInited
 	 */
 	private void resetStrategies() {
-//		cbcStrategiesMap = null;
 		cbcStrategies = null;
 	}
 
@@ -784,7 +779,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	 * Reset the CBC device data, forcing them to be reInited
 	 */
 	private void resetCBCEditor() {
-		//setCBControllerEditor(null);
         setEditingController(false);
         getCBControllerEditor().retrieveDB();        
         getCBControllerEditor().resetSerialNumber();
@@ -1866,7 +1860,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 
     public LiteYukonPAObject[] getSubBusList() {
 		if (subBusList == null) {
-			//subBusList = PAOFuncs.getAllCapControlSubBuses();			
 			subBusList = DaoFactory.getCBCDao().getAllSubsForUser (JSFParamUtil.getYukonUser());
 		}
 		return subBusList.toArray(new LiteYukonPAObject[subBusList.size()]);
@@ -1998,23 +1991,71 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                return CBCSelectionLists.CapBankControllerSetup;
            }
         } else if (getDbPersistent() instanceof CapControlArea) {
-            return CBCSelectionLists.CapControlAreaSetup;    
+            return areaTab > -1 ? areaTab : CBCSelectionLists.CapControlAreaSetup;
         } else if (getDbPersistent() instanceof CapControlSpecialArea) {
-            return CBCSelectionLists.CapControlSpecialAreaSetup;    
+            return specialAreaTab > -1 ? specialAreaTab : CBCSelectionLists.CapControlSpecialAreaSetup;
         } else if (getDbPersistent() instanceof CapBank) {
-            return CBCSelectionLists.CapBankSetup;    
+            return capbankTab > -1 ? capbankTab : CBCSelectionLists.CapBankSetup;
         } else if (getDbPersistent() instanceof CapControlSubBus) {
-            return CBCSelectionLists.CapControlSubBusSetup;
+            return subBusTab > -1 ? subBusTab : CBCSelectionLists.CapControlSubBusSetup;
         } else if (getDbPersistent() instanceof CapControlSubstation) {
-            return CBCSelectionLists.CapControlSubstationSetup;
+            return substationTab > -1 ? substationTab : CBCSelectionLists.CapControlSubstationSetup;
         } else if (getDbPersistent() instanceof CapControlFeeder) {
-           	return CBCSelectionLists.CapControlFeederSetup;
+            return feederTab > -1 ? feederTab : CBCSelectionLists.CapControlFeederSetup;
         }else if (getDbPersistent() instanceof CapControlStrategy) {
             return CBCSelectionLists.CapControlStrategyEditor;
         }
         return CBCSelectionLists.General;
     }
-         
+    
+    @SuppressWarnings("unchecked")
+    public void setSpecialAreaTab(ActionEvent e) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        Map<Integer, String> paramMap = context.getExternalContext().getRequestParameterMap();
+        int tabId = Integer.parseInt( paramMap.get("tabId") );
+        specialAreaTab = tabId;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public void setAreaTab(ActionEvent e) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        Map<Integer, String> paramMap = context.getExternalContext().getRequestParameterMap();
+        int tabId = Integer.parseInt( paramMap.get("tabId") );
+        areaTab = tabId;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public void setSubstationTab(ActionEvent e) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        Map<Integer, String> paramMap = context.getExternalContext().getRequestParameterMap();
+        int tabId = Integer.parseInt( paramMap.get("tabId") );
+        substationTab = tabId;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public void setSubBusTab(ActionEvent e) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        Map<Integer, String> paramMap = context.getExternalContext().getRequestParameterMap();
+        int tabId = Integer.parseInt( paramMap.get("tabId") );
+        subBusTab = tabId;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public void setFeederTab(ActionEvent e) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        Map<Integer, String> paramMap = context.getExternalContext().getRequestParameterMap();
+        int tabId = Integer.parseInt( paramMap.get("tabId") );
+        feederTab = tabId;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public void setCapbankTab(ActionEvent e) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        Map<Integer, String> paramMap = context.getExternalContext().getRequestParameterMap();
+        int tabId = Integer.parseInt( paramMap.get("tabId") );
+        capbankTab = tabId;
+    }
+    
     protected void checkForErrors() throws PortDoesntExistException, MultipleDevicesOnPortException, SameMasterSlaveCombinationException, SerialNumberExistsException, SQLException { 
         if (getDbPersistent() != null){
 			getCBControllerEditor().checkForErrors();
@@ -2330,6 +2371,15 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             return true;
         }
         return false;
+    }
+    
+    public void resetTabIndex() {
+        specialAreaTab = -1;
+        areaTab = -1;
+        substationTab = -1;
+        subBusTab = -1;
+        feederTab = -1;
+        capbankTab = -1;
     }
     
     /**

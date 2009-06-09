@@ -16,11 +16,7 @@
 		    int type = ParamUtil.getInteger(request, "type", PAOGroups.INVALID);
 		
 		    if( type != PAOGroups.INVALID ) {
-		        JSFUtil.resetBackingBean("capControlForm");
-		        JSFUtil.resetBackingBean("capBankEditor");
-		        JSFUtil.resetBackingBean("cbcCopyForm");
-		        CapControlForm capControlForm =
-		            (CapControlForm)JSFParamUtil.getJSFVar( "capControlForm" );
+		        CapControlForm capControlForm = (CapControlForm)JSFParamUtil.getJSFVar( "capControlForm" );
 		        
 				//This is needed because this was handled in the CBCSerlvet before entering faces pages.
 				//Since the servlet bypass, this static method will need to be called entering any faces page.
