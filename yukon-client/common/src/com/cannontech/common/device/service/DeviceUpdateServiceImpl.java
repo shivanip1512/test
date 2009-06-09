@@ -1,5 +1,6 @@
 package com.cannontech.common.device.service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -129,7 +130,10 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
                         configCmd.setDevice(device);
                         configCmd.setCommand("putconfig emetcon intervals");
 
-                        commandRequestDeviceExecutor.execute(configCmd, liteYukonUser);
+                        CommandCompletionCallbackAdapter<CommandRequestDevice> dummyCallback = new CommandCompletionCallbackAdapter<CommandRequestDevice>() {
+                        };
+                        
+                        commandRequestDeviceExecutor.execute(Collections.singletonList(configCmd), dummyCallback, liteYukonUser);
                     }
                 }
             }

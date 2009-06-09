@@ -138,17 +138,12 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
                             String deviceLogStr = " DEVICE: " +paoDao.getYukonPAOName(foundDeviceId) + "' (" + foundDeviceId + ")";
                             
                             // route found! run routeFoundCallback
-                            try {
 
-                                // log route found
-                                log.debug("Ping successful." + routeLogStr + deviceLogStr +
-                                          ". Running route found callback " + state.getRouteFoundCallback() + ".");
+                            // log route found
+                            log.debug("Ping successful." + routeLogStr + deviceLogStr +
+                                      ". Running route found callback " + state.getRouteFoundCallback() + ".");
 
-                                state.getRouteFoundCallback().handle(foundRouteId);
-
-                            } catch (Exception e) {
-                                runCallbackWithNull(state, "Route found callback failed.", deviceLogStr, routeLogStr, e);
-                            }
+                            runCallbackWithFoundRouteId(state, deviceLogStr, routeLogStr, foundRouteId);
                         }
 
                     };
@@ -166,16 +161,37 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
         }
     }
 
-    private void runCallbackWithNull(RouteDiscoveryState state, String reasonForNull, String deviceLogStr, String routeLogStr, Exception e) {
+    private void runCallbackWithFoundRouteId(final RouteDiscoveryState state, final String deviceLogStr, final String routeLogStr, final int foundRouteId) {
         
-        String callbackLogStr = " CALLBACK: " + state.getRouteFoundCallback().toString();
+    	scheduledExecutor.schedule(new Runnable() {
+            
+            @Override
+            public void run() {
+            	try {
+            		state.getRouteFoundCallback().handle(foundRouteId);
+            	} catch (Exception e) {
+            		runCallbackWithNull(state, "Route found callback failed.", deviceLogStr, routeLogStr, e);
+            	}
+            }
+        }, 0, TimeUnit.MILLISECONDS);
+    }
+
+    private void runCallbackWithNull(final RouteDiscoveryState state, final String reasonForNull, final String deviceLogStr, final String routeLogStr, final Exception nullReasonException) {
         
-        try{
-            state.getRouteFoundCallback().handle(null);
-            log.debug("Ran callback with null due to: " + reasonForNull + deviceLogStr + routeLogStr + callbackLogStr, e);
-        } catch (Exception ex) {
-            log.error("Failed to run callback with null. Original reason for null callback was: " + reasonForNull + deviceLogStr + routeLogStr + callbackLogStr, ex);
-        }
+        final String callbackLogStr = " CALLBACK: " + state.getRouteFoundCallback().toString();
+        
+        scheduledExecutor.schedule(new Runnable() {
+            
+            @Override
+            public void run() {
+            	try {
+            		state.getRouteFoundCallback().handle(null);
+            		log.debug("Ran callback with null due to: " + reasonForNull + deviceLogStr + routeLogStr + callbackLogStr, nullReasonException);
+            	} catch (Exception e) {
+            		log.error("Failed to run callback with null. Original reason for null callback was: " + reasonForNull + deviceLogStr + routeLogStr + callbackLogStr, e);
+            	}
+            }
+        }, 0, TimeUnit.MILLISECONDS);
     }
     
     @Required
