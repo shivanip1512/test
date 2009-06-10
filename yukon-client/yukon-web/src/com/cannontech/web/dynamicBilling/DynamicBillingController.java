@@ -513,15 +513,7 @@ public class DynamicBillingController extends MultiActionController {
 
         setAllReadingTypes(device, BillableField.rateDDemand, data);
 
-        // Add Peak kM (Coincidental)
-		data.setData("peak kM coincidental");
-		data.setValue(345.0);
-		data.setUnitOfMeasure(PointUnits.UOMID_KVAR);
-		data.setTimestamp(new Timestamp(new Date().getTime()));
-
-        setAllReadingTypes(device, BillableField.coincidentalAtPeakDemand, data);
-        
-		return device;
+        return device;
 	}
 
 	/**

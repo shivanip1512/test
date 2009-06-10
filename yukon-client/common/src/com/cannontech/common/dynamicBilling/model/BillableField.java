@@ -18,8 +18,7 @@ public enum BillableField {
     rateADemand(true, true, true, true, "A"), 
     rateBDemand(true, true, true, true, "B"), 
     rateCDemand(true, true, true, true, "C"), 
-    rateDDemand(true, true, true, true, "D"),
-    coincidentalAtPeakDemand(true, true, true, true, null);	//value archived at the time of the peak demand.
+    rateDDemand(true, true, true, true, "D");
 
     private boolean hasData = false;
     private boolean hasValue = false;

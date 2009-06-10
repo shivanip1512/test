@@ -116,7 +116,7 @@ public class MCT430 extends BillingDeviceBase {
                 break;
 
             case 22: // Peak kM (Coincidental) (IED)
-                addData(Channel.ONE, readingType, BillableField.coincidentalAtPeakDemand, data);
+                addData(Channel.ONE, readingType, BillableField.totalPeakDemand, data);
                 break;
 
             }
