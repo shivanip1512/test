@@ -1158,6 +1158,7 @@ void CtiCCSubstationBusStore::reset()
                 {
                     currentFeeder->setPeakTimeFlag(peakFlag);
                 }
+                currentFeeder->figureAndSetTargetVarValue(currentSubstationBus->getControlMethod(), currentSubstationBus->getControlUnits(), currentSubstationBus->getPeakTimeFlag());
 
                 currentFeeder->getMultipleMonitorPoints().clear();
                 CtiCCCapBank_SVector& capBanks = currentFeeder->getCCCapBanks();
@@ -1175,6 +1176,7 @@ void CtiCCSubstationBusStore::reset()
                 }
 
             }
+            currentSubstationBus->figureAndSetTargetVarValue();
         }
         executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::REQUEST_ALL_DATA));
         executor->Execute();
@@ -6291,53 +6293,60 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                                                     &_paobject_subbus_map, &_pointid_feeder_map, &_feeder_subbus_map );
 
                         }
+                        CtiCCSubstationBusPtr myTempBus = findSubBusByPAObjectID(subBusId);
+                        if(myTempBus != NULL)
+                        {
+                            myTempBus->figureAndSetTargetVarValue();
+                        }
                     }
-
-                    {
-                        RWDBSelector selector = db.selector();
-                        selector << pointTable["paobjectid"]
-                        << pointTable["pointid"]
-                        << pointTable["pointoffset"]
-                        << pointTable["pointtype"];
-
-                        selector.from(capControlSubstationBusTable);
-                        selector.from(pointTable);
-
-                        if (subBusId > 0)
+    
                         {
-                            selector.where(capControlSubstationBusTable["substationbusid"]==pointTable["paobjectid"] &&
-                                           capControlSubstationBusTable["substationbusid"] == subBusId);
-                        }
-                        else
-                            selector.where(capControlSubstationBusTable["substationbusid"]==pointTable["paobjectid"]);
-
-
-                        if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-                        {
-                            string loggedSQLstring = selector.asString();
+                            RWDBSelector selector = db.selector();
+                            selector << pointTable["paobjectid"]
+                            << pointTable["pointid"]
+                            << pointTable["pointoffset"]
+                            << pointTable["pointtype"];
+    
+                            selector.from(capControlSubstationBusTable);
+                            selector.from(pointTable);
+    
+                            if (subBusId > 0)
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                                selector.where(capControlSubstationBusTable["substationbusid"]==pointTable["paobjectid"] &&
+                                               capControlSubstationBusTable["substationbusid"] == subBusId);
                             }
-                        }
-
-                        RWDBReader rdr = selector.reader(conn);
-
-                        RWDBNullIndicator isNull;
-                        while ( rdr() )
-                        {
-                            long currentSubBusId;
-
-                            rdr["paobjectid"] >> currentSubBusId;
-                            CtiCCSubstationBusPtr currentCCSubstationBus = paobject_subbus_map->find(currentSubBusId)->second;
-
-
-                            rdr["pointid"] >> isNull;
-                            if ( !isNull )
+                            else
+                                selector.where(capControlSubstationBusTable["substationbusid"]==pointTable["paobjectid"]);
+    
+    
+                            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                             {
-                                long tempPointId = -1000;
-                                long tempPointOffset = -1000;
-                                string tempPointType = "(none)";
+                                string loggedSQLstring = selector.asString();
+                                {
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << CtiTime() << " - " << loggedSQLstring << endl;
+                                }
+                            }
+    
+                            RWDBReader rdr = selector.reader(conn);
+    
+                            RWDBNullIndicator isNull;
+                            while ( rdr() )
+                            {
+                                long currentSubBusId;
+    
+                                rdr["paobjectid"] >> currentSubBusId;
+                                CtiCCSubstationBusPtr currentCCSubstationBus = paobject_subbus_map->find(currentSubBusId)->second;
+    
+    
+                                rdr["pointid"] >> isNull;
+                                if ( !isNull )
+                                {
+                                    long tempPointId = -1000;
+                                    long tempPointOffset = -1000;
+                                    string tempPointType = "(none)";
+                                
+                        
                                 rdr["pointid"] >> tempPointId;
                                 rdr["pointoffset"] >> tempPointOffset;
                                 rdr["pointtype"] >> tempPointType;
@@ -6405,7 +6414,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                                                      &_paobject_substation_map, &_paobject_area_map, &_paobject_specialarea_map);
 
 
-
+                    
 
                 }
 
@@ -6989,7 +6998,13 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                         {
                             CtiCCFeederPtr currentCCFeeder = paobject_feeder_map->find(currentCCFeederId)->second;
                             currentCCFeeder->setDynamicData(rdr);
-
+                            if(feederId > 0 )
+                            {
+                                CtiCCSubstationBusPtr myTempBus = findSubBusByPAObjectID(currentCCFeeder->getParentId());
+                                if(myTempBus != NULL)
+                                    currentCCFeeder->figureAndSetTargetVarValue(myTempBus->getControlMethod(), myTempBus->getControlUnits(), myTempBus->getPeakTimeFlag());
+                                                                   
+                            }
                         }
                     }
                 }

@@ -60,13 +60,13 @@ typedef codeproject::sorted_vector<CtiCCCapBank*,false,CtiCCCapBank_lessTrip> Ct
 template<class T>
 struct FeederVARComparison
 {
-	bool operator()(const T& x, const T& y) const
-	{
+    bool operator()(const T& x, const T& y) const
+    {
         bool returnBoolean = false;
 
         // if the feeders are in different var categories,
         // we don't need the offset to determine which feeder should be first
-		if( x.getBusOptimizedVarCategory() != y.getBusOptimizedVarCategory() )
+        if( x.getBusOptimizedVarCategory() != y.getBusOptimizedVarCategory() )
         {
             returnBoolean = x.getBusOptimizedVarCategory() > y.getBusOptimizedVarCategory();
         }
@@ -78,7 +78,7 @@ struct FeederVARComparison
         }
 
         return returnBoolean;
-	}
+    }
 };
 
 class CtiCCFeeder : public RWCollectable
@@ -324,6 +324,8 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setLastVoltPointTime(const CtiTime& lastpointupdate);
     CtiCCFeeder& setRetryIndex(LONG value);
 
+
+    void figureAndSetTargetVarValue(const string& controlMethod, const string& controlUnits, BOOL peakTimeFlag);
     CtiCCCapBank* findCapBankToChangeVars(DOUBLE kvarSolution, CtiMultiMsg_vec& pointChanges);
     bool checkForMaxKvar( long, long );
     bool removeMaxKvar( long bankId );

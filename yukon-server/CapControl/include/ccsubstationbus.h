@@ -313,6 +313,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setLastVoltPointTime(const CtiTime& lastpointupdate);
 
 
+    void figureAndSetTargetVarValue();
+    DOUBLE getSetPoint();
     BOOL isPastMaxConfirmTime(const CtiTime& currentDateTime);
     LONG getLastFeederControlledSendRetries() const;
     void analyzeMultiVoltBus(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);

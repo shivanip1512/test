@@ -2458,7 +2458,8 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - No Watt Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
                         }
-                        
+
+                        currentSubstationBus->figureAndSetTargetVarValue();
                     }
                     
                 }
@@ -2506,6 +2507,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - No Var Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
                         }
+                        currentSubstationBus->figureAndSetTargetVarValue();
                     }
                 }
                 else if( currentSubstationBus->getCurrentVoltLoadPointId() == pointID )
@@ -2531,8 +2533,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                             currentSubstationBus->setBusUpdatedFlag(TRUE);
                         }
                         currentSubstationBus->setNewPointDataReceivedFlag(TRUE);
- 
-
+                        currentSubstationBus->figureAndSetTargetVarValue();
                     }
                 }
                 else if (currentSubstationBus->getSwitchOverPointId() == pointID)
@@ -2692,6 +2693,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                             currentSubstationBus->setBusUpdatedFlag(TRUE);
                         }
                         currentSubstationBus->figureEstimatedVarLoadPointValue();
+                        currentSubstationBus->figureAndSetTargetVarValue();
                     }
                 }
                 else if (currentSubstationBus->getDailyOperationsAnalogPointId()  == pointID)
@@ -2905,6 +2907,8 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << CtiTime() << " - No Watt Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
                             }
+
+                            currentFeeder->figureAndSetTargetVarValue(currentSubstationBus->getControlMethod(), currentSubstationBus->getControlUnits(), currentSubstationBus->getPeakTimeFlag());
                         }
                     }
                     else if( currentFeeder->getCurrentWattLoadPointId() == pointID )
@@ -2945,6 +2949,8 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << CtiTime() << " - No Var Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
                             }
+
+                            currentFeeder->figureAndSetTargetVarValue(currentSubstationBus->getControlMethod(), currentSubstationBus->getControlUnits(), currentSubstationBus->getPeakTimeFlag());                        
                         }
                     }
                     else if( currentFeeder->getCurrentVoltLoadPointId() == pointID )
@@ -2959,6 +2965,8 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
                                 currentSubstationBus->setBusUpdatedFlag(TRUE);
                             }
                             currentFeeder->setCurrentVoltPointQuality(quality);
+
+                            currentFeeder->figureAndSetTargetVarValue(currentSubstationBus->getControlMethod(), currentSubstationBus->getControlUnits(), currentSubstationBus->getPeakTimeFlag());                        
                         }
                     }
                     else if (currentFeeder->getDailyOperationsAnalogPointId()  == pointID )
@@ -3016,8 +3024,9 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
                                 }
                             }
                             currentFeeder->figureEstimatedVarLoadPointValue();
-                        }
 
+                            currentFeeder->figureAndSetTargetVarValue(currentSubstationBus->getControlMethod(), currentSubstationBus->getControlUnits(), currentSubstationBus->getPeakTimeFlag());                        
+                        }
                     }
                 }
             }

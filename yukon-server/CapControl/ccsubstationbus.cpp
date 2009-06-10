@@ -560,7 +560,6 @@ DOUBLE CtiCCSubstationBus::getPeakPFSetPoint() const
     return _peakpfsetpoint;
 }
 
-
 /*---------------------------------------------------------------------------
     getPeakStartTime
 
@@ -2178,6 +2177,22 @@ CtiCCSubstationBus& CtiCCSubstationBus::figureNextCheckTime()
     return *this;
 }
 
+DOUBLE CtiCCSubstationBus::getSetPoint()
+{
+    if (!stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::PF_BY_KVARControlUnits) ||
+        !stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::PF_BY_KQControlUnits ))
+    {
+        return (getPeakTimeFlag()?getPeakPFSetPoint():getOffPeakPFSetPoint());
+    }
+    else
+    {
+        DOUBLE lagLevel = (getPeakTimeFlag()?getPeakLag():getOffPeakLag());
+        DOUBLE leadLevel = (getPeakTimeFlag()?getPeakLead():getOffPeakLead());
+
+        return ((lagLevel + leadLevel)/2);
+    }
+}
+
 /*---------------------------------------------------------------------------
     setNewPointDataReceivedFlag
 
@@ -3219,6 +3234,15 @@ DOUBLE CtiCCSubstationBus::calculateKVARSolution(const string& controlUnits, DOU
     }
 
     return returnKVARSolution;
+}
+
+void CtiCCSubstationBus::figureAndSetTargetVarValue()
+{
+    setKVARSolution(calculateKVARSolution(getControlUnits(),getSetPoint(), getCurrentVarLoadPointValue(), getCurrentWattLoadPointValue()));
+    if( !stringCompareIgnoreCase(getControlUnits(),CtiCCSubstationBus::VoltControlUnits) )
+        setTargetVarValue( getKVARSolution() + getCurrentVoltLoadPointValue());
+    else
+        setTargetVarValue( getKVARSolution() + getCurrentVarLoadPointValue());
 }
 
 /*---------------------------------------------------------------------------
