@@ -30,25 +30,31 @@ public class WaitableCommandCompletionCallback extends
         }
     }
 
-    public void waitForCompletion(long betweenResultsMax, long totalMax) throws InterruptedException,
-            TimeoutException {
-        this.latestFinishTime = System.currentTimeMillis() + TimeUnit.MILLISECONDS.convert(totalMax, TimeUnit.SECONDS);
-        lastResultReceivedTime = System.currentTimeMillis();
+    public void waitForCompletion(long betweenResultsMax, long totalMax) throws InterruptedException, TimeoutException {
+    	
+    	long startTime = System.currentTimeMillis();
+        this.latestFinishTime = startTime + TimeUnit.MILLISECONDS.convert(totalMax, TimeUnit.SECONDS);
+        lastResultReceivedTime = startTime;
         log.debug("Starting await on " + Thread.currentThread() + " for " + totalMax);
+        
         synchronized (lock) {
             while (!isComplete()) {
-                if (System.currentTimeMillis() > latestFinishTime) {
+            	
+            	long currentTime = System.currentTimeMillis();
+            	long latestBetweenResultsFinishTime = lastResultReceivedTime + TimeUnit.MILLISECONDS.convert(betweenResultsMax, TimeUnit.SECONDS);
+            	
+                if (currentTime >= latestFinishTime) {
                     throw new TimeoutException("The entire commander command execution did not complete within " + totalMax + " seconds");
                 }
-                if (System.currentTimeMillis() > lastResultReceivedTime + TimeUnit.MILLISECONDS.convert(betweenResultsMax, TimeUnit.SECONDS)) {
+                if (currentTime >= latestBetweenResultsFinishTime) {
                     throw new TimeoutException("The commander command execution did not receive a result for " + betweenResultsMax + " seconds");
                 }
                 
                 // determine how long to wait... should be the shortest of A or B
                 // time until command must fully complete
-                long timeoutA = latestFinishTime - System.currentTimeMillis();
+                long timeoutA = latestFinishTime - currentTime;
                 // time until we must hear the next response
-                long timeoutB = lastResultReceivedTime + TimeUnit.MILLISECONDS.convert(betweenResultsMax, TimeUnit.SECONDS) - System.currentTimeMillis();
+                long timeoutB = latestBetweenResultsFinishTime - currentTime;
                 long timeout = Math.min(timeoutA, timeoutB);
                 
                 lock.wait(timeout);
