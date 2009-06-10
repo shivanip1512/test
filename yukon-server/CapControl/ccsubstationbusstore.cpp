@@ -7002,7 +7002,9 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                             {
                                 CtiCCSubstationBusPtr myTempBus = findSubBusByPAObjectID(currentCCFeeder->getParentId());
                                 if(myTempBus != NULL)
+                                {    
                                     currentCCFeeder->figureAndSetTargetVarValue(myTempBus->getControlMethod(), myTempBus->getControlUnits(), myTempBus->getPeakTimeFlag());
+                                }
                                                                    
                             }
                         }

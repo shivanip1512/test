@@ -2990,9 +2990,13 @@ void CtiCCFeeder::figureAndSetTargetVarValue(const string& controlMethod, const 
             DOUBLE setpoint = (lagLevel + leadLevel)/2;
             setKVARSolution(CtiCCSubstationBus::calculateKVARSolution(feederControlUnits, setpoint, getCurrentVarLoadPointValue(), getCurrentWattLoadPointValue()));
             if( !stringCompareIgnoreCase(feederControlUnits,CtiCCSubstationBus::VoltControlUnits) )
+            {    
                 setTargetVarValue( getKVARSolution() + getCurrentVoltLoadPointValue());
+            }
             else
+            {    
                 setTargetVarValue( getKVARSolution() + getCurrentVarLoadPointValue());
+            }
         }
     }
     else
