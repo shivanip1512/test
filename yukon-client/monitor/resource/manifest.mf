@@ -8,7 +8,7 @@ Class-Path: ./
  jtds.jar 
  SqlServer.jar 
  monitor.jar 
- yukonappserver.jar
- loadcontrol.jar
+ yukonappserver.jar 
+ loadcontrol.jar 
  ../log/ 
  ../export/ 
