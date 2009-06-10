@@ -163,7 +163,7 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
 
     private void runCallbackWithFoundRouteId(final RouteDiscoveryState state, final String deviceLogStr, final String routeLogStr, final int foundRouteId) {
         
-    	scheduledExecutor.schedule(new Runnable() {
+    	scheduledExecutor.execute(new Runnable() {
             
             @Override
             public void run() {
@@ -173,14 +173,14 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
             		runCallbackWithNull(state, "Route found callback failed.", deviceLogStr, routeLogStr, e);
             	}
             }
-        }, 0, TimeUnit.MILLISECONDS);
+        });
     }
 
     private void runCallbackWithNull(final RouteDiscoveryState state, final String reasonForNull, final String deviceLogStr, final String routeLogStr, final Exception nullReasonException) {
         
         final String callbackLogStr = " CALLBACK: " + state.getRouteFoundCallback().toString();
         
-        scheduledExecutor.schedule(new Runnable() {
+        scheduledExecutor.execute(new Runnable() {
             
             @Override
             public void run() {
@@ -191,7 +191,7 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
             		log.error("Failed to run callback with null. Original reason for null callback was: " + reasonForNull + deviceLogStr + routeLogStr + callbackLogStr, e);
             	}
             }
-        }, 0, TimeUnit.MILLISECONDS);
+        });
     }
     
     @Required
