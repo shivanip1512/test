@@ -229,7 +229,7 @@ protected:
     virtual const read_key_store_t &getReadKeyStore(void) const = 0;
 
     //  overridden by the 410 and 470 so they can use the same peak/TOU decode function
-    virtual point_info getDemandData(unsigned char *buf, int len) const = 0;
+    virtual point_info getDemandData(unsigned char *buf, int len, bool frozen) const = 0;
 
     point_info getData(const unsigned char *buf, int len, ValueType4xx vt) const;
 

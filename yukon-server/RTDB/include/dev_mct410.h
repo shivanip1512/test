@@ -302,11 +302,12 @@ protected:
         ValueType_AccumulatorDelta,
         ValueType_Voltage,
         ValueType_DynamicDemand,
+        ValueType_FrozenDynamicDemand,
         ValueType_LoadProfile_Voltage,
         ValueType_LoadProfile_DynamicDemand,
     };
 
-    virtual point_info getDemandData(unsigned char *buf, int len) const;
+    virtual point_info getDemandData(unsigned char *buf, int len, bool frozen) const;
 
     point_info getData(const unsigned char *buf, int len, ValueType410 vt) const;
 

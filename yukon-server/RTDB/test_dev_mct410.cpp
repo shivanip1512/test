@@ -10,16 +10,93 @@
 #define BOOST_TEST_MAIN "Test dev_mct410"
 #include <boost/test/unit_test.hpp>
 
+#include <limits>
+
 using boost::unit_test_framework::test_suite;
 
 class test_CtiDeviceMCT410 : public CtiDeviceMCT410
 {
 public:
+
+    typedef CtiDeviceMCT410::point_info point_info;
+
+    point_info test_getDemandData(unsigned char *buf, int len, bool frozen)
+    {
+        return getDemandData(buf, len, frozen);
+    }
+
     void test_extractDynamicPaoInfo(const INMESS &InMessage)
     {
         extractDynamicPaoInfo(InMessage);
     };
 };
+
+BOOST_AUTO_TEST_CASE(test_dev_mct410_getDemandData)
+{
+    test_CtiDeviceMCT410 dev;
+
+    struct demand_checks
+    {
+        unsigned char raw_value[2];
+        bool frozen;
+        double value;
+        bool freeze_bit;
+    };
+
+    demand_checks dc[10] = {{{0x30, 0x05}, false, 0.005, true},
+                            {{0x30, 0x05}, true,  0.004, true},
+                            {{0x30, 0x04}, false, 0.004, false},
+                            {{0x30, 0x04}, true,  0.004, false},
+                            {{0x2f, 0x0f}, false, 38.55, true},
+                            {{0x2f, 0x0f}, true,  38.54, true},
+                            {{0x2f, 0x0e}, false, 38.54, false},
+                            {{0x2f, 0x0e}, true,  38.54, false},
+                            {{0x01, 0x11}, false, 273,   true},
+                            {{0x01, 0x11}, true,  272,   true}};
+
+    test_CtiDeviceMCT410::point_info pi;
+
+    pi = dev.test_getDemandData(dc[0].raw_value, 2, dc[0].frozen);
+    BOOST_CHECK_SMALL(pi.value - dc[0].value, std::numeric_limits<double>::epsilon());
+    BOOST_CHECK_EQUAL(pi.freeze_bit, dc[0].freeze_bit);
+
+    pi = dev.test_getDemandData(dc[1].raw_value, 2, dc[1].frozen);
+    BOOST_CHECK_SMALL(pi.value - dc[1].value, std::numeric_limits<double>::epsilon());
+    BOOST_CHECK_EQUAL(pi.freeze_bit, dc[1].freeze_bit);
+
+    pi = dev.test_getDemandData(dc[2].raw_value, 2, dc[2].frozen);
+    BOOST_CHECK_SMALL(pi.value - dc[2].value, std::numeric_limits<double>::epsilon());
+    BOOST_CHECK_EQUAL(pi.freeze_bit, dc[2].freeze_bit);
+
+    pi = dev.test_getDemandData(dc[3].raw_value, 2, dc[3].frozen);
+    BOOST_CHECK_SMALL(pi.value - dc[3].value, std::numeric_limits<double>::epsilon());
+    BOOST_CHECK_EQUAL(pi.freeze_bit, dc[3].freeze_bit);
+
+    pi = dev.test_getDemandData(dc[4].raw_value, 2, dc[4].frozen);
+    BOOST_CHECK_SMALL(pi.value - dc[4].value, std::numeric_limits<double>::epsilon());
+    BOOST_CHECK_EQUAL(pi.freeze_bit, dc[4].freeze_bit);
+
+    pi = dev.test_getDemandData(dc[5].raw_value, 2, dc[5].frozen);
+    BOOST_CHECK_SMALL(pi.value - dc[5].value, std::numeric_limits<double>::epsilon());
+    BOOST_CHECK_EQUAL(pi.freeze_bit, dc[5].freeze_bit);
+
+    pi = dev.test_getDemandData(dc[6].raw_value, 2, dc[6].frozen);
+    BOOST_CHECK_SMALL(pi.value - dc[6].value, std::numeric_limits<double>::epsilon());
+    BOOST_CHECK_EQUAL(pi.freeze_bit, dc[6].freeze_bit);
+
+    pi = dev.test_getDemandData(dc[7].raw_value, 2, dc[7].frozen);
+    BOOST_CHECK_SMALL(pi.value - dc[7].value, std::numeric_limits<double>::epsilon());
+    BOOST_CHECK_EQUAL(pi.freeze_bit, dc[7].freeze_bit);
+
+    pi = dev.test_getDemandData(dc[8].raw_value, 2, dc[8].frozen);
+    BOOST_CHECK_SMALL(pi.value - dc[8].value, std::numeric_limits<double>::epsilon());
+    BOOST_CHECK_EQUAL(pi.freeze_bit, dc[8].freeze_bit);
+
+    pi = dev.test_getDemandData(dc[9].raw_value, 2, dc[9].frozen);
+    BOOST_CHECK_SMALL(pi.value - dc[9].value, std::numeric_limits<double>::epsilon());
+    BOOST_CHECK_EQUAL(pi.freeze_bit, dc[9].freeze_bit);
+}
+
 
 BOOST_AUTO_TEST_CASE(test_dev_mct410_extractDynamicPaoInfo)
 {

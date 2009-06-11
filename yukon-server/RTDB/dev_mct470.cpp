@@ -753,7 +753,7 @@ long CtiDeviceMCT470::getLoadProfileInterval( unsigned channel )
 }
 
 
-CtiDeviceMCT470::point_info CtiDeviceMCT470::getDemandData(unsigned char *buf, int len) const
+CtiDeviceMCT470::point_info CtiDeviceMCT470::getDemandData(unsigned char *buf, int len, bool frozen) const
 {
     return getData(buf, len, ValueType_PulseDemand);
 }

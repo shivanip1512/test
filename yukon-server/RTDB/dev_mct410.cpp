@@ -220,9 +220,11 @@ int CtiDeviceMCT410::makeDynamicDemand(double input)
 }
 
 
-CtiDeviceMCT410::point_info CtiDeviceMCT410::getDemandData(unsigned char *buf, int len) const
+CtiDeviceMCT410::point_info CtiDeviceMCT410::getDemandData(unsigned char *buf, int len, bool frozen) const
 {
-    return getData(buf, len, ValueType_DynamicDemand);
+    return frozen ?
+        getData(buf, len, ValueType_FrozenDynamicDemand) :
+        getData(buf, len, ValueType_DynamicDemand);
 }
 
 CtiDeviceMCT410::point_info CtiDeviceMCT410::getData(const unsigned char *buf, int len, ValueType410 vt) const
@@ -251,6 +253,7 @@ CtiDeviceMCT410::point_info CtiDeviceMCT410::getData(const unsigned char *buf, i
         if( i == 0 )
         {
             if( vt == ValueType_DynamicDemand ||
+                vt == ValueType_FrozenDynamicDemand ||
                 vt == ValueType_LoadProfile_DynamicDemand )
             {
                 resolution    = value_byte & 0x30;
@@ -279,6 +282,12 @@ CtiDeviceMCT410::point_info CtiDeviceMCT410::getData(const unsigned char *buf, i
 
     retval.freeze_bit = value & 0x01;
 
+    if( vt == ValueType_FrozenDynamicDemand )
+    {
+        //  clear the bottom bit
+        value &= ~1;
+    }
+
     switch( vt )
     {
         case ValueType_Voltage:                     min_error = 0xffffffe0; break;
@@ -286,6 +295,7 @@ CtiDeviceMCT410::point_info CtiDeviceMCT410::getData(const unsigned char *buf, i
         case ValueType_AccumulatorDelta:            min_error = 0xfffffffa; break;
 
         case ValueType_DynamicDemand:
+        case ValueType_FrozenDynamicDemand:
         case ValueType_LoadProfile_DynamicDemand:
         case ValueType_LoadProfile_Voltage:         min_error = 0xffffffa1; break;
     }
@@ -330,7 +340,9 @@ CtiDeviceMCT410::point_info CtiDeviceMCT410::getData(const unsigned char *buf, i
     retval.quality     = quality;
     retval.description = description;
 
-    if( vt == ValueType_DynamicDemand || vt == ValueType_LoadProfile_DynamicDemand )
+    if( vt == ValueType_DynamicDemand ||
+        vt == ValueType_FrozenDynamicDemand ||
+        vt == ValueType_LoadProfile_DynamicDemand )
     {
         if( getMCTDebugLevel(DebugLevel_Info) )
         {

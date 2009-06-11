@@ -3453,7 +3453,7 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
             //  TOU memory layout
             pi_kwh         = getData(DSt->Message,     3, ValueType_Accumulator);
 
-            pi_kw          = getDemandData(DSt->Message + 3, 2);
+            pi_kw          = getDemandData(DSt->Message + 3, 2, parse.getFlags() & CMD_FLAG_FROZEN);
             pi_kw_time     = getData(DSt->Message + 5, 4, ValueType_Raw);
 
             pi_freezecount = getData(DSt->Message + 9, 1, ValueType_Raw);
@@ -3461,7 +3461,7 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
         else
         {
             //  normal peak memory layout
-            pi_kw          = getDemandData(DSt->Message, 2);
+            pi_kw          = getDemandData(DSt->Message, 2, parse.getFlags() & CMD_FLAG_FROZEN);
             pi_kw_time     = getData(DSt->Message + 2, 4, ValueType_Raw);
 
             pi_kwh         = getData(DSt->Message + 6, 3, ValueType_Accumulator);

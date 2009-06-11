@@ -152,7 +152,7 @@ protected:
         ValueType_IED,
     };
 
-    virtual point_info getDemandData(unsigned char *buf, int len) const;
+    virtual point_info getDemandData(unsigned char *buf, int len, bool frozen) const;
 
     point_info getData(const unsigned char *buf, int len, ValueType470 vt) const;
 
