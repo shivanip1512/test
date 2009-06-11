@@ -7,16 +7,26 @@ public class CCVerifySubStation extends CapControlMessage {
     int subId; //subStationId
     int strategy;
     long cbInactivityTime;
+    boolean disableOvUv;
     
-    public CCVerifySubStation() {
+    public boolean isDisableOvUv() {
+		return disableOvUv;
+	}
+
+	public void setDisableOvUv(boolean disableOvUv) {
+		this.disableOvUv = disableOvUv;
+	}
+
+	public CCVerifySubStation() {
         super();
     }
 
-    public CCVerifySubStation (int _action_, int _subId_, int _strategy_, long _cbInactivityTime_){
+    public CCVerifySubStation (int _action_, int _subId_, int _strategy_, long _cbInactivityTime_, boolean _disableOvUv_){
         action = _action_;
         subId = _subId_;
         strategy = _strategy_;
-        cbInactivityTime = _cbInactivityTime_;      
+        cbInactivityTime = _cbInactivityTime_;
+        disableOvUv = _disableOvUv_;
     }
     
     public int getAction() {

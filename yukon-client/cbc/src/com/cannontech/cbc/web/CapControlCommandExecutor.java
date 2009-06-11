@@ -143,7 +143,7 @@ public class CapControlCommandExecutor
         if (cmdId == CapControlCommand.CMD_DISABLE_VERIFY)
             action = 1;
         int strat = cmdId - CapControlCommand.VERIFY_OFFSET;  
-        CCVerifySubStation msg = new CCVerifySubStation (action, paoId, strat, CCVerifySubStation.DEFAULT_CB_INACT_TIME);
+        CCVerifySubStation msg = new CCVerifySubStation (action, paoId, strat, CCVerifySubStation.DEFAULT_CB_INACT_TIME, false);
         capControlCache.getConnection().write(msg);
     }
 
@@ -152,7 +152,7 @@ public class CapControlCommandExecutor
 		if (cmdId == CapControlCommand.CMD_DISABLE_VERIFY)
 			action = 1;
 		int strat = cmdId - CapControlCommand.VERIFY_OFFSET;	
-		CCVerifySubBus msg = new CCVerifySubBus (action, paoId, strat, CCVerifySubBus.DEFAULT_CB_INACT_TIME);
+		CCVerifySubBus msg = new CCVerifySubBus (action, paoId, strat, CCVerifySubBus.DEFAULT_CB_INACT_TIME, false);
 		capControlCache.getConnection().write(msg);
 	}
 

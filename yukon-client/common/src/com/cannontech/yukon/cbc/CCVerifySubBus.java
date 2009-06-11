@@ -7,16 +7,26 @@ public class CCVerifySubBus extends CapControlMessage {
     int subId; //subBusID
     int strategy;
     long cbInactivityTime;
+    boolean disableOvUv;
 	
+	public boolean isDisableOvUv() {
+		return disableOvUv;
+	}
+
+	public void setDisableOvUv(boolean disableOvUv) {
+		this.disableOvUv = disableOvUv;
+	}
+
 	public CCVerifySubBus() {
 		super();
 	}
 
-	public CCVerifySubBus (int _action_, int _subId_, int _strategy_, long _cbInactivityTime_){
+	public CCVerifySubBus (int _action_, int _subId_, int _strategy_, long _cbInactivityTime_, boolean _disableOvUv_){
 		action = _action_;
 		subId = _subId_;
 		strategy = _strategy_;
-		cbInactivityTime = _cbInactivityTime_;		
+		cbInactivityTime = _cbInactivityTime_;
+		disableOvUv = _disableOvUv_;
 	}
 	
 	public int getAction() {

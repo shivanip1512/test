@@ -77,6 +77,7 @@ public class DefineCollectableVerifySub extends DefineCollectableCBCMessage {
 		vstr.insertUnsignedInt( (int) verifySub.getSubId());
 		vstr.insertUnsignedInt( (int) verifySub.getStrategy());
 		vstr.insertUnsignedInt( (long) verifySub.getCbInactivityTime());
+		vstr.insertUnsignedInt( (int) (verifySub.isDisableOvUv() == true ? 1 : 0) );
 
 	}
 }
