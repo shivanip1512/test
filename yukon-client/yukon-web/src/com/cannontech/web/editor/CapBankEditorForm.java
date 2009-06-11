@@ -276,13 +276,11 @@ public class CapBankEditorForm extends DBEditorForm {
 
     // hook into capcontrol form
     public void init(DBPersistent dbPersistent) {
-        if (getDbPersistent() == null) {
-            setDbPersistent(dbPersistent);
-            if (dbPersistent instanceof CapBank) {
-                capBank = (CapBank) getDbPersistent();
-                initController(capBank);
-                initAdditionalInfo();
-            }
+        setDbPersistent(dbPersistent);
+        if (dbPersistent instanceof CapBank) {
+            capBank = (CapBank) getDbPersistent();
+            initController(capBank);
+            initAdditionalInfo();
         }
     }
 

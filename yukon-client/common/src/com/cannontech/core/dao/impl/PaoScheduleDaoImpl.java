@@ -17,9 +17,11 @@ import com.cannontech.database.incrementer.NextValueHelper;
 public class PaoScheduleDaoImpl implements PaoScheduleDao {
 
 	private static final String assignCommandToSchedule;
+	private static final String updateAssignment;
 	private static final String removeCommandFromScheduleByEventId;
 	private static final String selectAllAssignments;
 	private static final String selectAllPaoSchedule;
+	private static final String selectAssignmentByEventId;
 	
 	private static final ParameterizedRowMapper<PaoScheduleAssignment> assignmentRowMapper;
 	private static final ParameterizedRowMapper<PAOSchedule> paoScheduleRowMapper;
@@ -28,11 +30,17 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
 	private NextValueHelper nextValueHelper = null;
 	
 	static{
+	    updateAssignment = "UPDATE PAOScheduleAssignment SET ScheduleId = ?, PaoId = ?, Command = ?, disableOvUv = ? where EventId = ?";
+	    
 		selectAllPaoSchedule = "SELECT ScheduleID,ScheduleName From PaoSchedule";
 		
 		selectAllAssignments = "SELECT sa.EventID, sa.ScheduleID, s.ScheduleName, s.NextRunTime, s.LastRunTime, sa.PaoID, po.PAOName, sa.Command, sa.disableOvUv " +
 				               "FROM PAOScheduleAssignment sa, PAOSchedule s, YukonPAObject po " +
 				               "WHERE s.ScheduleID = sa.ScheduleID AND sa.PaoID = po.PAObjectID ";
+		
+		selectAssignmentByEventId = "SELECT sa.EventID, sa.ScheduleID, s.ScheduleName, s.NextRunTime, s.LastRunTime, sa.PaoID, po.PAOName, sa.Command, sa.disableOvUv " +
+            "FROM PAOScheduleAssignment sa, PAOSchedule s, YukonPAObject po " +
+            "WHERE s.ScheduleID = sa.ScheduleID AND sa.PaoID = po.PAObjectID AND sa.EventID = ?";
 		
 		assignCommandToSchedule = "INSERT INTO PAOScheduleAssignment (EventID, ScheduleID, PaoID, Command, disableOvUv) VALUES (?,?,?,?,?)";
 		
@@ -75,6 +83,20 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
 		
 		return assignmentList;
 	}
+	
+	@Override
+    @Transactional(readOnly = true)
+    public PaoScheduleAssignment getScheduleAssignmentByEventId(Integer eventId) {
+        PaoScheduleAssignment assignment = simpleJdbcTemplate.queryForObject(selectAssignmentByEventId,assignmentRowMapper, eventId);
+        return assignment;
+    }
+	
+	@Override
+    @Transactional(readOnly = true)
+    public boolean updateAssignment(PaoScheduleAssignment assignment) {
+        int rowsAffected = simpleJdbcTemplate.update(updateAssignment, assignment.getScheduleId(), assignment.getPaoId(), assignment.getCommandName(), assignment.getDisableOvUv(), assignment.getEventId() );
+        return rowsAffected == 1;
+    }
 	
 	@Override
 	@Transactional(readOnly = true)

@@ -45,6 +45,26 @@ public class ScheduleAssignmentController {
         
 		return "scheduleassignment.jsp";
     }
+	
+    @RequestMapping(method = RequestMethod.POST)
+    public View setOvUv(Integer eventId, Integer ovuv, ModelMap map) throws ServletException, Exception {
+        boolean success = true;
+        String resultString = "The Delete was a success.";
+        if( eventId == null) {
+            success = false;
+            resultString = "The Delete failed, eventId was NULL";
+        } else {
+            PaoScheduleAssignment assignment = paoScheduleDao.getScheduleAssignmentByEventId(eventId);
+            assignment.setDisableOvUv(ovuv == 0 ? "Y" : "N");
+            success = paoScheduleDao.updateAssignment(assignment);
+            if (!success) {
+                resultString = "The Device was not in the database. Please refresh this page.";
+            }
+        }
+        map.addAttribute("success", success);
+        map.addAttribute("resultText" , resultString);
+        return new JsonView();
+    }
 
 	@RequestMapping(method=RequestMethod.POST)
 	public View removePao(Integer eventId, ModelMap map) throws ServletException, Exception {

@@ -47,6 +47,19 @@ function removeScheduleCommand(eventId) {
         } });
 }
 
+function setOvUv(eventId, ovuv) {
+    var url = "/spring/capcontrol/scheduleAssignments/setOvUv";
+    hideErrors();
+    new Ajax.Request(url, {'parameters': {'eventId': eventId, 'ovuv': ovuv}, 
+        onComplete: function(transport, json) {
+            if (!json.success) {
+                $('errorElement').innerHTML = json.resultText;
+                $('errorElement').show();
+            }
+        } 
+    });
+}
+
 function hideErrors() {
 	
 	if(!firstRun) {	
@@ -207,7 +220,12 @@ Event.observe(window, 'load', function() {
 					<td><cti:formatDate value="${item.nextRunTime}" type="DATEHM" /></td>
 					<td><c:out value="${item.commandName}" /></td>
 					<td><c:out value="${item.deviceName}" /></td>
-					<td><c:out value="${item.disableOvUv}"/></td>
+					<td>
+                        <select id="disableOvUvSelect" onchange="setOvUv(${item.eventId}, this.selectedIndex)">
+                            <option value="Y" <c:if test="${item.disableOvUv == 'Y'}">selected="selected"</c:if>>Y</option>
+                            <option value="N" <c:if test="${item.disableOvUv == 'N'}">selected="selected"</c:if>>N</option>
+                        </select>
+					</td>
 					<td align="center">
                         <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
                             <img src="/WebConfig/yukon/Icons/cancel.gif" class="pointer" onclick="removeScheduleCommand(${item.eventId})">
