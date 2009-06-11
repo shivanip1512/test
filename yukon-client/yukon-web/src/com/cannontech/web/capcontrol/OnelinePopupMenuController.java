@@ -462,16 +462,16 @@ public class OnelinePopupMenuController extends MultiActionController {
                 phaseB = st.nextToken();
                 phaseC = st.nextToken();
                 total = st.nextToken();
-                beforeRow = "<td align='left' style='color:white; font-size: 14;'>Before:</td><td align='left' style='color:white; font-size: 14;'>" 
-                    + phaseA + "</td><td align='left' style='color:white; font-size: 14;'>" 
-                    + phaseB + "</td><td align='left' style='color:white; font-size: 14;'>" 
-                    + phaseC + "</td><td align='left' style='color:white; font-size: 14;'>" 
+                beforeRow = "<td nowrap align='left' style='color:white; font-size: 14;'>Before:</td><td nowrap align='left' style='color:white; font-size: 14;'>" 
+                    + phaseA + "</td><td nowrap align='left' style='color:white; font-size: 14;'>" 
+                    + phaseB + "</td><td nowrap align='left' style='color:white; font-size: 14;'>" 
+                    + phaseC + "</td><td nowrap align='left' style='color:white; font-size: 14;'>" 
                     + total + "</td>";
             }else {
-                beforeRow = "<td align='left' style='color:white; font-size: 14;'>Before:</td><td colspan='4' align='left' style='color:white; font-size: 14;'>" + phaseA + "</td>";
+                beforeRow = "<td nowrap align='left' style='color:white; font-size: 14;'>Before:</td><td nowrap colspan='4' align='left' style='color:white; font-size: 14;'>" + phaseA + "</td>";
             }
         }else {
-            beforeRow = "<td align='left' style='color:white; font-size: 14;'>Before:</td><td colspan='4' align='left' style='color:white; font-size: 14;'>" + before + "</td>";
+            beforeRow = "<td nowrap align='left' style='color:white; font-size: 14;'>Before:</td><td nowrap colspan='4' align='left' style='color:white; font-size: 14;'>" + before + "</td>";
         }
         
         if(after.contains(":")) {
@@ -484,16 +484,16 @@ public class OnelinePopupMenuController extends MultiActionController {
                 phaseB = st.nextToken();
                 phaseC = st.nextToken();
                 total = st.nextToken();
-                afterRow = "<td align='left' style='color:white; font-size: 14;'>After:</td><td align='left' style='color:white; font-size: 14;'>" 
-                    + phaseA + "</td><td align='left' style='color:white; font-size: 14;'>" 
-                    + phaseB + "</td><td align='left' style='color:white; font-size: 14;'>" 
-                    + phaseC + "</td><td align='left' style='color:white; font-size: 14;'>" 
+                afterRow = "<td nowrap align='left' style='color:white; font-size: 14;'>After:</td><td nowrap align='left' style='color:white; font-size: 14;'>" 
+                    + phaseA + "</td><td nowrap align='left' style='color:white; font-size: 14;'>" 
+                    + phaseB + "</td><td nowrap align='left' style='color:white; font-size: 14;'>" 
+                    + phaseC + "</td><td nowrap align='left' style='color:white; font-size: 14;'>" 
                     + total + "</td>";
             }else {
-                afterRow = "<td align='left' style='color:white; font-size: 14;'>After:</td><td colspan='4' align='left' style='color:white; font-size: 14;'>" + phaseA + "</td>";
+                afterRow = "<td nowrap align='left' style='color:white; font-size: 14;'>After:</td><td nowrap colspan='4' align='left' style='color:white; font-size: 14;'>" + phaseA + "</td>";
             }
         }else {
-            afterRow = "<td align='left' style='color:white; font-size: 14;'>After:</td><td colspan='4' align='left' style='color:white; font-size: 14;'>" + after + "</td>";
+            afterRow = "<td nowrap align='left' style='color:white; font-size: 14;'>After:</td><td nowrap colspan='4' align='left' style='color:white; font-size: 14;'>" + after + "</td>";
         }
         
         if(change.contains(":")) {
@@ -506,16 +506,16 @@ public class OnelinePopupMenuController extends MultiActionController {
                 phaseB = st.nextToken();
                 phaseC = st.nextToken();
                 total = st.nextToken();
-                changeRow = "<td align='left' style='color:white; font-size: 14;'>% Change:</td><td align='left' style='color:white; font-size: 14;'>" 
-                    + phaseA + "</td><td align='left' style='color:white; font-size: 14;'>" 
-                    + phaseB + "</td><td align='left' style='color:white; font-size: 14;'>" 
-                    + phaseC + "</td><td align='left' style='color:white; font-size: 14;'>" 
+                changeRow = "<td nowrap align='left' style='color:white; font-size: 14;'>% Change:</td><td nowrap align='left' style='color:white; font-size: 14;'>" 
+                    + phaseA + "</td><td nowrap align='left' style='color:white; font-size: 14;'>" 
+                    + phaseB + "</td><td nowrap align='left' style='color:white; font-size: 14;'>" 
+                    + phaseC + "</td><td nowrap align='left' style='color:white; font-size: 14;'>" 
                     + total + "</td>";
             }else {
-                changeRow = "<td align='left' style='color:white; font-size: 14;'>% Change:</td><td colspan='4' align='left' style='color:white; font-size: 14;'>" + phaseA + "</td>";
+                changeRow = "<td nowrap align='left' style='color:white; font-size: 14;'>% Change:</td><td colspan='4' align='left' style='color:white; font-size: 14;'>" + phaseA + "</td>";
             }
         }else {
-            changeRow = "<td align='left' style='color:white; font-size: 14;'>% Change:</td><td colspan='4' align='left' style='color:white; font-size: 14;'>" + change + "</td>";
+            changeRow = "<td nowrap align='left' style='color:white; font-size: 14;'>% Change:</td><td colspan='4' align='left' style='color:white; font-size: 14;'>" + change + "</td>";
         }
         
         mav.addObject("beforeRow", beforeRow);
