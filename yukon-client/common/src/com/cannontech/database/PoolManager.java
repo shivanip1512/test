@@ -125,38 +125,50 @@ public class PoolManager {
         int maxActive = 6;
         if (StringUtils.isNotBlank(maxActiveConns)) {
             maxActive = Integer.valueOf(maxActiveConns);
-            log.info("DB maxActive=" + maxActive);
         }
+        log.info("DB maxActive=" + maxActive);
 
         String maxIdleConns = configSource.getString("DB_JAVA_MAXIDLECONS");
         int maxIdle = maxActive;
         if (StringUtils.isNotBlank(maxIdleConns)) {
             maxIdle = Integer.valueOf(maxIdleConns);
-            log.info("DB maxIdle=" + maxIdle);
         }
+        log.info("DB maxIdle=" + maxIdle);
         
         String minIdleConns = configSource.getString("DB_JAVA_MINIDLECONS");
         int minIdle = 0;
         if (StringUtils.isNotBlank(minIdleConns)) {
             minIdle = Integer.valueOf(minIdleConns);
-            log.info("DB minIdle=" + minIdle);
         }
+        log.info("DB minIdle=" + minIdle);
         
         String initConns = configSource.getString("DB_JAVA_INITCONS");
-        int init = 0;
+        int initialSize = 0;
         if (StringUtils.isNotBlank(initConns)) {
-            init = Integer.valueOf(initConns);
-            log.info("DB initialSize=" + init);
+            initialSize = Integer.valueOf(initConns);
         }
+        log.info("DB initialSize=" + initialSize);
+        
+        String validationQuery = configSource.getString("DB_JAVA_VALIDATION_QUERY", "SELECT 1");
+        log.info("DB validationQuery=" + validationQuery);
+        
+        boolean testOnBorrow = configSource.getBoolean("DB_JAVA_TEST_ON_BORROW", false);
+        log.info("DB testOnBorrow=" + testOnBorrow);
+        
+        boolean testOnReturn = configSource.getBoolean("DB_JAVA_TEST_ON_RETURN", false);
+        log.info("DB testOnReturn=" + testOnReturn);
         
         bds = new BasicDataSource();
         bds.setUrl(primaryUrl);
         bds.setUsername(primaryUser);
         bds.setPassword(password);
-        bds.setInitialSize(init);
+        bds.setInitialSize(initialSize);
         bds.setMaxActive(maxActive);
         bds.setMaxIdle(maxIdle);
         bds.setMinIdle(minIdle);
+        bds.setValidationQuery(validationQuery);
+        bds.setTestOnBorrow(testOnBorrow);
+        bds.setTestOnReturn(testOnReturn);
         log.debug("Created BasicDataSource:" + bds);
 
         DataSource actualDs = bds;
