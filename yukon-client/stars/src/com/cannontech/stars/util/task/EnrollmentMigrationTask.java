@@ -69,6 +69,7 @@ public class EnrollmentMigrationTask extends TimeConsumingTask {
                         if(groupId == 0)
                             groupId = InventoryUtils.getYukonLoadGroupIDFromSTARSProgramID(app.getProgramID());
                         controlGroup.setLmGroupId(groupId);
+                        controlGroup.setProgramId(app.getProgramID());
                         controlGroup.setRelay(app.getLoadNumber());
                         controlGroup.setAccountId(app.getAccountID());
                         LiteInventoryBase inventoryItem = starsInventoryBaseDao.getByInventoryId(controlGroup.getInventoryId());
