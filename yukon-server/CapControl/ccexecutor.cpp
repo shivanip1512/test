@@ -276,7 +276,7 @@ void CtiCCSubstationVerificationExecutor::EnableSubstationBusVerification()
                     CtiCCExecutor* executor;
                     if (currentSubstationBus->getVerificationDisableOvUvFlag())
                     {
-                        executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentSubstationBus->getPAOId()));
+                        executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_DISABLE_OVUV, currentSubstationBus->getPAOId()));
                         executor->Execute();
                         delete executor;
                     }
@@ -5027,10 +5027,10 @@ void CtiCCCommandExecutor::ConfirmFeeder()
                 LONG stationId, areaId, spAreaId;
                 store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId); 
                 CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _command->getUser());
-				currentCapBank->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()) + 1);                           
+                currentCapBank->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()) + 1);                           
                 eventMsg->setActionId(currentCapBank->getActionId());
-        		eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
-        		ccEvents.push_back(eventMsg);
+                eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
+                ccEvents.push_back(eventMsg);
 
                 currentCapBank->setBeforeVarsString(" Confirm ");
                 currentCapBank->setAfterVarsString(" --- ");
