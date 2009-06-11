@@ -129,6 +129,12 @@ public class CapControlSVGGenerator extends BaseSVGGenerator {
                     }
                 }
             }
+            if(comp instanceof StaticImage) {
+                if(((StaticImage)comp).getLinkTo().contains("redirectURL")) {
+                    elem.setAttributeNS(null,"id", "regenerateElement");
+                    elem.setAttributeNS(null,"redirectURL", ((StaticImage)comp).getLinkTo());
+                }
+            }
         } else if (isFeeder(comp) && getGenOptions().isScriptingEnabled()) {
             String id = OnelineUtil.extractObjectIdFromString(comp.getName());
             addDynamicAttributes(elem, CommandPopups.FEEDER_COMMAND +  "_" + id);

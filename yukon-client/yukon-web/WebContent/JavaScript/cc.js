@@ -22,9 +22,10 @@ function chop(string) {
 
 function updateDrawing() {
     var id = getSubId();
+    var redirectURL = getRedirectURL();
     var url = '/capcontrol/oneline/OnelineCBCServlet';
     
-	new Ajax.Request(url, { method:'POST', parameters:'id=' + id, 
+	new Ajax.Request(url, { method:'POST', parameters: {'id': id, 'redirectURL': redirectURL},
         onSuccess:function (t) {
 			var html = t.responseXML;
             updateHTML(html);
@@ -144,6 +145,13 @@ function updateVisibleText(prefix, xml) {
 			}
 		}
 	}
+}
+
+function getRedirectURL(){
+	var redirectElem = $('regenerateElement');
+	var url = new String(redirectElem.getAttribute('redirectURL'));
+	var end = url.split('redirectURL=');
+	return end[1];
 }
 
 function getSubId() {
