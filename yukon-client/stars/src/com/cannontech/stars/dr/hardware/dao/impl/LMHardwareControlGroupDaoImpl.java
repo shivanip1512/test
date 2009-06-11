@@ -312,7 +312,6 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
                 hardwareControlGroup.setRelay(rs.getInt("Relay"));
                 hardwareControlGroup.setUserIdFirstAction(rs.getInt("UserIdFirstAction"));
                 hardwareControlGroup.setUserIdSecondAction(rs.getInt("UserIdSecondAction"));
-                hardwareControlGroup.setProgramId(rs.getInt("ProgramId"));
                 return hardwareControlGroup;
             }
         };
@@ -356,7 +355,6 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
             p.addValue("relay", controlInfo.getRelay());
             p.addValue("userIdFirstAction", controlInfo.getUserIdFirstAction());
             p.addValue("userIdSecondAction", controlInfo.getUserIdSecondAction());
-            p.addValue("programId", controlInfo.getProgramId());
         }
         public Number getPrimaryKey(LMHardwareControlGroup controlInfo) {
             return controlInfo.getControlEntryId();
