@@ -336,6 +336,6 @@ function PopupWindow_showPopup (anchorname) {
  * @return
  */
 function showFlyoverPopup(html) {
-	overlib( html, BGCOLOR, '#FFFFFF', FGCOLOR, '#404040', TEXTCOLOR, '#FFFFFF');
+	overlib( html, BGCOLOR, '#FFFFFF', FGCOLOR, '#404040', TEXTCOLOR, '#FFFFFF', LEFT);
 }
 
