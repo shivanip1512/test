@@ -16,6 +16,8 @@ import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.capcontrol.CapBankController701x;
@@ -33,7 +35,6 @@ import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.CCSubAreaAssignment;
 import com.cannontech.database.db.capcontrol.CCSubstationSubBusList;
-import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.roles.capcontrol.CBCSettingsRole;
 import com.cannontech.spring.YukonSpringHook;
@@ -317,7 +318,8 @@ public final class CBCUtils {
     }
 
     public static boolean isCBAdditionalInfoAllowed(LiteYukonUser user) {
-        boolean showCapBankAddInfo = Boolean.valueOf(authDao.getRolePropertyValue(user, CBCSettingsRole.SHOW_CB_ADDINFO)).booleanValue();
+        RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
+        boolean showCapBankAddInfo = rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_CB_ADDINFO, user);
         return showCapBankAddInfo;
     }
 

@@ -12,14 +12,15 @@ import com.cannontech.cbc.util.CBCDisplay;
 import com.cannontech.cbc.oneline.util.UpdatableTextList;
 import com.cannontech.cbc.oneline.view.OneLineDrawing;
 import com.cannontech.cbc.util.CBCUtils;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.esub.element.StateImage;
 import com.cannontech.esub.element.StaticImage;
 import com.cannontech.esub.element.StaticText;
-import com.cannontech.roles.capcontrol.CBCSettingsRole;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.SubBus;
@@ -323,9 +324,10 @@ public class OnelineCap extends OnelineObject {
     
     public void setUser(final LiteYukonUser user) {
         this.user = user;
-        commandsFlag = DaoFactory.getAuthDao().checkRoleProperty(user,CBCSettingsRole.ALLOW_CAPBANK_CONTROLS);
-        editFlag = DaoFactory.getAuthDao().checkRoleProperty(user,CBCSettingsRole.CBC_DATABASE_EDIT);
-        additionalInfoFlag = DaoFactory.getAuthDao().checkRoleProperty(user,CBCSettingsRole.SHOW_CB_ADDINFO);
+        RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
+        commandsFlag = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CAPBANK_CONTROLS, user);
+        editFlag = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
+        additionalInfoFlag = rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_CB_ADDINFO, user);
     }
     
     public boolean isEditFlag() {

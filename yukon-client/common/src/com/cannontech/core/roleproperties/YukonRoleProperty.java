@@ -136,7 +136,7 @@ public enum YukonRoleProperty {
     CBC_ALLOW_OVUV(CBC_SETTINGS, com.cannontech.roles.capcontrol.CBCSettingsRole.CBC_ALLOW_OVUV, booleanType()),
     CBC_DATABASE_EDIT(CBC_SETTINGS, com.cannontech.roles.capcontrol.CBCSettingsRole.CBC_DATABASE_EDIT, booleanType()),
     SHOW_FLIP_COMMAND(CBC_SETTINGS, com.cannontech.roles.capcontrol.CBCSettingsRole.SHOW_FLIP_COMMAND, booleanType()),
-    SHOW_CB_ADDINFO(CBC_SETTINGS, com.cannontech.roles.capcontrol.CBCSettingsRole.SHOW_CB_ADDINFO, stringType()),
+    SHOW_CB_ADDINFO(CBC_SETTINGS, com.cannontech.roles.capcontrol.CBCSettingsRole.SHOW_CB_ADDINFO, booleanType()),
     AVAILABLE_DEFINITION(CBC_SETTINGS, com.cannontech.roles.capcontrol.CBCSettingsRole.AVAILABLE_DEFINITION, stringType()),
     UNAVAILABLE_DEFINITION(CBC_SETTINGS, com.cannontech.roles.capcontrol.CBCSettingsRole.UNAVAILABLE_DEFINITION, stringType()),
     TRIPPED_DEFINITION(CBC_SETTINGS, com.cannontech.roles.capcontrol.CBCSettingsRole.TRIPPED_DEFINITION, stringType()),

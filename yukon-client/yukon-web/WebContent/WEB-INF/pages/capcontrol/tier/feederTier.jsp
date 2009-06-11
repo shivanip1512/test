@@ -12,7 +12,7 @@
 <%@ page import="com.cannontech.cbc.util.CBCUtils" %>
 <%@ page import="com.cannontech.clientutils.CTILogger" %>
 <%@ page import="java.net.URLEncoder" %>
-<%@page import="org.springframework.web.bind.ServletRequestUtils"%>
+<%@ page import="org.springframework.web.bind.ServletRequestUtils"%>
 
 <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value=""/>
 
@@ -594,13 +594,13 @@
 	                        <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_NAME"/>
 						</c:otherwise>
 					</c:choose>
-					<cti:checkProperty property="CBCSettingsRole.SHOW_CB_ADDINFO">
+					<cti:checkRolesAndProperties value="SHOW_CB_ADDINFO">
 					   <a href="#" onclick="return GB_show('<center> Cap Bank Additional Information </center>', 
 					       '/spring/capcontrol/capAddInfo?paoID=${thisCapBankId}', 500, 600)" >
 					       <img class="rAlign magnifierImg" src="/capcontrol/images/magnifier.gif" 
 					           onmouseover="statusMsg(this, 'Click to see additional information for the cap bank.');" />
 					   </a>
-					</cti:checkProperty>
+					</cti:checkRolesAndProperties>
 				</td>
 
                 <td>
