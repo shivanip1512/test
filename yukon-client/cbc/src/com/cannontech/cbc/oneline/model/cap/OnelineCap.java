@@ -117,15 +117,19 @@ public class OnelineCap extends OnelineObject {
         
         capBankName.setX(getStateImage().getX() + 20);
         capBankName.setY(getStateImage().getY() - 20);
-        capBankName.setText(getStreamable().getCcName());
+        String displayableName = getStreamable().getCcName();
+        if(getStreamable().getCcName().length() > 13) {
+            displayableName = getStreamable().getCcName().substring(0, 11) + "...";
+        }
+        capBankName.setText(displayableName);
 
         
         if( !getStreamable().isBankMoved() ){
-            capBankName.setName(getName() + "_" + CommandPopups.BANK_MOVE);
+            capBankName.setName(getName() + "_" + CommandPopups.BANK_MOVE + "_" + getStreamable().getCcName());
         	capBankName.setPaint(OnelineUtil.PURPLISH);
         }
         else{//if moved
-            capBankName.setName(getName() + "_" + CommandPopups.BANK_MOVE_BACK);
+            capBankName.setName(getName() + "_" + CommandPopups.BANK_MOVE_BACK + "_" + getStreamable().getCcName());
             capBankName.setPaint(OnelineUtil.ORANGE);
         }
         

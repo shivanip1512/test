@@ -329,3 +329,13 @@ function PopupWindow_showPopup (anchorname) {
 		}
 }
 
+/**
+ * Show a flyover popup using the overlib popup 
+ * with the supplied html.
+ * @param text
+ * @return
+ */
+function showFlyoverPopup(html) {
+	overlib( html, BGCOLOR, '#FFFFFF', FGCOLOR, '#404040', TEXTCOLOR, '#FFFFFF');
+}
+

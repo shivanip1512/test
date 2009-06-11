@@ -26,7 +26,6 @@ public class OnelineDisplayManager {
     public static OnelineDisplayManager me;
     public static Hashtable<Integer, String> propPrefixMap = new Hashtable<Integer, String>();
 
-    @SuppressWarnings("static-access")
     private OnelineDisplayManager() {
         propPrefixMap.put(PAOGroups.CAP_CONTROL_SUBBUS, "SubStat_");
         propPrefixMap.put(PAOGroups.CAP_CONTROL_FEEDER, "FeederStat_");
@@ -75,7 +74,6 @@ public class OnelineDisplayManager {
             return (String) oldWebDisplay.getFeederValueAt((Feeder) stream, dispCol);
             
         } else if (stream instanceof CapBankDevice) {
-            
             return oldWebDisplay.getCapBankValueAt((CapBankDevice) stream, dispCol).toString();
             
         } else {
@@ -93,8 +91,14 @@ public class OnelineDisplayManager {
                                                              null,
                                                              new Integer((int) prevComp.getHeight() + 10));
         String text = getDisplayValue(stream, temp.getRolePropID(), stats, user);
+        String displayableText = new String(text);
+        if(stats.getPropColumnMap().get(temp.getRolePropID()) == CBCDisplay.CB_CONTROLLER) {
+            if(text.length() > 13) {
+                displayableText = text.substring(0, 12) + "...";
+            }
+        }
 
-        StaticText content = OnelineUtil.createTextElement(text,
+        StaticText content = OnelineUtil.createTextElement(displayableText,
                                                            OnelineUtil.getStartPoint(label),
                                                            new Integer((int) label.getWidth() + 10),
                                                            null);
@@ -131,6 +135,9 @@ public class OnelineDisplayManager {
         content.setName(propPrefixMap.get(type) + paoID + "_" + labelName);
         if(labelName.equalsIgnoreCase("Updated:")) {
             content.setName(CommandPopups.VAR_CHANGE_POPUP+"_"+paoID);
+            content.setLinkTo("javascript:void(0)");
+        }else if(labelName.equalsIgnoreCase("CBC:")) {
+            content.setName("CBCNAME_"+text);
             content.setLinkTo("javascript:void(0)");
         }
         temp.setFirstElement(label);

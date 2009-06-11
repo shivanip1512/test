@@ -25,7 +25,8 @@ public class OnelineHTMLGenerator extends HTMLGenerator {
             "cc.js",
             "cconelinepopup.js",
             "GreyBox/AmiJS.js",
-            "GreyBox/greybox.js"
+            "GreyBox/greybox.js",
+            "/JavaScript/ol/overlib_mini.js"
     };
 
     public OnelineHTMLGenerator() {
@@ -69,6 +70,7 @@ public class OnelineHTMLGenerator extends HTMLGenerator {
         sb.append("    });" + NEW_LINE);    
         sb.append("}" + NEW_LINE);
         sb.append("</script>" + NEW_LINE);
+        sb.append("<div id=\"overDiv\" style=\"position:absolute; visibility:hidden; z-index:1000;\"></div>");
         sb.append(NEW_LINE);
 
         

@@ -57,13 +57,32 @@ public class CapControlSVGGenerator extends BaseSVGGenerator {
         elem.removeAttributeNS(null, "onclick");
 
         if (comp instanceof LxAbstractText && getGenOptions().isScriptingEnabled() && !isFeeder(comp)) {
+            
             String paoID = OnelineUtil.extractObjectIdFromString(compName);
-            elem.setAttributeNS(null,
-                                "onmouseover",
-                                "underLine(evt.getTarget())");
-            elem.setAttributeNS(null,
-                                "onmouseout",
-                                "noUnderLine(evt.getTarget())");
+            String mouseover = "underLine(evt.getTarget())";
+            String mouseout = "noUnderLine(evt.getTarget())";
+            if(comp.getName().contains("CBCNAME_") || comp.getName().contains("CapBank_")) {
+                String[] parts = comp.getName().split("_");
+                if(parts[0].equalsIgnoreCase("CapBank")) {
+                    if(((LxAbstractText)comp).getText().contains("...")) {
+                        mouseover += "; showFlyoverPopup('" + parts[3] + "')";
+                        mouseout += "; nd();";
+                    }
+                    elem.setAttributeNS(null,"onmouseover", mouseover);
+                    elem.setAttributeNS(null,"onmouseout", mouseout);
+                }else {
+                    if(((LxAbstractText)comp).getText().contains("...")) {
+                        mouseover += "; showFlyoverPopup('" + parts[1] + "')";
+                        mouseout += "; nd();";
+                        elem.setAttributeNS(null,"onmouseover", mouseover);
+                        elem.setAttributeNS(null,"onmouseout", mouseout);
+                    }
+                }
+            }else {
+                elem.setAttributeNS(null,"onmouseover", mouseover);
+                elem.setAttributeNS(null,"onmouseout", mouseout);
+            }
+            
             if (StringUtils.contains(comp.getName(), CommandPopups.SUB_TAG)) {
 
                 elem.setAttributeNS(null,
