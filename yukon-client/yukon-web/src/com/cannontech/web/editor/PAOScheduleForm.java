@@ -6,6 +6,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
+import javax.servlet.http.HttpSession;
 
 
 import com.cannontech.clientutils.CTILogger;
@@ -49,13 +50,11 @@ public class PAOScheduleForm extends DBEditorForm {
 	    
 		FacesContext context = FacesContext.getCurrentInstance();
 		Map paramMap = context.getExternalContext().getRequestParameterMap();
+		HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
+		CapControlForm f = (CapControlForm) session.getAttribute("capControlForm"); 
 		int elemID = Integer.parseInt( (String)paramMap.get("schedID") );
-		//String elemID = (String)paramMap.get("schedID");
 		
-        CapControlForm f = new CapControlForm();
 		f.initItem( elemID, DBEditorNav.EDITOR_SCHEDULE );
-		
-		context.getExternalContext().getSessionMap().put("capControlForm", f );		
 	}
 
 	/**
