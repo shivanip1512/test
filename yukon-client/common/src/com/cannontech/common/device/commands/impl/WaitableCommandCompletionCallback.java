@@ -15,7 +15,7 @@ public class WaitableCommandCompletionCallback extends
 
     private final Object lock = new Object();
     private Logger log = YukonLogManager.getLogger(WaitableCommandCompletionCallback.class);
-    private long lastResultReceivedTime = 0;
+    private volatile long lastResultReceivedTime = 0;
     private long latestFinishTime = 0;
 
     public void doComplete() {
@@ -25,7 +25,7 @@ public class WaitableCommandCompletionCallback extends
 
     private void kick() {
         synchronized (lock) {
-            lastResultReceivedTime = System.currentTimeMillis();
+            this.lastResultReceivedTime = System.currentTimeMillis();
             lock.notify();
         }
     }
@@ -34,16 +34,16 @@ public class WaitableCommandCompletionCallback extends
     	
     	long startTime = System.currentTimeMillis();
         this.latestFinishTime = startTime + TimeUnit.MILLISECONDS.convert(totalMax, TimeUnit.SECONDS);
-        lastResultReceivedTime = startTime;
+        this.lastResultReceivedTime = startTime;
         log.debug("Starting await on " + Thread.currentThread() + " for " + totalMax);
         
         synchronized (lock) {
             while (!isComplete()) {
             	
             	long currentTime = System.currentTimeMillis();
-            	long latestBetweenResultsFinishTime = lastResultReceivedTime + TimeUnit.MILLISECONDS.convert(betweenResultsMax, TimeUnit.SECONDS);
+            	long latestBetweenResultsFinishTime = this.lastResultReceivedTime + TimeUnit.MILLISECONDS.convert(betweenResultsMax, TimeUnit.SECONDS);
             	
-                if (currentTime >= latestFinishTime) {
+                if (currentTime >= this.latestFinishTime) {
                     throw new TimeoutException("The entire commander command execution did not complete within " + totalMax + " seconds");
                 }
                 if (currentTime >= latestBetweenResultsFinishTime) {
@@ -52,7 +52,7 @@ public class WaitableCommandCompletionCallback extends
                 
                 // determine how long to wait... should be the shortest of A or B
                 // time until command must fully complete
-                long timeoutA = latestFinishTime - currentTime;
+                long timeoutA = this.latestFinishTime - currentTime;
                 // time until we must hear the next response
                 long timeoutB = latestBetweenResultsFinishTime - currentTime;
                 long timeout = Math.min(timeoutA, timeoutB);
