@@ -15,7 +15,6 @@ public class PointTemplate implements Comparable<PointTemplate> {
     private double multiplier = 1.0;
     private int unitOfMeasure = PointUnits.UOMID_INVALID;
     private int stateGroupId = StateGroupUtils.SYSTEM_STATEGROUPID;
-    private boolean shouldInitialize = false;
 
     public PointTemplate(int type, int offset) {
         devicePointIdentifier = new DevicePointIdentifier(type, offset);
@@ -34,13 +33,12 @@ public class PointTemplate implements Comparable<PointTemplate> {
     }
 
     public PointTemplate(String name, int type, int offset, double multiplier,
-            int unitOfMeasure, int stateGroupId, boolean shouldInitialize) {
+            int unitOfMeasure, int stateGroupId) {
         devicePointIdentifier = new DevicePointIdentifier(type, offset);
         this.name = name;
         this.multiplier = multiplier;
         this.unitOfMeasure = unitOfMeasure;
         this.stateGroupId = stateGroupId;
-        this.shouldInitialize = shouldInitialize;
     }
 
     public double getMultiplier() {
@@ -57,14 +55,6 @@ public class PointTemplate implements Comparable<PointTemplate> {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public boolean isShouldInitialize() {
-        return shouldInitialize;
-    }
-
-    public void setShouldInitialize(boolean shouldInitialize) {
-        this.shouldInitialize = shouldInitialize;
     }
 
     public int getStateGroupId() {
@@ -129,6 +119,12 @@ public class PointTemplate implements Comparable<PointTemplate> {
                 return false;
         } else if (!name.equals(other.name))
             return false;
+        if (multiplier != other.multiplier)
+        	return false;
+        if (unitOfMeasure != other.unitOfMeasure)
+        	return false;
+        if (stateGroupId != other.stateGroupId)
+        	return false;
         return true;
     }
     

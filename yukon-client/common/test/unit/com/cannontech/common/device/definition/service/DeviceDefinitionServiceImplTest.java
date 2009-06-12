@@ -203,8 +203,7 @@ public class DeviceDefinitionServiceImplTest {
                                                     2,
                                                     1.0,
                                                     1,
-                                                    0,
-                                                    true));
+                                                    0));
 
         // Demand Accumulators
         expectedTemplates.add(new PointTemplate("demand1",
@@ -212,8 +211,7 @@ public class DeviceDefinitionServiceImplTest {
                                                     1,
                                                     1.0,
                                                     0,
-                                                    0,
-                                                    true));
+                                                    0));
 
         
         Set<PointTemplate> actualTemplates = service.getPointTemplatesToAdd(device,
@@ -302,8 +300,7 @@ public class DeviceDefinitionServiceImplTest {
                 3,
                 .1,
                 1,
-                0,
-                false);
+                0);
         pair.oldDefinitionTemplate = new DevicePointIdentifier(2, 4);
         expectedTemplates.add(pair);
 
@@ -313,8 +310,7 @@ public class DeviceDefinitionServiceImplTest {
                 1,
                 .0001,
                 1,
-                0,
-                true);
+                0);
         pair.oldDefinitionTemplate = new DevicePointIdentifier(1, 1);
         expectedTemplates.add(pair);
         List<PointTemplateTransferPair> actualTemplates = service.getPointTemplatesToTransfer(device,

@@ -166,54 +166,82 @@ public class PointUtil {
 
 			pointBase = t.execute();
 		}
+		
+		PointTemplate existingPointTemplate = createPointTemplate(pointBase);
+		if (!existingPointTemplate.equals(newPointTemplate)) {
+			
+			applyPointTemplate(pointBase, newPointTemplate);
+			
+			Transaction<PointBase> t = Transaction.createTransaction(Transaction.UPDATE, pointBase);
+	        pointBase = t.execute();
+		}
 	
-		// update additional point data (multipier/uom, etc)
-		boolean hasChange = false;
+        return pointBase;
+	}
+	
+	public static PointTemplate createPointTemplate(PointBase pointBase) throws IllegalArgumentException {
+		
+		int pointType = PointTypes.getType(pointBase.getPoint().getPointType());
+		int pointOffset = pointBase.getPoint().getPointOffset();
+		
+		PointTemplate pointTemplate = new PointTemplate(pointType, pointOffset);
+		pointTemplate.setName(pointBase.getPoint().getPointName());
+		
 		if (pointBase instanceof AnalogPoint) {
         	
 			AnalogPoint analogPoint = (AnalogPoint)pointBase;
 			
-			hasChange = analogPoint.getPoint().getPointOffset() != newPointTemplate.getOffset()
-						|| analogPoint.getPointAnalog().getMultiplier() != newPointTemplate.getMultiplier()
-						|| analogPoint.getPointUnit().getUomID() != newPointTemplate.getUnitOfMeasure()
-						|| analogPoint.getPoint().getStateGroupID() != newPointTemplate.getStateGroupId();
-        	
-        	analogPoint.getPoint().setPointOffset(newPointTemplate.getOffset());
-        	analogPoint.getPointAnalog().setMultiplier(newPointTemplate.getMultiplier());
-        	analogPoint.getPointUnit().setUomID(newPointTemplate.getUnitOfMeasure());
-        	analogPoint.getPoint().setStateGroupID(newPointTemplate.getStateGroupId());
+			pointTemplate.setMultiplier(analogPoint.getPointAnalog().getMultiplier());
+			pointTemplate.setStateGroupId(analogPoint.getPoint().getStateGroupID());
+			pointTemplate.setUnitOfMeasure(analogPoint.getPointUnit().getUomID());
         	
         } else if (pointBase instanceof StatusPoint) {
         	
         	StatusPoint statusPoint = (StatusPoint)pointBase;
         	
-        	hasChange = statusPoint.getPoint().getPointOffset() != newPointTemplate.getOffset()
-						|| statusPoint.getPoint().getStateGroupID() != newPointTemplate.getStateGroupId();
-        	
-        	statusPoint.getPoint().setPointOffset(newPointTemplate.getOffset());
-        	statusPoint.getPoint().setStateGroupID(newPointTemplate.getStateGroupId());
+			pointTemplate.setStateGroupId(statusPoint.getPoint().getStateGroupID());
         	
         } else if (pointBase instanceof AccumulatorPoint) {
         	
         	AccumulatorPoint accumulatorPoint = (AccumulatorPoint)pointBase;
         	
-        	hasChange = accumulatorPoint.getPoint().getPointOffset() != newPointTemplate.getOffset()
-						|| accumulatorPoint.getPointAccumulator().getMultiplier() != newPointTemplate.getMultiplier()
-						|| accumulatorPoint.getPointUnit().getUomID() != newPointTemplate.getUnitOfMeasure()
-						|| accumulatorPoint.getPoint().getStateGroupID() != newPointTemplate.getStateGroupId();
-        	
-        	accumulatorPoint.getPoint().setPointOffset(newPointTemplate.getOffset());
-        	accumulatorPoint.getPointAccumulator().setMultiplier(newPointTemplate.getMultiplier());
-        	accumulatorPoint.getPointUnit().setUomID(newPointTemplate.getUnitOfMeasure());
-        	accumulatorPoint.getPoint().setStateGroupID(newPointTemplate.getStateGroupId());
+        	pointTemplate.setMultiplier(accumulatorPoint.getPointAccumulator().getMultiplier());
+			pointTemplate.setStateGroupId(accumulatorPoint.getPoint().getStateGroupID());
+			pointTemplate.setUnitOfMeasure(accumulatorPoint.getPointUnit().getUomID());
+			
+        } else {
+        	throw new IllegalArgumentException("Unsupported PointBase type: " + pointBase);
         }
 		
-		// update
-		if (hasChange) {
-		    Transaction<PointBase> t = Transaction.createTransaction(Transaction.UPDATE, pointBase);
-	        pointBase = t.execute();
-		}
+		return pointTemplate;
+	}
+	
+	public static void applyPointTemplate(PointBase pointBase, PointTemplate pointTemplate) {
 		
-        return pointBase;
+		if (pointBase instanceof AnalogPoint) {
+        	
+			AnalogPoint analogPoint = (AnalogPoint)pointBase;
+			
+        	analogPoint.getPointAnalog().setMultiplier(pointTemplate.getMultiplier());
+        	analogPoint.getPointUnit().setUomID(pointTemplate.getUnitOfMeasure());
+        	analogPoint.getPoint().setStateGroupID(pointTemplate.getStateGroupId());
+        	
+        } else if (pointBase instanceof StatusPoint) {
+        	
+        	StatusPoint statusPoint = (StatusPoint)pointBase;
+        	
+        	statusPoint.getPoint().setStateGroupID(pointTemplate.getStateGroupId());
+        	
+        } else if (pointBase instanceof AccumulatorPoint) {
+        	
+        	AccumulatorPoint accumulatorPoint = (AccumulatorPoint)pointBase;
+        	
+        	accumulatorPoint.getPointAccumulator().setMultiplier(pointTemplate.getMultiplier());
+        	accumulatorPoint.getPointUnit().setUomID(pointTemplate.getUnitOfMeasure());
+        	accumulatorPoint.getPoint().setStateGroupID(pointTemplate.getStateGroupId());
+			
+        } else {
+        	throw new IllegalArgumentException("Unsupported PointBase type: " + pointBase);
+        }
 	}
 }

@@ -93,6 +93,7 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
     // Maps containing all of the data in the deviceDefinition.xml file
     private Map<Integer, Map<Attribute, AttributeLookup>> deviceAttributeAttrDefinitionMap = null;
     private Map<Integer, Set<PointTemplate>> deviceAllPointTemplateMap = null;
+    private Map<Integer, Set<PointTemplate>> deviceInitPointTemplateMap = null;
     private Map<Integer, DeviceDefinition> deviceTypeMap = null;
     private Map<String, List<DeviceDefinition>> deviceDisplayGroupMap = null;
     private Map<String, Set<DeviceDefinition>> changeGroupDevicesMap = null;
@@ -251,21 +252,18 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
     }
 
     private Set<PointTemplate> getInitPointTemplates(Integer deviceType) {
-        Set<PointTemplate> templateSet = new HashSet<PointTemplate>();
 
-        if (this.deviceAllPointTemplateMap.containsKey(deviceType)) {
-            Set<PointTemplate> allTemplateSet = this.deviceAllPointTemplateMap.get(deviceType);
-            for (PointTemplate template : allTemplateSet) {
-                if (template.isShouldInitialize()) {
-                    templateSet.add(template);
-                }
+        if (this.deviceInitPointTemplateMap.containsKey(deviceType)) {
+        	Set<PointTemplate> templates = this.deviceInitPointTemplateMap.get(deviceType);
+        	Set<PointTemplate> returnSet = new HashSet<PointTemplate>();
+        	for (PointTemplate template : templates) {
+                returnSet.add(template);
             }
+        	return returnSet;
         } else {
             throw new IllegalArgumentException("Device type '"
                     + paoGroupsWrapper.getPAOTypeString(deviceType) + "' is not supported.");
         }
-
-        return templateSet;
     }
     
     // COMMANDS
@@ -444,6 +442,7 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
 
         this.deviceTypeMap = new LinkedHashMap<Integer, DeviceDefinition>();
         this.deviceAllPointTemplateMap = new HashMap<Integer, Set<PointTemplate>>();
+        this.deviceInitPointTemplateMap = new HashMap<Integer, Set<PointTemplate>>();
         this.deviceDisplayGroupMap = new LinkedHashMap<String, List<DeviceDefinition>>();
         this.changeGroupDevicesMap = new HashMap<String, Set<DeviceDefinition>>();
         this.deviceAttributeAttrDefinitionMap = new HashMap<Integer, Map<Attribute, AttributeLookup>>();
@@ -484,6 +483,85 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         	this.validateDeviceConstant(deviceStore);
             this.addDevice(deviceStore);
         }
+        
+// this junk should probably stick around for a while during 4.3 development, makes it easy to compare dao output to earlier versions
+//      //TEST FILE
+//        BufferedWriter out = new BufferedWriter(new FileWriter("c:\\deviceDefinition_NEW-3.txt"));
+//        
+//        List<DeviceDefinition> definitionList = new ArrayList<DeviceDefinition>(this.deviceTypeMap.values());
+//        Collections.sort(definitionList);
+//        for (DeviceDefinition definition : definitionList) {
+//        	
+//        	int deviceType = definition.getType();
+//        	Set<PointTemplate> pointTemplates = this.deviceAllPointTemplateMap.get(deviceType);
+//        	Set<PointTemplate> initPointTemplates = this.deviceInitPointTemplateMap.get(deviceType);
+//        	Set<CommandDefinition> commandDefinitions = this.deviceCommandMap.get(deviceType);
+//        	Map<Attribute, AttributeLookup> attributesMap = this.deviceAttributeAttrDefinitionMap.get(deviceType);
+//        	
+//        	// definition
+//            out.write("definition:type" + "\t\t" + definition.getType() + "\n");
+//            out.write("definition:changeGroup" + "\t\t" + definition.getChangeGroup() + "\n");
+//            out.write("definition:displayGroup" + "\t\t" + definition.getDisplayGroup() + "\n");
+//            out.write("definition:displayName" + "\t\t" + definition.getDisplayName() + "\n");
+//            out.write("definition:javaConstant" + "\t\t" + definition.getJavaConstant() + "\n");
+//            
+//            // points
+//            List<PointTemplate> pointTemplatesList = new ArrayList<PointTemplate>(pointTemplates);
+//            Collections.sort(pointTemplatesList);
+//            for (PointTemplate pointTemplate : pointTemplatesList) {
+//            	
+//            	out.write("pointTemplate:name" + "\t\t" + pointTemplate.getName() + "\n");
+//                out.write("pointTemplate:type" + "\t\t" + pointTemplate.getType() + "\n");
+//                out.write("pointTemplate:offset" + "\t\t" + pointTemplate.getOffset() + "\n");
+//                out.write("pointTemplate:multiplier" + "\t\t" + pointTemplate.getMultiplier() + "\n");
+//                out.write("pointTemplate:stateGroup" + "\t\t" + pointTemplate.getStateGroupId() + "\n");
+//                out.write("pointTemplate:uom" + "\t\t" + pointTemplate.getUnitOfMeasure() + "\n");
+//                
+//                if (initPointTemplates.contains(pointTemplate)) {
+//                	out.write("pointTemplate:init" + "\t\t" + true + "\n");
+//                } else {
+//                	out.write("pointTemplate:init" + "\t\t" + false + "\n");
+//                }
+//            }
+//            
+//            // commands
+//            List<CommandDefinition> commandDefinitionsList = new ArrayList<CommandDefinition>(commandDefinitions);
+//            Collections.sort(commandDefinitionsList);
+//            for (CommandDefinition commandDefinition : commandDefinitionsList) {
+//            	
+//            	out.write("commandDefinition:name" + "\t\t" + commandDefinition.getName() + "\n");
+//            	
+//            	Set<DevicePointIdentifier> affectedPointSet = commandDefinition.getAffectedPointList();
+//            	List<DevicePointIdentifier> affectedPointList = new ArrayList<DevicePointIdentifier>(affectedPointSet);
+//            	Collections.sort(affectedPointList);
+//            	for (DevicePointIdentifier affectedPoint : affectedPointList) {
+//            		
+//            		out.write("commandDefinition:affectedPoint:type" + "\t\t" + affectedPoint.getType() + "\n");
+//            		out.write("commandDefinition:affectedPoint:offset" + "\t\t" + affectedPoint.getOffset() + "\n");
+//            	}
+//            	
+//            	List<String> commandStringList = commandDefinition.getCommandStringList();
+//            	Collections.sort(commandStringList);
+//            	for (String commandstring : commandStringList) {
+//            		
+//            		out.write("commandDefinition:commandstring" + "\t\t" + commandstring + "\n");
+//            	}
+//            }
+//            
+//            // attributes
+//            List<AttributeLookup> attributeLookupList = new ArrayList<AttributeLookup>(attributesMap.values());
+//            Collections.sort(attributeLookupList);
+//            for (AttributeLookup attributeLookup : attributeLookupList) {
+//
+//        		out.write("attribute:key" + "\t\t" + attributeLookup.getAttribute().getKey() + "\n");
+//        		out.write("attribute:description" + "\t\t" + attributeLookup.getAttribute().getDescription() + "\n");
+//        		out.write("attribute:attributeLookup" + "\t\t" + attributeLookup.getPointRefName(null) + "\n");
+//        	}
+//            
+//            out.write("\n\n");
+//        }
+//        out.flush();
+//        out.close();
     }
     
     private void mergeInheritedDeviceStoresOntoDeviceStore(DeviceStore deviceStore, Map<String, DeviceStore> deviceStores) {
@@ -653,6 +731,7 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
 
         // Add device points
         Set<PointTemplate> pointSet = new HashSet<PointTemplate>();
+        Set<PointTemplate> initPointSet = new HashSet<PointTemplate>();
 
         Map<String, PointTemplate> pointNameTemplateMap = new HashMap<String, PointTemplate>();
 
@@ -661,12 +740,17 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
             PointTemplate template = this.createPointTemplate(point);
             pointSet.add(template);
 
+            if (point.getInit()) {
+            	initPointSet.add(template);
+            }
+            
             if (pointNameTemplateMap.containsKey(template.getName())) {
                 throw new RuntimeException("Point name: " + template.getName() + " is used twice for device type: " + javaConstant + " in the deviceDefinition.xml file - point names must be unique within a device type");
             }
             pointNameTemplateMap.put(template.getName(), template);
         }
         this.deviceAllPointTemplateMap.put(deviceType, pointSet);
+        this.deviceInitPointTemplateMap.put(deviceType, initPointSet);
         
         // Add device attributes
         Map<Attribute, AttributeLookup> attributeMap = new HashMap<Attribute, AttributeLookup>();
@@ -784,7 +868,6 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         PointTemplate template = new PointTemplate(PointTypes.getType(point.getType()), point.getOffset());
 
         template.setName(point.getName());
-        template.setShouldInitialize(point.getInit());
 
         double multiplier = 1.0;
         int unitOfMeasure = PointUnits.UOMID_INVALID;

@@ -102,8 +102,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
                                                                2,
                                                                1.0,
                                                                1,
-                                                               0,
-                                                               true);
+                                                               0);
 
         PointTemplate actualTemplate = dao.getPointTemplateForAttribute(device, BuiltInAttribute.USAGE);
 
@@ -375,8 +374,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
 		                                                2,
 		                                                2.5,
 		                                                0,
-		                                                0,
-		                                                false);
+		                                                0);
         
         PointTemplate actualPulse1PointTemplate = dao.getPointTemplateByTypeAndOffset(device, 2, 2);
         assertEquals("Expected point customizations do not match: ", expectedPulse1PointTemplate, actualPulse1PointTemplate);
@@ -411,8 +409,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
 													                4,
 													                1.0,
 													                1,
-													                0,
-													                false);
+													                0);
 
 		PointTemplate actualTemplate = dao.getPointTemplateForAttribute(device, BuiltInAttribute.USAGE);
 		
@@ -471,8 +468,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
                                                     2,
                                                     1.0,
                                                     1,
-                                                    0,
-                                                    true));
+                                                    0));
 
         // Demand Accumulators
         expectedTemplates.add(new PointTemplate("demand1",
@@ -480,8 +476,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
                                                     1,
                                                     1.0,
                                                     0,
-                                                    0,
-                                                    true));
+                                                    0));
 
         // Analog
         expectedTemplates.add(new PointTemplate("analog1",
@@ -489,8 +484,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
                                                     1,
                                                     1.0,
                                                     1,
-                                                    0,
-                                                    true));
+                                                    0));
 
         return expectedTemplates;
 
@@ -513,11 +507,10 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
                                                     4,
                                                     1.0,
                                                     1,
-                                                    0,
-                                                    false));
+                                                    0));
 
         // Status
-        expectedTemplates.add(new PointTemplate("status1", 0, 1, 1.0, -1, 0, false));
+        expectedTemplates.add(new PointTemplate("status1", 0, 1, 1.0, -1, 0));
 
         return expectedTemplates;
     }
