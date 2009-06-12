@@ -313,6 +313,14 @@ unsigned char CtiDeviceMCT4xx::crc8( const unsigned char *buf, unsigned int len 
 }
 
 
+CtiDeviceMCT4xx::point_info CtiDeviceMCT4xx::getAccumulatorData(unsigned char *buf, int len, bool is_frozen_data) const
+{
+    return is_frozen_data ?
+        getData(buf, len, ValueType_FrozenAccumulator) :
+        getData(buf, len, ValueType_Accumulator);
+}
+
+
 CtiDeviceMCT4xx::point_info CtiDeviceMCT4xx::getData( const unsigned char *buf, int len, ValueType4xx vt ) const
 {
     PointQuality_t quality = NormalQuality;
@@ -3448,12 +3456,14 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
+        const bool is_frozen_read = parse.getFlags() & CMD_FLAG_FROZEN;
+
         if( parse.getFlags() & (CMD_FLAG_GV_RATEMASK ^ CMD_FLAG_GV_RATET) )
         {
             //  TOU memory layout
-            pi_kwh         = getData(DSt->Message,     3, ValueType_Accumulator);
+            pi_kwh         = getAccumulatorData(DSt->Message, 3, is_frozen_read);
 
-            pi_kw          = getDemandData(DSt->Message + 3, 2, parse.getFlags() & CMD_FLAG_FROZEN);
+            pi_kw          = getDemandData(DSt->Message + 3, 2, is_frozen_read);
             pi_kw_time     = getData(DSt->Message + 5, 4, ValueType_Raw);
 
             pi_freezecount = getData(DSt->Message + 9, 1, ValueType_Raw);
@@ -3461,10 +3471,10 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
         else
         {
             //  normal peak memory layout
-            pi_kw          = getDemandData(DSt->Message, 2, parse.getFlags() & CMD_FLAG_FROZEN);
+            pi_kw          = getDemandData(DSt->Message, 2, is_frozen_read);
             pi_kw_time     = getData(DSt->Message + 2, 4, ValueType_Raw);
 
-            pi_kwh         = getData(DSt->Message + 6, 3, ValueType_Accumulator);
+            pi_kwh         = getAccumulatorData(DSt->Message + 6, 3, is_frozen_read);
 
             pi_freezecount = getData(DSt->Message + 9, 1, ValueType_Raw);
         }
@@ -3474,7 +3484,7 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
 
         kw_time      = CtiTime(pi_kw_time.value);
 
-        if( parse.getFlags() & CMD_FLAG_FROZEN )
+        if( is_frozen_read )
         {
             string freeze_error;
 

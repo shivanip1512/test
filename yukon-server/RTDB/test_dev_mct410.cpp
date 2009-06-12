@@ -20,9 +20,9 @@ public:
 
     typedef CtiDeviceMCT410::point_info point_info;
 
-    point_info test_getDemandData(unsigned char *buf, int len, bool frozen)
+    point_info test_getDemandData(unsigned char *buf, int len, bool is_frozen_data)
     {
-        return getDemandData(buf, len, frozen);
+        return getDemandData(buf, len, is_frozen_data);
     }
 
     void test_extractDynamicPaoInfo(const INMESS &InMessage)

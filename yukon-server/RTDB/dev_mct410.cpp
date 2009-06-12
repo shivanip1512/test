@@ -220,9 +220,9 @@ int CtiDeviceMCT410::makeDynamicDemand(double input)
 }
 
 
-CtiDeviceMCT410::point_info CtiDeviceMCT410::getDemandData(unsigned char *buf, int len, bool frozen) const
+CtiDeviceMCT410::point_info CtiDeviceMCT410::getDemandData(unsigned char *buf, int len, bool is_frozen_data) const
 {
-    return frozen ?
+    return is_frozen_data ?
         getData(buf, len, ValueType_FrozenDynamicDemand) :
         getData(buf, len, ValueType_DynamicDemand);
 }

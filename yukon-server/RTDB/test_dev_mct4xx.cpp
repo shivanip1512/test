@@ -14,7 +14,7 @@ class test_CtiDeviceMCT4xx : public CtiDeviceMCT4xx
 {
     //  these virtuals should never be called in our testing, so the BOOST_CHECK(0) call is there to alert us if they are
     virtual const read_key_store_t & getReadKeyStore(void) const                               {  BOOST_CHECK(0);  return fake_key_store;  };
-    virtual point_info getDemandData(unsigned char *buf, int len, bool frozen) const           {  BOOST_CHECK(0);  return point_info();  };
+    virtual point_info getDemandData(unsigned char *buf, int len, bool is_frozen_data) const   {  BOOST_CHECK(0);  return point_info();  };
     virtual point_info getLoadProfileData(unsigned channel, unsigned char *buf, unsigned len)  {  BOOST_CHECK(0);  return point_info();  };
     virtual long getLoadProfileInterval(unsigned channel)                                      {  BOOST_CHECK(0);  return 0;  };
     virtual INT decodeGetStatusFreeze( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList ) {BOOST_CHECK(0);  return 0;};
