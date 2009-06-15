@@ -36,7 +36,7 @@
 		<cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
 			<div id="systemCommandLink" align="right"></div>
 			<div align="right">
-				<a href="javascript:void(0);" id="systemResetOpCountsLink" align="right" onclick="sendResetOpCountCommand()">Reset All Op Counters</a>
+				<a href="javascript:void(0);" id="systemResetOpCountsLink" onclick="sendResetOpCountCommand()">Reset All Op Counters</a>
 			</div>
 			<br>
 		</cti:checkProperty>
@@ -78,7 +78,7 @@
 	        				<input type="checkbox" name="cti_chkbxAreas" value="${thisAreaId}"/>
 							<input type="image" id="showAreas${thisAreaId}" src="/capcontrol/images/nav-plus.gif"
 								 onclick="showRowElems( 'allAreas${thisAreaId}', 'showAreas${thisAreaId}'); return false;"/>
-		                        <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${thisAreaId}&ignoreBookmark=true">
+		                        <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${thisAreaId}">
 		                            <img class="rAlign editImg" src="${editInfoImage}"/>
 		                        </a>
 		                        <c:if test="${hasEditingRole}">
@@ -126,7 +126,7 @@
 							</c:forEach>
 	  					</table>
 		  				</td>
-						<td class="${css}" colspan="6"></td>
+						<td colspan="6"></td>
 		  			</tr>
 					
 					
