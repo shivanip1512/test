@@ -24,21 +24,23 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
+import com.cannontech.common.bulk.callbackResult.BackgroundProcessTypeEnum;
+import com.cannontech.common.bulk.callbackResult.ImportUpdateCallbackResult;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
-import com.cannontech.common.bulk.service.BulkOperationCallbackResults;
-import com.cannontech.common.bulk.service.BulkOperationTypeEnum;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.util.ReverseList;
-import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.roles.operator.DeviceActionsRole;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.simplereport.ColumnInfo;
 import com.cannontech.tools.csv.CSVReader;
@@ -55,10 +57,10 @@ public class BulkController extends BulkControllerBase {
     private final static int MAX_SELECTED_DEVICES_DISPLAYED = 1000;
     
     private PaoDao paoDao = null;
-    private RecentResultsCache<BulkOperationCallbackResults<?>> recentResultsCache = null;
+    private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache = null;
     private MeterDao meterDao = null;
     private YukonUserContextMessageSourceResolver messageSourceResolver = null;
-    private AuthDao authDao;
+    private RolePropertyDao rolePropertyDao;
     
     // BULK HOME
     public ModelAndView bulkHome(HttpServletRequest request, HttpServletResponse response) throws ServletException {
@@ -69,27 +71,29 @@ public class BulkController extends BulkControllerBase {
         //------------------------------------------------------------------------------------------
         
         // bulk update operations (add both completed and pending to same list)
-        List<BulkOperationCallbackResults<?>> rawResultsList = new ArrayList<BulkOperationCallbackResults<?>>();
+        List<BackgroundProcessResultHolder> rawResultsList = new ArrayList<BackgroundProcessResultHolder>();
         
         // ADD RESULTS TO LISTS
         // -----------------------------------------------------------------------------------------
         
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        boolean hasBulkImportRP = authDao.checkRoleProperty(userContext.getYukonUser(), DeviceActionsRole.BULK_IMPORT_OPERATION);
-        boolean hasBulkUpdateRP = authDao.checkRoleProperty(userContext.getYukonUser(), DeviceActionsRole.BULK_UPDATE_OPERATION);
-        boolean hasMassChangeRP = authDao.checkRoleProperty(userContext.getYukonUser(), DeviceActionsRole.MASS_CHANGE);
-        boolean hasMassDeleteRP = authDao.checkRoleProperty(userContext.getYukonUser(), DeviceActionsRole.MASS_DELETE);
+        LiteYukonUser user = userContext.getYukonUser();
+        boolean hasBulkImportRP = rolePropertyDao.checkProperty(YukonRoleProperty.BULK_IMPORT_OPERATION, user);
+        boolean hasBulkUpdateRP = rolePropertyDao.checkProperty(YukonRoleProperty.BULK_UPDATE_OPERATION, user);
+        boolean hasMassChangeRP = rolePropertyDao.checkProperty(YukonRoleProperty.MASS_CHANGE, user);
+        boolean hasMassDeleteRP = rolePropertyDao.checkProperty(YukonRoleProperty.MASS_DELETE, user);
+        boolean hasAddRemovePointsRP = rolePropertyDao.checkProperty(YukonRoleProperty.ADD_REMOVE_POINTS, user);
         
         // results
-        rawResultsList.addAll(new ReverseList<BulkOperationCallbackResults<?>>(recentResultsCache.getPending()));
-        rawResultsList.addAll(new ReverseList<BulkOperationCallbackResults<?>>(recentResultsCache.getCompleted()));
+        rawResultsList.addAll(new ReverseList<BackgroundProcessResultHolder>(recentResultsCache.getPending()));
+        rawResultsList.addAll(new ReverseList<BackgroundProcessResultHolder>(recentResultsCache.getCompleted()));
         
         BulkOpToViewableBulkOpMapper bulkOpToViewableBulkOpMapper = new BulkOpToViewableBulkOpMapper(hasBulkImportRP,
                                                                                                      hasBulkUpdateRP,
                                                                                                      hasMassChangeRP,
-                                                                                                     hasMassDeleteRP);
-        MappingList<BulkOperationCallbackResults<?>, BulkOperationDisplayableResult> resultsList = new MappingList<BulkOperationCallbackResults<?>, BulkOperationDisplayableResult>(rawResultsList,
-                                                                                                                                                                    bulkOpToViewableBulkOpMapper);
+                                                                                                     hasMassDeleteRP,
+                                                                                                     hasAddRemovePointsRP);
+        MappingList<BackgroundProcessResultHolder, BulkOperationDisplayableResult> resultsList = new MappingList<BackgroundProcessResultHolder, BulkOperationDisplayableResult>(rawResultsList, bulkOpToViewableBulkOpMapper);
         
         mav.addObject("hasBulkImportRP", hasBulkImportRP);
         mav.addObject("hasBulkUpdateRP", hasBulkUpdateRP);
@@ -236,28 +240,29 @@ public class BulkController extends BulkControllerBase {
         ModelAndView mav = new ModelAndView("processingExceptionErrorsList.jsp");
 
         String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
-        BulkOperationCallbackResults<?> bulkUpdateOperationResults = recentResultsCache.getResult(resultsId);
+        BackgroundProcessResultHolder bulkUpdateOperationResults = recentResultsCache.getResult(resultsId);
         
         mav.addObject("exceptionRowNumberMap", bulkUpdateOperationResults.getProcessingExceptionRowNumberMap());
         return mav;
     }
     
-    @SuppressWarnings("unchecked")
     public ModelAndView processingExceptionFileDownload(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
 
         String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
-        BulkOperationCallbackResults<?> bulkUpdateOperationResults = recentResultsCache.getResult(resultsId);
+        BackgroundProcessResultHolder backGroundCallback = recentResultsCache.getResult(resultsId);
+        
+        ImportUpdateCallbackResult callback = (ImportUpdateCallbackResult)backGroundCallback;
         
         // header row
-        InputStreamReader inputStreamReader = new InputStreamReader(bulkUpdateOperationResults.getBulkFileInfo().getFileResource().getInputStream());
+        InputStreamReader inputStreamReader = new InputStreamReader(callback.getBulkFileInfo().getFileResource().getInputStream());
         BufferedReader reader = new BufferedReader(inputStreamReader);
         CSVReader csvReader = new CSVReader(reader);
         String[] headerRow = csvReader.readNext();
         csvReader.close();
          
         // failed lines
-        List<String[]> fileLines = (List<String[]>)bulkUpdateOperationResults.getProcesingExceptionObjects();
+        List<String[]> fileLines = (List<String[]>)callback.getProcesingExceptionObjects();
         
         response.setContentType("text/csv");
         response.setHeader("Content-Type", "application/force-download");
@@ -278,62 +283,90 @@ public class BulkController extends BulkControllerBase {
     
     // HELPER MAPPER TO CREATE RESULTS THAT HAVE A "DETAIL VIEWABLE" PROPERTY BASED ON USER ROLE PROP
     // Used for display on main bulk ops page to display/hide the "view" link.
-    private class BulkOpToViewableBulkOpMapper
-            implements
-            ObjectMapper<BulkOperationCallbackResults<?>, BulkOperationDisplayableResult> {
+    private class BulkOpToViewableBulkOpMapper implements ObjectMapper<BackgroundProcessResultHolder, BulkOperationDisplayableResult> {
 
         private boolean hasBulkImportRP = false;
         private boolean hasBulkUpdateRP = false;
         private boolean hasMassChangeRP = false;
         private boolean hasMassDeleteRP = false;
+        private boolean hasAddRemovePointsRP = false;
 
         public BulkOpToViewableBulkOpMapper(boolean hasBulkImportRP,
                 boolean hasBulkUpdateRP, boolean hasMassChangeRP,
-                boolean hasMassDeleteRP) {
+                boolean hasMassDeleteRP,
+                boolean hasAddRemovePointsRP) {
             this.hasBulkImportRP = hasBulkImportRP;
             this.hasBulkUpdateRP = hasBulkUpdateRP;
             this.hasMassChangeRP = hasMassChangeRP;
             this.hasMassDeleteRP = hasMassDeleteRP;
+            this.hasAddRemovePointsRP = hasAddRemovePointsRP;
         }
 
-        public BulkOperationDisplayableResult map(
-                BulkOperationCallbackResults<?> from)
-                throws ObjectMappingException {
+        public BulkOperationDisplayableResult map(BackgroundProcessResultHolder from) throws ObjectMappingException {
+        	
             return new BulkOperationDisplayableResult(from,
                                                       this.hasBulkImportRP,
                                                       this.hasBulkUpdateRP,
                                                       this.hasMassChangeRP,
-                                                      this.hasMassDeleteRP);
+                                                      this.hasMassDeleteRP,
+                                                      this.hasAddRemovePointsRP);
         }
     }
     
     public class BulkOperationDisplayableResult {
 
-        private BulkOperationCallbackResults<?> result;
+        private BackgroundProcessResultHolder result;
         private boolean hasBulkImportRP = false;
         private boolean hasBulkUpdateRP = false;
         private boolean hasMassChangeRP = false;
         private boolean hasMassDeleteRP = false;
+        private boolean hasAddRemovePointsRP = false;
 
         public BulkOperationDisplayableResult(
-                BulkOperationCallbackResults<?> result,
+        		BackgroundProcessResultHolder result,
                 boolean hasBulkImportRP, boolean hasBulkUpdateRP,
-                boolean hasMassChangeRP, boolean hasMassDeleteRP) {
+                boolean hasMassChangeRP, boolean hasMassDeleteRP,
+                boolean hasAddRemovePointsRP) {
             this.result = result;
             this.hasBulkImportRP = hasBulkImportRP;
             this.hasBulkUpdateRP = hasBulkUpdateRP;
             this.hasMassChangeRP = hasMassChangeRP;
             this.hasMassDeleteRP = hasMassDeleteRP;
+            this.hasAddRemovePointsRP = hasAddRemovePointsRP;
         }
 
-        public BulkOperationCallbackResults<?> getResult() {
+        public BackgroundProcessResultHolder getResult() {
             return result;
         }
 
+		public boolean isHasBulkImportRP() {
+			return hasBulkImportRP;
+		}
+
+		public boolean isHasBulkUpdateRP() {
+			return hasBulkUpdateRP;
+		}
+
+		public boolean isHasMassChangeRP() {
+			return hasMassChangeRP;
+		}
+
+		public boolean isHasMassDeleteRP() {
+			return hasMassDeleteRP;
+		}
+
+		public boolean isHasAddRemovePointsRP() {
+			return hasAddRemovePointsRP;
+		}
+        
         public boolean isDetailViewable() {
 
-            BulkOperationTypeEnum opType = this.result.getBulkOperationType();
-            boolean detailViewable = (this.hasBulkImportRP && opType.equals(BulkOperationTypeEnum.IMPORT)) || (this.hasBulkUpdateRP && opType.equals(BulkOperationTypeEnum.UPDATE)) || (this.hasMassChangeRP && (opType.equals(BulkOperationTypeEnum.MASS_CHANGE) || opType.equals(BulkOperationTypeEnum.CHANGE_DEVICE_TYPE))) || (this.hasMassDeleteRP && opType.equals(BulkOperationTypeEnum.MASS_DELETE));
+            BackgroundProcessTypeEnum opType = this.result.getBackgroundProcessType();
+            boolean detailViewable = (this.hasBulkImportRP && opType.equals(BackgroundProcessTypeEnum.IMPORT)) 
+            						|| (this.hasBulkUpdateRP && opType.equals(BackgroundProcessTypeEnum.UPDATE)) 
+            						|| (this.hasMassChangeRP && (opType.equals(BackgroundProcessTypeEnum.MASS_CHANGE) || opType.equals(BackgroundProcessTypeEnum.CHANGE_DEVICE_TYPE))) 
+            			            || (this.hasMassDeleteRP && opType.equals(BackgroundProcessTypeEnum.MASS_DELETE)
+            			            || (this.hasAddRemovePointsRP && (opType.equals(BackgroundProcessTypeEnum.ADD_POINTS) || opType.equals(BackgroundProcessTypeEnum.REMOVE_POINTS))));
             return detailViewable;
         }
     }
@@ -344,7 +377,7 @@ public class BulkController extends BulkControllerBase {
     }
     
     @Required
-    public void setRecentBulkOperationResultsCache(RecentResultsCache<BulkOperationCallbackResults<?>> recentResultsCache) {
+    public void setRecentResultsCache(RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache) {
         this.recentResultsCache = recentResultsCache;
     }
 
@@ -360,7 +393,7 @@ public class BulkController extends BulkControllerBase {
     }
     
     @Autowired
-    public void setAuthDao(AuthDao authDao) {
-        this.authDao = authDao;
-    }
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+		this.rolePropertyDao = rolePropertyDao;
+	}
 }

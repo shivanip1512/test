@@ -3,6 +3,7 @@ package com.cannontech.spring;
 import java.util.Timer;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.access.BeanFactoryLocator;
 import org.springframework.beans.factory.access.BeanFactoryReference;
 import org.springframework.context.ApplicationContext;
@@ -72,6 +73,12 @@ public class YukonSpringHook {
     @SuppressWarnings("unchecked")
     public static <T> T getBean(String name, Class<T> expectedType) {
         return (T) getContext().getBean(name, expectedType);
+    }
+    
+    @SuppressWarnings("unchecked")
+    public static <T> T getBean(Class<T> expectedType) {
+        BeanFactoryUtils.beanOfTypeIncludingAncestors(getContext(), expectedType);
+        return (T) BeanFactoryUtils.beanOfTypeIncludingAncestors(getContext(), expectedType);
     }
     
     public static NextValueHelper getNextValueHelper() {

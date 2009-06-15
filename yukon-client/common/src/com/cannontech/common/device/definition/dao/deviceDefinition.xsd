@@ -20,31 +20,31 @@
     
     <xs:complexType name="deviceType">
       <xs:sequence minOccurs="1" maxOccurs="1">
-        <xs:element name="type" type="xs:integer" minOccurs="0" /> <!-- Must be set for non-abstract devices -->
         <xs:element name="displayName" type="xs:string" minOccurs="0" />
         <xs:element name="displayGroup" type="xs:string" minOccurs="0" />
         <xs:element name="changeGroup" type="xs:string" minOccurs="0" />
         <xs:element name="points" type="pointsType" minOccurs="0" />
         <xs:element name="commands" type="commandsType" minOccurs="0" />
         <xs:element name="attributes" type="attributesType" minOccurs="0" />
-        <xs:element name="features" type="featuresType" minOccurs="0" />
+        <xs:element name="tags" type="tagType" minOccurs="0" />
       </xs:sequence>
       <xs:attributeGroup ref="deviceAttributes" />
     </xs:complexType>
     
-    <xs:attributeGroup name="featureAttributes">
+    <!-- TAGS -->
+    <xs:attributeGroup name="tagAttributes">
 		<xs:attribute name="name" type="xs:string" use="required" />
         <xs:attribute name="enabled" type="xs:boolean" default="true" />
     </xs:attributeGroup>
     
-    <xs:complexType name="featuresType">
+    <xs:complexType name="tagType">
 	    <xs:sequence>
-	        <xs:element name="feature" minOccurs="0" maxOccurs="unbounded">
+	        <xs:element name="tag" minOccurs="0" maxOccurs="unbounded">
 	            <xs:complexType>
 	                <xs:sequence>
 	                    <xs:element name="value" type="xs:boolean" minOccurs="0" default="false" />
 	                </xs:sequence>
-	                <xs:attributeGroup ref="featureAttributes" />
+	                <xs:attributeGroup ref="tagAttributes" />
 	            </xs:complexType>
 	        </xs:element>
 	    </xs:sequence>

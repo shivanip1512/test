@@ -18,9 +18,10 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
+import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
+import com.cannontech.common.bulk.callbackResult.ImportUpdateCallbackResult;
 import com.cannontech.common.bulk.field.BulkFieldColumnHeader;
 import com.cannontech.common.bulk.field.BulkFieldService;
-import com.cannontech.common.bulk.service.BulkOperationCallbackResults;
 import com.cannontech.common.bulk.service.BulkUpdateFileInfo;
 import com.cannontech.common.bulk.service.BulkUpdateService;
 import com.cannontech.common.bulk.service.ParsedBulkUpdateFileInfo;
@@ -36,7 +37,7 @@ public class UpdateController extends MultiActionController {
 
     private BulkFieldService bulkFieldService = null;
     private BulkUpdateService bulkUpdateService = null;
-    private RecentResultsCache<BulkOperationCallbackResults<?>> recentBulkOperationResultsCache = null;
+    private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache = null;
    
     private Map<String, BulkUpdateFileInfo> bulkUpdateFileInfoMap = new HashMap<String, BulkUpdateFileInfo>();
     
@@ -156,13 +157,13 @@ public class UpdateController extends MultiActionController {
 
         // result info
         String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
-        BulkOperationCallbackResults<?> bulkOperationCallbackResults = recentBulkOperationResultsCache.getResult(resultsId);
+        ImportUpdateCallbackResult callbackResult = (ImportUpdateCallbackResult)recentResultsCache.getResult(resultsId);
         
-        BulkUpdateFileInfo bulkUpdateFileInfo = (BulkUpdateFileInfo)bulkOperationCallbackResults.getBulkFileInfo();
+        BulkUpdateFileInfo bulkUpdateFileInfo = (BulkUpdateFileInfo)callbackResult.getBulkFileInfo();
         
         mav.addObject("ignoreInvalidCols", bulkUpdateFileInfo.isIgnoreInvalidCols());
         mav.addObject("ignoreInvalidIdentifiers", bulkUpdateFileInfo.isIgnoreInvalidIdentifiers());
-        mav.addObject("bulkUpdateOperationResults", bulkOperationCallbackResults);
+        mav.addObject("callbackResult", callbackResult);
 
         return mav;
     }
@@ -188,9 +189,8 @@ public class UpdateController extends MultiActionController {
     }
     
     @Required
-    public void setRecentBulkOperationResultsCache(
-            RecentResultsCache<BulkOperationCallbackResults<?>> recentBulkOperationResultsCache) {
-        this.recentBulkOperationResultsCache = recentBulkOperationResultsCache;
+    public void setRecentResultsCache(RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache) {
+        this.recentResultsCache = recentResultsCache;
     }
     
     @Required

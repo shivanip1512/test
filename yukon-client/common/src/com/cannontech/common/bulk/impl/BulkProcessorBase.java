@@ -1,18 +1,18 @@
 package com.cannontech.common.bulk.impl;
 
+import java.util.Date;
 import java.util.Iterator;
 
-import com.cannontech.common.bulk.BulkProcessingResultHolder;
 import com.cannontech.common.bulk.BulkProcessor;
-import com.cannontech.common.bulk.BulkProcessorCallback;
-import com.cannontech.common.bulk.CollectingBulkProcessorCallback;
+import com.cannontech.common.bulk.callbackResult.BulkProcessorCallback;
+import com.cannontech.common.bulk.callbackResult.CollectingBulkProcessorCallback;
 import com.cannontech.common.bulk.mapper.PassThroughMapper;
 import com.cannontech.common.bulk.processor.Processor;
 import com.cannontech.common.util.ObjectMapper;
 
 public abstract class BulkProcessorBase implements BulkProcessor {
 
-    public <I> BulkProcessingResultHolder<I,I> bulkProcess(Iterator<I> iterator, Processor<I> processor) {
+    public <I> BulkProcessorCallback<I,I> bulkProcess(Iterator<I> iterator, Processor<I> processor) {
 
         // Use a pass through mapper
         ObjectMapper<I, I> passThroughMapper = new PassThroughMapper<I>();
@@ -21,7 +21,7 @@ public abstract class BulkProcessorBase implements BulkProcessor {
     }
     
     @Override
-    public <I, O> BulkProcessingResultHolder<I,O> bulkProcess(
+    public <I, O> BulkProcessorCallback<I,O> bulkProcess(
             Iterator<I> iterator, ObjectMapper<I, O> mapper,
             Processor<O> processor) {
         
@@ -38,6 +38,7 @@ public abstract class BulkProcessorBase implements BulkProcessor {
         // Use a pass through mapper
         ObjectMapper<I, I> passThroughMapper = new PassThroughMapper<I>();
 
+        callback.processingStarted(new Date());
         backgroundBulkProcess(iterator, passThroughMapper, processor, callback);
     }
 }

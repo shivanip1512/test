@@ -4,6 +4,7 @@ import java.util.Date;
 
 import org.springframework.context.MessageSourceResolvable;
 
+import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.user.YukonUserContext;
 
@@ -34,7 +35,7 @@ public interface BulkProcess {
      * Method to get the result holder for the process
      * @return The result holder
      */
-    public BulkProcessingResultHolder getResultHolder();
+    public BackgroundProcessResultHolder getResultHolder();
 
     /**
      * Method to get the description of the  action this bulk process is performing

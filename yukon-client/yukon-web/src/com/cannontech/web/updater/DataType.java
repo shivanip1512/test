@@ -9,7 +9,7 @@ public enum DataType {
     SUBBUS,
     FEEDER,
     CAPBANK,
-    BULKRESULT,
+    BACKGROUNDPROCESS,
     ROUTELOCATE,
     COMMANDER,
     ;

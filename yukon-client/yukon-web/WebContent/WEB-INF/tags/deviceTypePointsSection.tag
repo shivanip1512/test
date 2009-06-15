@@ -1,0 +1,51 @@
+<%@ attribute name="title" required="true" type="java.lang.String"%>
+<%@ attribute name="pointTypesMap" required="true" type="java.util.Map"%>
+<%@ attribute name="deviceType" required="true" type="java.lang.Integer"%>
+<%@ attribute name="deviceTypeEnum" required="false" type="com.cannontech.common.device.DeviceType"%>
+<%@ attribute name="deviceTypeDeviceCollection" required="false" type="com.cannontech.common.bulk.collection.DeviceCollection"%>
+<%@ attribute name="columnCount" required="true" type="java.lang.Integer"%>
+
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+
+
+<cti:uniqueIdentifier prefix="sectionContainer_" var="thisId"/>
+<div class="titledContainer sectionContainer id="${thisId}">
+    
+    <div class="titleBar sectionContainer_titleBar">
+        <div class="titleBar sectionContainer_title">
+            ${title} 
+            <c:if test="${deviceType > 0}">
+            	<cti:msg var="viewDefinitionDetailPopupTitle" key="yukon.common.device.bulk.addRemovePointsHome.viewDefinitionDetailPopupTitle"/>
+            	<cti:url var="definitionUrl" value="/spring/common/deviceDefinition.xml">	
+            		<cti:param name="deviceType" value="${deviceTypeEnum}"/>
+            	</cti:url>
+            	<img src="<cti:url value="/WebConfig/yukon/Icons/help.gif"/>" onclick="window.open('${definitionUrl}');return false;" title="${viewDefinitionDetailPopupTitle}">
+           	</c:if>
+           	<c:if test="${not empty deviceTypeDeviceCollection}">
+            	<tags:selectedDevicesPopup  deviceCollection="${deviceTypeDeviceCollection}" />
+           	</c:if>
+        </div>
+    </div>
+    
+    <%-- BODY --%>
+    <div id="${thisId}_content" class="content sectionContainer sectionContainer_content">
+        
+		<c:forEach var="pointTypesMapEntry" items="${pointTypesMap}">
+			
+			<c:set var="pointTypeName" value="${pointTypesMapEntry.key}"/>
+		
+			<span class="smallBoldLabel">${pointTypeName}</span>
+			<br>
+			<tags:pointsCheckboxTable deviceType="${deviceType}" pointTemplates="${pointTypesMap[pointTypeName]}" columnCount="${columnCount}"></tags:pointsCheckboxTable>
+		
+		
+		</c:forEach>
+	
+    </div>    
+
+</div>
+
+
+<br>

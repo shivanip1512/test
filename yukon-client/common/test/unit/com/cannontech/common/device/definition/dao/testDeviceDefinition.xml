@@ -9,7 +9,6 @@ This file contains default device and point information for all of the devices i
     
     <!-- Group 1 -->
     <device id="MCT310">
-        <type>1019</type>
         <displayName>Device 1</displayName>
         <displayGroup>display1</displayGroup>
         <changeGroup>change1</changeGroup>
@@ -74,7 +73,6 @@ This file contains default device and point information for all of the devices i
         </attributes>      
     </device>
     <device id="MCT370">
-        <type>1022</type>
         <displayName>Device 2</displayName>
         <displayGroup>display1</displayGroup>
         <changeGroup>change1</changeGroup>
@@ -104,7 +102,6 @@ This file contains default device and point information for all of the devices i
     
     <!-- Group 2 -->
     <device id="MCT318L">
-        <type>1036</type>
         <displayName>Device 3</displayName>
         <displayGroup>display2</displayGroup>
         <points>

@@ -24,4 +24,6 @@ public interface DeviceActionsRole {
     public static final int LOCATE_ROUTE = OperatorRoleDefs.DEVICE_ACTIONS_PROPERTYID_BASE - 6; // -21306
     /**Controls access to Mass Delete collection action. */
     public static final int MASS_DELETE = OperatorRoleDefs.DEVICE_ACTIONS_PROPERTYID_BASE - 7; // -21307
+    /**Controls access to Add Points collection action. */
+    public static final int ADD_REMOVE_POINTS = OperatorRoleDefs.DEVICE_ACTIONS_PROPERTYID_BASE - 8; // -21308
 }

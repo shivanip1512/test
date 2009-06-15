@@ -151,7 +151,11 @@ public class GroupEditorController extends MultiActionController {
         
         // check the size of the group
         int childDeviceCount = deviceGroupDao.getChildDeviceCount(group);
-        mav.addObject("deviceCount", childDeviceCount);
+        mav.addObject("childDeviceCount", childDeviceCount);
+        
+        // check the size of the group (recursive)
+        int deviceCount = deviceGroupDao.getDeviceCount(group);
+        mav.addObject("deviceCount", deviceCount);
         
         boolean groupModifiable = group.isModifiable() && group.getParent() != null;
         mav.addObject("groupModifiable", groupModifiable);

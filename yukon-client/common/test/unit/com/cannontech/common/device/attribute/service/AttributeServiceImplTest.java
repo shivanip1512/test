@@ -8,7 +8,6 @@ import junit.framework.TestCase;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
-import com.cannontech.common.device.attribute.model.UserDefinedAttribute;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDaoImplTest;
 import com.cannontech.common.device.service.PointServiceImpl;
@@ -38,7 +37,6 @@ public class AttributeServiceImplTest extends TestCase {
         });
         pointDao = new MockPointDao();
         pointService.setPointDao(pointDao);
-        service.setPointDao(pointDao);
         service.setPointService(pointService);
 
         device = new YukonDevice(1, 1019);
@@ -56,27 +54,6 @@ public class AttributeServiceImplTest extends TestCase {
         LitePoint actualPoint = service.getPointForAttribute(device, BuiltInAttribute.USAGE);
 
         assertEquals("Attribute point isn't as expected", expectedPoint, actualPoint);
-
-        // Test for device that doesn't exist
-        try {
-            device.setType(-1);
-            service.getPointForAttribute(device, new UserDefinedAttribute("invalid"));
-            fail("getPointForAttribute should've thrown exception for invalid device");
-        } catch (IllegalArgumentException e) {
-            // expected exception
-        } catch (Exception e) {
-            fail("Threw wrong type of exception: " + e.getClass());
-        }
-
-        // Test for attribute that doesn't exist
-        try {
-            service.getPointForAttribute(device, new UserDefinedAttribute("invalid"));
-            fail("getPointForAttribute should've thrown exception for invalid attribute");
-        } catch (IllegalArgumentException e) {
-            // expected exception
-        } catch (Exception e) {
-            fail("Threw wrong type of exception: " + e.getClass());
-        }
 
     }
 

@@ -29,6 +29,7 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
+import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 import org.exolab.castor.xml.Unmarshaller;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,38 +43,36 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.DeviceType;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
-import com.cannontech.common.device.definition.attribute.lookup.AttributeLookup;
-import com.cannontech.common.device.definition.attribute.lookup.BasicLookupAttrDef;
+import com.cannontech.common.device.definition.attribute.lookup.AttributeDefinition;
+import com.cannontech.common.device.definition.attribute.lookup.BasicAttributeDefinition;
 import com.cannontech.common.device.definition.model.CommandDefinition;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.model.DeviceDefinitionImpl;
-import com.cannontech.common.device.definition.model.DeviceFeature;
-import com.cannontech.common.device.definition.model.DevicePointIdentifier;
-import com.cannontech.common.device.definition.model.FeatureDefinition;
+import com.cannontech.common.device.definition.model.DeviceTag;
+import com.cannontech.common.device.definition.model.DeviceTagDefinition;
+import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.definition.model.castor.BasicLookup;
 import com.cannontech.common.device.definition.model.castor.Cmd;
 import com.cannontech.common.device.definition.model.castor.Command;
 import com.cannontech.common.device.definition.model.castor.Device;
 import com.cannontech.common.device.definition.model.castor.DeviceDefinitions;
-import com.cannontech.common.device.definition.model.castor.Feature;
 import com.cannontech.common.device.definition.model.castor.Point;
 import com.cannontech.common.device.definition.model.castor.PointRef;
+import com.cannontech.common.device.definition.model.castor.Tag;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.state.StateGroupUtils;
-import com.cannontech.util.ReflectivePropertySearcher;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * Implementation class for DeviceDefinitionDao
@@ -84,129 +83,83 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
     private Resource schemaFile = null;
     private Resource customInputFile = new FileSystemResource(CtiUtilities.getYukonBase() + "\\Server\\Config\\deviceDefinition.xml");
     private Resource pointLegendFile = null;
-    private PaoGroupsWrapper paoGroupsWrapper = null;
-    private String javaConstantClassName = null;
     private UnitMeasureDao unitMeasureDao = null;
     private StateDao stateDao = null;
     private Logger log = YukonLogManager.getLogger(DeviceDefinitionDaoImpl.class);
 
     // Maps containing all of the data in the deviceDefinition.xml file
-    private Map<Integer, Map<Attribute, AttributeLookup>> deviceAttributeAttrDefinitionMap = null;
-    private Map<Integer, Set<PointTemplate>> deviceAllPointTemplateMap = null;
-    private Map<Integer, Set<PointTemplate>> deviceInitPointTemplateMap = null;
-    private Map<Integer, DeviceDefinition> deviceTypeMap = null;
+    private Map<DeviceType, Map<Attribute, AttributeDefinition>> deviceAttributeAttrDefinitionMap = null;
+    private Map<DeviceType, Set<PointTemplate>> deviceAllPointTemplateMap = null;
+    private Map<DeviceType, Set<PointTemplate>> deviceInitPointTemplateMap = null;
+    private Map<DeviceType, DeviceDefinition> deviceTypeMap = null;
     private Map<String, List<DeviceDefinition>> deviceDisplayGroupMap = null;
     private Map<String, Set<DeviceDefinition>> changeGroupDevicesMap = null;
-    private Map<Integer, Set<CommandDefinition>> deviceCommandMap = null;
-    private Map<Integer, Set<FeatureDefinition>> deviceFeatureMap = null;
+    private Map<DeviceType, Set<CommandDefinition>> deviceCommandMap = null;
+    private Map<DeviceType, Set<DeviceTagDefinition>> deviceFeatureMap = null;
     private List<String> fileIdOrder = null;
     
     public void setInputFile(Resource inputFile) {
         this.inputFile = inputFile;
     }
+    
     public void setSchemaFile(Resource schemaFile) {
         this.schemaFile = schemaFile;
     }
+    
     public void setCustomInputFile(Resource customInputResource) {
         this.customInputFile = customInputResource;
     }
-    @Autowired
-    public void setPaoGroupsWrapper(PaoGroupsWrapper paoGroupsWrapper) {
-        this.paoGroupsWrapper = paoGroupsWrapper;
-    }
-    public void setJavaConstantClassName(String javaConstantClassName) {
-        this.javaConstantClassName = javaConstantClassName;
-    }
+
     @Autowired
     public void setStateDao(StateDao stateDao) {
         this.stateDao = stateDao;
     }
+    
     @Autowired
     public void setUnitMeasureDao(UnitMeasureDao unitMeasureDao) {
         this.unitMeasureDao = unitMeasureDao;
     }
+    
     public void setPointLegendFile(Resource pointLegendFile) {
         this.pointLegendFile = pointLegendFile;
     }
     
     // ATTRIBUTES
     //============================================
-    public Set<Attribute> getAvailableAttributes(DeviceDefinition deviceDefinition) {
-    	
-    	int deviceType = deviceDefinition.getType();
-    	return getAvailableAttributes(deviceType);
+    @Override
+    public AttributeDefinition getAttributeLookup(DeviceType deviceType,
+            BuiltInAttribute attribute) {
+        Map<Attribute, AttributeDefinition> attributeLookupsForDevice = deviceAttributeAttrDefinitionMap.get(deviceType);
+        Validate.notNull(attributeLookupsForDevice, "No AttributeLookups exist for " + deviceType);
+        AttributeDefinition attributeDefinition = attributeLookupsForDevice.get(attribute);
+        Validate.notNull(attributeDefinition, "No AttributeLookup exists for " + attribute + " on " + deviceType);
+        return attributeDefinition;
     }
     
-    public Set<Attribute> getAvailableAttributes(YukonDevice device) {
-    	
-        int deviceType = device.getType();
-        return getAvailableAttributes(deviceType);
-    }
-
-	private Set<Attribute> getAvailableAttributes(int deviceType) {
-		
-		if (this.deviceAttributeAttrDefinitionMap.containsKey(deviceType)) {
-            Map<Attribute, AttributeLookup> attributeMap = this.deviceAttributeAttrDefinitionMap.get(deviceType);
-            return Collections.unmodifiableSet(attributeMap.keySet());
+    @Override
+    public Set<AttributeDefinition> getDefinedAttributes(DeviceType deviceType) {
+        Map<Attribute, AttributeDefinition> attributeLookupsForDevice = deviceAttributeAttrDefinitionMap.get(deviceType);
+        if (attributeLookupsForDevice == null) {
+            return ImmutableSet.of();
         } else {
-            throw new IllegalArgumentException("Device type '" + deviceType
-                    + "' is not supported.");
-        }
-	}
-
-    // POINTS
-    //============================================
-    public Set<DevicePointIdentifier> getDevicePointIdentifierForAttributes(YukonDevice device, Set<? extends Attribute> attributes) {
-    	
-        Set<DevicePointIdentifier> pointSet = new HashSet<DevicePointIdentifier>(attributes.size());
-        for (Attribute attribute : attributes) {
-            PointTemplate pointTemplateForAttribute = getPointTemplateForAttribute(device, attribute);
-            pointSet.add(pointTemplateForAttribute.getDevicePointIdentifier());
-        }
-        return pointSet;
-    }
-    
-    public PointTemplate getPointTemplateForAttribute(YukonDevice device, Attribute attribute) {
-        int deviceType = device.getType();
-        if (this.deviceAttributeAttrDefinitionMap.containsKey(deviceType)) {
-            Map<Attribute, AttributeLookup> attributeMap = this.deviceAttributeAttrDefinitionMap.get(deviceType);
-            if (attributeMap.containsKey(attribute)) {
-            	AttributeLookup attributeDefinition = attributeMap.get(attribute);
-            	String pointName = attributeDefinition.getPointRefName(device);
-            	return getPointTemplate(deviceType, pointName);
-            } else {
-                throw new IllegalArgumentException("Attribute " + attribute.getKey()
-                        + " is not supported for Device type '" + deviceType + "'");
-            }
-        } else {
-            throw new IllegalArgumentException("Device type '" + deviceType
-                    + "' is not supported.");
+            return ImmutableSet.copyOf(attributeLookupsForDevice.values());
         }
     }
     
-    public Set<PointTemplate> getAllPointTemplates(YukonDevice device) {
-        int deviceType = device.getType();
-        return this.getAllPointTemplates(deviceType);
-    }
-
     public Set<PointTemplate> getAllPointTemplates(DeviceDefinition deviceDefinition) {
         return this.getAllPointTemplates(deviceDefinition.getType());
-    }
-
-    public Set<PointTemplate> getInitPointTemplates(YukonDevice device) {
-        int deviceType = device.getType();
-        return this.getInitPointTemplates(deviceType);
     }
 
     public Set<PointTemplate> getInitPointTemplates(DeviceDefinition deviceDefinition) {
         return this.getInitPointTemplates(deviceDefinition.getType());
     }
     
-    public PointTemplate getPointTemplateByTypeAndOffset(YukonDevice device,
-            Integer offset, Integer pointType) {
+    public PointTemplate getPointTemplateByTypeAndOffset(DeviceType deviceType, PointIdentifier pointIdentifier) {
 
+    	int pointType = pointIdentifier.getType();
+    	int offset = pointIdentifier.getOffset();
 
-        Set<PointTemplate> allPointTemplates = this.getAllPointTemplates(device.getType());
+        Set<PointTemplate> allPointTemplates = this.getAllPointTemplates(deviceType);
 
         for (PointTemplate template : allPointTemplates) {
 
@@ -215,13 +168,12 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
             }
         }
 
-        String deviceType = paoGroupsWrapper.getPAOTypeString(device.getType());
         String pointTypeString = PointTypes.getType(pointType);
 
         throw new NotFoundException("Point template not found for device type: " + deviceType + ", point type: " + pointTypeString + ", offset: " + offset);
     }
     
-    private PointTemplate getPointTemplate(Integer deviceType, String pointName) {
+    private PointTemplate getPointTemplate(DeviceType deviceType, String pointName) {
     	if (this.deviceAllPointTemplateMap.containsKey(deviceType)) {
         	Set<PointTemplate> templates = this.deviceAllPointTemplateMap.get(deviceType);
 
@@ -229,15 +181,13 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
             	if( template.getName().equals(pointName))
             		return template;
             }
-            throw new NotFoundException("Device type '"
-                    + paoGroupsWrapper.getPAOTypeString(deviceType) + "' does not support point " + pointName + ".");
+            throw new NotFoundException("Device type " + deviceType + " does not support point " + pointName + ".");
         } else {
-            throw new IllegalArgumentException("Device type '"
-                    + paoGroupsWrapper.getPAOTypeString(deviceType) + "' is not supported.");
+            throw new IllegalArgumentException("Device type " + deviceType + " is not supported.");
         }
     }
     
-    private Set<PointTemplate> getAllPointTemplates(Integer deviceType) {
+    public Set<PointTemplate> getAllPointTemplates(DeviceType deviceType) {
         if (this.deviceAllPointTemplateMap.containsKey(deviceType)) {
             Set<PointTemplate> templates = this.deviceAllPointTemplateMap.get(deviceType);
             Set<PointTemplate> returnSet = new HashSet<PointTemplate>();
@@ -246,12 +196,12 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
             }
             return returnSet;
         } else {
-            throw new IllegalArgumentException("Device type '"
-                    + paoGroupsWrapper.getPAOTypeString(deviceType) + "' is not supported.");
+            throw new IllegalArgumentException("Device type "
+                    + deviceType + " is not supported.");
         }
     }
 
-    private Set<PointTemplate> getInitPointTemplates(Integer deviceType) {
+    public Set<PointTemplate> getInitPointTemplates(DeviceType deviceType) {
 
         if (this.deviceInitPointTemplateMap.containsKey(deviceType)) {
         	Set<PointTemplate> templates = this.deviceInitPointTemplateMap.get(deviceType);
@@ -261,22 +211,20 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
             }
         	return returnSet;
         } else {
-            throw new IllegalArgumentException("Device type '"
-                    + paoGroupsWrapper.getPAOTypeString(deviceType) + "' is not supported.");
+            throw new IllegalArgumentException("Device type " + deviceType + " is not supported.");
         }
     }
     
     // COMMANDS
     //============================================
-    public Set<CommandDefinition> getCommandsThatAffectPoints(YukonDevice device, Set<? extends DevicePointIdentifier> pointSet) {
+    public Set<CommandDefinition> getCommandsThatAffectPoints(DeviceType deviceType, Set<? extends PointIdentifier> pointSet) {
 
         Set<CommandDefinition> commandSet = new HashSet<CommandDefinition>();
 
-        int deviceType = device.getType();
         Set<CommandDefinition> allCommandSet = this.deviceCommandMap.get(deviceType);
 
         for (CommandDefinition command : allCommandSet) {
-            for (DevicePointIdentifier point : pointSet) {
+            for (PointIdentifier point : pointSet) {
                 if (command.affectsPoint(point)) {
                     commandSet.add(command);
                     break;
@@ -289,33 +237,31 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
     
     public Set<CommandDefinition> getAvailableCommands(DeviceDefinition newDefinition) {
     	
-    	int deviceType = newDefinition.getType();
+    	DeviceType deviceType = newDefinition.getType();
         Set<CommandDefinition> allCommandSet = this.deviceCommandMap.get(deviceType);
         return allCommandSet;
     }
     
-    // FEATURES
+    // TAGS
     //============================================
-    public Set<DeviceFeature> getSupportedFeatures(YukonDevice device) {
+    public Set<DeviceTag> getSupportedTags(DeviceType deviceType) {
     	
-    	int deviceType = device.getType();
-    	return getSupportedFeaturesForDeviceType(deviceType);
+    	return getSupportedTagsForDeviceType(deviceType);
     }
-    public Set<DeviceFeature> getSupportedFeatures(DeviceDefinition deviceDefiniton) {
+    public Set<DeviceTag> getSupportedTags(DeviceDefinition deviceDefiniton) {
     	
-    	int deviceType = deviceDefiniton.getType();
-    	return getSupportedFeaturesForDeviceType(deviceType);
+    	return getSupportedTagsForDeviceType(deviceDefiniton.getType());
     }
     
-    public Set<DeviceDefinition> getDevicesThatSupportFeature(DeviceFeature feature) {
+    public Set<DeviceDefinition> getDevicesThatSupportTag(DeviceTag feature) {
     	
     	Set<DeviceDefinition> definitions = new HashSet<DeviceDefinition>();
-    	for (int deviceType : this.deviceFeatureMap.keySet()) {
+    	for (DeviceType deviceType : this.deviceFeatureMap.keySet()) {
     		
-    		Set<FeatureDefinition> allDeviceFeatureDefinitionsSet = this.deviceFeatureMap.get(deviceType);
-    		for (FeatureDefinition featureDefinition : allDeviceFeatureDefinitionsSet) {
+    		Set<DeviceTagDefinition> allDeviceFeatureDefinitionsSet = this.deviceFeatureMap.get(deviceType);
+    		for (DeviceTagDefinition featureDefinition : allDeviceFeatureDefinitionsSet) {
     			
-    			if (featureDefinition.getFeature().equals(feature) && featureDefinition.isSupported()) {
+    			if (featureDefinition.getTag().equals(feature) && featureDefinition.isTagTrue()) {
     				definitions.add(getDeviceDefinition(deviceType));
     				break;
     			}
@@ -324,26 +270,16 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
     	return definitions;
     }
     
-    public boolean isFeatureSupported(YukonDevice device, DeviceFeature feature) {
-    	int deviceType = device.getType();
-    	return isFeatureSupported(deviceType, feature);
-    }
-    public boolean isFeatureSupported(DeviceDefinition deviceDefiniton, DeviceFeature feature) {
-    	int deviceType = deviceDefiniton.getType();
-    	return isFeatureSupported(deviceType, feature);
+    public boolean isTagSupported(DeviceDefinition deviceDefiniton, DeviceTag feature) {
+    	return isTagSupported(deviceDefiniton.getType(), feature);
     }
     
-    public boolean isFeatureSupported(LiteYukonPAObject litePao, DeviceFeature feature) {
-    	int deviceType = litePao.getType();
-    	return isFeatureSupported(deviceType, feature);
-    }
-    
-    private boolean isFeatureSupported(int deviceType, DeviceFeature feature) {
+    public boolean isTagSupported(DeviceType deviceType, DeviceTag feature) {
     	
-    	Set<FeatureDefinition> allDeviceFeatureDefinitionsSet = this.deviceFeatureMap.get(deviceType);
+    	Set<DeviceTagDefinition> allDeviceFeatureDefinitionsSet = this.deviceFeatureMap.get(deviceType);
     	if (allDeviceFeatureDefinitionsSet != null) {
-    		for (FeatureDefinition featureDefinition : allDeviceFeatureDefinitionsSet) {
-    			if (featureDefinition.getFeature().equals(feature) && featureDefinition.isSupported()) {
+    		for (DeviceTagDefinition featureDefinition : allDeviceFeatureDefinitionsSet) {
+    			if (featureDefinition.getTag().equals(feature) && featureDefinition.isTagTrue()) {
     				return true;
     			}
     		}
@@ -351,15 +287,15 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
     	return false;
     }
     
-    private Set<DeviceFeature> getSupportedFeaturesForDeviceType(int deviceType) {
+    private Set<DeviceTag> getSupportedTagsForDeviceType(DeviceType deviceType) {
     	
-    	Set<DeviceFeature> supportedDeviceFeaturesSet = new HashSet<DeviceFeature>();
-    	Set<FeatureDefinition> allDeviceFeatureDefinitionsSet = this.deviceFeatureMap.get(deviceType);
+    	Set<DeviceTag> supportedDeviceFeaturesSet = new HashSet<DeviceTag>();
+    	Set<DeviceTagDefinition> allDeviceFeatureDefinitionsSet = this.deviceFeatureMap.get(deviceType);
     	
     	if (allDeviceFeatureDefinitionsSet != null) {
-	    	for (FeatureDefinition featureDefinition : allDeviceFeatureDefinitionsSet) {
-	    		if (featureDefinition.isSupported()) {
-	    			supportedDeviceFeaturesSet.add(featureDefinition.getFeature());
+	    	for (DeviceTagDefinition featureDefinition : allDeviceFeatureDefinitionsSet) {
+	    		if (featureDefinition.isTagTrue()) {
+	    			supportedDeviceFeaturesSet.add(featureDefinition.getTag());
 	    		}
 	    	}
     	}
@@ -378,21 +314,14 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         return Collections.unmodifiableMap(this.deviceDisplayGroupMap);
     }
     
-    public DeviceDefinition getDeviceDefinition(int deviceType) {
+    public DeviceDefinition getDeviceDefinition(DeviceType deviceType) {
         
         if (this.deviceTypeMap.containsKey(deviceType)) {
             return this.deviceTypeMap.get(deviceType);
         } else {
-            throw new IllegalArgumentException("Device type '" + deviceType
-                    + "' is not supported.");
+            throw new IllegalArgumentException("Device type " + deviceType
+                    + " is not supported.");
         }
-    }
-    
-    public DeviceDefinition getDeviceDefinition(YukonDevice device) {
-
-        int deviceType = device.getType();
-        return this.getDeviceDefinition(deviceType);
-
     }
     
     public Set<DeviceDefinition> getDevicesThatDeviceCanChangeTo(DeviceDefinition deviceDefinition) {
@@ -440,14 +369,14 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
     //============================================
     public void initialize() throws Exception {
 
-        this.deviceTypeMap = new LinkedHashMap<Integer, DeviceDefinition>();
-        this.deviceAllPointTemplateMap = new HashMap<Integer, Set<PointTemplate>>();
-        this.deviceInitPointTemplateMap = new HashMap<Integer, Set<PointTemplate>>();
+        this.deviceTypeMap = new LinkedHashMap<DeviceType, DeviceDefinition>();
+        this.deviceAllPointTemplateMap = new HashMap<DeviceType, Set<PointTemplate>>();
+        this.deviceInitPointTemplateMap = new HashMap<DeviceType, Set<PointTemplate>>();
         this.deviceDisplayGroupMap = new LinkedHashMap<String, List<DeviceDefinition>>();
         this.changeGroupDevicesMap = new HashMap<String, Set<DeviceDefinition>>();
-        this.deviceAttributeAttrDefinitionMap = new HashMap<Integer, Map<Attribute, AttributeLookup>>();
-        this.deviceCommandMap = new HashMap<Integer, Set<CommandDefinition>>();
-        this.deviceFeatureMap = new HashMap<Integer, Set<FeatureDefinition>>();
+        this.deviceAttributeAttrDefinitionMap = new HashMap<DeviceType, Map<Attribute, AttributeDefinition>>();
+        this.deviceCommandMap = new HashMap<DeviceType, Set<CommandDefinition>>();
+        this.deviceFeatureMap = new HashMap<DeviceType, Set<DeviceTagDefinition>>();
         this.fileIdOrder = new ArrayList<String>();
         
         // definition resources (in order from lowest level overrides to highest)
@@ -479,8 +408,6 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         
         // final devices are ready to have data added to the dao data maps 
         for (DeviceStore deviceStore : finalDeviceStores) {
-        
-        	this.validateDeviceConstant(deviceStore);
             this.addDevice(deviceStore);
         }
         
@@ -661,20 +588,6 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         is.close();
     }
     
-    private void validateDeviceConstant(DeviceStore device) throws Exception {
-
-        // Validate xml device type int / java constant
-        String javaConstant = device.getId();
-        int deviceType = device.getDeviceType();
-        int constantValue = ReflectivePropertySearcher.getIntForFQN(javaConstantClassName,
-                                                                    javaConstant);
-        if (deviceType != constantValue) {
-            throw new Exception("Java constant value for " + javaConstant + ": " + constantValue
-                    + " does not match value in deviceDefinition.xml file " + deviceType);
-        }
-
-    }
-    
     // ADD DEVICE
     //============================================
     /**
@@ -684,7 +597,7 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
      */
     private void addDevice(DeviceStore device) {
 
-        int deviceType = device.getDeviceType();
+        DeviceType deviceType = device.getDeviceType();
         String javaConstant = device.getId();
 
         String displayName = null;
@@ -753,12 +666,12 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         this.deviceInitPointTemplateMap.put(deviceType, initPointSet);
         
         // Add device attributes
-        Map<Attribute, AttributeLookup> attributeMap = new HashMap<Attribute, AttributeLookup>();
+        Map<Attribute, AttributeDefinition> attributeMap = new HashMap<Attribute, AttributeDefinition>();
         com.cannontech.common.device.definition.model.castor.Attribute[] attributes = device.getEnabledAttributes();
         for (com.cannontech.common.device.definition.model.castor.Attribute attribute : attributes) {
         	
-        	AttributeLookup attributeDefinition = 
-        		createAttributeDefinition(attribute.getName(), attribute.getChoiceValue());
+        	AttributeDefinition attributeDefinition = 
+        		createAttributeDefinition(attribute.getName(), attribute.getChoiceValue(), pointNameTemplateMap);
         	Attribute pointAttribute = BuiltInAttribute.valueOf(attribute.getName());
         	
             if (attributeMap.containsKey(pointAttribute)) {
@@ -780,10 +693,10 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         this.deviceCommandMap.put(deviceType, commandSet);
         
         // Add device features
-        Set<FeatureDefinition> featureSet = new HashSet<FeatureDefinition>();
-        Feature[] features = device.getEnabledFeatures();
-        for (Feature feature : features) {
-            FeatureDefinition definition = this.createFeatureDefinition(feature.getName(), feature.getValue());
+        Set<DeviceTagDefinition> featureSet = new HashSet<DeviceTagDefinition>();
+        Tag[] tags = device.getEnabledTags();
+        for (Tag tag : tags) {
+            DeviceTagDefinition definition = this.createDeviceTagDefinition(tag.getName(), tag.getValue());
             
             featureSet.add(definition);
         }
@@ -793,22 +706,28 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
     /**
      * Helper method to convert a castor AttributeLookup CHOICE object to a AttributeLookup definition
      * @param choiceLookup - The choice object from the attribute lookup
+     * @param pointNameTemplateMap 
      * @return The AttributeLookup definition representing the castor CHOICE lookup
      */
-	private AttributeLookup createAttributeDefinition(String attributeName,
-            Object choiceLookup) {
+	private AttributeDefinition createAttributeDefinition(String attributeName,
+            Object choiceLookup, Map<String, PointTemplate> pointNameTemplateMap) {
 
-        AttributeLookup attributeDefinition = null;
+        AttributeDefinition attributeDefinition = null;
         Attribute attribute = BuiltInAttribute.valueOf(attributeName);
 
         if (choiceLookup instanceof BasicLookup) {
             BasicLookup lookup = (BasicLookup) choiceLookup;
-            attributeDefinition = new BasicLookupAttrDef(attribute);
-            ((BasicLookupAttrDef) attributeDefinition).setPointName(lookup.getPoint());
+            PointTemplate pointTemplate = pointNameTemplateMap.get(lookup.getPoint());
+            if (pointTemplate == null) {
+                throw new IllegalArgumentException("Can't resolve point name '" + lookup.getPoint() + ":");
+            }
+            
+            attributeDefinition = new BasicAttributeDefinition(attribute, pointTemplate);
         }
 
-        if (attributeDefinition != null)
+        if (attributeDefinition != null) {
             return attributeDefinition;
+        }
 
         throw new IllegalArgumentException("Attribute Choice '" + choiceLookup.toString() + "' is not supported.");
     }
@@ -838,8 +757,8 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
                 throw new RuntimeException("Point name: " + pointRef.getName() + " not found for device: " + deviceName + ".  command pointRefs must reference a point name from the same device in the deviceDefinition.xml file. Point is not on device, or point has been named incorrectly in a custom file.");
             }
             PointTemplate template = pointNameTemplateMap.get(pointRef.getName());
-            DevicePointIdentifier dpi = new DevicePointIdentifier(template.getType(), template.getOffset());
-            definition.addAffectedPoint(dpi);
+            PointIdentifier pi = new PointIdentifier(template.getType(), template.getOffset());
+            definition.addAffectedPoint(pi);
         }
 
         return definition;
@@ -851,10 +770,10 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
      * @param value
      * @return
      */
-    private FeatureDefinition createFeatureDefinition(String featureName, boolean value) {
+    private DeviceTagDefinition createDeviceTagDefinition(String tagName, boolean value) {
     	
-    	DeviceFeature feature = DeviceFeature.valueOf(featureName);
-    	FeatureDefinition definition = new FeatureDefinition(feature, value);
+    	DeviceTag feature = DeviceTag.valueOf(tagName);
+    	DeviceTagDefinition definition = new DeviceTagDefinition(feature, value);
     	return definition;
     }
 

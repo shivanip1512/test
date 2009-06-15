@@ -5,7 +5,7 @@ import java.sql.Timestamp;
 import com.cannontech.billing.device.base.BillingData;
 import com.cannontech.billing.device.base.BillingDeviceBase;
 import com.cannontech.billing.device.base.DeviceData;
-import com.cannontech.common.device.definition.model.DevicePointIdentifier;
+import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.dynamicBilling.Channel;
 import com.cannontech.common.dynamicBilling.ReadingType;
 import com.cannontech.common.dynamicBilling.model.BillableField;
@@ -16,7 +16,7 @@ import com.cannontech.database.data.point.PointTypes;
  */
 public class Sentinel extends BillingDeviceBase {
 
-    public void populate(DevicePointIdentifier devicePointIdentifier, Timestamp timestamp, double value,
+    public void populate(PointIdentifier pointIdentifier, Timestamp timestamp, double value,
             int unitOfMeasure, String pointName, DeviceData deviceData) {
 
         addMeterData(Channel.ONE, deviceData);
@@ -29,11 +29,11 @@ public class Sentinel extends BillingDeviceBase {
 
         ReadingType readingType = getReadingType(unitOfMeasure);
 
-        switch (devicePointIdentifier.getType()) {
+        switch (pointIdentifier.getType()) {
 
         case PointTypes.ANALOG_POINT:
 
-            switch (devicePointIdentifier.getOffset()) {
+            switch (pointIdentifier.getOffset()) {
 
             // Electric
 
@@ -255,7 +255,7 @@ public class Sentinel extends BillingDeviceBase {
 
         case PointTypes.PULSE_ACCUMULATOR_POINT:
 
-            switch (devicePointIdentifier.getOffset()) {
+            switch (pointIdentifier.getOffset()) {
 
             case 1: // Total Consumption - channel 1
                 addData(Channel.ONE, readingType, BillableField.totalConsumption, data);
@@ -285,7 +285,7 @@ public class Sentinel extends BillingDeviceBase {
 
         case PointTypes.DEMAND_ACCUMULATOR_POINT:
 
-            switch (devicePointIdentifier.getOffset()) {
+            switch (pointIdentifier.getOffset()) {
 
             case 11: // Total Peak Demand - channel 1
                 addData(Channel.ONE, readingType, BillableField.totalPeakDemand, data);
@@ -314,12 +314,12 @@ public class Sentinel extends BillingDeviceBase {
     }
 
     @Override
-    public boolean isEnergy(DevicePointIdentifier devicePointIdentifier) {
-        switch (devicePointIdentifier.getType()) {
+    public boolean isEnergy(PointIdentifier pointIdentifier) {
+        switch (pointIdentifier.getType()) {
 
         case PointTypes.ANALOG_POINT:
 
-            switch (devicePointIdentifier.getOffset()) {
+            switch (pointIdentifier.getOffset()) {
 
             // Electric
             case 1: // KWh
@@ -348,7 +348,7 @@ public class Sentinel extends BillingDeviceBase {
 
         case PointTypes.PULSE_ACCUMULATOR_POINT:
 
-            switch (devicePointIdentifier.getOffset()) {
+            switch (pointIdentifier.getOffset()) {
 
             case 1: // Total Consumption - channel 1
             case 2: // Total Consumption - channel 2
@@ -363,12 +363,12 @@ public class Sentinel extends BillingDeviceBase {
     }
     
     @Override
-    public boolean isDemand(DevicePointIdentifier devicePointIdentifier) {
-        switch (devicePointIdentifier.getType()) {
+    public boolean isDemand(PointIdentifier pointIdentifier) {
+        switch (pointIdentifier.getType()) {
 
         case PointTypes.ANALOG_POINT:
 
-            switch (devicePointIdentifier.getOffset()) {
+            switch (pointIdentifier.getOffset()) {
 
             // Electric
             case 2: // Rate A KW
@@ -395,7 +395,7 @@ public class Sentinel extends BillingDeviceBase {
 
         case PointTypes.DEMAND_ACCUMULATOR_POINT:
 
-            switch (devicePointIdentifier.getOffset()) {
+            switch (pointIdentifier.getOffset()) {
 
             case 11: // Total Peak Demand - channel 1
             case 12: // Total Peak Demand - channel 2

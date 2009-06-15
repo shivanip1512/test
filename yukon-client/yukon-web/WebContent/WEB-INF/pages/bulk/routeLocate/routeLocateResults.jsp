@@ -66,7 +66,7 @@
     <tags:bulkActionContainer key="yukon.web.modules.amr.routeLocateResults"
                               deviceCollection="${result.deviceCollection}">
         
-        <tags:bulkResultProgress totalCount="${deviceCount}"
+        <tags:resultProgressBar totalCount="${deviceCount}"
         						 countKey="ROUTELOCATE/${resultId}/COMPLETED_COUNT"
         						 progressLabelTextKey="yukon.web.modules.amr.routeLocateResults.progressLabel"
         						 statusTextKey="ROUTELOCATE/${resultId}/STATUS_TEXT">
@@ -89,7 +89,7 @@
                 <img id="waitImg" src="<cti:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" style="display:none;">
             </form>
                                 
-        </tags:bulkResultProgress>
+        </tags:resultProgressBar>
         
         <%-- SUCCESS --%>
         <br>

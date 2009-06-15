@@ -2,7 +2,7 @@ package com.cannontech.billing.device.base;
 
 import java.sql.Timestamp;
 
-import com.cannontech.common.device.definition.model.DevicePointIdentifier;
+import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.dynamicBilling.Channel;
 import com.cannontech.common.dynamicBilling.ReadingType;
 import com.cannontech.common.dynamicBilling.model.BillableField;
@@ -24,7 +24,7 @@ public interface BillableDevice {
      * @param deviceData - Value object which contains data about the current
      *            device
      */
-    public void populate(DevicePointIdentifier devicePointIdentifier, Timestamp timestamp, double value,
+    public void populate(PointIdentifier pointIdentifier, Timestamp timestamp, double value,
             int unitOfMeasure, String pointName, DeviceData deviceData);
 
     /**
@@ -146,7 +146,7 @@ public interface BillableDevice {
      * @param pointOffset
      * @return true if energy type reading
      */
-    public boolean isEnergy(DevicePointIdentifier devicePointIdentifier);
+    public boolean isEnergy(PointIdentifier pointIdentifier);
     
     /**
      * Method to return true if the devicePointIdentifier is "Demand".
@@ -154,6 +154,6 @@ public interface BillableDevice {
      * @param pointOffset
      * @return true if demand type reading
      */
-    public boolean isDemand(DevicePointIdentifier devicePointIdentifier);
+    public boolean isDemand(PointIdentifier pointIdentifier);
 
 }

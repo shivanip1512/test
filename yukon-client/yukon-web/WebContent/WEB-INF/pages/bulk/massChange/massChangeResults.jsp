@@ -46,9 +46,8 @@
     <tags:boxContainer title="${headerTitle}" id="massChangeResultsContainer" hideEnabled="false">
     
         <%-- RESULTS --%>
-        <tags:bulkUpdateResultsTable    resultsTypeMsgKey="massChange"
-                                        totalCount="${deviceCollection.deviceCount}"
-                                        bulkUpdateOperationResults="${bulkUpdateOperationResults}" />
+        <tags:backgroundProcessResultHolder resultsTypeMsgKey="massChange"
+                                     callbackResult="${callbackResult}" />
         
     
     </tags:boxContainer>

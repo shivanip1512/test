@@ -81,7 +81,7 @@
 
         <%-- PROGRESS --%>
         <c:set var="totalCount" value="${result.deviceCollection.deviceCount}" />
-        <tags:bulkResultProgress totalCount="${totalCount}"
+        <tags:resultProgressBar totalCount="${totalCount}"
         						 countKey="COMMANDER/${result.key}/COMPLETED_ITEMS"
         						 progressLabelTextKey="yukon.common.device.commander.results.progressLabel"
         						 statusTextKey="COMMANDER/${result.key}/STATUS_TEXT"
@@ -103,7 +103,7 @@
                 <tags:selectedDevicesPopup deviceCollection="${result.deviceCollection}" />
             </div>
                                 
-        </tags:bulkResultProgress>
+        </tags:resultProgressBar>
         
         <%-- SUCCESS --%>
         <br>

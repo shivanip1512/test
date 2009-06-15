@@ -8,9 +8,13 @@ import com.cannontech.common.pao.YukonPao;
 
 public class YukonDevice extends YukonPao {
     public YukonDevice(int deviceId, int type) {
-        super(deviceId, type);
+        this(deviceId, DeviceType.getForId(type));
     }
 
+    public YukonDevice(int deviceId, DeviceType type) {
+        super(deviceId, type.getDeviceTypeId());
+    }
+    
     public YukonDevice() {
     }
 
@@ -20,6 +24,14 @@ public class YukonDevice extends YukonPao {
 
     public void setDeviceId(int deviceId) {
         setPaoId(deviceId);
+    }
+    
+    public DeviceType getDeviceType() {
+        return DeviceType.getForId(getType());
+    }
+    
+    public void setDeviceType(DeviceType deviceType) {
+        setType(deviceType.getDeviceTypeId());
     }
 
     @Override

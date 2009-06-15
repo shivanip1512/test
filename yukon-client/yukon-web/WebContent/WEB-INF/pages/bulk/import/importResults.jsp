@@ -35,9 +35,8 @@
     
             
            <%-- RESULTS --%>
-           <tags:bulkUpdateResultsTable resultsTypeMsgKey="import"
-                                        totalCount="${bulkImportOperationResults.bulkFileInfo.dataCount}"
-                                        bulkUpdateOperationResults="${bulkImportOperationResults}" />
+           <tags:backgroundProcessResultHolder resultsTypeMsgKey="import"
+                                        callbackResult="${callbackResult}" />
             
             
             <%-- BACK BUTTON --%>

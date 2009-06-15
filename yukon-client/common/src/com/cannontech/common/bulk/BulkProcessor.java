@@ -2,6 +2,7 @@ package com.cannontech.common.bulk;
 
 import java.util.Iterator;
 
+import com.cannontech.common.bulk.callbackResult.BulkProcessorCallback;
 import com.cannontech.common.bulk.processor.Processor;
 import com.cannontech.common.util.ObjectMapper;
 
@@ -18,7 +19,7 @@ public interface BulkProcessor {
      * @param processor - Processor to process objects
      * @return A bulk processing results object
      */
-    public <I> BulkProcessingResultHolder<I,I> bulkProcess(Iterator<I> iterator,
+    public <I> BulkProcessorCallback<I,I> bulkProcess(Iterator<I> iterator,
             Processor<I> processor);
 
     /**
@@ -31,7 +32,7 @@ public interface BulkProcessor {
      * @param processor - Processor to process objects
      * @return A bulk processing results object
      */
-    public <I, O> BulkProcessingResultHolder<I,O> bulkProcess(Iterator<I> iterator,
+    public <I, O> BulkProcessorCallback<I,O> bulkProcess(Iterator<I> iterator,
             ObjectMapper<I, O> mapper, Processor<O> processor);
     
     public <I, O> void bulkProcess(Iterator<I> iterator,

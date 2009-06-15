@@ -3,8 +3,9 @@ package com.cannontech.stars.util.filter.filterby;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.cannontech.common.util.SqlGenerator;
-import com.google.common.base.Join;
 
 public class FilterByChunkingSqlGenerator {
     private int chunkSize = 1000;
@@ -29,7 +30,7 @@ public class FilterByChunkingSqlGenerator {
         
         StringBuilder sb = new StringBuilder();
         sb.append("(");
-        sb.append(Join.join(" OR ", sqlList));
+        sb.append(StringUtils.join(sqlList, " OR "));
         sb.append(")");
         
         String sql = sb.toString();

@@ -32,6 +32,7 @@ import com.cannontech.message.util.MessageListener;
 import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.IServerConnection;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
@@ -50,10 +51,10 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     private SetMultimap<Integer, SignalListener> pointIdSignalListeners;
 
     {
-        SetMultimap<Integer, PointDataListener> pointIdPointDataListenersUnsynchronized = Multimaps.newLinkedHashMultimap();
+        SetMultimap<Integer, PointDataListener> pointIdPointDataListenersUnsynchronized = LinkedHashMultimap.create();
         pointIdPointDataListeners = Multimaps.synchronizedSetMultimap(pointIdPointDataListenersUnsynchronized);
         
-        SetMultimap<Integer, SignalListener> pointIdSignalListenersUnsynchronized = Multimaps.newLinkedHashMultimap();
+        SetMultimap<Integer, SignalListener> pointIdSignalListenersUnsynchronized = LinkedHashMultimap.create();
         pointIdSignalListeners =Multimaps.synchronizedSetMultimap(pointIdSignalListenersUnsynchronized);
     }
     

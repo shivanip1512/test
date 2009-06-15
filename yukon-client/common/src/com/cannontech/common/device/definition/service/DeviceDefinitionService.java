@@ -6,7 +6,7 @@ import java.util.Set;
 
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
-import com.cannontech.common.device.definition.model.DevicePointIdentifier;
+import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.database.data.point.PointBase;
 
@@ -17,7 +17,7 @@ import com.cannontech.database.data.point.PointBase;
 public interface DeviceDefinitionService {
 
 	public static class PointTemplateTransferPair {
-        public DevicePointIdentifier oldDefinitionTemplate;
+        public PointIdentifier oldDefinitionTemplate;
         public PointTemplate newDefinitionTemplate;
         
         @Override
@@ -94,7 +94,7 @@ public interface DeviceDefinitionService {
      * @return Set of points that will be removed from the device (returns a new
      *         copy each time the method is called)
      */
-    public abstract Set<DevicePointIdentifier> getPointTemplatesToRemove(YukonDevice device,
+    public abstract Set<PointIdentifier> getPointTemplatesToRemove(YukonDevice device,
             DeviceDefinition deviceDefinition);
     
     /**

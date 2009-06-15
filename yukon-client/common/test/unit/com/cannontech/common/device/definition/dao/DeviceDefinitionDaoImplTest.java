@@ -12,22 +12,25 @@ import junit.framework.TestCase;
 
 import org.springframework.core.io.UrlResource;
 
+import com.cannontech.common.device.DeviceType;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
-import com.cannontech.common.device.attribute.model.UserDefinedAttribute;
+import com.cannontech.common.device.definition.attribute.lookup.AttributeDefinition;
 import com.cannontech.common.device.definition.model.CommandDefinition;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.model.DeviceDefinitionImpl;
-import com.cannontech.common.device.definition.model.DevicePointIdentifier;
+import com.cannontech.common.device.definition.model.PointIdentifier;
+import com.cannontech.common.device.definition.model.DevicePointTemplate;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
-import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSet.Builder;
 
 /**
  * Test class for DeviceDefinitionDao
@@ -50,8 +53,6 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         dao.setSchemaFile(new UrlResource(schemaResource));
 
         dao.setCustomInputFile(null);
-        dao.setPaoGroupsWrapper(new DeviceDefinitionDaoImplTest().new MockPaoGroups());
-        dao.setJavaConstantClassName(DeviceTypes.class.getName());
         dao.setStateDao(new DeviceDefinitionDaoImplTest().new MockStateDao());
         dao.setUnitMeasureDao(new DeviceDefinitionDaoImplTest().new MockUnitMeasureDao());
         dao.initialize();
@@ -66,11 +67,20 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         device = new YukonDevice(10, 1019);
         device.setType(1019);
     }
+    
+    public void assertAttributeLookupsMatch(String message, Set<Attribute> attributes, Set<AttributeDefinition> lookups) {
+        Builder<Attribute> builder = ImmutableSet.builder();
+        for (AttributeDefinition lookup : lookups) {
+            builder.add(lookup.getAttribute());
+        }
+        ImmutableSet<Attribute> attributesFromLookups = builder.build();
+        assertEquals(message, attributes, attributesFromLookups);
+    }
 
     /**
      * Test getAvailableAttributes()
      */
-    public void testGetAvailableAttributes() {
+    public void testGetDefinedAttributes() {
 
         // Test with supported device type
         Set<Attribute> expectedAttributes = new HashSet<Attribute>();
@@ -78,57 +88,28 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         expectedAttributes.add(BuiltInAttribute.DEMAND);
         expectedAttributes.add(BuiltInAttribute.LOAD_PROFILE);
 
-        Set<Attribute> actualAttributes = dao.getAvailableAttributes(device);
+        Set<AttributeDefinition> actualAttributes = dao.getDefinedAttributes(device.getDeviceType());
 
-        assertEquals("Expected attributes did not match: ", expectedAttributes, actualAttributes);
+        assertAttributeLookupsMatch("Expected attributes did not match: ", expectedAttributes, actualAttributes);
 
-        // Test with unsupported device type
-        try {
-            device.setType(-1);
-            dao.getAvailableAttributes(device);
-            fail("Exception should be thrown for invalid device type");
-        } catch (IllegalArgumentException e) {
-            // expected exception
-        } catch (Exception e) {
-            fail("Threw wrong type of exception: " + e.getClass());
-        }
     }
 
     public void testGetPointTemplateForAttribute() {
 
         // Test with supported device type
-        PointTemplate expectedTemplate = new PointTemplate("pulse1",
+        PointTemplate expectedPointTemplate = new PointTemplate("pulse1",
                                                                2,
                                                                2,
                                                                1.0,
                                                                1,
                                                                0);
+        DevicePointTemplate expectedDevicePointTemplate = new DevicePointTemplate(device, expectedPointTemplate);
 
-        PointTemplate actualTemplate = dao.getPointTemplateForAttribute(device, BuiltInAttribute.USAGE);
+        AttributeDefinition attributeDefinition = dao.getAttributeLookup(device.getDeviceType(), BuiltInAttribute.USAGE);
+        DevicePointTemplate actualDevicePointTemplate = attributeDefinition.getPointTemplate(device);
+        
+        assertEquals("Expected point template did not match: ", expectedDevicePointTemplate, actualDevicePointTemplate);
 
-        assertEquals("Expected point template did not match: ", expectedTemplate, actualTemplate);
-
-        // Test with invalid attribute for the device
-        try {
-            device.setType(-1);
-            dao.getPointTemplateForAttribute(device, new UserDefinedAttribute("invalid"));
-            fail("Exception should be thrown for invalid device type");
-        } catch (IllegalArgumentException e) {
-            // expected exception
-        } catch (Exception e) {
-            fail("Threw wrong type of exception: " + e.getClass());
-        }
-
-        // Test with unsupported device type
-        try {
-            device.setType(-1);
-            dao.getPointTemplateForAttribute(device, BuiltInAttribute.USAGE);
-            fail("Exception should be thrown for invalid device type");
-        } catch (IllegalArgumentException e) {
-            // expected exception
-        } catch (Exception e) {
-            fail("Threw wrong type of exception: " + e.getClass());
-        }
     }
 
     /**
@@ -139,10 +120,10 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         // Test with supported device type
         Set<PointTemplate> expectedTemplates = this.getExpectedAllTemplates();
 
-        Set<PointTemplate> actualTemplates = dao.getAllPointTemplates(device);
+        Set<PointTemplate> actualTemplates = dao.getAllPointTemplates(device.getDeviceType());
 
         // Test the overloaded method - should return same results
-        Set<PointTemplate> acutalDefinitionTemplates = dao.getAllPointTemplates(dao.getDeviceDefinition(device));
+        Set<PointTemplate> acutalDefinitionTemplates = dao.getAllPointTemplates(dao.getDeviceDefinition(device.getDeviceType()));
         assertEquals("Expected definition templates did not match device templates",
                      this.getSortedList(actualTemplates),
                      this.getSortedList(acutalDefinitionTemplates));
@@ -151,16 +132,6 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
                      this.getSortedList(expectedTemplates),
                      this.getSortedList(actualTemplates));
 
-        // Test with unsupported device type
-        try {
-            device.setType(-1);
-            dao.getAvailableAttributes(device);
-            fail("Exception should be thrown for invalid device type");
-        } catch (IllegalArgumentException e) {
-            // expected exception
-        } catch (Exception e) {
-            fail("Threw wrong type of exception: " + e.getClass());
-        }
     }
 
     /**
@@ -170,10 +141,10 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
 
         // Test with supported device type
         Set<PointTemplate> expectedTemplates = DeviceDefinitionDaoImplTest.getExpectedInitTemplates();
-        Set<PointTemplate> actualTemplates = dao.getInitPointTemplates(device);
+        Set<PointTemplate> actualTemplates = dao.getInitPointTemplates(device.getDeviceType());
 
         // Test the overloaded method - should return same results
-        Set<PointTemplate> acutalDefinitionTemplates = dao.getInitPointTemplates(dao.getDeviceDefinition(device));
+        Set<PointTemplate> acutalDefinitionTemplates = dao.getInitPointTemplates(dao.getDeviceDefinition(device.getDeviceType()));
         assertEquals("Expected definition templates did not match device templates",
                      this.getSortedList(actualTemplates),
                      this.getSortedList(acutalDefinitionTemplates));
@@ -182,16 +153,6 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
                      this.getSortedList(expectedTemplates),
                      this.getSortedList(actualTemplates));
 
-        // Test with unsupported device type
-        try {
-            device.setType(-1);
-            dao.getAvailableAttributes(device);
-            fail("Exception should be thrown for invalid device type");
-        } catch (IllegalArgumentException e) {
-            // expected exception
-        } catch (Exception e) {
-            fail("Threw wrong type of exception: " + e.getClass());
-        }
     }
 
     /**
@@ -232,25 +193,15 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
     public void testGetDeviceDefinition() {
 
         // Test with supported device type
-        DeviceDefinition expectedDefinition = new DeviceDefinitionImpl(1019,
+        DeviceDefinition expectedDefinition = new DeviceDefinitionImpl(DeviceType.getForId(1019),
                                                                        "Device 1",
                                                                        "display1",
                                                                        "MCT310",
                                                                        "change1");
         assertEquals("device1 definition is not as expected",
                      expectedDefinition,
-                     dao.getDeviceDefinition(device));
+                     dao.getDeviceDefinition(device.getDeviceType()));
 
-        // Test with unsupported device type
-        try {
-            device.setType(-1);
-            dao.getDeviceDefinition(device);
-            fail("Exception should be thrown for invalid device type");
-        } catch (IllegalArgumentException e) {
-            // expected exception
-        } catch (Exception e) {
-            fail("Threw wrong type of exception: " + e.getClass());
-        }
     }
 
     /**
@@ -260,18 +211,18 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
 
         // Test with supported change group
         Set<DeviceDefinition> expectedDeviceTypesList = new HashSet<DeviceDefinition>();
-        expectedDeviceTypesList.add(new DeviceDefinitionImpl(1019,
+        expectedDeviceTypesList.add(new DeviceDefinitionImpl(DeviceType.getForId(1019),
                                                              "Device 1",
                                                              "display1",
                                                              "MCT310",
                                                              "change1"));
-        expectedDeviceTypesList.add(new DeviceDefinitionImpl(1022,
+        expectedDeviceTypesList.add(new DeviceDefinitionImpl(DeviceType.getForId(1022),
                                                              "Device 2",
                                                              "display1",
                                                              "MCT370",
                                                              "change1"));
 
-        DeviceDefinitionImpl definition = new DeviceDefinitionImpl(1019,
+        DeviceDefinitionImpl definition = new DeviceDefinitionImpl(DeviceType.getForId(1019),
                                                                    "test",
                                                                    "test",
                                                                    "test",
@@ -299,13 +250,13 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
      */
     public void testGetAffected() {
 
-        Set<DevicePointIdentifier> points = new HashSet<DevicePointIdentifier>();
+        Set<PointIdentifier> points = new HashSet<PointIdentifier>();
         Set<CommandDefinition> expectedCommandSet = new HashSet<CommandDefinition>();
 
         // Define expected points
-        DevicePointIdentifier status1 = new DevicePointIdentifier(0, 0);
-        DevicePointIdentifier pulse1 = new DevicePointIdentifier(2, 2);
-        DevicePointIdentifier pulse2 = new DevicePointIdentifier(2, 4);
+        PointIdentifier status1 = new PointIdentifier(0, 0);
+        PointIdentifier pulse1 = new PointIdentifier(2, 2);
+        PointIdentifier pulse2 = new PointIdentifier(2, 4);
 
         // Define expected command definitions
         CommandDefinition command1 = new CommandDefinition("command1");
@@ -321,7 +272,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         
         // Test with no expected commands
         points.add(status1);
-        Set<CommandDefinition> actualCommands = dao.getCommandsThatAffectPoints(device, points);
+        Set<CommandDefinition> actualCommands = dao.getCommandsThatAffectPoints(device.getDeviceType(), points);
         assertEquals("Expected no commands", expectedCommandSet, actualCommands);
 
         // Test with one expected command
@@ -329,7 +280,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         points.add(pulse2);
         expectedCommandSet.add(command2);
 
-        actualCommands = dao.getCommandsThatAffectPoints(device, points);
+        actualCommands = dao.getCommandsThatAffectPoints(device.getDeviceType(), points);
         assertEquals("Expected 1 command", expectedCommandSet, actualCommands);
 
         // Test with two expected commands
@@ -337,7 +288,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         points.add(pulse1);
         expectedCommandSet.add(command1);
 
-        actualCommands = dao.getCommandsThatAffectPoints(device, points);
+        actualCommands = dao.getCommandsThatAffectPoints(device.getDeviceType(), points);
         assertEquals("Expected 2 commands", expectedCommandSet, actualCommands);
 
     }
@@ -359,8 +310,6 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         dao.setSchemaFile(new UrlResource(schemaResource));
 
         dao.setCustomInputFile(new UrlResource(customFileUrl));
-        dao.setPaoGroupsWrapper(new DeviceDefinitionDaoImplTest().new MockPaoGroups());
-        dao.setJavaConstantClassName(DeviceTypes.class.getName());
         dao.setStateDao(new DeviceDefinitionDaoImplTest().new MockStateDao());
         dao.setUnitMeasureDao(new DeviceDefinitionDaoImplTest().new MockUnitMeasureDao());
         dao.initialize();
@@ -376,13 +325,16 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
 		                                                0,
 		                                                0);
         
-        PointTemplate actualPulse1PointTemplate = dao.getPointTemplateByTypeAndOffset(device, 2, 2);
+        DeviceType deviceType = DeviceType.getForId(device.getType());
+        PointIdentifier pointIdentifier = new PointIdentifier(2, 2);
+        PointTemplate actualPulse1PointTemplate = dao.getPointTemplateByTypeAndOffset(deviceType, pointIdentifier);
+        
         assertEquals("Expected point customizations do not match: ", expectedPulse1PointTemplate, actualPulse1PointTemplate);
 
         // Test custom definition overrides standard definition - command
-        DevicePointIdentifier pulse1 = new DevicePointIdentifier(2, 2);
-        DevicePointIdentifier pulse2 = new DevicePointIdentifier(2, 4);
-        Set<DevicePointIdentifier> points = new HashSet<DevicePointIdentifier>();
+        PointIdentifier pulse1 = new PointIdentifier(2, 2);
+        PointIdentifier pulse2 = new PointIdentifier(2, 4);
+        Set<PointIdentifier> points = new HashSet<PointIdentifier>();
         Set<CommandDefinition> expectedCommandSet = new HashSet<CommandDefinition>();
         
         CommandDefinition command1 = new CommandDefinition("command1");
@@ -400,58 +352,22 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         
         expectedCommandSet.add(command2);
 
-        Set<CommandDefinition> actualCommands = dao.getCommandsThatAffectPoints(device, points);
+        Set<CommandDefinition> actualCommands = dao.getCommandsThatAffectPoints(device.getDeviceType(), points);
         assertEquals("Expected command customizations do not match:", expectedCommandSet, actualCommands);
-        
-        // Test custom definition overrides standard definition - attribute
-        PointTemplate expectedTemplate = new PointTemplate("pulse2",
-													                2,
-													                4,
-													                1.0,
-													                1,
-													                0);
-
-		PointTemplate actualTemplate = dao.getPointTemplateForAttribute(device, BuiltInAttribute.USAGE);
-		
-		assertEquals("Expected point template did not match: ", expectedTemplate, actualTemplate);
-        
-        // Test with unsupported device type
-        try {
-            device.setType(-1);
-            dao.getAvailableAttributes(device);
-            fail("Exception should be thrown for invalid device type");
-        } catch (IllegalArgumentException e) {
-            // expected exception
-        } catch (Exception e) {
-            fail("Threw wrong type of exception: " + e.getClass());
-        }
-        
         
         // Test that device definition is custom
         
         // Test with supported device type
         device.setType(1019);
-        DeviceDefinition expectedDefinition = new DeviceDefinitionImpl(1019,
+        DeviceDefinition expectedDefinition = new DeviceDefinitionImpl(DeviceType.getForId(1019),
                                                                        "Custom Device 1",
                                                                        "customDisplay1",
                                                                        "MCT310",
                                                                        "customChange1");
         assertEquals("device1 definition is not as expected",
                      expectedDefinition,
-                     dao.getDeviceDefinition(device));
+                     dao.getDeviceDefinition(device.getDeviceType()));
 
-        // Test with unsupported device type
-        try {
-            device.setType(-1);
-            dao.getDeviceDefinition(device);
-            fail("Exception should be thrown for invalid device type");
-        } catch (IllegalArgumentException e) {
-            // expected exception
-        } catch (Exception e) {
-            fail("Threw wrong type of exception: " + e.getClass());
-        }
-        
-        
     }
     
 

@@ -386,7 +386,7 @@
                         <cti:param name="groupName" value="${group.fullName}"/>
                     </cti:url>
                     <c:choose>
-                        <c:when test="${deviceCount > 0}">
+                        <c:when test="${childDeviceCount > 0}">
                             <a href="${htmlUrl}">HTML</a>
                             |
                             <cti:simpleReportLinkFromNameTag definitionName="groupDevicesDefinition" viewType="csvView" groupName="${group.fullName}">CSV</cti:simpleReportLinkFromNameTag>
@@ -526,8 +526,8 @@
                                 <table style="width: 95%;" >
                                     <tr>
                                         <td>
-                                            <cti:msg key="yukon.web.deviceGroups.editor.membersContainer.groupContainsCountLabel" arguments="${deviceCount}"/>
-                                            <c:if test="${deviceCount > 0}">
+                                            <cti:msg key="yukon.web.deviceGroups.editor.membersContainer.groupContainsCountLabel" arguments="${childDeviceCount}"/>
+                                            <c:if test="${childDeviceCount > 0}">
                                                 <cti:msg var="showDevicesLimitText" 
                                                          key="yukon.web.deviceGroups.editor.membersContainer.showDevicesLimitText" 
                                                          argument="${maxGetDevicesSize}"/>

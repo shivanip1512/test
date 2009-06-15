@@ -54,11 +54,6 @@ public class DeviceType implements java.io.Serializable {
     private java.lang.String _inherits;
 
     /**
-     * Field _type
-     */
-    private java.lang.Integer _type;
-
-    /**
      * Field _displayName
      */
     private java.lang.String _displayName;
@@ -89,9 +84,9 @@ public class DeviceType implements java.io.Serializable {
     private com.cannontech.common.device.definition.model.castor.Attributes _attributes;
 
     /**
-     * Field _features
+     * Field _tags
      */
-    private com.cannontech.common.device.definition.model.castor.Features _features;
+    private com.cannontech.common.device.definition.model.castor.Tags _tags;
 
 
       //----------------/
@@ -186,17 +181,6 @@ public class DeviceType implements java.io.Serializable {
     } //-- java.lang.Boolean getEnabled() 
 
     /**
-     * Returns the value of field 'features'.
-     * 
-     * @return Features
-     * @return the value of field 'features'.
-     */
-    public com.cannontech.common.device.definition.model.castor.Features getFeatures()
-    {
-        return this._features;
-    } //-- com.cannontech.common.device.definition.model.castor.Features getFeatures() 
-
-    /**
      * Returns the value of field 'id'.
      * 
      * @return String
@@ -230,15 +214,15 @@ public class DeviceType implements java.io.Serializable {
     } //-- com.cannontech.common.device.definition.model.castor.Points getPoints() 
 
     /**
-     * Returns the value of field 'type'.
+     * Returns the value of field 'tags'.
      * 
-     * @return Integer
-     * @return the value of field 'type'.
+     * @return Tags
+     * @return the value of field 'tags'.
      */
-    public java.lang.Integer getType()
+    public com.cannontech.common.device.definition.model.castor.Tags getTags()
     {
-        return this._type;
-    } //-- java.lang.Integer getType() 
+        return this._tags;
+    } //-- com.cannontech.common.device.definition.model.castor.Tags getTags() 
 
     /**
      * Method isValid
@@ -358,16 +342,6 @@ public class DeviceType implements java.io.Serializable {
     } //-- void setEnabled(java.lang.Boolean) 
 
     /**
-     * Sets the value of field 'features'.
-     * 
-     * @param features the value of field 'features'.
-     */
-    public void setFeatures(com.cannontech.common.device.definition.model.castor.Features features)
-    {
-        this._features = features;
-    } //-- void setFeatures(com.cannontech.common.device.definition.model.castor.Features) 
-
-    /**
      * Sets the value of field 'id'.
      * 
      * @param id the value of field 'id'.
@@ -398,14 +372,14 @@ public class DeviceType implements java.io.Serializable {
     } //-- void setPoints(com.cannontech.common.device.definition.model.castor.Points) 
 
     /**
-     * Sets the value of field 'type'.
+     * Sets the value of field 'tags'.
      * 
-     * @param type the value of field 'type'.
+     * @param tags the value of field 'tags'.
      */
-    public void setType(java.lang.Integer type)
+    public void setTags(com.cannontech.common.device.definition.model.castor.Tags tags)
     {
-        this._type = type;
-    } //-- void setType(java.lang.Integer) 
+        this._tags = tags;
+    } //-- void setTags(com.cannontech.common.device.definition.model.castor.Tags) 
 
     /**
      * Method unmarshal

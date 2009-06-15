@@ -12,12 +12,12 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.io.FileSystemResource;
 
+import com.cannontech.common.bulk.callbackResult.BackgroundProcessTypeEnum;
 import com.cannontech.common.bulk.field.BulkFieldColumnHeader;
 import com.cannontech.common.bulk.service.BulkFileInfo;
 import com.cannontech.common.bulk.service.BulkImportFileInfo;
 import com.cannontech.common.bulk.service.BulkImportMethod;
 import com.cannontech.common.bulk.service.BulkImportService;
-import com.cannontech.common.bulk.service.BulkOperationTypeEnum;
 import com.cannontech.common.bulk.service.ParsedBulkImportFileInfo;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.creation.DeviceCreationException;
@@ -97,7 +97,7 @@ public class BulkImportServiceImpl extends BaseBulkService implements BulkImport
 
         final Map<BulkFieldColumnHeader, Integer> requiredFieldIndexMap = getRequiredFieldIndexes(parsedBulkImportFileInfo);
         
-        return doStartBulkImport(parsedBulkImportFileInfo, BulkOperationTypeEnum.IMPORT, new YukonDeviceResolver() {
+        return doStartBulkImport(parsedBulkImportFileInfo, BackgroundProcessTypeEnum.IMPORT, new YukonDeviceResolver() {
             
             @Override
             public YukonDevice returnDevice(String[] from) {

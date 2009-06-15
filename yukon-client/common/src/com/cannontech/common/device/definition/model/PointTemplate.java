@@ -10,31 +10,31 @@ import com.cannontech.database.db.state.StateGroupUtils;
  * instances
  */
 public class PointTemplate implements Comparable<PointTemplate> {
-    private DevicePointIdentifier devicePointIdentifier;
+    private PointIdentifier pointIdentifier;
     private String name = null;
     private double multiplier = 1.0;
     private int unitOfMeasure = PointUnits.UOMID_INVALID;
     private int stateGroupId = StateGroupUtils.SYSTEM_STATEGROUPID;
 
     public PointTemplate(int type, int offset) {
-        devicePointIdentifier = new DevicePointIdentifier(type, offset);
+        pointIdentifier = new PointIdentifier(type, offset);
     }
 
     public int getOffset() {
-        return devicePointIdentifier.getOffset();
+        return pointIdentifier.getOffset();
     }
 
     public int getType() {
-        return devicePointIdentifier.getType();
+        return pointIdentifier.getType();
     }
 
-    public DevicePointIdentifier getDevicePointIdentifier() {
-        return devicePointIdentifier;
+    public PointIdentifier getPointIdentifier() {
+        return pointIdentifier;
     }
 
     public PointTemplate(String name, int type, int offset, double multiplier,
             int unitOfMeasure, int stateGroupId) {
-        devicePointIdentifier = new DevicePointIdentifier(type, offset);
+        pointIdentifier = new PointIdentifier(type, offset);
         this.name = name;
         this.multiplier = multiplier;
         this.unitOfMeasure = unitOfMeasure;
@@ -94,7 +94,7 @@ public class PointTemplate implements Comparable<PointTemplate> {
         final int prime = 31;
         int result = 1;
         result =
-            prime * result + ((devicePointIdentifier == null) ? 0 : devicePointIdentifier
+            prime * result + ((pointIdentifier == null) ? 0 : pointIdentifier
                 .hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         return result;
@@ -109,10 +109,10 @@ public class PointTemplate implements Comparable<PointTemplate> {
         if (getClass() != obj.getClass())
             return false;
         final PointTemplate other = (PointTemplate) obj;
-        if (devicePointIdentifier == null) {
-            if (other.devicePointIdentifier != null)
+        if (pointIdentifier == null) {
+            if (other.pointIdentifier != null)
                 return false;
-        } else if (!devicePointIdentifier.equals(other.devicePointIdentifier))
+        } else if (!pointIdentifier.equals(other.pointIdentifier))
             return false;
         if (name == null) {
             if (other.name != null)

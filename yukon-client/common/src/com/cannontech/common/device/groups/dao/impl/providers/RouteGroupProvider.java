@@ -1,7 +1,9 @@
 package com.cannontech.common.device.groups.dao.impl.providers;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -47,14 +49,14 @@ public class RouteGroupProvider extends BinningDeviceGroupProviderBase<LiteYukon
     }
     
     @Override
-    protected LiteYukonPAObject getBinForDevice(YukonDevice device) {
+    protected Set<LiteYukonPAObject> getBinsForDevice(YukonDevice device) {
         LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(device.getDeviceId());
         int routeID = liteYukonPAO.getRouteID();
         if (routeID > 0) {
             LiteYukonPAObject routePao = paoDao.getLiteYukonPAO(routeID);
-            return routePao;
+            return Collections.singleton(routePao);
         } else {
-            return null;
+            return Collections.emptySet();
         }
     }
     

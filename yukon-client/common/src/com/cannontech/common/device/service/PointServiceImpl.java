@@ -1,6 +1,7 @@
 package com.cannontech.common.device.service;
 
 import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.device.definition.model.DevicePointIdentifier;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.core.dao.NotFoundException;
@@ -91,19 +92,24 @@ public class PointServiceImpl implements PointService {
                                 template.getStateGroupId());
     }
 
-    public LitePoint getPointForDevice(YukonDevice device, DevicePointIdentifier template) {
+    public LitePoint getPointForDevice(YukonDevice device, PointIdentifier pointIdentifier) throws NotFoundException {
 
         LitePoint point = pointDao.getLitePointIdByDeviceId_Offset_PointType(device.getDeviceId(),
-                                                                             template.getOffset(),
-                                                                             template.getType());
+																        		pointIdentifier.getOffset(),
+																        		pointIdentifier.getType());
 
         return point;
     }
+    
+    @Override
+    public LitePoint getPointForDevice(DevicePointIdentifier devicePointIdentifier) throws NotFoundException {
+        return getPointForDevice(devicePointIdentifier.getYukonDevice(), devicePointIdentifier.getDevicePointIdentifier());
+    }
 
-    public boolean pointExistsForDevice(YukonDevice device, DevicePointIdentifier template) {
+    public boolean pointExistsForDevice(YukonDevice device, PointIdentifier pointIdentifier) {
 
         try {
-            LitePoint point = this.getPointForDevice(device, template);
+            LitePoint point = this.getPointForDevice(device, pointIdentifier);
             if (point.getPointType() == PointTypes.SYSTEM_POINT) {
                 return false;
             }
@@ -112,5 +118,10 @@ public class PointServiceImpl implements PointService {
         }
 
         return true;
+    }
+    
+    @Override
+    public boolean pointExistsForDevice(DevicePointIdentifier devicePointIdentifier) {
+        return pointExistsForDevice(devicePointIdentifier.getYukonDevice(), devicePointIdentifier.getDevicePointIdentifier());
     }
 }

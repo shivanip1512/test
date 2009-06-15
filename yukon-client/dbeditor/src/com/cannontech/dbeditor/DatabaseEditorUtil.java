@@ -116,8 +116,8 @@ public final class DatabaseEditorUtil {
     
     public static DBPersistent getDisconnectStatusPointForDevice(final YukonDevice device) {
         final Attribute att = BuiltInAttribute.DISCONNECT_STATUS;
-        PointTemplate template = deviceDefinitionDao.getPointTemplateForAttribute(device, att);
-        LitePoint litePoint = pointDao.getLitePointIdByDeviceId_Offset_PointType(device.getDeviceId(), template.getOffset(), template.getType());
+        AttributeService attributeService = YukonSpringHook.getBean(AttributeService.class);
+        LitePoint litePoint = attributeService.getPointForAttribute(device, att);
         DBPersistent point = dbPersistentDao.retrieveDBPersistent(litePoint);
         return point;
     }

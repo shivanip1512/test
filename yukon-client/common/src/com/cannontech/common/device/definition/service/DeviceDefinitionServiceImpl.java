@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
-import com.cannontech.common.device.definition.model.DevicePointIdentifier;
+import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.service.PointService;
 import com.cannontech.core.dao.PointDao;
@@ -46,7 +46,7 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
     public List<PointBase> createDefaultPointsForDevice(YukonDevice device) {
 
         List<PointBase> pointList = new ArrayList<PointBase>();
-        Set<PointTemplate> pointTemplates = deviceDefinitionDao.getInitPointTemplates(device);
+        Set<PointTemplate> pointTemplates = deviceDefinitionDao.getInitPointTemplates(device.getDeviceType());
         for (PointTemplate template : pointTemplates) {
             pointList.add(pointService.createPoint(device.getDeviceId(), template));
         }
@@ -54,12 +54,12 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
         return pointList;
     }
 
-    public List<PointBase> createAllPointsForDevice(YukonDevice meter) {
+    public List<PointBase> createAllPointsForDevice(YukonDevice device) {
 
         List<PointBase> pointList = new ArrayList<PointBase>();
-        Set<PointTemplate> pointTemplates = deviceDefinitionDao.getAllPointTemplates(meter);
+        Set<PointTemplate> pointTemplates = deviceDefinitionDao.getAllPointTemplates(device.getDeviceType());
         for (PointTemplate template : pointTemplates) {
-            pointList.add(pointService.createPoint(meter.getDeviceId(), template));
+            pointList.add(pointService.createPoint(device.getDeviceId(), template));
         }
 
         return pointList;
@@ -69,18 +69,19 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
         return deviceDefinitionDao.getDeviceDisplayGroupMap();
     }
 
-    public boolean isDeviceTypeChangeable(YukonDevice meter) {
-        return deviceDefinitionDao.getDeviceDefinition(meter).isChangeable();
+    public boolean isDeviceTypeChangeable(YukonDevice device) {
+        DeviceDefinition deviceDefinition = deviceDefinitionDao.getDeviceDefinition(device.getDeviceType());
+        return deviceDefinition.isChangeable();
     }
 
-    public Set<DeviceDefinition> getChangeableDevices(YukonDevice meter) {
+    public Set<DeviceDefinition> getChangeableDevices(YukonDevice device) {
 
         // Make sure this device can be changed
-        if (!this.isDeviceTypeChangeable(meter)) {
+        if (!this.isDeviceTypeChangeable(device)) {
             return Collections.emptySet();
         }
 
-        DeviceDefinition deviceDefinition = deviceDefinitionDao.getDeviceDefinition(meter);
+        DeviceDefinition deviceDefinition = deviceDefinitionDao.getDeviceDefinition(device.getDeviceType());
 
         // Get all of the devices in the device's change group
         Set<DeviceDefinition> devices = deviceDefinitionDao.getDevicesThatDeviceCanChangeTo(deviceDefinition);
@@ -111,7 +112,7 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
 		return result;
 	}
 
-    public Set<DevicePointIdentifier> getPointTemplatesToRemove(YukonDevice device,
+    public Set<PointIdentifier> getPointTemplatesToRemove(YukonDevice device,
             DeviceDefinition newDefinition) {
 		this.validateChange(device, newDefinition);
 		// points to remove are points that exist on device (AND are defined) minus points being
@@ -121,10 +122,10 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
 		// should be compared by the identifier (although including name won't hurt, because
 		// everything is from the same definition)
 		
-		HashSet<DevicePointIdentifier> result = new HashSet<DevicePointIdentifier>();
+		HashSet<PointIdentifier> result = new HashSet<PointIdentifier>();
 		Set<PointTemplate> existingPointTemplates = getExistingPointTemplates(device);
 		for (PointTemplate pointTemplate : existingPointTemplates) {
-			result.add(pointTemplate.getDevicePointIdentifier());
+			result.add(pointTemplate.getPointIdentifier());
 		}
 		
 		List<PointTemplateTransferPair> pointTemplatesToTransfer = getPointTemplatesToTransfer(device, newDefinition);
@@ -152,7 +153,7 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
 				// so that any changes to the point's name in the DB are ignored
 				if (oldTemplate.getName().equals(newTemplate.getName())) {
 					PointTemplateTransferPair pair = new PointTemplateTransferPair();
-					pair.oldDefinitionTemplate = oldTemplate.getDevicePointIdentifier();
+					pair.oldDefinitionTemplate = oldTemplate.getPointIdentifier();
 					pair.newDefinitionTemplate = newTemplate;
 					templates.add(pair);
 				}
@@ -171,7 +172,7 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
      */
     private void validateChange(YukonDevice device, DeviceDefinition newDefinition) {
 
-        DeviceDefinition deviceDefinition = deviceDefinitionDao.getDeviceDefinition(device);
+        DeviceDefinition deviceDefinition = deviceDefinitionDao.getDeviceDefinition(device.getDeviceType());
 
         if (deviceDefinition.getChangeGroup() == null
                 || !deviceDefinition.getChangeGroup().equals(newDefinition.getChangeGroup())) {
@@ -193,19 +194,19 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
 
         Set<PointTemplate> templates = new HashSet<PointTemplate>();
     	List<LitePoint> existingPoints = pointDao.getLitePointsByPaObjectId(device.getDeviceId());
-    	Set<PointTemplate> existingTemplates = deviceDefinitionDao.getAllPointTemplates(device);
+    	Set<PointTemplate> existingTemplates = deviceDefinitionDao.getAllPointTemplates(device.getDeviceType());
     	
     	for (LitePoint litePoint : existingPoints) {
-    	    DevicePointIdentifier devicePointIdentifier = getDevicePointIdentifier(litePoint);
+    	    PointIdentifier pointIdentifier = getDevicePointIdentifier(litePoint);
 			for (PointTemplate template : existingTemplates) {
-				if (devicePointIdentifier.equals(template.getDevicePointIdentifier()))
+				if (pointIdentifier.equals(template.getPointIdentifier()))
 					templates.add(template);
 			}
 		}
         return templates;
     }
     
-    private DevicePointIdentifier getDevicePointIdentifier(LitePoint point) {
-        return new DevicePointIdentifier(point.getPointType(), point.getPointOffset());
+    private PointIdentifier getDevicePointIdentifier(LitePoint point) {
+        return new PointIdentifier(point.getPointType(), point.getPointOffset());
     }
 }

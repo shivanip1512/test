@@ -8,6 +8,7 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
+import com.cannontech.common.device.DeviceType;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.ObjectMapper;
@@ -25,7 +26,7 @@ import com.cannontech.database.db.pao.YukonPAObject;
 public class ObjectMapperFactoryImplTest extends TestCase {
 
     private ObjectMapperFactoryImpl mapper = null;
-    private YukonDevice testDevice = new YukonDevice(1, 1);
+    private YukonDevice testDevice = new YukonDevice(1, DeviceType.MCT310);
     private PaoDaoAdapter paoDaoAdapter;
     private DeviceDaoAdapter deviceDaoAdapter;
 
@@ -39,14 +40,14 @@ public class ObjectMapperFactoryImplTest extends TestCase {
             private LiteYukonPAObject lite1 = new LiteYukonPAObject(1,
                                                                     null,
                                                                     0,
-                                                                    1,
+                                                                    DeviceType.MCT310.getDeviceTypeId(),
                                                                     0,
                                                                     null,
                                                                     null);
             private LiteYukonPAObject lite2 = new LiteYukonPAObject(2,
                                                                     null,
                                                                     0,
-                                                                    2,
+                                                                    DeviceType.MCT310.getDeviceTypeId(),
                                                                     0,
                                                                     null,
                                                                     null);
@@ -132,7 +133,7 @@ public class ObjectMapperFactoryImplTest extends TestCase {
 
                 switch (paoId) {
                 case 1:
-                    return new YukonDevice(1, 1);
+                    return new YukonDevice(1, DeviceType.MCT310);
                 default:
                     throw new NotFoundException(paoId + " is not supported");
                 }

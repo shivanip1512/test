@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
@@ -13,6 +14,7 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
@@ -85,7 +87,6 @@ import com.cannontech.stars.xml.serialize.StarsServiceCompany;
 import com.cannontech.stars.xml.serialize.StarsSubstation;
 import com.cannontech.stars.xml.serialize.StarsSubstations;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.PrimitiveArrays;
 
 /**
  * @author yao
@@ -456,7 +457,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
      * Get programs published by this energy company only
      */
     public Iterable<LiteLMProgramWebPublishing> getPrograms() {
-    	Iterable<LiteLMProgramWebPublishing> programs = Iterables.emptyIterable();
+    	Iterable<LiteLMProgramWebPublishing> programs = Collections.emptyList();
     	
     	Iterable<LiteApplianceCategory> categories = getApplianceCategories();
         for(LiteApplianceCategory category : categories) {
@@ -1150,7 +1151,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
         int[] orderIDs = com.cannontech.database.db.stars.report.WorkOrderBase.searchByOrderNumber( orderNo, getLiteID() );
         if (orderIDs == null) return null;
 
-        List<Integer> workOrderIds = PrimitiveArrays.asList(orderIDs);
+        List<Integer> workOrderIds = Arrays.asList(ArrayUtils.toObject(orderIDs));
         List<LiteWorkOrderBase> workOrderList = starsWorkOrderBaseDao.getByIds(workOrderIds);
         
         for (final LiteWorkOrderBase workOrderBase : workOrderList) {

@@ -19,13 +19,15 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
-import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.DeviceType;
 import com.cannontech.common.device.attribute.model.Attribute;
+import com.cannontech.common.device.definition.attribute.lookup.AttributeDefinition;
+import com.cannontech.common.device.definition.attribute.lookup.BasicAttributeDefinition;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.CommandDefinition;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
-import com.cannontech.common.device.definition.model.DeviceFeature;
-import com.cannontech.common.device.definition.model.DevicePointIdentifier;
+import com.cannontech.common.device.definition.model.DeviceTag;
+import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.UnitMeasureDao;
@@ -43,7 +45,7 @@ public class DeviceDefinitionViewerController extends AbstractController {
 	@Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        ModelAndView mav = new ModelAndView("/WEB-INF/pages/device/deviceDefinitionViewer.jsp");
+        ModelAndView mav = new ModelAndView("deviceDefinition/deviceDefinitionViewer.jsp");
         
         // init
         Set<DeviceDefinition> allDefinitions = deviceDefinitionDao.getAllDeviceDefinitions();
@@ -53,14 +55,14 @@ public class DeviceDefinitionViewerController extends AbstractController {
         Set<String> allDisplayGroups = new LinkedHashSet<String>();
         Set<String> allChangeGroups = new HashSet<String>();
         Set<Attribute> allAttributes = new HashSet<Attribute>();
-        Set<DeviceFeature> allFeatures = new HashSet<DeviceFeature>();
+        Set<DeviceTag> allTags = new HashSet<DeviceTag>();
         
         // parameters
         String deviceTypeParam = ServletRequestUtils.getStringParameter(request, "deviceType");
         String displayGroupParam = ServletRequestUtils.getStringParameter(request, "displayGroup");
         String changeGroupParam = ServletRequestUtils.getStringParameter(request, "changeGroup");
         String attributeParam = ServletRequestUtils.getStringParameter(request, "attribute");
-        String featureParam = ServletRequestUtils.getStringParameter(request, "feature");
+        String tagParam = ServletRequestUtils.getStringParameter(request, "tag");
         
         // all
         for (DeviceDefinition deviceDefiniton : allDefinitions) {
@@ -87,24 +89,24 @@ public class DeviceDefinitionViewerController extends AbstractController {
         	}
         	
         	// allAttributes
-        	List<Attribute> definitionAttributes = new ArrayList<Attribute>(deviceDefinitionDao.getAvailableAttributes(deviceDefiniton));
-        	for (Attribute attribute : definitionAttributes) {
+        	List<AttributeDefinition> definitionAttributes = new ArrayList<AttributeDefinition>(deviceDefinitionDao.getDefinedAttributes(deviceDefiniton.getType()));
+        	for (AttributeDefinition attribute : definitionAttributes) {
         		if (!allAttributes.contains(attribute)) {
-        			allAttributes.add(attribute);
+        			allAttributes.add(attribute.getAttribute());
         		}
         	}
         	
-        	// allFeatures
-        	List<DeviceFeature> definitionFeatures = new ArrayList<DeviceFeature>(deviceDefinitionDao.getSupportedFeatures(deviceDefiniton));
-        	for (DeviceFeature feature : definitionFeatures) {
-        		if (!allFeatures.contains(feature)) {
-        			allFeatures.add(feature);
+        	// allTags
+        	List<DeviceTag> definitionTags = new ArrayList<DeviceTag>(deviceDefinitionDao.getSupportedTags(deviceDefiniton));
+        	for (DeviceTag tag : definitionTags) {
+        		if (!allTags.contains(tag)) {
+        			allTags.add(tag);
         		}
         	}
         	
         	// add to displayDefinitions
         	if (!StringUtils.isBlank(deviceTypeParam)) {
-        		if (Integer.valueOf(deviceTypeParam) == deviceDefiniton.getType()) {
+        		if (DeviceType.valueOf(deviceTypeParam) == deviceDefiniton.getType()) {
         			displayDefinitions.add(deviceDefiniton);
         		}
         	} else if (!StringUtils.isBlank(displayGroupParam)) {
@@ -116,14 +118,14 @@ public class DeviceDefinitionViewerController extends AbstractController {
     				displayDefinitions.add(deviceDefiniton);
     			}
         	} else if (!StringUtils.isBlank(attributeParam)) {
-        		for (Attribute attribute : definitionAttributes) {
-        			if (attribute.getKey().equals(attributeParam)) {
+        		for (AttributeDefinition attribute : definitionAttributes) {
+        			if (attribute.getAttribute().getKey().equals(attributeParam)) {
         				displayDefinitions.add(deviceDefiniton);
         			}
         		}
-        	} else if (!StringUtils.isBlank(featureParam)) {
-        		for (DeviceFeature feature : definitionFeatures) {
-        			if (featureParam.equals(feature.name())) {
+        	} else if (!StringUtils.isBlank(tagParam)) {
+        		for (DeviceTag tag : definitionTags) {
+        			if (tagParam.equals(tag.name())) {
         				displayDefinitions.add(deviceDefiniton);
         			}
         		}
@@ -152,13 +154,13 @@ public class DeviceDefinitionViewerController extends AbstractController {
         mav.addObject("displayGroupParam", displayGroupParam);
         mav.addObject("changeGroupParam", changeGroupParam);
         mav.addObject("attributeParam", attributeParam);
-        mav.addObject("featureParam", featureParam);
+        mav.addObject("tagParam", tagParam);
         
         mav.addObject("allDeviceTypes", allDeviceTypes);
         mav.addObject("allDisplayGroups", allDisplayGroups);
         mav.addObject("allChangeGroups", allChangeGroups);
         mav.addObject("allAttributes", allAttributes);
-        mav.addObject("allFeatures", allFeatures);
+        mav.addObject("allTags", allTags);
         
         mav.addObject("displayDefinitionsMap", displayDefinitionsMap);
         
@@ -207,7 +209,7 @@ public class DeviceDefinitionViewerController extends AbstractController {
 		private List<PointTemplateWrapper> points;
 		private List<AttributeWrapper> attributes;
 		private List<CommandDefinitionWrapper> commands;
-		private List<DeviceFeature> features;
+		private List<DeviceTag> tags;
 		
 		public DeviceInfo(DeviceDefinition deviceDefiniton) {
 			
@@ -223,10 +225,10 @@ public class DeviceDefinitionViewerController extends AbstractController {
 			}
 			
 			// attributes
-			List<Attribute> attributes = new ArrayList<Attribute>(deviceDefinitionDao.getAvailableAttributes(deviceDefiniton));
+			List<AttributeDefinition> attributes = new ArrayList<AttributeDefinition>(deviceDefinitionDao.getDefinedAttributes(deviceDefiniton.getType()));
 			this.attributes = new ArrayList<AttributeWrapper>();
-			for (Attribute attribute : attributes) {
-				this.attributes.add(new AttributeWrapper(attribute, deviceDefiniton.getType()));
+			for (AttributeDefinition attribute : attributes) {
+				this.attributes.add(new AttributeWrapper(attribute));
 			}
 			
 			// commands
@@ -237,8 +239,8 @@ public class DeviceDefinitionViewerController extends AbstractController {
 				this.commands.add(new CommandDefinitionWrapper(commandDefinition, deviceDefiniton));
 			}
 			
-			// features
-			this.features = new ArrayList<DeviceFeature>(deviceDefinitionDao.getSupportedFeatures(deviceDefiniton));
+			// tags
+			this.tags = new ArrayList<DeviceTag>(deviceDefinitionDao.getSupportedTags(deviceDefiniton));
 		}
 
 		public DeviceDefinition getDefinition() {
@@ -253,8 +255,8 @@ public class DeviceDefinitionViewerController extends AbstractController {
 		public List<CommandDefinitionWrapper> getCommands() {
 			return commands;
 		}
-		public List<DeviceFeature> getFeatures() {
-			return features;
+		public List<DeviceTag> getTags() {
+			return tags;
 		}
 	}
 	
@@ -268,7 +270,7 @@ public class DeviceDefinitionViewerController extends AbstractController {
 		public PointTemplateWrapper(PointTemplate pointTemplate) {
 			
 			this.pointTemplate = pointTemplate;
-			this.typeString = PointTypes.getType(pointTemplate.getDevicePointIdentifier().getType());
+			this.typeString = PointTypes.getType(pointTemplate.getPointIdentifier().getType());
 			this.uomString = "";
 			this.stateGroup = "";
 			int uom = pointTemplate.getUnitOfMeasure();
@@ -297,19 +299,20 @@ public class DeviceDefinitionViewerController extends AbstractController {
 	
 	public class AttributeWrapper {
 		
-		private Attribute attribute;
+		private AttributeDefinition attribute;
 		private PointTemplateWrapper pointTemplateWrapper;
 		
-		public AttributeWrapper(Attribute attribute, int deviceType) {
+		public AttributeWrapper(AttributeDefinition attribute) {
 			
 			this.attribute = attribute;
-			
-			YukonDevice fakeDevice = new YukonDevice(-1, deviceType);
-			PointTemplate pointTemplate = deviceDefinitionDao.getPointTemplateForAttribute(fakeDevice, attribute);
-			this.pointTemplateWrapper = new PointTemplateWrapper(pointTemplate);
+			if (attribute instanceof BasicAttributeDefinition) {
+                BasicAttributeDefinition basicAttributeLookup = (BasicAttributeDefinition) attribute;
+                
+                this.pointTemplateWrapper = new PointTemplateWrapper(basicAttributeLookup.getPointTemplate());
+            }
 		}
 		
-		public Attribute getAttribute() {
+		public AttributeDefinition getAttribute() {
 			return attribute;
 		}
 		public PointTemplateWrapper getPointTemplateWrapper() {
@@ -326,9 +329,9 @@ public class DeviceDefinitionViewerController extends AbstractController {
 			
 			this.commandDefinition = commandDefinition;
 			
-			Set<DevicePointIdentifier> affectedPointList = commandDefinition.getAffectedPointList();
+			Set<PointIdentifier> affectedPointList = commandDefinition.getAffectedPointList();
 			Set<PointTemplate> allPointTemplates = deviceDefinitionDao.getAllPointTemplates(deviceDefiniton);
-			for (DevicePointIdentifier affectedPoint : affectedPointList) {
+			for (PointIdentifier affectedPoint : affectedPointList) {
 				for (PointTemplate pointTemplate : allPointTemplates) {
 					if (affectedPoint.getType() == pointTemplate.getType() && affectedPoint.getOffset() == pointTemplate.getOffset()) {
 						pointNames.add(pointTemplate.getName());

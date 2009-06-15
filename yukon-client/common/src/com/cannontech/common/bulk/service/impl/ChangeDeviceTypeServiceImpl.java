@@ -7,6 +7,7 @@ import org.springframework.dao.DataRetrievalFailureException;
 
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.service.ChangeDeviceTypeService;
+import com.cannontech.common.device.DeviceType;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
@@ -15,22 +16,20 @@ import com.cannontech.common.device.service.DeviceUpdateService;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.PaoGroupsWrapper;
 
 public class ChangeDeviceTypeServiceImpl implements ChangeDeviceTypeService {
 
     private DeviceDefinitionDao deviceDefinitionDao;
-    private PaoGroupsWrapper paoGroupsWrapper;
     private PaoDao paoDao;
     private DeviceDefinitionService deviceDefinitionService;
     private DeviceUpdateService deviceUpdateService;
     
-    public YukonDevice changeDeviceType(YukonDevice device, int newDeviceType ) {
+    public YukonDevice changeDeviceType(YukonDevice device, DeviceType newDeviceType ) {
 
         try {
 
             // get the definition for the type selected
-            if (newDeviceType == device.getType()) {
+            if (newDeviceType == device.getDeviceType()) {
                 return device;
             }
 
@@ -52,7 +51,7 @@ public class ChangeDeviceTypeServiceImpl implements ChangeDeviceTypeService {
 
         }
         catch (IllegalArgumentException e) {
-            throw new ProcessingException("Invalid device type: " + paoGroupsWrapper.getPAOTypeString(newDeviceType));
+            throw new ProcessingException("Invalid device type: " + newDeviceType);
         } catch (DataRetrievalFailureException e) {
             throw new ProcessingException("Could not find device with id: " + device.getDeviceId(),
                                           e);
@@ -64,11 +63,6 @@ public class ChangeDeviceTypeServiceImpl implements ChangeDeviceTypeService {
     @Autowired
     public void setDeviceDefinitionDao(DeviceDefinitionDao deviceDefinitionDao) {
         this.deviceDefinitionDao = deviceDefinitionDao;
-    }
-    
-    @Autowired
-    public void setPaoGroupsWrapper(PaoGroupsWrapper paoGroupsWrapper) {
-        this.paoGroupsWrapper = paoGroupsWrapper;
     }
     
     @Autowired

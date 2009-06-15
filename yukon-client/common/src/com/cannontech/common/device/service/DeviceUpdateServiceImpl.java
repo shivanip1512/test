@@ -18,7 +18,7 @@ import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
-import com.cannontech.common.device.definition.model.DevicePointIdentifier;
+import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService.PointTemplateTransferPair;
@@ -203,7 +203,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         }
 
         // create a brand new DeviceBase of the new type
-        DeviceBase newDevice = DeviceFactory.createDevice(newDefinition.getType());
+        DeviceBase newDevice = DeviceFactory.createDevice(newDefinition.getType().getDeviceTypeId());
 
         // set all the device specific stuff here
         newDevice.setDevice(oldDevice.getDevice());
@@ -323,11 +323,11 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     throws TransactionException {
 
     	YukonDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
-        Set<DevicePointIdentifier> removeTemplates = deviceDefinitionService.getPointTemplatesToRemove(yukonDevice, newDefinition);
+        Set<PointIdentifier> removeTemplates = deviceDefinitionService.getPointTemplatesToRemove(yukonDevice, newDefinition);
 
         YukonDevice meter = deviceDao.getYukonDeviceForDevice(device);
 
-        for (DevicePointIdentifier identifier : removeTemplates) {
+        for (PointIdentifier identifier : removeTemplates) {
             LitePoint litePoint = pointService.getPointForDevice(meter, identifier);
 
             log.debug("Remove point: deviceId=" + device.getPAObjectID() + litePoint.getPointName() + " type=" + litePoint.getPointType() + " offset=" + litePoint.getPointOffset());

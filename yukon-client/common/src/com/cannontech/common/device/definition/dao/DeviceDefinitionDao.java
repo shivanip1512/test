@@ -4,14 +4,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.cannontech.common.device.YukonDevice;
-import com.cannontech.common.device.attribute.model.Attribute;
+import com.cannontech.common.device.DeviceType;
+import com.cannontech.common.device.attribute.model.BuiltInAttribute;
+import com.cannontech.common.device.definition.attribute.lookup.AttributeDefinition;
 import com.cannontech.common.device.definition.model.CommandDefinition;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
-import com.cannontech.common.device.definition.model.DeviceFeature;
-import com.cannontech.common.device.definition.model.DevicePointIdentifier;
+import com.cannontech.common.device.definition.model.DeviceTag;
+import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.device.definition.model.PointTemplate;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 /**
  * Data access object for device definition information
@@ -20,34 +20,12 @@ public interface DeviceDefinitionDao {
 
 	// ATTRIBUTES
 	//============================================
-    /**
-     * Method to get a set of attributes defined for a given device
-     * @param device - Device to get attributes for
-     * @return An immutable set of attributes for the device
-     * @throws IllegalArgumentException - If the device is not supported
-     */
-    public abstract Set<Attribute> getAvailableAttributes(YukonDevice meter);
-    public abstract Set<Attribute> getAvailableAttributes(DeviceDefinition deviceDefinition);
+    public abstract Set<AttributeDefinition> getDefinedAttributes(DeviceType deviceType);
+    
+    public abstract AttributeDefinition getAttributeLookup(DeviceType deviceType, BuiltInAttribute attribute);
 
     // POINTS
     //============================================
-    /**
-     * Method to get a set of point templates for a given device and set of attributes
-     * @param device - Device to get set of point templates for
-     * @param attributes - Attributes to get set of point templates for
-     * @return The Set of DevicePointIdentifier for the device and Attribute Set
-     */
-    @Deprecated
-    public abstract Set<DevicePointIdentifier> getDevicePointIdentifierForAttributes(YukonDevice device, Set<? extends Attribute> attributes);
-    
-    /**
-     * Method to get the point template for a given device and attribute
-     * @param device - Device to get point template for
-     * @param attribute - Attribute to get point template for
-     * @return The PointTemplate for the device and Attribute
-     */
-    public abstract PointTemplate getPointTemplateForAttribute(YukonDevice device,
-            Attribute attribute);
 
     /**
      * Method to get all of the point templates for a given device
@@ -55,7 +33,7 @@ public interface DeviceDefinitionDao {
      * @return A set of all point templates for the device (returns a new copy
      *         each time the method is called)
      */
-    public abstract Set<PointTemplate> getAllPointTemplates(YukonDevice device);
+    public abstract Set<PointTemplate> getAllPointTemplates(DeviceType deviceType);
 
     /**
      * Method to get all of the point templates for a given device definition
@@ -72,7 +50,7 @@ public interface DeviceDefinitionDao {
      * @return A set of all point templates for the device that should be
      *         initialized (returns a new copy each time the method is called)
      */
-    public abstract Set<PointTemplate> getInitPointTemplates(YukonDevice device);
+    public abstract Set<PointTemplate> getInitPointTemplates(DeviceType deviceType);
 
     /**
      * Method to get all of the point templates for a given device definition
@@ -90,7 +68,7 @@ public interface DeviceDefinitionDao {
      * @param pointType - Type of point template
      * @return Point template for device
      */
-    public abstract PointTemplate getPointTemplateByTypeAndOffset(YukonDevice device, Integer offset, Integer pointType);
+    public abstract PointTemplate getPointTemplateByTypeAndOffset(DeviceType deviceType, PointIdentifier pointIdentifier);
 
     // COMMANDS
     //============================================
@@ -101,20 +79,19 @@ public interface DeviceDefinitionDao {
      * @param pointSet - Set of points to get affecting commands for
      * @return The set of commands affecting one or more of the points
      */
-    public Set<CommandDefinition> getCommandsThatAffectPoints(YukonDevice device, Set<? extends DevicePointIdentifier> pointSet);
+    public Set<CommandDefinition> getCommandsThatAffectPoints(DeviceType deviceType, Set<? extends PointIdentifier> pointSet);
     
     public Set<CommandDefinition> getAvailableCommands(DeviceDefinition newDefinition);
     
-    // FEATURES
+    // TAGS
     //============================================
-    public abstract Set<DeviceFeature> getSupportedFeatures(YukonDevice device);
-    public abstract Set<DeviceFeature> getSupportedFeatures(DeviceDefinition deviceDefiniton);
+    public abstract Set<DeviceTag> getSupportedTags(DeviceType deviceType);
+    public abstract Set<DeviceTag> getSupportedTags(DeviceDefinition deviceDefiniton);
     
-    public abstract Set<DeviceDefinition> getDevicesThatSupportFeature(DeviceFeature feature);
+    public abstract Set<DeviceDefinition> getDevicesThatSupportTag(DeviceTag feature);
     
-    public abstract boolean isFeatureSupported(YukonDevice device, DeviceFeature feature);
-    public abstract boolean isFeatureSupported(DeviceDefinition deviceDefiniton, DeviceFeature feature);
-    public abstract boolean isFeatureSupported(LiteYukonPAObject litePao, DeviceFeature feature);
+    public abstract boolean isTagSupported(DeviceType deviceType, DeviceTag feature);
+    public abstract boolean isTagSupported(DeviceDefinition deviceDefiniton, DeviceTag feature);
     
     // DEFINITIONS
     //============================================
@@ -133,15 +110,8 @@ public interface DeviceDefinitionDao {
      * @param device - Device to get definition for
      * @return The device's device definition
      */
-    public abstract DeviceDefinition getDeviceDefinition(YukonDevice device);
+    public abstract DeviceDefinition getDeviceDefinition(DeviceType deviceType);
     
-    /**
-     * Method used to get a device definition for a type
-     * @param deviceType - Type to get definition for
-     * @return The type's device definition
-     */
-    public abstract DeviceDefinition getDeviceDefinition(int deviceType);
-
     /**
      * Method to get a set of device types that the given device can change into
      * @param deviceDefinition - Definition of device to change

@@ -103,7 +103,7 @@ public class DeviceTypePanel extends DataInputPanel implements ListSelectionList
      * @return int
      */
     public int getDeviceType() {
-        return ((DeviceDefinition) getDeviceTypeList().getSelectedValue()).getType();
+        return ((DeviceDefinition) getDeviceTypeList().getSelectedValue()).getType().getDeviceTypeId();
     }
 
     /**
@@ -226,7 +226,7 @@ public class DeviceTypePanel extends DataInputPanel implements ListSelectionList
     public Object getValue(Object val) {
         // Determine the correct type of device and return it
 
-        int type = ((DeviceDefinition) getDeviceTypeList().getSelectedValue()).getType();
+        int type = ((DeviceDefinition) getDeviceTypeList().getSelectedValue()).getType().getDeviceTypeId();
         DeviceBase returnDevice = DeviceFactory.createDevice(type);
 
         return returnDevice;

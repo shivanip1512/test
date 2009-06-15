@@ -8,7 +8,6 @@ This file contains a custom device definition.
 <deviceDefinitions>
     
     <device id="MCT310">
-    	<type>1019</type>
         <displayName>Custom Device 1</displayName>
         <displayGroup>customDisplay1</displayGroup>
         <changeGroup>customChange1</changeGroup>

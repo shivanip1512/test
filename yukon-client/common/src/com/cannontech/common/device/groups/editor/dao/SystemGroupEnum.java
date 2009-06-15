@@ -16,6 +16,7 @@ public enum SystemGroupEnum {
     TEMPORARYGROUPS("/System/Temporary/"),
     SYSTEMMETERS("/System/Meters/"),
     SYSTEMMETERSDISABLED("/System/Meters/Disabled/"),
+    DEVICETAGS("/System/Device Tags/"),
     ;
 
     private String fullPath;

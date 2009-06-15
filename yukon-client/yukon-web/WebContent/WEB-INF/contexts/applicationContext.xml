@@ -508,8 +508,8 @@
                 <entry key="CAPBANK">
                     <ref local="capBankUpdateBackingService"/>
                 </entry>
-                <entry key="BULKRESULT">
-                    <ref local="bulkResultBackingService"/>
+                <entry key="BACKGROUNDPROCESS">
+                    <ref local="backgroundProcessBackingService"/>
                 </entry>
                 <entry key="ROUTELOCATE">
                     <ref local="routeLocateBackingService"/>
@@ -604,10 +604,10 @@
         <property name="groupCommandExecutor" ref="groupCommandExecutor" />
     </bean>
     
-    <bean id="bulkResultBackingService" class="com.cannontech.web.updater.bulk.BulkResultBackingService">
+    <bean id="backgroundProcessBackingService" class="com.cannontech.web.updater.bulk.BackgroundProcessBackingService">
         <property name="templateProcessorFactory" ref="templateProcessorFactory" />
         <property name="messageSourceResolver" ref="yukonUserContextMessageSourceResolver" />
-        <property name="resultsCache" ref="recentBulkOperationResultsCache" />
+        <property name="recentResultsCache" ref="recentResultsCache" />
     </bean>
     
     

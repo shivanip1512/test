@@ -18,19 +18,18 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
+import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
+import com.cannontech.common.bulk.callbackResult.ImportUpdateCallbackResult;
 import com.cannontech.common.bulk.field.BulkFieldColumnHeader;
 import com.cannontech.common.bulk.field.BulkFieldService;
 import com.cannontech.common.bulk.service.BulkImportFileInfo;
 import com.cannontech.common.bulk.service.BulkImportMethod;
 import com.cannontech.common.bulk.service.BulkImportService;
-import com.cannontech.common.bulk.service.BulkOperationCallbackResults;
 import com.cannontech.common.bulk.service.ParsedBulkImportFileInfo;
 import com.cannontech.common.util.RecentResultsCache;
-import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.web.bulk.util.BulkFileUpload;
 import com.cannontech.web.bulk.util.BulkFileUploadUtils;
-import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @CheckRoleProperty(YukonRoleProperty.BULK_IMPORT_OPERATION)
@@ -38,7 +37,7 @@ public class ImportController extends MultiActionController {
 
     private BulkFieldService bulkFieldService = null;
     private BulkImportService bulkImportService = null;
-    private RecentResultsCache<BulkOperationCallbackResults<?>> recentBulkOperationResultsCache = null;
+    private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache = null;
     
     private List<BulkImportMethod> importMethods = null;
     private Map<String, BulkImportFileInfo> bulkImportFileInfoMap = new HashMap<String, BulkImportFileInfo>();
@@ -165,12 +164,12 @@ public class ImportController extends MultiActionController {
         
         // result info
         String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
-        BulkOperationCallbackResults<?> bulkOperationCallbackResults = recentBulkOperationResultsCache.getResult(resultsId);
+        ImportUpdateCallbackResult callbackResult = (ImportUpdateCallbackResult)recentResultsCache.getResult(resultsId);
         
-        BulkImportFileInfo bulkImportFileInfo = (BulkImportFileInfo)bulkOperationCallbackResults.getBulkFileInfo();
+        BulkImportFileInfo bulkImportFileInfo = (BulkImportFileInfo)callbackResult.getBulkFileInfo();
         
         mav.addObject("ignoreInvalidCols", bulkImportFileInfo.isIgnoreInvalidCols());
-        mav.addObject("bulkImportOperationResults", bulkOperationCallbackResults);
+        mav.addObject("callbackResult", callbackResult);
         
         return mav;
     }
@@ -181,9 +180,8 @@ public class ImportController extends MultiActionController {
     }
     
     @Required
-    public void setRecentBulkOperationResultsCache(
-            RecentResultsCache<BulkOperationCallbackResults<?>> recentBulkOperationResultsCache) {
-        this.recentBulkOperationResultsCache = recentBulkOperationResultsCache;
+    public void setRecentResultsCache(RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache) {
+        this.recentResultsCache = recentResultsCache;
     }
 
     public void setBulkImportService(BulkImportService bulkImportService) {

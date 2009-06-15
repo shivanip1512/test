@@ -12,7 +12,7 @@ import org.springframework.transaction.support.TransactionOperations;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.BulkProcessor;
-import com.cannontech.common.bulk.BulkProcessorCallback;
+import com.cannontech.common.bulk.callbackResult.BulkProcessorCallback;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.processor.Processor;

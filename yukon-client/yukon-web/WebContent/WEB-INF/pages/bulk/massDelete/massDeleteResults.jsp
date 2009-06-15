@@ -35,9 +35,8 @@
     <tags:boxContainer title="${headerTitle}" id="massDeleteResultsContainer" hideEnabled="false">
     
         <%-- RESULTS --%>
-        <tags:bulkUpdateResultsTable resultsTypeMsgKey="massDelete"
-                                     totalCount="${bulkUpdateOperationResults.initialDeviceCount}"
-                                     bulkUpdateOperationResults="${bulkUpdateOperationResults}" />
+        <tags:backgroundProcessResultHolder resultsTypeMsgKey="massDelete"
+                                     callbackResult="${callbackResult}" />
     
     </tags:boxContainer>
     

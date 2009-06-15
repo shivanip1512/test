@@ -1,7 +1,6 @@
 package com.cannontech.web.bulk;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -19,6 +18,8 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.common.bulk.BulkProcessor;
+import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
+import com.cannontech.common.bulk.callbackResult.MassChangeCallbackResult;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.field.BulkField;
@@ -31,10 +32,6 @@ import com.cannontech.common.bulk.mapper.PassThroughMapper;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.processor.Processor;
 import com.cannontech.common.bulk.processor.SingleProcessor;
-import com.cannontech.common.bulk.service.BulkOperationCallbackResults;
-import com.cannontech.common.bulk.service.BulkOperationTypeEnum;
-import com.cannontech.common.bulk.service.MassChangeCallbackResults;
-import com.cannontech.common.bulk.service.MassChangeFileInfo;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
@@ -51,15 +48,14 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 @CheckRoleProperty(YukonRoleProperty.MASS_CHANGE)
 public class MassChangeOptionsController extends InputFormController {
 
-    private BulkYukonDeviceFieldFactory bulkYukonDeviceFieldFactory = null;
-    private BulkProcessor bulkProcessor = null;
-    private DeviceCollectionFactory deviceCollectionFactory = null;
-    private BulkFieldService bulkFieldService = null;
-    
-    private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao = null;
-    private TemporaryDeviceGroupService temporaryDeviceGroupService = null;
-    private DeviceGroupCollectionHelper deviceGroupCollectionHelper = null;
-    private RecentResultsCache<BulkOperationCallbackResults<?>> recentResultsCache = null;
+    private BulkYukonDeviceFieldFactory bulkYukonDeviceFieldFactory;
+    private BulkProcessor bulkProcessor;
+    private DeviceCollectionFactory deviceCollectionFactory;
+    private BulkFieldService bulkFieldService;
+    private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+    private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
+    private TemporaryDeviceGroupService temporaryDeviceGroupService;
+    private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
     
     @Override
     public InputRoot getInputRoot(HttpServletRequest request) throws Exception {
@@ -120,39 +116,31 @@ public class MassChangeOptionsController extends InputFormController {
         // PROCESS
         //-------------------------------------------------------------------------------
 
-        // mapper
-        ObjectMapper<YukonDevice, YukonDevice> mapper = new PassThroughMapper<YukonDevice>();
+        // CALLBACK
+        String resultsId = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
+        StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup(null);
+        StoredDeviceGroup processingExceptionGroup = temporaryDeviceGroupService.createTempGroup(null);
         
-        // looking for a processor set that contains just the processor for this field
-        BulkYukonDeviceFieldProcessor bulkFieldProcessor = findYukonDeviceFieldProcessor(bulkField);
+        MassChangeCallbackResult callbackResult = new MassChangeCallbackResult(bulkFieldColumnHeader,
+														        		resultsId,
+														        		deviceCollection,
+																		successGroup, 
+																		processingExceptionGroup, 
+																		deviceGroupMemberEditorDao,
+																		deviceGroupCollectionHelper);
         
-        // create an instace of a Bulk Processor to run our fieldProcessor on the dto obj
-        Processor<YukonDevice> bulkUpdater = getBulkProcessor(bulkFieldProcessor, yukonDeviceDtoObj);
-        
-        
-        // CALL BACK SETUP
-        // going to use a DeviceGroupAddingBulkProcessorCallback to add success/fail devices to temp groups
-        
-        // create a temp group
-        final StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup(null);
-        final StoredDeviceGroup processingExceptionGroup = temporaryDeviceGroupService.createTempGroup(null);
-        
-        // init callcback, use a TranslatingBulkProcessorCallback to get from UpdateableDevice to YukonDevice
-        MassChangeCallbackResults bulkOperationCallbackResults = new MassChangeCallbackResults(successGroup, processingExceptionGroup, deviceGroupMemberEditorDao, deviceGroupCollectionHelper, Collections.singletonList(bulkFieldColumnHeader), BulkOperationTypeEnum.MASS_CHANGE);
-        
-        // STORE RESULTS INFO TO CACHE
-        String id = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
-        bulkOperationCallbackResults.setResultsId(id);
-        MassChangeFileInfo massChangeFileInfo = new MassChangeFileInfo(deviceCollection, massChangeBulkFieldName);
-        bulkOperationCallbackResults.setBulkFileInfo(massChangeFileInfo);
-        recentResultsCache.addResult(id, bulkOperationCallbackResults);
-        
+        // CACHE
+        recentResultsCache.addResult(resultsId, callbackResult);
         
         // PROCESS
-        bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, bulkUpdater, bulkOperationCallbackResults);
+        BulkYukonDeviceFieldProcessor bulkFieldProcessor = findYukonDeviceFieldProcessor(bulkField);
+        Processor<YukonDevice> bulkUpdater = getBulkProcessor(bulkFieldProcessor, yukonDeviceDtoObj);
+        ObjectMapper<YukonDevice, YukonDevice> mapper = new PassThroughMapper<YukonDevice>();
+        
+        bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, bulkUpdater, callbackResult);
         
         ModelAndView mav = new ModelAndView("redirect:massChange/massChangeResults");
-        mav.addObject("resultsId", id);
+        mav.addObject("resultsId", resultsId);
         return mav;
     }
     
@@ -221,12 +209,6 @@ public class MassChangeOptionsController extends InputFormController {
     }
 
     @Required
-    public void setDeviceGroupCollectionHelper(
-            DeviceGroupCollectionHelper deviceGroupCollectionHelper) {
-        this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
-    }
-
-    @Required
     public void setTemporaryDeviceGroupService(
             TemporaryDeviceGroupService temporaryDeviceGroupService) {
         this.temporaryDeviceGroupService = temporaryDeviceGroupService;
@@ -239,8 +221,12 @@ public class MassChangeOptionsController extends InputFormController {
     }
     
     @Required
-    public void setRecentBulkOperationResultsCache(
-            RecentResultsCache<BulkOperationCallbackResults<?>> recentResultsCache) {
+    public void setDeviceGroupCollectionHelper(DeviceGroupCollectionHelper deviceGroupCollectionHelper) {
+		this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
+	}
+    
+    @Required
+    public void setRecentResultsCache(RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache) {
         this.recentResultsCache = recentResultsCache;
     }
 

@@ -67,12 +67,7 @@
     </bean>
 
     <bean id="meterReadService"
-        class="com.cannontech.amr.deviceread.dao.impl.MeterReadServiceImpl">
-        <property name="deviceDefinitionDao" ref="deviceDefinitionDao" />
-        <property name="commandExecutor" ref="commandRequestDeviceExecutor" />
-        <property name="commandAuthorizationService" ref="paoCommandAuthorizationService" />
-        <property name="paoDao" ref="paoDao"/>
-    </bean>
+        class="com.cannontech.amr.deviceread.dao.impl.MeterReadServiceImpl"/>
 
     <bean id="peakReportService"
         class="com.cannontech.common.device.peakReport.service.impl.PeakReportServiceImpl">

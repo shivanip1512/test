@@ -7,8 +7,7 @@ import java.util.concurrent.Executor;
 
 import junit.framework.TestCase;
 
-import com.cannontech.common.bulk.BulkProcessingResultHolder;
-import com.cannontech.common.bulk.CollectingBulkProcessorCallback;
+import com.cannontech.common.bulk.callbackResult.CollectingBulkProcessorCallback;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.processor.Processor;
@@ -72,7 +71,7 @@ public class OneAtATimeProcessorTest extends TestCase {
         testList.add("two");
         testList.add("three");
 
-        BulkProcessingResultHolder<String, String> holder;
+        CollectingBulkProcessorCallback<String, String> holder;
         {
             CollectingBulkProcessorCallback<String, String> callback = new CollectingBulkProcessorCallback<String, String>();
 

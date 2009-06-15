@@ -35,9 +35,8 @@
     <tags:boxContainer title="${headerTitle}" id="updateResultsContainer" hideEnabled="false">
         
            <%-- RESULTS --%>
-           <tags:bulkUpdateResultsTable resultsTypeMsgKey="update"
-                                        totalCount="${bulkUpdateOperationResults.bulkFileInfo.dataCount}"
-                                        bulkUpdateOperationResults="${bulkUpdateOperationResults}" />
+           <tags:backgroundProcessResultHolder resultsTypeMsgKey="update"
+                                        callbackResult="${callbackResult}" />
             
             
             <%-- BACK BUTTON --%>

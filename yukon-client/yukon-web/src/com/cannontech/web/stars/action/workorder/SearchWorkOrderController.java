@@ -1,17 +1,18 @@
 package com.cannontech.web.stars.action.workorder;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.Pair;
-import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.db.stars.report.WorkOrderBase;
@@ -21,7 +22,6 @@ import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.util.WorkOrderManagerUtil;
 import com.cannontech.web.stars.action.StarsWorkorderActionController;
-import com.google.common.collect.PrimitiveArrays;
 
 public class SearchWorkOrderController extends StarsWorkorderActionController {
     
@@ -119,7 +119,7 @@ public class SearchWorkOrderController extends StarsWorkorderActionController {
         for (final Integer accountId : accountIds) {
             int[] woIDs = WorkOrderBase.searchByAccountID(accountId);
             if (woIDs == null) continue;
-            workOrderIdList.addAll(PrimitiveArrays.asList(woIDs));
+            workOrderIdList.addAll(Arrays.asList(ArrayUtils.toObject(woIDs)));
         }
         
         List<LiteWorkOrderBase> list = starsWorkOrderBaseDao.getByIds(workOrderIdList);

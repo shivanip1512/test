@@ -12,7 +12,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.BulkProcessor;
-import com.cannontech.common.bulk.BulkProcessorCallback;
+import com.cannontech.common.bulk.callbackResult.BulkProcessorCallback;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.processor.Processor;
@@ -48,7 +48,6 @@ public class TransactionPerItemProcessor extends RunnableBasedBulkProcessor impl
             final Processor<O> processor, final BulkProcessorCallback<I, O> callback) {
 
         return new Runnable() {
-            @SuppressWarnings("unchecked")
             public void run() {
                 try {
                     int rowNumber = 0;

@@ -13,18 +13,18 @@ public class CommandDefinition implements Comparable<CommandDefinition> {
 
 	String name = null;
     List<String> commandStringList = new ArrayList<String>();
-    Set<DevicePointIdentifier> affectedPointList = new HashSet<DevicePointIdentifier>();
+    Set<PointIdentifier> affectedPointList = new HashSet<PointIdentifier>();
 
     public CommandDefinition(String name) {
 		super();
 		this.name = name;
 	}
 
-	public Set<DevicePointIdentifier> getAffectedPointList() {
+	public Set<PointIdentifier> getAffectedPointList() {
         return affectedPointList;
     }
 
-    public void setAffectedPointList(Set<DevicePointIdentifier> affectedPointList) {
+    public void setAffectedPointList(Set<PointIdentifier> affectedPointList) {
         this.affectedPointList = affectedPointList;
     }
 
@@ -40,7 +40,7 @@ public class CommandDefinition implements Comparable<CommandDefinition> {
         this.commandStringList.add(commandString);
     }
 
-    public void addAffectedPoint(DevicePointIdentifier pointReference) {
+    public void addAffectedPoint(PointIdentifier pointReference) {
         this.affectedPointList.add(pointReference);
     }
 
@@ -52,9 +52,9 @@ public class CommandDefinition implements Comparable<CommandDefinition> {
 		this.name = name;
 	}
 
-	public boolean affectsPoint(DevicePointIdentifier pointTemplate) {
+	public boolean affectsPoint(PointIdentifier pointTemplate) {
 
-		for(DevicePointIdentifier identifier: affectedPointList) {
+		for(PointIdentifier identifier: affectedPointList) {
 			if( identifier.isComparableTo(pointTemplate))
 				return true;
 		}

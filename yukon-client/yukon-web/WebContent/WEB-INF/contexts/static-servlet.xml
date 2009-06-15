@@ -5,8 +5,6 @@
     <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
         <property name="mappings">
             <value>
-                /deviceDefinition.xml=deviceDefinitionViewerController
-                /deviceDefinition.xsl=deviceBaseController
                 /error-code.xml=friendlyErrorBaseController
                 /porter_error.xsl=friendlyErrorBaseController
                 /*=yukonBaseController
@@ -15,10 +13,6 @@
         <property name="order" value="1"/>
     </bean>
     
-    <bean id="deviceBaseController" class="com.cannontech.web.util.ClasspathResourceController">
-        <property name="classpathPrefix" value="com/cannontech/common/device/definition/dao"/>
-    </bean>
-  
     <bean id="friendlyErrorBaseController" class="com.cannontech.web.util.ClasspathResourceController">
         <property name="classpathPrefix" value="com/cannontech/amr/errors/dao/impl"/>
     </bean>
@@ -30,9 +24,6 @@
             <property name="urlDecode" value="false"/> <!-- changing this might open a security hole -->
           </bean>
         </property>
-    </bean>
-    
-    <bean id="deviceDefinitionViewerController" class="com.cannontech.web.util.DeviceDefinitionViewerController">
     </bean>
   
 </beans>

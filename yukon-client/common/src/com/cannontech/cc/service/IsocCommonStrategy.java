@@ -28,7 +28,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.customer.CICustomerPointType;
 import com.cannontech.support.CustomerPointTypeHelper;
-import com.google.common.collect.Comparators;
+import com.google.common.collect.Ordering;
 
 public class IsocCommonStrategy extends StrategyGroupBase {
     private SimplePointAccessDao pointAccess;
@@ -78,8 +78,8 @@ public class IsocCommonStrategy extends StrategyGroupBase {
         for (BaseEvent event : allEvents) {
             
             if (doesEventContributeToAllowedHours(event)) {
-                Date computedStart = Comparators.max(from, event.getStartTime());	//use the max startTime
-            	Date computedStop = Comparators.min(to, event.getStopTime());		//use the min stopTime
+                Date computedStart = Ordering.natural().max(from, event.getStartTime());	//use the max startTime
+            	Date computedStop = Ordering.natural().min(to, event.getStopTime());		//use the min stopTime
                 int differenceMinutes = TimeUtil.differenceMinutes(computedStart, computedStop);
                 totalMinutes += differenceMinutes;
             }

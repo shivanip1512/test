@@ -6,10 +6,10 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.cannontech.common.bulk.callbackResult.BackgroundProcessTypeEnum;
 import com.cannontech.common.bulk.field.BulkField;
 import com.cannontech.common.bulk.field.BulkFieldColumnHeader;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
-import com.cannontech.common.bulk.service.BulkOperationTypeEnum;
 import com.cannontech.common.bulk.service.BulkUpdateFileInfo;
 import com.cannontech.common.bulk.service.BulkUpdateService;
 import com.cannontech.common.bulk.service.ParsedBulkUpdateFileInfo;
@@ -126,7 +126,7 @@ public class BulkUpdateServiceImpl extends BaseBulkService implements BulkUpdate
         BulkFieldColumnHeader identifierBulkFieldColumnHeader = parsedBulkUpdateFileInfo.getIdentifierBulkFieldColumnHeader();
         final BulkField<?, YukonDevice> identifierBulkField = getBulkYukonDeviceFieldFactory().getBulkField(identifierBulkFieldColumnHeader.getFieldName());
         
-        return doStartBulkImport(parsedBulkUpdateFileInfo, BulkOperationTypeEnum.UPDATE, new YukonDeviceResolver() {
+        return doStartBulkImport(parsedBulkUpdateFileInfo, BackgroundProcessTypeEnum.UPDATE, new YukonDeviceResolver() {
 
             @Override
             public YukonDevice returnDevice(String[] from) {

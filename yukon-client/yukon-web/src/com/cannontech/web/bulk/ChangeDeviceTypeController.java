@@ -1,6 +1,5 @@
 package com.cannontech.web.bulk;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,17 +16,15 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.common.bulk.BulkProcessor;
+import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
+import com.cannontech.common.bulk.callbackResult.ChangeDeviceTypeCallbackResult;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
-import com.cannontech.common.bulk.field.BulkFieldColumnHeader;
 import com.cannontech.common.bulk.mapper.PassThroughMapper;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.processor.SingleProcessor;
-import com.cannontech.common.bulk.service.BulkOperationCallbackResults;
-import com.cannontech.common.bulk.service.BulkOperationTypeEnum;
 import com.cannontech.common.bulk.service.ChangeDeviceTypeService;
-import com.cannontech.common.bulk.service.DeviceCollectionContainingFileInfo;
-import com.cannontech.common.bulk.service.MassChangeCallbackResults;
+import com.cannontech.common.device.DeviceType;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService;
@@ -36,20 +33,18 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
-import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @CheckRoleProperty(YukonRoleProperty.MASS_CHANGE)
 public class ChangeDeviceTypeController extends BulkControllerBase {
 
-    private RecentResultsCache<BulkOperationCallbackResults<?>> recentBulkOperationResultsCache = null;
-    private BulkProcessor bulkProcessor = null;
-    private DeviceDefinitionService deviceDefinitionService = null;
+    private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
+    private BulkProcessor bulkProcessor;
+    private DeviceDefinitionService deviceDefinitionService;
     private TemporaryDeviceGroupService temporaryDeviceGroupService;
-    private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao = null;
-    private DeviceGroupCollectionHelper deviceGroupCollectionHelper = null;
+    private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+    private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     private ChangeDeviceTypeService changeDeviceTypeService;
     
     /**
@@ -70,7 +65,7 @@ public class ChangeDeviceTypeController extends BulkControllerBase {
         Map<String, List<DeviceDefinition>> deviceGroupMap = deviceDefinitionService.getDeviceDisplayGroupMap();
         for (String key : deviceGroupMap.keySet()) {
             for (DeviceDefinition def :  deviceGroupMap.get(key)) {
-                deviceTypes.put(def.getDisplayName(), def.getType());
+                deviceTypes.put(def.getDisplayName(), def.getType().getDeviceTypeId());
             }
         }
         mav.addObject("deviceTypes", deviceTypes);
@@ -102,36 +97,36 @@ public class ChangeDeviceTypeController extends BulkControllerBase {
         // DO CHANGE
         } else {
             
-            final int selectedDeviceType = ServletRequestUtils.getRequiredIntParameter(request, "deviceTypes"); 
+            // CALLBACK
+        	String resultsId = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
+            StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup(null);
+            StoredDeviceGroup processingExceptionGroup = temporaryDeviceGroupService.createTempGroup(null);
             
-            // create a temp group
-            final StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup(null);
-            final StoredDeviceGroup processingExceptionGroup = temporaryDeviceGroupService.createTempGroup(null);
+            ChangeDeviceTypeCallbackResult callbackResult = new ChangeDeviceTypeCallbackResult(resultsId,
+																						deviceCollection, 
+																						successGroup, 
+																						processingExceptionGroup, 
+																						deviceGroupMemberEditorDao,
+																						deviceGroupCollectionHelper);
             
-            // init callcback, use a TranslatingBulkProcessorCallback to get from UpdateableDevice to YukonDevice
-            MassChangeCallbackResults bulkOperationCallbackResults = new MassChangeCallbackResults(successGroup, processingExceptionGroup, deviceGroupMemberEditorDao, deviceGroupCollectionHelper, Collections.singletonList(BulkFieldColumnHeader.DEVICE_TYPE), BulkOperationTypeEnum.CHANGE_DEVICE_TYPE);
-            
-            // STORE RESULTS INFO TO CACHE
-            String id = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
-            bulkOperationCallbackResults.setResultsId(id);
-            DeviceCollectionContainingFileInfo deviceCollectionContainingFileInfo = new DeviceCollectionContainingFileInfo(deviceCollection);
-            bulkOperationCallbackResults.setBulkFileInfo(deviceCollectionContainingFileInfo);
-            recentBulkOperationResultsCache.addResult(id, bulkOperationCallbackResults);
+            // CACHE
+            recentResultsCache.addResult(resultsId, callbackResult);
             
             // PROCESS
+            final int selectedDeviceType = ServletRequestUtils.getRequiredIntParameter(request, "deviceTypes"); 
             SingleProcessor<YukonDevice> bulkUpdater = new SingleProcessor<YukonDevice>() {
 
                 @Override
                 public void process(YukonDevice device) throws ProcessingException {
-                    changeDeviceTypeService.changeDeviceType(device, selectedDeviceType);
+                    changeDeviceTypeService.changeDeviceType(device, DeviceType.getForId(selectedDeviceType));
                 }
             };
             
             ObjectMapper<YukonDevice, YukonDevice> mapper = new PassThroughMapper<YukonDevice>();
-            bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, bulkUpdater, bulkOperationCallbackResults);
+            bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, bulkUpdater, callbackResult);
             
             mav = new ModelAndView("redirect:changeDeviceTypeResults");
-            mav.addObject("resultsId", id);
+            mav.addObject("resultsId", resultsId);
         }
         
         return mav;
@@ -150,21 +145,17 @@ public class ChangeDeviceTypeController extends BulkControllerBase {
 
         // result info
         String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
-        BulkOperationCallbackResults<?> bulkOperationCallbackResults = recentBulkOperationResultsCache.getResult(resultsId);
+        ChangeDeviceTypeCallbackResult callbackResult = (ChangeDeviceTypeCallbackResult)recentResultsCache.getResult(resultsId);
         
-        // file info
-        DeviceCollectionContainingFileInfo deviceCollectionContainingFileInfo = (DeviceCollectionContainingFileInfo)bulkOperationCallbackResults.getBulkFileInfo();
-        
-        mav.addObject("deviceCollection", deviceCollectionContainingFileInfo.getDeviceCollection());
-        mav.addObject("bulkUpdateOperationResults", bulkOperationCallbackResults);
+        mav.addObject("deviceCollection", callbackResult.getDeviceCollection());
+        mav.addObject("callbackResult", callbackResult);
 
         return mav;
     }
     
     @Required
-    public void setRecentBulkOperationResultsCache(
-            RecentResultsCache<BulkOperationCallbackResults<?>> recentBulkOperationResultsCache) {
-        this.recentBulkOperationResultsCache = recentBulkOperationResultsCache;
+    public void setRecentResultsCache(RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache) {
+        this.recentResultsCache = recentResultsCache;
     }
     
     @Required
@@ -178,26 +169,22 @@ public class ChangeDeviceTypeController extends BulkControllerBase {
     }
     
     @Autowired
-    public void setTemporaryDeviceGroupService(
-            TemporaryDeviceGroupService temporaryDeviceGroupService) {
+    public void setTemporaryDeviceGroupService(TemporaryDeviceGroupService temporaryDeviceGroupService) {
         this.temporaryDeviceGroupService = temporaryDeviceGroupService;
     }
     
     @Autowired
-    public void setDeviceGroupMemberEditorDao(
-            DeviceGroupMemberEditorDao deviceGroupMemberEditorDao) {
+    public void setDeviceGroupMemberEditorDao(DeviceGroupMemberEditorDao deviceGroupMemberEditorDao) {
         this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
     }
     
     @Autowired
-    public void setDeviceGroupCollectionHelper(
-            DeviceGroupCollectionHelper deviceGroupCollectionHelper) {
-        this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
-    }
+    public void setDeviceGroupCollectionHelper(DeviceGroupCollectionHelper deviceGroupCollectionHelper) {
+		this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
+	}
     
     @Autowired
-    public void setChangeDeviceTypeService(
-            ChangeDeviceTypeService changeDeviceTypeService) {
+    public void setChangeDeviceTypeService(ChangeDeviceTypeService changeDeviceTypeService) {
         this.changeDeviceTypeService = changeDeviceTypeService;
     }
 }

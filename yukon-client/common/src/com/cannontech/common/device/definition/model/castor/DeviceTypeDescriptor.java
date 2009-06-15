@@ -213,41 +213,6 @@ public class DeviceTypeDescriptor extends org.exolab.castor.xml.util.XMLClassDes
         desc.setValidator(fieldValidator);
         //-- initialize element descriptors
         
-        //-- _type
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.Integer.class, "_type", "type", org.exolab.castor.xml.NodeType.Element);
-        handler = new org.exolab.castor.xml.XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                DeviceType target = (DeviceType) object;
-                return target.getType();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    DeviceType target = (DeviceType) object;
-                    target.setType( (java.lang.Integer) value);
-                }
-                catch (java.lang.Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
-            }
-        };
-        desc.setHandler(handler);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _type
-        fieldValidator = new org.exolab.castor.xml.FieldValidator();
-        { //-- local scope
-            IntegerValidator typeValidator = new IntegerValidator();
-            fieldValidator.setValidator(typeValidator);
-        }
-        desc.setValidator(fieldValidator);
         //-- _displayName
         desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.String.class, "_displayName", "displayName", org.exolab.castor.xml.NodeType.Element);
         desc.setImmutable(true);
@@ -458,35 +423,35 @@ public class DeviceTypeDescriptor extends org.exolab.castor.xml.util.XMLClassDes
         { //-- local scope
         }
         desc.setValidator(fieldValidator);
-        //-- _features
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(com.cannontech.common.device.definition.model.castor.Features.class, "_features", "features", org.exolab.castor.xml.NodeType.Element);
+        //-- _tags
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(com.cannontech.common.device.definition.model.castor.Tags.class, "_tags", "tags", org.exolab.castor.xml.NodeType.Element);
         handler = new org.exolab.castor.xml.XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 DeviceType target = (DeviceType) object;
-                return target.getFeatures();
+                return target.getTags();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
                     DeviceType target = (DeviceType) object;
-                    target.setFeatures( (com.cannontech.common.device.definition.model.castor.Features) value);
+                    target.setTags( (com.cannontech.common.device.definition.model.castor.Tags) value);
                 }
                 catch (java.lang.Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new com.cannontech.common.device.definition.model.castor.Features();
+                return new com.cannontech.common.device.definition.model.castor.Tags();
             }
         };
         desc.setHandler(handler);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _features
+        //-- validation code for: _tags
         fieldValidator = new org.exolab.castor.xml.FieldValidator();
         { //-- local scope
         }

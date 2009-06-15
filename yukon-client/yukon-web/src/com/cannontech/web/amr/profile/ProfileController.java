@@ -11,7 +11,7 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
-import com.cannontech.common.device.definition.model.DeviceFeature;
+import com.cannontech.common.device.definition.model.DeviceTag;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -39,7 +39,7 @@ public class ProfileController extends MultiActionController {
         
         mav.addObject("deviceId", deviceId);
         
-        boolean lpSupported = deviceDefinitionDao.isFeatureSupported(device, DeviceFeature.LOAD_PROFILE);
+        boolean lpSupported = deviceDefinitionDao.isTagSupported(device.getDeviceType(), DeviceTag.LOAD_PROFILE);
         mav.addObject("lpSupported", lpSupported);
         
         boolean profileCollection = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.PROFILE_COLLECTION, user);

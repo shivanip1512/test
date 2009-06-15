@@ -2,6 +2,7 @@ package com.cannontech.common.bulk.impl;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
@@ -14,8 +15,8 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.bulk.BulkProcessorCallback;
 import com.cannontech.common.bulk.DelayThrottleCalculator;
+import com.cannontech.common.bulk.callbackResult.BulkProcessorCallback;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.processor.Processor;
@@ -77,6 +78,8 @@ public class ResubmittingParallelBulkProcessor extends BulkProcessorBase {
         if (log.isDebugEnabled()) {
             log.debug("bulkProcess called with " + mapper + " and " + processor);
         }
+        
+        callback.processingStarted(new Date());
         
         // Get the bulk processor runnable and ask the ScheduledExecutor to run
         // it in the background

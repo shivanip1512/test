@@ -10,11 +10,11 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
+import com.cannontech.common.bulk.callbackResult.MassChangeCallbackResult;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.field.BulkField;
 import com.cannontech.common.bulk.field.BulkFieldService;
-import com.cannontech.common.bulk.service.BulkOperationCallbackResults;
-import com.cannontech.common.bulk.service.MassChangeFileInfo;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -23,7 +23,7 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 public class MassChangeController extends BulkControllerBase {
 
     private BulkFieldService bulkFieldService = null;
-    private RecentResultsCache<BulkOperationCallbackResults<?>> recentBulkOperationResultsCache = null;
+    private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache = null;
     
     /**
      * SELECT MASS CHANGE TYPE
@@ -40,7 +40,7 @@ public class MassChangeController extends BulkControllerBase {
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
         mav.addObject("deviceCollection", deviceCollection);
         
-        // available masss change operations
+        // available mass change operations
         List<BulkField<?, ?>> massChangableBulkFields = bulkFieldService.getMassChangableBulkFields();
         mav.addObject("massChangableBulkFields", massChangableBulkFields);
         
@@ -57,14 +57,12 @@ public class MassChangeController extends BulkControllerBase {
 
         // result info
         String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
-        BulkOperationCallbackResults<?> bulkOperationCallbackResults = recentBulkOperationResultsCache.getResult(resultsId);
+        MassChangeCallbackResult callbackResult = (MassChangeCallbackResult)recentResultsCache.getResult(resultsId);
         
-        // file info
-        MassChangeFileInfo massChangeFileInfo = (MassChangeFileInfo)bulkOperationCallbackResults.getBulkFileInfo();
-        
-        mav.addObject("deviceCollection", massChangeFileInfo.getDeviceCollection());
-        mav.addObject("massChangeBulkFieldName", massChangeFileInfo.getMassChangeBulkFieldName());
-        mav.addObject("bulkUpdateOperationResults", bulkOperationCallbackResults);
+        // results
+        mav.addObject("deviceCollection", callbackResult.getDeviceCollection());
+        mav.addObject("massChangeBulkFieldName", callbackResult.getMassChangeBulkFieldColumnHeader().getFieldName());
+        mav.addObject("callbackResult", callbackResult);
 
         return mav;
     }
@@ -75,8 +73,7 @@ public class MassChangeController extends BulkControllerBase {
     }
 
     @Required
-    public void setRecentBulkOperationResultsCache(
-            RecentResultsCache<BulkOperationCallbackResults<?>> recentBulkOperationResultsCache) {
-        this.recentBulkOperationResultsCache = recentBulkOperationResultsCache;
+    public void setRecentResultsCache(RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache) {
+        this.recentResultsCache = recentResultsCache;
     }
 }

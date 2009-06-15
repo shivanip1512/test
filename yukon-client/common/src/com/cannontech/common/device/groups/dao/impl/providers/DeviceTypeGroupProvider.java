@@ -2,7 +2,9 @@ package com.cannontech.common.device.groups.dao.impl.providers;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
@@ -55,10 +57,10 @@ public class DeviceTypeGroupProvider extends BinningDeviceGroupProviderBase<Stri
     }
 
     @Override
-    protected String getBinForDevice(YukonDevice device) {
+    protected Set<String> getBinsForDevice(YukonDevice device) {
         LiteYukonPAObject devicePao = paoDao.getLiteYukonPAO(device.getDeviceId());
         String type = getPaoGroupsWrapper().getPAOTypeString(devicePao.getType());
-        return type;
+        return Collections.singleton(type);
     }
     
     @Autowired

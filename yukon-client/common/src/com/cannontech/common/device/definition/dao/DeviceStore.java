@@ -8,12 +8,13 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.cannontech.common.device.definition.model.DevicePointIdentifier;
+import com.cannontech.common.device.DeviceType;
+import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.device.definition.model.castor.Attribute;
 import com.cannontech.common.device.definition.model.castor.Command;
 import com.cannontech.common.device.definition.model.castor.Device;
-import com.cannontech.common.device.definition.model.castor.Feature;
 import com.cannontech.common.device.definition.model.castor.Point;
+import com.cannontech.common.device.definition.model.castor.Tag;
 import com.cannontech.database.data.point.PointTypes;
 
 public class DeviceStore {
@@ -22,18 +23,18 @@ public class DeviceStore {
 	private String id;
 	private boolean enabled = true;
 	private List<String> inheritedIds = new ArrayList<String>();
-	private boolean isAbstract;
-	private Integer deviceType;
+	private boolean isAbstract = false;
+	private DeviceType deviceType = null;
 	
 	
 	// override-able if not already set by a child
 	private String displayName;
 	private String displayGroup;
 	private String changeGroup;
-	private Map<DevicePointIdentifier, Point> points = new HashMap<DevicePointIdentifier, Point>();
+	private Map<PointIdentifier, Point> points = new HashMap<PointIdentifier, Point>();
 	private Map<String, Command> commands = new HashMap<String, Command>();
 	private Map<String, Attribute> attributes = new HashMap<String, Attribute>();
-	private Map<String, Feature> features = new HashMap<String, Feature>();
+	private Map<String, Tag> tags = new HashMap<String, Tag>();
 	
 	public DeviceStore(Device castor) {
 		
@@ -42,7 +43,11 @@ public class DeviceStore {
 		this.setEnabled(castor.getEnabled());
 		this.setAbstract(castor.getAbstract());
 		this.setInheritedIds(castor.getInherits());
-		this.setDeviceType(castor.getType());
+		
+		if (!isAbstract()) {
+		    DeviceType deviceType = DeviceType.valueOf(getId());
+		    this.setDeviceType(deviceType);
+		}
 		
 		// initial apply of castor object
 		this.applyDisplayName(castor.getDisplayName());
@@ -57,8 +62,8 @@ public class DeviceStore {
 		if (castor.getAttributes() != null) {
 			this.applyAttributes(castor.getAttributes().getAttribute());
 		}
-		if (castor.getFeatures() != null) {
-			this.applyFeatures(castor.getFeatures().getFeature());
+		if (castor.getTags() != null) {
+			this.applyTags(castor.getTags().getTag());
 		}
 	}
 	
@@ -70,7 +75,7 @@ public class DeviceStore {
 		this.applyPoints(inheritedDevice.getEnabledPoints());
 		this.applyCommands(inheritedDevice.getEnabledCommands());
 		this.applyAttributes(inheritedDevice.getEnabledAttributes());
-		this.applyFeatures(inheritedDevice.getEnabledFeatures());
+		this.applyTags(inheritedDevice.getEnabledTags());
 	}
 	
 	
@@ -92,7 +97,7 @@ public class DeviceStore {
 	public void setAbstract(boolean isAbstract) {
 		this.isAbstract = isAbstract;
 	}
-	private void setDeviceType(Integer deviceType) {
+	private void setDeviceType(DeviceType deviceType) {
 		this.deviceType = deviceType;
 	}
 	
@@ -124,7 +129,7 @@ public class DeviceStore {
 		
 		for (Point inheritedPoint : points) {
 			
-			DevicePointIdentifier id = new DevicePointIdentifier(inheritedPoint.getOffset(), PointTypes.getType(inheritedPoint.getType()));
+			PointIdentifier id = new PointIdentifier(PointTypes.getType(inheritedPoint.getType()), inheritedPoint.getOffset());
 			Point exisitngPoint = this.points.get(id);
 			
 			if (exisitngPoint == null) {
@@ -201,18 +206,18 @@ public class DeviceStore {
 		}
 	}
 	
-	private void applyFeatures(Feature[] features) {
+	private void applyTags(Tag[] tags) {
 		
-		if (features == null) {
+		if (tags == null) {
 			return;
 		}
 		
-		for (Feature inheritedFeature : features) {
+		for (Tag inheritedTag : tags) {
 			
-			String id = inheritedFeature.getName();
-			Feature existingFeature = this.features.get(id);
+			String id = inheritedTag.getName();
+			Tag existingFeature = this.tags.get(id);
 			if (existingFeature == null) {
-				this.features.put(id, inheritedFeature);
+				this.tags.put(id, inheritedTag);
 			}
 		}
 	}
@@ -231,7 +236,7 @@ public class DeviceStore {
 	public boolean isAbstract() {
 		return isAbstract;
 	}
-	public int getDeviceType() {
+	public DeviceType getDeviceType() {
 		return deviceType;
 	}
 	
@@ -248,7 +253,7 @@ public class DeviceStore {
 	public Point[] getEnabledPoints() {
 		
 		List<Point> enabledPoints = new ArrayList<Point>();
-		for (DevicePointIdentifier id : this.points.keySet()) {
+		for (PointIdentifier id : this.points.keySet()) {
 			Point point = this.points.get(id);
 			if (point.getEnabled()) {
 				enabledPoints.add(point);
@@ -278,15 +283,15 @@ public class DeviceStore {
 		}
 		return enabledAttributes.toArray(new Attribute[]{});
 	}
-	public Feature[] getEnabledFeatures() {
+	public Tag[] getEnabledTags() {
 
-		List<Feature> enabledFeatures = new ArrayList<Feature>();
-		for (String id : this.features.keySet()) {
-			Feature feature = this.features.get(id);
-			if (feature.getEnabled()) {
-				enabledFeatures.add(feature);
+		List<Tag> enabledTags = new ArrayList<Tag>();
+		for (String id : this.tags.keySet()) {
+			Tag tag = this.tags.get(id);
+			if (tag.getEnabled()) {
+				enabledTags.add(tag);
 			}
 		}
-		return enabledFeatures.toArray(new Feature[]{});
+		return enabledTags.toArray(new Tag[]{});
 	}
 }

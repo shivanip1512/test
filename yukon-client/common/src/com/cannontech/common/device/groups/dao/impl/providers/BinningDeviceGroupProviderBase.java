@@ -130,9 +130,8 @@ public abstract class BinningDeviceGroupProviderBase<T> extends DeviceGroupProvi
     }
     
     protected boolean isDeviceInBin(T bin, YukonDevice device) {
-        T binForDevice = getBinForDevice(device);
-        // binForDevice may be null here
-        return bin.equals(binForDevice);
+        Set<T> binsForDevice = getBinsForDevice(device);
+        return binsForDevice.contains(bin);
     }
 
     public Set<DeviceGroup> getGroupMembership(DeviceGroup base, YukonDevice device) {
@@ -147,15 +146,18 @@ public abstract class BinningDeviceGroupProviderBase<T> extends DeviceGroupProvi
             }
         } else {
             // this must be the stored dynamic group
-            T bin = getBinForDevice(device);
+            Set<T> bins = getBinsForDevice(device);
             
-            if (bin != null) {
-                // helps the singleton method be happy
-                DeviceGroup result = createGroupForBin(base, bin);
-
-                return Collections.singleton(result);
-            } else {
+            if (bins.isEmpty()) {
                 return Collections.emptySet();
+            } else {
+                Set<DeviceGroup> result = new HashSet<DeviceGroup>(bins.size());
+                for (T bin : bins) {
+                    DeviceGroup deviceGroup = createGroupForBin(base, bin);
+                    result.add(deviceGroup);
+                }
+
+                return result;
             }
         }
     }
@@ -172,7 +174,7 @@ public abstract class BinningDeviceGroupProviderBase<T> extends DeviceGroupProvi
      * @param device
      * @return
      */
-    protected abstract T getBinForDevice(YukonDevice device);
+    protected abstract Set<T> getBinsForDevice(YukonDevice device);
 
     protected class BinnedDeviceGroup extends MutableDeviceGroup {
         public T bin;

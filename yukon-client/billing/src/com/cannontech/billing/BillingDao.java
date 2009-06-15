@@ -30,7 +30,7 @@ import com.cannontech.billing.device.base.DeviceData;
 import com.cannontech.billing.format.ExtendedTOURecordFormatter;
 import com.cannontech.billing.mainprograms.BillingFileDefaults;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.device.definition.model.DevicePointIdentifier;
+import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.util.CtiUtilities;
@@ -168,7 +168,7 @@ public class BillingDao {
                     int address = rset.getInt(13);
 
                     int pointType = PointTypes.getType(ptType);
-                    DevicePointIdentifier devicePointIdentifier = new DevicePointIdentifier(pointType, ptOffset);
+                    PointIdentifier pointIdentifier = new PointIdentifier(pointType, ptOffset);
                     java.util.Date tsDate = new java.util.Date(ts.getTime());
 
                     String accountNumber = (accountNumberMap == null ? paoName : accountNumberMap.get(meterNumber));
@@ -180,8 +180,8 @@ public class BillingDao {
 
                             if (device != null) {
 
-                                if( (device.isEnergy(devicePointIdentifier) &&  !tsDate.before(defaults.getEnergyStartDate()) )  || 
-                                        (device.isDemand(devicePointIdentifier) &&  !tsDate.before(defaults.getDemandStartDate()) ) ) { 
+                                if( (device.isEnergy(pointIdentifier) &&  !tsDate.before(defaults.getEnergyStartDate()) )  || 
+                                        (device.isDemand(pointIdentifier) &&  !tsDate.before(defaults.getDemandStartDate()) ) ) { 
 
                                     DeviceData meterData = new DeviceData(meterNumber,
                                                                           getMeterPositionNumber(meterPositionNumberMap,
@@ -189,7 +189,7 @@ public class BillingDao {
                                                                                                  String.valueOf(address),
                                                                                                  accountNumber,
                                                                                                  paoName);
-                                    device.populate(devicePointIdentifier,
+                                    device.populate(pointIdentifier,
                                                     ts,
                                                     reading,
                                                     unitOfMeasure,
@@ -204,8 +204,8 @@ public class BillingDao {
 
                             if (device != null) {
 
-                                if( (device.isEnergy(devicePointIdentifier) &&  !tsDate.before(defaults.getEnergyStartDate()) )  || 
-                                        (device.isDemand(devicePointIdentifier) &&  !tsDate.before(defaults.getDemandStartDate()) ) ) { 
+                                if( (device.isEnergy(pointIdentifier) &&  !tsDate.before(defaults.getEnergyStartDate()) )  || 
+                                        (device.isDemand(pointIdentifier) &&  !tsDate.before(defaults.getDemandStartDate()) ) ) { 
 
                                     DeviceData meterData = new DeviceData(meterNumber,
                                                                           getMeterPositionNumber(meterPositionNumberMap,
@@ -213,7 +213,7 @@ public class BillingDao {
                                                                                                  String.valueOf(address),
                                                                                                  accountNumber,
                                                                                                  paoName);
-                                    device.populate(devicePointIdentifier,
+                                    device.populate(pointIdentifier,
                                                     ts,
                                                     reading,
                                                     unitOfMeasure,
@@ -495,7 +495,7 @@ public class BillingDao {
                     int address = rset.getInt(13);
 
                     int pointType = PointTypes.getType(ptType);
-                    DevicePointIdentifier devicePointIdentifier = new DevicePointIdentifier(pointType, ptOffset);
+                    PointIdentifier pointIdentifier = new PointIdentifier(pointType, ptOffset);
                     java.util.Date tsDate = new java.util.Date(ts.getTime());
                     
                     //AccountNumber will always be the same as paoName for interval readings.
@@ -504,8 +504,8 @@ public class BillingDao {
                     device = BillableDeviceFactory.createBillableDevice(category, paoType);
                     if (device != null) {
                         
-                        if( (device.isEnergy(devicePointIdentifier) &&  !tsDate.before(defaults.getEnergyStartDate()) )  || 
-                            (device.isDemand(devicePointIdentifier) &&  !tsDate.before(defaults.getDemandStartDate()) ) ) { 
+                        if( (device.isEnergy(pointIdentifier) &&  !tsDate.before(defaults.getEnergyStartDate()) )  || 
+                            (device.isDemand(pointIdentifier) &&  !tsDate.before(defaults.getDemandStartDate()) ) ) { 
 
                             DeviceData meterData = new DeviceData(meterNumber,
                                                                   getMeterPositionNumber(meterPositionNumberMap,
@@ -513,7 +513,7 @@ public class BillingDao {
                                                                   String.valueOf(address),
                                                                   accountNumber,
                                                                   paoName);
-                            device.populate(devicePointIdentifier,
+                            device.populate(pointIdentifier,
                                             ts,
                                             reading,
                                             unitOfMeasure,

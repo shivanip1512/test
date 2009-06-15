@@ -1,5 +1,6 @@
 package com.cannontech.common.bulk.impl;
 
+import java.util.Date;
 import java.util.Iterator;
 import java.util.concurrent.Executor;
 
@@ -7,7 +8,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.bulk.BulkProcessorCallback;
+import com.cannontech.common.bulk.callbackResult.BulkProcessorCallback;
 import com.cannontech.common.bulk.processor.Processor;
 import com.cannontech.common.util.ObjectMapper;
 
@@ -30,6 +31,8 @@ public abstract class RunnableBasedBulkProcessor extends BulkProcessorBase {
             log.debug("bulkProcess called with " + mapper + " and " + processor + " on " + this.getClass().getSimpleName());
         }
         
+        callback.processingStarted(new Date());
+        
         // Get the bulk processor runnable and run it in this thread (will
         // block)
         Runnable runnable = getBulkProcessorRunnable(iterator,
@@ -45,6 +48,8 @@ public abstract class RunnableBasedBulkProcessor extends BulkProcessorBase {
         if (log.isDebugEnabled()) {
             log.debug("bulkProcess called with " + mapper + " and " + processor + " on " + this.getClass().getSimpleName());
         }
+        
+        callback.processingStarted(new Date());
         
         // Get the bulk processor runnable and ask the ScheduledExecutor to run
         // it in the background

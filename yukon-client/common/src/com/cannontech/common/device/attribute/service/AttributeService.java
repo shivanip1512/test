@@ -4,6 +4,7 @@ import java.util.Set;
 
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.Attribute;
+import com.cannontech.common.device.definition.model.DevicePointTemplate;
 import com.cannontech.database.data.lite.LitePoint;
 
 public interface AttributeService {
@@ -49,6 +50,8 @@ public interface AttributeService {
      * @return True if the point exists on the device
      */
     public boolean pointExistsForAttribute(YukonDevice device, Attribute attribute);
+    
+    public DevicePointTemplate getDevicePointTemplateForAttribute(YukonDevice device, Attribute attribute);
     
     /**
      * Method used to create a point for the device and given attribute

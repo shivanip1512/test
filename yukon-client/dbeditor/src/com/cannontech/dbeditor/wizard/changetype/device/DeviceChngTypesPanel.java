@@ -23,7 +23,7 @@ import javax.swing.event.ListSelectionListener;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
-import com.cannontech.common.device.definition.model.DevicePointIdentifier;
+import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService.PointTemplateTransferPair;
@@ -34,10 +34,8 @@ import com.cannontech.common.gui.util.TitleBorder;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
-import com.cannontech.database.data.device.MCT310ID;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.AnalogPoint;
@@ -116,7 +114,7 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
                         if (((DeviceDefinition) getJListDevices().getSelectedValue()).equals(deviceDefinition)) {
 
                             int currentDeviceType = PAOGroups.getDeviceType(currentDevice.getPAOType());
-                            int newType = deviceDefinition.getType();
+                            int newType = deviceDefinition.getType().getDeviceTypeId();
                             
                             if (DeviceTypesFuncs.isDisconnectMCT(currentDeviceType) && (DeviceTypesFuncs.isMCT410(newType)) ) {
                                 isDisconnect = true;
@@ -258,7 +256,7 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
         buffer.append("\n");
 
         // Add text for point deletions
-        Set<DevicePointIdentifier> removeTemplates = deviceDefinitionService.getPointTemplatesToRemove(yukonDevice,
+        Set<PointIdentifier> removeTemplates = deviceDefinitionService.getPointTemplatesToRemove(yukonDevice,
                                                                                                deviceDefinition);
         buffer.append("Points to remove:\n");
         buffer.append(this.generateRemoveChangeText(deviceDefinition, removeTemplates));
@@ -285,7 +283,7 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
      * @return A String with remove information
      */
     private String generateRemoveChangeText(DeviceDefinition deviceDefinition,
-            Set<DevicePointIdentifier> removeTemplates) {
+            Set<PointIdentifier> removeTemplates) {
 
         StringBuffer buffer = new StringBuffer();
 
@@ -293,7 +291,7 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
             buffer.append("--none\n");
         } else {
             LitePoint point = null;
-            for (DevicePointIdentifier template : removeTemplates) {
+            for (PointIdentifier template : removeTemplates) {
                 point = pointService.getPointForDevice(getYukonDeviceForDevice(getCurrentDevice()), template);
                 buffer.append("-- #" + point.getPointOffset() + " " + point.getPointName() + "\n");
             }

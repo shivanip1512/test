@@ -2,7 +2,9 @@ package com.cannontech.common.device.groups.dao.impl.providers;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
@@ -49,10 +51,10 @@ public class RolodexGroupProvider extends BinningDeviceGroupProviderBase<Charact
     }
     
     @Override
-    protected Character getBinForDevice(YukonDevice device) {
+    protected Set<Character> getBinsForDevice(YukonDevice device) {
         LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(device.getDeviceId());
-        char firstLetter = liteYukonPAO.getPaoName().toUpperCase().charAt(0);
-        return firstLetter;
+        Character firstLetter = liteYukonPAO.getPaoName().toUpperCase().charAt(0);
+        return Collections.singleton(firstLetter);
     }
     
     @Autowired

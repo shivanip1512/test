@@ -162,6 +162,17 @@
 	background-image:url(../images/default/tree/folder_deviceGroupRoutes.gif);
 }
 
+/* Tags */
+.x-tree-node-expanded .x-tree-node-icon.DEVICETAGS{
+    background-image:url(../images/default/tree/folder-open_deviceGroupTags.gif);
+}
+.x-tree-node-leaf .x-tree-node-icon.DEVICETAGS{
+	background-image:url(../images/default/tree/folder_deviceGroupTags.gif);
+}
+.x-tree-node-collapsed .x-tree-node-icon.DEVICETAGS{
+	background-image:url(../images/default/tree/folder_deviceGroupTags.gif);
+}
+
 /* Scanning Meters */
 .x-tree-node-expanded .x-tree-node-icon.SCANNINGMETERS{
     background-image:url(../images/default/tree/folder-open_deviceGroupScanningMeters.gif);

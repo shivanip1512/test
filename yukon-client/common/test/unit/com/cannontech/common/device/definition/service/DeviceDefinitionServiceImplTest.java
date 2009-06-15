@@ -10,13 +10,14 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.cannontech.common.device.DeviceType;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.service.AttributeServiceImpl;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDaoImplTest;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.model.DeviceDefinitionImpl;
-import com.cannontech.common.device.definition.model.DevicePointIdentifier;
+import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService.PointTemplateTransferPair;
 import com.cannontech.common.device.service.PointServiceImpl;
@@ -62,7 +63,6 @@ public class DeviceDefinitionServiceImplTest {
         attributeService = new AttributeServiceImpl();
         attributeService.setDeviceDefinitionDao(deviceDefinitionDao);
         attributeService.setPointService(pointService);
-        attributeService.setPointDao(pointDao);
 
         device = new YukonDevice(1, DeviceTypes.MCT310);
 
@@ -132,7 +132,7 @@ public class DeviceDefinitionServiceImplTest {
         // Test with changeable device
         Set<DeviceDefinition> expectedDevices = new HashSet<DeviceDefinition>();
         YukonDevice device2 = new YukonDevice(11, DeviceTypes.MCT370);
-        expectedDevices.add(deviceDefinitionDao.getDeviceDefinition(device2));
+        expectedDevices.add(deviceDefinitionDao.getDeviceDefinition(device2.getDeviceType()));
 
         Set<DeviceDefinition> actualDevices = service.getChangeableDevices(device);
 
@@ -215,7 +215,7 @@ public class DeviceDefinitionServiceImplTest {
 
         
         Set<PointTemplate> actualTemplates = service.getPointTemplatesToAdd(device,
-                                                                            new DeviceDefinitionImpl(1019,
+                                                                            new DeviceDefinitionImpl(DeviceType.getForId(1019),
                                                                                                      "Device1",
                                                                                                      "display1",
                                                                                                      "MCT310",
@@ -229,7 +229,7 @@ public class DeviceDefinitionServiceImplTest {
         // change)
         try {
             device.setType(DeviceTypes.MCT318L);
-            DeviceDefinition deviceDefinition = deviceDefinitionDao.getDeviceDefinition(device);
+            DeviceDefinition deviceDefinition = deviceDefinitionDao.getDeviceDefinition(device.getDeviceType());
 
             device.setType(DeviceTypes.MCT310);
             service.getPointTemplatesToAdd(device, deviceDefinition);
@@ -248,16 +248,16 @@ public class DeviceDefinitionServiceImplTest {
     public void testGetPointTemplatesToRemove() {
 
         // Test remove points from type 'device1' to type 'device2'
-        Set<DevicePointIdentifier> expectedTemplates = new HashSet<DevicePointIdentifier>();
+        Set<PointIdentifier> expectedTemplates = new HashSet<PointIdentifier>();
 
         // Pulse Accumulators - "pulse1"
-        expectedTemplates.add(new DevicePointIdentifier(2, 2));
+        expectedTemplates.add(new PointIdentifier(2, 2));
 
         // Demand Accumulators - "demand1"
-        expectedTemplates.add(new DevicePointIdentifier(3, 1));
+        expectedTemplates.add(new PointIdentifier(3, 1));
 
-        Set<DevicePointIdentifier> actualTemplates = service.getPointTemplatesToRemove(device,
-                                                                               new DeviceDefinitionImpl(1022,
+        Set<PointIdentifier> actualTemplates = service.getPointTemplatesToRemove(device,
+                                                                               new DeviceDefinitionImpl(DeviceType.getForId(1022),
                                                                                                         "Device2",
                                                                                                         "display2",
                                                                                                         "MCT370",
@@ -271,7 +271,7 @@ public class DeviceDefinitionServiceImplTest {
         // invalid change)
         try {
             device.setType(DeviceTypes.MCT318L);
-            DeviceDefinition deviceDefinition = deviceDefinitionDao.getDeviceDefinition(device);
+            DeviceDefinition deviceDefinition = deviceDefinitionDao.getDeviceDefinition(device.getDeviceType());
 
             device.setType(DeviceTypes.MCT310);
             service.getPointTemplatesToRemove(device, deviceDefinition);
@@ -301,7 +301,7 @@ public class DeviceDefinitionServiceImplTest {
                 .1,
                 1,
                 0);
-        pair.oldDefinitionTemplate = new DevicePointIdentifier(2, 4);
+        pair.oldDefinitionTemplate = new PointIdentifier(2, 4);
         expectedTemplates.add(pair);
 
         pair = new PointTemplateTransferPair();
@@ -311,10 +311,10 @@ public class DeviceDefinitionServiceImplTest {
                 .0001,
                 1,
                 0);
-        pair.oldDefinitionTemplate = new DevicePointIdentifier(1, 1);
+        pair.oldDefinitionTemplate = new PointIdentifier(1, 1);
         expectedTemplates.add(pair);
         List<PointTemplateTransferPair> actualTemplates = service.getPointTemplatesToTransfer(device,
-                                                                                 new DeviceDefinitionImpl(1022,
+                                                                                 new DeviceDefinitionImpl(DeviceType.getForId(1022),
                                                                                                           "Device2",
                                                                                                           "display2",
                                                                                                           "MCT370",
@@ -328,7 +328,7 @@ public class DeviceDefinitionServiceImplTest {
         // invalid change)
         try {
             device.setType(DeviceTypes.MCT318L);
-            DeviceDefinition deviceDefinition = deviceDefinitionDao.getDeviceDefinition(device);
+            DeviceDefinition deviceDefinition = deviceDefinitionDao.getDeviceDefinition(device.getDeviceType());
 
             device.setType(DeviceTypes.MCT310);
             service.getPointTemplatesToTransfer(device, deviceDefinition);

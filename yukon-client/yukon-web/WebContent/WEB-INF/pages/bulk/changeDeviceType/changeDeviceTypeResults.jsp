@@ -45,9 +45,8 @@
     <tags:boxContainer title="${headerTitle}" id="changeDeviceTypeResultsContainer" hideEnabled="false">
     
         <%-- RESULTS --%>
-        <tags:bulkUpdateResultsTable    resultsTypeMsgKey="changeDeviceType"
-                                        totalCount="${deviceCollection.deviceCount}"
-                                        bulkUpdateOperationResults="${bulkUpdateOperationResults}" />
+        <tags:backgroundProcessResultHolder resultsTypeMsgKey="changeDeviceType"
+                                     callbackResult="${callbackResult}" />
         
     
     </tags:boxContainer>

@@ -17,12 +17,16 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.TypeMismatchException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.io.FileSystemResource;
 
 import com.cannontech.common.bulk.BulkProcessor;
-import com.cannontech.common.bulk.BulkProcessorCallback;
-import com.cannontech.common.bulk.TranslatingBulkProcessorCallback;
+import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
+import com.cannontech.common.bulk.callbackResult.BackgroundProcessTypeEnum;
+import com.cannontech.common.bulk.callbackResult.BulkProcessorCallback;
+import com.cannontech.common.bulk.callbackResult.ImportUpdateCallbackResult;
+import com.cannontech.common.bulk.callbackResult.TranslatingBulkProcessorCallback;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.field.BulkField;
 import com.cannontech.common.bulk.field.BulkFieldColumnHeader;
@@ -39,10 +43,7 @@ import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.processor.Processor;
 import com.cannontech.common.bulk.processor.SingleProcessor;
 import com.cannontech.common.bulk.service.BulkFileInfo;
-import com.cannontech.common.bulk.service.BulkOperationCallbackResults;
-import com.cannontech.common.bulk.service.BulkOperationTypeEnum;
 import com.cannontech.common.bulk.service.ParsedBulkFileInfo;
-import com.cannontech.common.bulk.service.UpdateImportCallbackResults;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
@@ -63,13 +64,13 @@ public abstract class BaseBulkService {
         public YukonDevice returnDevice(String[] from);
     }
     
-    private BulkFieldService bulkFieldService = null;
-    private BulkProcessor bulkProcessor = null;
-    private BulkYukonDeviceFieldFactory bulkYukonDeviceFieldFactory = null;
-    private DeviceGroupCollectionHelper deviceGroupCollectionHelper = null;
-    private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao = null;
-    private RecentResultsCache<BulkOperationCallbackResults<?>> recentBulkOperationResultsCache = null;
-    private TemporaryDeviceGroupService temporaryDeviceGroupService = null;
+    private BulkFieldService bulkFieldService;
+    private BulkProcessor bulkProcessor;
+    private BulkYukonDeviceFieldFactory bulkYukonDeviceFieldFactory;
+    private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+    private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
+    private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
+    private TemporaryDeviceGroupService temporaryDeviceGroupService;
 
     protected boolean checkForDuplicates(List<BulkFieldColumnHeader> headerColumnSet, ParsedBulkFileInfo result) {
         boolean foundDuplicate = false;
@@ -122,7 +123,7 @@ public abstract class BaseBulkService {
         }
     }
 
-    protected String doStartBulkImport(final ParsedBulkFileInfo parsedBulkImportFileInfo, final BulkOperationTypeEnum bulkOperationType, final YukonDeviceResolver resolver) throws IOException {
+    protected String doStartBulkImport(final ParsedBulkFileInfo parsedBulkImportFileInfo, final BackgroundProcessTypeEnum bulkOperationType, final YukonDeviceResolver resolver) throws IOException {
         String resultsId = null;
         FileSystemResource fileResource = parsedBulkImportFileInfo.getBulkFileInfo().getFileResource();
 
@@ -285,28 +286,30 @@ public abstract class BaseBulkService {
             List<BulkFieldColumnHeader> updateBulkFieldColumnHeaders, 
             ObjectMapper<String[], UpdateableDevice> mapper,
             BulkFileInfo bulkFileInfo,
-            BulkOperationTypeEnum bulkOperationType) {
+            BackgroundProcessTypeEnum backgroundProcessType) {
 
         // updater
         Processor<UpdateableDevice> bulkUpdater = getMultiBulkFieldUpdateProcessor(bulkFieldList);
 
-        // callback
+        // CALLBACK
+        String resultsId = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
         StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup(null);
-        StoredDeviceGroup processingExceptionGroup = temporaryDeviceGroupService.createTempGroup(null);
+        
+        ImportUpdateCallbackResult callbackResult = new ImportUpdateCallbackResult(backgroundProcessType,
+																        		updateBulkFieldColumnHeaders,
+																        		bulkFileInfo,
+																        		resultsId,
+																        		successGroup,
+																        		deviceGroupMemberEditorDao,
+																        		deviceGroupCollectionHelper);
 
-        // init callcback, use a TranslatingBulkProcessorCallback to get from UpdateableDevice to YukonDevice
-        UpdateImportCallbackResults bulkOperationCallbackResults = new UpdateImportCallbackResults(successGroup, processingExceptionGroup, deviceGroupMemberEditorDao, deviceGroupCollectionHelper, updateBulkFieldColumnHeaders, bulkOperationType);
+        BulkProcessorCallback<String[], UpdateableDevice> translatingCallback = new TranslatingBulkProcessorCallback<String[], UpdateableDevice, YukonDevice>(callbackResult, new UpdateableDeviceMapper());
 
-        BulkProcessorCallback<String[],UpdateableDevice> bulkProcessorCallback = new TranslatingBulkProcessorCallback<String[],UpdateableDevice, YukonDevice>(bulkOperationCallbackResults, new UpdateableDeviceMapper());
+        // CACHE
+        recentResultsCache.addResult(resultsId, callbackResult);
 
-        // save reference to callback in cache
-        String id = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
-        bulkOperationCallbackResults.setResultsId(id);
-        bulkOperationCallbackResults.setBulkFileInfo(bulkFileInfo);
-        String resultsId = recentBulkOperationResultsCache.addResult(id, bulkOperationCallbackResults);
-
-        // process
-        bulkProcessor.backgroundBulkProcess(csvReaderIterator, mapper, bulkUpdater, bulkProcessorCallback);
+        // PROCESS
+        bulkProcessor.backgroundBulkProcess(csvReaderIterator, mapper, bulkUpdater, translatingCallback);
 
         return resultsId;
     }
@@ -343,22 +346,19 @@ public abstract class BaseBulkService {
     }
 
     @Required
-    public void setDeviceGroupCollectionHelper(
-            DeviceGroupCollectionHelper deviceGroupCollectionHelper) {
-        this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
-    }
-
-    @Required
     public void setDeviceGroupMemberEditorDao(
             DeviceGroupMemberEditorDao deviceGroupMemberEditorDao) {
         this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
     }
 
+    @Autowired
+    public void setDeviceGroupCollectionHelper(DeviceGroupCollectionHelper deviceGroupCollectionHelper) {
+		this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
+	}
 
     @Required
-    public void setRecentBulkOperationResultsCache(
-            RecentResultsCache<BulkOperationCallbackResults<?>> recentBulkOperationResultsCache) {
-        this.recentBulkOperationResultsCache = recentBulkOperationResultsCache;
+    public void setRecentResultsCache(RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache) {
+        this.recentResultsCache = recentResultsCache;
     }
 
 

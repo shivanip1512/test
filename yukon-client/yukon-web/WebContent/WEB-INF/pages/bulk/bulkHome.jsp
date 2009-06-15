@@ -105,23 +105,24 @@
                     <th style="text-align:right;"><cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.status"/></th>
                 </tr>
             
-                <c:forEach var="result" items="${resultsList}" varStatus="resultStatus">
+                <c:forEach var="displayableResult" items="${resultsList}" varStatus="resultStatus">
                 
-                    <c:set var="b" value="${result.result}" />
-                    <c:set var="detailViewable" value="${result.detailViewable}" />
+                    <c:set var="callbackResult" value="${displayableResult.result}" />
+                    <c:set var="detailViewable" value="${displayableResult.detailViewable}" />
+                    <c:set var="resultsId" value="${callbackResult.resultsId}" />
                     
                     <tr valign="bottom">
                     
                         <%-- TYPE --%>
                         <td>
-                            ${b.bulkOperationType.title}
+                            ${callbackResult.backgroundProcessType.title}
                         </td>
                         
                         
                         <%-- START/STOP TIME --%>
                         <td>
-                            <cti:formatDate value="${b.startTime}" type="BOTH"/> - <br>
-                            <cti:dataUpdaterValue type="BULKRESULT" identifier="${b.resultsId}/STOP_TIME"/>
+                            <cti:formatDate value="${callbackResult.startTime}" type="BOTH"/> - <br>
+                            <cti:dataUpdaterValue type="BACKGROUNDPROCESS" identifier="${resultsId}/STOP_TIME"/>
                         </td>
                         
                         
@@ -131,23 +132,23 @@
                         
                             <c:choose>
                                 
-                                <%-- MASS DELETE HAS NO SUCCESS GRUP --%>
-                                <c:when test="${b.massDelete}">
+                                <%-- SUCCESS COUNT --%>
+                                <c:when test="${not callbackResult.successDevicesSupported}">
                                     <div style="font-size:12px;padding-right:20px;">
-                                        <cti:dataUpdaterValue type="BULKRESULT" identifier="${b.resultsId}/SUCCESS_COUNT"/>
+                                        <cti:dataUpdaterValue type="BACKGROUNDPROCESS" identifier="${resultsId}/SUCCESS_COUNT"/>
                                     </div>                  
                                 </c:when>
                                 
-                                <%-- BULK IMPORT/UPDATE, MASS CHANGE DO HAVE SUCCESS GROUP --%>
+                                <%-- SUCCESS COUNT/DEVICE COLLECTION --%>
                                 <c:otherwise>
                                 
-                                    <c:set var="successFormName" value="processingExceptionForm${b.resultsId}"/>
+                                    <c:set var="successFormName" value="processingExceptionForm${resultsId}"/>
                                     
-                                    <a href="javascript:submitForm('${successFormName}');" class="small" title="${performNewActionLinkTitle}"><cti:dataUpdaterValue type="BULKRESULT" identifier="${b.resultsId}/SUCCESS_COUNT"/></a> 
-                                    <tags:selectedDevicesPopup deviceCollection="${b.successDeviceCollection}" />
+                                    <a href="javascript:submitForm('${successFormName}');" class="small" title="${performNewActionLinkTitle}"><cti:dataUpdaterValue type="BACKGROUNDPROCESS" identifier="${resultsId}/SUCCESS_COUNT"/></a> 
+                                    <tags:selectedDevicesPopup deviceCollection="${callbackResult.successDeviceCollection}" />
                                     
                                     <form id="${successFormName}" method="post" action="/spring/bulk/collectionActions">
-                                        <cti:deviceCollection deviceCollection="${b.successDeviceCollection}" />
+                                        <cti:deviceCollection deviceCollection="${callbackResult.successDeviceCollection}" />
                                     </form>
                                     
                                 </c:otherwise>
@@ -158,61 +159,80 @@
                         
                         
                         
-                        <%-- PROCESSING EXCEPTION --%>
+                        <%-- FAILURES --%>
                         <td align="right">
                         
-                            <c:choose>
+                        	<table>
+                        	<tr>
+                        	
+                        		<td>
+                        			<c:choose>
+                        			
+                        			<%-- FAILURE COUNT --%>
+                        			<c:when test="${not callbackResult.failureDevicesSupported}">
+	                                	<td>
+	                                	<div style="font-size:12px;padding-right:20px;">
+	                                		<cti:dataUpdaterValue type="BACKGROUNDPROCESS" identifier="${resultsId}/PROCESSING_EXCEPTION_COUNT"/>
+										</div>
+										</td>
+	                                </c:when>
+	                                
+	                                <%-- FAILURE COUNT/DEVICE COLLECTION --%>
+	                                <c:otherwise>
                                 
-                                <%-- MASS CHANGE/DELETE ACTUALLY ADDS ERRORS TO GROUP --%>
-                                <c:when test="${b.massChange || b.massDelete}">
-                                
-                                    <c:set var="processingExceptionCollectionActionFormName" value="processingExceptionCollectionActionForm${b.resultsId}"/>
-                                
-                                    <a href="javascript:submitForm('${processingExceptionCollectionActionFormName}');" class="small" title="${performNewActionLinkTitle}"><cti:dataUpdaterValue type="BULKRESULT" identifier="${b.resultsId}/PROCESSING_EXCEPTION_COUNT"/></a> 
-                                    
-                                    <tags:selectedDevicesPopup deviceCollection="${b.processingExceptionDeviceCollection}" />
-                                    
-                                    <form id="${processingExceptionCollectionActionFormName}" method="post" action="/spring/bulk/collectionActions">
-                                        <cti:deviceCollection deviceCollection="${b.processingExceptionDeviceCollection}" />
-                                    </form>
-                                    
-                                </c:when>
-                                
-                                <%-- UPDATE/IMPORT DOES NOT --%>
-                                <c:otherwise>
-                                
-                                    <cti:dataUpdaterValue type="BULKRESULT" identifier="${b.resultsId}/PROCESSING_EXCEPTION_COUNT"/>
-                                    
-                                    <tags:downloadBulkFailuresFile resultsId="${b.resultsId}" showText="false" />
-                                    
-                                </c:otherwise>
-                            
-                            </c:choose>
+	                                	<td>
+	                                    <c:set var="processingExceptionCollectionActionFormName" value="processingExceptionCollectionActionForm${resultsId}"/>
+	                                
+	                                    <a href="javascript:submitForm('${processingExceptionCollectionActionFormName}');" class="small" title="${performNewActionLinkTitle}"><cti:dataUpdaterValue type="BACKGROUNDPROCESS" identifier="${resultsId}/PROCESSING_EXCEPTION_COUNT"/></a> 
+	                                    
+	                                    <tags:selectedDevicesPopup deviceCollection="${callbackResult.failureDeviceCollection}" />
+	                                    
+	                                    <form id="${processingExceptionCollectionActionFormName}" method="post" action="/spring/bulk/collectionActions">
+	                                        <cti:deviceCollection deviceCollection="${callbackResult.failureDeviceCollection}" />
+	                                    </form>
+	                                    </td>
+	                                    
+	                                </c:otherwise>
+	                            	
+	                            	</c:choose>
+                        		</td>
+                        
+                        		<%-- FAILURE FILE DOWNLOAD --%>
+                            	<td>
+                            		<c:if test="${callbackResult.failureFileSupported}">
+                               			<tags:downloadBulkFailuresFile resultsId="${resultsId}" showText="false" />
+                           			</c:if>
+                                </td>
+
+                           	</tr>
+                           	</table>
                             
                         </td>
                         
                         
-                        <%-- FIELDS --%>
+                        <%-- BULK FIELDS --%>
                         <td>
                             <div style="width:20px;"></div>
                         </td>
                         <td>
-                            <c:forEach var="field" items="${b.bulkFieldColumnHeaders}" varStatus="fieldStatus">
-                                ${field}<c:if test="${fieldStatus.count < fn:length(b.bulkFieldColumnHeaders)}">,</c:if>
-                            </c:forEach>
+                        	<c:if test="${callbackResult.bulkFieldListingSupported}">
+	                            <c:forEach var="field" items="${callbackResult.bulkFieldColumnHeaders}" varStatus="fieldStatus">
+	                                ${field}<c:if test="${fieldStatus.count < fn:length(callbackResult.bulkFieldColumnHeaders)}">,</c:if>
+	                            </c:forEach>
+                            </c:if>
                         </td>
                         
                         <%-- DEATIL LINK --%>
                         <c:choose>
                             <c:when test="${detailViewable}">
-                                <cti:url var="resultDetailUrl" value="/spring/bulk/${b.bulkOperationType.pathValue}/${b.bulkOperationType.pathValue}Results">
-                                    <cti:param name="resultsId" value="${b.resultsId}" />
+                                <cti:url var="resultDetailUrl" value="/spring/bulk/${callbackResult.backgroundProcessType.pathValue}/${callbackResult.backgroundProcessType.pathValue}Results">
+                                    <cti:param name="resultsId" value="${resultsId}" />
                                 </cti:url>
                                 <td>
                                     <a href="${resultDetailUrl}"><cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.detailLink"/></a>
                                 </td>
                             </c:when>
-                            <c:when test="${hasBulkImportRP || hasBulkUpdateRP || hasMassChangeRP || hasMassDeleteRP}">
+                            <c:when test="${hasBulkImportRP || hasBulkUpdateRP || hasMassChangeRP}">
                                 <td></td>
                             </c:when>
                             <c:otherwise>
@@ -222,7 +242,7 @@
                         
                         <%-- COMPLETE? --%>
                         <td align="right">
-                            <cti:dataUpdaterValue type="BULKRESULT" identifier="${b.resultsId}/STATUS_TEXT"/>
+                            <cti:dataUpdaterValue type="BACKGROUNDPROCESS" identifier="${resultsId}/STATUS_TEXT"/>
                         </td>
                     </tr>
                 

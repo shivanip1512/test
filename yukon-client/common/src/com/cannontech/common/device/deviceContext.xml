@@ -34,7 +34,6 @@
         <property name="dbPersistentDao" ref="dbPersistentDao" />
         <property name="deviceDefinitionDao" ref="deviceDefinitionDao" />
         <property name="pointService" ref="devicePointService" />
-        <property name="pointDao" ref="pointDao"/>
     </bean>
     
     <bean id="devicePointService" class="com.cannontech.common.device.service.PointServiceImpl" scope="singleton">
@@ -59,7 +58,6 @@
         <property name="inputFile" value="classpath:com/cannontech/common/device/definition/dao/deviceDefinition.xml" />
         <property name="schemaFile" value="classpath:com/cannontech/common/device/definition/dao/deviceDefinition.xsd" />
         <property name="pointLegendFile" value="classpath:com/cannontech/common/device/definition/dao/pointOffset.xsl" />
-        <property name="javaConstantClassName" value="com.cannontech.database.data.pao.DeviceTypes" />
     </bean>
     
 	<bean id="paoGroupsWrapper" class="com.cannontech.database.data.pao.PaoGroupsWrapperImpl" scope="singleton" />
@@ -88,6 +86,11 @@
     
     <bean id="deviceTypeGroupProvider"
         class="com.cannontech.common.device.groups.dao.impl.providers.DeviceTypeGroupProvider">
+        <property name="mainDelegator" ref="deviceGroupDao"/>
+    </bean>
+    
+    <bean id="deviceTagGroupProvider"
+        class="com.cannontech.common.device.groups.dao.impl.providers.DeviceTagGroupProvider">
         <property name="mainDelegator" ref="deviceGroupDao"/>
     </bean>
     
@@ -138,6 +141,7 @@
                 <entry key="ROLODEX" value-ref="rolodexDeviceGroupProvider"/>
                 <entry key="ROUTE" value-ref="routeGroupProvider"/>
                 <entry key="DEVICETYPE" value-ref="deviceTypeGroupProvider"/>
+                <entry key="DEVICETAG" value-ref="deviceTagGroupProvider"/>
                 <entry key="METERS_SCANNING_LOAD_PROFILE" value-ref="loadProfileScanningMetersGroupProvider"/>
                 <entry key="METERS_SCANNING_VOLTAGE_PROFILE" value-ref="voltageProfileScanningMetersGroupProvider"/>
                 <entry key="METERS_SCANNING_INTEGRITY" value-ref="integrityScanningMetersGroupProvider"/>

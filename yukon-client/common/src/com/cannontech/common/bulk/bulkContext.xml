@@ -356,7 +356,7 @@
     
     <bean id="deviceGroupCollectionHelper" class="com.cannontech.common.bulk.collection.DeviceGroupCollectionHelperImpl"/>
     
-    <bean id="recentBulkOperationResultsCache" class="com.cannontech.common.util.RecentResultsCache"/>
+    <bean id="recentResultsCache" class="com.cannontech.common.util.RecentResultsCache"/>
     
     <bean id="baseBulkService" class="com.cannontech.common.bulk.service.impl.BaseBulkService" abstract="true">
     
@@ -365,8 +365,7 @@
         <property name="bulkFieldService" ref="bulkFieldService" />
         <property name="temporaryDeviceGroupService" ref="temporaryDeviceGroupService" />
         <property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao" />
-        <property name="deviceGroupCollectionHelper" ref="deviceGroupCollectionHelper" />
-        <property name="recentBulkOperationResultsCache" ref="recentBulkOperationResultsCache" />
+        <property name="recentResultsCache" ref="recentResultsCache" />
         
     </bean>
     

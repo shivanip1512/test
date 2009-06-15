@@ -46,6 +46,10 @@
         <cti:msg var="changeDeviceTypeDescription" key="yukon.common.device.bulk.collectionActions.changeDeviceTypeDescription"/>
         <cti:msg var="routeLocateLabel" key="yukon.common.device.bulk.collectionActions.routeLocateLabel"/>
         <cti:msg var="routeLocateDescription" key="yukon.common.device.bulk.collectionActions.routeLocateDescription"/>
+        <cti:msg var="addPointsLabel" key="yukon.common.device.bulk.collectionActions.addPointsLabel"/>
+        <cti:msg var="addPointsDescription" key="yukon.common.device.bulk.collectionActions.addPointsDescription"/>
+        <cti:msg var="removePointsLabel" key="yukon.common.device.bulk.collectionActions.removePointsLabel"/>
+        <cti:msg var="removePointsDescription" key="yukon.common.device.bulk.collectionActions.removePointsDescription"/>
         <cti:msg var="massDeleteLabel" key="yukon.common.device.bulk.collectionActions.massDeleteLabel"/>
         <cti:msg var="massDeleteDescription" key="yukon.common.device.bulk.collectionActions.massDeleteDescription"/>
         <cti:msg var="deviceCollectionReportLabel" key="yukon.common.device.bulk.collectionActions.deviceCollectionReportLabel"/>
@@ -132,6 +136,32 @@
                     </form>
                 </td>
                 <td>${routeLocateDescription}</td>
+            </tr>
+            </cti:checkProperty>
+            
+            <%-- ADD POINTS --%>
+            <cti:checkProperty property="operator.DeviceActionsRole.ADD_REMOVE_POINTS">
+            <tr>
+                <td>
+                    <form id="addPointsForm" method="get" action="/spring/bulk/addPoints/home">
+                        <cti:deviceCollection deviceCollection="${deviceCollection}" />
+                        <input type="submit" id="addPointsButton" value="${addPointsLabel}" style="width:140px;"/>
+                    </form>
+                </td>
+                <td>${addPointsDescription}</td>
+            </tr>
+            </cti:checkProperty>
+            
+            <%-- REMOVE POINTS --%>
+            <cti:checkProperty property="operator.DeviceActionsRole.ADD_REMOVE_POINTS">
+            <tr>
+                <td>
+                    <form id="removePointsForm" method="get" action="/spring/bulk/removePoints/home">
+                        <cti:deviceCollection deviceCollection="${deviceCollection}" />
+                        <input type="submit" id="removePointsButton" value="${removePointsLabel}" style="width:140px;"/>
+                    </form>
+                </td>
+                <td>${removePointsDescription}</td>
             </tr>
             </cti:checkProperty>
             
