@@ -28,7 +28,7 @@ if exist "C:\Program Files\Microsoft Visual Studio 9.0\VC\bin\vcvars32.bat" (
 rem Roguewave configuration settings.
 
 set rw=
-set rwbuildlevel=15
+set rwbuildlevel=12
 
 rem Preset the exit code to failure.  This will only be set to 0 on a successful compilation.
 
@@ -44,10 +44,10 @@ rem             sets the base directory to the supplied directory
 rem     --labels build-version build-version-details
 rem             set the corresponding build information labels
 
-set debug=true
+set debug=
 set build_version=
 set build_version_details=
-set build_mode=DEBUG
+set build_mode=RELEASE
 set exit=0
 set _build_args=
 
@@ -61,10 +61,10 @@ if "%~1" == "" goto Done_Processing
         goto Process_Args
     )
     
-    if /i "%~1" == "--release" (
-        set debug=
-        set build_mode=RELEASE
-        set rwbuildlevel=12
+    if /i "%~1" == "--debug" (
+        set debug=true
+        set build_mode=DEBUG
+        set rwbuildlevel=15
         shift
         goto Process_Args
     )
