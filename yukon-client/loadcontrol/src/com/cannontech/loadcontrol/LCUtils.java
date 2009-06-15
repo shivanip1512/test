@@ -305,9 +305,12 @@ public class LCUtils
 				if( prg.getDisableFlag().booleanValue() ) {
                     return CtiUtilities.STRING_DASH_LINE;
                 } else {
-					if( prg.getStopTime() == null || prg.getStopTime().before(get1990GregCalendar()) ) {
+                	//return dashes if stop time is null, <1990 or >= 2035 
+                	if( prg.getStopTime() == null 
+						|| prg.getStopTime().before(get1990GregCalendar())
+						|| prg.getStopTime().compareTo(CtiUtilities.get2035GregCalendar()) >= 0 ) {
                         return CtiUtilities.STRING_DASH_LINE;
-                    } else {
+					} else {
                         String result = dateFormattingService.formatDate(prg.getStopTime().getTime(), DateFormatEnum.DATEHM, userContext);
                         return result;
                     }

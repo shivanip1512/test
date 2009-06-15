@@ -99,6 +99,7 @@ public final class CtiUtilities
 	public static final Integer LM_SUBORDINATION_FUNC_ID = new Integer(3);
 	
 	private static java.util.GregorianCalendar gc1990 = null;
+	private static java.util.GregorianCalendar gc2035 = null;
 	
 	//a universal formatter for numbers
 	private static DecimalFormat numberFormatter = null;
@@ -136,6 +137,14 @@ public final class CtiUtilities
 		gc1990.set( Calendar.MINUTE, 0 );
 		gc1990.set( Calendar.SECOND, 0 );
 
+		/** Init end of time **/
+		gc2035 = new java.util.GregorianCalendar();
+		gc2035.set( Calendar.YEAR, 2035 );
+		gc2035.set( Calendar.DAY_OF_YEAR, 1 );
+		gc2035.set( Calendar.HOUR, 0 );
+		gc2035.set( Calendar.MINUTE, 0 );
+		gc2035.set( Calendar.SECOND, 0 );
+		
 		try
 		{
 			temp = java.net.InetAddress.getLocalHost().getHostAddress().toString()
@@ -523,6 +532,10 @@ private static boolean findPath(java.util.Stack s, Object o) {
  */
 public static java.util.GregorianCalendar get1990GregCalendar() {
 	return gc1990;
+}
+
+public static java.util.GregorianCalendar get2035GregCalendar() {
+	return gc2035;
 }
 
 /**
