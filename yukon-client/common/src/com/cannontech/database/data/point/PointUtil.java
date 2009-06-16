@@ -156,7 +156,7 @@ public class PointUtil {
 			pointBase.setPointAlarming(savePointAlarming);
 			pointBase.setPointID(savePoint.getPointID());
 		
-			//Set new point defaults from tempalte
+			//Set new point defaults from template
 			pointBase.getPoint().setPointType(PointTypes.getType(newPointTemplate.getType()));
 			
 			// Add the updated (partial) point information.
@@ -217,6 +217,13 @@ public class PointUtil {
 	}
 	
 	public static void applyPointTemplate(PointBase pointBase, PointTemplate pointTemplate) {
+		
+		if (PointTypes.getType(pointBase.getPoint().getPointType()) != pointTemplate.getType()) {
+			throw new IllegalArgumentException("Method not intended to be used to change point type.");
+		}
+		
+		pointBase.getPoint().setPointOffset(pointTemplate.getOffset());
+		pointBase.getPoint().setPointName(pointTemplate.getName());
 		
 		if (pointBase instanceof AnalogPoint) {
         	
