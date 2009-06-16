@@ -84,7 +84,7 @@ public class DeviceGroupUpdaterController {
             	error = "File header should contain an Identifier column and at least one action column.";
             } else {
             
-            	int currentLineNumber = 0;
+            	int currentLineNumber = 1;
 	            String currentIdentifier = "";
 	            String currentColumnValue = "";
 	            BulkField<?, YukonDevice> identifierBulkField = null;
@@ -92,7 +92,7 @@ public class DeviceGroupUpdaterController {
             	try {
 		            
 		            // identifier bulk field
-		            BulkFieldColumnHeader identifierColunHeader = BulkFieldColumnHeader.valueOf(headerRow[currentLineNumber++].trim());
+		            BulkFieldColumnHeader identifierColunHeader = BulkFieldColumnHeader.valueOf(headerRow[0].trim());
 		            identifierBulkField = bulkYukonDeviceFieldFactory.getBulkField(identifierColunHeader.getFieldName());
 		            
 		            // processors
