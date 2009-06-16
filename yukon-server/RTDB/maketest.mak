@@ -55,6 +55,7 @@ test_mgr_point.obj \
 test_dev_ccu721.obj \
 test_dev_mct4xx.obj \
 test_dev_mct410.obj \
+test_dev_mct470.obj \
 test_dev_addr_global.obj \
 
 ALL:            $(TEST_OBJS) Makefile

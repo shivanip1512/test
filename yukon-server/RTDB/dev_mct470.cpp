@@ -1388,7 +1388,7 @@ INT CtiDeviceMCT470::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
 bool CtiDeviceMCT470::isPrecannedTableCurrent() const
 {
-    return hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableType) && _precannedTableCurrent;
+    return _precannedTableCurrent && hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableType);
 }
 
 
