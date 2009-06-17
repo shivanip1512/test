@@ -111,7 +111,7 @@ function execute_CapBankMoveBack (paoId, cmdId, redirectURL) {
             'cmdId': cmdId
         }, 
 		onSuccess: function() {
-            window.location.replace(redirectURL);
+        	setTimeout('window.location.replace(\'' + redirectURL + '\')', 1000);
         },
 		onFailure: function() {
             display_status('Move Bank', "Failed", "red"); 

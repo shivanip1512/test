@@ -12,7 +12,7 @@
         <tr>
             <td>
                 <a href="javascript:void(0);" class="optDeselect" onmouseover="changeOptionStyle(this);"
-                   onclick="closeTierPopup(); executeCommandController('${paoId}', '${assignHereCmdId}', 'Assign Bank Here', 'CAPBANK', false, ${opts}); setTimeout('window.location.reload()', 2000);">${assignHere}</a>
+                   onclick="closeTierPopup(); executeCommandController('${paoId}', '${assignHereCmdId}', 'Assign Bank Here', 'CAPBANK', false, ${opts}); setTimeout('window.location.reload()', 1000);">${assignHere}</a>
             </td>
         </tr>
     </table>
