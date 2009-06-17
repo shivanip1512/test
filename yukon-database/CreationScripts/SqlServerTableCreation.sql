@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     6/4/2009 4:29:04 PM                          */
+/* Created on:     6/17/2009 1:24:15 PM                         */
 /*==============================================================*/
 
 
@@ -12698,6 +12698,20 @@ INSERT INTO YukonUserRole VALUES(-1016, -100, -200, -20006, '(none)');
 INSERT INTO YukonUserRole VALUES(-1017, -100, -200, -20007, '(none)');
 INSERT INTO YukonUserRole VALUES(-1018, -100, -200, -20008, '(none)');
 INSERT INTO YukonUserRole VALUES(-1019, -100, -200, -20009, '(none)');
+
+/* Adding the Energy Company Role to DefaultCTI */
+INSERT INTO YukonUserRole VALUES(-1100, -100, -2, -1100, '(none)');
+INSERT INTO YukonUserRole VALUES(-1101, -100, -2, -1101, '(none)');
+INSERT INTO YukonUserRole VALUES(-1102, -100, -2, -1102, '(none)');
+INSERT INTO YukonUserRole VALUES(-1105, -100, -2, -1105, '(none)');
+INSERT INTO YukonUserRole VALUES(-1106, -100, -2, -1106, '(none)');
+INSERT INTO YukonUserRole VALUES(-1107, -100, -2, -1107, '(none)');
+INSERT INTO YukonUserRole VALUES(-1108, -100, -2, -1108, '(none)');
+INSERT INTO YukonUserRole VALUES(-1109, -100, -2, -1109, '(none)');
+INSERT INTO YukonUserRole VALUES(-1110, -100, -2, -1110, '(none)');
+INSERT INTO YukonUserRole VALUES(-1111, -100, -2, -1111, '(none)');
+INSERT INTO YukonUserRole VALUES(-1112, -100, -2, -1112, '(none)');
+INSERT INTO YukonUserRole VALUES(-1114, -100, -2, -1114, '(none)'); 
 
 /*==============================================================*/
 /* Table: YukonWebConfiguration                                 */
