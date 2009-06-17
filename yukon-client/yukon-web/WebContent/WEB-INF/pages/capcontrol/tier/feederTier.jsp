@@ -648,9 +648,9 @@
 			                    class="warning" ${popupEvent}="getCapBankTempMoveBack('${thisCapBankId}', event);" 
 		                    </c:when>
 		                    <c:otherwise>
-		                        onmouseover="statusMsg(this, 'Click here to temporarily move this CapBank from its current parent feeder');"
+		                        onmouseover="statusMsg(this, 'Click here to fully move or temporarily move this CapBank from its current parent feeder');"
 		                        onmouseout="nd();"
-		                        onclick="return GB_show('CapBank Temp Move for ${viewableCapBank.capBankDevice.ccName} (Pick feeder by clicking on name)',
+		                        onclick="return GB_show('CapBank Move for ${viewableCapBank.capBankDevice.ccName} (Pick feeder by clicking on name)',
 		                            '/capcontrol/tempmove.jsp?bankid=${thisCapBankId}', 500, 710, onGreyBoxClose);"
 		                    </c:otherwise>
 		                    </c:choose>

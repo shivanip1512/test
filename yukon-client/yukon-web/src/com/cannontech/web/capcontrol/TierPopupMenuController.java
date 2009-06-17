@@ -359,11 +359,20 @@ public class TierPopupMenuController extends MultiActionController {
         String paoName = capBank.getCcName();
         mav.addObject("paoName", paoName);
         
-        int cmdId = CapControlCommand.RETURN_BANK_TO_FEEDER;
-        mav.addObject("cmdId", cmdId);
+        int moveBackCmdId = CapControlCommand.RETURN_BANK_TO_FEEDER;
+        int assignHereCmdId = CapControlCommand.CMD_BANK_TEMP_MOVE;
+        mav.addObject("moveBackCmdId", moveBackCmdId);
+        mav.addObject("assignHereCmdId", assignHereCmdId);
         
-        String displayName = "Temp Move Back";
-        mav.addObject("displayName", displayName);
+        String moveBack = "Temp Move Back";
+        String assignHere = "Assign Bank Here";
+        mav.addObject("moveBack", moveBack);
+        mav.addObject("assignHere", assignHere);
+        
+        String opts = "[" + capBank.getParentID() + ", " + capBank.getParentID()
+            + ", " + capBank.getCloseOrder() + ", " + capBank.getCloseOrder()
+            + ", " + capBank.getTripOrder() + ", " + 1.0 + "]";
+        mav.addObject("opts", opts);
         
         mav.setViewName("tier/popupmenu/tempMoveMenu.jsp");
         return mav;

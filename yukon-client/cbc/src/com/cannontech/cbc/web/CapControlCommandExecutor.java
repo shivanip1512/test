@@ -168,8 +168,6 @@ public class CapControlCommandExecutor
 	}
 
 	public void executeCBCCommand(int paoId, float[] optParams) {
-       //TODO validate optionalParams is not null
-        
         // Build up the manaual change message here, params[0] = new state ID
         CapBankDevice bank = capControlCache.getCapBankDevice(paoId);
         
@@ -278,7 +276,6 @@ public class CapControlCommandExecutor
 	}
 	
 	private void executeCapBankCmdTempMove(final int paoId, final float[] optionalParams) {
-	    //TODO: Validate Optional parameters is not null
 		TempMoveCapBank msg = new TempMoveCapBank(
 	                                                    (int)optionalParams[0], // original feeder ID
 	                                                    (int)optionalParams[1], // new feeder ID
@@ -286,14 +283,12 @@ public class CapControlCommandExecutor
 	                                                    optionalParams[2], // order of control
 	                                                    optionalParams[3],
 	                                                    optionalParams[4],
-	                                                    false );
+	                                                    optionalParams[5] > 0 ? true : false);
 	    capControlCache.getConnection().write( msg );
 	}
 	
 	private void executeCapBankCmdResetOpCount(final int paoId, final float[] optionalParams) {
         
-		//TODO: Validate optionalParams is not null
-		
 		// Build up the reset opcount message here
         CapBankDevice bank = capControlCache.getCapBankDevice(paoId);
 

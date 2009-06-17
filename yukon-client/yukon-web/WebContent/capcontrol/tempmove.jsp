@@ -117,15 +117,22 @@ Event.observe(window, 'load', updateFeederBankInfo, false);
 		<input type="hidden" name="opt"> <!--Display Order-->
 		<input type="hidden" name="opt"> <!--Close Order-->
 		<input type="hidden" name="opt"> <!--Trip Order-->
+		<input type="hidden" name="opt"> <!--Permanent/Temp-->
 		<input type="hidden" name="selectedFeeder" value="<%=oldfdrid%>" id="selectedFeeder">
 	
 	    <table id="innerTable" style="margin-left: 5%; margin-right: 5%;" border="0" cellspacing="0" cellpadding="0">
-	        <tr><td class="columnHeader" colspan="4">Temp Move for: <%=path %></td></tr>
+	        <tr>
+	           <td class="columnHeader" colspan="5">Move for: <%=path %></td>
+            </tr>
 	        <tr height="5px"/>
 	        <tr class="columnHeader lAlign">
 	            <td class="rAlign">
-                    <input id="submitOne" type="button" value="Submit" 
-                        onclick="setFeederIDinRedirectURL(getSelectedFeeder(),<%=oneline%>,<%=subbusID %>);postMany('frmCapBankMove', 'opt[1]', getSelectedFeeder(), 'opt[2]', getOrder('Display'), 'opt[3]', getOrder('Close'), 'opt[4]', getOrder('Trip') );"/>
+                    <input id="submitOne" type="button" value="Temp Move" 
+                        onclick="setFeederIDinRedirectURL(getSelectedFeeder(),<%=oneline%>,<%=subbusID %>);postMany('frmCapBankMove', 'opt[1]', getSelectedFeeder(), 'opt[2]', getOrder('Display'), 'opt[3]', getOrder('Close'), 'opt[4]', getOrder('Trip'), 'opt[5]', 0 );"/>
+                </td>
+                <td class="rAlign">
+                    <input id="submitOne" type="button" value="Move" 
+                        onclick="setFeederIDinRedirectURL(getSelectedFeeder(),<%=oneline%>,<%=subbusID %>);postMany('frmCapBankMove', 'opt[1]', getSelectedFeeder(), 'opt[2]', getOrder('Display'), 'opt[3]', getOrder('Close'), 'opt[4]', getOrder('Trip'), 'opt[5]', 1 );"/>
                 </td>
 	            <td class="rAlign">Display Order: <input type="text" id="txtDisplayOrder" class="tableCell" size="1" maxlength="3" value="1.5"></td>
 	            <td class="rAlign">Close Order: <input type="text" id="txtCloseOrder" class="tableCell" size="1" maxlength="3" value="1.5"></td>

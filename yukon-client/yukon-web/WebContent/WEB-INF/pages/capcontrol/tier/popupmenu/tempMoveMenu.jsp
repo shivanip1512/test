@@ -6,7 +6,13 @@
         <tr>
             <td>
                 <a href="javascript:void(0);" class="optDeselect" onmouseover="changeOptionStyle(this);"
-                   onclick="closeTierPopup(); execute_CapBankMoveBack('${paoId}','${cmdId}', '${redirectURL}');">${displayName}</a>
+                   onclick="closeTierPopup(); execute_CapBankMoveBack('${paoId}','${moveBackCmdId}', '${redirectURL}');">${moveBack}</a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <a href="javascript:void(0);" class="optDeselect" onmouseover="changeOptionStyle(this);"
+                   onclick="closeTierPopup(); executeCommandController('${paoId}', '${assignHereCmdId}', 'Assign Bank Here', 'CAPBANK', false, ${opts}); setTimeout('window.location.reload()', 2000);">${assignHere}</a>
             </td>
         </tr>
     </table>
