@@ -21,20 +21,20 @@ public class DeviceAddressRange
    
 	//MCT470= 510,001-594,000
 	private static final RangeBase RANGE_MCT470 = 
-		new RangeBase( 100000, 2796201, DeviceTypes.MCT470);
+		new RangeBase( 100000, 3997695, DeviceTypes.MCT470);
 	
 	//MCT430= 620,000-620,199; 620,200-700,000
     private static final RangeBase RANGE_MCT430A = 
-        new RangeBase( 100000, 2796201, DeviceTypes.MCT430A);
+        new RangeBase( 100000, 3997695, DeviceTypes.MCT430A);
     
     private static final RangeBase RANGE_MCT430S4 = 
-        new RangeBase( 100000, 2796201, DeviceTypes.MCT430S4);
+        new RangeBase( 100000, 3997695, DeviceTypes.MCT430S4);
 
     private static final RangeBase RANGE_MCT430SL = 
-        new RangeBase( 100000, 2796201, DeviceTypes.MCT430SL);
+        new RangeBase( 100000, 3997695, DeviceTypes.MCT430SL);
 
     private static final RangeBase RANGE_MCT430A3 = 
-        new RangeBase( 100000, 2796201, DeviceTypes.MCT430A3);
+        new RangeBase( 100000, 3997695, DeviceTypes.MCT430A3);
     
    	// 310,000-313,555; 313,600-314,499; 314,500-499,999; 
     // 594,001-610,000; 810,001-1,000,000; 2,897,700-3,597,700 
