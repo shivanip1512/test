@@ -5,6 +5,9 @@ package com.cannontech.device.range;
  * Sep 5, 2002 at 4:20:40 PM
  * 
  * A undefined generated comment
+ * Ranges entered by SNelson on 20090615.
+ * Ranges can be found in http://portal.cannontech.com/sites/Ops/Production%20Documents/Other%20Address%20Numbers-%20Allocation%20doc/Product%20Address%20Numbers.xls
+ * 
  */
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -16,9 +19,11 @@ public class DeviceAddressRange
 	private static final RangeBase RANGE_DEFAULT = 
 		new RangeBase(0, Integer.MAX_VALUE, PAOGroups.INVALID);
    
+	//MCT470= 510,001-594,000
 	private static final RangeBase RANGE_MCT470 = 
 		new RangeBase( 100000, 2796201, DeviceTypes.MCT470);
 	
+	//MCT430= 620,000-620,199; 620,200-700,000
     private static final RangeBase RANGE_MCT430A = 
         new RangeBase( 100000, 2796201, DeviceTypes.MCT430A);
     
@@ -30,18 +35,22 @@ public class DeviceAddressRange
 
     private static final RangeBase RANGE_MCT430A3 = 
         new RangeBase( 100000, 2796201, DeviceTypes.MCT430A3);
-   	
+    
+   	// 310,000-313,555; 313,600-314,499; 314,500-499,999; 
+    // 594,001-610,000; 810,001-1,000,000; 2,897,700-3,597,700 
 	private static final RangeBase RANGE_MCT410CL = 
-		new RangeBase( 0, 2796201, DeviceTypes.MCT410CL); 
+		new RangeBase( 0, 3997695, DeviceTypes.MCT410CL); 
    	
+	//700,001-799,999; 1,000,001-1,398,100; 1,398,102 - 2,796,201 
    	private static final RangeBase RANGE_MCT410IL = 
-		new RangeBase( 1000000, 2796201, DeviceTypes.MCT410IL);   
+		new RangeBase( 0, 3997695, DeviceTypes.MCT410IL);   
    	
+   	// 3,797,700-3,996,927
    	private static final RangeBase RANGE_MCT410FL = 
-   	    new RangeBase( 0, 2796201, DeviceTypes.MCT410FL);
+   	    new RangeBase( 0, 3997695, DeviceTypes.MCT410FL);
    	
    	private static final RangeBase RANGE_MCT410GL = 
-   	    new RangeBase( 0, 2796201, DeviceTypes.MCT410GL);
+   	    new RangeBase( 0, 3997695, DeviceTypes.MCT410GL);
 
    	private static final RangeBase RANGE_MCT_BROADCAST = 
         new RangeBase( 1, 4096, DeviceTypes.MCTBROADCAST);
