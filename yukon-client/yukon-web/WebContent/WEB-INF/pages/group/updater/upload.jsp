@@ -8,7 +8,7 @@
 
    	<cti:breadCrumbs>
 	   <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-	   <cti:crumbLink url="/spring/group/editor/home" title="Device Groups" />
+	   <cti:crumbLink url="/spring/group/editor/home" title="Groups Home" />
 	   &gt; File Upload
   	</cti:breadCrumbs>
         
@@ -39,7 +39,7 @@
 					     <br><br>
 					     Do not use the Create Groups option if you expect the groups to already exists, this will prevent any misspellings from causing unwanted groups to be created.
 					     <br><br>
-					     When this option is checked, if any of the group names specified in the column headers does not yet exist, they will be created automatically.
+					     When this option is checked, if any of the group names specified in the column headers or in any of the row values does not yet exist, they will be created automatically.
 					     <br><br>
 					     
 					</tags:simplePopup>

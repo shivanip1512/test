@@ -176,9 +176,11 @@ public class DeviceGroupUpdaterController {
 	private class DeviceGroupPrefixProcessor implements BulkFieldProcessor<YukonDevice, String> {
 
 		private StoredDeviceGroup group;
+		private boolean createGroups;
 		
 		public DeviceGroupPrefixProcessor (String groupName, boolean createGroups) {
 			this.group = deviceGroupEditorDao.getStoredGroup(groupName, createGroups);
+			this.createGroups = createGroups;
 		}
 
 		@Override
@@ -190,7 +192,7 @@ public class DeviceGroupUpdaterController {
 			}
 			
 			// find subgroup, add device to it
-			StoredDeviceGroup subgroupGroup = deviceGroupEditorDao.getGroupByName(this.group, subgroup, true);
+			StoredDeviceGroup subgroupGroup = deviceGroupEditorDao.getGroupByName(this.group, subgroup, this.createGroups);
 			deviceGroupMemberEditorDao.addDevices(subgroupGroup, device);
 		}
 		

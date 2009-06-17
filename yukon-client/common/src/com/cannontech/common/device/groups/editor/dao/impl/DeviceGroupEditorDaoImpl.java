@@ -223,10 +223,10 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
                 
                 // throw special exception if the grup is child of Hidden group (temp group)
                 if ((parent.getFullName() + "/").equals(SystemGroupEnum.TEMPORARYGROUPS.getFullPath())) {
-                    throw new TemporaryDeviceGroupNotFoundException(fullName);
+                    throw new TemporaryDeviceGroupNotFoundException("Group \"" + fullName + "\" could not be found");
                 }
                 
-                throw new NotFoundException(fullName);
+                throw new NotFoundException("Group \"" + fullName + "\" could not be found");
             }
         }
         PartialGroupResolver resolver = new PartialGroupResolver(this);
