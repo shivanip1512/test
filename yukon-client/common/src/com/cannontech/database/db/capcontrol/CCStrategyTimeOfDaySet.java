@@ -32,6 +32,7 @@ public class CCStrategyTimeOfDaySet {
     private CCStrategyTimeOfDay hourTwentyOne = new CCStrategyTimeOfDay();
     private CCStrategyTimeOfDay hourTwentyTwo = new CCStrategyTimeOfDay();
     private CCStrategyTimeOfDay hourTwentyThree = new CCStrategyTimeOfDay();
+    
     private CCStrategyTimeOfDay[] array = {
         hourZero, hourOne, hourTwo, hourThree, hourFour, hourFive, hourSix, 
         hourSeven, hourEight, hourNine, hourTen, hourEleven, hourTwelve, 
@@ -39,7 +40,8 @@ public class CCStrategyTimeOfDaySet {
         hourEighteen, hourNineteen, hourTwenty, hourTwentyOne, hourTwentyTwo, 
         hourTwentyThree
     };
-    private List<CCStrategyTimeOfDay> list = new ArrayList<CCStrategyTimeOfDay>(Arrays.asList(array)); 
+    
+    private List<CCStrategyTimeOfDay> list = new ArrayList<CCStrategyTimeOfDay>(Arrays.asList(array));
 
     public CCStrategyTimeOfDaySet() {
         super();
@@ -91,7 +93,7 @@ public class CCStrategyTimeOfDaySet {
         }
     }
     
-    public void setTimes() {
+    private void setTimes() {
         getHourZero().setStartTimeSeconds(0);
         getHourOne().setStartTimeSeconds(3600);
         getHourTwo().setStartTimeSeconds(7200);

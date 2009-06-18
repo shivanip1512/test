@@ -5,6 +5,7 @@
 <%@ page import="org.apache.commons.lang.StringUtils"%>
 <%@ page import="javax.faces.application.FacesMessage"%>
 <%@ page import="com.cannontech.cbc.exceptions.CBCExceptionMessages"%>
+<%@ page import="javax.faces.context.FacesContext"%>
 
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
@@ -12,8 +13,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
-
-<%@page import="javax.faces.context.FacesContext"%><f:view>
+<f:view>
 
 <cti:standardPage title="CapControl Wizard" module="capcontrol">
 <cti:includeScript link="/JavaScript/itemPicker.js"/>
@@ -21,10 +21,12 @@
 <cti:includeScript link="/JavaScript/tableCreation.js"/>
 <cti:includeScript link="/JavaScript/scrollDiv.js"/>
 <cti:includeScript link="/capcontrol/js/cbc_funcs.js"/>
-<cti:includeCss link="/WebConfig/yukon/styles/itemPicker.css"/>
 <cti:includeScript link="/JavaScript/GreyBox/AmiJS.js"/>
 <cti:includeScript link="/JavaScript/GreyBox/greybox.js"/>
+
+<cti:includeCss link="/WebConfig/yukon/styles/itemPicker.css"/>
 <cti:includeCss link="/editor/css/greybox/greybox.css"/>
+<cti:includeCss link="/editor/css/base.css"/>
 <%
     //****
     // Entry point file for all operations that edit a PAObject

@@ -17,13 +17,14 @@ public class CCStrategyTimeOfDay extends DBPersistent implements com.cannontech.
     }
 
     public static final String SETTER_COLUMNS[] = { 
-        "percentclose",
+        "PercentClose", "WkndPercentClose"
     };
     public static final String CONSTRAINT_COLUMNS[] = { "strategyId", "startTimeSeconds" };
     public static final String TABLE_NAME = "CCStrategyTimeOfDay";
     private Integer strategyId = -1;
     private Integer startTimeSeconds = 0;
     private Integer percentClose = 0;
+    private Integer wkndPercentClose = 0;
     
     public Integer getStrategyId() {
         return strategyId;
@@ -56,12 +57,27 @@ public class CCStrategyTimeOfDay extends DBPersistent implements com.cannontech.
     public void setPercentOpen() {
     }
     
+    public void setWkndPercentClose(Integer wkndPercentClose) {
+        this.wkndPercentClose = wkndPercentClose;
+    }
+    
+    public Integer getWkndPercentClose() {
+        return wkndPercentClose;
+    }
+    
+    public Integer getWkndPercentOpen() {
+        return 100 - wkndPercentClose;
+    }
+    
+    public void setWkndPercentOpen() {
+    }
+    
     /**
      * add method.
      */
     public void add() throws java.sql.SQLException {
         Object[] addValues = {
-            getStrategyId(), getStartTimeSeconds(), getPercentClose()
+            getStrategyId(), getStartTimeSeconds(), getPercentClose(), getWkndPercentClose()
         };
         add( TABLE_NAME, addValues );
     }
@@ -82,6 +98,7 @@ public class CCStrategyTimeOfDay extends DBPersistent implements com.cannontech.
     
         if( results.length == SETTER_COLUMNS.length ) {
             setPercentClose( (Integer) results[0] );
+            setWkndPercentClose( (Integer) results[1] );
         } else {
             throw new IncorrectResultSizeDataAccessException(SETTER_COLUMNS.length, results.length);
         }
@@ -91,7 +108,7 @@ public class CCStrategyTimeOfDay extends DBPersistent implements com.cannontech.
      * update method.
      */
     public void update() throws java.sql.SQLException {
-        Object setValues[]= { getPercentClose() };
+        Object setValues[]= { getPercentClose(), getWkndPercentClose() };
         Object constraintValues[] = { getStrategyId(), getStartTimeSeconds() };
         update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
     }

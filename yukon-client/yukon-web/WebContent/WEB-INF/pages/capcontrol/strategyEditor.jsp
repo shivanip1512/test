@@ -108,7 +108,7 @@
 		</x:commandButton>
 	</x:panelGroup>
 	
-	<h:panelGrid id="body" columns="2" styleClass="gridLayout" columnClasses="gridCell,gridCell" >
+	<x:panelGrid forceId="true" id="body" columns="2" styleClass="gridLayout" columnClasses="gridCell,gridCell" >
 		<h:column rendered="#{capControlForm.currentStrategyID != 0}" >
 		
 		    <x:htmlTag value="fieldset" styleClass="fieldSet">
@@ -187,7 +187,7 @@
                     title="Check to use like-day history control on this strategy."/>
             </x:htmlTag>
 	
-            <h:panelGrid rendered="#{!capControlForm.timeOfDay}" columnClasses="gridCell">
+            <x:panelGrid forceId="true" rendered="#{!capControlForm.timeOfDay}" columnClasses="gridCell">
                 <h:column>
                     <x:htmlTag value="fieldset" styleClass="fieldSet">
                         <x:htmlTag value="legend">
@@ -208,7 +208,7 @@
                             title="Option to disable automatic control on this device upon reaching the max number of operations."/>
                     </x:htmlTag>
                 </h:column>
-            </h:panelGrid>
+            </x:panelGrid>
         </h:column>
 
         <h:column rendered="#{capControlForm.currentStrategyID != 0 && (!capControlForm.timeOfDay)}" >
@@ -217,7 +217,7 @@
 	                <x:outputText value="Strategy Peaks" />
 	            </x:htmlTag>
                 
-                <x:panelGrid columns="2" columnClasses="gridCell,gridCell">
+                <x:panelGrid forceId="true" id="strategyPeaksGrid" columns="2" columnClasses="gridCell,gridCell">
                 
                     <x:outputLabel for="Control_Algorithm" value="Control Algorithm: " title="The units and process we use to make control decisions"/>
                     <x:selectOneMenu id="Control_Algorithm" onchange="controlAlgoChanged();" disabled="#{!capControlForm.editingCBCStrategy}"
@@ -246,7 +246,7 @@
 
                 </x:panelGrid>
                 
-                <x:panelGrid columns="3" columnClasses="gridCellMedium,gridCellMedium,gridCellMedium"> 
+                <x:panelGrid forceId="true" id="peakSettingsGrid" columns="3" columnClasses="gridCellMedium,gridCellMedium,gridCellMedium"> 
                     <x:outputText value=" "/>
                     <x:outputText value="Peak" style="font-weight: bold; padding: 3; text-align: center;"/>
                     <x:outputText value="Off Peak" style="font-weight: bold; padding: 3; text-align: center;"/>
@@ -467,206 +467,407 @@
                 <x:htmlTag value="legend">
                     <x:outputText value="Strategy Settings" />
                 </x:htmlTag>
-                
-                <x:panelGrid columns="3" cellspacing="3">
-                    <x:outputText value=" "/>
-                    <x:outputText value="Close" style="font-weight: bold; text-align: center;"/>
-                    <x:outputText value="Open" style="font-weight: bold; text-align: center;"/>
-                    
-                    <x:outputLabel for="hourZeroClose" id="hourZeroLabel" value = "00:00"/>
-                    <x:inputText id="hourZeroClose" disabled="#{!capControlForm.editingCBCStrategy}"
-                        size="3" value="#{capControlForm.strategyTimeOfDay.hourZero.percentClose}"/>
-                    <x:panelGroup>
-                        <x:outputLabel for="hourZeroClose" id="hourZeroOpen" value="#{capControlForm.strategyTimeOfDay.hourZero.percentOpen}"/>
-                        <x:outputText value="%"/>
-                    </x:panelGroup>
-                    
-                    <x:outputLabel for="hourOneClose" id="hourOneLabel" value="01:00"/>
-                    <x:inputText id="hourOneClose" disabled="#{!capControlForm.editingCBCStrategy}" 
-                        size="3" value="#{capControlForm.strategyTimeOfDay.hourOne.percentClose}"/>
-                    <x:panelGroup>
-                        <x:outputLabel for="hourOneClose" id="hourOneOpen" value="#{capControlForm.strategyTimeOfDay.hourOne.percentOpen}"/>
-                        <x:outputText value="%"/>
-                    </x:panelGroup>
-                    
-                    <x:outputLabel for="hourTwoClose" id="hourTwoLabel" value="02:00"/>
-                    <x:inputText id="hourTwoClose" disabled="#{!capControlForm.editingCBCStrategy}"
-                        size="3" value="#{capControlForm.strategyTimeOfDay.hourTwo.percentClose}"/>
-                    <x:panelGroup>
-                        <x:outputLabel for="hourTwoClose" id="hourTwoOpen" value="#{capControlForm.strategyTimeOfDay.hourTwo.percentOpen}"/>
-                        <x:outputText value="%"/>
-                    </x:panelGroup>
-
-                    <x:outputLabel for="hourThreeClose" id="hourThreeLabel" value="03:00"/>
-                    <x:inputText id="hourThreeClose" disabled="#{!capControlForm.editingCBCStrategy}"
-                        size="3" value="#{capControlForm.strategyTimeOfDay.hourThree.percentClose}"/>
-                    <x:panelGroup>
-                        <x:outputLabel for="hourThreeClose"  id="hourThreeOpen" value="#{capControlForm.strategyTimeOfDay.hourThree.percentOpen}"/>
-                        <x:outputText value="%"/>
-                    </x:panelGroup>
-                    
-                    <x:outputLabel for="hourFourClose" id="hourFourLabel" value="04:00"/>
-                    <x:inputText id="hourFourClose" disabled="#{!capControlForm.editingCBCStrategy}"
-                        size="3" value="#{capControlForm.strategyTimeOfDay.hourFour.percentClose}"/>
-                    <x:panelGroup>
-                        <x:outputLabel for="hourFourClose" id="hourFourOpen" value="#{capControlForm.strategyTimeOfDay.hourFour.percentOpen}"/>
-                        <x:outputText value="%"/>
-                    </x:panelGroup>
-                    
-                    <x:outputLabel for="hourFiveClose" id="hourFiveLabel" value="05:00"/>
-                    <x:inputText id="hourFiveClose" disabled="#{!capControlForm.editingCBCStrategy}"
-                        size="3" value="#{capControlForm.strategyTimeOfDay.hourFive.percentClose}"/>
-                    <x:panelGroup>
-                        <x:outputLabel for="hourFiveClose" id="hourFiveOpen" value="#{capControlForm.strategyTimeOfDay.hourFive.percentOpen}"/>
-                        <x:outputText value="%"/>
-                    </x:panelGroup>
-                    
-                    <x:outputLabel for="hourSixClose" id="hourSixLabel" value="06:00"/>
-                    <x:inputText id="hourSixClose" disabled="#{!capControlForm.editingCBCStrategy}"
-                        size="3" value="#{capControlForm.strategyTimeOfDay.hourSix.percentClose}"/>
-                    <x:panelGroup>
-                        <x:outputLabel for="hourSixClose" id="hourSixOpen" value="#{capControlForm.strategyTimeOfDay.hourSix.percentOpen}"/>
-                        <x:outputText value="%"/>
-                    </x:panelGroup>
-
-                    <x:outputLabel for="hourSevenClose" id="hourSevenLabel" value="07:00"/>
-                    <x:inputText id="hourSevenClose" disabled="#{!capControlForm.editingCBCStrategy}"
-                        size="3" value="#{capControlForm.strategyTimeOfDay.hourSeven.percentClose}"/>
-                    <x:panelGroup>
-                        <x:outputLabel for="hourSevenClose" id="hourSevenOpen" value="#{capControlForm.strategyTimeOfDay.hourSeven.percentOpen}"/>
-                        <x:outputText value="%"/>
-                    </x:panelGroup>
-        
-                    <x:outputLabel for="hourEightClose" id="hourEightLabel" value="08:00"/>
-                    <x:inputText id="hourEightClose" disabled="#{!capControlForm.editingCBCStrategy}"
-                        size="3" value="#{capControlForm.strategyTimeOfDay.hourEight.percentClose}"/>
-                    <x:panelGroup>
-                        <x:outputLabel for="hourEightClose" id="hourEightOpen" value="#{capControlForm.strategyTimeOfDay.hourEight.percentOpen}"/>
-                        <x:outputText value="%"/>
-                    </x:panelGroup>
-
-                    <x:outputLabel for="hourNineClose" id="hourNineLabel" value="09:00"/>
-                    <x:inputText id="hourNineClose" disabled="#{!capControlForm.editingCBCStrategy}"
-                        size="3" value="#{capControlForm.strategyTimeOfDay.hourNine.percentClose}"/>
-                    <x:panelGroup>
-                        <x:outputLabel for="hourNineClose" id="hourNineOpen" value="#{capControlForm.strategyTimeOfDay.hourNine.percentOpen}"/>
-                        <x:outputText value="%"/>
-                    </x:panelGroup>
-        
-                    <x:outputLabel for="hourTenClose" id="hourTenLabel" value="10:00"/>
-                    <x:inputText id="hourTenClose" disabled="#{!capControlForm.editingCBCStrategy}"
-                        size="3" value="#{capControlForm.strategyTimeOfDay.hourTen.percentClose}"/>
-                    <x:panelGroup>
-                        <x:outputLabel for="hourTenClose" id="hourTenOpen" value="#{capControlForm.strategyTimeOfDay.hourTen.percentOpen}"/>
-                        <x:outputText value="%"/>
-                    </x:panelGroup>
-        
-                    <x:outputLabel for="hourElevenClose" id="hourElevenLabel" value="11:00"/>
-                    <x:inputText id="hourElevenClose" disabled="#{!capControlForm.editingCBCStrategy}"
-                        size="3" value="#{capControlForm.strategyTimeOfDay.hourEleven.percentClose}"/>
-                    <x:panelGroup>
-                        <x:outputLabel for="hourElevenClose" id="hourElevenOpen" value="#{capControlForm.strategyTimeOfDay.hourEleven.percentOpen}"/>
-                        <x:outputText value="%"/>
-                    </x:panelGroup>
-        
-                    <x:outputLabel for="hourTwelveClose" id="hourTwelveLabel" value="12:00"/>
-                    <x:inputText id="hourTwelveClose" disabled="#{!capControlForm.editingCBCStrategy}"
-                        size="3" value="#{capControlForm.strategyTimeOfDay.hourTwelve.percentClose}"/>
-                    <x:panelGroup>
-                        <x:outputLabel for="hourTwelveClose" id="hourTwelveOpen" value="#{capControlForm.strategyTimeOfDay.hourTwelve.percentOpen}"/>
-                        <x:outputText value="%"/>
-                    </x:panelGroup>
-        
-                    <x:outputLabel for="hourThirteenClose" id="hourThirteenLabel" value="13:00"/>
-                    <x:inputText id="hourThirteenClose" disabled="#{!capControlForm.editingCBCStrategy}"
-                        size="3" value="#{capControlForm.strategyTimeOfDay.hourThirteen.percentClose}"/>
-                    <x:panelGroup>
-                        <x:outputLabel for="hourThirteenClose" id="hourThirteenOpen" value="#{capControlForm.strategyTimeOfDay.hourThirteen.percentOpen}"/>
-                        <x:outputText value="%"/>
-                    </x:panelGroup>
-        
-                    <x:outputLabel for="hourFourteenClose" id="hourFourteenLabel" value = "14:00"/>
-                    <x:inputText id="hourFourteenClose" disabled="#{!capControlForm.editingCBCStrategy}"
-                        size="3" value="#{capControlForm.strategyTimeOfDay.hourFourteen.percentClose}"/>
-                    <x:panelGroup>
-                        <x:outputLabel for="hourFourteenClose" id="hourFourteenOpen" value="#{capControlForm.strategyTimeOfDay.hourFourteen.percentOpen}"/>
-                        <x:outputText value="%"/>
-                    </x:panelGroup>
-        
-                    <x:outputLabel for="hourFifteenClose" id="hourFifteenLabel" value="15:00"/>
-                    <x:inputText id="hourFifteenClose" disabled="#{!capControlForm.editingCBCStrategy}"
-                        size="3" value="#{capControlForm.strategyTimeOfDay.hourFifteen.percentClose}"/>
-                    <x:panelGroup>
-                        <x:outputLabel for="hourFifteenClose" id="hourFifteenOpen" value="#{capControlForm.strategyTimeOfDay.hourFifteen.percentOpen}"/>
-                        <x:outputText value="%"/>
-                    </x:panelGroup>
-        
-                    <x:outputLabel for="hourSixteenClose" id="hourSixteenLabel" value="16:00"/>
-                    <x:inputText id="hourSixteenClose" disabled="#{!capControlForm.editingCBCStrategy}"
-                        size="3" value="#{capControlForm.strategyTimeOfDay.hourSixteen.percentClose}"/>
-                    <x:panelGroup>
-                        <x:outputLabel for="hourSixteenClose" id="hourSixteenOpen" value="#{capControlForm.strategyTimeOfDay.hourSixteen.percentOpen}"/>
-                        <x:outputText value="%"/>
-                    </x:panelGroup>
-        
-                    <x:outputLabel for="hourSeventeenClose" id="hourSeventeenLabel" value="17:00"/>
-                    <x:inputText id="hourSeventeenClose" disabled="#{!capControlForm.editingCBCStrategy}"
-                        size="3" value="#{capControlForm.strategyTimeOfDay.hourSeventeen.percentClose}"/>
-                    <x:panelGroup>
-                        <x:outputLabel for="hourSeventeenClose" id="hourSeventeenOpen" value="#{capControlForm.strategyTimeOfDay.hourSeventeen.percentOpen}"/>
-                        <x:outputText value="%"/>
-                    </x:panelGroup>
-
-                    <x:outputLabel for="hourEighteenClose" id="hourEighteenLabel" value="18:00"/>
-                    <x:inputText id="hourEighteenClose" disabled="#{!capControlForm.editingCBCStrategy}"
-                        size="3" value="#{capControlForm.strategyTimeOfDay.hourEighteen.percentClose}"/>
-                    <x:panelGroup>
-                        <x:outputLabel for="hourEighteenClose" id="hourEighteenOpen" value="#{capControlForm.strategyTimeOfDay.hourEighteen.percentOpen}"/>
-                        <x:outputText value="%"/>
-                    </x:panelGroup>
-        
-                    <x:outputLabel for="hourNineteenClose" id="hourNineteenLabel" value="19:00"/>
-                    <x:inputText id="hourNineteenClose" disabled="#{!capControlForm.editingCBCStrategy}"
-                        size="3" value="#{capControlForm.strategyTimeOfDay.hourNineteen.percentClose}"/>
-                    <x:panelGroup>
-                        <x:outputLabel for="hourNineteenClose" id="hourNineteenOpen" value="#{capControlForm.strategyTimeOfDay.hourNineteen.percentOpen}"/>
-                        <x:outputText value="%"/>
-                    </x:panelGroup>
-
-                    <x:outputLabel for="hourTwentyClose" id="hourTwentyLabel" value="20:00"/>
-                    <x:inputText id="hourTwentyClose" disabled="#{!capControlForm.editingCBCStrategy}"
-                        size="3" value="#{capControlForm.strategyTimeOfDay.hourTwenty.percentClose}"/>
-                    <x:panelGroup>
-                        <x:outputLabel for="hourTwentyClose" id="hourTwentyOpen" value="#{capControlForm.strategyTimeOfDay.hourTwenty.percentOpen}"/>
-                        <x:outputText value="%"/>
-                    </x:panelGroup>
-        
-                    <x:outputLabel for="hourTwentyOneClose" id="hourTwentyOneLabel" value="21:00"/>
-                    <x:inputText id="hourTwentyOneClose" disabled="#{!capControlForm.editingCBCStrategy}"
-                        size="3" value="#{capControlForm.strategyTimeOfDay.hourTwentyOne.percentClose}"/>
-                    <x:panelGroup>
-                        <x:outputLabel for="hourTwentyOneClose" id="hourTwentyOneOpen" value="#{capControlForm.strategyTimeOfDay.hourTwentyOne.percentOpen}"/>
-                        <x:outputText value="%"/>
-                    </x:panelGroup>
-        
-                    <x:outputLabel for="hourTwentyTwoClose" id="hourTwentyTwoLabel" value="22:00"/>
-                    <x:inputText id="hourTwentyTwoClose" disabled="#{!capControlForm.editingCBCStrategy}"
-                        size="3" value="#{capControlForm.strategyTimeOfDay.hourTwentyTwo.percentClose}"/>
-                    <x:panelGroup>
-                        <x:outputLabel for="hourTwentyTwoClose" id="hourTwentyTwoOpen" value="#{capControlForm.strategyTimeOfDay.hourTwentyTwo.percentOpen}"/>
-                        <x:outputText value="%"/>
-                    </x:panelGroup>
-        
-                    <x:outputLabel for="hourTwentyThreeClose" id="hourTwentyThreeLabel" value="23:00"/>
-                    <x:inputText id="hourTwentyThreeClose" disabled="#{!capControlForm.editingCBCStrategy}"
-                        size="3" value="#{capControlForm.strategyTimeOfDay.hourTwentyThree.percentClose}"/>
-                    <x:panelGroup>
-                        <x:outputLabel for="hourTwentyThreeClose" id="hourTwentyThreeOpen" value="#{capControlForm.strategyTimeOfDay.hourTwentyThree.percentOpen}"/>
-                        <x:outputText value="%"/>
-                    </x:panelGroup>
+                <x:panelGrid forceId="true" id="settingsGrid" columns="2" columnClasses="gridColumn,gridColumn">
+                    <x:panelGrid forceId="true" id="weekdayGrid" columns="3" cellspacing="3">
+                        
+                        <f:facet name="header"><x:outputText value="Weekday" styleClass="medLabel"/></f:facet>
+	                    <x:outputText value=" "/>
+	                    <x:outputText value="Close" style="font-weight: bold; text-align: center;"/>
+	                    <x:outputText value="Open" style="font-weight: bold; text-align: center;"/>
+	                    
+	                    <x:outputLabel for="hourZeroClose" id="hourZeroLabel" value = "00:00"/>
+	                    <x:inputText id="hourZeroClose" disabled="#{!capControlForm.editingCBCStrategy}"
+	                        size="3" value="#{capControlForm.strategyTimeOfDay.hourZero.percentClose}"/>
+	                    <x:panelGroup>
+	                        <x:outputLabel for="hourZeroClose" id="hourZeroOpen" value="#{capControlForm.strategyTimeOfDay.hourZero.percentOpen}"/>
+	                        <x:outputText value="%"/>
+	                    </x:panelGroup>
+	                    
+	                    <x:outputLabel for="hourOneClose" id="hourOneLabel" value="01:00"/>
+	                    <x:inputText id="hourOneClose" disabled="#{!capControlForm.editingCBCStrategy}" 
+	                        size="3" value="#{capControlForm.strategyTimeOfDay.hourOne.percentClose}"/>
+	                    <x:panelGroup>
+	                        <x:outputLabel for="hourOneClose" id="hourOneOpen" value="#{capControlForm.strategyTimeOfDay.hourOne.percentOpen}"/>
+	                        <x:outputText value="%"/>
+	                    </x:panelGroup>
+	                    
+	                    <x:outputLabel for="hourTwoClose" id="hourTwoLabel" value="02:00"/>
+	                    <x:inputText id="hourTwoClose" disabled="#{!capControlForm.editingCBCStrategy}"
+	                        size="3" value="#{capControlForm.strategyTimeOfDay.hourTwo.percentClose}"/>
+	                    <x:panelGroup>
+	                        <x:outputLabel for="hourTwoClose" id="hourTwoOpen" value="#{capControlForm.strategyTimeOfDay.hourTwo.percentOpen}"/>
+	                        <x:outputText value="%"/>
+	                    </x:panelGroup>
+	
+	                    <x:outputLabel for="hourThreeClose" id="hourThreeLabel" value="03:00"/>
+	                    <x:inputText id="hourThreeClose" disabled="#{!capControlForm.editingCBCStrategy}"
+	                        size="3" value="#{capControlForm.strategyTimeOfDay.hourThree.percentClose}"/>
+	                    <x:panelGroup>
+	                        <x:outputLabel for="hourThreeClose"  id="hourThreeOpen" value="#{capControlForm.strategyTimeOfDay.hourThree.percentOpen}"/>
+	                        <x:outputText value="%"/>
+	                    </x:panelGroup>
+	                    
+	                    <x:outputLabel for="hourFourClose" id="hourFourLabel" value="04:00"/>
+	                    <x:inputText id="hourFourClose" disabled="#{!capControlForm.editingCBCStrategy}"
+	                        size="3" value="#{capControlForm.strategyTimeOfDay.hourFour.percentClose}"/>
+	                    <x:panelGroup>
+	                        <x:outputLabel for="hourFourClose" id="hourFourOpen" value="#{capControlForm.strategyTimeOfDay.hourFour.percentOpen}"/>
+	                        <x:outputText value="%"/>
+	                    </x:panelGroup>
+	                    
+	                    <x:outputLabel for="hourFiveClose" id="hourFiveLabel" value="05:00"/>
+	                    <x:inputText id="hourFiveClose" disabled="#{!capControlForm.editingCBCStrategy}"
+	                        size="3" value="#{capControlForm.strategyTimeOfDay.hourFive.percentClose}"/>
+	                    <x:panelGroup>
+	                        <x:outputLabel for="hourFiveClose" id="hourFiveOpen" value="#{capControlForm.strategyTimeOfDay.hourFive.percentOpen}"/>
+	                        <x:outputText value="%"/>
+	                    </x:panelGroup>
+	                    
+	                    <x:outputLabel for="hourSixClose" id="hourSixLabel" value="06:00"/>
+	                    <x:inputText id="hourSixClose" disabled="#{!capControlForm.editingCBCStrategy}"
+	                        size="3" value="#{capControlForm.strategyTimeOfDay.hourSix.percentClose}"/>
+	                    <x:panelGroup>
+	                        <x:outputLabel for="hourSixClose" id="hourSixOpen" value="#{capControlForm.strategyTimeOfDay.hourSix.percentOpen}"/>
+	                        <x:outputText value="%"/>
+	                    </x:panelGroup>
+	
+	                    <x:outputLabel for="hourSevenClose" id="hourSevenLabel" value="07:00"/>
+	                    <x:inputText id="hourSevenClose" disabled="#{!capControlForm.editingCBCStrategy}"
+	                        size="3" value="#{capControlForm.strategyTimeOfDay.hourSeven.percentClose}"/>
+	                    <x:panelGroup>
+	                        <x:outputLabel for="hourSevenClose" id="hourSevenOpen" value="#{capControlForm.strategyTimeOfDay.hourSeven.percentOpen}"/>
+	                        <x:outputText value="%"/>
+	                    </x:panelGroup>
+	        
+	                    <x:outputLabel for="hourEightClose" id="hourEightLabel" value="08:00"/>
+	                    <x:inputText id="hourEightClose" disabled="#{!capControlForm.editingCBCStrategy}"
+	                        size="3" value="#{capControlForm.strategyTimeOfDay.hourEight.percentClose}"/>
+	                    <x:panelGroup>
+	                        <x:outputLabel for="hourEightClose" id="hourEightOpen" value="#{capControlForm.strategyTimeOfDay.hourEight.percentOpen}"/>
+	                        <x:outputText value="%"/>
+	                    </x:panelGroup>
+	
+	                    <x:outputLabel for="hourNineClose" id="hourNineLabel" value="09:00"/>
+	                    <x:inputText id="hourNineClose" disabled="#{!capControlForm.editingCBCStrategy}"
+	                        size="3" value="#{capControlForm.strategyTimeOfDay.hourNine.percentClose}"/>
+	                    <x:panelGroup>
+	                        <x:outputLabel for="hourNineClose" id="hourNineOpen" value="#{capControlForm.strategyTimeOfDay.hourNine.percentOpen}"/>
+	                        <x:outputText value="%"/>
+	                    </x:panelGroup>
+	        
+	                    <x:outputLabel for="hourTenClose" id="hourTenLabel" value="10:00"/>
+	                    <x:inputText id="hourTenClose" disabled="#{!capControlForm.editingCBCStrategy}"
+	                        size="3" value="#{capControlForm.strategyTimeOfDay.hourTen.percentClose}"/>
+	                    <x:panelGroup>
+	                        <x:outputLabel for="hourTenClose" id="hourTenOpen" value="#{capControlForm.strategyTimeOfDay.hourTen.percentOpen}"/>
+	                        <x:outputText value="%"/>
+	                    </x:panelGroup>
+	        
+	                    <x:outputLabel for="hourElevenClose" id="hourElevenLabel" value="11:00"/>
+	                    <x:inputText id="hourElevenClose" disabled="#{!capControlForm.editingCBCStrategy}"
+	                        size="3" value="#{capControlForm.strategyTimeOfDay.hourEleven.percentClose}"/>
+	                    <x:panelGroup>
+	                        <x:outputLabel for="hourElevenClose" id="hourElevenOpen" value="#{capControlForm.strategyTimeOfDay.hourEleven.percentOpen}"/>
+	                        <x:outputText value="%"/>
+	                    </x:panelGroup>
+	        
+	                    <x:outputLabel for="hourTwelveClose" id="hourTwelveLabel" value="12:00"/>
+	                    <x:inputText id="hourTwelveClose" disabled="#{!capControlForm.editingCBCStrategy}"
+	                        size="3" value="#{capControlForm.strategyTimeOfDay.hourTwelve.percentClose}"/>
+	                    <x:panelGroup>
+	                        <x:outputLabel for="hourTwelveClose" id="hourTwelveOpen" value="#{capControlForm.strategyTimeOfDay.hourTwelve.percentOpen}"/>
+	                        <x:outputText value="%"/>
+	                    </x:panelGroup>
+	        
+	                    <x:outputLabel for="hourThirteenClose" id="hourThirteenLabel" value="13:00"/>
+	                    <x:inputText id="hourThirteenClose" disabled="#{!capControlForm.editingCBCStrategy}"
+	                        size="3" value="#{capControlForm.strategyTimeOfDay.hourThirteen.percentClose}"/>
+	                    <x:panelGroup>
+	                        <x:outputLabel for="hourThirteenClose" id="hourThirteenOpen" value="#{capControlForm.strategyTimeOfDay.hourThirteen.percentOpen}"/>
+	                        <x:outputText value="%"/>
+	                    </x:panelGroup>
+	        
+	                    <x:outputLabel for="hourFourteenClose" id="hourFourteenLabel" value = "14:00"/>
+	                    <x:inputText id="hourFourteenClose" disabled="#{!capControlForm.editingCBCStrategy}"
+	                        size="3" value="#{capControlForm.strategyTimeOfDay.hourFourteen.percentClose}"/>
+	                    <x:panelGroup>
+	                        <x:outputLabel for="hourFourteenClose" id="hourFourteenOpen" value="#{capControlForm.strategyTimeOfDay.hourFourteen.percentOpen}"/>
+	                        <x:outputText value="%"/>
+	                    </x:panelGroup>
+	        
+	                    <x:outputLabel for="hourFifteenClose" id="hourFifteenLabel" value="15:00"/>
+	                    <x:inputText id="hourFifteenClose" disabled="#{!capControlForm.editingCBCStrategy}"
+	                        size="3" value="#{capControlForm.strategyTimeOfDay.hourFifteen.percentClose}"/>
+	                    <x:panelGroup>
+	                        <x:outputLabel for="hourFifteenClose" id="hourFifteenOpen" value="#{capControlForm.strategyTimeOfDay.hourFifteen.percentOpen}"/>
+	                        <x:outputText value="%"/>
+	                    </x:panelGroup>
+	        
+	                    <x:outputLabel for="hourSixteenClose" id="hourSixteenLabel" value="16:00"/>
+	                    <x:inputText id="hourSixteenClose" disabled="#{!capControlForm.editingCBCStrategy}"
+	                        size="3" value="#{capControlForm.strategyTimeOfDay.hourSixteen.percentClose}"/>
+	                    <x:panelGroup>
+	                        <x:outputLabel for="hourSixteenClose" id="hourSixteenOpen" value="#{capControlForm.strategyTimeOfDay.hourSixteen.percentOpen}"/>
+	                        <x:outputText value="%"/>
+	                    </x:panelGroup>
+	        
+	                    <x:outputLabel for="hourSeventeenClose" id="hourSeventeenLabel" value="17:00"/>
+	                    <x:inputText id="hourSeventeenClose" disabled="#{!capControlForm.editingCBCStrategy}"
+	                        size="3" value="#{capControlForm.strategyTimeOfDay.hourSeventeen.percentClose}"/>
+	                    <x:panelGroup>
+	                        <x:outputLabel for="hourSeventeenClose" id="hourSeventeenOpen" value="#{capControlForm.strategyTimeOfDay.hourSeventeen.percentOpen}"/>
+	                        <x:outputText value="%"/>
+	                    </x:panelGroup>
+	
+	                    <x:outputLabel for="hourEighteenClose" id="hourEighteenLabel" value="18:00"/>
+	                    <x:inputText id="hourEighteenClose" disabled="#{!capControlForm.editingCBCStrategy}"
+	                        size="3" value="#{capControlForm.strategyTimeOfDay.hourEighteen.percentClose}"/>
+	                    <x:panelGroup>
+	                        <x:outputLabel for="hourEighteenClose" id="hourEighteenOpen" value="#{capControlForm.strategyTimeOfDay.hourEighteen.percentOpen}"/>
+	                        <x:outputText value="%"/>
+	                    </x:panelGroup>
+	        
+	                    <x:outputLabel for="hourNineteenClose" id="hourNineteenLabel" value="19:00"/>
+	                    <x:inputText id="hourNineteenClose" disabled="#{!capControlForm.editingCBCStrategy}"
+	                        size="3" value="#{capControlForm.strategyTimeOfDay.hourNineteen.percentClose}"/>
+	                    <x:panelGroup>
+	                        <x:outputLabel for="hourNineteenClose" id="hourNineteenOpen" value="#{capControlForm.strategyTimeOfDay.hourNineteen.percentOpen}"/>
+	                        <x:outputText value="%"/>
+	                    </x:panelGroup>
+	
+	                    <x:outputLabel for="hourTwentyClose" id="hourTwentyLabel" value="20:00"/>
+	                    <x:inputText id="hourTwentyClose" disabled="#{!capControlForm.editingCBCStrategy}"
+	                        size="3" value="#{capControlForm.strategyTimeOfDay.hourTwenty.percentClose}"/>
+	                    <x:panelGroup>
+	                        <x:outputLabel for="hourTwentyClose" id="hourTwentyOpen" value="#{capControlForm.strategyTimeOfDay.hourTwenty.percentOpen}"/>
+	                        <x:outputText value="%"/>
+	                    </x:panelGroup>
+	        
+	                    <x:outputLabel for="hourTwentyOneClose" id="hourTwentyOneLabel" value="21:00"/>
+	                    <x:inputText id="hourTwentyOneClose" disabled="#{!capControlForm.editingCBCStrategy}"
+	                        size="3" value="#{capControlForm.strategyTimeOfDay.hourTwentyOne.percentClose}"/>
+	                    <x:panelGroup>
+	                        <x:outputLabel for="hourTwentyOneClose" id="hourTwentyOneOpen" value="#{capControlForm.strategyTimeOfDay.hourTwentyOne.percentOpen}"/>
+	                        <x:outputText value="%"/>
+	                    </x:panelGroup>
+	        
+	                    <x:outputLabel for="hourTwentyTwoClose" id="hourTwentyTwoLabel" value="22:00"/>
+	                    <x:inputText id="hourTwentyTwoClose" disabled="#{!capControlForm.editingCBCStrategy}"
+	                        size="3" value="#{capControlForm.strategyTimeOfDay.hourTwentyTwo.percentClose}"/>
+	                    <x:panelGroup>
+	                        <x:outputLabel for="hourTwentyTwoClose" id="hourTwentyTwoOpen" value="#{capControlForm.strategyTimeOfDay.hourTwentyTwo.percentOpen}"/>
+	                        <x:outputText value="%"/>
+	                    </x:panelGroup>
+	        
+	                    <x:outputLabel for="hourTwentyThreeClose" id="hourTwentyThreeLabel" value="23:00"/>
+	                    <x:inputText id="hourTwentyThreeClose" disabled="#{!capControlForm.editingCBCStrategy}"
+	                        size="3" value="#{capControlForm.strategyTimeOfDay.hourTwentyThree.percentClose}"/>
+	                    <x:panelGroup>
+	                        <x:outputLabel for="hourTwentyThreeClose" id="hourTwentyThreeOpen" value="#{capControlForm.strategyTimeOfDay.hourTwentyThree.percentOpen}"/>
+	                        <x:outputText value="%"/>
+	                    </x:panelGroup>
+	                </x:panelGrid>
+                    <x:panelGrid forceId="true" id="weekendGrid" columns="3" cellspacing="3">
+                        <f:facet name="header"><x:outputText value="Weekend" styleClass="medLabel"/></f:facet>
+                        <x:outputText value=" "/>
+                        <x:outputText value="Close" style="font-weight: bold; text-align: center;"/>
+                        <x:outputText value="Open" style="font-weight: bold; text-align: center;"/>
+                        
+                        <x:outputLabel for="weekendHourZeroClose" id="weekendHourZeroLabel" value = "00:00"/>
+                        <x:inputText id="weekendHourZeroClose" disabled="#{!capControlForm.editingCBCStrategy}"
+                            size="3" value="#{capControlForm.strategyTimeOfDay.hourZero.wkndPercentClose}"/>
+                        <x:panelGroup>
+                            <x:outputLabel for="weekendHourZeroClose" id="weekendHourZeroOpen" value="#{capControlForm.strategyTimeOfDay.hourZero.wkndPercentOpen}"/>
+                            <x:outputText value="%"/>
+                        </x:panelGroup>
+                        
+                        <x:outputLabel for="weekendHourOneClose" id="weekendHourOneLabel" value="01:00"/>
+                        <x:inputText id="weekendHourOneClose" disabled="#{!capControlForm.editingCBCStrategy}" 
+                            size="3" value="#{capControlForm.strategyTimeOfDay.hourOne.wkndPercentClose}"/>
+                        <x:panelGroup>
+                            <x:outputLabel for="weekendHourOneClose" id="weekendHourOneOpen" value="#{capControlForm.strategyTimeOfDay.hourOne.wkndPercentOpen}"/>
+                            <x:outputText value="%"/>
+                        </x:panelGroup>
+                        
+                        <x:outputLabel for="weekendHourTwoClose" id="weekendHourTwoLabel" value="02:00"/>
+                        <x:inputText id="weekendHourTwoClose" disabled="#{!capControlForm.editingCBCStrategy}"
+                            size="3" value="#{capControlForm.strategyTimeOfDay.hourTwo.wkndPercentClose}"/>
+                        <x:panelGroup>
+                            <x:outputLabel for="weekendHourTwoClose" id="weekendHourTwoOpen" value="#{capControlForm.strategyTimeOfDay.hourTwo.wkndPercentOpen}"/>
+                            <x:outputText value="%"/>
+                        </x:panelGroup>
+    
+                        <x:outputLabel for="weekendHourThreeClose" id="weekendHourThreeLabel" value="03:00"/>
+                        <x:inputText id="weekendHourThreeClose" disabled="#{!capControlForm.editingCBCStrategy}"
+                            size="3" value="#{capControlForm.strategyTimeOfDay.hourThree.wkndPercentClose}"/>
+                        <x:panelGroup>
+                            <x:outputLabel for="weekendHourThreeClose"  id="weekendHourThreeOpen" value="#{capControlForm.strategyTimeOfDay.hourThree.wkndPercentOpen}"/>
+                            <x:outputText value="%"/>
+                        </x:panelGroup>
+                        
+                        <x:outputLabel for="weekendHourFourClose" id="weekendHourFourLabel" value="04:00"/>
+                        <x:inputText id="weekendHourFourClose" disabled="#{!capControlForm.editingCBCStrategy}"
+                            size="3" value="#{capControlForm.strategyTimeOfDay.hourFour.wkndPercentClose}"/>
+                        <x:panelGroup>
+                            <x:outputLabel for="weekendHourFourClose" id="weekendHourFourOpen" value="#{capControlForm.strategyTimeOfDay.hourFour.wkndPercentOpen}"/>
+                            <x:outputText value="%"/>
+                        </x:panelGroup>
+                        
+                        <x:outputLabel for="weekendHourFiveClose" id="weekendHourFiveLabel" value="05:00"/>
+                        <x:inputText id="weekendHourFiveClose" disabled="#{!capControlForm.editingCBCStrategy}"
+                            size="3" value="#{capControlForm.strategyTimeOfDay.hourFive.wkndPercentClose}"/>
+                        <x:panelGroup>
+                            <x:outputLabel for="weekendHourFiveClose" id="weekendHourFiveOpen" value="#{capControlForm.strategyTimeOfDay.hourFive.wkndPercentOpen}"/>
+                            <x:outputText value="%"/>
+                        </x:panelGroup>
+                        
+                        <x:outputLabel for="weekendHourSixClose" id="weekendHourSixLabel" value="06:00"/>
+                        <x:inputText id="weekendHourSixClose" disabled="#{!capControlForm.editingCBCStrategy}"
+                            size="3" value="#{capControlForm.strategyTimeOfDay.hourSix.wkndPercentClose}"/>
+                        <x:panelGroup>
+                            <x:outputLabel for="weekendHourSixClose" id="weekendHourSixOpen" value="#{capControlForm.strategyTimeOfDay.hourSix.wkndPercentOpen}"/>
+                            <x:outputText value="%"/>
+                        </x:panelGroup>
+    
+                        <x:outputLabel for="weekendHourSevenClose" id="weekendHourSevenLabel" value="07:00"/>
+                        <x:inputText id="weekendHourSevenClose" disabled="#{!capControlForm.editingCBCStrategy}"
+                            size="3" value="#{capControlForm.strategyTimeOfDay.hourSeven.wkndPercentClose}"/>
+                        <x:panelGroup>
+                            <x:outputLabel for="weekendHourSevenClose" id="weekendHourSevenOpen" value="#{capControlForm.strategyTimeOfDay.hourSeven.wkndPercentOpen}"/>
+                            <x:outputText value="%"/>
+                        </x:panelGroup>
+            
+                        <x:outputLabel for="weekendHourEightClose" id="weekendHourEightLabel" value="08:00"/>
+                        <x:inputText id="weekendHourEightClose" disabled="#{!capControlForm.editingCBCStrategy}"
+                            size="3" value="#{capControlForm.strategyTimeOfDay.hourEight.wkndPercentClose}"/>
+                        <x:panelGroup>
+                            <x:outputLabel for="weekendHourEightClose" id="weekendHourEightOpen" value="#{capControlForm.strategyTimeOfDay.hourEight.wkndPercentOpen}"/>
+                            <x:outputText value="%"/>
+                        </x:panelGroup>
+    
+                        <x:outputLabel for="weekendHourNineClose" id="weekendHourNineLabel" value="09:00"/>
+                        <x:inputText id="weekendHourNineClose" disabled="#{!capControlForm.editingCBCStrategy}"
+                            size="3" value="#{capControlForm.strategyTimeOfDay.hourNine.wkndPercentClose}"/>
+                        <x:panelGroup>
+                            <x:outputLabel for="weekendHourNineClose" id="weekendHourNineOpen" value="#{capControlForm.strategyTimeOfDay.hourNine.wkndPercentOpen}"/>
+                            <x:outputText value="%"/>
+                        </x:panelGroup>
+            
+                        <x:outputLabel for="weekendHourTenClose" id="weekendHourTenLabel" value="10:00"/>
+                        <x:inputText id="weekendHourTenClose" disabled="#{!capControlForm.editingCBCStrategy}"
+                            size="3" value="#{capControlForm.strategyTimeOfDay.hourTen.wkndPercentClose}"/>
+                        <x:panelGroup>
+                            <x:outputLabel for="weekendHourTenClose" id="weekendHourTenOpen" value="#{capControlForm.strategyTimeOfDay.hourTen.wkndPercentOpen}"/>
+                            <x:outputText value="%"/>
+                        </x:panelGroup>
+            
+                        <x:outputLabel for="weekendHourElevenClose" id="weekendHourElevenLabel" value="11:00"/>
+                        <x:inputText id="weekendHourElevenClose" disabled="#{!capControlForm.editingCBCStrategy}"
+                            size="3" value="#{capControlForm.strategyTimeOfDay.hourEleven.wkndPercentClose}"/>
+                        <x:panelGroup>
+                            <x:outputLabel for="weekendHourElevenClose" id="weekendHourElevenOpen" value="#{capControlForm.strategyTimeOfDay.hourEleven.wkndPercentOpen}"/>
+                            <x:outputText value="%"/>
+                        </x:panelGroup>
+            
+                        <x:outputLabel for="weekendHourTwelveClose" id="weekendHourTwelveLabel" value="12:00"/>
+                        <x:inputText id="weekendHourTwelveClose" disabled="#{!capControlForm.editingCBCStrategy}"
+                            size="3" value="#{capControlForm.strategyTimeOfDay.hourTwelve.wkndPercentClose}"/>
+                        <x:panelGroup>
+                            <x:outputLabel for="weekendHourTwelveClose" id="weekendHourTwelveOpen" value="#{capControlForm.strategyTimeOfDay.hourTwelve.wkndPercentOpen}"/>
+                            <x:outputText value="%"/>
+                        </x:panelGroup>
+            
+                        <x:outputLabel for="weekendHourThirteenClose" id="weekendHourThirteenLabel" value="13:00"/>
+                        <x:inputText id="weekendHourThirteenClose" disabled="#{!capControlForm.editingCBCStrategy}"
+                            size="3" value="#{capControlForm.strategyTimeOfDay.hourThirteen.wkndPercentClose}"/>
+                        <x:panelGroup>
+                            <x:outputLabel for="weekendHourThirteenClose" id="weekendHourThirteenOpen" value="#{capControlForm.strategyTimeOfDay.hourThirteen.wkndPercentOpen}"/>
+                            <x:outputText value="%"/>
+                        </x:panelGroup>
+            
+                        <x:outputLabel for="weekendHourFourteenClose" id="weekendHourFourteenLabel" value = "14:00"/>
+                        <x:inputText id="weekendHourFourteenClose" disabled="#{!capControlForm.editingCBCStrategy}"
+                            size="3" value="#{capControlForm.strategyTimeOfDay.hourFourteen.wkndPercentClose}"/>
+                        <x:panelGroup>
+                            <x:outputLabel for="weekendHourFourteenClose" id="weekendHourFourteenOpen" value="#{capControlForm.strategyTimeOfDay.hourFourteen.wkndPercentOpen}"/>
+                            <x:outputText value="%"/>
+                        </x:panelGroup>
+            
+                        <x:outputLabel for="weekendHourFifteenClose" id="weekendHourFifteenLabel" value="15:00"/>
+                        <x:inputText id="weekendHourFifteenClose" disabled="#{!capControlForm.editingCBCStrategy}"
+                            size="3" value="#{capControlForm.strategyTimeOfDay.hourFifteen.wkndPercentClose}"/>
+                        <x:panelGroup>
+                            <x:outputLabel for="weekendHourFifteenClose" id="weekendHourFifteenOpen" value="#{capControlForm.strategyTimeOfDay.hourFifteen.wkndPercentOpen}"/>
+                            <x:outputText value="%"/>
+                        </x:panelGroup>
+            
+                        <x:outputLabel for="weekendHourSixteenClose" id="weekendHourSixteenLabel" value="16:00"/>
+                        <x:inputText id="weekendHourSixteenClose" disabled="#{!capControlForm.editingCBCStrategy}"
+                            size="3" value="#{capControlForm.strategyTimeOfDay.hourSixteen.wkndPercentClose}"/>
+                        <x:panelGroup>
+                            <x:outputLabel for="weekendHourSixteenClose" id="weekendHourSixteenOpen" value="#{capControlForm.strategyTimeOfDay.hourSixteen.wkndPercentOpen}"/>
+                            <x:outputText value="%"/>
+                        </x:panelGroup>
+            
+                        <x:outputLabel for="weekendHourSeventeenClose" id="weekendHourSeventeenLabel" value="17:00"/>
+                        <x:inputText id="weekendHourSeventeenClose" disabled="#{!capControlForm.editingCBCStrategy}"
+                            size="3" value="#{capControlForm.strategyTimeOfDay.hourSeventeen.wkndPercentClose}"/>
+                        <x:panelGroup>
+                            <x:outputLabel for="weekendHourSeventeenClose" id="weekendHourSeventeenOpen" value="#{capControlForm.strategyTimeOfDay.hourSeventeen.wkndPercentOpen}"/>
+                            <x:outputText value="%"/>
+                        </x:panelGroup>
+    
+                        <x:outputLabel for="weekendHourEighteenClose" id="weekendHourEighteenLabel" value="18:00"/>
+                        <x:inputText id="weekendHourEighteenClose" disabled="#{!capControlForm.editingCBCStrategy}"
+                            size="3" value="#{capControlForm.strategyTimeOfDay.hourEighteen.wkndPercentClose}"/>
+                        <x:panelGroup>
+                            <x:outputLabel for="weekendHourEighteenClose" id="weekendHourEighteenOpen" value="#{capControlForm.strategyTimeOfDay.hourEighteen.wkndPercentOpen}"/>
+                            <x:outputText value="%"/>
+                        </x:panelGroup>
+            
+                        <x:outputLabel for="weekendHourNineteenClose" id="weekendHourNineteenLabel" value="19:00"/>
+                        <x:inputText id="weekendHourNineteenClose" disabled="#{!capControlForm.editingCBCStrategy}"
+                            size="3" value="#{capControlForm.strategyTimeOfDay.hourNineteen.wkndPercentClose}"/>
+                        <x:panelGroup>
+                            <x:outputLabel for="weekendHourNineteenClose" id="weekendHourNineteenOpen" value="#{capControlForm.strategyTimeOfDay.hourNineteen.wkndPercentOpen}"/>
+                            <x:outputText value="%"/>
+                        </x:panelGroup>
+    
+                        <x:outputLabel for="weekendHourTwentyClose" id="weekendHourTwentyLabel" value="20:00"/>
+                        <x:inputText id="weekendHourTwentyClose" disabled="#{!capControlForm.editingCBCStrategy}"
+                            size="3" value="#{capControlForm.strategyTimeOfDay.hourTwenty.wkndPercentClose}"/>
+                        <x:panelGroup>
+                            <x:outputLabel for="weekendHourTwentyClose" id="weekendHourTwentyOpen" value="#{capControlForm.strategyTimeOfDay.hourTwenty.wkndPercentOpen}"/>
+                            <x:outputText value="%"/>
+                        </x:panelGroup>
+            
+                        <x:outputLabel for="weekendHourTwentyOneClose" id="weekendHourTwentyOneLabel" value="21:00"/>
+                        <x:inputText id="weekendHourTwentyOneClose" disabled="#{!capControlForm.editingCBCStrategy}"
+                            size="3" value="#{capControlForm.strategyTimeOfDay.hourTwentyOne.wkndPercentClose}"/>
+                        <x:panelGroup>
+                            <x:outputLabel for="weekendHourTwentyOneClose" id="weekendHourTwentyOneOpen" value="#{capControlForm.strategyTimeOfDay.hourTwentyOne.wkndPercentOpen}"/>
+                            <x:outputText value="%"/>
+                        </x:panelGroup>
+            
+                        <x:outputLabel for="weekendHourTwentyTwoClose" id="weekendHourTwentyTwoLabel" value="22:00"/>
+                        <x:inputText id="weekendHourTwentyTwoClose" disabled="#{!capControlForm.editingCBCStrategy}"
+                            size="3" value="#{capControlForm.strategyTimeOfDay.hourTwentyTwo.wkndPercentClose}"/>
+                        <x:panelGroup>
+                            <x:outputLabel for="weekendHourTwentyTwoClose" id="weekendHourTwentyTwoOpen" value="#{capControlForm.strategyTimeOfDay.hourTwentyTwo.wkndPercentOpen}"/>
+                            <x:outputText value="%"/>
+                        </x:panelGroup>
+            
+                        <x:outputLabel for="weekendHourTwentyThreeClose" id="weekendHourTwentyThreeLabel" value="23:00"/>
+                        <x:inputText id="weekendHourTwentyThreeClose" disabled="#{!capControlForm.editingCBCStrategy}"
+                            size="3" value="#{capControlForm.strategyTimeOfDay.hourTwentyThree.wkndPercentClose}"/>
+                        <x:panelGroup>
+                            <x:outputLabel for="weekendHourTwentyThreeClose" id="weekendHourTwentyThreeOpen" value="#{capControlForm.strategyTimeOfDay.hourTwentyThree.wkndPercentOpen}"/>
+                            <x:outputText value="%"/>
+                        </x:panelGroup>
+                    </x:panelGrid>
                 </x:panelGrid>
             </x:htmlTag>
         </h:column>
-    </h:panelGrid>
+    </x:panelGrid>
 	<x:inputHidden forceId="true" id="controlAlgoToggle" value="#{capControlForm.currentStratModel.resetPkOffPkVals}" />
 </f:subview>
