@@ -152,6 +152,7 @@ CtiCCStrategy& CtiCCStrategy::operator=(const CtiCCStrategy& right)
         {
             CtiTimeOfDayController* tmp = new CtiTimeOfDayController;
             tmp->_percentToClose = ((CtiTimeOfDayController*)right._todc[i])->_percentToClose;
+            tmp->_wkndPercentToClose = ((CtiTimeOfDayController*)right._todc[i])->_wkndPercentToClose;
             tmp->_secsFromMidnight = ((CtiTimeOfDayController*)right._todc[i])->_secsFromMidnight;
             _todc.push_back(tmp);
         }
