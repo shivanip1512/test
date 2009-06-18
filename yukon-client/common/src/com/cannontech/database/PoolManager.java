@@ -149,7 +149,7 @@ public class PoolManager {
         }
         log.info("DB initialSize=" + initialSize);
         
-        String validationQuery = configSource.getString("DB_JAVA_VALIDATION_QUERY", "SELECT 1");
+        String validationQuery = configSource.getString("DB_JAVA_VALIDATION_QUERY", null);
         log.info("DB validationQuery=" + validationQuery);
         
         boolean testOnBorrow = configSource.getBoolean("DB_JAVA_TEST_ON_BORROW", false);
