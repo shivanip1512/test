@@ -180,6 +180,7 @@ void CtiCCStrategy::setTimeAndCloseValues(RWDBReader &rdr)
 
     rdr["starttimeseconds"]  >> todc->_secsFromMidnight;
     rdr["percentclose"] >> todc->_percentToClose;
+    rdr["wkndpercentclose"] >> todc->_wkndPercentToClose;
 
     _todc.push_back(todc);
 

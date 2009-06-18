@@ -32,6 +32,7 @@ typedef struct
 {
     long _secsFromMidnight;
     int  _percentToClose;
+    int  _wkndPercentToClose;
 
 } CtiTimeOfDayController;
 //For Sorted Vector, the vector will use this to determine position in the vector.

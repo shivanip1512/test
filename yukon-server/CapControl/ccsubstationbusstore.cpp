@@ -4079,7 +4079,8 @@ void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDatabase(long strategyI
                 selector << capControlStrategy["strategyid"]
                 << capControlStrategy["controlmethod"]
                 << capControlTimeOfDayStrategy["starttimeseconds"]
-                << capControlTimeOfDayStrategy["percentclose"];
+                << capControlTimeOfDayStrategy["percentclose"]
+                << capControlTimeOfDayStrategy["wkndpercentclose"];
 
 
                 selector.from(capControlStrategy);

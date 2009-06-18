@@ -2048,6 +2048,7 @@ LONG CtiCCSubstationBus::getNextTODStartTime()
     LONG retVal =  CtiTime().seconds() - CtiTime(0, 0, 0).seconds();
     retVal += 1; //add 1 sec for delay.
     BOOL found = FALSE;
+    CtiDate today = CtiDate();
 
     for (LONG i = 0; i < _todControls.size(); i++)
     {
@@ -2055,7 +2056,14 @@ LONG CtiCCSubstationBus::getNextTODStartTime()
         {
             found = TRUE;
             retVal = ((CtiTimeOfDayController*)_todControls[i])->_secsFromMidnight;
-            _percentToClose = ((CtiTimeOfDayController*)_todControls[i])->_percentToClose;
+            if (today.weekDay() > 0 && today.weekDay() < 6)
+            {
+                _percentToClose = ((CtiTimeOfDayController*)_todControls[i])->_percentToClose;
+            }
+            else //Saturday or Sunday use weekend values
+            {
+                _percentToClose = ((CtiTimeOfDayController*)_todControls[i])->_wkndPercentToClose;
+            }
             break;
         }
     }
@@ -10931,6 +10939,7 @@ void CtiCCSubstationBus::setTODControls(CtiCCStrategyPtr strategy)
     {
         CtiTimeOfDayController* tmp = new CtiTimeOfDayController;
         tmp->_percentToClose = ((CtiTimeOfDayController*)tmpVec[i])->_percentToClose;
+        tmp->_wkndPercentToClose = ((CtiTimeOfDayController*)tmpVec[i])->_wkndPercentToClose;
         tmp->_secsFromMidnight = ((CtiTimeOfDayController*)tmpVec[i])->_secsFromMidnight;
         _todControls.push_back(tmp);
     }
