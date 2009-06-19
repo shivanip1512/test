@@ -5,7 +5,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <f:view>
 <cti:standardPage title="CapControl Wizard" module="capcontrol">
-
+<cti:includeCss link="/editor/css/base.css"/>
 <%@ page import="com.cannontech.web.editor.CapControlForm" %>
 
 <%

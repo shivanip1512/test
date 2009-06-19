@@ -13,6 +13,7 @@
 
 <f:view>
 	<cti:standardPage title="CapControl Wizard" module="capcontrol">
+        <cti:includeCss link="/editor/css/base.css"/>
 		<script type="text/javascript">
 		    var submitAllowed = true;
 		    function submitCheck() {
