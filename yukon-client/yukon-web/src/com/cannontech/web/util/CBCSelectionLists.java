@@ -40,10 +40,18 @@ public class CBCSelectionLists {
     public static final int CapControlSubstationSetup = 2;
     public static final int CapControlAreaSetup = 3;
     public static final int CapControlSpecialAreaSetup = 4;
+    public static final int CapControlSubSchedSetup = 5;
     public static final int CapControlFeederSetup = 6;
+    public static final int CapControlStrategySetup = 7;
     public static final int CapControlChildList = 8;
     public static final int CapBankSetup = 9;
     public static final int CapBankControllerSetup = 10;
+    public static final int CapBankControllerSchedule = 11;
+    public static final int DualBus = 12;
+    public static final int CapBankAdvanced = 13;
+    public static final int CapBankAdditionalInfo = 14;
+    public static final int AreaSubs = 15;
+    public static final int SpecialAreaSubs = 16;
     public static final int CapControlStrategyEditor = 17;
     
     /* MyFaces 1.10 does not seem to show the correct time with h:outPutText, */

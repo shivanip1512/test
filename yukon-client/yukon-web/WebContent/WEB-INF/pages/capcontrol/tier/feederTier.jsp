@@ -36,7 +36,6 @@
 
 <cti:breadCrumbs>
 	<cti:crumbLink url="/spring/capcontrol/tier/areas" title="Home" />
-
 	<c:choose>
 		<c:when test="${isSpecialArea}">
 		  	<cti:crumbLink url="/spring/capcontrol/tier/areas?isSpecialArea=${isSpecialArea}" title="Special Substation Areas" />
@@ -147,7 +146,7 @@
         <c:set var="editInfoImage" value="/editor/images/info_item.gif"/>
     </c:otherwise>
 </c:choose>
-	<cti:titledContainer title="Substation">
+	<ct:abstractContainer type="box" title="Substation" hideEnabled="false">
 		<table id="substationTable" width="100%" cellspacing="0" cellpadding="0">
 			<tr class="columnHeader">
 				<th class="lAlign">Substation Name</th>
@@ -193,11 +192,11 @@
                 </tr>
 
 		</table>
-	</cti:titledContainer>
+	</ct:abstractContainer>
 	
 	<br>
 
-	<cti:titledContainer title="Substation Bus">
+	<ct:abstractContainer type="box" title="Substation Bus" hideEnabled="true" showInitially="true">
 
 		<table id="subTable" width="100%" cellspacing="0" cellpadding="0">
 			<tr class="columnHeader lAlign">
@@ -292,18 +291,20 @@
 					</div>
 				</td>
 				<td>
-				<c:choose>
-					<c:when test="${viewableSubBus.subBus.usePhaseData}">
-						<a onmouseover="showDynamicPopup($('subVarLoadPopup_${thisSubBusId}'));" 
-						onmouseout="nd();"
-						id="${thisSubBusId}">
-					</c:when>
-					<c:otherwise>
-						<a id="${thisSubBusId}">
-					</c:otherwise>
-				</c:choose>
-                        <cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="KVAR_LOAD"/>   
-                    </a>
+					<c:choose>
+						<c:when test="${viewableSubBus.subBus.usePhaseData}">
+							<a onmouseover="showDynamicPopup($('subVarLoadPopup_${thisSubBusId}'));" 
+							onmouseout="nd();"
+							id="${thisSubBusId}">
+								<cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="KVAR_LOAD"/>   
+		                    </a>
+						</c:when>
+						<c:otherwise>
+							<a id="${thisSubBusId}">
+								<cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="KVAR_LOAD"/>   
+		                    </a>
+						</c:otherwise>
+					</c:choose>
 				    <div class="ccVarLoadPopup" id="subVarLoadPopup_${thisSubBusId}" style="display: none;" > 
                         <cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="KVAR_LOAD_MESSAGE"/>
 				    </div>
@@ -376,11 +377,11 @@
 
 		</c:forEach>
 		</table>
-	</cti:titledContainer>
+	</ct:abstractContainer>
 
 	<br>
 
-	<cti:titledContainer title="Feeders">
+	<ct:abstractContainer type="box" title="Feeders" hideEnabled="true" showInitially="true">
 
 		<table id="fdrTable" width="100%" cellspacing="0" cellpadding="0">
         	<tr class="columnHeader lAlign">
@@ -459,16 +460,18 @@
 					</td>
                     
 					<td>
-					<c:choose>
-						<c:when test="${viewfeeder.feeder.usePhaseData}">
-	                        <a onmouseover="showDynamicPopup($('feederVarLoadPopup_${thisFeederId}'));" onmouseout="nd();" id="${thisFeederId}">
-					  	</c:when>
-					  	<c:otherwise>
-							<a id="${thisFeederId}">
-					  	</c:otherwise>
-					</c:choose>
-                            <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="KVAR_LOAD"/>
-                        </a>
+						<c:choose>
+							<c:when test="${viewfeeder.feeder.usePhaseData}">
+		                        <a onmouseover="showDynamicPopup($('feederVarLoadPopup_${thisFeederId}'));" onmouseout="nd();" id="${thisFeederId}">
+			                        <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="KVAR_LOAD"/>
+		                        </a>
+						  	</c:when>
+						  	<c:otherwise>
+								<a id="${thisFeederId}">
+									<cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="KVAR_LOAD"/>
+		                        </a>
+						  	</c:otherwise>
+						</c:choose>
                         <div class="ccVarLoadPopup" id="feederVarLoadPopup_${thisFeederId}" style="display: none;">
                             <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="KVAR_LOAD_MESSAGE"/> 
                         </div>
@@ -491,11 +494,11 @@
 			</c:forEach>
 		</table>
 
-    </cti:titledContainer>
+    </ct:abstractContainer>
 
 	<br>
 	
-	<cti:titledContainer title="Capacitor Banks" id="last_titled_container">
+	<ct:abstractContainer type="box" title="Substation Bus" hideEnabled="true" showInitially="true" id="last_titled_container">
         <div id="capBankDiv">
 		<table id="capBankTable" width="100%" cellspacing="0" cellpadding="0" >
             <tr class="columnHeader lAlign">
@@ -670,7 +673,7 @@
 		</div>
 		<input type="hidden" id="lastUpdate" value="">
         
-	</cti:titledContainer>
+	</ct:abstractContainer>
     
 
 <capTags:commandMsgDiv/>

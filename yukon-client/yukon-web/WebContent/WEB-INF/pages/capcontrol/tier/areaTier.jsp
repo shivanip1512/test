@@ -51,7 +51,7 @@
 	    </c:otherwise>
     </c:choose>
 	
-	<cti:titledContainer title="${title}" id="last_titled_container">
+	<ct:abstractContainer type="box" hideEnabled="false" title="${title}" id="last_titled_container">
 		<form id="areaForm" action="" method="get">
 		<input type="hidden" name="CCSessionInfo.STR_CC_AREA" />
 		<input type="hidden" name="CCSessionInfo.STR_CC_AREAID"/>
@@ -137,7 +137,7 @@
         </div>
         </form>
 
-	</cti:titledContainer>
+	</ct:abstractContainer>
 	
 	<capTags:commandMsgDiv/>
 

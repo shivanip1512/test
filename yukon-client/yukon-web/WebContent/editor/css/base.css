@@ -10,7 +10,7 @@ a.menuLink:active {
 
 .submenuLink, a.submenuLink:active, a.submenuLink:visited, a.submenuLink:link,
 a.submenuLink:hover, legend, .editorHeader, .legendLikeLabel {
-	color: #003399;
+	color: #0066CC;
 }
 
 .submenuLink {
@@ -122,7 +122,7 @@ legend, .legendLikeLabel{
 
 .fieldSet {
     padding: 2px;
-    border: 1px solid gray;
+    border: 1px solid #ccc;
 }
 
 .dataCell {
@@ -173,6 +173,7 @@ legend, .legendLikeLabel{
 .gridColumn, .gridCell, .gridCellSmall, .gridCellMedium, .gridCellLarge {
 	vertical-align: top;
 	width: 50%;
+	padding: 10px;
 }
 
 .gridCell {
@@ -259,10 +260,62 @@ legend, .legendLikeLabel{
 }
 
 .myFaces_panelTabbedPane_activeHeaderCell input {
-    color: black;
-    padding: 2px 5px;
-    border: 2px solid;
-    border-color: white;
-    background-color: white;
-    display: block;
+    background-color: #ccc !important;
+    padding: .3em .5em;
+    color:  #06C;
+    font-size: 14px;
+    background-image: url(../../WebConfig/yukon/Icons/boxContainerBg26pxInverted.gif);
+    background-position: left bottom;
+    background-repeat:repeat-x;
+}
+
+.myFaces_panelTabbedPane_inactiveHeaderCell {
+    border-color:#ccc;
+    border-style: solid outset solid solid;
+    border-width: 1px;
+    background-color: #555555;
+    border-top-width: 0px;
+}
+
+.myFaces_panelTabbedPane_activeHeaderCell {
+    border-color:#ccc;
+    border-style: solid outset solid solid;
+    border-width: 1px;
+    background-color: #ccc;
+    border-top-width: 0px;
+}
+
+.myFaces_panelTabbedPane_inactiveHeaderCell input {
+    padding: .3em .5em;
+    color:  #06C;
+    font-size: 14px;
+    background-color: #ccc;
+}
+
+.myFaces_panelTabbedPane_pane {
+	border: 2px #ccc;
+	border-color:#ccc;
+    border-style: solid;
+    border-width: 2px;
+    border-top-width: 0px;
+}
+
+.myFaces_panelTabbedPane_subHeaderCell_last {
+    border-right:none;
+    border-top:none;
+}
+
+.myFaces_panelTabbedPane_subHeaderCell_active {
+	background-color: #ccc;
+    border: none;
+}
+
+.myFaces_panelTabbedPane_subHeaderCell_inactive {
+	background-color: #ccc;
+	border: none;
+}
+
+.myFaces_panelTabbedPane_subHeaderCell {
+	background-color: #ccc;
+    height: 0px;
 }

@@ -60,7 +60,7 @@
     </c:otherwise>
 </c:choose>
 
-<cti:titledContainer title="${containerTitle}" id="last_titled_container">
+<ct:abstractContainer type="box" hideEnabled="false" title="${containerTitle}" id="last_titled_container">
           
 	<table id="subHeaderTable" width="100%" cellspacing="0" cellpadding="0" >
 	  <tr class="columnHeader lAlign">              
@@ -142,7 +142,7 @@
     Event.observe(window, 'load', checkPageExpire);
 </script>
 
-</cti:titledContainer>
+</ct:abstractContainer>
 
 <capTags:commandMsgDiv/>
 

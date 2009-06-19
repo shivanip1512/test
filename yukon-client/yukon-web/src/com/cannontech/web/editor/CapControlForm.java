@@ -2056,6 +2056,31 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         capbankTab = tabId;
     }
     
+    @SuppressWarnings("unchecked")
+    public void setTab(ActionEvent e) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        Map<Integer, String> paramMap = context.getExternalContext().getRequestParameterMap();
+        int tabId = Integer.parseInt( paramMap.get("tabId") );
+        if (getDbPersistent() instanceof CapControlSpecialArea) {
+            specialAreaTab = tabId;
+        }
+        if (getDbPersistent() instanceof CapControlArea) {
+            areaTab = tabId;
+        }
+        if (getDbPersistent() instanceof CapControlSubstation) {
+            substationTab= tabId;
+        }
+        if (getDbPersistent() instanceof CapControlSubBus) {
+            subBusTab = tabId;
+        }
+        if (getDbPersistent() instanceof CapControlFeeder) {
+            feederTab = tabId;
+        }
+        if (getDbPersistent() instanceof CapBank) {
+            capbankTab = tabId;
+        }
+    }
+    
     protected void checkForErrors() throws PortDoesntExistException, MultipleDevicesOnPortException, SameMasterSlaveCombinationException, SerialNumberExistsException, SQLException { 
         if (getDbPersistent() != null){
 			getCBControllerEditor().checkForErrors();
