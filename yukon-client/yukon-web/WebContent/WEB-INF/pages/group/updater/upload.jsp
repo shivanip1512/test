@@ -8,11 +8,14 @@
 
    	<cti:breadCrumbs>
 	   <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-	   <cti:crumbLink url="/spring/group/editor/home" title="Groups Home" />
+	   <cti:crumbLink url="/spring/group/editor/home" title="Device Groups" />
 	   &gt; File Upload
   	</cti:breadCrumbs>
         
-	<tags:boxContainer title="File Upload" id="updaterContainer" hideEnabled="false">
+    <h2>Group File Upload</h2>
+    <br>
+    
+	<tags:boxContainer title="Upload a CSV formatted file containing required column headers for updating or setting device group members." id="updaterContainer" hideEnabled="false">
 	
 		<table>
 			<tr valign="top">

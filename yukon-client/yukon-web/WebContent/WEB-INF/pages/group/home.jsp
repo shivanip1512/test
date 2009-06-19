@@ -10,7 +10,7 @@
 
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-        <cti:crumbLink title="Groups Home" />
+        <cti:crumbLink title="Device Groups" />
     </cti:breadCrumbs>
     
     

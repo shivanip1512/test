@@ -11,7 +11,7 @@
 
        	<cti:breadCrumbs>
     	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-    	    <cti:crumbLink url="/spring/group/editor/home" title="Groups Home" />
+    	    <cti:crumbLink url="/spring/group/editor/home" title="Device Groups" />
     	    &gt; Group Processing
     	</cti:breadCrumbs>
         
@@ -38,7 +38,9 @@
             }
         
         </script>
-	
+		
+		<h2>Group Processing</h2>
+    
     	<c:if test="${param.errorMsg != null}">
     		<div style="color: red;margin: 10px 0px;">Error: <spring:escapeBody htmlEscape="true">${param.errorMsg}</spring:escapeBody></div>
     		<c:set var="errorMsg" value="" scope="request"/>
