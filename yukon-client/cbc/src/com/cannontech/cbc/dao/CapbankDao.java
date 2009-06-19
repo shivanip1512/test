@@ -7,6 +7,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.cbc.model.Capbank;
 import com.cannontech.cbc.model.Feeder;
+import com.cannontech.cbc.model.LiteCapControlObject;
 
 public interface CapbankDao {
     public boolean add( Capbank bank );
@@ -28,6 +29,7 @@ public interface CapbankDao {
      *  to a Feeder.
      */
     public List<Integer> getUnassignedCapBankIds();
+    public List<LiteCapControlObject> getOrphans();
     
     /**
      * This method returns the Feeder ID that owns the given cap bank ID.

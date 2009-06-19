@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.cbc.model.Area;
+import com.cannontech.cbc.model.LiteCapControlObject;
 import com.cannontech.cbc.model.Substation;
 
 public interface SubstationDao {
@@ -26,6 +27,7 @@ public interface SubstationDao {
     public boolean unassignSubstation(int areaId, int substationId);
     
     public List<Integer> getAllUnassignedSubstationIds();
+    public List<LiteCapControlObject> getOrphans();
     
     public List<Integer> getAllSpecialAreaUnassignedSubstationIds( Integer areaId );
 

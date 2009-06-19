@@ -27,10 +27,6 @@ public interface AreaDao {
      */
     public boolean update( Area area );
     
-    /**
-     * Returns 
-     * @param id
-     * @return
-     */
+    
     public Area getById( int id );
 }

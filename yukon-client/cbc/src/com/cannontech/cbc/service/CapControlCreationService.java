@@ -2,6 +2,7 @@ package com.cannontech.cbc.service;
 
 import com.cannontech.cbc.model.Area;
 import com.cannontech.cbc.model.Capbank;
+import com.cannontech.cbc.model.CapbankController;
 import com.cannontech.cbc.model.Feeder;
 import com.cannontech.cbc.model.Substation;
 import com.cannontech.cbc.model.SubstationBus;
@@ -48,10 +49,19 @@ public interface CapControlCreationService {
 	 * 
 	 * @param bank
 	 */
-	/* This might be handled in the Bulk Importer
+	/* This might be handled in the Bulk Importer */
 	public boolean createCapbank(Capbank capbank);
 	
 	public boolean assignCapbank(int capbankId, int feederId);
 	public boolean assignCapbank(int capbankId, String feederName);
-	*/
+	
+	/**
+	 * Adds the Controllers to the Database as an orphan.
+	 * 
+	 */
+	public boolean createController(CapbankController controller);
+	
+	public boolean assignController(CapbankController controller, int capbankId);
+	public boolean assignController(CapbankController controller, String capBankName);
+	
 }
