@@ -11,7 +11,6 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.pao.CapControlType;
-import com.cannontech.web.lite.LiteWrapper;
 import com.cannontech.yukon.cbc.CCArea;
 import com.cannontech.yukon.cbc.CapControlClientConnection;
 import com.cannontech.yukon.cbc.CCSpecialArea;
@@ -182,26 +181,6 @@ public class FilterCapControlCacheImpl implements CapControlCache {
 	    StreamableCapObject area = cache.getArea(id);
 	    if (filter.valid(area)) return cache.getFeedersBySubStation(sub);
 	    return Collections.emptyList();
-	}
-
-	public LiteWrapper[] getOrphanedCBCs() {
-		return cache.getOrphanedCBCs();
-	}
-
-	public LiteWrapper[] getOrphanedCapBanks() {
-		return cache.getOrphanedCapBanks();
-	}
-
-	public LiteWrapper[] getOrphanedFeeders() {
-		return cache.getOrphanedFeeders();
-	}
-
-	public LiteWrapper[] getOrphanedSubBuses() {
-		return cache.getOrphanedSubBuses();
-	}
-
-	public LiteWrapper[] getOrphanedSubstations() {
-		return cache.getOrphanedSubstations();
 	}
 
 	public int getParentSubBusID(int childID) {

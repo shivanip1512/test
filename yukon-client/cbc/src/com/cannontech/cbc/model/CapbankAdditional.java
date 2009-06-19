@@ -14,13 +14,14 @@ public class CapbankAdditional {
 	private double longitude = 0.0;
 	private String capbankConfig = CtiUtilities.STRING_NONE;
 	private String commMedium = CtiUtilities.STRING_NONE;
-	private char extAntenna = 'N';
+	private int commStrength = 0;
+	private String extAntenna = "N";
 	private String antennaType = CtiUtilities.STRING_NONE;
 	private Date lastMaintenanceVisit = CapBankAdditional.getBeginningTime();
 	private Date lastInspection = CapBankAdditional.getBeginningTime();
 	private Date opCountResetDate = CapBankAdditional.getBeginningTime();
 	private String potentialTransformer = CtiUtilities.STRING_NONE;
-	private char maintenanceRequired = 'N';
+	private String maintenanceRequired = "N";
 	private String otherComments = CtiUtilities.STRING_NONE;
 	private String opTeamComments = CtiUtilities.STRING_NONE;
 	private Date cbcInstallDate = CapBankAdditional.getBeginningTime();
@@ -84,12 +85,20 @@ public class CapbankAdditional {
 	public void setCommMedium(String commMedium) {
 		this.commMedium = commMedium;
 	}
+	
+	public int getCommStrength() {
+		return commStrength;
+	}
 
-	public char getExtAntenna() {
+	public void setCommStrength(int commStrength) {
+		this.commStrength = commStrength;
+	}
+
+	public String getExtAntenna() {
 		return extAntenna;
 	}
 
-	public void setExtAntenna(char extAntenna) {
+	public void setExtAntenna(String extAntenna) {
 		this.extAntenna = extAntenna;
 	}
 
@@ -133,11 +142,11 @@ public class CapbankAdditional {
 		this.potentialTransformer = potentialTransformer;
 	}
 
-	public char getMaintenanceRequired() {
+	public String getMaintenanceRequired() {
 		return maintenanceRequired;
 	}
 
-	public void setMaintenanceRequired(char maintenanceRequired) {
+	public void setMaintenanceRequired(String maintenanceRequired) {
 		this.maintenanceRequired = maintenanceRequired;
 	}
 
@@ -177,9 +186,11 @@ public class CapbankAdditional {
 				+ ((cbcInstallDate == null) ? 0 : cbcInstallDate.hashCode());
 		result = prime * result
 				+ ((commMedium == null) ? 0 : commMedium.hashCode());
+		result = prime * result + commStrength;
 		result = prime * result
 				+ ((driveDirections == null) ? 0 : driveDirections.hashCode());
-		result = prime * result + extAntenna;
+		result = prime * result
+				+ ((extAntenna == null) ? 0 : extAntenna.hashCode());
 		result = prime * result
 				+ ((lastInspection == null) ? 0 : lastInspection.hashCode());
 		result = prime
@@ -192,7 +203,10 @@ public class CapbankAdditional {
 		temp = Double.doubleToLongBits(longitude);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + maintenanceAreaId;
-		result = prime * result + maintenanceRequired;
+		result = prime
+				* result
+				+ ((maintenanceRequired == null) ? 0 : maintenanceRequired
+						.hashCode());
 		result = prime
 				* result
 				+ ((opCountResetDate == null) ? 0 : opCountResetDate.hashCode());
@@ -237,12 +251,17 @@ public class CapbankAdditional {
 				return false;
 		} else if (!commMedium.equals(other.commMedium))
 			return false;
+		if (commStrength != other.commStrength)
+			return false;
 		if (driveDirections == null) {
 			if (other.driveDirections != null)
 				return false;
 		} else if (!driveDirections.equals(other.driveDirections))
 			return false;
-		if (extAntenna != other.extAntenna)
+		if (extAntenna == null) {
+			if (other.extAntenna != null)
+				return false;
+		} else if (!extAntenna.equals(other.extAntenna))
 			return false;
 		if (lastInspection == null) {
 			if (other.lastInspection != null)
@@ -262,7 +281,10 @@ public class CapbankAdditional {
 			return false;
 		if (maintenanceAreaId != other.maintenanceAreaId)
 			return false;
-		if (maintenanceRequired != other.maintenanceRequired)
+		if (maintenanceRequired == null) {
+			if (other.maintenanceRequired != null)
+				return false;
+		} else if (!maintenanceRequired.equals(other.maintenanceRequired))
 			return false;
 		if (opCountResetDate == null) {
 			if (other.opCountResetDate != null)
@@ -288,6 +310,5 @@ public class CapbankAdditional {
 			return false;
 		return true;
 	}
-
-
+	
 }

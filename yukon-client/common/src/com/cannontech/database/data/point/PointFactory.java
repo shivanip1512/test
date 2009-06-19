@@ -328,14 +328,6 @@ public static synchronized void createBankOpCntPoint(
 /**
  * Creates a CapBanks analog op count point automatically
  */
-public static synchronized PointBase createBankOpCntPoint( int capBankID )
-{	
-	return createBankOpCntPoint(capBankID);
-}
-
-/**
- * Creates a CapBanks analog op count point automatically
- */
 public static synchronized PointBase createBankOpCntPoint( Integer capBankID )
 {	
 	//defaults pointControl

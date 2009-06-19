@@ -1,5 +1,6 @@
 package com.cannontech.cbc.point;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -7,6 +8,7 @@ import java.util.Map;
 import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.capcontrol.CapControlFeeder;
 import com.cannontech.database.data.capcontrol.CapControlSubBus;
 import com.cannontech.database.data.lite.LiteFactory;
@@ -137,23 +139,29 @@ public class CBCPointFactory {
 
     }
 
-    public static MultiDBPersistent createPointsForCBCDevice(
-            YukonPAObject deviceCBC) {
+    public static MultiDBPersistent createPointsForCBCDevice(YukonPAObject deviceCBC) {
 
         MultiDBPersistent dbPersistentVector = new MultiDBPersistent();
 
         Integer paoId = deviceCBC.getPAObjectID();
         switch (PAOGroups.getDeviceType(deviceCBC.getPAOType())) {
-
-        case PAOGroups.CBC_7020:
-        case PAOGroups.CBC_7022:
-        case PAOGroups.CBC_7023:
-        case PAOGroups.CBC_7024:
-        
-            dbPersistentVector = (MultiDBPersistent) createPointsForCBCDevice(paoId);
-            break;
-        case PAOGroups.CBC_DNP:
-            dbPersistentVector = (MultiDBPersistent) createPointsForCBCDNPDevice(paoId);
+	        case PAOGroups.CBC_7020:
+	        case PAOGroups.CBC_7022:
+	        case PAOGroups.CBC_7023:
+	        case PAOGroups.CBC_7024: {
+	        
+	            dbPersistentVector = (MultiDBPersistent) createPointsForCBCDevice(paoId);
+	            break;
+	        }
+	        case PAOGroups.CBC_DNP: {
+	            dbPersistentVector = (MultiDBPersistent) createPointsForCBCDNPDevice(paoId);
+	            break;
+	        }
+	        default: {
+	        	//One way
+	        	PointBase statusPt = CapBankController.createStatusControlPoint(paoId);
+	        	dbPersistentVector.getDBPersistentVector().add(statusPt);
+	        }
         }
 
         return dbPersistentVector;
@@ -264,32 +272,23 @@ public class CBCPointFactory {
         point.setStateGroupID(statusGrpID);
     }
 
-    public static SmartMultiDBPersistent createPointsForPAO(DBPersistent dbObj) {
+    public static SmartMultiDBPersistent createPointsForPAO(int paoID, Connection connection) {
         SmartMultiDBPersistent retSmart = new SmartMultiDBPersistent();
 
-        if ((dbObj instanceof CapControlSubBus) || (dbObj instanceof CapControlFeeder)) {
-            for (int i = 0; i < PAO_POINT_PARAMS.length; i++) {
-                AnalogPointParams params = (AnalogPointParams) PAO_POINT_PARAMS[i];
-                Integer paoID = new Integer(0);
+        for (int i = 0; i < PAO_POINT_PARAMS.length; i++) {
+            AnalogPointParams params = (AnalogPointParams) PAO_POINT_PARAMS[i];
+            
+            PointDao pointDAO = DaoFactory.getPointDao();
+            PointBase analogPoint = PointFactory.createAnalogPoint(params.getName(),
+                                                                   paoID,
+                                                                   pointDAO.getNextPointId(),
+                                                                   params.getOffset(),
+                                                                   params.getUofm());
 
-                if (dbObj instanceof CapControlSubBus) {
-                    CapControlSubBus bus = (CapControlSubBus) dbObj;
-                    paoID = bus.getPAObjectID();
-                }
-                if (dbObj instanceof CapControlFeeder) {
-                    CapControlFeeder feeder = (CapControlFeeder) dbObj;
-                    paoID = feeder.getPAObjectID();
-                }
-
-                PointDao pointDAO = DaoFactory.getPointDao();
-                PointBase analogPoint = PointFactory.createAnalogPoint(params.getName(),
-                                                                       paoID,
-                                                                       pointDAO.getNextPointId(),
-                                                                       params.getOffset(),
-                                                                       params.getUofm());
-                retSmart.addDBPersistent(analogPoint);
-            }
+            analogPoint.setDbConnection(connection);
+            retSmart.addDBPersistent(analogPoint);
         }
+
         return retSmart;
     }
 

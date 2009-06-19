@@ -10,7 +10,6 @@ public enum CapControlType {
     CAPBANK("CAP BANK"),
     CBC("CBC");
 
-	
 	private final String displayValue;
 	
 	private CapControlType(String displayValue) {

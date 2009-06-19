@@ -1,5 +1,6 @@
 package com.cannontech.cbc.dao.impl;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -15,12 +16,25 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.capcontrol.CapBankOperationalState;
 import com.cannontech.cbc.dao.CapbankDao;
 import com.cannontech.cbc.model.Capbank;
+import com.cannontech.cbc.model.CapbankAdditional;
 import com.cannontech.cbc.model.Feeder;
+import com.cannontech.cbc.model.LiteCapControlObject;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SqlGenerator;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.PoolManager;
+import com.cannontech.database.data.capcontrol.CapBank;
+import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.util.Validator;
 
@@ -32,8 +46,12 @@ public class CapbankDaoImpl implements CapbankDao {
     private static final String selectAllSql;
     private static final String selectByIdSql;
     private static final String selectByControlDeviceIdSql;
+    private static final String insertAdditionalSql;
+    private static final String removeAdditionalSql;
+    private static final String updateAdditionalSql;
     
     private static final ParameterizedRowMapper<Capbank> rowMapper;
+    private static final ParameterizedRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private PaoDao paoDao;
     
@@ -52,8 +70,8 @@ public class CapbankDaoImpl implements CapbankDao {
         
         updateSql = "UPDATE CAPBANK SET OPERATIONALSTATE = ?," + 
         "ControllerType = ?,CONTROLDEVICEID = ?,CONTROLPOINTID = ?, " + 
-        "BANKSIZE = ?, TypeOfSwitch = ?,TypeOfSwitch = ?, MapLocationID = ?, RecloseDelay = ?," + 
-        " MaxDailyOps = ?, MaxOpDisable = ?, WHERE DEVICEID = ?";
+        "BANKSIZE = ?, TypeOfSwitch = ?, SwitchManufacture = ?,MapLocationID = ?, RecloseDelay = ?," + 
+        " MaxDailyOps = ?, MaxOpDisable = ? WHERE DEVICEID = ?";
         
         selectAllSql = "SELECT yp.PAOName, DEVICEID, OPERATIONALSTATE, ControllerType, CONTROLDEVICEID,"
 				+ "CONTROLPOINTID, BANKSIZE, TypeOfSwitch, SwitchManufacture, MapLocationID, RecloseDelay,"
@@ -63,7 +81,22 @@ public class CapbankDaoImpl implements CapbankDao {
         
         selectByControlDeviceIdSql = selectAllSql + " WHERE CONTROLDEVICEID = ?";
         
+        insertAdditionalSql = "INSERT INTO CAPBANKADDITIONAL (DeviceID,MaintenanceAreaID,PoleNumber," 
+        	                + "DriveDirections,Latitude,Longitude,CapBankConfig,CommMedium,CommStrength," 
+        	                + "ExtAntenna,AntennaType,LastMaintVisit,LastInspVisit,OpCountResetDate," 
+        	                + "PotentialTransformer,MaintenanceReqPend,OtherComments,OpTeamComments,CBCBattInstallDate) " 
+        	                + "VALUES (?,?,?,?,? ,?,?,?,?,? ,?,?,?,?,? ,?,?,?,?)";
+        
+        updateAdditionalSql = "UPDATE CAPBANKADDITIONAL SET MaintenanceAreaID=?,PoleNumber=?," 
+            + "DriveDirections=?,Latitude=?,Longitude=?,CapBankConfig=?,CommMedium=?,CommStrength=?," 
+            + "ExtAntenna=?,AntennaType=?,LastMaintVisit=?,LastInspVisit=?,OpCountResetDate=?," 
+            + "PotentialTransformer=?,MaintenanceReqPend=?,OtherComments=?,OpTeamComments=?,CBCBattInstallDate=? " 
+            + "WHERE DeviceID = ?";
+        
+        removeAdditionalSql = "DELETE FROM CAPBANKADDITIONAL WHERE DeviceID = ?";
+        
         rowMapper = CapbankDaoImpl.createRowMapper();
+        liteCapControlObjectRowMapper = CapbankControllerDaoImpl.createLiteCapControlObjectRowMapper();
     }
 
     private static final ParameterizedRowMapper<Capbank> createRowMapper() {
@@ -103,40 +136,59 @@ public class CapbankDaoImpl implements CapbankDao {
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean add(Capbank bank) {
-		int rowsAffected = 0;
-		YukonPAObject pao = new YukonPAObject();
+		Connection connection = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
 		
-		pao.setCategory(PAOGroups.STRING_CAT_CAPCONTROL);
-		pao.setPaoClass(PAOGroups.STRING_CAT_CAPCONTROL);
-		pao.setPaoName(bank.getName());
-		pao.setType(CapControlTypes.STRING_CAPCONTROL_CAPBANK);
-		pao.setDescription("(none)");
+		DeviceBase device = DeviceFactory.createDevice(PAOGroups.CAPBANK);
+		device.setDbConnection(connection);
 		
-		boolean ret = paoDao.add(pao);
+		//Set what the factory didn't
+		int newId = paoDao.getNextPaoId();
 		
-		if (ret == false) {
-			CTILogger.debug("Insert of CapBank, " + bank.getName() + ", in YukonPAObject table failed.");
+		device.setDeviceID(newId);
+		device.setPAOCategory(PAOGroups.STRING_CAT_DEVICE);
+		device.setPAOName(bank.getName());		
+		
+		SmartMultiDBPersistent smartDB = new SmartMultiDBPersistent();
+		smartDB.addOwnerDBPersistent(device);
+		
+		//create the Status Point for this CapBank
+		PointBase statusPoint = PointFactory.createBankStatusPt(newId);
+		statusPoint.setDbConnection(connection);
+		smartDB.addDBPersistent(statusPoint);
+		
+		//create the Analog Point for this CapBank used to track Op Counts
+		PointBase analogPoint = PointFactory.createBankOpCntPoint(newId);
+		analogPoint.setDbConnection(connection);
+		smartDB.addDBPersistent(analogPoint);
+		
+		try {
+			smartDB.add();
+		} catch(SQLException e) {
+			CTILogger.error("Insert of CapBank, " + bank.getName() + ", failed.");
 			return false;
 		}
 		
-		//Added to YukonPAObject table, now add to CapControlFeeder
-		bank.setId(pao.getPaObjectID());
-		rowsAffected = simpleJdbcTemplate.update(insertSql, bank.getId(),
-                                                                bank.getOperationalState().name(),
-                                                                bank.getControllerType(),
-                                                                bank.getControlDeviceId(),
-                                                                bank.getControlPointId(),
-                                                                bank.getBankSize(),
-                                                                bank.getTypeOfSwitch(),
-                                                                bank.getSwitchManufacturer(),
-                                                                bank.getMapLocationId(),
-                                                                bank.getRecloseDelay(),
-                                                                bank.getMaxDailyOps(),
-                                                                bank.getMaxOpDisable());
-        boolean result = (rowsAffected == 1);
+		//Added to YukonPAObject table, now add to CAPBANK
+		bank.setId(newId);
+		int rowsAffected = simpleJdbcTemplate.update(updateSql, 
+	                                                bank.getOperationalState().name(),
+	                                                bank.getControllerType(),
+	                                                bank.getControlDeviceId(),
+	                                                bank.getControlPointId(),
+	                                                bank.getBankSize(),
+	                                                bank.getTypeOfSwitch(),
+	                                                bank.getSwitchManufacturer(),
+	                                                bank.getMapLocationId(),
+	                                                bank.getRecloseDelay(),
+	                                                bank.getMaxDailyOps(),
+	                                                bank.getMaxOpDisable(),
+	                                                bank.getId());
+		addCapbankAdditional(bank);
+		
+		boolean result = (rowsAffected == 1);
         
 		if (result == false) {
-			CTILogger.debug("Insert of CapBank, " + bank.getName() + ", in CapBank table failed.");
+			CTILogger.error("Update of bank information in CapBank table failed for bank with name: " + bank.getName());
 		}
 		
         return result;
@@ -144,55 +196,45 @@ public class CapbankDaoImpl implements CapbankDao {
 	
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean remove(Capbank bank) {
-        int rowsAffected = simpleJdbcTemplate.update(removeSql,bank.getId());
-        boolean result = (rowsAffected == 1);
-        
-        if (result) {
-    		YukonPAObject pao = new YukonPAObject();
-    		pao.setPaObjectID(bank.getId());
-    		
-    		return paoDao.remove(pao);       	
-        }
+    	
+    	simpleJdbcTemplate.update(removeSql,bank.getId());
+    	removeCapbankAdditional(bank);
+    	
+    	DeviceBase device = DeviceFactory.createDevice(PAOGroups.CAPBANK);
+    	device.setDeviceID(bank.getId());
 		
-        return result;
+    	//delete points
+    	
+    	try {
+    		device.delete();
+    	} catch (SQLException e) {
+    		CTILogger.error("Removal of CapBank Failed: " + bank.getName());
+    		return false;
+    	}
+    	
+		return true;
     }
     
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean update(Capbank bank) {
-		int rowsAffected = 0;
-		YukonPAObject pao = new YukonPAObject();
+    	Connection connection = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
 		
-		pao.setCategory(PAOGroups.STRING_CAT_CAPCONTROL);
-		pao.setPaoClass(PAOGroups.STRING_CAT_CAPCONTROL);
-		pao.setPaoName(bank.getName());
-		pao.setType(CapControlTypes.STRING_CAPCONTROL_CAPBANK);
-		pao.setDescription("(none)");
+		DeviceBase device = DeviceFactory.createDevice(PAOGroups.CAPBANK);
+		device.setDbConnection(connection);
+
+		//Set what the factory didn't
+		device.setPAOCategory(PAOGroups.STRING_CAT_DEVICE);
+		device.setPAOName(bank.getName());
+		device.setDeviceID(bank.getId());
 		
-		List<LiteYukonPAObject> paos = paoDao.getLiteYukonPaoByName(bank.getName(), false);
-		
-		if (paos.size() == 0) {
-			CTILogger.debug("No results returned for Feeder, " + bank.getName() + ", cannot update.");
-			return false;
+		try {
+			device.update();
+		} catch (SQLException e) {
+			CTILogger.debug("Update of Capbank in YukonPAObject table failed for bank: " + bank.getName());
+			return false;			
 		}
-		if (paos.size() > 1) {
-			CTILogger.debug("Multiple paos with Feeder name: " + bank.getName() + " cannot update.");
-			return false;
-		}
-		
-		//Added to YukonPAObject table, now add to CapControlFeeder
-		LiteYukonPAObject litePao = paos.get(0);
-		pao.setPaObjectID(litePao.getYukonID());
-		
-		boolean ret = paoDao.update(pao);
-		
-		if (ret == false) {
-			CTILogger.debug("Update of CapBank, " + bank.getName() + ", in YukonPAObject table failed.");
-			return false;
-		}
-		
-		//Added to YukonPAObject table, now add to CapControlFeeder
-		bank.setId(pao.getPaObjectID());
-    	rowsAffected = simpleJdbcTemplate.update(updateSql,bank.getOperationalState().name(),
+
+    	int rowsAffected = simpleJdbcTemplate.update(updateSql,bank.getOperationalState().name(),
                                                      bank.getControllerType(),
                                                      bank.getControlDeviceId(),
                                                      bank.getControlPointId(),
@@ -204,10 +246,12 @@ public class CapbankDaoImpl implements CapbankDao {
                                                      bank.getMaxDailyOps(),
                                                      bank.getMaxOpDisable(),
                                                      bank.getId());
-        boolean result = (rowsAffected == 1);
+        updateCapbankAdditional(bank);
+        
+    	boolean result = (rowsAffected == 1);
         
 		if (result == false) {
-			CTILogger.debug("Update of CapBank, " + bank.getName() + ", in CapBank table failed.");
+			CTILogger.debug("Update of bank in CapBank table failed for bank name: " + bank.getName());
 		}
         
         return result;
@@ -255,6 +299,82 @@ public class CapbankDaoImpl implements CapbankDao {
         List<Integer> listmap = simpleJdbcTemplate.query(sql, mapper);
         return listmap;
     }
+    
+	@Override
+	public List<LiteCapControlObject> getOrphans() {
+        List<Integer> ids = getUnassignedCapBankIds();
+		
+		ChunkingSqlTemplate<Integer> template = new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
+		final List<LiteCapControlObject> unassignedObjects = template.query(new SqlGenerator<Integer>() {
+            @Override
+            public String generate(List<Integer> subList) {
+                SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
+                sqlBuilder.append("SELECT PAObjectID,PAOName,TYPE,Description FROM YukonPAObject WHERE PAObjectID IN (");
+                sqlBuilder.append(subList);
+                sqlBuilder.append(")");
+                String sql = sqlBuilder.toString();
+                return sql;
+            }
+        }, ids, liteCapControlObjectRowMapper);
+		
+		return unassignedObjects;
+	}
+    
+	private void addCapbankAdditional(Capbank bank) {
+    	CapbankAdditional capbankAdditional = bank.getCapbankAdditional();
+    	
+		simpleJdbcTemplate.update(insertAdditionalSql,
+		    			bank.getId(),
+		    			capbankAdditional.getMaintenanceAreaId(),
+		    			capbankAdditional.getPoleNumber(),
+		    			capbankAdditional.getDriveDirections(),
+		    			capbankAdditional.getLatitude(),
+		    			capbankAdditional.getLongitude(),
+		    			capbankAdditional.getCapbankConfig(),
+		    			capbankAdditional.getCommMedium(),
+		    			capbankAdditional.getCommStrength(),
+		    			capbankAdditional.getExtAntenna(),
+		    			capbankAdditional.getAntennaType(),
+		    			capbankAdditional.getLastMaintenanceVisit(),
+		    			capbankAdditional.getLastInspection(),
+		    			capbankAdditional.getOpCountResetDate(),
+		    			capbankAdditional.getPotentialTransformer(),
+		    			capbankAdditional.getMaintenanceRequired(),
+		    			capbankAdditional.getOtherComments(),
+		    			capbankAdditional.getOpTeamComments(),
+		    			capbankAdditional.getCbcInstallDate());    	
+	}
+	
+	private void updateCapbankAdditional(Capbank bank) {
+    	CapbankAdditional capbankAdditional = bank.getCapbankAdditional();
+    	
+		simpleJdbcTemplate.update(updateAdditionalSql,
+		    			capbankAdditional.getMaintenanceAreaId(),
+		    			capbankAdditional.getPoleNumber(),
+		    			capbankAdditional.getDriveDirections(),
+		    			capbankAdditional.getLatitude(),
+		    			capbankAdditional.getLongitude(),
+		    			capbankAdditional.getCapbankConfig(),
+		    			capbankAdditional.getCommMedium(),
+		    			capbankAdditional.getCommStrength(),
+		    			capbankAdditional.getExtAntenna(),
+		    			capbankAdditional.getAntennaType(),
+		    			capbankAdditional.getLastMaintenanceVisit(),
+		    			capbankAdditional.getLastInspection(),
+		    			capbankAdditional.getOpCountResetDate(),
+		    			capbankAdditional.getPotentialTransformer(),
+		    			capbankAdditional.getMaintenanceRequired(),
+		    			capbankAdditional.getOtherComments(),
+		    			capbankAdditional.getOpTeamComments(),
+		    			capbankAdditional.getCbcInstallDate(),
+		    			bank.getId());    			
+	}
+	
+	private void removeCapbankAdditional(Capbank bank) {
+		simpleJdbcTemplate.update(removeAdditionalSql,bank.getId());    
+	}
+	
+	
     /**
      * This method returns the Feeder ID that owns the given cap bank ID.
      */
@@ -291,6 +411,9 @@ public class CapbankDaoImpl implements CapbankDao {
     	String insertAssignmentSql = "INSERT INTO CCFeederBankList " 
     		 + "(FeederID,DeviceID,ControlOrder,CloseOrder,TripOrder) VALUES (?,?,?,?,?)";
     	
+		//remove any existing assignment
+    	unassignCapbank(feederId,capbankId);
+    	
 		int rowsAffected = simpleJdbcTemplate.update(insertAssignmentSql,
 				feederId, capbankId, controlOrder.controlOrder,
 				controlOrder.closeOrder, controlOrder.tripOrder);
@@ -316,7 +439,7 @@ public class CapbankDaoImpl implements CapbankDao {
 	
 	private ControlOrder generateControlOrder(int feederId) {
 		ControlOrder order = new ControlOrder();
-		
+		//TODO
 		/*
 		 * Figure out the order for a newly assigned bank here.
 		 */

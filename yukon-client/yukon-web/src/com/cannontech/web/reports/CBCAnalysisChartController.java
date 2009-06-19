@@ -105,7 +105,7 @@ public class CBCAnalysisChartController extends MultiActionController  {
     	    		SubBus subBus_cache = capControlCache.getSubBus(targetId);
     	    		SubstationBus subBus_dao = substationBusDao.getById(targetId);
     	    		
-    	    		if ("".equalsIgnoreCase(subBus_dao.getUsephasedata())) {
+    	    		if ("Y".equalsIgnoreCase(subBus_dao.getUsephasedata())) {
     	    			
     	    			definitionName = "kVarPhaseWattRPHDefinition";
     	    			

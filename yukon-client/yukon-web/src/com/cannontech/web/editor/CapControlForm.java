@@ -1165,7 +1165,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             holidayScheduleDao.saveDefaultHolidayScheduleStrategyAssigment(paoId);
         }
         if  (paoType == CapControlTypes.CAP_CONTROL_FEEDER || paoType == CapControlTypes.CAP_CONTROL_SUBBUS) {
-            smartMulti = CBCPointFactory.createPointsForPAO(dbObj);
+            smartMulti = CBCPointFactory.createPointsForPAO(paoId,dbObj.getDbConnection());
         } else {
             smartMulti = cbObjCreator.createChildItems(paoType, new Integer(paoId));
         }
@@ -1204,7 +1204,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                 StatusPoint statusPt;
                 if ( pao instanceof CapBankController702x || pao instanceof CapBankControllerDNP ) {
                    MultiDBPersistent pointVector = CBCPointFactory.createPointsForCBCDevice(pao);           
-                   CBControllerEditor.insertPointsIntoDB(pointVector);  
+                   CBControllerEditor.insertPointsIntoDB(pointVector);
                    statusPt = (StatusPoint) MultiDBPersistent.getFirstObjectOfType(StatusPoint.class, pointVector);
                 }else {
                     //create additional info find the first status point in our CBC and assign its ID to our CapBank for control purposes
@@ -1270,7 +1270,9 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 			initItem(itemID, editorType);
 			
             //create points for the CBC702x or CBC DNP device   
-            if (dbObj instanceof CapBankController702x || dbObj instanceof CapBankControllerDNP){
+            if (dbObj instanceof CapBankController702x 
+            		|| dbObj instanceof CapBankControllerDNP
+            		|| dbObj instanceof CapBankController701x){
                 DBPersistent pointVector = CBCPointFactory.createPointsForCBCDevice((YukonPAObject)dbObj);
                 CBControllerEditor.insertPointsIntoDB(pointVector);  
             }

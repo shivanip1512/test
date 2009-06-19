@@ -13,7 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.cbc.dao.AreaDao;
 import com.cannontech.cbc.model.Area;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.HolidayScheduleDao;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.SeasonScheduleDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -31,6 +34,8 @@ public class AreaDaoImpl implements AreaDao {
     
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private PaoDao paoDao;
+    private SeasonScheduleDao seasonScheduleDao;
+    private HolidayScheduleDao holidayScheduleDao;
     
     static {
             
@@ -61,16 +66,6 @@ public class AreaDaoImpl implements AreaDao {
         };
         return rowMapper;
     }
-    
-    @Autowired
-    public void setSimpleJdbcTemplate(final SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
-    }
-    
-    @Autowired
-	public void setPaoDao(PaoDao paoDao) {
-		this.paoDao = paoDao;
-	}
 
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
@@ -82,7 +77,7 @@ public class AreaDaoImpl implements AreaDao {
 		pao.setPaoClass(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoName(area.getName());
 		pao.setType(CapControlTypes.STRING_CAPCONTROL_AREA);
-		pao.setDescription("(none)");
+		pao.setDescription(CtiUtilities.STRING_NONE);
 		
 		boolean ret = paoDao.add(pao);
 
@@ -100,7 +95,11 @@ public class AreaDaoImpl implements AreaDao {
 		
 		if (result == false) {
 			CTILogger.debug("Insert of Area, " + area.getName() + ", in CAPCONTROLAREA table failed.");
+			return false;
 		}
+		
+		seasonScheduleDao.saveDefaultSeasonStrategyAssigment(area.getId());
+		holidayScheduleDao.saveDefaultHolidayScheduleStrategyAssigment(area.getId());
 		
 		return result;
 	}
@@ -116,20 +115,9 @@ public class AreaDaoImpl implements AreaDao {
 		pao.setPaoClass(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoName(area.getName());
 		pao.setType(CapControlTypes.STRING_CAPCONTROL_AREA);
-		pao.setDescription("(none)");
+		pao.setDescription(CtiUtilities.STRING_NONE);
 		
-		List<LiteYukonPAObject> paos = paoDao.getLiteYukonPaoByName(area.getName(), false);
-		
-		if (paos.size() == 0) {
-			CTILogger.debug("No results returned for Area, " + area.getName() + ", cannot update.");
-			return false;
-		}
-		if (paos.size() > 1) {
-			CTILogger.debug("Multiple paos with Area name: " + area.getName() + " cannot update.");
-			return false;
-		}
-		LiteYukonPAObject litePao = paos.get(0);
-		pao.setPaObjectID(litePao.getYukonID());
+		pao.setPaObjectID(area.getId());
 		
 		boolean ret = paoDao.update(pao);
 
@@ -139,7 +127,6 @@ public class AreaDaoImpl implements AreaDao {
 		}
 
 		//Added to YukonPAObject table, now add to CAPCONTROLAREA
-		area.setId(pao.getPaObjectID());
 		rowsAffected = simpleJdbcTemplate.update(updateSql, area.getVoltReductionPointId(), area.getId());
 		
 		boolean result = (rowsAffected == 1);
@@ -172,4 +159,26 @@ public class AreaDaoImpl implements AreaDao {
 		
         return result;
 	}
+    
+    @Autowired
+    public void setSimpleJdbcTemplate(final SimpleJdbcTemplate simpleJdbcTemplate) {
+        this.simpleJdbcTemplate = simpleJdbcTemplate;
+    }
+    
+    @Autowired
+	public void setPaoDao(PaoDao paoDao) {
+		this.paoDao = paoDao;
+	}
+	
+	@Autowired
+	public void setSeasonScheduleDao(SeasonScheduleDao seasonScheduleDao) {
+		this.seasonScheduleDao = seasonScheduleDao;
+	}
+	
+	@Autowired
+	public void setHolidayScheduleDao(HolidayScheduleDao holidayScheduleDao) {
+		this.holidayScheduleDao = holidayScheduleDao;
+	}
+	
+	
 }

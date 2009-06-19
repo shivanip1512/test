@@ -50,13 +50,6 @@ public class CBCDBObjCreator {
 		
 		//store the objects we add to the DB
 		SmartMultiDBPersistent retSmart = new SmartMultiDBPersistent();
-		boolean isTwoWay = CBCUtils.isTwoWay(paoType);
-        if( DeviceTypesFuncs.isCapBankController(paoType) && !isTwoWay) {
-			//create the Status Point for this CBC
-			PointBase statusPt = CapBankController.createStatusControlPoint(parentID);
-		
-			retSmart.addDBPersistent( statusPt );
-		}
 		
 		if( paoType == PAOGroups.CAPBANK ) {			
 			//create the Status Point for this CapBank

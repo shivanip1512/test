@@ -11,11 +11,19 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.cbc.dao.SubstationBusDao;
+import com.cannontech.cbc.model.LiteCapControlObject;
 import com.cannontech.cbc.model.Substation;
 import com.cannontech.cbc.model.SubstationBus;
+import com.cannontech.cbc.point.CBCPointFactory;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SqlGenerator;
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.HolidayScheduleDao;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.core.dao.SeasonScheduleDao;
+import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.pao.YukonPAObject;
@@ -29,8 +37,12 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
     private static final String selectByIdSql;
     
     private static final ParameterizedRowMapper<SubstationBus> rowMapper;
+    private static final ParameterizedRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
+    
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private PaoDao paoDao;
+    private SeasonScheduleDao seasonScheduleDao;
+    private HolidayScheduleDao holidayScheduleDao;
     
     static {
             insertSql = "INSERT INTO CAPCONTROLSUBSTATIONBUS (SubstationBusID,CurrentVarLoadPointID," +
@@ -52,13 +64,8 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
             selectByIdSql = selectAllSql + " WHERE SubstationBusID = yp.PAObjectID AND SubstationBusID = ?";
                         
             rowMapper = SubstationBusDaoImpl.createRowMapper();
+            liteCapControlObjectRowMapper = CapbankControllerDaoImpl.createLiteCapControlObjectRowMapper();
         }
-    	private static ParameterizedRowMapper<Integer> SubstationIdMapper = new ParameterizedRowMapper<Integer>() {
-    		public Integer mapRow(ResultSet rs, int num) throws SQLException{
-    			Integer i = new Integer ( rs.getInt("substationBusID") );
-    			return i;
-        }
-    };
     
     private static final ParameterizedRowMapper<SubstationBus> createRowMapper() {
         ParameterizedRowMapper<SubstationBus> rowMapper = new ParameterizedRowMapper<SubstationBus>() {
@@ -92,16 +99,6 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         };
         return rowMapper;
     }
-    
-    @Autowired
-    public void setSimpleJdbcTemplate(final SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
-    }
-    
-    @Autowired
-	public void setPaoDao(PaoDao paoDao) {
-		this.paoDao = paoDao;
-	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean add(SubstationBus bus) {
@@ -112,7 +109,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
 		pao.setPaoClass(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoName(bus.getName());
 		pao.setType(CapControlTypes.STRING_CAPCONTROL_SUBBUS);
-		pao.setDescription("(none)");
+		pao.setDescription(CtiUtilities.STRING_NONE);
 		
 		boolean ret = paoDao.add(pao);
 		
@@ -141,7 +138,20 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         
 		if (result == false) {
 			CTILogger.debug("Insert of Subbus, " + bus.getName() + ", in CAPCONTROLSUBSTATIONBUS table failed.");
+			return false;
 		}
+
+		SmartMultiDBPersistent smartMulti = CBCPointFactory.createPointsForPAO(pao.getPaObjectID(), pao.getDbConnection());
+		
+		try {
+			smartMulti.add();
+		} catch (SQLException e) {
+			CTILogger.debug("Inserting Points for Subbus, " + bus.getName() + " failed.");
+			return false;
+		}
+		
+		seasonScheduleDao.saveDefaultSeasonStrategyAssigment(bus.getId());
+		holidayScheduleDao.saveDefaultHolidayScheduleStrategyAssigment(bus.getId());
 		
         return result;
     }
@@ -170,22 +180,9 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
 		pao.setPaoClass(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoName(bus.getName());
 		pao.setType(CapControlTypes.STRING_CAPCONTROL_SUBBUS);
-		pao.setDescription("(none)");
+		pao.setDescription(CtiUtilities.STRING_NONE);
 		
-		List<LiteYukonPAObject> paos = paoDao.getLiteYukonPaoByName(bus.getName(), false);
-		
-		if (paos.size() == 0) {
-			CTILogger.debug("No results returned for Subbus, " + bus.getName() + ", cannot update.");
-			return false;
-		}
-		if (paos.size() > 1) {
-			CTILogger.debug("Multiple paos with Subbus name: " + bus.getName() + " cannot update.");
-			return false;
-		}
-		
-		//Added to YukonPAObject table, now add to CapControlFeeder
-		LiteYukonPAObject litePao = paos.get(0);
-		pao.setPaObjectID(litePao.getYukonID());
+		pao.setPaObjectID(bus.getId());
 		
 		boolean ret = paoDao.update(pao);
 		
@@ -195,7 +192,6 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
 		}
 		
 		//Added to YukonPAObject table, now add to CAPCONTROLSUBSTATIONBUS
-		bus.setId(pao.getPaObjectID());
     	rowsAffected = simpleJdbcTemplate.update(updateSql, bus.getCurrentVarLoadPointId(),
                                                      bus.getCurrentWattLoadPointId(),
                                                      bus.getMapLocationId(),
@@ -237,11 +233,31 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         String orphanedSubs = "SELECT substationBusID FROM CapControlSubstationBus WHERE ";
         orphanedSubs += "substationBusID NOT IN (SELECT substationBusId FROM CCSubstationSubBusList) ";
         orphanedSubs += "ORDER BY substationBusID";
-        List<Integer> listmap = simpleJdbcTemplate.query(orphanedSubs, SubstationIdMapper);
+        List<Integer> listmap = simpleJdbcTemplate.query(orphanedSubs, mapper);
         
         return listmap;
     }
 
+	@Override
+	public List<LiteCapControlObject> getOrphans() {
+        List<Integer> ids = getAllUnassignedBuses();
+		
+		ChunkingSqlTemplate<Integer> template = new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
+		final List<LiteCapControlObject> unassignedObjects = template.query(new SqlGenerator<Integer>() {
+            @Override
+            public String generate(List<Integer> subList) {
+                SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
+                sqlBuilder.append("SELECT PAObjectID,PAOName,TYPE,Description FROM YukonPAObject WHERE PAObjectID IN (");
+                sqlBuilder.append(subList);
+                sqlBuilder.append(")");
+                String sql = sqlBuilder.toString();
+                return sql;
+            }
+        }, ids, liteCapControlObjectRowMapper);
+		
+		return unassignedObjects;
+	}
+	
     @Override
     public boolean assignSubstationBus(Substation substation, SubstationBus substationBus) {
     	return assignSubstationBus(substation.getId(),substationBus.getId());
@@ -251,6 +267,9 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
     public boolean assignSubstationBus(int substationId, int substationBusId) {
     	String getDisplayOrderSql = "SELECT max(DisplayOrder) FROM CCSUBSTATIONSUBBUSLIST WHERE SubStationID = ?";
     	String insertAssignmentSql = "INSERT INTO CCSUBSTATIONSUBBUSLIST (SubStationID,SubStationBusID,DisplayOrder) VALUES (?,?,?)";
+    	
+		//remove any existing assignment
+    	unassignSubstationBus(substationId,substationBusId);
     	
 		int displayOrder = simpleJdbcTemplate.queryForInt(getDisplayOrderSql, substationId);
 		int rowsAffected = simpleJdbcTemplate.update(insertAssignmentSql, substationId,substationBusId,++displayOrder);
@@ -281,4 +300,25 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
 		int id = simpleJdbcTemplate.queryForInt(getParentSql, stationBus.getId());
 		return id;
 	}
+	    
+    @Autowired
+    public void setSimpleJdbcTemplate(final SimpleJdbcTemplate simpleJdbcTemplate) {
+        this.simpleJdbcTemplate = simpleJdbcTemplate;
+    }
+    
+    @Autowired
+	public void setPaoDao(PaoDao paoDao) {
+		this.paoDao = paoDao;
+	}
+    
+    @Autowired
+	public void setSeasonScheduleDao(SeasonScheduleDao seasonScheduleDao) {
+		this.seasonScheduleDao = seasonScheduleDao;
+	}
+
+    @Autowired
+	public void setHolidayScheduleDao(HolidayScheduleDao holidayScheduleDao) {
+		this.holidayScheduleDao = holidayScheduleDao;
+	}
+
 }

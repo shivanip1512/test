@@ -6,7 +6,6 @@ import com.cannontech.cbc.web.CBCWebUpdatedObjectMap;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.pao.CapControlType;
-import com.cannontech.web.lite.LiteWrapper;
 import com.cannontech.yukon.cbc.CCArea;
 import com.cannontech.yukon.cbc.CapControlClientConnection;
 import com.cannontech.yukon.cbc.CCSpecialArea;
@@ -31,10 +30,6 @@ public interface CapControlCache {
     public CCSpecialArea getCBCSpecialArea(int id);
     
     public StreamableCapObject getObject(int id);
-    
-    public LiteWrapper[] getOrphanedSubBuses();
-    
-    public LiteWrapper[] getOrphanedSubstations();
     
     public List<SubBus> getSubBusesBySubStation(SubStation sub);
     
@@ -152,27 +147,6 @@ public interface CapControlCache {
 	 * 
 	 */
 	public abstract List<Feeder> getFeedersByArea(int areaID);
-
-	/**
-	 * Find all the orphaned CBC's in the system. This requires a database hit since
-	 * the CapControl server does not know about these.
-	 * 
-	 */
-	public abstract LiteWrapper[] getOrphanedCBCs();
-
-	/**
-	 * Find the orphaned CapBanks in the system. This requires a database hit since
-	 * the CapControl server does not know about these.
-	 * 
-	 */
-	public abstract LiteWrapper[] getOrphanedCapBanks();
-
-	/**
-	 * Find the orphaned Feeders in the system. This requires a database hit since
-	 * the CapControl server does not know about these.
-	 * 
-	 */
-	public abstract LiteWrapper[] getOrphanedFeeders();
 
 	/**
 	 * Create an array of SubBuses. Best usage is to store the results of this call
