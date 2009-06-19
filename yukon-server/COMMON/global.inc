@@ -189,6 +189,13 @@ DLLFLAGS= /Fm $(DLLFLAGS)
 !ENDIF
 
 
+# Parallel Build
+#       This (/MP[#]) is the number of source files that will be built in parallel.
+#       Set the number to the number of cores in your CPU.  Setting the number to more than the number
+#       of cores doesn't make it build faster but does have a negative effect on page file usage.
+PARALLEL = /MP2
+
+
 INCLPATHS=-I. -I.\include
 
 

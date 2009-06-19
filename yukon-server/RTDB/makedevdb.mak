@@ -150,10 +150,21 @@ CTIPROGS=\
 ctidevdb.dll
 
 
+RTDB_DEVDB_FULLBUILD = $[Filename,$(OBJ),RtdbDevDBFullBuild,target]
+
+
 ALL:            $(CTIPROGS)
 
 
-ctidevdb.dll:   $(YUKONDEVDLLOBJS) Makefile
+$(RTDB_DEVDB_FULLBUILD) :
+	@touch $@
+	@echo:
+	@echo Compiling cpp to obj
+	$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PARALLEL) $(PCHFLAGS) $(INCLPATHS) /D_DLL_DEVDB -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(YUKONDEVDLLOBJS)]
+
+
+
+ctidevdb.dll:   $(RTDB_DEVDB_FULLBUILD) $(YUKONDEVDLLOBJS) Makefile
                 @build -nologo -f $(_InputFile) id
                 @echo:
                 @echo Compiling $@

@@ -57,10 +57,21 @@ CTIPROGS=\
 ctipntdb.dll
 
 
+RTDB_PNT_FULLBUILD = $[Filename,$(OBJ),RtdbPntFullBuild,target]
+
+
 ALL:            $(CTIPROGS)
 
 
-ctipntdb.dll:   $(YUKONPNTDLLOBJS) Makefile
+$(RTDB_PNT_FULLBUILD) :
+	@touch $@
+	@echo:
+	@echo Compiling cpp to obj
+	$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PARALLEL) $(PCHFLAGS) $(INCLPATHS) /D_DLL_PNTDB -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(YUKONPNTDLLOBJS)]
+
+
+
+ctipntdb.dll:   $(RTDB_PNT_FULLBUILD) $(YUKONPNTDLLOBJS) Makefile
                 @build -nologo -f $(_InputFile) id
                 @echo:
                 @echo Compiling $@

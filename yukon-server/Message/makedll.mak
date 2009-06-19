@@ -57,6 +57,7 @@ msg_tag.obj \
 msg_trace.obj \
 
 
+MESSAGE_FULLBUILD = $[Filename,$(OBJ),MessageFullBuild,target]
 
 
 CTIPROGS=\
@@ -65,7 +66,15 @@ ctimsg.dll
 
 ALL:           $(CTIPROGS)
 
-ctimsg.dll:    $(OBJS) Makefile
+
+$(MESSAGE_FULLBUILD) :
+        @touch $@
+        @echo:
+        @echo Compiling cpp to obj
+        $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(PARALLEL) $(INCLPATHS) /D_DLL_MESSAGE -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(OBJS)]
+
+
+ctimsg.dll:    $(MESSAGE_FULLBUILD) $(OBJS) Makefile
                 @build -nologo -f $(_InputFile) id
                 @echo:
                 @echo Compiling $@

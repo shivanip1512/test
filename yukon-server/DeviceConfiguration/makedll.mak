@@ -47,10 +47,21 @@ CTIPROGS=\
 cticonfig.dll
 
 
+DEVCONF_FULLBUILD = $[Filename,$(OBJ),DevConfFullBuild,target]
+
+
+
 ALL:            $(CTIPROGS)
 
 
-cticonfig.dll:   $(DLLOBJS) Makedll.mak
+$(DEVCONF_FULLBUILD) :
+        @touch $@
+        @echo:
+        @echo Compiling cpp to obj
+        $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PARALLEL) $(PCHFLAGS) $(INCLPATHS) /D_DLL_CONFIG -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(DLLOBJS)]
+
+
+cticonfig.dll:  $(DEVCONF_FULLBUILD) $(DLLOBJS) Makedll.mak
                 @build -nologo -f $(_InputFile) id
                 @echo:
                 @echo Compiling $@

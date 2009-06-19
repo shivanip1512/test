@@ -58,9 +58,22 @@ $(COMPILEBASE)\lib\ctipntdb.lib \
 $(COMPILEBASE)\lib\ctidbsrc.lib
 
 
+SCANNER_EXE_FULLBUILD = $[Filename,$(OBJ),ScannerExeFullBuild,target]
+
+
+
 ALL:            scanner.exe
 
-scanner.exe:    $(BASEOBJS) makeexe.mak
+
+$(SCANNER_EXE_FULLBUILD) :
+	@touch $@
+	@echo Compiling cpp to obj
+	@echo:
+	$(RWCPPINVOKE) $(CFLAGS) $(RWCPPFLAGS) $(PARALLEL) $(PCHFLAGS) $(INCLPATHS) -DWINDOWS -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(BASEOBJS)]
+
+
+
+scanner.exe:    $(SCANNER_EXE_FULLBUILD) $(BASEOBJS) makeexe.mak
                 @build -nologo -f $(_InputFile) id
                 @echo:
                 @echo Compiling $@

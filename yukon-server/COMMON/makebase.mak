@@ -97,10 +97,21 @@ ctibase.dll
 WINLIBS=kernel32.lib user32.lib advapi32.lib wsock32.lib
 
 
+COMMON_FULLBUILD = $[Filename,$(OBJ),CommonFullBuild,target]
+
+
 ALL:            $(CTIPROGS)
                 -@if exist $(BOOST)\stage\lib\boost_thread-vc6-mt-gd-1_31.dll copy $(BOOST)\stage\lib\boost_thread-vc6-mt-gd-1_31.dll $(YUKONOUTPUT)
 
-ctibase.dll:    $(BASEOBJS) Makefile
+$(COMMON_FULLBUILD):
+        @touch $@
+        @echo:
+        @echo Compiling cpp to obj
+        @echo:
+        $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(PARALLEL) $(DLLBUILDNAME) $(INCLPATHS) -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(BASEOBJS)]
+
+
+ctibase.dll:    $(COMMON_FULLBUILD) $(BASEOBJS) Makefile
                 @build -nologo -f $(_InputFile) id
                 @%cd $(OBJ)
                 $(CC) $(BASEOBJS) id_ctibase.obj $(WINLIBS) $(DLLFLAGS) $(RWLIBS) $(BOOSTLIBS) $(COMPILEBASE)\lib\cticparms.lib $(COMPILEBASE)\lib\clrdump.lib /Fe..\$@ $(LINKFLAGS)
@@ -133,6 +144,7 @@ clean:
 *.idb \
 *.obj \
 $(OBJ)\*.obj \
+$(OBJ)\*.target \
 $(BIN)\*.pdb \
 $(BIN)\*.pch \
 $(BIN)\*.ilk \

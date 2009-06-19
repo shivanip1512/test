@@ -70,9 +70,22 @@ ccstatsobject.obj
 
 TARGS = capcontrol.exe
 
+
+CAPCONTROL_FULLBUILD = $[Filename,$(OBJ),CapControlFullBuild,target]
+
+
 ALL:          $(TARGS)
 
-capcontrol.exe:     $(BASEOBJS) Makefile
+
+$(CAPCONTROL_FULLBUILD) :
+	@touch $@
+	@echo Compiling cpp to obj
+	@echo:
+	$(RWCPPINVOKE) $(CFLAGS) $(RWCPPFLAGS) $(PARALLEL) $(PCHFLAGS) $(INCLPATHS) -DWINDOWS -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(BASEOBJS)]
+
+
+
+capcontrol.exe: $(CAPCONTROL_FULLBUILD) $(BASEOBJS) Makefile
               @echo:
               @echo Compiling $@
               @%cd $(OBJ)

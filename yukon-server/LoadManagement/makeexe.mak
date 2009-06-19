@@ -87,9 +87,22 @@ main.obj
 
 TARGS = loadmanagement.exe
 
+
+LOADMANAGEMENT_FULLBUILD = $[Filename,$(OBJ),LoadManagementFullBuild,target]
+
+
 ALL:          $(TARGS)
 
-loadmanagement.exe:     $(BASEOBJS) Makefile
+
+$(LOADMANAGEMENT_FULLBUILD) :
+	@touch $@
+	@echo:
+	@echo Compiling cpp to obj
+	@echo:
+	$(RWCPPINVOKE) $(CFLAGS) $(RWCPPFLAGS) $(PARALLEL) $(PCHFLAGS) $(INCLPATHS) -DWINDOWS -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(BASEOBJS)]
+
+
+loadmanagement.exe: $(LOADMANAGEMENT_FULLBUILD) $(BASEOBJS) Makefile
               @echo:
               @echo Compiling $@
               @%cd $(OBJ)

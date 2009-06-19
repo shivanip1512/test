@@ -103,10 +103,19 @@ $(COMPILEBASE)\lib\ctiholidaydb.lib \
 advapi32.lib
 
 
+CALC_FULLBUILD = $[Filename,$(OBJ),CalcFullBuild,target]
+
 
 ALL:            $(CTIPROGS)
 
-calc_logic.exe:  $(CALCOBJS) makeexe.mak
+
+$(CALC_FULLBUILD) :
+	@touch $@
+	@echo Compiling cpp to obj
+	$(RWCPPINVOKE) /Fm $(RWCPPFLAGS) $(CFLAGS) $(PARALLEL) $(PCHFLAGS) -DIMPORT $(INCLPATHS) -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(CALCOBJS)]
+
+
+calc_logic.exe:  $(CALC_FULLBUILD) $(CALCOBJS) makeexe.mak
         @echo:
         @echo Compiling ..\$@
         @%cd $(OBJ)

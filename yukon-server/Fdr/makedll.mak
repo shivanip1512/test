@@ -134,6 +134,10 @@ fdrdnpslave.dll
 #    around it for now.
 # $(FDRINTERFACEOBJS) \
 
+
+FDR_DLL_FULLBUILD = $[Filename,$(OBJ),FdrDllFullBuild,target]
+
+
 dirs:
                 @if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
                 @if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
@@ -141,7 +145,15 @@ dirs:
 
 all:            dirs $(CTIFDRDLLS)
 
-cti_fdr.dll: $(FDRINTERFACEOBJS)
+
+$(FDR_DLL_FULLBUILD) :
+                @touch $@
+                @echo Compiling cpp to obj
+                @echo:
+                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PARALLEL) $(PCHFLAGS) $(INCLPATHS) -D_DLL_FDRBASE -DWINDOWS -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(FDRINTERFACEOBJS)]
+
+
+cti_fdr.dll: $(FDR_DLL_FULLBUILD) $(FDRINTERFACEOBJS)
                 @echo Building  ..\$@
                 @%cd $(OBJ)
                 $(CC) $(DLLFLAGS) $(FDRINTERFACEOBJS) $(INCLPATHS) $(RWLIBS) $(BOOSTLIBS) $(CTIFDRLIBS) /Fe..\$@ $(LINKFLAGS)

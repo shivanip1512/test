@@ -45,11 +45,22 @@ portglob.obj \
 dllmain.obj
 
 
+PORTER_DLL_FULLBUILD = $[Filename,$(OBJ),PorterDllFullBuild,target]
+
+
 
 ALL:            portglob.dll
 
 
-portglob.dll:  $(DLLOBJS) Makedll.mak
+$(PORTER_DLL_FULLBUILD) :
+	@touch $@
+	@echo Compiling cpp to obj
+	@echo:
+	$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PARALLEL) $(PCHFLAGS) /D_DLL_PORTGLOB $(INCLPATHS) -DWINDOWS -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(DLLOBJS)]
+
+
+
+portglob.dll:  $(PORTER_DLL_FULLBUILD) $(DLLOBJS) Makedll.mak
                @build -nologo -f $(_InputFile) id
                @echo Building  ..\$@
                @%cd $(OBJ)

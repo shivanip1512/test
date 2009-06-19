@@ -55,10 +55,22 @@ $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctidbsrc.lib \
 $(COMPILEBASE)\lib\cticparms.lib
 
+
+MCCMD_FULLBUILD = $[Filename,$(OBJ),MccmdFullBuild,target]
+
+
+
 ALL:            mccmd.dll
 
 
-mccmd.dll:  $(DLLOBJS) Makedll.mak
+$(MCCMD_FULLBUILD) :
+	@touch $@
+	@echo Compiling cpp to obj
+	@echo:
+	$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PARALLEL) $(PCHFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -DWINDOWS -c $[StrReplace,.obj,.cpp,$(DLLOBJS)]
+
+
+mccmd.dll:  $(MCCMD_FULLBUILD) $(DLLOBJS) Makedll.mak
             @echo Building  $@
             @%cd $(OBJ)
             $(CC) $(DLLFLAGS) $(DLLOBJS) $(INCLPATHS) $(LIBS) $(RWLIBS) $(BOOSTLIBS) /Fe..\$@ -link /def:$(DLLDEF) $(LINKFLAGS)

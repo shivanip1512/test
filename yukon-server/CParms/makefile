@@ -15,6 +15,7 @@ clean:
 *.obj \
 *.idb \
 $(OBJ)\*.obj \
+$(OBJ)\*.target \
 $(BIN)\*.pdb \
 $(BIN)\*.pch \
 $(BIN)\*.ilk \

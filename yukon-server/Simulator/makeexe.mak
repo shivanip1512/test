@@ -61,9 +61,20 @@ CTIPROGS=\
 ccu_simulator.exe
 
 
+SIMULATOR_FULLBUILD = $[Filename,$(OBJ),SimulatorFullBuild,target]
+
+
 ALL:            $(CTIPROGS)
 
-ccu_simulator.exe:      $(CCU_SIMULATOR_OBJS) makeexe.mak
+
+$(SIMULATOR_FULLBUILD) :
+	@touch $@
+        @echo:
+        @echo Compiling cpp to obj
+        $(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(PARALLEL) $(PCHFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(CCU_SIMULATOR_OBJS)]
+
+
+ccu_simulator.exe:      $(SIMULATOR_FULLBUILD) $(CCU_SIMULATOR_OBJS) makeexe.mak
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)

@@ -68,10 +68,21 @@ tagmanager.obj \
 vgexe_factory.obj \
 
 
+DISPATCH_VG_FULLBUILD = $[Filename,$(OBJ),DispatchVGFullBuild,target]
+
 
 ALL:            ctivg.dll
 
-ctivg.dll:      $(DLLOBJS) Makedll.mak
+
+$(DISPATCH_VG_FULLBUILD) :
+	@touch $@
+	@echo Compiling cpp to obj
+	@echo:
+	$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PARALLEL) $(PCHFLAGS) /DCTIVANGOGH $(INCLPATHS) -DWINDOWS -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(DLLOBJS)]
+
+
+
+ctivg.dll:      $(DISPATCH_VG_FULLBUILD) $(DLLOBJS) Makedll.mak
                 @build -nologo -f $(_InputFile) id
                 @echo Building  ..\$@
                 @%cd $(OBJ)

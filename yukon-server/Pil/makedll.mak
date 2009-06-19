@@ -58,10 +58,20 @@ pilglob.obj \
 pilserver.obj
 
 
+PIL_FULLBUILD = $[Filename,$(OBJ),PilFullBuild,target]
+
 
 ALL:            ctipil.dll
 
-ctipil.dll:     $(DLLOBJS) makedll.mak
+
+$(PIL_FULLBUILD) :
+	@touch $@
+	@echo Compiling cpp to obj
+	@echo:
+	$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PARALLEL) $(PCHFLAGS) /D_DLL_CTIPIL $(INCLPATHS) -DWINDOWS -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(DLLOBJS)]
+
+
+ctipil.dll:     $(PIL_FULLBUILD) $(DLLOBJS) makedll.mak
                 @echo Building  $@
                 @%cd $(OBJ)
                 $(CC) $(DLLFLAGS) $(DLLOBJS) $(INCLPATHS) $(RWLIBS) $(BOOSTLIBS) $(DLLLIBS) -Fe..\$@ $(LINKFLAGS)

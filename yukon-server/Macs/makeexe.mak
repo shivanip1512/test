@@ -72,9 +72,21 @@ tbl_mcsimpsched.obj
 
 TARGS = macs.exe
 
+
+MACS_EXE_FULLBUILD = $[Filename,$(OBJ),MacsExeFullBuild,target]
+
+
 ALL:          $(TARGS)
 
-macs.exe:     $(BASEOBJS) Makefile
+
+$(MACS_EXE_FULLBUILD) :
+	@touch $@
+	@echo Compiling cpp to obj
+	@echo:
+	$(RWCPPINVOKE) $(CFLAGS) $(RWCPPFLAGS) $(PARALLEL) $(PCHFLAGS) $(INCLPATHS) -DWINDOWS -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(BASEOBJS)]
+
+
+macs.exe:     $(MACS_EXE_FULLBUILD) $(BASEOBJS) Makefile
               @echo:
               @echo Compiling $@
               @%cd $(OBJ)

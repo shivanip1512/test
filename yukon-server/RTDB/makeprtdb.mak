@@ -62,11 +62,20 @@ $(COMPILEBASE)\lib\clrdump.lib \
 CTIPROGS=\
 ctiprtdb.dll
 
+RTDB_PRT_FULLBUILD = $[Filename,$(OBJ),RtdbPrtFullBuild,target]
+
 
 ALL:            $(CTIPROGS)
 
 
-ctiprtdb.dll:   $(YUKONPORTDLLOBJS) Makefile
+$(RTDB_PRT_FULLBUILD) :
+	@touch $@
+	@echo:
+	@echo Compiling cpp to obj
+	$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PARALLEL) $(INCLPATHS) /D_DLL_PRTDB -Fdctiprt.pdb -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(YUKONPORTDLLOBJS)]
+
+
+ctiprtdb.dll:   $(RTDB_PRT_FULLBUILD) $(YUKONPORTDLLOBJS) Makefile
                 @build -nologo -f $(_InputFile) id
                 @echo:
                 @echo Compiling $@

@@ -148,9 +148,21 @@ saprotocol.dll \
 ctiprot.dll
 
 
+PROTOCOL_FULLBUILD = $[Filename,$(OBJ),ProtocolFullBuild,target]
+
+
 ALL:           $(CTIPROGS)
 
-ctiprot.dll:   $(OBJS) Makefile
+
+$(PROTOCOL_FULLBUILD) :
+	@touch $@
+	@echo:
+	@echo Compiling cpp to obj
+	$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PARALLEL) $(PCHFLAGS) $(INCLPATHS) /D_DLL_PROT -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(OBJS)]
+
+
+
+ctiprot.dll:   $(PROTOCOL_FULLBUILD) $(OBJS) Makefile
                 @build -nologo -f $(_InputFile) id
                 @echo:
                 @echo Compiling $@

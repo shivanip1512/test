@@ -97,11 +97,24 @@ EXECS=\
 porter.exe \
 traceset.exe
 
+
+PORTER_EXE_FULLBUILD = $[Filename,$(OBJ),PorterExeFullBuild,target]
+
+
+
 ALL:            $(EXECS)
                 -@if exist $(COMPILEBASE)\porter\lib\libeay32.dll copy $(COMPILEBASE)\porter\lib\libeay32.dll $(YUKONOUTPUT)
                 -@if exist $(COMPILEBASE)\porter\lib\ssleay32.dll copy $(COMPILEBASE)\porter\lib\ssleay32.dll $(YUKONOUTPUT)
 
-porter.exe:     $(BASEOBJS) Makefile
+
+$(PORTER_EXE_FULLBUILD) :
+	@touch $@
+	@echo Compiling cpp to obj
+	@echo:
+	$(RWCPPINVOKE) $(CFLAGS) $(RWCPPFLAGS) $(PARALLEL) $(PCHFLAGS) $(INCLPATHS) -DWINDOWS -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(BASEOBJS)]
+
+
+porter.exe:     $(PORTER_EXE_FULLBUILD) $(BASEOBJS) Makefile
                 @build -nologo -f $(_InputFile) id
                 @echo:
                 @echo Compiling ..\$@

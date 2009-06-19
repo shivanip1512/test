@@ -21,11 +21,19 @@ cparms.obj \
 CTIPROGS=\
 cticparms.dll
 
+CPARMS_FULLBUILD = $[Filename,$(OBJ),CParmsFullBuild,target]
 
 
 ALL:            $(CTIPROGS)
 
-cticparms.dll:  $(CPARMOBJS) Makefile
+$(CPARMS_FULLBUILD) :
+        @touch $@
+        @echo:
+        @echo Compiling cpp to obj
+        $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(PARALLEL) /D_DLL_CPARM -I..\include $(INCLPATHS) -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(CPARMOBJS)]
+
+
+cticparms.dll:  $(CPARMS_FULLBUILD) $(CPARMOBJS) Makefile
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)

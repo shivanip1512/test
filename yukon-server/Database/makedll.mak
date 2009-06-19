@@ -127,9 +127,21 @@ CTIPROGS=\
 ctidbsrc.dll \
 
 
+DATABASE_FULLBUILD = $[Filename,$(OBJ),DatabaseFullBuild,target]
+
+
 ALL:            $(CTIPROGS)
 
-ctidbsrc.dll:   $(YUKONDLLOBJS) Makefile
+
+$(DATABASE_FULLBUILD) :
+	@touch $@
+	@echo:
+	@echo Compiling cpp to obj
+	$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PARALLEL) $(PCHFLAGS) $(INCLPATHS) /DCTIYUKONDB -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(YUKONDLLOBJS)]
+
+
+
+ctidbsrc.dll:   $(DATABASE_FULLBUILD) $(YUKONDLLOBJS) Makefile
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)

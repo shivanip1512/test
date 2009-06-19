@@ -50,10 +50,22 @@ executor.obj \
 executorfactory.obj \
 server_b.obj
 
+
+SERVER_FULLBUILD = $[Filename,$(OBJ),ServerFullBuild,target]
+
+
 ALL:            ctisvr.dll
 
 
-ctisvr.dll:     $(SERVEROBJS) makesvr.mak
+$(SERVER_FULLBUILD) :
+	@touch $@
+	@echo:
+	@echo Compiling cpp to obj
+	@echo:
+	$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PARALLEL) $(PCHFLAGS) /DCTISVR $(INCLPATHS) -DWINDOWS -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(SERVEROBJS)]
+
+
+ctisvr.dll:     $(SERVER_FULLBUILD) $(SERVEROBJS) makesvr.mak
                 @build -nologo -f $(_InputFile) id
                 @echo Building  $@
                 @%cd $(OBJ)
