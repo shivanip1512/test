@@ -498,7 +498,7 @@
 
 	<br>
 	
-	<ct:abstractContainer type="box" title="Substation Bus" hideEnabled="true" showInitially="true" id="last_titled_container">
+	<ct:abstractContainer type="box" title="Capacitor Banks" hideEnabled="true" showInitially="true" id="last_titled_container">
         <div id="capBankDiv">
 		<table id="capBankTable" width="100%" cellspacing="0" cellpadding="0" >
             <tr class="columnHeader lAlign">
