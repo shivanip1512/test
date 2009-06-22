@@ -363,8 +363,21 @@ void CtiConnection::InThread()
 
                 try
                 {
-                    if( c != NULL && !_exchange->In().fail() ) // If fail, c may not be valid at all.
+                    if( c != NULL )
                     {
+                        if( _exchange->In().fail() ) // If fail, c is not valid.
+                        {
+                            string whoStr = who();
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << NowTime << " Message fail indicator received for " << whoStr << endl;
+                            }
+
+                            delete c;
+                            c = NULL;
+                            continue; // We deleted the incoming message, no reason to keep going
+                        }
+
                         try
                         {
                             MsgPtr = (CtiMessage*)c;
@@ -416,16 +429,6 @@ void CtiConnection::InThread()
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
-                    }
-                    else if( c != NULL ) // Lighter weight then checking fail again, this really means: if( _exchange->In().fail() )
-                    {
-                        string whoStr = who();
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << NowTime << " Message fail indicator received for " << whoStr << endl;
-                        }
-                        delete c;
-                        c = NULL;
                     }
                 }
                 catch(...)
