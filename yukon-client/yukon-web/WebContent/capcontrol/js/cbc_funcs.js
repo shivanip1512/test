@@ -1116,8 +1116,3 @@ return retStr;
 String.prototype.removeLeadTrailSpace = function () {
     return new String ( removeSpaceFromBeginning ( removeSpaceFromEnd (this) ) );
 }
-
-function resultsPost (param) {
-	redirect = '/capcontrol/results.jsp?'+param;
-	post(redirect);
-}

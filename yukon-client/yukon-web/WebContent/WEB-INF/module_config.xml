@@ -456,24 +456,24 @@
       <option id="orphans">
         <links>
         <option id="orphanedsubstations">
-            <link>/capcontrol/results.jsp?cbc_lastSearch=__cti_oSubstations__</link>
+            <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oSubstations__</link>
           </option>
          <option id="orphanedsubstationbuses">
-            <link>/capcontrol/results.jsp?cbc_lastSearch=__cti_oSubBuses__</link>
+            <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oSubBuses__</link>
           </option>
           <option id="orphanedfeeders">
-            <link>/capcontrol/results.jsp?cbc_lastSearch=__cti_oFeeders__</link>
+            <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oFeeders__</link>
           </option>
           <option id="orphanedcapbanks">
-            <link>/capcontrol/results.jsp?cbc_lastSearch=__cti_oBanks__</link>
+            <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oBanks__</link>
           </option>
           <option id="orphanedcbcs">
-            <link>/capcontrol/results.jsp?cbc_lastSearch=__cti_oCBCs__</link>
+            <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oCBCs__</link>
           </option>
         </links>
       </option>
     </links>
-    <search action="results.jsp" method="get" fieldname="cbc_lastSearch"/>
+    <search action="/spring/capcontrol/search/searchResults" method="get" fieldname="cbc_lastSearch"/>
     <skin name="standard"/>
     <css file="/css/base.css"/> <!-- normally this should be an absolute path -->
     <css file="/WebConfig/yukon/styles/capcontrollogos.css"/>
