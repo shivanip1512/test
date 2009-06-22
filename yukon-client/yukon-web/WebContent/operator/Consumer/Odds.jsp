@@ -43,7 +43,7 @@
 			  	<input type="hidden" name="action" value="SendControlOdds">
                 <table border="1" cellspacing="0" cellpadding="3" width="550">
                   <tr> 
-                    <td width="200" class="HeaderCell" align="center" colspan="2">Program 
+                    <td width="390" class="HeaderCell" align="center" colspan="2">Program 
                       Enrollment </td>
                     <td width="148" class="HeaderCell" align="center">
 					  <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_ODDS_FOR_CONTROL %>" defaultvalue="odds for control" format="all_capital"/>
@@ -73,11 +73,11 @@
 <%	        if (j == 0) { %>
                     <td width="64" rowspan="<%= progList.size() %>"><img src="../../WebConfig/<%= category.getStarsWebConfig().getLogoLocation() %>"></td>
 <%	        } %>
-                    <td width="338" class="TableCell" align="center" style="border-right:none">
+                    <td width="320" class="TableCell" align="left" style="border-right:none">
                     <input type="hidden" name="ProgID" value="<%= program.getProgramID() %>">
                     <%= ServletUtils.getProgramDisplayNames(program)[0] %>
                     </td>
-                    <td width="148" class="TableCell" align="center" style="border-left:none">
+                    <td width="148" class="TableCell" align="left" style="border-left:none">
                             <select name="ControlOdds" onchange="setContentChanged(true)">
                               <%
 			for (int k = 0; k < oddsList.getStarsSelectionListEntryCount(); k++) {
