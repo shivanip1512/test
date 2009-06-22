@@ -1,7 +1,5 @@
 package com.cannontech.loadcontrol;
 
-import static com.cannontech.common.util.CtiUtilities.get1990GregCalendar;
-
 import java.awt.Color;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -283,7 +281,7 @@ public class LCUtils
                     return CtiUtilities.STRING_DASH_LINE;
                 } else {
 					if( prg.getStartTime() == null
-						 || prg.getStartTime().before(get1990GregCalendar()) ) {
+						 || prg.getStartTime().before(CtiUtilities.get1990GregCalendar()) ) {
                         return CtiUtilities.STRING_DASH_LINE;
                     } else {
                         String result = dateFormattingService.formatDate(prg.getStartTime().getTime(), DateFormatEnum.DATEHM, userContext);
@@ -307,7 +305,7 @@ public class LCUtils
                 } else {
                 	//return dashes if stop time is null, <1990 or >= 2035 
                 	if( prg.getStopTime() == null 
-						|| prg.getStopTime().before(get1990GregCalendar())
+						|| prg.getStopTime().before(CtiUtilities.get1990GregCalendar())
 						|| prg.getStopTime().compareTo(CtiUtilities.get2035GregCalendar()) >= 0 ) {
                         return CtiUtilities.STRING_DASH_LINE;
 					} else {
