@@ -121,7 +121,7 @@ public static final PointBase retrievePoint(Integer id, String databaseAlias) th
 
 
 public static PointBase createAnalogPoint( String pointName, Integer paoID, 
-		Integer pointID, int pointOffset, int pointUnit )
+		Integer pointID, int pointOffset, int pointUnit, int stateGroupId )
 {
 	com.cannontech.database.data.point.PointBase point =
 		com.cannontech.database.data.point.PointFactory.createPoint(com.cannontech.database.data.point.PointTypes.ANALOG_POINT);
@@ -133,8 +133,7 @@ public static PointBase createAnalogPoint( String pointName, Integer paoID,
 			paoID,
 			new Integer(pointOffset) );
 	
-	point.getPoint().setStateGroupID( 
-		new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ANALOG) );
+	point.getPoint().setStateGroupID( stateGroupId);			// new Integer(StateGroupUtils.STATEGROUP_ANALOG) );
 	
 	//defaults - pointUnit
 	((com.cannontech.database.data.point.ScalarPoint)point).setPointUnit(
@@ -160,7 +159,7 @@ public static PointBase createAnalogPoint( String pointName, Integer paoID,
 }
 
 public static PointBase createAnalogPoint( String pointName, Integer paoID, 
-        Integer pointID, int pointOffset, int pointUnit, double multiplier )
+        Integer pointID, int pointOffset, int pointUnit, double multiplier, int stateGroupId )
 {
     com.cannontech.database.data.point.PointBase point =
         com.cannontech.database.data.point.PointFactory.createPoint(com.cannontech.database.data.point.PointTypes.ANALOG_POINT);
@@ -172,8 +171,7 @@ public static PointBase createAnalogPoint( String pointName, Integer paoID,
             paoID,
             new Integer(pointOffset) );
     
-    point.getPoint().setStateGroupID( 
-        new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ANALOG) );
+    point.getPoint().setStateGroupID( stateGroupId);	// new Integer(StateGroupUtils.STATEGROUP_ANALOG) );
     
     //defaults - pointUnit
     ((com.cannontech.database.data.point.ScalarPoint)point).setPointUnit(
@@ -200,7 +198,7 @@ public static PointBase createAnalogPoint( String pointName, Integer paoID,
 
 
 public static PointBase createDmdAccumPoint( String pointName, Integer paoID, 
-      Integer pointID, int pointOffset, int pointUnit, double multiplier )
+      Integer pointID, int pointOffset, int pointUnit, double multiplier, int stateGroupId )
 {
    com.cannontech.database.data.point.PointBase point =
       com.cannontech.database.data.point.PointFactory.createPoint(
@@ -213,8 +211,7 @@ public static PointBase createDmdAccumPoint( String pointName, Integer paoID,
          paoID,
          new Integer(pointOffset) );
    
-   point.getPoint().setStateGroupID( 
-      new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ANALOG) );
+   point.getPoint().setStateGroupID( stateGroupId);			//new Integer(StateGroupUtils.STATEGROUP_ANALOG) );
 
    //defaults - pointAccumulator   
    com.cannontech.database.db.point.PointAccumulator accumPt = 
@@ -275,7 +272,7 @@ public final static PointBase createNewPoint( Integer pointID, int pointType, St
 }
 
 public static PointBase createPulseAccumPoint( String pointName, Integer paoID, 
-      Integer pointID, int pointOffset, int pointUnit, double multiplier )
+      Integer pointID, int pointOffset, int pointUnit, double multiplier, int stateGroupId )
 {
    final int defaultDecimalPlaces = (pointOffset != 1) ? 
            com.cannontech.database.db.point.PointUnit.DEFAULT_DECIMAL_PLACES : 1;
@@ -287,8 +284,7 @@ public static PointBase createPulseAccumPoint( String pointName, Integer paoID,
          paoID,
          new Integer(pointOffset) );
    
-   point.getPoint().setStateGroupID( 
-      new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ANALOG) );
+   point.getPoint().setStateGroupID(stateGroupId);			// new Integer(StateGroupUtils.STATEGROUP_ANALOG) );
 
    //defaults - pointAccumulator   
    com.cannontech.database.db.point.PointAccumulator accumPt = 
@@ -338,7 +334,8 @@ public static synchronized PointBase createBankOpCntPoint( Integer capBankID )
 			capBankID,
 			null,
 			PointTypes.PT_OFFSET_TOTAL_KWH,
-			PointUnits.UOMID_COUNTS);
+			PointUnits.UOMID_COUNTS, 
+			StateGroupUtils.STATEGROUP_ANALOG);
 }
 
 /**
@@ -351,6 +348,29 @@ public static synchronized void createBankStatusPt(
 	PaoDao paoDao = DaoFactory.getPaoDao();
 	newVal.addDBPersistent(
 			createBankStatusPt(paoDao.getNextPaoId()));		
+}
+
+/**
+ * Creates a status point
+ */
+public static synchronized PointBase createStatusPoint( String pointName, Integer paoID, 
+	      Integer pointID, int pointOffset, int stateGroupId )
+{
+	//Create new point
+	PointBase newPoint = PointFactory.createPoint(PointTypes.STATUS_POINT);
+	newPoint = PointFactory.createNewPoint(		
+			pointID,
+			PointTypes.STATUS_POINT,
+			pointName,
+			paoID,
+			pointOffset );
+
+	newPoint.getPoint().setStateGroupID( stateGroupId );
+	
+	//defaults pointStatus
+	((StatusPoint) newPoint).setPointStatus( new PointStatus(pointID) );
+
+	return newPoint;
 }
 
 /**
@@ -382,7 +402,7 @@ public static synchronized PointBase createBankStatusPt( Integer capBankID )
 	return newPoint;
 }
 
-public static PointBase createCalcStatusPoint (Integer paoId, String name){
+public static PointBase createCalcStatusPoint (Integer paoId, String name, int stateGroupId){
     
     PointBase newPoint =
         PointFactory.createPoint(PointTypes.STATUS_POINT);
@@ -395,7 +415,7 @@ public static PointBase createCalcStatusPoint (Integer paoId, String name){
                                         new Integer (TypeBase.POINT_OFFSET) );
     
     
-    newPoint.getPoint().setStateGroupID( new Integer (StateGroupUtils.STATEGROUP_TWO_STATE_STATUS));
+    newPoint.getPoint().setStateGroupID( stateGroupId);				//new Integer (StateGroupUtils.STATEGROUP_TWO_STATE_STATUS));
     
     //defaults pointStatus
     ((CalcStatusPoint) newPoint).setPointStatus( new PointStatus(newPoint.getPoint().getPointID()) );
@@ -406,7 +426,7 @@ public static PointBase createCalcStatusPoint (Integer paoId, String name){
     
 }
 
-public static PointBase createCalculatedPoint(Integer paoId, String name){
+public static PointBase createCalculatedPoint(Integer paoId, String name, int stateGroupId){
     PointBase point = createPoint(PointTypes.CALCULATED_POINT);
     
     point = PointFactory.createNewPoint(    
@@ -417,7 +437,7 @@ public static PointBase createCalculatedPoint(Integer paoId, String name){
                                         new Integer (TypeBase.POINT_OFFSET)
                                          );
     
-    point.getPoint().setStateGroupID(new Integer (StateGroupUtils.STATEGROUP_ANALOG));
+    point.getPoint().setStateGroupID(stateGroupId);			//new Integer (StateGroupUtils.STATEGROUP_ANALOG));
     PointUnit punit = new PointUnit  (point.getPoint().getPointID(),
                                       new Integer (PointUnits.UOMID_UNDEF),
                                       new Integer(PointUnit.DEFAULT_DECIMAL_PLACES),

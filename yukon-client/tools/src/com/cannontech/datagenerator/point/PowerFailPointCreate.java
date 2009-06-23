@@ -16,6 +16,7 @@ import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.db.state.StateGroupUtils;
 public class PowerFailPointCreate extends PointCreate
 {
 	/**
@@ -71,7 +72,8 @@ public class PowerFailPointCreate extends PointCreate
 					   new Integer(pointID),
 					   PointTypes.PT_OFFSET_BLINK_COUNT,
 					   PointUnits.UOMID_COUNTS,
-					   1.0) );
+					   1.0,
+					   StateGroupUtils.STATEGROUP_ANALOG) );
 			CTILogger.info("Adding Blink Count: PointId " + pointID + " to Device ID" + litePaobject.getPaoName());
 			
 			++addCount;

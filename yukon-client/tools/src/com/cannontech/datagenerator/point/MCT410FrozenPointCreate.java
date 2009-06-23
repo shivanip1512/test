@@ -14,6 +14,7 @@ import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.yukon.IDatabaseCache;
 /**
  * Creates all Frozen MCT10 points (frozen peak demand, frozen min volts, frozen max volts for every MCT410 type in the database.
@@ -70,7 +71,8 @@ public class MCT410FrozenPointCreate extends PointCreate
 						new Integer(pointID),
 						PointTypes.PT_OFFSET_FROZEN_PEAK_DEMAND,
 						PointUnits.UOMID_KW,
-						multiplier) );
+						multiplier,
+						StateGroupUtils.STATEGROUP_ANALOG) );
 				CTILogger.info("Adding Frozen Peak Demand: PointId " + pointID  + " to Device: " + litePaobject.getPaoName());
 				addCount++;
 			}
@@ -83,7 +85,8 @@ public class MCT410FrozenPointCreate extends PointCreate
 						new Integer(pointID),
 						PointTypes.PT_OFFSET_FROZEN_MAX_VOLT,
 						PointUnits.UOMID_VOLTS,
-						multiplier) );
+						multiplier,
+						StateGroupUtils.STATEGROUP_ANALOG) );
 				CTILogger.info("Adding Frozen Max Volts: PointId " + pointID + " to Device: " + litePaobject.getPaoName());
 				addCount++;
 			}
@@ -98,7 +101,8 @@ public class MCT410FrozenPointCreate extends PointCreate
 						new Integer(pointID),
 						PointTypes.PT_OFFSET_FROZEN_MIN_VOLT,
 						PointUnits.UOMID_VOLTS,
-						multiplier) );
+						multiplier,
+						StateGroupUtils.STATEGROUP_ANALOG) );
 		
 				CTILogger.info("Adding Frozen Min Volts: PointId " + pointID + " to Device: " + litePaobject.getPaoName());
 				addCount++;

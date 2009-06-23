@@ -22,6 +22,8 @@ import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class LMGroupBaseWizardPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
@@ -348,7 +350,8 @@ private void createExtraObjects( LMGroup lmGroup, SmartMultiDBPersistent smartDB
 				paoID,
 				new Integer(ids[1]),
 				PointTypes.PT_OFFSET_ANNUAL_HISTORY,
-				com.cannontech.database.data.point.PointUnits.UOMID_COUNTS) );			
+				PointUnits.UOMID_COUNTS, 
+				StateGroupUtils.STATEGROUP_ANALOG) );			
 		
 		smartDB.addDBPersistent( 
 				PointFactory.createAnalogPoint(
@@ -356,7 +359,8 @@ private void createExtraObjects( LMGroup lmGroup, SmartMultiDBPersistent smartDB
 					paoID,
 					new Integer(ids[2]),
 					PointTypes.PT_OFFSET_DAILY_HISTORY,
-					com.cannontech.database.data.point.PointUnits.UOMID_COUNTS) );			
+					PointUnits.UOMID_COUNTS,
+					StateGroupUtils.STATEGROUP_ANALOG) );			
 
 		smartDB.addDBPersistent( 
 			PointFactory.createAnalogPoint(
@@ -364,7 +368,8 @@ private void createExtraObjects( LMGroup lmGroup, SmartMultiDBPersistent smartDB
 				paoID,
 				new Integer(ids[3]),
 				PointTypes.PT_OFFSET_SEASONAL_HISTORY,
-				com.cannontech.database.data.point.PointUnits.UOMID_COUNTS) );			
+				PointUnits.UOMID_COUNTS,
+				StateGroupUtils.STATEGROUP_ANALOG) );			
 		
 		smartDB.addDBPersistent( 
 			PointFactory.createAnalogPoint(
@@ -372,7 +377,8 @@ private void createExtraObjects( LMGroup lmGroup, SmartMultiDBPersistent smartDB
 				paoID,
 				new Integer(ids[4]),
 				PointTypes.PT_OFFSET_MONTHLY_HISTORY,
-				com.cannontech.database.data.point.PointUnits.UOMID_COUNTS) );
+				PointUnits.UOMID_COUNTS,
+				StateGroupUtils.STATEGROUP_ANALOG) );
 				
 		smartDB.addDBPersistent( 
 			PointFactory.createAnalogPoint(
@@ -380,7 +386,8 @@ private void createExtraObjects( LMGroup lmGroup, SmartMultiDBPersistent smartDB
 				paoID,
 				new Integer(ids[5]),
 				PointTypes.PT_OFFSET_CONTROL_COUNTDOWN,
-				com.cannontech.database.data.point.PointUnits.UOMID_COUNTS) );				
+				PointUnits.UOMID_COUNTS, 
+				StateGroupUtils.STATEGROUP_ANALOG) );				
 	
 	}
 

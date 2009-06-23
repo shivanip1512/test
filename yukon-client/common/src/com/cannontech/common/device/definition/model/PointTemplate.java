@@ -14,7 +14,7 @@ public class PointTemplate implements Comparable<PointTemplate> {
     private String name = null;
     private double multiplier = 1.0;
     private int unitOfMeasure = PointUnits.UOMID_INVALID;
-    private int stateGroupId = StateGroupUtils.SYSTEM_STATEGROUPID;
+    private int stateGroupId = StateGroupUtils.STATEGROUP_ANALOG;
 
     public PointTemplate(int type, int offset) {
         pointIdentifier = new PointIdentifier(type, offset);

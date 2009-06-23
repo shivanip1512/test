@@ -14,6 +14,7 @@ import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.yukon.IDatabaseCache;
 /**
  * @author snebben
@@ -84,7 +85,8 @@ public class MCT410AllPointCreate extends PointCreate
 						new Integer(pointID),
 						PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND,
 						PointUnits.UOMID_VOLTS,
-						multiplier) );
+						multiplier,
+						StateGroupUtils.STATEGROUP_ANALOG) );
 				CTILogger.info("Adding Voltage LP: PointId " + pointID + " to Device: " + litePaobject.getPaoName() );
 				addCount++;
 			}
@@ -99,7 +101,8 @@ public class MCT410AllPointCreate extends PointCreate
 						new Integer(pointID),
 						PointTypes.PT_OFFSET_PEAK_KW_DEMAND,
 						PointUnits.UOMID_KW,
-						multiplier) );
+						multiplier,
+						StateGroupUtils.STATEGROUP_ANALOG) );
 				CTILogger.info("Adding Peak kW: PointId " + pointID  + " to Device: " + litePaobject.getPaoName());
 				addCount++;
 			}
@@ -114,7 +117,8 @@ public class MCT410AllPointCreate extends PointCreate
 						new Integer(pointID),
 						PointTypes.PT_OFFSET_MAX_VOLT_DEMAND,
 						PointUnits.UOMID_VOLTS,
-						multiplier) );
+						multiplier,
+						StateGroupUtils.STATEGROUP_ANALOG) );
 				CTILogger.info("Adding Max Volts: PointId " + pointID + " to Device: " + litePaobject.getPaoName());
 				addCount++;
 			}
@@ -129,7 +133,8 @@ public class MCT410AllPointCreate extends PointCreate
 						new Integer(pointID),
 						PointTypes.PT_OFFSET_MIN_VOLT_DEMAND,
 						PointUnits.UOMID_VOLTS,
-						multiplier) );
+						multiplier,
+						StateGroupUtils.STATEGROUP_ANALOG) );
 		
 				CTILogger.info("Adding Min Volts: PointId " + pointID + " to Device: " + litePaobject.getPaoName());
 				addCount++;
@@ -145,7 +150,8 @@ public class MCT410AllPointCreate extends PointCreate
 						new Integer(pointID),
 						PointTypes.PT_OFFSET_KW_DEMAND,
 						PointUnits.UOMID_KW,
-						multiplier) );
+						multiplier,
+						StateGroupUtils.STATEGROUP_ANALOG) );
 				CTILogger.info("Adding kW: PointId " + pointID + " to Device: " + litePaobject.getPaoName());
 				addCount++;
 			}
@@ -160,7 +166,8 @@ public class MCT410AllPointCreate extends PointCreate
 						new Integer(pointID),
 						PointTypes.PT_OFFSET_VOLTAGE_DEMAND,
 						PointUnits.UOMID_VOLTS,
-						multiplier) );
+						multiplier,
+						StateGroupUtils.STATEGROUP_ANALOG) );
 				CTILogger.info("Adding Voltage: PointId " + pointID + " to Device ID" + litePaobject.getPaoName());
 				addCount++;
 			}
@@ -175,7 +182,8 @@ public class MCT410AllPointCreate extends PointCreate
 					   new Integer(pointID),
 					   PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND,
 					   PointUnits.UOMID_KW,
-					   multiplier) );
+					   multiplier,
+					   StateGroupUtils.STATEGROUP_ANALOG) );
 				CTILogger.info("Adding kW-LP: PointId " + pointID + " to Device ID" + litePaobject.getPaoName());
 				addCount++;
 			}
@@ -189,7 +197,8 @@ public class MCT410AllPointCreate extends PointCreate
 					   new Integer(pointID),
 					   PointTypes.PT_OFFSET_TOTAL_KWH,
 					   PointUnits.UOMID_KWH,
-					   multiplier) );
+					   multiplier,
+					   StateGroupUtils.STATEGROUP_ANALOG) );
 			    CTILogger.info("Adding kWh: PointId " + pointID + " to Device ID" + litePaobject.getPaoName());
 				addCount++;
 			}
@@ -204,7 +213,8 @@ public class MCT410AllPointCreate extends PointCreate
 						   new Integer(pointID),
 						   PointTypes.PT_OFFSET_BLINK_COUNT,
 						   PointUnits.UOMID_COUNTS,
-						   1.0) );
+						   1.0,
+						   StateGroupUtils.STATEGROUP_ANALOG) );
 				    CTILogger.info("Adding Blink Count: PointId " + pointID + " to Device ID" + litePaobject.getPaoName());
 					addCount++;
 			}
@@ -217,7 +227,8 @@ public class MCT410AllPointCreate extends PointCreate
 							new Integer(paobjectID), 
                             new Integer(pointID), 
                             PointTypes.PT_OFFSET_OUTAGE, 
-                            PointUnits.UOMID_SECONDS));
+                            PointUnits.UOMID_SECONDS,
+    						StateGroupUtils.STATEGROUP_ANALOG) );
 				    CTILogger.info("Adding Outage Log: PointId " + pointID + " to Device ID" + litePaobject.getPaoName());
 					addCount++;
 			}

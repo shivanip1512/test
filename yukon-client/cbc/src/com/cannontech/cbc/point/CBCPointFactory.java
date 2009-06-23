@@ -220,7 +220,8 @@ public class CBCPointFactory {
                                                             .getPointID(),
                                                        param.getOffset(),
                                                        ((AnalogPointParams) param).getUofm(),
-                                                       ((AnalogPointParams) param).getMult());
+                                                       ((AnalogPointParams) param).getMult(), 
+                                                       StateGroupUtils.STATEGROUP_ANALOG);
 
                 break;
 
@@ -233,7 +234,8 @@ public class CBCPointFactory {
                                                                 .getPointID(),
                                                            param.getOffset(),
                                                            ((AccumPointParams) param).getUofm(),
-                                                           ((AccumPointParams) param).getMult());
+                                                           ((AccumPointParams) param).getMult(), 
+                                                           StateGroupUtils.STATEGROUP_ANALOG);
 
                 PointUnit punit = new PointUnit(point.getPoint().getPointID(),
                                                 new Integer(PointUnits.UOMID_COUNTS),
@@ -283,7 +285,8 @@ public class CBCPointFactory {
                                                                    paoID,
                                                                    pointDAO.getNextPointId(),
                                                                    params.getOffset(),
-                                                                   params.getUofm());
+                                                                   params.getUofm(), 
+                                                                   StateGroupUtils.STATEGROUP_ANALOG);
 
             analogPoint.setDbConnection(connection);
             retSmart.addDBPersistent(analogPoint);

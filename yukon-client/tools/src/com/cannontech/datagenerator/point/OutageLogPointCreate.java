@@ -11,6 +11,7 @@ import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.db.state.StateGroupUtils;
 public class OutageLogPointCreate extends PointCreate
 {
 	/**
@@ -65,7 +66,8 @@ public class OutageLogPointCreate extends PointCreate
 						new Integer(litePaobject.getYukonID()), 
                         new Integer(pointID), 
                         PointTypes.PT_OFFSET_OUTAGE, 
-                        PointUnits.UOMID_SECONDS));
+                        PointUnits.UOMID_SECONDS,
+						StateGroupUtils.STATEGROUP_ANALOG) );
 		    
 			++addCount;
 		}

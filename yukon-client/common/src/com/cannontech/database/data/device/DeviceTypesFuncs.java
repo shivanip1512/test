@@ -21,6 +21,7 @@ import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.DeviceCBC;
 import com.cannontech.database.db.device.DeviceAddress;
 import com.cannontech.database.db.device.DeviceMCT400Series;
+import com.cannontech.database.db.state.StateGroupUtils;
 
 /**
  * This type was created in VisualAge.
@@ -1210,7 +1211,7 @@ public static Object changeType (String newType,
 						   DaoFactory.getPointDao().getNextPointId(),
 						   PointTypes.PT_OFFSET_TOTAL_KWH,
 						   com.cannontech.database.data.point.PointUnits.UOMID_KWH,
-						   0.1) ).execute();
+						   0.1, StateGroupUtils.STATEGROUP_ANALOG) ).execute();
 				}
 				
 				if(!blinkCountExists)	
@@ -1222,7 +1223,7 @@ public static Object changeType (String newType,
                            DaoFactory.getPointDao().getNextPointId(),
 						   PointTypes.PT_OFFSET_BLINK_COUNT,
 						   com.cannontech.database.data.point.PointUnits.UOMID_COUNTS,
-						   1.0) ).execute();
+						   1.0, StateGroupUtils.STATEGROUP_ANALOG) ).execute();
 				}
 				
 				if(!loadProfileExists)
@@ -1234,7 +1235,7 @@ public static Object changeType (String newType,
                            DaoFactory.getPointDao().getNextPointId(),
 						   PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND,
 						   com.cannontech.database.data.point.PointUnits.UOMID_KW,
-						   0.1) ).execute();
+						   0.1, StateGroupUtils.STATEGROUP_ANALOG) ).execute();
 				}
 				
 				Transaction.createTransaction(Transaction.INSERT,  
@@ -1244,7 +1245,7 @@ public static Object changeType (String newType,
                         DaoFactory.getPointDao().getNextPointId(),                        
 						PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND,
 						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
-						0.1) ).execute();
+						0.1, StateGroupUtils.STATEGROUP_ANALOG) ).execute();
 		   	
                 if(!peakKWExists) {
     				Transaction.createTransaction(Transaction.INSERT, 
@@ -1254,7 +1255,7 @@ public static Object changeType (String newType,
                             DaoFactory.getPointDao().getNextPointId(),                                                
     						PointTypes.PT_OFFSET_PEAK_KW_DEMAND,
     						com.cannontech.database.data.point.PointUnits.UOMID_KW,
-    						0.1) ).execute();
+    						0.1,StateGroupUtils.STATEGROUP_ANALOG) ).execute();
                 }
 			
                 if(!maxVoltsExists) {
@@ -1265,7 +1266,7 @@ public static Object changeType (String newType,
                             DaoFactory.getPointDao().getNextPointId(),                                                                        
     						PointTypes.PT_OFFSET_MAX_VOLT_DEMAND,
     						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
-    						0.1) ).execute();
+    						0.1, StateGroupUtils.STATEGROUP_ANALOG) ).execute();
                 }
     			
                 if(!minVoltsExists) {
@@ -1276,7 +1277,7 @@ public static Object changeType (String newType,
                             DaoFactory.getPointDao().getNextPointId(),                                                                                                
     						PointTypes.PT_OFFSET_MIN_VOLT_DEMAND,
     						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
-    						0.1) ).execute();
+    						0.1, StateGroupUtils.STATEGROUP_ANALOG) ).execute();
                 }
                 
 				Transaction.createTransaction(Transaction.INSERT, 
@@ -1286,7 +1287,7 @@ public static Object changeType (String newType,
                         DaoFactory.getPointDao().getNextPointId(),
 						PointTypes.PT_OFFSET_FROZEN_PEAK_DEMAND,
 						com.cannontech.database.data.point.PointUnits.UOMID_KW,
-						0.1) ).execute();			
+						0.1, StateGroupUtils.STATEGROUP_ANALOG) ).execute();			
 			
 				Transaction.createTransaction(Transaction.INSERT, 
 					PointFactory.createDmdAccumPoint(
@@ -1295,7 +1296,7 @@ public static Object changeType (String newType,
                         DaoFactory.getPointDao().getNextPointId(),
 						PointTypes.PT_OFFSET_FROZEN_MAX_VOLT,
 						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
-						0.1) ).execute();
+						0.1, StateGroupUtils.STATEGROUP_ANALOG) ).execute();
 			
 				Transaction.createTransaction(Transaction.INSERT, 
 					PointFactory.createDmdAccumPoint(
@@ -1304,7 +1305,7 @@ public static Object changeType (String newType,
                         DaoFactory.getPointDao().getNextPointId(),                        
 						PointTypes.PT_OFFSET_FROZEN_MIN_VOLT,
 						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
-						0.1) ).execute();
+						0.1, StateGroupUtils.STATEGROUP_ANALOG) ).execute();
 			
                 if(!kWDemandExists) {
     				Transaction.createTransaction(Transaction.INSERT, 
@@ -1314,7 +1315,7 @@ public static Object changeType (String newType,
                             DaoFactory.getPointDao().getNextPointId(),                        
     						PointTypes.PT_OFFSET_KW_DEMAND,
     						com.cannontech.database.data.point.PointUnits.UOMID_KW,
-    						0.1) ).execute();
+    						0.1, StateGroupUtils.STATEGROUP_ANALOG) ).execute();
                 }
                 
                 if(!voltageExists) {
@@ -1325,7 +1326,7 @@ public static Object changeType (String newType,
                             DaoFactory.getPointDao().getNextPointId(),                        
     						PointTypes.PT_OFFSET_VOLTAGE_DEMAND,
     						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
-    						0.1) ).execute();
+    						0.1, StateGroupUtils.STATEGROUP_ANALOG) ).execute();
                 }
                 
 				Transaction t2 =

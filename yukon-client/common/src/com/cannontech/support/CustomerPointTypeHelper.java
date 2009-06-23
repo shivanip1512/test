@@ -32,6 +32,7 @@ import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.customer.CICustomerPointType;
+import com.cannontech.database.db.state.StateGroupUtils;
 
 public class CustomerPointTypeHelper {
     private CustomerPointTypeLookup pointTypeLookup;
@@ -139,7 +140,8 @@ public class CustomerPointTypeHelper {
                                                              customerDevice.getYukonID(), 
                                                              pointId, 
                                                              0, 
-                                                             PointUnits.UOMID_UNDEF);
+                                                             PointUnits.UOMID_UNDEF,
+                                                             StateGroupUtils.STATEGROUP_ANALOG);
             point.getPoint().setArchiveType(PointTypes.ARCHIVE_ON_TIMER_OR_UPDATE);
             point.getPoint().setArchiveInterval(7*24*60*60); // 1 week as seconds
             dbPersistentDao.performDBChange(point, Transaction.INSERT);

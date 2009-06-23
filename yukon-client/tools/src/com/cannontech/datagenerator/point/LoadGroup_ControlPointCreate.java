@@ -18,6 +18,7 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.db.point.PointStatus;
+import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.yukon.IDatabaseCache;
 /**
  * @author snebben
@@ -70,7 +71,8 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 						new Integer(paobjectID),
 						new Integer(pointID),
 						PointTypes.PT_OFFSET_DAILY_HISTORY,
-						PointUnits.UOMID_COUNTS));
+						PointUnits.UOMID_COUNTS, 
+						StateGroupUtils.STATEGROUP_ANALOG));
 				CTILogger.info("Adding DAILY_HISTROY PointId " + pointID + " to Device: " + litePaobject.getPaoName() );
 				addCount++;
 			}
@@ -82,7 +84,8 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 						new Integer(paobjectID),
 						new Integer(pointID),
 						PointTypes.PT_OFFSET_MONTHLY_HISTORY,
-						PointUnits.UOMID_COUNTS));
+						PointUnits.UOMID_COUNTS,
+						StateGroupUtils.STATEGROUP_ANALOG));
 				CTILogger.info("Adding MONTHLY_HISTROY PointId " + pointID  + " to Device: " + litePaobject.getPaoName());
 				addCount++;
 			}
@@ -94,7 +97,8 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 						new Integer(paobjectID),
 						new Integer(pointID),
 						PointTypes.PT_OFFSET_SEASONAL_HISTORY,
-						PointUnits.UOMID_COUNTS));
+						PointUnits.UOMID_COUNTS, 
+						StateGroupUtils.STATEGROUP_ANALOG));
 				CTILogger.info("Adding SEASONAL_HISTROY PointId " + pointID + " to Device: " + litePaobject.getPaoName());
 				addCount++;
 			}
@@ -106,7 +110,8 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 						new Integer(paobjectID),
 						new Integer(pointID),
 						PointTypes.PT_OFFSET_ANNUAL_HISTORY,
-						PointUnits.UOMID_COUNTS));
+						PointUnits.UOMID_COUNTS,
+						StateGroupUtils.STATEGROUP_ANALOG));
 				CTILogger.info("Adding ANNUAL_HISTROY PointId " + pointID + " to Device: " + litePaobject.getPaoName());
 				addCount++;
 			}
@@ -136,7 +141,8 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 						new Integer(litePaobject.getLiteID()),
 						new Integer(pointID),
 						PointTypes.PT_OFFSET_CONTROL_COUNTDOWN,
-						PointUnits.UOMID_COUNTS));
+						PointUnits.UOMID_COUNTS,
+						StateGroupUtils.STATEGROUP_ANALOG));
 				CTILogger.info("Adding CONTROL_COUNTDOWN PointId " + pointID + " to Device ID" + litePaobject.getYukonID());
 				addCount++;
 			}

@@ -44,15 +44,16 @@ public class PointServiceImpl implements PointService {
                                                                  pointId,
                                                                  offset,
                                                                  unitOfMeasure,
-                                                                 multiplier);
+                                                                 multiplier,
+                                                                 stateGroupId);
             break;
 
         case PointTypes.STATUS_POINT:
-            point = (StatusPoint) PointFactory.createBankStatusPt(paoId);
-            point.setPointID(pointId);
-            point.getPoint().setPointName(name);
-            point.getPoint().setPointOffset(offset);
-            point.getPoint().setStateGroupID(stateGroupId);
+            point = (StatusPoint) PointFactory.createStatusPoint(name, 
+            													paoId, 
+            													pointId, 
+            													offset, 
+            													stateGroupId);
             break;
 
         case PointTypes.DEMAND_ACCUMULATOR_POINT:
@@ -61,7 +62,8 @@ public class PointServiceImpl implements PointService {
                                                                         pointId,
                                                                         offset,
                                                                         unitOfMeasure,
-                                                                        multiplier);
+                                                                        multiplier, 
+                                                                        stateGroupId);
 
             break;
 
@@ -71,7 +73,8 @@ public class PointServiceImpl implements PointService {
                                                                           pointId,
                                                                           offset,
                                                                           unitOfMeasure,
-                                                                          multiplier);
+                                                                          multiplier, 
+                                                                          stateGroupId);
 
             break;
 

@@ -14,6 +14,7 @@ import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.point.Point;
 import com.cannontech.database.db.point.PointAlarming;
+import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 
 /**
@@ -31,12 +32,11 @@ public class PointUtil {
            point =  PointFactory.createPoint(PointTypes.ANALOG_POINT);
            point =  PointFactory.createAnalogPoint(name,
                                                                       paoId,
-                                                                      point.getPoint()
-                                                                                 .getPointID(),
+                                                                      point.getPoint().getPointID(),
                                                                       validPointOffset,
-                                     
                                                                       PointUnits.UOMID_VOLTS,
-                                                                      1.0);
+                                                                      1.0, 
+                                                                      StateGroupUtils.STATEGROUP_ANALOG);
            dbPersistentVector.getDBPersistentVector().add(point);
            break;
        case PointTypes.STATUS_POINT:
@@ -53,21 +53,19 @@ public class PointUtil {
                                                                       point.getPoint().getPointID(),
                                                                       TypeBase.POINT_OFFSET, 
                                                                       PointUnits.UOMID_UNDEF, 
-                                                                      0.1);
-
-           
-           
+                                                                      0.1, 
+                                                                      StateGroupUtils.STATEGROUP_ANALOG);
            
            dbPersistentVector.getDBPersistentVector().add(point);
            break;
            
        case PointTypes.CALCULATED_POINT:
-           point = PointFactory.createCalculatedPoint(paoId, name);
+           point = PointFactory.createCalculatedPoint(paoId, name, StateGroupUtils.STATEGROUP_ANALOG);
            dbPersistentVector.getDBPersistentVector().add(point);
            break;
            
        case PointTypes.CALCULATED_STATUS_POINT:
-           point = PointFactory.createCalcStatusPoint(paoId, name);
+           point = PointFactory.createCalcStatusPoint(paoId, name, StateGroupUtils.STATEGROUP_ANALOG);
            dbPersistentVector.getDBPersistentVector().add(point); 
            break;
            
