@@ -1,6 +1,8 @@
-<jsp:directive.page import="com.cannontech.util.ParamUtil"/>
 <jsp:directive.page import="com.cannontech.database.data.pao.PAOGroups"/>
+<jsp:directive.page import="com.cannontech.web.delete.DeleteFormPoint"/>
 <jsp:directive.page import="com.cannontech.web.util.JSFUtil"/>
+<jsp:directive.page import="com.cannontech.web.util.JSFParamUtil"/>
+<jsp:directive.page import="com.cannontech.util.ParamUtil"/>
 <%@ page import="com.cannontech.web.editor.*" %>
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
@@ -8,11 +10,13 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <f:view>
 <cti:standardPage title="CapControl Wizard" module="capcontrol">
-
+<cti:includeCss link="/editor/css/base.css"/>
 <%
 //This is needed because this was handled in the CBCSerlvet before entering faces pages.
 //Since the servlet bypass, this static method will need to be called entering any faces page.
 CapControlForm.setupFacesNavigation();
+DeleteFormPoint deleteForm = (DeleteFormPoint)JSFParamUtil.getJSFVar( "pointDeleteForm" );
+deleteForm.initItem();
 %>
 
     <x:panelLayout id="page" styleClass="pageLayout" headerClass="pageHeader"
@@ -83,7 +87,7 @@ CapControlForm.setupFacesNavigation();
                     <x:panelGroup>
                         <f:verbatim><br/><hr/><br/></f:verbatim>
                         <x:commandButton value="Submit" action="#{pointDeleteForm.update}" styleClass="stdButton" title="Writes this item to the database" />
-                        <x:commandButton value="Return" action="none" styleClass="stdButton" immediate="true" title="Returns to the last module page that was used to enter this editor" >
+                        <x:commandButton value="Return" action="#{pointDeleteForm.reset}" styleClass="stdButton" immediate="true" title="Returns to the last module page that was used to enter this editor" >
                             <f:actionListener type="com.cannontech.web.editor.CtiNavActionListener" />
                         </x:commandButton>
                     </x:panelGroup>

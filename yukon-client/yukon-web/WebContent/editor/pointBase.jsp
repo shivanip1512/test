@@ -10,6 +10,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <f:view>
 <cti:standardPage title="Editor" module="capcontrol">
+    <cti:includeCss link="/editor/css/base.css"/>
 <%
     //****
     // Entry point file for all operations that edit a point
@@ -18,15 +19,12 @@
     int id = ParamUtil.getInteger(request, "itemid", PAOGroups.INVALID);
     String parentId = JSFParamUtil.getJSFReqParam("parentId");
 
-    PointForm ptEditorForm =
-            (PointForm)JSFParamUtil.getJSFVar( "ptEditorForm" );
+    PointForm ptEditorForm = (PointForm)JSFParamUtil.getJSFVar( "ptEditorForm" );
 
     if (parentId != null) {
-
         ptEditorForm.initWizard(new Integer(parentId));
     }
     if( id != PAOGroups.INVALID ) {
-
         ptEditorForm.initItem( id );
     }
     //This is needed because this was handled in the CBCSerlvet before entering faces pages.

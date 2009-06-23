@@ -32,7 +32,7 @@ public class CtiNavActionListener implements ActionListener {
 				
 				String red = "";
 				HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
-				CapControlForm form = (CapControlForm) session.getAttribute("capControlForm");      
+				CapControlForm form = (CapControlForm) session.getAttribute("capControlForm");
 			    red = CBCNavigationUtil.goBack(session);
 			    
 			    if (ctiNav.getModuleRedirectPage() != null) {
@@ -55,7 +55,7 @@ public class CtiNavActionListener implements ActionListener {
 				    // it preserves the return point since it will fall off of our 2 page history in CtiNav
 				    ctiNav.setCurrentPage(ctiNav.getPreservedAddress());
                     ctiNav.setPreservedAddress(null);
-                    form.resetTabIndex();
+                    if(form != null) form.resetTabIndex();
                 }else {
                     ctiNav.setNavigation(red);
                 }

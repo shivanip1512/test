@@ -718,6 +718,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		    resetCurrentStratModel();
         }
         initEditorPanels();
+        getPointTreeForm().init(itemID);
 	}
 
     private void resetCurrentStratModel() {

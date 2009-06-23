@@ -52,39 +52,39 @@
                 </f:facet>
 
                 <x:panelGroup>
-                    <f:verbatim><br/><fieldset class="fieldSet"><legend>General</legend></f:verbatim>
-
-                    <f:verbatim><br/></f:verbatim>
-                    <x:outputLabel for="Name" value="Name: " title="A label for the item in the system"/>
-                    <x:inputText id="Name" required="true" maxlength="32" styleClass="char32Label"
-                            value="#{ptEditorForm.wizData.name}" />
-    
-                    <f:verbatim><br/></f:verbatim>
-                    <h:selectBooleanCheckbox id="disabledCheck" value="#{ptEditorForm.wizData.disabled}" />
-                    <x:outputLabel for="disabledCheck" value="Disabled" title="Is the item disabled"/>
-                    <f:verbatim></fieldset></f:verbatim>
+                    <x:htmlTag value="fieldset" styleClass="fieldSet">
+	                    <x:htmlTag value="legend"><x:outputText value="General"/></x:htmlTag>
+	
+	                    <f:verbatim><br/></f:verbatim>
+	                    <x:outputLabel for="Name" value="Name: " title="A label for the item in the system"/>
+	                    <x:inputText id="Name" required="true" maxlength="32" styleClass="char32Label"
+	                            value="#{ptEditorForm.wizData.name}" />
+	    
+	                    <f:verbatim><br/></f:verbatim>
+	                    <h:selectBooleanCheckbox id="disabledCheck" value="#{ptEditorForm.wizData.disabled}" />
+	                    <x:outputLabel for="disabledCheck" value="Disabled" title="Is the item disabled"/>
+                    </x:htmlTag>
                 </x:panelGroup>
 
 
                 <x:panelGroup>
-                    <f:verbatim><br/><br/></f:verbatim>
-                    <f:verbatim><fieldset><legend>Item Type</legend></f:verbatim>
-                    <x:outputLabel for="Point_Type" value="Point Type: "
-                            title="Type of Point this object will be"/>
-                    <x:selectOneMenu id="Point_Type" value="#{ptEditorForm.wizData.pointType}"
-                            required="true" onchange="submit();" >
-                        <f:selectItems value="#{selLists.pointTypes}" />
-                    </x:selectOneMenu>
-
-                    <f:verbatim><br/><br/></f:verbatim>
-                    <x:outputLabel for="Calc_Output" value="Calc. Output: "
-                            title="The calculated output only applies to calculated points"/>
-                    <x:selectOneMenu id="Calc_Output" disabled="#{!ptEditorForm.wizData.subtypeNeeded}"
-                            value="#{ptEditorForm.wizData.subType}" onchange="submit();">
-                        <f:selectItems value="#{selLists.pointSubtypes}"/>
-                    </x:selectOneMenu>
-                    
-                    <f:verbatim></fieldset></f:verbatim>
+                    <x:htmlTag value="fieldset" styleClass="fieldSet">
+                        <x:htmlTag value="legend"><x:outputText value="Item Type"/></x:htmlTag>
+	                    <x:outputLabel for="Point_Type" value="Point Type: "
+	                            title="Type of Point this object will be"/>
+	                    <x:selectOneMenu id="Point_Type" value="#{ptEditorForm.wizData.pointType}"
+	                            required="true" onchange="submit();" >
+	                        <f:selectItems value="#{selLists.pointTypes}" />
+	                    </x:selectOneMenu>
+	
+	                    <f:verbatim><br/><br/></f:verbatim>
+	                    <x:outputLabel for="Calc_Output" value="Calc. Output: "
+	                            title="The calculated output only applies to calculated points"/>
+	                    <x:selectOneMenu id="Calc_Output" disabled="#{!ptEditorForm.wizData.subtypeNeeded}"
+	                            value="#{ptEditorForm.wizData.subType}" onchange="submit();">
+	                        <f:selectItems value="#{selLists.pointSubtypes}"/>
+	                    </x:selectOneMenu>
+                    </x:htmlTag>
 
                 </x:panelGroup>             
             <f:facet name="footer">

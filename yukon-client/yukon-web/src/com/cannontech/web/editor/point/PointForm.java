@@ -47,6 +47,7 @@ import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.database.db.point.PointLimit;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.web.editor.CapControlForm;
 import com.cannontech.web.editor.DBEditorForm;
 import com.cannontech.web.exceptions.InvalidPointLimits;
 import com.cannontech.web.exceptions.InvalidPointOffsetException;
@@ -373,15 +374,15 @@ public class PointForm extends DBEditorForm
             fcsMessage.setDetail("Database add was SUCCESSFUL");
             PointBase point = PointUtil.createPoint(pointType, name, paoId);    
             initItem( point.getPoint().getPointID().intValue() );
-             
+            CapControlForm capControlForm = (CapControlForm)JSFParamUtil.getJSFVar( "capControlForm" );
+            capControlForm.getPointTreeForm().resetPointList();
         }catch (TransactionException e){
             fcsMessage.setDetail("ERROR creating point -- PointForm.create" + e.getMessage());
             edType =  "";
         }
         finally{
             //set the Context
-            FacesContext.getCurrentInstance()
-            .addMessage("cti_db_add", fcsMessage);
+            FacesContext.getCurrentInstance().addMessage("cti_db_add", fcsMessage);
         }
         return edType;
     }

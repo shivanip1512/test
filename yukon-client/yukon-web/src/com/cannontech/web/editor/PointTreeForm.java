@@ -47,6 +47,10 @@ public class PointTreeForm {
      */
     public PointTreeForm(int paoId) {
         super();
+        init(paoId);
+    }
+
+    public void init(int paoId) {
         LiteYukonPAObject litePAO = null;
         try {
             litePAO = DaoFactory.getPaoDao().getLiteYukonPAO(paoId);
@@ -60,8 +64,6 @@ public class PointTreeForm {
             retrieveDB();
         }
     }
-
-
 
     public PointTreeForm() {}
 
@@ -80,13 +82,17 @@ public class PointTreeForm {
             return;
 
         try {
-            setPao((YukonPAObject) Transaction.createTransaction(Transaction.RETRIEVE,getPao()).execute());
+            setPao(Transaction.createTransaction(Transaction.RETRIEVE,getPao()).execute());
 
         } catch (TransactionException te) {
             CTILogger.error("Unable to retrieve db object", te);
             return;
         }
 
+    }
+    
+    public void resetPointList() {
+        pointList = null;
     }
 
     @SuppressWarnings("unchecked")

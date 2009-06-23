@@ -19,6 +19,7 @@ import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.editor.CapControlForm;
 import com.cannontech.web.editor.DBEditorForm;
 import com.cannontech.web.navigation.CtiNavObject;
 import com.cannontech.web.util.JSFParamUtil;
@@ -43,8 +44,6 @@ public abstract class DeleteForm extends DBEditorForm {
      * Returns the DB object for the given ID; this could be a Point, PAO, Customer, etc.
      */
     abstract DBPersistent getDBObj( int itemID );
-
-
 
     /**
      * Calls the delete() method for each item that we are able to
@@ -84,7 +83,10 @@ public abstract class DeleteForm extends DBEditorForm {
                         deleteDBObject( deleteable.getDbPersistent(), facesMsg );
                         deleteable.setWasDeleted( true );
                         facesMsg.setDetail( "...deleted" );
-                        
+                        if(deleteable.getDbPersistent() instanceof PointBase) {
+                            CapControlForm capControlForm = (CapControlForm)JSFParamUtil.getJSFVar( "capControlForm" );
+                            capControlForm.getPointTreeForm().resetPointList();
+                        }
                         if(area != null) {
                             HttpSession session = (HttpSession) ex.getSession(false);
                             CtiNavObject navObject = (CtiNavObject) session.getAttribute("CtiNavObject");
@@ -156,47 +158,48 @@ public abstract class DeleteForm extends DBEditorForm {
         }
         
     }
+    
+    public void reset() {
+        setDeletables(null);
+    }
 
     /**
      * Retrieves the items that are to be deleted
      */
     public Deleteable[] getDeleteItems() {
-
-        if( getDeletables() == null ) {
-
+        if ( getDeletables() == null ) {
             setDeletables( new Deleteable[ getItemIDs().length ] );
             for( int i = 0; i < getItemIDs().length; i++ ) {
             
-                getDeletables()[i] = new Deleteable();              
-                DBPersistent dbObj = getDBObj( getItemIDs()[i] );
-                if( dbObj == null ) {
+                getDeletables()[i] = new Deleteable();
+                try {
+                    DBPersistent dbObj = getDBObj( getItemIDs()[i] );
+                    if( dbObj == null ) {
+                        CTILogger.warn("Unable to find item ID = " + getItemIDs()[i] + " in cache, ignoring entry");
+                        continue;
+                    }
+                    //when we delete points we have a check box that confirms the deletion,
+                    //on the paos we don't
+                    if (!(dbObj instanceof PointBase))
+                    {
+                        getDeletables()[i].setChecked(true);
+                    }
+                    getDeletables()[i].setDbPersistent( dbObj );
+                } catch(NotFoundException nfe) {
                     CTILogger.warn("Unable to find item ID = " + getItemIDs()[i] + " in cache, ignoring entry");
                     continue;
                 }
-                //when we delete points we have a check box that confirms the deletion,
-                //on the paos we don't
-                if (!(dbObj instanceof PointBase))
-                {
-                    getDeletables()[i].setChecked(true);
-                }
-                getDeletables()[i].setDbPersistent( dbObj );
                 
                 try {
-                    Transaction.createTransaction(
-                            Transaction.RETRIEVE,
-                            getDeletables()[i].getDbPersistent()).execute();
-    
+                    Transaction.createTransaction( Transaction.RETRIEVE, getDeletables()[i].getDbPersistent()).execute();
                     //if we retrieve the item, find out if we can delete it
                     setDeleteMsgs( getDeletables()[i] );
-    
                 } catch(Exception e) {
-                    e.printStackTrace();
+                    CTILogger.warn("Unable to Retrieve item with id: " + getDeletables()[i].getDbPersistent().toString(), e);
                 }
-                
-    
             }
         }
-
+        
         return getDeletables();
     }
 

@@ -3,7 +3,6 @@
 <cti:includeCss link="/WebConfig/yukon/styles/YukonGeneralStyles.css"/>
 
 <cti:standardPage title="Search Results" module="capcontrol">
-<cti:includeScript link="/capcontrol/js/cbc_funcs.js"/>
 
 <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value=""/>
 
