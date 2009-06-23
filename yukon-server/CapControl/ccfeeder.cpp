@@ -8227,7 +8227,6 @@ BOOL CtiCCFeeder::isDataOldAndFallBackNecessary(string controlUnits)
             else if ( !stringCompareIgnoreCase(feederControlUnits, CtiCCSubstationBus::PF_BY_KVARControlUnits) )
             {
                  if (timeNow > getLastWattPointTime() + _LIKEDAY_OVERRIDE_TIMEOUT ||
-                    timeNow > getLastVoltPointTime() + _LIKEDAY_OVERRIDE_TIMEOUT ||
                     timeNow > getLastCurrentVarPointUpdateTime() + _LIKEDAY_OVERRIDE_TIMEOUT )
                 {
                      retVal = TRUE;

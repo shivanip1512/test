@@ -9694,32 +9694,6 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededTimeOfDayControl
             LONG numOfBanks = 0;
             try
             {
-                /*if (!getSendMoreTimeControlledCommandsFlag())
-                {
-                    for(LONG i=0;i<_ccfeeders.size();i++)
-                    {
-                        CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders.at(i);
-                        if (!currentFeeder->getDisableFlag())
-                        {
-                            CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
-                            for(LONG j=0;j<ccCapBanks.size();j++)
-                            {
-                                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[j];
-                                if (!stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState))
-                                {
-                                    numOfBanks += 1;
-                                    if (currentCapBank->getControlStatus() == CtiCCCapBank::Close ||
-                                        currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending ||
-                                        currentCapBank->getControlStatus() == CtiCCCapBank::CloseQuestionable ||
-                                        currentCapBank->getControlStatus() == CtiCCCapBank::CloseFail )
-                                    {
-                                        currentNumClosed += 1;
-                                    }
-                                }
-                            }
-                    }
-                } */
-
                 for(LONG i=0;i<_ccfeeders.size();i++)
                 {
                     CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders.at(i);
@@ -10255,7 +10229,6 @@ BOOL CtiCCSubstationBus::isDataOldAndFallBackNecessary()
                 else if ( !stringCompareIgnoreCase(getControlUnits(), CtiCCSubstationBus::PF_BY_KVARControlUnits) )
                 {
                      if (timeNow > getLastWattPointTime() + _LIKEDAY_OVERRIDE_TIMEOUT ||
-                        timeNow > getLastVoltPointTime() + _LIKEDAY_OVERRIDE_TIMEOUT ||
                         timeNow > getLastCurrentVarPointUpdateTime() + _LIKEDAY_OVERRIDE_TIMEOUT )
                     {
                          retVal = TRUE;
