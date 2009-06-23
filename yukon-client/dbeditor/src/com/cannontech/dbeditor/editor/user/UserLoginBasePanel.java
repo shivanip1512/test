@@ -561,6 +561,7 @@ public void jCheckBoxEnableEC_ActionPerformed(java.awt.event.ActionEvent actionE
 		List companies = new ArrayList(cache.getAllEnergyCompanies());
 		java.util.Collections.sort( companies, LiteComparators.liteStringComparator );
 		
+		getJComboBoxEnergyCompany().removeAllItems();
 		for(int j = 0; j < companies.size(); j++)
 		{
 			//weed out the default energy company
