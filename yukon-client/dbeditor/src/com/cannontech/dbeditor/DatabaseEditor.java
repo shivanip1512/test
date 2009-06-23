@@ -39,6 +39,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.DeviceType;
 import com.cannontech.common.device.configuration.model.Category;
 import com.cannontech.common.device.configuration.model.DeviceConfiguration;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService;
@@ -720,7 +721,7 @@ private boolean executeChangeObjectType(WizardPanelEvent event)
 	{
 		type = ((com.cannontech.database.data.device.DeviceBase) selectedObject).getPAOType();
 		currentType = com.cannontech.database.data.pao.PAOGroups.getDeviceType(type);
-		newType = ((Integer) p.getValue(null)).intValue();
+		newType = ((DeviceType) p.getValue(null)).getDeviceTypeId();
 
 	}
 	else if (selectedObject instanceof com.cannontech.database.data.point.PointBase)
