@@ -152,6 +152,7 @@ void CtiMCFileInterface::handleFile(const string& filename )
 
     consume_file << setfill('0');
     consume_file << " ";
+    consume_file << setw(2) << now_date.year();
     consume_file << setw(2) << now_date.month();
     consume_file << setw(2) << now_date.dayOfMonth();
     consume_file << " ";
