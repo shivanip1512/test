@@ -25,6 +25,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.util.ParamUtil;
 import com.cannontech.web.capcontrol.models.ResultRow;
 import com.cannontech.web.lite.LiteBaseResults;
@@ -56,6 +57,7 @@ public class ResultsController {
         mav.addObject("lastSubKey", CCSessionInfo.STR_SUBID);
         
         String label = srchCriteria;
+        boolean orphan = true;
         
         LiteWrapper[] items = new LiteWrapper[0];
         List<LiteCapControlObject> ccObjects = null;
@@ -80,7 +82,8 @@ public class ResultsController {
             ccObjects = cbcDao.getOrphans();
             label = "Orphaned CBCs";
         }
-        else {      
+        else {   
+        	orphan = false;
             LiteBaseResults lbr = new LiteBaseResults();
             lbr.searchLiteObjects( srchCriteria );
             items = lbr.getFoundItems();
@@ -113,11 +116,17 @@ public class ResultsController {
                 row.setItemId(item.getId());
                 row.setIsPaobject(true);
                 
-                boolean isController = CBCUtils.isController(item.getId());
+                //If this is not a device, it is not a controller. Next call will catch it.
+                int type = PAOGroups.getDeviceType(item.getType());
+                boolean isController = CBCUtils.checkControllerByType(type);
                 row.setIsController(isController);
                 
-                String parentString = psp.printPAO(item.getId());
+                String parentString = ParentStringPrinter.ORPH_STRING;
+                if (!orphan) {
+                	parentString = psp.printPAO(item.getId());
+                }
                 row.setParentString(parentString);
+                
                 row.setParentId(item.getParentId());
                 row.setItemDescription(item.getDescription());
                 row.setItemType(item.getType());
