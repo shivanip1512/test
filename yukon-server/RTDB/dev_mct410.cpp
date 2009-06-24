@@ -1341,6 +1341,10 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
             found = getOperation(function, OutMessage->Buffer.BSt);
         }
     }
+    else if( parse.isKeyValid("lp_command") )
+    {
+        nRet = Inherited::executeGetValue(pReq, parse, OutMessage, vgList, retList, outList);
+    }
     else if( parse.getFlags() & CMD_FLAG_GV_PEAK )
     {
         if( parse.getFlags() & CMD_FLAG_FROZEN )

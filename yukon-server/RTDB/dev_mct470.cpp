@@ -1653,6 +1653,10 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
             OutMessage->Buffer.BSt.Function += FuncRead_TOUChannelOffset;
         }
     }
+    else if( parse.isKeyValid("lp_command") )
+    {
+        nRet = Inherited::executeGetValue(pReq, parse, OutMessage, vgList, retList, outList);
+    }
     else if( parse.getFlags() & CMD_FLAG_GV_PEAK )
     {
         function = Emetcon::GetValue_PeakDemand;
