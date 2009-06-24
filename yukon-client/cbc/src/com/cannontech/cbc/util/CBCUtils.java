@@ -645,23 +645,26 @@ public final class CBCUtils {
     
     public static boolean isController(LiteWrapper lite) {
         int type = lite.getRawType();
+        return checkControllerByType(type);
+    }
+    
+    public static boolean checkControllerByType(int type) {
         switch (type) {
-            case PAOGroups.CBC_7010:
-            case PAOGroups.CBC_7011:
-            case PAOGroups.CBC_7012:
-            case PAOGroups.CBC_7020:
-            case PAOGroups.CBC_7022:
-            case PAOGroups.CBC_7023:
-            case PAOGroups.CBC_7024:
-            case PAOGroups.CBC_EXPRESSCOM:
-            case PAOGroups.CAPBANKCONTROLLER:
-            case PAOGroups.CBC_DNP:
-            case PAOGroups.CBC_FP_2800:
-                return true;
-        default:
-            return false;
-            
-        }
+	        case PAOGroups.CBC_7010:
+	        case PAOGroups.CBC_7011:
+	        case PAOGroups.CBC_7012:
+	        case PAOGroups.CBC_7020:
+	        case PAOGroups.CBC_7022:
+	        case PAOGroups.CBC_7023:
+	        case PAOGroups.CBC_7024:
+	        case PAOGroups.CBC_EXPRESSCOM:
+	        case PAOGroups.CAPBANKCONTROLLER:
+	        case PAOGroups.CBC_DNP:
+	        case PAOGroups.CBC_FP_2800:
+	            return true;
+	    default:
+	        return false;
+	    }
     }
     
     public static boolean isController(int id) {
