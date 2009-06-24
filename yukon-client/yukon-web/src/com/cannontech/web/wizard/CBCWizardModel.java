@@ -36,6 +36,16 @@ public class CBCWizardModel implements CapControlCreationModel{
 	public CBCWizardModel() {
 		super();
 	}
+	
+	public void reset() {
+	    name = "";
+	    disabled = new Boolean(false);
+	    createNested = false;
+	    wizPaoType = PAOGroups.INVALID;
+	    secondaryType = new Integer(PAOGroups.INVALID);
+	    portID = new Integer(PAOGroups.INVALID);
+	    nestedWizard = null;
+	}
 
 	/* (non-Javadoc)
      * @see com.cannontech.web.wizard.CreateModel#getSelectedType()
