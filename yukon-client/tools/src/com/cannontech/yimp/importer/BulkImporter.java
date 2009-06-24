@@ -349,51 +349,14 @@ public void runImport(List<ImportData> imps) {
         }
         
         /*Address range check for 400 series*/
-		if(template400SeriesBase instanceof MCT410IL && !DeviceAddressRange.isValidRange(DeviceTypes.MCT410IL, Long.parseLong(address))) {
-            String error = "Has an incorrect MCT410IL address ("+address+").  ";
-            log.error(logMsgPrefix + error);
-            errorMsg.add(error);
+        if(template400SeriesBase instanceof MCT400SeriesBase) {
+        	int deviceType = PAOGroups.getDeviceType(template400SeriesBase.getPAOType());
+        	if (!DeviceAddressRange.isValidRange(deviceType, Long.parseLong(address))) {
+        		String error = "Has an incorrect " + template400SeriesBase.getPAOType() + " address ("+address+").  ";
+        		log.error(logMsgPrefix + error);
+        		errorMsg.add(error);
+        	}
 		}
-        else if(template400SeriesBase instanceof MCT410CL && !DeviceAddressRange.isValidRange(DeviceTypes.MCT410CL, Long.parseLong(address))) {
-            String error = "Has an incorrect MCT410CL address ("+address+").  ";
-            log.error(logMsgPrefix + error);
-            errorMsg.add(error);
-        }
-        else if(template400SeriesBase instanceof MCT410FL && !DeviceAddressRange.isValidRange(DeviceTypes.MCT410FL, Long.parseLong(address))) {
-            String error = "Has an incorrect MCT410FL address ("+address+").  ";
-            log.error(logMsgPrefix + error);
-            errorMsg.add(error);
-        }
-        else if(template400SeriesBase instanceof MCT410GL && !DeviceAddressRange.isValidRange(DeviceTypes.MCT410GL, Long.parseLong(address))) {
-            String error = "Has an incorrect MCT410GL address ("+address+").  ";
-            log.error(logMsgPrefix + error);
-            errorMsg.add(error);
-        }
-        else if(template400SeriesBase instanceof MCT430S4 && !DeviceAddressRange.isValidRange(DeviceTypes.MCT430S4, Long.parseLong(address))) {
-            String error = "Has an incorrect MCT430S4 address ("+address+").  ";
-            log.error(logMsgPrefix + error);
-            errorMsg.add(error);
-        }
-        else if(template400SeriesBase instanceof MCT430A && !DeviceAddressRange.isValidRange(DeviceTypes.MCT430A, Long.parseLong(address))) {
-            String error = "Has an incorrect MCT430A address ("+address+").  ";
-            log.error(logMsgPrefix + error);
-            errorMsg.add(error);
-        }
-        else if(template400SeriesBase instanceof MCT430SL && !DeviceAddressRange.isValidRange(DeviceTypes.MCT430SL, Long.parseLong(address))) {
-            String error = "Has an incorrect MCT430SL address ("+address+").  ";
-            log.error(logMsgPrefix + error);
-            errorMsg.add(error);
-        }
-        else if(template400SeriesBase instanceof MCT430A3 && !DeviceAddressRange.isValidRange(DeviceTypes.MCT430A3, Long.parseLong(address))) {
-            String error = "Has an incorrect MCT430A3 address ("+address+").  ";
-            log.error(logMsgPrefix + error);
-            errorMsg.add(error);
-        }
-        else if(template400SeriesBase instanceof MCT470 && !DeviceAddressRange.isValidRange(DeviceTypes.MCT470, Long.parseLong(address))) {
-            String error = "Has an incorrect MCT470 address ("+address+").  ";
-            log.error(logMsgPrefix + error);
-            errorMsg.add(error);
-        }
         
         /*New 400 series MCTs will each need a clause added above if address range
          * validation is desired
