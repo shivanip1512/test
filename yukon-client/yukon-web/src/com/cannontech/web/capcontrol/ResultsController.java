@@ -25,7 +25,6 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.util.ParamUtil;
 import com.cannontech.web.capcontrol.models.ResultRow;
 import com.cannontech.web.lite.LiteBaseResults;
@@ -112,14 +111,12 @@ public class ResultsController {
                 ResultRow row = new ResultRow();
                 row.setName(item.getName());
                 row.setItemId(item.getId());
-                int type = PAOGroups.getPAOType("DEVICE", item.getType());
-                row.setIsPaobject(type == LiteTypes.YUKON_PAOBJECT);
+                row.setIsPaobject(true);
                 
                 boolean isController = CBCUtils.isController(item.getId());
                 row.setIsController(isController);
                 
-                boolean isPoint = item.getParentId() != CtiUtilities.NONE_ZERO_ID;
-                String parentString = (!isPoint) ? psp.printPAO(item.getId()) :  psp.printPoint(item.getId());
+                String parentString = psp.printPAO(item.getId());
                 row.setParentString(parentString);
                 row.setParentId(item.getParentId());
                 row.setItemDescription(item.getDescription());

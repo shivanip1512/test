@@ -781,6 +781,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	 */
 	private void resetCBCEditor() {
         setEditingController(false);
+        setCBControllerEditor(null);
         getCBControllerEditor().retrieveDB();        
         getCBControllerEditor().resetSerialNumber();
 	}

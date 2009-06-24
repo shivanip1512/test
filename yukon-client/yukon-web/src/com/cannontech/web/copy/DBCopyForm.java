@@ -28,7 +28,6 @@ public class DBCopyForm extends DBEditorForm {
 
     public DBCopyForm() {
         super();
-
     }
 
     public void init(int id, int type) {
@@ -53,10 +52,9 @@ public class DBCopyForm extends DBEditorForm {
             try {
                 copyObject = CBCCopyUtils.copy(origObject);
                 if (CBCCopyUtils.isPoint(copyObject)) {
-                    ((PointBase) copyObject).getPoint()
-                                            .setPointName(getPaoName());
+                    ((PointBase) copyObject).getPoint().setPointName(getPaoName() + " (copy)");
                 } else {
-                    ((YukonPAObject) copyObject).setPAOName(getPaoName());
+                    ((YukonPAObject) copyObject).setPAOName(getPaoName() + " (copy)");
                 }
                 addDBObject(copyObject, message);
 

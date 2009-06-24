@@ -11,7 +11,8 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <f:view>
 <cti:standardPage title="CapControl Copy Object" module="capcontrol">
-<cti:includeScript link="/capcontrol/js/cbc_funcs.js"/>
+	<cti:includeScript link="/capcontrol/js/cbc_funcs.js"/>
+	<cti:includeCss link="/editor/css/base.css"/>
 <%
     //****
     // Entry point file for all operations that edit a PAObject
@@ -19,9 +20,8 @@
 
     int id = ParamUtil.getInteger(request, "itemid", PAOGroups.INVALID);
     int type = ParamUtil.getInteger(request, "type", PAOGroups.INVALID);
-	DBCopyForm cbcCopyForm = new DBCopyForm();
     if( id != PAOGroups.INVALID ) {
-        cbcCopyForm = (DBCopyForm)JSFParamUtil.getJSFVar( "cbcCopyForm" );
+        DBCopyForm cbcCopyForm = (DBCopyForm)JSFParamUtil.getJSFVar( "cbcCopyForm" );
         cbcCopyForm.init(id, type);
         
         //This is needed because this was handled in the CBCSerlvet before entering faces pages.
