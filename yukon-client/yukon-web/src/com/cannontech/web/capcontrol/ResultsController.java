@@ -26,6 +26,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.util.ParamUtil;
 import com.cannontech.web.capcontrol.models.ResultRow;
 import com.cannontech.web.lite.LiteBaseResults;
@@ -137,6 +138,10 @@ public class ResultsController {
         mav.addObject("rows", rows);
         mav.addObject("resultsFound", rows.size());
         mav.setViewName("search/searchResults.jsp");
+        
+        String urlParams = request.getQueryString();
+        String requestURI = request.getRequestURI() + ((urlParams != null) ? "?" + urlParams : "");
+        CBCNavigationUtil.setNavigation(requestURI , request.getSession());
         return mav;
     }
     
