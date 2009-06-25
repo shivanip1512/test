@@ -6786,6 +6786,15 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
             movedCapBankPtr->setTripOrder(tripOrder);
 
             newFeederCapBanks.push_back(movedCapBankPtr);
+
+            if( permanentFlag )
+            {
+                //reorder new feeder.
+                newFeederPtr->checkForAndReorderFeeder();
+                //reorder old feeder
+                oldFeederPtr->checkForAndReorderFeeder();
+            }
+
             store->insertItemsIntoMap(CtiCCSubstationBusStore::CapBankIdFeederIdMap, &movedCapBankId, &newFeederId);
             long subBusId = store->findSubBusIDbyFeederID(newFeederId);
             if (subBusId != NULL)

@@ -2943,25 +2943,44 @@ void CtiCCFeeder::updateIntegrationWPoint(const CtiTime &currentDateTime, const 
 
 void CtiCCFeeder::checkForAndReorderFeeder()
 {
-    for(LONG i=0;i<_cccapbanks.size();i++)
-    {
-        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
-        float tempIndex = 0;
-        currentCapBank->setControlOrder((LONG)currentCapBank->getControlOrder());
-        for(LONG j=0;j<_cccapbanks.size();j++)
-        {
-            CtiCCCapBank* nextCapBank = (CtiCCCapBank*)_cccapbanks[j];
-
-            if (nextCapBank != currentCapBank)
-            {
-                if (currentCapBank->getControlOrder() == (LONG)nextCapBank->getControlOrder())
-                {
-                    tempIndex += 0.1;
-                    nextCapBank->setControlOrder(currentCapBank->getControlOrder() + tempIndex);
-                }
-            }
-        }
+    CtiCCCapBank_SVector displayCaps;
+    int i=0;
+    CtiCCCapBank* currentCapBank = NULL;
+    for (i = 0; i < _cccapbanks.size(); i++)
+    {    
+        displayCaps.insert(_cccapbanks[i]);
     }
+    
+    for(i=0;i<displayCaps.size();i++)
+    {
+        currentCapBank = (CtiCCCapBank*)displayCaps[i];
+        currentCapBank->setControlOrder(i + 1);
+    }
+
+    CtiCCCapBank_SCloseVector closeCaps;
+    for (i = 0; i < _cccapbanks.size(); i++)
+    {    
+        closeCaps.insert(_cccapbanks[i]);
+    }
+    
+    for(i=0;i<closeCaps.size();i++)
+    {
+        currentCapBank = (CtiCCCapBank*)closeCaps[i];
+        currentCapBank->setCloseOrder(i + 1);
+    }
+
+    CtiCCCapBank_STripVector tripCaps;
+    for (i = 0; i < _cccapbanks.size(); i++)
+    {    
+        tripCaps.insert(_cccapbanks[i]);
+    }
+    
+    for(i=0;i<tripCaps.size();i++)
+    {
+        currentCapBank = (CtiCCCapBank*)tripCaps[i];
+        currentCapBank->setTripOrder(i + 1);
+    }
+
 }
 
 void CtiCCFeeder::figureAndSetTargetVarValue(const string& controlMethod, const string& controlUnits, BOOL peakTimeFlag)
