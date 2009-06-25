@@ -2944,11 +2944,15 @@ void CtiCCFeeder::updateIntegrationWPoint(const CtiTime &currentDateTime, const 
 void CtiCCFeeder::checkForAndReorderFeeder()
 {
     CtiCCCapBank_SVector displayCaps;
+    CtiCCCapBank_SCloseVector closeCaps;
+    CtiCCCapBank_STripVector tripCaps;
     int i=0;
     CtiCCCapBank* currentCapBank = NULL;
     for (i = 0; i < _cccapbanks.size(); i++)
     {    
         displayCaps.insert(_cccapbanks[i]);
+        closeCaps.insert(_cccapbanks[i]);
+        tripCaps.insert(_cccapbanks[i]);
     }
     
     for(i=0;i<displayCaps.size();i++)
@@ -2957,24 +2961,12 @@ void CtiCCFeeder::checkForAndReorderFeeder()
         currentCapBank->setControlOrder(i + 1);
     }
 
-    CtiCCCapBank_SCloseVector closeCaps;
-    for (i = 0; i < _cccapbanks.size(); i++)
-    {    
-        closeCaps.insert(_cccapbanks[i]);
-    }
-    
     for(i=0;i<closeCaps.size();i++)
     {
         currentCapBank = (CtiCCCapBank*)closeCaps[i];
         currentCapBank->setCloseOrder(i + 1);
     }
 
-    CtiCCCapBank_STripVector tripCaps;
-    for (i = 0; i < _cccapbanks.size(); i++)
-    {    
-        tripCaps.insert(_cccapbanks[i]);
-    }
-    
     for(i=0;i<tripCaps.size();i++)
     {
         currentCapBank = (CtiCCCapBank*)tripCaps[i];
