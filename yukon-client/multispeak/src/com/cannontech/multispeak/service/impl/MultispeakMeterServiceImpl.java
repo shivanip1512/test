@@ -120,6 +120,9 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 	/** A map of Long(userMessageID) to MultispeakEvent values */
 	private static Map<Long,MultispeakEvent> eventsMap = Collections.synchronizedMap(new HashMap<Long,MultispeakEvent>());
 
+	private static final String EXTENSION_REGISTER_NUMBER_STRING = "readingSeqNbr";
+	private static final String EXTENSION_DEVICE_TEMPLATE_STRING = "AMRMeterType";
+	
     /**
      * Get the static instance of Multispeak (this) object.
      * Adds a message listener to the pil connection instance. 
@@ -890,7 +893,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 ExtensionsItem [] eItems = mspMeter.getExtensionsList();
                 for (ExtensionsItem eItem : eItems) {
                     String extName = eItem.getExtName();
-                    if ( extName.equalsIgnoreCase("AMRMeterType")) {
+                    if ( extName.equalsIgnoreCase(EXTENSION_DEVICE_TEMPLATE_STRING)) {
                         templateName = eItem.getExtValue();
                         loaded = true;
                     }
@@ -900,7 +903,28 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 
         return templateName;
     }
-   
+
+    /**
+     * Returns the meter register (sequence number) from Meter object.
+     * If no value is provided in the Meter object, then null is returned. 
+     * @param mspMeter
+     * @return
+     */
+    private String getMeterRegister(ExtensionsItem[] extensionItems) {
+        String registerNumber = null;
+        
+        if( extensionItems != null) {
+            for (ExtensionsItem eItem : extensionItems) {
+                String extName = eItem.getExtName();
+                if ( extName.equalsIgnoreCase(EXTENSION_REGISTER_NUMBER_STRING)) {
+                    registerNumber = eItem.getExtValue();
+                }
+            }
+        }
+
+        return registerNumber;
+    }
+    
     /**
      * Removes the Meter from all Billing group memberships (all children under Billing).
      * Adds the Meter to 'newBilling' Billing child group.  If the billing group does not already
@@ -1034,7 +1058,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
      * @param defaultValue
      * @return
      */
-    private static String getPaoNameFromMspMeter(Meter mspMeter, int paoNameAlias, String defaultValue) {
+    private String getPaoNameFromMspMeter(Meter mspMeter, int paoNameAlias, String defaultValue) {
 			
 		switch (paoNameAlias) {
 			case MultispeakVendor.ACCOUNT_NUMBER_PAONAME:
@@ -1075,6 +1099,16 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             { // lookup by meter number
 				return mspMeter.getMeterNo();
             }
+            case MultispeakVendor.SERVICE_LOCATION_WITH_REGISTER_NO_PAONAME:
+			{
+				if( mspMeter.getUtilityInfo() == null ||
+						StringUtils.isBlank(mspMeter.getUtilityInfo().getServLoc()))
+                   return null;
+				
+				String serviceLocation = mspMeter.getUtilityInfo().getServLoc();
+				String registerNo = getMeterRegister(mspMeter.getExtensionsList());
+				return multispeakFuncs.buildServiceLocationWithRegister(serviceLocation, registerNo);
+			}	
 			default:
 				return defaultValue;
 		}
@@ -1151,6 +1185,15 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 }
                 return null;
             }
+            case MultispeakVendor.SERVICE_LOCATION_WITH_REGISTER_NO_PAONAME:
+            {
+                if( StringUtils.isBlank(mspServiceLocation.getObjectID()))
+                   return null;
+                
+				String serviceLocation = mspServiceLocation.getObjectID();
+				String registerNo = getMeterRegister(mspServiceLocation.getExtensionsList());
+				return multispeakFuncs.buildServiceLocationWithRegister(serviceLocation, registerNo);
+            } 
             default:
                 return defaultValue;
         }

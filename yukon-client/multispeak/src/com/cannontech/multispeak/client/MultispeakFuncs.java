@@ -290,6 +290,40 @@ public class MultispeakFuncs
         return deviceGroup;
     }
     
+    /**
+     * Helper method to construct a new service location value containing a register location.
+     * Format is "serviceLocation_registerNo_"
+     * @param serviceLocation
+     * @param registerNo
+     * @return
+     */
+    public String buildServiceLocationWithRegister(String serviceLocation, String registerNo) {
+    	String serviceLocationWithRegNo = serviceLocation;
+    	
+    	if (StringUtils.isNotBlank(registerNo)) {
+    		serviceLocationWithRegNo += "_" + registerNo + "_";
+    	}    	
+    	return serviceLocationWithRegNo;
+    }
+    
+    /**
+     * Helper method to parse the service location value from a value containing the register location too.
+     * Format of serviceLocatinoWithRegNo is expected to be "serviceLocation_registerNo_".
+     * After parse, returned value will be "serviceLocation" (the _registerNo_ part will be removed).
+     * @param serviceLocationWithRegNo
+     * @return
+     */
+    public String parseServiceLocationWithRegister(String serviceLocationWithRegNo) {
+    	String serviceLocation = serviceLocationWithRegNo;
+    	
+    	int underscoreIndex = serviceLocation.indexOf("_");
+    	if (underscoreIndex > 0){	//found an instance of _
+    		//truncate to the underscore index, not inclusive of.   This should remove things like 12345_3_ and make 12345
+    		serviceLocation = serviceLocation.substring(0, underscoreIndex);
+    	}
+    	return serviceLocation;
+    }
+    
     @Autowired
     public void setMultispeakDao(MultispeakDao multispeakDao) {
         this.multispeakDao = multispeakDao;
