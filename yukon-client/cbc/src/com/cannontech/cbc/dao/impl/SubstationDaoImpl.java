@@ -17,11 +17,9 @@ import com.cannontech.cbc.model.LiteCapControlObject;
 import com.cannontech.cbc.model.Substation;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.ChunkingSqlTemplate;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.pao.YukonPAObject;
@@ -91,7 +89,7 @@ public class SubstationDaoImpl implements SubstationDao {
 		pao.setPaoClass(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoName(substation.getName());
 		pao.setType(CapControlTypes.STRING_CAPCONTROL_SUBSTATION);
-		pao.setDescription(CtiUtilities.STRING_NONE);
+		pao.setDescription(substation.getDescription());
 
 		boolean ret = paoDao.add(pao);
 		
@@ -140,7 +138,7 @@ public class SubstationDaoImpl implements SubstationDao {
 		pao.setPaoClass(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoName(substation.getName());
 		pao.setType(CapControlTypes.STRING_CAPCONTROL_SUBSTATION);
-		pao.setDescription(CtiUtilities.STRING_NONE);
+		pao.setDescription(substation.getDescription());
 		
 		pao.setPaObjectID(substation.getId());
 		
@@ -179,7 +177,7 @@ public class SubstationDaoImpl implements SubstationDao {
 		String assignStationSql = "INSERT INTO CCSUBAREAASSIGNMENT (AreaID,SubstationBusID,DisplayOrder) VALUES (?,?,?)";
 		
 		//remove any existing assignment
-		unassignSubstation(areaId,substationId);
+		unassignSubstation(substationId);
 		
 		int displayOrder = simpleJdbcTemplate.queryForInt(getDisplayOrderSql, areaId);
 		int rowsAffected = simpleJdbcTemplate.update(assignStationSql, areaId,substationId,++displayOrder);
@@ -189,15 +187,15 @@ public class SubstationDaoImpl implements SubstationDao {
 	}
 	
 	@Override
-	public boolean unassignSubstation(Area area, Substation substation) {
-		return unassignSubstation(area.getId(), substation.getId());
+	public boolean unassignSubstation(Substation substation) {
+		return unassignSubstation(substation.getId());
 	}
 
 	@Override
-	public boolean unassignSubstation(int areaId, int substationId) {
-		String unassignStationSql = "DELETE FROM CCSUBAREAASSIGNMENT WHERE AreaID = ? AND SubstationBusID = ?";
+	public boolean unassignSubstation(int substationId) {
+		String unassignStationSql = "DELETE FROM CCSUBAREAASSIGNMENT WHERE AND SubstationBusID = ?";
 		
-		int rowsAffected = simpleJdbcTemplate.update(unassignStationSql, areaId,substationId);
+		int rowsAffected = simpleJdbcTemplate.update(unassignStationSql,substationId);
 		
 		boolean result = (rowsAffected == 1);
 		return result;

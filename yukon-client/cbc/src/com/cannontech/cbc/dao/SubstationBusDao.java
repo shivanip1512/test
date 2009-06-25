@@ -23,6 +23,6 @@ public interface SubstationBusDao {
     public boolean assignSubstationBus(Substation substation, SubstationBus substationBus);
     public boolean assignSubstationBus(int substationId, int substationBusId);
 
-    public boolean unassignSubstationBus(Substation substation, SubstationBus substationBus);
-    public boolean unassignSubstationBus(int substationId, int substationBusId);
+    public boolean unassignSubstationBus(SubstationBus substationBus);
+    public boolean unassignSubstationBus(int substationBusId);
 }

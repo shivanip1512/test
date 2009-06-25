@@ -36,6 +36,6 @@ public interface FeederDao {
     public boolean assignFeeder(SubstationBus substationBus, Feeder feeder);
     public boolean assignFeeder(int substationBusId, int feederId);
 
-    public boolean unassignFeeder(SubstationBus substationBus, Feeder feeder);
-    public boolean unassignFeeder(int substationBusId, int feederId);
+    public boolean unassignFeeder(Feeder feeder);
+    public boolean unassignFeeder(int feederId);
 }

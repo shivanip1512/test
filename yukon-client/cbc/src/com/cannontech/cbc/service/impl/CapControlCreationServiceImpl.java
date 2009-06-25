@@ -1,5 +1,6 @@
 package com.cannontech.cbc.service.impl;
 
+import java.sql.Connection;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +20,15 @@ import com.cannontech.cbc.model.SubstationBus;
 import com.cannontech.cbc.service.CapControlCreationService;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.PoolManager;
+import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.common.device.DeviceType;
+import com.cannontech.common.util.CtiUtilities;
 
 public class CapControlCreationServiceImpl implements CapControlCreationService {
 
@@ -40,19 +45,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	public boolean createArea(Area area) {
 		boolean success = areaDao.add(area);
 		
-		if (!success) {
-			//Attempt to update instead, maybe it is already in the database.
-			int id = getPaoIdByName(area.getName());
-			if (id == -1) {
-				//Not found in the Database.
-				return false;
-			} 
-			area.setId(id);
-			
-			if (success = areaDao.update(area)) {
-				sendDBChangeMessage(area.getId(),DBChangeMsg.CHANGE_TYPE_UPDATE,CapControlType.AREA);
-			}
-		} else {
+		if (success) {
 			//Send DB add message
 			sendDBChangeMessage(area.getId(),DBChangeMsg.CHANGE_TYPE_ADD,CapControlType.AREA);
 		}
@@ -64,19 +57,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	public boolean createSubstation(Substation substation) {
 		boolean success = substationDao.add(substation);
 
-		if (!success) {
-			//Attempt to update instead, maybe it is already in the database.
-			int id = getPaoIdByName(substation.getName());
-			if (id == -1) {
-				//Not found in the Database.
-				return false;
-			} 
-			substation.setId(id);
-			
-			if (success = substationDao.update(substation)) {
-				sendDBChangeMessage(substation.getId(),DBChangeMsg.CHANGE_TYPE_UPDATE,CapControlType.SUBSTATION);
-			}
-		} else {
+		if (success) {
 			//Send DB add message
 			sendDBChangeMessage(substation.getId(),DBChangeMsg.CHANGE_TYPE_ADD,CapControlType.SUBSTATION);
 		}
@@ -97,30 +78,22 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	@Override
 	public boolean assignSubstation(int substationId, String areaName) {
 		int id = getPaoIdByName(areaName);
-		if(id == -1) {
+		if (id == -1) {
 			return false;
 		}
 		
 		return assignSubstation(substationId, id);
 	}
-
+	@Override
+	public boolean unassignSubstation(int substationId) {
+		return substationDao.unassignSubstation(substationId);
+	}
+	
 	@Override
 	public boolean createCapbank(Capbank bank) {
 		boolean success = capbankDao.add(bank);
 		
-		if (!success) {
-			//Attempt to update instead, maybe it is already in the database.
-			int id = getPaoIdByName(bank.getName());
-			if (id == -1) {
-				//Not found in the Database.
-				return false;
-			} 
-			bank.setId(id);
-			
-			if (success = capbankDao.update(bank)) {
-				sendDBChangeMessage(bank.getId(),DBChangeMsg.CHANGE_TYPE_UPDATE,CapControlType.CAPBANK);
-			}
-		} else {
+		if (success) {
 			sendDBChangeMessage(bank.getId(),DBChangeMsg.CHANGE_TYPE_ADD,CapControlType.CAPBANK);
 		}
 		
@@ -142,11 +115,15 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	@Override
 	public boolean assignCapbank(int bankId, String feederName) {
 		int id = getPaoIdByName(feederName);
-		if(id == -1) {
+		if (id == -1) {
 			return false;
 		}
 		
 		return assignCapbank(bankId, id);
+	}
+	@Override
+	public boolean unassignCapbank(int capbankId) {
+		return capbankDao.unassignCapbank(capbankId);
 	}
 
 	@Override
@@ -154,18 +131,6 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 		boolean success = feederDao.add(feeder);
 		
 		if (!success) {
-			//Attempt to update instead, maybe it is already in the database.
-			int id = getPaoIdByName(feeder.getName());
-			if (id == -1) {
-				//Not found in the Database.
-				return false;
-			} 
-			feeder.setId(id);
-			
-			if (success = feederDao.update(feeder)) {
-				sendDBChangeMessage(feeder.getId(),DBChangeMsg.CHANGE_TYPE_UPDATE,CapControlType.FEEDER);
-			}
-		} else {
 			sendDBChangeMessage(feeder.getId(),DBChangeMsg.CHANGE_TYPE_ADD,CapControlType.FEEDER);
 		}
 		
@@ -186,7 +151,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	@Override
 	public boolean assignFeeder(int feederId, String subBusName) {
 		int id = getPaoIdByName(subBusName);
-		if(id == -1) {
+		if (id == -1) {
 			return false;
 		}
 		
@@ -194,22 +159,15 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	}
 
 	@Override
+	public boolean unassignFeeder(int feederId) {
+		return feederDao.unassignFeeder(feederId);
+	}
+	
+	@Override
 	public boolean createSubstationBus(SubstationBus subBus) {
 		boolean success = substationBusDao.add(subBus);
 		
-		if (!success) {
-			//Attempt to update instead, maybe it is already in the database.
-			int id = getPaoIdByName(subBus.getName());
-			if (id == -1) {
-				//Not found in the Database.
-				return false;
-			} 
-			subBus.setId(id);
-			
-			if(success = substationBusDao.update(subBus)) {
-				sendDBChangeMessage(subBus.getId(),DBChangeMsg.CHANGE_TYPE_UPDATE,CapControlType.SUBBUS);
-			}
-		} else {
+		if (success) {
 			sendDBChangeMessage(subBus.getId(),DBChangeMsg.CHANGE_TYPE_ADD,CapControlType.SUBBUS);
 		}
 
@@ -231,7 +189,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	@Override
 	public boolean assignSubstationBus(int subBusId, String substationName) {
 		int id = getPaoIdByName(substationName);
-		if(id == -1) {
+		if (id == -1) {
 			return false;
 		}
 		
@@ -239,24 +197,30 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	}
 
 	@Override
+	public boolean unassignSubstationBus(int subBusId) {
+		return substationBusDao.unassignSubstationBus(subBusId);
+	}
+	
+	@Override
 	public boolean createController(CapbankController controller) {
 		boolean success = capbankControllerDao.add(controller);
-		String type = PAOGroups.getPAOTypeString(controller.getType());
-		
-		if (!success) {
-			//Attempt to update instead, maybe it is already in the database.
-			int id = getPaoIdByName(controller.getName());
-			if (id == -1) {
-				//Not found in the Database.
-				return false;
-			} 
-			controller.setId(id);
-			
-			if (success = capbankControllerDao.update(controller)) {
-				sendDBChangeMessage(controller.getId(),DBChangeMsg.CHANGE_TYPE_UPDATE,type);
-			}
-		} else {
+
+		if (success) {
+			String type = DeviceType.getForId(controller.getType()).name();
 			sendDBChangeMessage(controller.getId(),DBChangeMsg.CHANGE_TYPE_ADD,type);
+		}
+		
+		return success;
+	}
+	
+	@Override
+	public boolean createControllerFromTemplate(String template, CapbankController controller) {
+		//Dao must set type in controller.
+		boolean success = capbankControllerDao.copyTemplateController(template, controller);
+
+		if (success) {
+			String devType = DeviceType.getForId(controller.getType()).name();
+			sendDBChangeMessage(controller.getId(),DBChangeMsg.CHANGE_TYPE_ADD,devType);
 		}
 		
 		return success;
@@ -285,13 +249,28 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 		return assignController(controller, id);
 	}
 	
-	private int getPaoIdByName(String paoName) {
+	@Override
+	public boolean unassignController(int controllerId) {
+		return capbankControllerDao.unassignController(controllerId);
+	}
+	
+	private LiteYukonPAObject getPaoByName(String paoName) {
 		List<LiteYukonPAObject> paos = paoDao.getLiteYukonPaoByName(paoName, false);
 		
 		if (paos.size() != 1) {
-			return -1;
+			return null;
 		}
 		LiteYukonPAObject litePao = paos.get(0);
+		
+		return litePao;
+	}
+	
+	private int getPaoIdByName(String paoName) {
+		LiteYukonPAObject litePao = getPaoByName(paoName);
+		
+		if (litePao == null) {
+			return -1;
+		}
 		
 		return litePao.getYukonID();
 	}

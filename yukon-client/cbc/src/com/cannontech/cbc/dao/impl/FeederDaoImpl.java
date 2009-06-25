@@ -18,13 +18,11 @@ import com.cannontech.cbc.model.SubstationBus;
 import com.cannontech.cbc.point.CBCPointFactory;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.ChunkingSqlTemplate;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.HolidayScheduleDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.SeasonScheduleDao;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -103,7 +101,7 @@ public class FeederDaoImpl implements FeederDao {
 		pao.setPaoClass(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoName(feeder.getName());
 		pao.setType(CapControlTypes.STRING_CAPCONTROL_FEEDER);
-		pao.setDescription(CtiUtilities.STRING_NONE);
+		pao.setDescription(feeder.getDescription());
 		
 		boolean ret = paoDao.add(pao);
 		
@@ -177,7 +175,7 @@ public class FeederDaoImpl implements FeederDao {
 		pao.setPaoClass(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoName(feeder.getName());
 		pao.setType(CapControlTypes.STRING_CAPCONTROL_FEEDER);
-		pao.setDescription(CtiUtilities.STRING_NONE);
+		pao.setDescription(feeder.getDescription());
     	
 		pao.setPaObjectID(feeder.getId());
 		
@@ -268,7 +266,7 @@ public class FeederDaoImpl implements FeederDao {
     	String insertAssignmentSql = "INSERT INTO CCFeederSubAssignment (SubStationBusID,FeederID,DisplayOrder) VALUES (?,?,?)";
     	
 		//remove any existing assignment
-    	unassignFeeder(substationBusId,feederId);
+    	unassignFeeder(feederId);
     	
 		int displayOrder = simpleJdbcTemplate.queryForInt(getDisplayOrderSql, substationBusId);
 		int rowsAffected = simpleJdbcTemplate.update(insertAssignmentSql, substationBusId,feederId,++displayOrder);
@@ -278,15 +276,14 @@ public class FeederDaoImpl implements FeederDao {
 	}
 
 	@Override
-	public boolean unassignFeeder(SubstationBus substationBus,Feeder feeder) {
-		return unassignFeeder(substationBus.getId(),feeder.getId());
+	public boolean unassignFeeder(Feeder feeder) {
+		return unassignFeeder(feeder.getId());
 	}
 
 	@Override
-	public boolean unassignFeeder(int substationBusId, int feederId) {
-    	String deleteAssignmentSql = "DELETE FROM CCFeederSubAssignment WHERE SubstationBusID = ? AND FeederID = ?";
-    	
-		int rowsAffected = simpleJdbcTemplate.update(deleteAssignmentSql,substationBusId,feederId);
+	public boolean unassignFeeder(int feederId) {
+    	String deleteAssignmentSql = "DELETE FROM CCFeederSubAssignment WHERE FeederID = ?";   	
+		int rowsAffected = simpleJdbcTemplate.update(deleteAssignmentSql,feederId);
 		
 		boolean result = (rowsAffected == 1);
 		return result;

@@ -5,6 +5,8 @@ import com.cannontech.common.util.CtiUtilities;
 public class Feeder {
 	
 	private String name;
+	private String description = CtiUtilities.STRING_NONE;
+	
 	private int id;
 	private int currentVarLoadPointId = CtiUtilities.NONE_ZERO_ID;
     private int currentWattLoadPointId = CtiUtilities.NONE_ZERO_ID;
@@ -22,6 +24,12 @@ public class Feeder {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
 	}
 	public int getCurrentVarLoadPointId() {
         return currentVarLoadPointId;
@@ -92,6 +100,8 @@ public class Feeder {
 		result = prime * result + currentVarLoadPointId;
 		result = prime * result + currentVoltLoadPointId;
 		result = prime * result + currentWattLoadPointId;
+		result = prime * result
+				+ ((description == null) ? 0 : description.hashCode());
 		result = prime * result + id;
 		result = prime * result
 				+ ((mapLocationId == null) ? 0 : mapLocationId.hashCode());
@@ -125,6 +135,11 @@ public class Feeder {
 		if (currentVoltLoadPointId != other.currentVoltLoadPointId)
 			return false;
 		if (currentWattLoadPointId != other.currentWattLoadPointId)
+			return false;
+		if (description == null) {
+			if (other.description != null)
+				return false;
+		} else if (!description.equals(other.description))
 			return false;
 		if (id != other.id)
 			return false;

@@ -8,6 +8,8 @@ import com.cannontech.database.db.device.Device;
 public class Capbank {
 	
 	private String name;
+	private String description = CtiUtilities.STRING_NONE;
+	
     private int id;
     private CapBankOperationalState operationalState = CapBankOperationalState.Switched;
     private String controllerType = CtiUtilities.STRING_NONE;
@@ -31,6 +33,14 @@ public class Capbank {
 		this.name = name;
 	}
 	
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
 	public int getBankSize() {
         return bankSize;
     }
@@ -148,6 +158,8 @@ public class Capbank {
 		result = prime * result + controlPointId;
 		result = prime * result
 				+ ((controllerType == null) ? 0 : controllerType.hashCode());
+		result = prime * result
+				+ ((description == null) ? 0 : description.hashCode());
 		result = prime * result + id;
 		result = prime * result
 				+ ((mapLocationId == null) ? 0 : mapLocationId.hashCode());
@@ -193,6 +205,11 @@ public class Capbank {
 				return false;
 		} else if (!controllerType.equals(other.controllerType))
 			return false;
+		if (description == null) {
+			if (other.description != null)
+				return false;
+		} else if (!description.equals(other.description))
+			return false;
 		if (id != other.id)
 			return false;
 		if (mapLocationId == null) {
@@ -231,5 +248,5 @@ public class Capbank {
 			return false;
 		return true;
 	}
-	
+
 }

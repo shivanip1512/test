@@ -147,6 +147,7 @@ public class CapbankDaoImpl implements CapbankDao {
 		device.setDeviceID(newId);
 		device.setPAOCategory(PAOGroups.STRING_CAT_DEVICE);
 		device.setPAOName(bank.getName());		
+		device.setPAODescription(bank.getDescription());
 		
 		SmartMultiDBPersistent smartDB = new SmartMultiDBPersistent();
 		smartDB.addOwnerDBPersistent(device);
@@ -226,6 +227,7 @@ public class CapbankDaoImpl implements CapbankDao {
 		device.setPAOCategory(PAOGroups.STRING_CAT_DEVICE);
 		device.setPAOName(bank.getName());
 		device.setDeviceID(bank.getId());
+		device.setPAODescription(bank.getDescription());
 		
 		try {
 			device.update();
@@ -412,7 +414,7 @@ public class CapbankDaoImpl implements CapbankDao {
     		 + "(FeederID,DeviceID,ControlOrder,CloseOrder,TripOrder) VALUES (?,?,?,?,?)";
     	
 		//remove any existing assignment
-    	unassignCapbank(feederId,capbankId);
+    	unassignCapbank(capbankId);
     	
 		int rowsAffected = simpleJdbcTemplate.update(insertAssignmentSql,
 				feederId, capbankId, controlOrder.controlOrder,
@@ -423,15 +425,15 @@ public class CapbankDaoImpl implements CapbankDao {
 	}
 
 	@Override
-	public boolean unassignCapbank(Feeder feeder, Capbank capbank) {
-		return unassignCapbank(feeder.getId(),capbank.getId());
+	public boolean unassignCapbank(Capbank capbank) {
+		return unassignCapbank(capbank.getId());
 	}
 
 	@Override
-	public boolean unassignCapbank(int feederId, int capbankId) {
-    	String deleteAssignmentSql = "DELETE FROM CCFeederBankList WHERE FeederID = ? AND DeviceId = ?";
+	public boolean unassignCapbank(int capbankId) {
+    	String deleteAssignmentSql = "DELETE FROM CCFeederBankList WHERE DeviceId = ?";
     	
-		int rowsAffected = simpleJdbcTemplate.update(deleteAssignmentSql,feederId,capbankId);
+		int rowsAffected = simpleJdbcTemplate.update(deleteAssignmentSql,capbankId);
 		
 		boolean result = (rowsAffected == 1);
 		return result;
@@ -439,10 +441,6 @@ public class CapbankDaoImpl implements CapbankDao {
 	
 	private ControlOrder generateControlOrder(int feederId) {
 		ControlOrder order = new ControlOrder();
-		//TODO
-		/*
-		 * Figure out the order for a newly assigned bank here.
-		 */
 		
 		order.controlOrder = 0;
 		order.closeOrder = 0;

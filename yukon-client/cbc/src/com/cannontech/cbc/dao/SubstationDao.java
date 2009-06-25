@@ -23,8 +23,8 @@ public interface SubstationDao {
     public boolean assignSubstation(Area area, Substation substation);
     public boolean assignSubstation(int areaId, int substationId);
     
-    public boolean unassignSubstation(Area area, Substation substation);
-    public boolean unassignSubstation(int areaId, int substationId);
+    public boolean unassignSubstation(Substation substation);
+    public boolean unassignSubstation(int substationId);
     
     public List<Integer> getAllUnassignedSubstationIds();
     public List<LiteCapControlObject> getOrphans();

@@ -5,6 +5,8 @@ import com.cannontech.common.util.CtiUtilities;
 public class SubstationBus {
 	
 	private String name;
+	private String description = CtiUtilities.STRING_NONE;
+	
     private int id;
     private int currentVarLoadPointId = CtiUtilities.NONE_ZERO_ID;
     private int currentWattLoadPointId = CtiUtilities.NONE_ZERO_ID;
@@ -25,6 +27,12 @@ public class SubstationBus {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
 	}
 	public int getAltSubId() {
         return altSubId;
@@ -125,6 +133,8 @@ public class SubstationBus {
 		result = prime * result + currentVoltLoadPointId;
 		result = prime * result + currentWattLoadPointId;
 		result = prime * result
+				+ ((description == null) ? 0 : description.hashCode());
+		result = prime * result
 				+ ((dualBusEnabled == null) ? 0 : dualBusEnabled.hashCode());
 		result = prime * result + id;
 		result = prime * result
@@ -164,6 +174,11 @@ public class SubstationBus {
 			return false;
 		if (currentWattLoadPointId != other.currentWattLoadPointId)
 			return false;
+		if (description == null) {
+			if (other.description != null)
+				return false;
+		} else if (!description.equals(other.description))
+			return false;
 		if (dualBusEnabled == null) {
 			if (other.dualBusEnabled != null)
 				return false;
@@ -201,5 +216,5 @@ public class SubstationBus {
 			return false;
 		return true;
 	}
-	
+
 }

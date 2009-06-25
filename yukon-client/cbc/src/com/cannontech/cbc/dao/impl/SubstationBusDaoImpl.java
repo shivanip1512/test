@@ -17,7 +17,6 @@ import com.cannontech.cbc.model.SubstationBus;
 import com.cannontech.cbc.point.CBCPointFactory;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.ChunkingSqlTemplate;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.HolidayScheduleDao;
@@ -109,7 +108,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
 		pao.setPaoClass(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoName(bus.getName());
 		pao.setType(CapControlTypes.STRING_CAPCONTROL_SUBBUS);
-		pao.setDescription(CtiUtilities.STRING_NONE);
+		pao.setDescription(bus.getDescription());
 		
 		boolean ret = paoDao.add(pao);
 		
@@ -180,7 +179,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
 		pao.setPaoClass(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoName(bus.getName());
 		pao.setType(CapControlTypes.STRING_CAPCONTROL_SUBBUS);
-		pao.setDescription(CtiUtilities.STRING_NONE);
+		pao.setDescription(bus.getDescription());
 		
 		pao.setPaObjectID(bus.getId());
 		
@@ -269,7 +268,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
     	String insertAssignmentSql = "INSERT INTO CCSUBSTATIONSUBBUSLIST (SubStationID,SubStationBusID,DisplayOrder) VALUES (?,?,?)";
     	
 		//remove any existing assignment
-    	unassignSubstationBus(substationId,substationBusId);
+    	unassignSubstationBus(substationBusId);
     	
 		int displayOrder = simpleJdbcTemplate.queryForInt(getDisplayOrderSql, substationId);
 		int rowsAffected = simpleJdbcTemplate.update(insertAssignmentSql, substationId,substationBusId,++displayOrder);
@@ -279,15 +278,15 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
     }
 
     @Override
-    public boolean unassignSubstationBus(Substation substation, SubstationBus substationBus) {
-    	return unassignSubstationBus(substation.getId(),substationBus.getId());
+    public boolean unassignSubstationBus(SubstationBus substationBus) {
+    	return unassignSubstationBus(substationBus.getId());
     }
     
     @Override
-    public boolean unassignSubstationBus(int substationId, int substationBusId) {
-    	String deleteAssignmentSql = "DELETE FROM CCSUBSTATIONSUBBUSLIST WHERE SubStationID = ? AND SubstationBusID = ?";
+    public boolean unassignSubstationBus(int substationBusId) {
+    	String deleteAssignmentSql = "DELETE FROM CCSUBSTATIONSUBBUSLIST WHERE SubstationBusID = ?";
     	
-		int rowsAffected = simpleJdbcTemplate.update(deleteAssignmentSql, substationId,substationBusId);
+		int rowsAffected = simpleJdbcTemplate.update(deleteAssignmentSql,substationBusId);
 		
 		boolean result = (rowsAffected == 1);
 		return result;

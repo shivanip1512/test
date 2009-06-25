@@ -13,11 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.cbc.dao.AreaDao;
 import com.cannontech.cbc.model.Area;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.HolidayScheduleDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.SeasonScheduleDao;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.pao.YukonPAObject;
@@ -77,7 +75,7 @@ public class AreaDaoImpl implements AreaDao {
 		pao.setPaoClass(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoName(area.getName());
 		pao.setType(CapControlTypes.STRING_CAPCONTROL_AREA);
-		pao.setDescription(CtiUtilities.STRING_NONE);
+		pao.setDescription(area.getDescription());
 		
 		boolean ret = paoDao.add(pao);
 
@@ -115,7 +113,7 @@ public class AreaDaoImpl implements AreaDao {
 		pao.setPaoClass(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoName(area.getName());
 		pao.setType(CapControlTypes.STRING_CAPCONTROL_AREA);
-		pao.setDescription(CtiUtilities.STRING_NONE);
+		pao.setDescription(area.getDescription());
 		
 		pao.setPaObjectID(area.getId());
 		

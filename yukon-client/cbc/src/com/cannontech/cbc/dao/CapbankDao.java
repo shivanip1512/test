@@ -42,6 +42,6 @@ public interface CapbankDao {
     public boolean assignCapbank(Feeder feeder, Capbank capbank);
     public boolean assignCapbank(int feederId, int capbankId);
 
-    public boolean unassignCapbank(Feeder feeder, Capbank capbank);
-    public boolean unassignCapbank(int feederId, int capbankId);
+    public boolean unassignCapbank(Capbank capbank);
+    public boolean unassignCapbank(int capbankId);
 }

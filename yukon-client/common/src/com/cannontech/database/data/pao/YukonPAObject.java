@@ -330,6 +330,11 @@ public void setPAOName( String name )
 {
 	getYukonPAObject().setPaoName( name );
 }
+
+public void setPAODescription(String description)
+{
+	getYukonPAObject().setDescription(description);
+}
 /**
  * Insert the method's description here.
  * Creation date: (9/12/2001 10:25:35 AM)

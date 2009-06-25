@@ -3,7 +3,10 @@ package com.cannontech.cbc.dao.impl;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Vector;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
@@ -12,13 +15,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.cbc.dao.CapbankControllerDao;
 import com.cannontech.cbc.model.Capbank;
-import com.cannontech.cbc.model.CapbankAdditional;
 import com.cannontech.cbc.model.CapbankController;
 import com.cannontech.cbc.model.LiteCapControlObject;
 import com.cannontech.cbc.point.CBCPointFactory;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.DeviceType;
 import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.CtiUtilities;
@@ -26,22 +29,27 @@ import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.capcontrol.CapBankController6510;
-import com.cannontech.database.data.capcontrol.CapBankController701x;
 import com.cannontech.database.data.capcontrol.CapBankController702x;
 import com.cannontech.database.data.capcontrol.CapBankControllerDNP;
-import com.cannontech.database.data.capcontrol.CapBankControllerExpresscom;
-import com.cannontech.database.data.capcontrol.CapBankControllerVersacom;
-import com.cannontech.database.data.capcontrol.CapBankController_FP_2800;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceFactory;
+import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.MultiDBPersistent;
-import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointUtil;
+import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.capcontrol.DeviceCBC;
+import com.cannontech.database.db.device.DeviceAddress;
+import com.cannontech.database.db.device.DeviceScanRate;
 
 
 public class CapbankControllerDaoImpl implements CapbankControllerDao {
@@ -56,6 +64,7 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 	private static final ParameterizedRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
 	
 	private PaoDao paoDao;
+	private PointDao pointDao;
 	private DeviceDefinitionService deviceDefinitionService;
 	private DeviceDao deviceDao;
 	
@@ -103,10 +112,15 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
         };
         return rowMapper;
     }
-
+    
+    @Override
+    public boolean add(CapbankController capbankController) {
+    	return this.add(capbankController,true);
+    }
+    
 	@Override
 	@Transactional
-	public boolean add(CapbankController capbankController) {
+	public boolean add(CapbankController capbankController, boolean addPoints) {
 		Connection connection = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
 		int newId = paoDao.getNextPaoId();
 		DeviceType type = DeviceType.getForId(capbankController.getType());
@@ -136,15 +150,15 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 		if (result == false) {
 			CTILogger.error("Update of controller information in DeviceCBC table failed for cbc with name: " + capbankController.getName());
 		}
-		
-		MultiDBPersistent pointVector = CBCPointFactory.createPointsForCBCDevice(controller);
-		try {
-			PointUtil.insertIntoDB(pointVector);
-		} catch (TransactionException e) {
-			CTILogger.error("Failed on Inserting Points for CapBankController, " + capbankController.getName() +".");
-			return false;
+		if (addPoints) {
+			MultiDBPersistent pointVector = CBCPointFactory.createPointsForCBCDevice(controller);
+			try {
+				PointUtil.insertIntoDB(pointVector);
+			} catch (TransactionException e) {
+				CTILogger.error("Failed on Inserting Points for CapBankController, " + capbankController.getName() +".");
+				return false;
+			}
 		}
-		
 		return result;
 	}
 
@@ -198,6 +212,47 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 	}
 	
 	@Override
+	public boolean copyTemplateController(String templateName, CapbankController controller) {
+		List<LiteYukonPAObject> paos = paoDao.getLiteYukonPaoByName(templateName, false);
+		if (paos.size() != 1) {
+			CTILogger.error("Template not found to copy.");
+			throw new UnsupportedOperationException("Template not found to copy. " + templateName);
+		}
+		
+		LiteYukonPAObject pao = paos.get(0);
+		int type = pao.getType();
+		controller.setType(type);
+		
+		int templateDeviceId = pao.getLiteID();
+		DeviceBase base = DeviceFactory.createDevice(type);
+		base.setDeviceID(templateDeviceId);
+
+		try {
+			Transaction.createTransaction(com.cannontech.database.Transaction.RETRIEVE, base).execute();
+		} catch (TransactionException e) {
+			throw new UnsupportedOperationException("Error Retrieving Template from the database. " + templateName);
+		}
+		
+		int newId = paoDao.getNextPaoId();
+		controller.setId(newId);
+		base.setDeviceID(newId);
+		base.setPAOName(controller.getName());
+		setTypeSpecificCbcFields(DeviceType.getForId(type),base,controller);
+		
+		try {
+			Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, base).execute();
+		} catch (TransactionException e) {
+			throw new UnsupportedOperationException("Error inserting copy of template into the database. " + controller.getName());
+		}
+		
+		//Copy points and add them to the DB
+        List<PointBase> points = getPointsForPao(templateDeviceId);
+        this.applyPoints(newId, points);
+		
+		return true;
+	}
+	
+	@Override
 	public boolean assignController(Capbank capbank, CapbankController controller) {
 		return assignController(capbank.getId(),controller.getId());
 	}
@@ -213,15 +268,15 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 	}
 
 	@Override
-	public boolean unassignController(Capbank capbank, CapbankController controller) {
-		return unassignController(capbank.getId(),controller.getId());
+	public boolean unassignController(CapbankController controller) {
+		return unassignController(controller.getId());
 	}
 
 	@Override
-	public boolean unassignController(int capbankId, int controllerId) {
-    	String removeAssignmentSql = "UPDATE CAPBANK SET CONTROLDEVICEID=? WHERE DEVICEID = ?";
+	public boolean unassignController(int controllerId) {
+    	String removeAssignmentSql = "UPDATE CAPBANK SET CONTROLDEVICEID=0 WHERE CONTROLDEVICEID = ?";
     	
-		int rowsAffected = simpleJdbcTemplate.update(removeAssignmentSql,controllerId,capbankId);
+		int rowsAffected = simpleJdbcTemplate.update(removeAssignmentSql,controllerId);
 		
 		boolean result = (rowsAffected == 1);
 		return result;
@@ -282,32 +337,78 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 			case CBC_7020: {
 				CapBankController702x cbc = (CapBankController702x)device;
 				cbc.setCommID(controller.getPortId());
+				
+				DeviceAddress devAddress = cbc.getDeviceAddress();
+				DeviceCBC devCbc = cbc.getDeviceCBC();
+				
+				devAddress.setMasterAddress(controller.getMasterAddress());
+				devAddress.setSlaveAddress(controller.getSlaveAddress());
+				devAddress.setPostCommWait(controller.getPostCommWait());
+				devCbc.setSerialNumber(controller.getSerialNumber());
+				devCbc.setRouteID(controller.getRouteId());
+				
+				DeviceScanRate scanRate = new DeviceScanRate();
+				scanRate.setDeviceID(controller.getId());
+				
+				scanRate.setScanType(controller.getScanType());
+				scanRate.setScanGroup(controller.getScanGroup());
+				scanRate.setIntervalRate(controller.getIntervalRate());
+				scanRate.setAlternateRate(controller.getAlternateRate());
+				
+				cbc.getDeviceScanRateMap().clear();
+				cbc.getDeviceScanRateMap().put(scanRate.getScanGroup(),scanRate);
+				
 				break;	
 			}
-			case CBC_7012:
-			case CBC_7011:
-			case CBC_7010: {
-				//CapBankController701x cbc = (CapBankController701x)device;
+			case CBC_DNP: {
+				CapBankControllerDNP cbc = (CapBankControllerDNP)device;
+				cbc.setCommID(controller.getPortId());
+				
+				DeviceAddress devAddress = cbc.getDeviceAddress();
+				DeviceCBC devCbc = cbc.getDeviceCBC();
+				
+				devAddress.setMasterAddress(controller.getMasterAddress());
+				devAddress.setSlaveAddress(controller.getSlaveAddress());
+				devAddress.setPostCommWait(controller.getPostCommWait());
+				devCbc.setSerialNumber(controller.getSerialNumber());
+				devCbc.setRouteID(controller.getRouteId());
+				
+				DeviceScanRate scanRate = new DeviceScanRate();
+				scanRate.setDeviceID(controller.getId());
+				
+				scanRate.setScanType(controller.getScanType());
+				scanRate.setScanGroup(controller.getScanGroup());
+				scanRate.setIntervalRate(controller.getIntervalRate());
+				scanRate.setAlternateRate(controller.getAlternateRate());
+				
+				cbc.getDeviceScanRateMap().clear();
+				cbc.getDeviceScanRateMap().put(scanRate.getScanGroup(),scanRate);
+				
 				break;
 			}
 			case DNP_CBC_6510: {
-				//CapBankController6510 cbc = (CapBankController6510)device;
+				CapBankController6510 cbc = (CapBankController6510)device;
+				cbc.setCommID(controller.getPortId());
+				
+				DeviceAddress devAddress = cbc.getDeviceAddress();
+				
+				devAddress.setMasterAddress(controller.getMasterAddress());
+				devAddress.setSlaveAddress(controller.getSlaveAddress());
+				devAddress.setPostCommWait(controller.getPostCommWait());
 				break;
 			}
-			case CBC_DNP: {
-				//CapBankControllerDNP cbc = (CapBankControllerDNP)device;
-				break;
-			}
-			case CBC_FP_2800: {
-				//CapBankController_FP_2800 cbc = (CapBankController_FP_2800)device;
-				break;
-			}
-			case CAPBANKCONTROLLER: {
-				//CapBankControllerVersacom cbc = (CapBankControllerVersacom)device;
-				break;
-			}
-			case CBC_EXPRESSCOM: {
-				//CapBankControllerExpresscom cbc = (CapBankControllerExpresscom)device;
+			case CBC_FP_2800:
+			case CAPBANKCONTROLLER:
+			case CBC_EXPRESSCOM:
+			case CBC_7012:
+			case CBC_7011:
+			case CBC_7010: {
+				CapBankController cbc = (CapBankController)device;
+				
+				DeviceCBC devCbc = cbc.getDeviceCBC();
+				
+				devCbc.setSerialNumber(controller.getSerialNumber());
+				devCbc.setRouteID(controller.getRouteId());
 				break;
 			}
 			default: {
@@ -315,6 +416,50 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 			}
 		}
 	}
+	
+    private void applyPoints(int deviceId, List<PointBase> points) {
+        
+        MultiDBPersistent pointsToAdd = new MultiDBPersistent();
+        Vector<DBPersistent> newPoints = pointsToAdd.getDBPersistentVector();
+
+        for (PointBase point : points) {
+        
+            int nextPointId = pointDao.getNextPointId();
+            point.setPointID(nextPointId);
+            point.getPoint().setPaoID(deviceId);
+            
+            newPoints.add(point);
+        }
+        
+		try {
+			PointUtil.insertIntoDB(pointsToAdd);
+		} catch (TransactionException e) {
+			String str = "Failed on Inserting Points for CapBankController with id " + deviceId +".";
+			CTILogger.error(str);
+			throw new UnsupportedOperationException(str);
+		}
+    }
+    
+    private List<PointBase> getPointsForPao(int id) {
+        
+        List<LitePoint> litePoints = pointDao.getLitePointsByPaObjectId(id);
+        List<PointBase> points = new ArrayList<PointBase>(litePoints.size());
+        
+        for (LitePoint litePoint: litePoints) {
+            
+            PointBase pointBase = (PointBase)LiteFactory.createDBPersistent(litePoint);
+            
+            try {
+                Transaction.createTransaction(com.cannontech.database.Transaction.RETRIEVE, pointBase).execute();
+                points.add(pointBase);
+            }
+            catch (TransactionException e) {
+                throw new DeviceCreationException("Could not retrieve points for new device.", e);
+            }
+        }
+
+        return points;
+    }
 	
 	@Override
 	public void changeSerialNumber(YukonDevice device, int newSerialNumber) {
@@ -331,6 +476,11 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
     @Autowired
 	public void setPaoDao(PaoDao paoDao) {
 		this.paoDao = paoDao;
+	}
+    
+    @Autowired
+	public void setPointDao(PointDao pointDao) {
+		this.pointDao = pointDao;
 	}
     
     @Autowired

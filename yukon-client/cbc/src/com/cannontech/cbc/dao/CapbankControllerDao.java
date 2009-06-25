@@ -10,16 +10,19 @@ import com.cannontech.common.device.YukonDevice;
 public interface CapbankControllerDao {
 
 	public boolean add(CapbankController capbankController);
+	public boolean add(CapbankController capbankController, boolean addPoints);
 	
 	public boolean update(CapbankController capbankController);
 	
 	public boolean remove(CapbankController capbankController);
 	
+	public boolean copyTemplateController(String templateName, CapbankController controller);
+	
     public boolean assignController(Capbank capbank, CapbankController controller);
     public boolean assignController(int capbankId, int controllerId);
 
-    public boolean unassignController(Capbank capbank, CapbankController controller);
-    public boolean unassignController(int capbankId, int controller);
+    public boolean unassignController(CapbankController controller);
+    public boolean unassignController(int controller);
 	
 	public void changeSerialNumber(YukonDevice device, int newSerialNumber);
 	
