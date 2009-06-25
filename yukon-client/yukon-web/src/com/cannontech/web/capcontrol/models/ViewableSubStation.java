@@ -1,15 +1,18 @@
 package com.cannontech.web.capcontrol.models;
 
+import java.util.List;
+
+import com.cannontech.yukon.cbc.SubStation;
+
+
 public class ViewableSubStation {
 
-	private String subStationName = null;
+    private SubStation substation = null;
+    private String subStationName = null;
 	private int feederCount;
 	private int capBankCount;
+	private List<ViewableSubBus> subBuses = null;
 	
-	public ViewableSubStation() {
-		
-	}
-
 	public String getSubStationName() {
 		return subStationName;
 	}
@@ -34,5 +37,19 @@ public class ViewableSubStation {
 		this.capBankCount = capBankCount;
 	}
 	
-	
+    public List<ViewableSubBus> getSubBuses() {
+        return subBuses;
+    }
+
+    public void setSubBuses(List<ViewableSubBus> subBuses) {
+        this.subBuses = subBuses;
+    }
+    
+    public SubStation getSubstation() {
+        return substation;
+    }
+
+    public void setSubstation(SubStation substation) {
+        this.substation = substation;
+    }
 }

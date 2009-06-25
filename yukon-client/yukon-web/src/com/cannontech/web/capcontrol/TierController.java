@@ -1,6 +1,5 @@
 package com.cannontech.web.capcontrol;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -19,12 +18,8 @@ import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.cbc.web.CBCWebUtils;
 import com.cannontech.cbc.web.CCSessionInfo;
-import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.util.ServletUtil;
@@ -32,7 +27,7 @@ import com.cannontech.web.capcontrol.models.ViewableArea;
 import com.cannontech.web.capcontrol.models.ViewableCapBank;
 import com.cannontech.web.capcontrol.models.ViewableFeeder;
 import com.cannontech.web.capcontrol.models.ViewableSubBus;
-import com.cannontech.web.capcontrol.models.ViewableSubStation;
+import com.cannontech.web.capcontrol.util.CapControlWebUtils;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
@@ -48,8 +43,6 @@ public class TierController {
 
 	private FilterCacheFactory filterCacheFactory;
 	private RolePropertyDao rolePropertyDao;
-	private PointDao pointDao;
-	private PaoDao paoDao;
 	
 	@RequestMapping
 	public String areas(HttpServletRequest request, LiteYukonUser user, Boolean isSpecialArea, ModelMap mav) {
@@ -73,7 +66,7 @@ public class TierController {
 			mav.addAttribute("updaterType", "CBCAREA");
 		}
 		
-		List<ViewableArea> viewableAreas = createViewableArea(ccAreas, cache, isSpecialArea);
+		List<ViewableArea> viewableAreas = CapControlWebUtils.createViewableAreas(ccAreas, cache, isSpecialArea);
 		mav.addAttribute("ccAreas", viewableAreas);
 		
 		boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
@@ -159,15 +152,15 @@ public class TierController {
 		
 		List<SubBus> subBusList = cache.getSubBusesBySubStation(substation);
 		Collections.sort(subBusList, CBCUtils.SUB_DISPLAY_COMPARATOR);
-		List<ViewableSubBus> viewableSubBusList = createViewableSubBus(subBusList);
+		List<ViewableSubBus> viewableSubBusList = CapControlWebUtils.createViewableSubBus(subBusList, cache);
 		mav.addAttribute("subBusList", viewableSubBusList);
 		
 		List<Feeder> feederList = cache.getFeedersBySubStation(substation);
-		List<ViewableFeeder> viewableFeederList = createViewableFeeder(feederList,cache);
+		List<ViewableFeeder> viewableFeederList = CapControlWebUtils.createViewableFeeder(feederList,cache);
 		mav.addAttribute("feederList", viewableFeederList);
 
 		List<CapBankDevice> capBankList = cache.getCapBanksBySubStation(substation);
-		List<ViewableCapBank> viewableCapBankList = createViewableCapBank(capBankList);
+		List<ViewableCapBank> viewableCapBankList = CapControlWebUtils.createViewableCapBank(capBankList);
 		mav.addAttribute("capBankList", viewableCapBankList);
 
 		boolean hasSubstationControl = CBCWebUtils.hasSubstationControlRights(session);
@@ -215,106 +208,7 @@ public class TierController {
 		return "tier/feederTier.jsp";
     }
 	
-	private List<ViewableSubBus> createViewableSubBus(List<SubBus> subBusList) {
-		List<ViewableSubBus> viewableList = new ArrayList<ViewableSubBus>(subBusList.size());
-		
-		for(SubBus subBus: subBusList) {
-			ViewableSubBus viewable = new ViewableSubBus();
-			viewable.setSubBus(subBus);
-			
-			if(subBus.getCurrentVarLoadPointID() != 0) {
-				LitePoint point = pointDao.getLitePoint(subBus.getCurrentVarLoadPointID());
-				viewable.setVarPoint(point);
-			}
-			if(subBus.getCurrentVoltLoadPointID() != 0) {
-				LitePoint point = pointDao.getLitePoint(subBus.getCurrentVoltLoadPointID());
-				viewable.setVoltPoint(point);
-			}
-			if(subBus.getCurrentWattLoadPointID() != 0) {
-				LitePoint point = pointDao.getLitePoint(subBus.getCurrentWattLoadPointID());
-				viewable.setWattPoint(point);
-			}
-
-			viewableList.add(viewable);
-		}
-		
-		return viewableList;
-	}
 	
-	private List<ViewableFeeder> createViewableFeeder(List<Feeder> feeders, CapControlCache cache) {
-	    List<ViewableFeeder> viewableList = new ArrayList<ViewableFeeder>(feeders.size());
-		
-	    for (Feeder feeder: feeders) {
-	    	String subBusName = cache.getSubBusNameForFeeder(feeder);
-	    	ViewableFeeder viewable = new ViewableFeeder();
-	    	
-	    	viewable.setFeeder(feeder);
-	    	viewable.setSubBusName(subBusName);
-	    	
-	    	viewableList.add(viewable);
-	    }
-	    
-	    return viewableList;
-	}
-	
-	private List<ViewableCapBank> createViewableCapBank(List<CapBankDevice> capBanks) {
-	    List<ViewableCapBank> viewableList = new ArrayList<ViewableCapBank>(capBanks.size());
-		
-	    for (CapBankDevice cbc: capBanks) {
-	    	LiteYukonPAObject controller = paoDao.getLiteYukonPAO(cbc.getControlDeviceID());
-	    	ViewableCapBank viewable = new ViewableCapBank();
-	    	
-	    	viewable.setCapBankDevice(cbc);
-	    	viewable.setControlDevice(controller);
-	    	viewable.setTwoWayCbc(CBCUtils.isTwoWay(controller));
-	    	viewable.setDevice701x(CBCUtils.is701xDevice(controller));
-	    	
-	    	viewableList.add(viewable);
-	    }
-	    
-	    return viewableList;
-	}
-	
-	private List<ViewableArea> createViewableArea(List<? extends StreamableCapObject> areas, CapControlCache cache, boolean isSpecialArea) {
-	    List<ViewableArea> viewableList = new ArrayList<ViewableArea>(areas.size());
-		
-	    for (StreamableCapObject area: areas) {	    	
-	    	ViewableArea viewable = new ViewableArea();
-	    	List<ViewableSubStation> viewableSubStations = null;
-	    	
-	    	List<SubStation> subStations = null;
-	    	if(isSpecialArea) {
-	    		subStations = cache.getSubstationsBySpecialArea(area.getCcId());
-	    	} else {
-	    		subStations = cache.getSubstationsByArea(area.getCcId());
-	    	}
-	     	viewableSubStations = createViewableSubStation(subStations, cache);
-
-	    	viewable.setArea(area);
-	    	viewable.setSubStations(viewableSubStations);
-	    	viewableList.add(viewable);
-	    }
-	    
-	    return viewableList;
-	}
-	
-	private List<ViewableSubStation> createViewableSubStation(List<SubStation> subStations, CapControlCache cache) {
-		List<ViewableSubStation> viewableList = new ArrayList<ViewableSubStation>(subStations.size());
-		
-		for(SubStation subStation : subStations) {
-    		ViewableSubStation viewable = new ViewableSubStation();
-    		List<CapBankDevice> capBanks = cache.getCapBanksBySubStation(subStation);
-    		List<Feeder> feeders = cache.getFeedersBySubStation(subStation);
-    		
-    		viewable.setSubStationName(subStation.getCcName());
-    		viewable.setFeederCount(feeders.size());
-    		viewable.setCapBankCount(capBanks.size());
-    		
-    		viewableList.add(viewable);
-    	}
-		
-		return viewableList;
-	}
 	
 	@RequestMapping(method=RequestMethod.POST)
 	public void updateSession(HttpServletRequest request, CCSessionInfo info) throws ServletException, Exception {
@@ -333,13 +227,4 @@ public class TierController {
         this.rolePropertyDao = rolePropertyDao;
     }
 	
-	@Autowired
-	public void setPointDao (PointDao pointDao) {
-		this.pointDao = pointDao;
-	}
-	
-	@Autowired
-	public void setPaoDao (PaoDao paoDao) {
-		this.paoDao = paoDao;
-	}
 }

@@ -1,6 +1,8 @@
 package com.cannontech.web.capcontrol.models;
 
 
+import java.util.List;
+
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.yukon.cbc.SubBus;
 
@@ -9,11 +11,8 @@ public class ViewableSubBus {
 	private SubBus subBus = null;
 	private LitePoint varPoint = null;
 	private LitePoint voltPoint = null;
-	private LitePoint wattPoint = null;	
-	
-	public ViewableSubBus() {
-		
-	}
+	private LitePoint wattPoint = null;
+	private List<ViewableFeeder> feeders = null;
 	
 	public SubBus getSubBus() {
 		return this.subBus;
@@ -47,5 +46,11 @@ public class ViewableSubBus {
 		this.wattPoint = wattPoint;
 	}
 	
-	
+    public List<ViewableFeeder> getFeeders() {
+        return feeders;
+    }
+
+    public void setFeeders(List<ViewableFeeder> feeders) {
+        this.feeders = feeders;
+    }
 }

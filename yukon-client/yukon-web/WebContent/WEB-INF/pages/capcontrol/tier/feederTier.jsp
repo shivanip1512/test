@@ -654,7 +654,7 @@
 		                        onmouseover="statusMsg(this, 'Click here to fully move or temporarily move this CapBank from its current parent feeder');"
 		                        onmouseout="nd();"
 		                        onclick="return GB_show('CapBank Move for ${viewableCapBank.capBankDevice.ccName} (Pick feeder by clicking on name)',
-		                            '/capcontrol/tempmove.jsp?bankid=${thisCapBankId}', 500, 710, onGreyBoxClose);"
+		                            '/spring/capcontrol/move/bankMove?bankid=${thisCapBankId}', 500, 710, onGreyBoxClose);"
 		                    </c:otherwise>
 		                    </c:choose>
 		                </c:if>

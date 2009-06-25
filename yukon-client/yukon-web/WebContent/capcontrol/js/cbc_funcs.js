@@ -70,8 +70,8 @@ function getMenuFromURL(url, event) {
 	 *  so the attributes of the event need to be set and passed
 	 *  as variables.
 	 */
-	var x = event.clientX;
-	var y = event.clientY;
+	var x = mouseX(event);
+    var y = mouseY(event);
     new Ajax.Request(url, {
         method: 'POST',
         onSuccess: function(transport) {
@@ -87,8 +87,8 @@ function getMenuFromURLAbove(url, event) {
 	 *  so the attributes of the event need to be set and passed
 	 *  as variables.
 	 */
-	var x = event.clientX;
-	var y = event.clientY;
+	var x = mouseX(event);
+	var y = mouseY(event);
     new Ajax.Request(url, {
 	    method: 'POST',
 	    onSuccess: function(transport) {
@@ -104,8 +104,8 @@ function getReasonMenuFromURL(url, event) {
 	 *  so the attributes of the event need to be set and passed
 	 *  as variables.
 	 */
-	var x = event.clientX;
-    var y = event.clientY;
+    var x = mouseX(event);
+    var y = mouseY(event);
     new Ajax.Request(url, {
 	    method: 'POST',
 	    onSuccess: function(transport) {
@@ -1115,4 +1115,28 @@ return retStr;
 
 String.prototype.removeLeadTrailSpace = function () {
     return new String ( removeSpaceFromBeginning ( removeSpaceFromEnd (this) ) );
+}
+
+function mouseX(evt) {
+	if (evt.pageX) {
+		return evt.pageX;
+	} else if (evt.clientX) {
+	   return evt.clientX + (document.documentElement.scrollLeft ?
+	   document.documentElement.scrollLeft :
+	   document.body.scrollLeft);
+	} else {
+		return null;
+	}
+}
+
+function mouseY(evt) {
+	if (evt.pageY) {
+		return evt.pageY;
+	} else if (evt.clientY) {
+	   return evt.clientY + (document.documentElement.scrollTop ?
+	   document.documentElement.scrollTop :
+	   document.body.scrollTop);
+	} else {
+		return null;
+	}
 }

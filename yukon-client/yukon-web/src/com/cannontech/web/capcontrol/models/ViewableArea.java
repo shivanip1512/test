@@ -9,10 +9,6 @@ public class ViewableArea {
 	private StreamableCapObject area = null;
 	private List<ViewableSubStation> subStations = null;	
 	
-	public ViewableArea() {
-		
-	}
-
 	public StreamableCapObject getArea() {
 		return area;
 	}
