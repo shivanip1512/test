@@ -3,42 +3,38 @@
 
 #include "EncodingFilter.h"
 #include <string>
-#include <boost/shared_array.hpp>
-
-using std::string;
-using boost::shared_ptr;
 
 class LantronixEncryptionImpl : public EncodingFilter
 {
-	public:
-		enum{
-			UDPHEADERSIZE=18//header is 16(IV) + 2(len)
-		};
+    public:
+        enum{
+            UDPHEADERSIZE=18//header is 16(IV) + 2(len)
+        };
 
-		union uint_t
-		{
-			unsigned long ul;
-			unsigned char uc[4];
-		} uint;
-	
-		LantronixEncryptionImpl();
+        union uint_t
+        {
+            unsigned long ul;
+            unsigned char uc[4];
+        } uint;
 
-		virtual bool decode(const unsigned char* const cipher, long bufLen, vector<unsigned char>& pText);
-		virtual bool encode(const unsigned char* const plainText, long bufLen, vector<unsigned char>& cipher);
+        LantronixEncryptionImpl();
 
-		void setKey (string key);
-		void setIV (unsigned char iv[]);
+        virtual bool decode(const unsigned char* const cipher,    long bufLen, std::vector<unsigned char>& pText);
+        virtual bool encode(const unsigned char* const plainText, long bufLen, std::vector<unsigned char>& cipher);
 
-		unsigned char* getKey();
-		unsigned char* getIV();
+        void setKey(const std::string key);
+        void setIV (const unsigned char iv[]);
 
-	private:
+        const unsigned char* getKey();
+        const unsigned char* getIV();
 
-		void generateNewIV(char seed);
+    private:
 
-		bool _staticIv;
-		unsigned char _iv[16];
-		unsigned char _key[16];
+        void generateNewIV(char seed);
+
+        bool _staticIv;
+        unsigned char _iv[16];
+        unsigned char _key[16];
 };
 
 
