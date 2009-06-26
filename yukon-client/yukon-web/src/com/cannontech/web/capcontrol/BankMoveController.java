@@ -1,5 +1,6 @@
 package com.cannontech.web.capcontrol;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,14 +12,18 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
+import com.cannontech.cbc.util.CBCDisplay;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.util.ParamUtil;
+import com.cannontech.web.capcontrol.models.MovedBank;
 import com.cannontech.web.capcontrol.models.ViewableArea;
 import com.cannontech.web.capcontrol.util.CapControlWebUtils;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.yukon.cbc.CCArea;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.CapControlCommand;
 import com.cannontech.yukon.cbc.Feeder;
@@ -31,6 +36,7 @@ public class BankMoveController {
     private FilterCacheFactory cacheFactory;
     private CapControlCache capControlCache;
     private PaoDao paoDao;
+    private RolePropertyDao rolePropertyDao;
     
     @RequestMapping
     public ModelAndView bankMove(HttpServletRequest request, LiteYukonUser user) {
@@ -90,6 +96,37 @@ public class BankMoveController {
         return mav;
     }
     
+    @RequestMapping
+    public ModelAndView movedCapBanks(HttpServletRequest request, LiteYukonUser user) {
+        final ModelAndView mav = new ModelAndView();
+        final CBCDisplay cbcDisplay = new CBCDisplay(user);
+        
+        String popupEvent = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.POPUP_APPEAR_STYLE, user);
+        if (popupEvent == null) {
+            popupEvent = "onclick";
+        }
+        mav.addObject("popupEvent", popupEvent);
+        
+        List<CCArea> areas = capControlCache.getCbcAreas();
+        List<MovedBank> movedCaps = new ArrayList<MovedBank>();   
+        for (CCArea area : areas) {
+            List<CapBankDevice> capBanks = capControlCache.getCapBanksByArea(area.getPaoId());
+            for (CapBankDevice capBank : capBanks) {
+                if (capBank.isBankMoved()) {
+                    MovedBank movedBank = new MovedBank(capBank);
+                    movedBank.setCurrentFeederName(cbcDisplay.getCapBankValueAt(capBank, CBCDisplay.CB_PARENT_COLUMN).toString());
+                    movedBank.setOriginalFeederName(paoDao.getYukonPAOName(capBank.getOrigFeederID()));
+                    movedCaps.add(movedBank);
+                }
+            }
+        }
+        
+        mav.addObject("movedCaps", movedCaps);
+        
+        mav.setViewName("move/movedCapBanks.jsp");
+        return mav;
+    }
+    
     @Autowired
     public void setFilterCacheFactory (FilterCacheFactory filterCacheFactory) {
         this.cacheFactory = filterCacheFactory;
@@ -103,5 +140,10 @@ public class BankMoveController {
     @Autowired
     public void setPaoDao(PaoDao paoDao) {
         this.paoDao = paoDao;
+    }
+    
+    @Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
     }
 }

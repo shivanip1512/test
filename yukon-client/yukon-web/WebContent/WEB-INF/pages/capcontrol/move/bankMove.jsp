@@ -2,20 +2,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 
-<%@ page import="java.util.*" %>
-<%@ page import="com.cannontech.yukon.cbc.*" %>
-<%@ page import="com.cannontech.util.*" %>
-<%@ page import="com.cannontech.cbc.util.*" %>
-<%@ page import="com.cannontech.database.data.lite.*" %>
-<%@ page import="com.cannontech.database.data.pao.CapControlType" %>
-<%@ page import="com.cannontech.common.constants.LoginController" %>
-<%@ page import="com.cannontech.spring.YukonSpringHook" %>
-<%@ page import="com.cannontech.cbc.cache.CapControlCache" %>
-<%@ page import="com.cannontech.cbc.cache.FilterCacheFactory" %>
-<%@ page import="com.cannontech.core.dao.PaoDao" %>
-
-<link rel="stylesheet" type="text/css" href="/WebConfig/yukon/CannonStyle.css" >
-<link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/StandardStyles.css" >
 <link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/YukonGeneralStyles.css" >
 <link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/InnerStyles.css" >
 <link rel="stylesheet" type="text/css" href="/capcontrol/css/base.css" >
@@ -111,7 +97,7 @@ Event.observe(window, 'load', updateFeederBankInfo, false);
         
         <div id="ControlOrders"></div>
         <div style="margin-left: 2%; margin-right: 2%;  padding-bottom:2%; padding-top:2%;">
-            <ct:abstractContainer styleClass="boxContainerPadding" type="box" title="Feeders Eligible for the Move | Select a feeder below:" hideEnabled="false">
+            <ct:abstractContainer type="box" title="Feeders Eligible for the Move | Select a feeder below:" hideEnabled="false">
                 <div style=" height: 275px; overflow: auto;">
                     <c:forEach var="viewableArea" items="${allAreas}">
                         <div>

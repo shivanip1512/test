@@ -1,24 +1,12 @@
-
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 <%@ taglib tagdir="/WEB-INF/tags/capcontrol" prefix="capTags"%>
 
-<%@ page import="com.cannontech.spring.YukonSpringHook" %>
-<%@ page import="com.cannontech.cbc.cache.CapControlCache" %>
-<%@ page import="com.cannontech.cbc.cache.FilterCacheFactory" %>
-<%@ page import="com.cannontech.core.dao.PaoDao" %>
-<%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
-<%@ page import="com.cannontech.cbc.util.CBCUtils" %>
-<%@ page import="com.cannontech.clientutils.CTILogger" %>
-<%@ page import="java.net.URLEncoder" %>
-<%@ page import="org.springframework.web.bind.ServletRequestUtils"%>
-
+<cti:standardPage title="${substation.ccName}" module="capcontrol">
 <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value=""/>
 
-
 <cti:url var="onelineCBCServlet" value="/capcontrol/oneline/OnelineCBCServlet"/>
-<cti:standardPage title="${substation.ccName}" module="capcontrol">
 <%@include file="/capcontrol/cbc_inc.jspf"%>
 
 <!-- necessary DIV element for the OverLIB popup library -->
@@ -126,18 +114,11 @@
    		window.location.href = window.location.href;
    	}
 
-   	function getCapBankTempMoveBack(id, event){
-   	    var url = '/spring/capcontrol/tier/popupmenu?menu=capBankTempMoveBack&id=' + id;
-   	    var redirect = window.location.href;
-		url += '&redirectURL=' + escape(redirect);
-
-   	    getMenuFromURL(url, event);
-   	}
-   	
  </script>
 
 <input type="hidden" id="lastAccessedID" value="${lastAccessed}">
 <input type="hidden" id="fullURL" value="${fullURL}">
+<input type="hidden" id="paoId_${substation.ccId}" value="${substation.ccId}"/>
 <c:choose>
     <c:when test="${hasEditingRole}">
         <c:set var="editInfoImage" value="/editor/images/edit_item.gif"/>
@@ -150,12 +131,8 @@
 		<table id="substationTable" width="100%" cellspacing="0" cellpadding="0">
 			<tr class="columnHeader">
 				<th class="lAlign">Substation Name</th>
-
 				<th class="lAlign">State</th>
 			</tr>
-
-                <input type="hidden" id="paoId_${substation.ccId}" value="${substation.ccId}"/>
-                
                 <tr class="altTableCell" id="tr_substation_${substation.ccId}">
                     <td id="anc_${thisSubStationId}">
                         <a title="Edit" class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${substation.ccId}">
@@ -674,9 +651,6 @@
 		<input type="hidden" id="lastUpdate" value="">
         
 	</ct:abstractContainer>
-    
-
-<capTags:commandMsgDiv/>
-
+    <capTags:commandMsgDiv/>
     <ct:disableUpdaterHighlights/>
 </cti:standardPage>

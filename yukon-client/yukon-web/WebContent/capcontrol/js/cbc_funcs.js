@@ -64,6 +64,13 @@ function getCapBankSystemMenu(id, event) {
     getMenuFromURLAbove(url, event); 
 }
 
+function getCapBankTempMoveBack(id, event){
+    var url = '/spring/capcontrol/tier/popupmenu?menu=capBankTempMoveBack&id=' + id;
+    var redirect = window.location.href;
+    url += '&redirectURL=' + escape(redirect);
+    getMenuFromURL(url, event);
+}
+
 function getMenuFromURL(url, event) {
 	/*
 	 *  In IE the event does not pass through the ajax request

@@ -445,7 +445,7 @@
             <script>showRecentCmds('/capcontrol/tabledata.jsp?type=RC')</script>
           </option>
           <option id="recentcapbankmoves">
-       		<link>/capcontrol/movedCapBanks.jsp</link>  
+       		<link>/spring/capcontrol/move/movedCapBanks</link>  
        	  </option>
        	  <option id="specialareas">
        		<link>/spring/capcontrol/tier/areas?isSpecialArea=true</link>  

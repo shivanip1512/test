@@ -1,8 +1,8 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<cti:includeCss link="/WebConfig/yukon/styles/YukonGeneralStyles.css"/>
 
 <cti:standardPage title="Search Results" module="capcontrol">
+<cti:includeCss link="/WebConfig/yukon/styles/YukonGeneralStyles.css"/>
 
 <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value=""/>
 
