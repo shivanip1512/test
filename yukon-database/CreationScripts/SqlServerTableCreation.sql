@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     6/17/2009 1:24:15 PM                         */
+/* Created on:     6/29/2009 10:00:59 AM                        */
 /*==============================================================*/
 
 
@@ -7737,7 +7737,6 @@ insert into ECToGenericMapping values (-1, 1045, 'YukonSelectionList');
 insert into ECToGenericMapping values (-1, 1046, 'YukonSelectionList');
 insert into ECToGenericMapping values (-1, 1047, 'YukonSelectionList');
 insert into ECToGenericMapping values (-1, 1048, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1049, 'YukonSelectionList');
 insert into ECToGenericMapping values (-1, 1050, 'YukonSelectionList');
 insert into ECToGenericMapping values (-1, 1051, 'YukonSelectionList');
 insert into ECToGenericMapping values (-1, 1052, 'YukonSelectionList');
@@ -11563,14 +11562,6 @@ insert into YukonListEntry values (1232,1020,2,'THERMOSTAT CONTROL',0);
 insert into YukonListEntry values (1233,1020,3,'SAVINGS',0);
 INSERT INTO YukonListEntry VALUES (1224,1019,0,'Circulate',2504); 
 
-insert into YukonListEntry values (1241,1049,1,'1 Day',24);
-insert into YukonListEntry values (1242,1049,2,'2 Days',48);
-insert into YukonListEntry values (1243,1049,3,'3 Days',72);
-insert into YukonListEntry values (1244,1049,4,'4 Days',96);
-insert into YukonListEntry values (1245,1049,5,'5 Days',120);
-insert into YukonListEntry values (1246,1049,6,'6 Days',144);
-insert into YukonListEntry values (1247,1049,7,'7 Days',168);
-
 insert into YukonListEntry values (1251,1050,0,'Last Updated Time',3201);
 insert into YukonListEntry values (1252,1050,0,'Setpoint',3202);
 insert into YukonListEntry values (1253,1050,0,'Fan',3203);
@@ -12201,7 +12192,7 @@ INSERT INTO YukonRoleProperty VALUES(-20153,-201,'Inventory Checking','true','Co
 INSERT INTO YukonRoleProperty VALUES(-20154,-201,'Automatic Configuration','false','Controls whether to automatically send out config command when creating hardware or changing program enrollment');
 INSERT INTO YukonRoleProperty VALUES(-20155,-201,'Order Number Auto Generation','false','Controls whether the order number is automatically generated or entered by user');
 INSERT INTO YukonRoleProperty VALUES(-20156,-201,'Call Number Auto Generation','false','Controls whether the call number is automatically generated or entered by user');
-INSERT INTO YukonRoleProperty VALUES(-20157,-201,'Opt Out Rules','(none)','Defines the rules for opting out.');
+INSERT INTO YukonRoleProperty VALUES(-20157,-201,'Opt Out Period','(none)','Contains information on Opt Out Period.');
 INSERT INTO YukonRoleProperty VALUES(-20158,-201,'Disable Switch Sending','false','Disables the ability to send configs and connects/disconnects to switches.');
 INSERT INTO YukonRoleProperty VALUES(-20159,-201,'Switches to Meter','(none)','Allow switches to be assigned under meters for an account.');
 INSERT INTO YukonRoleProperty VALUES(-20160,-201,'Create Login With Account','false','Require that a login is created with every new customer account.');
@@ -12361,7 +12352,7 @@ INSERT INTO YukonRoleProperty VALUES(-40010,-400,'Thermostats All','false','Cont
 INSERT INTO YukonRoleProperty VALUES(-40011,-400,'Change Login Password','true','Controls access for customers to change their own login password'); 
 INSERT INTO YukonRoleProperty VALUES(-40051,-400,'Hide Opt Out Box','false','Controls whether to show the opt out box on the programs opt out page');
 INSERT INTO YukonRoleProperty VALUES(-40052,-400,'Automatic Configuration','false','Controls whether to automatically send out config command when changing program enrollment');
-INSERT INTO YukonRoleProperty VALUES(-40055,-400,'Opt Out Rules','(none)','Defines the rules for opting out.');
+INSERT INTO YukonRoleProperty VALUES(-40055,-400,'Opt Out Period','(none)','Contains information on Opt Out Period.');
 INSERT INTO YukonRoleProperty VALUES(-40056,-400,'Opt Out Limits',' ','Contains information on Opt Out limits.');
 INSERT INTO YukonRoleProperty VALUES(-40100,-400,'Link FAQ','(none)','The customized FAQ link');
 INSERT INTO YukonRoleProperty VALUES(-40102,-400,'Link Thermostat Instructions','(none)','The customized thermostat instructions link');
@@ -12524,7 +12515,6 @@ insert into YukonSelectionList values (1045,'N','(none)','Heat pump standby sour
 insert into YukonSelectionList values (1046,'N','(none)','Irrigation type selection','IrrigationType','Y');
 insert into YukonSelectionList values (1047,'N','(none)','Irrigation soil type selection','IRRSoilType','Y');
 insert into YukonSelectionList values (1048,'N','(none)','Device location selection','DeviceLocation','N');
-insert into YukonSelectionList values (1049,'O','(none)','Opt out period selection','OptOutPeriod','Y');
 insert into YukonSelectionList values (1050,'N','(none)','Gateway end device data description','GatewayEndDeviceDataDesc','N');
 insert into YukonSelectionList values (1051,'N','(none)','Hardware Inventory search by selection','InvSearchBy','N');
 insert into YukonSelectionList values (1052,'N','(none)','Hardware Inventory sort by selection','InvSortBy','N');
