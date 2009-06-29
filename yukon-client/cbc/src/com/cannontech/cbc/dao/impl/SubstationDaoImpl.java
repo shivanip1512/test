@@ -193,7 +193,7 @@ public class SubstationDaoImpl implements SubstationDao {
 
 	@Override
 	public boolean unassignSubstation(int substationId) {
-		String unassignStationSql = "DELETE FROM CCSUBAREAASSIGNMENT WHERE AND SubstationBusID = ?";
+		String unassignStationSql = "DELETE FROM CCSUBAREAASSIGNMENT WHERE SubstationBusID = ?";
 		
 		int rowsAffected = simpleJdbcTemplate.update(unassignStationSql,substationId);
 		

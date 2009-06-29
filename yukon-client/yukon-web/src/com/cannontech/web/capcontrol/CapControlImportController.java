@@ -199,7 +199,13 @@ public class CapControlImportController {
 	            		area.setName(name);
 	            		area.setDesctiption(description);
 	            		
-	            		capControlCreationService.createArea(area);
+	            		boolean ret = capControlCreationService.createArea(area);
+	            		if (!ret) {
+	            			int id = getPaoIdByName(name);
+            				if (id == -1) {
+            					throw new UnsupportedOperationException(capcontrolType.name() + " failed insert and does not exist. " + name);
+            				}
+	            		}
 	            		break;
 	            	}
 	            	case SUBSTATION: {
@@ -220,13 +226,15 @@ public class CapControlImportController {
             			} else {
             				//If creation failed, check if it already exists to update assignment.
             				int id = getPaoIdByName(name);
+            				
             				if (id == -1) {
             					throw new UnsupportedOperationException(capcontrolType.name() + " failed insert and was not found for re-assigning. " + name + " to " + parent);
             				} else {
+            					substation.setId(id);
             					int parentId = getPaoIdByName(parent);
             					if (parentId == -1) {
             						//unassign the substation and do not re-assign.
-            						capControlCreationService.unassignSubstation(id);
+            						capControlCreationService.unassignSubstation(substation.getId());
             						break;
             					}
             					//Assign will unassign first.
@@ -257,10 +265,11 @@ public class CapControlImportController {
             				if (id == -1) {
             					throw new UnsupportedOperationException(capcontrolType.name() + " failed insert and was not found for re-assigning. " + name + " to " + parent);
             				} else {
+            					subBus.setId(id);
             					int parentId = getPaoIdByName(parent);
             					if (parentId == -1) {
             						//unassign the substation and do not re-assign.
-            						capControlCreationService.unassignSubstationBus(id);
+            						capControlCreationService.unassignSubstationBus(subBus.getId());
             						break;
             					}
             					//Assign will unassign first.
@@ -291,10 +300,11 @@ public class CapControlImportController {
             				if (id == -1) {
             					throw new UnsupportedOperationException(capcontrolType.name() + " failed insert and was not found for re-assigning. " + name + " to " + parent);
             				} else {
+            					feeder.setId(id);
             					int parentId = getPaoIdByName(parent);
             					if (parentId == -1) {
             						//unassign the substation and do not re-assign.
-            						capControlCreationService.unassignFeeder(id);
+            						capControlCreationService.unassignFeeder(feeder.getId());
             						break;
             					}
             					//Assign will unassign first.
@@ -304,7 +314,7 @@ public class CapControlImportController {
 	            		
 	            		break;
 	            	}
-	            	case CAPBANK: {//TODO
+	            	case CAPBANK: {
 	            		Capbank bank = new Capbank();
 	            		bank.setName(name);
 	            		bank.setDescription(description);
@@ -326,10 +336,11 @@ public class CapControlImportController {
             				if (id == -1) {
             					throw new UnsupportedOperationException(capcontrolType.name() + " failed insert and was not found for re-assigning. " + name + " to " + parent);
             				} else {
+            					bank.setId(id);
             					int parentId = getPaoIdByName(parent);
             					if (parentId == -1) {
             						//unassign the substation and do not re-assign.
-            						capControlCreationService.unassignCapbank(id);
+            						capControlCreationService.unassignCapbank(bank.getId());
             						break;
             					}
             					//Assign will unassign first.
@@ -493,7 +504,7 @@ public class CapControlImportController {
 	
 	private CapControlImportType determineImportMethod(String[] header) throws UnsupportedOperationException {
 		
-		//Do stuff to figure out what this file is based on the header row
+		//Figure out what this file is based on the number of header columns
 		if(header.length == hierarchyRequiredColumns.length) {
 			return CapControlImportType.Hierarchy;
 		} else if (header.length == cbcNewDeviceRequiredColumns.length) {
