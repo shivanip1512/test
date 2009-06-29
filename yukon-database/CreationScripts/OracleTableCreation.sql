@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/29/2009 3:22:05 PM                         */
+/* Created on:     6/29/2009 3:55:07 PM                         */
 /*==============================================================*/
 
 
@@ -6876,6 +6876,7 @@ create table PAOScheduleAssignment  (
    ScheduleID           NUMBER                          not null,
    PaoID                NUMBER                          not null,
    Command              VARCHAR2(128)                   not null,
+   PAOScheduleAssignment VARCHAR2(1)                     not null,
    constraint PK_PAOSCHEDULEASSIGNMENT primary key (EventID)
 );
 

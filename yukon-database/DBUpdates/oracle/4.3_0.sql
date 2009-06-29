@@ -46,6 +46,15 @@ ALTER TABLE CCStrategyTimeOfDay ALTER COLUMN WkndPercentClose NUMERIC NOT NULL;
 GO
 /* End YUK-7594 */
 
+/* Start YUK-7498 */
+ALTER TABLE PAOScheduleAssignment ADD DisableOvUv VARCHAR(1);
+GO
+UPDATE PAOScheduleAssignment SET DisableOvUv = 'N';
+GO
+ALTER TABLE PAOScheduleAssignment ALTER COLUMN DisableOvUv VARCHAR(1) NOT NULL; 
+GO
+/* End YUK-7498 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
