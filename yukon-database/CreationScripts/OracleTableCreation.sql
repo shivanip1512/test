@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/29/2009 2:18:44 PM                         */
+/* Created on:     6/29/2009 3:22:05 PM                         */
 /*==============================================================*/
 
 
@@ -1616,6 +1616,7 @@ create table CCSTRATEGYTIMEOFDAY  (
    StrategyID           NUMBER                          not null,
    StartTimeSeconds     NUMBER                          not null,
    PercentClose         NUMBER                          not null,
+   WkndPercentClose     NUMBER                          not null,
    constraint PK_STRAT_TOD primary key (StrategyID, StartTimeSeconds)
 );
 

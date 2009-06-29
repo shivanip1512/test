@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     6/29/2009 2:21:04 PM                         */
+/* Created on:     6/29/2009 3:18:25 PM                         */
 /*==============================================================*/
 
 
@@ -4157,6 +4157,7 @@ create table CCSTRATEGYTIMEOFDAY (
    StrategyID           numeric              not null,
    StartTimeSeconds     numeric              not null,
    PercentClose         numeric              not null,
+   WkndPercentClose     numeric              not null,
    constraint PK_STRAT_TOD primary key (StrategyID, StartTimeSeconds)
 )
 go

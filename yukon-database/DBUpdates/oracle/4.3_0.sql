@@ -37,6 +37,15 @@ WHERE RolePropertyId = -1600;
 INSERT INTO YukonRoleProperty VALUES (-21308,-213,'Add/Remove Points','false','Controls access to Add/Remove Points mass change action.');
 /* End YUK-7461 */
 
+/* Start YUK-7594 */
+ALTER TABLE CCStrategyTimeOfDay ADD WkndPercentClose NUMERIC;
+GO
+UPDATE CCStrategyTimeOfDay SET WkndPercentClose = 0;
+GO
+ALTER TABLE CCStrategyTimeOfDay ALTER COLUMN WkndPercentClose NUMERIC NOT NULL;
+GO
+/* End YUK-7594 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
