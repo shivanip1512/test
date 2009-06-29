@@ -33,6 +33,10 @@ SET Description = 'Defines a Yukon Pao (Device) Name field alias. Valid values(0
 WHERE RolePropertyId = -1600;
 /* End YUK-7618 */
 
+/* Start YUK-7618 */
+INSERT INTO YukonRoleProperty VALUES (-21308,-213,'Add/Remove Points','false','Controls access to Add/Remove Points mass change action.');
+/* End YUK-7618 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
