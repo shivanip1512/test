@@ -55,6 +55,12 @@ ALTER TABLE PAOScheduleAssignment ALTER COLUMN DisableOvUv VARCHAR(1) NOT NULL;
 GO
 /* End YUK-7498 */
 
+/* Start YUK-6623 */
+UPDATE Command 
+SET Command = 'putconfig xcom temp service enable', Label = 'Temp Out-Of-Service Cancel' 
+WHERE CommandId = -69;
+/* End YUK-6623 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

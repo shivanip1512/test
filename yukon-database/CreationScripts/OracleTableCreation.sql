@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/29/2009 3:55:07 PM                         */
+/* Created on:     6/29/2009 4:27:54 PM                         */
 /*==============================================================*/
 
 
@@ -2237,28 +2237,28 @@ INSERT INTO Command VALUES(-49, 'putconfig led yyy', 'Configure LEDS (load, test
 /* insert into command values(-50, 'loop', '1 TCU Loop', 'All TCUs'); */
 /* insert into command values(-51, 'loop 5', '5 TCU Loops', 'All TCUs'); */
 /* Repeater-BASE */
-insert into command values(-52, 'getconfig role 1', 'Read Roles', 'All Repeaters');
-insert into command values(-53, 'putconfig emetcon install', 'Download All Roles', 'All Repeaters');
-insert into command values(-54, 'loop locate', 'Locate Device', 'All Repeaters');
+INSERT INTO Command VALUES(-52, 'getconfig role 1', 'Read Roles', 'All Repeaters');
+INSERT INTO Command VALUES(-53, 'putconfig emetcon install', 'Download All Roles', 'All Repeaters');
+INSERT INTO Command VALUES(-54, 'loop locate', 'Locate Device', 'All Repeaters');
 /* ION-BASE */
-insert into command values(-55, 'scan general', 'Scan Status Points', 'All ION Meters');
-insert into command values(-56, 'scan integrity', 'Scan Power Meter and Status', 'All ION Meters');
-insert into command values(-57, 'getstatus eventlog', 'Retrieve Event Log', 'All ION Meters');
+INSERT INTO Command VALUES(-55, 'scan general', 'Scan Status Points', 'All ION Meters');
+INSERT INTO Command VALUES(-56, 'scan integrity', 'Scan Power Meter and Status', 'All ION Meters');
+INSERT INTO Command VALUES(-57, 'getstatus eventlog', 'Retrieve Event Log', 'All ION Meters');
 /* IEDAlpha-BASE */
-insert into command values(-58, 'putconfig emetcon ied class 72 1', 'Set Current Period (Alpha)', 'DEVICE');
-insert into command values(-59, 'putconfig emetcon ied class 72 2', 'Set Previous Period (Alpha)', 'DEVICE');
+INSERT INTO Command VALUES(-58, 'putconfig emetcon ied class 72 1', 'Set Current Period (Alpha)', 'DEVICE');
+INSERT INTO Command VALUES(-59, 'putconfig emetcon ied class 72 2', 'Set Previous Period (Alpha)', 'DEVICE');
 /* EDGEKV-BASE */
-insert into command values(-60, 'getvalue ied demand', 'Read IED Volts', 'DEVICE');
-insert into command values(-61, 'putconfig emetcon ied class 0 0', 'Set Current Period (GEKV)', 'DEVICE');
-insert into command values(-62, 'putconfig emetcon ied class 0 1', 'Set Previous Period (GEKV)', 'DEVICE');
+INSERT INTO Command VALUES(-60, 'getvalue ied demand', 'Read IED Volts', 'DEVICE');
+INSERT INTO Command VALUES(-61, 'putconfig emetcon ied class 0 0', 'Set Current Period (GEKV)', 'DEVICE');
+INSERT INTO Command VALUES(-62, 'putconfig emetcon ied class 0 1', 'Set Previous Period (GEKV)', 'DEVICE');
 /* ExpresscomSerial */
-insert into command values(-63, 'putconfig xcom raw 0x30 0x00 0x02 0x58', 'Cold Load Pickup (load, time x 0.5sec)', 'ExpresscomSerial');
-insert into command values(-64, 'putstatus xcom prop inc', 'Increment Prop Counter', 'ExpresscomSerial');
-insert into command values(-65, 'putconfig xcom raw 0x05 0x00', 'Turn Off Test Light', 'ExpresscomSerial');
-insert into command values(-66, 'putconfig xcom main 0x01 0x40', 'Clear Prop Counter', 'ExpresscomSerial');
-insert into command values(-67, 'putconfig xcom main 0x01 0x80', 'Clear Comm Loss Counter', 'ExpresscomSerial');
-insert into command values(-68, 'putconfig xcom service out temp offhours 24', 'Temp Out-Of-Service (hours)', 'ExpresscomSerial');
-insert into command values(-69, 'putconfig xcom service in', 'In-Service', 'ExpresscomSerial');
+INSERT INTO Command VALUES(-63, 'putconfig xcom raw 0x30 0x00 0x02 0x58', 'Cold Load Pickup (load, time x 0.5sec)', 'ExpresscomSerial');
+INSERT INTO Command VALUES(-64, 'putstatus xcom prop inc', 'Increment Prop Counter', 'ExpresscomSerial');
+INSERT INTO Command VALUES(-65, 'putconfig xcom raw 0x05 0x00', 'Turn Off Test Light', 'ExpresscomSerial');
+INSERT INTO Command VALUES(-66, 'putconfig xcom main 0x01 0x40', 'Clear Prop Counter', 'ExpresscomSerial');
+INSERT INTO Command VALUES(-67, 'putconfig xcom main 0x01 0x80', 'Clear Comm Loss Counter', 'ExpresscomSerial');
+INSERT INTO Command VALUES(-68, 'putconfig xcom service out temp offhours 24', 'Temp Out-Of-Service (hours)', 'ExpresscomSerial');
+INSERT INTO Command VALUES(-69, 'putconfig xcom temp service enable', 'Temp Out-Of-Service Cancel', 'ExpresscomSerial');
 
 /* LCRSerial */
 INSERT INTO Command VALUES(-70, 'putconfig cycle r1 50', 'Install Cycle Count', 'LCRSerial');
