@@ -38,15 +38,21 @@ INSERT INTO YukonRoleProperty VALUES (-21308,-213,'Add/Remove Points','false','C
 /* End YUK-7461 */
 
 /* Start YUK-7594 */
-ALTER TABLE CCStrategyTimeOfDay ADD WkndPercentClose NUMBER;
+ALTER TABLE CCStrategyTimeOfDay ADD WkndPercentClose NUMERIC;
+GO
 UPDATE CCStrategyTimeOfDay SET WkndPercentClose = 0;
-ALTER TABLE CCStrategyTimeOfDay MODIFY WkndPercentClose NUMBER NOT NULL;
+GO
+ALTER TABLE CCStrategyTimeOfDay ALTER COLUMN WkndPercentClose NUMERIC NOT NULL;
+GO
 /* End YUK-7594 */
 
 /* Start YUK-7498 */
-ALTER TABLE PAOScheduleAssignment ADD DisableOvUv VARCHAR2(1);
+ALTER TABLE PAOScheduleAssignment ADD DisableOvUv VARCHAR(1);
+GO
 UPDATE PAOScheduleAssignment SET DisableOvUv = 'N';
-ALTER TABLE PAOScheduleAssignment MODIFY DisableOvUv VARCHAR2(1) NOT NULL; 
+GO
+ALTER TABLE PAOScheduleAssignment ALTER COLUMN DisableOvUv VARCHAR(1) NOT NULL; 
+GO
 /* End YUK-7498 */
 
 /* Start YUK-6623 */
