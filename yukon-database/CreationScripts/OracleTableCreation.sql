@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/29/2009 4:27:54 PM                         */
+/* Created on:     6/29/2009 5:03:44 PM                         */
 /*==============================================================*/
 
 
@@ -11891,11 +11891,12 @@ alter table MACSimpleSchedule
       references MACSchedule (ScheduleID);
 
 alter table MCTBroadCastMapping
-   add constraint FK_MCTB_MAPDEV foreign key (MCTBroadCastID)
-      references DEVICE (DEVICEID);
+   add constraint FK_MCTBCM_Device_MCTId foreign key (MctID)
+      references DEVICE (DEVICEID)
+      on delete cascade;
 
 alter table MCTBroadCastMapping
-   add constraint FK_MCTB_MAPMCT foreign key (MctID)
+   add constraint FK_MCTB_MAPDEV foreign key (MCTBroadCastID)
       references DEVICE (DEVICEID);
 
 alter table MCTConfigMapping

@@ -55,6 +55,15 @@ SET Command = 'putconfig xcom temp service enable', Label = 'Temp Out-Of-Service
 WHERE CommandId = -69;
 /* End YUK-6623 */
 
+/* Start YUK-7587 */
+ALTER TABLE MCTBroadCastMapping
+   DROP CONSTRAINT FK_MCTB_MAPMCT;
+ALTER TABLE MCTBroadCastMapping
+   ADD CONSTRAINT FK_MCTBCM_Device_MCTId FOREIGN KEY (MCTId)
+      REFERENCES Device (DeviceId)
+         ON DELETE CASCADE;
+/* End YUK-7587 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     6/29/2009 4:31:39 PM                         */
+/* Created on:     6/29/2009 5:02:08 PM                         */
 /*==============================================================*/
 
 
@@ -15298,12 +15298,13 @@ alter table MACSimpleSchedule
 go
 
 alter table MCTBroadCastMapping
-   add constraint FK_MCTB_MAPDEV foreign key (MCTBroadCastID)
+   add constraint FK_MCTBCM_Device_MCTId foreign key (MctID)
       references DEVICE (DEVICEID)
+         on delete cascade
 go
 
 alter table MCTBroadCastMapping
-   add constraint FK_MCTB_MAPMCT foreign key (MctID)
+   add constraint FK_MCTB_MAPDEV foreign key (MCTBroadCastID)
       references DEVICE (DEVICEID)
 go
 
