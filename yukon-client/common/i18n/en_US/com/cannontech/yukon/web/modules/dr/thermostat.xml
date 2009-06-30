@@ -89,13 +89,31 @@
     <entry key="yukon.dr.operator.scheduleHints.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
     <entry key="yukon.dr.operator.scheduleHints.back">Back to Schedule</entry>
     <entry key="yukon.dr.operator.scheduleHints.hint"><![CDATA[
-        <p>The schedule page allows you to set your ongoing temperature schedule. Four time frames are available for weekdays (Monday through Friday), Saturdays, and Sundays. Within each of these time frames, you may select your cooling and heating temperatures. Simply use the following procedures.</p>
-        <p><b>1)</b> Click<b> Weekday</b>, <b>Saturday</b>, or <b>Sunday</b> for the day(s) you would like to set. If you prefer to use the same settings for all days, set the<b> Weekday</b> page and check <b>Apply settings to Saturday and Sunday</b>.</p>
-        <p><b>2)</b> The utility recommended settings are displayed the first time the page is accessed. If at any time you would like to redisplay these settings, click the <b>Recommended Settings</b> button.</p>
-        <p><b>3)</b> Select<b> Cooling</b> or <b>Heating</b>. When <b>Cooling</b> is selected, the blue Cooling arrows are displayed to the left of each thermostat, while the Heating arrows are grayed to the right. When <b>Heating</b> is selected, the red Heating arrows are displayed to the right of each thermostat, while the Cooling arrows are grayed to the left.</p>
-        <p><b>4)</b> Slide the thermostats across the timeline to change time intervals for<b> Wake (W)</b>, <b>Leave (L)</b>, <b>Return (R)</b>, and<b> Sleep (S)</b>. Time frames are the same for both Cooling and Heating. Each of the time frames should be set to 1/2 hour before you would like the temperature to reach the selected level. Times may be entered directly in the text boxes.</p>
-        <p><b>5)</b> Slide the enabled (red or blue) arrows to the temperature you would like. The temperature is displayed at the top of each thermostat for each time frame. Temperatures may be set differently for Cooling and Heating.</p>
-        <p><b>6)</b> If you would like to temporarily change your thermostat, click on the<b> Manual</b> link at left or at the link provided at the top of the page. This page is also a convenient location for holding a temperature for a short amount of time that is different from your regular schedule. You may use this feature, for example, while away on vacation or while you have visiting guests.</p>
+        <p>The schedule page allows you to set your ongoing temperature schedule.
+           Four time frames are available for weekdays (Monday through Friday),
+           Saturdays, and Sundays. Within each of these time frames, you may
+           select your cooling and heating temperatures. Simply use the
+           following procedures.</p>
+        <p><b>1)</b> Click <b>Weekday</b>, <b>Saturday</b>, or <b>Sunday</b> for
+           the day(s) you would like to set.</p>
+        <p><b>2)</b> The utility recommended settings are displayed the first
+           time the page is accessed. If at any time you would like to redisplay
+           these settings, click the <b>Recommended Settings</b> button.</p>
+        <p><b>3)</b> Slide the thermostats across the timeline to change time
+           intervals for<b> Wake (W)</b>, <b>Leave (L)</b>, <b>Return (R)</b>,
+           and<b> Sleep (S)</b>. Each of the time frames should be set to 1/2
+           hour before you would like the temperature to reach the selected
+           level. Times may be entered directly in the text boxes.</p>
+        <p><b>4)</b> Slide the enabled (red or blue) arrows to the temperature
+           you would like. The temperature is displayed at the top of each
+           thermostat for each time frame. Temperatures may be set differently
+           for Cooling and Heating.</p>
+        <p><b>5)</b> If you would like to temporarily change your thermostat,
+           click on the<b> Manual</b> link at left or at the link provided at
+           the top of the page. This page is also a convenient location for
+           holding a temperature for a short amount of time that is different
+           from your regular schedule. You may use this feature, for example,
+           while away on vacation or while you have visiting guests.</p>
     ]]></entry>
     
     <!--  thermostatSchedule.jsp -->
