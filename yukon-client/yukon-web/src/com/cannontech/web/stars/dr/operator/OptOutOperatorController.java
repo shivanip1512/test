@@ -213,8 +213,8 @@ public class OptOutOperatorController {
     			yukonUserContext,
     			"yukon.dr.operator.optoutconfirm.question.");
     	if (questions.size() == 0) {
-    		return "redirect:/spring/stars/consumer/optout/doOptOut?startDate=" + startDate
-				+ "&duration=" + durationInDays + "&inventoryIds=" + jsonInventoryIds;
+            return "redirect:/spring/stars/operator/optout/update?startDate=" + startDate
+                + "&durationInDays=" + durationInDays + "&jsonInventoryIds=" + jsonInventoryIds;
     	}
     	
 		return "redirect:/operator/Consumer/OptOutQuestions.jsp?startDate=" + startDate
