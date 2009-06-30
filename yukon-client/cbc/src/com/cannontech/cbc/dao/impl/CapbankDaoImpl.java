@@ -409,17 +409,29 @@ public class CapbankDaoImpl implements CapbankDao {
 
 	@Override
 	public boolean assignCapbank(int feederId, int capbankId) {
-		ControlOrder controlOrder = generateControlOrder(feederId);
-    	String insertAssignmentSql = "INSERT INTO CCFeederBankList " 
-    		 + "(FeederID,DeviceID,ControlOrder,CloseOrder,TripOrder) VALUES (?,?,?,?,?)";
-    	
+		String adjustTripOrders = "UPDATE CCFeederBankList SET TripOrder = TripOrder+1 WHERE FeederId = ?";
+    	String insert = "INSERT INTO CCFeederBankList(FeederID,DeviceID,ControlOrder,CloseOrder,TripOrder) ";
+		String assignmentsExist = " Select ?,?,MAX(ControlOrder)+1,MAX(CloseOrder)+1,1 " 
+    		 + "From CCFeederBankList WHERE FeederId = ?";
+		String firstAssignment = " VALUES (?,?,1,1,1)"; 
+		
 		//remove any existing assignment
     	unassignCapbank(capbankId);
     	
-		int rowsAffected = simpleJdbcTemplate.update(insertAssignmentSql,
-				feederId, capbankId, controlOrder.controlOrder,
-				controlOrder.closeOrder, controlOrder.tripOrder);
-		
+    	//Check if any assignments exist.
+    	int rowsAffected = 0;
+    	int count = simpleJdbcTemplate.queryForInt("SELECT count(FeederID) FROM CCFeederBankList WHERE FeederId=?", feederId);
+    	
+    	if (count > 0) {
+	    	//Change trip orders to +1 so the new one can be 1
+			simpleJdbcTemplate.update(adjustTripOrders,feederId);
+			
+			//Insert new assignment
+			rowsAffected = simpleJdbcTemplate.update(insert + assignmentsExist,feederId,capbankId,feederId);
+    	} else {
+    		//This is the first assignment. Insert with defaults
+    		rowsAffected = simpleJdbcTemplate.update(insert + firstAssignment,feederId,capbankId);
+    	}
 		boolean result = (rowsAffected == 1);
 		return result;
 	}
@@ -437,15 +449,5 @@ public class CapbankDaoImpl implements CapbankDao {
 		
 		boolean result = (rowsAffected == 1);
 		return result;
-	}
-	
-	private ControlOrder generateControlOrder(int feederId) {
-		ControlOrder order = new ControlOrder();
-		
-		order.controlOrder = 0;
-		order.closeOrder = 0;
-		order.tripOrder = 0;
-		
-		return order;
 	}
 }
