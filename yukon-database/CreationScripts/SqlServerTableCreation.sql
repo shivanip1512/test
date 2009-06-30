@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     6/29/2009 5:02:08 PM                         */
+/* Created on:     6/30/2009 1:12:33 PM                         */
 /*==============================================================*/
 
 
@@ -9722,7 +9722,7 @@ create table PAOScheduleAssignment (
    ScheduleID           numeric              not null,
    PaoID                numeric              not null,
    Command              varchar(128)         not null,
-   PAOScheduleAssignment varchar(1)           not null,
+   DisableOvUv          varchar(1)           not null,
    constraint PK_PAOSCHEDULEASSIGNMENT primary key (EventID)
 )
 go
