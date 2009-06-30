@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/30/2009 1:10:36 PM                         */
+/* Created on:     6/30/2009 1:45:33 PM                         */
 /*==============================================================*/
 
 
@@ -438,8 +438,6 @@ drop table DCItemType cascade constraints;
 drop table DCItemValue cascade constraints;
 
 drop table DEVICE cascade constraints;
-
-drop table DEVICE2WAYFLAGS cascade constraints;
 
 drop table DEVICECARRIERSETTINGS cascade constraints;
 
@@ -2753,21 +2751,6 @@ create table DEVICE  (
 );
 
 INSERT into device values (0, 'N', 'N');
-
-/*==============================================================*/
-/* Table: DEVICE2WAYFLAGS                                       */
-/*==============================================================*/
-create table DEVICE2WAYFLAGS  (
-   DEVICEID             NUMBER                          not null,
-   MONTHLYSTATS         VARCHAR2(1)                     not null,
-   TWENTYFOURHOURSTATS  VARCHAR2(1)                     not null,
-   HOURLYSTATS          VARCHAR2(1)                     not null,
-   FAILUREALARM         VARCHAR2(1)                     not null,
-   PERFORMANCETHRESHOLD NUMBER                          not null,
-   PERFORMANCEALARM     VARCHAR2(1)                     not null,
-   PERFORMANCETWENTYFOURALARM VARCHAR2(1)                     not null,
-   constraint PK_DEVICE2WAYFLAGS primary key (DEVICEID)
-);
 
 /*==============================================================*/
 /* Table: DEVICECARRIERSETTINGS                                 */
@@ -10911,10 +10894,6 @@ alter table DEVICE
    add constraint FK_Dev_YukPAO foreign key (DEVICEID)
       references YukonPAObject (PAObjectID);
 
-alter table DEVICE2WAYFLAGS
-   add constraint SYS_C0013208 foreign key (DEVICEID)
-      references DEVICE (DEVICEID);
-
 alter table DEVICECARRIERSETTINGS
    add constraint SYS_C0013216 foreign key (DEVICEID)
       references DEVICE (DEVICEID);
@@ -11118,8 +11097,8 @@ alter table DeviceRoutes
       references Route (RouteID);
 
 alter table DeviceSeries5RTU
-   add constraint FK_DvS5r_Dv2w foreign key (DeviceID)
-      references DEVICE2WAYFLAGS (DEVICEID);
+   add constraint FK_DeviceSer5RTU_Device foreign key (DeviceID)
+      references DEVICE (DEVICEID);
 
 alter table DeviceTNPPSettings
    add constraint FK_DevTNPP_Dev foreign key (DeviceID)

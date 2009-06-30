@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     6/30/2009 1:12:33 PM                         */
+/* Created on:     6/30/2009 1:42:13 PM                         */
 /*==============================================================*/
 
 
@@ -1696,13 +1696,6 @@ if exists (select 1
            where  id = object_id('DEVICE')
             and   type = 'U')
    drop table DEVICE
-go
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('DEVICE2WAYFLAGS')
-            and   type = 'U')
-   drop table DEVICE2WAYFLAGS
 go
 
 if exists (select 1
@@ -5378,22 +5371,6 @@ create table DEVICE (
 go
 
 INSERT into device values (0, 'N', 'N');
-
-/*==============================================================*/
-/* Table: DEVICE2WAYFLAGS                                       */
-/*==============================================================*/
-create table DEVICE2WAYFLAGS (
-   DEVICEID             numeric              not null,
-   MONTHLYSTATS         varchar(1)           not null,
-   TWENTYFOURHOURSTATS  varchar(1)           not null,
-   HOURLYSTATS          varchar(1)           not null,
-   FAILUREALARM         varchar(1)           not null,
-   PERFORMANCETHRESHOLD numeric              not null,
-   PERFORMANCEALARM     varchar(1)           not null,
-   PERFORMANCETWENTYFOURALARM varchar(1)           not null,
-   constraint PK_DEVICE2WAYFLAGS primary key (DEVICEID)
-)
-go
 
 /*==============================================================*/
 /* Table: DEVICECARRIERSETTINGS                                 */
@@ -14078,11 +14055,6 @@ alter table DEVICE
       references YukonPAObject (PAObjectID)
 go
 
-alter table DEVICE2WAYFLAGS
-   add constraint SYS_C0013208 foreign key (DEVICEID)
-      references DEVICE (DEVICEID)
-go
-
 alter table DEVICECARRIERSETTINGS
    add constraint SYS_C0013216 foreign key (DEVICEID)
       references DEVICE (DEVICEID)
@@ -14335,8 +14307,8 @@ alter table DeviceRoutes
 go
 
 alter table DeviceSeries5RTU
-   add constraint FK_DvS5r_Dv2w foreign key (DeviceID)
-      references DEVICE2WAYFLAGS (DEVICEID)
+   add constraint FK_DeviceSer5RTU_Device foreign key (DeviceID)
+      references DEVICE (DEVICEID)
 go
 
 alter table DeviceTNPPSettings

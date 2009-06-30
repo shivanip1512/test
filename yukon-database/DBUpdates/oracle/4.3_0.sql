@@ -64,6 +64,17 @@ ALTER TABLE MCTBroadCastMapping
          ON DELETE CASCADE;
 /* End YUK-7587 */
 
+/* Start YUK-7404 */
+ALTER TABLE DeviceSeries5RTU
+    DROP Constraint FK_DvS5r_Dv2w;
+    
+ALTER TABLE DeviceSeries5RTU
+   ADD CONSTRAINT FK_DeviceSer5RTU_Device FOREIGN KEY (DeviceId)
+      REFERENCES Device (DeviceId);
+
+DROP TABLE Device2WayFlags;
+/* End YUK-7404 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
