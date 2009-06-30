@@ -5815,7 +5815,7 @@ void CtiVanGogh::VGAppMonitorThread()
                 rwSleep(5000);//5 second sleep
 
                 //Check thread watcher status
-                if((LastThreadMonitorTime.now().minute() - LastThreadMonitorTime.minute()) >= 1)
+                if((LastThreadMonitorTime.now().seconds() - LastThreadMonitorTime.seconds()) >= 60)
                 {
                     if(pointID!=0)
                     {
