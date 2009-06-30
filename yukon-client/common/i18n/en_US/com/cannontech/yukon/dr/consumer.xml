@@ -397,9 +397,11 @@
     <entry key="yukon.dr.consumer.optoutconfirm.description">Please complete the following form to opt out of your program:</entry>
     <entry key="yukon.dr.consumer.optoutconfirm.save">Opt Out</entry>
     <entry key="yukon.dr.consumer.optoutconfirm.cancel">Cancel</entry>
+    <!--
     <entry key="yukon.dr.consumer.optoutconfirm.question.1">Question 1</entry>
     <entry key="yukon.dr.consumer.optoutconfirm.question.2">Question 2</entry>
     <entry key="yukon.dr.consumer.optoutconfirm.question.3">Question 3</entry>
+    -->
     
     <!-- optOutResult.jsp -->
     <entry key="yukon.dr.consumer.optoutresult.header">Opt Out Result</entry>
