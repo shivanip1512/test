@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/30/2009 1:45:33 PM                         */
+/* Created on:     6/30/2009 2:07:19 PM                         */
 /*==============================================================*/
 
 
@@ -9290,6 +9290,7 @@ INSERT INTO YukonRoleProperty VALUES(-20212,-202,'CIS Info Type','NONE','Defines
 INSERT INTO YukonRoleProperty VALUES(-20600,-206,'View Drawings','true','Controls viewing of Esubstations drawings');
 INSERT INTO YukonRoleProperty VALUES(-20601,-206,'Edit Limits','false','Controls editing of point limits');
 INSERT INTO YukonRoleProperty VALUES(-20602,-206,'Control','false','Controls control from Esubstation drawings');
+INSERT INTO YukonRoleProperty VALUES(-20603,-206,'Esub Home URL','/esub/sublist.html','The url of the starting page for esubstation. Usually the sublist page.');
 
 /* Odds For Control Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-20700,-207,'Odds For Control Label','Odds for Control','The operator specific name for odds for control');

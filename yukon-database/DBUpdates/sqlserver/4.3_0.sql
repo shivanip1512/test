@@ -84,6 +84,10 @@ GO
 DROP TABLE Device2WayFlags;
 /* End YUK-7404 */
 
+/* Start YUK-7384 */
+INSERT INTO YukonRoleProperty VALUES(-20603,-206,'Esub Home URL','/esub/sublist.html','The url of the starting page for esubstation. Usually the sublist page.');
+/* End YUK-7384 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
