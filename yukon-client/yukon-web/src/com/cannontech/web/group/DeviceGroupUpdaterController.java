@@ -145,7 +145,7 @@ public class DeviceGroupUpdaterController {
 	            	Set<BulkFieldColumnHeader> identifierFields = bulkFieldService.getUpdateIdentifierBulkFieldColumnHeaders();
 	            	error = "Error (line 1): Invalid header column. Identifier types: " + StringUtils.join(identifierFields, " ,") + ". Header types: " + StringUtils.join(DeviceGroupUpdaterColumn.values(), " ,");
 	            } catch (NotFoundException e) {
-	            	error = e.getMessage() + ". Check spelling, or use the the Create Groups option if you would like groups to be created if they do not yet exist.";
+	            	error = e.getMessage() + ". Please check the spelling, or if you would like groups to automatically be created if they do not exist, check the Create Groups option.";
 	            } finally {
 	        		csvReader.close();
 	        	}

@@ -79,7 +79,7 @@
 							Descriptions of the two column header types are listed in the table below.
 						</li><br>
 						<li>Rows are processed top to bottom, columns are processed left to right.</li><br>
-						<li>Groups will be automatically be created if they do not yet exist.</li>
+						<li>Groups will automatically be created if they do not yet exist.</li>
                     </ul>
                     
                     <%-- sample files --%>
