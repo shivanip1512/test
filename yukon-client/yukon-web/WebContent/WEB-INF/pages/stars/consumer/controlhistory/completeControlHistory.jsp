@@ -60,7 +60,7 @@
         <tr>
             <td align="right">
                 <br>
-                <input type="button" value="Back" onclick="javascript:location.href='${controlHistoryView}';"/>
+                <input type="button" value="<cti:msg key="yukon.dr.consumer.completecontrolhistory.back"/>" onclick="javascript:location.href='${controlHistoryView}';"/>
             </td>
         </tr>            
     </table>
