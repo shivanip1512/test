@@ -670,7 +670,7 @@ public boolean isInputValid()
 		int endDay = d.getSeasonEndDay().intValue();
 		
 		//if the days are in the same month, then doublecheck for proper chronology
-		if(startMonth == endMonth && endDay < startDay)
+ 		if(startMonth == endMonth && endDay < startDay)
 		{			
 			setErrorString("Row " + (i + 1) + " contains an improperly defined season.  The end day must be later than the start day.");
 			return false;
@@ -686,8 +686,12 @@ public boolean isInputValid()
 
 			//If the next season starts before this one ends, or if it is
 			//a December to January jump, then make sure there is no overlap
-			
-			if(startMonth < nextEndMonth && nextEndMonth < endMonth && startMonth > 1) {
+			if(startMonth == nextStartMonth && endMonth == nextEndMonth && 
+			   startDay == nextStartDay && endDay == nextEndDay) {
+			    setErrorString("Rows " + (i + 1) + " and " + (j+ 1) + " contain seasons that are identical.  Seasons can't overlap in a season schedule." );
+                return false;
+			}
+			if(startMonth <= nextEndMonth && nextEndMonth < endMonth && startMonth > 1) {
 			    setErrorString("Rows " + (i + 1) + " and " + (j+ 1) + " contain seasons that overlap.  Seasons can't overlap in a season schedule." );
                 return false;
 			}
