@@ -5,7 +5,7 @@
 
 <div style="background: white;">
     <input type="hidden" id="commentPaoName" value="${paoName}"/>
-    <table width="295px">
+    <table width="334px">
         <tr>
             <td>Enter a comment for this operation.</td>
         </tr>

@@ -136,7 +136,7 @@ function showReasonPopup(html, up, x, y) {
 	popupDiv.setStyle({
 		top: y + "px",
 		left: x + "px",
-		width: 307 + "px"
+		width: 350 + "px"
 	});
 }
 
