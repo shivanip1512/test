@@ -59,15 +59,15 @@
 			<table id="areaTable" width="100%" border="0" cellspacing="0" cellpadding="0" >
 			<thead>
 			<tr class="columnHeader lAlign">                
-                <th>Area Name</th>
-                <th width="2%"></th>
-                <th>State</th>
-                <th>Setup</th>
-                <th>Available<br/> kVARS</th>
-                <th>Unavailable <br/>kVARS</th>
-                <th>Closed <br/>kVARS</th>
-                <th>Tripped <br/>kVARS</th>
-                <th>PFactor/Est.</th>
+                <th style="text-align: left;">Area Name</th>
+                <th width="2%" style="text-align: left;"></th>
+                <th style="text-align: left;">State</th>
+                <th style="text-align: left;">Setup</th>
+                <th style="text-align: left;">Available<br/> kVARS</th>
+                <th style="text-align: left;">Unavailable <br/>kVARS</th>
+                <th style="text-align: left;">Closed <br/>kVARS</th>
+                <th style="text-align: left;">Tripped <br/>kVARS</th>
+                <th style="text-align: left;">PFactor/Est.</th>
         	</tr>
         	</thead>
         	<tbody>
