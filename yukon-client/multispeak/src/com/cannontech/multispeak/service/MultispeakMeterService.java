@@ -15,6 +15,7 @@ import com.cannontech.multispeak.deploy.service.ConnectDisconnectEvent;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
 import com.cannontech.multispeak.deploy.service.LoadActionCode;
 import com.cannontech.multispeak.deploy.service.Meter;
+import com.cannontech.multispeak.deploy.service.MeterGroup;
 import com.cannontech.multispeak.deploy.service.MeterRead;
 import com.cannontech.multispeak.deploy.service.ServiceLocation;
 
@@ -156,4 +157,26 @@ public interface MultispeakMeterService {
      */
     public ErrorObject[] changeMeterObject(final MultispeakVendor mspVendor, Meter[] changedMeters) throws RemoteException;
 
+    /**
+     * Adds meters to a group.  If the group doesn't exist, a new group will be created
+     * @param meterGroup
+     * @return
+     */
+    public ErrorObject[] addMetersToGroup(MeterGroup meterGroup, MultispeakVendor mspVendor);
+    
+    /**
+     * Removes all meters from groupName.
+	 * TODO - Should the group be deleted too?
+     * @param groupName
+     * @return
+     */
+    public ErrorObject[] removeMetersFromGroup(String groupName, String[] meterNumbers, MultispeakVendor mspVendor);
+    
+    /**
+     * Removed meters from groupName AND deletes groupName from the system.
+     * @param groupName
+     * @param mspVendor
+     * @return
+     */
+    public ErrorObject deleteGroup(String groupName, MultispeakVendor mspVendor);
 }

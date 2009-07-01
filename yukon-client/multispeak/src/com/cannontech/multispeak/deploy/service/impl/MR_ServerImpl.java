@@ -101,7 +101,11 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
                                          "cancelUsageMonitoring",
                                          "initiateDisconnectedStatus",
                                          "cancelDisconnectedStatus",
-                                         "serviceLocationChangedNotification"};          
+                                         "serviceLocationChangedNotification",
+                                         "deleteMeterGroup",
+                                         "establishMeterGroup",
+                                         "insertMeterInMeterGroup",
+                                         "removeMetersFromMeterGroup"};
         return multispeakFuncs.getMethods(MultispeakDefines.MR_Server_STR , methods);
     }
     
@@ -356,14 +360,17 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     public ErrorObject deleteMeterGroup(String meterGroupID)
             throws RemoteException {
         init();
-        return null;
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        return multispeakMeterService.deleteGroup(meterGroupID, vendor);
     }
 
     @Override
     public ErrorObject[] establishMeterGroup(MeterGroup meterGroup)
             throws RemoteException {
         init();
-        return null;
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        ErrorObject[] errorObject = multispeakMeterService.addMetersToGroup(meterGroup, vendor);
+        return errorObject;
     }
 
     @Override
@@ -384,7 +391,12 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     public ErrorObject[] insertMeterInMeterGroup(String[] meterNumbers,
             String meterGroupID) throws RemoteException {
         init();
-        return null;
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        MeterGroup meterGroup = new MeterGroup();
+        meterGroup.setMeterList(meterNumbers);
+        meterGroup.setGroupName(meterGroupID);
+        ErrorObject[] errorObject = multispeakMeterService.addMetersToGroup(meterGroup, vendor);
+        return errorObject;
     }
 
     @Override
@@ -405,7 +417,9 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     public ErrorObject[] removeMetersFromMeterGroup(String[] meterNumbers,
             String meterGroupID) throws RemoteException {
         init();
-        return null;
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        ErrorObject[] errorObject = multispeakMeterService.removeMetersFromGroup(meterGroupID, meterNumbers, vendor);
+        return errorObject;
     }
 
     @Override
