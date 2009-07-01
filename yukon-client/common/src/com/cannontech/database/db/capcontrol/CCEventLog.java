@@ -25,7 +25,7 @@ private Long seqId;
 private Long value;
 private String text;
 private String userName;
-
+private String formattedTimestamp;
 
 public Date getDateTime() {
 	return dateTime;
@@ -120,11 +120,21 @@ public Date getTimestamp() {
     return dateTime;
 }
 
+public String getFormattedTimestamp() {
+    return formattedTimestamp;
+}
+
+public void setFormattedTimestamp(String formattedTimestamp) {
+    this.formattedTimestamp = formattedTimestamp;
+}
+
 public String getUser() {
     return userName;
 }
 
-
+public String getDeviceControlled() {
+    return DaoFactory.getPaoDao().getYukonPAOName(DaoFactory.getPointDao().getLitePoint(getPointId().intValue()).getPaobjectID());
+}
 
 
 

@@ -442,7 +442,7 @@
             <link>/spring/capcontrol/scheduleAssignments/schedule</link>
           </option>
           <option id="recentcontrols">
-            <script>showRecentCmds('/capcontrol/tabledata.jsp?type=RC')</script>
+            <script>showRecentCmds('recentControls')</script>
           </option>
           <option id="recentcapbankmoves">
        		<link>/spring/capcontrol/move/movedCapBanks</link>  

@@ -231,9 +231,6 @@ table.miniResultsTableLeft td {
     border: 1px solid #ccc;
 }
 
-
-
-
 /* Compact Result Table - TOP*/
 table.compactResultsTable {
 	width: 95%;
@@ -612,4 +609,3 @@ span.progressBarPercentComplete {
 span.progressBarCompletedCount {
     font-size:11px;display:inline;
 }
-

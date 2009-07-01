@@ -432,7 +432,6 @@ function createURLreq( elems, initialURL, attrib ) {
             initialURL += lastID;
         }
     }
-
     return initialURL;
 }
 
@@ -606,13 +605,12 @@ function showRecentCmds( baseUrl )
     getValidChecks( elemSubs, validElems );
     getValidChecks( elemFdrs, validElems );
     getValidChecks( elemBanks, validElems );
-
     var url = createURLreq( validElems, baseUrl, 'value' );
-    window.location = url;
+    window.location.href = '/spring/capcontrol/search/' + url;
 }
 
 function showRecentCmdsForSingle( baseUrl, id ){
-	window.location = baseUrl + '&value=' + id;
+	window.location.href = baseUrl + '?value=' + id;
 }
 
 // -------------------------------------------

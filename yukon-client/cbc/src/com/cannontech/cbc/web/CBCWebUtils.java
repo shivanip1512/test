@@ -492,9 +492,9 @@ public static synchronized String genGraphWattURL(int id, CapControlCache capCon
 	}
 	
 	@SuppressWarnings("unchecked")
-    public static List<RecentControls> getCCEventsForPAO (Long _paoId_, String type, CapControlCache theCache, int prevDaysCount) {
+    public static List<CCEventLog> getCCEventsForPAO (Long _paoId_, String type, CapControlCache theCache, int prevDaysCount) {
         String sqlStmt ="SELECT * FROM " + CCEventLog.TABLE_NAME + " WHERE"; 
-        List<RecentControls> ccEvents = new ArrayList<RecentControls>();
+        List<CCEventLog> ccEvents = new ArrayList<CCEventLog>();
         long startTS = ServletUtil.getDate(- prevDaysCount).getTime();
         java.sql.Timestamp timestamp = new java.sql.Timestamp( startTS );
                 

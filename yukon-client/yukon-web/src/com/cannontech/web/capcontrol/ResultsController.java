@@ -1,6 +1,7 @@
 package com.cannontech.web.capcontrol;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,6 +11,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.cannontech.cbc.cache.CapControlCache;
+import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.cbc.dao.CapbankControllerDao;
 import com.cannontech.cbc.dao.CapbankDao;
 import com.cannontech.cbc.dao.FeederDao;
@@ -22,27 +25,39 @@ import com.cannontech.cbc.web.CCSessionInfo;
 import com.cannontech.cbc.web.ParentStringPrinter;
 import com.cannontech.cbc.web.ParentStringPrinterFactory;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.db.capcontrol.CCEventLog;
+import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ParamUtil;
+import com.cannontech.web.capcontrol.models.ControlEventSet;
 import com.cannontech.web.capcontrol.models.ResultRow;
 import com.cannontech.web.lite.LiteBaseResults;
 import com.cannontech.web.lite.LiteWrapper;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.yukon.cbc.StreamableCapObject;
 
 @Controller
 @RequestMapping("/search/*")
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
 public class ResultsController {
+    
+    private FilterCacheFactory cacheFactory;
     private SubstationBusDao substationBusDao;
     private SubstationDao substationDao;
     private FeederDao feederDao;
     private CapbankDao capbankDao;
     private CapbankControllerDao cbcDao;
+    private PaoDao paoDao;
     private ParentStringPrinterFactory printerFactory;
+    private DateFormattingService dateFormattingService; 
 
     @RequestMapping
     public ModelAndView results(HttpServletRequest request, LiteYukonUser user) {
@@ -144,6 +159,41 @@ public class ResultsController {
         CBCNavigationUtil.setNavigation(requestURI , request.getSession());
         return mav;
     }
+
+    @RequestMapping
+    public ModelAndView recentControls(HttpServletRequest request, LiteYukonUser user) {
+        final ModelAndView mav = new ModelAndView();
+        CapControlCache filterCapControlCache = cacheFactory.createUserAccessFilteredCache(user);
+        YukonUserContext context = YukonUserContextUtils.getYukonUserContext(request);
+        Integer MAX_DAYS_CNT = 7;   
+        String[] strPaoids = ParamUtil.getStrings(request, "value");
+        int dayCnt = ParamUtil.getInteger(request, "dayCnt", 1);
+        List<ControlEventSet>  listOfEventSets = new ArrayList<ControlEventSet>();
+        
+        for( int i = 0; i < strPaoids.length; i++ ) {
+            int id = Integer.parseInt( strPaoids[i] );
+            StreamableCapObject cbcPAO = filterCapControlCache.getCapControlPAO(new Integer(id));
+
+            if( cbcPAO != null ) {
+                List<CCEventLog> events= CBCWebUtils.getCCEventsForPAO(new Long (id), cbcPAO.getCcType(), filterCapControlCache, dayCnt);
+                for(CCEventLog event : events) {
+                    String formattedTimestamp = dateFormattingService.formatDate(event.getTimestamp(), DateFormatEnum.BOTH, context);
+                    event.setFormattedTimestamp(formattedTimestamp);
+                }
+                ControlEventSet set = new ControlEventSet(id, events);
+                String paoName = paoDao.getLiteYukonPAO(id).getPaoName();
+                set.setPaoName(paoName);
+                listOfEventSets.add(set);
+            }
+        }
+        
+        mav.addObject("dayCnt", new Integer(dayCnt));
+        mav.addObject("MAX_DAYS_CNT", MAX_DAYS_CNT);
+        mav.addObject("paoIdString", Arrays.toString( strPaoids));
+        mav.addObject("listOfEventSets", listOfEventSets);
+        mav.setViewName("search/recentControls.jsp");
+        return mav;
+    }
     
     @Autowired
     public void setParentStringPrinterFactory(ParentStringPrinterFactory printerFactory) {
@@ -173,5 +223,20 @@ public class ResultsController {
     @Autowired
     public void setCapbankControllerDao(CapbankControllerDao capbankControllerDao) {
         this.cbcDao = capbankControllerDao;
+    }
+    
+    @Autowired
+    public void setPaoDao(PaoDao paoDao) {
+        this.paoDao = paoDao;
+    }
+    
+    @Autowired
+    public void setDateFormattingService(DateFormattingService dateFormattingService) {
+        this.dateFormattingService = dateFormattingService;
+    }
+    
+    @Autowired
+    public void setFilterCacheFactory (FilterCacheFactory filterCacheFactory) {
+        this.cacheFactory = filterCacheFactory;
     }
 }
