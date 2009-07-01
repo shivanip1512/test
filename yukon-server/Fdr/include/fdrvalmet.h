@@ -245,13 +245,18 @@ class IM_EX_FDRVALMET CtiFDR_Valmet : public CtiFDRSingleSocket
         USHORT      YukonToForeignQuality (USHORT aQuality);
         USHORT      YukonToForeignStatus (int aStatus);
 
-        bool translateAndUpdatePoint(CtiFDRPointSPtr & translationPoint, int aIndex);
+        virtual void signalReloadList();
+        virtual void signalPointRemoved(string &pointName);
 
+        bool translateAndUpdatePoint(CtiFDRPointSPtr & translationPoint, int aIndex);
 
         enum {  Valmet_Invalid = 0,
                 Valmet_Open = 1,
                 Valmet_Closed=2,
                 Valmet_Indeterminate=3};
+
+        private:
+            std::map<string,int> nameToPointId;
 
 };
 

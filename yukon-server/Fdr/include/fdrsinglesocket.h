@@ -224,6 +224,10 @@ class IM_EX_FDRBASE CtiFDRSingleSocket : public CtiFDRSocketInterface
         virtual bool translateAndUpdatePoint(CtiFDRPointSPtr & translationPoint, int aIndex)=0;
         
         virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send=false);
+        virtual void cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool recvList);
+
+        virtual void signalReloadList();
+        virtual void signalPointRemoved(string &pointName);
 
         virtual int processValueMessage(CHAR *data);
         virtual int processStatusMessage(CHAR *data);

@@ -299,6 +299,9 @@ bool CtiFDRSingleSocket::loadList(string &aDirection,  CtiFDRPointList &aList)
             if (((pointList->entries() == 0) && (aList.getPointList()->entries() <= 2)) ||
                 (pointList->entries() > 0))
             {
+                // Signal the list reload to anyone who cares.
+                signalReloadList();
+
                 // get iterator on list
                 CtiFDRManager::spiterator myIterator = pointList->getMap().begin();
 
@@ -365,6 +368,16 @@ bool CtiFDRSingleSocket::loadList(string &aDirection,  CtiFDRPointList &aList)
     return successful;
 }
 
+void CtiFDRSingleSocket::signalReloadList()
+{
+    //Do nothing by default
+}
+
+void CtiFDRSingleSocket::signalPointRemoved(string &pointName)
+{
+    //do Nothing by default
+}
+
 bool CtiFDRSingleSocket::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send)
 {
     bool successful = false;
@@ -384,6 +397,29 @@ bool CtiFDRSingleSocket::translateSinglePoint(CtiFDRPointSPtr & translationPoint
     }
 
     return successful;
+}
+
+void CtiFDRSingleSocket::cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool recvList)
+{
+    if (recvList)
+    {
+        if (translationPoint.get() == NULL)
+        {
+            return;
+        }
+
+        int size = translationPoint->getDestinationList().size();
+        for ( int i = 0 ; i < size; i++) {
+            string str = translationPoint->getDestinationList()[i].getTranslation();
+            if (str != "")
+            {
+                std::transform(str.begin(), str.end(), str.begin(), toupper);
+                signalPointRemoved(str);
+            }
+        }
+    }
+
+    return;
 }
 
 void CtiFDRSingleSocket::setCurrentClientLinkStates()
