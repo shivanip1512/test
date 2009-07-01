@@ -20,7 +20,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.util.ParamUtil;
 import com.cannontech.web.capcontrol.models.MovedBank;
-import com.cannontech.web.capcontrol.models.ViewableArea;
+import com.cannontech.web.capcontrol.models.SimpleArea;
 import com.cannontech.web.capcontrol.util.CapControlWebUtils;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.yukon.cbc.CCArea;
@@ -45,8 +45,8 @@ public class BankMoveController {
         int bankId = ParamUtil.getInteger(request, "bankid");
         int subBusId = 0;
         boolean oneline = ParamUtil.getBoolean(request,"oneline",false);
-        List<ViewableArea> viewableAreas = CapControlWebUtils.createViewableAreas(filterCapControlCache.getCbcAreas(), filterCapControlCache, false);
-        mav.addObject("allAreas", viewableAreas);
+        List<SimpleArea> simpleAreas = CapControlWebUtils.buildSimpleHierarchy();
+        mav.addObject("allAreas", simpleAreas);
         CapBankDevice capBank = filterCapControlCache.getCapBankDevice( new Integer(bankId) );
         
         int oldFeederId = 0;

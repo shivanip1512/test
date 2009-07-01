@@ -10,11 +10,17 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.web.capcontrol.models.SimpleArea;
+import com.cannontech.web.capcontrol.models.SimpleCapBank;
+import com.cannontech.web.capcontrol.models.SimpleFeeder;
+import com.cannontech.web.capcontrol.models.SimpleSubstation;
+import com.cannontech.web.capcontrol.models.SimpleSubstationBus;
 import com.cannontech.web.capcontrol.models.ViewableArea;
 import com.cannontech.web.capcontrol.models.ViewableCapBank;
 import com.cannontech.web.capcontrol.models.ViewableFeeder;
 import com.cannontech.web.capcontrol.models.ViewableSubBus;
 import com.cannontech.web.capcontrol.models.ViewableSubStation;
+import com.cannontech.yukon.cbc.CCArea;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.StreamableCapObject;
@@ -23,14 +29,14 @@ import com.cannontech.yukon.cbc.SubStation;
 
 public class CapControlWebUtils {
     
-    public static List<ViewableSubBus> createViewableSubBus(List<SubBus> subBusList, CapControlCache cache) {
+    public static List<ViewableSubBus> createViewableSubBus(List<SubBus> subBusList) {
         List<ViewableSubBus> viewableList = new ArrayList<ViewableSubBus>(subBusList.size());
         PointDao pointDao = YukonSpringHook.getBean("pointDao", PointDao.class);
+        
         for(SubBus subBus: subBusList) {
             ViewableSubBus viewable = new ViewableSubBus();
             viewable.setSubBus(subBus);
-            List<ViewableFeeder> viewableFeeders = createViewableFeeder(cache.getFeedersBySubBus(subBus.getCcId()), cache);
-            viewable.setFeeders(viewableFeeders);
+            
             if(subBus.getCurrentVarLoadPointID() != 0) {
                 LitePoint point = pointDao.getLitePoint(subBus.getCurrentVarLoadPointID());
                 viewable.setVarPoint(point);
@@ -49,6 +55,7 @@ public class CapControlWebUtils {
         
         return viewableList;
     }
+
     
     public static List<ViewableFeeder> createViewableFeeder(List<Feeder> feeders, CapControlCache cache) {
         List<ViewableFeeder> viewableList = new ArrayList<ViewableFeeder>(feeders.size());
@@ -56,8 +63,7 @@ public class CapControlWebUtils {
         for (Feeder feeder: feeders) {
             String subBusName = cache.getSubBusNameForFeeder(feeder);
             ViewableFeeder viewable = new ViewableFeeder();
-            List<ViewableCapBank> viewableCapbanks = createViewableCapBank(cache.getCapBanksByFeeder(feeder.getCcId()));
-            viewable.setCapBanks(viewableCapbanks);
+            
             viewable.setFeeder(feeder);
             viewable.setSubBusName(subBusName);
             
@@ -70,7 +76,6 @@ public class CapControlWebUtils {
     public static List<ViewableCapBank> createViewableCapBank(List<CapBankDevice> capBanks) {
         List<ViewableCapBank> viewableList = new ArrayList<ViewableCapBank>(capBanks.size());
         PaoDao paoDao = YukonSpringHook.getBean("paoDao", PaoDao.class);
-        
         for (CapBankDevice cbc: capBanks) {
             LiteYukonPAObject controller = paoDao.getLiteYukonPAO(cbc.getControlDeviceID());
             ViewableCapBank viewable = new ViewableCapBank();
@@ -114,20 +119,76 @@ public class CapControlWebUtils {
         
         for(SubStation subStation : subStations) {
             ViewableSubStation viewable = new ViewableSubStation();
-            List<ViewableSubBus> subBuses = createViewableSubBus(cache.getSubBusesBySubStation(subStation), cache) ;
             List<CapBankDevice> capBanks = cache.getCapBanksBySubStation(subStation);
             List<Feeder> feeders = cache.getFeedersBySubStation(subStation);
             
-            viewable.setSubstation(subStation);
             viewable.setSubStationName(subStation.getCcName());
             viewable.setFeederCount(feeders.size());
             viewable.setCapBankCount(capBanks.size());
-            viewable.setSubBuses(subBuses);
             
             viewableList.add(viewable);
         }
         
         return viewableList;
     }
+
+    public static List<SimpleArea> buildSimpleHierarchy(){
+        List<SimpleArea> areas = new ArrayList<SimpleArea>();
+        CapControlCache cache = YukonSpringHook.getBean("capControlCache", CapControlCache.class);
+        for(CCArea area : cache.getCbcAreas()) {
+            SimpleArea simpleArea = new SimpleArea(getSimpleSubstations(area));
+            simpleArea.setName(area.getCcName());
+            simpleArea.setId(area.getCcId());
+            areas.add(simpleArea);
+        }
+        return areas;
+    }
     
+    public static List<SimpleSubstation> getSimpleSubstations(CCArea area){
+        List<SimpleSubstation> substations = new ArrayList<SimpleSubstation>();
+        CapControlCache cache = YukonSpringHook.getBean("capControlCache", CapControlCache.class);
+        for(SubStation substation : cache.getSubstationsByArea(area.getCcId())) {
+            SimpleSubstation simpleSubstation = new SimpleSubstation(getSimpleSubstationBuses(substation));
+            simpleSubstation.setName(substation.getCcName());
+            simpleSubstation.setId(substation.getCcId());
+            substations.add(simpleSubstation);
+        }
+        return substations;
+    }
+    
+    public static List<SimpleSubstationBus> getSimpleSubstationBuses(SubStation substation){
+        List<SimpleSubstationBus> substationBuses = new ArrayList<SimpleSubstationBus>();
+        CapControlCache cache = YukonSpringHook.getBean("capControlCache", CapControlCache.class);
+        for(SubBus substationBus : cache.getSubBusesBySubStation(substation)) {
+            SimpleSubstationBus simpleSubstationBus = new SimpleSubstationBus(getSimpleFeeders(substationBus));
+            simpleSubstationBus.setName(substationBus.getCcName());
+            simpleSubstationBus.setId(substationBus.getCcId());
+            substationBuses.add(simpleSubstationBus);
+        }
+        return substationBuses;
+    }
+    
+    public static List<SimpleFeeder> getSimpleFeeders(SubBus subBus){
+        List<SimpleFeeder> feeders = new ArrayList<SimpleFeeder>();
+        CapControlCache cache = YukonSpringHook.getBean("capControlCache", CapControlCache.class);
+        for(Feeder feeder : cache.getFeedersBySubBus(subBus.getCcId())) {
+            SimpleFeeder simpleFeeder = new SimpleFeeder(getSimpleCapBanks(feeder));
+            simpleFeeder.setName(feeder.getCcName());
+            simpleFeeder.setId(feeder.getCcId());
+            feeders.add(simpleFeeder);
+        }
+        return feeders;
+    }
+    
+    public static List<SimpleCapBank> getSimpleCapBanks(Feeder feeder){
+        List<SimpleCapBank> capbanks = new ArrayList<SimpleCapBank>();
+        CapControlCache cache = YukonSpringHook.getBean("capControlCache", CapControlCache.class);
+        for(CapBankDevice capBank : cache.getCapBanksByFeeder(feeder.getCcId())) {
+            SimpleCapBank simpleCapBank = new SimpleCapBank();
+            simpleCapBank.setName(capBank.getCcName());
+            simpleCapBank.setId(capBank.getCcId());
+            capbanks.add(simpleCapBank);
+        }
+        return capbanks;
+    }
 }

@@ -99,26 +99,26 @@ Event.observe(window, 'load', updateFeederBankInfo, false);
         <div style="margin-left: 2%; margin-right: 2%;  padding-bottom:2%; padding-top:2%;">
             <ct:abstractContainer type="box" title="Feeders Eligible for the Move | Select a feeder below:" hideEnabled="false">
                 <div style=" height: 275px; overflow: auto;">
-                    <c:forEach var="viewableArea" items="${allAreas}">
+                    <c:forEach var="simpleArea" items="${allAreas}">
                         <div>
-                            <img id="chkBxArea${viewableArea.area.ccId}"src="/capcontrol/images/nav-plus.gif" onclick="showDiv('areaId${viewableArea.area.ccId}');toggleExpandImg('chkBxArea${viewableArea.area.ccId}');"/>
-                            ${viewableArea.area.paoName}
-                            <div class="tableCell" style="display:none" id="areaId${viewableArea.area.ccId}">
-                                <c:forEach var="viewableStation" items="${viewableArea.subStations}">
+                            <img id="chkBxArea${simpleArea.id}"src="/capcontrol/images/nav-plus.gif" onclick="showDiv('areaId${simpleArea.id}');toggleExpandImg('chkBxArea${simpleArea.id}');"/>
+                            ${simpleArea.name}
+                            <div class="tableCell" style="display:none" id="areaId${simpleArea.id}">
+                                <c:forEach var="simpleStation" items="${simpleArea.substations}">
                                     <div>       
-                                        <img class="lIndent" id="chkBxStation${viewableStation.substation.ccId}" src="/capcontrol/images/nav-plus.gif" onclick="showDiv( 'stationId${viewableStation.substation.ccId}' );toggleExpandImg( 'chkBxStation${viewableStation.substation.ccId}');"/>
-                                        ${viewableStation.subStationName}
-                                        <div class="tableCell" style="display:none" id="stationId${viewableStation.substation.ccId}">
-                                            <c:forEach var="viewableSubBus" items="${viewableStation.subBuses}">
+                                        <img class="lIndent" id="chkBxStation${simpleStation.id}" src="/capcontrol/images/nav-plus.gif" onclick="showDiv( 'stationId${simpleStation.id}' );toggleExpandImg( 'chkBxStation${simpleStation.id}');"/>
+                                        ${simpleStation.name}
+                                        <div class="tableCell" style="display:none" id="stationId${simpleStation.id}">
+                                            <c:forEach var="simpleSubBus" items="${simpleStation.substationBuses}">
                                                 <div>
-                                                    <img class="llIndent" id="chkBxSub${viewableSubBus.subBus.ccId}" src="/capcontrol/images/nav-plus.gif" onclick="showDiv( 'subId${viewableSubBus.subBus.ccId}' );toggleExpandImg('chkBxSub${viewableSubBus.subBus.ccId}');"/>
-                                                    ${viewableSubBus.subBus.ccName}
-                                                    <div class="altTableCell" style="display:none" id="subId${viewableSubBus.subBus.ccId}">
-                                                        <c:forEach var="viewableFeeder" items="${viewableSubBus.feeders}">
-                                                            <c:if test="${!(viewableFeeder.feeder.ccId == oldFeederId)}">
+                                                    <img class="llIndent" id="chkBxSub${simpleSubBus.id}" src="/capcontrol/images/nav-plus.gif" onclick="showDiv( 'subId${simpleSubBus.id}' );toggleExpandImg('chkBxSub${simpleSubBus.id}');"/>
+                                                    ${simpleSubBus.name}
+                                                    <div class="altTableCell" style="display:none" id="subId${simpleSubBus.id}">
+                                                        <c:forEach var="simpleFeeder" items="${simpleSubBus.feeders}">
+                                                            <c:if test="${!(simpleFeeder.id == oldFeederId)}">
                                                                 <div>
-                                                                    <input class="capbankTempMoveLink" type="radio" name="feeder" id="feederId${viewableFeeder.feeder.ccId}"onclick="selectFeeder(${viewableFeeder.feeder.ccId});"/>
-                                                                    ${viewableFeeder.feeder.ccName}
+                                                                    <input class="capbankTempMoveLink" type="radio" name="feeder" id="feederId${simpleFeeder.id}" onclick="selectFeeder(${simpleFeeder.id});"/>
+                                                                    ${simpleFeeder.name}
                                                                 </div>
                                                             </c:if>
                                                         </c:forEach>

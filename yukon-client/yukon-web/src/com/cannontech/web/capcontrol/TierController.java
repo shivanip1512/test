@@ -152,7 +152,7 @@ public class TierController {
 		
 		List<SubBus> subBusList = cache.getSubBusesBySubStation(substation);
 		Collections.sort(subBusList, CBCUtils.SUB_DISPLAY_COMPARATOR);
-		List<ViewableSubBus> viewableSubBusList = CapControlWebUtils.createViewableSubBus(subBusList, cache);
+		List<ViewableSubBus> viewableSubBusList = CapControlWebUtils.createViewableSubBus(subBusList);
 		mav.addAttribute("subBusList", viewableSubBusList);
 		
 		List<Feeder> feederList = cache.getFeedersBySubStation(substation);
