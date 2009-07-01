@@ -170,7 +170,7 @@ Event.observe(window, 'load', function() {
 							<option value="${schedule.scheduleID}">${schedule.scheduleName}</option> 
 						</c:when>
 						<c:when test="${param.defSchedule == schedule.scheduleID}"> 
-							<option value="${schedule.scheduleID}" selected >${schedule.scheduleName}</option> 
+							<option value="${schedule.scheduleID}" selected="selected" >${schedule.scheduleName}</option> 
 						</c:when>
 					</c:choose>
 					
@@ -185,7 +185,7 @@ Event.observe(window, 'load', function() {
 							<option value="${command}">${command.commandName}</option>
 						</c:when>
 						<c:when test="${param.defCommand == command}">
-							<option value="${command}" selected >${command.commandName}</option>
+							<option value="${command}" selected="selected" >${command.commandName}</option>
 						</c:when>
 					</c:choose>
 				</c:forEach>
@@ -213,7 +213,7 @@ Event.observe(window, 'load', function() {
 			</thead>
 			<tbody id="tableBody">
 			<c:forEach var="item" items="${itemList}">
-				<tr class="altRow" id="s_${item.eventId}" >
+				<tr class="<tags:alternateRow odd="" even="altRow"/>" id="s_${item.eventId}" >
 					<td id="schedRow" style="display:none"/>
 					<td><c:out value="${item.scheduleName}" /></td>
 					<td><cti:formatDate value="${item.lastRunTime}" type="DATEHM" /></td>
