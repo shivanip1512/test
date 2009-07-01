@@ -33,7 +33,7 @@
                 <th>Cap Bank</th>
             </tr>
 			<c:forEach var="movedCapbank" items="${movedCaps}">
-				<tr id="tr_cap_${movedCapbank.capbank.ccId}">
+				<tr id="tr_cap_${movedCapbank.capbank.ccId}" class="<ct:alternateRow odd="" even="altRow"/>">
 					<td id="${movedCapbank.capbank.ccName}">
                            <a href="javascript:void(0);" style="color: #F09100;cursor: help;" ${popupEvent}="getCapBankTempMoveBack('${movedCapbank.capbank.ccId}', event)">
                                ${movedCapbank.currentFeederName}
