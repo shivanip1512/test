@@ -64,6 +64,7 @@
 										<x:commandLink id="ptLink" value="#{node.description}"
 											actionListener="#{capControlForm.pointTreeForm.pointClick}">
 											<f:param name="ptID" value="#{node.identifier}" />
+											<f:param name="tabId" value="6"/>
 										</x:commandLink>
 									</x:panelGroup>
 								</f:facet>
@@ -78,11 +79,14 @@
 
 				<x:commandLink id="addPtLnk" value="Add Point" actionListener="#{capControlForm.pointTreeForm.addPointClick}" rendered="#{capControlForm.editingAuthorized}">
 					<f:param name="parentId" value="#{capControlForm.pointTreeForm.pao.PAObjectID}" />
+					<f:param name="tabId" value="6"/>
 				</x:commandLink>
 
                 <x:outputText value=" | " rendered="#{capControlForm.editingAuthorized}"/>
 
-				<x:commandLink id="deletePtLnk" value="Delete Point" actionListener="#{capControlForm.pointTreeForm.deletePointClick}" rendered="#{capControlForm.editingAuthorized}"/>
+				<x:commandLink id="deletePtLnk" value="Delete Point" actionListener="#{capControlForm.pointTreeForm.deletePointClick}" rendered="#{capControlForm.editingAuthorized}">
+				    <f:param name="tabId" value="6"/>
+				</x:commandLink>
 
 			</h:column>
 

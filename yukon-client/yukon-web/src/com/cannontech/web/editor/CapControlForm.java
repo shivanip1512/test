@@ -680,6 +680,11 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
            else {
                setEditingController(false);
            }
+           if(getDbPersistent() instanceof CapBank) {
+               CapBankEditorForm editor = (CapBankEditorForm) JSFParamUtil.getJSFVar("capBankEditor");
+               editor.resetForm();
+               editor.init(getPAOBase());
+           }
            initDataModel(getDbPersistent());
            initPanels(PAOGroups.getPAOType(((YukonPAObject) getDbPersistent()).getPAOCategory(), ((YukonPAObject) getDbPersistent()).getPAOType()));
         } else if (getDbPersistent() instanceof PointBase) {

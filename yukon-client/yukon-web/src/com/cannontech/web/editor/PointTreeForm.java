@@ -28,6 +28,7 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
+import com.cannontech.web.editor.point.PointForm;
 import com.cannontech.web.util.JSFParamUtil;
 import com.cannontech.web.util.JSFTreeUtils;
 
@@ -169,6 +170,8 @@ public class PointTreeForm {
             String location = red + val;            
             //bookmark the current page
             HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
+            CapControlForm form = (CapControlForm) session.getAttribute("capControlForm");
+            form.setTab(ae);
             CBCNavigationUtil.bookmarkLocationAndRedirect(location, session);
             //go to the next page
             FacesContext.getCurrentInstance().getExternalContext().redirect(location);
@@ -189,6 +192,10 @@ public class PointTreeForm {
         try {
             String val = JSFParamUtil.getJSFReqParam("parentId");
             HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
+            CapControlForm form = (CapControlForm) session.getAttribute("capControlForm");
+            PointForm pointForm = (PointForm)JSFParamUtil.getJSFVar( "ptEditorForm" );
+            pointForm.resetForm();
+            form.setTab(ae);
             String location = "pointWizBase.jsf?parentId=" + val;
             CBCNavigationUtil.bookmarkLocationAndRedirect(location,session);            
             FacesContext.getCurrentInstance().getExternalContext().redirect(location);
@@ -215,6 +222,8 @@ public class PointTreeForm {
                 attribVal += "value=" + point.getLiteID() + "&";
             }
             HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
+            CapControlForm form = (CapControlForm) session.getAttribute("capControlForm");
+            form.setTab(ae);
             String location = "deleteBasePoint.jsf?" + attribVal;
             CBCNavigationUtil.bookmarkLocationAndRedirect(location,session);            
             FacesContext.getCurrentInstance().getExternalContext().redirect(location);

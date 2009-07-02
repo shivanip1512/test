@@ -190,15 +190,13 @@ public abstract class DBEditorForm {
             return null;
 
         try {
-            conn = PoolManager.getInstance()
-                              .getConnection(CtiUtilities.getDatabaseAlias());
+            conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
             getDbPersistent().setDbConnection(conn);
             getDbPersistent().retrieve();
         } catch (SQLException sql) {
             CTILogger.error("Unable to retrieve DB Object", sql);
         } finally {
             getDbPersistent().setDbConnection(null);
-
             try {
                 if (conn != null)
                     conn.close();

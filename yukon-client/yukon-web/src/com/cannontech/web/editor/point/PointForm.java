@@ -339,24 +339,20 @@ public class PointForm extends DBEditorForm
      * 
      */
     public void resetForm() {
-        
         emailNotifcations = null;
         stateGroups = null;
         initialStates = null;
         notifGroups = null;
         alarmCategories = null;
-    
         isArchiveInterEnabled = false;
         isCalcRateEnabled = false;
         alarmTableEntries = null;
-
         pointLimitEntry = null;
         pointFDREntry = null;
         pointStatusEntry = null;
-        
         staleData = null;
+        getWizData().reset();
 
-        initItem();
     }
     
     

@@ -585,7 +585,12 @@ public class CapBankEditorForm extends DBEditorForm {
     }
 
     public void resetForm() {
-        initAdditionalInfo();
+        additionalInfo = null;
+        unassignedPoints = null;
+        assignedPoints = null;
+        monitorPointsVector = null;
+        controller = null;
+        capBank = null;
     }
 
     public boolean isCustomSize() {

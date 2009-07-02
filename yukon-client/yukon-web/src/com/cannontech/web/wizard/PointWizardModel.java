@@ -65,6 +65,12 @@ public class PointWizardModel {
     public void setParentId(Integer parentId) {
         this.parentId = parentId;
     }
-
     
+    public void reset() {
+        name = null;
+        disabled = new Boolean(false);
+        pointType = new Integer (PointTypes.INVALID_POINT);
+        subType = PointTypes.CALCULATED_POINT;
+        parentId = new Integer (0);
+    }
 }
