@@ -165,8 +165,7 @@ public interface MultispeakMeterService {
     public ErrorObject[] addMetersToGroup(MeterGroup meterGroup, MultispeakVendor mspVendor);
     
     /**
-     * Removes all meters from groupName.
-	 * TODO - Should the group be deleted too?
+     * Removes meterNumbers from groupName.
      * @param groupName
      * @return
      */

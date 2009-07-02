@@ -831,7 +831,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 	    			YukonDevice yukonDevice = deviceDao.getYukonDeviceObjectByMeterNumber(meterNumber);
 	    			yukonDevices.add(yukonDevice);
 	    		}catch (EmptyResultDataAccessException e) {
-	    			ErrorObject errorObject = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "addMetersToGroup", mspVendor.getCompanyName());
+	    			ErrorObject errorObject = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "removeMetersFromGroup", mspVendor.getCompanyName());
 	    			errorObjects.add(errorObject);
 	    		}
 	    	}
