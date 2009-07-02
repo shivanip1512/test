@@ -1278,9 +1278,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 			initItem(itemID, editorType);
 			
             //create points for the CBC702x or CBC DNP device   
-            if (dbObj instanceof CapBankController702x 
-            		|| dbObj instanceof CapBankControllerDNP
-            		|| dbObj instanceof CapBankController701x){
+            if (dbObj instanceof CapBankController702x || dbObj instanceof CapBankControllerDNP){
                 DBPersistent pointVector = CBCPointFactory.createPointsForCBCDevice((YukonPAObject)dbObj);
                 CBControllerEditor.insertPointsIntoDB(pointVector);  
             }
