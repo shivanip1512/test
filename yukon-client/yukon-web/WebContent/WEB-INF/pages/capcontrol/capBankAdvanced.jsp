@@ -4,11 +4,6 @@
 <%@ page import="com.cannontech.web.editor.CapControlForm"%>
 <%@ page import="com.cannontech.web.editor.CapBankEditorForm"%>
 <%@ page import="com.cannontech.web.util.JSFParamUtil"%>
-<%
-    //CapControlForm capControlForm = (CapControlForm) JSFParamUtil.getJSFVar("capControlForm");
-    //CapBankEditorForm editor = (CapBankEditorForm) JSFParamUtil.getJSFVar("capBankEditor");
-    //editor.init(capControlForm.getPAOBase());
-%>
 <f:verbatim>
 	<script type="text/javascript">
         function checkAdaptiveCount(el) {
