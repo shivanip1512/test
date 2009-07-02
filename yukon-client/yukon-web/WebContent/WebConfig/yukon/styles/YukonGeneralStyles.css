@@ -1,3 +1,11 @@
+.altTableCell {
+    background-color: #eeeeee;
+}
+
+.tableCell {
+    background-color: white;
+}
+
 h2 { /*Page Header*/
   margin: 0;
 }

@@ -60,7 +60,7 @@ public class ResultsController {
     private DateFormattingService dateFormattingService; 
 
     @RequestMapping
-    public ModelAndView results(HttpServletRequest request, LiteYukonUser user) {
+    public ModelAndView searchResults(HttpServletRequest request, LiteYukonUser user) {
         final ModelAndView mav = new ModelAndView();
         ParentStringPrinter psp = printerFactory.createParentStringPrinter(request);
         String srchCriteria = ParamUtil.getString(request, CCSessionInfo.STR_LAST_SEARCH, null);

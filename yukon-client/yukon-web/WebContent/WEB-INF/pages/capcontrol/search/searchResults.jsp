@@ -1,5 +1,6 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 
 <cti:standardPage title="Search Results" module="capcontrol">
 <cti:includeCss link="/WebConfig/yukon/styles/YukonGeneralStyles.css"/>
@@ -28,7 +29,7 @@
                 <th>Parent</th>
             </tr>
             <c:forEach items="${rows}" var="row">
-                <tr height="18px" valign="middle" style="vertical-align : middle;">
+                <tr height="18px" valign="middle" style="vertical-align : middle;"  class="<ct:alternateRow odd="altTableCell" even="tableCell"/>">
                     <td width="80px" nowrap="nowrap">
                         <c:choose>
                             <c:when test="${row.paobject}">
