@@ -1,6 +1,9 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
+<c:url var="delete" value="/WebConfig/yukon/Icons/stop.gif"/>
+<c:url var="deleteOver" value="/WebConfig/yukon/Icons/stop_over.gif"/>
+
 <%-- THE LIST OF ONGOING/PENDING PROFILE REQUESTS --%>
 <div id="${divId}">
 
@@ -50,7 +53,7 @@
                                 
                                 <%-- CANCEL ICON --%>
                                 <td>
-                                    <img src="/WebConfig/yukon/Icons/action_stop.gif" onclick="javascript:cancelLoadProfile(${pendingRequest.requestId});">
+                                    <img onclick="javascript:cancelLoadProfile(${pendingRequest.requestId});" src="${delete}" onmouseover="javascript:this.src='${deleteOver}'" onmouseout="javascript:this.src='${delete}'">
                                 </td>
 
                             </tr>

@@ -160,7 +160,7 @@ public class DetailEconomicBean implements BaseDetailBean {
         case NO_FAILURES:
             return "/WebConfig/yukon/Icons/icon_accept.gif";
         case NO_SUCCESS:
-            return "/WebConfig/yukon/Icons/action_stop.gif";
+            return "/WebConfig/yukon/Icons/stop.gif";
         case PENDING:
             return "/WebConfig/yukon/Icons/icon_clock.gif";
         }

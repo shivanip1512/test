@@ -7,6 +7,9 @@
 <cti:includeScript link="/JavaScript/paoPicker.js" />
 <cti:includeCss link="/WebConfig/yukon/styles/itemPicker.css" />
 
+<c:url var="delete" value="/WebConfig/yukon/Icons/stop.gif"/>
+<c:url var="deleteOver" value="/WebConfig/yukon/Icons/stop_over.gif"/>
+
 <cti:uniqueIdentifier  prefix="addPao" var="addPao"/>
 <cti:uniqueIdentifier var="addPaoSpanId" prefix="addPaoSpan_"/>
 <cti:uniqueIdentifier var="newPaoId" prefix="newPao_"/>
@@ -49,7 +52,7 @@
 						<c:out value="${pao.type}" />
 					</td>
 					<td align="center">
-                        <tags:widgetActionRefreshImage paoId="${pao.paoId}" method="removePao" title="Remove this PAO" imgSrc="/WebConfig/yukon/Icons/cancel.gif" imgSrcHover="/WebConfig/yukon/Icons/cancel.gif"/>
+                        <tags:widgetActionRefreshImage paoId="${pao.paoId}" method="removePao" title="Remove this PAO" imgSrc="${delete}" imgSrcHover="${deleteOver}"/>
 					</td>
 				</tr>
 				
