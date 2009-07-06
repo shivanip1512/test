@@ -825,22 +825,27 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     	List<ErrorObject> errorObjects = new ArrayList<ErrorObject>();    	    	
     	List<YukonDevice> yukonDevices = new ArrayList<YukonDevice>();
     	
-    	if(meterNumbers != null) {
-	    	for (String meterNumber : meterNumbers) {
-	    		try {
-	    			YukonDevice yukonDevice = deviceDao.getYukonDeviceObjectByMeterNumber(meterNumber);
-	    			yukonDevices.add(yukonDevice);
-	    		}catch (EmptyResultDataAccessException e) {
-	    			ErrorObject errorObject = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "removeMetersFromGroup", mspVendor.getCompanyName());
-	    			errorObjects.add(errorObject);
-	    		}
-	    	}
-    	}
-    	
-    	StoredDeviceGroup storedGroup = deviceGroupEditorDao.getStoredGroup(groupName, true);
-    	deviceGroupMemberEditorDao.removeDevices(storedGroup, yukonDevices);
-        mspObjectDao.logMSPActivity("removeMetersFromGroup", "Removed " + yukonDevices.size() + " Meters from group: "+ storedGroup.getFullName() + ".",
-                       mspVendor.getCompanyName());
+    	try {
+    		StoredDeviceGroup storedGroup = deviceGroupEditorDao.getStoredGroup(groupName, false);
+    		if(meterNumbers != null) {
+    	    	for (String meterNumber : meterNumbers) {
+    	    		try {
+    	    			YukonDevice yukonDevice = deviceDao.getYukonDeviceObjectByMeterNumber(meterNumber);
+    	    			yukonDevices.add(yukonDevice);
+    	    		}catch (EmptyResultDataAccessException e) {
+    	    			ErrorObject errorObject = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "removeMetersFromGroup", mspVendor.getCompanyName());
+    	    			errorObjects.add(errorObject);
+    	    		}
+    	    	}
+        	}
+        	
+        	deviceGroupMemberEditorDao.removeDevices(storedGroup, yukonDevices);
+            mspObjectDao.logMSPActivity("removeMetersFromGroup", "Removed " + yukonDevices.size() + " Meters from group: "+ storedGroup.getFullName() + ".",
+                           mspVendor.getCompanyName());
+    	} catch (NotFoundException e) {
+			ErrorObject errorObject = mspObjectDao.getNotFoundErrorObject(groupName, "GroupName", "MeterGroup", "removeMetersFromGroup", mspVendor.getCompanyName());
+			errorObjects.add(errorObject);
+   		}
         return mspObjectDao.toErrorObject(errorObjects);
     }
 
