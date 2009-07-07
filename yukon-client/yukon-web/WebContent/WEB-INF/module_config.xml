@@ -649,6 +649,13 @@
           </option>
         </links>
       </option>
+      <option id="other">
+        <links>
+          <option id="threadDump" >
+            <link>/spring/debug/threadDump</link>
+          </option>
+        </links>
+      </option>
     </links>
   </module>
         

@@ -26,6 +26,8 @@
     <bean name="/accountService/inputs/*" class="com.cannontech.web.debug.AccountServiceInputsTestController" >
     </bean>
     
+    <bean name="/threadDump" class="com.cannontech.web.debug.ThreadDumpController"/>
+    
     <bean name="/webservice/xml/*" class="com.cannontech.web.debug.webservice.XMLTestController" >
     	<property name="exampleRequestXmls">
            <list>

@@ -169,6 +169,9 @@
 <entry key="yukon.web.menu.config.debug.webservice">Web Services Test</entry>
 <entry key="yukon.web.menu.config.debug.webservice.xml">XML</entry>
 
+<entry key="yukon.web.menu.config.debug.other">Other</entry>
+<entry key="yukon.web.menu.config.debug.other.threadDump">Thread Dump</entry>
+
 <!-- Commander Module -->
 <entry key="yukon.web.menu.config.commander.deviceselection">Device Selection</entry>
 
