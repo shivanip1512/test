@@ -18,6 +18,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.DBEditorTypes;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
+import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.web.editor.CapControlForm;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.JsonView;
@@ -32,12 +33,16 @@ public class StrategyController {
     private StrategyDao strategyDao = null;
     
     @RequestMapping
-    public String scheduleAssignments(HttpServletRequest request, LiteYukonUser user, ModelMap mav) {
+    public String strategies(HttpServletRequest request, LiteYukonUser user, ModelMap mav) {
         List<CapControlStrategy> strategies = strategyDao.getAllStrategies();
         mav.addAttribute("strategies", strategies);
         
         boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
         mav.addAttribute("hasEditingRole", hasEditingRole);
+        
+        String urlParams = request.getQueryString();
+        String requestURI = request.getRequestURI() + ((urlParams != null) ? "?" + urlParams : "");
+        CBCNavigationUtil.setNavigation(requestURI , request.getSession());
         
         return "strategy/strategies.jsp";
     }

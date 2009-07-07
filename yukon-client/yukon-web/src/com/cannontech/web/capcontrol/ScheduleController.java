@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -22,6 +23,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.pao.PAOSchedule;
 import com.cannontech.database.db.pao.PaoScheduleAssignment;
+import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.JsonView;
@@ -51,7 +53,7 @@ public class ScheduleController {
     }
 	
 	@RequestMapping
-    public String schedules(LiteYukonUser user, ModelMap mav) {
+    public String schedules(HttpServletRequest request, LiteYukonUser user, ModelMap mav) {
 	    boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
 	    mav.addAttribute("hasEditingRole", hasEditingRole);
         List<PAOSchedule> schedList = paoScheduleDao.getAllPaoScheduleNames();
@@ -59,6 +61,10 @@ public class ScheduleController {
         
         long startOfTime = CtiUtilities.get1990GregCalendar().getTime().getTime();
         mav.addAttribute("startOfTime", startOfTime);
+        
+        String urlParams = request.getQueryString();
+        String requestURI = request.getRequestURI() + ((urlParams != null) ? "?" + urlParams : "");
+        CBCNavigationUtil.setNavigation(requestURI , request.getSession());
         
         return "schedule/schedules.jsp";
     }
