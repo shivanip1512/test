@@ -53,10 +53,10 @@
 
 <c:choose>
     <c:when test="${hasEditingRole}">
-        <c:set var="editInfoImage" value="/WebConfig/yukon/Icons/edit.gif"/>
+        <c:set var="editInfoImage" value="/WebConfig/yukon/Icons/pencil.gif"/>
     </c:when>
     <c:otherwise>
-        <c:set var="editInfoImage" value="/WebContent/WebConfig/yukon/Icons/help.gif"/>
+        <c:set var="editInfoImage" value="/WebContent/WebConfig/yukon/Icons/information.gif"/>
     </c:otherwise>
 </c:choose>
 
@@ -85,7 +85,7 @@
 
 		            <input type="hidden" id="paoId_${subStation.ccId}" value="${subStation.ccId}"></input>
 		            
-			        <tr class="<ct:alternateRow odd="altRow" even=""/>" >
+			        <tr class="<ct:alternateRow odd="altRow" even=""/>">
 						<td>
 						    <input type="checkbox" name="cti_chkbxSubStation" value="${subStation.ccId}" />
 	                        <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${subStation.ccId}&ignoreBookmark=true">
@@ -93,7 +93,7 @@
 	                        </a>
 	                        <c:if test="${hasEditingRole}">
 		                        <a class="editImg" href="/editor/deleteBasePAO.jsf?value=${subStation.ccId}">
-		                            <img class="rAlign editImg" src="/WebConfig/yukon/Icons/stop.gif"/>
+		                            <img class="rAlign editImg" src="/WebConfig/yukon/Icons/delete.gif"/>
 		                        </a>
 		                    </c:if>
 

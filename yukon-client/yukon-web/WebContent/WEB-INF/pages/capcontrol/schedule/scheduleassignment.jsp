@@ -228,7 +228,7 @@ Event.observe(window, 'load', function() {
 					</td>
 					<td align="center">
                         <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
-                            <img src="/WebConfig/yukon/Icons/stop.gif" class="pointer" onclick="removeScheduleCommand(${item.eventId})">
+                            <img src="/WebConfig/yukon/Icons/delete.gif" class="pointer" onclick="removeScheduleCommand(${item.eventId})">
                         </cti:checkProperty>
 					</td>
 				</tr>

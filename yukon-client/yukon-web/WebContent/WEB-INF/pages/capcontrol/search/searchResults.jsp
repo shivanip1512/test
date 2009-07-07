@@ -36,20 +36,20 @@
                                 <input type="checkbox" name="cti_chkbxSubBuses" value="${row.itemId}"/>
                                 <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
                                     <a href="/editor/cbcBase.jsf?type=2&itemid=${row.itemId}" class="editImg">
-                                        <img class="rAlign editImg" src="/WebConfig/yukon/Icons/edit.gif"/>
+                                        <img class="rAlign editImg" src="/WebConfig/yukon/Icons/pencil.gif"/>
                                     </a>
                                     <a href="/editor/deleteBasePAO.jsf?value=${row.itemId}" class="editImg">
-                                        <img class="rAlign editImg" src="/WebConfig/yukon/Icons/stop.gif" height="16" width="16"/>
+                                        <img class="rAlign editImg" src="/WebConfig/yukon/Icons/delete.gif" height="16" width="16"/>
                                     </a>
                                 </cti:checkProperty>
                             </c:when>
 	                        <c:otherwise>
 	                            <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
 	                                <a href="/editor/pointBase.jsf?parentId=${row.parentId}&itemid=${row.itemId}" class="editImg">
-	                                    <img class="rAlign editImg" src="/WebConfig/yukon/Icons/edit.gif"/>
+	                                    <img class="rAlign editImg" src="/WebConfig/yukon/Icons/pencil.gif"/>
 	                                </a>
 	                                <a href="/editor/deleteBasePoint.jsf?value=${row.itemId}" class="editImg">
-	                                    <img class="rAlign editImg" src="/WebConfig/yukon/Icons/stop.gif" height="16" width="16"/>
+	                                    <img class="rAlign editImg" src="/WebConfig/yukon/Icons/delete.gif" height="16" width="16"/>
 	                                </a>
 	                            </cti:checkProperty>
 	                        </c:otherwise>

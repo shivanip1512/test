@@ -100,9 +100,9 @@
                         <c:choose>
                             <c:when test="${hasEditingRole}">
 	                            <a href="/editor/cbcBase.jsf?type=3&itemid=${item.scheduleID}">
-	                                <img class="rAlign editImg" src="/WebConfig/yukon/Icons/edit.gif" />
+	                                <img class="rAlign editImg" src="/WebConfig/yukon/Icons/pencil.gif" />
 	                            </a>
-	                            <img src="/WebConfig/yukon/Icons/stop.gif " class="pointer" onclick="removeSchedule(${item.scheduleID}, '${item.scheduleName}');">
+	                            <img src="/WebConfig/yukon/Icons/delete.gif " class="pointer" onclick="removeSchedule(${item.scheduleID}, '${item.scheduleName}');">
                             </c:when>
                             <c:otherwise>
                                 <a href="/editor/cbcBase.jsf?type=3&itemid=${item.scheduleID}">

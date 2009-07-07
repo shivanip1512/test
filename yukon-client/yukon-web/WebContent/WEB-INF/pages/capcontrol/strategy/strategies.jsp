@@ -85,9 +85,9 @@
                         <c:choose>
                             <c:when test="${hasEditingRole}">
                                 <a href="/editor/cbcBase.jsf?type=5&itemid=${item.strategyID}">
-                                    <img class="rAlign editImg" src="/WebConfig/yukon/Icons/edit.gif" />
+                                    <img class="rAlign editImg" src="/WebConfig/yukon/Icons/pencil.gif" />
                                 </a>
-                                <img src="/WebConfig/yukon/Icons/stop.gif " class="pointer" onclick="removeStrategy(${item.strategyID}, '${item.strategyName}');">
+                                <img src="/WebConfig/yukon/Icons/delete.gif " class="pointer" onclick="removeStrategy(${item.strategyID}, '${item.strategyName}');">
                             </c:when>
                             <c:otherwise>
                                 <a href="/editor/cbcBase.jsf?type=3&itemid=${item.strategyID}">
