@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.View;
 
 import com.cannontech.capcontrol.ScheduleCommand;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.PaoScheduleDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -23,7 +24,6 @@ import com.cannontech.database.db.pao.PAOSchedule;
 import com.cannontech.database.db.pao.PaoScheduleAssignment;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.web.util.CBCSelectionLists;
 import com.cannontech.web.util.JsonView;
 
 
@@ -57,7 +57,7 @@ public class ScheduleController {
         List<PAOSchedule> schedList = paoScheduleDao.getAllPaoScheduleNames();
         mav.addAttribute("scheduleList",schedList);
         
-        long startOfTime = CBCSelectionLists.getStartOfTime();
+        long startOfTime = CtiUtilities.get1990GregCalendar().getTime().getTime();
         mav.addAttribute("startOfTime", startOfTime);
         
         return "schedule/schedules.jsp";

@@ -289,7 +289,7 @@ public class CBCSelectionLists {
 	 * Returns the valid start of time for Yukon
 	 * @return
 	 */
-	public static long getStartOfTime() {
+	public long getStartOfTime() {
 
 		return CtiUtilities.get1990GregCalendar().getTime().getTime();
 	}
