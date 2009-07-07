@@ -124,12 +124,13 @@
         <property name="stateDao" ref="stateDao"/>
     </bean>
 
-    <bean name="scheduleAssignmentController" class="com.cannontech.web.capcontrol.ScheduleAssignmentController"/>
+    <bean name="scheduleController" class="com.cannontech.web.capcontrol.ScheduleController"/>
 	<bean name="tierController" class="com.cannontech.web.capcontrol.TierController"/>
 	<bean name="capBankWebController" class="com.cannontech.web.capcontrol.CapBankWebController"/>
 	<bean name="capControlImportController" class="com.cannontech.web.capcontrol.CapControlImportController"/>
 	<bean name="resultsController" class="com.cannontech.web.capcontrol.ResultsController"/>
 	<bean name="bankMoveController" class="com.cannontech.web.capcontrol.BankMoveController"/>
+	<bean name="strategyController" class="com.cannontech.web.capcontrol.StrategyController"/>
 	
     <bean id="onelinePopupMenuController" class="com.cannontech.web.capcontrol.OnelinePopupMenuController">
         <property name="methodNameResolver" ref="menuMethodNameResolver"/>

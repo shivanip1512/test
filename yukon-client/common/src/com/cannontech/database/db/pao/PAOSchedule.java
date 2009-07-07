@@ -2,6 +2,8 @@ package com.cannontech.database.db.pao;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
@@ -19,14 +21,36 @@ public class PAOSchedule extends DBPersistent implements CTIDbChange
 {
 	private Integer scheduleID = null;
 	//Set the time to now - 4 hours
-	private Date nextRunTime =
-        new Date( System.currentTimeMillis() - 14400000 );
+	private Date nextRunTime = new Date( System.currentTimeMillis() - 14400000 );
 
 	private Date lastRunTime = CtiUtilities.get1990GregCalendar().getTime();
 	private Integer intervalRate = new Integer(CtiUtilities.NONE_ZERO_ID);
 	private String scheduleName = CtiUtilities.STRING_NONE;
 	private boolean disabled = false;
-
+	private Map<Integer, String> intervalStrings = new HashMap<Integer, String>() 
+    {
+        {
+            put(0, CtiUtilities.STRING_NONE);
+            put(300, "5 minutes");
+            put(420, "7 minutes");
+            put(600, "10 minutes");
+            put(720, "12 minutes");
+            put(900, "15 minutes");
+            put(1200, "20 minutes");
+            put(1500, "25 minutes");
+            put(1800, "30 minutes");
+            put(3600, "1 hour");
+            put(7200, "2 hour");
+            put(21600, "6 hour");
+            put(43200, "12 hour");
+            put(86400, "1 day");
+            put(172800, "2 days");
+            put(432000, "5 days");
+            put(604800, "7 days");
+            put(1209600, "14 days");
+            put(2592000, "30 days");
+        }
+    };
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
@@ -257,35 +281,19 @@ public class PAOSchedule extends DBPersistent implements CTIDbChange
 				typeOfChange)
 		};
 
-
 		return msgs;
 	}
-
-	/*
-	public final static boolean isMasterProgram(Integer anID, String databaseAlias) throws java.sql.SQLException 
-	{
-		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-			"SELECT ExclusionID from " + TABLE_NAME + " WHERE PaoID = " + anID, databaseAlias);
-			
-		try
-		{
-			stmt.execute();
-			return (stmt.getRowCount() > 0 );
-		}
-		catch( Exception e )
-		{
-			return false;
-		}
-	
-	}
-	*/
-	
 
 	/**
 	 * @return
 	 */
 	public Integer getIntervalRate() {
 		return intervalRate;
+	}
+	
+	public String getIntervalRateString() {
+	    String intervalString = intervalStrings.get(intervalRate);
+	    return intervalString == null ? "?" : intervalString;
 	}
 
 	/**

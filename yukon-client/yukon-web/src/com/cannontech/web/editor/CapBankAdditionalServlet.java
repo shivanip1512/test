@@ -16,11 +16,9 @@ import com.cannontech.web.util.CBCDBUtil;
 
 public class CapBankAdditionalServlet extends AbstractController {
 
-    protected ModelAndView handleRequestInternal(HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
-        ModelAndView mav = new ModelAndView("capBankAddInfoPopup");
-        int paoID = ServletRequestUtils.getRequiredIntParameter(request,
-                                                                "paoID");
+    protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        ModelAndView mav = new ModelAndView("capBankAddInfoPopup.jsp");
+        int paoID = ServletRequestUtils.getRequiredIntParameter(request, "paoID");
         LiteYukonPAObject lite = DaoFactory.getPaoDao().getLiteYukonPAO(paoID);
         CapBankAdditional capBankAdd = new CapBankAdditional();
         capBankAdd.setDeviceID(paoID);

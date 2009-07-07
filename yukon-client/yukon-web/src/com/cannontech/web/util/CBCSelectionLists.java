@@ -255,9 +255,6 @@ public class CBCSelectionLists {
 		new SelectItem( PointTypes.getType(PointTypes.CONTROLTYPE_SBO_PULSE), PointTypes.getType(PointTypes.CONTROLTYPE_SBO_PULSE) )
 	};
     
-
-
-
 	/**
 	 * 
 	 */
@@ -292,7 +289,7 @@ public class CBCSelectionLists {
 	 * Returns the valid start of time for Yukon
 	 * @return
 	 */
-	public long getStartOfTime() {
+	public static long getStartOfTime() {
 
 		return CtiUtilities.get1990GregCalendar().getTime().getTime();
 	}

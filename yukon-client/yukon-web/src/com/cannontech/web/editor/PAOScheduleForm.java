@@ -67,7 +67,7 @@ public class PAOScheduleForm extends DBEditorForm {
 			.resolveVariable(FacesContext.getCurrentInstance(), "CtiNavObject");
 		
 		nav.setModuleRedirectPage(
-			DBEditorNav.getEditorURL(DBEditorNav.EDTYPE_LIST_SCHEDULE) ); //"paoSchedList");
+			DBEditorNav.getEditorURL(DBEditorNav.EDTYPE_LIST_SCHEDULE) );
 
 		return "cbcEditor";
 	}

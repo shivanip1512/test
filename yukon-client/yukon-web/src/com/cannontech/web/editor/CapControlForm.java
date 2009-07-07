@@ -1404,7 +1404,8 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		}
 	}
 
-	public void deleteStrategy() {
+	public boolean deleteStrategy() {
+	    boolean success = true;
 		// this message will be filled in by the super class
 		FacesMessage facesMsg = new FacesMessage();
 		try {
@@ -1423,6 +1424,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 				// clear out the memory of the any list of Strategies
 				resetStrategies();
 				facesMsg.setDetail("CapControl Strategy delete was SUCCESSFUL");
+				success = true;
 			} else {
 				StringBuffer items = new StringBuffer("");
 				for (int i = 0; i < paos.length; i++) {
@@ -1430,13 +1432,19 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                 }
 				facesMsg.setDetail("Unable to delete the Strategy since the following items use it: " + items.deleteCharAt(items.length() - 1));
 				facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
+				success = false;
 			}
 		} catch (TransactionException te) {
 			facesMsg.setDetail("Unable to delete the Strategy: " + te.getMessage());
             facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
+            success = false;
 		} finally {
-			FacesContext.getCurrentInstance().addMessage("cti_db_delete", facesMsg);
+		    FacesContext context = FacesContext.getCurrentInstance(); 
+			if(context != null) {
+			    context.addMessage("cti_db_delete", facesMsg);
+			}
 		}
+		return success;
 	}
 
 	public String getPAODescLabel() {

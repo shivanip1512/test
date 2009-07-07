@@ -17,22 +17,26 @@ import org.springframework.web.servlet.View;
 import com.cannontech.capcontrol.ScheduleCommand;
 import com.cannontech.core.dao.PaoScheduleDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.pao.PAOSchedule;
 import com.cannontech.database.db.pao.PaoScheduleAssignment;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.util.CBCSelectionLists;
 import com.cannontech.web.util.JsonView;
 
 
 @Controller
-@RequestMapping("/scheduleAssignments/*")
+@RequestMapping("/schedule/*")
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
-public class ScheduleAssignmentController {
+public class ScheduleController {
     
 	private PaoScheduleDao paoScheduleDao = null;
+	private RolePropertyDao rolePropertyDao = null;
 	
 	@RequestMapping
-	public String schedule(ModelMap mav) {
+	public String scheduleAssignments(ModelMap mav) {
                 
         List<PAOSchedule> schedList = paoScheduleDao.getAllPaoScheduleNames();
 		mav.addAttribute("scheduleList",schedList);
@@ -43,7 +47,38 @@ public class ScheduleAssignmentController {
 		Collections.sort(paosOnSchedule);
 		mav.addAttribute("itemList",paosOnSchedule);
         
-		return "scheduleassignment.jsp";
+		return "schedule/scheduleassignment.jsp";
+    }
+	
+	@RequestMapping
+    public String schedules(LiteYukonUser user, ModelMap mav) {
+	    boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
+	    mav.addAttribute("hasEditingRole", hasEditingRole);
+        List<PAOSchedule> schedList = paoScheduleDao.getAllPaoScheduleNames();
+        mav.addAttribute("scheduleList",schedList);
+        
+        long startOfTime = CBCSelectionLists.getStartOfTime();
+        mav.addAttribute("startOfTime", startOfTime);
+        
+        return "schedule/schedules.jsp";
+    }
+	
+	@RequestMapping(method=RequestMethod.POST)
+    public View deleteSchedule(Integer scheduleId, ModelMap map) throws ServletException, Exception {
+        boolean success = true;
+        String resultString = "Schedule deleted successfully.";
+        if( scheduleId == null) {
+            success = false;
+            resultString = "Delete failed, scheduleId was NULL";
+        } else {
+            success = paoScheduleDao.delete(scheduleId);
+            if (!success) {
+                resultString = "The schedule was not in the database. Please refresh this page.";
+            }
+        }
+        map.addAttribute("success", success);
+        map.addAttribute("resultText" , resultString);
+        return new JsonView();
     }
 	
     @RequestMapping(method = RequestMethod.POST)
@@ -132,4 +167,9 @@ public class ScheduleAssignmentController {
 	public void setPaoScheduleDao(PaoScheduleDao paoScheduleDao) {
 		this.paoScheduleDao = paoScheduleDao;
 	}
+	
+	@Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
+    }
 }

@@ -55,29 +55,29 @@
 							paginatorTableClass="paginator"
 							paginatorActiveColumnStyle="font-weight:bold;">
 							<f:facet name="first">
-								<x:graphicImage url="/editor/images/arrow-first.gif" border="1"
-									title="First page" />
-							</f:facet>
-							<f:facet name="last">
-								<x:graphicImage url="/editor/images/arrow-last.gif" border="1"
-									title="Last page" />
-							</f:facet>
-							<f:facet name="previous">
-								<x:graphicImage url="/editor/images/arrow-previous.gif"
-									border="1" title="Previous page" />
-							</f:facet>
-							<f:facet name="next">
-								<x:graphicImage url="/editor/images/arrow-next.gif" border="1"
-									title="Next page" />
-							</f:facet>
-							<f:facet name="fastforward">
-								<x:graphicImage url="/editor/images/arrow-ff.gif" border="1"
-									title="Next set of pages" />
-							</f:facet>
-							<f:facet name="fastrewind">
-								<x:graphicImage url="/editor/images/arrow-fr.gif" border="1"
-									title="Previous set of pages" />
-							</f:facet>
+	                            <x:graphicImage url="/WebConfig/yukon/Icons/arrow_first.gif" border="1"
+	                                title="First page" />
+	                        </f:facet>
+	                        <f:facet name="last">
+	                            <x:graphicImage url="/WebConfig/yukon/Icons/arrow_last.gif" border="1"
+	                                title="Last page" />
+	                        </f:facet>
+	                        <f:facet name="previous">
+	                            <x:graphicImage url="/WebConfig/yukon/Icons/resultset_previous.gif"
+	                                border="1" title="Previous page" />
+	                        </f:facet>
+	                        <f:facet name="next">
+	                            <x:graphicImage url="/WebConfig/yukon/Icons/resultset_next.gif" border="1"
+	                                title="Next page" />
+	                        </f:facet>
+	                        <f:facet name="fastforward">
+	                            <x:graphicImage url="/WebConfig/yukon/Icons/arrow_fastforward.gif" border="1"
+	                                title="Next set of pages" />
+	                        </f:facet>
+	                        <f:facet name="fastrewind">
+	                            <x:graphicImage url="/WebConfig/yukon/Icons/arrow_rewind.gif" border="1"
+	                                title="Previous set of pages" />
+	                        </f:facet>
 						</x:dataScroller>
 
 						<x:dataScroller id="scrollDisplay" for="subBusAvailData"
@@ -216,29 +216,29 @@
 							paginatorTableClass="paginator"
 							paginatorActiveColumnStyle="font-weight:bold;">
 							<f:facet name="first">
-								<x:graphicImage url="/editor/images/arrow-first.gif" border="1"
-									title="First page" />
-							</f:facet>
-							<f:facet name="last">
-								<x:graphicImage url="/editor/images/arrow-last.gif" border="1"
-									title="Last page" />
-							</f:facet>
-							<f:facet name="previous">
-								<x:graphicImage url="/editor/images/arrow-previous.gif"
-									border="1" title="Previous page" />
-							</f:facet>
-							<f:facet name="next">
-								<x:graphicImage url="/editor/images/arrow-next.gif" border="1"
-									title="Next page" />
-							</f:facet>
-							<f:facet name="fastforward">
-								<x:graphicImage url="/editor/images/arrow-ff.gif" border="1"
-									title="Next set of pages" />
-							</f:facet>
-							<f:facet name="fastrewind">
-								<x:graphicImage url="/editor/images/arrow-fr.gif" border="1"
-									title="Previous set of pages" />
-							</f:facet>
+                                <x:graphicImage url="/WebConfig/yukon/Icons/arrow_first.gif" border="1"
+                                    title="First page" />
+                            </f:facet>
+                            <f:facet name="last">
+                                <x:graphicImage url="/WebConfig/yukon/Icons/arrow_last.gif" border="1"
+                                    title="Last page" />
+                            </f:facet>
+                            <f:facet name="previous">
+                                <x:graphicImage url="/WebConfig/yukon/Icons/resultset_previous.gif"
+                                    border="1" title="Previous page" />
+                            </f:facet>
+                            <f:facet name="next">
+                                <x:graphicImage url="/WebConfig/yukon/Icons/resultset_next.gif" border="1"
+                                    title="Next page" />
+                            </f:facet>
+                            <f:facet name="fastforward">
+                                <x:graphicImage url="/WebConfig/yukon/Icons/arrow_fastforward.gif" border="1"
+                                    title="Next set of pages" />
+                            </f:facet>
+                            <f:facet name="fastrewind">
+                                <x:graphicImage url="/WebConfig/yukon/Icons/arrow_rewind.gif" border="1"
+                                    title="Previous set of pages" />
+                            </f:facet>
 						</x:dataScroller>
 
 						<x:dataScroller id="scrollDisplay" for="fdrAvailData"
@@ -368,29 +368,29 @@
 							paginatorTableClass="paginator"
 							paginatorActiveColumnStyle="font-weight:bold;">
 							<f:facet name="first">
-								<x:graphicImage url="/editor/images/arrow-first.gif" border="1"
-									title="First page" />
-							</f:facet>
-							<f:facet name="last">
-								<x:graphicImage url="/editor/images/arrow-last.gif" border="1"
-									title="Last page" />
-							</f:facet>
-							<f:facet name="previous">
-								<x:graphicImage url="/editor/images/arrow-previous.gif"
-									border="1" title="Previous page" />
-							</f:facet>
-							<f:facet name="next">
-								<x:graphicImage url="/editor/images/arrow-next.gif" border="1"
-									title="Next page" />
-							</f:facet>
-							<f:facet name="fastforward">
-								<x:graphicImage url="/editor/images/arrow-ff.gif" border="1"
-									title="Next set of pages" />
-							</f:facet>
-							<f:facet name="fastrewind">
-								<x:graphicImage url="/editor/images/arrow-fr.gif" border="1"
-									title="Previous set of pages" />
-							</f:facet>
+                                <x:graphicImage url="/WebConfig/yukon/Icons/arrow_first.gif" border="1"
+                                    title="First page" />
+                            </f:facet>
+                            <f:facet name="last">
+                                <x:graphicImage url="/WebConfig/yukon/Icons/arrow_last.gif" border="1"
+                                    title="Last page" />
+                            </f:facet>
+                            <f:facet name="previous">
+                                <x:graphicImage url="/WebConfig/yukon/Icons/resultset_previous.gif"
+                                    border="1" title="Previous page" />
+                            </f:facet>
+                            <f:facet name="next">
+                                <x:graphicImage url="/WebConfig/yukon/Icons/resultset_next.gif" border="1"
+                                    title="Next page" />
+                            </f:facet>
+                            <f:facet name="fastforward">
+                                <x:graphicImage url="/WebConfig/yukon/Icons/arrow_fastforward.gif" border="1"
+                                    title="Next set of pages" />
+                            </f:facet>
+                            <f:facet name="fastrewind">
+                                <x:graphicImage url="/WebConfig/yukon/Icons/arrow_rewind.gif" border="1"
+                                    title="Previous set of pages" />
+                            </f:facet>
 						</x:dataScroller>
 
 						<x:dataScroller id="scrollDisplay" for="bankAvailData"

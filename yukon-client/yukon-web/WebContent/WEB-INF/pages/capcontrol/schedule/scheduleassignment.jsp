@@ -31,7 +31,7 @@ function addPao(paos) {
 }
 
 function removeScheduleCommand(eventId) {
-	var url = "/spring/capcontrol/scheduleAssignments/removePao";
+	var url = "/spring/capcontrol/schedule/removePao";
 
 	hideErrors();
 	
@@ -48,7 +48,7 @@ function removeScheduleCommand(eventId) {
 }
 
 function setOvUv(eventId, ovuv) {
-    var url = "/spring/capcontrol/scheduleAssignments/setOvUv";
+    var url = "/spring/capcontrol/schedule/setOvUv";
     hideErrors();
     new Ajax.Request(url, {'parameters': {'eventId': eventId, 'ovuv': ovuv}, 
         onComplete: function(transport, json) {
@@ -228,7 +228,7 @@ Event.observe(window, 'load', function() {
 					</td>
 					<td align="center">
                         <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
-                            <img src="/WebConfig/yukon/Icons/cancel.gif" class="pointer" onclick="removeScheduleCommand(${item.eventId})">
+                            <img src="/WebConfig/yukon/Icons/stop.gif" class="pointer" onclick="removeScheduleCommand(${item.eventId})">
                         </cti:checkProperty>
 					</td>
 				</tr>

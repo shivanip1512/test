@@ -22,6 +22,8 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
 	private static final String selectAllAssignments;
 	private static final String selectAllPaoSchedule;
 	private static final String selectAssignmentByEventId;
+	private static final String deletePaoSchedule;
+	private static final String deletePaoScheduleAssignmentByScheduleId;
 	
 	private static final ParameterizedRowMapper<PaoScheduleAssignment> assignmentRowMapper;
 	private static final ParameterizedRowMapper<PAOSchedule> paoScheduleRowMapper;
@@ -45,6 +47,10 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
 		assignCommandToSchedule = "INSERT INTO PAOScheduleAssignment (EventID, ScheduleID, PaoID, Command, disableOvUv) VALUES (?,?,?,?,?)";
 		
 		removeCommandFromScheduleByEventId = "DELETE FROM PAOScheduleAssignment WHERE EventID = ?";
+		
+		deletePaoSchedule = "DELETE FROM PAOSchedule WHERE ScheduleId = ?";
+		
+		deletePaoScheduleAssignmentByScheduleId = "DELETE FROM PAOScheduleAssignment WHERE ScheduleId = ?";
 		
         assignmentRowMapper = new ParameterizedRowMapper<PaoScheduleAssignment>(){
             public PaoScheduleAssignment mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -139,6 +145,23 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
 		
 		return rowsAffected == 1;
 	}
+	
+	@Override
+    @Transactional(readOnly = false)
+    public boolean deletePaoScheduleAssignmentsByScheduleId(int scheduleId) {
+        int rowsAffected = simpleJdbcTemplate.update(deletePaoScheduleAssignmentByScheduleId, scheduleId);
+        
+        return rowsAffected == 1;
+    }
+	
+	@Override
+    @Transactional(readOnly = false)
+    public boolean delete(int scheduleId) {
+	    deletePaoScheduleAssignmentsByScheduleId(scheduleId);
+        int rowsAffected = simpleJdbcTemplate.update(deletePaoSchedule, scheduleId);
+        
+        return rowsAffected == 1;
+    }
 	
 	@Autowired
 	public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {

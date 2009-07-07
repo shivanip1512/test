@@ -432,14 +432,14 @@
       <option id="view">
         <links>
           <option id="schedules">
-            <link>/editor/paoSchedListBase.jsf</link>
+            <link>/spring/capcontrol/schedule/schedules</link>
           </option>
           <option id="strategies">
-            <link>/editor/strategyList.jsf</link>
+            <link>/spring/capcontrol/strategy/strategies</link>
           </option>
           
           <option id="scheduleassignment">
-            <link>/spring/capcontrol/scheduleAssignments/schedule</link>
+            <link>/spring/capcontrol/schedule/scheduleAssignments</link>
           </option>
           <option id="recentcontrols">
             <script>showRecentCmds('recentControls')</script>

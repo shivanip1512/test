@@ -44,10 +44,10 @@
 	
 	<c:choose>
 	    <c:when test="${hasEditingRole}">
-	        <c:set var="editInfoImage" value="/editor/images/edit_item.gif"/>
+	        <c:set var="editInfoImage" value="/WebConfig/yukon/Icons/edit.gif"/>
 	    </c:when>
 	    <c:otherwise>
-	        <c:set var="editInfoImage" value="/editor/images/info_item.gif"/>
+	        <c:set var="editInfoImage" value="/WebConfig/yukon/Icons/help.gif"/>
 	    </c:otherwise>
     </c:choose>
 	
@@ -83,7 +83,7 @@
 		                        </a>
 		                        <c:if test="${hasEditingRole}">
 			                        <a class="editImg" href="/editor/deleteBasePAO.jsf?value=${thisAreaId}">
-			                            <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
+			                            <img class="rAlign editImg" src="/WebConfig/yukon/Icons/stop.gif"/>
 			                        </a>
                                 </c:if>
 	        				<a href="/spring/capcontrol/tier/substations?areaId=${thisAreaId}&isSpecialArea=${isSpecialArea}">

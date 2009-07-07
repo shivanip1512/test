@@ -121,10 +121,10 @@
 <input type="hidden" id="paoId_${substation.ccId}" value="${substation.ccId}"/>
 <c:choose>
     <c:when test="${hasEditingRole}">
-        <c:set var="editInfoImage" value="/editor/images/edit_item.gif"/>
+        <c:set var="editInfoImage" value="/WebConfig/yukon/Icons/edit.gif"/>
     </c:when>
     <c:otherwise>
-        <c:set var="editInfoImage" value="/editor/images/info_item.gif"/>
+        <c:set var="editInfoImage" value="/WebConfig/yukon/Icons/help.gif"/>
     </c:otherwise>
 </c:choose>
 	<ct:abstractContainer type="box" title="Substation" hideEnabled="false">
@@ -140,11 +140,11 @@
 	                    </a>
 	                    <c:if test="${hasEditingRole}">
 		                    <a title="Delete" class="editImg" href="/editor/deleteBasePAO.jsf?value=${substation.ccId}">
-		                        <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
+		                        <img class="rAlign editImg" src="/WebConfig/yukon/Icons/stop.gif"/>
 		                    </a>
 	                    </c:if>
                     	<a title="Bank Locations" class="editImg" href="/spring/capcontrol/capbank/capBankLocations?value=${substation.ccId}&specialArea=${isSpecialArea}">
-	                        <img class="rAlign editImg" src="/capcontrol/images/compass.gif"/>
+	                        <img class="rAlign editImg" src="/capcontrol/images/map.gif"/>
 	                    </a>
                         ${substation.ccName}
                         <font color="red">
@@ -214,11 +214,11 @@
                     </a>
 	                <c:if test="${hasEditingRole}">
 	                    <a title="Delete" class="editImg" href="/editor/deleteBasePAO.jsf?value=${thisSubBusId}">
-	                        <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
+	                        <img class="rAlign editImg" src="/WebConfig/yukon/Icons/stop.gif"/>
 	                    </a>
 	                </c:if>
                    	<a title="Bank Locations" class="editImg" href="/spring/capcontrol/capbank/capBankLocations?value=${thisSubBusId}&specialArea=${isSpecialArea}">
-                        <img class="rAlign editImg" src="/capcontrol/images/compass.gif"/>
+                        <img class="rAlign editImg" src="/capcontrol/images/map.gif"/>
                     </a>
                 </td>
                 <td>
@@ -392,11 +392,11 @@
                         </a>
 	                    <c:if test="${hasEditingRole}">
 	                        <a title="Delete" class="editImg" href="/editor/deleteBasePAO.jsf?value=${thisFeederId}">
-	                            <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
+	                            <img class="rAlign editImg" src="/WebConfig/yukon/Icons/stop.gif"/>
 	                        </a>
                         </c:if>
                     	<a title="Bank Locations" class="editImg" href="/spring/capcontrol/capbank/capBankLocations?value=${thisFeederId}&specialArea=${isSpecialArea}">
-	                        <img class="rAlign editImg" src="/capcontrol/images/compass.gif"/>
+	                        <img class="rAlign editImg" src="/capcontrol/images/map.gif"/>
 	                    </a>
 						<span>${viewfeeder.feeder.ccName}</span>
 					</td>
@@ -483,13 +483,13 @@
                 <td>CBC Name</td>
                 <td>CB Name (Order) 
                     <img class="rAlign popupImg" 
-                        src="/capcontrol/images/question.gif" 
+                        src="/WebConfig/yukon/Icons/help.gif" 
                         onmouseover="statusMsg(this, 'Order is the order the CapBank will control in. Commands that can be sent to a field device are initiated from this column');" />
                 </td>                    
                 <td width="2%"></td>    
                 <td>State 
                     <img class="rAlign popupImg" 
-                        src="/capcontrol/images/question.gif"
+                        src="/WebConfig/yukon/Icons/help.gif"
                         onmouseover="statusMsgAbove(this,'System Commands, those commands that do NOT send out a message to a field device, can be initiated from this column.<br> -V : Auto Volt Control (ovUv) is Disabled.<br> -U: CBC reported unsolicited state change.<br> -Q: CapBank state reflects abnormal data quality.<br> -CF: Communications Failure.<br> -P: Partial - phase imbalance.<br> -S: Significant - questionable var response on all phases.');"/>  
                         <span id="cb_state_td_hdr2" style="display:none" >[Op Count Value]</span> 
                 </td>
@@ -520,7 +520,7 @@
 	                        </a>
 	                        <c:if test="${hasEditingRole}">
 		                        <a href="/editor/copyBase.jsf?itemid=${viewableCapBank.capBankDevice.controlDeviceID}&type=1>">
-	                               <img src="/editor/images/page_copy.gif" border="0" height="15" width="15"/>
+	                               <img src="/WebConfig/yukon/Icons/copy.gif" border="0" height="15" width="15"/>
 	                            </a>
 	                        </c:if>
 							${viewableCapBank.controlDevice.paoName}
@@ -535,7 +535,7 @@
                             '/spring/capcontrol/oneline/popupmenu?menu=pointTimestamp&cbcID=${viewableCapBank.controlDevice.liteID}',
                              500, 600)" >
                             <img class="rAlign magnifierImg" 
-                                src="/capcontrol/images/magnifier.gif" 
+                                src="/WebConfig/yukon/Icons/magnifier.gif" 
                                 onmouseover="statusMsg(this,'Click here to see the timestamp information for the cap bank controller device.');" />
                        </a>
                     </c:if>
@@ -554,7 +554,7 @@
 	                        </a>
 		                    <c:if test="${hasEditingRole}">
 		                        <a class="editImg" href="/editor/deleteBasePAO.jsf?value=${thisCapBankId}">
-		                            <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
+		                            <img class="rAlign editImg" src="/WebConfig/yukon/Icons/stop.gif"/>
 		                        </a>
 	                        </c:if>
 	                        <a href="javascript:void(0);" ${popupEvent}="getCapBankMenu('${thisCapBankId}', event);">
@@ -568,17 +568,15 @@
 	                        </a>
 		                    <c:if test="${hasEditingRole}">
 		                        <a href="/editor/deleteBasePAO.jsf?value=${thisCapBankId}">
-		                            <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
+		                            <img class="rAlign editImg" src="/WebConfig/yukon/Icons/stop.gif"/>
 		                        </a>
 	                        </c:if>
 	                        <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_NAME"/>
 						</c:otherwise>
 					</c:choose>
 					<cti:checkRolesAndProperties value="SHOW_CB_ADDINFO">
-					   <a href="#" onclick="return GB_show('<center> Cap Bank Additional Information </center>', 
-					       '/spring/capcontrol/capAddInfo?paoID=${thisCapBankId}', 500, 600)" >
-					       <img class="rAlign magnifierImg" src="/capcontrol/images/magnifier.gif" 
-					           onmouseover="statusMsg(this, 'Click to see additional information for the cap bank.');" />
+					   <a href="#" onclick="return GB_show('<center> Cap Bank Additional Information </center>', '/spring/capcontrol/capAddInfo?paoID=${thisCapBankId}', 500, 600)" >
+					       <img class="rAlign magnifierImg" src="/WebConfig/yukon/Icons/magnifier.gif" onmouseover="statusMsg(this, 'Click to see additional information for the cap bank.');" />
 					   </a>
 					</cti:checkRolesAndProperties>
 				</td>

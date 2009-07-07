@@ -14,4 +14,6 @@ public interface PaoScheduleDao {
 	public boolean assignCommand  (PaoScheduleAssignment param);
     public boolean unassignCommandByEventId(int eventId);
     public boolean updateAssignment(PaoScheduleAssignment assignment);
+    public boolean delete(int scheduleId);
+    public boolean deletePaoScheduleAssignmentsByScheduleId(int scheduleId);
 }

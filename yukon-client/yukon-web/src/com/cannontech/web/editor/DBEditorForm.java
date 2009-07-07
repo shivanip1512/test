@@ -9,6 +9,8 @@ import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIData;
 
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
@@ -195,6 +197,9 @@ public abstract class DBEditorForm {
             getDbPersistent().retrieve();
         } catch (SQLException sql) {
             CTILogger.error("Unable to retrieve DB Object", sql);
+            return null;
+        } catch(IncorrectResultSizeDataAccessException e){
+            return null;
         } finally {
             getDbPersistent().setDbConnection(null);
             try {

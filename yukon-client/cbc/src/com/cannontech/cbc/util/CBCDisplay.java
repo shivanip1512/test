@@ -548,7 +548,7 @@ public class CBCDisplay {
             //add an asterisk if the quality was low
             if (!CBCUtils.signalQualityNormal(subBus, PointUnits.UOMID_KVAR))
             {
-                retVal += "<font color=\"red\"><bold>"+ SYMBOL_SIGNAL_QUALITY + "</bold></font>";
+                retVal += "<img src=\"/WebConfig/yukon/Icons/icon_alert.gif\" style=\"vertical-align: middle\"/>";
             }
 
             retVal += " / ";
@@ -584,7 +584,7 @@ public class CBCDisplay {
 
             if (!CBCUtils.signalQualityNormal(subBus, PointUnits.UOMID_KW))
             {
-                retVal += "<font color=\"red\"><bold>"+ SYMBOL_SIGNAL_QUALITY + "</bold></font>";
+                retVal += "<img src=\"/WebConfig/yukon/Icons/icon_alert.gif\" style=\"vertical-align: middle\"/>";
             }
             retVal += " / ";
 
@@ -597,7 +597,7 @@ public class CBCDisplay {
             }
             if (!CBCUtils.signalQualityNormal(subBus, PointUnits.UOMID_KVOLTS))
             {
-                retVal += "<font color=\"red\"><bold>"+ SYMBOL_SIGNAL_QUALITY + "</bold></font>";
+                retVal += "<img src=\"/WebConfig/yukon/Icons/icon_alert.gif\" style=\"vertical-align: middle\"/>";
             }
 
             return retVal;
@@ -761,7 +761,7 @@ public class CBCDisplay {
                                                          decPlaces);
             if (!CBCUtils.signalQualityNormal(feeder, PointUnits.UOMID_KVAR))
             {
-                retVal += "<font color=\"red\"><bold>"+ SYMBOL_SIGNAL_QUALITY + "</bold></font>";
+                retVal += "<img src=\"/WebConfig/yukon/Icons/icon_alert.gif\" style=\"vertical-align: middle\"/>";
             }
 
             retVal += " / ";
@@ -788,7 +788,7 @@ public class CBCDisplay {
 
             if (!CBCUtils.signalQualityNormal(feeder, PointUnits.UOMID_KW))
             {
-                retVal += "<font color=\"red\"><bold>"+ SYMBOL_SIGNAL_QUALITY + "</bold></font>";
+                retVal += "<img src=\"/WebConfig/yukon/Icons/icon_alert.gif\" style=\"vertical-align: middle\"/>";
             }
 
             retVal += " / ";
@@ -802,7 +802,7 @@ public class CBCDisplay {
             }
             if (!CBCUtils.signalQualityNormal(feeder, PointUnits.UOMID_KVOLTS))
             {
-                retVal += "<font color=\"red\"><bold>"+ SYMBOL_SIGNAL_QUALITY + "</bold></font>";
+                retVal += "<img src=\"/WebConfig/yukon/Icons/icon_alert.gif\" style=\"vertical-align: middle\"/>";
             }
             return retVal;
         }
