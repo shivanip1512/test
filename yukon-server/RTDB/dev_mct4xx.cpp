@@ -3479,8 +3479,15 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
             pi_freezecount = getData(DSt->Message + 9, 1, ValueType_Raw);
         }
 
-        //  turn raw pulses into a demand reading
-        pi_kw.value *= double(3600 / getDemandInterval());
+        //  turn raw pulses into a demand reading - TOU reads use LP interval
+        if( InMessage->Sequence == Emetcon::GetValue_TOUPeak )
+        {
+            pi_kw.value *= double(3600 / getLoadProfileInterval());
+        }
+        else
+        {
+            pi_kw.value *= double(3600 / getDemandInterval());
+        }
 
         kw_time      = CtiTime(pi_kw_time.value);
 
