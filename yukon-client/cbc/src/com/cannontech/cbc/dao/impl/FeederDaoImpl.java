@@ -21,12 +21,14 @@ import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.HolidayScheduleDao;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.SeasonScheduleDao;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.pao.YukonPAObject;
+import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.util.Validator;
 
 public class FeederDaoImpl implements FeederDao {
@@ -41,7 +43,7 @@ public class FeederDaoImpl implements FeederDao {
     private static final ParameterizedRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
     
     private SimpleJdbcTemplate simpleJdbcTemplate;
-    private PaoDao paoDao;
+    private NextValueHelper nextValueHelper;
     private SeasonScheduleDao seasonScheduleDao;
     private HolidayScheduleDao holidayScheduleDao;
     
@@ -92,27 +94,28 @@ public class FeederDaoImpl implements FeederDao {
         return rowMapper;
     }
 
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+    @Override
     public boolean add(Feeder feeder) {
-		int rowsAffected = 0;
+    	int newPaoId = nextValueHelper.getNextValue("YukonPaObject");
+    	
 		YukonPAObject pao = new YukonPAObject();
-		
+		pao.setPaObjectID(newPaoId);
 		pao.setCategory(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoClass(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoName(feeder.getName());
 		pao.setType(CapControlTypes.STRING_CAPCONTROL_FEEDER);
 		pao.setDescription(feeder.getDescription());
-		
-		boolean ret = paoDao.add(pao);
-		
-		if (ret == false) {
-			CTILogger.debug("Insert of Feeder, " + feeder.getName() + ", in YukonPAObject table failed.");
+				
+		try {
+			Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, pao).execute();
+		} catch (TransactionException e) {
+			CTILogger.error("Insert of Feeder, " + feeder.getName() + ", in YukonPAObject table failed.");
 			return false;
 		}
-		
+
 		//Added to YukonPAObject table, now add to CapControlFeeder
 		feeder.setId(pao.getPaObjectID());
-		rowsAffected = simpleJdbcTemplate.update(insertSql, feeder.getId(),
+		int rowsAffected = simpleJdbcTemplate.update(insertSql, feeder.getId(),
                                                          feeder.getCurrentVarLoadPointId(),
                                                          feeder.getCurrentWattLoadPointId(),
                                                          feeder.getMapLocationId(),
@@ -132,9 +135,9 @@ public class FeederDaoImpl implements FeederDao {
 		SmartMultiDBPersistent smartMulti = CBCPointFactory.createPointsForPAO(pao.getPaObjectID(),pao.getDbConnection());
 		
 		try {
-			smartMulti.add();
-		} catch (SQLException e) {
-			CTILogger.debug("Inserting Points for Feeder, " + feeder.getName() + " failed.");
+			Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, smartMulti).execute();
+		} catch (TransactionException e) {
+			CTILogger.error("Inserting Points for Feeder, " + feeder.getName() + " failed.");
 			return false;
 		}
 		
@@ -150,7 +153,7 @@ public class FeederDaoImpl implements FeederDao {
         return f;
     }
     
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+    @Override
     public boolean remove(Feeder feeder) {
         int rowsAffected = simpleJdbcTemplate.update(removeSql,feeder.getId());
         boolean result = (rowsAffected == 1);
@@ -160,13 +163,18 @@ public class FeederDaoImpl implements FeederDao {
         if (result) {
     		YukonPAObject pao = new YukonPAObject();
     		pao.setPaObjectID(feeder.getId());
-    		
-    		return paoDao.remove(pao);       	
+    		try {
+    			Transaction.createTransaction(com.cannontech.database.Transaction.DELETE, pao).execute();
+    		} catch (TransactionException e) {
+    			CTILogger.error("Removal of Feeder, " + feeder.getName() + ", in YukonPAObject table failed.");
+    			return false;
+    		} 	
         }
 		
         return result;
     }
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+    
+    @Override
     public boolean update(Feeder feeder) {
 		int rowsAffected = 0;
 		YukonPAObject pao = new YukonPAObject();
@@ -176,17 +184,15 @@ public class FeederDaoImpl implements FeederDao {
 		pao.setPaoName(feeder.getName());
 		pao.setType(CapControlTypes.STRING_CAPCONTROL_FEEDER);
 		pao.setDescription(feeder.getDescription());
-    	
 		pao.setPaObjectID(feeder.getId());
 		
-		boolean ret = paoDao.update(pao);
-		
-		//Added to YukonPAObject table, now add to CAPCONTROLSUBSTATION table
-		if (ret == false) {
-			CTILogger.debug("Update of Feeder, " + feeder.getName() + ", in YukonPAObject table failed.");
+		try {
+			Transaction.createTransaction(com.cannontech.database.Transaction.UPDATE, pao).execute();
+		} catch (TransactionException e) {
+			CTILogger.error("Update of Feeder, " + feeder.getName() + ", in YukonPAObject table failed.");
 			return false;
 		}
-    	
+
         rowsAffected = simpleJdbcTemplate.update(updateSql, feeder.getCurrentVarLoadPointId(),
                                                      feeder.getCurrentWattLoadPointId(),
                                                      feeder.getMapLocationId(),
@@ -303,8 +309,8 @@ public class FeederDaoImpl implements FeederDao {
     }
 
     @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-		this.paoDao = paoDao;
+    public void setNextValueHelper(NextValueHelper nextValueHelper) {
+		this.nextValueHelper = nextValueHelper;
 	}
 
     @Autowired

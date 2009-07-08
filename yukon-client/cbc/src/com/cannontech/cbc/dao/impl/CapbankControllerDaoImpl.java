@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
@@ -119,22 +118,20 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
     }
     
 	@Override
-	@Transactional
 	public boolean add(CapbankController capbankController, boolean addPoints) {
-		Connection connection = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+		
 		int newId = paoDao.getNextPaoId();
 		DeviceType type = DeviceType.getForId(capbankController.getType());
 		
 		DeviceBase controller = DeviceFactory.createDevice(type.getDeviceTypeId());
-		controller.setDbConnection(connection);
 		controller.setPAOName(capbankController.getName());
 		controller.setDeviceID(newId);
 		controller.setPAOCategory(PAOGroups.STRING_CAT_DEVICE);
 		setTypeSpecificCbcFields(type,controller,capbankController);
 
 		try {
-			controller.add();
-		} catch (SQLException e) {
+			Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, controller).execute();
+		} catch (TransactionException e) {
 			CTILogger.error("Insert of CapBankController, " + capbankController.getName() + ", failed.");
 			return false;
 		}
@@ -167,24 +164,22 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
     	DeviceBase device = DeviceFactory.createDevice(capbankController.getType());
     	device.setDeviceID(capbankController.getId());
 		
-    	//TODO Delete Points on object.
-    	try {
-    		device.delete();
-    	} catch (SQLException e) {
-    		CTILogger.error("Removal of CBC Failed: " + capbankController.getName());
-    		return false;
-    	}
+    	//TODO: Delete Points on object.
+		try {
+			Transaction.createTransaction(com.cannontech.database.Transaction.DELETE, device).execute();
+		} catch (TransactionException e) {
+			CTILogger.error("Removal of CBC Failed: " + capbankController.getName());
+			return false;
+		}
     	
 		return true;  
 	}
 
 	@Override
 	public boolean update(CapbankController capbankController) {
-		Connection connection = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
 		DeviceType type = DeviceType.getForId(capbankController.getType());
 		
 		DeviceBase controller = DeviceFactory.createDevice(type.getDeviceTypeId());
-		controller.setDbConnection(connection);
 		controller.setPAOName(capbankController.getName());
 		controller.setDeviceID(capbankController.getId());
 		controller.setPAOCategory(PAOGroups.STRING_CAT_DEVICE);
@@ -192,8 +187,8 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 		setTypeSpecificCbcFields(type,controller,capbankController);
 		
 		try {
-			controller.update();
-		} catch (SQLException e) {
+			Transaction.createTransaction(com.cannontech.database.Transaction.UPDATE, controller).execute();
+		} catch (TransactionException e) {
 			CTILogger.error("Update of CapBankController, " + capbankController.getName() + ", failed.");
 			return false;
 		}
@@ -211,8 +206,12 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 		return result;
 	}
 	
+	/**
+	 * This function will copy an existing controller and it's points. 
+	 * Then set the values stored in CapbankController into the newly created controller
+	 */
 	@Override
-	public boolean copyTemplateController(String templateName, CapbankController controller) {
+	public boolean createControllerFromTemplate(String templateName, CapbankController controller) {
 		List<LiteYukonPAObject> paos = paoDao.getLiteYukonPaoByName(templateName, false);
 		if (paos.size() != 1) {
 			CTILogger.error("Template not found to copy.");

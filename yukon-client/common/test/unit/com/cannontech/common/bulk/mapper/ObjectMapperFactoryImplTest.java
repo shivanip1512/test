@@ -331,21 +331,7 @@ public class ObjectMapperFactoryImplTest extends TestCase {
 				String paoClass) {
             throw new UnsupportedOperationException("Method not implemented");
         }
-
-		@Override
-		public boolean add(YukonPAObject pao) {
-			throw new UnsupportedOperationException("Method not implemented");
-		}
-
-		@Override
-		public boolean remove(YukonPAObject pao) {
-			throw new UnsupportedOperationException("Method not implemented");
-		}
-
-		@Override
-		public boolean update(YukonPAObject pao) {
-			throw new UnsupportedOperationException("Method not implemented");
-		}
+		
     }
 
     /**

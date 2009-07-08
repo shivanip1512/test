@@ -20,12 +20,14 @@ import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.HolidayScheduleDao;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.SeasonScheduleDao;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.pao.YukonPAObject;
+import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.util.Validator;
 
 public class SubstationBusDaoImpl implements SubstationBusDao {
@@ -39,7 +41,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
     private static final ParameterizedRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
     
     private SimpleJdbcTemplate simpleJdbcTemplate;
-    private PaoDao paoDao;
+    private NextValueHelper nextValueHelper;
     private SeasonScheduleDao seasonScheduleDao;
     private HolidayScheduleDao holidayScheduleDao;
     
@@ -99,27 +101,28 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         return rowMapper;
     }
 
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+    @Override
     public boolean add(SubstationBus bus) {
-		int rowsAffected = 0;
-		YukonPAObject pao = new YukonPAObject();
+    	int newPaoId = nextValueHelper.getNextValue("YukonPaObject");
 		
+    	YukonPAObject pao = new YukonPAObject();
+		pao.setPaObjectID(newPaoId);
 		pao.setCategory(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoClass(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoName(bus.getName());
 		pao.setType(CapControlTypes.STRING_CAPCONTROL_SUBBUS);
 		pao.setDescription(bus.getDescription());
 		
-		boolean ret = paoDao.add(pao);
-		
-		if (ret == false) {
-			CTILogger.debug("Insert of Subbus, " + bus.getName() + ", in YukonPAObject table failed.");
+		try {
+			Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, pao).execute();
+		} catch (TransactionException e) {
+			CTILogger.error("Insert of Subbus, " + bus.getName() + ", in YukonPAObject table failed.");
 			return false;
 		}
 		
 		//Added to YukonPAObject table, now add to CAPCONTROLSUBSTATIONBUS
 		bus.setId(pao.getPaObjectID());
-    	rowsAffected = simpleJdbcTemplate.update(insertSql, bus.getId(),
+    	int rowsAffected = simpleJdbcTemplate.update(insertSql, bus.getId(),
                                                      bus.getCurrentVarLoadPointId(),
                                                      bus.getCurrentWattLoadPointId(),
                                                      bus.getMapLocationId(),
@@ -143,9 +146,9 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
 		SmartMultiDBPersistent smartMulti = CBCPointFactory.createPointsForPAO(pao.getPaObjectID(), pao.getDbConnection());
 		
 		try {
-			smartMulti.add();
-		} catch (SQLException e) {
-			CTILogger.debug("Inserting Points for Subbus, " + bus.getName() + " failed.");
+			Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, smartMulti).execute();
+		} catch (TransactionException e) {
+			CTILogger.error("Inserting Points for Subbus, " + bus.getName() + " failed.");
 			return false;
 		}
 		
@@ -155,7 +158,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         return result;
     }
 
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+    @Override
     public boolean remove(SubstationBus bus) {
         int rowsAffected = simpleJdbcTemplate.update(removeSql,bus.getId());
         boolean result = (rowsAffected == 1);
@@ -163,14 +166,18 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         if (result) {
     		YukonPAObject pao = new YukonPAObject();
     		pao.setPaObjectID(bus.getId());
-    		
-    		return paoDao.remove(pao);       	
+    		try {
+    			Transaction.createTransaction(com.cannontech.database.Transaction.DELETE, pao).execute();
+    		} catch (TransactionException e) {
+    			CTILogger.error("Removal of Subbus, " + bus.getName() + ", in YukonPAObject table failed.");
+    			return false;
+    		}	
         }
 		
         return result;
     }
     
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+    @Override
     public boolean update(SubstationBus bus) {
 		int rowsAffected = 0;
 		YukonPAObject pao = new YukonPAObject();
@@ -180,13 +187,12 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
 		pao.setPaoName(bus.getName());
 		pao.setType(CapControlTypes.STRING_CAPCONTROL_SUBBUS);
 		pao.setDescription(bus.getDescription());
-		
 		pao.setPaObjectID(bus.getId());
 		
-		boolean ret = paoDao.update(pao);
-		
-		if (ret == false) {
-			CTILogger.debug("Update of Subbus, " + bus.getName() + ", in YukonPAObject table failed.");
+		try {
+			Transaction.createTransaction(com.cannontech.database.Transaction.UPDATE, pao).execute();
+		} catch (TransactionException e) {
+			CTILogger.error("Update of Subbus, " + bus.getName() + ", in YukonPAObject table failed.");
 			return false;
 		}
 		
@@ -306,8 +312,8 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
     }
     
     @Autowired
-	public void setPaoDao(PaoDao paoDao) {
-		this.paoDao = paoDao;
+	public void setNextValueHelper(NextValueHelper nextValueHelper) {
+		this.nextValueHelper = nextValueHelper;
 	}
     
     @Autowired

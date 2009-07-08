@@ -16,9 +16,12 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.HolidayScheduleDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.SeasonScheduleDao;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.pao.YukonPAObject;
+import com.cannontech.database.incrementer.NextValueHelper;
 
 public class AreaDaoImpl implements AreaDao {
 
@@ -31,11 +34,11 @@ public class AreaDaoImpl implements AreaDao {
     private static final ParameterizedRowMapper<Area> rowMapper;
     
     private SimpleJdbcTemplate simpleJdbcTemplate;
-    private PaoDao paoDao;
     private SeasonScheduleDao seasonScheduleDao;
     private HolidayScheduleDao holidayScheduleDao;
+    private NextValueHelper nextValueHelper;
     
-    static {
+	static {
             
     		insertSql = "INSERT INTO CAPCONTROlAREA " +
             "(AreaID,VoltReductionPointId) VALUES (?,?)";
@@ -66,27 +69,27 @@ public class AreaDaoImpl implements AreaDao {
     }
 
 	@Override
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 	public boolean add(Area area) {
-		int rowsAffected = 0;
+		int newPaoId = nextValueHelper.getNextValue("YukonPaObject");
+
 		YukonPAObject pao = new YukonPAObject();
-		
+		pao.setPaObjectID(newPaoId);
 		pao.setCategory(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoClass(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoName(area.getName());
 		pao.setType(CapControlTypes.STRING_CAPCONTROL_AREA);
 		pao.setDescription(area.getDescription());
-		
-		boolean ret = paoDao.add(pao);
-
-		if (ret == false) {
-			CTILogger.debug("Insert of Area, " + area.getName() + ", in YukonPAObject table failed.");
+				
+		try {
+			Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, pao).execute();
+		} catch (TransactionException e) {
+			CTILogger.error("Insert of Area, " + area.getName() + ", in YukonPAObject table failed.");
 			return false;
 		}
-
+		
 		//Added to YukonPAObject table, now add to CAPCONTROLAREA
 		area.setId(pao.getPaObjectID());
-		rowsAffected = simpleJdbcTemplate.update(insertSql, area.getId(),
+		int rowsAffected = simpleJdbcTemplate.update(insertSql, area.getId(),
 				area.getVoltReductionPointId());
 
 		boolean result = (rowsAffected == 1);
@@ -103,7 +106,6 @@ public class AreaDaoImpl implements AreaDao {
 	}
 
 	@Override
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 	public boolean update(Area area) {
 		int rowsAffected = 0;
 		
@@ -114,13 +116,12 @@ public class AreaDaoImpl implements AreaDao {
 		pao.setPaoName(area.getName());
 		pao.setType(CapControlTypes.STRING_CAPCONTROL_AREA);
 		pao.setDescription(area.getDescription());
-		
 		pao.setPaObjectID(area.getId());
-		
-		boolean ret = paoDao.update(pao);
-
-		if (ret == false) {
-			CTILogger.debug("Update of Area, " + area.getName() + ", in YukonPAObject table failed.");
+				
+		try {
+			Transaction.createTransaction(com.cannontech.database.Transaction.UPDATE, pao).execute();
+		} catch (TransactionException e) {
+			CTILogger.error("Update of Area, " + area.getName() + ", in YukonPAObject table failed.");
 			return false;
 		}
 
@@ -142,7 +143,6 @@ public class AreaDaoImpl implements AreaDao {
 	}
 
 	@Override
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 	public boolean remove(Area area) {
 		
         int rowsAffected = simpleJdbcTemplate.update(removeSql,area.getId() );
@@ -151,8 +151,12 @@ public class AreaDaoImpl implements AreaDao {
         if (result) {
     		YukonPAObject pao = new YukonPAObject();
     		pao.setPaObjectID(area.getId());
-    		
-    		return paoDao.remove(pao);       	
+    		try {
+    			Transaction.createTransaction(com.cannontech.database.Transaction.DELETE, pao).execute();
+    		} catch (TransactionException e) {
+    			CTILogger.error("Removal of Area, " + area.getName() + ", in YukonPAObject table failed.");
+    			return false;
+    		}
         }
 		
         return result;
@@ -162,11 +166,6 @@ public class AreaDaoImpl implements AreaDao {
     public void setSimpleJdbcTemplate(final SimpleJdbcTemplate simpleJdbcTemplate) {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
-    
-    @Autowired
-	public void setPaoDao(PaoDao paoDao) {
-		this.paoDao = paoDao;
-	}
 	
 	@Autowired
 	public void setSeasonScheduleDao(SeasonScheduleDao seasonScheduleDao) {
@@ -178,5 +177,9 @@ public class AreaDaoImpl implements AreaDao {
 		this.holidayScheduleDao = holidayScheduleDao;
 	}
 	
-	
+	@Autowired
+    public void setNextValueHelper(NextValueHelper nextValueHelper) {
+		this.nextValueHelper = nextValueHelper;
+	}
+
 }

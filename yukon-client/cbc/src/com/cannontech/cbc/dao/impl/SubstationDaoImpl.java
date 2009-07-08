@@ -8,8 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.cbc.dao.SubstationDao;
 import com.cannontech.cbc.model.Area;
@@ -19,10 +17,12 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.pao.YukonPAObject;
+import com.cannontech.database.incrementer.NextValueHelper;
 
 public class SubstationDaoImpl implements SubstationDao {
     
@@ -36,7 +36,7 @@ public class SubstationDaoImpl implements SubstationDao {
     private static final ParameterizedRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
     
     private SimpleJdbcTemplate simpleJdbcTemplate;
-    private PaoDao paoDao;
+    private NextValueHelper nextValueHelper;
     
     static {
             insertSql = "INSERT INTO CAPCONTROLSUBSTATION "
@@ -74,32 +74,32 @@ public class SubstationDaoImpl implements SubstationDao {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
     
-    @Autowired
-	public void setPaoDao(PaoDao paoDao) {
-		this.paoDao = paoDao;
+	@Autowired
+    public void setNextValueHelper(NextValueHelper nextValueHelper) {
+		this.nextValueHelper = nextValueHelper;
 	}
 
 	@Override
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean add (Substation substation) {
-		int rowsAffected = 0;
-		YukonPAObject pao = new YukonPAObject();
+		int newPaoId = nextValueHelper.getNextValue("YukonPaObject");
 		
+		YukonPAObject pao = new YukonPAObject();
+		pao.setPaObjectID(newPaoId);
 		pao.setCategory(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoClass(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoName(substation.getName());
 		pao.setType(CapControlTypes.STRING_CAPCONTROL_SUBSTATION);
 		pao.setDescription(substation.getDescription());
 
-		boolean ret = paoDao.add(pao);
-		
-		if (ret == false) {
-			CTILogger.debug("Insert of Substation, " + substation.getName() + ", in YukonPAObject table failed.");
+		try {
+			Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, pao).execute();
+		} catch (TransactionException e) {
+			CTILogger.error("Insert of Substation, " + substation.getName() + ", in YukonPAObject table failed.");
 			return false;
 		}
 		
 		substation.setId(pao.getPaObjectID());
-		rowsAffected = simpleJdbcTemplate.update(insertSql, substation.getId(),
+		int rowsAffected = simpleJdbcTemplate.update(insertSql, substation.getId(),
 				substation.getVoltReductionPointId());
 		
 		boolean result = (rowsAffected == 1);
@@ -112,7 +112,6 @@ public class SubstationDaoImpl implements SubstationDao {
     }
     
     @Override
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean remove (Substation substation) {
         int rowsAffected = simpleJdbcTemplate.update(removeSql,substation.getId() );
         boolean result = (rowsAffected == 1);
@@ -121,14 +120,18 @@ public class SubstationDaoImpl implements SubstationDao {
     		YukonPAObject pao = new YukonPAObject();
     		pao.setPaObjectID(substation.getId());
     		
-    		return paoDao.remove(pao);       	
+    		try {
+    			Transaction.createTransaction(com.cannontech.database.Transaction.DELETE, pao).execute();
+    		} catch (TransactionException e) {
+    			CTILogger.error("Removal of Substation, " + substation.getName() + ", in YukonPAObject table failed.");
+    			return false;
+    		}
         }
 		
         return result;
     }
     
     @Override
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean update (Substation substation) {
 		int rowsAffected = 0;
 		
@@ -142,10 +145,10 @@ public class SubstationDaoImpl implements SubstationDao {
 		
 		pao.setPaObjectID(substation.getId());
 		
-		boolean ret = paoDao.update(pao);
-
-		if (ret == false) {
-			CTILogger.debug("Update of Substation, " + substation.getName() + ", in YukonPAObject table failed.");
+		try {
+			Transaction.createTransaction(com.cannontech.database.Transaction.UPDATE, pao).execute();
+		} catch (TransactionException e) {
+			CTILogger.error("Update of Substation, " + substation.getName() + ", in YukonPAObject table failed.");
 			return false;
 		}
 

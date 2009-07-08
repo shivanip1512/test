@@ -16,7 +16,7 @@ public interface CapbankControllerDao {
 	
 	public boolean remove(CapbankController capbankController);
 	
-	public boolean copyTemplateController(String templateName, CapbankController controller);
+	public boolean createControllerFromTemplate(String templateName, CapbankController controller);
 	
     public boolean assignController(Capbank capbank, CapbankController controller);
     public boolean assignController(int capbankId, int controllerId);

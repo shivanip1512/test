@@ -1,6 +1,5 @@
 package com.cannontech.cbc.dao.impl;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -21,21 +20,17 @@ import com.cannontech.cbc.model.Feeder;
 import com.cannontech.cbc.model.LiteCapControlObject;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.ChunkingSqlTemplate;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.PoolManager;
-import com.cannontech.database.data.capcontrol.CapBank;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceFactory;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
-import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
-import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.util.Validator;
 
 //TODO: This does not add to cap bank additional yet.
@@ -54,12 +49,6 @@ public class CapbankDaoImpl implements CapbankDao {
     private static final ParameterizedRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private PaoDao paoDao;
-    
-	private class ControlOrder {
-		public int controlOrder;
-		public int closeOrder;
-		public int tripOrder;
-	}
     
     static {
         insertSql = "INSERT INTO CAPBANK (DEVICEID,OPERATIONALSTATE,ControllerType," + 
@@ -134,12 +123,9 @@ public class CapbankDaoImpl implements CapbankDao {
 		this.paoDao = paoDao;
 	}
 
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-    public boolean add(Capbank bank) {
-		Connection connection = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-		
+    @Override
+    public boolean add(Capbank bank) {		
 		DeviceBase device = DeviceFactory.createDevice(PAOGroups.CAPBANK);
-		device.setDbConnection(connection);
 		
 		//Set what the factory didn't
 		int newId = paoDao.getNextPaoId();
@@ -154,17 +140,15 @@ public class CapbankDaoImpl implements CapbankDao {
 		
 		//create the Status Point for this CapBank
 		PointBase statusPoint = PointFactory.createBankStatusPt(newId);
-		statusPoint.setDbConnection(connection);
 		smartDB.addDBPersistent(statusPoint);
 		
 		//create the Analog Point for this CapBank used to track Op Counts
 		PointBase analogPoint = PointFactory.createBankOpCntPoint(newId);
-		analogPoint.setDbConnection(connection);
 		smartDB.addDBPersistent(analogPoint);
 		
 		try {
-			smartDB.add();
-		} catch(SQLException e) {
+			Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, smartDB).execute();
+		} catch (TransactionException e) {
 			CTILogger.error("Insert of CapBank, " + bank.getName() + ", failed.");
 			return false;
 		}
@@ -195,7 +179,7 @@ public class CapbankDaoImpl implements CapbankDao {
         return result;
     }
 	
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+    @Override
     public boolean remove(Capbank bank) {
     	
     	simpleJdbcTemplate.update(removeSql,bank.getId());
@@ -204,24 +188,20 @@ public class CapbankDaoImpl implements CapbankDao {
     	DeviceBase device = DeviceFactory.createDevice(PAOGroups.CAPBANK);
     	device.setDeviceID(bank.getId());
 		
-    	//delete points
-    	
-    	try {
-    		device.delete();
-    	} catch (SQLException e) {
-    		CTILogger.error("Removal of CapBank Failed: " + bank.getName());
-    		return false;
-    	}
+    	//TODO: delete points
+		try {
+			Transaction.createTransaction(com.cannontech.database.Transaction.DELETE, device).execute();
+		} catch (TransactionException e) {
+			CTILogger.error("Removal of CapBank Failed: " + bank.getName());
+			return false;
+		}
     	
 		return true;
     }
     
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+    @Override
     public boolean update(Capbank bank) {
-    	Connection connection = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-		
 		DeviceBase device = DeviceFactory.createDevice(PAOGroups.CAPBANK);
-		device.setDbConnection(connection);
 
 		//Set what the factory didn't
 		device.setPAOCategory(PAOGroups.STRING_CAT_DEVICE);
@@ -230,10 +210,10 @@ public class CapbankDaoImpl implements CapbankDao {
 		device.setPAODescription(bank.getDescription());
 		
 		try {
-			device.update();
-		} catch (SQLException e) {
-			CTILogger.debug("Update of Capbank in YukonPAObject table failed for bank: " + bank.getName());
-			return false;			
+			Transaction.createTransaction(com.cannontech.database.Transaction.UPDATE, device).execute();
+		} catch (TransactionException e) {
+			CTILogger.error("Update of Capbank in YukonPAObject table failed for bank: " + bank.getName());
+			return false;
 		}
 
     	int rowsAffected = simpleJdbcTemplate.update(updateSql,bank.getOperationalState().name(),

@@ -9,29 +9,6 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.pao.YukonPAObject;
 
 public interface PaoDao {
-    
-	/**
-	 * Inserts Pao into the YukonPAObject table.
-	 * 
-	 * @param litePao
-	 * @return
-	 */
-	public boolean add(YukonPAObject pao);
-	
-	/**
-	 * Removes Pao from the YukonPAObject table.
-	 * @param litePao
-	 * @return
-	 */
-	public boolean remove(YukonPAObject pao);
-	
-	/**
-	 * Updates Pao in the YukonPAObject table.
-	 * 
-	 * @param litePao
-	 * @return
-	 */
-	public boolean update(YukonPAObject pao);
 	
     public YukonPao getYukonPao(int paoId);
     

@@ -13,6 +13,7 @@ public class CapbankController {
 	private int slaveAddress;
 	private int postCommWait;
 	
+	private boolean scanEnabled;
 	private String scanType;
 	private int intervalRate;
 	private int scanGroup;
@@ -126,6 +127,14 @@ public class CapbankController {
 		this.portId = portId;
 	}
 
+	public boolean isScanEnabled() {
+		return scanEnabled;
+	}
+
+	public void setScanEnabled(boolean scanEnabled) {
+		this.scanEnabled = scanEnabled;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -138,6 +147,7 @@ public class CapbankController {
 		result = prime * result + portId;
 		result = prime * result + postCommWait;
 		result = prime * result + routeId;
+		result = prime * result + (scanEnabled ? 1231 : 1237);
 		result = prime * result + scanGroup;
 		result = prime * result
 				+ ((scanType == null) ? 0 : scanType.hashCode());
@@ -174,6 +184,8 @@ public class CapbankController {
 		if (postCommWait != other.postCommWait)
 			return false;
 		if (routeId != other.routeId)
+			return false;
+		if (scanEnabled != other.scanEnabled)
 			return false;
 		if (scanGroup != other.scanGroup)
 			return false;

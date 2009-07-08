@@ -62,52 +62,6 @@ public final class PaoDaoImpl implements PaoDao {
     private IDatabaseCache databaseCache;
     private NextValueHelper nextValueHelper;
     private AuthDao authDao;
-
-	@Override
-	public boolean add(YukonPAObject pao) {
-		int id = getNextPaoId();
-		pao.setPaObjectID(id);
-		Connection connection = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-		pao.setDbConnection(connection);
-		
-		try{
-			pao.add();
-		} catch (SQLException e) {
-			CTILogger.error("Error inserting, " + pao.getPaoName() + ", into YukonPAObject Table.");
-			return false;
-		}
-		
-		return true;
-	}
-
-	@Override
-	public boolean remove(YukonPAObject pao) {
-		try{
-			Connection connection = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-			pao.setDbConnection(connection);
-			pao.delete();
-		} catch (SQLException e) {
-			CTILogger.error("Error removing, " + pao.getPaoName() + ", from YukonPAObject Table.");
-			return false;
-		}
-		
-		return true;
-	}
-    
-	@Override
-	public boolean update(YukonPAObject pao) {
-		try{
-			Connection connection = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-			pao.setDbConnection(connection);
-			pao.update();
-		} catch (SQLException e) {
-			CTILogger.error("Error updating, " + pao.getPaoName() + ", in YukonPAObject Table.");
-			return false;
-		}
-		
-		return true;
-	}
-	
 	
     /*
      * (non-Javadoc)

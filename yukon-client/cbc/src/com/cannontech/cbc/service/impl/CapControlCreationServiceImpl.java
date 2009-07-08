@@ -1,10 +1,7 @@
 package com.cannontech.cbc.service.impl;
 
-import java.sql.Connection;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
-
 import com.cannontech.cbc.dao.AreaDao;
 import com.cannontech.cbc.dao.CapbankControllerDao;
 import com.cannontech.cbc.dao.SubstationBusDao;
@@ -20,15 +17,11 @@ import com.cannontech.cbc.model.SubstationBus;
 import com.cannontech.cbc.service.CapControlCreationService;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.PoolManager;
-import com.cannontech.database.data.device.DeviceBase;
-import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.common.device.DeviceType;
-import com.cannontech.common.util.CtiUtilities;
 
 public class CapControlCreationServiceImpl implements CapControlCreationService {
 
@@ -216,7 +209,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	@Override
 	public boolean createControllerFromTemplate(String template, CapbankController controller) {
 		//Dao must set type in controller.
-		boolean success = capbankControllerDao.copyTemplateController(template, controller);
+		boolean success = capbankControllerDao.createControllerFromTemplate(template, controller);
 
 		if (success) {
 			String devType = DeviceType.getForId(controller.getType()).name();
