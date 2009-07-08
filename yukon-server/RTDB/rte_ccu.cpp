@@ -40,8 +40,10 @@
 
 #define MAX_EXPRESSCOM_IN_EMETCON_LENGTH 18
 
-static INT NoQueingVersacom   = gConfigParms.getValueAsInt("VERSACOM_CCU_NOQUEUE",   FALSE);
-static INT NoQueingExpresscom = gConfigParms.getValueAsInt("EXPRESSCOM_CCU_NOQUEUE", FALSE);
+static bool NoQueingVersacom   = gConfigParms.isTrue("VERSACOM_CCU_NOQUEUE");
+static bool NoQueingEmetcon    = gConfigParms.isTrue("EMETCON_CCU_NOQUEUE");
+static bool NoQueingExpresscom = gConfigParms.isTrue("EXPRESSCOM_CCU_NOQUEUE");
+static bool NoQueing = gConfigParms.isTrue("CCU_NOQUEUE");
 
 INT CtiRouteCCU::ExecuteRequest(CtiRequestMsg            *pReq,
                                 CtiCommandParser         &parse,
@@ -67,8 +69,7 @@ INT CtiRouteCCU::ExecuteRequest(CtiRequestMsg            *pReq,
             OutMessage->Port     = _transmitterDevice->getPortID();
             OutMessage->Remote   = _transmitterDevice->getAddress();    // This is the DLC address if the CCU.
 
-            //  do not allow queing if this is a foreign CCU port (shared CCU)
-            if( gForeignCCUPorts.find(OutMessage->Port) != gForeignCCUPorts.end() )
+            if( NoQueing || isForeignCcuPort(OutMessage->Port) )
             {
                 OutMessage->EventCode |=  DTRAN;
                 OutMessage->EventCode &= ~QUEUED;
@@ -380,6 +381,12 @@ INT CtiRouteCCU::assembleDLCRequest(CtiCommandParser     &parse,
         }
         case TYPE_CCU711:
         {
+            if(NoQueingEmetcon)
+            {
+                OutMessage->EventCode &= ~QUEUED;
+                OutMessage->EventCode |=  DTRAN;
+            }
+
             if(OutMessage->EventCode & DTRAN)
             {
                 if( OutMessage->EventCode & BWORD )

@@ -81,8 +81,9 @@ IM_EX_CTIBASE int           gDefaultPortCommFailCount = 5;
 IM_EX_CTIBASE unsigned char gMCT400SeriesSPID = 0xFF;
 IM_EX_CTIBASE short         gSimulatePorts = 0;
 IM_EX_CTIBASE set<long>     gSimulatedPorts;
-IM_EX_CTIBASE set<long>     gForeignCCUPorts;
 IM_EX_CTIBASE set<long>     gScanForceDevices;
+
+set<long> ForeignCCUPorts;
 
 /*
  *  These are global to the ctibase, but
@@ -474,13 +475,13 @@ DLLEXPORT void InitYukonBaseGlobals(void)
         string id_str;
         long   id;
 
-        gForeignCCUPorts.clear();
+        ForeignCCUPorts.clear();
 
         while( (tok_iter != tok.end()) && !(id_str = *tok_iter++).empty() )
         {
             if( id = atol(id_str.c_str()) )
             {
-                gForeignCCUPorts.insert(id);
+                ForeignCCUPorts.insert(id);
             }
         }
     }
@@ -514,7 +515,10 @@ DLLEXPORT INT getDebugLevel(void)
     return DebugLevel;
 }
 
-
+DLLEXPORT INT isForeignCcuPort(INT portid)
+{
+    return ForeignCCUPorts.find(portid) != ForeignCCUPorts.end();
+}
 
 
 

@@ -225,7 +225,7 @@ protected:
         FuncRead_MultiDayDailyReportingMaxOffset = 0x0f,
 
         FuncRead_Channel1SingleDayBasePos   = 0x30,
-        FuncRead_Channel1SingleDayLen       =    9,
+        FuncRead_Channel1SingleDayLen       =   11,
         FuncRead_Channel1SingleDayMaxOffset = 0x07,
 
         FuncRead_FrozenMReadPos   = 0x91,

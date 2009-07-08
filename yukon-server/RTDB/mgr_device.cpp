@@ -15,8 +15,6 @@
 
 #include <rw/db/db.h>
 
-#include "boost/multi_array/algorithm.hpp"
-
 #include "mgr_device.h"
 #include "debug_timer.h"
 #include "cparms.h"
