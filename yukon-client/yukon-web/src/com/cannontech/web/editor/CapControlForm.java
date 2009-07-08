@@ -4,13 +4,11 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.faces.application.FacesMessage;
@@ -22,12 +20,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.Validate;
-import org.apache.myfaces.custom.tree2.HtmlTree;
-import org.apache.myfaces.custom.tree2.TreeModel;
-import org.apache.myfaces.custom.tree2.TreeModelBase;
-import org.apache.myfaces.custom.tree2.TreeNode;
-import org.apache.myfaces.custom.tree2.TreeNodeBase;
-import org.apache.myfaces.custom.tree2.TreeStateBase;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.cbc.cache.CapControlCache;
@@ -95,13 +87,11 @@ import com.cannontech.web.editor.data.CBCSpecialAreaData;
 import com.cannontech.web.editor.model.CBCSpecialAreaDataModel;
 import com.cannontech.web.editor.model.CapControlStrategyModel;
 import com.cannontech.web.editor.model.DataModelFactory;
-import com.cannontech.web.editor.point.PointLists;
 import com.cannontech.web.exceptions.AltBusNeedsSwitchPointException;
 import com.cannontech.web.navigation.CtiNavObject;
 import com.cannontech.web.util.CBCDBUtil;
 import com.cannontech.web.util.CBCSelectionLists;
 import com.cannontech.web.util.JSFParamUtil;
-import com.cannontech.web.util.JSFTreeUtils;
 import com.cannontech.web.util.JSFUtil;
 import com.cannontech.web.wizard.CBCWizardModel;
 import com.cannontech.yukon.cbc.SubStation;
@@ -128,10 +118,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	// possible editor for the CBC a CapBank belongs to
 	private ICBControllerModel cbControllerEditor = null;
 	private PointTreeForm pointTreeForm = null;
-	private LiteYukonPAObject[] unusedCCPAOs = null;
 	// selectable items that appear in lists on the GUI
-	private SelectItem[] kwkvarPaos = null;
-	private SelectItem[] kwkvarPoints = null;
 	private SelectItem[] cbcStrategies = null;
 	private SelectItem[] cbcHolidayStrategies = null;
     private SelectItem[] cbcSchedules = null;
@@ -139,17 +126,9 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	// variables that hold sub bus info
 	protected List<LiteYukonPAObject> subBusList = null;
     private Integer oldSubBus = null;
-    //contains the offset variables
-    private Map<String, String> offsetMap = new HashMap<String, String>();
 	// Boolean to keep track of the disable dual subbus status
-	// by default will be set to true
     private Boolean enableDualBus = Boolean.FALSE;
-	private HtmlTree dualBusSwitchPointTree;
 	private boolean isDualSubBusEdited;
-    private boolean switchPointEnabled = true;
-    private TreeNode varTreeData = null;
-    private TreeNode wattTreeData = null;
-    private TreeNode voltTreeData = null;
     private SelectItem[] controlMethods = null;
     private Map<Integer, String> paoNameMap = null;
     private Map<Integer, String> pointNameMap = null;
@@ -310,30 +289,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         return cbcHolidayStrategiesMap;
     }
 
-	public SelectItem[] getKwkvarPaos() {
-		if (kwkvarPaos == null) {
-			PointLists pLists = new PointLists();
-			LiteYukonPAObject[] lPaos = pLists.getPAOsByUofMPoints(PointUnits.CAP_CONTROL_VAR_UOMIDS);
-			SelectItem[] temp = new SelectItem[lPaos.length];
-			for (int i = 0; i < temp.length; i++) {
-				temp[i] = new SelectItem(new Integer(lPaos[i].getLiteID()), lPaos[i].getPaoName());
-            }
-			// add the none PAObject to this list
-			kwkvarPaos = new SelectItem[temp.length + 1];
-			kwkvarPaos[0] = new SelectItem(new Integer(LiteYukonPAObject.LITEPAOBJECT_NONE.getLiteID()), LiteYukonPAObject.LITEPAOBJECT_NONE.getPaoName());
-			System.arraycopy(temp, 0, kwkvarPaos, 1, temp.length);
-		}
-		return kwkvarPaos;
-	}
-
-	public SelectItem[] getKwkvarPoints() {
-		if (kwkvarPoints == null) {
-			kwkvarPoints = new SelectItem[1];
-			kwkvarPoints[0] = new SelectItem(new Integer(LitePoint.NONE_LITE_PT.getLiteID()), LitePoint.NONE_LITE_PT.getPointName());
-		}
-		return kwkvarPoints;
-	}
-
 	public int getCurrentStrategyID() {
 		int stratID = CtiUtilities.NONE_ZERO_ID;
         if (getDbPersistent() instanceof CapControlStrategy) {
@@ -365,119 +320,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     
     public void newHolidayScheduleSelected (ValueChangeEvent vce) {
     }
-
-	public TreeNode getVarTreeData() {
-		if (varTreeData == null){
-			varTreeData = new TreeNodeBase("root", "Var Points", false);
-			Integer [] types = { PointTypes.ANALOG_POINT, PointTypes.CALCULATED_POINT, PointTypes.DEMAND_ACCUMULATOR_POINT, PointTypes.PULSE_ACCUMULATOR_POINT};
-			List<LitePoint> points = pointDao.getLitePointsBy(types, PointUnits.CAP_CONTROL_VAR_UOMIDS, null,null,null);
-			JSFTreeUtils.createPAOTreeFromPointList (points, varTreeData, JSFParamUtil.getYukonUser());
-		}	
-		return varTreeData;
-	}
-
-	public TreeNode getWattTreeData() {
-		if (wattTreeData == null){
-			wattTreeData =  new TreeNodeBase("root", "Watt Points", false);
-            Integer [] types = { PointTypes.ANALOG_POINT, PointTypes.CALCULATED_POINT, PointTypes.DEMAND_ACCUMULATOR_POINT, PointTypes.PULSE_ACCUMULATOR_POINT};
-            List<LitePoint> points = pointDao.getLitePointsBy(types, PointUnits.CAP_CONTROL_WATTS_UOMIDS, null,null,null);
-			JSFTreeUtils.createPAOTreeFromPointList (points, wattTreeData, JSFParamUtil.getYukonUser());
-		}	
-		return wattTreeData;
-	}
-
-	public TreeNode getVoltTreeData() {
-		if (voltTreeData == null){
-			voltTreeData = new TreeNodeBase("root", "Volt Points", false);
-			Integer [] types = { PointTypes.ANALOG_POINT, PointTypes.CALCULATED_POINT, PointTypes.DEMAND_ACCUMULATOR_POINT, PointTypes.PULSE_ACCUMULATOR_POINT};
-			List<LitePoint> points = pointDao.getLitePointsBy(types, PointUnits.CAP_CONTROL_VOLTS_UOMIDS, null,null,null);
-			JSFTreeUtils.createPAOTreeFromPointList (points, voltTreeData, JSFParamUtil.getYukonUser());
-		}	
-		return voltTreeData;
-	}
-	
-	private void  resetUOFMTreeData() {
-		voltTreeData = null;
-		wattTreeData = null;
-		varTreeData = null;
-	}
-
-	/**
-	 * Returns all the unused PAOs for a control point in the system. Only do
-	 * this once with each instance of this class
-	 */
-	private LiteYukonPAObject[] getAllUnusedCCPAOs() {
-		if (unusedCCPAOs == null) {
-			unusedCCPAOs = paoDao.getAllUnusedCCPAOs(((CapBank) getDbPersistent()).getCapBank().getControlDeviceID());
-        }
-		return unusedCCPAOs;
-	}
-
-	@SuppressWarnings("unchecked")
-    public TreeNode getCapBankPoints() {
-		TreeNode rootNode = new TreeNodeBase("root", "Devices With Status Points", false);
-		if (!(getDbPersistent() instanceof CapBank)) {
-			return rootNode;
-        }
-		LiteYukonPAObject[] tempArr = getAllUnusedCCPAOs();
-		List tempList = new ArrayList ();
-        for (int i = 0; i < tempArr.length; i++) {
-            LiteYukonPAObject object = tempArr[i];
-            if (object != null) {
-                tempList.add(object);
-            }
-        }
-        LiteYukonPAObject[] lPaos = (LiteYukonPAObject[])tempList.toArray(new LiteYukonPAObject[tempList.size()]);
-        Vector typeList = new Vector(32);
-		Arrays.sort(lPaos, LiteComparators.litePaoTypeComparator);
-		int currType = Integer.MIN_VALUE;
-		TreeNodeBase paoTypeNode = null;
-		TreeNodeBase[] paoNodes = new TreeNodeBase[lPaos.length];
-		for (int i = 0; i < lPaos.length; i++) {
-			// only show CapControl speficic PAOs
-			if (!PAOGroups.isCapControl(lPaos[i])) {
-				continue;
-            }
-			if (currType != lPaos[i].getType()) {
-				paoTypeNode = new TreeNodeBase( "paoTypes", "Type: " + PAOGroups.getPAOTypeString(lPaos[i].getType()), PAOGroups.getPAOTypeString(lPaos[i].getType()), false);
-				typeList.add(paoTypeNode);
-			}
-			paoNodes[i] = new TreeNodeBase("paos", lPaos[i].getPaoName(), String.valueOf(lPaos[i].getYukonID()), false);
-			List lPoints = pointDao.getLitePointsByPaObjectId(lPaos[i].getYukonID());
-			for (int j = 0; j < lPoints.size(); j++) {
-				// status points are only allowed in this list
-				if ( ((LitePoint)lPoints.get(j)).getPointType() == PointTypes.STATUS_POINT) {
-                    TreeNode node = new TreeNodeBase("points", ((LitePoint) lPoints.get(j)).getPointName(), String.valueOf(((LitePoint) lPoints.get(j)).getPointID()), true);
-					paoNodes[i].getChildren().add(node);
-                }
-			}
-			// only show PAObjects that have 1 or more points
-			if (paoNodes[i].getChildren().size() > 0) {
-				paoTypeNode.getChildren().add(paoNodes[i]);
-            }
-			currType = lPaos[i].getType();
-		}
-		// this list will be a fixed size with a controlled max value
-		// java.util.Collections.sort( typeList, DummyTreeNode.comparator);
-		// only show types that have 1 or more points
-		for (int i = 0; i < typeList.size(); i++) {
-			paoTypeNode = (TreeNodeBase) typeList.get(i);	
-			for (int j=0; j < paoTypeNode.getChildCount(); j++) {
-				TreeNodeBase pao = (TreeNodeBase) paoTypeNode.getChildren().get(j);
-				if (pao.getChildCount() > 100) {
-					TreeNode newRoot = new TreeNodeBase("root", "temp root", false);
-					newRoot.getChildren().add(pao);
-					newRoot = JSFTreeUtils.splitTree(newRoot, 100, "sublevels");
-					TreeNodeBase newPAO = (TreeNodeBase) newRoot.getChildren().get(0);
-					paoTypeNode.getChildren().set(j, newPAO);					
-				}
-			}
-			if (paoTypeNode.getChildren().size() > 0) {
-				rootNode.getChildren().add(paoTypeNode);
-            }
-		}
-		return rootNode;
-	}
 
 	public void varPtTeeClick(ActionEvent ae) {
 		String val = (String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("ptId");
@@ -535,27 +377,10 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         }
 		if (getDbPersistent() instanceof CapControlSubBus) {
 			((CapControlSubBus) getDbPersistent()).getCapControlSubstationBus().setSwitchPointID(Integer.valueOf(val));
-			if (Integer.valueOf(val).intValue() == 0) { 
-				setSwitchPointEnabled(false);
-            } else {
-				setSwitchPointEnabled(true);
-            }
 		}
 		setDualSubBusEdited(true);
 	}
 
-	public void selectedTwoWayPointClick(ActionEvent ae) {
-	    //for some reason that works better then doin them separately
-        selectedAltSubBusClick(ae);
-    }
-
-	public void selectedAltSubBusClick(ActionEvent ae){
-	    resetCurrentDivOffset();
-	    getSelectedTwoWayPointsFormatString();
-        resetCurrentAltSubDivOffset(); 
-        getSelectedSubBusFormatString();
-    }
-	
 	public void subBusPAOsClick(ActionEvent ae) {
         String val = (String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("ptID");
         if (val == null) {
@@ -567,7 +392,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             // set the new value
             ((CapControlSubBus) getDbPersistent()).getCapControlSubstationBus().setAltSubPAOId(Integer.valueOf(val));
         }
-        //The user fiddled around ...
         setDualSubBusEdited(true);
     }
     
@@ -746,17 +570,11 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		resetStrategies();
 		resetCBCEditor();
 		resetPointTreeForm();
-		resetCurrentDivOffset();
-		resetCurrentAltSubDivOffset();
-		resetUOFMTreeData();
 		isDualSubBusEdited = false;
 		editingCBCStrategy = false;
 		unassignedBanks = null;
 		unassignedFeeders = null;
 		unassignedSubBuses = null;
-		unusedCCPAOs = null;
-		kwkvarPaos = null;
-		kwkvarPoints = null;
 		editingController = false;
         assignedStratMap = null;
         scheduleId = -1000;
@@ -825,11 +643,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         getVisibleTabs().put("CBAddInfo", Boolean.FALSE);
         getVisibleTabs().put("CBCStrategy", Boolean.FALSE);
 
-		//here you go ... this is the new era. we decide to create an area
-        //We can't call area an area because area already exists in our code.
-        //We will call that capcontrolarea
-        //Don't confuse area (description of the sub in the yukonpaobject table) with an actual
-        //capcontrolarea object
         switch (paoType) {
 
             case PAOGroups.CAP_CONTROL_AREA:
@@ -923,22 +736,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	public DBPersistent getPAOBase() {
         return getDbPersistent();
      }
-
-	public void kwkvarPaosChanged(ValueChangeEvent ev) {
-		if (ev == null || ev.getNewValue() == null) {
-			return;
-        }
-		PointLists pLists = new PointLists();
-		LitePoint[] lPoints = pLists.getPointsByUofMPAOs(((Integer) ev.getNewValue()).intValue(), PointUnits.CAP_CONTROL_VAR_UOMIDS);
-		SelectItem[] temp = new SelectItem[lPoints.length];
-		for (int i = 0; i < lPoints.length; i++) {
-			temp[i] = new SelectItem(new Integer(lPoints[i].getLiteID()), lPoints[i].getPointName());
-        }
-		// add the none LitePoint to this list
-		kwkvarPoints = new SelectItem[temp.length + 1];
-		kwkvarPoints[0] = new SelectItem(new Integer(LitePoint.NONE_LITE_PT.getLiteID()), LitePoint.NONE_LITE_PT.getPointName());
-		System.arraycopy(temp, 0, kwkvarPoints, 1, temp.length);
-	}
 
     public void clearfaces() {
         FacesMessage facesMessage = new FacesMessage();
@@ -1695,24 +1492,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	}
 
     public void initEditorPanels() {
-		if (getDbPersistent() instanceof CapControlFeeder) {
-			com.cannontech.database.db.capcontrol.CapControlFeeder capControlFeeder = ((CapControlFeeder) getDbPersistent()).getCapControlFeeder();
-			int fdrVarPtID = capControlFeeder.getCurrentVarLoadPointID().intValue();
-			LitePoint litePoint = pointDao.getLitePoint(fdrVarPtID);
-			if (litePoint != null) {
-				int paobjectID = litePoint.getPaobjectID();
-				kwkvarPaosChanged(new ValueChangeEvent(DUMMY_UI, null, new Integer(paobjectID)));
-			}
-		} else if (getDbPersistent() instanceof CapControlSubBus) {
-			int varPtID = ((CapControlSubBus) getDbPersistent()).getCapControlSubstationBus().getCurrentVarLoadPointID().intValue();
-			LitePoint litePoint = pointDao.getLitePoint(varPtID);
-			if (litePoint != null) {
-				if (varPtID > CtiUtilities.NONE_ZERO_ID) {
-					kwkvarPaosChanged(new ValueChangeEvent(DUMMY_UI, null, new Integer(litePoint.getPaobjectID())));
-                }
-			}
-		}
-
 		List<Integer> unassignedBankIDs = capbankDao.getUnassignedCapBankIds();
         unassignedBanks = new ArrayList<LiteYukonPAObject>(unassignedBankIDs.size());
 		for (Integer i : unassignedBankIDs ) {
@@ -1881,13 +1660,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		return subBusList.toArray(new LiteYukonPAObject[subBusList.size()]);
 	}
 
-	public TreeNode getSwitchPointList() {
-	    TreeNode rootData = new TreeNodeBase("root","Switch Points", false);
-        TreeSet<LitePoint> points = PointLists.getAllTwoStateStatusPoints();
-        rootData = JSFTreeUtils.createPAOTreeFromPointList(points, rootData, JSFParamUtil.getYukonUser());
-        return rootData;
-    }
-    
     public String getSelectedSubBusFormatString() {
         
 		String retString = new String();
@@ -1899,72 +1671,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 			LiteYukonPAObject liteDevice = paoDao.getLiteYukonPAO(subPAOid.intValue());
 			retString = new String(liteDevice.getPaoName());
 		}
-		// Every time the page loads we need to keep track of the
-		// currently selected value. We index the current value
-		// from the total list
-		if (this.subBusList != null && subPAOid != null) {
-			for (int i = 0; i < this.subBusList.size(); i++) {
-				LiteYukonPAObject device = this.subBusList.get(i);
-				if (device.getLiteID() == subPAOid.intValue()) {
-				    offsetMap.put("selectedSubBus", "" + i);
-                }
-            }
-		}
 		return retString;
-	}
-
-    @SuppressWarnings("unchecked")
-    public String getSelectedTwoWayPointsFormatString() {
-		String retString = new String(" ");
-		Integer pointId = null;
-
-		//variables to hold state info to expand the nodes
-		TreeModelBase model = (TreeModelBase) getTreeModelData();
-		TreeStateBase state = (TreeStateBase) model.getTreeState();
-
-		if (getDbPersistent() instanceof CapControlSubBus) {
-			pointId = ((CapControlSubBus) getDbPersistent()).getCapControlSubstationBus().getSwitchPointID();
-		}
-		TreeNode tn = this.getSwitchPointList();
-		List<TreeNodeBase> paos = tn.getChildren();
-      
-		for (int i = 0; i < paos.size(); i++) {
-			TreeNodeBase pao = paos.get(i);
-			String paoName = pao.getDescription();
-			List<TreeNodeBase> points = pao.getChildren();
-			for (int j = 0; j < points.size(); j++) {
-				TreeNodeBase point = points.get(j);
-				if (pointId.equals(new Integer(point.getIdentifier()))) {
-					retString = retString + paoName + "/" + point.getDescription();
-					//code to expand the selected node
-                    //currently TreeModelBase class accepts colon delimited
-                    //string as the node path. 0 would be the root and the
-                    //rest of the nodes would be realtive to the root such as
-                    //0:1: 0:0 would be identify 2 leaf nodes in the binary tree
-					String nodeId = "0:" + i;
-					state.expandPath(model.getPathInformation(nodeId));
-					model.setTreeState(state);
-					
-                    //set the index of the switch point selected
-					offsetMap.put("selectedSwitchPoint", "" + i);
-                }
-			}
-		}
-		return retString;
-	}
-
-	//binding to the tree model. used to expand selected node 
-    private TreeModel getTreeModelData() {
-		TreeModelBase tree = (TreeModelBase) getDualBusSwitchPointTree().getDataModel();
-		return tree;
-	}
-
-	public HtmlTree getDualBusSwitchPointTree() {
-		return dualBusSwitchPointTree;
-	}
-
-	public void setDualBusSwitchPointTree(HtmlTree tree) {
-		this.dualBusSwitchPointTree = tree;
 	}
 
     public Boolean getEnableDualBus() {
@@ -1977,14 +1684,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         setDualSubBusEdited(true);
     }
     
-    private void resetCurrentDivOffset() {
-        offsetMap.put("currentTwoWayPointDivOffset","0");
-	}
-
-    private void resetCurrentAltSubDivOffset ()  {
-		offsetMap.put("currentAltSubDivOffset","0");
-	}
-	
 	public boolean isDualSubBusEdited() {
 		return isDualSubBusEdited;
 	}
@@ -1992,14 +1691,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	public void setDualSubBusEdited(boolean isDualSubBusEdited) {
 		this.isDualSubBusEdited = isDualSubBusEdited;
 	}
-
-    public Map<String, String> getOffsetMap() {
-        return offsetMap;
-    }
-
-    public void setOffsetMap(Map<String, String> offsetMap) {
-        this.offsetMap = offsetMap;
-    }
 
     public int getSelectedPanelIndex() {
         if (isEditingController()) {
@@ -2151,14 +1842,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         }
     }
 
-	public boolean isSwitchPointEnabled() {
-		return switchPointEnabled;
-	}
-
-	public void setSwitchPointEnabled(boolean switchPointEnabled) {
-		this.switchPointEnabled = switchPointEnabled;
-	}
-	
 	//delegate to this class because generic class doesn't have to know about business rules	
 	public SelectItem[]  getControlMethods () {
     	String algorithm = getCbcStrategiesMap().get( new Integer ( getCurrentStrategyID() )).getControlUnits();

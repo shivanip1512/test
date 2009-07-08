@@ -87,8 +87,6 @@ public interface ICapControlModel {
 
     public abstract String getSelectedSubBusFormatString();
 
-    public abstract String getSelectedTwoWayPointsFormatString();
-
     public abstract Boolean getEnableDualBus();
 
     public abstract void setEnableDualBus(Boolean enableDualBus);
@@ -101,19 +99,11 @@ public interface ICapControlModel {
 
     public abstract void setOldSubBus(Integer oldSubBus);
 
-    public abstract Map<String, String> getOffsetMap();
-
-    public abstract void setOffsetMap(Map<String, String> offsetMap);
-
     public abstract int getSelectedPanelIndex();
 
     public abstract String getPaoName();
 
     public abstract LitePoint[] getCapBankPointList();
-
-    public abstract boolean isSwitchPointEnabled();
-
-    public abstract void setSwitchPointEnabled(boolean switchPointEnabled);
 
     public abstract Map<Integer, String> getPointNameMap();
 

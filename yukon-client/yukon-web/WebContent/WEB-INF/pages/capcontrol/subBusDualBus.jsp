@@ -5,7 +5,6 @@
 <f:verbatim>
 <script type="text/javascript">
 
-addSmartScrolling('currentAltSubDivOffset', 'AltSubBusScrollableDiv', 'selectedSubBus', 'AltSubBusList');
 var switchPointPicker = new PointPicker(
     'switch_point',
     'com.cannontech.common.search.criteria.CCTwoStatePointCriteria',
@@ -32,11 +31,7 @@ var switchPointPicker = new PointPicker(
 				<x:panelGroup forceId="true" id="altSubBusPanel">
 		
 					<h:outputText styleClass="tableHeader" value="Selected Alternate SubBus: " rendered="#{capControlForm.enableDualBus}"/>
-					<x:commandLink actionListener="#{capControlForm.selectedAltSubBusClick}" rendered="#{capControlForm.enableDualBus && capControlForm.editingAuthorized}">
-                        <h:outputText value="#{capControlForm.selectedSubBusFormatString}" rendered="#{capControlForm.enableDualBus}"/>
-					</x:commandLink>
-					
-					<h:outputText value="#{capControlForm.selectedSubBusFormatString}" rendered="#{capControlForm.enableDualBus && !capControlForm.editingAuthorized}"/>
+					<h:outputText value="#{capControlForm.selectedSubBusFormatString}" rendered="#{capControlForm.enableDualBus }"/>
 				
 					<x:htmlTag value="fieldSet" styleClass="fieldSet">
                         <x:htmlTag value="legend"><x:outputText value="Alternate Substation Bus"/></x:htmlTag>
@@ -44,7 +39,6 @@ var switchPointPicker = new PointPicker(
 							<x:dataList forceId="true" id="AltSubBusList" var="item" value="#{capControlForm.subBusList}" layout="unorderedList" styleClass="listWithNoBullets" rendered="#{capControlForm.enableDualBus}">
 							
 								<x:panelGroup>
-									<x:graphicImage value="/editor/images/blue_check.gif" height="14" width="14" hspace="2" rendered="#{capControlForm.PAOBase.capControlSubstationBus.altSubPAOId == item.liteID}" />
 									<x:commandLink id="ptLink" value="#{item.paoName}" actionListener="#{capControlForm.subBusPAOsClick}">
 										<f:param name="ptID" value="#{item.liteID}" />
 									</x:commandLink>
@@ -83,6 +77,4 @@ var switchPointPicker = new PointPicker(
 			</x:panelGrid>
 	    </x:htmlTag>
 	</f:subview>
-	<x:inputHidden forceId="true" id="selectedSubBus" value="#{capControlForm.offsetMap['selectedSubBus']}" />
-	<x:inputHidden forceId="true" id="currentAltSubDivOffset" value="#{capControlForm.offsetMap['currentAltSubDivOffset']}" />
 </f:subview>

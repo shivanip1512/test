@@ -483,5 +483,4 @@
             </div>
         </div>
 	</f:verbatim>
-	<x:inputHidden id="capbankHiden" forceId="true" value="#{capControlForm.offsetMap['capbankHiden']}" />
 </f:subview>

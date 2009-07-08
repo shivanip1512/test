@@ -144,20 +144,14 @@ public class CapBankEditorForm extends DBEditorForm {
         if (unassignedPoints == null) {
             unassignedPoints = new ArrayList<CapBankMonitorPointParams>();
             CapBank capBank = ((CapBank) getDbPersistent());
-            int controlDeviceId = capBank.getCapBank()
-                                         .getControlDeviceID()
-                                         .intValue();
+            int controlDeviceId = capBank.getCapBank().getControlDeviceID().intValue();
             if (controlDeviceId > 0) {
                 List<LitePoint> allPoints = pointDao.getLitePointsByPaObjectId(controlDeviceId);
                 for (int i = 0; i < allPoints.size(); i++) {
                     LitePoint point = allPoints.get(i);
                     if (point.getUofmID() == PointUnits.UOMID_VOLTS) {
                         CapBankMonitorPointParams monitorPoint = new CapBankMonitorPointParams(point);
-                        // set the cap bank id to replace the CBC if with Cap
-                        // Bank Id
-                        monitorPoint.setCapBankId(capBank.getCapBank()
-                                                         .getDeviceID()
-                                                         .intValue());
+                        monitorPoint.setCapBankId(capBank.getCapBank().getDeviceID().intValue());
                         // set the feeder limits by default
                         setDefaultFeederLimits(capBank, monitorPoint);
 

@@ -91,7 +91,7 @@
                             </c:when>
                             <c:otherwise>
                                 <a href="/editor/cbcBase.jsf?type=3&itemid=${item.strategyID}">
-                                    <img class="rAlign editImg" src="/WebConfig/yukon/Icons/help.gif" />
+                                    <img class="rAlign editImg" src="/WebConfig/yukon/Icons/information.gif" />
                                 </a>
                             </c:otherwise>
                         </c:choose>
