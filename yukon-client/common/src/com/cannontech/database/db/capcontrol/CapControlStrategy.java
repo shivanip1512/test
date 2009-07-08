@@ -56,6 +56,7 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
     private String integrateFlag = "N";
     private Integer integratePeriod = new Integer (0);
     private String likeDayFallBack = "N";
+    private String endDaySettings = CtiUtilities.STRING_NONE;
 	public static final String CNTRL_INDIVIDUAL_FEEDER = "IndividualFeeder";
 	public static final String CNTRL_SUBSTATION_BUS = "SubstationBus";
 	public static final String CNTRL_BUSOPTIMIZED_FEEDER= "BusOptimizedFeeder";
@@ -71,7 +72,7 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 		"PeakLag", "PeakLead", "OffPkLag", "OffPkLead", 
         "PeakVARLag", "PeakVARLead" , "OffPkVARLag", "OffPkVARLead",
         "PeakPFSetPoint", "OffPkPFSetPoint", "IntegrateFlag", "IntegratePeriod",
-        "LikeDayFallBack"
+        "LikeDayFallBack", "EndDaySettings"
 	};
 	public static final String CONSTRAINT_COLUMNS[] = { "StrategyID" };
 	public static final String TABLE_NAME = "CapControlStrategy";
@@ -97,7 +98,7 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 			getPeakLag(), getPeakLead(), getOffPkLag(), getOffPkLead(),
             getPkVarLag(), getPkVarLead(), getOffPkLag(), getOffPkLead(),
             getPkPFPoint(), getOffPkPFPoint(), getIntegrateFlag(), getIntegratePeriod(), 
-            getLikeDayFallBack()
+            getLikeDayFallBack(), getEndDaySettings()
 		};
 		add( TABLE_NAME, addValues );
 	}
@@ -338,6 +339,9 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
             setPkPFPoint((Double) results[22]);
             setOffPkPFPoint((Double) results [23]);
             setIntegrateFlag((String)results[24]);
+            setIntegratePeriod((Integer)results[25]);
+            setLikeDayFallBack((String)results[26]);
+            setEndDaySettings((String)results[27]);
         } else {
 			throw new IncorrectResultSizeDataAccessException(SETTER_COLUMNS.length, results.length);
 		}
@@ -457,7 +461,7 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 			getPeakLag(), getPeakLead(), getOffPkLag(), getOffPkLead(),
             getPkVarLag(), getPkVarLead(), getOffpkVarLag(), getOffpkVarLead(),
             getPkPFPoint(), getOffPkPFPoint(), getIntegrateFlag(), getIntegratePeriod(),
-            getLikeDayFallBack()
+            getLikeDayFallBack(), getEndDaySettings()
 		};
 		Object constraintValues[] = { getStrategyID() };
 		update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
@@ -523,7 +527,7 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 		   "PeakLag, PeakLead, OffPkLag, OffPkLead, " + 
            "PeakVARLag, PeakVARLead , OffPkVARLag , OffPkVARLead," + 
            "PeakPFSetPoint, OffPkPFSetPoint, IntegrateFlag, IntegratePeriod," +
-           "LikeDayFallBack" +
+           "LikeDayFallBack, EndDaySettings" +
 		   " from " + TABLE_NAME + " order by StrategyName";
 
 		try {		
@@ -565,6 +569,7 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
                     cbcStrat.setIntegrateFlag(new String (rset.getString(26)));
                     cbcStrat.setIntegratePeriod(new Integer (rset.getInt(27)));
                     cbcStrat.setLikeDayFallBack(new String (rset.getString(28)));
+                    cbcStrat.setEndDaySettings(new String (rset.getString(29)));
                     list.add( cbcStrat );				
 				}
 
@@ -875,5 +880,13 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 	public void setLikeDayFallBack(String likeDayFallBack) {
 		this.likeDayFallBack = likeDayFallBack;
 	}
+	
+	public String getEndDaySettings() {
+        return endDaySettings;
+    }
+
+    public void setEndDaySettings(String endDaySettings) {
+        this.endDaySettings = endDaySettings;
+    }
 
 }

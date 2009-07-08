@@ -23,7 +23,7 @@
 			if ($("Peak_Lagging")) {
 				$("Peak_Lagging").value = "0.0";
 			}
-			if($ ("Offpeak_Lagging")) {
+			if($("Offpeak_Lagging")) {
 				$("Offpeak_Lagging").value = "0.0";
 			}
 			if($("peak_upper")) {
@@ -187,28 +187,35 @@
                     title="Check to use like-day history control on this strategy."/>
             </x:htmlTag>
 	
-            <x:panelGrid forceId="true" rendered="#{!capControlForm.timeOfDay}" columnClasses="gridCell">
-                <h:column>
                     <x:htmlTag value="fieldset" styleClass="fieldSet">
                         <x:htmlTag value="legend">
                             <x:outputText value="Strategy Operations" />
                         </x:htmlTag>
-                        <x:outputLabel for="Max_Daily_Ops" value="Max Daily Operations: " title="The total number of controls allowed per day"/>
-                        <x:inputText id="Max_Daily_Ops" styleClass="char16Label" required="true"
-                            disabled="#{!capControlForm.editingCBCStrategy}"
-                            value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].maxDailyOperation}" >
-                            <f:validateLongRange minimum="0" maximum="9999" />
-                        </x:inputText>
-                        <x:outputText id="MaxDailyOpsDesc" value="(0 = unlimited)"/>
-	
-                        <x:htmlTag value="br"/>
+                        <x:panelGrid columns="2">
+	                        <x:outputLabel for="Max_Daily_Ops" value="Max Daily Operations: " title="The total number of controls allowed per day"/>
+	                        <x:panelGroup>
+		                        <x:inputText id="Max_Daily_Ops" styleClass="char16Label" required="true"
+		                            disabled="#{!capControlForm.editingCBCStrategy}"
+		                            value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].maxDailyOperation}" >
+		                            <f:validateLongRange minimum="0" maximum="9999" />
+		                        </x:inputText>
+		                        <x:outputText id="MaxDailyOpsDesc" value="(0 = unlimited)"/>
+	                        </x:panelGroup>
+	                        
+	                        <x:outputLabel for="endOfDayOperation" value="End of Day Operation: " title="End the day on this operation."/>
+	                        <x:selectOneMenu rendered="#{!capControlForm.timeOfDay}" id="endOfDayOperation" disabled="#{!capControlForm.editingCBCStrategy}"
+	                        value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].endDaySettings}" >
+		                        <f:selectItem itemValue="(none)" itemLabel="(none)" />
+		                        <f:selectItem itemValue="Trip" itemLabel="Trip" />
+		                        <f:selectItem itemValue="Close" itemLabel="Close" />
+		                    </x:selectOneMenu>
+                        </x:panelGrid>
+                        
                         <h:selectBooleanCheckbox id="Disabled_Ops" value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].maxOperationDisabled}"
                             disabled="#{!capControlForm.editingCBCStrategy}" />
                         <x:outputLabel for="Disabled_Ops" value="Disable upon reaching max operations" 
                             title="Option to disable automatic control on this device upon reaching the max number of operations."/>
                     </x:htmlTag>
-                </h:column>
-            </x:panelGrid>
         </h:column>
 
         <h:column rendered="#{capControlForm.currentStrategyID != 0 && (!capControlForm.timeOfDay)}" >
@@ -217,7 +224,7 @@
 	                <x:outputText value="Strategy Peaks" />
 	            </x:htmlTag>
                 
-                <x:panelGrid forceId="true" id="strategyPeaksGrid" columns="2" columnClasses="gridCell,gridCell">
+                <x:panelGrid forceId="true" id="strategyPeaksGrid" columns="2">
                 
                     <x:outputLabel for="Control_Algorithm" value="Control Algorithm: " title="The units and process we use to make control decisions"/>
                     <x:selectOneMenu id="Control_Algorithm" onchange="controlAlgoChanged();" disabled="#{!capControlForm.editingCBCStrategy}"
@@ -246,7 +253,7 @@
 
                 </x:panelGrid>
                 
-                <x:panelGrid forceId="true" id="peakSettingsGrid" columns="3" columnClasses="gridCellMedium,gridCellMedium,gridCellMedium"> 
+                <x:panelGrid forceId="true" id="peakSettingsGrid" columns="3"> 
                     <x:outputText value=" "/>
                     <x:outputText value="Peak" style="font-weight: bold; padding: 3; text-align: center;"/>
                     <x:outputText value="Off Peak" style="font-weight: bold; padding: 3; text-align: center;"/>
@@ -467,7 +474,7 @@
                 <x:htmlTag value="legend">
                     <x:outputText value="Strategy Settings" />
                 </x:htmlTag>
-                <x:panelGrid forceId="true" id="settingsGrid" columns="2" columnClasses="gridColumn,gridColumn">
+                <x:panelGrid forceId="true" id="settingsGrid" columns="2">
                     <x:panelGrid forceId="true" id="weekdayGrid" columns="3" cellspacing="3">
                         
                         <f:facet name="header"><x:outputText value="Weekday" styleClass="medLabel"/></f:facet>
