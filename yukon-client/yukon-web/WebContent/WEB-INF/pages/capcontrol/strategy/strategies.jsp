@@ -72,9 +72,9 @@
                     <td><c:out value="${item.controlMethod}" /></td>
                     <td><c:out value="${item.controlUnits}" /></td>
                     <td>
-                        <c:out value="${item.peakStartTime}"/>
+                        <cti:formatDuration value="${item.peakStartTime * 1000}" type="HM_SHORT"/>
                         <c:out value="/"/>
-                        <c:out value="${item.peakStopTime}"/>
+                        <cti:formatDuration value="${item.peakStopTime * 1000}" type="HM_SHORT"/>
                     </td>
                     <td><c:out value="${item.controlIntervalString}"/></td>
                     <td><c:out value="${item.minResponseTimeString}"/></td>

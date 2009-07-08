@@ -55,7 +55,8 @@ public strictfp class DurationFormattingServiceImpl implements DurationFormattin
             	seconds = (int) ((tempDuration + 500) / MILLIS_IN_SECOND);
             	break;
             case HMS :
-            case HM : 
+            case HM :
+            case HM_SHORT : 
             case H : 
             	hours = (int) (tempDuration / MILLIS_IN_HOUR);
             	tempDuration = tempDuration - (MILLIS_IN_HOUR * hours);
@@ -175,7 +176,8 @@ public strictfp class DurationFormattingServiceImpl implements DurationFormattin
             			minutes, 
             			seconds};
             }
-
+            
+            case HM_SHORT :
             case HM : {
             	return new Object[] { 
             	        hours, 
