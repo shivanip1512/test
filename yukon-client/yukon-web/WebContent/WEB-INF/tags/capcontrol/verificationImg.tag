@@ -7,7 +7,7 @@
                     
 <span id="verification_span_${paoId}" style="display: none;">
     <span class="popupImg" onmouseover="statusMsg(this, 'Currently being used in a Verification schedule');">
-        <img src="/capcontrol/images/flag_red.gif"/>
+        <img src="/capcontrol/images/flag_red.gif" style="vertical-align: middle;"/>
     </span>
 </span>                    
                     

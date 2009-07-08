@@ -6,13 +6,13 @@
 <input type="hidden" id="warning_${paoId}" value='<cti:capControlValue paoId="${paoId}" type="${type}" format="WARNING_FLAG"/>'></input>
                     
 <span id="warning_${paoId}_ok" style="display: none;">
-    <img src="/capcontrol/images/green.gif"/>
+    <img src="/capcontrol/images/green.gif" style="vertical-align: middle;"/>
 </span>
 
 <span id="warning_${paoId}_alert" style="display: none;" 
       onmouseover="showDynamicPopup($('warningPopup_${paoId}'));" 
       onmouseout="nd();">
-    <img src="/capcontrol/images/yellow.gif"/>
+    <img src="/capcontrol/images/yellow.gif" style="vertical-align: middle;"/>
 </span>
 
 <cti:dataUpdaterCallback function="updateWarningImage('warning_${paoId}')" initialize="true" value="${type}/${paoId}/WARNING_FLAG"/>            

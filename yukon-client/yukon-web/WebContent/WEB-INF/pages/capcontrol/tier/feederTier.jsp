@@ -136,15 +136,15 @@
                 <tr class="altTableCell" id="tr_substation_${substation.ccId}">
                     <td id="anc_${thisSubStationId}">
                         <a title="Edit" class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${substation.ccId}">
-                            <img class="rAlign editImg" src="${editInfoImage}">
+                            <img class="rAlign editImg" src="${editInfoImage}" style="vertical-align: middle;">
 	                    </a>
 	                    <c:if test="${hasEditingRole}">
 		                    <a title="Delete" class="editImg" href="/editor/deleteBasePAO.jsf?value=${substation.ccId}">
-		                        <img class="rAlign editImg" src="/WebConfig/yukon/Icons/delete.gif"/>
+		                        <img class="rAlign editImg" src="/WebConfig/yukon/Icons/delete.gif" style="vertical-align: middle;"/>
 		                    </a>
 	                    </c:if>
                     	<a title="Bank Locations" class="editImg" href="/spring/capcontrol/capbank/capBankLocations?value=${substation.ccId}&specialArea=${isSpecialArea}">
-	                        <img class="rAlign editImg" src="/WebConfig/yukon/Icons/find.gif"/>
+	                        <img class="rAlign editImg" src="/WebConfig/yukon/Icons/find.gif" style="vertical-align: middle;"/>
 	                    </a>
                         ${substation.ccName}
                         <font color="red">
@@ -210,15 +210,15 @@
                 
 				<td id="subName">
 				    <a title="Edit" class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${thisSubBusId}">
-                        <img class="rAlign editImg" src="${editInfoImage}"/>
+                        <img class="rAlign editImg" src="${editInfoImage}" style="vertical-align: middle;"/>
                     </a>
 	                <c:if test="${hasEditingRole}">
 	                    <a title="Delete" class="editImg" href="/editor/deleteBasePAO.jsf?value=${thisSubBusId}">
-	                        <img class="rAlign editImg" src="/WebConfig/yukon/Icons/delete.gif"/>
+	                        <img class="rAlign editImg" src="/WebConfig/yukon/Icons/delete.gif" style="vertical-align: middle;"/>
 	                    </a>
 	                </c:if>
                    	<a title="Bank Locations" class="editImg" href="/spring/capcontrol/capbank/capBankLocations?value=${thisSubBusId}&specialArea=${isSpecialArea}">
-                        <img class="rAlign editImg" src="/WebConfig/yukon/Icons/find.gif"/>
+                        <img class="rAlign editImg" src="/WebConfig/yukon/Icons/find.gif" style="vertical-align: middle;"/>
                     </a>
                 </td>
                 <td>
@@ -383,20 +383,20 @@
                 <c:set var="thisFeederId" value="${viewfeeder.feeder.ccId}"/>
                 <input type="hidden" id="paoId_${thisFeederId}" value="${thisFeederId}"></input>
                 
-				<tr class="<ct:alternateRow odd="altTableCell" even="tableCell"/>" >
+				<tr class="<ct:alternateRow odd="altTableCell" even="tableCell"/>" style="vertical-align: middle;">
 					<td>
 						<input type="checkbox" name="cti_chkbxFdrs" value="${thisFeederId}"/>
 						
 						<a title="Edit" class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${thisFeederId}">
-                            <img class="rAlign editImg" src="${editInfoImage}"/>
+                            <img class="rAlign editImg" src="${editInfoImage}" style="vertical-align: middle;"/>
                         </a>
 	                    <c:if test="${hasEditingRole}">
 	                        <a title="Delete" class="editImg" href="/editor/deleteBasePAO.jsf?value=${thisFeederId}">
-	                            <img class="rAlign editImg" src="/WebConfig/yukon/Icons/delete.gif"/>
+	                            <img class="rAlign editImg" src="/WebConfig/yukon/Icons/delete.gif" style="vertical-align: middle;"/>
 	                        </a>
                         </c:if>
                     	<a title="Bank Locations" class="editImg" href="/spring/capcontrol/capbank/capBankLocations?value=${thisFeederId}&specialArea=${isSpecialArea}">
-	                        <img class="rAlign editImg" src="/WebConfig/yukon/Icons/find.gif"/>
+	                        <img class="rAlign editImg" src="/WebConfig/yukon/Icons/find.gif" style="vertical-align: middle;"/>
 	                    </a>
 						<span>${viewfeeder.feeder.ccName}</span>
 					</td>
@@ -482,12 +482,12 @@
                 <td><input type="checkbox" name="chkAllBanksBx" onclick="checkAll(this, 'cti_chkbxBanks');" /> </td>
                 <td>CBC Name</td>
                 <td>CB Name (Order) 
-                    <img class="rAlign popupImg" src="/WebConfig/yukon/Icons/information.gif" 
+                    <img class="rAlign popupImg" src="/WebConfig/yukon/Icons/information.gif" style="vertical-align: middle;"
                         onmouseover="statusMsg(this, 'Order is the order the CapBank will control in. Commands that can be sent to a field device are initiated from this column');" />
                 </td>                    
                 <td width="2%"></td>    
                 <td>State 
-                    <img class="rAlign popupImg" src="/WebConfig/yukon/Icons/information.gif"
+                    <img class="rAlign popupImg" src="/WebConfig/yukon/Icons/information.gif" style="vertical-align: middle;"
                         onmouseover="statusMsgAbove(this,'System Commands, those commands that do NOT send out a message to a field device, can be initiated from this column.<br> -V : Auto Volt Control (ovUv) is Disabled.<br> -U: CBC reported unsolicited state change.<br> -Q: CapBank state reflects abnormal data quality.<br> -CF: Communications Failure.<br> -P: Partial - phase imbalance.<br> -S: Significant - questionable var response on all phases.');"/>  
                         <span id="cb_state_td_hdr2" style="display:none" >[Op Count Value]</span> 
                 </td>
@@ -503,22 +503,22 @@
             <input type="hidden" id="paoId_${thisCapBankId}" value="${thisCapBankId}"></input>            
 
 			<tr id="tr_cap_${thisCapBankId}" onmouseover="highLightRow(this)" onmouseout="unHighLightRow(this)"  
-			    class="<ct:alternateRow odd="altTableCell" even="tableCell"/>" >
+			    class="<ct:alternateRow odd="altTableCell" even="tableCell"/>" style="vertical-align: middle;">
 				
                 <td>
                     <input type="checkbox" name="cti_chkbxBanks" value="${thisCapBankId}"/>
                 </td>
                 
-				<td>
+				<td style="vertical-align: middle;">
 					<c:choose>
 						<c:when test="${viewableCapBank.capBankDevice.controlDeviceID != 0}">
 					        
 					        <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${viewableCapBank.capBankDevice.controlDeviceID}">
-	                            <img class="rAlign editImg" src="${editInfoImage}"/>
+	                            <img class="rAlign editImg" src="${editInfoImage}" style="vertical-align: middle;"/>
 	                        </a>
 	                        <c:if test="${hasEditingRole}">
 		                        <a href="/editor/copyBase.jsf?itemid=${viewableCapBank.capBankDevice.controlDeviceID}&type=1>">
-	                               <img src="/WebConfig/yukon/Icons/copy.gif" border="0" height="15" width="15"/>
+	                               <img src="/WebConfig/yukon/Icons/copy.gif" border="0" height="15" width="15" style="vertical-align: middle;"/>
 	                            </a>
 	                        </c:if>
 							${viewableCapBank.controlDevice.paoName}
@@ -532,14 +532,14 @@
                         <a href="#" onclick="return GB_show(' ', 
                             '/spring/capcontrol/oneline/popupmenu?menu=pointTimestamp&cbcID=${viewableCapBank.controlDevice.liteID}',
                              500, 600)" >
-                            <img class="rAlign magnifierImg" 
+                            <img class="rAlign magnifierImg" style="vertical-align: middle;"
                                 src="/WebConfig/yukon/Icons/magnifier.gif" 
                                 onmouseover="statusMsg(this,'Click here to see the timestamp information for the cap bank controller device.');" />
                        </a>
                     </c:if>
 				</td>
 				
-                <td>
+                <td style="vertical-align: middle;">
                 	<c:choose>
 	                	<c:when test="${hasCapbankControl}">
 	                        <!--2-way device designator-->
@@ -548,11 +548,11 @@
 	                        <input id="is701x_${thisCapBankId}" type="hidden" value="${viewableCapBank.device701x}"/>
 	                        
 	                        <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${thisCapBankId}">
-	                            <img class="rAlign editImg" src="${editInfoImage}"/>
+	                            <img class="rAlign editImg" src="${editInfoImage}" style="vertical-align: middle;"/>
 	                        </a>
 		                    <c:if test="${hasEditingRole}">
 		                        <a class="editImg" href="/editor/deleteBasePAO.jsf?value=${thisCapBankId}">
-		                            <img class="rAlign editImg" src="/WebConfig/yukon/Icons/delete.gif"/>
+		                            <img class="rAlign editImg" src="/WebConfig/yukon/Icons/delete.gif" style="vertical-align: middle;"/>
 		                        </a>
 	                        </c:if>
 	                        <a href="javascript:void(0);" ${popupEvent}="getCapBankMenu('${thisCapBankId}', event);">
@@ -562,11 +562,11 @@
 						<c:otherwise>
 	                        
 	                        <a href="/editor/cbcBase.jsf?type=2&itemid=${thisCapBankId}">
-	                            <img class="rAlign editImg" src="${editInfoImage}"/>
+	                            <img class="rAlign editImg" src="${editInfoImage}" style="vertical-align: middle;"/>
 	                        </a>
 		                    <c:if test="${hasEditingRole}">
 		                        <a href="/editor/deleteBasePAO.jsf?value=${thisCapBankId}">
-		                            <img class="rAlign editImg" src="/WebConfig/yukon/Icons/delete.gif"/>
+		                            <img class="rAlign editImg" src="/WebConfig/yukon/Icons/delete.gif" style="vertical-align: middle;"/>
 		                        </a>
 	                        </c:if>
 	                        <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_NAME"/>
@@ -574,7 +574,7 @@
 					</c:choose>
 					<cti:checkRolesAndProperties value="SHOW_CB_ADDINFO">
 					   <a href="#" onclick="return GB_show('<center> Cap Bank Additional Information </center>', '/spring/capcontrol/capAddInfo?paoID=${thisCapBankId}', 500, 600)" >
-					       <img class="rAlign magnifierImg" src="/WebConfig/yukon/Icons/magnifier.gif" onmouseover="statusMsg(this, 'Click to see additional information for the cap bank.');" />
+					       <img class="rAlign magnifierImg" src="/WebConfig/yukon/Icons/magnifier.gif" onmouseover="statusMsg(this, 'Click to see additional information for the cap bank.');" style="vertical-align: middle;"/>
 					   </a>
 					</cti:checkRolesAndProperties>
 				</td>
