@@ -86,7 +86,7 @@ BOOST_AUTO_TEST_CASE(test_mgr_point_get_control_offset)
     manager.addPoint(point_status2);
     manager.addPoint(point_status3);
 
-	//  make sure everything's still copasetic
+    //  make sure everything's still copasetic
     BOOST_CHECK_EQUAL(manager.getControlOffsetEqual(device1_id, control_offset_contentious).get(), point_status1);
     BOOST_CHECK_EQUAL(manager.getControlOffsetEqual(device2_id, control_offset_contentious).get(), point_status2);
     BOOST_CHECK_EQUAL(manager.getControlOffsetEqual(device2_id, control_offset_unique).get(),      point_status3);

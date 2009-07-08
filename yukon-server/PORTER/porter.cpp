@@ -756,6 +756,11 @@ INT PorterMainFunction (INT argc, CHAR **argv)
                 continue;
             }
 
+            if(!(stricmp (argv[i], "/N")))
+            {
+                NoQueing = TRUE;
+                continue;
+            }
             if(!(stricmp (argv[i], "/W")))
             {
                 VCUWait = TRUE;

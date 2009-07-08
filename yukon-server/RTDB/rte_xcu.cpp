@@ -45,6 +45,8 @@
 #include "prot_lmi.h"
 using namespace std;
 
+static INT NoQueing = FALSE;
+
 CtiRouteXCU::CtiRouteXCU()
 {
 }

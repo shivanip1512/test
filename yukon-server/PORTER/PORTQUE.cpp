@@ -110,7 +110,9 @@ void blitzNexusFromQueue(HCTIQUEUE q, CtiConnect *&Nexus)
 
 void blitzNexusFromCCUQueue(CtiDeviceSPtr Device, CtiConnect *&Nexus)
 {
-    if(Device && !isForeignCcuPort(Device->getPortID()) && Device->getType() == TYPE_CCU711)
+    bool foreignCCU = (gForeignCCUPorts.find(Device->getPortID()) != gForeignCCUPorts.end());
+
+    if(!foreignCCU && Device && Device->getType() == TYPE_CCU711)
     {
         CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)Device->getTrxInfo();
 
@@ -156,7 +158,9 @@ struct buildLGRPQ
             return;
         }
 
-        if(!isForeignCcuPort(ccu_device->getPortID()) && !ccu_device->isInhibited())
+        bool foreignCCU = gForeignCCUPorts.find(ccu_device->getPortID()) != gForeignCCUPorts.end();
+
+        if(!foreignCCU && !ccu_device->isInhibited())
         {
             switch( ccu_device->getType() )
             {
@@ -329,7 +333,7 @@ INT CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage
 
     UINT ErrorReturnCode = (InMessage->EventCode & ~DECODED);
 
-    bool foreignCCU = isForeignCcuPort(InMessage->Port);
+    bool foreignCCU = (gForeignCCUPorts.find(InMessage->Port) != gForeignCCUPorts.end());
 
     //  if this is a foreign CCU, we're not allowed to touch the queues
     if( !foreignCCU )

@@ -454,56 +454,52 @@ int CCU721::sendCommResult(INMESS *InMessage)
                     queued_results.pop();
 
                     const OUTMESS *om = result.om;
-                    
-					if( om )
-					{
-						INMESS *im = CTIDBG_new INMESS;
+                    INMESS *im = CTIDBG_new INMESS;
 
-						OutEchoToIN(om, im);
+                    OutEchoToIN(om, im);
 
-						im->Port      = om->Port;
-						im->Remote    = om->Remote;
+                    im->Port      = om->Port;
+                    im->Remote    = om->Remote;
 
-						im->EventCode = translateKlondikeError(result.error);
-						im->Time      = result.timestamp;
-						im->InLength  = result.message.size();
+                    im->EventCode = translateKlondikeError(result.error);
+                    im->Time      = result.timestamp;
+                    im->InLength  = result.message.size();
 
-						copy(result.message.begin(), result.message.end(), im->Buffer.InMessage);
+                    copy(result.message.begin(), result.message.end(), im->Buffer.InMessage);
 
-						if( !im->EventCode )
-						{
-							im->EventCode = processInbound(om, im);
-						}
+                    if( !im->EventCode )
+                    {
+                        im->EventCode = processInbound(om, im);
+                    }
 
-						int socket_error;
-						unsigned long bytes_written;
+                    int socket_error;
+                    unsigned long bytes_written;
 
-						OUTMESS statistics_report;
+                    OUTMESS statistics_report;
 
-						statistics_report.Port          = im->Port;
-						statistics_report.DeviceID      = im->DeviceID;
-						statistics_report.TargetID      = im->TargetID;
-						statistics_report.EventCode     = im->EventCode & 0x3fff;
-						statistics_report.MessageFlags  = im->MessageFlags;
+                    statistics_report.Port          = im->Port;
+                    statistics_report.DeviceID      = im->DeviceID;
+                    statistics_report.TargetID      = im->TargetID;
+                    statistics_report.EventCode     = im->EventCode & 0x3fff;
+                    statistics_report.MessageFlags  = im->MessageFlags;
 
-						_statistics.push_back(statistics_report);
+                    _statistics.push_back(statistics_report);
 
-						if( (socket_error = im->ReturnNexus->CTINexusWrite(im, sizeof(INMESS), &bytes_written, 60L)) != NORMAL )
-						{
-							{
-								CtiLockGuard<CtiLogger> doubt_guard(dout);
-								dout << CtiTime() << " Error writing to nexus. Cti::Device::CCU721::sendCommResult() on device \"" << getName() << "\".  "
-									 << "Wrote " << bytes_written << "/" << sizeof(INMESS) << " bytes" << endl;
-							}
+                    if( (socket_error = im->ReturnNexus->CTINexusWrite(im, sizeof(INMESS), &bytes_written, 60L)) != NORMAL )
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " Error writing to nexus. Cti::Device::CCU721::sendCommResult() on device \"" << getName() << "\".  "
+                                 << "Wrote " << bytes_written << "/" << sizeof(INMESS) << " bytes" << endl;
+                        }
 
-							if( CTINEXUS::CTINexusIsFatalSocketError(socket_error) )
-							{
-								status = socket_error;
-							}
-						}
+                        if( CTINEXUS::CTINexusIsFatalSocketError(socket_error) )
+                        {
+                            status = socket_error;
+                        }
+                    }
 
-						delete om;
-					}
+                    delete om;
                 }
 
                 break;

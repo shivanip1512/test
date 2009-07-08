@@ -544,9 +544,9 @@ INT ValidateEmetconMessage(OUTMESS *&OutMessage)
 
     if(OutMessage->EventCode & BWORD)
     {
-        //  do not allow queing if this is a foreign CCU port (shared CCU), if it's a broadcast command, or if it's a timesync
-        //    This is only to handle things writing directly to the port that do not go through CtiRouteCCU::ExecuteRequest().
-        if( isForeignCcuPort(OutMessage->Port)
+        //  do not allow queing if NoQueing is set, if this is a foreign CCU port (shared CCU), if it's a broadcast command, or if it's a timesync
+        if( NoQueing
+            || (gForeignCCUPorts.find(OutMessage->Port) != gForeignCCUPorts.end())
             || (OutMessage->Remote == CCUGLOBAL)
             || (OutMessage->EventCode & TSYNC) )
         {

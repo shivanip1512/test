@@ -3579,7 +3579,9 @@ INT ValidateDevice(CtiPortSPtr Port, CtiDeviceSPtr &Device, OUTMESS *&OutMessage
 {
     INT status = NORMAL;
 
-    if(!isForeignCcuPort(Device->getPortID()) && Device->getAddress() != 0xffff && !Device->isInhibited())
+    bool foreignCCU = (gForeignCCUPorts.find(Device->getPortID()) != gForeignCCUPorts.end());
+
+    if(!foreignCCU && Device->getAddress() != 0xffff && !Device->isInhibited())
     {
         if( Device->hasTrxInfo() ) // Does this device type support TrxInfo?
         {

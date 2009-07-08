@@ -707,7 +707,7 @@ static void applyPortSendTime(const long unusedid, CtiPortSPtr PortRecord, void 
         if(PortRecord->getName()[0] == '@') return;
         if(PortRecord->isInhibited()) return;
 
-        if(isForeignCcuPort(PortRecord->getPortID())) return;
+        if(gForeignCCUPorts.find(PortRecord->getPortID()) != gForeignCCUPorts.end()) return;
 
         if(PortRecord->getProtocolWrap() == ProtocolWrapIDLC)
         {
