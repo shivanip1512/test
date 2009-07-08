@@ -38,6 +38,28 @@ class IM_EX_PROT CtiProtocolExpresscom
 {
 public:
 
+    enum AddressRanges
+    {
+        SerialMin       = 1,
+        SerialMax       = 4294967295,
+        SpidMin         = 1,
+        SpidMax         = 65534,
+        GeoMin          = 1,
+        GeoMax          = 65534,
+        SubstationMin   = 1,
+        SubstationMax   = 65534,
+        FeederMin       = 0,        // Feeder is a 16 bit bitfield.  Range = 0x0000 to 0xFFFF
+        FeederMax       = 65535,
+        ZipMin          = 1,
+        ZipMax          = 16777214,
+        UserMin         = 1,
+        UserMax         = 65534,
+        ProgramMin      = 1,
+        ProgramMax      = 254,
+        SplinterMin     = 1,
+        SplinterMax     = 254
+    };
+
     typedef enum
     {
         atLoad          = 0x8000,           // Load level addressing
@@ -252,6 +274,9 @@ private:
     INT configureTargetLoadAmps(CtiCommandParser &parse);
     INT priority(BYTE priority);
     INT parseTargetAddressing(CtiCommandParser &parse);
+
+    bool validateAddress(const unsigned int address, const AddressRanges min, const AddressRanges max);
+
     unsigned short addCRC(unsigned short crc, unsigned char data);
     void calcCRC(std::vector< BYTE >::iterator data, unsigned char len);
     static unsigned short crctbl[256];
@@ -284,7 +309,7 @@ public:
     /*
      * This method incorporates all the assigned addressing into the parse object.
      */
-    void addAddressing( UINT serial = 0, USHORT spid = 0, USHORT geo = 0, USHORT substation = 0, USHORT feeder = 0, UINT zip = 0, USHORT uda = 0, BYTE program = 0, BYTE splinter = 0);
+    INT addAddressing( UINT serial = 0, USHORT spid = 0, USHORT geo = 0, USHORT substation = 0, USHORT feeder = 0, UINT zip = 0, USHORT uda = 0, BYTE program = 0, BYTE splinter = 0);
     INT parseAddressing(CtiCommandParser &parse);
 
     enum
