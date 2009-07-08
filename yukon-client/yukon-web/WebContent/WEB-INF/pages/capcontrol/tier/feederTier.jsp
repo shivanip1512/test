@@ -201,10 +201,10 @@
 	<c:forEach var="viewableSubBus" items="${subBusList}">
 			<c:set var="thisSubBusId" value="${viewableSubBus.subBus.ccId}"/>
             <input type="hidden" id="paoId_${viewableSubBus.subBus.ccId}" value="${thisSubBusId}"></input>
-			<tr class="<ct:alternateRow odd="altTableCell" even="tableCell"/>"  id="tr_sub_${thisSubBusId}">
+			<tr class="<ct:alternateRow odd="altTableCell" even="tableCell"/>"  id="tr_sub_${thisSubBusId}" style="vertical-align: middle;">
 				
-                <td id="anc_${thisSubBusId}"><input type="checkbox" name="cti_chkbxSubBuses" value="${thisSubBusId}"/>
-					<input type="image" id="showSnap${thisSubBusId}" src="/capcontrol/images/nav-plus.gif" 
+                <td id="anc_${thisSubBusId}"><input type="checkbox" name="cti_chkbxSubBuses" value="${thisSubBusId}" style="vertical-align: middle;"/>
+					<input type="image" id="showSnap${thisSubBusId}" src="/capcontrol/images/nav-plus.gif" style="vertical-align: middle;"
 					   onclick="showRowElems( 'subSnapShot${thisSubBusId}', 'showSnap${thisSubBusId}'); return false;"/>
 				</td>
                 
@@ -385,7 +385,7 @@
                 
 				<tr class="<ct:alternateRow odd="altTableCell" even="tableCell"/>" style="vertical-align: middle;">
 					<td>
-						<input type="checkbox" name="cti_chkbxFdrs" value="${thisFeederId}"/>
+						<input type="checkbox" name="cti_chkbxFdrs" value="${thisFeederId}" style="vertical-align: middle;"/>
 						
 						<a title="Edit" class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${thisFeederId}">
                             <img class="rAlign editImg" src="${editInfoImage}" style="vertical-align: middle;"/>
