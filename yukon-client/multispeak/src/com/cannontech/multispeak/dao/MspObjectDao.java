@@ -70,7 +70,29 @@ public interface MspObjectDao {
      * @return
      */
     public com.cannontech.multispeak.deploy.service.Meter getMspMeter(String meterNumber, MultispeakVendor mspVendor);
+
+
+    /**
+     * Returns a list of the MeterNumber(s) for the mspServiceLocation.
+     * If the interface/method is not supported by mspVendor, or if no object is found,
+     * an empty List<Meter> object is returned.
+     * @param mspServiceLocation The serviceLocation to get the Meter information for.
+     * @param mspVendor The MultiSpeak Vendor to ask for the information from.
+     * @return
+     */
+    public List<com.cannontech.multispeak.deploy.service.Meter> getMspMetersByServiceLocation(ServiceLocation mspServiceLocation, MultispeakVendor mspVendor);
     
+    /**
+     * Returns a list of the MeterNumber(s) for the serviceLocation .
+     * If the interface/method is not supported by mspVendor, or if no object is found,
+     * an empty List<Meter> object is returned.
+     * @param serviceLocation The serviceLocation to get the Meter information for.
+     * @param mspVendor The MultiSpeak Vendor to ask for the information from.
+     * @return
+     */
+    public List<com.cannontech.multispeak.deploy.service.Meter> getMspMetersByServiceLocation(String serviceLocation, MultispeakVendor mspVendor);
+
+    	
     /**
      * Creates a new (MSP) ErrorObject 
      * @param objectID The Multispeak objectID

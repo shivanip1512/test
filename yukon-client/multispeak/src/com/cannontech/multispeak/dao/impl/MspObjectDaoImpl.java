@@ -1,6 +1,8 @@
 package com.cannontech.multispeak.dao.impl;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -95,6 +97,40 @@ public class MspObjectDaoImpl implements MspObjectDao {
        }
        return mspMeter;
     }
+    
+    @Override
+    public List<com.cannontech.multispeak.deploy.service.Meter> getMspMetersByServiceLocation(ServiceLocation mspServiceLocation, MultispeakVendor mspVendor) {
+    	return getMspMetersByServiceLocation(mspServiceLocation.getObjectID(), mspVendor);    	
+    }
+    
+    @Override
+    public List<com.cannontech.multispeak.deploy.service.Meter> getMspMetersByServiceLocation(String serviceLocation, MultispeakVendor mspVendor) {
+        
+    	List<com.cannontech.multispeak.deploy.service.Meter> meters = new ArrayList<com.cannontech.multispeak.deploy.service.Meter>();
+    	// lookup by meter number
+        //lookup meter by servicelocation
+        String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.CB_Server_STR);
+
+        try {
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor);
+            if (port != null) {
+            	long start = System.currentTimeMillis();
+                CTILogger.debug("Begin call to getMeterByServLoc for ServLoc:" + serviceLocation);
+                com.cannontech.multispeak.deploy.service.Meter[] mspMeters = port.getMeterByServLoc(serviceLocation);
+                CTILogger.debug("End call to getMeterByServLoc for ServLoc:" + serviceLocation + "  (took " + (System.currentTimeMillis() - start) + " millis)");
+                if( mspMeters!= null) {
+                	meters = Arrays.asList(mspMeters);
+                }
+            } else {
+            	CTILogger.error("Port not found for CB_Server (" + mspVendor.getCompanyName() + ") for ServLoc: " + serviceLocation);
+            }
+        } catch (RemoteException e) {
+        	CTILogger.error("TargetService: " + endpointURL + " - updateServiceLocation (" + mspVendor.getCompanyName() + ") for ServLoc: " + serviceLocation);
+        	CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
+        }
+        return meters;
+    }
+    
     @Override
     public ErrorObject getErrorObject(String objectID, String errorMessage, String nounType, String method, String userName){
         ErrorObject errorObject = new ErrorObject();

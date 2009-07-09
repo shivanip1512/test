@@ -291,35 +291,36 @@ public class MultispeakFuncs
     }
     
     /**
-     * Helper method to construct a new service location value containing a register location.
-     * Format is "serviceLocation_registerNo_"
+     * Helper method to construct a new service location value containing a position location.
+     * Format is "serviceLocation [position]"
      * @param serviceLocation
-     * @param registerNo
+     * @param positionNumber
      * @return
      */
-    public String buildServiceLocationWithRegister(String serviceLocation, String registerNo) {
+    public String buildServiceLocationWithPosition(String serviceLocation, String positionNumber) {
     	String serviceLocationWithRegNo = serviceLocation;
     	
-    	if (StringUtils.isNotBlank(registerNo)) {
-    		serviceLocationWithRegNo += "_" + registerNo + "_";
+    	if (StringUtils.isNotBlank(positionNumber)) {
+    		serviceLocationWithRegNo += " [" + positionNumber + "]";
     	}    	
     	return serviceLocationWithRegNo;
     }
     
     /**
-     * Helper method to parse the service location value from a value containing the register location too.
-     * Format of serviceLocatinoWithRegNo is expected to be "serviceLocation_registerNo_".
-     * After parse, returned value will be "serviceLocation" (the _registerNo_ part will be removed).
+     * Helper method to parse the service location value from a value containing the position location too.
+     * Format of serviceLocatinoWithRegNo is expected to be "serviceLocation [positionNo]".
+     * After parse, returned value will be "serviceLocation" (the [positionNo] part will be removed).
      * @param serviceLocationWithRegNo
      * @return
      */
-    public String parseServiceLocationWithRegister(String serviceLocationWithRegNo) {
+    public String parseServiceLocationWithPosition(String serviceLocationWithRegNo) {
     	String serviceLocation = serviceLocationWithRegNo;
     	
-    	int underscoreIndex = serviceLocation.indexOf("_");
-    	if (underscoreIndex > 0){	//found an instance of _
-    		//truncate to the underscore index, not inclusive of.   This should remove things like 12345_3_ and make 12345
-    		serviceLocation = serviceLocation.substring(0, underscoreIndex);
+    	int bracketIndex = serviceLocation.lastIndexOf("[");
+    	if (bracketIndex > 0){	//found an instance of [
+    		//truncate to the underscore index, not inclusive of.   This should remove things like 12345 [3] and make 12345
+    		//must trim to remove end of string whitespace
+    		serviceLocation = serviceLocation.substring(0, bracketIndex).trim();
     	}
     	return serviceLocation;
     }
