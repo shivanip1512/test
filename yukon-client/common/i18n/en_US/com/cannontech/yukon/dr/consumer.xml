@@ -367,6 +367,7 @@
     
     <!-- optOut.jsp -->
     <entry key="yukon.dr.consumer.optout.header">Programs - Opt Out</entry>
+    <entry key="yukon.dr.consumer.optout.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
     <entry key="yukon.dr.consumer.optout.description">If you would like to temporarily opt out of all programs, select the time frame below.</entry>
     <entry key="yukon.dr.consumer.optout.startDate">Start Date:</entry>
     <entry key="yukon.dr.consumer.optout.duration">Duration:</entry>
