@@ -187,5 +187,8 @@
         <table name="MSPVendor" identitycolumn="VENDORID" initsequence="true"/>
         <table name="MSPLMInterfaceMapping" identitycolumn="MspLMInterfaceMappingId" initsequence="true"/>
       </sequence> 
+      <sequence name="EventLog">
+        <table name="EventLog" identitycolumn="EventLogId" initsequence="false"/>
+      </sequence> 
   </sequencetable>
 </sequencetables>

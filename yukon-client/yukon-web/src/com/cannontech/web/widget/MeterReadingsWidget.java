@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.time.DateUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
@@ -23,6 +24,7 @@ import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.commands.CommandResultHolder;
+import com.cannontech.common.events.loggers.MeteringEventLogService;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LitePoint;
@@ -40,6 +42,7 @@ public class MeterReadingsWidget extends WidgetControllerBase {
     private MeterReadService meterReadService;
     private AttributeService attributeService;
     private RawPointHistoryDao rphDao;
+    private MeteringEventLogService meteringEventLogService;
     private List<? extends Attribute> attributesToShow;
 
     public void setMeterReadService(MeterReadService meterReadService) {
@@ -90,6 +93,8 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         // allExisting is a copy...
         allExistingAttributes.retainAll(attributesToShow);
         LiteYukonUser user = ServletUtil.getYukonUser(request);
+        
+        meteringEventLogService.readNowPushedForReadingsWidget(user, meter.getDeviceId());
         CommandResultHolder result = meterReadService.readMeter(meter, allExistingAttributes, user);
         
         mav.addObject("errorsExist", result.isErrorsExist());
@@ -167,5 +172,11 @@ public class MeterReadingsWidget extends WidgetControllerBase {
     @Required
     public void setRphDao(RawPointHistoryDao rphDao) {
         this.rphDao = rphDao;
+    }
+    
+    @Autowired
+    public void setMeteringEventLogService(
+            MeteringEventLogService meteringEventLogService) {
+        this.meteringEventLogService = meteringEventLogService;
     }
 }

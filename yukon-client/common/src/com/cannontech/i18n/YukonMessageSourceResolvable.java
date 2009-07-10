@@ -36,5 +36,9 @@ public class YukonMessageSourceResolvable extends DefaultMessageSourceResolvable
     public static MessageSourceResolvable createMultipleCodes(List<String> asList, String defaultMessage) {
         return new DefaultMessageSourceResolvable(asList.toArray(new String[asList.size()]), defaultMessage);
     }
+
+    public static MessageSourceResolvable createDefaultWithArguments(String code, String defaultMessage, Object... arguments) {
+        return new DefaultMessageSourceResolvable(new String[] { code }, arguments, defaultMessage);
+    }
     
 }

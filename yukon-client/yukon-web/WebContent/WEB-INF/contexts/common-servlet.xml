@@ -8,6 +8,10 @@
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
 
+    <bean id="annotationMapping" class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+        <property name="order" value="1"/>
+    </bean>
+    
     <bean
         class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
         <property name="mappings">
@@ -17,6 +21,8 @@
             </props>
         </property>
     </bean>
+    
+    <bean class="com.cannontech.web.common.events.EventLogViewerController"/>
     
     <bean id="alertController" class="com.cannontech.web.common.alert.AlertController">
         <property name="alertService" ref="alertService"/>
@@ -31,6 +37,10 @@
             value="org.springframework.web.servlet.view.JstlView" />
         <property name="prefix" value="/WEB-INF/pages/common/" />
         <property name="suffix" value="" />
+    </bean>
+    
+    <bean id="viewNameTranslator" class="org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator">
+        <property name="suffix" value=".jsp"/>
     </bean>
 
 </beans>

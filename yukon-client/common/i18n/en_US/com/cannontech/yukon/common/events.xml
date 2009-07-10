@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+<entry key="yukon.common.events.amr.meterReading.readNowPushedForReadingsWidget">Read Now button pressed for deviceId={2} by {0}</entry>
+</properties>

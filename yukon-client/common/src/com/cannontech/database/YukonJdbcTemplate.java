@@ -1,5 +1,6 @@
 package com.cannontech.database;
 
+import java.util.Collection;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -28,6 +29,12 @@ public class YukonJdbcTemplate extends SimpleJdbcTemplate implements
         return query(sql.getSql(), rm, sql.getArguments());
     }
 
+    @Override
+    public <T> void query(SqlFragmentSource sql, ParameterizedRowMapper<T> rm, Collection<? super T> result)
+    throws DataAccessException {
+        getJdbcOperations().query(sql.getSql(), sql.getArguments(), new CollectionRowCallbackHandler<T>(rm, result));
+    }
+    
     @Override
     public int queryForInt(SqlFragmentSource sql) throws DataAccessException {
         return queryForInt(sql.getSql(), sql.getArguments());
