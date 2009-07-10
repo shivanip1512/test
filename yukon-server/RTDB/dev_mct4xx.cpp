@@ -3369,6 +3369,7 @@ INT CtiDeviceMCT4xx::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, 
 INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList)
 {
     int        status = NORMAL,
+               channel,
                pointoffset;
     point_info pi_kw,
                pi_kw_time,
@@ -3412,15 +3413,15 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
 
     */
 
-    pointoffset = 1;
+    channel = 1;
 
     if( parse.getiValue("channel") == 2 )
     {
-        pointoffset = 2;
+        pointoffset = channel = 2;
     }
     else if( parse.getiValue("channel") == 3 )
     {
-        pointoffset = 3;
+        pointoffset = channel = 3;
     }
 
     if( parse.getFlags() & (CMD_FLAG_GV_RATEMASK ^ CMD_FLAG_GV_RATET) )
@@ -3482,7 +3483,7 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
         //  turn raw pulses into a demand reading - TOU reads use LP interval
         if( InMessage->Sequence == Emetcon::GetValue_TOUPeak )
         {
-            pi_kw.value *= double(3600 / getLoadProfileInterval());
+            pi_kw.value *= double(3600 / getLoadProfileInterval(channel));
         }
         else
         {
