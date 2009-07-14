@@ -152,7 +152,6 @@
         <!-- clean out the old object files, etc -->
         <exec failonerror="false"
               dir="${basedir}/yukon-server/"
-              error="${log.dir}/server-error.log" output="${log.dir}/server-output.log" 
               resultproperty="errorcode"
               executable="cmd.exe" >
             <arg value="/c" />
@@ -161,9 +160,8 @@
         </exec>
 
         <!-- build it -->
-        <exec failonerror="false" 
+        <exec failonerror="true" 
               dir="${basedir}/yukon-server/"
-              append="true" error="${log.dir}/server-error.log" output="${log.dir}/server-output.log" 
               resultproperty="errorcode"
               executable="cmd.exe" >
             <arg value="/c" />
@@ -176,16 +174,7 @@
             <arg value="${yukon.build.details}" />
         </exec>
 
-        <loadfile property="errormessage" srcFile="${log.dir}/server-error.log" />
-        <loadfile property="erroroutput" srcFile="${log.dir}/server-output.log" />
-
-        <condition property="out" value="${erroroutput}" else="">
-            <isfailure code="${errorcode}"/>
-        </condition>
-
-        <echo message="${out}" />
-
-        <fail message="${errormessage}">
+        <fail message="yukon-server build FAILED">
             <condition>
                 <isfailure code="${errorcode}" />
             </condition>
