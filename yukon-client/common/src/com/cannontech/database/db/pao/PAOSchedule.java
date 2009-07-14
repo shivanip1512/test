@@ -2,8 +2,6 @@ package com.cannontech.database.db.pao;
 
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
@@ -13,6 +11,7 @@ import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.google.common.collect.ImmutableMap;
 
 /**
  * DB object for the table PAOSchedule
@@ -27,31 +26,30 @@ public class PAOSchedule extends DBPersistent implements CTIDbChange
 	private Integer intervalRate = new Integer(CtiUtilities.NONE_ZERO_ID);
 	private String scheduleName = CtiUtilities.STRING_NONE;
 	private boolean disabled = false;
-	private Map<Integer, String> intervalStrings = new HashMap<Integer, String>() 
-    {
-        {
-            put(0, CtiUtilities.STRING_NONE);
-            put(300, "5 minutes");
-            put(420, "7 minutes");
-            put(600, "10 minutes");
-            put(720, "12 minutes");
-            put(900, "15 minutes");
-            put(1200, "20 minutes");
-            put(1500, "25 minutes");
-            put(1800, "30 minutes");
-            put(3600, "1 hour");
-            put(7200, "2 hour");
-            put(21600, "6 hour");
-            put(43200, "12 hour");
-            put(86400, "1 day");
-            put(172800, "2 days");
-            put(432000, "5 days");
-            put(604800, "7 days");
-            put(1209600, "14 days");
-            put(2592000, "30 days");
-        }
-    };
-
+	
+	static final ImmutableMap<Integer, String> intervalStrings =
+	       new ImmutableMap.Builder<Integer, String>()
+	           .put(0, CtiUtilities.STRING_NONE)
+	           .put(300, "5 minutes")
+	           .put(420, "7 minutes")
+	           .put(600, "10 minutes")
+	           .put(720, "12 minutes")
+	           .put(900, "15 minutes")
+	           .put(1200, "20 minutes")
+	           .put(1500, "25 minutes")
+	           .put(1800, "30 minutes")
+	           .put(3600, "1 hour")
+	           .put(7200, "2 hour")
+	           .put(21600, "6 hour")
+	           .put(43200, "12 hour")
+	           .put(86400, "1 day")
+	           .put(172800, "2 days")
+	           .put(432000, "5 days")
+	           .put(604800, "7 days")
+	           .put(1209600, "14 days")
+	           .put(2592000, "30 days")
+	           .build();
+	
 	public static final String SETTER_COLUMNS[] = 
 	{ 
 		"NextRunTime", "LastRunTime",
