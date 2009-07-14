@@ -11,6 +11,7 @@ public enum SystemGroupEnum {
     USAGEMONITORING("/Meters/Flags/UsageMonitoring/"),
     SYSTEM("/System/"),
     DEVICETYPES("/System/Device Types/"),
+    DEVICECONFIGS("/System/Meters/Device Configs/"),
     ROUTES("/System/Routes/"),
     SCANNINGMETERS("/System/Meters/Scanning/"),
     TEMPORARYGROUPS("/System/Temporary/"),

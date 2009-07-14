@@ -205,3 +205,14 @@
 .x-tree-node-collapsed .x-tree-node-icon.SYSTEMMETERSDISABLED{
 	background-image:url(../images/default/tree/folder_deviceGroupDisabled.gif);
 }
+
+/* Device Config */
+.x-tree-node-expanded .x-tree-node-icon.DEVICECONFIGS{
+    background-image:url(../images/default/tree/folder-open_deviceConfigs.gif);
+}
+.x-tree-node-leaf .x-tree-node-icon.DEVICECONFIGS{
+    background-image:url(../images/default/tree/folder_deviceConfigs.gif);
+}
+.x-tree-node-collapsed .x-tree-node-icon.DEVICECONFIGS{
+    background-image:url(../images/default/tree/folder_deviceConfigs.gif);
+}
