@@ -2,8 +2,8 @@ package com.cannontech.web.capcontrol.models;
 
 public class ResultRow {
     
-    private Integer itemId = -1;
-    private Integer parentId = -1;
+    private int itemId = -1;
+    private int parentId = -1;
     private String parentString = "";
     private boolean isController = false;
     private boolean isPaobject = false;
