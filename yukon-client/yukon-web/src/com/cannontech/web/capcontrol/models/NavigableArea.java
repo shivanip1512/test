@@ -2,17 +2,17 @@ package com.cannontech.web.capcontrol.models;
 
 import java.util.List;
 
-public class SimpleArea {
+public class NavigableArea {
     
-    private List<SimpleSubstation> substations;
+    private List<NavigableSubstation> substations;
     private String name;
     private Integer id;
     
-    public SimpleArea(List<SimpleSubstation> substations) {
+    public NavigableArea(List<NavigableSubstation> substations) {
         this.substations = substations;
     }
     
-    public List<SimpleSubstation> getSubstations(){
+    public List<NavigableSubstation> getSubstations(){
         return substations;
     }
     

@@ -1,20 +1,9 @@
 package com.cannontech.web.capcontrol.models;
 
-import java.util.List;
-
-public class SimpleFeeder {
+public class NavigableCapBank {
     
-    private List<SimpleCapBank> capbanks;
     private String name;
     private Integer id;
-    
-    public SimpleFeeder(List<SimpleCapBank> capbanks) {
-        this.capbanks = capbanks;
-    }
-    
-    public List<SimpleCapBank> getCapbanks(){
-        return capbanks;
-    }
     
     public String getName() {
         return name;

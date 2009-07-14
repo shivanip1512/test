@@ -2,17 +2,17 @@ package com.cannontech.web.capcontrol.models;
 
 import java.util.List;
 
-public class SimpleSubstation {
+public class NavigableSubstation {
     
-    private List<SimpleSubstationBus> substationBuses;
+    private List<NavigableSubstationBus> substationBuses;
     private String name;
     private Integer id;
     
-    public SimpleSubstation(List<SimpleSubstationBus> substationBuses) {
+    public NavigableSubstation(List<NavigableSubstationBus> substationBuses) {
         this.substationBuses = substationBuses;
     }
     
-    public List<SimpleSubstationBus> getSubstationBuses(){
+    public List<NavigableSubstationBus> getSubstationBuses(){
         return substationBuses;
     }
     

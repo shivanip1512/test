@@ -10,11 +10,11 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.web.capcontrol.models.SimpleArea;
-import com.cannontech.web.capcontrol.models.SimpleCapBank;
-import com.cannontech.web.capcontrol.models.SimpleFeeder;
-import com.cannontech.web.capcontrol.models.SimpleSubstation;
-import com.cannontech.web.capcontrol.models.SimpleSubstationBus;
+import com.cannontech.web.capcontrol.models.NavigableArea;
+import com.cannontech.web.capcontrol.models.NavigableCapBank;
+import com.cannontech.web.capcontrol.models.NavigableFeeder;
+import com.cannontech.web.capcontrol.models.NavigableSubstation;
+import com.cannontech.web.capcontrol.models.NavigableSubstationBus;
 import com.cannontech.web.capcontrol.models.ViewableArea;
 import com.cannontech.web.capcontrol.models.ViewableCapBank;
 import com.cannontech.web.capcontrol.models.ViewableFeeder;
@@ -132,62 +132,62 @@ public class CapControlWebUtils {
         return viewableList;
     }
 
-    public static List<SimpleArea> buildSimpleHierarchy(){
-        List<SimpleArea> areas = new ArrayList<SimpleArea>();
+    public static List<NavigableArea> buildSimpleHierarchy(){
+        List<NavigableArea> areas = new ArrayList<NavigableArea>();
         CapControlCache cache = YukonSpringHook.getBean("capControlCache", CapControlCache.class);
         for(CCArea area : cache.getCbcAreas()) {
-            SimpleArea simpleArea = new SimpleArea(getSimpleSubstations(area));
-            simpleArea.setName(area.getCcName());
-            simpleArea.setId(area.getCcId());
-            areas.add(simpleArea);
+            NavigableArea navigableArea = new NavigableArea(getSimpleSubstations(area));
+            navigableArea.setName(area.getCcName());
+            navigableArea.setId(area.getCcId());
+            areas.add(navigableArea);
         }
         return areas;
     }
     
-    public static List<SimpleSubstation> getSimpleSubstations(CCArea area){
-        List<SimpleSubstation> substations = new ArrayList<SimpleSubstation>();
+    public static List<NavigableSubstation> getSimpleSubstations(CCArea area){
+        List<NavigableSubstation> substations = new ArrayList<NavigableSubstation>();
         CapControlCache cache = YukonSpringHook.getBean("capControlCache", CapControlCache.class);
         for(SubStation substation : cache.getSubstationsByArea(area.getCcId())) {
-            SimpleSubstation simpleSubstation = new SimpleSubstation(getSimpleSubstationBuses(substation));
-            simpleSubstation.setName(substation.getCcName());
-            simpleSubstation.setId(substation.getCcId());
-            substations.add(simpleSubstation);
+            NavigableSubstation navigableSubstation = new NavigableSubstation(getSimpleSubstationBuses(substation));
+            navigableSubstation.setName(substation.getCcName());
+            navigableSubstation.setId(substation.getCcId());
+            substations.add(navigableSubstation);
         }
         return substations;
     }
     
-    public static List<SimpleSubstationBus> getSimpleSubstationBuses(SubStation substation){
-        List<SimpleSubstationBus> substationBuses = new ArrayList<SimpleSubstationBus>();
+    public static List<NavigableSubstationBus> getSimpleSubstationBuses(SubStation substation){
+        List<NavigableSubstationBus> substationBuses = new ArrayList<NavigableSubstationBus>();
         CapControlCache cache = YukonSpringHook.getBean("capControlCache", CapControlCache.class);
         for(SubBus substationBus : cache.getSubBusesBySubStation(substation)) {
-            SimpleSubstationBus simpleSubstationBus = new SimpleSubstationBus(getSimpleFeeders(substationBus));
-            simpleSubstationBus.setName(substationBus.getCcName());
-            simpleSubstationBus.setId(substationBus.getCcId());
-            substationBuses.add(simpleSubstationBus);
+            NavigableSubstationBus navigableSubstationBus = new NavigableSubstationBus(getSimpleFeeders(substationBus));
+            navigableSubstationBus.setName(substationBus.getCcName());
+            navigableSubstationBus.setId(substationBus.getCcId());
+            substationBuses.add(navigableSubstationBus);
         }
         return substationBuses;
     }
     
-    public static List<SimpleFeeder> getSimpleFeeders(SubBus subBus){
-        List<SimpleFeeder> feeders = new ArrayList<SimpleFeeder>();
+    public static List<NavigableFeeder> getSimpleFeeders(SubBus subBus){
+        List<NavigableFeeder> feeders = new ArrayList<NavigableFeeder>();
         CapControlCache cache = YukonSpringHook.getBean("capControlCache", CapControlCache.class);
         for(Feeder feeder : cache.getFeedersBySubBus(subBus.getCcId())) {
-            SimpleFeeder simpleFeeder = new SimpleFeeder(getSimpleCapBanks(feeder));
-            simpleFeeder.setName(feeder.getCcName());
-            simpleFeeder.setId(feeder.getCcId());
-            feeders.add(simpleFeeder);
+            NavigableFeeder navigableFeeder = new NavigableFeeder(getSimpleCapBanks(feeder));
+            navigableFeeder.setName(feeder.getCcName());
+            navigableFeeder.setId(feeder.getCcId());
+            feeders.add(navigableFeeder);
         }
         return feeders;
     }
     
-    public static List<SimpleCapBank> getSimpleCapBanks(Feeder feeder){
-        List<SimpleCapBank> capbanks = new ArrayList<SimpleCapBank>();
+    public static List<NavigableCapBank> getSimpleCapBanks(Feeder feeder){
+        List<NavigableCapBank> capbanks = new ArrayList<NavigableCapBank>();
         CapControlCache cache = YukonSpringHook.getBean("capControlCache", CapControlCache.class);
         for(CapBankDevice capBank : cache.getCapBanksByFeeder(feeder.getCcId())) {
-            SimpleCapBank simpleCapBank = new SimpleCapBank();
-            simpleCapBank.setName(capBank.getCcName());
-            simpleCapBank.setId(capBank.getCcId());
-            capbanks.add(simpleCapBank);
+            NavigableCapBank navigableCapBank = new NavigableCapBank();
+            navigableCapBank.setName(capBank.getCcName());
+            navigableCapBank.setId(capBank.getCcId());
+            capbanks.add(navigableCapBank);
         }
         return capbanks;
     }
