@@ -29,7 +29,7 @@ WHERE ListName = 'OptOutPeriod';
 
 /* Start YUK-7618 */
 UPDATE YukonRoleProperty 
-SET Description = 'Defines a Yukon Pao (Device) Name field alias. Valid values(0-5): [0=Device Name, 1=Account Number, 2=Service Location, 3=Customer, 4=EA Location, 5=Grid Location, 6=Service Location With Register]' 
+SET Description = 'Defines a Yukon Pao (Device) Name field alias. Valid values(0-5): [0=Device Name, 1=Account Number, 2=Service Location, 3=Customer, 4=EA Location, 5=Grid Location, 6=Service Location [Position]]' 
 WHERE RolePropertyId = -1600;
 /* End YUK-7618 */
 
