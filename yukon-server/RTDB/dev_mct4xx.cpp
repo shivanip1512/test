@@ -3413,7 +3413,7 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
 
     */
 
-    channel = 1;
+    pointoffset = channel = 1;
 
     if( parse.getiValue("channel") == 2 )
     {
