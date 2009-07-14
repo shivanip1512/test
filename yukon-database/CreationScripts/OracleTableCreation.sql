@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/30/2009 2:07:19 PM                         */
+/* Created on:     7/14/2009 9:41:41 AM                         */
 /*==============================================================*/
 
 
@@ -9248,7 +9248,7 @@ INSERT INTO YukonRoleProperty VALUES(-20153,-201,'Inventory Checking','true','Co
 INSERT INTO YukonRoleProperty VALUES(-20154,-201,'Automatic Configuration','false','Controls whether to automatically send out config command when creating hardware or changing program enrollment');
 INSERT INTO YukonRoleProperty VALUES(-20155,-201,'Order Number Auto Generation','false','Controls whether the order number is automatically generated or entered by user');
 INSERT INTO YukonRoleProperty VALUES(-20156,-201,'Call Number Auto Generation','false','Controls whether the call number is automatically generated or entered by user');
-INSERT INTO YukonRoleProperty VALUES(-20157,-201,'Opt Out Period','(none)','Contains information on Opt Out Period.');
+INSERT INTO YukonRoleProperty VALUES(-20157,-201,'Opt Out Period','(none)','Contains info on Opt Out Period, enter number of days customer can opt out as comma-separated values. Eg., 1,3,4,5');
 INSERT INTO YukonRoleProperty VALUES(-20158,-201,'Disable Switch Sending','false','Disables the ability to send configs and connects/disconnects to switches.');
 INSERT INTO YukonRoleProperty VALUES(-20159,-201,'Switches to Meter','(none)','Allow switches to be assigned under meters for an account.');
 INSERT INTO YukonRoleProperty VALUES(-20160,-201,'Create Login With Account','false','Require that a login is created with every new customer account.');
@@ -9410,7 +9410,7 @@ INSERT INTO YukonRoleProperty VALUES(-40010,-400,'Thermostats All','false','Cont
 INSERT INTO YukonRoleProperty VALUES(-40011,-400,'Change Login Password','true','Controls access for customers to change their own login password'); 
 INSERT INTO YukonRoleProperty VALUES(-40051,-400,'Hide Opt Out Box','false','Controls whether to show the opt out box on the programs opt out page');
 INSERT INTO YukonRoleProperty VALUES(-40052,-400,'Automatic Configuration','false','Controls whether to automatically send out config command when changing program enrollment');
-INSERT INTO YukonRoleProperty VALUES(-40055,-400,'Opt Out Period','(none)','Contains information on Opt Out Period.');
+INSERT INTO YukonRoleProperty VALUES(-40055,-400,'Opt Out Period','(none)','Contains info on Opt Out Period, enter number of days customer can opt out as comma-separated values. Eg., 1,3,4,5');
 INSERT INTO YukonRoleProperty VALUES(-40056,-400,'Opt Out Limits',' ','Contains information on Opt Out limits.');
 INSERT INTO YukonRoleProperty VALUES(-40100,-400,'Link FAQ','(none)','The customized FAQ link');
 INSERT INTO YukonRoleProperty VALUES(-40102,-400,'Link Thermostat Instructions','(none)','The customized thermostat instructions link');

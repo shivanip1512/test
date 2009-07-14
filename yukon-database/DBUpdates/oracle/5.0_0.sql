@@ -4,7 +4,7 @@
 
 /* Start YUK-7455 */
 UPDATE YukonRoleProperty 
-SET KeyName='Opt Out Period', Description='Contains information on Opt Out Period.'
+SET KeyName='Opt Out Period', Description='Contains info on Opt Out Period, enter number of days customer can opt out as comma-separated values. Eg., 1,3,4,5'
 WHERE RolePropertyId IN (-20157, -40055);
 
 DELETE FROM YukonListEntry 
