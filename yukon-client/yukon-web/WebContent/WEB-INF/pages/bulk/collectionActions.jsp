@@ -30,8 +30,7 @@
     <h2>${pageTitle}</h2>
     <br>
 
-    <tags:bulkActionContainer   key="yukon.common.device.bulk.collectionActions" 
-                                deviceCollection="${deviceCollection}">
+    <tags:bulkActionContainer   key="yukon.common.device.bulk.collectionActions" deviceCollection="${deviceCollection}">
         
         <%-- LABELS AND DESCRIPTIONS --%>
         <cti:msg var="addToGroupLabel" key="yukon.common.device.bulk.collectionActions.addToGroupLabel"/>
@@ -54,6 +53,10 @@
         <cti:msg var="massDeleteDescription" key="yukon.common.device.bulk.collectionActions.massDeleteDescription"/>
         <cti:msg var="deviceCollectionReportLabel" key="yukon.common.device.bulk.collectionActions.deviceCollectionReportLabel"/>
         <cti:msg var="deviceCollectionReportDescription" key="yukon.common.device.bulk.collectionActions.deviceCollectionReportDescription"/>
+        <cti:msg var="assignConfigLabel" key="yukon.common.device.bulk.collectionActions.assignConfigLabel"/>
+        <cti:msg var="assignConfigDescription" key="yukon.common.device.bulk.collectionActions.assignConfigDescription"/>
+        <cti:msg var="pushConfigLabel" key="yukon.common.device.bulk.collectionActions.pushConfigLabel"/>
+        <cti:msg var="pushConfigDescription" key="yukon.common.device.bulk.collectionActions.pushConfigDescription"/>
         
         <table cellspacing="10">
         
@@ -177,6 +180,32 @@
                 <td>${massDeleteDescription}</td>
             </tr>
             </cti:checkProperty>
+            
+            <%-- ASSIGN CONFIG --%>
+            <cti:checkRolesAndProperties value="MASS_CHANGE">
+            <tr>
+                <td>
+                    <form id="assignConfigForm" method="get" action="/spring/bulk/config/assignConfig">
+                        <cti:deviceCollection deviceCollection="${deviceCollection}" />
+                        <input type="submit" id="assignConfigButton" value="${assignConfigLabel}" style="width:140px;"/>
+                    </form>
+                </td>
+                <td>${assignConfigDescription}</td>
+            </tr>
+            </cti:checkRolesAndProperties>
+            
+            <%-- PUSH CONFIG --%>
+            <cti:checkRolesAndProperties value="MASS_CHANGE">
+            <tr>
+                <td>
+                    <form id="pushConfigForm" method="get" action="/spring/bulk/config/pushConfig">
+                        <cti:deviceCollection deviceCollection="${deviceCollection}" />
+                        <input type="submit" id="pushConfigButton" value="${pushConfigLabel}" style="width:140px;"/>
+                    </form>
+                </td>
+                <td>${pushConfigDescription}</td>
+            </tr>
+            </cti:checkRolesAndProperties>
             
             </cti:checkRole>
 

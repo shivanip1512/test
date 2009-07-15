@@ -98,6 +98,10 @@
     <entry key="yukon.common.device.bulk.collectionActions.massDeleteDescription">Delete multiple devices.</entry>
     <entry key="yukon.common.device.bulk.collectionActions.deviceCollectionReportLabel">Device Report</entry>
     <entry key="yukon.common.device.bulk.collectionActions.deviceCollectionReportDescription">View a report detailing devices.</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.assignConfigLabel">Assign Config</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.assignConfigDescription">Assign a config to a collection of devices.</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.pushConfigLabel">Push Config</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.pushConfigDescription">Push device configurations to a collection of devices.</entry>
     
     <!-- DEVICE COLLECTION REPORT -->
     <!-- ******************************************************************************************************************** -->
@@ -197,6 +201,71 @@
     <entry key="yukon.common.device.bulk.massChange.deviceType">Change Type</entry>
     <entry key="yukon.common.device.bulk.massChange.deviceType.description">Choose from applicable device types.</entry>
     
+    <!-- ASSIGN CONFIG -->
+    <!-- ******************************************************************************************************************** -->
+    <!-- ******************************************************************************************************************** -->
+    
+    <!-- assignConfig.jsp -->
+    <entry key="yukon.common.device.bulk.assignConfig.pageTitle">Assign Configuration</entry>
+    <entry key="yukon.common.device.bulk.assignConfig.header">Assign Configuration:</entry>
+    <entry key="yukon.common.device.bulk.assignConfig.noteLabel">Note:</entry>
+    <entry key="yukon.common.device.bulk.assignConfig.noteText">Select the Device Configuration you wish to assign the selected devices to.</entry>
+    <entry key="yukon.common.device.bulk.assignConfig.assign">Assign</entry>
+    <entry key="yukon.common.device.bulk.assignConfig.cancel">Cancel</entry>
+    <entry key="yukon.common.device.bulk.assignConfig.selectLabel">Device Config:</entry>
+    
+    <!-- assignConfigResults.jsp -->
+    <entry key="yukon.common.device.bulk.assignConfigResults.pageTitle">Assign Config Results</entry>
+    <entry key="yukon.common.device.bulk.assignConfigResults.header">Results of Assign Config Operation</entry>
+    
+    <entry key="yukon.common.device.bulk.assignConfigResults.noteLabel">Note: </entry>
+    <entry key="yukon.common.device.bulk.assignConfigResults.noteText"><![CDATA[
+        Progress is updated every 10 seconds. Processing will continue if you wish to navigate away from this page at any time.<br>You can return to this results page by following a link within the "Recent Bulk Operations" section of the main Bulk Operations page.
+    ]]></entry>
+    <entry key="yukon.common.device.bulk.assignConfigResults.progressLabel">Progress</entry>
+    <entry key="yukon.common.device.bulk.assignConfigResults.inProgress">In Progress...</entry>
+    <entry key="yukon.common.device.bulk.assignConfigResults.complete">Complete.</entry>
+    
+    <entry key="yukon.common.device.bulk.assignConfigResults.successLabel">Successfully Assigned Config to Devices</entry>
+    <entry key="yukon.common.device.bulk.assignConfigResults.processingExceptionLabel">Failed To Assign Config</entry>
+    
+    <entry key="yukon.common.device.bulk.assignConfigResults.collectionActionOnDevicesLabel">Choose New Operation For These Devices</entry>
+    <entry key="yukon.common.device.bulk.assignConfigResults.processingExceptionErrorListLabel">View Failure Reasons</entry>
+    
+    <entry key="yukon.common.device.bulk.assignConfigResults.noProcessingExceptionErrorListLabel">No processing errors.</entry>
+    
+    <!-- PUSH CONFIG -->
+    <!-- ******************************************************************************************************************** -->
+    <!-- ******************************************************************************************************************** -->
+    
+    <!-- pushConfig.jsp -->
+    <entry key="yukon.common.device.bulk.pushConfig.pageTitle">Push Configuration</entry>
+    <entry key="yukon.common.device.bulk.pushConfig.header">Push Configuration:</entry>
+    <entry key="yukon.common.device.bulk.pushConfig.noteLabel">Note:</entry>
+    <entry key="yukon.common.device.bulk.pushConfig.noteText">Select the method you wish to use when pushing configurations to devices.</entry>
+    <entry key="yukon.common.device.bulk.pushConfig.assign">Push</entry>
+    <entry key="yukon.common.device.bulk.pushConfig.cancel">Cancel</entry>
+    <entry key="yukon.common.device.bulk.pushConfig.selectLabel">Method:</entry>
+    
+    <!-- pushConfigResults.jsp -->
+    <entry key="yukon.common.device.bulk.pushConfigResults.pageTitle">Push Config Results</entry>
+    <entry key="yukon.common.device.bulk.pushConfigResults.header">Results of Push Config Operation</entry>
+    
+    <entry key="yukon.common.device.bulk.pushConfigResults.noteLabel">Note: </entry>
+    <entry key="yukon.common.device.bulk.pushConfigResults.noteText"><![CDATA[
+        Progress is updated every 10 seconds. Processing will continue if you wish to navigate away from this page at any time.<br>You can return to this results page by following a link within the "Recent Bulk Operations" section of the main Bulk Operations page.
+    ]]></entry>
+    <entry key="yukon.common.device.bulk.pushConfigResults.progressLabel">Progress</entry>
+    <entry key="yukon.common.device.bulk.pushConfigResults.inProgress">In Progress...</entry>
+    <entry key="yukon.common.device.bulk.pushConfigResults.complete">Complete.</entry>
+    
+    <entry key="yukon.common.device.bulk.pushConfigResults.successLabel">Successfully Pushed Config to Devices</entry>
+    <entry key="yukon.common.device.bulk.pushConfigResults.processingExceptionLabel">Failed To Push Config</entry>
+    
+    <entry key="yukon.common.device.bulk.pushConfigResults.collectionActionOnDevicesLabel">Choose New Operation For These Devices</entry>
+    <entry key="yukon.common.device.bulk.pushConfigResults.processingExceptionErrorListLabel">View Failure Reasons</entry>
+    
+    <entry key="yukon.common.device.bulk.pushConfigResults.noProcessingExceptionErrorListLabel">No processing errors.</entry>
   
     <!-- MASS DELETE -->
     <!-- ******************************************************************************************************************** -->

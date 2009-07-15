@@ -366,7 +366,6 @@
         <property name="temporaryDeviceGroupService" ref="temporaryDeviceGroupService" />
         <property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao" />
         <property name="recentResultsCache" ref="recentResultsCache" />
-        
     </bean>
     
     <bean id="bulkUpdateService" class="com.cannontech.common.bulk.service.impl.BulkUpdateServiceImpl" parent="baseBulkService">

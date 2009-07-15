@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -12,6 +13,7 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.PropertyEditorRegistry;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
@@ -164,14 +166,22 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         // Load configuration
         String sql = "SELECT * FROM DeviceConfiguration WHERE DeviceConfigurationId = ?";
 
-        ConfigurationBase configuration = simpleJdbcTemplate.queryForObject(sql,
-                                                                            new ConfigurationBaseRowMapper(),
-                                                                            id);
+        ConfigurationBase configuration = simpleJdbcTemplate.queryForObject(sql, new ConfigurationBaseRowMapper(), id);
 
         // Load configuration items
         loadConfigurationItems(configuration);
 
         return configuration;
+    }
+    
+    public ConfigurationBase getConfigurationForDevice(int deviceId) {
+        String sql = "SELECT * FROM DeviceConfiguration WHERE DeviceConfigurationId = ("
+            +"SELECT DeviceConfigurationId FROM DeviceConfigurationDeviceMap WHERE DeviceId = ?)";
+        try {
+            return simpleJdbcTemplate.queryForObject(sql, new ConfigurationBaseRowMapper(), deviceId);
+        }catch(IncorrectResultSizeDataAccessException e) {
+            return null;
+        }
     }
 
     public List<ConfigurationBase> getAllConfigurations() {
@@ -182,6 +192,17 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
                                                                       new ConfigurationBaseRowMapper());
 
         // Load configuration items
+        for (ConfigurationBase configuration : configList) {
+            loadConfigurationItems(configuration);
+        }
+
+        return configList;
+    }
+    
+    public List<ConfigurationBase> getAllConfigurationsByType(ConfigurationType type) {
+        String sql = "SELECT * FROM DeviceConfiguration WHERE Type = ? ORDER BY name";
+        List<ConfigurationBase> configList = simpleJdbcTemplate.query(sql, new ConfigurationBaseRowMapper(), type.toString());
+
         for (ConfigurationBase configuration : configList) {
             loadConfigurationItems(configuration);
         }
@@ -275,6 +296,10 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
             dbPersistentDao.processDBChange(msg);
         }
 
+    }
+    
+    public void assignConfigToDevice(ConfigurationBase configuration, YukonDevice device) {
+        assignConfigToDevices(configuration, Collections.singletonList(device));
     }
 
     public void unassignConfig(Integer deviceId) {

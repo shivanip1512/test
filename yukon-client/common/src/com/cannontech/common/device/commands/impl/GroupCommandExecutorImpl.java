@@ -22,7 +22,6 @@ import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.util.SimpleCallback;
-import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 /**
@@ -60,9 +59,7 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
         this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
     }
 
-    public String execute(final DeviceCollection deviceCollection, final String command, final SimpleCallback<GroupCommandResult> callback,
-                        LiteYukonUser user)
-    throws PaoAuthorizationException {
+    public String execute(final DeviceCollection deviceCollection, final String command, final SimpleCallback<GroupCommandResult> callback, LiteYukonUser user) {
         
         ObjectMapper<YukonDevice, CommandRequestDevice> objectMapper = new ObjectMapper<YukonDevice, CommandRequestDevice>() {
             public CommandRequestDevice map(YukonDevice from) throws ObjectMappingException {

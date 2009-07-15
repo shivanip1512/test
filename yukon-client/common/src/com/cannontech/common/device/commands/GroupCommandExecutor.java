@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.util.SimpleCallback;
-import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 /**
@@ -12,8 +11,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
  */
 public interface GroupCommandExecutor {
 
-    public String execute(DeviceCollection deviceCollection, String command, SimpleCallback<GroupCommandResult> callback, LiteYukonUser user)
-        throws PaoAuthorizationException;
+    public String execute(DeviceCollection deviceCollection, String command, SimpleCallback<GroupCommandResult> callback, LiteYukonUser user);
     
     public List<GroupCommandResult> getCompleted();
 

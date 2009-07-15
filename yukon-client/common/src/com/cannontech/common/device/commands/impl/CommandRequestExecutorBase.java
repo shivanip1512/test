@@ -28,6 +28,7 @@ import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.device.commands.CollectingCommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
@@ -230,12 +231,13 @@ public abstract class CommandRequestExecutorBase<T> implements
 
     public CommandResultHolder execute(List<T> commands, LiteYukonUser user)
             throws CommandCompletionException {
-        WaitableCommandCompletionCallback callback = new WaitableCommandCompletionCallback();
+        CollectingCommandCompletionCallback callback = new CollectingCommandCompletionCallback();
+        WaitableCommandCompletionCallback<Object> waitableCallback = new WaitableCommandCompletionCallback<Object>(callback);
 
         execute(commands, callback, user);
 
         try {
-            callback.waitForCompletion(betweenResultsMaxDelay,totalMaxDelay);
+            waitableCallback.waitForCompletion(betweenResultsMaxDelay,totalMaxDelay);
             return callback;
         } catch (InterruptedException e) {
             throw new CommandCompletionException("Interrupted while block for command completion",

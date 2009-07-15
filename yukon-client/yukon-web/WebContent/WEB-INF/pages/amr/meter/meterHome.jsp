@@ -160,6 +160,10 @@
 				<c:if test="${touSupported}">
 					<ct:widget bean="touWidget" />
 				</c:if>
+				
+				<c:if test="${configSupported}">
+                    <ct:widget bean="configWidget" />
+                </c:if>
 			</td>
 		</tr></table>
 

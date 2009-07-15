@@ -25,7 +25,7 @@ public class WaitableCommandCompletionCallbackTest {
         final AtomicInteger interruptCount = new AtomicInteger(0);
         Runnable runnable = new Runnable() {
             public void run() {
-                WaitableCommandCompletionCallback completionCallback = new WaitableCommandCompletionCallback();
+                WaitableCommandCompletionCallback<Object> completionCallback = new WaitableCommandCompletionCallback<Object>(new CollectingCommandCompletionCallback());
                 try {
                     completionCallback.waitForCompletion(10, 20);
                     fail("completed normally");

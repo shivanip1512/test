@@ -238,19 +238,10 @@ public class GroupCommanderController implements InitializingBean {
 
         };
 
-        try {
-            String key = 
-                groupCommandExecutor.execute(deviceCollection, commandString, callback, userContext.getYukonUser());
-            map.addAttribute("resultKey", key);
-            return true;
-        } catch (PaoAuthorizationException e) {
-            log.warn("Unable to execute, putting error in model", e);
-            map.addAttribute("error", "Unable to execute specified commands");
-        }
-
-        // must have been an error, try again
-        map.addAttribute("command", commandString);
-        return false;
+        String key = 
+            groupCommandExecutor.execute(deviceCollection, commandString, callback, userContext.getYukonUser());
+        map.addAttribute("resultKey", key);
+        return true;
     }
 
     private void sendEmail(String emailAddress, URL hostUrl, GroupCommandResult result, YukonUserContext userContext) {

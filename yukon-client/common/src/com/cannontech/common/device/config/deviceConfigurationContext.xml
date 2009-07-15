@@ -41,19 +41,17 @@
 				<ref bean="demandLP430_470Category"/>
 				<ref bean="mct470lpChannelsCategory"/>
 				<ref bean="mct470CofigurationByte"/>
-				
-				<!-- 
-				<ref bean="longLPCategory"/>
 				<ref bean="addressingCategory"/>
-				<ref bean="optionsCategory"/>
-				<ref bean="voltageThresholdCategory"/>
-				<ref bean="holidaysCategory"/>
 				<ref bean="relaysCategory"/>
-				<ref bean="precannedTableCategory"/>
-				<ref bean="systemOptionsCategory"/>
+				<ref bean="precannedTableCategory"/>				
 				<ref bean="touCategory"/>
-				<ref bean="dnpCategory"/>
-				-->
+				<ref bean="dnpCategory"/>				 
+		<!-- 	<ref bean="optionsCategory"/>
+				<ref bean="longLPCategory"/>
+		 		<ref bean="voltageThresholdCategory"/>
+			 	<ref bean="holidaysCategory"/>
+				<ref bean="systemOptionsCategory"/>
+		-->
 			</list>
 		</property>
 		
@@ -63,35 +61,40 @@
 				<prop key="Time Zone Offset">timeZoneOffset</prop>
 				<prop key="Demand Interval">demandInterval</prop>
 				<prop key="Load Profile Interval 1">loadProfileInterval1</prop>
-				<prop key="Load Profile Interval 2">loadProfileInterval2</prop>
 				<prop key="Channel Config 1">channelConfig1</prop>
 				<prop key="Channel Config 2">channelConfig2</prop>
 				<prop key="Channel Config 3">channelConfig3</prop>
 				<prop key="Channel Config 4">channelConfig4</prop>
-				<prop key="Configuration">configuration</prop>
 				<prop key="Channel 1 Multiplier">channel1Multiplier</prop>
 				<prop key="Channel 2 Multiplier">channel2Multiplier</prop>
 				<prop key="Channel 3 Multiplier">channel3Multiplier</prop>
 				<prop key="Channel 4 Multiplier">channel4Multiplier</prop>
-				<prop key="Channel 1 LP Interval">channel1LPInterval</prop>
-				<prop key="Channel 2 LP Interval">channel2LPInterval</prop>
-				<prop key="Channel 3 LP Interval">channel3LPInterval</prop>
-				<prop key="Channel 4 LP Interval">channel4LPInterval</prop>
-
-				<!--
 				<prop key="Channel 1 Length">channel1Length</prop>
 				<prop key="Channel 2 Length">channel2Length</prop>
 				<prop key="Channel 3 Length">channel3Length</prop>
 				<prop key="Channel 4 Length">channel4Length</prop>
+				<prop key="Service Provider ID">serviceProviderId</prop>
+				<prop key="Configuration">configuration</prop>
+				
+<!--		   	<prop key="Load Profile Interval 2">loadProfileInterval2</prop> 
+				<prop key="Channel 1 LP Interval">channel1LPInterval</prop>
+				<prop key="Channel 2 LP Interval">channel2LPInterval</prop>
+				<prop key="Channel 3 LP Interval">channel3LPInterval</prop>
+				<prop key="Channel 4 LP Interval">channel4LPInterval</prop>
 				<prop key="Bronze Address">bronzeAddress</prop>
 				<prop key="Lead Address">leadAddress</prop>
-				<prop key="Service Provider ID">serviceProviderId</prop>
 				<prop key="Collection Address">collectionAddress</prop>
-				<prop key="DST Begin">dstBegin</prop>
+	 			<prop key="DST Begin">dstBegin</prop>
 				<prop key="DST End">dstEnd</prop>
 				<prop key="Alarm Mask Meter">alarmMaskMeter</prop>
 				<prop key="Alarm Mask Event 1">alarmMaskEvent1</prop>
 				<prop key="Alarm Mask Event 2">alarmMaskEvent2</prop>
+				<prop key="LED Test Enabled">ledTestEnabled</prop>
+				<prop key="Disable Reconnect button">disableReconnectButton</prop>
+				<prop key="Demand Limit Mode">demandLimitMode</prop>
+				<prop key="Disconnect Cycling Mode">disconnectCyclingMode</prop>
+				<prop key="MCT-410d Rev E">mct410dRevE</prop>
+				<prop key="Daily Reporting">dailyReporting</prop>
 				<prop key="Time Adjust Tolerance">timeAdjustTolerance</prop>
 				<prop key="Options">options</prop>
 				<prop key="Outage Cycles">outageCycles</prop>
@@ -100,6 +103,7 @@
 				<prop key="Holiday Date 1">holidayDate1</prop>
 				<prop key="Holiday Date 2">holidayDate2</prop>
 				<prop key="Holiday Date 3">holidayDate3</prop>
+-->				
 				<prop key="Relay A Timer">relayATimer</prop>
 				<prop key="Relay B Timer">relayBTimer</prop>
 				<prop key="Table Read Interval">tableReadInterval</prop>
@@ -125,8 +129,8 @@
 				<prop key="Schedule1Rate3">tou.scheduleList[0].timeRateList[3].rate</prop>
 				<prop key="Schedule1Time4">tou.scheduleList[0].timeRateList[4].time</prop>
 				<prop key="Schedule1Rate4">tou.scheduleList[0].timeRateList[4].rate</prop>
-				<prop key="Schedule1Time5">tou.scheduleList[0].timeRateList[4].time</prop>
-				<prop key="Schedule1Rate5">tou.scheduleList[0].timeRateList[4].rate</prop>
+				<prop key="Schedule1Time5">tou.scheduleList[0].timeRateList[5].time</prop>
+				<prop key="Schedule1Rate5">tou.scheduleList[0].timeRateList[5].rate</prop>
 				<prop key="Schedule2Time0">tou.scheduleList[1].timeRateList[0].time</prop>
 				<prop key="Schedule2Rate0">tou.scheduleList[1].timeRateList[0].rate</prop>
 				<prop key="Schedule2Time1">tou.scheduleList[1].timeRateList[1].time</prop>
@@ -137,8 +141,8 @@
 				<prop key="Schedule2Rate3">tou.scheduleList[1].timeRateList[3].rate</prop>
 				<prop key="Schedule2Time4">tou.scheduleList[1].timeRateList[4].time</prop>
 				<prop key="Schedule2Rate4">tou.scheduleList[1].timeRateList[4].rate</prop>
-				<prop key="Schedule2Time5">tou.scheduleList[1].timeRateList[4].time</prop>
-				<prop key="Schedule2Rate5">tou.scheduleList[1].timeRateList[4].rate</prop>
+				<prop key="Schedule2Time5">tou.scheduleList[1].timeRateList[5].time</prop>
+				<prop key="Schedule2Rate5">tou.scheduleList[1].timeRateList[5].rate</prop>
 				<prop key="Schedule3Time0">tou.scheduleList[2].timeRateList[0].time</prop>
 				<prop key="Schedule3Rate0">tou.scheduleList[2].timeRateList[0].rate</prop>
 				<prop key="Schedule3Time1">tou.scheduleList[2].timeRateList[1].time</prop>
@@ -149,8 +153,8 @@
 				<prop key="Schedule3Rate3">tou.scheduleList[2].timeRateList[3].rate</prop>
 				<prop key="Schedule3Time4">tou.scheduleList[2].timeRateList[4].time</prop>
 				<prop key="Schedule3Rate4">tou.scheduleList[2].timeRateList[4].rate</prop>
-				<prop key="Schedule3Time5">tou.scheduleList[2].timeRateList[4].time</prop>
-				<prop key="Schedule3Rate5">tou.scheduleList[2].timeRateList[4].rate</prop>
+				<prop key="Schedule3Time5">tou.scheduleList[2].timeRateList[5].time</prop>
+				<prop key="Schedule3Rate5">tou.scheduleList[2].timeRateList[5].rate</prop>
 				<prop key="Schedule4Time0">tou.scheduleList[3].timeRateList[0].time</prop>
 				<prop key="Schedule4Rate0">tou.scheduleList[3].timeRateList[0].rate</prop>
 				<prop key="Schedule4Time1">tou.scheduleList[3].timeRateList[1].time</prop>
@@ -161,8 +165,8 @@
 				<prop key="Schedule4Rate3">tou.scheduleList[3].timeRateList[3].rate</prop>
 				<prop key="Schedule4Time4">tou.scheduleList[3].timeRateList[4].time</prop>
 				<prop key="Schedule4Rate4">tou.scheduleList[3].timeRateList[4].rate</prop>
-				<prop key="Schedule4Time5">tou.scheduleList[3].timeRateList[4].time</prop>
-				<prop key="Schedule4Rate5">tou.scheduleList[3].timeRateList[4].rate</prop>
+				<prop key="Schedule4Time5">tou.scheduleList[3].timeRateList[5].time</prop>
+				<prop key="Schedule4Rate5">tou.scheduleList[3].timeRateList[5].rate</prop>
 				<prop key="collection 1 binary a">collection1BinaryA</prop>
 				<prop key="collection 1 binary b">collection1BinaryB</prop>
 				<prop key="collection 2 binary a">collection2BinaryA</prop>
@@ -191,7 +195,7 @@
 				<prop key="accumulator 8">accumulator8</prop>
 				<prop key="binary byte 1a">binaryByte1a</prop>
 				<prop key="binary byte 1b">binaryByte1b</prop>
-				-->
+				
 				
 			</props>
 		</property>
@@ -211,19 +215,17 @@
 				<ref bean="dst430_470Category"/>
 				<ref bean="demandLP430_470Category"/>
 				<ref bean="mct430lpChannelsCategory"/>
-				
-				<!-- 
 				<ref bean="mct430CofigurationByte"/>
 				<ref bean="addressingCategory"/>
-				<ref bean="optionsCategory"/>
+				<ref bean="precannedTableCategory"/>
+<!-- 			<ref bean="optionsCategory"/>
 				<ref bean="voltageThresholdCategory"/>
 				<ref bean="holidaysCategory"/>
-				<ref bean="relaysCategory"/>
-				<ref bean="precannedTableCategory"/>
+				 <ref bean="relaysCategory"/>
 				<ref bean="systemOptionsCategory"/>
 				<ref bean="touCategory"/>
 				<ref bean="dnpCategory"/>
-				-->
+ -->				
 			</list>
 		</property>
 		
@@ -234,12 +236,21 @@
 				<prop key="Time Zone Offset">timeZoneOffset</prop>
 				<prop key="Demand Interval">demandInterval</prop>
 				<prop key="Load Profile Interval 1">loadProfileInterval1</prop>
-				<prop key="Load Profile Interval 2">loadProfileInterval2</prop>
 				<prop key="Channel Config 1">channelConfig1</prop>
 				<prop key="Channel Config 2">channelConfig2</prop>
 				<prop key="Channel Config 3">channelConfig3</prop>
 				<prop key="Channel Config 4">channelConfig4</prop>
+				<prop key="Channel 1 Length">channel1Length</prop>
+				<prop key="Channel 2 Length">channel2Length</prop>
+				<prop key="Channel 3 Length">channel3Length</prop>
+				<prop key="Channel 4 Length">channel4Length</prop>
+				<prop key="Service Provider ID">serviceProviderId</prop>
+				<prop key="Time Adjust Tolerance">timeAdjustTolerance</prop>
+				<prop key="Table Read Interval">tableReadInterval</prop>
+				<prop key="Meter Number">meterNumber</prop>
+				<prop key="Table Type">tableType</prop>
 				<prop key="Configuration">configuration</prop>
+<!-- 			<prop key="Load Profile Interval 2">loadProfileInterval2</prop>
 				<prop key="Channel 1 Multiplier">channel1Multiplier</prop>
 				<prop key="Channel 2 Multiplier">channel2Multiplier</prop>
 				<prop key="Channel 3 Multiplier">channel3Multiplier</prop>
@@ -248,22 +259,20 @@
 				<prop key="Channel 2 LP Interval">channel2LPInterval</prop>
 				<prop key="Channel 3 LP Interval">channel3LPInterval</prop>
 				<prop key="Channel 4 LP Interval">channel4LPInterval</prop>
-
-				<!--
-				<prop key="Channel 1 Length">channel1Length</prop>
-				<prop key="Channel 2 Length">channel2Length</prop>
-				<prop key="Channel 3 Length">channel3Length</prop>
-				<prop key="Channel 4 Length">channel4Length</prop>
 				<prop key="Bronze Address">bronzeAddress</prop>
 				<prop key="Lead Address">leadAddress</prop>
-				<prop key="Service Provider ID">serviceProviderId</prop>
 				<prop key="Collection Address">collectionAddress</prop>
 				<prop key="DST Begin">dstBegin</prop>
 				<prop key="DST End">dstEnd</prop>
 				<prop key="Alarm Mask Meter">alarmMaskMeter</prop>
-				<prop key="Alarm Mask Event 1">alarmMaskEvent1</prop>
+		    	<prop key="Alarm Mask Event 1">alarmMaskEvent1</prop>
 				<prop key="Alarm Mask Event 2">alarmMaskEvent2</prop>
-				<prop key="Time Adjust Tolerance">timeAdjustTolerance</prop>
+				<prop key="LED Test Enabled">ledTestEnabled</prop>
+				<prop key="Disable Reconnect button">disableReconnectButton</prop>
+				<prop key="Demand Limit Mode">demandLimitMode</prop>
+				<prop key="Disconnect Cycling Mode">disconnectCyclingMode</prop>
+				<prop key="MCT-410d Rev E">mct410dRevE</prop>
+				<prop key="Daily Reporting">dailyReporting</prop>
 				<prop key="Configuration">configuration</prop>
 				<prop key="Options">options</prop>
 				<prop key="Outage Cycles">outageCycles</prop>
@@ -274,9 +283,6 @@
 				<prop key="Holiday Date 3">holidayDate3</prop>
 				<prop key="Relay A Timer">relayATimer</prop>
 				<prop key="Relay B Timer">relayBTimer</prop>
-				<prop key="Table Read Interval">tableReadInterval</prop>
-				<prop key="Meter Number">meterNumber</prop>
-				<prop key="Table Type">tableType</prop>
 				<prop key="Demand Meters to Scan">demandMetersToScan</prop>
 				<prop key="Default Rate">tou.defaultRate</prop>
 				<prop key="Monday">tou.monday</prop>
@@ -287,7 +293,7 @@
 				<prop key="Saturday">tou.saturday</prop>
 				<prop key="sunday">tou.sunday</prop>
 				<prop key="holiday">tou.holiday</prop>
-				<prop key="Schedule1Time0">tou.scheduleList[0].timeRateList[0].time</prop>
+	    		<prop key="Schedule1Time0">tou.scheduleList[0].timeRateList[0].time</prop>
 				<prop key="Schedule1Rate0">tou.scheduleList[0].timeRateList[0].rate</prop>
 				<prop key="Schedule1Time1">tou.scheduleList[0].timeRateList[1].time</prop>
 				<prop key="Schedule1Rate1">tou.scheduleList[0].timeRateList[1].rate</prop>
@@ -297,8 +303,8 @@
 				<prop key="Schedule1Rate3">tou.scheduleList[0].timeRateList[3].rate</prop>
 				<prop key="Schedule1Time4">tou.scheduleList[0].timeRateList[4].time</prop>
 				<prop key="Schedule1Rate4">tou.scheduleList[0].timeRateList[4].rate</prop>
-				<prop key="Schedule1Time5">tou.scheduleList[0].timeRateList[4].time</prop>
-				<prop key="Schedule1Rate5">tou.scheduleList[0].timeRateList[4].rate</prop>
+				<prop key="Schedule1Time5">tou.scheduleList[0].timeRateList[5].time</prop>
+				<prop key="Schedule1Rate5">tou.scheduleList[0].timeRateList[5].rate</prop>
 				<prop key="Schedule2Time0">tou.scheduleList[1].timeRateList[0].time</prop>
 				<prop key="Schedule2Rate0">tou.scheduleList[1].timeRateList[0].rate</prop>
 				<prop key="Schedule2Time1">tou.scheduleList[1].timeRateList[1].time</prop>
@@ -309,8 +315,8 @@
 				<prop key="Schedule2Rate3">tou.scheduleList[1].timeRateList[3].rate</prop>
 				<prop key="Schedule2Time4">tou.scheduleList[1].timeRateList[4].time</prop>
 				<prop key="Schedule2Rate4">tou.scheduleList[1].timeRateList[4].rate</prop>
-				<prop key="Schedule2Time5">tou.scheduleList[1].timeRateList[4].time</prop>
-				<prop key="Schedule2Rate5">tou.scheduleList[1].timeRateList[4].rate</prop>
+				<prop key="Schedule2Time5">tou.scheduleList[1].timeRateList[5].time</prop>
+				<prop key="Schedule2Rate5">tou.scheduleList[1].timeRateList[5].rate</prop>
 				<prop key="Schedule3Time0">tou.scheduleList[2].timeRateList[0].time</prop>
 				<prop key="Schedule3Rate0">tou.scheduleList[2].timeRateList[0].rate</prop>
 				<prop key="Schedule3Time1">tou.scheduleList[2].timeRateList[1].time</prop>
@@ -321,9 +327,9 @@
 				<prop key="Schedule3Rate3">tou.scheduleList[2].timeRateList[3].rate</prop>
 				<prop key="Schedule3Time4">tou.scheduleList[2].timeRateList[4].time</prop>
 				<prop key="Schedule3Rate4">tou.scheduleList[2].timeRateList[4].rate</prop>
-				<prop key="Schedule3Time5">tou.scheduleList[2].timeRateList[4].time</prop>
-				<prop key="Schedule3Rate5">tou.scheduleList[2].timeRateList[4].rate</prop>
-				<prop key="Schedule4Time0">tou.scheduleList[3].timeRateList[0].time</prop>
+				<prop key="Schedule3Time5">tou.scheduleList[2].timeRateList[5].time</prop>
+				<prop key="Schedule3Rate5">tou.scheduleList[2].timeRateList[5].rate</prop>
+		        <prop key="Schedule4Time0">tou.scheduleList[3].timeRateList[0].time</prop>
 				<prop key="Schedule4Rate0">tou.scheduleList[3].timeRateList[0].rate</prop>
 				<prop key="Schedule4Time1">tou.scheduleList[3].timeRateList[1].time</prop>
 				<prop key="Schedule4Rate1">tou.scheduleList[3].timeRateList[1].rate</prop>
@@ -333,8 +339,9 @@
 				<prop key="Schedule4Rate3">tou.scheduleList[3].timeRateList[3].rate</prop>
 				<prop key="Schedule4Time4">tou.scheduleList[3].timeRateList[4].time</prop>
 				<prop key="Schedule4Rate4">tou.scheduleList[3].timeRateList[4].rate</prop>
-				<prop key="Schedule4Time5">tou.scheduleList[3].timeRateList[4].time</prop>
-				<prop key="Schedule4Rate5">tou.scheduleList[3].timeRateList[4].rate</prop>
+				<prop key="Schedule4Time5">tou.scheduleList[3].timeRateList[5].time</prop>
+				<prop key="Schedule4Rate5">tou.scheduleList[3].timeRateList[5].rate</prop>
+			 
 				<prop key="collection 1 binary a">collection1BinaryA</prop>
 				<prop key="collection 1 binary b">collection1BinaryB</prop>
 				<prop key="collection 2 binary a">collection2BinaryA</prop>
@@ -363,7 +370,8 @@
 				<prop key="accumulator 8">accumulator8</prop>
 				<prop key="binary byte 1a">binaryByte1a</prop>
 				<prop key="binary byte 1b">binaryByte1b</prop>
-				-->
+-->				
+				
 				
 			</props>
 		</property>
@@ -406,8 +414,9 @@
 				<prop key="DST End">dstEnd</prop>
 				<prop key="Time Zone Offset">timeZoneOffset</prop>
 				<prop key="Alarm Mask Meter">alarmMaskMeter</prop>
-				<prop key="Alarm Mask Event 1">alarmMaskEvent1</prop>
+			  	<prop key="Alarm Mask Event 1">alarmMaskEvent1</prop>
 				<prop key="Alarm Mask Event 2">alarmMaskEvent2</prop>
+		
 				<prop key="Time Adjust Tolerance">timeAdjustTolerance</prop>
 				<prop key="Configuration">configuration</prop>
 				<prop key="Options">options</prop>
@@ -449,8 +458,8 @@
 				<prop key="Schedule1Rate3">tou.scheduleList[0].timeRateList[3].rate</prop>
 				<prop key="Schedule1Time4">tou.scheduleList[0].timeRateList[4].time</prop>
 				<prop key="Schedule1Rate4">tou.scheduleList[0].timeRateList[4].rate</prop>
-				<prop key="Schedule1Time5">tou.scheduleList[0].timeRateList[4].time</prop>
-				<prop key="Schedule1Rate5">tou.scheduleList[0].timeRateList[4].rate</prop>
+				<prop key="Schedule1Time5">tou.scheduleList[0].timeRateList[5].time</prop>
+				<prop key="Schedule1Rate5">tou.scheduleList[0].timeRateList[5].rate</prop>
 				<prop key="Schedule2Time0">tou.scheduleList[1].timeRateList[0].time</prop>
 				<prop key="Schedule2Rate0">tou.scheduleList[1].timeRateList[0].rate</prop>
 				<prop key="Schedule2Time1">tou.scheduleList[1].timeRateList[1].time</prop>
@@ -461,8 +470,8 @@
 				<prop key="Schedule2Rate3">tou.scheduleList[1].timeRateList[3].rate</prop>
 				<prop key="Schedule2Time4">tou.scheduleList[1].timeRateList[4].time</prop>
 				<prop key="Schedule2Rate4">tou.scheduleList[1].timeRateList[4].rate</prop>
-				<prop key="Schedule2Time5">tou.scheduleList[1].timeRateList[4].time</prop>
-				<prop key="Schedule2Rate5">tou.scheduleList[1].timeRateList[4].rate</prop>
+				<prop key="Schedule2Time5">tou.scheduleList[1].timeRateList[5].time</prop>
+				<prop key="Schedule2Rate5">tou.scheduleList[1].timeRateList[5].rate</prop>
 				<prop key="Schedule3Time0">tou.scheduleList[2].timeRateList[0].time</prop>
 				<prop key="Schedule3Rate0">tou.scheduleList[2].timeRateList[0].rate</prop>
 				<prop key="Schedule3Time1">tou.scheduleList[2].timeRateList[1].time</prop>
@@ -473,8 +482,8 @@
 				<prop key="Schedule3Rate3">tou.scheduleList[2].timeRateList[3].rate</prop>
 				<prop key="Schedule3Time4">tou.scheduleList[2].timeRateList[4].time</prop>
 				<prop key="Schedule3Rate4">tou.scheduleList[2].timeRateList[4].rate</prop>
-				<prop key="Schedule3Time5">tou.scheduleList[2].timeRateList[4].time</prop>
-				<prop key="Schedule3Rate5">tou.scheduleList[2].timeRateList[4].rate</prop>
+				<prop key="Schedule3Time5">tou.scheduleList[2].timeRateList[5].time</prop>
+				<prop key="Schedule3Rate5">tou.scheduleList[2].timeRateList[5].rate</prop>
 				<prop key="Schedule4Time0">tou.scheduleList[3].timeRateList[0].time</prop>
 				<prop key="Schedule4Rate0">tou.scheduleList[3].timeRateList[0].rate</prop>
 				<prop key="Schedule4Time1">tou.scheduleList[3].timeRateList[1].time</prop>
@@ -485,8 +494,8 @@
 				<prop key="Schedule4Rate3">tou.scheduleList[3].timeRateList[3].rate</prop>
 				<prop key="Schedule4Time4">tou.scheduleList[3].timeRateList[4].time</prop>
 				<prop key="Schedule4Rate4">tou.scheduleList[3].timeRateList[4].rate</prop>
-				<prop key="Schedule4Time5">tou.scheduleList[3].timeRateList[4].time</prop>
-				<prop key="Schedule4Rate5">tou.scheduleList[3].timeRateList[4].rate</prop>
+				<prop key="Schedule4Time5">tou.scheduleList[3].timeRateList[5].time</prop>
+				<prop key="Schedule4Rate5">tou.scheduleList[3].timeRateList[5].rate</prop>
 			</props>
 		</property>
 	</bean>
@@ -497,7 +506,7 @@
 		<property name="name" value="MCT Addressing" />
 		<property name="inputList">
 			<list>
-				<bean class="com.cannontech.web.input.InputBase">
+<!-- 			<bean class="com.cannontech.web.input.InputBase">
 					<property name="displayName" value="Bronze Address" />
 					<property name="field" value="bronzeAddress" />
 					<property name="type" ref="inputIntegerType" />
@@ -526,7 +535,7 @@
 					</property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
-				<bean class="com.cannontech.web.input.InputBase">
+ -->			<bean class="com.cannontech.web.input.InputBase">
 					<property name="displayName" value="Service Provider Id" />
 					<property name="field" value="serviceProviderId" />
 					<property name="type" ref="inputIntegerType" />
@@ -540,7 +549,7 @@
 					</property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
-				<bean class="com.cannontech.web.input.InputBase">
+<!-- 			<bean class="com.cannontech.web.input.InputBase">
 					<property name="displayName" value="Collection Address" />
 					<property name="field" value="collectionAddress" />
 					<property name="type" ref="inputIntegerType" />
@@ -554,7 +563,7 @@
 					</property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
-			</list>
+ -->		</list>
 		</property>
 	</bean>
 				
@@ -1040,7 +1049,7 @@
 					gives details of each bit. The default config value (written for reset ram 
 					function) is 0x00.
 				-->
-				<bean class="com.cannontech.web.input.InputBase">
+ 				<bean class="com.cannontech.web.input.InputBase">
 					<property name="displayName" value="Enable DST" />
 					<property name="field" value="enableDst" />
 					<property name="description">
@@ -1051,6 +1060,7 @@
 					<property name="type" ref="inputBooleanType" />
 					<property name="security" ref="configEditSecurity" />
 				</bean>
+			
 				<bean class="com.cannontech.web.input.InputBase">
 					<property name="displayName" value="Role Enabled" />
 					<property name="field" value="roleEnabled" />
@@ -1062,8 +1072,27 @@
 					<property name="type" ref="inputBooleanType" />
 					<property name="security" ref="configEditSecurity" />
 				</bean>
-				
+					
 				<!-- END Configuration Byte 0x03 -->
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Time Adjust Tolerance" />
+					<property name="field" value="timeAdjustTolerance" />
+					<property name="description">
+						<value>
+							Update the RTC if it is this far away from the incoming time sync
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="validatorList">
+						<list>
+							<bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
+								<property name="minValue" value="0" />
+								<property name="maxValue" value="255" />
+							</bean>
+						</list>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>	
 			</list>
 		</property>
 	</bean>
@@ -1079,7 +1108,7 @@
 					gives details of each bit. The default config value (written for reset ram 
 					function) is 0x00.
 				-->
-				<bean class="com.cannontech.web.input.InputBase">
+			 <bean class="com.cannontech.web.input.InputBase">
 					<property name="displayName" value="Enable DST" />
 					<property name="field" value="enableDst" />
 					<property name="description">
@@ -1090,7 +1119,7 @@
 					<property name="type" ref="inputBooleanType" />
 					<property name="security" ref="configEditSecurity" />
 				</bean>
-				<bean class="com.cannontech.web.input.InputBase">
+<!-- 			<bean class="com.cannontech.web.input.InputBase">
 					<property name="displayName" value="Multiple Electronic Meters" />
 					<property name="field" value="multipleElectronicMeters" />
 					<property name="description">
@@ -1107,17 +1136,17 @@
 										<property name="text" value="Single Electronic Meter" />
 										<property name="value" value="0" />
 									</bean>
-									<bean class="com.cannontech.web.input.type.InputOption">
+ 									<bean class="com.cannontech.web.input.type.InputOption">
 										<property name="text" value="Multiple Electronic Meters attached" />
 										<property name="value" value="1" />
 									</bean>
-								</list>
+ 								</list>
 							</property>
 						</bean>
 					</property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
-				<!--
+-->				
                 <bean class="com.cannontech.web.input.InputBase">
 					<property name="displayName" value="Role Enabled" />
 					<property name="field" value="roleEnabled" />
@@ -1129,7 +1158,7 @@
 					<property name="type" ref="inputBooleanType" />
 					<property name="security" ref="configEditSecurity" />
 				</bean>
-                 -->
+
 				<bean class="com.cannontech.web.input.InputBase">
 					<property name="displayName" value="Electronic Meter" />
 					<property name="field" value="electronicMeter" />
@@ -1181,6 +1210,26 @@
 					<property name="security" ref="configEditSecurity" />
 				</bean>
 				<!-- END Configuration Byte 0x03 -->
+				
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Time Adjust Tolerance" />
+					<property name="field" value="timeAdjustTolerance" />
+					<property name="description">
+						<value>
+							Update the RTC if it is this far away from the incoming time sync
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="validatorList">
+						<list>
+							<bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
+								<property name="minValue" value="0" />
+								<property name="maxValue" value="255" />
+							</bean>
+						</list>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>				
 			</list>
 		</property>
 	</bean>
@@ -1221,6 +1270,9 @@
 							<property name="enumeratedType" ref="inputIntegerType" />
 							<property name="optionList">
 								<list>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="5" />
+									</bean>
 									<bean class="com.cannontech.web.input.type.InputOption">
 										<property name="value" value="5" />
 									</bean>
@@ -1336,25 +1388,6 @@
 							Interval in minutes over which most recent demand is calculatd
 						</value>
 					</property>
-					<property name="type" ref="inputIntegerType" />
-					<property name="validatorList">
-						<list>
-							<bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
-								<property name="minValue" value="1" />
-								<property name="maxValue" value="60" />
-							</bean>
-						</list>
-					</property>
-					<property name="security" ref="configEditSecurity" />
-				</bean>
-				<bean class="com.cannontech.web.input.InputBase">
-					<property name="displayName" value="Load Profile Interval 1" />
-					<property name="field" value="loadProfileInterval1" />
-					<property name="description">
-						<value>
-							Interval in minutes over which load profile values are kept. Valid values are 5, 15, 30, and 0
-						</value>
-					</property>
 					<property name="type">
 						<bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
 							<property name="enumeratedType" ref="inputIntegerType" />
@@ -1379,6 +1412,40 @@
 					<property name="security" ref="configEditSecurity" />
 				</bean>
 				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Load Profile Interval 1" />
+					<property name="field" value="loadProfileInterval1" />
+					<property name="description">
+						<value>
+							Interval in minutes over which load profile values are kept. Valid values are 5, 15, 30, and 0
+						</value>
+					</property>
+					<property name="type">
+						<bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+							<property name="enumeratedType" ref="inputIntegerType" />
+							<property name="optionList">
+								<list>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="0" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="5" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="15" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="30" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="60" />
+									</bean>
+								</list>
+							</property>
+						</bean>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+			<!-- 	<bean class="com.cannontech.web.input.InputBase">
 					<property name="displayName" value="Load Profile Interval 2" />
 					<property name="field" value="loadProfileInterval2" />
 					<property name="description">
@@ -1409,6 +1476,7 @@
 					</property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
+			-->
 			</list>
 		</property>
 	</bean>
@@ -1698,7 +1766,7 @@
 					</property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
-				<bean class="com.cannontech.web.input.InputBase">
+<!--  			<bean class="com.cannontech.web.input.InputBase">
 					<property name="displayName" value="Channel #1 Load Profile Interval" />
 					<property name="field" value="channel1LPInterval" />
 					<property name="description">
@@ -1715,7 +1783,7 @@
 										<property name="text" value="Load Profile Interval 1" />
 										<property name="value" value="0" />
 									</bean>
-									<bean class="com.cannontech.web.input.type.InputOption">
+  									<bean class="com.cannontech.web.input.type.InputOption">
 										<property name="text" value="Load Profile Interval 2" />
 										<property name="value" value="1" />
 									</bean>
@@ -1744,7 +1812,7 @@
 					</property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
-
+-->
 
 				<bean class="com.cannontech.web.input.InputBase">
 					<property name="displayName" value="Channel #2 Meter Type" />
@@ -1856,7 +1924,7 @@
 					</property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
-				<bean class="com.cannontech.web.input.InputBase">
+<!-- 			<bean class="com.cannontech.web.input.InputBase">
 					<property name="displayName" value="Channel #2 Load Profile Interval" />
 					<property name="field" value="channel2LPInterval" />
 					<property name="description">
@@ -1870,11 +1938,11 @@
 							<property name="optionList">
 								<list>
 									<bean class="com.cannontech.web.input.type.InputOption">
-										<property name="text" value="#0" />
+										<property name="text" value="Load Profile Interval 1" />
 										<property name="value" value="0" />
 									</bean>
-									<bean class="com.cannontech.web.input.type.InputOption">
-										<property name="text" value="#1" />
+  								<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="Load Profile Interval 2" />
 										<property name="value" value="1" />
 									</bean>
 								</list>
@@ -1902,7 +1970,7 @@
 					</property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
-
+-->
 
 				<bean class="com.cannontech.web.input.InputBase">
 					<property name="displayName" value="Channel #3 Meter Type" />
@@ -2014,7 +2082,7 @@
 					</property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
-				<bean class="com.cannontech.web.input.InputBase">
+<!-- 			<bean class="com.cannontech.web.input.InputBase">
 					<property name="displayName" value="Channel #3 Load Profile Interval" />
 					<property name="field" value="channel3LPInterval" />
 					<property name="description">
@@ -2028,11 +2096,11 @@
 							<property name="optionList">
 								<list>
 									<bean class="com.cannontech.web.input.type.InputOption">
-										<property name="text" value="#0" />
+										<property name="text" value="Load Profile Interval 1" />
 										<property name="value" value="0" />
 									</bean>
-									<bean class="com.cannontech.web.input.type.InputOption">
-										<property name="text" value="#1" />
+  									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="Load Profile Interval 2" />
 										<property name="value" value="1" />
 									</bean>
 								</list>
@@ -2060,7 +2128,7 @@
 					</property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
-
+ -->
 				<bean class="com.cannontech.web.input.InputBase">
 					<property name="displayName" value="Channel #4 Meter Type" />
 					<property name="field" value="channel4Type" />
@@ -2171,7 +2239,7 @@
 					</property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
-				<bean class="com.cannontech.web.input.InputBase">
+<!-- 			<bean class="com.cannontech.web.input.InputBase">
 					<property name="displayName" value="Channel #4 Load Profile Interval" />
 					<property name="field" value="channel4LPInterval" />
 					<property name="description">
@@ -2185,11 +2253,11 @@
 							<property name="optionList">
 								<list>
 									<bean class="com.cannontech.web.input.type.InputOption">
-										<property name="text" value="#0" />
+										<property name="text" value="Load Profile Interval 1" />
 										<property name="value" value="0" />
 									</bean>
-									<bean class="com.cannontech.web.input.type.InputOption">
-										<property name="text" value="#1" />
+  									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="Load Profile Interval 2" />
 										<property name="value" value="1" />
 									</bean>
 								</list>
@@ -2198,7 +2266,7 @@
 					</property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
-				<bean class="com.cannontech.web.input.InputBase">
+ 				<bean class="com.cannontech.web.input.InputBase">
 					<property name="displayName" value="Channel #4 Multiplier" />
 					<property name="field" value="channel4Multiplier" />
 					<property name="description">
@@ -2217,7 +2285,7 @@
 					</property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
-								
+-->								
 			</list>
 		</property>
 	</bean>
@@ -2344,7 +2412,7 @@
 					</property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
-				<bean class="com.cannontech.web.input.InputBase">
+<!-- 			<bean class="com.cannontech.web.input.InputBase">
 					<property name="displayName" value="Channel #1 Load Profile Interval" />
 					<property name="field" value="channel1LPInterval" />
 					<property name="description">
@@ -2361,7 +2429,7 @@
 										<property name="text" value="Load Profile Interval 1" />
 										<property name="value" value="0" />
 									</bean>
-									<bean class="com.cannontech.web.input.type.InputOption">
+  									<bean class="com.cannontech.web.input.type.InputOption">
 										<property name="text" value="Load Profile Interval 2" />
 										<property name="value" value="1" />
 									</bean>
@@ -2371,8 +2439,8 @@
 					</property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
-				<bean class="com.cannontech.web.input.InputBase">
-					<property name="displayName" value="Channel #1 Multiplier" />
+ -->			<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Channel #1 KYZ Multiplier" />
 					<property name="field" value="channel1Multiplier" />
 					<property name="description">
 						<value>
@@ -2510,7 +2578,7 @@
 					</property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
-				<bean class="com.cannontech.web.input.InputBase">
+<!-- 			<bean class="com.cannontech.web.input.InputBase">
 					<property name="displayName" value="Channel #2 Load Profile Interval" />
 					<property name="field" value="channel2LPInterval" />
 					<property name="description">
@@ -2524,11 +2592,11 @@
 							<property name="optionList">
 								<list>
 									<bean class="com.cannontech.web.input.type.InputOption">
-										<property name="text" value="#0" />
+										<property name="text" value="Load Profile Interval 1" />
 										<property name="value" value="0" />
 									</bean>
-									<bean class="com.cannontech.web.input.type.InputOption">
-										<property name="text" value="#1" />
+  									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="Load Profile Interval 2" />
 										<property name="value" value="1" />
 									</bean>
 								</list>
@@ -2537,8 +2605,8 @@
 					</property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
-				<bean class="com.cannontech.web.input.InputBase">
-					<property name="displayName" value="Channel #2 Multiplier" />
+ -->			<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Channel #2 KYZ Multiplier" />
 					<property name="field" value="channel2Multiplier" />
 					<property name="description">
 						<value>
@@ -2676,7 +2744,7 @@
 					</property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
-				<bean class="com.cannontech.web.input.InputBase">
+<!-- 			<bean class="com.cannontech.web.input.InputBase">
 					<property name="displayName" value="Channel #3 Load Profile Interval" />
 					<property name="field" value="channel3LPInterval" />
 					<property name="description">
@@ -2690,11 +2758,11 @@
 							<property name="optionList">
 								<list>
 									<bean class="com.cannontech.web.input.type.InputOption">
-										<property name="text" value="#0" />
+										<property name="text" value="Load Profile Interval 1" />
 										<property name="value" value="0" />
 									</bean>
-									<bean class="com.cannontech.web.input.type.InputOption">
-										<property name="text" value="#1" />
+  									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="Load Profile Interval 2" />
 										<property name="value" value="1" />
 									</bean>
 								</list>
@@ -2703,8 +2771,8 @@
 					</property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
-				<bean class="com.cannontech.web.input.InputBase">
-					<property name="displayName" value="Channel #3 Multiplier" />
+ -->			<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Channel #3 KYZ Multiplier" />
 					<property name="field" value="channel3Multiplier" />
 					<property name="description">
 						<value>
@@ -2841,7 +2909,7 @@
 					</property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
-				<bean class="com.cannontech.web.input.InputBase">
+<!-- 			<bean class="com.cannontech.web.input.InputBase">
 					<property name="displayName" value="Channel #4 Load Profile Interval" />
 					<property name="field" value="channel4LPInterval" />
 					<property name="description">
@@ -2855,11 +2923,11 @@
 							<property name="optionList">
 								<list>
 									<bean class="com.cannontech.web.input.type.InputOption">
-										<property name="text" value="#0" />
+										<property name="text" value="Load Profile Interval 1" />
 										<property name="value" value="0" />
 									</bean>
-									<bean class="com.cannontech.web.input.type.InputOption">
-										<property name="text" value="#1" />
+  									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="Load Profile Interval 2" />
 										<property name="value" value="1" />
 									</bean>
 								</list>
@@ -2868,8 +2936,8 @@
 					</property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
-				<bean class="com.cannontech.web.input.InputBase">
-					<property name="displayName" value="Channel #4 Multiplier" />
+ -->			<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Channel #4 KYZ Multiplier" />
 					<property name="field" value="channel4Multiplier" />
 					<property name="description">
 						<value>
@@ -2887,7 +2955,6 @@
 					</property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
-								
 			</list>
 		</property>
 	</bean>
@@ -2950,14 +3017,104 @@
 							Seconds between each read of the attached IED. In 15 second increments.
 						</value>
 					</property>
-					<property name="type" ref="inputIntegerType" />
-					<property name="validatorList">
-						<list>
-							<bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
-								<property name="minValue" value="0" />
-								<property name="maxValue" value="50" />
-							</bean>
-						</list>
+					<property name="type">
+						<bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+							<property name="enumeratedType" ref="inputIntegerType" />
+							<property name="optionList">
+								<list>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="1" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="2" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="3" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="4" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="5" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="6" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="7" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="8" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="9" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="10" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="11" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="12" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="13" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="14" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="15" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="16" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="17" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="18" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="19" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="20" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="21" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="22" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="23" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="24" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="25" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="26" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="27" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="28" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="29" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="30" />
+									</bean>
+								</list>
+							</property>
+						</bean>
 					</property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
@@ -2974,7 +3131,7 @@
 						<list>
 							<bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
 								<property name="minValue" value="0" />
-								<property name="maxValue" value="50" />
+								<property name="maxValue" value="500" />
 							</bean>
 						</list>
 					</property>
@@ -2993,7 +3150,7 @@
 						<list>
 							<bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
 								<property name="minValue" value="0" />
-								<property name="maxValue" value="50" />
+								<property name="maxValue" value="11" />
 							</bean>
 						</list>
 					</property>

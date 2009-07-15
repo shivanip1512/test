@@ -262,7 +262,7 @@ public class BulkController extends BulkControllerBase {
         csvReader.close();
          
         // failed lines
-        List<String[]> fileLines = (List<String[]>)callback.getProcesingExceptionObjects();
+        List<String[]> fileLines = callback.getProcesingExceptionObjects();
         
         response.setContentType("text/csv");
         response.setHeader("Content-Type", "application/force-download");

@@ -19,27 +19,25 @@
         
         <br>
         <table class="compactResultsTable">
-        
-            <th>Device Name</th>
-            <th>Error Description</th>
-            <th>Error Code</th>
-        
+            <tr>
+	            <th>Device Name</th>
+	            <th>Error Description</th>
+	            <th>Error Code</th>
+	        </tr>
             <c:forEach items="${result.resultHolder.failedDevices}" var="device">
             
                 <c:set value="${result.resultHolder.errors[device]}" var="error"/>
-                
                 <tr>
                     <td>
                         <div><cti:deviceName device="${device}"/></div>
                     </td>
                     <td>
-                        ${error.description}
+                        ${error.description}, ${error.porter}
                     </td>
                     <td>
                         (${error.errorCode})
                     </td>
                 </tr>
-                
             </c:forEach>
             
         </table>

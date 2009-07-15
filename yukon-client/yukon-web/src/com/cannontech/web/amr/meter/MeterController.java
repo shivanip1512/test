@@ -293,6 +293,9 @@ public class MeterController extends MultiActionController {
         
         boolean voltageSupported = availableAttributes.contains(BuiltInAttribute.VOLTAGE);
         mav.addObject("voltageSupported", voltageSupported);
+        
+        boolean configSupported = DeviceTypesFuncs.isMCT430(device.getType()) || DeviceTypesFuncs.isMCT470(device.getType());
+        mav.addObject("configSupported", configSupported);
 
         return mav;
     }

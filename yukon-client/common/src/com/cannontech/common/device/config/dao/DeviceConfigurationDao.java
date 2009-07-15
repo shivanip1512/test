@@ -54,8 +54,13 @@ public interface DeviceConfigurationDao {
      * Method to assign a configuration to a collection of devices
      * @param devices - Devices to assgin configuration to
      */
-    public void assignConfigToDevices(ConfigurationBase configuration,
-            Collection<YukonDevice> devices);
+    public void assignConfigToDevices(ConfigurationBase configuration, Collection<YukonDevice> devices);
+    
+    /**
+     * Method to assign a configuration to a single device
+     * @param device - Device to assgin configuration to
+     */
+    public void assignConfigToDevice(ConfigurationBase configuration, YukonDevice device);
 
     /**
      * Method to get a list of devices that have been assigned the given
@@ -70,4 +75,19 @@ public interface DeviceConfigurationDao {
      * @param deviceId - Id of device to remove config for
      */
     public void unassignConfig(Integer deviceId);
+    
+    /**
+     * Returns configuration of a device or null if the device is not assigned
+     * to a configuration
+     * @param id - Id of device
+     * @return ConfigurationBase
+     */
+    public ConfigurationBase getConfigurationForDevice(int deviceId);
+    
+    /**
+     * Returns a list of configurations by type.
+     * @param type
+     * @return
+     */
+    public List<ConfigurationBase> getAllConfigurationsByType(ConfigurationType type);
 }

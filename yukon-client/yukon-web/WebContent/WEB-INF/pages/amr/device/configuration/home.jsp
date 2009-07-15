@@ -65,6 +65,8 @@
 					<input type="submit" name="assignDevices" value="Assign to Devices"/>
 				</c:if>
 			
+                <br/><br/>
+                <a href="/spring/bulk/bulkHome">Bulk Operations Home</a>
 			</form>
 		</c:when>
 		<c:otherwise>

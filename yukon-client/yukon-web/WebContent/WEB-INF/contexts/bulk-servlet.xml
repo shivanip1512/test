@@ -30,6 +30,7 @@
                 <prop key="/routeLocate/*">RouteLocateController</prop>
                 <prop key="/addPoints/*">addPointsController</prop>
                 <prop key="/removePoints/*">removePointsController</prop>
+                <prop key="/config/*">deviceConfigController</prop>
                 <prop key="/*">BulkController</prop>
             </props>
         </property>
@@ -153,6 +154,14 @@
     
     <bean id="removePointsController" class="com.cannontech.web.bulk.RemovePointsController" >
     	<property name="deviceCollectionFactory" ref="deviceCollectionFactory" />
+    </bean>
+    
+    <bean id="deviceConfigController" class="com.cannontech.web.bulk.DeviceConfigController">
+        <property name="deviceCollectionFactory" ref="deviceCollectionFactory" />
+        <property name="bulkProcessor" ref="oneAtATimeProcessor" />
+        <property name="recentResultsCache" ref="recentResultsCache" />
+        <property name="deviceConfigService" ref="deviceConfigService" />
+        <property name="alertService" ref="alertService"/>
     </bean>
     
 </beans>

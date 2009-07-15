@@ -8,19 +8,21 @@ import org.springframework.core.style.ToStringCreator;
 
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.commands.CollectingCommandCompletionCallback;
+import com.cannontech.common.device.commands.CommandCompletionCallback;
 
-public class WaitableCommandCompletionCallback extends
-        CollectingCommandCompletionCallback {
+public class WaitableCommandCompletionCallback<T> implements CommandCompletionCallback<T> {
 
     private final Object lock = new Object();
     private Logger log = YukonLogManager.getLogger(WaitableCommandCompletionCallback.class);
     private volatile long lastResultReceivedTime = 0;
     private long latestFinishTime = 0;
+    
+    private CommandCompletionCallback<T> delegate;
+    private volatile boolean complete;
 
-    public void doComplete() {
-        super.doComplete();
-        kick();
+
+    public WaitableCommandCompletionCallback(CommandCompletionCallback<T> delegate) {
+        this.delegate = delegate;
     }
 
     private void kick() {
@@ -38,7 +40,7 @@ public class WaitableCommandCompletionCallback extends
         log.debug("Starting await on " + Thread.currentThread() + " for " + totalMax);
         
         synchronized (lock) {
-            while (!isComplete()) {
+            while (!complete) {
             	
             	long currentTime = System.currentTimeMillis();
             	long latestBetweenResultsFinishTime = this.lastResultReceivedTime + TimeUnit.MILLISECONDS.convert(betweenResultsMax, TimeUnit.SECONDS);
@@ -64,29 +66,51 @@ public class WaitableCommandCompletionCallback extends
     }
     
     @Override
-    public void receivedIntermediateError(Object command,
-            DeviceErrorDescription error) {
-        super.receivedIntermediateError(command, error);
+    public void receivedIntermediateError(T command, DeviceErrorDescription error) {
+        delegate.receivedIntermediateError(command, error);
         kick();
     }
     
     @Override
-    public void receivedLastError(Object command, DeviceErrorDescription error) {
-        super.receivedLastError(command, error);
+    public void receivedLastError(T command, DeviceErrorDescription error) {
+        delegate.receivedLastError(command, error);
         kick();
     }
     
     @Override
-    public void receivedLastResultString(Object command, String value) {
-        super.receivedLastResultString(command, value);
+    public void receivedLastResultString(T command, String value) {
+        delegate.receivedLastResultString(command, value);
         kick();
     }
     
     @Override
-    public void receivedIntermediateResultString(Object command, String value) {
-        super.receivedIntermediateResultString(command, value);
+    public void receivedIntermediateResultString(T command, String value) {
+        delegate.receivedIntermediateResultString(command, value);
         kick();
     }
+    
+    @Override
+    public void cancel() {
+        delegate.cancel();
+    }
+    
+    @Override
+    public void complete() {
+        delegate.complete();
+        complete = true;
+        kick();
+    }
+    
+    @Override
+    public void processingExceptionOccured(String reason) {
+        delegate.processingExceptionOccured(reason);
+    }
+    
+    @Override
+    public void receivedValue(T command, com.cannontech.core.dynamic.PointValueHolder value) {
+        delegate.receivedValue(command, value);
+    };
+    
 
     @Override
     public String toString() {
