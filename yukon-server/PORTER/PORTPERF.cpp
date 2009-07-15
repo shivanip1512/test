@@ -95,7 +95,17 @@ typedef deque< statistics_event_t > event_queue_t;
 static event_queue_t  statistics_event_queues[2];
 static unsigned       active_index = 0;
 static event_queue_t *active_event_queue = &statistics_event_queues[active_index];
+static CtiTime        last_statistics_midnight_operation;
 
+// Function used for for_each processing on statistics
+struct process_statistics_midnight
+{
+    CtiTime &operation_time;
+
+    process_statistics_midnight(CtiTime &time_to_set) : operation_time(time_to_set)  { };
+
+    void operator()(std::pair<long const ,class CtiStatistics *> &stat_pair)  {  if( stat_pair.second ) stat_pair.second->updateTime(operation_time);  };
+};
 
 VOID PerfUpdateThread (PVOID Arg)
 {
@@ -624,7 +634,8 @@ struct map_compare
 void processCollectedStats(bool force)
 {
     int inactive_index;
-
+    CtiTime current_last_stat_time;
+    
     {
         CtiLockGuard<CtiCriticalSection> guard(event_mux);
 
@@ -632,6 +643,7 @@ void processCollectedStats(bool force)
         //  only place this changes
         active_index ^= 0x01;
         active_event_queue = &statistics_event_queues[active_index];
+        current_last_stat_time.resetToNow();  // This time will be equal to or after all current stats and equal to or before all following stats
     }
 
     event_queue_t &inactive_event_queue = statistics_event_queues[inactive_index];
@@ -673,6 +685,15 @@ void processCollectedStats(bool force)
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " processCollectedStats() : processed " << count << " / " << total << " statistics events." << endl;
         }
+    }
+
+    //Everything has been processed. Now, if necessary, we tell all stats to pass midnight.
+    if( current_last_stat_time.day() != last_statistics_midnight_operation.day() )
+    {
+        last_statistics_midnight_operation.resetToNow();
+        for_each(statistics.begin(), statistics.end(), process_statistics_midnight(current_last_stat_time));
+        new_events = true;
+
     }
 
     if( count > 1000 && (getDebugLevel() & DEBUGLEVEL_STATISTICS) )

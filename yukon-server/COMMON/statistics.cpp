@@ -85,6 +85,10 @@ CtiStatistics::~CtiStatistics()
     */
 }
 
+void CtiStatistics::updateTime(const CtiTime &now_time)
+{
+    rotateCounters(now_time);
+}
 
 void CtiStatistics::incrementRequest(const CtiTime &stattime)
 {
@@ -207,6 +211,7 @@ void CtiStatistics::rotateCounters(const CtiTime &newtime)
         resetCounter( CurrentHour );
         computeHourInterval( newtime.hour(), _intervalBounds[ CurrentHour ] );
 
+        // If midnight, we dont need to set this. If its a new value, that incoming value will set this to true.
         _dirtyCounter[ CurrentHour ] = false;
         _rowExists   [ CurrentHour ] = _hourRowExists[ newtime.hour() ];
 
@@ -219,14 +224,13 @@ void CtiStatistics::rotateCounters(const CtiTime &newtime)
         // Copy current to previous. Write out a report.
         copyCounter(Yesterday, Daily);
         _intervalBounds[ Yesterday ] = _intervalBounds[ Daily ];        // Give it yesterday's timestamp.
-
-        _dirtyCounter[ Yesterday ] = _dirtyCounter[ Daily ];
+        _dirtyCounter  [ Yesterday ] = hasNonZeroValue(Yesterday);      // Write out yesterday only if non zero
 
         // Completely reset the daily counter.
         resetCounter( Daily );
         computeDailyInterval(_intervalBounds[Daily]);
 
-        _dirtyCounter[ Daily ] = false;
+        _dirtyCounter[ Daily ] = true;
 
         _dirty = true;
         _doHistInsert = true;
@@ -238,15 +242,13 @@ void CtiStatistics::rotateCounters(const CtiTime &newtime)
         // Copy current to previous.
         copyCounter( LastMonth, Monthly );
         _intervalBounds[ LastMonth ] = _intervalBounds[ Monthly ];
-
-        _dirtyCounter[ LastMonth ] = _dirtyCounter[ Monthly ];
-        _rowExists   [ LastMonth ] = _rowExists   [ Monthly ];
+        _dirtyCounter  [ LastMonth ] = hasNonZeroValue(LastMonth);    // Write out lastmonth only if non zero
 
         // Completely reset the monthly counter.
         resetCounter( Monthly );
         computeMonthInterval(_intervalBounds[Monthly]);
 
-        _dirtyCounter[ Monthly ] = false;
+        _dirtyCounter[ Monthly ] = true;
 
         _dirty = true;
     }
@@ -407,15 +409,23 @@ void CtiStatistics::Factory(RWDBReader &rdr, vector<CtiStatistics *> &restored)
 
                 stat->_hourRowExists.set(atoi(typeStr.substr(4).c_str()));
             }
-            else if( typeStr == "Daily" )
+            else if( typeStr == getCounterName(Daily, startdt) )
             {
                 counter = Daily;
             }
-            else if( typeStr == "Monthly" )
+            else if( typeStr == getCounterName(Yesterday, startdt) )
+            {
+                counter = Yesterday;
+            }
+            else if( typeStr == getCounterName(Monthly, startdt) )
             {
                 counter = Monthly;
             }
-            else if( typeStr == "Lifetime" )
+            else if( typeStr == getCounterName(LastMonth, startdt) )
+            {
+                counter = LastMonth;
+            }
+            else if( typeStr == getCounterName(Lifetime, startdt) )
             {
                 counter = Lifetime;
             }

@@ -43,6 +43,7 @@ public:
 
     bool isDirty() const;
     CtiStatistics& resetDirty();
+    void updateTime(const CtiTime &now_time);
     void incrementRequest(const CtiTime &stattime);
     void incrementAttempts(const CtiTime &stattime, int CompletionStatus);        // This is a retry scenario
     void incrementCompletion(const CtiTime &stattime, int CompletionStatus);
@@ -163,6 +164,21 @@ private:
             }
         }
         _dirtyCounter.set(destBinIndex);
+    }
+
+    inline bool hasNonZeroValue( unsigned int binIndex )
+    {
+        if(binIndex < FinalCounterBin)
+        {
+            for(int i = 0; i < FinalStatType; i++)
+            {
+                if(_counter[i][binIndex] != 0)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 };
