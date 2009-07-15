@@ -101,10 +101,10 @@ IM_EX_CTIBASE extern int            gDefaultPortCommFailCount;
 IM_EX_CTIBASE extern unsigned char  gMCT400SeriesSPID;
 IM_EX_CTIBASE extern short          gSimulatePorts;
 IM_EX_CTIBASE extern set<long>      gSimulatedPorts;
-IM_EX_CTIBASE extern set<long>      gForeignCCUPorts;
 IM_EX_CTIBASE extern set<long>      gScanForceDevices;
 
 IM_EX_CTIBASE void         InitYukonBaseGlobals(void);
 IM_EX_CTIBASE INT          getDebugLevel(void);
+IM_EX_CTIBASE INT          isForeignCcuPort(INT portid);
 
 #endif // #ifndef __DLLBASE_H__
