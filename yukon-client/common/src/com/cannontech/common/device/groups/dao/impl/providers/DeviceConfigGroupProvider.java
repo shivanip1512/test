@@ -31,12 +31,13 @@ public class DeviceConfigGroupProvider extends BinningDeviceGroupProviderBase<St
 
     @Override
     protected Set<String> getBinsForDevice(YukonDevice device) {
-        String sql = "select dc.Name "
-            + "from DeviceConfiguration dc "
-            + "join DeviceConfigurationDeviceMap dcdm on dcdm.DeviceConfigurationId = dc.DeviceConfigurationId "
-            + "where dcdm.DeviceId = ?";
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select dc.Name ");
+        sql.append("from DeviceConfiguration dc");
+        sql.append("join DeviceConfigurationDeviceMap dcdm on dcdm.DeviceConfigurationId = dc.DeviceConfigurationId");
+        sql.append("where dcdm.DeviceId = ").appendArgument(new Integer(device.getDeviceId()));
         try {
-            String bin = getJdbcTemplate().queryForObject(sql, new StringRowMapper(), device.getDeviceId());
+            String bin = getJdbcTemplate().queryForObject(sql.getSql(), new StringRowMapper(), sql.getArguments());
             return Collections.singleton(bin);
         }catch(EmptyResultDataAccessException e) {
             return Collections.emptySet();
