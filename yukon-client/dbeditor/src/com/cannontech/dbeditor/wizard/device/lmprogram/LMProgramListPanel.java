@@ -41,17 +41,18 @@ public void addButtonAction_actionPerformed(java.util.EventObject newEvent) {
  * @param arg1 java.util.EventObject
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC1(java.util.EventObject arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.fireInputUpdate();
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
+private void connEtoC1(java.util.EventObject arg1) throws IllegalArgumentException{
+	Object[] lmProgPAOs = getAddRemovePanel().getLeftList().getSelectedValues();
+	for (Object temp: lmProgPAOs) {
+	    LiteYukonPAObject lmProgPAO = (LiteYukonPAObject)temp;
+	    int loadGroupId = lmProgPAO.getLiteID();
+	    LoadGroupDao loadGroupDao = YukonSpringHook.getBean("loadGroupDao", LoadGroupDao.class);
+	    boolean loadGroupInUse = loadGroupDao.isLoadGroupInUse(loadGroupId);
+	    if(!loadGroupInUse){
+	        this.fireInputUpdate();
+	    } else {
+	        throw new IllegalArgumentException("The load group you are trying to add is currently being used in customer enrollment.  Please unenroll all accounts before removing a load group from its program. ("+lmProgPAO.getPaoName()+")");
+	    }
 	}
 }
 /**
@@ -61,15 +62,17 @@ private void connEtoC1(java.util.EventObject arg1) {
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void connEtoC2(java.util.EventObject arg1) throws IllegalArgumentException {
-    LiteYukonPAObject lmProgPAO = (LiteYukonPAObject) getAddRemovePanel().rightListGetSelectedValue();
-    int loadGroupId = lmProgPAO.getLiteID();
-    LoadGroupDao loadGroupDao = YukonSpringHook.getBean("loadGroupDao", LoadGroupDao.class);
-    boolean loadGroupInUse = loadGroupDao.isLoadGroupInUse(loadGroupId);
-    if(!loadGroupInUse){
-        this.fireInputUpdate();
-    } else {
-        throw new IllegalArgumentException("The load group you are trying to remove is currently being used in enrollment.  Please unenroll all accounts before removing a load group from its program.");
-    }
+	Object[] lmProgPAOs = getAddRemovePanel().getLeftList().getSelectedValues();
+	for (Object temp: lmProgPAOs) {
+	    LiteYukonPAObject lmProgPAO = (LiteYukonPAObject)temp;    int loadGroupId = lmProgPAO.getLiteID();
+	    LoadGroupDao loadGroupDao = YukonSpringHook.getBean("loadGroupDao", LoadGroupDao.class);
+	    boolean loadGroupInUse = loadGroupDao.isLoadGroupInUse(loadGroupId);
+	    if(!loadGroupInUse){
+	        this.fireInputUpdate();
+	    } else {
+	        throw new IllegalArgumentException("The load group you are trying to remove is currently being used in customer enrollment.  Please unenroll all accounts before removing a load group from its program. ("+lmProgPAO.getPaoName()+")");
+	    }
+	}
 }
 /**
  * Return the AddRemovePanel property value.
@@ -128,7 +131,6 @@ private void handleException(Throwable exception) {
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
 	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );
-	CTILogger.info(exception);
 }
 /**
  * Insert the method's description here.

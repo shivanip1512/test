@@ -35,9 +35,15 @@ class IvjEventHandler implements java.awt.event.ActionListener, java.awt.event.M
 		public void actionPerformed(java.awt.event.ActionEvent e) {
 			if (e.getSource() == AddRemovePanel.this.getAddButton()) {
                 if(getLeftList().getSelectedValues().length > 0) {
-                    connEtoC1(e);
-                    connEtoC10(e);
-                }
+                    try {
+                         connEtoC10(e);
+                         connEtoC1(e);
+                    } catch (Exception ex) {
+                         JOptionPane.showMessageDialog(null, ex.getMessage(), "Illigal Operation Exception", JOptionPane.ERROR_MESSAGE);
+                         handleException(ex);
+                    }
+                } 
+
             }
 			if (e.getSource() == AddRemovePanel.this.getRemoveButton()) {
                 if(getRightList().getSelectedValues().length > 0) {
@@ -152,11 +158,7 @@ private void connEtoC1(java.awt.event.ActionEvent arg1) {
  * @param arg1 java.awt.event.ActionEvent
  */
 private void connEtoC10(java.awt.event.ActionEvent arg1) {
-	try {
-		this.fireAddButtonAction_actionPerformed(new java.util.EventObject(this));
-	} catch (java.lang.Throwable ivjExc) {
-		handleException(ivjExc);
-	}
+	this.fireAddButtonAction_actionPerformed(new java.util.EventObject(this));
 }
 /**
  * connEtoC11:  (RightList.mouse.mouseReleased(java.awt.event.MouseEvent) --> AddRemovePanel.fireRightListMouse_mouseReleased(Ljava.util.EventObject;)V)
@@ -175,11 +177,7 @@ private void connEtoC11(java.awt.event.MouseEvent arg1) {
  * @throws IllegalArgumentException 
  */
 private void connEtoC12(java.awt.event.ActionEvent arg1) throws IllegalArgumentException {
-//	try {
-		this.fireRemoveButtonAction_actionPerformed(new java.util.EventObject(this));
-//	} catch (java.lang.Throwable ivjExc) {
-//		handleException(ivjExc);
-//	}
+	this.fireRemoveButtonAction_actionPerformed(new java.util.EventObject(this));
 }
 /**
  * connEtoC13:  (RightList.mouse.mouseClicked(java.awt.event.MouseEvent) --> AddRemovePanel.fireRightListMouse_mouseClicked(Ljava.util.EventObject;)V)
@@ -610,7 +608,6 @@ private void handleException(Throwable exception) {
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
 	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
-	
 }
 /**
  * Initializes connections
