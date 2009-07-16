@@ -281,6 +281,9 @@ VOID PortThread(void *pid)
 
             if( CONTINUE_LOOP == (status = ResetChannel(Port, Device)) )
             {
+                //  we're busted - don't make anyone else wait on our priorities
+                DeviceManager.setDevicePrioritiesForPort(portid, CtiDeviceManager::device_priorities_t());
+
                 Sleep(50);
                 status = 0;
                 continue;
@@ -4113,6 +4116,8 @@ BOOL findExclusionFreeOutMessage(void *data, void* d)
 
     bool     blockedByExclusion = false;
 
+    CtiDeviceManager::device_priorities_t *excluded_device_priorities = reinterpret_cast<CtiDeviceManager::device_priorities_t *>(data);
+
     try
     {
         if(OutMessage &&
@@ -4124,10 +4129,14 @@ BOOL findExclusionFreeOutMessage(void *data, void* d)
             {
                 CtiTablePaoExclusion exclusion;
 
-                if( DeviceManager.mayDeviceExecuteExclusionFree(Device, exclusion) )
+                if( DeviceManager.mayDeviceExecuteExclusionFree(Device, OutMessage->Priority, exclusion) )
                 {
                     bStatus = TRUE;     // This device is locked in as executable!!!
                     Device->setExecuting();
+                }
+                else if( excluded_device_priorities )  //  are we tracking priorities?
+                {
+                    (*excluded_device_priorities)[OutMessage->DeviceID] = max((*excluded_device_priorities)[OutMessage->DeviceID], OutMessage->Priority);
                 }
             }
             else
@@ -4203,7 +4212,7 @@ INT ProcessExclusionLogic(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr 
         {
             CtiTablePaoExclusion exclusion;
 
-            if( !DeviceManager.mayDeviceExecuteExclusionFree(Device, exclusion) )
+            if( !DeviceManager.mayDeviceExecuteExclusionFree(Device, OutMessage->Priority, exclusion) )
             {
                 // There is an exclusion conflict for this device.  It cannot execute this OM.
                 DeviceManager.removeInfiniteExclusion(Device);  // Remove any infinite time exclusions caused by Device from any other device in the list.
@@ -4439,6 +4448,8 @@ INT GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries)
 
     OutMessage = 0;         // Don't let us return with a bogus value!
 
+    CtiDeviceManager::device_priorities_t maxExcludedDevicePriorities;
+
     /*
      *  Search for the first queue entry which is ok to send.  In the general case, this should be the zeroeth entry and
      *  this call is relatively inexpensive.
@@ -4446,7 +4457,9 @@ INT GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries)
     if( Port->getQueueSlot() == 0 && Port->searchQueue(NULL, findNonExclusionOutMessage, false) != 0 )
     {
         CtiDeviceManager::coll_type::reader_lock_guard_t find_dev_guard(DeviceManager.getLock());
-        Port->setQueueSlot( Port->searchQueue( NULL, findExclusionFreeOutMessage, false ) );
+
+        //  look for the first nonexcluded entry, noting the priorities of the blocked items as we pass them by
+        Port->setQueueSlot( Port->searchQueue( reinterpret_cast<void *>(&maxExcludedDevicePriorities), findExclusionFreeOutMessage, false ) );
     }
 
     /*
@@ -4475,6 +4488,16 @@ INT GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries)
 
         status = CONTINUE_LOOP;
     }
+
+    //  if the OM we just got was an exclusion OM, we didn't get into the findExclusionFreeOutMessage call,
+    //    so we note this one's priority in case it's excluded
+    if(OutMessage && OutMessage->MessageFlags & MessageFlag_ApplyExclusionLogic)
+    {
+        maxExcludedDevicePriorities[OutMessage->DeviceID] = max(OutMessage->Priority, maxExcludedDevicePriorities[OutMessage->DeviceID]);
+    }
+
+    //  inform the device manager/exclusion logic about the priorities waiting on this port
+    DeviceManager.setDevicePrioritiesForPort(Port->getPortID(), maxExcludedDevicePriorities);
 
     if(OutMessage)
     {

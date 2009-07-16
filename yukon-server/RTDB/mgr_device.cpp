@@ -15,8 +15,6 @@
 
 #include <rw/db/db.h>
 
-#include "boost/multi_array/algorithm.hpp"
-
 #include "mgr_device.h"
 #include "debug_timer.h"
 #include "cparms.h"
@@ -914,9 +912,9 @@ void CtiDeviceManager::refreshList(id_range_t &paoids, const LONG deviceType)
 /*
  * ptr_type anxiousDevice has asked to execute.  We make certain that no other device which is in his exclusion list is executing.
  */
-bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice, CtiTablePaoExclusion &deviceexclusion)
+bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice, const int requestPriority, CtiTablePaoExclusion &deviceexclusion)
 {
-    bool bstatus = false;
+    bool mayExecute = false;
 
     try
     {
@@ -927,8 +925,7 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice
             CtiTime now;
 
             // Make sure no other device out there has begun executing and doesn't want us to until they are done.
-            // The device may also have logic which prevents it's executing.
-            if( !anxiousDevice->isExecutionProhibited() && !anxiousDevice->isExecutionProhibitedByInternalLogic() )
+            if( !anxiousDevice->isExecutionProhibited() )
             {
                 if(anxiousDevice->hasExclusions())
                 {
@@ -936,7 +933,7 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice
                      *  Walk the anxiousDevice's exclusion list checking if any of the devices on it indicate that they are
                      *  currently executing.  If any of them are executing, the anxious device cannot start.
                      */
-                    bool busted = false;
+                    bool blocked = false;
                     CtiDeviceSPtr device;
                     vector< CtiDeviceSPtr > anxiousDeviceBlocksThisVector;
 
@@ -958,7 +955,7 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice
                                     ", Duration " << anxiousDevice->getExclusion().getCycleTimeExclusion().getTransmitTime() << endl;
                             }
 
-                            bstatus = true;             // Provided no proximity exclusion is executing, we can go!
+                            mayExecute = true;      // Provided no proximity exclusion is executing, we can go!
                         }
                         else
                         {
@@ -969,15 +966,15 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice
                             }
 
                             deviceexclusion = anxiousDevice->getExclusion().getCycleTimeExclusion();                             // Pass this out to the callee as the device which blocked us first!
-                            busted = true;          // Window is closed!
-                            bstatus = false;        // Cannot execute.
+                            blocked = true;          // Window is closed!
+                            mayExecute = false;     // Cannot execute.
                         }
                     }
 
                     CtiDeviceBase::exclusions exvector = anxiousDevice->getExclusions();
                     CtiDeviceBase::exclusions::iterator itr;
 
-                    for(itr = exvector.begin(); !busted && itr != exvector.end(); itr++)
+                    for(itr = exvector.begin(); !blocked && itr != exvector.end(); itr++)
                     {
                         CtiTablePaoExclusion &paox = *itr;
 
@@ -987,9 +984,12 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice
                             {
                                 device = getDeviceByID(paox.getExcludedPaoId());  // grab the excludable device
 
+                                int deviceMaxWaitingPriority = 0;  //  initialized in the else-if below
+
                                 if(device)
                                 {
-                                    if(device->isExecuting())               // is the excludable executing?  This would block anxiousDevice.
+                                    //  is the excludable executing?  This would block anxiousDevice.
+                                    if(device->isExecuting())
                                     {
                                         if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
                                         {
@@ -997,18 +997,30 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice
                                             dout << CtiTime() << " Device: " << anxiousDevice->getName() << " Port: " << anxiousDevice->getPortID() << " cannot execute because device " << device->getName() << " port: " << device->getPortID() << " is executing.  TID: " << GetCurrentThreadId() << endl;
                                         }
                                         deviceexclusion = paox;     // Pass this out to the callee as the device which blocked us first!
-                                        anxiousDeviceBlocksThisVector.clear();             // Cannot use the list to block other devices.
-                                        busted = true;              // 20060228 CGP.  // Prevent additional loops.
+                                        anxiousDeviceBlocksThisVector.clear();  // Cannot use the list to block other devices.
+                                        blocked = true;             // 20060228 CGP.  // Prevent additional loops.
                                         break;                      // we cannot go
-                                    }/*
-                                    else if( device->isExecutionProhibited(now, anxiousDevice->getID()) )  // This asks if anxiousDevice is already blocking "device".  We don't add it a second time.
+                                    }
+                                    //  Does the excludable have a higher priority request waiting that should block anxiousDevice?
+                                    else if(requestPriority < (deviceMaxWaitingPriority = getPortDevicePriority(device->getPortID(), device->getID())))
                                     {
-                                        if(0 && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+                                        if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << " Device " << device->getName() << " is already blocked by " << anxiousDevice->getName() << endl;
+                                            dout << CtiTime() << " Device: " << anxiousDevice->getName()
+                                                              << " Port: " << anxiousDevice->getPortID()
+                                                              << " Priority: " << requestPriority
+                                                              << " cannot execute because "
+                                                              << " device " << device->getName()
+                                                              << " port: " << device->getPortID()
+                                                              << " priority: " <<  deviceMaxWaitingPriority
+                                                              << " is executing.  TID: " << GetCurrentThreadId() << endl;
                                         }
-                                    }*/
+                                        deviceexclusion = paox;     // Pass this out to the callee as the device which blocked us first!
+                                        anxiousDeviceBlocksThisVector.clear();  // Cannot use the list to block other devices.
+                                        blocked = true;
+                                        break;
+                                    }
                                     else
                                     {
                                         anxiousDeviceBlocksThisVector.push_back(device);    // Throw a copy of the shptr onto this vector to be marked out if we succeed.
@@ -1040,9 +1052,9 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice
                     /*
                      *  If we get through all proximity exclusion devices and no one is running, we MAY execute.
                      */
-                    if(!busted && itr == exvector.end())
+                    if(!blocked && itr == exvector.end())
                     {
-                        bstatus = true;                     // we may execute in this case.
+                        mayExecute = true;                     // we may execute in this case.
                     }
 
                     //
@@ -1069,16 +1081,16 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " " << anxiousDevice->getName() << " caused  " << procnt << " devices to be blocked because it is executing" << endl;
                         }
-                        bstatus = true;
+                        mayExecute = true;
                     }
                 }
                 else
                 {
-                    bstatus = true;
+                    mayExecute = true;
                 }
             }
 
-            if(bstatus)
+            if(mayExecute)
             {
                 if( 0 && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS && anxiousDevice->hasExclusions() )
                 {
@@ -1095,8 +1107,44 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice
         dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    return bstatus;
+    return mayExecute;
 }
+
+
+CtiDeviceManager &CtiDeviceManager::setDevicePrioritiesForPort(long portid, const device_priorities_t &device_priorities)
+{
+    Cti::readers_writer_lock_t::writer_lock_guard_t guard(_portDevicePrioritiesLock);
+
+    _portDevicePriorities[portid] = device_priorities;
+
+    return *this;
+}
+
+
+int CtiDeviceManager::getPortDevicePriority(long portid, long deviceid) const
+{
+    Cti::readers_writer_lock_t::reader_lock_guard_t guard(_portDevicePrioritiesLock);
+
+    port_device_priorities_t::const_iterator pdp_itr = _portDevicePriorities.find(portid);
+
+    if( pdp_itr == _portDevicePriorities.end() )
+    {
+        return 0;
+    }
+
+    const device_priorities_t &dp = pdp_itr->second;
+
+    device_priorities_t::const_iterator dp_itr = dp.find(deviceid);
+
+    if( dp_itr == dp.end() )
+    {
+        return 0;
+    }
+
+    return dp_itr->second;
+}
+
+
 
 /*
  * ptr_type anxiousDevice has completed an execution.  We must cleanup his mess.
@@ -1979,7 +2027,6 @@ CtiDeviceManager::ptr_type CtiDeviceManager::chooseExclusionDevice( LONG portid 
 {
     CtiTime now;
     CtiDeviceSPtr devA;           //
-    CtiDeviceSPtr devB;           //
     CtiDeviceSPtr devS;
 
     /*

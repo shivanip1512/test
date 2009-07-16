@@ -46,6 +46,8 @@ public:
     typedef coll_type::spiterator       spiterator;
     typedef coll_type::insert_pair      insert_pair;
 
+    typedef map<long, int> device_priorities_t;
+
 protected:
 
     class id_range_t;
@@ -63,9 +65,14 @@ private:
 
     typedef map<long, set<long> > port_devices_t;
     typedef map<int,  set<long> > type_devices_t;
+    typedef map<long, device_priorities_t> port_device_priorities_t;
 
     port_devices_t _portDevices;
     type_devices_t _typeDevices;
+
+    port_device_priorities_t _portDevicePriorities;
+
+    mutable Cti::readers_writer_lock_t _portDevicePrioritiesLock;
 
     bool refreshDevices(RWDBReader& rdr);
 
@@ -131,6 +138,8 @@ protected:
 
     virtual void refreshDeviceProperties(id_range_t &paoids, int type);
 
+    int getPortDevicePriority(long portid, long deviceid) const;
+
 public:
 
     CtiDeviceManager(CtiApplication_t app_id);
@@ -178,7 +187,9 @@ public:
 
     int select(bool (*selectFun)(const long, ptr_type, void*), void* d, vector< ptr_type > &coll);
 
-    bool mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice, CtiTablePaoExclusion &deviceexclusion);
+    CtiDeviceManager &setDevicePrioritiesForPort(long portid, const device_priorities_t &device_priorities);
+
+    bool mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice, const int requestPriority, CtiTablePaoExclusion &deviceexclusion);
     bool removeInfiniteExclusion(CtiDeviceSPtr anxiousDevice);
     ptr_type chooseExclusionDevice(LONG portid);
     CtiDeviceManager &addPortExclusion(LONG paoID);
