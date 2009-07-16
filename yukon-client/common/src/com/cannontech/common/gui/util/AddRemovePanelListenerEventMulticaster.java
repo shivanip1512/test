@@ -51,8 +51,9 @@ public static com.cannontech.common.gui.util.AddRemovePanelListener remove(com.c
 /**
  * 
  * @param newEvent java.util.EventObject
+ * @throws IllegalArgumentException 
  */
-public void removeButtonAction_actionPerformed(java.util.EventObject newEvent) {
+public void removeButtonAction_actionPerformed(java.util.EventObject newEvent) throws IllegalArgumentException {
 	((com.cannontech.common.gui.util.AddRemovePanelListener)a).removeButtonAction_actionPerformed(newEvent);
 	((com.cannontech.common.gui.util.AddRemovePanelListener)b).removeButtonAction_actionPerformed(newEvent);
 }

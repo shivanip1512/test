@@ -7,5 +7,7 @@ public interface LoadGroupDao {
     LoadGroup getById(int loadGroupId);
 
     LoadGroup getByLoadGroupName(String loadGroupName);
+    
+    boolean isLoadGroupInUse(int loadGroupId);
 
 }

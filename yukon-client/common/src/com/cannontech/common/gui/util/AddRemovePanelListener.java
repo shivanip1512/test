@@ -14,8 +14,9 @@ void leftListListSelection_valueChanged(java.util.EventObject newEvent);
 /**
  * 
  * @param newEvent java.util.EventObject
+ * @throws IllegalArgumentException 
  */
-void removeButtonAction_actionPerformed(java.util.EventObject newEvent);
+void removeButtonAction_actionPerformed(java.util.EventObject newEvent) throws IllegalArgumentException;
 /**
  * 
  * @param newEvent java.util.EventObject

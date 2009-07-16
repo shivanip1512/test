@@ -91,6 +91,29 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
     }
     
     /*
+     * This method checks to see if the load group supplied load group is be used in an active enrollment
+     */
+    public boolean isLoadGroupInUse(int loadGroupId){
+        boolean isUsed = false;
+
+        /*
+         * This query gets all the load group information for the supplied load group name, 
+         * except for the program ids.
+         */
+        final SqlStatementBuilder loadGroupInUseQuery = new SqlStatementBuilder();
+        loadGroupInUseQuery.append("Select count(*) ");
+        loadGroupInUseQuery.append("From LMHardwareControlGroup LMHCG");
+        loadGroupInUseQuery.append("Where LMHCG.LMGroupId = ?");
+        
+        int enrollmentCount = simpleJdbcTemplate.queryForInt(loadGroupInUseQuery.toString(),
+                                                             loadGroupId);
+        if(enrollmentCount > 0)
+            isUsed = true;
+            
+        return isUsed;
+    }
+    
+    /*
      * This method retrieves all the program ids that are associated with the 
      * loadGroup provided.
      */

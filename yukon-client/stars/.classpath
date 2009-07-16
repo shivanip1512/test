@@ -6,7 +6,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/common"/>
 	<classpathentry kind="src" path="/commander"/>
-	<classpathentry kind="src" path="/dbeditor"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/third-party"/>
 	<classpathentry kind="lib" path="/third-party/servlet-api.jar"/>
 	<classpathentry kind="lib" path="/third-party/jaxm-api.jar"/>
