@@ -1,6 +1,7 @@
 package com.cannontech.multispeak.block;
 
 import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.multispeak.block.syntax.SyntaxItem;
 
@@ -38,4 +39,13 @@ public interface Block {
      * @return
      */
     public boolean hasData();
+    
+	/**
+     * Helper method to load the fields based on the attribute.
+     * This method assumes the pointValue matches the attribute provided.
+	 * @param meter
+	 * @param pointValue
+	 * @param attribute
+	 */
+    public void populate(Meter meter, PointValueHolder pointValue, BuiltInAttribute attribute);
 }

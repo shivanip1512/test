@@ -514,13 +514,11 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     public FormattedBlock[] getLatestReadingByType(String readingType, String lastReceived) throws RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        List<com.cannontech.amr.meter.model.Meter> meters = meterDao.getMetersByMeterNumber(lastReceived, 
-                                                                                            vendor.getMaxReturnRecords());
-        
+
         FormattedBlockService<Block> formattedBlockServ = 
             mspValidationService.isValidBlockReadingType(readingTypesMap, readingType);
-
-        FormattedBlock formattedBlock = formattedBlockServ.getFormattedBlock(meters);
+        
+        FormattedBlock formattedBlock = mspRawPointHistoryDao.retrieveLatestBlock(formattedBlockServ, lastReceived, vendor.getMaxReturnRecords());
         FormattedBlock[] formattedBlockArray = new FormattedBlock[]{formattedBlock};
         
         setObjectsRemaining(vendor.getMaxReturnRecords(), formattedBlock);

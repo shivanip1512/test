@@ -4,8 +4,13 @@ import java.util.Collections;
 import java.util.List;
 
 import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeDynamicDataSource;
+import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.multispeak.block.Block;
+import com.cannontech.multispeak.block.BlockBase;
 import com.cannontech.multispeak.block.FormattedBlockService;
 import com.cannontech.multispeak.block.data.FormattedBlockBase;
 import com.cannontech.multispeak.deploy.service.FormattedBlock;
@@ -38,4 +43,21 @@ public abstract class FormattedBlockServiceImpl <T extends Block> implements For
         mspFormattedBlock.setValSyntax(blockBase.getValSyntax());
         return mspFormattedBlock;
     }
+    
+
+	/**
+	 * Helper method to load pointValue data for an attribute.
+	 * @param meter
+	 * @param block
+	 */
+	protected void populateBlock(Meter meter, BlockBase block, BuiltInAttribute attribute) {
+		try {
+            PointValueHolder pointValue = attrDynamicDataSource.getPointValue(meter, attribute);
+            block.populate(meter, pointValue, attribute);
+        } catch (IllegalArgumentException e) {
+            CTILogger.debug("Ignoring Exception:" + e.getMessage());
+        } catch (NotFoundException e) {
+            CTILogger.debug("Ignoring Exception:" + e.getMessage());
+        }
+	}
 }

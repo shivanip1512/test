@@ -9,17 +9,13 @@ import org.apache.commons.lang.StringUtils;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
-import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.util.Iso8601DateUtil;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.PointValueHolder;
-import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.multispeak.block.Block;
+import com.cannontech.multispeak.block.BlockBase;
 import com.cannontech.multispeak.block.syntax.SyntaxItem;
-import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.tools.csv.CSVReader;
 
-public class LoadBlock implements Block{
+public class LoadBlock extends BlockBase{
 
     public String meterNumber;
     public Double loadProfileDemand;
@@ -28,7 +24,6 @@ public class LoadBlock implements Block{
     public Date kVArDateTime;
     public Double voltage;
     public Date voltageDateTime;
-    public boolean hasData = false;
     
     private static int FIELD_COUNT = 7;
     
@@ -58,37 +53,25 @@ public class LoadBlock implements Block{
         else if (syntaxItem.equals(SyntaxItem.LOAD_PROFILE_DEMAND)){
             if( loadProfileDemand != null)
                 return String.valueOf(loadProfileDemand);
-        }
-        
-        else if (syntaxItem.equals(SyntaxItem.LOAD_PROFILE_DEMAND_DATETIME)){
+        } else if (syntaxItem.equals(SyntaxItem.LOAD_PROFILE_DEMAND_DATETIME)){
             if ( loadProfileDemandDateTime != null){
                 return Iso8601DateUtil.formatIso8601Date(loadProfileDemandDateTime);
             }
-        }
-        
-        else if (syntaxItem.equals(SyntaxItem.KVAR)){
+        } else if (syntaxItem.equals(SyntaxItem.KVAR)){
             if( kVAr != null)
                 return String.valueOf(kVAr);
-        }
-        
-        else if (syntaxItem.equals(SyntaxItem.KVAR_DATETIME)){
+        } else if (syntaxItem.equals(SyntaxItem.KVAR_DATETIME)){
             if (kVArDateTime != null){
             	return Iso8601DateUtil.formatIso8601Date(kVArDateTime);
             }
-        }
-
-        else if (syntaxItem.equals(SyntaxItem.VOLTAGE)){
+        } else if (syntaxItem.equals(SyntaxItem.VOLTAGE)){
             if (voltage != null)
             return String.valueOf(voltage);
-        }
-        
-        else if (syntaxItem.equals(SyntaxItem.VOLTAGE_DATETIME)){
+        } else if (syntaxItem.equals(SyntaxItem.VOLTAGE_DATETIME)){
             if( voltageDateTime != null) {
             	return Iso8601DateUtil.formatIso8601Date(voltageDateTime);
             }
-        }
-        
-        else {
+        } else {
             CTILogger.error("SyntaxItem: " + syntaxItem + " - Not Valid for LoadBlock");
         }
         
@@ -109,60 +92,43 @@ public class LoadBlock implements Block{
      */
 	private void loadPointValue(Meter meter, PointValueHolder pointValue) {
 		
-		if (pointValue == null) {
+		if(!hasValidPointValue(pointValue)) {
+			//get out before doing any more work.
 			return;
 		}
-		
-		AttributeService attributeService = (AttributeService)YukonSpringHook.getBean("attributeService");
-		try {
-		    LitePoint litePoint = 
-		        attributeService.getPointForAttribute(meter, BuiltInAttribute.LOAD_PROFILE);
-		    
-		    if( pointValue.getId() == litePoint.getPointID()){
-		        loadProfileDemand = pointValue.getValue();
-		        loadProfileDemandDateTime = pointValue.getPointDataTimeStamp();
-		        hasData = true;
-		    }
-		} catch (IllegalArgumentException e) {
-		    CTILogger.debug(e);
-		} catch (NotFoundException e){
-		    CTILogger.error(e);
-		}
-		
-		if (!hasData) { 
-		    try {
-		        LitePoint litePoint = 
-		            attributeService.getPointForAttribute(meter, BuiltInAttribute.KVAR);
-		        
-		        if( pointValue.getId() == litePoint.getPointID()){
-		            kVAr = pointValue.getValue();
-		            kVArDateTime = pointValue.getPointDataTimeStamp();
-		            hasData = true;
-		        }
-		    } catch (IllegalArgumentException e) {
-		        CTILogger.debug(e);
-		    } catch (NotFoundException e){
-		        CTILogger.error(e);
-		    }
-		}
-		if (!hasData) {
-		    try {
-		        LitePoint litePoint = 
-		            attributeService.getPointForAttribute(meter, BuiltInAttribute.VOLTAGE);
-		        
-		        if( pointValue.getId() == litePoint.getPointID()){
-		            voltage = pointValue.getValue();
-		            voltageDateTime = pointValue.getPointDataTimeStamp();
-		            hasData = true;
-		        }
-		    } catch (IllegalArgumentException e) {
-		        CTILogger.debug(e);
-		    } catch (NotFoundException e){
-		        CTILogger.error(e);
-		    }
-		}
+
+		populateByPointValue(meter, pointValue, BuiltInAttribute.LOAD_PROFILE);
+		populateByPointValue(meter, pointValue, BuiltInAttribute.KVAR);
+		populateByPointValue(meter, pointValue, BuiltInAttribute.VOLTAGE);
 	}
-    
+
+	/**
+     * Helper method to load the fields based on the attribute.
+     * This method assumes the pointValue matches the attribute provided.
+	 * @param meter
+	 * @param pointValue
+	 * @param attribute
+	 */
+	@Override
+	public void populate(Meter meter, PointValueHolder pointValue, BuiltInAttribute attribute) {
+		
+		if (!hasValidPointValue(pointValue)) {
+			return;
+		}
+		if (attribute.equals(BuiltInAttribute.LOAD_PROFILE)) {
+			setLoadProfileDemand(meter, pointValue);
+		}
+		else if (attribute.equals(BuiltInAttribute.KVAR)) {
+			setKVar(meter, pointValue);
+		}
+		else if (attribute.equals(BuiltInAttribute.VOLTAGE)) {
+			setVoltage(meter, pointValue);
+		} else {
+			throw new IllegalArgumentException("Attribute " + attribute.toString() + " is not supported by LoadBlock.");
+		}
+		hasData = true;
+	}
+
     @Override
     public void populate(String string, char separator){
     	
@@ -188,11 +154,36 @@ public class LoadBlock implements Block{
     	}
     }
 
-    @Override
-    public boolean hasData() {
-        return hasData;
-    }
-    
+	/**
+     * Helper method to set the loadProfileDemand fields
+     * @param meter
+     * @param pointValue
+     */
+	private void setLoadProfileDemand(Meter meter, PointValueHolder pointValue) {
+        loadProfileDemand = pointValue.getValue();
+        loadProfileDemandDateTime = pointValue.getPointDataTimeStamp();
+	}
+	
+	/**
+     * Helper method to set the kVar fields
+     * @param meter
+     * @param pointValue
+     */
+	private void setKVar(Meter meter, PointValueHolder pointValue) {
+        kVAr = pointValue.getValue();
+        kVArDateTime = pointValue.getPointDataTimeStamp();
+	}
+	
+	/**
+     * Helper method to set the voltage fields
+     * @param meter
+     * @param pointValue
+     */
+	private void setVoltage(Meter meter, PointValueHolder pointValue) {
+        voltage = pointValue.getValue();
+        voltageDateTime = pointValue.getPointDataTimeStamp();
+	}
+	
     @Override
     public String getObjectId() {
     	return meterNumber;

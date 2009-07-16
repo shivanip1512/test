@@ -8,6 +8,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.multispeak.block.data.load.LoadBlock;
 import com.cannontech.multispeak.block.data.outage.OutageBlock;
 import com.cannontech.multispeak.block.data.outage.OutageValList;
 import com.cannontech.multispeak.deploy.service.FormattedBlock;
@@ -44,15 +45,8 @@ public class OutageFormattedBlockImpl extends FormattedBlockServiceImpl <OutageB
         OutageBlock outageBlock = new OutageBlock();
         outageBlock.populate(meter, null);
 
-        try {
-            PointValueHolder outage = 
-                attrDynamicDataSource.getPointValue(meter, BuiltInAttribute.BLINK_COUNT);
-            outageBlock.populate(meter, outage);
-        } catch (IllegalArgumentException e) {
-            CTILogger.debug("Ignoring Exception:" + e.getMessage());
-        } catch (NotFoundException e) {
-            CTILogger.debug("Ignoring Exception:" + e.getMessage());
-        }
+        populateBlock(meter, outageBlock, BuiltInAttribute.BLINK_COUNT);
+
         return outageBlock;
     }
 }

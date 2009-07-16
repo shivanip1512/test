@@ -176,7 +176,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
                      " AND (POINTOFFSET < 101 or POINTOFFSET > 104)";   //exclude Profile data for now.
                      if ( !StringUtils.isBlank(lastReceived) )
                          sql += " AND DMG.METERNUMBER > ? ";
-                     sql += " ORDER BY METERNUMBER, P.POINTID, TIMESTAMP";  //P.POINTID, 
+                     sql += " ORDER BY METERNUMBER, PAO.PAOBJECTID, P.POINTID, TIMESTAMP";  //P.POINTID, 
         
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -278,7 +278,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
                      " AND TIMESTAMP >= ? AND TIMESTAMP <= ? ";
                      if ( !StringUtils.isBlank(lastReceived) )
                          sql += " AND DMG.METERNUMBER > ? ";
-                     sql += " ORDER BY DMG.METERNUMBER, TIMESTAMP";  //P.POINTID, 
+                     sql += " ORDER BY DMG.METERNUMBER, PAO.PAOBJECTID, TIMESTAMP";  //P.POINTID, 
         
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -354,6 +354,114 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
 
                 CTILogger.info( (new Date().getTime() - timerStart.getTime())*.001 + 
                                                           " Secs for RPH Data for formattedBlock to be loaded" );                
+            }
+        }
+        
+        catch( java.sql.SQLException e ) {
+            CTILogger.error(e);
+        }
+        finally
+        {
+        	SqlUtils.close(rset, pstmt, conn );
+        }
+        return block.createFormattedBlock(blockList);
+    }
+    
+    public FormattedBlock retrieveLatestBlock(FormattedBlockService<Block> block, String lastReceived, int maxRecords) {
+        Date timerStart = new Date();
+        
+        List<Block> blockList = new ArrayList<Block>();
+        
+        String sql = "SELECT DISTINCT P.POINTID, TIMESTAMP, VALUE, P.POINTTYPE, " + 
+                     " PAO.TYPE, PAO.CATEGORY, PAO.PAOBJECTID, DMG.METERNUMBER, QUality " + 
+                     " FROM " + RawPointHistory.TABLE_NAME + " rph, " + Point.TABLE_NAME + " p, " +
+                     YukonPAObject.TABLE_NAME + " pao, " + DeviceMeterGroup.TABLE_NAME + " dmg, " +
+                     " (SELECT distinct r.pointid, max(r.timestamp) AS rDate " + 
+              		 " FROM rawpointhistory r " +
+              		 " GROUP BY pointid) irph " +
+                     " WHERE RPH.POINTID = P.POINTID " +
+                     " AND RPH.POINTID = IRPH.POINTID " +
+                     " AND RPH.TIMESTAMP = IRPH.RDATE " +
+                     " AND P.PAOBJECTID = PAO.PAOBJECTID " +
+                     " AND PAO.PAOBJECTID = DMG.DEVICEID ";
+                     if ( !StringUtils.isBlank(lastReceived) )
+                         sql += " AND DMG.METERNUMBER > ? ";
+                     sql += " ORDER BY DMG.METERNUMBER, PAO.PAOBJECTID, TIMESTAMP";  //P.POINTID, 
+        
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rset = null;
+
+        try
+        {
+            conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+
+            if( conn == null ) {
+                CTILogger.error(getClass() + ":  Error getting database connection.");
+            } else {
+                pstmt = conn.prepareStatement(sql);
+                if ( !StringUtils.isBlank(lastReceived) ) {
+                    pstmt.setString(1, lastReceived);
+                }
+                
+                rset = pstmt.executeQuery();
+
+                int lastPaoID = -1;
+                int paobjectID = 0;
+                
+                Block b = block.getNewBlock();
+                
+                while( rset.next()) {
+                	
+                    int pointID = rset.getInt(1);
+                    Timestamp ts = rset.getTimestamp(2);
+                    Date dateTime = new Date();
+                    dateTime.setTime(ts.getTime());
+                    double value = rset.getDouble(3);
+                    String ptType = rset.getString(4);
+                    int pointType = PointTypes.getType(ptType);
+                    String type = rset.getString(5);
+                    String category = rset.getString(6);
+                    int paoType = PAOGroups.getPAOType(category, type);
+                    paobjectID = rset.getInt(7);
+                    String meterNumber = rset.getString(8);
+                    Integer quality = rset.getInt(9);
+                    //This is only a partial Meter object load
+                    Meter meter = new Meter();
+                    meter.setMeterNumber(meterNumber + "(" + paobjectID + ")");
+                    meter.setType(paoType);
+                    meter.setTypeStr(type);
+                    meter.setDeviceId(paobjectID);
+                    
+                    SimplePointValue pointValue = new SimplePointValue(pointID, dateTime, pointType, value);
+                    
+                    //Store any previous meter readings.
+                    if (lastPaoID != paobjectID) {
+                        if( b.hasData()) {
+                            blockList.add(b);
+                        }
+                        b = null;
+                        if( lastPaoID != paobjectID && blockList.size() >= maxRecords) {
+                            break;
+                        }
+                    }
+
+                    if( b == null) { 
+                        b = block.getNewBlock();
+                    }
+
+                    b.populate( meter, pointValue);
+                    System.out.println(pointID + "("+ quality +")");
+                    lastPaoID = paobjectID;
+                }
+                
+                //Add the last meterRead object
+                if( b != null && b.hasData() ) {  //made it all the way through and need to add last one 
+                    blockList.add(b);
+                }
+
+                CTILogger.info( (new Date().getTime() - timerStart.getTime())*.001 + 
+                                                          " Secs for RPH Data for latest formattedBlock to be loaded" );                
             }
         }
         
