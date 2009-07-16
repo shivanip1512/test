@@ -7,11 +7,11 @@ public enum ApplianceTypeEnum implements DisplayableEnum {
     AIR_CONDITIONER,
     STORAGE_HEAT,
     IRRIGATION,
-    GRAINDRYER,
+    GRAIN_DRYER,
     HEAT_PUMP,
     GENERATOR,
     CHILLER,
-    DUAL_STAGE_AIR_CONDITIONER,
+    DUAL_STAGE,
     DUAL_FUEL,
     WATER_HEATER;
 
