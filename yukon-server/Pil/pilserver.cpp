@@ -1517,6 +1517,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
 {
     INT status = NORMAL;
     INT i;
+    bool isGroupCommand = false;
 
     CtiRequestMsg *pReq = (CtiRequestMsg*)Req.replicateMessage();
     pReq->setConnectionHandle( Req.getConnectionHandle() );
@@ -1633,6 +1634,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
                 std::transform(groupname.begin(), groupname.end(), groupname.begin(), ::tolower);
 
                 getDeviceGroupMembers(groupname, members);
+                isGroupCommand = true; // We will take the remaining pReq and place it on the group queue as well.
             }
 
             vector<long>::iterator itr, members_end = members.end();
@@ -1791,6 +1793,15 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
 
             }
         }
+    }
+
+    // The last request from the group is not placed on the group list until now.
+    // This allows some processing to happen after the group expansion,
+    // but the message must go into the queue or MACS has serious problems.
+    if(isGroupCommand && pReq != NULL)
+    {
+        _groupQueue.insert(pReq);
+        pReq = NULL;
     }
 
     if(execList.size() == 0 && pReq != NULL)
