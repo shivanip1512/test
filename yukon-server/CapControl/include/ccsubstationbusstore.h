@@ -126,11 +126,11 @@ public:
 
     } CtiCapControlMapType;
 
-    CtiCCSubstationBus_vec* getCCSubstationBuses(ULONG secondsFrom1901);
-    CtiCCSubstation_vec* getCCSubstations(ULONG secondsFrom1901);
+    CtiCCSubstationBus_vec* getCCSubstationBuses(ULONG secondsFrom1901, bool checkReload = false);
+    CtiCCSubstation_vec* getCCSubstations(ULONG secondsFrom1901, bool checkReload = false);
     CtiCCState_vec* getCCCapBankStates(ULONG secondsFrom1901);
-    CtiCCArea_vec* getCCGeoAreas(ULONG secondsFrom1901);
-    CtiCCSpArea_vec* getCCSpecialAreas(ULONG secondsFrom1901);
+    CtiCCArea_vec* getCCGeoAreas(ULONG secondsFrom1901, bool checkReload = false);
+    CtiCCSpArea_vec* getCCSpecialAreas(ULONG secondsFrom1901, bool checkReload = false);
 
     static CtiCCSubstationBusStore* getInstance();
     static void deleteInstance();

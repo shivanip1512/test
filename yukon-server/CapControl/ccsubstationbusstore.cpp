@@ -157,10 +157,15 @@ CtiCCSubstationBusStore::~CtiCCSubstationBusStore()
 
     Returns a CtiCCSubstationBus_vec of CtiCCSubstationBuses
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus_vec* CtiCCSubstationBusStore::getCCSubstationBuses(ULONG secondsFrom1901)
+CtiCCSubstationBus_vec* CtiCCSubstationBusStore::getCCSubstationBuses(ULONG secondsFrom1901, bool checkReload)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
+    if (!checkReload)
+    {
+        return _ccSubstationBuses;
+    }
+    
     if( (!_isvalid) && (secondsFrom1901 >= _lastdbreloadtime.seconds()+30) )
     {//is not valid and has been at 0.5 minutes from last db reload, so we don't do this a bunch of times in a row on multiple updates
         reset();
@@ -195,9 +200,14 @@ CtiCCSubstationBus_vec* CtiCCSubstationBusStore::getCCSubstationBuses(ULONG seco
 
     Returns a CtiCCGeoArea_vec of CtiCCGeoAreas
 ---------------------------------------------------------------------------*/
-CtiCCArea_vec* CtiCCSubstationBusStore::getCCGeoAreas(ULONG secondsFrom1901)
+CtiCCArea_vec* CtiCCSubstationBusStore::getCCGeoAreas(ULONG secondsFrom1901, bool checkReload)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+
+    if (!checkReload)
+    {
+        return _ccGeoAreas;
+    }
 
     if( !_isvalid && secondsFrom1901 >= _lastdbreloadtime.seconds()+30 )
     {//is not valid and has been at 0.5 minutes from last db reload, so we don't do this a bunch of times in a row on multiple updates
@@ -212,9 +222,14 @@ CtiCCArea_vec* CtiCCSubstationBusStore::getCCGeoAreas(ULONG secondsFrom1901)
 
     Returns a CtiCCSpecialArea_vec of CtiCCAreas
 ---------------------------------------------------------------------------*/
-CtiCCSpArea_vec* CtiCCSubstationBusStore::getCCSpecialAreas(ULONG secondsFrom1901)
+CtiCCSpArea_vec* CtiCCSubstationBusStore::getCCSpecialAreas(ULONG secondsFrom1901, bool checkReload)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+
+    if (!checkReload)
+    {
+        return _ccSpecialAreas;
+    }
 
     if( !_isvalid && secondsFrom1901 >= _lastdbreloadtime.seconds()+30 )
     {//is not valid and has been at 0.5 minutes from last db reload, so we don't do this a bunch of times in a row on multiple updates
@@ -228,9 +243,14 @@ CtiCCSpArea_vec* CtiCCSubstationBusStore::getCCSpecialAreas(ULONG secondsFrom190
 
     Returns a CtiCCSubstation_vec of CtiCCSubstations
 ---------------------------------------------------------------------------*/
-CtiCCSubstation_vec* CtiCCSubstationBusStore::getCCSubstations(ULONG secondsFrom1901)
+CtiCCSubstation_vec* CtiCCSubstationBusStore::getCCSubstations(ULONG secondsFrom1901, bool checkReload)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+
+    if (!checkReload)
+    {   
+        return _ccSubstations;
+    }
 
     if( !_isvalid && secondsFrom1901 >= _lastdbreloadtime.seconds()+30 )
     {//is not valid and has been at 0.5 minutes from last db reload, so we don't do this a bunch of times in a row on multiple updates
@@ -1085,7 +1105,7 @@ void CtiCCSubstationBusStore::reset()
 
         CtiMultiMsg_vec capMessages;
         _reregisterforpoints = TRUE;
-        _lastdbreloadtime.now();
+        _lastdbreloadtime = _lastdbreloadtime.now();
         if ( !wasAlreadyRunning )
         {
             dumpAllDynamicData();
@@ -2214,7 +2234,7 @@ void CtiCCSubstationBusStore::doResetThr()
         rwRunnable().serviceCancellation();
 
         CtiTime currentTime;
-        currentTime.now();
+        currentTime = currentTime.now();
 
         if( currentTime.seconds() >= lastPeriodicDatabaseRefresh.seconds()+refreshrate )
         {
@@ -9907,7 +9927,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
 
 
 
-                _lastindividualdbreloadtime.now();
+                _lastindividualdbreloadtime = _lastindividualdbreloadtime.now();
 
 
                 for(LONG i=0;i<_ccSubstationBuses->size();i++)

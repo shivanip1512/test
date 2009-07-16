@@ -292,7 +292,7 @@ void CtiCapController::controlLoop()
 
                 rwRunnable().serviceCancellation();
 
-                CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(secondsFrom1901);
+                CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(secondsFrom1901, true);
                 CtiCCSubstation_vec& ccSubstations = *store->getCCSubstations(secondsFrom1901);
                 CtiCCArea_vec& ccAreas = *store->getCCGeoAreas(secondsFrom1901);
 
