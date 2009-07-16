@@ -8,17 +8,19 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.common.device.DeviceType;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.config.dao.ConfigurationType;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.ConfigurationBase;
+import com.cannontech.common.device.config.model.VerifyResult;
+import com.cannontech.common.device.groups.service.DeviceConfigService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.widget.support.WidgetControllerBase;
@@ -32,6 +34,7 @@ public class ConfigWidget extends WidgetControllerBase {
     private MeterDao meterDao;
     private DeviceConfigurationDao deviceConfigurationDao;
     private CommandRequestDeviceExecutor commandRequestExecutor;
+    private DeviceConfigService deviceConfigService;
     
     /**
      * This method renders the default deviceGroupWidget
@@ -51,8 +54,14 @@ public class ConfigWidget extends WidgetControllerBase {
         ModelAndView mav = new ModelAndView("configWidget/render.jsp");
         Meter meter = getMeter(request);
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
-        DeviceType meterType = meter.getDeviceType();
-        List<ConfigurationBase> existingConfigs = deviceConfigurationDao.getAllConfigurationsByType(ConfigurationType.valueOf(meterType.toString()));
+        String meterType = meter.getTypeStr();
+        ConfigurationType type = ConfigurationType.MCT410;
+        if(meterType.contains("470")) {
+            type = ConfigurationType.MCT470;
+        }else if(meterType.contains("430")) {
+            type = ConfigurationType.MCT430;
+        }
+        List<ConfigurationBase> existingConfigs = deviceConfigurationDao.getAllConfigurationsByType(type);
         mav.addObject("existingConfigs", existingConfigs);
         ConfigurationBase config = deviceConfigurationDao.getConfigurationForDevice(deviceId);
         mav.addObject("currentDeviceId", config != null ? config.getId() : -1);
@@ -71,6 +80,7 @@ public class ConfigWidget extends WidgetControllerBase {
         return meter;
     }
     
+    @RequestMapping
     public ModelAndView assignConfig(HttpServletRequest request, HttpServletResponse response) throws Exception {
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
         Meter meter = getMeter(request);
@@ -88,16 +98,38 @@ public class ConfigWidget extends WidgetControllerBase {
         return mav;
     }
     
+    @RequestMapping
     public ModelAndView pushConfig(HttpServletRequest request, HttpServletResponse response, LiteYukonUser user) throws Exception {
+        ModelAndView mav = new ModelAndView("configWidget/configWidgetResult.jsp");
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
         Meter meter = getMeter(request);
         YukonDevice device = new YukonDevice(deviceId, meter.getType());
-        
         String commandString = "putconfig emetcon install all force";
-        
         CommandResultHolder resultHolder = commandRequestExecutor.execute(device, commandString, user);
-        ModelAndView mav = getConfigModelAndView(request);
-        mav.addObject("resultHolder", resultHolder);
+        mav.addObject("pushResult", resultHolder);
+        return mav;
+    }
+    
+    @RequestMapping
+    public ModelAndView readConfig(HttpServletRequest request, HttpServletResponse response, LiteYukonUser user) throws Exception {
+        ModelAndView mav = new ModelAndView("configWidget/configWidgetResult.jsp");
+        int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
+        Meter meter = getMeter(request);
+        YukonDevice device = new YukonDevice(deviceId, meter.getType());
+        String commandString = "getconfig model";
+        CommandResultHolder resultHolder = commandRequestExecutor.execute(device, commandString, user);
+        mav.addObject("readResult", resultHolder);
+        return mav;
+    }
+    
+    @RequestMapping
+    public ModelAndView verifyConfig(HttpServletRequest request, HttpServletResponse response, LiteYukonUser user) throws Exception {
+        ModelAndView mav = new ModelAndView("configWidget/configWidgetResult.jsp");
+        int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
+        Meter meter = getMeter(request);
+        YukonDevice device = new YukonDevice(deviceId, meter.getType());
+        VerifyResult verifyResult = deviceConfigService.verifyConfig(device, user);
+        mav.addObject("verifyResult", verifyResult);
         return mav;
     }
 
@@ -112,9 +144,13 @@ public class ConfigWidget extends WidgetControllerBase {
     }
     
     @Required
-    public void setCommandRequestExecutor(
-            CommandRequestDeviceExecutor commandRequestExecutor) {
+    public void setCommandRequestExecutor(CommandRequestDeviceExecutor commandRequestExecutor) {
         this.commandRequestExecutor = commandRequestExecutor;
+    }
+    
+    @Required
+    public void setDeviceConfigService(DeviceConfigService deviceConfigService) {
+        this.deviceConfigService = deviceConfigService;
     }
 }
 

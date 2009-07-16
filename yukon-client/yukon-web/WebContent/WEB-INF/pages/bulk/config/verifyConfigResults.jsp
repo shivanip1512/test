@@ -2,7 +2,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:msg var="pageTitle" key="yukon.common.device.bulk.pushConfigResults.pageTitle"/>
+<cti:msg var="pageTitle" key="yukon.common.device.bulk.verifyConfigResults.pageTitle"/>
 
 <cti:standardPage title="${pageTitle}" module="amr">
     <cti:includeCss link="/WebConfig/yukon/styles/YukonGeneralStyles.css"/>
@@ -32,10 +32,17 @@
         <cti:msg var="pushConfigPageTitle" key="yukon.common.device.bulk.pushConfig.pageTitle"/>
         <cti:crumbLink url="${pushConfigUrl}" title="${pushConfigPageTitle}" />
         
-        <%-- push config results --%>
+        <%-- verify config results --%>
         <cti:crumbLink>${pageTitle}</cti:crumbLink>
         
     </cti:breadCrumbs>
+    <cti:url value="/spring/meter/home" var="meterHomeUrl"/>
+    
+    <script language="JavaScript">
+    function forwardToMeterHome(id) {
+        window.location = "${meterHomeUrl}?deviceId=" + id;
+    }
+    </script>
     
     <h2>${pageTitle}</h2>
     <br>
@@ -50,7 +57,7 @@
         <c:forEach var="device" items="${devices}">
             <c:choose>
                 <c:when test="${resultsMap[device].synced}">
-              <tr>
+              <tr onclick="forwardToMeterHome(${device.deviceId});">
                   <td>${resultsMap[device].meter.name}</td>
                   <td>${resultsMap[device].config.name}</td>
                   <td>${resultsMap[device].config.type}</td>
@@ -58,7 +65,7 @@
               </tr>
                 </c:when>
              <c:otherwise>
-                    <tr style="background: #FFDDDD;">
+                    <tr style="background: #FFDDDD;" onclick="forwardToMeterHome(${device.deviceId});">
                         <td>${resultsMap[device].meter.name}</td>
                         <td>${resultsMap[device].config.name}</td>
                         <td>${resultsMap[device].config.type}</td>

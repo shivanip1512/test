@@ -171,6 +171,16 @@ public class DeviceConfigController extends BulkControllerBase {
         return "config/pushConfig.jsp";
     }
     
+    @RequestMapping
+    public String verifyConfigs(DeviceCollection deviceCollection, LiteYukonUser user, ModelMap model) {
+        Map<YukonDevice, VerifyResult> resultsMap = deviceConfigService.verifyConfigs(deviceCollection, user);
+        Set<YukonDevice> devices = resultsMap.keySet();
+        model.addAttribute("devices", devices);
+        model.addAttribute("resultsMap", resultsMap);
+        
+        return "config/verifyConfigResults.jsp";
+    }
+    
     /**
      * DO PUSH CONFIG
      * @param deviceCollection
@@ -183,7 +193,11 @@ public class DeviceConfigController extends BulkControllerBase {
      */
     @RequestMapping(method=RequestMethod.POST)
     public String doPushConfig(DeviceCollection deviceCollection, String cancelButton, String method, LiteYukonUser user, ModelMap model) throws ServletException {
-
+        
+        if (method.equalsIgnoreCase("verify")) {
+            model.addAllAttributes(deviceCollection.getCollectionParameters());
+            return "redirect:verifyConfigs";
+        }
         // CANCEL
         if (cancelButton != null) {
             // redirect
@@ -213,19 +227,9 @@ public class DeviceConfigController extends BulkControllerBase {
             
         };
         
-        String key;
-        if(!method.equalsIgnoreCase("verify")){
-            key = deviceConfigService.pushConfigs(deviceCollection, method.equalsIgnoreCase("force") ? true : false, callback, user);
-            model.addAttribute("resultKey", key);
-            return "redirect:/spring/group/commander/resultDetail";
-        } else {
-            Map<YukonDevice, VerifyResult> resultsMap = deviceConfigService.verifyConfigs(deviceCollection, user);
-            Set<YukonDevice> devices = resultsMap.keySet();
-            model.addAttribute("devices", devices);
-            model.addAttribute("resultsMap", resultsMap);
-            
-            return "config/verifyConfigResults.jsp";
-        }
+        String key = deviceConfigService.pushConfigs(deviceCollection, method.equalsIgnoreCase("force") ? true : false, callback, user);
+        model.addAttribute("resultKey", key);
+        return "redirect:/spring/group/commander/resultDetail";
     }
     
     @Required

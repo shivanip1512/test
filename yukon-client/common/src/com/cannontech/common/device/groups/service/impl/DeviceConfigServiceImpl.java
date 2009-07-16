@@ -1,5 +1,6 @@
 package com.cannontech.common.device.groups.service.impl;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
@@ -22,6 +23,7 @@ import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.google.common.collect.Lists;
 
 public class DeviceConfigServiceImpl implements DeviceConfigService {
     
@@ -37,7 +39,9 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     }
     
     @Override
-    public Map<YukonDevice, VerifyResult> verifyConfigs(DeviceCollection deviceCollection, LiteYukonUser user) {
+    public Map<YukonDevice, VerifyResult> verifyConfigs(Iterable<? extends YukonDevice> devices, LiteYukonUser user) {
+        List<YukonDevice> deviceList = Lists.newArrayList(devices);
+        
         final String commandString = "putconfig emetcon install all verify";
         
         ObjectMapper<YukonDevice, CommandRequestDevice> objectMapper = new ObjectMapper<YukonDevice, CommandRequestDevice>() {
@@ -46,9 +50,9 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
             }
         };
         
-        List<CommandRequestDevice> requests = new MappingList<YukonDevice, CommandRequestDevice>(deviceCollection.getDeviceList(), objectMapper);
+        List<CommandRequestDevice> requests = new MappingList<YukonDevice, CommandRequestDevice>(deviceList, objectMapper);
         
-        VerifyConfigCommandCompletionCallback commandCompletionCallback = new VerifyConfigCommandCompletionCallback(deviceCollection.getDeviceList());
+        VerifyConfigCommandCompletionCallback commandCompletionCallback = new VerifyConfigCommandCompletionCallback(deviceList);
         
         WaitableCommandCompletionCallback<CommandRequestDevice> waitableCallback = new WaitableCommandCompletionCallback<CommandRequestDevice>(commandCompletionCallback);
         
@@ -62,6 +66,12 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         }
         
         return commandCompletionCallback.getResults();
+    }
+    
+    @Override
+    public VerifyResult verifyConfig(YukonDevice device, LiteYukonUser user) {
+        Map<YukonDevice, VerifyResult> verifyConfigResult = verifyConfigs(Collections.singleton(device), user);
+        return verifyConfigResult.get(device);
     }
     
     private CommandRequestDevice buildStandardRequest(YukonDevice device, final String command) {

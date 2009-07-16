@@ -1,7 +1,6 @@
 package com.cannontech.common.device.commands.impl;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
@@ -19,11 +18,11 @@ public class VerifyConfigCommandCompletionCallback implements CommandCompletionC
     
     Map<YukonDevice, VerifyResult> results = new HashMap<YukonDevice, VerifyResult>();
     
-    public VerifyConfigCommandCompletionCallback(List<YukonDevice> devices) {
+    public VerifyConfigCommandCompletionCallback(Iterable<? extends YukonDevice> devices) {
         initializeResults(devices);
     }
     
-    private void initializeResults(List<YukonDevice> devices) {
+    private void initializeResults(Iterable<? extends YukonDevice> devices) {
         MeterDao meterDao = YukonSpringHook.getBean("meterDao", MeterDao.class);
         DeviceConfigurationDao deviceConfigurationDao = YukonSpringHook.getBean("deviceConfigurationDao", DeviceConfigurationDao.class);
         for(YukonDevice device : devices) {

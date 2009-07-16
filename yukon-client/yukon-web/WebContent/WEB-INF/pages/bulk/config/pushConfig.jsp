@@ -49,7 +49,7 @@
                     </td>
                     <td>
                         <select id="method" name="method">
-                                <option value="Basic">Basic</option>
+                                <option value="Standard">Standard</option>
                                 <option value="Force">Force</option>
                                 <option value="Verify">Verify</option>
                         </select>

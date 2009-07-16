@@ -13,5 +13,7 @@ public interface DeviceConfigService {
 
     public String pushConfigs(DeviceCollection deviceCollection, boolean force, SimpleCallback<GroupCommandResult> callback, LiteYukonUser user);
     
-    public Map<YukonDevice, VerifyResult> verifyConfigs(DeviceCollection deviceCollection, LiteYukonUser user);
+    public Map<YukonDevice, VerifyResult> verifyConfigs(Iterable<? extends YukonDevice> deviceCollection, LiteYukonUser user);
+
+    public VerifyResult verifyConfig(YukonDevice device, LiteYukonUser user);
 }

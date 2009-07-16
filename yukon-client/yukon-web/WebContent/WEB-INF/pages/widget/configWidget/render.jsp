@@ -25,12 +25,16 @@
         <c:choose>
             <c:when test="${fn:length(existingConfigs) > 0}">
                 <div style="text-align: right">
-                    <ct:widgetActionRefresh method="pushConfig" label="Push" labelBusy="Pushing"/>
+                    <ct:widgetActionUpdate method="pushConfig" label="Push" labelBusy="Pushing" container="${widgetParameters.widgetId}_config_results"/>
+                    <ct:widgetActionUpdate method="readConfig" label="Read" labelBusy="Reading" container="${widgetParameters.widgetId}_config_results"/>
+                    <ct:widgetActionUpdate method="verifyConfig" label="Verify" labelBusy="Verifying" container="${widgetParameters.widgetId}_config_results"/>
 				</div>
             </c:when>
             <c:otherwise>
                 There are no existing configurations.<br><br>
             </c:otherwise>
         </c:choose>
+        
+        <div id="${widgetParameters.widgetId}_config_results"></div>
     </div>
 <br>
