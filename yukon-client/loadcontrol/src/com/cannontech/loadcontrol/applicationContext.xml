@@ -20,6 +20,9 @@
         <property name="serverRequest" ref="serverRequest" />
    </bean>
    
+   <bean id="loadGroupDao" class="com.cannontech.loadcontrol.loadgroup.dao.impl.LoadGroupDaoImpl">
+   </bean>
+   
    <bean id="loadControlProgramDao" class="com.cannontech.loadcontrol.dao.impl.LoadControlProgramDaoImpl">
    </bean>
     

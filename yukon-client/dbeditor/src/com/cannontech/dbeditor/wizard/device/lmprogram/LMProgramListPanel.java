@@ -5,8 +5,8 @@ import org.quartz.impl.jdbcjobstore.InvalidConfigurationException;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.lm.GearControlMethod;
+import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.dr.loadgroup.dao.LoadGroupDao;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
