@@ -32,6 +32,7 @@ public class ConfigurableFlexibleDateParser implements FlexibleDateParser {
             try {
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern, locale);
                 simpleDateFormat.setTimeZone(timeZone);
+                simpleDateFormat.setLenient(false);
                 Date result = simpleDateFormat.parse(dateStr);
                 if (mode == DateOnlyMode.END_OF_DAY) {
                     Calendar calendar = simpleDateFormat.getCalendar();
@@ -59,6 +60,7 @@ public class ConfigurableFlexibleDateParser implements FlexibleDateParser {
                     }
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern, dateFormatSymbols);
                     simpleDateFormat.setTimeZone(timeZone);
+                    simpleDateFormat.setLenient(false);
                     Date result = simpleDateFormat.parse(dateStr);
                     return result;
                 } catch (ParseException e) {

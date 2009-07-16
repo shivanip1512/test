@@ -12,6 +12,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.TimeZone;
 
 import javax.servlet.ServletConfig;
@@ -23,8 +24,6 @@ import javax.servlet.http.HttpSession;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AuthDao;
-import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.loadcontrol.LCUtils;
@@ -36,7 +35,6 @@ import com.cannontech.loadcontrol.gui.manualentry.ResponseProg;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.roles.loadcontrol.DirectLoadcontrolRole;
-import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ParamUtil;
@@ -56,7 +54,6 @@ public class LCConnectionServlet extends ErrorAwareInitializingServlet implement
 	private com.cannontech.web.loadcontrol.LoadcontrolCache cache = null;
     
     private DateFormattingService dateFormattingService = null;
-    private YukonUserDao yukonUserDao = null;
     private AuthDao authDao = null;
 
 /**
@@ -99,7 +96,6 @@ public LoadControlClientConnection getConnection() {
 public void doInit(ServletConfig config) throws ServletException {
 
 	dateFormattingService = YukonSpringHook.getBean("dateFormattingService", DateFormattingService.class);
-    yukonUserDao = YukonSpringHook.getBean("yukonUserDao", YukonUserDao.class);
     authDao = YukonSpringHook.getBean("authDao", AuthDao.class);
 	clientConnection = YukonSpringHook.getBean("loadControlClientConnection", LoadControlClientConnection.class);
 
@@ -131,7 +127,7 @@ public void update(java.util.Observable obs, Object o) {}
 public void service(HttpServletRequest req, HttpServletResponse resp) throws javax.servlet.ServletException, java.io.IOException
 {
 	String redirectURL = req.getParameter("redirectURL");
-	Hashtable optionalProps = new Hashtable(10);
+	Map<String, Object> optionalProps = new Hashtable<String, Object>(10);
 
 	//handle any commands that we may need to send to the server from any page here
 	String cmd = req.getParameter("cmd");
@@ -164,7 +160,7 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
             }
             
             WebCmdMsg msg = LMCmdMsgFactory.createCmdMsg( 
-					cmd, new Integer(itemid), optionalProps, getCache() );
+					cmd, new Integer(itemid), (Hashtable<String, Object>) optionalProps, getCache() );
 
 			CTILogger.info("LM_COMMAND: " + req.getServletPath() +
 				"	cmd = " + cmd +
@@ -380,9 +376,9 @@ private LMSession getLMSession( HttpServletRequest req )
 	return lmSession;
 }
 
-private Hashtable getOptionalParams( HttpServletRequest req )
+private Map<String, Object> getOptionalParams( HttpServletRequest req )
 {
-	Hashtable optionalProps = new Hashtable(10);
+	Map<String, Object> optionalProps = new Hashtable<String, Object>(10);
 	
 	if( req.getParameter("duration") != null )
 		optionalProps.put( "duration",
@@ -405,9 +401,8 @@ private Hashtable getOptionalParams( HttpServletRequest req )
 		
 		try {
 		    gcStart.setTime( dateFormattingService.flexibleDateParser(req.getParameter("startdate"), userContext) );
-        }
-        catch (ParseException e) {
-            gcStart.setTime( ServletUtil.parseDateStringLiberally(req.getParameter("startdate")) );
+        } catch (ParseException e) {
+            throw new RuntimeException("The start date is not a valid date.", e);
         }
 		gcStart.set( GregorianCalendar.HOUR, 0 );
 		gcStart.set( GregorianCalendar.MINUTE, 0 );
@@ -429,9 +424,8 @@ private Hashtable getOptionalParams( HttpServletRequest req )
 
         try {
             gcStart.setTime( dateFormattingService.flexibleDateParser(dateFormat, userContext));
-        } catch (ParseException e1) {
-            String formatDate = dateFormattingService.formatDate(tempCal.getTime(), DateFormatEnum.DATE, userContext);
-            gcStart.setTime( ServletUtil.parseDateStringLiberally(formatDate));
+        } catch (ParseException e) {
+        	throw new RuntimeException("The start date is not a valid date.", e);
         }
         
         gcStart.set( GregorianCalendar.HOUR, 0 );
@@ -456,9 +450,8 @@ private Hashtable getOptionalParams( HttpServletRequest req )
         try {
             Date stopDate = dateFormattingService.flexibleDateParser(req.getParameter("stopdate"), userContext);
             gcStop.setTime( stopDate );
-        }
-        catch (ParseException e) {
-            gcStop.setTime( ServletUtil.parseDateStringLiberally(req.getParameter("stopdate")) );
+        } catch (ParseException e) {
+        	throw new RuntimeException("The stop date is not a valid date.", e);
         }
 		gcStop.set( GregorianCalendar.HOUR, 0 );
 		gcStop.set( GregorianCalendar.MINUTE, 0 );
@@ -487,9 +480,8 @@ private Hashtable getOptionalParams( HttpServletRequest req )
 
         try {
             gcStop.setTime( dateFormattingService.flexibleDateParser(dateFormat, userContext));
-	    } catch (ParseException e1) {
-	        String formatDate = dateFormattingService.formatDate(tempCal.getTime(), DateFormatEnum.DATE, userContext);
-	        gcStop.setTime( ServletUtil.parseDateStringLiberally(formatDate));
+	    } catch (ParseException e) {
+	    	throw new RuntimeException("The stop date is not a valid date.", e);
 	    }
 	        
 	    gcStop.set( GregorianCalendar.HOUR, 0 );
@@ -501,7 +493,7 @@ private Hashtable getOptionalParams( HttpServletRequest req )
 	} else {
 		//set the stop time to 1 year from now if no stop selected
 		Calendar c = dateFormattingService.getCalendar(userContext);
-		c.add( c.YEAR, 1 );
+		c.add( Calendar.YEAR, 1 );
 		optionalProps.put( "stopdate", c.getTime() );
 	}
 
@@ -558,14 +550,5 @@ private Hashtable getOptionalParams( HttpServletRequest req )
 	
 	return optionalProps;
 }
-
-private DateFormattingService getDateFormattingService() {
-    return dateFormattingService;
-}
-
-private void setDateFormattingService(DateFormattingService dateFormattingService) {
-    this.dateFormattingService = dateFormattingService;
-}
-
 
 }
