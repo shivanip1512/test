@@ -425,7 +425,7 @@ void CtiPointClientManager::refreshArchivalList(LONG pntID, LONG paoID, const se
 
     start = start.now();
     sql = "SELECT pointid from point WHERE ("
-          "archivetype = 'on timer' OR "
+          "archivetype = 'On Timer' OR "
           "archivetype = 'time&update' OR "
           "archivetype = 'timer|update')";
 
