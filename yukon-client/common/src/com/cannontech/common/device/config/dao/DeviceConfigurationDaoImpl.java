@@ -3,8 +3,6 @@ package com.cannontech.common.device.config.dao;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -243,11 +241,8 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         return deviceList;
     }
 
-    @Transactional
-    public void assignConfigToDevices(ConfigurationBase configuration,
-            Collection<YukonDevice> devices) {
-
-        // Get the device types that the configuration supports
+    public void assignConfigToDevice(ConfigurationBase configuration, YukonDevice device) throws InvalidDeviceTypeException {
+     // Get the device types that the configuration supports
         String[] supportedDeviceTypeList = configuration.getType().getSupportedDeviceTypeList();
         List<Integer> typeList = new ArrayList<Integer>();
         for (String deviceType : supportedDeviceTypeList) {
@@ -255,30 +250,22 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
             typeList.add(type);
         }
 
-        List<DBChangeMsg> dbChangeList = new ArrayList<DBChangeMsg>();
-
-        for (YukonDevice device : devices) {
-
+        // Only add the devices whose type is supported by the configuration
+        if (typeList.contains(device.getType())) {
             // Clean out any assigned configs - device can only be assigned one
             // config
             unassignConfig(device.getDeviceId());
 
-            // Only add the devices whose type is supported by the configuration
-            if (typeList.contains(device.getType())) {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("insert into DeviceConfigurationDeviceMap");
+            sql.append("(DeviceConfigurationId, DeviceId)");
+            sql.append("values");
+            sql.append("(?, ?)");
 
-                SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("insert into DeviceConfigurationDeviceMap");
-                sql.append("(DeviceConfigurationId, DeviceId)");
-                sql.append("values");
-                sql.append("(?, ?)");
-
-                try {
-                    simpleJdbcTemplate.update(sql.toString(),
-                                              configuration.getId(),
-                                              device.getDeviceId());
-                } catch (DataIntegrityViolationException e) {
-                    // ignore - tried to insert duplicate
-                }
+            try {
+                simpleJdbcTemplate.update(sql.toString(), configuration.getId(), device.getDeviceId());
+            } catch (DataIntegrityViolationException e) {
+                // ignore - tried to insert duplicate
             }
 
             // TODO add objecttype
@@ -287,19 +274,12 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
                                                    DBChangeMsg.CAT_DEVICE_CONFIG,
                                                    "device",
                                                    DBChangeMsg.CHANGE_TYPE_UPDATE);
-            dbChangeList.add(dbChange);
-
+            // Send DBChangeMsgs
+            dbPersistentDao.processDBChange(dbChange);
+        } else {
+            throw new InvalidDeviceTypeException("Device type: " + device.getDeviceType().name() 
+               + " is invalid for config: " + configuration.getName());
         }
-
-        // Send DBChangeMsgs
-        for (DBChangeMsg msg : dbChangeList) {
-            dbPersistentDao.processDBChange(msg);
-        }
-
-    }
-    
-    public void assignConfigToDevice(ConfigurationBase configuration, YukonDevice device) {
-        assignConfigToDevices(configuration, Collections.singletonList(device));
     }
 
     public void unassignConfig(Integer deviceId) {

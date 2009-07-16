@@ -1,6 +1,5 @@
 package com.cannontech.common.device.config.dao;
 
-import java.util.Collection;
 import java.util.List;
 
 import com.cannontech.common.device.YukonDevice;
@@ -51,16 +50,11 @@ public interface DeviceConfigurationDao {
     public void delete(int id);
 
     /**
-     * Method to assign a configuration to a collection of devices
-     * @param devices - Devices to assgin configuration to
-     */
-    public void assignConfigToDevices(ConfigurationBase configuration, Collection<YukonDevice> devices);
-    
-    /**
      * Method to assign a configuration to a single device
      * @param device - Device to assgin configuration to
+     * @throws InvalidDeviceTypeException 
      */
-    public void assignConfigToDevice(ConfigurationBase configuration, YukonDevice device);
+    public void assignConfigToDevice(ConfigurationBase configuration, YukonDevice device) throws InvalidDeviceTypeException;
 
     /**
      * Method to get a list of devices that have been assigned the given

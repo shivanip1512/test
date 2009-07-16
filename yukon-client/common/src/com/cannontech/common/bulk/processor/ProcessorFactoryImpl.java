@@ -1,10 +1,8 @@
 package com.cannontech.common.bulk.processor;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
+import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.ConfigurationBase;
 
 /**
@@ -19,20 +17,18 @@ public class ProcessorFactoryImpl implements ProcessorFactory {
         this.deviceConfigurationDao = deviceConfigurationDao;
     }
 
-    public Processor<YukonDevice> createAssignConfigurationToYukonDeviceProcessor(
-            final ConfigurationBase configuration) {
+    public Processor<YukonDevice> createAssignConfigurationToYukonDeviceProcessor(final ConfigurationBase configuration) {
 
-        return new Processor<YukonDevice>() {
+        return new SingleProcessor<YukonDevice>() {
 
             public void process(YukonDevice device) throws ProcessingException {
-                process(Collections.singletonList(device));
+                try {
+                    deviceConfigurationDao.assignConfigToDevice(configuration, device);
+                } catch (InvalidDeviceTypeException e) {
+                    throw new ProcessingException(e.getMessage(), e);
+                }
             }
 
-            public void process(Collection<YukonDevice> devices)
-                    throws ProcessingException {
-                deviceConfigurationDao.assignConfigToDevices(configuration,
-                                                             devices);
-            }
         };
     }
 }
