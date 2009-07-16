@@ -9,6 +9,7 @@
     <entry key="yukon.web.login.invalidLogin">* Invalid username/password</entry>
     <entry key="yukon.web.login.retry">* Login disabled, please retry after {0} seconds</entry>
     <entry key="yukon.web.login.invalidUrlAccess">* Invalid page access for user</entry>
+    <entry key="yukon.web.login.login">Login</entry>
     <entry key="yukon.web.login.enterLogin">Please enter your username and password below.</entry>
     <entry key="yukon.web.login.username">Username:</entry>
     <entry key="yukon.web.login.password">Password:</entry>

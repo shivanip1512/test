@@ -61,7 +61,8 @@
             </div>
 
             <div class="loginMainSection">
-                <ct:abstractContainer title="Login" type="rounded">
+                <cti:msg var="loginTitle" key="yukon.web.login.login"></cti:msg>
+                <ct:abstractContainer title="${loginTitle}" type="rounded">
                     
                     <c:if test="${!empty param.failed}">
                         <div class="loginErrorMsg">
