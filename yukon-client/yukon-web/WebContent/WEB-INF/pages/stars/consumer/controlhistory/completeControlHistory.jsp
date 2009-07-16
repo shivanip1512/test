@@ -15,7 +15,7 @@
                 <table class="programTitle">
                     <tr>
                         <td rowspan="2">
-                            <img src="../../../../WebConfig/${program.logoLocation}"></img>
+                            <img src="../../../../WebConfig/${program.applianceCategoryLogo}"></img>
                         </td>
                         <td>
                             <b><cti:msg key="${program.displayName}"></cti:msg></b>

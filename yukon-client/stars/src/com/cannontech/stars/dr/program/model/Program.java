@@ -11,7 +11,10 @@ public class Program {
     private String programName;
     private int programOrder;
     private String description;
-    private String logoLocation;
+    private String savingsDescriptionIcon;
+    private String controlPercentDescriptionIcon;
+    private String environmentDescriptionIcon;
+    private String applianceCategoryLogo;
     private ChanceOfControl chanceOfControl;
     private int applianceCategoryId;
     
@@ -52,15 +55,40 @@ public class Program {
     public void setProgramOrder(int programOrder) {
         this.programOrder = programOrder;
     }
-    
-    public String getLogoLocation() {
-        return logoLocation;
+
+    public String getSavingsDescriptionIcon() {
+        return savingsDescriptionIcon;
     }
 
-    public void setLogoLocation(String logoLocation) {
-        this.logoLocation = logoLocation;
+    public void setSavingsDescriptionIcon(String savingsDescriptionIcon) {
+        this.savingsDescriptionIcon = savingsDescriptionIcon;
     }
-    
+
+    public String getControlPercentDescriptionIcon() {
+        return controlPercentDescriptionIcon;
+    }
+
+    public void setControlPercentDescriptionIcon(
+            String controlPercentDescriptionIcon) {
+        this.controlPercentDescriptionIcon = controlPercentDescriptionIcon;
+    }
+
+    public String getEnvironmentDescriptionIcon() {
+        return environmentDescriptionIcon;
+    }
+
+    public void setEnvironmentDescriptionIcon(String environmentDescriptionIcon) {
+        this.environmentDescriptionIcon = environmentDescriptionIcon;
+    }
+
+    public String getApplianceCategoryLogo() {
+        return applianceCategoryLogo;
+    }
+
+    public void setApplianceCategoryLogo(String applianceCategoryLogo) {
+        this.applianceCategoryLogo = applianceCategoryLogo;
+    }
+
     public ChanceOfControl getChanceOfControl() {
         return chanceOfControl;
     }
@@ -102,8 +130,14 @@ public class Program {
 				+ ((description == null) ? 0 : description.hashCode());
 		result = prime * result
 				+ ((descriptionUrl == null) ? 0 : descriptionUrl.hashCode());
-		result = prime * result
-				+ ((logoLocation == null) ? 0 : logoLocation.hashCode());
+        result = prime * result + ((savingsDescriptionIcon == null) ? 0
+                : savingsDescriptionIcon.hashCode());
+        result = prime * result + ((controlPercentDescriptionIcon == null) ? 0
+                : controlPercentDescriptionIcon.hashCode());
+        result = prime * result + ((environmentDescriptionIcon == null) ? 0
+                : environmentDescriptionIcon.hashCode());
+        result = prime * result + ((applianceCategoryLogo == null) ? 0
+                : applianceCategoryLogo.hashCode());
 		result = prime * result + programId;
 		result = prime * result
 				+ ((programName == null) ? 0 : programName.hashCode());
@@ -137,11 +171,26 @@ public class Program {
 				return false;
 		} else if (!descriptionUrl.equals(other.descriptionUrl))
 			return false;
-		if (logoLocation == null) {
-			if (other.logoLocation != null)
+		if (savingsDescriptionIcon == null) {
+			if (other.savingsDescriptionIcon != null)
 				return false;
-		} else if (!logoLocation.equals(other.logoLocation))
+		} else if (!savingsDescriptionIcon.equals(other.savingsDescriptionIcon))
 			return false;
+        if (controlPercentDescriptionIcon == null) {
+            if (other.controlPercentDescriptionIcon != null)
+                return false;
+        } else if (!controlPercentDescriptionIcon.equals(other.controlPercentDescriptionIcon))
+            return false;
+        if (environmentDescriptionIcon == null) {
+            if (other.environmentDescriptionIcon != null)
+                return false;
+        } else if (!environmentDescriptionIcon.equals(other.environmentDescriptionIcon))
+            return false;
+        if (applianceCategoryLogo == null) {
+            if (other.applianceCategoryLogo != null)
+                return false;
+        } else if (!applianceCategoryLogo.equals(other.applianceCategoryLogo))
+            return false;
 		if (programId != other.programId)
 			return false;
 		if (programName == null) {

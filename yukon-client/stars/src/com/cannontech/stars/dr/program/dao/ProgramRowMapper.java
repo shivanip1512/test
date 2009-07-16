@@ -39,9 +39,23 @@ public class ProgramRowMapper implements ParameterizedRowMapper<Program> {
         String programName = getProgramName(rs);
         program.setProgramName(programName);
 
-        String logoLocation = getLogoLocation(rs);
-        program.setLogoLocation(logoLocation);
-        
+        String applianceCategoryLogo = getApplianceCategoryLogo(rs);
+        program.setApplianceCategoryLogo(applianceCategoryLogo);
+
+        String descriptionIcons = rs.getString("LogoLocation");
+        if (!StringUtils.isEmpty(descriptionIcons) && !descriptionIcons.equals(CtiUtilities.STRING_NONE)) {
+            String[] descriptionIconArray = descriptionIcons.split(",");
+            if (descriptionIconArray.length > 0) {
+                program.setSavingsDescriptionIcon(descriptionIconArray[0].trim());
+            }
+            if (descriptionIconArray.length > 1) {
+                program.setControlPercentDescriptionIcon(descriptionIconArray[1].trim());
+            }
+            if (descriptionIconArray.length > 2) {
+                program.setEnvironmentDescriptionIcon(descriptionIconArray[2].trim());
+            }
+        }
+
         int applianceCategoryId = rs.getInt("ApplianceCategoryID");
         program.setApplianceCategoryId(applianceCategoryId);
         
@@ -64,21 +78,8 @@ public class ProgramRowMapper implements ParameterizedRowMapper<Program> {
         }
         return programName;
     }
-    
-    /**
-     * Returns the logoLocation of the program, if the program's logoLocation
-     * is empty the logoLocation of the ApplianceCategory that the program 
-     * belongs to is returned instead.
-     * @param rs 
-     * @return logoLocation
-     * @throws SQLException
-     */
-    private String getLogoLocation(final ResultSet rs) throws SQLException {
-        String logoLocation = rs.getString("LogoLocation");
-       
-        boolean isEmpty = isEmptyString(logoLocation);
-        if (!isEmpty) return logoLocation;
-        
+
+    private String getApplianceCategoryLogo(final ResultSet rs) throws SQLException {
         int applianceCategoryId = rs.getInt("ApplianceCategoryID");
         
         final StringBuilder sb = new StringBuilder();
@@ -91,16 +92,5 @@ public class ProgramRowMapper implements ParameterizedRowMapper<Program> {
         String applianceCategoryLogoLocation = 
         	simpleJdbcTemplate.queryForObject(sql, String.class, applianceCategoryId);
         return applianceCategoryLogoLocation;
-    }
-    
-    /**
-     * Checks for null or empty Strings "", empty database varchars "(none)",
-     * and empty csv varchars stored in STARS ",,"
-     */
-    private boolean isEmptyString(final String value) {
-        if (StringUtils.isEmpty(value)) return true;
-        if (value.equals(CtiUtilities.STRING_NONE)) return true;
-        if (value.matches("^,+$")) return true;
-        return false;
     }
 }

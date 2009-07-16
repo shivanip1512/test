@@ -204,8 +204,6 @@ table.programTitle {
 
 div#programEnrollmentDiv {
 	font-size: .8em;
-	overflow: auto;
-	height: 325px; 
 	vertical-align: top;
 }	
 
@@ -235,4 +233,14 @@ div#controlEventsDiv table tr td {
 
 span#notEnrolledMessageSpan {
     font-size: 12px;
+}
+
+div.legend {
+	font-size: .7em;
+	border: 1px solid #ccc;
+}
+
+div.legend h1 {
+	line-height: 0px;
+	font-size: 1em;
 }

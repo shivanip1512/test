@@ -41,7 +41,7 @@ function viewCompleteControlHistory(programId) {
                             
                             <tr>
                                 <td class="${logoClass}" width="5%">
-                                    <img src="../../../WebConfig/${program.logoLocation}"></img>
+                                    <img src="../../../WebConfig/${program.applianceCategoryLogo}"></img>
                                 </td>
                                 <td class="${tableDataClass}">
                                     <b><cti:msg key="${program.displayName}"></cti:msg></b>

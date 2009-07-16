@@ -83,7 +83,10 @@ function submitEnrollment() {
     form.submit();
 }
 </script>    
-    
+    <c:set var="savingsDescriptionIconDisplayed" value="false"/>
+    <c:set var="controlPercentDescriptionIconDisplayed" value="false"/>
+    <c:set var="environmentDescriptionIconDisplayed" value="false"/>
+
     <h3><cti:msg key="yukon.dr.consumer.enrollment.header" /></h3>
     <br>
     <cti:msg key="yukon.dr.consumer.enrollment.enrollmentTitle" var="enrollmentTitle"/>
@@ -98,8 +101,7 @@ function submitEnrollment() {
                     <tr>
                         <th></th>
                         <th><cti:msg key="yukon.dr.consumer.enrollment.category"/></th>
-                        <th><cti:msg key="yukon.dr.consumer.enrollment.programName"/></th>
-                        <th><cti:msg key="yukon.dr.consumer.enrollment.description"/></th>
+                        <th colspan="2"><cti:msg key="yukon.dr.consumer.enrollment.programNameAndDescriptionLabel"/></th>
                         <th>&nbsp;</th>
                     </tr>
                     <cti:getProperty var="perProgram" property="ResidentialCustomerRole.ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY" />
@@ -114,7 +116,7 @@ function submitEnrollment() {
                         <c:set var="enrollmentProgramsSize" value="${fn:length(enrollmentPrograms)}"/>
 
                         <c:set var="enrollmentProgramIds" value="${fn:join(enrollment.programIds, ',')}"/>
-                        <c:set var="rowspan" value="${enrollmentProgramsSize > 0 ? enrollmentProgramsSize : 1}"/>
+                        <c:set var="rowspan" value="${enrollmentProgramsSize > 0 ? enrollmentProgramsSize * 2 : 1}"/>
                     
                         <c:set var="applianceCategoryId" value="${enrollment.applianceCategory.applianceCategoryId}"/>
                     
@@ -165,7 +167,7 @@ function submitEnrollment() {
                             <c:choose>
                                 <c:when test="${!perProgram}">
 		                            <tr valign="top" class="">
-		                                <td class="${programClass}">
+		                                <td>
 		                                    <input 
 		                                        type="radio" 
 		                                        id="program_${programId}"
@@ -175,10 +177,21 @@ function submitEnrollment() {
 		                                    >
 		                                    <cti:msg key="${enrollmentProgram.program.displayName}"/>
 		                                </td>
-		                                <td class="${programClass}" rowspan="${inventoryRowspan}">
-		                                    <spring:escapeBody htmlEscape="true">${enrollmentProgram.program.description}</spring:escapeBody>
-		                                </td>
-		                                <td class="${programClass}" rowspan="${inventoryRowspan}">
+		                                <td><nobr>
+		                                    <c:if test="${!empty enrollmentProgram.program.savingsDescriptionIcon}">
+		                                    	<img src="../../../WebConfig/yukon/Icons/${enrollmentProgram.program.savingsDescriptionIcon}">
+												<c:set var="savingsDescriptionIconDisplayed" value="true"/>
+		                                    </c:if>
+		                                    <c:if test="${!empty enrollmentProgram.program.controlPercentDescriptionIcon}">
+		                                    	<img src="../../../WebConfig/yukon/Icons/${enrollmentProgram.program.controlPercentDescriptionIcon}">
+												<c:set var="controlPercentDescriptionIconDisplayed" value="true"/>
+		                                    </c:if>
+		                                    <c:if test="${!empty enrollmentProgram.program.environmentDescriptionIcon}">
+		                                    	<img src="../../../WebConfig/yukon/Icons/${enrollmentProgram.program.environmentDescriptionIcon}">
+												<c:set var="environmentDescriptionIconDisplayed" value="true"/>
+		                                    </c:if>
+		                                </nobr></td>
+		                                <td>
                                             <a href="/spring/stars/consumer/enrollment/details?categoryId=${applianceCategoryId}&programId=${programId}">
                                                 <cti:msg key="yukon.dr.consumer.enrollment.details"/>
                                             </a>
@@ -188,6 +201,12 @@ function submitEnrollment() {
 		                                    enrollmentAction('${inventoryIds}',${programId}, ${applianceCategoryId}, ${enrollmentProgram.enrolled}, '');        
 		                                </script>
 		                            </tr>
+		                            <tr valign="top" class="">
+		                                <td class="${programClass}" colspan="2">
+		                                    <spring:escapeBody htmlEscape="true">${enrollmentProgram.program.description}</spring:escapeBody>
+		                                </td>
+		                                <td class="${programClass}">&nbsp;</td>
+                                    </tr>
 		                        </c:when>
 		                        <c:otherwise>    
 		                            <c:set var="inventoryIds" value="${fn:join(enrollmentProgram.programInventoryIds, ',')}"/>
@@ -221,6 +240,27 @@ function submitEnrollment() {
                 </table>
             </div>                            
         </ct:boxContainer>
+        <c:if test="${savingsDescriptionIconDisplayed || controlPercentDescriptionIconDisplayed || environmentDescriptionIconDisplayed}">
+            <cti:msg key="yukon.dr.consumer.enrollment.iconKeyTitle" var="iconKeyTitle"/>
+            <br>
+            <div class="legend">
+            	<h1>${iconKeyTitle}</h1>
+            	<table>
+                <c:if test="${savingsDescriptionIconDisplayed}">
+                    <tr><td><img src="../../../WebConfig/yukon/Icons/$$Sm.gif"></td>
+                    <td><cti:msg key="yukon.dr.consumer.enrollment.savingsIconDescription"/></td></tr>
+                </c:if>
+                <c:if test="${controlPercentDescriptionIconDisplayed}">
+                    <tr><td><img src="../../../WebConfig/yukon/Icons/ThirdSm.gif"></td>
+                    <td><cti:msg key="yukon.dr.consumer.enrollment.controlPercentIconDescription"/></td></tr>
+                </c:if>
+                <c:if test="${environmentDescriptionIconDisplayed}">
+                    <tr><td><img src="../../../WebConfig/yukon/Icons/Tree2Sm.gif"></td>
+                    <td><cti:msg key="yukon.dr.consumer.enrollment.environmentIconDescription"/></td></tr>
+                </c:if>
+                </table>
+            </div>
+        </c:if>
         <br>
         <div align="center">
             <span style="padding-right: 0.5em;">
