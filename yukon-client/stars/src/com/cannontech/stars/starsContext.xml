@@ -169,8 +169,6 @@
 
     <bean id="starsProgramDao" class="com.cannontech.stars.dr.program.dao.impl.ProgramDaoImpl"/>
     
-    <bean id="loadGroupDao" class="com.cannontech.stars.dr.loadgroup.dao.impl.LoadGroupDaoImpl"/>
-    
     <bean id="starsProgramService" class="com.cannontech.stars.dr.program.service.impl.ProgramServiceImpl"/>
 
     <bean id="starsProgramEnrollmentService" class="com.cannontech.stars.dr.program.service.impl.ProgramEnrollmentServiceImpl"/>
