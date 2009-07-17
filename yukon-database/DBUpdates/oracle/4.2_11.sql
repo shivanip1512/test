@@ -50,7 +50,6 @@ INSERT INTO YukonUserRole VALUES(-1105, -100, -2, -1105, '(none)');
 INSERT INTO YukonUserRole VALUES(-1106, -100, -2, -1106, '(none)');
 INSERT INTO YukonUserRole VALUES(-1107, -100, -2, -1107, '(none)');
 INSERT INTO YukonUserRole VALUES(-1108, -100, -2, -1108, '(none)');
-INSERT INTO YukonUserRole VALUES(-1109, -100, -2, -1109, '(none)');
 INSERT INTO YukonUserRole VALUES(-1110, -100, -2, -1110, '(none)');
 INSERT INTO YukonUserRole VALUES(-1111, -100, -2, -1111, '(none)');
 INSERT INTO YukonUserRole VALUES(-1112, -100, -2, -1112, '(none)');
