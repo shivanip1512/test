@@ -18,7 +18,6 @@
                 </select>
                 <ct:widgetActionRefresh method="assignConfig" label="Assign" labelBusy="Assigning"/>
             </ct:nameValue>
-		    <br>
 		</ct:nameValueContainer>
                         
         <%-- ASSIGN BUTTON --%>
@@ -37,4 +36,3 @@
         
         <div id="${widgetParameters.widgetId}_config_results"></div>
     </div>
-<br>
