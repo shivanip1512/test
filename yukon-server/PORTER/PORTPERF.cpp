@@ -634,7 +634,7 @@ struct map_compare
 void processCollectedStats(bool force)
 {
     int inactive_index;
-    CtiTime current_last_stat_time;
+    CtiTime current_stat_time;
     
     {
         CtiLockGuard<CtiCriticalSection> guard(event_mux);
@@ -643,7 +643,7 @@ void processCollectedStats(bool force)
         //  only place this changes
         active_index ^= 0x01;
         active_event_queue = &statistics_event_queues[active_index];
-        current_last_stat_time.resetToNow();  // This time will be equal to or after all current stats and equal to or before all following stats
+        current_stat_time.resetToNow();  // This time will be equal to or after all current stats and equal to or before all following stats
     }
 
     event_queue_t &inactive_event_queue = statistics_event_queues[inactive_index];
@@ -688,10 +688,10 @@ void processCollectedStats(bool force)
     }
 
     //Everything has been processed. Now, if necessary, we tell all stats to pass midnight.
-    if( current_last_stat_time.day() != last_statistics_midnight_operation.day() )
+    if( current_stat_time.day() != last_statistics_midnight_operation.day() )
     {
         last_statistics_midnight_operation.resetToNow();
-        for_each(statistics.begin(), statistics.end(), process_statistics_midnight(current_last_stat_time));
+        for_each(statistics.begin(), statistics.end(), process_statistics_midnight(current_stat_time));
         new_events = true;
 
     }
