@@ -173,6 +173,7 @@ public class DeviceConfigController extends BulkControllerBase {
     
     @RequestMapping
     public String verifyConfigs(DeviceCollection deviceCollection, LiteYukonUser user, ModelMap model) {
+        model.addAttribute("deviceCollection", deviceCollection);
         Map<YukonDevice, VerifyResult> resultsMap = deviceConfigService.verifyConfigs(deviceCollection, user);
         Set<YukonDevice> devices = resultsMap.keySet();
         model.addAttribute("devices", devices);
