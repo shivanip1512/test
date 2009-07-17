@@ -194,20 +194,20 @@ public class DeviceConfigController extends BulkControllerBase {
     @RequestMapping(method=RequestMethod.POST)
     public String doPushConfig(DeviceCollection deviceCollection, String cancelButton, String method, LiteYukonUser user, ModelMap model) throws ServletException {
         
-        if (method.equalsIgnoreCase("verify")) {
-            model.addAllAttributes(deviceCollection.getCollectionParameters());
-            return "redirect:verifyConfigs";
-        }
         // CANCEL
         if (cancelButton != null) {
             // redirect
             model.addAllAttributes(deviceCollection.getCollectionParameters());
             return "redirect:/spring/bulk/collectionActions";
         }
-        // DO ASSIGN
-            
-        // CALLBACK
+
+        // DO VERIFY
+        if (method.equalsIgnoreCase("verify")) {
+            model.addAllAttributes(deviceCollection.getCollectionParameters());
+            return "redirect:verifyConfigs";
+        }
         
+        // DO PUSH
         SimpleCallback<GroupCommandResult> callback = new SimpleCallback<GroupCommandResult>() {
             @Override
             public void handle(GroupCommandResult result) {

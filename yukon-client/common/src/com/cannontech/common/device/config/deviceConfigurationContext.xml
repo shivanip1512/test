@@ -43,7 +43,7 @@
 				<ref bean="mct470CofigurationByte"/>
 				<ref bean="addressingCategory"/>
 				<ref bean="relaysCategory"/>
-				<ref bean="precannedTableCategory"/>				
+				<ref bean="mct470PrecannedTableCategory"/>				
 				<ref bean="touCategory"/>
 				<ref bean="dnpCategory"/>				 
 		<!-- 	<ref bean="optionsCategory"/>
@@ -217,7 +217,7 @@
 				<ref bean="mct430lpChannelsCategory"/>
 				<ref bean="mct430CofigurationByte"/>
 				<ref bean="addressingCategory"/>
-				<ref bean="precannedTableCategory"/>
+				<ref bean="mct430PrecannedTableCategory"/>
 <!-- 			<ref bean="optionsCategory"/>
 				<ref bean="voltageThresholdCategory"/>
 				<ref bean="holidaysCategory"/>
@@ -2971,15 +2971,215 @@
 							Time the relay will remain closed in 250ms increments
 						</value>
 					</property>
-					<property name="type" ref="inputIntegerType" />
-					<property name="validatorList">
-						<list>
-							<bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
-								<property name="minValue" value="0" />
-								<property name="maxValue" value="50" />
-							</bean>
-						</list>
-					</property>
+					<property name="type">
+                        <bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+                            <property name="enumeratedType" ref="inputIntegerType" />
+                            <property name="optionList">
+                                <list>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="1" />
+                                        <property name="text" value="250 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="2" />
+                                        <property name="text" value="500 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="3" />
+                                        <property name="text" value="750 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="4" />
+                                        <property name="text" value="1 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="5" />
+                                        <property name="text" value="1 sec 250 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="6" />
+                                        <property name="text" value="1 sec 500 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="7" />
+                                        <property name="text" value="1sec 750 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="8" />
+                                        <property name="text" value="2 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="9" />
+                                        <property name="text" value="2 sec 250 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="10" />
+                                        <property name="text" value="2 sec 500 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="11" />
+                                        <property name="text" value="2 sec 750 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="12" />
+                                        <property name="text" value="3 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="13" />
+                                        <property name="text" value="3 sec 250 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="14" />
+                                        <property name="text" value="3 sec 500 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="15" />
+                                        <property name="text" value="3 sec 750 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="16" />
+                                        <property name="text" value="4 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="17" />
+                                        <property name="text" value="4 sec 250 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="18" />
+                                        <property name="text" value="4 sec 500 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="19" />
+                                        <property name="text" value="4 sec 750 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="20" />
+                                        <property name="text" value="5 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="21" />
+                                        <property name="text" value="5 sec 250 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="22" />
+                                        <property name="text" value="5 sec 500 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="23" />
+                                        <property name="text" value="5 sec 750 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="24" />
+                                        <property name="text" value="6 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="25" />
+                                        <property name="text" value="6 sec 250 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="26" />
+                                        <property name="text" value="6 sec 500 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="27" />
+                                        <property name="text" value="6 sec 750 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="28" />
+                                        <property name="text" value="7 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="29" />
+                                        <property name="text" value="7 sec 250 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="30" />
+                                        <property name="text" value="7 sec 500 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="31" />
+                                        <property name="text" value="7 sec 750 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="32" />
+                                        <property name="text" value="8 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="33" />
+                                        <property name="text" value="8 sec 250 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="34" />
+                                        <property name="text" value="8 sec 500 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="35" />
+                                        <property name="text" value="8 sec 750 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="36" />
+                                        <property name="text" value="9 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="37" />
+                                        <property name="text" value="9 sec 250 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="38" />
+                                        <property name="text" value="9 sec 500 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="39" />
+                                        <property name="text" value="9 sec 750 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="40" />
+                                        <property name="text" value="10 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="41" />
+                                        <property name="text" value="10 sec 250 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="42" />
+                                        <property name="text" value="10 sec 500 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="43" />
+                                        <property name="text" value="10 sec 750 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="44" />
+                                        <property name="text" value="11 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="45" />
+                                        <property name="text" value="11 sec 250 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="46" />
+                                        <property name="text" value="11 sec 500 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="47" />
+                                        <property name="text" value="11 sec 750 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="48" />
+                                        <property name="text" value="12 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="49" />
+                                        <property name="text" value="12 sec 250 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="50" />
+                                        <property name="text" value="12 sec 500 ms" />
+                                    </bean>
+                                </list>
+                            </property>
+                        </bean>
+                    </property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
 				<bean class="com.cannontech.web.input.InputBase">
@@ -2990,22 +3190,222 @@
 							Time the relay will remain closed in 250ms increments
 						</value>
 					</property>
-					<property name="type" ref="inputIntegerType" />
-					<property name="validatorList">
-						<list>
-							<bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
-								<property name="minValue" value="0" />
-								<property name="maxValue" value="50" />
-							</bean>
-						</list>
-					</property>
+                    <property name="type">
+                        <bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+                            <property name="enumeratedType" ref="inputIntegerType" />
+                            <property name="optionList">
+                                <list>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="1" />
+                                        <property name="text" value="250 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="2" />
+                                        <property name="text" value="500 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="3" />
+                                        <property name="text" value="750 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="4" />
+                                        <property name="text" value="1 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="5" />
+                                        <property name="text" value="1 sec 250 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="6" />
+                                        <property name="text" value="1 sec 500 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="7" />
+                                        <property name="text" value="1sec 750 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="8" />
+                                        <property name="text" value="2 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="9" />
+                                        <property name="text" value="2 sec 250 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="10" />
+                                        <property name="text" value="2 sec 500 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="11" />
+                                        <property name="text" value="2 sec 750 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="12" />
+                                        <property name="text" value="3 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="13" />
+                                        <property name="text" value="3 sec 250 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="14" />
+                                        <property name="text" value="3 sec 500 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="15" />
+                                        <property name="text" value="3 sec 750 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="16" />
+                                        <property name="text" value="4 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="17" />
+                                        <property name="text" value="4 sec 250 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="18" />
+                                        <property name="text" value="4 sec 500 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="19" />
+                                        <property name="text" value="4 sec 750 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="20" />
+                                        <property name="text" value="5 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="21" />
+                                        <property name="text" value="5 sec 250 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="22" />
+                                        <property name="text" value="5 sec 500 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="23" />
+                                        <property name="text" value="5 sec 750 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="24" />
+                                        <property name="text" value="6 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="25" />
+                                        <property name="text" value="6 sec 250 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="26" />
+                                        <property name="text" value="6 sec 500 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="27" />
+                                        <property name="text" value="6 sec 750 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="28" />
+                                        <property name="text" value="7 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="29" />
+                                        <property name="text" value="7 sec 250 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="30" />
+                                        <property name="text" value="7 sec 500 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="31" />
+                                        <property name="text" value="7 sec 750 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="32" />
+                                        <property name="text" value="8 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="33" />
+                                        <property name="text" value="8 sec 250 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="34" />
+                                        <property name="text" value="8 sec 500 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="35" />
+                                        <property name="text" value="8 sec 750 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="36" />
+                                        <property name="text" value="9 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="37" />
+                                        <property name="text" value="9 sec 250 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="38" />
+                                        <property name="text" value="9 sec 500 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="39" />
+                                        <property name="text" value="9 sec 750 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="40" />
+                                        <property name="text" value="10 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="41" />
+                                        <property name="text" value="10 sec 250 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="42" />
+                                        <property name="text" value="10 sec 500 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="43" />
+                                        <property name="text" value="10 sec 750 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="44" />
+                                        <property name="text" value="11 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="45" />
+                                        <property name="text" value="11 sec 250 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="46" />
+                                        <property name="text" value="11 sec 500 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="47" />
+                                        <property name="text" value="11 sec 750 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="48" />
+                                        <property name="text" value="12 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="49" />
+                                        <property name="text" value="12 sec 250 ms" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="50" />
+                                        <property name="text" value="12 sec 500 ms" />
+                                    </bean>
+                                </list>
+                            </property>
+                        </bean>
+                    </property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
 			</list>
 		</property>
 	</bean>							
 	
-	<bean id="precannedTableCategory" class="com.cannontech.common.device.config.model.CategoryTemplate">
+	<bean id="mct430PrecannedTableCategory" class="com.cannontech.common.device.config.model.CategoryTemplate">
 		<property name="name" value="MCT Precanned Table" />
 		<property name="inputList">
 			<list>
@@ -3024,116 +3424,128 @@
 								<list>
 									<bean class="com.cannontech.web.input.type.InputOption">
 										<property name="value" value="1" />
+                                        <property name="text" value="15 sec" />
 									</bean>
 									<bean class="com.cannontech.web.input.type.InputOption">
 										<property name="value" value="2" />
+										<property name="text" value="30 sec" />
 									</bean>
 									<bean class="com.cannontech.web.input.type.InputOption">
 										<property name="value" value="3" />
+										<property name="text" value="45 sec" />
 									</bean>
 									<bean class="com.cannontech.web.input.type.InputOption">
 										<property name="value" value="4" />
+										<property name="text" value="1 min" />
 									</bean>
 									<bean class="com.cannontech.web.input.type.InputOption">
 										<property name="value" value="5" />
+										<property name="text" value="1 min 15 sec" />
 									</bean>
 									<bean class="com.cannontech.web.input.type.InputOption">
 										<property name="value" value="6" />
+										<property name="text" value="1 min 30 sec" />
 									</bean>
 									<bean class="com.cannontech.web.input.type.InputOption">
 										<property name="value" value="7" />
+										<property name="text" value="1min 45 sec" />
 									</bean>
 									<bean class="com.cannontech.web.input.type.InputOption">
 										<property name="value" value="8" />
+										<property name="text" value="2 min" />
 									</bean>
 									<bean class="com.cannontech.web.input.type.InputOption">
 										<property name="value" value="9" />
+										<property name="text" value="2 min 15 sec" />
 									</bean>
 									<bean class="com.cannontech.web.input.type.InputOption">
 										<property name="value" value="10" />
+										<property name="text" value="2 min 30 sec" />
 									</bean>
 									<bean class="com.cannontech.web.input.type.InputOption">
 										<property name="value" value="11" />
+										<property name="text" value="2 min 45 sec" />
 									</bean>
 									<bean class="com.cannontech.web.input.type.InputOption">
 										<property name="value" value="12" />
+										<property name="text" value="3 min" />
 									</bean>
 									<bean class="com.cannontech.web.input.type.InputOption">
 										<property name="value" value="13" />
+										<property name="text" value="3 min 15 sec" />
 									</bean>
 									<bean class="com.cannontech.web.input.type.InputOption">
 										<property name="value" value="14" />
+										<property name="text" value="3 min 30 sec" />
 									</bean>
 									<bean class="com.cannontech.web.input.type.InputOption">
 										<property name="value" value="15" />
+										<property name="text" value="3 min 45 sec" />
 									</bean>
 									<bean class="com.cannontech.web.input.type.InputOption">
 										<property name="value" value="16" />
+										<property name="text" value="4 min" />
 									</bean>
 									<bean class="com.cannontech.web.input.type.InputOption">
 										<property name="value" value="17" />
+										<property name="text" value="4 min 15 sec" />
 									</bean>
 									<bean class="com.cannontech.web.input.type.InputOption">
 										<property name="value" value="18" />
+										<property name="text" value="4 min 30 sec" />
 									</bean>
 									<bean class="com.cannontech.web.input.type.InputOption">
 										<property name="value" value="19" />
+										<property name="text" value="4 min 45 sec" />
 									</bean>
 									<bean class="com.cannontech.web.input.type.InputOption">
 										<property name="value" value="20" />
+										<property name="text" value="5 min" />
 									</bean>
 									<bean class="com.cannontech.web.input.type.InputOption">
 										<property name="value" value="21" />
+										<property name="text" value="5 min 15 sec" />
 									</bean>
 									<bean class="com.cannontech.web.input.type.InputOption">
 										<property name="value" value="22" />
+										<property name="text" value="5 min 30 sec" />
 									</bean>
 									<bean class="com.cannontech.web.input.type.InputOption">
 										<property name="value" value="23" />
+										<property name="text" value="5 min 45 sec" />
 									</bean>
 									<bean class="com.cannontech.web.input.type.InputOption">
 										<property name="value" value="24" />
+										<property name="text" value="6 min" />
 									</bean>
 									<bean class="com.cannontech.web.input.type.InputOption">
 										<property name="value" value="25" />
+										<property name="text" value="6 min 15 sec" />
 									</bean>
 									<bean class="com.cannontech.web.input.type.InputOption">
 										<property name="value" value="26" />
+										<property name="text" value="6 min 30 sec" />
 									</bean>
 									<bean class="com.cannontech.web.input.type.InputOption">
 										<property name="value" value="27" />
+										<property name="text" value="6 min 45 sec" />
 									</bean>
 									<bean class="com.cannontech.web.input.type.InputOption">
 										<property name="value" value="28" />
+										<property name="text" value="7 min" />
 									</bean>
 									<bean class="com.cannontech.web.input.type.InputOption">
 										<property name="value" value="29" />
+										<property name="text" value="7 min 15 sec" />
 									</bean>
 									<bean class="com.cannontech.web.input.type.InputOption">
 										<property name="value" value="30" />
+										<property name="text" value="7 min 30 sec" />
 									</bean>
 								</list>
 							</property>
+							
 						</bean>
-					</property>
-					<property name="security" ref="configEditSecurity" />
-				</bean>
-				<bean class="com.cannontech.web.input.InputBase">
-					<property name="displayName" value="Meter Number" />
-					<property name="field" value="meterNumber" />
-					<property name="description">
-						<value>
-							Meter number to be read
-						</value>
-					</property>
-					<property name="type" ref="inputIntegerType" />
-					<property name="validatorList">
-						<list>
-							<bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
-								<property name="minValue" value="0" />
-								<property name="maxValue" value="500" />
-							</bean>
-						</list>
 					</property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
@@ -3149,7 +3561,7 @@
 					<property name="validatorList">
 						<list>
 							<bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
-								<property name="minValue" value="0" />
+								<property name="minValue" value="1" />
 								<property name="maxValue" value="11" />
 							</bean>
 						</list>
@@ -3158,7 +3570,192 @@
 				</bean>
 			</list>
 		</property>
-	</bean>							
+	</bean>	
+	
+	<bean id="mct470PrecannedTableCategory" class="com.cannontech.common.device.config.model.CategoryTemplate">
+        <property name="name" value="MCT Precanned Table" />
+        <property name="inputList">
+            <list>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="displayName" value="Table Read Interval" />
+                    <property name="field" value="tableReadInterval" />
+                    <property name="description">
+                        <value>
+                            Seconds between each read of the attached IED. In 15 second increments.
+                        </value>
+                    </property>
+                    <property name="type">
+                        <bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+                            <property name="enumeratedType" ref="inputIntegerType" />
+                            <property name="optionList">
+                                <list>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="1" />
+                                        <property name="text" value="15 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="2" />
+                                        <property name="text" value="30 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="3" />
+                                        <property name="text" value="45 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="4" />
+                                        <property name="text" value="1 min" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="5" />
+                                        <property name="text" value="1 min 15 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="6" />
+                                        <property name="text" value="1 min 30 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="7" />
+                                        <property name="text" value="1min 45 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="8" />
+                                        <property name="text" value="2 min" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="9" />
+                                        <property name="text" value="2 min 15 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="10" />
+                                        <property name="text" value="2 min 30 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="11" />
+                                        <property name="text" value="2 min 45 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="12" />
+                                        <property name="text" value="3 min" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="13" />
+                                        <property name="text" value="3 min 15 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="14" />
+                                        <property name="text" value="3 min 30 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="15" />
+                                        <property name="text" value="3 min 45 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="16" />
+                                        <property name="text" value="4 min" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="17" />
+                                        <property name="text" value="4 min 15 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="18" />
+                                        <property name="text" value="4 min 30 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="19" />
+                                        <property name="text" value="4 min 45 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="20" />
+                                        <property name="text" value="5 min" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="21" />
+                                        <property name="text" value="5 min 15 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="22" />
+                                        <property name="text" value="5 min 30 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="23" />
+                                        <property name="text" value="5 min 45 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="24" />
+                                        <property name="text" value="6 min" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="25" />
+                                        <property name="text" value="6 min 15 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="26" />
+                                        <property name="text" value="6 min 30 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="27" />
+                                        <property name="text" value="6 min 45 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="28" />
+                                        <property name="text" value="7 min" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="29" />
+                                        <property name="text" value="7 min 15 sec" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="30" />
+                                        <property name="text" value="7 min 30 sec" />
+                                    </bean>
+                                </list>
+                            </property>
+                        </bean>
+                    </property>
+                    <property name="security" ref="configEditSecurity" />
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="displayName" value="Meter Number" />
+                    <property name="field" value="meterNumber" />
+                    <property name="description">
+                        <value>
+                            Meter number to be read
+                        </value>
+                    </property>
+                    <property name="type" ref="inputIntegerType" />
+                    <property name="validatorList">
+                        <list>
+                            <bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
+                                <property name="minValue" value="0" />
+                                <property name="maxValue" value="500" />
+                            </bean>
+                        </list>
+                    </property>
+                    <property name="security" ref="configEditSecurity" />
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="displayName" value="Table Type" />
+                    <property name="field" value="tableType" />
+                    <property name="description">
+                        <value>
+                            Table to use. Use caution when changing.
+                        </value>
+                    </property>
+                    <property name="type" ref="inputIntegerType" />
+                    <property name="validatorList">
+                        <list>
+                            <bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
+                                <property name="minValue" value="1" />
+                                <property name="maxValue" value="11" />
+                            </bean>
+                        </list>
+                    </property>
+                    <property name="security" ref="configEditSecurity" />
+                </bean>
+            </list>
+        </property>
+    </bean>						
 	
 	<bean id="systemOptionsCategory" class="com.cannontech.common.device.config.model.CategoryTemplate">
 		<property name="name" value="MCT System Options" />

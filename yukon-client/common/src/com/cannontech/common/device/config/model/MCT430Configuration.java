@@ -107,7 +107,7 @@ public class MCT430Configuration extends ConfigurationBase {
      private Integer relayBTimer = null;
 
     // Precanned Table
-     private Integer tableReadInterval = 2;
+     private Integer tableReadInterval = 20;
      private Integer meterNumber = 0;
      private Integer tableType = 1;
 
