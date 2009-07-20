@@ -122,7 +122,9 @@ public class SeasonScheduleDaoImpl implements SeasonScheduleDao{
 
     public List<Season> getSeasonsForSchedule(Integer scheduleId) {
         
-        String sql = "Select SeasonName, SeasonScheduleID From DateOfSeason Where SeasonScheduleID = ?";
+        String sql = "SELECT SeasonName, SeasonScheduleID FROM DateOfSeason WHERE SeasonScheduleID = ?" 
+            + " ORDER BY SEASONSCHEDULEID, SEASONNAME, SEASONSTARTMONTH," 
+            + " SEASONSTARTDAY, SEASONENDMONTH, SEASONENDDAY";
         
         List<Season> seasons = jdbcTemplate.query(sql, seasonRowMapper, scheduleId);
         return seasons;
