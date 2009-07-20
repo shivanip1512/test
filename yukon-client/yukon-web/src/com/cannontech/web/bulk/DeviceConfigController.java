@@ -30,6 +30,7 @@ import com.cannontech.common.bulk.processor.Processor;
 import com.cannontech.common.bulk.processor.ProcessorFactory;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.commands.GroupCommandResult;
+import com.cannontech.common.device.commands.VerifyConfigCommandResult;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.ConfigurationBase;
 import com.cannontech.common.device.config.model.VerifyResult;
@@ -174,10 +175,15 @@ public class DeviceConfigController extends BulkControllerBase {
     @RequestMapping
     public String verifyConfigs(DeviceCollection deviceCollection, LiteYukonUser user, ModelMap model) {
         model.addAttribute("deviceCollection", deviceCollection);
-        Map<YukonDevice, VerifyResult> resultsMap = deviceConfigService.verifyConfigs(deviceCollection, user);
+        VerifyConfigCommandResult result = deviceConfigService.verifyConfigs(deviceCollection, user);
+        DeviceCollection successCollection = deviceGroupCollectionHelper.buildDeviceCollection(result.getSuccessGroup());
+        DeviceCollection failureCollection = deviceGroupCollectionHelper.buildDeviceCollection(result.getFailureGroup());
+        Map<YukonDevice, VerifyResult> resultsMap = result.getResults();
         Set<YukonDevice> devices = resultsMap.keySet();
         model.addAttribute("devices", devices);
         model.addAttribute("resultsMap", resultsMap);
+        model.addAttribute("successCollection", successCollection);
+        model.addAttribute("failureCollection", failureCollection);
         
         return "config/verifyConfigResults.jsp";
     }
@@ -193,7 +199,7 @@ public class DeviceConfigController extends BulkControllerBase {
      * @throws ServletException
      */
     @RequestMapping(method=RequestMethod.POST)
-    public String doPushConfig(DeviceCollection deviceCollection, String cancelButton, String method, LiteYukonUser user, ModelMap model) throws ServletException {
+    public String doPushConfig(DeviceCollection deviceCollection, String cancelButton, String verifyButton, String method, LiteYukonUser user, ModelMap model) throws ServletException {
         
         // CANCEL
         if (cancelButton != null) {
@@ -203,7 +209,7 @@ public class DeviceConfigController extends BulkControllerBase {
         }
 
         // DO VERIFY
-        if (method.equalsIgnoreCase("verify")) {
+        if (verifyButton != null) {
             model.addAllAttributes(deviceCollection.getCollectionParameters());
             return "redirect:verifyConfigs";
         }
@@ -228,7 +234,7 @@ public class DeviceConfigController extends BulkControllerBase {
             
         };
         
-        String key = deviceConfigService.pushConfigs(deviceCollection, method.equalsIgnoreCase("force") ? true : false, callback, user);
+        String key = deviceConfigService.pushConfigs(deviceCollection, method, callback, user);
         model.addAttribute("resultKey", key);
         return "redirect:/spring/group/commander/resultDetail";
     }

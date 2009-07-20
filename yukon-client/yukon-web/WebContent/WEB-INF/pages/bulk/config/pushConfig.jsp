@@ -36,6 +36,9 @@
     
     <%-- BOX --%>
     <cti:msg var="headerTitle" key="yukon.common.device.bulk.pushConfig.header"/>
+    <cti:msg var="cancel" key="yukon.common.device.bulk.pushConfig.cancel" />
+    <cti:msg var="push" key="yukon.common.device.bulk.pushConfig.push" />
+    <cti:msg var="verify" key="yukon.common.device.bulk.pushConfig.verify" />
     <tags:bulkActionContainer   key="yukon.common.device.bulk.pushConfig" deviceCollection="${deviceCollection}">
     
         <form id="pushConfigForm" method="post" action="/spring/bulk/config/doPushConfig">
@@ -44,22 +47,35 @@
             <cti:deviceCollection deviceCollection="${deviceCollection}" />
             <table>
                 <tr>
-                    <td valign="top" class="smallBoldLabel">
+                    <td class="smallBoldLabel">
                         <cti:msg key="yukon.common.device.bulk.pushConfig.selectLabel"/>
                     </td>
                     <td>
                         <select id="method" name="method">
                                 <option value="Standard">Standard</option>
                                 <option value="Force">Force</option>
-                                <option value="Verify">Verify</option>
+                                <option value="Read">Read</option>
                         </select>
                     </td>
+                    <td><input type="submit" name="pushButton" value="${push}"></td>
                 </tr>
             </table>
-            <%-- PUSH OR CANCEL BUTTONS --%>
-            <cti:msg var="cancel" key="yukon.common.device.bulk.pushConfig.cancel" />
-            <cti:msg var="push" key="yukon.common.device.bulk.pushConfig.assign" />
-            <input type="submit" name="cancelButton" value="${cancel}"> <input type="submit" name="pushButton" value="${push}">
+            <hr width="98%">
+            <table>
+                <tr>
+                    <td class="smallBoldLabel">
+                        <cti:msg key="yukon.common.device.bulk.pushConfig.noteLabel"/>
+                    </td>
+                    <td style="font-size:11px;">
+                        <cti:msg key="yukon.common.device.bulk.pushConfig.verifyNoteText"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td><input type="submit" name="verifyButton" value="${verify}"></td>
+                </tr>
+            </table>
+            <hr width="98%">
+            <input type="submit" name="cancelButton" value="${cancel}">
             
         </form>
             

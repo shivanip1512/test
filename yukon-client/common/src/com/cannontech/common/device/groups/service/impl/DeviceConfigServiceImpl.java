@@ -2,7 +2,6 @@ package com.cannontech.common.device.groups.service.impl;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +14,7 @@ import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.GroupCommandExecutor;
 import com.cannontech.common.device.commands.GroupCommandResult;
+import com.cannontech.common.device.commands.VerifyConfigCommandResult;
 import com.cannontech.common.device.commands.impl.VerifyConfigCommandCompletionCallback;
 import com.cannontech.common.device.commands.impl.WaitableCommandCompletionCallback;
 import com.cannontech.common.device.config.model.VerifyResult;
@@ -30,16 +30,18 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     private GroupCommandExecutor groupCommandExecutor;
     private CommandRequestDeviceExecutor commandRequestExecutor;
     
-    public String pushConfigs(DeviceCollection deviceCollection, boolean force, SimpleCallback<GroupCommandResult> callback, LiteYukonUser user) {
+    public String pushConfigs(DeviceCollection deviceCollection, String method, SimpleCallback<GroupCommandResult> callback, LiteYukonUser user) {
         String commandString = "putconfig emetcon install all";
-        if (force) {
+        if (method.equalsIgnoreCase("force")) {
             commandString += " force";
+        } else if (method.equalsIgnoreCase("read")) {
+            commandString = "getconfig model";
         }
         return groupCommandExecutor.execute(deviceCollection,commandString, callback, user);
     }
     
     @Override
-    public Map<YukonDevice, VerifyResult> verifyConfigs(Iterable<? extends YukonDevice> devices, LiteYukonUser user) {
+    public VerifyConfigCommandResult verifyConfigs(Iterable<? extends YukonDevice> devices, LiteYukonUser user) {
         List<YukonDevice> deviceList = Lists.newArrayList(devices);
         
         final String commandString = "putconfig emetcon install all verify";
@@ -70,8 +72,8 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     
     @Override
     public VerifyResult verifyConfig(YukonDevice device, LiteYukonUser user) {
-        Map<YukonDevice, VerifyResult> verifyConfigResult = verifyConfigs(Collections.singleton(device), user);
-        return verifyConfigResult.get(device);
+        VerifyConfigCommandResult verifyConfigResult = verifyConfigs(Collections.singleton(device), user);
+        return verifyConfigResult.getResults().get(device);
     }
     
     private CommandRequestDevice buildStandardRequest(YukonDevice device, final String command) {

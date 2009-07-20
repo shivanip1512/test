@@ -242,10 +242,12 @@
     <entry key="yukon.common.device.bulk.pushConfig.pageTitle">Push Configuration</entry>
     <entry key="yukon.common.device.bulk.pushConfig.header">Push Configuration:</entry>
     <entry key="yukon.common.device.bulk.pushConfig.noteLabel">Note:</entry>
-    <entry key="yukon.common.device.bulk.pushConfig.noteText">Select the method you wish to use when pushing configurations to devices.</entry>
-    <entry key="yukon.common.device.bulk.pushConfig.assign">Push</entry>
+    <entry key="yukon.common.device.bulk.pushConfig.noteText">Select the method you wish to use when pushing configurations to devices. This action will transmit configuration settings out to devices.</entry>
+    <entry key="yukon.common.device.bulk.pushConfig.verifyNoteText">Verifies that the devices settings match the devices assigned configuration's settings.  This action queries the database and does not read from devices.</entry>
+    <entry key="yukon.common.device.bulk.pushConfig.push">Push</entry>
+    <entry key="yukon.common.device.bulk.pushConfig.verify">Verify</entry>
     <entry key="yukon.common.device.bulk.pushConfig.cancel">Cancel</entry>
-    <entry key="yukon.common.device.bulk.pushConfig.selectLabel">Method:</entry>
+    <entry key="yukon.common.device.bulk.pushConfig.selectLabel">Push Action:</entry>
     
     <!-- verifyConfigResults.jsp -->
     <entry key="yukon.common.device.bulk.verifyConfigResults.pageTitle">Verify Config Results</entry>

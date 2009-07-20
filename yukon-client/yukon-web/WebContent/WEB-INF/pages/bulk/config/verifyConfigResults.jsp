@@ -46,6 +46,38 @@
     
     <h2>${pageTitle}</h2>
     <br>
+    
+    <%-- SUCCESS --%>
+    <br>
+    <div class="normalBoldLabel">Verified Devices: <span class="okGreen">${successCollection.deviceCount}</span></div>
+    <c:if test="${successCollection.deviceCount > 0}">
+        <div id="successActionsDiv" style="padding:10px;">
+    
+        <%-- device collection action --%>
+        <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.commander.collectionActionOnDevicesLabel.successResults" class="small">
+            <cti:mapParam value="${successCollection.collectionParameters}"/>
+        </cti:link>
+        <tags:selectedDevicesPopup deviceCollection="${successCollection}" />
+        
+    </div>
+    <br>
+    </c:if>
+    
+    <%-- FAILURE --%>
+    <div class="normalBoldLabel">Devices with configuration descrepancies: <span class="errorRed">${failureCollection.deviceCount}</span></div>
+    
+    <c:if test="${failureCollection.deviceCount > 0}">
+	    <div id="errorActionsDiv" style="padding:10px;">
+	    
+	        <%-- device collection action --%>
+	        <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.commander.collectionActionOnDevicesLabel.failureResults" class="small">
+	            <cti:mapParam value="${failureCollection.collectionParameters}"/>
+	        </cti:link>
+	        <tags:selectedDevicesPopup deviceCollection="${failureCollection}" />
+	        
+	    </div>
+    </c:if>
+     
     <table class="resultsTable activeResultsTable" align="center">
         <tr>
             <th>Device Name</th>
@@ -57,16 +89,16 @@
         <c:forEach var="device" items="${devices}">
             <c:choose>
                 <c:when test="${resultsMap[device].synced}">
-              <tr onclick="forwardToMeterHome(${device.deviceId});">
-                  <td>${resultsMap[device].meter.name}</td>
+              <tr>
+                  <td onclick="forwardToMeterHome(${device.deviceId});">${resultsMap[device].meter.name}</td>
                   <td>${resultsMap[device].config.name}</td>
                   <td>${resultsMap[device].config.type}</td>
                   <td>In Sync</td>
               </tr>
                 </c:when>
              <c:otherwise>
-                    <tr style="background: #FFDDDD;" onclick="forwardToMeterHome(${device.deviceId});">
-                        <td>${resultsMap[device].meter.name}</td>
+                    <tr style="background: #FFDDDD;">
+                        <td onclick="forwardToMeterHome(${device.deviceId});">${resultsMap[device].meter.name}</td>
                         <td>${resultsMap[device].config.name}</td>
                         <td>${resultsMap[device].config.type}</td>
                         <td>Some attributes did not match: ${resultsMap[device].discrepancies}</td>
