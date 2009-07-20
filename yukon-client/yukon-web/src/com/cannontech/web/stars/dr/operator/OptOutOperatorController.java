@@ -272,8 +272,6 @@ public class OptOutOperatorController {
             return "redirect:/operator/Consumer/OptOut.jsp";
         }
 
-        int hoursRemainingInDay = TimeUtil.getHoursTillMidnight(now,
-                                                                userTimeZone);
         boolean isSameDay = TimeUtil.isSameDay(startDateObj,
                                                today,
                                                yukonUserContext.getTimeZone());
@@ -290,6 +288,8 @@ public class OptOutOperatorController {
                 // Today counts as the first day
                 extraHours = (durationInDays - 1) * 24;
             }
+            
+            int hoursRemainingInDay = TimeUtil.getHoursTillMidnight(now, userTimeZone);
             optOutRequest.setDurationInHours(hoursRemainingInDay + extraHours);
             optOutRequest.setStartDate(null); // Same day OptOut's have null
                                               // startDates.

@@ -237,8 +237,6 @@ public class OptOutController extends AbstractConsumerController {
             return "consumer/optout/optOutResult.jsp";
         }
 
-        int hoursRemainingInDay = TimeUtil.getHoursTillMidnight(now,
-                                                                userTimeZone);
         boolean isSameDay = TimeUtil.isSameDay(startDateObj,
                                                today,
                                                yukonUserContext.getTimeZone());
@@ -249,19 +247,21 @@ public class OptOutController extends AbstractConsumerController {
 
         OptOutRequest optOutRequest = new OptOutRequest();
         if (isSameDay) {
+            int extraHours = 0;
+            // If durationInDays is 1 that means the rest of today only
+            if (durationInDays > 1) {
+                // Today counts as the first day
+                extraHours = (durationInDays - 1) * 24;
+            }
+            
+            int hoursRemainingInDay = TimeUtil.getHoursTillMidnight(now, userTimeZone);
+            optOutRequest.setDurationInHours(hoursRemainingInDay + extraHours);
             optOutRequest.setStartDate(null); // Same day OptOut's have null
                                               // startDates.
         } else {
             optOutRequest.setStartDate(startDateObj);
+            optOutRequest.setDurationInHours(durationInDays * 24);
         }
-
-        int extraHours = 0;
-        // If durationInDays is 1 that means the rest of today only
-        if (durationInDays > 1) {
-            // Today counts as the first day
-            extraHours = (durationInDays - 1) * 24;
-        }
-        optOutRequest.setDurationInHours(hoursRemainingInDay + extraHours);
         optOutRequest.setInventoryIdList(inventoryIds);
         optOutRequest.setQuestions(questionList);
 
