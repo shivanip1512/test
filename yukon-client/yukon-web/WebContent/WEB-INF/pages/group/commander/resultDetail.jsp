@@ -4,7 +4,10 @@
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage title="Commander Results" module="amr">
+<c:url var="script" value="/WebConfig/yukon/Icons/script.gif"/>
+<c:url var="scriptOver" value="/WebConfig/yukon/Icons/script_over.gif"/>
+
+<cti:standardPage title="Group Command Processing Result Detail" module="amr">
 
     <cti:standardMenu menuSelection="devicegroups|commander"/>
 
@@ -14,38 +17,16 @@
         <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
         
         <%-- commander from location --%>
-        <cti:crumbLink url="/spring/group/commander/resultList" title="All Results" />
+        <cti:crumbLink url="/spring/group/commander/resultList" title="Recent Group Command Processing Results" />
         
         <%-- this result --%>
-        &gt; Command Executing
+        <cti:crumbLink title="Group Command Processing Result Detail"/>
     
     </cti:breadCrumbs>
     
     <cti:includeScript link="/JavaScript/bulkDataUpdaterCallbacks.js"/>
     
     <script type="text/javascript">
-        
-        function refreshResults(kind, theDiv) {
-
-            if (theDiv.visible()) {
-            
-                var url = '/spring/group/commander/' + kind;
-                
-                var params = $H();
-                params['resultKey'] = '${result.key}';
-            
-                var updater = new Ajax.Updater (theDiv, url, {
-              
-                  'parameters': params,
-                  
-                  'onSuccess': function(response) {
-                               },
-                  
-                  'onException': function(response) {
-                               }
-                });
-            }
-        }
         
         function showCmdCanceldMsg() {
             return function(data) {
@@ -57,7 +38,7 @@
     
     </script>
     
-    <h2>Results</h2>
+    <h2>Group Command Processing Result Detail</h2>
     <br>
   
     <tags:boxContainer id="commanderResultsContainer" hideEnabled="false">
@@ -102,6 +83,24 @@
                 </cti:link>
                 <tags:selectedDevicesPopup deviceCollection="${result.deviceCollection}" />
             </div>
+            
+            <%-- cre action --%>
+            <div id="creResultsDiv" style="display:none;">
+                <br>
+                
+                <cti:msg var="creResultsText" key="yukon.common.device.commander.collectionActionOnDevicesLabel.creResults"/>
+                
+                <cti:url var="creResultsUrl" value="/spring/amr/commandRequestExecution/detail">
+                	<cti:param name="commandRequestExecutionId" value="${result.commandRequestExecutionIdentifier.commandRequestExecutionId}"/>
+                </cti:url>
+                
+                <cti:link href="${creResultsUrl}" key="yukon.common.device.commander.collectionActionOnDevicesLabel.creResults" class="small"/>
+                <img onclick="window.location='${creResultsUrl}';" 
+							title="${creResultsText}" 
+							src="${script}" onmouseover="javascript:this.src='${scriptOver}'" 
+							onmouseout="javascript:this.src='${script}'">
+                
+            </div>
                                 
         </tags:resultProgressBar>
         
@@ -116,11 +115,6 @@
                 <cti:mapParam value="${result.successCollection.collectionParameters}"/>
             </cti:link>
             <tags:selectedDevicesPopup deviceCollection="${result.successCollection}" />
-            
-            <%-- success list --%>
-            <div style="height:8px;"></div>
-            <a href="javascript:void(0);" onclick="$('successResultsDiv${result.key}').toggle();refreshResults('successList', $('successResultsDiv${result.key}'));" class="small">View Results</a>
-            <div id="successResultsDiv${result.key}" style="display:none;"></div>
             
         </div>
     
@@ -145,18 +139,13 @@
             </cti:link>
             <tags:selectedDevicesPopup deviceCollection="${result.failureCollection}" />
             
-            <%-- errors list --%>
-            <div style="height:8px;"></div>
-            <a href="javascript:void(0);" onclick="$('errorsResultsDiv${result.key}').toggle();refreshResults('errorsList', $('errorsResultsDiv${result.key}'));" class="small">View Failure Reasons</a>
-            <div id="errorsResultsDiv${result.key}" style="display:none;"></div>
-        
         </div> 
 
         </jsp:body>
         
     </tags:boxContainer>
     
-    <cti:dataUpdaterCallback function="toggleElementsWhenTrue(['allDevicesActionsDiv','successActionsDiv','errorActionsDiv'],true)" initialize="true" value="COMMANDER/${result.key}/IS_COMPLETE" />
+    <cti:dataUpdaterCallback function="toggleElementsWhenTrue(['allDevicesActionsDiv','successActionsDiv','errorActionsDiv','creResultsDiv'],true)" initialize="true" value="COMMANDER/${result.key}/IS_COMPLETE" />
     <cti:dataUpdaterCallback function="toggleElementsWhenTrue(['cancelCommandsDiv'],false)" initialize="true" value="COMMANDER/${result.key}/IS_COMPLETE" />
       
 </cti:standardPage>

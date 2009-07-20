@@ -18,6 +18,7 @@ public enum SystemGroupEnum {
     SYSTEMMETERS("/System/Meters/"),
     SYSTEMMETERSDISABLED("/System/Meters/Disabled/"),
     DEVICETAGS("/System/Device Tags/"),
+    OUTAGE_PROCESSING("/Meters/Monitors/Outage/"),
     ;
 
     private String fullPath;

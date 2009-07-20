@@ -2,6 +2,8 @@
 <%@ attribute name="dataUrl" required="true" type="java.lang.String"%>
 <%@ attribute name="height" required="true" type="java.lang.Integer"%>
 <%@ attribute name="width" required="true" type="java.lang.Integer"%>
+<%@ attribute name="showLoadMask" required="false" type="java.lang.Boolean"%>
+<%@ attribute name="refreshRate" required="false" type="java.lang.Integer"%>
 
 <%@ attribute name="title" required="true" type="java.lang.String"%>
 <%@ attribute name="csvUrl" required="true" type="java.lang.String"%>
@@ -19,12 +21,20 @@
 
 <cti:uniqueIdentifier var="gridDiv" prefix="gridId_"/>
 
+<c:if test="${empty showLoadMask}">
+	<c:set var="showLoadMask" value="true"/>
+</c:if>
+
+<c:if test="${empty refreshRate}">
+	<c:set var="refreshRate" value="0"/>
+</c:if>
+
 <script type="text/javascript">
     
     Ext.onReady(function(){
     
         var gridMaker = new ExtGridMaker();
-        var grid = gridMaker.getReportGrid('${title}', ${height}, ${width}, ${cti:jsonString(columnInfo)}, '${cti:escapeJavaScript(dataUrl)}', '${cti:escapeJavaScript(csvUrl)}', '${cti:escapeJavaScript(pdfUrl)}');
+        var grid = gridMaker.getReportGrid('${title}', ${height}, ${width}, ${cti:jsonString(columnInfo)}, '${cti:escapeJavaScript(dataUrl)}', '${cti:escapeJavaScript(csvUrl)}', '${cti:escapeJavaScript(pdfUrl)}', ${showLoadMask}, ${refreshRate});
     
         grid.render('${gridDiv}');
     });

@@ -7,9 +7,11 @@ import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
+import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandRequestRoute;
 import com.cannontech.common.device.commands.CommandRequestRouteExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
+import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.porter.message.Request;
 
@@ -37,24 +39,24 @@ public class CommandRequestRouteExecutorImpl extends
 
 	@Override
 	public CommandResultHolder execute(int routeId, String command,
-			LiteYukonUser user) throws CommandCompletionException {
+			CommandRequestExecutionType type, LiteYukonUser user) throws CommandCompletionException {
 		
 		CommandRequestRoute commandRequest = new CommandRequestRoute();
         commandRequest.setCommand(command);
         commandRequest.setRouteId(routeId);
 		
-        return execute(commandRequest, user);
+        return execute(commandRequest, type, user);
 	}
 
 	@Override
-	public void execute(int routeId, String command,
+	public CommandRequestExecutionIdentifier execute(int routeId, String command,
 			CommandCompletionCallback<? super CommandRequestRoute> callback,
-			LiteYukonUser user) {
+			CommandRequestExecutionType type, LiteYukonUser user) {
 		
 		CommandRequestRoute commandRequest = new CommandRequestRoute();
         commandRequest.setCommand(command);
         commandRequest.setRouteId(routeId);
         
-        execute(Collections.singletonList(commandRequest), callback, user);
+        return execute(Collections.singletonList(commandRequest), callback, type, user);
 	}
 }

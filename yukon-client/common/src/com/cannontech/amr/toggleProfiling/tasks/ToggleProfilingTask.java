@@ -26,7 +26,7 @@ public class ToggleProfilingTask extends YukonTaskBase {
     private PaoDao paoDao = null;
     private DBPersistentDao dbPersistentDao = null;
 
-    public void start() {
+    public void start(int jobId) {
         startTask();
     }
     
@@ -46,7 +46,7 @@ public class ToggleProfilingTask extends YukonTaskBase {
         dbPersistentDao.performDBChange(yukonPaobject, DBChangeMsg.CHANGE_TYPE_UPDATE);
     }
 
-    public void stop() throws UnsupportedOperationException {
+    public void stop(int jobId) throws UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }
 

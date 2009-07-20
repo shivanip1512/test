@@ -6,7 +6,10 @@ public enum AlertType implements DisplayableEnum {
 
     ALARM,
     CAPCONTROL_SERVER_RESPONSE,
-    COMMAND_COMPLETION;
+    COMMAND_COMPLETION,
+    GROUP_METER_READ_COMPLETION,
+    OUTAGE_PROCESSING_READ_LOGS_COMPLETION,
+    ;
     
     private final static String keyPrefix = "yukon.web.alerts.types.";
 

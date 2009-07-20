@@ -18,6 +18,6 @@ public interface CommandRequestDeviceExecutor extends
      * @throws Exception
      */
     public CommandResultHolder execute(YukonDevice device, String command,
-            LiteYukonUser user) throws Exception;
+    		CommandRequestExecutionType type, LiteYukonUser user) throws Exception;
 
 }

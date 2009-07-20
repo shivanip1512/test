@@ -1,0 +1,149 @@
+package com.cannontech.amr.outageProcessing.dao.impl;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.List;
+
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.cannontech.amr.outageProcessing.OutageMonitor;
+import com.cannontech.amr.outageProcessing.OutageMonitorEvaluatorStatus;
+import com.cannontech.amr.outageProcessing.dao.OutageMonitorDao;
+import com.cannontech.core.dao.DuplicateException;
+import com.cannontech.core.dao.OutageMonitorNotFoundException;
+import com.cannontech.database.FieldMapper;
+import com.cannontech.database.SimpleTableAccessTemplate;
+import com.cannontech.database.incrementer.NextValueHelper;
+
+public class OutageMonitorDaoImpl implements OutageMonitorDao, InitializingBean  {
+
+	private static final ParameterizedRowMapper<OutageMonitor> rowMapper;
+    private SimpleJdbcTemplate simpleJdbcTemplate;
+    private NextValueHelper nextValueHelper;
+    private SimpleTableAccessTemplate<OutageMonitor> template;
+    
+    private static final String selectAllSql;
+    private static final String selectById;
+    private static final String selectCountByName;
+    private static final String deleteById;
+    private static final String TABLE_NAME = "OutageMonitor";
+    
+    static {
+        
+    	selectAllSql = "SELECT * FROM " + TABLE_NAME;
+
+		selectById = selectAllSql + " WHERE OutageMonitorId = ?";
+		selectCountByName = "SELECT COUNT(*) FROM " + TABLE_NAME + " WHERE Name = ?";
+		
+		deleteById = "DELETE FROM " + TABLE_NAME + " WHERE OutageMonitorId = ?";
+		
+        rowMapper = OutageMonitorDaoImpl.createRowMapper();
+    }
+    
+    public void saveOrUpdate(OutageMonitor outageMonitor) {
+    	try {
+    		template.save(outageMonitor);
+    	} catch (DataIntegrityViolationException e) {
+    		throw new DuplicateException("Unable to save outage processor.", e);
+    	}
+    }
+    
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public OutageMonitor getById(final int outageMonitorId) throws OutageMonitorNotFoundException {
+    	
+    	OutageMonitor outageMonitor = null;
+    	
+    	try {
+    		outageMonitor = simpleJdbcTemplate.queryForObject(selectById, rowMapper, outageMonitorId);
+    	} catch (EmptyResultDataAccessException e) {
+    		throw new OutageMonitorNotFoundException();
+    	}
+    	
+    	return outageMonitor;
+    }
+    
+    public boolean processorExistsWithName(String name) {
+
+    	int c = simpleJdbcTemplate.queryForInt(selectCountByName, name);
+    	
+    	return c > 0;
+    }
+    
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public List<OutageMonitor> getAll() {
+        try {
+            List<OutageMonitor> list = simpleJdbcTemplate.query(selectAllSql, rowMapper, new Object[]{});
+            return list;
+        } catch (DataAccessException e) {
+            return Collections.emptyList();
+        } 
+    }
+    
+    public int delete(int outageMonitorId) {
+    	
+    	return simpleJdbcTemplate.update(deleteById, outageMonitorId);
+    }
+    
+    private static final ParameterizedRowMapper<OutageMonitor> createRowMapper() {
+        final ParameterizedRowMapper<OutageMonitor> rowMapper = new ParameterizedRowMapper<OutageMonitor>() {
+            public OutageMonitor mapRow(ResultSet rs, int rowNum) throws SQLException {
+            	OutageMonitor outageMonitor = new OutageMonitor();
+            	
+            	outageMonitor.setOutageMonitorId(rs.getInt("OutageMonitorId"));
+            	outageMonitor.setName(rs.getString("Name"));
+            	outageMonitor.setGroupName(rs.getString("GroupName"));
+            	outageMonitor.setTimePeriod(rs.getInt("TimePeriod"));
+            	outageMonitor.setNumberOfOutages(rs.getInt("NumberOfOutages"));
+            	outageMonitor.setScheduledCommandJobId(rs.getInt("ScheduledCommandJobId"));
+            	outageMonitor.setEvaluatorStatus(OutageMonitorEvaluatorStatus.valueOf(rs.getString("EvaluatorStatus")));
+                return outageMonitor;
+            }
+        };
+        return rowMapper;
+    }
+    
+    private FieldMapper<OutageMonitor> outageMonitorFieldMapper = new FieldMapper<OutageMonitor>() {
+        public void extractValues(MapSqlParameterSource p, OutageMonitor outageMonitor) {
+            p.addValue("OutageMonitorId", outageMonitor.getOutageMonitorId());
+            p.addValue("Name", outageMonitor.getName());
+            p.addValue("GroupName", outageMonitor.getGroupName());
+            p.addValue("TimePeriod", outageMonitor.getTimePeriod());
+            p.addValue("NumberOfOutages", outageMonitor.getNumberOfOutages());
+            p.addValue("ScheduledCommandJobId", outageMonitor.getScheduledCommandJobId());
+            p.addValue("EvaluatorStatus", outageMonitor.getEvaluatorStatus().name());
+            
+        }
+        public Number getPrimaryKey(OutageMonitor outageMonitor) {
+            return outageMonitor.getOutageMonitorId();
+        }
+        public void setPrimaryKey(OutageMonitor outageMonitor, int value) {
+        	outageMonitor.setOutageMonitorId(value);
+        }
+    };
+    
+    public void afterPropertiesSet() throws Exception {
+        template = new SimpleTableAccessTemplate<OutageMonitor>(simpleJdbcTemplate, nextValueHelper);
+        template.withTableName(TABLE_NAME);
+        template.withPrimaryKeyField("OutageMonitorId");
+        template.withFieldMapper(outageMonitorFieldMapper); 
+    }
+    
+    @Autowired
+    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
+		this.simpleJdbcTemplate = simpleJdbcTemplate;
+	}
+    @Autowired
+    public void setNextValueHelper(NextValueHelper nextValueHelper) {
+		this.nextValueHelper = nextValueHelper;
+	}
+}

@@ -7,8 +7,8 @@
 <cti:includeScript link="/JavaScript/paoPicker.js" />
 <cti:includeCss link="/WebConfig/yukon/styles/itemPicker.css" />
 
-<c:url var="delete" value="/WebConfig/yukon/Icons/stop.gif"/>
-<c:url var="deleteOver" value="/WebConfig/yukon/Icons/stop_over.gif"/>
+<c:url var="delete" value="/WebConfig/yukon/Icons/delete.gif"/>
+<c:url var="deleteOver" value="/WebConfig/yukon/Icons/delete_over.gif"/>
 
 <cti:uniqueIdentifier  prefix="addPao" var="addPao"/>
 <cti:uniqueIdentifier var="addPaoSpanId" prefix="addPaoSpan_"/>

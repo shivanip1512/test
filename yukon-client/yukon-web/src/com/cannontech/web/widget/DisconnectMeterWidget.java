@@ -18,6 +18,7 @@ import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
+import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.dao.DeviceDao;
@@ -124,7 +125,7 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
     	Meter meter = getMeter(request);
     	
     	LiteYukonUser user = ServletUtil.getYukonUser(request);
-        CommandResultHolder result = commandRequestExecutor.execute(meter, CONTROL_CONNECT_COMMAND, user);
+        CommandResultHolder result = commandRequestExecutor.execute(meter, CONTROL_CONNECT_COMMAND, CommandRequestExecutionType.DEVICE_COMMAND, user);
         
         ModelAndView mav = getControlModelAndView(request, result);
         
@@ -137,7 +138,7 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
     	Meter meter = getMeter(request);
     	
     	LiteYukonUser user = ServletUtil.getYukonUser(request);
-        CommandResultHolder result = commandRequestExecutor.execute(meter, CONTROL_DISCONNECT_COMMAND, user);
+        CommandResultHolder result = commandRequestExecutor.execute(meter, CONTROL_DISCONNECT_COMMAND, CommandRequestExecutionType.DEVICE_COMMAND, user);
         
         ModelAndView mav = getControlModelAndView(request, result);
         

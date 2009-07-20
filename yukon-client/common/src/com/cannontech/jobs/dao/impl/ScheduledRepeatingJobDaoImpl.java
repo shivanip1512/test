@@ -44,10 +44,9 @@ public class ScheduledRepeatingJobDaoImpl extends JobDaoBase implements Schedule
 
     private SimpleTableAccessTemplate<ScheduledRepeatingJob> template;
     
-    public void afterPropertiesSet() throws Exception {
-        super.afterPropertiesSet();
-        
-        jobRowMapper = new SeparableRowMapper<ScheduledRepeatingJob>(yukonJobBaseRowMapper) {
+    public SeparableRowMapper<ScheduledRepeatingJob> getJobRowMapper() {
+    	
+    	SeparableRowMapper<ScheduledRepeatingJob> rowMapper = new SeparableRowMapper<ScheduledRepeatingJob>(yukonJobBaseRowMapper) {
             protected ScheduledRepeatingJob createObject(ResultSet rs) throws SQLException {
                 ScheduledRepeatingJob job = new ScheduledRepeatingJob();
                 return job;
@@ -57,6 +56,14 @@ public class ScheduledRepeatingJobDaoImpl extends JobDaoBase implements Schedule
                 job.setCronString(rs.getString("cronString"));
             }
         };
+        
+        return rowMapper;
+    }
+    
+    public void afterPropertiesSet() throws Exception {
+        super.afterPropertiesSet();
+        
+        jobRowMapper = getJobRowMapper();
         
         template = new SimpleTableAccessTemplate<ScheduledRepeatingJob>(jdbcTemplate, nextValueHelper);
         template.withTableName("JobScheduledRepeating");

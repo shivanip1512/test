@@ -13,6 +13,7 @@ import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
+import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.peakReport.dao.PeakReportDao;
 import com.cannontech.common.device.peakReport.model.PeakReportPeakType;
@@ -80,7 +81,7 @@ public class PeakReportServiceImpl implements PeakReportService {
         // run command
         CommandResultHolder commandResultHolder;
         try{
-            commandResultHolder = commandRequestExecutor.execute(meter, commandBuffer.toString(), userContext.getYukonUser());
+            commandResultHolder = commandRequestExecutor.execute(meter, commandBuffer.toString(), CommandRequestExecutionType.DEVICE_COMMAND, userContext.getYukonUser());
         }
         catch(Exception e){
             throw new PeakSummaryReportRequestException();

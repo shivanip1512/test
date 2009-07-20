@@ -185,11 +185,12 @@ public class JobManagerImpl implements JobManager {
         return false;
     }
     
-    public void scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, Date time) {
-        scheduleJob(jobDefinition, task, time, new SystemUserContext());
+    // SCHEDULE JOB
+    public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, Date time) {
+        return scheduleJob(jobDefinition, task, time, new SystemUserContext());
     }
 
-    public void scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, Date time, YukonUserContext userContext) {
+    public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, Date time, YukonUserContext userContext) {
         log.info("scheduling onetime job: jobDefinition=" + jobDefinition + ", task=" + task + ", time=" + time);
         ScheduledOneTimeJob oneTimeJob = new ScheduledOneTimeJob();
         scheduleJobCommon(oneTimeJob, jobDefinition, task, userContext);
@@ -198,13 +199,15 @@ public class JobManagerImpl implements JobManager {
         scheduledOneTimeJobDao.save(oneTimeJob);
 
         doScheduleOneTimeJob(oneTimeJob);
+        
+        return oneTimeJob;
     }
 
-    public void scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, String cronExpression) {
-        scheduleJob(jobDefinition, task, cronExpression, new SystemUserContext());
+    public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, String cronExpression) {
+        return scheduleJob(jobDefinition, task, cronExpression, new SystemUserContext());
     }
 
-    public void scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, String cronExpression, YukonUserContext userContext) {
+    public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, String cronExpression, YukonUserContext userContext) {
         log.info("scheduling repeating job: jobDefinition=" + jobDefinition + ", task=" + task + ", cronExpression=" + cronExpression);
         ScheduledRepeatingJob repeatingJob = new ScheduledRepeatingJob();
         scheduleJobCommon(repeatingJob, jobDefinition, task, userContext);
@@ -213,8 +216,11 @@ public class JobManagerImpl implements JobManager {
         scheduledRepeatingJobDao.save(repeatingJob);
 
         doScheduleScheduledJob(repeatingJob);
+        
+        return repeatingJob;
     }
-
+    
+    // PRIVATE HELPERS
     private void scheduleJobCommon(YukonJob job, YukonJobDefinition<?> jobDefinition, YukonTask task, YukonUserContext userContext) throws BeansException {
         InputRoot inputRoot = jobDefinition.getInputs();
 
@@ -281,6 +287,7 @@ public class JobManagerImpl implements JobManager {
         }
     }
     
+    // MISC PUBLIC
     public void disableJob(YukonJob job) {
         log.info("disabling job: " + job);
         job.setDisabled(true);
@@ -295,7 +302,9 @@ public class JobManagerImpl implements JobManager {
             
             // there is no need to pass true because it is taken out of scheduledJobs
             // before it actually runs
-            jobInfo.future.cancel(false);
+            if (jobInfo.future != null) {
+            	jobInfo.future.cancel(false);
+            }
         } else {
             log.info("tried to remove job while disabling, it no longer existed: " + job);
         }
@@ -306,17 +315,16 @@ public class JobManagerImpl implements JobManager {
     public void enableJob(YukonJob job) {
         log.info("enabling job: " + job);
         job.setDisabled(false);
+        yukonJobDao.update(job);
         
         // not great, but I don't really have a better way
         if (job instanceof ScheduledOneTimeJob) {
             ScheduledOneTimeJob oneTimeJob = (ScheduledOneTimeJob) job;
-            scheduledOneTimeJobDao.save(oneTimeJob);
             
             // put it into the schedule
             doScheduleOneTimeJob(oneTimeJob);
         } else if (job instanceof ScheduledRepeatingJob) {
             ScheduledRepeatingJob repeatingJob = (ScheduledRepeatingJob) job;
-            scheduledRepeatingJobDao.save(repeatingJob);
             
             // put it into the schedule
             doScheduleScheduledJob(repeatingJob);
@@ -325,7 +333,7 @@ public class JobManagerImpl implements JobManager {
         
     }
 
-    private Date getNextRuntime(ScheduledRepeatingJob job, Date from) throws ScheduleException {
+    public Date getNextRuntime(ScheduledRepeatingJob job, Date from) throws ScheduleException {
         try {
             CronExpression cronExpression = new CronExpression(job.getCronString());
             // is this the right thing to do?
@@ -337,6 +345,9 @@ public class JobManagerImpl implements JobManager {
         } catch (ParseException e) {
             throw new ScheduleException("Could not calculate next runtime for " + job.getBeanName()
                 + " with " + job.getCronString(), e);
+        } catch (UnsupportedOperationException e) {
+        	throw new ScheduleException("Could not calculate next runtime for " + job.getBeanName()
+                    + " with " + job.getCronString(), e);
         }
     }
 
@@ -353,7 +364,7 @@ public class JobManagerImpl implements JobManager {
     			throw new IllegalStateException("a task for " + status.getJob()
     					+ " is already running: " + existingTask);
     		}
-    		task.start(); // this should block until task is complete
+    		task.start(status.getJob().getId()); // this should block until task is complete
     	} catch (Exception e) {
     		log.error("YukonTask failed", e);
     		status.setJobState(JobState.FAILED);
@@ -392,7 +403,7 @@ public class JobManagerImpl implements JobManager {
             return false;
         }
         try {
-            task.stop();
+            task.stop(job.getId());
         } catch (UnsupportedOperationException e) {
             log.warn("tried to stop an unstoppable task, job was: " + job, e);
             return false;
@@ -400,7 +411,7 @@ public class JobManagerImpl implements JobManager {
         return true;
     }
 
-
+    // PRIVATE CLASSES
     private class BaseRunnableJob implements Runnable {
         private final int jobId;
 

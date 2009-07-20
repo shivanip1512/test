@@ -28,17 +28,6 @@
 		
 		$('filterForm').submit();
 	}
-
-	// These two functions are neccessary since IE does not support css :hover
-	function highLightRow(row) {
-		row = $(row);
-		row.addClassName('hover');
-	}
-	
-	function unHighLightRow(row){
-		row = $(row);
-		row.removeClassName('hover');
-	}
 	
 </script>
 	
@@ -134,7 +123,11 @@
             
             <%-- DATA ROWS --%>
             <c:forEach var="row" items="${resultColumnsList}">
-                <tr class="<tags:alternateRow odd="" even="altRow"/>" onclick="javascript:forwardToMeterHome(this, ${row[idEnum]})" onmouseover="highLightRow(this)" onmouseout="unHighLightRow(this)">
+                <tr class="<tags:alternateRow odd="" even="altRow"/>" 
+                	onclick="javascript:forwardToMeterHome(this, ${row[idEnum]})" 
+                	onmouseover="activeResultsTable_highLightRow(this)" 
+                	onmouseout="activeResultsTable_unHighLightRow(this)">
+                	
                 <c:forEach var="dispEnum" items="${orderedDispEnums}">
                     <td>
                         <%-- although the result of ${null} is <BLANK>, explicitly leave --%>

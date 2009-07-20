@@ -15,6 +15,7 @@ import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
+import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.config.dao.ConfigurationType;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
@@ -105,7 +106,7 @@ public class ConfigWidget extends WidgetControllerBase {
         Meter meter = getMeter(request);
         YukonDevice device = new YukonDevice(deviceId, meter.getType());
         String commandString = "putconfig emetcon install all force";
-        CommandResultHolder resultHolder = commandRequestExecutor.execute(device, commandString, user);
+        CommandResultHolder resultHolder = commandRequestExecutor.execute(device, commandString, CommandRequestExecutionType.DEVICE_CONFIG_PUSH, user);
         mav.addObject("pushResult", resultHolder);
         return mav;
     }
@@ -117,7 +118,7 @@ public class ConfigWidget extends WidgetControllerBase {
         Meter meter = getMeter(request);
         YukonDevice device = new YukonDevice(deviceId, meter.getType());
         String commandString = "getconfig model";
-        CommandResultHolder resultHolder = commandRequestExecutor.execute(device, commandString, user);
+        CommandResultHolder resultHolder = commandRequestExecutor.execute(device, commandString, CommandRequestExecutionType.DEVICE_COMMAND, user);
         mav.addObject("readResult", resultHolder);
         return mav;
     }

@@ -19,6 +19,7 @@
     <c:set var="disabledStr" value="disabled" />
 </c:if>
 
+<span style="white-space:nowrap;">
 <input id="${uniqueId}" name="${fieldName}" ${disabledStr}  type="text" size="10" maxlength="10" value="${fieldValue}" style="width:70px;">&nbsp;
 
 <cti:msg key="yukon.common.calendarcontrol.months" var="months"/>
@@ -39,6 +40,6 @@
         </span>
     </c:otherwise>
 </c:choose>
-
+</span>
 
 

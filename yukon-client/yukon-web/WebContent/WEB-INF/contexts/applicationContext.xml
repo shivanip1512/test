@@ -493,8 +493,12 @@
         <property name="commandAuthorizationService" ref="paoCommandAuthorizationService" />
     </bean>
     
+    <bean id="outageMonitorsWidget" class="com.cannontech.web.widget.OutageMonitorsWidget">
+    	<property name="title" value="Outage Monitors"/>
+        <property name="identityPath" value="common/deviceIdentity.jsp" />
+    </bean>
+    
     <!-- Update Service -->
-        
     <bean id="dataUpdaterService" class="com.cannontech.web.updater.DefaultDataUpdaterService"
         abstract="false" lazy-init="default" autowire="default"
         dependency-check="default">
@@ -535,6 +539,18 @@
                 </entry>
                 <entry key="COMMANDER">
                     <ref local="commanderUpdateBackingService"/>
+                </entry>
+                <entry key="COMMAND_REQUEST_EXECUTION">
+                    <ref local="commandRequestExecutionBackingService"/>
+                </entry>
+                <entry key="OUTAGE_PROCESSING">
+                    <ref local="outageMonitorBackingService"/>
+                </entry>
+                <entry key="JOB">
+                    <ref local="jobBackingService"/>
+                </entry>
+                <entry key="GROUP_METER_READ">
+                    <ref local="groupMeterReadUpdateBackingService"/>
                 </entry>
             </map>
         </property>
@@ -629,7 +645,34 @@
         <property name="recentResultsCache" ref="recentResultsCache" />
     </bean>
     
+    <bean id="groupMeterReadUpdateBackingService" class="com.cannontech.web.updater.groupMeterRead.GroupMeterReadUpdateBackingService">
+    	<property name="templateProcessorFactory" ref="templateProcessorFactory" />
+        <property name="messageSourceResolver" ref="yukonUserContextMessageSourceResolver" />
+    </bean>
     
+    <bean id="commandRequestExecutionBackingService" class="com.cannontech.web.updater.commandRequestExecution.CommandRequestExecutionBackingService">
+    </bean>
+    <bean id="requestCountCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.RequestCountCommandExecutionUpdaterHandler"/>
+    <bean id="resultsCountCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.ResultsCountCommandExecutionUpdaterHandler"/>
+    <bean id="successResultsCountCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.SuccessResultsCountCommandExecutionUpdaterHandler"/>
+    <bean id="failureResultsCountCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.FailureResultsCountCommandExecutionUpdaterHandler"/>
+    <bean id="stopTimeCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.StopTimeCommandExecutionUpdaterHandler"/>
+    <bean id="isCompleteCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.IsCompleteCommandExecutionUpdaterHandler"/>
+    <bean id="lastCreIdForJobCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.LastCreIdForJobCommandExecutionUpdaterHandler"/>
+    <bean id="lastRequestCountForJobCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.LastRequestCountForJobCommandExecutionUpdaterHandler"/>
+    <bean id="lastSuccessResultsCountForJobCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.LastSuccessResultsCountForJobCommandExecutionUpdaterHandler"/>
+    <bean id="lastFailureResultsCountForJobCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.LastFailureResultsCountForJobCommandExecutionUpdaterHandler"/>
+    <bean id="creCountForJobCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.CreCountForJobCommandExecutionUpdaterHandler"/>
+    
+    <bean id="outageMonitorBackingService" class="com.cannontech.web.updater.outageProcessing.OutageMonitorBackingService">
+    </bean>
+    <bean id="outageCountOutageProcessingUpdaterHandler" class="com.cannontech.web.updater.outageProcessing.handler.OutageCountOutageProcessingUpdaterHandler"/>
+    
+    <bean id="jobBackingService" class="com.cannontech.web.updater.job.JobBackingService">
+    </bean>
+    <bean id="lastRunJobUpdaterHandler" class="com.cannontech.web.updater.job.handler.LastRunJobUpdaterHandler"/>
+    <bean id="nextRunJobUpdaterHandler" class="com.cannontech.web.updater.job.handler.NextRunJobUpdaterHandler"/>
+    <bean id="scheduleDescriptionJobUpdaterHandler" class="com.cannontech.web.updater.job.handler.ScheduleDescriptionJobUpdaterHandler"/>
     
     
     <bean id="abstractFormattingService" class="com.cannontech.web.updater.capcontrol.AbstractFormattingService"
@@ -838,6 +881,10 @@
         <property name="messageSourceResolver" ref="yukonUserContextMessageSourceResolver"/>
         <property name="phoneNumberFormattingService" ref="phoneNumberFormattingService"/>
     </bean>     
+    
+    <bean id="userNameTagPrototype" class="com.cannontech.web.taglib.UserNameTag">
+        <property name="yukonUserDao" ref="yukonUserDao"/>
+    </bean>
     
     <!-- Remember to add friendlyExceptionPropertyKey key to friendlyException.properties file -->
     <bean id="friendlyExceptionResolver" class="com.cannontech.common.util.FriendlyExceptionResolver">

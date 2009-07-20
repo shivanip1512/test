@@ -18,6 +18,7 @@ public class FormatDateTag extends YukonTagSupport {
     private String type;
     private DateFormatEnum enumValue;
     private String var;
+    private String nullText;
     
     @Override
     public void doTag() throws JspException, IOException {
@@ -29,7 +30,11 @@ public class FormatDateTag extends YukonTagSupport {
                                                              enumValue,
                                                              getUserContext());
         }else{
-            getJspContext().getOut().print("Date doesn't exist");
+        	if (nullText != null) {
+        		formattedDate = nullText;
+        	} else {
+        		getJspContext().getOut().print("Date doesn't exist");
+        	}
         }
         
         if (var == null) {
@@ -50,6 +55,9 @@ public class FormatDateTag extends YukonTagSupport {
     public void setVar(final String var) {
         this.var = var;
     }
+    public void setNullText(String nullText) {
+		this.nullText = nullText;
+	}
     public void setDateFormattingService(DateFormattingService dfs) {
         this.dateFormattingService = dfs;
     }

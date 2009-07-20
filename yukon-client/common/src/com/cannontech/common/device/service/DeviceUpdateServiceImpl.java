@@ -17,6 +17,7 @@ import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
+import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.device.definition.model.PointTemplate;
@@ -133,7 +134,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
                         CommandCompletionCallbackAdapter<CommandRequestDevice> dummyCallback = new CommandCompletionCallbackAdapter<CommandRequestDevice>() {
                         };
                         
-                        commandRequestDeviceExecutor.execute(Collections.singletonList(configCmd), dummyCallback, liteYukonUser);
+                        commandRequestDeviceExecutor.execute(Collections.singletonList(configCmd), dummyCallback, CommandRequestExecutionType.DEVICE_COMMAND, liteYukonUser);
                     }
                 }
             }

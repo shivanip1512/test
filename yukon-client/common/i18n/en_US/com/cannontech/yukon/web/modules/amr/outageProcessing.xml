@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+	<!-- OutageMonitorsWidget render.jsp -->
+    <!-- ================================================================================================================================================= -->
+    <!-- ================================================================================================================================================= -->
+    <entry key="yukon.web.modules.amr.outageMonitorsWidget.popupInfo"><![CDATA[
+    	 <br><div style="font-weight:normal;">
+	     <img src="/WebConfig/yukon/Icons/cog.gif"> View the Outage Processing widget (read outage logs, remove meters from group, etc.)
+	     <br><br>
+	     <img src="/WebConfig/yukon/Icons/script.gif"> View the details of the scheduled group command job. This icon will not appear for those Outage Monitors that are not setup to send a periodic group command.
+	     <br><br>
+	     <img src="/WebConfig/yukon/Icons/delete.gif"> Delete the Outage Monitor. If the Outage Monitor has a scheduled group command setup, it will be disabled.
+	     <br><br>
+	     </div>
+    ]]></entry>
+    <entry key="yukon.web.modules.amr.outageMonitorsWidget.tableHeader.name">Name</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorsWidget.tableHeader.scheduleDescription">Read Schedule</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorsWidget.tableHeader.devices">Devices</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorsWidget.createNew">Create New Outage Monitor</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorsWidget.deleteConfirm">Are you sure you want to delete this Outage Monitor?\n\nIf there is a scheduled group command associated with the processor, it will be disabled.\n</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorsWidget.actionTitle.outageProcessing">Manage Processor Output</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorsWidget.actionTitle.scheduledRead">View Scheduled Read</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorsWidget.actionTitle.startReadNow">Start Outage Count Read Now</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorsWidget.actionTitle.delete">Delete Outage Monitor</entry>
+    
+    
+    <!-- OutageMonitorEditorController config.jsp -->
+    <!-- ================================================================================================================================================= -->
+    <!-- ================================================================================================================================================= -->
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.pageTitle">Outage Monitoring</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.headerTitle">Outage Monitoring Setup</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.name">Name</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.deviceGroup">Device Group</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.selectDeviceGroup">Select Device Group</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.selectDeviceGroupChoose">Choose</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.selectDeviceGroupCancel">Cancel</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.outagesGroup">Outages Group</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.chooseGroup">Choose Group</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.changeGroup">Change Group</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.numberOfOutages">Number of Outages Allowed</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.numberOfOutagesOutages">Outages</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.timePeriod">Time Period</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.timePeriodDays">Days</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.scheduleRead">Schedule Read</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.scheduleReadDescription">Read Outage Counts</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.readFrequency">Time/Frequency</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.outageMonitoring">Outage Monitoring</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.outageMonitoringEnable">Enable</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.popupInfo.outageMonitoringEnable"><![CDATA[
+    	 <br>
+	     Enable outage monitoring.
+	     <br><br>
+	     Devices found to have excessive outages will be added to the Outages Group.
+	     <br><br>
+    ]]></entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.outageMonitoringDisable">Disable</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.popupInfo.outageMonitoringDisable"><![CDATA[
+    	 <br>
+	     Disable outage monitoring.
+	     <br><br>
+	     Devices will not be checked for excessive outages and will no longer be added to the Outages Group.
+	     <br><br>
+    ]]></entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.update">Update</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.update.busy">Updating</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.create">Create</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.create.busy">Creating</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.delete">Delete</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.delete.busy">Deleting</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.deleteConfirm">Are you sure you want to delete this Outage Monitor?\n\nIf there is a scheduled group command associated with the processor, it will be disabled.\n</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.popupInfo.deviceGroup"><![CDATA[
+    	 <br>
+	     The group of devices that will be checked for excessive outages.
+	     <br><br>
+	     Those devices that meet the outage count requirements defined below will be moved into a separate Outages Device Group for this processor.
+	     <br><br>
+    ]]></entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.popupInfo.numberOfOutages"><![CDATA[
+    	 <br>
+	     Number of outages required to cause the devices to be moved into the Outage Device Group for this monitor.
+	     <br><br>
+	     Must be greater than or equal to 1.
+	     <br><br>
+    ]]></entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.popupInfo.timePeriod"><![CDATA[
+    	 <br>
+	     Number of days over which to look for outages.
+	     <br><br>
+	     Must be greater than 0.
+	     <br><br>
+    ]]></entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.popupInfo.scheduleRead"><![CDATA[
+    	 <br>
+	     Outage count read commands will be sent to each of the devices in the selected device group periodically based on the Read Time/Frequency defined below.
+	     <br><br>
+    ]]></entry>
+    
+    
+    <!-- OutageProcessingController process.jsp -->
+    <!-- ================================================================================================================================================= -->
+    <!-- ================================================================================================================================================= -->
+    <entry key="yukon.web.modules.amr.outageProcessing.pageTitle">Outage Processing</entry>
+    <entry key="yukon.web.modules.amr.outageProcessing.section.mainDetail.name">Name</entry>
+    <entry key="yukon.web.modules.amr.outageProcessing.section.mainDetail.deviceGroup">Device Group</entry>
+    <entry key="yukon.web.modules.amr.outageProcessing.section.mainDetail.outagesGroup">Outages Group</entry>
+    <entry key="yukon.web.modules.amr.outageProcessing.section.mainDetail.devices">Devices</entry>
+    <entry key="yukon.web.modules.amr.outageProcessing.section.mainDetail.numberOfOutages">Number of Outages Allowed</entry>
+    <entry key="yukon.web.modules.amr.outageProcessing.section.mainDetail.timePeriod">Time Period</entry>
+    
+    <entry key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.title">Read Outage Logs</entry>
+    <entry key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.button">Read Logs</entry>
+    <entry key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.noteLabel">Note:</entry>
+    <entry key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.noteBody"><![CDATA[
+    	Read outage logs 1-6 from all meters in the Outages Group.
+		<br>
+		Devices that do not support Outage Logs read will not be included.
+		<br>
+		Recommended usage is to have Remove Successfully Read Meters from Outages Group After Read checked.
+		
+    ]]></entry>
+    <entry key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.removeAfterRead">Remove Successfully Read Meters from Outages Group After Read</entry>
+    <entry key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.recentReadLogsResults">Recent Read Outage Logs Results:</entry>
+    <entry key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.recentReadLogsResults.tableHeader.dateTime">Read Date/Time</entry>
+    <entry key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.recentReadLogsResults.tableHeader.successCount">Success Count</entry>
+    <entry key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.recentReadLogsResults.tableHeader.failureCount">Failure Count</entry>
+    <entry key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.recentReadLogsResults.tableHeader.unsupportedCount">Not Supported</entry>
+    <entry key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.recentReadLogsResults.tableHeader.detail">Detail</entry>
+    <entry key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.recentReadLogsResults.tableHeader.status">Status</entry>
+    <entry key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.recentReadLogsResults.viewDetailLink">View</entry>
+
+    <entry key="yukon.web.modules.amr.outageProcessing.section.options.title">Options</entry>
+    <entry key="yukon.web.modules.amr.outageProcessing.section.options.outagesGroupReport">View Outages Group Devices Report</entry>
+    <entry key="yukon.web.modules.amr.outageProcessing.section.options.clearOutagesGroup">Clear Outages Group</entry>
+    <entry key="yukon.web.modules.amr.outageProcessing.section.options.otherActions">Other Actions</entry>
+    
+	<entry key="yukon.web.modules.amr.outageProcessing.readOutagesLog.completionAlert"><![CDATA[
+	
+	Outage Logs read has completed for Outage Monitor "{outageMonitorName}" with {percentSuccess|#0.0#}% success 
+	  <a href="/spring/amr/outageProcessing/process/readLogsDetail?outageMonitorId={outageMonitorId}&resultKey={resultKey}" title="Click to see complete details">
+	    <img src="/WebConfig/yukon/Icons/magnifier_zoom_in.gif" alt="detail" style="border-style: none; vertical-align:middle">
+	  </a>
+	]]></entry>
+	
+
+</properties>

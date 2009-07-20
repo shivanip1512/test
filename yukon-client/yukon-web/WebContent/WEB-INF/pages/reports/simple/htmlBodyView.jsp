@@ -32,4 +32,4 @@
 
 
 <%-- REPORT TABLE --%>
-<tags:extReportGrid title="${reportTitle}" height="350" width="1000" columnInfo="${columnInfo}" dataUrl="${dataUrl}" csvUrl="${csvUrl}" pdfUrl="${pdfUrl}" />
+<tags:extReportGrid title="${reportTitle}" height="350" width="1000" columnInfo="${columnInfo}" dataUrl="${dataUrl}" csvUrl="${csvUrl}" pdfUrl="${pdfUrl}" showLoadMask="${showLoadMask}" refreshRate="${refreshRate}" />

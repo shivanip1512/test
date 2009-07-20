@@ -3,6 +3,7 @@ package com.cannontech.common.device.commands;
 import java.util.List;
 
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
+import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
 import com.cannontech.common.util.Completable;
 import com.cannontech.core.dynamic.PointValueHolder;
 
@@ -35,5 +36,11 @@ public interface CommandResultHolder extends Completable {
      * @return
      */
     public String getLastResultString();
+    
+    /**
+     * CommandRequestExecutionIdentifier for the CommandRequestExecution database table record where command results can be found.
+     * @return
+     */
+    public CommandRequestExecutionIdentifier getCommandRequestExecutionIdentifier();
 
 }

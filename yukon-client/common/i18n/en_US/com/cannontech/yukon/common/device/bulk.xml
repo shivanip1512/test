@@ -84,6 +84,8 @@
     <entry key="yukon.common.device.bulk.collectionActions.removeFromGroupDescription">Remove devices from a Device Group.</entry>
     <entry key="yukon.common.device.bulk.collectionActions.sendCommandLabel">Send Command</entry>
     <entry key="yukon.common.device.bulk.collectionActions.sendCommandDescription">Issue a command to multiple devices.</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.readAttributeLabel">Read Attribute</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.readAttributeDescription">Read an attribute of multiple devices.</entry>
     <entry key="yukon.common.device.bulk.collectionActions.massChangeLabel">Mass Change</entry>
     <entry key="yukon.common.device.bulk.collectionActions.massChangeDescription">Change same value on multiple devices.</entry>
     <entry key="yukon.common.device.bulk.collectionActions.changeDeviceTypeLabel">Change Type</entry>

@@ -25,7 +25,7 @@ public class ImportCustAccountsSchedulerTask implements YukonTask {
     // Injected Dependencies
     private StarsDatabaseCache starsDbCacheInstance;
     
-    public void start() {
+    public void start(int jobId) {
             try {
                 startTask();
             } catch (NotFoundException e){
@@ -59,7 +59,7 @@ public class ImportCustAccountsSchedulerTask implements YukonTask {
         }
     }
 
-    public void stop() throws UnsupportedOperationException {
+    public void stop(int jobId) throws UnsupportedOperationException {
         // TODO Auto-generated method stub
     }
 

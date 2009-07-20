@@ -12,6 +12,7 @@ import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
+import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.GroupCommandExecutor;
 import com.cannontech.common.device.commands.GroupCommandResult;
 import com.cannontech.common.device.commands.VerifyConfigCommandResult;
@@ -58,7 +59,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         
         WaitableCommandCompletionCallback<CommandRequestDevice> waitableCallback = new WaitableCommandCompletionCallback<CommandRequestDevice>(commandCompletionCallback);
         
-        commandRequestExecutor.execute(requests, waitableCallback, user);
+        commandRequestExecutor.execute(requests, waitableCallback, CommandRequestExecutionType.DEVICE_CONFIG_VERIFY, user);
         try {
             waitableCallback.waitForCompletion(60, 120);
         } catch (InterruptedException e) {

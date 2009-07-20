@@ -7,6 +7,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
+import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.porter.message.Request;
@@ -34,7 +35,7 @@ public class CommandRequestDeviceExecutorImpl extends
     }
 
     public CommandResultHolder execute(YukonDevice device, String command,
-            LiteYukonUser user) throws Exception {
+    		CommandRequestExecutionType type, LiteYukonUser user) throws Exception {
 
         CommandRequestDevice cmdRequest = new CommandRequestDevice();
         cmdRequest.setDevice(device);
@@ -43,7 +44,7 @@ public class CommandRequestDeviceExecutorImpl extends
         commandStr += " update";
         commandStr += " noqueue";
         cmdRequest.setCommand(commandStr);
-        return execute(cmdRequest, user);
+        return execute(cmdRequest, type, user);
     }
 
 }

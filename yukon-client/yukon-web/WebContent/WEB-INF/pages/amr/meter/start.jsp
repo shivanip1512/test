@@ -10,20 +10,27 @@
 		<cti:crumbLink title="Metering" />
 </cti:breadCrumbs>
 
-	<h2>
-	Metering
-	</h2>
-
+	<h2>Metering</h2>
+	<br>
+	
 	<ct:widgetContainer identify="false">
 
-		<table class="widgetColumns"><tr>
-			<td class="widgetColumnCell" valign="top">
-				<ct:widget bean="meterSearchWidget" />
-			</td>
-			<td class="widgetColumnCell" valign="top">
-
-			</td>
-		</tr></table>
+		<table class="widgetColumns">
+		
+			<tr>
+		
+				<td class="widgetColumnCell" valign="top">
+					<cti:msg var="outagesWidgetPopupInfoText" key="yukon.web.modules.amr.outageMonitorsWidget.popupInfo"/>
+					<ct:widget bean="outageMonitorsWidget" helpText="${outagesWidgetPopupInfoText}"/>
+				</td>
+				
+				<td class="widgetColumnCell" valign="top">
+					<ct:widget bean="meterSearchWidget" />
+				</td>
+			
+			</tr>
+			
+		</table>
 
 	</ct:widgetContainer>
 

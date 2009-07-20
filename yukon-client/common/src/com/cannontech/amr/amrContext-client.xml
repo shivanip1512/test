@@ -66,8 +66,11 @@
         <constructor-arg ref="paoGroupsWrapper" />
     </bean>
 
-    <bean id="meterReadService"
-        class="com.cannontech.amr.deviceread.dao.impl.MeterReadServiceImpl"/>
+	<bean id="meterReadCommandGeneratorService" class="com.cannontech.amr.deviceread.service.impl.MeterReadCommandGeneratorServiceImpl"/>
+
+    <bean id="meterReadService" class="com.cannontech.amr.deviceread.dao.impl.MeterReadServiceImpl"/>
+        
+    <bean id="groupMeterReadService" class="com.cannontech.amr.deviceread.service.impl.GroupMeterReadServiceImpl"/>
 
     <bean id="peakReportService"
         class="com.cannontech.common.device.peakReport.service.impl.PeakReportServiceImpl">

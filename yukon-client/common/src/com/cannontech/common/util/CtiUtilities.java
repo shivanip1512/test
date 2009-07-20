@@ -1864,6 +1864,28 @@ public static double convertTemperature(double temperature, String fromUnit, Str
         SimpleDateFormat df = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
         return df.parse(javaDateStr);
     }
+     
+     public static String getOrdinalFor(int value) {
+    	 
+		int hundredRemainder = value % 100;
+		
+		if (hundredRemainder >= 10 && hundredRemainder <= 20) {
+			return "th";
+		}
+		
+		int tenRemainder = value % 10;
+		
+		switch (tenRemainder) {
+		case 1:
+			return "st";
+		case 2:
+			return "nd";
+		case 3:
+			return "rd";
+		default:
+			return "th";
+		}
+	}
 }
 
 

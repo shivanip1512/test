@@ -2,6 +2,8 @@ package com.cannontech.jobs.dao;
 
 import java.util.Set;
 
+import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+
 import com.cannontech.jobs.model.JobStatus;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.support.YukonJobDefinition;
@@ -13,6 +15,7 @@ public interface ScheduledRepeatingJobDao {
     public Set<ScheduledRepeatingJob> getAll();
     public Set<JobStatus<ScheduledRepeatingJob>> getAllUnfinished();
     public Set<ScheduledRepeatingJob> getJobsByDefinition(YukonJobDefinition<? extends YukonTask> definition);
+    public ParameterizedRowMapper<ScheduledRepeatingJob> getJobRowMapper();
     
     /**
      * Saves the job and its properties. When it completes, its id

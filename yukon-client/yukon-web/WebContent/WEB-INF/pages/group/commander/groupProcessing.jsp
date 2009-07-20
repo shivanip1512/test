@@ -5,14 +5,14 @@
 <%@ taglib prefix="ext" tagdir="/WEB-INF/tags/ext" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 
-<cti:standardPage title="Commander Results" module="amr">
+<cti:standardPage title="Group Processing" module="amr">
 
     <cti:standardMenu menuSelection="devicegroups|commander"/>
 
        	<cti:breadCrumbs>
     	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
     	    <cti:crumbLink url="/spring/group/editor/home" title="Device Groups" />
-    	    &gt; Group Processing
+    	    <cti:crumbLink title="Group Command Processing"/>
     	</cti:breadCrumbs>
         
         <cti:includeScript link="/JavaScript/commanderPrompter.js"/>
@@ -39,7 +39,7 @@
         
         </script>
 		
-		<h2>Group Processing</h2>
+		<h2>Group Command Processing</h2>
     
     	<c:if test="${param.errorMsg != null}">
     		<div style="color: red;margin: 10px 0px;">Error: <spring:escapeBody htmlEscape="true">${param.errorMsg}</spring:escapeBody></div>

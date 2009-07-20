@@ -1,5 +1,6 @@
 package com.cannontech.common.device.commands;
 
+import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -19,7 +20,7 @@ public interface CommandRequestRouteExecutor extends
 	 * @throws CommandCompletionException
 	 */
 	public CommandResultHolder execute(int routeId, String command,
-			LiteYukonUser user) throws CommandCompletionException;
+			CommandRequestExecutionType type, LiteYukonUser user) throws CommandCompletionException;
 	
 	/**
 	 * Convenience method to execute a command on a given route for a user
@@ -28,7 +29,7 @@ public interface CommandRequestRouteExecutor extends
 	 * @param callback - Callback called as results of executing command come in
 	 * @param user - User executing command
 	 */
-	public void execute(int routeId, String command,
+	public CommandRequestExecutionIdentifier execute(int routeId, String command,
 			CommandCompletionCallback<? super CommandRequestRoute> callback,
-			LiteYukonUser user);
+			CommandRequestExecutionType type, LiteYukonUser user);
 }

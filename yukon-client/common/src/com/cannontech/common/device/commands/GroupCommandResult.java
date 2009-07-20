@@ -1,6 +1,7 @@
 package com.cannontech.common.device.commands;
 
 import com.cannontech.common.bulk.collection.DeviceCollection;
+import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
 import com.cannontech.common.util.CancelStatus;
 import com.cannontech.common.util.Completable;
 import com.cannontech.common.util.ExceptionStatus;
@@ -11,6 +12,8 @@ public class GroupCommandResult implements Completable, CancelStatus, ExceptionS
     private DeviceCollection deviceCollection;
     private MultipleDeviceResultHolder resultHolder;
     private GroupCommandCompletionCallback callback;
+    private CommandRequestExecutionType commandRequestExecutionType;
+    private CommandRequestExecutionIdentifier commandRequestExecutionIdentifier;
     
     private DeviceCollection successCollection;
     private DeviceCollection failureCollection;
@@ -61,6 +64,19 @@ public class GroupCommandResult implements Completable, CancelStatus, ExceptionS
     public void setSuccessCollection(DeviceCollection successCollection) {
         this.successCollection = successCollection;
     }
+    
+    public CommandRequestExecutionType getCommandRequestExecutionType() {
+		return commandRequestExecutionType;
+	}
+    public void setCommandRequestExecutionType(CommandRequestExecutionType commandRequestExecutionType) {
+		this.commandRequestExecutionType = commandRequestExecutionType;
+	}
+    public CommandRequestExecutionIdentifier getCommandRequestExecutionIdentifier() {
+		return commandRequestExecutionIdentifier;
+	}
+    public void setCommandRequestExecutionIdentifier(CommandRequestExecutionIdentifier commandRequestExecutionIdentifier) {
+		this.commandRequestExecutionIdentifier = commandRequestExecutionIdentifier;
+	}
     
     @Override
     public boolean isComplete() {

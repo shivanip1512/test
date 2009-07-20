@@ -80,6 +80,8 @@ public abstract class SimpleReportLinkFromNameTagBase extends YukonTagSupport im
         optionalAttributeDefaults.put("showMenu", "false");
         optionalAttributeDefaults.put("menuSelection", "");
         optionalAttributeDefaults.put("viewJsp", "MENU");
+        optionalAttributeDefaults.put("showLoadMask", "false");
+        optionalAttributeDefaults.put("refreshRate", "0");
         
         CtiUtilities.overrideValuesOfDefaultsMap(optionalAttributeDefaults, identifierAttributes);
         

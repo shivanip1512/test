@@ -3,6 +3,7 @@
 <%@ attribute name="paramMap" required="false" type="java.util.Map"%>
 <%@ attribute name="hideEnabled" required="false" type="java.lang.Boolean"%>
 <%@ attribute name="title" required="false" type="java.lang.String"%>
+<%@ attribute name="helpText" required="false" type="java.lang.String"%>
 
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -48,7 +49,7 @@ Event.observe(window,'load', function() {${widgetParameters.jsWidget}.render()})
     <c:set var="containerTitle" value="${title}"/>
 </c:if>
 
-<ct:abstractContainer type="box" title="${containerTitle}" id="widgetTitledContainer_${widgetParameters.widgetId}" styleClass="widgetContainer" showInitially="true" hideEnabled="${empty hideEnabled ? true : hideEnabled}">
+<ct:abstractContainer type="box" title="${containerTitle}" id="widgetTitledContainer_${widgetParameters.widgetId}" styleClass="widgetContainer" showInitially="true" hideEnabled="${empty hideEnabled ? true : hideEnabled}" helpText="${helpText}">
 
 <div id="widgetContainer_${widgetParameters.widgetId}" style="height: ${widgetParameters.height};">
 <c:choose>

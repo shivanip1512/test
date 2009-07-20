@@ -30,6 +30,12 @@
     <bean id="commandRequestRouteAndDeviceExecutor" parent="commandRequestExecutorBase" class="com.cannontech.common.device.commands.impl.CommandRequestRouteAndDeviceExecutorImpl">
     </bean>
     
+    <bean id="commandRequestExecutionDao" class="com.cannontech.common.device.commands.dao.impl.CommandRequestExecutionDaoImpl">
+    </bean>
+    
+    <bean id="commandRequestExecutionResultsDao" class="com.cannontech.common.device.commands.dao.impl.CommandRequestExecutionResultsDaoImpl">
+    </bean>
+    
     <bean id="attributeService" class="com.cannontech.common.device.attribute.service.AttributeServiceImpl" scope="singleton">
         <property name="dbPersistentDao" ref="dbPersistentDao" />
         <property name="deviceDefinitionDao" ref="deviceDefinitionDao" />

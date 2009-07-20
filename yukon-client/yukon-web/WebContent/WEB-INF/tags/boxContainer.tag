@@ -3,9 +3,14 @@
 <%@ attribute name="styleClass" required="false" type="java.lang.String"%>
 <%@ attribute name="hideEnabled" required="false" type="java.lang.Boolean"%>
 <%@ attribute name="showInitially" required="false" type="java.lang.Boolean"%>
+<%@ attribute name="helpText" required="false" type="java.lang.String"%>
 
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
+
+<c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
+<c:url var="helpOver" value="/WebConfig/yukon/Icons/help_over.gif"/>
 
 <cti:includeScript link="/JavaScript/simpleCookies.js"/>
 <cti:includeScript link="/JavaScript/hideReveal.js"/>
@@ -31,6 +36,11 @@
 			</c:if>
 		<div class="title boxContainer_title">
 			${title}
+			
+			<c:if test="${not empty helpText}">
+            	<img onclick="$('boxContainerInfoPopup_${thisId}').toggle();" src="${help}" onmouseover="javascript:this.src='${helpOver}'" onmouseout="javascript:this.src='${help}'">
+        	</c:if>
+        	
 		</div>
 	</div>
 	
@@ -47,4 +57,10 @@
 	<script type="text/javascript">
         hideRevealSectionSetup('${thisId}_plusImg', '${thisId}_minusImg', '${thisId}_control', '${thisId}_content', ${showInitially ? true : false}, '${cti:jsSafe(title)}');
 	</script>
+</c:if>
+
+<c:if test="${not empty helpText}">
+	<tags:simplePopup id="boxContainerInfoPopup_${thisId}" title="${title}" onClose="$('boxContainerInfoPopup_${thisId}').toggle();">
+     	${helpText}
+	</tags:simplePopup>	
 </c:if>

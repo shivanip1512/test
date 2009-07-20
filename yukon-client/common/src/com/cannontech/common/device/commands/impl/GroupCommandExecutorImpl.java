@@ -12,9 +12,11 @@ import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
+import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.GroupCommandCompletionCallback;
 import com.cannontech.common.device.commands.GroupCommandExecutor;
 import com.cannontech.common.device.commands.GroupCommandResult;
+import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
@@ -66,7 +68,13 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
                 return buildStandardRequest(from, command);
             }
         };
-        List<CommandRequestDevice> requests = new MappingList<YukonDevice, CommandRequestDevice>(deviceCollection.getDeviceList(), objectMapper);
+        
+    	List<CommandRequestDevice> requests = new MappingList<YukonDevice, CommandRequestDevice>(deviceCollection.getDeviceList(), objectMapper);
+    	
+    	return execute(deviceCollection, command, requests, callback, user);
+    }
+    
+    public String execute(final DeviceCollection deviceCollection, final String command, List<CommandRequestDevice> requests, final SimpleCallback<GroupCommandResult> callback, LiteYukonUser user) {
         
         // create temporary groups
         final StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup(null);
@@ -96,6 +104,9 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
             
         };
         
+        CommandRequestExecutionType commandRequestExecutionType = CommandRequestExecutionType.GROUP_COMMAND;
+        
+        groupCommandResult.setCommandRequestExecutionType(commandRequestExecutionType);
         groupCommandResult.setCommand(command);
         groupCommandResult.setResultHolder(commandCompletionCallback);
         groupCommandResult.setDeviceCollection(deviceCollection);
@@ -107,10 +118,10 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
         groupCommandResult.setFailureCollection(failureCollectioin);
         
         String key = resultsCache.addResult(groupCommandResult);
-        // is the weird?
         groupCommandResult.setKey(key);
         
-        commandRequestExecutor.execute(requests, commandCompletionCallback, user);
+        CommandRequestExecutionIdentifier commandRequestExecutionIdentifier = commandRequestExecutor.execute(requests, commandCompletionCallback, commandRequestExecutionType, user);
+        groupCommandResult.setCommandRequestExecutionIdentifier(commandRequestExecutionIdentifier);
         
         log.debug("executing " + command + " on the " + requests.size() + " devices in " + deviceCollection);
         

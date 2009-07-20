@@ -10,13 +10,15 @@ ExtGridMaker.prototype = {
 	},
     
     // Basic grid - no title, toolbar
-    getBasicGrid: function(height, width, columnInfo, dataUrl) {
+    getBasicGrid: function(height, width, columnInfo, dataUrl, showLoadMask, refreshRate) {
     
         var store = gridHelper.getJsonStore(columnInfo, dataUrl)
         var columns = gridHelper.getColumns(columnInfo, width, true);
         
-        var loadMask = new Ext.LoadMask(Ext.getBody(), {msg:"Loading data...", store:store});
-        loadMask.show();
+        if (showLoadMask && refreshRate <= 0) {
+	        var loadMask = new Ext.LoadMask(Ext.getBody(), {msg:"Loading data...", store:store});
+	        loadMask.show();
+        }
         
         var grid = new Ext.grid.GridPanel({
             store: store,
@@ -30,21 +32,26 @@ ExtGridMaker.prototype = {
             enableColumnMove: true
         });
         
+        if (refreshRate > 0) {
+        	new PeriodicalExecuter(function(){store.reload();}, refreshRate);
+        }
+        
         return grid;
     },
     
     // Report grid - title and export buttons on toolbar
-    getReportGrid: function(title, height, width, columnInfo, dataUrl, csvUrl, pdfUrl) {
-    
+    getReportGrid: function(title, height, width, columnInfo, dataUrl, csvUrl, pdfUrl, showLoadMask, refreshRate) {
+        
+        var basicGrid = this.getBasicGrid(height, width, columnInfo, dataUrl, showLoadMask, refreshRate);
+        
         var csvButton = new Ext.Button({text:'CSV', handler:function(){window.location = csvUrl}, icon:'/WebConfig/yukon/Icons/excel.gif', cls: 'x-btn-text-icon' });
         var pdfButton = new Ext.Button({text:'PDF', handler:function(){window.location = pdfUrl}, icon:'/WebConfig/yukon/Icons/pdf.gif', cls: 'x-btn-text-icon'});
-        
-        var basicGrid = this.getBasicGrid(height, width, columnInfo, dataUrl);
+        var refreshButton = new Ext.Button({text:'Reload', handler:function(){basicGrid.getStore().reload();}, icon:'/WebConfig/yukon/Icons/table_refresh.gif', cls: 'x-btn-text-icon'});
         
         var grid = basicGrid.cloneConfig({
         
             title: title,
-            tbar: ['->', 'Export: ', csvButton, '-', pdfButton]
+            tbar: [refreshButton, '->', 'Export: ', csvButton, '-', pdfButton]
         });
         
         return grid;

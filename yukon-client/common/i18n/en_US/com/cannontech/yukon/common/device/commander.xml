@@ -9,6 +9,8 @@
     
     <entry key="yukon.common.device.commander.collectionActionOnDevicesLabel.allResults">Choose New Operation For All Devices</entry>
     
+    <entry key="yukon.common.device.commander.collectionActionOnDevicesLabel.creResults">View Results Log</entry>
+    
     <entry key="yukon.common.device.commander.collectionActionOnDevicesLabel.successResults">Choose New Operation For These Devices</entry>
     
     <entry key="yukon.common.device.commander.collectionActionOnDevicesLabel.failureResults">Choose New Operation For These Devices</entry>

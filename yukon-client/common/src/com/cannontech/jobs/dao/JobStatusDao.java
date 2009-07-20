@@ -30,5 +30,12 @@ public interface JobStatusDao {
      * @return
      */
     public JobStatus<YukonJob> getStatusByJobId(int jobId);
+    
+    /**
+     * Gets the most recent StopTime for given job whose status is 'COMPLETED'
+     * @param jobId
+     * @return
+     */
+    public Date getJobLastSuccessfulRunDate(int jobId);
 
 }

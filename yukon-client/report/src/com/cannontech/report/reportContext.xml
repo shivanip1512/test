@@ -676,7 +676,72 @@
             <bean class="com.cannontech.simplereport.reportlayoutdata.GroupCommanderFailureResultsReportLayoutData"/>
         </property>
     </bean>
+    
+    <!-- Command Request Execution Results Report -->
+   	<bean id="commandRequestExecutionResultsModel" class="com.cannontech.analysis.tablemodel.CommandRequestExecutionResultsModel" scope="prototype">
+    </bean>
+    
+    <bean id="commandRequestExecutionResultsDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
+        <property name="reportModelName"><idref local="commandRequestExecutionResultsModel"/></property>
+        <property name="inputs">
+          <bean class="com.cannontech.web.input.InputRoot">
+            <property name="inputList">
+              <list>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="commandRequestExecutionId"/>
+                    <property name="displayName" value="Command Request Execution ID"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.IntegerType"/>
+                    </property>
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="resultsFilterType"/>
+                    <property name="displayName" value="Results Filter Type"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.StringType"/>
+                    </property>
+                </bean>
+              </list>
+            </property>
+          </bean>
+        </property>
+        
+        <property name="reportLayoutData">
+            <bean class="com.cannontech.simplereport.reportlayoutdata.CommandRequestExecutionReportLayoutData"/>
+        </property>
+        
+    </bean>
+    
+    <!-- Command Request Execution Failure Stats Report -->
+   	<bean id="commandRequestExecutionFailureStatsModel" class="com.cannontech.analysis.tablemodel.CommandRequestExecutionFailureStatsModel" scope="prototype">
+    </bean>
+    
+    <bean id="commandRequestExecutionFailureStatsDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
+        <property name="reportModelName"><idref local="commandRequestExecutionFailureStatsModel"/></property>
+        <property name="inputs">
+          <bean class="com.cannontech.web.input.InputRoot">
+            <property name="inputList">
+              <list>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="commandRequestExecutionId"/>
+                    <property name="displayName" value="Command Request Execution ID"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.IntegerType"/>
+                    </property>
+                </bean>
+              </list>
+            </property>
+          </bean>
+        </property>
+        
+        <property name="reportLayoutData">
+            <bean class="com.cannontech.simplereport.reportlayoutdata.CommandRequestExecutionFailureStatsLayoutData"/>
+        </property>
+        
+    </bean>
+    
     <bean id="reportGroupService" class="com.cannontech.analysis.service.impl.ReportGroupServiceImpl">
     </bean>
+    
 </beans>
 

@@ -297,8 +297,22 @@
               <link>/spring/group/commander/groupProcessing</link>
               <requireRoleProperty value="GROUP_COMMANDER"/>
             </option>
+            <option id="groupMeterRead">
+              <link>/spring/group/groupMeterRead/homeGroup</link>
+            </option>
             <option id="updater">
               <link>/spring/group/updater/upload</link>
+            </option>
+          </links>
+	    </option>
+	    <option id="commandRequestExecution">
+		  <link>/spring/amr/commandRequestExecution/list</link>
+		  <links>
+		    <option id="allRequests">
+              <link>/spring/amr/commandRequestExecution/list</link>
+            </option>
+		    <option id="scheduledGroupRequests">
+              <link>/spring/amr/scheduledGroupCommandRequestExecution/list</link>
             </option>
           </links>
 	    </option>

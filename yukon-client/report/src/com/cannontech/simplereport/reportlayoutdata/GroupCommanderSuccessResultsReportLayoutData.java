@@ -2,7 +2,7 @@ package com.cannontech.simplereport.reportlayoutdata;
 
 import com.cannontech.analysis.report.ColumnLayoutData;
 
-public class GroupCommanderSuccessResultsReportLayoutData implements ReportLayoutData{
+public class GroupCommanderSuccessResultsReportLayoutData implements ReportLayoutData {
 
     private ColumnLayoutData[] bodyColumns;
     

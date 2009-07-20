@@ -141,3 +141,13 @@ function stickyCheckboxes_retrieve(id) {
     var state = YukonClientPersistance.getState("stickyCheckboxes", id);
     return state;
 }
+
+function activeResultsTable_highLightRow(row) {
+	row = $(row);
+	row.addClassName('hover');
+}
+
+function activeResultsTable_unHighLightRow(row){
+	row = $(row);
+	row.removeClassName('hover');
+}

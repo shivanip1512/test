@@ -41,11 +41,10 @@ import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.common.util.SimpleCallback;
-import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
-import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.CommandDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -68,7 +67,7 @@ public class GroupCommanderController implements InitializingBean {
 
     private Logger log = YukonLogManager.getLogger(GroupCommanderController.class);
 
-    private AuthDao authDao;
+    private RolePropertyDao rolePropertyDao;
     private CommandDao commandDao;
     private GroupCommandExecutor groupCommandExecutor;
     private AlertService alertService;
@@ -190,7 +189,7 @@ public class GroupCommanderController implements InitializingBean {
         if (StringUtils.isBlank(commandString)) {
             error = true;
             map.addAttribute("errorMsg", "You must enter a valid command");
-        } else if (authDao.checkRoleProperty(userContext.getYukonUser(), CommanderRole.EXECUTE_MANUAL_COMMAND)) {
+        } else if (rolePropertyDao.checkProperty(YukonRoleProperty.EXECUTE_MANUAL_COMMAND, userContext.getYukonUser())) {
             // check that it is authorized
             if (!commandAuthorizationService.isAuthorized(userContext.getYukonUser(), commandString)) {
                 error = true;
@@ -238,8 +237,7 @@ public class GroupCommanderController implements InitializingBean {
 
         };
 
-        String key = 
-            groupCommandExecutor.execute(deviceCollection, commandString, callback, userContext.getYukonUser());
+        String key = groupCommandExecutor.execute(deviceCollection, commandString, callback, userContext.getYukonUser());
         map.addAttribute("resultKey", key);
         return true;
     }
@@ -327,13 +325,6 @@ public class GroupCommanderController implements InitializingBean {
         map.addAttribute("result", result);
     }
     
-    @RequestMapping({"errorsList", "successList"})
-    public void results(String resultKey, ModelMap map) {
-        GroupCommandResult result = groupCommandExecutor.getResult(resultKey);
-        
-        map.addAttribute("result", result);
-    }
-    
     @RequestMapping
     public ModelAndView cancelCommands(String resultId, YukonUserContext userContext) {
         
@@ -376,7 +367,7 @@ public class GroupCommanderController implements InitializingBean {
     }
     
     @Autowired
-    public void setAuthDao(AuthDao authDao) {
-        this.authDao = authDao;
-    }
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+		this.rolePropertyDao = rolePropertyDao;
+	}
 }

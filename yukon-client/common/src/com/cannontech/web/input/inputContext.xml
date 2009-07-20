@@ -21,6 +21,7 @@
      <property name="deviceDefinitionService" ref="deviceDefinitionService" />
      <property name="enumeratedType" ref="inputIntegerType" />
  </bean>
+ <bean id="inputAttributeType" class="com.cannontech.web.input.type.AttributeType" />
  
  
  </beans>

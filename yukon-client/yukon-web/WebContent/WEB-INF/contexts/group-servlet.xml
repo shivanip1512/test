@@ -18,9 +18,10 @@
     
     <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
         <property name="mappings">
-            <value>
-            	/editor/*=groupEditorController
-            </value>
+        	<props>
+                <prop key="/editor/*">groupEditorController</prop>
+                <prop key="/groupMeterRead/*">GroupMeterReadController</prop>
+            </props>
         </property>
     </bean>    
 
@@ -46,6 +47,8 @@
     </bean>
     
     <bean class="com.cannontech.web.group.GroupCommanderController" />
+    
+    <bean id="GroupMeterReadController" class="com.cannontech.web.group.GroupMeterReadController" />
     
     <bean class="com.cannontech.web.group.DeviceGroupUpdaterController" />
     

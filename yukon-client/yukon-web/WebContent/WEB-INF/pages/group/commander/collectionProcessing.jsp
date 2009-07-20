@@ -5,11 +5,11 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 
-<cti:standardPage title="Commander Results" module="amr">
+<cti:standardPage title="Group Processing" module="amr">
 <cti:standardMenu menuSelection="devicegroups|commander"/>
    	<cti:breadCrumbs>
 	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-	    &gt; Group Processing
+	    <cti:crumbLink title="Group Processing"/>
 	</cti:breadCrumbs>
 
 <script type="text/javascript">
@@ -22,8 +22,8 @@
 	
 </script>
 	
-	<h2>Group Processing</h2>
-  <br>
+	<h2>Group Command Processing</h2>
+	<br>
   
     <tags:bulkActionContainer key="yukon.common.device.group" deviceCollection="${deviceCollection}">
   

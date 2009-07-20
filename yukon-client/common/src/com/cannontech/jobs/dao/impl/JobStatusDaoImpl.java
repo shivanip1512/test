@@ -15,6 +15,7 @@ import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.jobs.dao.JobStatusDao;
+import com.cannontech.jobs.model.JobState;
 import com.cannontech.jobs.model.JobStatus;
 import com.cannontech.jobs.model.YukonJob;
 
@@ -87,6 +88,23 @@ public class JobStatusDaoImpl implements JobStatusDao, InitializingBean {
             sql.append("where js.jobid = ?");
             JobStatusRowMapper<YukonJob> jobStatusRowMapper = new JobStatusRowMapper<YukonJob>(yukonJobBaseRowMapper);
             result = jdbcTemplate.queryForObject(sql.toString(), jobStatusRowMapper, jobId);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+        return result;
+    }
+    
+    public Date getJobLastSuccessfulRunDate(int jobId) {
+        
+        Date result = null;
+        try {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT MAX(js.StartTime) AS lastOkRun");
+            sql.append("FROM JobStatus js");
+            sql.append("JOIN Job j ON js.jobid = j.jobid");
+            sql.append("WHERE js.jobid = ?");
+            sql.append("AND js.JobState = ?");
+            result = jdbcTemplate.queryForObject(sql.toString(), Date.class, jobId, JobState.COMPLETED.name());
         } catch (EmptyResultDataAccessException e) {
             return null;
         }

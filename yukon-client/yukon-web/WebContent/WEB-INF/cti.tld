@@ -794,6 +794,12 @@
   		<required>true</required>
   		<rtexprvalue>true</rtexprvalue>
 	</attribute>
+	<attribute>
+ 		<name>nullText</name>
+  		<required>false</required>
+  		<rtexprvalue>true</rtexprvalue>
+  		<description>Text to be displayed in place of formatted date if date is null.</description>
+	</attribute>
   </tag>
   
   <tag>
@@ -1013,6 +1019,22 @@
       <rtexprvalue>true</rtexprvalue>
     </attribute>
     <dynamic-attributes>true</dynamic-attributes>
+  </tag>
+  
+  <tag>
+  	<name>userName</name>
+  	<tag-class>com.cannontech.web.taglib.UserNameTag</tag-class>
+  	<body-content>empty</body-content>
+	<attribute>
+ 		<name>userId</name>
+  		<required>true</required>
+  		<rtexprvalue>true</rtexprvalue>	
+	</attribute>
+ 	<attribute>
+ 		<name>var</name>
+  		<required>false</required>
+  		<rtexprvalue>true</rtexprvalue>
+	</attribute>
   </tag>
   
   <tag>

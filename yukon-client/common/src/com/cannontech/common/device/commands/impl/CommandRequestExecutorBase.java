@@ -2,6 +2,7 @@ package com.cannontech.common.device.commands.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -30,8 +31,18 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.device.commands.CollectingCommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
+import com.cannontech.common.device.commands.CommandRequestBase;
+import com.cannontech.common.device.commands.CommandRequestDevice;
+import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandRequestExecutor;
+import com.cannontech.common.device.commands.CommandRequestRoute;
+import com.cannontech.common.device.commands.CommandRequestRouteAndDevice;
 import com.cannontech.common.device.commands.CommandResultHolder;
+import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
+import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultsDao;
+import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
+import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
+import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionResult;
 import com.cannontech.core.authorization.support.CommandPermissionConverter;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.service.PorterRequestCancelService;
@@ -52,7 +63,7 @@ import com.cannontech.yukon.BasicServerConnection;
  * @param <T> - Type of command request this executor will execute
  */
 @ManagedResource
-public abstract class CommandRequestExecutorBase<T> implements
+public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> implements
         CommandRequestExecutor<T> {
     private BasicServerConnection porterConnection;
     private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
@@ -61,6 +72,8 @@ public abstract class CommandRequestExecutorBase<T> implements
     private Set<Permission> loggableCommandPermissions = new HashSet<Permission>();
     private ConfigurationSource configurationSource;
     private Executor executor;
+    private CommandRequestExecutionDao commandRequestExecutionDao;
+	private CommandRequestExecutionResultsDao commandRequestExecutionResultsDao;
     
     private int defaultForegroundPriority = 14;
     private int defaultBackgroundPriority = 8;
@@ -91,13 +104,16 @@ public abstract class CommandRequestExecutorBase<T> implements
         private int groupMessageId;
         private volatile boolean canceled = false;
         private CountDownLatch commandsAreWritingLatch = new CountDownLatch(1);
+        private CommandRequestExecution commandRequestExecution;
 
         private CommandResultMessageListener(List<RequestHolder> requests,
                 CommandCompletionCallback<? super T> callback,
-                int groupMessageId) {
+                int groupMessageId,
+                CommandRequestExecution commandRequestExecution) {
             
             this.callback = callback;
             this.groupMessageId = groupMessageId;
+            this.commandRequestExecution = commandRequestExecution;
             
             pendingUserMessageIds = new HashMap<Long, T>(requests.size());
             for (RequestHolder requestHolder : requests) {
@@ -106,17 +122,25 @@ public abstract class CommandRequestExecutorBase<T> implements
         }
 
         public synchronized void messageReceived(MessageEvent e) {
+        	
             boolean debug = log.isDebugEnabled();
+            
             Message message = e.getMessage();
+            
             if (message instanceof Return) {
-                Return retMessage = (Return) message;
+            
+            	Return retMessage = (Return) message;
                 long userMessageId = retMessage.getUserMessageID();
+                
+                // this is one of ours
                 if (pendingUserMessageIds.containsKey(userMessageId)) {
-                    T command = pendingUserMessageIds.get(userMessageId);
+                    
+                	T command = pendingUserMessageIds.get(userMessageId);
                     if (debug) {
                         log.debug("Got return message " + retMessage + " for my " + command + " on " + this);
                     }
-                    // this is one of ours, check the status message and create an error if necessary 
+                    
+                    // check the status message and create an error if necessary 
                     DeviceErrorDescription errorDescription = null;
                     int status = retMessage.getStatus();
                     if (status != 0) {
@@ -126,6 +150,8 @@ public abstract class CommandRequestExecutorBase<T> implements
                             log.debug("Calling receivedError on " + callback + " for " + retMessage);
                         }
                     }
+                    
+                    // grab point data and give it to the callback
                     Vector<?> resultVector = retMessage.getVector();
                     for (Object aResult : resultVector) {
                         if (aResult instanceof PointData) {
@@ -139,18 +165,28 @@ public abstract class CommandRequestExecutorBase<T> implements
                         }
                     }
 
+                    // last results
                     if (retMessage.getExpectMore() == 0) {
+
                         if (errorDescription != null) {
                             if (debug) {
                                 log.debug("Calling receivedLastError on " + callback + " for " + retMessage);
                             }
                             callback.receivedLastError(command, errorDescription);
+                            
+                            
                         } else {
                             log.debug("Calling receivedLastResultString on " + callback + " for " + retMessage);
                             callback.receivedLastResultString(command, retMessage.getResultString());
+                            
                         }
                         
+                        // insert CommandRequestExecutionResult record
+                    	makeCommandRequestExecutionResult(commandRequestExecution, command, status);
+                        
                         pendingUserMessageIds.remove(userMessageId);
+                        
+                    // intermediate results
                     } else {
                         if (errorDescription != null) {
                             if (debug) {
@@ -166,12 +202,17 @@ public abstract class CommandRequestExecutorBase<T> implements
                     }
 
                 }
-
+                
                 // an argument could be made that this belongs in the above if,
                 // but I think this makes it a little more resilient to strange
                 // errors
                 if (pendingUserMessageIds.isEmpty()) {
+                	
+                	// complete the callback
                     callback.complete();
+                    
+                    // complete the commandRequestExecution record
+                    completeCommandRequestExecutionRecord(this.commandRequestExecution);
 
                     if (debug) {
                         log.debug("Removing porter message listener because pending list is empty: " + this);
@@ -179,6 +220,38 @@ public abstract class CommandRequestExecutorBase<T> implements
                     this.removeListener();
                 }
             }
+        }
+        
+        private void completeCommandRequestExecutionRecord(CommandRequestExecution commandRequestExecution) {
+        	
+        	commandRequestExecution.setStopTime(new Date());
+            commandRequestExecutionDao.saveOrUpdate(commandRequestExecution);
+        }
+        
+        private void makeCommandRequestExecutionResult(CommandRequestExecution commandRequestExecution, T command, int status) {
+        	
+        	CommandRequestExecutionResult commandRequestExecutionResult = new CommandRequestExecutionResult();
+        	commandRequestExecutionResult.setCommandRequestExecutionId(commandRequestExecution.getId());
+        	commandRequestExecutionResult.setCommand(command.getCommand());
+        	commandRequestExecutionResult.setCompleteTime(new Date());
+        	
+        	if (status != 0) {
+        		commandRequestExecutionResult.setErrorCode(status);
+        	}
+        	
+        	if (command instanceof CommandRequestRouteAndDevice) {
+        		CommandRequestRouteAndDevice commandRequestRouteAndDevice = (CommandRequestRouteAndDevice)command;
+        		commandRequestExecutionResult.setDeviceId(commandRequestRouteAndDevice.getDevice().getDeviceId());
+        		commandRequestExecutionResult.setRouteId(commandRequestRouteAndDevice.getRouteId());
+        	} else if (command instanceof CommandRequestDevice) {
+        		CommandRequestDevice commandRequestDevice = (CommandRequestDevice)command;
+        		commandRequestExecutionResult.setDeviceId(commandRequestDevice.getDevice().getDeviceId());
+        	} else if (command instanceof CommandRequestRoute) {
+        		CommandRequestRoute commandRequestRoute = (CommandRequestRoute)command;
+        		commandRequestExecutionResult.setDeviceId(commandRequestRoute.getRouteId());
+        	}
+            
+            commandRequestExecutionResultsDao.saveOrUpdate(commandRequestExecutionResult);
         }
 
         private synchronized void handleUnknownReturn(long userMessageID, Object aResult) {
@@ -212,6 +285,10 @@ public abstract class CommandRequestExecutorBase<T> implements
         public CountDownLatch getCommandsAreWritingLatch() {
         	return commandsAreWritingLatch;
         }
+        
+        public CommandRequestExecution getCommandRequestExecution() {
+			return this.commandRequestExecution;
+		}
 
         @Override
         public synchronized String toString() {
@@ -224,17 +301,18 @@ public abstract class CommandRequestExecutorBase<T> implements
         }
     }
 
-    public CommandResultHolder execute(T command, LiteYukonUser user)
+    public CommandResultHolder execute(T command, CommandRequestExecutionType type, LiteYukonUser user)
             throws CommandCompletionException {
-        return execute(Collections.singletonList(command), user);
+        return execute(Collections.singletonList(command), type, user);
     }
 
-    public CommandResultHolder execute(List<T> commands, LiteYukonUser user)
+    public CommandResultHolder execute(List<T> commands, CommandRequestExecutionType type, LiteYukonUser user)
             throws CommandCompletionException {
         CollectingCommandCompletionCallback callback = new CollectingCommandCompletionCallback();
         WaitableCommandCompletionCallback<Object> waitableCallback = new WaitableCommandCompletionCallback<Object>(callback);
 
-        execute(commands, waitableCallback, user);
+        CommandRequestExecutionIdentifier commandRequestExecutionIdentifier = execute(commands, waitableCallback, type, user);
+        callback.setCommandRequestExecutionIdentifier(commandRequestExecutionIdentifier);
 
         try {
             waitableCallback.waitForCompletion(betweenResultsMaxDelay,totalMaxDelay);
@@ -249,16 +327,28 @@ public abstract class CommandRequestExecutorBase<T> implements
 
     }
 
-    public void execute(final List<T> commands,
-            final CommandCompletionCallback<? super T> callback, final LiteYukonUser user) {
+    public CommandRequestExecutionIdentifier execute(final List<T> commands,
+            final CommandCompletionCallback<? super T> callback, CommandRequestExecutionType type, final LiteYukonUser user) {
 
         log.debug("Executing " + commands.size() + " for " + callback);
 
         if (commands.isEmpty()) {
             log.debug("Skipping execution because there were no commands");
             callback.complete();
-            return;
+            return null;
         }
+        
+        // create CommandREquestExection record
+        final CommandRequestExecution commandRequestExecution = new CommandRequestExecution();
+        commandRequestExecution.setStartTime(new Date());
+        commandRequestExecution.setRequestCount(commands.size());
+        commandRequestExecution.setType(type);
+        commandRequestExecution.setUserId(user.getUserID());
+        
+        commandRequestExecutionDao.saveOrUpdate(commandRequestExecution);
+        
+        CommandRequestExecutionIdentifier commandRequestExecutionIdentifier = new CommandRequestExecutionIdentifier(commandRequestExecution.getId());
+        
         
         executor.execute(new Runnable() {
         	
@@ -279,7 +369,9 @@ public abstract class CommandRequestExecutorBase<T> implements
 		        // create listener
 		        CommandResultMessageListener messageListener = new CommandResultMessageListener(commandRequests,
 		                                                                                        callback, 
-		                                                                                        groupMessageId);
+		                                                                                        groupMessageId,
+		                                                                                        commandRequestExecution);
+		        
 		        msgListeners.put(callback, messageListener);
 		        
 		        log.debug("Addinging porter message listener: " + messageListener);
@@ -339,6 +431,7 @@ public abstract class CommandRequestExecutorBase<T> implements
         	}
         });
         
+        return commandRequestExecutionIdentifier;
     }
     
     public long cancelExecution(CommandCompletionCallback<? super T> callback, LiteYukonUser user) {
@@ -446,6 +539,18 @@ public abstract class CommandRequestExecutorBase<T> implements
 		this.executor = executor;
 	}
     
+    @Autowired
+    public void setCommandRequestExecutionDao(
+			CommandRequestExecutionDao commandRequestExecutionDao) {
+		this.commandRequestExecutionDao = commandRequestExecutionDao;
+	}
+    
+    @Autowired
+    public void setCommandRequestExecutionResultsDao(
+			CommandRequestExecutionResultsDao commandRequestExecutionResultsDao) {
+		this.commandRequestExecutionResultsDao = commandRequestExecutionResultsDao;
+	}
+    
     @ManagedAttribute
     public int getBetweenResultsMaxDelay() {
         return betweenResultsMaxDelay;
@@ -465,5 +570,4 @@ public abstract class CommandRequestExecutorBase<T> implements
     public void setTotalMaxDelay(int totalMaxDelay) {
         this.totalMaxDelay = totalMaxDelay;
     }
-
 }

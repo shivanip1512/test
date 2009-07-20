@@ -39,6 +39,8 @@
         <cti:msg var="removeFromGroupDescription" key="yukon.common.device.bulk.collectionActions.removeFromGroupDescription"/>
         <cti:msg var="sendCommandLabel" key="yukon.common.device.bulk.collectionActions.sendCommandLabel"/>
         <cti:msg var="sendCommandDescription" key="yukon.common.device.bulk.collectionActions.sendCommandDescription"/>
+        <cti:msg var="readAttributeLabel" key="yukon.common.device.bulk.collectionActions.readAttributeLabel"/>
+        <cti:msg var="readAttributeDescription" key="yukon.common.device.bulk.collectionActions.readAttributeDescription"/>
         <cti:msg var="massChangeLabel" key="yukon.common.device.bulk.collectionActions.massChangeLabel"/>
         <cti:msg var="massChangeDescription" key="yukon.common.device.bulk.collectionActions.massChangeDescription"/>
         <cti:msg var="changeDeviceTypeLabel" key="yukon.common.device.bulk.collectionActions.changeDeviceTypeLabel"/>
@@ -102,6 +104,17 @@
                 <td>${sendCommandDescription}</td>
             </tr>
             </cti:checkProperty>
+            
+            <%-- GROUP ATTRIBUTE READ --%>
+            <tr>
+                <td>
+                    <form id="groupAttributeReadForm" method="get" action="/spring/group/groupMeterRead/homeCollection">
+                        <cti:deviceCollection deviceCollection="${deviceCollection}" />
+                        <input type="submit" id="groupCommanderButton" value="${readAttributeLabel}" style="width:140px;"/>
+                    </form>
+                </td>
+                <td>${readAttributeDescription}</td>
+            </tr>
             
             <%-- MASS CHANGE --%>
             <cti:checkProperty property="operator.DeviceActionsRole.MASS_CHANGE">

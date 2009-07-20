@@ -12,6 +12,7 @@ import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.JobManagerException;
+import com.cannontech.jobs.support.ScheduleException;
 import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.jobs.support.YukonTask;
 import com.cannontech.user.YukonUserContext;
@@ -72,27 +73,31 @@ public class JobManagerStub implements JobManager {
     }
 
     @Override
-    public void scheduleJob(YukonJobDefinition<?> jobDefinition,
+    public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition,
             YukonTask task, Date time) {
         throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
     }
 
     @Override
-    public void scheduleJob(YukonJobDefinition<?> jobDefinition,
+    public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition,
             YukonTask task, Date time, YukonUserContext userContext) {
         throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
     }
 
     @Override
-    public void scheduleJob(YukonJobDefinition<?> jobDefinition,
+    public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition,
             YukonTask task, String cronExpression) {
         throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
     }
 
     @Override
-    public void scheduleJob(YukonJobDefinition<?> jobDefinition,
+    public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition,
             YukonTask task, String cronExpression, YukonUserContext userContext) {
         throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
     }
-
+    
+    @Override
+    public Date getNextRuntime(ScheduledRepeatingJob job, Date from) throws ScheduleException {
+    	throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
+    }
 }

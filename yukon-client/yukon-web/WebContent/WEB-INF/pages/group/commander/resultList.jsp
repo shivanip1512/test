@@ -3,23 +3,23 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage title="Commander Results" module="amr">
+<cti:standardPage title="Group Command Processing Results" module="amr">
 
     <cti:standardMenu menuSelection="devicegroups|commander"/>
     
        	<cti:breadCrumbs>
     	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
             
-   	        <cti:crumbLink url="/spring/group/commander/groupProcessing" title="Group Processing" />
+   	        <cti:crumbLink url="/spring/group/commander/groupProcessing" title="Group Command Processing" />
             
-            &gt; Command Executing
+            <cti:crumbLink title="Group Command Processing Results"/>
     	</cti:breadCrumbs>
 
         <%-- TITLE --%>
-        <h2>Command Processing Results</h2>
+        <h2>Group Command Processing Results</h2>
         <br>
         
-        <tags:boxContainer title="Command Processing Results" id="commandProcessingContainer" hideEnabled="false">
+        <tags:boxContainer title="Recent Group Command Processing Results" id="commandProcessingContainer" hideEnabled="false">
         
         <table class="compactResultsTable">
             <tr>

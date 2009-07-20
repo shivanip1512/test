@@ -11,7 +11,7 @@
 <cti:includeScript link="/JavaScript/bulkDataUpdaterCallbacks.js"/>
 <cti:uniqueIdentifier var="pbarId" prefix="pbar_"/>
         
-<table cellpadding="0px" border="0px">
+<table cellpadding="0px" border="0px" class="noStyle">
     <tr>
         <td>
             <div id="progressBorder_${pbarId}" class="progressBarBorder" align="left">

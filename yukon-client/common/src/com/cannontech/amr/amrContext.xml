@@ -244,8 +244,74 @@
         <property name="dbPersistentDao" ref="dbPersistentDao" />
     </bean>
     
+    <!-- Scheduled Group Request Execution Job Definition -->
+    <bean id="scheduledGroupRequestExecutionJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+        <property name="taskName">
+            <idref local="scheduledGroupRequestExecutionTask" />
+        </property>
+        <property name="title" value="Scheduled Group Request Execution Job" />
+        <property name="inputs">
+            <bean class="com.cannontech.web.input.InputRoot">
+                <property name="inputList">
+                    <list>
+                        <bean
+                            class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="groupName" />
+                            <property name="displayName" value="Group Name" />
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.StringType" />
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="attribute" />
+                            <property name="displayName" value="Attribute" />
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.AttributeType" />
+                            </property>
+                        </bean>
+                        <bean
+                            class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="command" />
+                            <property name="displayName" value="Command" />
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.StringType" />
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="commandRequestExecutionType" />
+                            <property name="displayName" value="Command Request Execution Type" />
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.CommandRequestExecutionTypeType" />
+                            </property>
+                        </bean>
+                    </list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+    
+    <!-- Scheduled Group Request Execution Task -->
+    <bean id="scheduledGroupRequestExecutionTask" 
+        class="com.cannontech.amr.scheduledGroupRequestExecution.tasks.ScheduledGroupRequestExecutionTask"  
+        scope="prototype">
+    </bean>
     
     
+    
+    <!-- Scheduled Group Request Execution Service -->
+    <bean id="scheduledGroupRequestExecutionService" 
+        class="com.cannontech.amr.scheduledGroupRequestExecution.service.impl.ScheduledGroupRequestExecutionServiceImpl"  
+        scope="prototype">
+    </bean>
+    
+    <!-- Scheduled Group Command Execution Results Dao -->
+    <bean id="scheduledGroupCommandRequestExecutionDao" 
+        class="com.cannontech.amr.scheduledGroupRequestExecution.dao.impl.ScheduledGroupCommandRequestExecutionDaoImpl"  
+        scope="prototype">
+    </bean>
+    
+    <!-- Outage monitor Service -->
+    <bean id="outageMonitorService" class="com.cannontech.amr.outageProcessing.service.impl.OutageMonitorServiceImpl"/>
     
 </beans>
 

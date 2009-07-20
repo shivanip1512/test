@@ -9,7 +9,7 @@
 
 <cti:uniqueIdentifier var="uniqueId" prefix="slowinput_"/>
 
-<span id="slowInputSpan${uniqueId}"> 
+<span id="slowInputSpan${uniqueId}" style="white-space:nowrap;"> 
     <input id="slowInputButton${uniqueId}" type="button" value="${label}" onclick="updateButton('slowInputSpan${uniqueId}', '${labelBusy}...', '${myFormId}','slowInputProcessImg${uniqueId}');" >
     <span id="slowInputWaitingSpan${uniqueId}" class="slowInput_waiting" style="display:none"> 
         <img id="slowInputProcessImg${uniqueId}" src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" alt="waiting"> 

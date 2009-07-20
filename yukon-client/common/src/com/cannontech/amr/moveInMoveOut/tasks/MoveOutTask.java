@@ -26,7 +26,7 @@ public class MoveOutTask extends YukonTaskBase {
     private MoveInMoveOutService moveInMoveOutService = null;
     private MoveInMoveOutEmailService moveInMoveOutEmailService = null;
 
-    public void start() {
+    public void start(int jobId) {
         startTask();
     }
 
@@ -44,7 +44,7 @@ public class MoveOutTask extends YukonTaskBase {
         moveInMoveOutEmailService.createMoveOutEmail(moveOutResult, getUserContext());
     }
 
-    public void stop() throws UnsupportedOperationException {
+    public void stop(int jobId) throws UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }
 

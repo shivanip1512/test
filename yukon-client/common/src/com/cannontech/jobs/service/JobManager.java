@@ -7,6 +7,7 @@ import java.util.Set;
 import com.cannontech.jobs.model.ScheduledOneTimeJob;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.model.YukonJob;
+import com.cannontech.jobs.support.ScheduleException;
 import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.jobs.support.YukonTask;
 import com.cannontech.user.YukonUserContext;
@@ -16,10 +17,10 @@ public interface JobManager {
 
     public static final String JOB_MANAGER_DISABLED_KEY = "JOB_MANAGER_DISABLED";
     
-    public void scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, Date time);
-    public void scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, Date time, YukonUserContext userContext);
-    public void scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, String cronExpression);
-    public void scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, String cronExpression, YukonUserContext userContext);
+    public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, Date time);
+    public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, Date time, YukonUserContext userContext);
+    public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, String cronExpression);
+    public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, String cronExpression, YukonUserContext userContext);
     
     public void enableJob(YukonJob job);
     public void disableJob(YukonJob job);
@@ -31,5 +32,7 @@ public interface JobManager {
     
     public Set<ScheduledOneTimeJob> getUnRunOneTimeJobsByDefinition(YukonJobDefinition<? extends YukonTask> definition);
     public Set<ScheduledRepeatingJob> getUnRunRepeatingJobsByDefinition(YukonJobDefinition<? extends YukonTask> definition);
+    
+    public Date getNextRuntime(ScheduledRepeatingJob job, Date from) throws ScheduleException;
 
 }

@@ -11,6 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
+import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.database.data.lite.LiteTOUSchedule;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -48,7 +49,7 @@ public class TouScheduleWidget extends WidgetControllerBase {
         String command = ycBean.buildTOUScheduleCommand(scheduleId);
         
         Meter meter = meterDao.getForId(deviceId);
-        CommandResultHolder result = commandRequestExecutor.execute(meter, command, user);
+        CommandResultHolder result = commandRequestExecutor.execute(meter, command, CommandRequestExecutionType.DEVICE_COMMAND, user);
         
         mav.addObject("result", result);
         mav.addObject("successMsg", "Successful Download");

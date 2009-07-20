@@ -13,6 +13,8 @@ public interface GroupCommandExecutor {
 
     public String execute(DeviceCollection deviceCollection, String command, SimpleCallback<GroupCommandResult> callback, LiteYukonUser user);
     
+    public String execute(final DeviceCollection deviceCollection, final String command, List<CommandRequestDevice> requests, final SimpleCallback<GroupCommandResult> callback, LiteYukonUser user);	
+    
     public List<GroupCommandResult> getCompleted();
 
     public List<GroupCommandResult> getPending();

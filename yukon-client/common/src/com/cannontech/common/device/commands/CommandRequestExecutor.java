@@ -2,6 +2,7 @@ package com.cannontech.common.device.commands;
 
 import java.util.List;
 
+import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -18,7 +19,7 @@ public interface CommandRequestExecutor<T> {
      * @return Results of executing command
      * @throws CommandCompletionException
      */
-    public CommandResultHolder execute(T command, LiteYukonUser user)
+    public CommandResultHolder execute(T command, CommandRequestExecutionType type, LiteYukonUser user)
             throws CommandCompletionException;
 
     /**
@@ -29,7 +30,7 @@ public interface CommandRequestExecutor<T> {
      * @return Results of executing commands
      * @throws CommandCompletionException
      */
-    public CommandResultHolder execute(List<T> commands, LiteYukonUser user)
+    public CommandResultHolder execute(List<T> commands, CommandRequestExecutionType type, LiteYukonUser user)
             throws CommandCompletionException;
 
     /**
@@ -38,9 +39,10 @@ public interface CommandRequestExecutor<T> {
      * @param commands - Commands to execute
      * @param callback - Callback which will be called as the commands execute
      * @param user - User executing the commands
+     * @return The CommandRequestExecution ID. The ID of the CommandRequestExecution database table record where command results can be found.
      */
-    public void execute(List<T> commands, CommandCompletionCallback<? super T> callback,
-            LiteYukonUser user);
+    public CommandRequestExecutionIdentifier execute(List<T> commands, CommandCompletionCallback<? super T> callback,
+    		CommandRequestExecutionType type, LiteYukonUser user);
     
     /**
      * 

@@ -49,7 +49,7 @@ public class OptOutTask implements YukonTask {
         this.userContext = userContext;
     }
     
-	public void start() {
+	public void start(int jobId) {
     	
         logger.debug("Starting opt out task.");
         
@@ -66,7 +66,7 @@ public class OptOutTask implements YukonTask {
         
     }
 
-    public void stop() throws UnsupportedOperationException {
+    public void stop(int jobId) throws UnsupportedOperationException {
         throw new UnsupportedOperationException("Cannot stop this task.");
     }
     
