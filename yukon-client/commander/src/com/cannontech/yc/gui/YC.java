@@ -654,6 +654,16 @@ public class YC extends Observable implements MessageListener
 	}
 
 	/**
+	 * Set the command string without checking command authorization.
+	 * @param command_ java.lang.String
+	 */
+	public void setCommandStringWithoutPaoAuth(String command_)
+	{
+		commandString = command_;
+		setCommands(commandString);
+	}
+	
+	/**
 	 * Takes a command string, then parses the string for multiple commands
 	 *  separated by the '&' character
 	 */
@@ -718,7 +728,7 @@ public class YC extends Observable implements MessageListener
 
         return false;
     }
-    
+        
     public boolean isAllowCommand(String command, LiteYukonUser user, Object object) {
 
         if (object instanceof LiteYukonPAObject) {

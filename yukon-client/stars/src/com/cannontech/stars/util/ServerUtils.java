@@ -80,16 +80,12 @@ public class ServerUtils {
 		
 		YC yc = getYC();
 		synchronized (yc) {
-		    try {
     			yc.setYCDefaults( ycDefaults );
     			yc.setRouteID( routeID );
                 /*We now need to pass in a user for the permission checks to work properly*/
                 yc.setLiteUser(user);
-                yc.setCommandString( command );
+                yc.setCommandStringWithoutPaoAuth( command );
     			yc.handleSerialNumber();
-			} catch (PaoAuthorizationException e) {
-			    throw new WebClientException("You do not have permission to execute command: " + e.getPermission());
-			}
 		}
 	}
 	
