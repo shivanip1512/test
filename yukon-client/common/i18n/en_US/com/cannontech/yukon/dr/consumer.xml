@@ -320,7 +320,6 @@
     <!-- enrollment.jsp -->
     <entry key="yukon.dr.consumer.enrollment.header">Programs - Enrollment</entry>
     <entry key="yukon.dr.consumer.enrollment.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
-    <entry key="yukon.dr.consumer.enrollmentComplete.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
     <entry key="yukon.dr.consumer.enrollment.enrollmentTitle">Program Enrollment</entry>
     <entry key="yukon.dr.consumer.enrollment.category">Category</entry>
     <entry key="yukon.dr.consumer.enrollment.programNameAndDescriptionLabel">Program Name/Description</entry>
@@ -342,7 +341,6 @@
     <!-- enrollmentDetail.jsp -->
     <entry key="yukon.dr.consumer.enrollmentDetail.header">Programs - Enrollment Detailddd</entry>
     <entry key="yukon.dr.consumer.enrollmentDetail.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
-    <entry key="yukon.dr.consumer.enrollmentDetailComplete.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
     <entry key="yukon.dr.consumer.enrollmentDetail.enrollmentTitle">Program Enrollment</entry>
     <entry key="yukon.dr.consumer.enrollmentDetail.category">Category</entry>
     <entry key="yukon.dr.consumer.enrollmentDetail.programName">Program Name</entry>
@@ -351,8 +349,12 @@
     <entry key="yukon.dr.consumer.enrollmentDetail.save">Save</entry>
     <entry key="yukon.dr.consumer.enrollmentDetail.reset">Reset</entry>
 
+    <!-- enrollmentResult.jsp -->
+    <entry key="yukon.dr.consumer.enrollmentResult.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
+
     <!-- programDetails.jsp -->
     <entry key="yukon.dr.consumer.programDetails.header">Programs - Detail</entry>
+    <entry key="yukon.dr.consumer.programDetails.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
     <entry key="yukon.dr.consumer.programDetails.backToEnrollment">Back to Enrollment</entry>
     
     <!-- faq.jsp -->

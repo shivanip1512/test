@@ -6,7 +6,7 @@
 
 <cti:url var="actionUrl" value="/spring/stars/consumer/enrollmentDetail"/>
 
-<cti:standardPage module="consumer" page="enrollmentDetail">
+<cti:standardPage module="consumer" page="enrollment">
     <cti:standardMenu />
     
 <script type="text/javascript">

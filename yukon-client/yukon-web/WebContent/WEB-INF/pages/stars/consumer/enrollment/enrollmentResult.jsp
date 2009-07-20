@@ -3,7 +3,7 @@
 <%@ taglib tagdir="/WEB-INF/tags/dr" prefix="dr"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 
-<cti:standardPage module="consumer" page="enrollmentComplete">
+<cti:standardPage module="consumer" page="enrollmentResult">
     <cti:standardMenu/>
 
     <h3>
