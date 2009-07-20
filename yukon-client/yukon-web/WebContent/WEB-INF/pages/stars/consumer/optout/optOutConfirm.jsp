@@ -6,7 +6,7 @@
 <cti:url var="optOutUrl" value="/spring/stars/consumer/optout" />
 <cti:url var="actionUrl" value="${optOutUrl}/update" />
 
-<cti:standardPage module="consumer" page="optout">
+<cti:standardPage module="consumer" page="optoutconfirm">
     <cti:standardMenu />
     
 <script type="text/javascript">

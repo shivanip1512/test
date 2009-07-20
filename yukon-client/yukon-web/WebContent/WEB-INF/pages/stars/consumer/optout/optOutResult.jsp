@@ -4,7 +4,7 @@
 
 <cti:url var="generalUrl" value="/spring/stars/consumer/general"/>
 
-<cti:standardPage module="consumer" page="optout">
+<cti:standardPage module="consumer" page="optoutresult">
     <cti:standardMenu />
     
     <h3><cti:msg key="yukon.dr.consumer.optoutresult.header"/></h3>
