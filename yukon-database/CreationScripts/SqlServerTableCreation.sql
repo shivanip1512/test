@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     7/14/2009 10:20:19 AM                        */
+/* Created on:     7/14/2009 11:18:58 AM                        */
 /*==============================================================*/
 
 
@@ -10939,9 +10939,9 @@ insert into YukonGroupRole values(-301,-200,-206,-20601,'(none)');
 insert into YukonGroupRole values(-302,-200,-206,-20602,'(none)');
 
 /* Assign roles to the default Esub Operators */
-insert into YukonGroupRole values(-350,-201,-206,-20600,'(none)');
-insert into YukonGroupRole values(-351,-201,-206,-20601,'true');
-insert into YukonGroupRole values(-352,-201,-206,-20602,'false');
+INSERT INTO YukonGroupRole VALUES(-350,-201,-206,-20600,'(none)');
+INSERT INTO YukonGroupRole VALUES(-351,-201,-206,-20601,'true');
+INSERT INTO YukonGroupRole VALUES(-352,-201,-206,-20602,'true');
 
 /* Web Client Customers Web Client role */
 insert into yukongrouprole values (-400, -302, -108, -10800, '/user/CILC/user_trending.jsp');
@@ -11156,13 +11156,10 @@ insert into YukonGroupRole values(-1075,-2,-103,-10305,'(none)');
 insert into YukonGroupRole values(-1390,-2,-106,-10600,'(none)');
 
 /* Esubstation Editor */
-insert into YukonGroupRole values(-1080,-2,-107,-10700,'(none)');
-insert into YukonGroupRole values(-1081,-2,-206,-20600,'(none)');
-insert into YukonGroupRole values(-1082,-2,-206,-20601,'(none)');
-insert into YukonGroupRole values(-1083,-2,-206,-20602,'(none)');
-insert into YukonGroupRole values(-1084,-2,-206,-20600,'(none)');
-insert into YukonGroupRole values(-1085,-2,-206,-20601,'true');
-insert into YukonGroupRole values(-1086,-2,-206,-20602,'false');
+INSERT INTO YukonGroupRole VALUES(-1080,-2,-107,-10700,'(none)');
+INSERT INTO YukonGroupRole VALUES(-1081,-2,-206,-20600,'(none)');
+INSERT INTO YukonGroupRole VALUES(-1082,-2,-206,-20601,'(none)');
+INSERT INTO YukonGroupRole VALUES(-1083,-2,-206,-20602,'(none)');
 
 /* Web Client Customers Web Client role */
 insert into YukonGroupRole values (-1090,-2, -108, -10800, '/operator/Operations.jsp');
@@ -12633,9 +12630,6 @@ INSERT INTO YukonUserRole VALUES(-250,-1,-107,-10700,'(none)');
 INSERT INTO YukonUserRole VALUES(-300,-1,-206,-20600,'(none)');
 INSERT INTO YukonUserRole VALUES(-301,-1,-206,-20601,'(none)');
 INSERT INTO YukonUserRole VALUES(-302,-1,-206,-20602,'(none)');
-INSERT INTO YukonUserRole VALUES(-350,-1,-206,-20600,'(none)');
-INSERT INTO YukonUserRole VALUES(-351,-1,-206,-20601,'true');
-INSERT INTO YukonUserRole VALUES(-352,-1,-206,-20602,'false');
 
 /* Web Client Customers Web Client role */
 INSERT INTO YukonUserRole VALUES(-400, -1, -108, -10800, '/operator/Operations.jsp');

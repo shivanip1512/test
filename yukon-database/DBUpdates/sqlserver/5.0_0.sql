@@ -88,6 +88,11 @@ DROP TABLE Device2WayFlags;
 INSERT INTO YukonRoleProperty VALUES(-20603,-206,'Esub Home URL','/esub/sublist.html','The url of the starting page for esubstation. Usually the sublist page.');
 /* End YUK-7384 */
 
+/* Start YUK-7662 */
+DELETE FROM YukonGroupRole WHERE GroupRoleId IN (-1084, -1085, -1086);
+DELETE FROM YukonUserRole WHERE UserRoleID IN (-350, -351, -352);
+/* End YUK-7662 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
