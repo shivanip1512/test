@@ -234,7 +234,7 @@ public abstract class CommandRequestExecutorBase<T> implements
         CollectingCommandCompletionCallback callback = new CollectingCommandCompletionCallback();
         WaitableCommandCompletionCallback<Object> waitableCallback = new WaitableCommandCompletionCallback<Object>(callback);
 
-        execute(commands, callback, user);
+        execute(commands, waitableCallback, user);
 
         try {
             waitableCallback.waitForCompletion(betweenResultsMaxDelay,totalMaxDelay);
