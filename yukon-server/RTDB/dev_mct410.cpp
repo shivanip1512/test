@@ -169,12 +169,10 @@ CtiDeviceMCT410::ConfigPartsList CtiDeviceMCT410::initConfigParts()
     return tempList;
 }
 
-
 CtiDeviceMCT410::ConfigPartsList CtiDeviceMCT410::getPartsList()
 {
     return _config_parts;
 }
-
 
 int CtiDeviceMCT410::makeDynamicDemand(double input)
 {
@@ -450,16 +448,8 @@ CtiDeviceMCT410::CommandSet CtiDeviceMCT410::initCommandStore()
     cs.insert(CommandStore(Emetcon::PutConfig_UniqueAddress,    Emetcon::IO_Function_Write, FuncWrite_SetAddressPos,        FuncWrite_SetAddressLen));
 
     //******************************** Config Related starts here *************************
-    cs.insert(CommandStore(Emetcon::PutConfig_Addressing,       Emetcon::IO_Write,          Memory_BronzeAddressPos,        Memory_BronzeAddressLen
-                                                                                                                            + Memory_LeadAddressLen
-                                                                                                                            + Memory_CollectionAddressLen
-                                                                                                                            + Memory_SPIDAddressLen));
-
     cs.insert(CommandStore(Emetcon::PutConfig_LongLoadProfile,  Emetcon::IO_Function_Write, FuncWrite_LLPStoragePos,        FuncWrite_LLPStorageLen));
     cs.insert(CommandStore(Emetcon::GetConfig_LongLoadProfile,  Emetcon::IO_Function_Read,  FuncRead_LLPStatusPos,          FuncRead_LLPStatusLen));
-
-    cs.insert(CommandStore(Emetcon::PutConfig_DST,              Emetcon::IO_Write,          Memory_DSTBeginPos,             Memory_DSTBeginLen
-                                                                                                                            + Memory_DSTEndLen));
 
     cs.insert(CommandStore(Emetcon::PutConfig_VThreshold,       Emetcon::IO_Write,          Memory_OverVThresholdPos,       Memory_OverVThresholdLen +
                                                                                                                             Memory_UnderVThresholdLen));

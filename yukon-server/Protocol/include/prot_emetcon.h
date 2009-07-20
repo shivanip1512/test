@@ -190,6 +190,7 @@ public:
         PutConfig_OnOffPeak,
         PutConfig_Disconnect,
         PutConfig_Addressing,
+        PutConfig_SPID,
         PutConfig_VThreshold,
         PutConfig_DST,
         PutConfig_Holiday,
@@ -197,6 +198,7 @@ public:
         PutConfig_Outage,
         PutConfig_OutageThreshold,
         PutConfig_TimeAdjustTolerance,
+        PutConfig_ConfigurationByte,
         PutConfig_TimeZoneOffset,
         PutConfig_TOU,  //  this may need to be removed in light of the new config install commands
         PutConfig_TOUEnable,
