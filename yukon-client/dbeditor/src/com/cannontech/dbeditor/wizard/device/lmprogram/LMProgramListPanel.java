@@ -1,8 +1,5 @@
 package com.cannontech.dbeditor.wizard.device.lmprogram;
 
-import org.quartz.impl.jdbcjobstore.InvalidConfigurationException;
-
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
@@ -58,7 +55,7 @@ private void connEtoC1(java.util.EventObject arg1) throws IllegalArgumentExcepti
 /**
  * connEtoC2:  (AddRemovePanel.addRemovePanel.removeButtonAction_actionPerformed(java.util.EventObject) --> LMProgramListPanel.fireInputUpdate()V)
  * @param arg1 java.util.EventObject
- * @throws InvalidConfigurationException 
+ * @throws IllegalArgumentException 
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void connEtoC2(java.util.EventObject arg1) throws IllegalArgumentException {
@@ -273,7 +270,7 @@ public static void main(java.lang.String[] args) {
 /**
  * Method to handle events for the AddRemovePanelListener interface.
  * @param newEvent java.util.EventObject
- * @throws InvalidConfigurationException 
+ * @throws IllegalArgumentException 
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 public void removeButtonAction_actionPerformed(java.util.EventObject newEvent) throws IllegalArgumentException {
