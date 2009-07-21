@@ -84,6 +84,7 @@ import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
+import com.cannontech.user.UserUtils;
 
 public class OptOutServiceImpl implements OptOutService {
 
@@ -438,17 +439,20 @@ public class OptOutServiceImpl implements OptOutService {
 		// Get the consumer user's time zone for date calculation
 		int userId = contact.getLoginID();
 		LiteYukonUser user = yukonUserDao.getLiteYukonUser(userId);
-		TimeZone userTimeZone = authDao.getUserTimeZone(user);
 		
 		int optOutLimit = OptOutService.NO_OPT_OUT_LIMIT;
 		Date startDate = new Date(0);
 
-		OptOutLimit currentOptOutLimit = this.getCurrentOptOutLimit(user);
-		if(currentOptOutLimit != null) {
-			optOutLimit = currentOptOutLimit.getLimit();
-			startDate = currentOptOutLimit.getOptOutLimitStartDate(currentMonth, userTimeZone);
+		// The account we are looking at doesn't have a login, therefore there are no limits
+		if(user.getUserID() != UserUtils.USER_DEFAULT_ID) {
+			TimeZone userTimeZone = authDao.getUserTimeZone(user);
+			OptOutLimit currentOptOutLimit = this.getCurrentOptOutLimit(user);
+			if(currentOptOutLimit != null) {
+				optOutLimit = currentOptOutLimit.getLimit();
+				startDate = currentOptOutLimit.getOptOutLimitStartDate(currentMonth, userTimeZone);
+			}
 		}
-
+		
 		// Get the number of opt outs used from the start of the limit (if there is a limit)
 		// till now
 		Integer usedOptOuts = optOutEventDao.getNumberOfOptOutsUsed(
@@ -740,20 +744,23 @@ public class OptOutServiceImpl implements OptOutService {
         return availOptOutPeriods;
     }
 	
-	private  OptOutLimit getCurrentOptOutLimit(LiteYukonUser user) {
+	private OptOutLimit getCurrentOptOutLimit(LiteYukonUser user) {
 		
-		DateTime dateTime = new DateTime();
-		int currentMonth = dateTime.getMonthOfYear();
-		
-		String optOutLimitString = 
-			rolePropertyDao.getPropertyStringValue(YukonRoleProperty.RESIDENTIAL_OPT_OUT_LIMITS, user);
-		
-		List<OptOutLimit> optOutLimits = this.parseOptOutLimitString(optOutLimitString);
-		for (OptOutLimit limit : optOutLimits) {
-            if (limit.isMonthUnderLimit(currentMonth)) {
-                return limit;
-            }
-        }
+		// The account we are looking at doesn't have a login, therefore there are no limits
+		if(user.getUserID() != UserUtils.USER_DEFAULT_ID) {
+			DateTime dateTime = new DateTime();
+			int currentMonth = dateTime.getMonthOfYear();
+			
+			String optOutLimitString = 
+				rolePropertyDao.getPropertyStringValue(YukonRoleProperty.RESIDENTIAL_OPT_OUT_LIMITS, user);
+			
+			List<OptOutLimit> optOutLimits = this.parseOptOutLimitString(optOutLimitString);
+			for (OptOutLimit limit : optOutLimits) {
+	            if (limit.isMonthUnderLimit(currentMonth)) {
+	                return limit;
+	            }
+	        }
+		}
 		
 		return null;
 	}
