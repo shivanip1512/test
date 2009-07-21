@@ -23,6 +23,7 @@ import com.cannontech.message.dispatch.message.PointRegistration;
 import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.message.server.ServerResponseMsg;
 import com.cannontech.message.util.Command;
+import com.cannontech.message.util.Message;
 import com.cannontech.message.util.ServerRequest;
 import com.cannontech.yukon.IServerConnection;
 
@@ -213,7 +214,13 @@ class DispatchProxy {
                 pointData.add((PointData) o);
             } else if (o instanceof Multi) {
                 extractPointData(pointData, (Multi) o);
-            } else {
+            } else if (o instanceof Signal) {
+                /*
+                 *  When asked for a point data, Dispatch will send back
+                 *  Singals in the multi if their are any active for that point.
+                 */
+                continue; 
+            }else {
                 log.info("Received unknown type in multi (expecting PointData): " 
                                + o.getClass());
             }
