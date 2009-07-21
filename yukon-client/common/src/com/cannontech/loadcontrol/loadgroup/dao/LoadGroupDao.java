@@ -5,10 +5,17 @@ import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
 
 public interface LoadGroupDao {
 
-    LoadGroup getById(int loadGroupId);
+    public LoadGroup getById(int loadGroupId);
 
-    LoadGroup getByLoadGroupName(String loadGroupName);
+    public LoadGroup getByLoadGroupName(String loadGroupName);
     
-    boolean isLoadGroupInUse(int loadGroupId);
+    /**
+     * This method returns false when the supplied load group
+     * is apart of an active enrollment.  
+     * 
+     * @param loadGroupId
+     * @return
+     */
+    public boolean isLoadGroupInUse(int loadGroupId);
 
 }
