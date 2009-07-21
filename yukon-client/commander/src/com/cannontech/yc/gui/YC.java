@@ -655,12 +655,11 @@ public class YC extends Observable implements MessageListener
 
 	/**
 	 * Set the command string without checking command authorization.
-	 * @param command_ java.lang.String
+	 * @param command java.lang.String
 	 */
-	public void setCommandStringWithoutPaoAuth(String command_)
+	public void setCommandStringWithoutPaoAuth(String command)
 	{
-		commandString = command_;
-		setCommands(commandString);
+		setCommands(command);
 	}
 	
 	/**
