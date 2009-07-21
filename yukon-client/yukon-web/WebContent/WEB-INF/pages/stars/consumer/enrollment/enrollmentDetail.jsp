@@ -104,6 +104,20 @@ function submitEnrollment() {
                                 <td class="${programClass}" rowspan="${inventoryRowspan}">
                                     <spring:escapeBody htmlEscape="true">${enrollmentProgram.program.description}</spring:escapeBody>
                                 </td>
+                                <td class="${programClass} images" rowspan="${inventoryRowspan}">
+		                            <c:if test="${!empty enrollmentProgram.program.savingsDescriptionIcon}">
+		                               	<img src="../../../WebConfig/yukon/Icons/${enrollmentProgram.program.savingsDescriptionIcon}">
+										<c:set var="savingsDescriptionIconDisplayed" value="true"/>
+		                            </c:if>
+		                            <c:if test="${!empty enrollmentProgram.program.controlPercentDescriptionIcon}">
+		                                <img src="../../../WebConfig/yukon/Icons/${enrollmentProgram.program.controlPercentDescriptionIcon}">
+									    <c:set var="controlPercentDescriptionIconDisplayed" value="true"/>
+		                            </c:if>
+		                            <c:if test="${!empty enrollmentProgram.program.environmentDescriptionIcon}">
+		                                <img src="../../../WebConfig/yukon/Icons/${enrollmentProgram.program.environmentDescriptionIcon}">
+									    <c:set var="environmentDescriptionIconDisplayed" value="true"/>
+		                            </c:if>
+		                        </td>
                                 <td class="${programClass}" style="padding-bottom: 0.5em;">
                                     <c:forEach var="enrollmentInventory" items="${inventories}">
                                         <c:set var="inventoryId" value="${enrollmentInventory.inventoryId}"/>

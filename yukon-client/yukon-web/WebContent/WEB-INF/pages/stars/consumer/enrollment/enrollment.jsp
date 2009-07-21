@@ -177,7 +177,7 @@ function submitEnrollment() {
 		                                    >
 		                                    <cti:msg key="${enrollmentProgram.program.displayName}"/>
 		                                </td>
-		                                <td><nobr>
+		                                <td class="images">
 		                                    <c:if test="${!empty enrollmentProgram.program.savingsDescriptionIcon}">
 		                                    	<img src="../../../WebConfig/yukon/Icons/${enrollmentProgram.program.savingsDescriptionIcon}">
 												<c:set var="savingsDescriptionIconDisplayed" value="true"/>
@@ -190,7 +190,7 @@ function submitEnrollment() {
 		                                    	<img src="../../../WebConfig/yukon/Icons/${enrollmentProgram.program.environmentDescriptionIcon}">
 												<c:set var="environmentDescriptionIconDisplayed" value="true"/>
 		                                    </c:if>
-		                                </nobr></td>
+		                                </td>
 		                                <td>
                                             <a href="/spring/stars/consumer/enrollment/details?categoryId=${applianceCategoryId}&programId=${programId}">
                                                 <cti:msg key="yukon.dr.consumer.enrollment.details"/>

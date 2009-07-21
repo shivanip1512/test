@@ -343,8 +343,7 @@
     <entry key="yukon.dr.consumer.enrollmentDetail.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
     <entry key="yukon.dr.consumer.enrollmentDetail.enrollmentTitle">Program Enrollment</entry>
     <entry key="yukon.dr.consumer.enrollmentDetail.category">Category</entry>
-    <entry key="yukon.dr.consumer.enrollmentDetail.programName">Program Name</entry>
-    <entry key="yukon.dr.consumer.enrollmentDetail.description">Description</entry>
+    <entry key="yukon.dr.consumer.enrollmentDetail.programNameAndDescriptionLabel">Program Name/Description</entry>
     <entry key="yukon.dr.consumer.enrollmentDetail.enrolledHardware">Enrolled Hardware</entry>
     <entry key="yukon.dr.consumer.enrollmentDetail.save">Save</entry>
     <entry key="yukon.dr.consumer.enrollmentDetail.reset">Reset</entry>

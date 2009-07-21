@@ -82,6 +82,10 @@ table.enrolledPrograms tr td.view {
     border-left: 1px solid #ccc;
 }
 
+table.enrolledPrograms td.images {
+    white-space: nowrap;
+}
+
 table.enrolledPrograms tr td.viewBordered {
     white-space: nowrap;
     font-size: .8em;
