@@ -32,7 +32,7 @@ public class VerifyConfigCommandResult {
         for(YukonDevice device : devices) {
             Meter meter = meterDao.getForYukonDevice(device);
             VerifyResult result = new VerifyResult(meter);
-            result.setConfig(deviceConfigurationDao.getConfigurationForDevice(device.getDeviceId()));
+            result.setConfig(deviceConfigurationDao.getConfigurationForDevice(device));
             results.put(device, result);
         }
     }

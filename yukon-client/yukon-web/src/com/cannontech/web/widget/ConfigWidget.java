@@ -54,7 +54,6 @@ public class ConfigWidget extends WidgetControllerBase {
     private ModelAndView getConfigModelAndView(HttpServletRequest request) throws ServletRequestBindingException {
         ModelAndView mav = new ModelAndView("configWidget/render.jsp");
         Meter meter = getMeter(request);
-        int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
         String meterType = meter.getTypeStr();
         ConfigurationType type = ConfigurationType.MCT410;
         if(meterType.contains("470")) {
@@ -64,7 +63,7 @@ public class ConfigWidget extends WidgetControllerBase {
         }
         List<ConfigurationBase> existingConfigs = deviceConfigurationDao.getAllConfigurationsByType(type);
         mav.addObject("existingConfigs", existingConfigs);
-        ConfigurationBase config = deviceConfigurationDao.getConfigurationForDevice(deviceId);
+        ConfigurationBase config = deviceConfigurationDao.getConfigurationForDevice(meter);
         mav.addObject("currentDeviceId", config != null ? config.getId() : -1);
         mav.addObject("currentConfigName", config != null ? config.getName() : CtiUtilities.STRING_NONE);
         return mav;

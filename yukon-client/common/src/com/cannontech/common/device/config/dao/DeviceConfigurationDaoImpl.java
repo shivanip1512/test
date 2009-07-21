@@ -172,11 +172,11 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         return configuration;
     }
     
-    public ConfigurationBase getConfigurationForDevice(int deviceId) {
+    public ConfigurationBase getConfigurationForDevice(YukonDevice device) {
         String sql = "SELECT * FROM DeviceConfiguration WHERE DeviceConfigurationId = ("
             +"SELECT DeviceConfigurationId FROM DeviceConfigurationDeviceMap WHERE DeviceId = ?)";
         try {
-            return simpleJdbcTemplate.queryForObject(sql, new ConfigurationBaseRowMapper(), deviceId);
+            return simpleJdbcTemplate.queryForObject(sql, new ConfigurationBaseRowMapper(), device.getDeviceId());
         }catch(IncorrectResultSizeDataAccessException e) {
             return null;
         }
