@@ -596,6 +596,10 @@ div.sectionContainer .sectionContainer_content {
     color:#CC0000;
 }
 
+tr.lightRedBackground {
+	background: #FFDDDD;
+}
+
 .errorMessage {
     color:#CC0000;
     font-style: italic;

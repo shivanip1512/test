@@ -204,8 +204,8 @@
         </property>
         <property name="deviceConfigurationDao" ref="deviceConfigurationDao" />
         <property name="meterDao" ref="meterDao"/>
-        <property name="commandRequestExecutor" ref="commandRequestDeviceExecutor"/>
         <property name="deviceConfigService" ref="deviceConfigService"/>
+        <property name="deviceDefinitionDao" ref="deviceDefinitionDao"/>
     </bean>
 
     <bean id="readCurrentTimeWidget"

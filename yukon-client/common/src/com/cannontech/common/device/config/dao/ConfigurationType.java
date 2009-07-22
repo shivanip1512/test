@@ -4,6 +4,7 @@ import com.cannontech.common.device.config.model.ConfigurationBase;
 import com.cannontech.common.device.config.model.MCT410Configuration;
 import com.cannontech.common.device.config.model.MCT430Configuration;
 import com.cannontech.common.device.config.model.MCT470Configuration;
+import com.cannontech.common.device.definition.model.DeviceTag;
 import com.cannontech.common.search.criteria.MCT410Criteria;
 import com.cannontech.common.search.criteria.MCT430Criteria;
 import com.cannontech.common.search.criteria.MCT470Criteria;
@@ -27,8 +28,8 @@ public enum ConfigurationType {
             return MCT470Criteria.class;
         }
 
-        public String[] getSupportedDeviceTypeList() {
-            return MCT470Criteria.MCT_470_TYPES;
+        public DeviceTag getSupportedDeviceTag() {
+            return DeviceTag.DEVICE_CONFIGURATION_470;
         }
     },
     MCT430 {
@@ -44,8 +45,8 @@ public enum ConfigurationType {
             return MCT430Criteria.class;
         }
 
-        public String[] getSupportedDeviceTypeList() {
-            return MCT430Criteria.MCT_430_TYPES;
+        public DeviceTag getSupportedDeviceTag() {
+            return DeviceTag.DEVICE_CONFIGURATION_430;
         }
     },
     MCT410 {
@@ -61,8 +62,8 @@ public enum ConfigurationType {
             return MCT410Criteria.class;
         }
 
-        public String[] getSupportedDeviceTypeList() {
-            return MCT410Criteria.MCT_410_TYPES;
+        public DeviceTag getSupportedDeviceTag() {
+            return null;
         }
     };
 
@@ -87,9 +88,9 @@ public enum ConfigurationType {
     public abstract Class<? extends YukonObjectCriteriaHelper> getCriteria();
 
     /**
-     * Method to get an array of the device types this configuration type
+     * Method to get a device tag representing the devices this configuration type
      * supports
      * @return Array of device types
      */
-    public abstract String[] getSupportedDeviceTypeList();
+    public abstract DeviceTag getSupportedDeviceTag();
 }

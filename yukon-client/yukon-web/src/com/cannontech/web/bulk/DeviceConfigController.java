@@ -53,7 +53,7 @@ public class DeviceConfigController extends BulkControllerBase {
 
     private BulkProcessor bulkProcessor;
     private ProcessorFactory processorFactory;
-    public DeviceConfigurationDao deviceConfigurationDao;
+    private DeviceConfigurationDao deviceConfigurationDao;
     private TemporaryDeviceGroupService temporaryDeviceGroupService;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
@@ -176,9 +176,13 @@ public class DeviceConfigController extends BulkControllerBase {
     public String verifyConfigs(DeviceCollection deviceCollection, LiteYukonUser user, ModelMap model) {
         model.addAttribute("deviceCollection", deviceCollection);
         VerifyConfigCommandResult result = deviceConfigService.verifyConfigs(deviceCollection, user);
-        DeviceCollection successCollection = deviceGroupCollectionHelper.buildDeviceCollection(result.getSuccessGroup());
-        DeviceCollection failureCollection = deviceGroupCollectionHelper.buildDeviceCollection(result.getFailureGroup());
-        Map<YukonDevice, VerifyResult> resultsMap = result.getResults();
+        StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup(null);
+        StoredDeviceGroup failureGroup = temporaryDeviceGroupService.createTempGroup(null);
+        deviceGroupMemberEditorDao.addDevices(successGroup, result.getSuccessList());
+        deviceGroupMemberEditorDao.addDevices(failureGroup, result.getFailureList());
+        DeviceCollection successCollection = deviceGroupCollectionHelper.buildDeviceCollection(successGroup);
+        DeviceCollection failureCollection = deviceGroupCollectionHelper.buildDeviceCollection(failureGroup);
+        Map<YukonDevice, VerifyResult> resultsMap = result.getVerifyResultsMap();
         Set<YukonDevice> devices = resultsMap.keySet();
         model.addAttribute("devices", devices);
         model.addAttribute("resultsMap", resultsMap);

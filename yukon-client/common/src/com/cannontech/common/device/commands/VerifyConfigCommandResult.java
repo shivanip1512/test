@@ -1,60 +1,48 @@
 package com.cannontech.common.device.commands;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.YukonDevice;
-import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.VerifyResult;
-import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
-import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
-import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
-import com.cannontech.spring.YukonSpringHook;
 
 public class VerifyConfigCommandResult {
     
-    Map<YukonDevice, VerifyResult> results = new HashMap<YukonDevice, VerifyResult>();
-    private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao = YukonSpringHook.getBean("deviceGroupMemberEditorDao", DeviceGroupMemberEditorDao.class);
-    private TemporaryDeviceGroupService temporaryDeviceGroupService = YukonSpringHook.getBean("temporaryDeviceGroupService", TemporaryDeviceGroupService.class);;
-    private StoredDeviceGroup successGroup;
-    private StoredDeviceGroup failureGroup;
+    Map<YukonDevice, VerifyResult> verifyResultsMap = new HashMap<YukonDevice, VerifyResult>();
+    private List<YukonDevice> successList = new ArrayList<YukonDevice>();
+    private List<YukonDevice> failureList = new ArrayList<YukonDevice>();
 
-    public VerifyConfigCommandResult() {
-        successGroup = temporaryDeviceGroupService.createTempGroup(null);
-        failureGroup = temporaryDeviceGroupService.createTempGroup(null);
-    }
-    
-    public void initializeResults(Iterable<? extends YukonDevice> devices) {
-        MeterDao meterDao = YukonSpringHook.getBean("meterDao", MeterDao.class);
-        DeviceConfigurationDao deviceConfigurationDao = YukonSpringHook.getBean("deviceConfigurationDao", DeviceConfigurationDao.class);
-        for(YukonDevice device : devices) {
-            Meter meter = meterDao.getForYukonDevice(device);
-            VerifyResult result = new VerifyResult(meter);
-            result.setConfig(deviceConfigurationDao.getConfigurationForDevice(device));
-            results.put(device, result);
+    public void addResultString(YukonDevice device, String value) {
+        if(value.contains("is NOT current")) {
+            verifyResultsMap.get(device).getDiscrepancies().add(value);
+        } else {
+            verifyResultsMap.get(device).getMatching().add(value);
         }
     }
     
+    public void addError(YukonDevice device, String value) {
+        verifyResultsMap.get(device).getDiscrepancies().add(value);
+    }
+    
     public void handleSuccess(YukonDevice device) {
-        deviceGroupMemberEditorDao.addDevices(successGroup, device);
+        successList.add(device);
     }
     
     public void handleFailure(YukonDevice device) {
-        deviceGroupMemberEditorDao.addDevices(failureGroup, device);
+        failureList.add(device);
     }
     
-    public StoredDeviceGroup getFailureGroup() {
-        return failureGroup;
+    public List<YukonDevice> getFailureList() {
+        return failureList;
     }
     
-    public StoredDeviceGroup getSuccessGroup() {
-        return successGroup;
+    public List<YukonDevice> getSuccessList() {
+        return successList;
     }
     
-    public Map<YukonDevice, VerifyResult> getResults(){
-        return results;
+    public Map<YukonDevice, VerifyResult> getVerifyResultsMap(){
+        return verifyResultsMap;
     }
-    
 }

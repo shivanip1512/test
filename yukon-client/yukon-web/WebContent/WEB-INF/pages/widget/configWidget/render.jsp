@@ -13,7 +13,7 @@
                 <select id="configuration" name="configuration">
                     <option value="-1">(none)</option>
                     <c:forEach var="config" items="${existingConfigs}">
-                        <option value="${config.id}" <c:if test="${config.id == currentDeviceId}">selected</c:if>>${config.name}</option>
+                        <option value="${config.id}" <c:if test="${config.id == currentConfigId}">selected</c:if>>${config.name}</option>
                     </c:forEach>
                 </select>
                 <ct:widgetActionRefresh method="assignConfig" label="Assign" labelBusy="Assigning"/>

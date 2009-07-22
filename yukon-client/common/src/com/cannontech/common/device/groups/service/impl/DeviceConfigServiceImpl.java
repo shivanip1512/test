@@ -4,22 +4,28 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.clientutils.CTILogger;
+import com.cannontech.amr.errors.model.DeviceErrorDescription;
+import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
+import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.commands.GroupCommandExecutor;
 import com.cannontech.common.device.commands.GroupCommandResult;
 import com.cannontech.common.device.commands.VerifyConfigCommandResult;
-import com.cannontech.common.device.commands.impl.VerifyConfigCommandCompletionCallback;
 import com.cannontech.common.device.commands.impl.WaitableCommandCompletionCallback;
+import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.VerifyResult;
 import com.cannontech.common.device.groups.service.DeviceConfigService;
+import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.SimpleCallback;
@@ -30,6 +36,9 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     
     private GroupCommandExecutor groupCommandExecutor;
     private CommandRequestDeviceExecutor commandRequestExecutor;
+    private Logger log = YukonLogManager.getLogger(DeviceConfigServiceImpl.class);
+    private DeviceConfigurationDao deviceConfigurationDao;
+    private MeterDao meterDao;
     
     public String pushConfigs(DeviceCollection deviceCollection, String method, SimpleCallback<GroupCommandResult> callback, LiteYukonUser user) {
         String commandString = "putconfig emetcon install all";
@@ -54,8 +63,47 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         };
         
         List<CommandRequestDevice> requests = new MappingList<YukonDevice, CommandRequestDevice>(deviceList, objectMapper);
+
+        final VerifyConfigCommandResult result = new VerifyConfigCommandResult();
         
-        VerifyConfigCommandCompletionCallback commandCompletionCallback = new VerifyConfigCommandCompletionCallback(deviceList);
+        for(YukonDevice device : devices) {
+            Meter meter = meterDao.getForYukonDevice(device);
+            VerifyResult verifyResult = new VerifyResult(meter);
+            verifyResult.setConfig(deviceConfigurationDao.findConfigurationForDevice(device));
+            result.getVerifyResultsMap().put(device, verifyResult);
+        }
+        
+        CommandCompletionCallbackAdapter<CommandRequestDevice> commandCompletionCallback = new CommandCompletionCallbackAdapter<CommandRequestDevice>() {
+            @Override
+            public void receivedIntermediateResultString(CommandRequestDevice command, String value) {
+                YukonDevice device = command.getDevice();
+                result.addResultString(device, value);
+            }
+            
+            @Override
+            public void receivedIntermediateError(CommandRequestDevice command, DeviceErrorDescription error) {
+                YukonDevice device = command.getDevice();
+                result.addError(device, error.getPorter());
+            }
+            
+            @Override
+            public void receivedLastError(CommandRequestDevice command, DeviceErrorDescription error) {
+                YukonDevice device = command.getDevice();
+                result.addError(device, error.getPorter());
+                result.handleFailure(device);
+            }
+
+            @Override
+            public void receivedLastResultString(CommandRequestDevice command, String value) {
+                YukonDevice device = command.getDevice();
+                result.addResultString(device, value);
+                if(result.getVerifyResultsMap().get(device).getDiscrepancies().isEmpty()) {
+                    result.handleSuccess(device);
+                }else {
+                    result.handleFailure(device);
+                }
+            }
+        };
         
         WaitableCommandCompletionCallback<CommandRequestDevice> waitableCallback = new WaitableCommandCompletionCallback<CommandRequestDevice>(commandCompletionCallback);
         
@@ -63,18 +111,32 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         try {
             waitableCallback.waitForCompletion(60, 120);
         } catch (InterruptedException e) {
-            return commandCompletionCallback.getResults();
+            log.error(e);
         } catch (TimeoutException e) {
-            CTILogger.error(e);
+            log.error(e);
         }
         
-        return commandCompletionCallback.getResults();
+        return result;
     }
     
     @Override
     public VerifyResult verifyConfig(YukonDevice device, LiteYukonUser user) {
         VerifyConfigCommandResult verifyConfigResult = verifyConfigs(Collections.singleton(device), user);
-        return verifyConfigResult.getResults().get(device);
+        return verifyConfigResult.getVerifyResultsMap().get(device);
+    }
+    
+    @Override
+    public CommandResultHolder readConfig(YukonDevice device, LiteYukonUser user) throws Exception {
+        String commandString = "getconfig model";
+        CommandResultHolder resultHolder = commandRequestExecutor.execute(device, commandString, CommandRequestExecutionType.DEVICE_COMMAND, user);
+        return resultHolder;
+    }
+    
+    @Override
+    public CommandResultHolder pushConfig(YukonDevice device, LiteYukonUser user) throws Exception {
+        String commandString = "putconfig emetcon install all force";
+        CommandResultHolder resultHolder = commandRequestExecutor.execute(device, commandString, CommandRequestExecutionType.DEVICE_CONFIG_PUSH, user);
+        return resultHolder;
     }
     
     private CommandRequestDevice buildStandardRequest(YukonDevice device, final String command) {
@@ -95,5 +157,15 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     @Autowired
     public void setCommandRequestExecutor(CommandRequestDeviceExecutor commandRequestExecutor) {
         this.commandRequestExecutor = commandRequestExecutor;
+    }
+    
+    @Autowired
+    public void setDeviceConfigurationDao(DeviceConfigurationDao deviceConfigurationDao) {
+        this.deviceConfigurationDao = deviceConfigurationDao;
+    }
+    
+    @Autowired
+    public void setMeterDao(MeterDao meterDao) {
+        this.meterDao = meterDao;
     }
 }

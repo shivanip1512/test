@@ -23,6 +23,7 @@
 		</property>
 		<property name="paoGroupsWrapper" ref="paoGroupsWrapper" />
 		<property name="dbPersistentDao" ref="dbPersistentDao" />
+		<property name="deviceDefinitionDao" ref="deviceDefinitionDao" />
 	</bean>
 	
 	<!-- Configuration templates -->

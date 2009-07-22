@@ -7,10 +7,10 @@ import com.google.common.collect.Lists;
 
 public class VerifyResult {
     
-    Meter meter;
-    ConfigurationBase config;
-    List<String> matching = Lists.newArrayList();
-    List<String> discrepancies = Lists.newArrayList();
+    private Meter meter;
+    private ConfigurationBase config;
+    private List<String> matching = Lists.newArrayList();
+    private List<String> discrepancies = Lists.newArrayList();
 
     public VerifyResult(Meter meter) {
         this.meter = meter;

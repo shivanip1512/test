@@ -673,6 +673,11 @@
         		<basicLookup point="Peak kW (Rate D kW)"/>
         	</attribute>
         </attributes>
+        <tags>
+            <tag name="DEVICE_CONFIGURATION_470">
+                <value>true</value>
+            </tag>
+        </tags>
     </device>
     
     <!-- MCT 430 BASE -->
@@ -978,6 +983,11 @@
         		<basicLookup point="Peak kW (Rate D kW)" />
         	</attribute>
         </attributes>
+        <tags>
+            <tag name="DEVICE_CONFIGURATION_430">
+                <value>true</value>
+            </tag>
+        </tags>
    </device>
    
    <device id="MCT_430_S_BASE" abstract="true" inherits="MCT_430_BASE, SUPPORTS_VOLTAGE_TAG">

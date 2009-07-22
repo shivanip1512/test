@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,29 +14,31 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.common.device.YukonDevice;
-import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.config.dao.ConfigurationType;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.ConfigurationBase;
 import com.cannontech.common.device.config.model.VerifyResult;
+import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
+import com.cannontech.common.device.definition.model.DeviceTag;
 import com.cannontech.common.device.groups.service.DeviceConfigService;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
 /**
  * Widget used to display basic device information
  */
+@Controller
+@RequestMapping("/configWidget/*")
 public class ConfigWidget extends WidgetControllerBase {
 
     private MeterDao meterDao;
     private DeviceConfigurationDao deviceConfigurationDao;
-    private CommandRequestDeviceExecutor commandRequestExecutor;
     private DeviceConfigService deviceConfigService;
+    private DeviceDefinitionDao deviceDefinitionDao;
     
     /**
      * This method renders the default deviceGroupWidget
@@ -54,17 +57,16 @@ public class ConfigWidget extends WidgetControllerBase {
     private ModelAndView getConfigModelAndView(HttpServletRequest request) throws ServletRequestBindingException {
         ModelAndView mav = new ModelAndView("configWidget/render.jsp");
         Meter meter = getMeter(request);
-        String meterType = meter.getTypeStr();
         ConfigurationType type = ConfigurationType.MCT410;
-        if(meterType.contains("470")) {
+        if(deviceDefinitionDao.isTagSupported(meter.getDeviceType(), DeviceTag.DEVICE_CONFIGURATION_470)) {
             type = ConfigurationType.MCT470;
-        }else if(meterType.contains("430")) {
+        }else if(deviceDefinitionDao.isTagSupported(meter.getDeviceType(), DeviceTag.DEVICE_CONFIGURATION_430)) {
             type = ConfigurationType.MCT430;
         }
         List<ConfigurationBase> existingConfigs = deviceConfigurationDao.getAllConfigurationsByType(type);
         mav.addObject("existingConfigs", existingConfigs);
-        ConfigurationBase config = deviceConfigurationDao.getConfigurationForDevice(meter);
-        mav.addObject("currentDeviceId", config != null ? config.getId() : -1);
+        ConfigurationBase config = deviceConfigurationDao.findConfigurationForDevice(meter);
+        mav.addObject("currentConfigId", config != null ? config.getId() : -1);
         mav.addObject("currentConfigName", config != null ? config.getName() : CtiUtilities.STRING_NONE);
         return mav;
     }
@@ -84,12 +86,11 @@ public class ConfigWidget extends WidgetControllerBase {
     public ModelAndView assignConfig(HttpServletRequest request, HttpServletResponse response) throws Exception {
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
         Meter meter = getMeter(request);
-        YukonDevice device = new YukonDevice(deviceId, meter.getType());
         
         final int configId = ServletRequestUtils.getRequiredIntParameter(request, "configuration");
         if(configId > -1) {
             ConfigurationBase configuration = deviceConfigurationDao.getConfiguration(configId);
-            deviceConfigurationDao.assignConfigToDevice(configuration, device);
+            deviceConfigurationDao.assignConfigToDevice(configuration, meter);
         }else {
             deviceConfigurationDao.unassignConfig(deviceId);
         }
@@ -99,36 +100,31 @@ public class ConfigWidget extends WidgetControllerBase {
     }
     
     @RequestMapping
-    public ModelAndView pushConfig(HttpServletRequest request, HttpServletResponse response, LiteYukonUser user) throws Exception {
+    public ModelAndView pushConfig(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         ModelAndView mav = new ModelAndView("configWidget/configWidgetResult.jsp");
-        int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
         Meter meter = getMeter(request);
-        YukonDevice device = new YukonDevice(deviceId, meter.getType());
-        String commandString = "putconfig emetcon install all force";
-        CommandResultHolder resultHolder = commandRequestExecutor.execute(device, commandString, CommandRequestExecutionType.DEVICE_CONFIG_PUSH, user);
+        CommandResultHolder resultHolder = deviceConfigService.readConfig(meter, userContext.getYukonUser());
         mav.addObject("pushResult", resultHolder);
         return mav;
     }
     
     @RequestMapping
-    public ModelAndView readConfig(HttpServletRequest request, HttpServletResponse response, LiteYukonUser user) throws Exception {
+    public ModelAndView readConfig(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         ModelAndView mav = new ModelAndView("configWidget/configWidgetResult.jsp");
-        int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
         Meter meter = getMeter(request);
-        YukonDevice device = new YukonDevice(deviceId, meter.getType());
-        String commandString = "getconfig model";
-        CommandResultHolder resultHolder = commandRequestExecutor.execute(device, commandString, CommandRequestExecutionType.DEVICE_COMMAND, user);
+        CommandResultHolder resultHolder = deviceConfigService.readConfig(meter, userContext.getYukonUser());
         mav.addObject("readResult", resultHolder);
         return mav;
     }
     
     @RequestMapping
-    public ModelAndView verifyConfig(HttpServletRequest request, HttpServletResponse response, LiteYukonUser user) throws Exception {
+    public ModelAndView verifyConfig(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         ModelAndView mav = new ModelAndView("configWidget/configWidgetResult.jsp");
-        int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
         Meter meter = getMeter(request);
-        YukonDevice device = new YukonDevice(deviceId, meter.getType());
-        VerifyResult verifyResult = deviceConfigService.verifyConfig(device, user);
+        VerifyResult verifyResult = deviceConfigService.verifyConfig(meter, userContext.getYukonUser());
         mav.addObject("verifyResult", verifyResult);
         return mav;
     }
@@ -144,13 +140,13 @@ public class ConfigWidget extends WidgetControllerBase {
     }
     
     @Required
-    public void setCommandRequestExecutor(CommandRequestDeviceExecutor commandRequestExecutor) {
-        this.commandRequestExecutor = commandRequestExecutor;
+    public void setDeviceConfigService(DeviceConfigService deviceConfigService) {
+        this.deviceConfigService = deviceConfigService;
     }
     
     @Required
-    public void setDeviceConfigService(DeviceConfigService deviceConfigService) {
-        this.deviceConfigService = deviceConfigService;
+    public void setDeviceDefinitionDao(DeviceDefinitionDao deviceDefinitionDao) {
+        this.deviceDefinitionDao = deviceDefinitionDao;
     }
 }
 

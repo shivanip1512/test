@@ -75,7 +75,7 @@ public interface DeviceConfigurationDao {
      * @param device
      * @return ConfigurationBase
      */
-    public ConfigurationBase getConfigurationForDevice(YukonDevice device);
+    public ConfigurationBase findConfigurationForDevice(YukonDevice device);
     
     /**
      * Returns a list of configurations by type.

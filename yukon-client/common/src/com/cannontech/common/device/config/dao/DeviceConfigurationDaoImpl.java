@@ -2,7 +2,6 @@ package com.cannontech.common.device.config.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -10,7 +9,6 @@ import java.util.Properties;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.PropertyEditorRegistry;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
@@ -21,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.config.model.ConfigurationBase;
 import com.cannontech.common.device.config.model.ConfigurationTemplate;
+import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
+import com.cannontech.common.device.definition.model.DeviceTag;
 import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
@@ -38,14 +38,12 @@ import com.cannontech.web.input.type.InputType;
 public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
 
     public static final String DB_CHANGE_OBJECT_TYPE = "config";
-
     private SimpleJdbcTemplate simpleJdbcTemplate = null;
     private NextValueHelper nextValueHelper = null;
-
     private PaoGroupsWrapper paoGroupsWrapper;
     private DBPersistentDao dbPersistentDao = null;
-
     private List<ConfigurationTemplate> configurationTemplateList = null;
+    private DeviceDefinitionDao deviceDefinitionDao;
 
     public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
@@ -61,6 +59,10 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
 
     public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
         this.dbPersistentDao = dbPersistentDao;
+    }
+    
+    public void setDeviceDefinitionDao(DeviceDefinitionDao deviceDefinitionDao) {
+        this.deviceDefinitionDao = deviceDefinitionDao;
     }
 
     public List<ConfigurationTemplate> getConfigurationTemplateList() {
@@ -172,9 +174,11 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         return configuration;
     }
     
-    public ConfigurationBase getConfigurationForDevice(YukonDevice device) {
-        String sql = "SELECT * FROM DeviceConfiguration WHERE DeviceConfigurationId = ("
-            +"SELECT DeviceConfigurationId FROM DeviceConfigurationDeviceMap WHERE DeviceId = ?)";
+    public ConfigurationBase findConfigurationForDevice(YukonDevice device) {
+        String sql = "select * "
+            + "from DeviceConfiguration dc "
+            + "join DeviceConfigurationDeviceMap dcdm on dc.DeviceConfigurationId = dcdm.DeviceConfigurationId "
+            + "where dcdm.DeviceId = ?";
         try {
             return simpleJdbcTemplate.queryForObject(sql, new ConfigurationBaseRowMapper(), device.getDeviceId());
         }catch(IncorrectResultSizeDataAccessException e) {
@@ -242,44 +246,35 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     }
 
     public void assignConfigToDevice(ConfigurationBase configuration, YukonDevice device) throws InvalidDeviceTypeException {
-     // Get the device types that the configuration supports
-        String[] supportedDeviceTypeList = configuration.getType().getSupportedDeviceTypeList();
-        List<Integer> typeList = new ArrayList<Integer>();
-        for (String deviceType : supportedDeviceTypeList) {
-            int type = paoGroupsWrapper.getDeviceType(deviceType);
-            typeList.add(type);
-        }
-
+        // Get the device types that the configuration supports
+        DeviceTag tag = configuration.getType().getSupportedDeviceTag();
+        
         // Only add the devices whose type is supported by the configuration
-        if (typeList.contains(device.getType())) {
-            // Clean out any assigned configs - device can only be assigned one
-            // config
-            unassignConfig(device.getDeviceId());
-
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("insert into DeviceConfigurationDeviceMap");
-            sql.append("(DeviceConfigurationId, DeviceId)");
-            sql.append("values");
-            sql.append("(?, ?)");
-
-            try {
-                simpleJdbcTemplate.update(sql.toString(), configuration.getId(), device.getDeviceId());
-            } catch (DataIntegrityViolationException e) {
-                // ignore - tried to insert duplicate
-            }
-
-            // TODO add objecttype
-            DBChangeMsg dbChange = new DBChangeMsg(device.getDeviceId(),
-                                                   DBChangeMsg.CHANGE_CONFIG_DB,
-                                                   DBChangeMsg.CAT_DEVICE_CONFIG,
-                                                   "device",
-                                                   DBChangeMsg.CHANGE_TYPE_UPDATE);
-            // Send DBChangeMsgs
-            dbPersistentDao.processDBChange(dbChange);
-        } else {
-            throw new InvalidDeviceTypeException("Device type: " + device.getDeviceType().name() 
-               + " is invalid for config: " + configuration.getName());
+        if (!deviceDefinitionDao.isTagSupported(device.getDeviceType(), tag)) {
+            throw new InvalidDeviceTypeException("Device type: " 
+                + device.getDeviceType().name() 
+                + " is invalid for config: " + configuration.getName());
         }
+        
+        // Clean out any assigned configs - device can only be assigned one
+        // config
+        unassignConfig(device.getDeviceId());
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("insert into DeviceConfigurationDeviceMap");
+        sql.append("(DeviceConfigurationId, DeviceId)");
+        sql.append("values");
+        sql.append("(?, ?)");
+
+        simpleJdbcTemplate.update(sql.toString(), configuration.getId(), device.getDeviceId());
+
+        DBChangeMsg dbChange = new DBChangeMsg(device.getDeviceId(),
+                                               DBChangeMsg.CHANGE_CONFIG_DB,
+                                               DBChangeMsg.CAT_DEVICE_CONFIG,
+                                               "device",
+                                               DBChangeMsg.CHANGE_TYPE_UPDATE);
+        // Send DBChangeMsgs
+        dbPersistentDao.processDBChange(dbChange);
     }
 
     public void unassignConfig(Integer deviceId) {
@@ -288,7 +283,6 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         String sql = "DELETE FROM DeviceConfigurationDeviceMap WHERE DeviceId = ?";
         simpleJdbcTemplate.update(sql, deviceId);
 
-        // TODO add objecttype
         DBChangeMsg dbChange = new DBChangeMsg(deviceId,
                                                DBChangeMsg.CHANGE_CONFIG_DB,
                                                DBChangeMsg.CAT_DEVICE_CONFIG,

@@ -24,13 +24,7 @@
         <%-- collection actions --%>
         <tags:collectionActionsCrumbLink deviceCollection="${deviceCollection}" />
         
-        <cti:url var="pushConfigUrl" value="/spring/bulk/config/pushConfig">
-            <c:forEach var="deviceCollectionParam" items="${deviceCollection.collectionParameters}">
-                <cti:param name="${deviceCollectionParam.key}" value="${deviceCollectionParam.value}"/>
-            </c:forEach>
-        </cti:url>
-        <cti:msg var="pushConfigPageTitle" key="yukon.common.device.bulk.pushConfig.pageTitle"/>
-        <cti:crumbLink url="${pushConfigUrl}" title="${pushConfigPageTitle}" />
+        <tags:crumbLinkByMap url="/spring/bulk/config/pushConfig" parameterMap="${deviceCollection.collectionParameters}" titleKey="yukon.common.device.bulk.pushConfig.pageTitle" />
         
         <%-- verify config results --%>
         <cti:crumbLink>${pageTitle}</cti:crumbLink>
@@ -38,7 +32,7 @@
     </cti:breadCrumbs>
     <cti:url value="/spring/meter/home" var="meterHomeUrl"/>
     
-    <script language="JavaScript">
+    <script type="text/javascript">
     function forwardToMeterHome(id) {
         window.location = "${meterHomeUrl}?deviceId=" + id;
     }
@@ -89,15 +83,15 @@
         <c:forEach var="device" items="${devices}">
             <c:choose>
                 <c:when test="${resultsMap[device].synced}">
-              <tr>
-                  <td onclick="forwardToMeterHome(${device.deviceId});">${resultsMap[device].meter.name}</td>
-                  <td>${resultsMap[device].config.name}</td>
-                  <td>${resultsMap[device].config.type}</td>
-                  <td>In Sync</td>
-              </tr>
+                    <tr>
+                        <td onclick="forwardToMeterHome(${device.deviceId});">${resultsMap[device].meter.name}</td>
+                        <td>${resultsMap[device].config.name}</td>
+                        <td>${resultsMap[device].config.type}</td>
+                        <td>In Sync</td>
+                    </tr>
                 </c:when>
-             <c:otherwise>
-                    <tr style="background: #FFDDDD;">
+                <c:otherwise>
+                    <tr class="lightRedBackground">
                         <td onclick="forwardToMeterHome(${device.deviceId});">${resultsMap[device].meter.name}</td>
                         <td>${resultsMap[device].config.name}</td>
                         <td>${resultsMap[device].config.type}</td>

@@ -10,6 +10,8 @@ public enum DeviceTag {
 	PEAK_REPORT("Peak Report"),
 	VOLTAGE("Voltage"),
 	VOLTAGE_PROFILE("Voltage Profile"),
+	DEVICE_CONFIGURATION_470("Device Configuration 470"),
+	DEVICE_CONFIGURATION_430("Device Configuration 430"),
 	;
 
 	private String description;
