@@ -25,7 +25,7 @@ public class ProcessorFactoryImpl implements ProcessorFactory {
                 try {
                     deviceConfigurationDao.assignConfigToDevice(configuration, device);
                 } catch (InvalidDeviceTypeException e) {
-                    throw new ProcessingException(e.getMessage(), e);
+                    throw new ProcessingException(e.getMessage());
                 }
             }
 
