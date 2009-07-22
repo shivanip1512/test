@@ -161,7 +161,7 @@ void SystemMsgThread::run( void )
         {
             try
             {
-                CtiRequestMsg *msg = (CtiRequestMsg *)_input->getQueue();
+                CtiRequestMsg *msg = (CtiRequestMsg *)_input->getQueue(1000);
 
                 if( msg != NULL)
                 {
@@ -185,8 +185,6 @@ void SystemMsgThread::run( void )
                         dout << CtiTime() << " SystemMessageHandlerThread run() Thread Active " << endl;
                     }
                 }
-
-                sleep(1000);
             }
             catch(...)
             {
