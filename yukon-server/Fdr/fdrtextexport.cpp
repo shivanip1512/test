@@ -395,7 +395,7 @@ int CtiFDR_TextExport::readConfig( void )
 */
 bool CtiFDR_TextExport::loadTranslationLists()
 {
-    bool successful = false;
+    bool successful = true;
     bool foundPoint = false;
     RWDBStatus listStatus;
 
@@ -428,7 +428,9 @@ bool CtiFDR_TextExport::loadTranslationLists()
                 for ( ; myIterator != pointList->getMap().end(); ++myIterator )
                 {
                     foundPoint = true;
-                    translateSinglePoint(myIterator->second);
+                    if (!translateSinglePoint(myIterator->second)) {
+                        successful = false;
+                    }
                 }
 
                 {
@@ -446,12 +448,20 @@ bool CtiFDR_TextExport::loadTranslationLists()
                 {
                     if (!foundPoint)
                     {
-                        // means there was nothing in the list, wait until next db change or reload
+                        //Means there was nothing in the list, wait until next db change or reload
+                        //Setting true so we do not reload in 60 seconds.
                         successful = true;
                         if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " No points defined for use by interface " << getInterfaceName() << endl;
+                        }
+                    }
+                    else
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " Error in translating points " << getInterfaceName() << endl;
                         }
                     }
                 }
