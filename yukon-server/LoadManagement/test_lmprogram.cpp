@@ -20,9 +20,8 @@
 #define BOOST_AUTO_TEST_MAIN "Test LM Program"
 
 #include <boost/test/unit_test.hpp>
-#include <boost/test/auto_unit_test.hpp>
 
-BOOST_AUTO_UNIT_TEST(test_get_control_window)
+BOOST_AUTO_TEST_CASE(test_get_control_window)
 {
     CtiLMProgramControlWindow *window1 = new CtiLMProgramControlWindow();
     CtiLMProgramControlWindow *resultWindow;

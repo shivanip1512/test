@@ -5,17 +5,16 @@
 
 INCLPATHS+= \
 -I$(LOADMANAGEMENT)\include \
--I$(CAPCONTROL)\include \
 -I$(COMMON)\include \
 -I$(DATABASE)\include \
--I$(PROCLOG)\include \
 -I$(MSG)\include \
 -I$(RTDB)\include \
 -I$(SERVICE)\include \
 -I$(CPARMS)\include \
 -I$(SERVER)\include \
--I$(RW) \
 -I$(BOOST) \
+-I$(RW)
+
 
 .PATH.cpp = .;$(R_LOADMANAGEMENT)
 .PATH.H = \
@@ -117,6 +116,7 @@ deps:
 	.\obj\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOSTLIBS) $(BOOSTTESTLIBS) $(LOADMANAGEMENTBASEOBJS) $(RWLIBS) $(LIBS) $(LINKFLAGS)
 
 	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+        mt.exe -manifest $(BIN)\$(@B).exe.manifest -outputresource:$(BIN)\$(@B).exe;1
 	-copy $(BIN)\$(@B).exe $(YUKONOUTPUT)
 	-@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
 	-if exist $(BIN)\$(@B).lib copy $(BIN)\$(@B).lib $(COMPILEBASE)\lib
@@ -137,6 +137,7 @@ test_lmprogram.obj:	yukon.h precompiled.h ctidbgmem.h \
 		dllbase.h dsm2.h mutex.h guard.h clrdump.h cticonnect.h \
 		netports.h logger.h thread.h CtiPCPtrQueue.h msg_ptreg.h \
 		msg_reg.h queue.h cparms.h configkey.h configval.h \
-		tbl_lmprogramhistory.h dbaccess.h sema.h
+		tbl_lmprogramhistory.h dbaccess.h sema.h \
+		lmprogramcontrolwindow.h
 #ENDUPDATE#
 

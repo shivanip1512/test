@@ -3,6 +3,7 @@
 #include <io.h>
 
 #include "lmservice.h"
+#include "id_loadmanagement.h"
 #include "eventlog.h"
 #include "configparms.h"
 #include "rtdb.h"

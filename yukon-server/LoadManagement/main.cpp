@@ -4,7 +4,6 @@
 #include <rw/thr/thrutil.h>
 #include <rw/collstr.h>
 
-#include "id_loadmanagement.h"
 #include "lmcontrolareastore.h"
 #include "loadmanager.h"
 #include "dbaccess.h"
