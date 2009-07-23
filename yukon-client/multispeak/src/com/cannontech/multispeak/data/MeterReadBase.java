@@ -57,7 +57,7 @@ public abstract class MeterReadBase implements ReadableDevice{
         
         for (LitePoint litePoint : litePoints) {
             PointValueQualityHolder pointData = dds.getPointValue(litePoint.getPointID());
-            if( pointData != null && pointData.getPointQuality().getQuality() != PointQuality.Uninitialized.getQuality())
+            if( pointData != null && pointData.getPointQuality() != PointQuality.Uninitialized)
                 populate(litePoint.getPointType(), litePoint.getPointOffset(), litePoint.getUofmID(), pointData.getPointDataTimeStamp(), pointData.getValue());
         }
     }
