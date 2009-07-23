@@ -5,6 +5,7 @@
 all:
         @build -nologo -f makepch.mak
         @build -nologo -f makeexe.mak
+        @build -nologo -f maketest.mak
 
 clean:
         -del \
@@ -30,7 +31,9 @@ allclean:   clean all
 copy:
         @build -nologo -f makepch.mak $@
         @build -nologo -f makeexe.mak $@
+        @build -nologo -f maketest.mak $@
 
 deps:
         @build -nologo -f makeexe.mak $@
+        @build -nologo -f maketest.mak $@
 
