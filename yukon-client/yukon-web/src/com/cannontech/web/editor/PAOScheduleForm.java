@@ -51,25 +51,10 @@ public class PAOScheduleForm extends DBEditorForm {
 		FacesContext context = FacesContext.getCurrentInstance();
 		Map paramMap = context.getExternalContext().getRequestParameterMap();
 		HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
-		CapControlForm f = (CapControlForm) session.getAttribute("capControlForm"); 
+		CapControlForm capControlForm = (CapControlForm) session.getAttribute("capControlForm"); 
 		int elemID = Integer.parseInt( (String)paramMap.get("schedID") );
 		
-		f.initItem( elemID, DBEditorNav.EDITOR_SCHEDULE );
-	}
-
-	/**
-	 * Go to the editor page after we have processed the edit event
-	 */
-	public String goto_edit() {
-		
-		//map our return variable page to this list
-		CtiNavObject nav = (CtiNavObject)FacesContext.getCurrentInstance().getApplication().getVariableResolver()
-			.resolveVariable(FacesContext.getCurrentInstance(), "CtiNavObject");
-		
-		nav.setModuleRedirectPage(
-			DBEditorNav.getEditorURL(DBEditorNav.EDTYPE_LIST_SCHEDULE) );
-
-		return "cbcEditor";
+		capControlForm.initItem( elemID, DBEditorNav.EDITOR_SCHEDULE );
 	}
 
 	/**

@@ -176,7 +176,7 @@ public class CapBankEditorForm extends DBEditorForm {
         }
         catch( EmptyResultDataAccessException e)
         {
-            CTILogger.warn("Feeder " + capBank.getPAObjectID().intValue() + " not found.");
+            CTILogger.debug("Feeder " + capBank.getPAObjectID().intValue() + " not found.");
         }
         
         if (fdrId != 0) {

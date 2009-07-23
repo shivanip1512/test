@@ -9,8 +9,6 @@ import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.capcontrol.CapBankController;
-import com.cannontech.database.data.capcontrol.CapControlFeeder;
-import com.cannontech.database.data.capcontrol.CapControlSubBus;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.multi.MultiDBPersistent;
@@ -58,77 +56,64 @@ public class CBCPointFactory {
             new StatusPointParams(7, "Last Control - OVUV"),
             new StatusPointParams(8, "Last Control - Neutral Fault"),
             new StatusPointParams(9, "Last Control - Scheduled"),
-            new StatusPointParams(10, "Last Control - Digital"),
+            new StatusPointParams(10, "Last Control - Var"),
             new StatusPointParams(11, "Last Control - Analog"),
             new StatusPointParams(12, "Last Control - Temperature"),
             new StatusPointParams(13, "OV Condition"),
             new StatusPointParams(14, "UV Condition"),
             new StatusPointParams(15, "Op Failed - Neutral Current"),
             new StatusPointParams(16, "Neutral Current Fault"),
+            new StatusPointParams(17, "VAR Alarm"),
             new StatusPointParams(24, "Bad Relay"),
             new StatusPointParams(25, "Daily Max Ops"),
             new StatusPointParams(26, "Voltage Delta Abnormal"),
             new StatusPointParams(27, "Temp Alarm"),
             new StatusPointParams(28, "DST Active"),
             new StatusPointParams(29, "Neutral Lockout"),
+            new StatusPointParams(30, "Power Flow"),
             new StatusPointParams(34, "Control Ignored Indicator"),
 
             // analog
-            new AnalogPointParams(1.0, 3, "Firmware Version",
-					PointUnits.UOMID_UNDEF),
+            new AnalogPointParams(1.0, 3, "Firmware Version",PointUnits.UOMID_UNDEF),
 			new AnalogPointParams(0.1, 5, "Voltage", PointUnits.UOMID_VOLTS),
-			new AnalogPointParams(0.1, 6, "High Voltage",
-					PointUnits.UOMID_VOLTS),
+			new AnalogPointParams(0.1, 6, "High Voltage", PointUnits.UOMID_VOLTS),
 			new AnalogPointParams(0.1, 7, "Low Voltage", PointUnits.UOMID_VOLTS),
-			new AnalogPointParams(0.1, 8, "Delta Voltage",
-					PointUnits.UOMID_VOLTS),
-			new AnalogPointParams(1.0, 9, "Analog Input 1",
-					PointUnits.UOMID_UNDEF),
-			new AnalogPointParams(0.1, 10, "Temperature",
-					PointUnits.UOMID_TEMP_F),
+			new AnalogPointParams(0.1, 8, "Delta Voltage", PointUnits.UOMID_VOLTS),
+			new AnalogPointParams(1.0, 9, "Analog Input 1", PointUnits.UOMID_UNDEF),
+			new AnalogPointParams(0.1, 10, "Temperature", PointUnits.UOMID_TEMP_F),
 			new AnalogPointParams(1.0, 13, "RSSI", PointUnits.UOMID_UNDEF),
-			new AnalogPointParams(1.0, 14, "Control Ignored Reason",
-					PointUnits.UOMID_UNDEF),
-			new AnalogPointParams(1.0, 10002, "Control UV Set Point",
-					PointUnits.UOMID_VOLTS),
-			new AnalogPointParams(1.0, 10003, "Control OV Set Point",
-					PointUnits.UOMID_VOLTS),
-			new AnalogPointParams(1.0, 10004, "Control OVUV Track Time",
-					PointUnits.UOMID_SECONDS),
-			new AnalogPointParams(1.0, 10006, "Daily Control Limit",
-					PointUnits.UOMID_COUNTS),
-			new AnalogPointParams(1.0, 10007, "Emergency UV Set Point",
-					PointUnits.UOMID_VOLTS),
-			new AnalogPointParams(1.0, 10008, "Emergency OV Set Point",
-					PointUnits.UOMID_VOLTS),
-			new AnalogPointParams(1.0, 10009, "Emergency OVUV Track Time",
-					PointUnits.UOMID_SECONDS),
-			new AnalogPointParams(1.0, 10010, "Neutral Current Sensor",
-					PointUnits.UOMID_AMPS),
-			new AnalogPointParams(1.0, 10011,
-					"Neutral Current Alarm Set Point", PointUnits.UOMID_AMPS),
-			new AnalogPointParams(1.0, 10015, "Trip Delay Time",
-					PointUnits.UOMID_SECONDS),
-			new AnalogPointParams(1.0, 10016, "Close Delay Time",
-					PointUnits.UOMID_SECONDS),
-			new AnalogPointParams(1.0, 10017, "Bank Control Time",
-					PointUnits.UOMID_MINUTES),
-            new AnalogPointParams(1.0,10018,"Re-Close Delay Time",
-            		PointUnits.UOMID_SECONDS),
-            new AnalogPointParams(1.0,10057,"Com Loss Time",
-            		PointUnits.UOMID_SECONDS),
-            new AnalogPointParams(1.0,10110,"Com Retry Delay Time",
-            		PointUnits.UOMID_SECONDS),
-            new AnalogPointParams(1.0,10111,"Yukon Poll Time",
-            		PointUnits.UOMID_SECONDS),
-    		new AnalogPointParams(1.0, 20001, "IP Address",
-    				PointUnits.UOMID_UNDEF),
-			new AnalogPointParams(1.0, 20002, "UDP Port",
-					PointUnits.UOMID_UNDEF),
+			new AnalogPointParams(1.0, 14, "Control Ignored Reason", PointUnits.UOMID_UNDEF),
+			new AnalogPointParams(1.0, 15, "CDMA Rx Power", PointUnits.UOMID_UNDEF),
+			new AnalogPointParams(1.0, 16, "CDMA Ec/Io", PointUnits.UOMID_UNDEF),
+			new AnalogPointParams(1.0, 17, "True VAR RMS Current", PointUnits.UOMID_AMPS),
+			new AnalogPointParams(1.0, 18, "3 Phase kVARs", PointUnits.UOMID_KVAR),
+			new AnalogPointParams(1.0, 19, "VAR RMS Voltage", PointUnits.UOMID_VOLTS),
+			new AnalogPointParams(1.0, 20, "VAR 1 Phase kVA", PointUnits.UOMID_KVA),
+			new AnalogPointParams(1.0, 21, "VAR 1 Phase kWatts", PointUnits.UOMID_KW),
+			new AnalogPointParams(1.0, 22, "VAR Power Factor", PointUnits.UOMID_UNDEF),
+			new AnalogPointParams(1.0, 10002, "Control UV Set Point", PointUnits.UOMID_VOLTS),
+			new AnalogPointParams(1.0, 10003, "Control OV Set Point", PointUnits.UOMID_VOLTS),
+			new AnalogPointParams(1.0, 10004, "Control OVUV Track Time", PointUnits.UOMID_SECONDS),
+			new AnalogPointParams(1.0, 10006, "Daily Control Limit", PointUnits.UOMID_COUNTS),
+			new AnalogPointParams(1.0, 10007, "Emergency UV Set Point", PointUnits.UOMID_VOLTS),
+			new AnalogPointParams(1.0, 10008, "Emergency OV Set Point", PointUnits.UOMID_VOLTS),
+			new AnalogPointParams(1.0, 10009, "Emergency OVUV Track Time", PointUnits.UOMID_SECONDS),
+			new AnalogPointParams(1.0, 10010, "Neutral Current Sensor", PointUnits.UOMID_AMPS),
+			new AnalogPointParams(1.0, 10011, "Neutral Current Alarm Set Point", PointUnits.UOMID_AMPS),
+			new AnalogPointParams(1.0, 10015, "Trip Delay Time", PointUnits.UOMID_SECONDS),
+			new AnalogPointParams(1.0, 10016, "Close Delay Time", PointUnits.UOMID_SECONDS),
+			new AnalogPointParams(1.0, 10017, "Bank Control Time", PointUnits.UOMID_MINUTES),
+            new AnalogPointParams(1.0,10018,"Re-Close Delay Time", PointUnits.UOMID_SECONDS),
+            new AnalogPointParams(1.0,10057,"Com Loss Time", PointUnits.UOMID_SECONDS),
+            new AnalogPointParams(1.0,10110,"Com Retry Delay Time", PointUnits.UOMID_SECONDS),
+            new AnalogPointParams(1.0,10111,"Yukon Poll Time", PointUnits.UOMID_SECONDS),
+            new AnalogPointParams(1.0,10113,"VAR Close Point", PointUnits.UOMID_KVAR),
+            new AnalogPointParams(1.0,10114,"VAR Trip Point", PointUnits.UOMID_KVAR),
+    		new AnalogPointParams(1.0, 20001, "IP Address", PointUnits.UOMID_UNDEF),
+			new AnalogPointParams(1.0, 20002, "UDP Port", PointUnits.UOMID_UNDEF),
 
             // accumulator
-			new AccumPointParams(1.0, 1, "Total op count",
-					PointUnits.UOMID_COUNTS),
+			new AccumPointParams(1.0, 1, "Total op count", PointUnits.UOMID_COUNTS),
 			new AccumPointParams(1.0, 2, "UV op count", PointUnits.UOMID_COUNTS),
 			new AccumPointParams(1.0, 3, "OV op count", PointUnits.UOMID_COUNTS)
 
@@ -193,9 +178,9 @@ public class CBCPointFactory {
         return dbPersistentVector;
     }
     
-    private static List createPoints(Integer paoId) {
+    private static List<PointBase> createPoints(Integer paoId) {
 
-        List pointList = new ArrayList();
+        List<PointBase> pointList = new ArrayList<PointBase>();
         for (int i = 0; i < CBC_POINT_PROTOTYPES.length; i++) {
             PointParams param = CBC_POINT_PROTOTYPES[i];
             PointBase point = PointFactory.createPoint(param.getType());

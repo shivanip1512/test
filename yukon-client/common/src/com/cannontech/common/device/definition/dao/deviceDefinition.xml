@@ -3969,21 +3969,49 @@
     </device>
     
     <!-- CBCs -->
-    <device id="CAPBANKCONTROLLER">
+    <device id="CAPBANKCONTROLLER" inherits="CBC_1WAY_BASE">
         <displayName>CBC Versacom</displayName>
         <changeGroup>cap</changeGroup>
     </device>
-    <device id="CBC_7010">
+    
+    <device id="CBC_7010" inherits="CBC_1WAY_BASE">
         <displayName>CBC 7010</displayName>
         <changeGroup>cap</changeGroup>
     </device>
-    <device id="CBC_EXPRESSCOM">
+    
+    <device id="CBC_DNP" inherits="CBC_DNP_BASE">
+        <displayName>CBC DNP</displayName>
+        <changeGroup>cap</changeGroup>
+    </device>
+    
+    <device id="CBC_EXPRESSCOM" inherits="CBC_1WAY_BASE">
         <displayName>CBC Expresscom</displayName>
         <changeGroup>cap</changeGroup>
     </device>
     
-    <device id="CBC_BASE" abstract="true">
+    <device id="CBC_1WAY_BASE" abstract="true">
+        <changeGroup>cap1</changeGroup>
+        <points>
+            <point type="Status" offset="8">
+                <name>BANK STATUS</name>
+                <stategroup value="TwoStateStatus"/>
+            </point>
+        </points>
+    </device>
+    
+    <device id="CBC_DNP_BASE" abstract="true">
+        <changeGroup>cap1</changeGroup>
+        <points>
+            <point type="Status" offset="1">
+                <name>Capacitor bank state</name>
+                <stategroup value="TwoStateStatus"/>
+            </point>
+        </points>
+    </device>
+    
+    <device id="CBC_2WAY_BASE" abstract="true">
     	<changeGroup>cap2</changeGroup>
+    	<!-- PULSE ACCUMULATOR POINTS -->
     	<points>
         	<point type="PulseAccumulator" offset="1">
         		<init>true</init>
@@ -4003,7 +4031,7 @@
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Counts"/>
             </point>
-        
+            <!-- ANALOG POINTS -->
             <point type="Analog" offset="3">
             	<init>true</init>
                 <name>Firmware Version</name>
@@ -4055,6 +4083,54 @@
             <point type="Analog" offset="14">
             	<init>true</init>
                 <name>Control Ignored Reason</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+            <point type="Analog" offset="15">
+                <init>true</init>
+                <name>CDMA Rx Power</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+            <point type="Analog" offset="16">
+                <init>true</init>
+                <name>CDMA Ec/Io</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+            <point type="Analog" offset="17">
+                <init>true</init>
+                <name>True VAR RMS Current</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Amps"/>
+            </point>
+            <point type="Analog" offset="18">
+                <init>true</init>
+                <name>3 Phase kVARs</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVAr"/>
+            </point>
+            <point type="Analog" offset="19">
+                <init>true</init>
+                <name>VAR RMS Voltage</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+            </point>
+            <point type="Analog" offset="20">
+                <init>true</init>
+                <name>VAR 1 Phase kVA</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVA"/>
+            </point>
+            <point type="Analog" offset="21">
+                <init>true</init>
+                <name>VAR 1 Phase kWatts</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point type="Analog" offset="22">
+                <init>true</init>
+                <name>VAR Power Factor</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
             </point>
@@ -4136,6 +4212,36 @@
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Seconds"/>
             </point>
+            <point type="Analog" offset="10057">
+                <init>true</init>
+                <name>Com Loss Time</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
+            </point>
+            <point type="Analog" offset="10110">
+                <init>true</init>
+                <name>Com Retry Delay Time</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
+            </point>
+            <point type="Analog" offset="10111">
+                <init>true</init>
+                <name>Yukon Poll Time</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
+            </point>
+            <point type="Analog" offset="10113">
+                <init>true</init>
+                <name>VAR Close Point</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVAr"/>
+            </point>
+            <point type="Analog" offset="10114">
+                <init>true</init>
+                <name>VAR Trip Point</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVAr"/>
+            </point>
             <point type="Analog" offset="20001">
             	<init>true</init>
                 <name>IP Address</name>
@@ -4148,112 +4254,120 @@
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
             </point>
-            
+            <!-- STATUS POINTS -->
             <point type="Status" offset="1">
                 <name>Capacitor bank state</name>
-                <stategroup value="SystemState"/>
+                <stategroup value="TwoStateStatus"/>
             </point>
             <point type="Status" offset="2">
                 <name>Re-close Blocked</name>
-                <stategroup value="SystemState"/>
+                <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="3">
                 <name>Control Mode</name>
-                <stategroup value="SystemState"/>
+                <stategroup value="RemoteLocal"/>
             </point>
             <point type="Status" offset="4">
                 <name>Auto Volt Control</name>
-                <stategroup value="SystemState"/>
+                <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="5">
                 <name>Last Control - Local</name>
-                <stategroup value="SystemState"/>
+                <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="6">
                 <name>Last Control - Remote</name>
-                <stategroup value="SystemState"/>
+                <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="7">
                 <name>Last Control - OVUV</name>
-                <stategroup value="SystemState"/>
+                <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="8">
                 <name>Last Control - Neutral Fault</name>
-                <stategroup value="SystemState"/>
+                <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="9">
                 <name>Last Control - Scheduled</name>
-                <stategroup value="SystemState"/>
+                <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="10">
-                <name>Last Control - Digital</name>
-                <stategroup value="SystemState"/>
+                <name>Last Control - Var</name>
+                <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="11">
                 <name>Last Control - Analog</name>
-                <stategroup value="SystemState"/>
+                <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="12">
                 <name>Last Control - Temperature</name>
-                <stategroup value="SystemState"/>
+                <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="13">
                 <name>OV Condition</name>
-                <stategroup value="SystemState"/>
+                <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="14">
                 <name>UV Condition</name>
-                <stategroup value="SystemState"/>
+                <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="15">
                 <name>Op Failed - Neutral Current</name>
-                <stategroup value="SystemState"/>
+                <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="16">
                 <name>Neutral Current Fault</name>
-                <stategroup value="SystemState"/>
+                <stategroup value="TrueFalse"/>
+            </point>
+            <point type="Status" offset="17">
+                <name>VAR Alarm</name>
+                <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="24">
                 <name>Bad Relay</name>
-                <stategroup value="SystemState"/>
+                <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="25">
                 <name>Daily Max Ops</name>
-                <stategroup value="SystemState"/>
+                <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="26">
                 <name>Voltage Delta Abnormal</name>
-                <stategroup value="SystemState"/>
+                <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="27">
                 <name>Temp Alarm</name>
-                <stategroup value="SystemState"/>
+                <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="28">
                 <name>DST Active</name>
-                <stategroup value="SystemState"/>
+                <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="29">
                 <name>Neutral Lockout</name>
-                <stategroup value="SystemState"/>
+                <stategroup value="TrueFalse"/>
+            </point>
+            <point type="Status" offset="30">
+                <name>Power Flow</name>
+                <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="34">
                 <name>Control Ignored Indicator</name>
-                <stategroup value="SystemState"/>
+                <stategroup value="TrueFalse"/>
             </point>
         </points>
     </device>
     
-    <device id="CBC_7020" inherits="CBC_BASE">
+    <device id="CBC_7020" inherits="CBC_2WAY_BASE">
         <displayName>CBC 7020</displayName>
     </device>
-    <device id="CBC_7022" inherits="CBC_BASE">
+    <device id="CBC_7022" inherits="CBC_2WAY_BASE">
         <displayName>CBC 7022</displayName>
     </device>
-    <device id="CBC_7023" inherits="CBC_BASE">
+    <device id="CBC_7023" inherits="CBC_2WAY_BASE">
         <displayName>CBC 7023</displayName>
     </device>
-    <device id="CBC_7024" inherits="CBC_BASE">
+    <device id="CBC_7024" inherits="CBC_2WAY_BASE">
         <displayName>CBC 7024</displayName>
     </device>
         

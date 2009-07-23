@@ -66,9 +66,7 @@ public abstract class JSFUtil {
 
     public static String redirect(String url) {
         try {
-            FacesContext.getCurrentInstance()
-                        .getExternalContext()
-                        .redirect(url);
+            FacesContext.getCurrentInstance().getExternalContext().redirect(url);
             FacesContext.getCurrentInstance().responseComplete();
         } catch (IOException e) {
             CTILogger.error("Unable to redirect to " + url, e);

@@ -45,7 +45,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         if (method.equalsIgnoreCase("force")) {
             commandString += " force";
         } else if (method.equalsIgnoreCase("read")) {
-            commandString = "getconfig model";
+            commandString = "getconfig install";
         }
         return groupCommandExecutor.execute(deviceCollection,commandString, callback, user);
     }

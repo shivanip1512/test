@@ -1,6 +1,5 @@
 package com.cannontech.cbc.dao.impl;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -10,26 +9,23 @@ import java.util.Vector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.cbc.dao.CapbankControllerDao;
 import com.cannontech.cbc.model.Capbank;
 import com.cannontech.cbc.model.CapbankController;
 import com.cannontech.cbc.model.LiteCapControlObject;
-import com.cannontech.cbc.point.CBCPointFactory;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.DeviceType;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.creation.DeviceCreationException;
+import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.util.ChunkingSqlTemplate;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.database.PoolManager;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.capcontrol.CapBankController;
@@ -148,9 +144,11 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 			CTILogger.error("Update of controller information in DeviceCBC table failed for cbc with name: " + capbankController.getName());
 		}
 		if (addPoints) {
-			MultiDBPersistent pointVector = CBCPointFactory.createPointsForCBCDevice(controller);
+			List<PointBase> points = deviceDefinitionService.createAllPointsForDevice(new YukonDevice(controller.getPAObjectID(), PAOGroups.getDeviceType(controller.getPAOType())));
+			MultiDBPersistent pointMulti = new MultiDBPersistent();
+	        pointMulti.getDBPersistentVector().addAll(points);
 			try {
-				PointUtil.insertIntoDB(pointVector);
+				PointUtil.insertIntoDB(pointMulti);
 			} catch (TransactionException e) {
 				CTILogger.error("Failed on Inserting Points for CapBankController, " + capbankController.getName() +".");
 				return false;

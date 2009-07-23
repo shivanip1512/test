@@ -202,7 +202,7 @@
 		<h:column>
 			<x:panelGroup>
 				<x:htmlTag value="fieldset" styleClass="fieldSet">
-                    <x:htmlTag value="legend"><x:outputText value="Analog and Status Points"/></x:htmlTag>
+                    <x:htmlTag value="legend"><x:outputText value="CBC Points"/></x:htmlTag>
 					<x:div forceId="true" id="CBCCtlEditorScrollDiv"
 						styleClass="scrollSmall">
 	
