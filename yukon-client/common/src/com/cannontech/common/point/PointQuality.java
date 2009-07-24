@@ -2,13 +2,13 @@ package com.cannontech.common.point;
 
 public enum PointQuality {
     Uninitialized(0, "Uninitialized", "Uninit"),
-    InitDefault(1, "Init Default", "Init-Def"),
-    InitLastKnown(2, "Init Last Known", "Init-Last"),
+    InitDefault(1, "Init Default", "Init-Def"),	//not used JOtteson 6/30/2009
+    InitLastKnown(2, "Init Last Known", "Init-Last"),	//not used JOtteson 6/30/2009
     NonUpdated(3, "Non Updated", "Non"),
     Manual(4, "Manual", "Man"),
     Normal(5, "Normal", "Norm"),
-    ExceedsLow(6, "Exceeds Low", "Exc-Low"),
-    ExceedsHigh(7, "Exceeds High", "Exc-High"),
+    ExceedsLow(6, "Exceeds Low", "Exc-Low"),	//not used JOtteson 6/30/2009
+    ExceedsHigh(7, "Exceeds High", "Exc-High"),	//not used JOtteson 6/30/2009
     Abnormal(8, "Abnormal"),
     Unknown(9, "Unknown"),
     Invalid(10, "Invalid", "Inv"),
