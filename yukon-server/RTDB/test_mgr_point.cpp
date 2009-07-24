@@ -82,6 +82,10 @@ BOOST_AUTO_TEST_CASE(test_mgr_point_get_control_offset)
     point_status2->setControlOffset(control_offset_contentious);
     point_status3->setControlOffset(control_offset_unique);
 
+    point_status1->setControlType(NormalControlType);
+    point_status2->setControlType(NormalControlType);
+    point_status3->setControlType(NormalControlType);
+
     manager.addPoint(point_status1);
     manager.addPoint(point_status2);
     manager.addPoint(point_status3);
@@ -105,6 +109,7 @@ BOOST_AUTO_TEST_CASE(test_mgr_point_changes)
     point_status1 = make_point<Test_CtiPointStatus>(device1_id, status1_id, StatusPointType, point1_offset);
 
     point_status1->setControlOffset(control1_offset);
+    point_status1->setControlType(NormalControlType);
 
     manager.addPoint(point_status1);
     //  we need to replace the following tests with point replacements from addPoint on the same pointid

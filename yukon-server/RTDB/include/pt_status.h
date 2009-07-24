@@ -57,6 +57,8 @@ public:
     void setControlOffset( int offset    )  {  _pointStatus.setControlOffset(offset);   }
     void setID           ( long id       )  {  _pointBase.setID(id);                }
     void setDeviceID     ( long deviceid )  {  _pointBase.setPAObjectID(deviceid);  }
+
+    void setControlType  ( CtiControlType_t type )  {  _pointStatus.setControlType(type);  }
 };
 
 

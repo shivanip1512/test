@@ -330,7 +330,16 @@ UINT CtiTablePointStatus::getStaticTags() const
 }
 
 CtiTablePointStatus::CtiTablePointStatus() :
-_controlInhibit(TRUE), _stateZeroControl(NULL), _stateOneControl(NULL)
+_controlInhibit(TRUE),
+_stateZeroControl(NULL),
+_stateOneControl(NULL),
+_controlType(InvalidControlType),
+_pointID       (0),
+_initialState  (0),
+_controlOffset (0),
+_closeTime1    (0),
+_closeTime2    (0),
+_commandTimeout(0)
 {}
 
 CtiTablePointStatus::CtiTablePointStatus(const CtiTablePointStatus& aRef)
