@@ -1,7 +1,10 @@
 package com.cannontech.common.device.service;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
@@ -10,6 +13,7 @@ import org.springframework.beans.factory.annotation.Required;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandRequestRouteAndDevice;
 import com.cannontech.common.device.commands.CommandRequestRouteAndDeviceExecutor;
@@ -23,7 +27,11 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
     private CommandRequestRouteAndDeviceExecutor commandRequestRouteAndDeviceExecutor = null;
     private ScheduledExecutor scheduledExecutor = null;
     private PaoDao paoDao = null;
+    private Map<SimpleCallback<Integer>, List<CommandCompletionCallback<CommandRequestRouteAndDevice>>> simpleCallbacksToCommandCompleteCallbacks = 
+        new HashMap<SimpleCallback<Integer>, List<CommandCompletionCallback<CommandRequestRouteAndDevice>>>();
+    private List<SimpleCallback<Integer>> cancelationCallbackList = new ArrayList<SimpleCallback<Integer>>(); 
     
+
     private static int MAX_ROUTE_RETRY = 10;
     private static int NEXT_ATTEMPT_WAIT = 5;
     private Logger log = YukonLogManager.getLogger(RouteDiscoveryServiceImpl.class);
@@ -35,14 +43,19 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
         state.setRouteIds(routeIds);
         state.setAttemptCount(1);
         state.setRouteFoundCallback(routeFoundCallback);
-        
+        state.setUser(user);
         // run
         doNextDiscoveryRequest(device, state);
     }
     
     private void doNextDiscoveryRequest(final YukonDevice device, final RouteDiscoveryState state) {
-        
+
         final String deviceLogStr = " DEVICE: " + paoDao.getYukonPAOName(device.getDeviceId()) + "' (" + device.getDeviceId() + ")";
+        
+        // The Callback has been canceled.  Ending the recursive call for that given Callback.
+        if(cancelationCallbackList.contains(state.getRouteFoundCallback())) {
+            return;
+        }
         
         // NO MORE ROUTES
         if (!state.isRoutesRemaining()) {
@@ -72,8 +85,8 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
 
                     // callback
                     CommandCompletionCallbackAdapter<CommandRequestRouteAndDevice> callback = new CommandCompletionCallbackAdapter<CommandRequestRouteAndDevice>() {
-                    	
-                    	@Override
+
+                        @Override
                         public void processingExceptionOccured(String reason) {
                         
                     		runCallbackWithNull(state, "Processing exception: " + reason, deviceLogStr, "", null);
@@ -149,6 +162,15 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
 
                     };
 
+                    List<CommandCompletionCallback<CommandRequestRouteAndDevice>> commandCompletionCallbackList = 
+                        simpleCallbacksToCommandCompleteCallbacks.get(state.getRouteFoundCallback());
+                    
+                    if(commandCompletionCallbackList == null){
+                        commandCompletionCallbackList = new ArrayList<CommandCompletionCallback<CommandRequestRouteAndDevice>>();
+                        simpleCallbacksToCommandCompleteCallbacks.put(state.getRouteFoundCallback(),commandCompletionCallbackList);
+                    }
+                    commandCompletionCallbackList.add(callback);
+
                     // execute
                     try {
                         commandRequestRouteAndDeviceExecutor.execute(Collections.singletonList(cmdReq), callback, CommandRequestExecutionType.DEVICE_COMMAND, state.getUser());
@@ -176,7 +198,7 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
             }
         });
     }
-
+    
     private void runCallbackWithNull(final RouteDiscoveryState state, final String reasonForNull, final String deviceLogStr, final String routeLogStr, final Exception nullReasonException) {
         
         final String callbackLogStr = " CALLBACK: " + state.getRouteFoundCallback().toString();
@@ -195,6 +217,32 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
         });
     }
     
+    public void cancelRouteDiscovery(final List<SimpleCallback<Integer>> routeFoundCallbacks, final LiteYukonUser user) {
+        
+        // Stops any further commands from being sent out by currently running callbacks.
+        for (SimpleCallback<Integer> routeFoundCallback : routeFoundCallbacks) {
+            this.cancelationCallbackList.add(routeFoundCallback);
+        }        
+        
+        // Sends out a cancel request for all the pings that have not had responses
+        scheduledExecutor.schedule(new Runnable() {
+            @Override
+            public void run() {
+                for (SimpleCallback<Integer> routeFoundCallback : routeFoundCallbacks) {
+                    List<CommandCompletionCallback<CommandRequestRouteAndDevice>> commandCompletionCallbacks = 
+                        simpleCallbacksToCommandCompleteCallbacks.get(routeFoundCallback);
+                    
+                    // Sends a cancel command to all the commands that have been sent out.
+                    if(commandCompletionCallbacks != null){
+                        for ( CommandCompletionCallback<CommandRequestRouteAndDevice> commandCompletionCallback : commandCompletionCallbacks) {
+                            commandRequestRouteAndDeviceExecutor.cancelExecution(commandCompletionCallback, user);
+                        }
+                    }
+                }
+            }
+        }, 5, TimeUnit.MILLISECONDS);
+    }
+
     @Required
     public void setCommandRequestRouteAndDeviceExecutor(
             CommandRequestRouteAndDeviceExecutor commandRequestRouteAndDeviceExecutor) {
@@ -210,4 +258,5 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
     public void setPaoDao(PaoDao paoDao) {
         this.paoDao = paoDao;
     }
+
 }
