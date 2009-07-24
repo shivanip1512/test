@@ -127,7 +127,7 @@ RWDBStatus CtiFDRManager::loadPointList()
         RWDBSelector selector = db.selector();
         buildFDRPointSelector(db,selector,fdrTranslation,pointBaseTable,pointAnalogTable, pointAccumulatorTable);
 
-        selector.where( selector.where() && fdrTranslation[COLNAME_FDR_POINTID] == pointBaseTable[COLNAME_PTBASE_POINTID] && 
+        selector.where( selector.where() && fdrTranslation[COLNAME_FDR_POINTID] == pointBaseTable[COLNAME_PTBASE_POINTID] &&
                         pointBaseTable[COLNAME_PTBASE_POINTID].leftOuterJoin(pointAnalogTable[COLNAME_PTANALOG_POINTID]) &&
                         pointBaseTable[COLNAME_PTBASE_POINTID].leftOuterJoin(pointAccumulatorTable[COLNAME_PTANALOG_POINTID]));
 
@@ -139,12 +139,12 @@ RWDBStatus CtiFDRManager::loadPointList()
                 dout << CtiTime() << " " << loggedSQLstring << endl;
             }
         }
-        
+
         std::map<long,CtiFDRPointSPtr> fdrTempMap;
-        retStatus = getPointsFromDB(selector,fdrTempMap); 
+        retStatus = getPointsFromDB(selector,fdrTempMap);
 
         //move all from tempMap to main Map.
-        for (std::map<long,CtiFDRPointSPtr>::iterator itr = fdrTempMap.begin(); itr != fdrTempMap.end(); itr++) 
+        for (std::map<long,CtiFDRPointSPtr>::iterator itr = fdrTempMap.begin(); itr != fdrTempMap.end(); itr++)
         {
             pointMap.insert((*itr).second->getPointID(),(*itr).second);
         }
@@ -169,7 +169,7 @@ RWDBStatus CtiFDRManager::loadPointList()
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ") loadPointList: unknown exception" << endl;
-        }     
+        }
         pointMap.removeAll(NULL, 0);
     }
     return retStatus;
@@ -198,14 +198,17 @@ RWDBStatus CtiFDRManager::loadPoint(long pointId)
         RWDBSelector selector = db.selector();
         buildFDRPointSelector(db,selector,fdrTranslation,pointBaseTable,pointAnalogTable, pointAccumulatorTable);
 
-        selector.where( selector.where() && fdrTranslation[COLNAME_FDR_POINTID] == pointBaseTable[COLNAME_PTBASE_POINTID] && pointBaseTable[COLNAME_PTBASE_POINTID].leftOuterJoin(pointAnalogTable[COLNAME_PTANALOG_POINTID]));
+        selector.where( selector.where() && fdrTranslation[COLNAME_FDR_POINTID] == pointBaseTable[COLNAME_PTBASE_POINTID]
+                        && pointBaseTable[COLNAME_PTBASE_POINTID].leftOuterJoin(pointAnalogTable[COLNAME_PTANALOG_POINTID])
+                        && pointBaseTable[COLNAME_PTBASE_POINTID].leftOuterJoin(pointAccumulatorTable[COLNAME_PTANALOG_POINTID]));
+
         selector.where( selector.where() && pointBaseTable[COLNAME_FDR_POINTID] == pointId);
 
         std::map<long,CtiFDRPointSPtr > fdrTempMap;
         retStatus = getPointsFromDB(selector,fdrTempMap);
-        
+
          //move all from tempMap to main Map.
-        for (std::map<long,CtiFDRPointSPtr >::iterator itr = fdrTempMap.begin(); itr != fdrTempMap.end(); itr++) 
+        for (std::map<long,CtiFDRPointSPtr >::iterator itr = fdrTempMap.begin(); itr != fdrTempMap.end(); itr++)
         {
             pointMap.insert((*itr).second->getPointID(),(*itr).second);
         }
@@ -240,7 +243,7 @@ RWDBStatus CtiFDRManager::loadPoint(long pointId)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ") loadPointList: unknown exception" << endl;
-        }     
+        }
         pointMap.removeAll(NULL, 0);
     }
 
@@ -345,7 +348,7 @@ RWDBStatus CtiFDRManager::getPointsFromDB(RWDBSelector& selector, std::map<long,
                 rdr[8]    >> dataOffset;
             }
 
-            
+
             std::map< long, CtiFDRPointSPtr >::iterator itr = fdrPtrMap.find(pointID);
 
             if( itr != fdrPtrMap.end() )
