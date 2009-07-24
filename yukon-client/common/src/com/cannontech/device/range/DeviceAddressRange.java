@@ -14,6 +14,10 @@ import com.cannontech.database.data.pao.PAOGroups;
 
 public class DeviceAddressRange
 {
+	
+	//IMPORTANT!  4194012 is the reserved broadcast group address. This should not be a valid address that
+	// could be entered into the Physical Address field.  SN (via Fisher) 20090724
+	
 	// Use Integer values for default range.
 	// The address field in DeviceCarrierSettings is an int (and should be positive)
 	private static final RangeBase RANGE_DEFAULT = 
