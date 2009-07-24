@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.common.bulk.collection.DeviceCollection;
@@ -30,52 +31,37 @@ public class RouteLocateExecutorImpl implements RouteLocateExecutor {
     private PaoDao paoDao = null;
     private DeviceUpdateService deviceUpdateService = null;
     private RecentResultsCache<RouteLocateResult> routeLocateResultsCache = null;
-    
+
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     
     @Override
-    public String execute(final DeviceCollection deviceCollection, final List<Integer> routeIds, boolean autoUpdateRoute, final SimpleCallback<RouteLocateResult> callback, LiteYukonUser user) {
+    public String execute(final DeviceCollection deviceCollection, final List<Integer> routeIds, boolean autoUpdateRoute, final SimpleCallback<RouteLocateResult> callback, final LiteYukonUser user) {
 
-        
         final RouteLocateResult routeLocateResult = new RouteLocateResult(deviceGroupMemberEditorDao, deviceGroupCollectionHelper);
         routeLocateResult.setDeviceCollection(deviceCollection);
         routeLocateResult.setRouteIds(routeIds);
         routeLocateResult.setAutoUpdateRoute(autoUpdateRoute);
         routeLocateResult.setSuccessGroup(temporaryDeviceGroupService.createTempGroup(null));
         routeLocateResult.setFailureGroup(temporaryDeviceGroupService.createTempGroup(null));
-        
+
         for (final YukonDevice device : deviceCollection) {
 
             List<Integer> orderedRouteIds = new ArrayList<Integer>(routeIds);
-            
+        
             // setup DeviceRouteLocation
             final DeviceRouteLocation deviceRouteLocation = new DeviceRouteLocation(device);
             
             // set initial route name (if it has one already)
-            final LiteYukonPAObject devicePaoObj = paoDao.getLiteYukonPAO(device.getDeviceId());
-            Integer initialRouteId = devicePaoObj.getRouteID();
-            if (initialRouteId != PAOGroups.INVALID) {
-                deviceRouteLocation.setInitialRouteId(initialRouteId);
-                deviceRouteLocation.setInitialRouteName(paoDao.getYukonPAOName(initialRouteId));
-                
-                boolean removed = orderedRouteIds.remove(initialRouteId);
-                if (removed) {
-                    
-                    List<Integer> reOrderedRouteIds = new ArrayList<Integer>();
-                    reOrderedRouteIds.add(initialRouteId);
-                    reOrderedRouteIds.addAll(orderedRouteIds);
-                    orderedRouteIds = reOrderedRouteIds;
-                }
-            }
-            
-            deviceRouteLocation.setDeviceName(devicePaoObj.getPaoName());
+            addInitialRoute(device, deviceRouteLocation, orderedRouteIds);
             
             // callback
             SimpleCallback<Integer> routeFoundCallback = new SimpleCallback<Integer> () {
                 
                 @Override
                 public void handle(Integer routeId) throws Exception {
+                    if(routeLocateResult.isCanceled()) 
+                        return;
                     
                     // not found
                     if (routeId == null) {
@@ -119,10 +105,9 @@ public class RouteLocateExecutorImpl implements RouteLocateExecutor {
                 }
             };
             
-            
             routeLocateResult.addPendingDeviceRouteLocation(deviceRouteLocation);
-            
             routeDiscoveryService.routeDiscovery(device, orderedRouteIds, routeFoundCallback, user);
+            routeLocateResult.addRouteFoundCallback(routeFoundCallback);
             
         }
         
@@ -132,6 +117,39 @@ public class RouteLocateExecutorImpl implements RouteLocateExecutor {
         return resultId;
     }
 
+    public void cancelExecution(String resultId, final LiteYukonUser user) {
+        RouteLocateResult routeLocateResult = routeLocateResultsCache.getResult(resultId);
+        List<SimpleCallback<Integer>> routeFoundCallbacks = routeLocateResult.getRouteFoundCallbacks();
+
+        routeDiscoveryService.cancelRouteDiscovery(routeFoundCallbacks, user);
+        
+        routeLocateResult.setCanceled(true);
+        routeLocateResult.setStopTime(new Date());
+        routeLocateResult.emptyPendingDeviceRouteLocations();
+    }
+    
+    private void addInitialRoute(YukonDevice device, 
+                                 DeviceRouteLocation deviceRouteLocation,
+                                 List<Integer> orderedRouteIds){
+        LiteYukonPAObject devicePaoObj = paoDao.getLiteYukonPAO(device.getDeviceId());
+        Integer initialRouteId = devicePaoObj.getRouteID();
+        if (initialRouteId != PAOGroups.INVALID) {
+            deviceRouteLocation.setInitialRouteId(initialRouteId);
+            deviceRouteLocation.setInitialRouteName(paoDao.getYukonPAOName(initialRouteId));
+            
+            boolean removed = orderedRouteIds.remove(initialRouteId);
+            if (removed) {
+                
+                List<Integer> reOrderedRouteIds = new ArrayList<Integer>();
+                reOrderedRouteIds.add(initialRouteId);
+                reOrderedRouteIds.addAll(orderedRouteIds);
+                orderedRouteIds = reOrderedRouteIds;
+            }
+        }
+        
+        deviceRouteLocation.setDeviceName(devicePaoObj.getPaoName());
+    }
+    
     @Override
     public List<RouteLocateResult> getCompleted() {
         return routeLocateResultsCache.getCompleted();
@@ -183,4 +201,5 @@ public class RouteLocateExecutorImpl implements RouteLocateExecutor {
     public void setRouteLocateResultsCache(RecentResultsCache<RouteLocateResult> routeLocateResultsCache) {
         this.routeLocateResultsCache = routeLocateResultsCache;
     }
+
 }

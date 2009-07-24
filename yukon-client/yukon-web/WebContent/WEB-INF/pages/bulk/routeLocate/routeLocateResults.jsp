@@ -45,13 +45,22 @@
             return function(data) {
             
                 var isComplete = data['isComplete'];
-                
+                var isCanceled = data['isCanceled'];
+
                 if (isComplete == 'true') {
                     $('setViewRoutesButton').disabled = false;
+                    $('cancelLocateDiv').hide();
+                }
+
+                if (isCanceled == 'true') {
+                    $('setViewRoutesButton').disabled = false;
+                    $('cancelLocateDiv').hide();
+
+                    $('commandsCanceledDiv').show();
                 }
             };
         }
-        
+
         function slowInput(buttonObj, formId) {
             buttonObj.disabled = true;
             $('waitImg').show();
@@ -69,27 +78,50 @@
         <tags:resultProgressBar totalCount="${deviceCount}"
         						 countKey="ROUTELOCATE/${resultId}/COMPLETED_COUNT"
         						 progressLabelTextKey="yukon.web.modules.amr.routeLocateResults.progressLabel"
-        						 statusTextKey="ROUTELOCATE/${resultId}/STATUS_TEXT">
-                                
+        						 statusTextKey="ROUTELOCATE/${resultId}/STATUS_TEXT"
+                                 statusClassKey="ROUTELOCATE/${resultId}/STATUS_CLASS"
+                                 isAbortedKey="ROUTELOCATE/${resultId}/IS_CANCELED">
             <%-- set/view routes --%>
             <br>
             <form id="routeLocateSettingsForm" action="<cti:url value="/spring/bulk/routeLocate/routeSettings" />" method="get">
                 <input type="hidden" name="resultId" value="${resultId}">
                 
+                <%-- cancel commands --%>
+                <div id="cancelLocateDiv">
+                    <c:url var="cancelUrl" value="/spring/bulk/routeLocate/cancelCommands" />
+                    <cti:msg var="cancelText" key="yukon.web.modules.amr.routeLocateResults.cancelLocateButtonLabel" />
+                    <tags:cancelCommands resultId="${resultId}"
+                                         cancelUrl="${cancelUrl}"
+                                         cancelButtonText="${cancelText}"/>
+                </div>
+                
                 <c:choose>
                     <c:when test="${result.autoUpdateRoute}">
-                        <cti:msg var="viewRoutesButtonLabel" key="yukon.web.modules.amr.routeLocateResults.viewRoutesButtonLabel" />
-                        <input type="button" id="setViewRoutesButton" value="${viewRoutesButtonLabel}" onclick="slowInput(this,'routeLocateSettingsForm');" <c:if test="${not result.complete}">disabled</c:if>>
+                        <span id="setRoutesSpan">
+                            <cti:msg var="viewRoutesButtonLabel" key="yukon.web.modules.amr.routeLocateResults.viewRoutesButtonLabel" />
+                            <input type="button" id="setViewRoutesButton" value="${viewRoutesButtonLabel}" onclick="slowInput(this,'routeLocateSettingsForm');" <c:if test="${not result.complete}">disabled</c:if>/>
+                        </span>
                     </c:when>
                     <c:otherwise>
-                        <cti:msg var="setRoutesButtonLabel" key="yukon.web.modules.amr.routeLocateResults.setRoutesButtonLabel" />
-                        <input type="button" id="setViewRoutesButton" value="${setRoutesButtonLabel}" onclick="slowInput(this,'routeLocateSettingsForm');" <c:if test="${not result.complete}">disabled</c:if>>
+                        <span id="setRoutesSpan">
+                            <cti:msg var="setRoutesButtonLabel" key="yukon.web.modules.amr.routeLocateResults.setRoutesButtonLabel" />
+                            <input type="button" id="setViewRoutesButton" value="${setRoutesButtonLabel}" onclick="slowInput(this,'routeLocateSettingsForm');" <c:if test="${not result.complete}">disabled</c:if>/>
+                        </span>
                     </c:otherwise>
                 </c:choose>
                 <img id="waitImg" src="<cti:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" style="display:none;">
             </form>
                                 
         </tags:resultProgressBar>
+
+        <div id="AllDevicesActionsDiv" style="padding:10px;display:none;">
+            <%-- device collection action --%>
+            <cti:link href="/spring/bulk/collectionActions" key="yukon.web.modules.amr.routeLocateResults.collectionActionOnAllDevicesLabel" class="small">
+                <cti:mapParam value="${result.deviceCollection.collectionParameters}"/>
+            </cti:link>
+            <tags:selectedDevicesPopup deviceCollection="${result.deviceCollection}" />
+            
+        </div>
         
         <%-- SUCCESS --%>
         <br>
@@ -109,7 +141,10 @@
         <%-- FAILURE --%>
         <br>
         <div class="normalBoldLabel"><cti:msg key="yukon.web.modules.amr.routeLocateResults.failureLabel" />: <span class="errorRed"><cti:dataUpdaterValue type="ROUTELOCATE" identifier="${resultId}/NOT_FOUND_COUNT"/></span></div>
-        
+        <div id="commandsCanceledDiv" style="display:none;">
+            <br>
+            <span class="errorRed"><cti:msg key="yukon.web.modules.amr.routeLocateResults.commandsCanceled" /></span>
+        </div>
         <div id="errorActionsDiv" style="padding:10px;display:none;">
         
             <%-- device collection action --%>
@@ -122,7 +157,8 @@
                     
     </tags:bulkActionContainer>
     
-    <cti:dataUpdaterCallback function="enableButton()" initialize="true" isComplete="ROUTELOCATE/${resultId}/IS_COMPLETE" />
-    <cti:dataUpdaterCallback function="toggleElementsWhenTrue(['successActionsDiv','errorActionsDiv'],true)" initialize="true" value="ROUTELOCATE/${resultId}/IS_COMPLETE" />
+    <cti:dataUpdaterCallback function="enableButton()" initialize="true" isComplete="ROUTELOCATE/${resultId}/IS_COMPLETE" isCanceled="ROUTELOCATE/${resultId}/IS_CANCELED"/>
+    <cti:dataUpdaterCallback function="toggleElementsWhenTrue(['AllDevicesActionsDiv','successActionsDiv','errorActionsDiv'],true)" initialize="true" value="ROUTELOCATE/${resultId}/IS_COMPLETE" />
+    <cti:dataUpdaterCallback function="toggleElementsWhenTrue(['AllDevicesActionsDiv','successActionsDiv','errorActionsDiv'],true)" initialize="true" value="ROUTELOCATE/${resultId}/IS_CANCELED" />
     
  </cti:standardPage>

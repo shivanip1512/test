@@ -1,4 +1,7 @@
 <%@ attribute name="resultId" required="true" type="java.lang.String"%>
+<%@ attribute name="cancelButtonText" required="true" type="java.lang.String"%>
+<%@ attribute name="cancelUrl" required="true" type="java.lang.String"%>
+<%@ attribute name="onClickEvent" required="false" type="java.lang.String"%>
 
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -57,17 +60,15 @@
 
 </script>
 
-<c:url var="cancelUrl" value="/spring/group/commander/cancelCommands" />
 <c:url var="waitImgUrl" value="/WebConfig/yukon/Icons/indicator_arrows.gif" />
-<cti:msg var="cancelText" key="yukon.common.device.commander.results.cancelCommands" />
 <cti:msg var="cancelingText" key="yukon.common.device.commander.results.cancelingCommands" />
 <cti:msg var="finishedText" key="yukon.common.device.commander.results.finishedCancelingCommands" />
 
 <span>
     <input type="button" 
-               value="${cancelText}"
+               value="${cancelButtonText}"
                id="cancelButton${ccid}" 
-               onclick="cancelCommands('${resultId}','${cancelUrl}','${ccid}','${cancelingText}','${finishedText}');">
+               onclick="cancelCommands('${resultId}','${cancelUrl}','${ccid}','${cancelButtonText}','${finishedText}');">
     <img id="waitImg${ccid}" src="${waitImgUrl}" style="display:none;">
 </span>
            

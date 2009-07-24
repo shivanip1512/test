@@ -1,5 +1,6 @@
 package com.cannontech.common.device.routeLocate;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +12,7 @@ import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.util.Completable;
+import com.cannontech.common.util.SimpleCallback;
 
 public class RouteLocateResult implements Completable {
 
@@ -19,6 +21,7 @@ public class RouteLocateResult implements Completable {
     
     private String resultId;
     private List<Integer> routeIds;
+    private List<SimpleCallback<Integer>> routeFoundCallbacks;
     private boolean autoUpdateRoute;
     private DeviceCollection deviceCollection;
     private StoredDeviceGroup successGroup;
@@ -27,6 +30,7 @@ public class RouteLocateResult implements Completable {
     private Date startTime;
     private Date stopTime;
     private boolean isComplete = false;
+    private boolean isCanceled = false;
     
     private int locatedCount = 0;
     private int notFoundCount = 0;
@@ -35,6 +39,7 @@ public class RouteLocateResult implements Completable {
     private Map<Integer, DeviceRouteLocation> completedDeviceRouteLocations = new HashMap<Integer, DeviceRouteLocation>();
     
     public RouteLocateResult(DeviceGroupMemberEditorDao deviceGroupMemberEditorDao, DeviceGroupCollectionHelper deviceGroupCollectionHelper) {
+        this.routeFoundCallbacks = new ArrayList<SimpleCallback<Integer>>();
         this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
         this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
         this.startTime = new Date();
@@ -43,6 +48,10 @@ public class RouteLocateResult implements Completable {
     @Override
     public boolean isComplete() {
         return isComplete;
+    }
+    
+    public boolean isCanceled() {
+        return isCanceled;
     }
     
     // METHODS
@@ -137,11 +146,19 @@ public class RouteLocateResult implements Completable {
     public Map<Integer, DeviceRouteLocation> getPendingDeviceRouteLocations() {
         return pendingDeviceRouteLocations;
     }
+    
+    public void emptyPendingDeviceRouteLocations(){
+        pendingDeviceRouteLocations.clear();
+    }
 
     public void setComplete(boolean isComplete) {
         this.isComplete = isComplete;
     }
 
+    public void setCanceled(boolean isCanceled) {
+        this.isCanceled = isCanceled;
+    }
+    
     public Date getStartTime() {
         return startTime;
     }
@@ -158,4 +175,18 @@ public class RouteLocateResult implements Completable {
         this.stopTime = stopTime;
     }
 
+    public void addRouteFoundCallback(SimpleCallback<Integer> routeFoundCallback) {
+        routeFoundCallbacks.add(routeFoundCallback);
+    }
+
+    public List<SimpleCallback<Integer>> getRouteFoundCallbacks() {
+        return routeFoundCallbacks;
+    }
+
+    public void setRouteFoundCallbacks(
+            List<SimpleCallback<Integer>> routeFoundCallbacks) {
+        this.routeFoundCallbacks = routeFoundCallbacks;
+    }
+
 }
+

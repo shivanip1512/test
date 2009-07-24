@@ -72,7 +72,11 @@
             <%-- cancel commands --%>
             <div id="cancelCommandsDiv">
                 <br>
-                <tags:cancelCommands resultId="${result.key}" />
+                <c:url var="cancelUrl" value="/spring/group/commander/cancelCommands" />
+                <cti:msg var="cancelText" key="yukon.web.modules.amr.routeLocateResults.cancelLocateButtonLabel" />
+                <tags:cancelCommands resultId="${result.key}" 
+                                     cancelUrl="${cancelUrl}"
+                                     cancelButtonText="${cancelText}"/>
             </div>
             
             <%-- device collection action --%>

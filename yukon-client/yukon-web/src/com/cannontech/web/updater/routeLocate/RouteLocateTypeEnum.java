@@ -31,7 +31,11 @@ public enum RouteLocateTypeEnum {
             
             ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.web.modules.amr.routeLocateHome.recentRouteLocateResults.STOP_TIME");
             resolvableTemplate.addData("stopTime", routeLocateResult.getStopTime());
-            resolvableTemplate.addData("finished", routeLocateResult.isComplete());
+            
+            if (routeLocateResult.isComplete() || routeLocateResult.isCanceled())
+                resolvableTemplate.addData("finished", true);
+            else
+                resolvableTemplate.addData("finished", false);
             
             return resolvableTemplate;
         }
@@ -43,15 +47,39 @@ public enum RouteLocateTypeEnum {
         }
     }),
     
+    IS_CANCELED(new ResultAccessor<RouteLocateResult>() {
+        public Object getValue(RouteLocateResult routeLocateResult) {
+            return routeLocateResult.isCanceled();
+        }
+    }),
+    
+    STATUS_CLASS(new ResultAccessor<RouteLocateResult>() {
+        public Object getValue(RouteLocateResult routeLocateResult) {
+            
+            String className = "";
+            if (routeLocateResult.isCanceled()) {
+                className = "errorRed";
+            } else {
+                className = "";
+            }
+            
+            return className;
+        }
+    }),
+    
     STATUS_TEXT(new ResultAccessor<RouteLocateResult>() {
         public Object getValue(RouteLocateResult routeLocateResult) {
             
         	ResolvableTemplate resolvableTemplate = null;
         	
-        	if (routeLocateResult.isComplete()) {
-        		resolvableTemplate = new ResolvableTemplate("yukon.web.modules.amr.routeLocateHome.recentRouteLocateResults.IS_COMPLETE_TEXT");
+        	if(routeLocateResult.isCanceled()){
+        	    resolvableTemplate = new ResolvableTemplate("yukon.web.modules.amr.routeLocateHome.recentRouteLocateResults.IS_CANCELED_TEXT");
         	} else {
-        		resolvableTemplate = new ResolvableTemplate("yukon.web.modules.amr.routeLocateHome.recentRouteLocateResults.IS_IN_PROGRESS_TEXT");
+            	if (routeLocateResult.isComplete()) {
+            		resolvableTemplate = new ResolvableTemplate("yukon.web.modules.amr.routeLocateHome.recentRouteLocateResults.IS_COMPLETE_TEXT");
+            	} else {
+        	        resolvableTemplate = new ResolvableTemplate("yukon.web.modules.amr.routeLocateHome.recentRouteLocateResults.IS_IN_PROGRESS_TEXT");
+        	    }
         	}
         	
             return resolvableTemplate;

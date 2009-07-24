@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -33,6 +34,7 @@ import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.bulk.BulkControllerBase;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.util.JsonView;
 
 @CheckRoleProperty(YukonRoleProperty.LOCATE_ROUTE)
 public class RouteLocateController extends BulkControllerBase {
@@ -46,6 +48,7 @@ public class RouteLocateController extends BulkControllerBase {
     private Logger log = YukonLogManager.getLogger(RouteLocateController.class);
     
     // HOME
+    @RequestMapping(value = "/routeLocate/home")
     public ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws Exception, ServletException {
         
         ModelAndView mav = new ModelAndView("routeLocate/routeLocateHome.jsp");
@@ -80,6 +83,7 @@ public class RouteLocateController extends BulkControllerBase {
     }
     
     // EXECUTE
+    @RequestMapping(value = "/routeLocate/executeRouteLocation")
     public ModelAndView executeRouteLocation(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
@@ -135,7 +139,19 @@ public class RouteLocateController extends BulkControllerBase {
         return mav;
     }
     
+    
+    // CANCELS A CURRENTLY RUNNING ROUTE LOCATE
+    @RequestMapping(value = "/routeLocate/cancelCommands")
+    public ModelAndView cancelCommands(String resultId, YukonUserContext userContext) {
+        
+        ModelAndView mav = new ModelAndView(new JsonView());
+        routeLocateExecutor.cancelExecution(resultId,userContext.getYukonUser());
+        return mav;
+  
+    }
+  
     // RESULTS
+    @RequestMapping(value = "/routeLocate/results")
     public ModelAndView results(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         
         ModelAndView mav = new ModelAndView("routeLocate/routeLocateResults.jsp");
@@ -156,6 +172,7 @@ public class RouteLocateController extends BulkControllerBase {
     
     
     // VIEW ROUTES
+    @RequestMapping(value = "/routeLocate/routeSettings")
     public ModelAndView routeSettings(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         
         ModelAndView mav = new ModelAndView("routeLocate/routeLocateRouteSettings.jsp");
@@ -189,6 +206,7 @@ public class RouteLocateController extends BulkControllerBase {
     
     
     // SET SINGLE ROUTE
+    @RequestMapping(value = "/routeLocate/setRoute")
     public ModelAndView setRoute(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         
         // get info
@@ -239,5 +257,4 @@ public class RouteLocateController extends BulkControllerBase {
     public void setDeviceDao(DeviceDao deviceDao) {
         this.deviceDao = deviceDao;
     }
-    
 }

@@ -10,6 +10,8 @@ public interface RouteLocateExecutor {
 
     public String execute(DeviceCollection deviceCollection, List<Integer> routeIds, boolean autoUpdateRoute, SimpleCallback<RouteLocateResult> callback, LiteYukonUser user);
     
+    public void cancelExecution(String resultId, LiteYukonUser user);
+    
     public List<RouteLocateResult> getCompleted();
     
     public List<RouteLocateResult> getPending();

@@ -10,4 +10,6 @@ public interface RouteDiscoveryService {
 
     public void routeDiscovery(YukonDevice device, List<Integer> routeIds, SimpleCallback<Integer> callback, LiteYukonUser user);
 
+    public void cancelRouteDiscovery(List<SimpleCallback<Integer>> routeFoundCallbacks, 
+                                     final LiteYukonUser user);
 }

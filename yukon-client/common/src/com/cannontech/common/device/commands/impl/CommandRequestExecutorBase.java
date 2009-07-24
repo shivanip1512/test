@@ -439,6 +439,9 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         // get listener
         CommandResultMessageListener messageListener = msgListeners.get(callback);
         
+        // The callback has already returned.
+        if(messageListener == null) return 0;
+        
         // cancel listener
         // - settings listener to canceled will cause the commandRequests write loop to stop sending
         //   commands and log them as unsent instead.
