@@ -50,6 +50,10 @@ private:
     bool current_thread_owns_both  () const;
     bool current_thread_owns_any   () const;
 
+protected:
+
+    virtual void terminate_program() const;
+
 public:
 
     typedef CtiReadLockGuard<readers_writer_lock_t>  reader_lock_guard_t;

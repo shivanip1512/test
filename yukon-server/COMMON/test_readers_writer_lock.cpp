@@ -8,9 +8,19 @@ using boost::unit_test_framework::test_suite;
 
 #include <sstream>
 
+namespace Cti {
+
+class test_readers_writer_lock_t : public readers_writer_lock_t
+{
+protected:
+    virtual void terminate_program() const { throw "Unit test program kill override"; }
+};
+
+}; // namespace Cti
+
 BOOST_AUTO_TEST_CASE(test_lock)
 {
-    Cti::readers_writer_lock_t lock;
+    Cti::test_readers_writer_lock_t lock;
     std::ostringstream s;
 
     s.str("");

@@ -44,7 +44,7 @@ void readers_writer_lock_t::acquireWrite()
         {
             //  upgrades not currently allowed
             autopsy(__FILE__, __LINE__);
-            throw "Reader Lock upgrade NOT allowed";
+            terminate_program();
         }
 
         _lock.lock();
@@ -78,7 +78,7 @@ bool readers_writer_lock_t::acquireWrite(unsigned long milliseconds)
         {
             //  upgrades not currently allowed
             autopsy(__FILE__, __LINE__);
-            throw "Reader Lock upgrade NOT allowed";
+            terminate_program();
         }
 
         if( !_lock.timed_lock(boost::posix_time::milliseconds(milliseconds)) )
@@ -115,7 +115,7 @@ bool readers_writer_lock_t::tryAcquireWrite()
         {
             //  upgrades not currently allowed
             autopsy(__FILE__, __LINE__);
-            throw "Reader Lock upgrade NOT allowed";
+            terminate_program();
         }
 
         if( !_lock.try_lock() )
@@ -183,7 +183,7 @@ void readers_writer_lock_t::add_reader()
     {
         //  Out of thread storage space!
         autopsy(__FILE__, __LINE__);
-        throw "Out of RW lock storage space";
+        terminate_program();
     }
 
     ++_reader_recursion[reader_index];
@@ -201,14 +201,14 @@ bool readers_writer_lock_t::remove_reader()
     {
         //  It wasn't in the list - never inserted?
         autopsy(__FILE__, __LINE__);
-        throw "Reader missing";
+        terminate_program();
     }
 
     if( !_reader_recursion[reader_index] )
     {
         //  clear_tid() called one too many times
         autopsy(__FILE__, __LINE__);
-        throw "Recursion too deep";
+        terminate_program();
     }
 
     return --_reader_recursion[reader_index];
@@ -244,7 +244,7 @@ unsigned readers_writer_lock_t::find_reader_index(thread_id_t tid) const
     {
         //  Out of thread storage space!
         autopsy(__FILE__, __LINE__);
-        throw "Out of RW lock storage space";
+        terminate_program();
     }
 
     return reader_index;
@@ -326,6 +326,11 @@ readers_writer_lock_t::operator string() const
     s << "]";
 
     return s.str();
+}
+
+void readers_writer_lock_t::terminate_program() const
+{
+    terminate();
 }
 
 };
