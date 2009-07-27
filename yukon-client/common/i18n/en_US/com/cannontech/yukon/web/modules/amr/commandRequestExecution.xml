@@ -120,5 +120,7 @@
 	     <br><br>
     ]]></entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.editScheduleButton">Edit Job</entry>
+    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.enableJobButton">Enable Job</entry>
+    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.disableJobButton">Disable Job</entry>
     
 </properties>

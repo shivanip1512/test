@@ -27,6 +27,8 @@
 <cti:msg var="deviceGroupPopupInfoText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.popInfo.deviceGroup" />
 <cti:msg var="executionsPopupInfoText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.popInfo.executions" />
 <cti:msg var="editScheduleButtonText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.editScheduleButton" />
+<cti:msg var="enableJobButtonText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.enableJobButton" />
+<cti:msg var="disableJobButtonText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.disableJobButton" />
     
 <c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
 <c:url var="helpOver" value="/WebConfig/yukon/Icons/help_over.gif"/>
@@ -169,15 +171,30 @@
 			
 		</tags:nameValueContainer>
 		
-		<%-- edit button --%>
+		
 		<br><br>
-		<form name="editScheduledGroupRequestExecutionForm" id="editScheduledGroupRequestExecutionForm" action="/spring/group/scheduledGroupRequestExecution/home" method="get">
-		
+		<form id="editScheduledGroupRequestExecutionForm" action="/spring/group/scheduledGroupRequestExecution/home" method="get">
 			<input type="hidden" name="editJobId" value="${jobWrapper.job.id}">
-		
-			<tags:slowInput myFormId="editScheduledGroupRequestExecutionForm" labelBusy="${editScheduleButtonText}" label="${editScheduleButtonText}"/>
-			
 		</form>
+		
+		<form id="toggleJobEnabledForm" action="/spring/group/scheduledGroupRequestExecutionResults/toggleJobEnabled" method="post">
+			<input type="hidden" name="jobId" value="${jobWrapper.job.id}">
+		</form>
+		
+		<%-- edit button --%>
+		<tags:slowInput myFormId="editScheduledGroupRequestExecutionForm" labelBusy="${editScheduleButtonText}" label="${editScheduleButtonText}"/>
+		
+		<%-- enable/disable button --%>
+		<c:choose>
+			<c:when test="${jobWrapper.job.disabled}">
+				<tags:slowInput myFormId="toggleJobenabledForm" labelBusy="${enableJobButtonText}" label="${enableJobButtonText}"/>
+			</c:when>
+			<c:otherwise>
+				<tags:slowInput myFormId="toggleJobenabledForm" labelBusy="${disableJobButtonText}" label="${disableJobButtonText}"/>
+			</c:otherwise>
+		</c:choose>
+		
+		
 	
 	</tags:sectionContainer>
 					

@@ -161,6 +161,27 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
 		
 	}
 	
+	// TOGGLE JOB ENABLED
+	public ModelAndView toggleJobEnabled(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+		
+		ModelAndView mav = new ModelAndView("redirect:detail");
+		
+		int jobId = ServletRequestUtils.getRequiredIntParameter(request, "jobId");
+        
+        ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(jobId);
+        
+        if (job.isDisabled()) {
+        	jobManager.enableJob(job);
+        } else {
+        	jobManager.disableJob(job);
+        }
+        
+        mav.addObject("jobId", jobId);
+        
+        return mav;
+		
+	}
+	
 	// JOB WRAPPER
 	public class JobWrapper {
 		
