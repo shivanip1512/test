@@ -73,6 +73,13 @@
 					<x:selectOneMenu id="Decimal_Digits" value="#{ptEditorForm.pointBase.pointUnit.decimalPlaces}" >
 						<f:selectItems value="#{ptEditorForm.decimalDigits}"/>
 					</x:selectOneMenu>
+					
+					<x:outputLabel for="stateGroups" value="State Group: "/>
+                    <x:selectOneMenu id="stateGroups" value="#{ptEditorForm.pointBase.point.stateGroupID}"
+                            disabled="#{!capControlForm.editingAuthorized}"
+                            onchange="submit();" valueChangeListener="#{ptEditorForm.stateGroupChanged}">
+                        <f:selectItems value="#{ptEditorForm.stateGroups}"/>
+                    </x:selectOneMenu>
 				</x:panelGrid>
 			</x:htmlTag>
 	    </f:subview>

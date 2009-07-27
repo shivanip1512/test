@@ -117,6 +117,7 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 	public boolean add(CapbankController capbankController, boolean addPoints) {
 		
 		int newId = paoDao.getNextPaoId();
+		capbankController.setId(newId);
 		DeviceType type = DeviceType.getForId(capbankController.getType());
 		
 		DeviceBase controller = DeviceFactory.createDevice(type.getDeviceTypeId());

@@ -21,6 +21,7 @@ public class SubstationBus {
     private int phasec = CtiUtilities.NONE_ZERO_ID;
     private String controlFlag = "N";
     private int voltReductionPointId = 0;
+    private boolean disabled = false;
     
     public String getName() {
 		return name;
@@ -34,6 +35,15 @@ public class SubstationBus {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+	
+	public boolean getDisabled() {
+        return disabled ;
+    }
+    
+    public void setDisabled(boolean disabled) {
+        this.disabled = disabled;
+    }
+    
 	public int getAltSubId() {
         return altSubId;
     }

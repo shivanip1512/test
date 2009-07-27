@@ -8,7 +8,9 @@ public enum CapControlType {
     SUBBUS("CCSUBBUS"),
     FEEDER("CCFEEDER"),
     CAPBANK("CAP BANK"),
-    CBC("CBC");
+    CBC("CBC"),
+    SCHEDULE("SCHEDULE"),
+    STRATEGY("STRATEGY");
 
 	private final String displayValue;
 	

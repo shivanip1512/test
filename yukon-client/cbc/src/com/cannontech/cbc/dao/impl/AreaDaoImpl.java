@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.cbc.dao.AreaDao;
 import com.cannontech.cbc.model.Area;
+import com.cannontech.cbc.model.SpecialArea;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.HolidayScheduleDao;
 import com.cannontech.core.dao.PaoDao;
@@ -26,6 +27,7 @@ import com.cannontech.database.incrementer.NextValueHelper;
 public class AreaDaoImpl implements AreaDao {
 
     private static final String insertSql;
+    private static final String specialAreaInsertSql;
     private static final String removeSql;
     private static final String updateSql;
     private static final String selectAllSql;
@@ -41,6 +43,9 @@ public class AreaDaoImpl implements AreaDao {
 	static {
             
     		insertSql = "INSERT INTO CAPCONTROlAREA " +
+            "(AreaID,VoltReductionPointId) VALUES (?,?)";
+    		
+    		specialAreaInsertSql = "INSERT INTO CAPCONTROlSPECIALAREA " +
             "(AreaID,VoltReductionPointId) VALUES (?,?)";
     		
             removeSql = "DELETE FROM CAPCONTROlAREA WHERE AreaID = ?";
@@ -79,6 +84,7 @@ public class AreaDaoImpl implements AreaDao {
 		pao.setPaoName(area.getName());
 		pao.setType(CapControlTypes.STRING_CAPCONTROL_AREA);
 		pao.setDescription(area.getDescription());
+		pao.setDisableFlag(area.getDisabled() ? 'Y' : 'N');
 				
 		try {
 			Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, pao).execute();
@@ -104,6 +110,43 @@ public class AreaDaoImpl implements AreaDao {
 		
 		return result;
 	}
+	
+	@Override
+    public boolean addSpecialArea(SpecialArea specialArea) {
+        int newPaoId = nextValueHelper.getNextValue("YukonPaObject");
+
+        YukonPAObject pao = new YukonPAObject();
+        pao.setPaObjectID(newPaoId);
+        pao.setCategory(PAOGroups.STRING_CAT_CAPCONTROL);
+        pao.setPaoClass(PAOGroups.STRING_CAT_CAPCONTROL);
+        pao.setPaoName(specialArea.getName());
+        pao.setType(CapControlTypes.STRING_CAPCONTROL_SPECIAL_AREA);
+        pao.setDescription(specialArea.getDescription());
+        pao.setDisableFlag(specialArea.getDisabled() ? 'Y' : 'N');
+                
+        try {
+            Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, pao).execute();
+        } catch (TransactionException e) {
+            CTILogger.error("Insert of SpecialArea, " + specialArea.getName() + ", in YukonPAObject table failed.");
+            return false;
+        }
+        
+        //Added to YukonPAObject table, now add to CAPCONTROLAREA
+        specialArea.setId(pao.getPaObjectID());
+        int rowsAffected = simpleJdbcTemplate.update(specialAreaInsertSql, specialArea.getId(), specialArea.getVoltReductionPointId());
+
+        boolean result = (rowsAffected == 1);
+        
+        if (result == false) {
+            CTILogger.debug("Insert of SpecialArea, " + specialArea.getName() + ", in CAPCONTROLSPECIALAREA table failed.");
+            return false;
+        }
+        
+        seasonScheduleDao.saveDefaultSeasonStrategyAssigment(specialArea.getId());
+        holidayScheduleDao.saveDefaultHolidayScheduleStrategyAssigment(specialArea.getId());
+        
+        return result;
+    }
 
 	@Override
 	public boolean update(Area area) {

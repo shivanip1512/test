@@ -483,7 +483,7 @@
                 <td>CBC Name</td>
                 <td>CB Name (Order) 
                     <img class="rAlign popupImg" src="/WebConfig/yukon/Icons/information.gif" style="vertical-align: middle;"
-                        onmouseover="statusMsg(this, 'Order is the order the CapBank will control in. Commands that can be sent to a field device are initiated from this column');" />
+                        onmouseover="statusMsgAbove(this, 'Order is the order the CapBank will control in. Commands that can be sent to a field device are initiated from this column');" />
                 </td>                    
                 <td width="2%"></td>    
                 <td>State 

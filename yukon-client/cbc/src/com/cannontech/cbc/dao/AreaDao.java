@@ -1,8 +1,10 @@
 package com.cannontech.cbc.dao;
 
 import com.cannontech.cbc.model.Area;
+import com.cannontech.cbc.model.SpecialArea;
 
 public interface AreaDao {
+    
 	/**
 	 * Adds Area to the database. Returns false if failed.
 	 * 
@@ -10,6 +12,7 @@ public interface AreaDao {
 	 * @return
 	 */
     public boolean add( Area area );
+    
     /**
      * Removes Area from the database. Returns false if failed.
      * 
@@ -29,4 +32,11 @@ public interface AreaDao {
     
     
     public Area getById( int id );
+    
+    /**
+     * Adds SpecialArea to the database. Returns false if failed.
+     * @param specialArea
+     * @return
+     */
+    public boolean addSpecialArea(SpecialArea specialArea);
 }

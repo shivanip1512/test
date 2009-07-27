@@ -1,7 +1,6 @@
 package com.cannontech.servlet.filter;
 
 import java.io.IOException;
-import java.util.Stack;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -10,7 +9,6 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.util.AntPathMatcher;
@@ -40,7 +38,7 @@ public class ReferrerPageFilter implements Filter {
             "/capcontrol/cbcPointTimestamps.jsp",
             "/capcontrol/standardPageWrapper.jsp",
             "/capcontrol/capcontrolcomments.jsp",
-            "/capcontrol/tempmove.jsp",
+            "/spring/capcontrol/move/bankMove",
             "/spring/capcontrol/capAddInfo",
             "/capcontrol/charts.jsp"};
     }

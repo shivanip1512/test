@@ -12,7 +12,7 @@
         <tr>
             <td colspan="2">
                 <hr style="color: gray;"/>
-                <a href="/capcontrol/standardPageWrapper.jsp?title=Temp CapBank Move&page=/capcontrol/tempmove.jsp&bankid=${paoId}&oneline=true" 
+                <a href="/capcontrol/standardPageWrapper.jsp?title=Temp CapBank Move&page=/spring/capcontrol/move/bankMove.jsp&bankid=${paoId}&oneline=true" 
                 style="color: white">Move Bank</a>
             </td>
         </tr>

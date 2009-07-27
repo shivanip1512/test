@@ -13,10 +13,9 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.database.data.pao.DBEditorTypes;
 import com.cannontech.database.db.pao.PAOSchedule;
-import com.cannontech.servlet.nav.DBEditorNav;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.web.navigation.CtiNavObject;
 import com.cannontech.web.util.JSFParamUtil;
 
 /**
@@ -43,7 +42,8 @@ public class PAOScheduleForm extends DBEditorForm {
 	/**
 	 * Edit a schedule with the given id
 	 */
-	public void edit( ActionEvent ev ) {
+	@SuppressWarnings("unchecked")
+    public void edit( ActionEvent ev ) {
 	    if(!isEditingAuthorized()) {
             throw new NotAuthorizedException("The user is not authorized to perform this action.");
         }
@@ -54,7 +54,7 @@ public class PAOScheduleForm extends DBEditorForm {
 		CapControlForm capControlForm = (CapControlForm) session.getAttribute("capControlForm"); 
 		int elemID = Integer.parseInt( (String)paramMap.get("schedID") );
 		
-		capControlForm.initItem( elemID, DBEditorNav.EDITOR_SCHEDULE );
+		capControlForm.initItem( elemID, DBEditorTypes.EDITOR_SCHEDULE );
 	}
 
 	/**

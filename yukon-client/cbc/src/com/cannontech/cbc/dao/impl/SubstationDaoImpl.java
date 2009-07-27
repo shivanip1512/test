@@ -90,6 +90,7 @@ public class SubstationDaoImpl implements SubstationDao {
 		pao.setPaoName(substation.getName());
 		pao.setType(CapControlTypes.STRING_CAPCONTROL_SUBSTATION);
 		pao.setDescription(substation.getDescription());
+		pao.setDisableFlag(substation.getDisabled() ? 'Y' : 'N');
 
 		try {
 			Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, pao).execute();

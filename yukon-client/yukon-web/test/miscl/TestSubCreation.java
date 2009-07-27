@@ -3,6 +3,7 @@ package miscl;
 
 import junit.framework.TestCase;
 
+import com.cannontech.cbc.exceptions.PAODoesntHaveNameException;
 import com.cannontech.web.editor.CapControlForm;
 import com.cannontech.web.wizard.CBCWizardModel;
 
@@ -15,7 +16,7 @@ public class TestSubCreation extends TestCase {
 
     CapControlForm form = new CapControlForm();
 
-    public void testCreateSub () {
+    public void testCreateSub () throws PAODoesntHaveNameException {
         CapControlForm form = new CapControlForm();
         ((CBCWizardModel)form.getWizData()).setName("Elliot's Sub 11");
         form.initWizard (4000);

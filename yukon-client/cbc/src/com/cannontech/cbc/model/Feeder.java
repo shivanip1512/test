@@ -17,6 +17,7 @@ public class Feeder {
     private int phaseb = CtiUtilities.NONE_ZERO_ID;
     private int phasec = CtiUtilities.NONE_ZERO_ID;
     private String controlFlag = "N";
+    private boolean disabled = false;
     
     
 	public String getName() {
@@ -31,6 +32,15 @@ public class Feeder {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+	
+	public boolean getDisabled() {
+        return disabled;
+    }
+    
+    public void setDisabled(boolean disabled) {
+        this.disabled = disabled;
+    }
+    
 	public int getCurrentVarLoadPointId() {
         return currentVarLoadPointId;
     }

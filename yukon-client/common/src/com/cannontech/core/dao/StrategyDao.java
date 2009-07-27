@@ -11,4 +11,6 @@ public interface StrategyDao {
     public boolean delete(int strategyId);
 
     public boolean deleteStrategyAssignmentsByStrategyId(int strategyId);
+    
+    public int add(String name);
 }

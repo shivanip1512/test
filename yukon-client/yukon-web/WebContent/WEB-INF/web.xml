@@ -619,14 +619,6 @@
 
 	<!-- CapControl specific configs -->
 	<servlet>
-		<description>
-			Allows for interaction with the CapControl server.
-		</description>
-		<servlet-name>CBCServlet</servlet-name>
-		<servlet-class>com.cannontech.servlet.CBCServlet</servlet-class>
-		<load-on-startup>5</load-on-startup>
-	</servlet>
-	<servlet>
 		<servlet-name>OnelineCBCServlet</servlet-name>
 		<servlet-class>
 			com.cannontech.servlet.OnelineCBCServlet
@@ -1032,11 +1024,6 @@
 	<servlet-mapping>
 		<servlet-name>MultispeakServlet</servlet-name>
 		<url-pattern>/servlet/MultispeakServlet</url-pattern>
-	</servlet-mapping>
-
-	<servlet-mapping>
-		<servlet-name>CBCServlet</servlet-name>
-		<url-pattern>/servlet/CBCServlet</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>

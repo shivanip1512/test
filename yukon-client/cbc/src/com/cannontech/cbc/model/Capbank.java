@@ -24,6 +24,7 @@ public class Capbank {
     private String maxOpDisable = "N";
     
     private CapbankAdditional capbankAdditional;
+    private boolean disabled = false;
     
     public String getName() {
 		return name;
@@ -40,6 +41,14 @@ public class Capbank {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+	
+	public boolean getDisabled() {
+        return disabled ;
+    }
+    
+    public void setDisabled(boolean disabled) {
+        this.disabled = disabled;
+    }
 
 	public int getBankSize() {
         return bankSize;

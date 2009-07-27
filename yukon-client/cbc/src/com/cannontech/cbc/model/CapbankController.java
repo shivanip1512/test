@@ -18,6 +18,7 @@ public class CapbankController {
 	private int intervalRate;
 	private int scanGroup;
 	private int alternateRate;
+    private boolean disabled;
 	
 	public CapbankController() {
 		
@@ -134,6 +135,14 @@ public class CapbankController {
 	public void setScanEnabled(boolean scanEnabled) {
 		this.scanEnabled = scanEnabled;
 	}
+	
+	public boolean getDisabled() {
+        return disabled;
+    }
+    
+    public void setDisabled(boolean disabled) {
+        this.disabled = disabled;
+    }
 
 	@Override
 	public int hashCode() {

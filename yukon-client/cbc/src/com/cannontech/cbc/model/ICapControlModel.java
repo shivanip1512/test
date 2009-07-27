@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.cannontech.cbc.exceptions.PAODoesntHaveNameException;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.DBPersistent;
@@ -31,7 +32,7 @@ public interface ICapControlModel {
 
     public abstract void update() throws SQLException;
 
-    public abstract String create();
+    public abstract String create() throws PAODoesntHaveNameException;
 
     public abstract ICBControllerModel getCBControllerEditor();
 

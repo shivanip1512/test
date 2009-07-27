@@ -2,6 +2,7 @@ package com.cannontech.core.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.PaoScheduleDao;
 import com.cannontech.database.db.pao.PAOSchedule;
 import com.cannontech.database.db.pao.PaoScheduleAssignment;
@@ -24,6 +26,7 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
 	private static final String selectAssignmentByEventId;
 	private static final String deletePaoSchedule;
 	private static final String deletePaoScheduleAssignmentByScheduleId;
+	private static final String insertSql;
 	
 	private static final ParameterizedRowMapper<PaoScheduleAssignment> assignmentRowMapper;
 	private static final ParameterizedRowMapper<PAOSchedule> paoScheduleRowMapper;
@@ -32,6 +35,9 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
 	private NextValueHelper nextValueHelper = null;
 	
 	static{
+	    
+	    insertSql = "INSERT INTO PAOSchedule values(?, ?, ?, ?, ?, ?)";
+	    
 	    updateAssignment = "UPDATE PAOScheduleAssignment SET ScheduleId = ?, PaoId = ?, Command = ?, disableOvUv = ? where EventId = ?";
 	    
 		selectAllPaoSchedule = "SELECT ScheduleID,ScheduleName From PaoSchedule";
@@ -81,6 +87,16 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
 			}
 		};
 	}
+	
+	@Override
+    public int add(String name, boolean disabled) {
+	    int scheduleId = nextValueHelper.getNextValue("PAOSchedule");
+	    Date nextRunTime = new Date( System.currentTimeMillis() - 14400000 );
+	    Date lastRunTime = CtiUtilities.get1990GregCalendar().getTime();
+	    Integer intervalRate = new Integer(CtiUtilities.NONE_ZERO_ID);
+        simpleJdbcTemplate.update(insertSql, scheduleId, nextRunTime, lastRunTime, intervalRate, name, disabled ? "Y" : "N" );
+        return scheduleId;
+    }
 
 	@Override
 	@Transactional(readOnly = true)

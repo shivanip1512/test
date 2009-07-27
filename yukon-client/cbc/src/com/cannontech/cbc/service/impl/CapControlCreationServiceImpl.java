@@ -10,16 +10,22 @@ import com.cannontech.cbc.dao.FeederDao;
 import com.cannontech.cbc.dao.CapbankDao;
 import com.cannontech.cbc.model.Area;
 import com.cannontech.cbc.model.Capbank;
+import com.cannontech.cbc.model.CapbankAdditional;
 import com.cannontech.cbc.model.CapbankController;
 import com.cannontech.cbc.model.Feeder;
+import com.cannontech.cbc.model.SpecialArea;
 import com.cannontech.cbc.model.Substation;
 import com.cannontech.cbc.model.SubstationBus;
 import com.cannontech.cbc.service.CapControlCreationService;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PaoScheduleDao;
+import com.cannontech.core.dao.StrategyDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.CapControlType;
+import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.common.device.DeviceType;
 
@@ -33,6 +39,89 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	private AreaDao areaDao;
 	private PaoDao paoDao;
 	private DBPersistentDao dbPersistantDao;
+    private PaoScheduleDao paoScheduleDao;
+    private StrategyDao strategyDao;
+	
+	@Override
+	public int create(int type, String name, boolean disabled, int portId) {
+        int id = -1;
+        switch(type) {
+
+            case CapControlTypes.CAP_CONTROL_SPECIAL_AREA :
+                SpecialArea spArea = new SpecialArea();
+                spArea.setName(name);
+                spArea.setDisabled(disabled);
+                createSpecialArea(spArea);
+                id = spArea.getId();
+                break;
+                
+            case CapControlTypes.CAP_CONTROL_AREA :
+                Area area = new Area();
+                area.setName(name);
+                area.setDisabled(disabled);
+                createArea(area);
+                id = area.getId();
+                break;
+                
+            case CapControlTypes.CAP_CONTROL_SUBSTATION :
+                Substation substation = new Substation();
+                substation.setName(name);
+                substation.setDisabled(disabled);
+                createSubstation(substation);
+                id = substation.getId();
+                break;
+    
+            case CapControlTypes.CAP_CONTROL_SUBBUS :
+                SubstationBus bus = new SubstationBus();
+                bus.setName(name);
+                bus.setDisabled(disabled);
+                createSubstationBus(bus);
+                id = bus.getId();
+                break;
+    
+            case CapControlTypes.CAP_CONTROL_FEEDER :
+                Feeder feeder = new Feeder();
+                feeder.setName(name);
+                feeder.setDisabled(disabled);
+                createFeeder(feeder);
+                id = feeder.getId();
+                break;
+    
+            case CapControlTypes.CAP_CONTROL_CAPBANK :
+                Capbank capbank = new Capbank();
+                capbank.setName(name);
+                capbank.setDisabled(disabled);
+                capbank.setCapbankAdditional(new CapbankAdditional());
+                createCapbank(capbank);
+                id = capbank.getId();
+                break;
+    
+            case CapControlTypes.CAP_CONTROL_SCHEDULE :
+                id = createPAOSchedule(name, disabled);
+                
+                break;
+                
+            case CapControlTypes.CAP_CONTROL_STRATEGY :
+                id = createStrategy(name);
+                break;
+                
+            default : // must be a cbc
+                CapbankController controller = new CapbankController();
+                DeviceType deviceType = DeviceType.getForId(type);
+                controller.setScanGroup(0);
+                controller.setScanType(DeviceScanRate.TYPE_GENERAL);
+                controller.setName(name);
+                controller.setType(deviceType.getDeviceTypeId());
+                controller.setPortId(portId);
+                controller.setDisabled(disabled);
+                createController(controller);
+                id = controller.getId();
+                break;
+                
+        }
+        
+        return id;
+    }
 	
 	@Override
 	public boolean createArea(Area area) {
@@ -47,6 +136,18 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	}
 	
 	@Override
+    public boolean createSpecialArea(SpecialArea specialArea) {
+        boolean success = areaDao.addSpecialArea(specialArea);
+        
+        if (success) {
+            //Send DB add message
+            sendDBChangeMessage(specialArea.getId(),DBChangeMsg.CHANGE_TYPE_ADD,CapControlType.SPECIAL_AREA);
+        }
+
+        return success;
+    }
+	
+	@Override
 	public boolean createSubstation(Substation substation) {
 		boolean success = substationDao.add(substation);
 
@@ -57,6 +158,16 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 
 		return success;
 	}
+	
+	@Override
+    public int createPAOSchedule(String name, boolean disabled) {
+        return paoScheduleDao.add(name, disabled);
+    }
+	
+	@Override
+    public int createStrategy(String name) {
+        return strategyDao.add(name);
+    }
 	
 	@Override
 	public boolean assignSubstation(int substationId, int areaId) {
@@ -311,4 +422,13 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 		this.dbPersistantDao = dbPersistantDao;
 	}
 	
+	@Autowired
+    public void setPaoScheduleDao(PaoScheduleDao paoScheduleDao) {
+        this.paoScheduleDao = paoScheduleDao;
+    }
+	
+	@Autowired
+    public void setStrategyDao(StrategyDao strategyDao) {
+        this.strategyDao = strategyDao;
+    }
 }

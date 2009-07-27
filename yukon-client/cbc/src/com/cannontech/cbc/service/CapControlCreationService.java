@@ -4,6 +4,7 @@ import com.cannontech.cbc.model.Area;
 import com.cannontech.cbc.model.Capbank;
 import com.cannontech.cbc.model.CapbankController;
 import com.cannontech.cbc.model.Feeder;
+import com.cannontech.cbc.model.SpecialArea;
 import com.cannontech.cbc.model.Substation;
 import com.cannontech.cbc.model.SubstationBus;
 
@@ -71,4 +72,8 @@ public interface CapControlCreationService {
 	public boolean assignController(CapbankController controller, String capBankName);
 	public boolean unassignController(int controllerId);
 	
+	public int create(int type, String name, boolean disabled, int portId);
+    public boolean createSpecialArea(SpecialArea specialArea);
+    public int createPAOSchedule(String name, boolean disabled);
+    public int createStrategy(String name);
 }

@@ -9,6 +9,7 @@ public class Area {
 	
 	private int id;
 	private int voltReductionPointId = 0;
+    private boolean disabled = false;
 	
 	public Area() {
 		
@@ -29,6 +30,14 @@ public class Area {
 	public void setDesctiption(String description) {
 		this.description = description;
 	}
+	
+	public boolean getDisabled() {
+        return disabled;
+    }
+    
+    public void setDisabled(boolean disabled) {
+        this.disabled = disabled;
+    }
 	
 	public int getId() {
 		return id;

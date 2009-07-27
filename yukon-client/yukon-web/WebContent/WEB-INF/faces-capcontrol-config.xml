@@ -19,12 +19,16 @@
             <value>#{seasonScheduleDao}</value>
         </managed-property>
         <managed-property>
-            <property-name>deviceDefinitionService</property-name>
-            <value>#{deviceDefinitionService}</value>
-        </managed-property>
-        <managed-property>
             <property-name>holidayScheduleDao</property-name>
             <value>#{holidayScheduleDao}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>capbankControllerDao</property-name>
+            <value>#{capbankControllerDao}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>capControlCreationService</property-name>
+            <value>#{capControlCreationService}</value>
         </managed-property>
     </managed-bean>
     

@@ -418,10 +418,10 @@
             <link>/editor/cbcWizBase.jsf?type=1051</link>
           </option>
           <option id="schedule">
-            <link>/editor/cbcWizBase.jsf?type=100000</link>
+            <link>/editor/cbcWizBase.jsf?type=4005</link>
           </option>
           <option id="strategy">
-            <link>/editor/cbcWizBase.jsf?type=5</link>
+            <link>/editor/cbcWizBase.jsf?type=4006</link>
           </option>
         </links>
       </option>

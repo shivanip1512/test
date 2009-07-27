@@ -3979,6 +3979,16 @@
         <changeGroup>cap</changeGroup>
     </device>
     
+    <device id="CBC_7011" inherits="CBC_1WAY_BASE">
+        <displayName>CBC 7011</displayName>
+        <changeGroup>cap</changeGroup>
+    </device>
+    
+    <device id="CBC_7012" inherits="CBC_1WAY_BASE">
+        <displayName>CBC 7012</displayName>
+        <changeGroup>cap</changeGroup>
+    </device>
+    
     <device id="CBC_DNP" inherits="CBC_DNP_BASE">
         <displayName>CBC DNP</displayName>
         <changeGroup>cap</changeGroup>
@@ -4370,5 +4380,20 @@
     <device id="CBC_7024" inherits="CBC_2WAY_BASE">
         <displayName>CBC 7024</displayName>
     </device>
-        
+    
+    <device id="CAPBANK">
+        <displayName>CAP BANK</displayName>
+        <points>
+            <point type="Status" offset="1">
+                <name>BANK STATUS</name>
+                <stategroup value="CapBankStatus"/>
+            </point>
+            <point type="Analog" offset="1">
+                <init>true</init>
+                <name>OPERATION</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+            </point>
+        </points>
+    </device>
 </deviceDefinitions>

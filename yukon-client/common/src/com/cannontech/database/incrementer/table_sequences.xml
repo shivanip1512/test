@@ -197,5 +197,11 @@
         <table name="CommandRequestExecution" identitycolumn="CommandRequestExecutionId"/>
         <table name="CommandRequestExecutionResults" identitycolumn="CommandRequestExecutionResultsId"/>
       </sequence>
+      <sequence name="PAOSchedule">
+        <table name="PAOSchedule" identitycolumn="ScheduleId" initsequence="true"/>
+      </sequence>
+      <sequence name="CapControlStrategy">
+        <table name="CapControlStrategy" identitycolumn="StrategyId" initsequence="true"/>
+      </sequence>
   </sequencetable>
 </sequencetables>

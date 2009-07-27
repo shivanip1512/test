@@ -16,4 +16,5 @@ public interface PaoScheduleDao {
     public boolean updateAssignment(PaoScheduleAssignment assignment);
     public boolean delete(int scheduleId);
     public boolean deletePaoScheduleAssignmentsByScheduleId(int scheduleId);
+    public int add(String name, boolean disabled);
 }

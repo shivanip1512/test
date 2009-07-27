@@ -9,17 +9,58 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.StrategyDao;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
+import com.cannontech.database.db.point.calculation.CalcComponentTypes;
+import com.cannontech.database.incrementer.NextValueHelper;
 
 
 public class StrategyDaoImpl implements StrategyDao{
     
     private final ParameterizedRowMapper<CapControlStrategy> rowMapper = new StrategyRowMapper();
     private SimpleJdbcTemplate simpleJdbcTemplate;
+    private NextValueHelper nextValueHelper;
 
     public StrategyDaoImpl() {
         super();
+    }
+    
+    @Override
+    public int add(String name) {
+        int strategyId = nextValueHelper.getNextValue("CapControlStrategy");
+        String controlMethod = "IndividualFeeder";
+        Integer maxDailyOperation = new Integer(0);
+        String maxOperationDisableFlag = "N";
+        Integer peakStartTime = new Integer(0);
+        Integer peakStopTime = new Integer(86400);  //24:00
+        Integer controlInterval = new Integer(900);
+        Integer minResponseTime = new Integer(900);
+        Integer minConfirmPercent = new Integer(75);
+        Integer failurePercent = new Integer(25);
+        String daysOfWeek = new String("NYYYYYNN");
+        String controlUnits = CalcComponentTypes.LABEL_KVAR;
+        Integer controlDelayTime = new Integer(0);
+        Integer controlSendRetries = new Integer(0);
+        Double peakLag = new Double(0.0);
+        Double peakLead = new Double(0.0);
+        Double offPkLag = new Double(0.0);
+        Double offPkLead = new Double(0.0);
+        Double pkVarLag = new Double (0.0);
+        Double pkVarLead = new Double(0.0);
+        Double offpkVarLead = new Double(0.0);
+        Double offpkVarLag = new Double(0.0);
+        Double pkPFPoint = new Double (0.1);
+        Double offPkPFPoint = new Double (0.1);
+        String integrateFlag = "N";
+        Integer integratePeriod = new Integer (0);
+        String likeDayFallBack = "N";
+        String endDaySettings = CtiUtilities.STRING_NONE;
+        String sql = "INSERT INTO CapControlStrategy VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+        simpleJdbcTemplate.update(sql, strategyId, name, controlMethod, maxDailyOperation, maxOperationDisableFlag, peakStartTime, peakStopTime,
+            controlInterval, minResponseTime, minConfirmPercent, failurePercent, daysOfWeek, controlUnits, controlDelayTime, controlSendRetries, peakLag, peakLead,
+            offPkLag, offPkLead, pkVarLag, pkVarLead, offpkVarLag, offpkVarLead, pkPFPoint, offPkPFPoint, integrateFlag, integratePeriod, likeDayFallBack, endDaySettings);
+        return strategyId;
     }
     
     @Override
@@ -108,5 +149,10 @@ public class StrategyDaoImpl implements StrategyDao{
     @Autowired
     public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
+    }
+    
+    @Autowired
+    public void setNextValueHelper(NextValueHelper nextValueHelper) {
+        this.nextValueHelper = nextValueHelper;
     }
 }

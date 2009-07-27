@@ -19,6 +19,9 @@ import com.cannontech.cbc.model.CapbankAdditional;
 import com.cannontech.cbc.model.Feeder;
 import com.cannontech.cbc.model.LiteCapControlObject;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.DeviceType;
+import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -30,7 +33,6 @@ import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointBase;
-import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.util.Validator;
 
 //TODO: This does not add to cap bank additional yet.
@@ -49,6 +51,7 @@ public class CapbankDaoImpl implements CapbankDao {
     private static final ParameterizedRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private PaoDao paoDao;
+    private DeviceDefinitionService deviceDefinitionService;
     
     static {
         insertSql = "INSERT INTO CAPBANK (DEVICEID,OPERATIONALSTATE,ControllerType," + 
@@ -122,6 +125,11 @@ public class CapbankDaoImpl implements CapbankDao {
 	public void setPaoDao(PaoDao paoDao) {
 		this.paoDao = paoDao;
 	}
+    
+    @Autowired
+    public void setDeviceDefinitionService(DeviceDefinitionService deviceDefinitionService) {
+        this.deviceDefinitionService = deviceDefinitionService;
+    }
 
     @Override
     public boolean add(Capbank bank) {		
@@ -134,17 +142,12 @@ public class CapbankDaoImpl implements CapbankDao {
 		device.setPAOCategory(PAOGroups.STRING_CAT_DEVICE);
 		device.setPAOName(bank.getName());		
 		device.setPAODescription(bank.getDescription());
+		device.setDisabled(bank.getDisabled());
 		
 		SmartMultiDBPersistent smartDB = new SmartMultiDBPersistent();
 		smartDB.addOwnerDBPersistent(device);
-		
-		//create the Status Point for this CapBank
-		PointBase statusPoint = PointFactory.createBankStatusPt(newId);
-		smartDB.addDBPersistent(statusPoint);
-		
-		//create the Analog Point for this CapBank used to track Op Counts
-		PointBase analogPoint = PointFactory.createBankOpCntPoint(newId);
-		smartDB.addDBPersistent(analogPoint);
+		List<PointBase> points = deviceDefinitionService.createAllPointsForDevice(new YukonDevice(newId, DeviceType.CAPBANK));
+		smartDB.addAllDBPersistent(points);
 		
 		try {
 			Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, smartDB).execute();

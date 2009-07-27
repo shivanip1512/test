@@ -19,10 +19,11 @@ import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang.Validate;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.cbc.cache.CapControlCache;
+import com.cannontech.cbc.dao.CapbankControllerDao;
 import com.cannontech.cbc.dao.CapbankDao;
 import com.cannontech.cbc.dao.FeederDao;
 import com.cannontech.cbc.dao.SubstationBusDao;
@@ -36,12 +37,10 @@ import com.cannontech.cbc.exceptions.SerialNumberExistsException;
 import com.cannontech.cbc.model.EditorDataModel;
 import com.cannontech.cbc.model.ICBControllerModel;
 import com.cannontech.cbc.model.ICapControlModel;
-import com.cannontech.cbc.point.CBCPointFactory;
 import com.cannontech.cbc.service.CapControlCreationModel;
+import com.cannontech.cbc.service.CapControlCreationService;
 import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.device.YukonDevice;
-import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.StringUtils;
@@ -72,8 +71,6 @@ import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.multi.MultiDBPersistent;
-import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.database.data.pao.DBEditorTypes;
 import com.cannontech.database.data.pao.PAOFactory;
@@ -82,13 +79,11 @@ import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
-import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.CCFeederBankList;
 import com.cannontech.database.db.capcontrol.CCFeederSubAssignment;
 import com.cannontech.database.db.capcontrol.CCStrategyTimeOfDaySet;
 import com.cannontech.database.db.capcontrol.CCSubstationSubBusList;
-import com.cannontech.database.db.capcontrol.CapBankAdditional;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.capcontrol.CapControlSubstationBus;
 import com.cannontech.database.db.device.DeviceScanRate;
@@ -98,10 +93,8 @@ import com.cannontech.database.db.pao.PAOScheduleAssign;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 import com.cannontech.database.db.season.SeasonSchedule;
 import com.cannontech.database.model.Season;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.web.db.CBCDBObjCreator;
 import com.cannontech.web.editor.data.CBCSpecialAreaData;
 import com.cannontech.web.editor.model.CBCSpecialAreaDataModel;
 import com.cannontech.web.editor.model.CapControlStrategyModel;
@@ -160,7 +153,8 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     private Integer holidayScheduleId = -1000;
     private Integer holidayStrategyId = -1000;
     private CCStrategyTimeOfDaySet strategyTimeOfDay = null;
-    private DeviceDefinitionService deviceDefinitionService;
+    private CapControlCreationService capControlCreationService;
+    private CapbankControllerDao capbankControllerDao;
     
     private static CapControlCache cache = (CapControlCache)YukonSpringHook.getBean("capControlCache");
     private static CapbankDao capbankDao = YukonSpringHook.getBean("capbankDao",CapbankDao.class);
@@ -494,7 +488,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                 ((CapControlStrategy)dbObj).setStrategyID(new Integer(id));
                 break;
 		}
-		setDbPersistent(dbObj);        
+		setDbPersistent(dbObj);
 		initItem();
 	}
 
@@ -536,13 +530,13 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 			initPanels(PointTypes.getType(((PointBase) getDbPersistent()).getPoint().getPointType()));
 		} else if (getDbPersistent() instanceof PAOSchedule) {
 			itemID = ((PAOSchedule) getDbPersistent()).getScheduleID().intValue();
-            initPanels(DBEditorTypes.PAO_SCHEDULE);
+            initPanels(CapControlTypes.CAP_CONTROL_SCHEDULE);
 		}
         else if (getDbPersistent() instanceof CapControlStrategy) {
             CapControlStrategy strat = (CapControlStrategy)getDbPersistent();
             itemID = strat.getStrategyID().intValue();
             editingCBCStrategy = true;
-            initPanels(DBEditorTypes.EDITOR_STRATEGY);
+            initPanels(CapControlTypes.CAP_CONTROL_STRATEGY);
             if(strat.getControlMethod().equalsIgnoreCase(CapControlStrategy.CNTRL_TIME_OF_DAY)) {
                 CCStrategyTimeOfDaySet tod = getStrategyTimeOfDay();
                 tod.setStrategyId(strat.getStrategyID());
@@ -706,14 +700,14 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     			getVisibleTabs().put("CBCController", Boolean.TRUE);
     			break;
     
-    		case DBEditorTypes.PAO_SCHEDULE:
+    		case CapControlTypes.CAP_CONTROL_SCHEDULE:
     			setEditorTitle("Schedule");
     			getVisibleTabs().put("GeneralPAO", Boolean.FALSE);
     			getVisibleTabs().put("GeneralSchedule", Boolean.TRUE);
     			getVisibleTabs().put("CBCSchedule", Boolean.TRUE);
     			break;
                 
-            case DBEditorTypes.EDITOR_STRATEGY:
+            case CapControlTypes.CAP_CONTROL_STRATEGY:
                 setEditorTitle("Strategy");
                 getVisibleTabs().put("GeneralPAO", Boolean.FALSE);
                 getVisibleTabs().put("CBCStrategy", Boolean.TRUE);
@@ -947,171 +941,64 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		((CapControlSubBus) getDbPersistent()).getCapControlSubstationBus().setDualBusEnabled(dualBusCtl);
 	}
     
-	/**
-	 * Creates extra points or any other supporting object for the given parent
-	 * based on the paoType
-	 * @param dbObj 
-	 * @throws PAODoesntHaveNameException 
-	 */
-	private void createPostItems(int paoType, int paoId, final FacesMessage facesMsg, DBPersistent dbObj) throws TransactionException {
-        SmartMultiDBPersistent smartMulti = new SmartMultiDBPersistent();
-		// store the objects we add to the DB
-		CBCDBObjCreator cbObjCreator = new CBCDBObjCreator(getWizData());
-        if (dbObj instanceof CapBank) {
-            createCapBankAdditional(dbObj, facesMsg);
-        }else if(dbObj instanceof CapControlSubBus 
-            	|| dbObj instanceof CapControlArea
-            	|| dbObj instanceof CapControlSpecialArea
-            	|| dbObj instanceof CapControlFeeder) {
-            seasonScheduleDao.saveDefaultSeasonStrategyAssigment(paoId);
-            holidayScheduleDao.saveDefaultHolidayScheduleStrategyAssigment(paoId);
+    /**
+     * Returns the JSF page id to start editing from.
+     * @param type
+     * @return
+     */
+    private int getEditorType(int type) {
+        if (type == CapControlTypes.CAP_CONTROL_SCHEDULE) {
+            return DBEditorTypes.EDITOR_SCHEDULE;
+        }else if (type == CapControlTypes.CAP_CONTROL_STRATEGY) {
+            return DBEditorTypes.EDITOR_STRATEGY;
+        }else {
+            return DBEditorTypes.EDITOR_CAPCONTROL;
         }
-        if  (paoType == CapControlTypes.CAP_CONTROL_FEEDER || paoType == CapControlTypes.CAP_CONTROL_SUBBUS) {
-            smartMulti = CBCPointFactory.createPointsForPAO(paoId,dbObj.getDbConnection());
-        } else {
-            smartMulti = cbObjCreator.createChildItems(paoType, new Integer(paoId));
-        }
-		addDBObject(smartMulti, facesMsg);
-	}
-
-	/**
-	 * Creates extra supporting object(s) for the given parent based on the
-	 * paoType
-	 * @throws PAODoesntHaveNameException 
-	 */
-	private void createPreItems(int paoType, DBPersistent dbObj, final FacesMessage facesMsg) throws TransactionException, PAODoesntHaveNameException {
-		// store the objects we add to the DB
-		CBCDBObjCreator cbObjCreator = new CBCDBObjCreator(getWizData());
-        SmartMultiDBPersistent smartMulti = new SmartMultiDBPersistent();
-		//work around for a when pao is a sub bus. need when creating points
-        if (paoType != PAOGroups.INVALID) {
-            smartMulti = cbObjCreator.createParentItems(paoType);
-        }
-		//make sure we are inserting the right object
-		try {			
-			Validate.notNull(smartMulti.getOwnerDBPersistent());
-			errorCheckOnCreate(smartMulti.getOwnerDBPersistent(), cbObjCreator.getCbcWizardModel().getNestedWizard());
-		} catch (IllegalArgumentException nullArg) {
-		    //don't do anything since we just want to avoid exception thrown to the user
-		} catch (PAODoesntHaveNameException e) {
-			throw e;
-		}
-		addDBObject(smartMulti, facesMsg);
-		if  (dbObj instanceof CapBank) {
-		    // set the parent to use the newly created supporting items
-    		if (((CBCWizardModel) getWizData()).isCreateNested()) {
-    			// set the CapBanks ControlDeviceID to be the ID of the CBC we just created
-    			YukonPAObject pao = ((YukonPAObject) smartMulti.getOwnerDBPersistent());
-                ((CapBank) dbObj).getCapBank().setControlDeviceID(pao.getPAObjectID());
-                StatusPoint statusPt;
-                if ( pao instanceof CapBankController702x || pao instanceof CapBankControllerDNP ) {
-                   MultiDBPersistent pointVector = CBCPointFactory.createPointsForCBCDevice(pao);           
-                   CBControllerEditor.insertPointsIntoDB(pointVector);
-                   statusPt = (StatusPoint) MultiDBPersistent.getFirstObjectOfType(StatusPoint.class, pointVector);
-                }else {
-                    //create additional info find the first status point in our CBC and assign its ID to our CapBank for control purposes
-                    statusPt = (StatusPoint) SmartMultiDBPersistent.getFirstObjectOfType(StatusPoint.class, smartMulti);
-                }
-    			((CapBank) dbObj).getCapBank().setControlPointID(statusPt.getPoint().getPointID());
-    		}
-        }
-    }
-
-	//  create addtional info
-    private void createCapBankAdditional(DBPersistent dbObj, final FacesMessage facesMsg) throws TransactionException {
-        CapBankAdditional additionalInfo = new CapBankAdditional();
-        additionalInfo.setDeviceID(((CapBank)dbObj).getDevice().getDeviceID());
-        addDBObject(additionalInfo, facesMsg);
     }
 
     /**
      * Creates a cap control object, strategy, or schedule.
+     * @throws PAODoesntHaveNameException 
      * @Return String the url to go when done.
      */
-    public String create() {
-		FacesMessage facesMsg = new FacesMessage();
+    @Transactional
+    public String create() throws PAODoesntHaveNameException {
+        FacesMessage facesMsg = new FacesMessage();
         FacesContext facesContext = FacesContext.getCurrentInstance();
-		try {
-			// if there is a secondaryType set, use that value to create the PAO
-			int paoType = ((CBCWizardModel) getWizData()).getSelectedType();
-			DBPersistent dbObj = null;
-            CapControlStrategy strategy = null;
-			int editorType = PAOGroups.INVALID;
-			if (paoType == DBEditorTypes.PAO_SCHEDULE) {
-				dbObj = new PAOSchedule();
-				((PAOSchedule) dbObj).setDisabled(((CBCWizardModel) getWizData()).getDisabled().booleanValue());
-				((PAOSchedule) dbObj).setScheduleName(((CBCWizardModel) getWizData()).getName());
-				addDBObject(dbObj, facesMsg);
-				itemID = ((PAOSchedule) dbObj).getScheduleID().intValue();
-				editorType = DBEditorTypes.EDITOR_SCHEDULE;
-			} else if(paoType == DBEditorTypes.EDITOR_STRATEGY) {
-                strategy = CCYukonPAOFactory.createCapControlStrategy();
-                Integer newID = CapControlStrategy.getNextStrategyID();
-                strategy.setStrategyID(newID);
-                strategy.setStrategyName(((CBCWizardModel) getWizData()).getName());
-                addDBObject(strategy, facesMsg);
-                itemID = strategy.getStrategyID();
-                editorType = DBEditorTypes.EDITOR_STRATEGY;
-            }else {
-				dbObj = CCYukonPAOFactory.createCapControlPAO(paoType);
-				((YukonPAObject) dbObj).setDisabled(((CBCWizardModel) getWizData()).getDisabled().booleanValue());
-				// for CBCs that have a portID with it
-				if (DeviceTypesFuncs.cbcHasPort(paoType)) {
-                    ICapBankController capBankController = (ICapBankController) dbObj;
-                    capBankController.setCommID(getWizData().getPortID());
-                }
-				createPreItems(paoType, dbObj, facesMsg);
-				//make sure we configured the object correctly before we insert it into DB
-				errorCheckOnCreate(dbObj, (CBCWizardModel) getWizData());
-				addDBObject(dbObj, facesMsg);
-				itemID = ((YukonPAObject) dbObj).getPAObjectID().intValue();
-				editorType = DBEditorTypes.EDITOR_CAPCONTROL;
-			}
-			// creates any extra db objects if need be
-			createPostItems(paoType, itemID, facesMsg, dbObj);
-			facesMsg.setDetail("Database add was SUCCESSFUL");
-			
-            //create points for the CBC702x or CBC DNP device   
-            if (dbObj instanceof CapBankController702x || dbObj instanceof CapBankControllerDNP){
-                List<PointBase> points = deviceDefinitionService.createAllPointsForDevice(new YukonDevice(((YukonPAObject)dbObj).getPAObjectID(), PAOGroups.getDeviceType(((YukonPAObject)dbObj).getPAOType())));
-                MultiDBPersistent pointMulti = new MultiDBPersistent();
-                pointMulti.getDBPersistentVector().addAll(points);
-                CBControllerEditor.insertPointsIntoDB(pointMulti);  
-            }
-
-            if(!(paoType == DBEditorTypes.EDITOR_STRATEGY)) {
-                generateDBChangeMsg(dbObj, DBChangeMsg.CHANGE_TYPE_ADD);
-            }else {
-                generateDBChangeMsg(strategy, DBChangeMsg.CHANGE_TYPE_ADD);
-            }
-            JSFUtil.redirect("/editor/cbcBase.jsf?type=" + editorType + "&itemid=" + itemID);
-		} 
-		catch (PAODoesntHaveNameException noNameE){
-			facesMsg.setDetail(noNameE.getMessage());
-			facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
-		}
-		catch (TransactionException te) {
-			// do nothing since the appropriate actions was taken in the super
-		} finally {
-            if (facesContext != null){
-                facesContext.addMessage("cti_db_add", facesMsg);
-            }
+        
+        CBCWizardModel wizard = (CBCWizardModel) getWizData();
+        String name = wizard.getName();
+        if(org.apache.commons.lang.StringUtils.isBlank(name)) {
+            throw new PAODoesntHaveNameException();
         }
-		return ""; // go nowhere since this action failed
-	}
+        int type = wizard.getSelectedType();
+        boolean disabled = wizard.getDisabled();
+        int portId = wizard.getPortID();
 
-	/**
-	 * @param dbObj
-	 * @param wizData 
-	 * @throws PAODoesntHaveNameException
-	 */
-	private void errorCheckOnCreate(DBPersistent dbObj, CBCWizardModel wizData) throws PAODoesntHaveNameException {
-		if (!((CBCWizardModel) getWizData()).getName().equalsIgnoreCase("")){
-			((YukonPAObject) dbObj).setPAOName(wizData.getName());			
-		}
-		else {		
-			throw new PAODoesntHaveNameException();
-		}
+        try {
+            if(type == CapControlTypes.CAP_CONTROL_CAPBANK && wizard.isCreateNested()) {
+                /* Create the cbc, then the cap bank, then assign cbc to cap bank */
+                CBCWizardModel cbcWizard = wizard.getNestedWizard();
+                int cbcType = cbcWizard.getSelectedType();
+                boolean cbcDisabled = cbcWizard.getDisabled();
+                String cbcName = cbcWizard.getName();
+                int cbcPortId = cbcWizard.getPortID();
+                int controllerId = capControlCreationService.create(cbcType, cbcName, cbcDisabled, cbcPortId);
+                itemID = capControlCreationService.create(type, name, disabled, portId);
+                capbankControllerDao.assignController(itemID, controllerId);
+            } else {
+                itemID = capControlCreationService.create(type, name, disabled, portId);
+            }
+            facesMsg.setDetail("Database add was SUCCESSFUL");
+            JSFUtil.redirect("/editor/cbcBase.jsf?type=" + getEditorType(type) + "&itemid=" + itemID);
+        }catch (Exception e) {
+            facesMsg.setDetail(e.getMessage());
+            facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
+            return "";
+        } finally {
+            facesContext.addMessage("cti_db_add", facesMsg);
+        }
+        return "";
 	}
 
 	@SuppressWarnings("unchecked")
@@ -2143,7 +2030,11 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		this.unassignedSubBuses = unassignedSubBuses;
 	}
 	
-	public void setDeviceDefinitionService(DeviceDefinitionService deviceDefinitionService) {
-        this.deviceDefinitionService = deviceDefinitionService;
+	public void setCapControlCreationService(CapControlCreationService capControlCreationService) {
+        this.capControlCreationService = capControlCreationService;
+    }
+	
+	public void setCapbankControllerDao(CapbankControllerDao capbankControllerDao) {
+        this.capbankControllerDao = capbankControllerDao;
     }
 }

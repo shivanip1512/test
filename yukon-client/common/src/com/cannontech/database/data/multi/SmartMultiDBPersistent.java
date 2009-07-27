@@ -1,5 +1,7 @@
 package com.cannontech.database.data.multi;
 
+import java.util.Collection;
+
 import com.cannontech.database.db.DBPersistent;
 
 public class SmartMultiDBPersistent extends CommonMulti implements com.cannontech.database.db.CTIDbChange
@@ -25,6 +27,13 @@ public SmartMultiDBPersistent(MultiDBPersistent aMulti) {
 public synchronized boolean addDBPersistent( DBPersistent value )
 {
 	return getDBPersistentVector().add( value );
+}
+
+/**
+ * Adds a DB DBPersistent object to our Multi
+ */
+public synchronized boolean addAllDBPersistent( Collection<? extends DBPersistent> collection ) {
+    return getDBPersistentVector().addAll(collection);
 }
 
 /**
