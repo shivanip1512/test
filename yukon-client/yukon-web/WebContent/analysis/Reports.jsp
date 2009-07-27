@@ -24,7 +24,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
-<cti:verifyRolesAndProperties value="REPORTING"/>
+
+<%@page import="com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter"%><cti:verifyRolesAndProperties value="REPORTING"/>
 
 <%
 	LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
@@ -38,6 +39,9 @@
 <jsp:setProperty name="REPORT_BEAN" property="groupType" param="groupType"/>
 <jsp:setProperty name="REPORT_BEAN" property="start" param="startDate"/>
 <jsp:setProperty name="REPORT_BEAN" property="stop" param="stopDate"/>
+<jsp:setProperty name="REPORT_BEAN" property="stop" param="stopDate"/>
+<jsp:setProperty name="REPORT_BEAN" property="selectedReportFilter" param="selectedReportFilter"/> <%-- enum value of the ReportFilter to be selected initially Ex: GROUP Ex: METER. Optional, set to first filter is not present. --%>
+<jsp:setProperty name="REPORT_BEAN" property="selectedReportFilterValues" param="selectedReportFilterValues"/> <%-- comma separated list of values to be selected initially. Ex: 01234599 Ex: /Meters/X,/Meters/Y. Optional, blank default value if not set --%>
 
 <% 
     REPORT_BEAN.setUserID(lYukonUser.getUserID());
@@ -105,6 +109,9 @@
 <cti:standardMenu menuSelection="<%= menuSelection %>"/>
 
 <script>
+
+Event.observe (window, 'load', makeFirstSelectedFilterValueVisible);
+
 function loadTarget(form)
 {
 	var extGroup = form.ext;
@@ -190,6 +197,26 @@ function checkDates(){
 		return false;
 	}
 }
+
+function makeFirstSelectedFilterValueVisible() {
+	
+	var listbox = $('selectFilterValues');	
+	var selectedOptions = new Array();
+	y=0;
+		for (x=0;x<listbox.options.length;x++){
+		if (listbox.options[x].selected){
+				selectedOptions[y]=x;
+				y++;
+		}
+		} 
+	listbox.selectedIndex=0;//this and next line prompt the listbox to 'wake up' 
+	listbox.options[0].selected=false; 
+	for (y=selectedOptions.length-1;y>-1;y--){//start from the end and work backwards so first selected item is the one scrolled to. 
+		listbox.options[selectedOptions[y]].selected=true;//select the options required 
+	}
+	
+}
+
 </script>
 <%
 	java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");
@@ -374,9 +401,27 @@ function checkDates(){
         	<tr>
             	<td class='main' style='padding-left:5; padding-top:5'>
 					<div id='DivFilterModelType' style='display:true'>
+					
+						<%
+						ReportFilter selectedReportFilter = null;
+						String selectedReportFilterStr = REPORT_BEAN.getSelectedReportFilter();
+						if (selectedReportFilterStr != null) {
+							try {
+								selectedReportFilter = ReportFilter.valueOf(selectedReportFilterStr);
+							} catch (IllegalArgumentException e) {
+								// not valid ReportFilter, ignore
+							}
+						}
+						REPORT_BEAN.setSelectedReportFilter(null); // don't want to have this value persist in the report bean for other reports. Only used to setup filter defaults based on specific url parameter provided this time.
+						%>
+					
 						<select id='filterModelType' name='filterModelType' onChange='changeFilter(this.value)'>
 							<%for (ReportFilter filter : filterObjectsMap.keySet()) {%>
-                    			<option value='<%=filter.ordinal()%>'>  <%=filter.getFilterTitle() %></option>
+                    			<option value='<%=filter.ordinal()%>' 
+                    				<% if (selectedReportFilter != null && selectedReportFilter.equals(filter)){%> selected <%}%>  
+                    			>
+                    			<%=filter.getFilterTitle() %>
+                    			</option>
         					<% } %>
                 		</select>
 					</div>
@@ -385,32 +430,78 @@ function checkDates(){
           	<tr><td height='9'></td></tr>
           	<tr>
             	<td class='main' valign='top' height='19' style='padding-left:5; padding-top:5'>
-        			<% int isFirst = 0; %>
+        			<% boolean isFirst = true; %>
         			<%for(ReportFilter filter: filterObjectsMap.keySet()) {%>
+        			
+        				<%
+        				String displayStyle = "none";
+        				if ((selectedReportFilter != null && selectedReportFilter.equals(filter))
+        					|| (selectedReportFilter == null && isFirst)){
+        					displayStyle = "true";
+        				}
+        				%>
+        			
             			<%if( filter.equals(ReportFilter.METER ) ){%>
-                    		<div id="Div<%=filter.getFilterTitle()%>" style="display:<%=isFirst==0?"true":"none"%>">
+                    		<div id="Div<%=filter.getFilterTitle()%>" style="display:<%=displayStyle%>">
                     		<input type='text' name="filterMeterValues" style='width:650px;'/>
                     		<BR><span class='NavText'>* Enter a comma separated list of Meter Number(s).</span><br></div>
             			<%} else if( filter.equals(ReportFilter.DEVICE)) {%>
-                    		<div id="Div<%=filter.getFilterTitle()%>" style="display:<%=isFirst==0?"true":"none"%>">
+                    		<div id="Div<%=filter.getFilterTitle()%>" style="display:<%=displayStyle%>">
 		                    <input type='text' name='filterDeviceValues' style='width:650px;'/>
         		            <BR><span class='NavText'>* Enter a comma separated list of Device Name(s).</span><br></div>                    
             			<% }else {%>
-            				<div id="Div<%=filter.getFilterTitle()%>" style="display:<%=isFirst==0?"true":"none"%>">
+            				<div id="Div<%=filter.getFilterTitle()%>" style="display:<%=displayStyle%>">
+            				
                     		<select id="selectFilterValues" name='filterValues' size='10' multiple style='width:350px;'>
                 			<%List objects = filterObjectsMap.get(filter);%>
                 			<%if (objects != null) {
+                				
+                				List<String> selectedReportFilterValues = REPORT_BEAN.getSelectedReportFilterValuesList();
+                				REPORT_BEAN.setSelectedReportFilterValues(null); // don't want to have this value persist in the report bean for other reports. Only used to setup filter defaults based on specific url parameter provided this time.
+                				
                     			for (Object object : objects) {
-                        			if( object instanceof String) {%>
-                                    	<option value='<c:out value="<%=object.toString()%>" />'><c:out value="<%=object.toString()%>" /></option>
-                        			<%}else if (object instanceof LiteYukonPAObject) {%>
-                                    	<option value='<c:out value="<%=((LiteYukonPAObject)object).getYukonID()%>" />'><c:out value="<%=((LiteYukonPAObject)object).getPaoName()%>" /></option>
-                        			<%}else if (object instanceof LiteDeviceMeterNumber){%>
-                                    	<option value='<c:out value="<%=((LiteDeviceMeterNumber)object).getDeviceID()%>" />'><c:out value="<%=((LiteDeviceMeterNumber)object).getMeterNumber()%>" /></option>
-                        			<%}else if (object instanceof DeviceReadJobLog){%>
-                                    	<option value='<c:out value="<%=((DeviceReadJobLog)object).getDeviceReadJobLogID()%>" />'><c:out value="<%=((DeviceReadJobLog)object).toString()%>" /></option>
-                                   	<%}else if (object instanceof LiteCapControlStrategy){%>
-                                   		<option value='<c:out value="<%=((LiteCapControlStrategy)object).getStrategyId()%>" />'><c:out value="<%=((LiteCapControlStrategy)object).getStrategyName()%>" /></option>
+                    				
+                    				String objectStringVal = "";
+                    				
+                        			if( object instanceof String) {
+                        			
+                        				objectStringVal = object.toString();%>
+                        				
+                                    	<option value='<c:out value="<%=objectStringVal%>" />' <% if (selectedReportFilterValues != null && selectedReportFilterValues.contains(objectStringVal)) {%>selected<%} %>>
+                                    		<c:out value="<%=object.toString()%>" />
+                                    	</option>
+                                    	
+                        			<%}else if (object instanceof LiteYukonPAObject) {
+                        			
+                        				objectStringVal = String.valueOf(((LiteYukonPAObject)object).getYukonID());%>
+                        				
+                                    	<option value='<c:out value="<%=objectStringVal%>" />' <% if (selectedReportFilterValues != null && selectedReportFilterValues.contains(objectStringVal)) {%>selected<%} %>>
+                                    		<c:out value="<%=((LiteYukonPAObject)object).getPaoName()%>" />
+                                    	</option>
+                                    	
+                        			<%}else if (object instanceof LiteDeviceMeterNumber){
+                        			
+                        				objectStringVal = String.valueOf(((LiteDeviceMeterNumber)object).getDeviceID());%>
+                        				
+                                    	<option value='<c:out value="<%=objectStringVal%>" />' <% if (selectedReportFilterValues != null && selectedReportFilterValues.contains(objectStringVal)) {%>selected<%} %>>
+                                    		<c:out value="<%=((LiteDeviceMeterNumber)object).getMeterNumber()%>" />
+                                    	</option>
+                                    	
+                        			<%}else if (object instanceof DeviceReadJobLog){
+                        			
+                        				objectStringVal = String.valueOf(((DeviceReadJobLog)object).getDeviceReadJobLogID());%>
+                        				
+                                    	<option value='<c:out value="<%=objectStringVal%>" />' <% if (selectedReportFilterValues != null && selectedReportFilterValues.contains(objectStringVal)) {%>selected<%} %>>
+                                    		<c:out value="<%=((DeviceReadJobLog)object).toString()%>" />
+                                    	</option>
+                                    	
+                                   	<%}else if (object instanceof LiteCapControlStrategy){
+                                   	
+                                   		objectStringVal = ((LiteCapControlStrategy)object).getStrategyName();%>
+                                   		
+                                   		<option value='<c:out value="<%=((LiteCapControlStrategy)object).getStrategyId()%>" />' <% if (selectedReportFilterValues != null && selectedReportFilterValues.contains(objectStringVal)) {%>selected<%} %>>
+                                   			<c:out value="<%=objectStringVal%>" />
+                                   		</option>
                         		<%}
                     			}
                 			}%>
@@ -419,7 +510,7 @@ function checkDates(){
                 			<span class='NavText'>* Hold &lt;Shift&gt; key down to select range of values</span>
                       	</div>
             			<% } %>
-            		<% isFirst++; %>
+            			<% isFirst = false; %>
         			<% }%>
         		</td>
         	</tr>

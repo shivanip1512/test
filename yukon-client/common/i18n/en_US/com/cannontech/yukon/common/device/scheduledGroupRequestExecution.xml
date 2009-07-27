@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+	<!-- ScheduledGroupRequestExecutionController home.jsp -->
+    <!-- ================================================================================================================================================= -->
+    <!-- ================================================================================================================================================= -->
+    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.pageTitle">Scheduled Group Request Execution</entry>
+    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.pageTitle.editMode">Edit Scheduled Group Request Execution</entry>
+    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.requestType">Request Type</entry>
+    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.requestType.attribute">Attribute</entry>
+    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.requestType.command">Command</entry>
+    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.group">Group</entry>
+    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.timeFrequency">Time/Frequency</entry>
+    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.scheduleButton">Schedule</entry>
+    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.updateButton">Update</entry>
+    
+</properties>

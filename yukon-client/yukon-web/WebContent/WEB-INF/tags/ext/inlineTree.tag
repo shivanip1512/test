@@ -21,6 +21,7 @@
 <%@ attribute name="treeCss" required="false" type="java.lang.String"%>
 <%@ attribute name="treeAttributes" required="false" type="java.lang.String"%>
 <%@ attribute name="treeCallbacks" required="false" type="java.lang.String"%>
+<%@ attribute name="highlightNodePath" required="false" type="java.lang.String"%>
 
 <%-- ASYNC JSON --%>
 <%-- json should be a list of children of the root node (root node is created in javascript!) --%>
@@ -77,8 +78,30 @@
         <c:if test="${not empty treeCallbacks}">
             tree_${id}.on(${treeCallbacks});
         </c:if>
-                
+
+        // HIGHLIGHT PATH
+        <c:if test="${not empty highlightNodePath}">
+	        var extSelectedNodePath = '${highlightNodePath}';
+			var pathParts = extSelectedNodePath.split('/')
+			var selectedNodeId = pathParts[pathParts.length - 1];
+	
+			tree_${id}.expandPath(extSelectedNodePath);
+			var selectedNode = tree_${id}.getNodeById(selectedNodeId);
+			if(selectedNode.getDepth() > 0) {
+				selectedNode.ensureVisible();
+			}
+
+			tree_${id}.on({'beforeclick':function(node, e) {
+					if (node.id != selectedNode.id) {
+						selectedNode.getUI().removeClass('highlightNode');
+			 		}
+				}
+		 	});
+			
+		</c:if>  
     });
+
+    
     
     function toggleExpand(expand) {
         

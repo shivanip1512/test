@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.deviceread.service.GroupMeterReadResult;
 import com.cannontech.amr.deviceread.service.GroupMeterReadService;
-import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupCommandRequestExecutionDao;
-import com.cannontech.amr.scheduledGroupRequestExecution.dao.model.ScheduledGroupCommandRequestExecutionPair;
+import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
+import com.cannontech.amr.scheduledGroupRequestExecution.dao.model.ScheduledGroupRequestExecutionPair;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
@@ -45,7 +45,7 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
     private GroupMeterReadService groupMeterReadService;
     private DeviceGroupService deviceGroupService;
     private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
-    private ScheduledGroupCommandRequestExecutionDao scheduledGroupCommandRequestExecutionResultsDao;
+    private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionResultsDao;
 
     public void start(int jobId) {
         startTask(jobId);
@@ -100,12 +100,12 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
             	throw new UnsupportedOperationException("A command string or attribute is required to run task.");
             }
             
-	        // create ScheduledGroupCommandRequestExecutionResult record
-	        ScheduledGroupCommandRequestExecutionPair pair = new ScheduledGroupCommandRequestExecutionPair();
+	        // create ScheduledGroupRequestExecutionResult record
+	        ScheduledGroupRequestExecutionPair pair = new ScheduledGroupRequestExecutionPair();
 	        pair.setCommandRequestExecutionId(commandRequestExecutionIdentifier.getCommandRequestExecutionId());
 	        pair.setJobId(jobId);
 	        
-	        scheduledGroupCommandRequestExecutionResultsDao.insert(pair);
+	        scheduledGroupRequestExecutionResultsDao.insert(pair);
 	        
         } catch (NotFoundException e) {
         	log.error("Could not run command due to missing device group. command = " + getCommand() + ", groupName = " + getGroupName() + ", user = " + user.getUsername() + ".", e);
@@ -174,8 +174,8 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
 	}
     
     @Autowired
-    public void setScheduledGroupCommandRequestExecutionResultsDao(
-			ScheduledGroupCommandRequestExecutionDao scheduledGroupCommandRequestExecutionResultsDao) {
-		this.scheduledGroupCommandRequestExecutionResultsDao = scheduledGroupCommandRequestExecutionResultsDao;
+    public void setScheduledGroupRequestExecutionResultsDao(
+			ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionResultsDao) {
+		this.scheduledGroupRequestExecutionResultsDao = scheduledGroupRequestExecutionResultsDao;
 	}
 }

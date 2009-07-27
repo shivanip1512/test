@@ -305,8 +305,8 @@
     </bean>
     
     <!-- Scheduled Group Command Execution Results Dao -->
-    <bean id="scheduledGroupCommandRequestExecutionDao" 
-        class="com.cannontech.amr.scheduledGroupRequestExecution.dao.impl.ScheduledGroupCommandRequestExecutionDaoImpl"  
+    <bean id="scheduledGroupRequestExecutionDao" 
+        class="com.cannontech.amr.scheduledGroupRequestExecution.dao.impl.ScheduledGroupRequestExecutionDaoImpl"  
         scope="prototype">
     </bean>
     

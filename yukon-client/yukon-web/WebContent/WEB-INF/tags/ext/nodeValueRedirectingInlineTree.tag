@@ -13,6 +13,7 @@
 <%@ attribute name="width" required="true" type="java.lang.Integer"%>
 <%@ attribute name="height" required="true" type="java.lang.Integer"%>
 <%@ attribute name="treeAttributes" required="false" type="java.lang.String"%>
+<%@ attribute name="highlightNodePath" required="false" type="java.lang.String"%>
 
 <%-- DEVICE GROUP SELECTION HANDLER CODE --%>
 <script type="text/javascript">
@@ -44,4 +45,5 @@
                 
                 divId="selectDeviceGRoupNameTreeDiv_${id}"
                 width="${width}"
-                height="${height}" />
+                height="${height}"
+                highlightNodePath="${highlightNodePath}" />

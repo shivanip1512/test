@@ -4,6 +4,7 @@ import com.cannontech.web.amr.util.cronExpressionTag.handler.CronTagStyleHandler
 import com.cannontech.web.amr.util.cronExpressionTag.handler.CustomCronTagStyleHandler;
 import com.cannontech.web.amr.util.cronExpressionTag.handler.DailyCronTagStyleHandler;
 import com.cannontech.web.amr.util.cronExpressionTag.handler.MonthlyCronTagStyleHandler;
+import com.cannontech.web.amr.util.cronExpressionTag.handler.OneTimeCronTagStyleHandler;
 import com.cannontech.web.amr.util.cronExpressionTag.handler.WeeklyCronTagStyleHandler;
 
 public enum CronTagStyleType {
@@ -11,6 +12,7 @@ public enum CronTagStyleType {
 	DAILY(new DailyCronTagStyleHandler()),
 	WEEKLY(new WeeklyCronTagStyleHandler()),
 	MONTHLY(new MonthlyCronTagStyleHandler()),
+	ONETIME(new OneTimeCronTagStyleHandler()),
 	CUSTOM(new CustomCronTagStyleHandler()),
 	;
 	

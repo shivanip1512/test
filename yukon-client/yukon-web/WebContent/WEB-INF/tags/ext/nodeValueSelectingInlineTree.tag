@@ -7,6 +7,7 @@
 <%-- values will be returned as a list the same way a <select multiple> element does --%>
 <%@ attribute name="fieldId" required="true" type="java.lang.String"%>
 <%@ attribute name="fieldName" required="true" type="java.lang.String"%>
+<%@ attribute name="fieldValue" required="false" type="java.lang.String"%>
 <%@ attribute name="nodeValueName" required="true" type="java.lang.String"%>
 <%@ attribute name="multiSelect" required="true" type="java.lang.Boolean"%>
 
@@ -17,6 +18,7 @@
 <%@ attribute name="width" required="true" type="java.lang.Integer"%>
 <%@ attribute name="height" required="true" type="java.lang.Integer"%>
 <%@ attribute name="treeAttributes" required="false" type="java.lang.String"%>
+<%@ attribute name="highlightNodePath" required="false" type="java.lang.String"%>
 
 <%-- DEVICE GROUP SELECTION HANDLER CODE --%>
 <script type="text/javascript">
@@ -109,7 +111,7 @@
         <select name="${fieldName}" id="${fieldId}" style="display:none;" multiple></select>
     </c:when>
     <c:otherwise>
-        <input type="hidden" name="${fieldName}" id="${fieldId}" value="">
+        <input type="hidden" name="${fieldName}" id="${fieldId}" value="${fieldValue}">
     </c:otherwise>
 </c:choose>
 
@@ -123,4 +125,5 @@
                     
                     divId="selectDeviceGRoupNameTreeDiv_${id}"
                     width="${width}"
-                    height="${height}" />
+                    height="${height}"
+                    highlightNodePath="${highlightNodePath}" />

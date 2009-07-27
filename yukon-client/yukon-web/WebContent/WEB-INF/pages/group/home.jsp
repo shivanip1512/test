@@ -16,28 +16,6 @@
     
     <script type="text/javascript">
     
-    	Event.observe(window, 'load', function(){initGroupsHome();});
-
-    	function initGroupsHome() {
-
-    		makeTreeGroupVisible();
-    	}
-
-    	function makeTreeGroupVisible() {
-
-    		var tree = this.tree_deviceGroupEditorTree;
-
-    		var extSelectedNodePath = '${extSelectedNodePath}';
-			var pathParts = extSelectedNodePath.split('/')
-			var selectedNodeId = pathParts[pathParts.length - 1];
-
-			tree.expandPath(extSelectedNodePath);
-			var selectedNode = tree.getNodeById(selectedNodeId);
-			if(selectedNode.getDepth() > 0) {
-				selectedNode.ensureVisible();
-			}
-    	}
-    
         function showGroupPopup(popupDiv, focusElem){
             
             $(popupDiv).toggle();
@@ -160,7 +138,8 @@
                                                 id="deviceGroupEditorTree"
                                                 dataJson="${allGroupsDataJson}"
                                                 width="432"
-                                                height="600" />
+                                                height="600"
+                                                highlightNodePath="${extSelectedNodePath}" />
                                 
         </tags:boxContainer>
     </div>

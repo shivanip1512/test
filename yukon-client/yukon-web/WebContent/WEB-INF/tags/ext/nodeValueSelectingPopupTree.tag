@@ -5,6 +5,7 @@
 <%-- submitCallback is optional, can be used for application specific behavior after submit button click is handled (like to submit a form or do nothing) --%>
 <%@ attribute name="fieldId" required="true" type="java.lang.String"%>
 <%@ attribute name="fieldName" required="true" type="java.lang.String"%>
+<%@ attribute name="fieldValue" required="false" type="java.lang.String"%>
 <%@ attribute name="nodeValueName" required="true" type="java.lang.String"%>
 <%@ attribute name="submitButtonText" required="true" type="java.lang.String"%>
 <%@ attribute name="cancelButtonText" required="true" type="java.lang.String"%>
@@ -15,6 +16,7 @@
 <%@ attribute name="id" required="true" type="java.lang.String"%>
 <%@ attribute name="treeAttributes" required="false" type="java.lang.String"%>
 <%@ attribute name="triggerElement" required="true" type="java.lang.String"%>
+<%@ attribute name="highlightNodePath" required="false" type="java.lang.String"%>
 <%@ attribute name="dataJson" required="true" type="java.lang.String"%>
 <%@ attribute name="title" required="true" type="java.lang.String"%>
 <%@ attribute name="width" required="true" type="java.lang.Integer"%>
@@ -79,7 +81,7 @@
 </script>
 
 <%-- VALUE HIDDEN FIELD --%>
-<input type="hidden" name="${fieldName}" id="${fieldId}" value="">
+<input type="hidden" name="${fieldName}" id="${fieldId}" value="${fieldValue}">
 
 <%-- POPUP TREE --%>
 <ext:popupTree  id="${id}"
@@ -87,6 +89,7 @@
                 treeAttributes="{}"
                 treeCallbacks="{'beforeclick':recordNameValue_${id}}"
                 triggerElement="${triggerElement}"
+                highlightNodePath="${highlightNodePath}"
                 
                 dataJson="${dataJson}"
                 

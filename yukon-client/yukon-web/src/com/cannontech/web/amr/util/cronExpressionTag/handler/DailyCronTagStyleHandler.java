@@ -52,7 +52,8 @@ public class DailyCronTagStyleHandler extends CronTagStyleHandlerBase {
 		
 		String dayOfMonthStr = parts[3];
 		String dayOfWeek = parts[5];
-		if (dayOfMonthStr.equals("?") && (dayOfWeek.equals("*") || dayOfWeek.equals("2-6"))) {
+		String year = parts[6];
+		if (dayOfMonthStr.equals("?") && year.equals("*") && (dayOfWeek.equals("*") || dayOfWeek.equals("2-6"))) {
 			return true;
 		}
 		

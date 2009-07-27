@@ -15,6 +15,7 @@ import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.DeviceGroupUiService;
 import com.cannontech.common.util.predicate.AggregateAndPredicate;
 import com.cannontech.web.group.DeviceGroupTreeUtils;
+import com.cannontech.web.group.HighlightSelectedGroupNodeAttributeSettingCallback;
 import com.cannontech.web.util.ExtTreeNode;
 
 @Configurable("deviceGroupHierarchyJsonPrototype")
@@ -25,6 +26,8 @@ public class DeviceGroupHierarchyJsonTag extends YukonTagSupport{
     
     private String predicates = "";
     private String rootName = "Groups";
+    private String selectGroupName = null;
+    private String selectedNodePathVar = null;
     private String var = null;
     
     @Override
@@ -35,8 +38,22 @@ public class DeviceGroupHierarchyJsonTag extends YukonTagSupport{
         DeviceGroup rootGroup = deviceGroupService.getRootGroup();
         DeviceGroupHierarchy groupHierarchy = deviceGroupUiService.getDeviceGroupHierarchy(rootGroup, aggregatePredicate);
         
-        ExtTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupExtTree(groupHierarchy, rootName, null);
+        HighlightSelectedGroupNodeAttributeSettingCallback nodeCallback = null;
+        if (!StringUtils.isBlank(selectGroupName)) {
+        	DeviceGroup selectedDeviceGroup = deviceGroupService.resolveGroupName(selectGroupName);
+        	nodeCallback = new HighlightSelectedGroupNodeAttributeSettingCallback(selectedDeviceGroup);
+        }
+        
+        ExtTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupExtTree(groupHierarchy, rootName, nodeCallback);
         JSONObject jsonObj = new JSONObject(root.toMap());
+        
+        String extSelectedNodePath = null;
+        if (nodeCallback != null) {
+        	extSelectedNodePath = nodeCallback.getExtSelectedNodePath();
+        	if (!StringUtils.isBlank(selectedNodePathVar)) {
+        		this.getJspContext().setAttribute(selectedNodePathVar, extSelectedNodePath);
+        	}
+        }
         
         if (var == null) {
             jsonObj.write(getJspContext().getOut());
@@ -62,6 +79,14 @@ public class DeviceGroupHierarchyJsonTag extends YukonTagSupport{
             this.rootName = rootName;
         }
     }
+    
+    public void setSelectGroupName(String selectGroupName) {
+		this.selectGroupName = selectGroupName;
+	}
+    
+    public void setSelectedNodePathVar(String selectedNodePathVar) {
+		this.selectedNodePathVar = selectedNodePathVar;
+	}
     
     public void setVar(String var) {
         if (!StringUtils.isBlank(var)) {

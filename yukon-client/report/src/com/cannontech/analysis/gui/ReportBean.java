@@ -6,6 +6,7 @@
  */
 package com.cannontech.analysis.gui;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -56,6 +57,9 @@ public class ReportBean
 	
 	private boolean isChanged = false;
     private ReportController reportController;
+    
+    private String selectedReportFilter = null;
+    private String selectedReportFilterValues = null;
 	
 	/**
 	 * 
@@ -105,6 +109,26 @@ public class ReportBean
 		stop = stopDateString;
 		stopDate = ServletUtil.parseDateStringLiberally(stop);
 		
+	}
+	
+	public String getSelectedReportFilter() {
+		return selectedReportFilter;
+	}
+	public void setSelectedReportFilter(String selectedReportFilter) {
+		this.selectedReportFilter = selectedReportFilter;
+	}
+	
+	public String getSelectedReportFilterValues() {
+		return selectedReportFilterValues;
+	}
+	public List<String> getSelectedReportFilterValuesList() {
+		if (getSelectedReportFilterValues() == null) {
+			return null;
+		}
+		return Arrays.asList(StringUtils.split(getSelectedReportFilterValues(), ","));
+	}
+	public void setSelectedReportFilterValues(String selectedReportFilterValues) {
+		this.selectedReportFilterValues = selectedReportFilterValues;
 	}
 	
 	/**

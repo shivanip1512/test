@@ -58,7 +58,8 @@ public class MonthlyCronTagStyleHandler extends CronTagStyleHandlerBase {
 		
 		String dayOfMonthStr = parts[3];
 		String dayOfWeek = parts[5];
-		if (dayOfWeek.equals("?") && (dayOfMonthStr.equals("L") || NumberUtils.isDigits(dayOfMonthStr))) {
+		String year = parts[6];
+		if (dayOfWeek.equals("?") && year.equals("*") && (dayOfMonthStr.equals("L") || NumberUtils.isDigits(dayOfMonthStr))) {
 			return true;
 		}
 		

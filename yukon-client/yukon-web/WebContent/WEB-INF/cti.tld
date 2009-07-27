@@ -1392,6 +1392,22 @@
         </attribute>
         <attribute>
             <description>
+                Full path name of the group to be highlighted in the tree.
+            </description>
+            <name>selectGroupName</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <description>
+                Name of var to write the ext node path of the selectGroupName group to.
+            </description>
+            <name>selectedNodePathVar</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <description>
                 Outputs the Json string into a context variable with name supplied to the 'var' attribute.
             </description>
             <name>var</name>

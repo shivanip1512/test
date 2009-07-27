@@ -2,18 +2,18 @@ package com.cannontech.web.updater.commandRequestExecution.handler;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupCommandRequestExecutionDao;
+import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.commandRequestExecution.CommandRequestExecutionUpdaterTypeEnum;
 
 public class LastSuccessResultsCountForJobCommandExecutionUpdaterHandler implements CommandRequestExecutionUpdaterHandler {
 
-	private ScheduledGroupCommandRequestExecutionDao scheduledGroupCommandRequestExecutionDao;
+	private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao;
 	
 	@Override
 	public String handle(int id, YukonUserContext userContext) {
 
-		int count = scheduledGroupCommandRequestExecutionDao.getLatestSuccessCountForJobId(id);
+		int count = scheduledGroupRequestExecutionDao.getLatestSuccessCountForJobId(id);
 		return String.valueOf(count);
 	}
 	
@@ -23,8 +23,8 @@ public class LastSuccessResultsCountForJobCommandExecutionUpdaterHandler impleme
 	}
 
 	@Autowired
-	public void setScheduledGroupCommandRequestExecutionDao(
-			ScheduledGroupCommandRequestExecutionDao scheduledGroupCommandRequestExecutionDao) {
-		this.scheduledGroupCommandRequestExecutionDao = scheduledGroupCommandRequestExecutionDao;
+	public void setScheduledGroupRequestExecutionDao(
+			ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao) {
+		this.scheduledGroupRequestExecutionDao = scheduledGroupRequestExecutionDao;
 	}
 }

@@ -9,6 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -62,6 +63,7 @@ public class OutageProcessingController extends MultiActionController {
 		mav.addObject("outageMonitor", outageMonitor);
 		mav.addObject("outageGroupBase", SystemGroupEnum.OUTAGE_PROCESSING.getFullPath());
 		mav.addObject("allReads", allReads);
+		mav.addObject("reportStartDate", DateUtils.addMonths(new Date(), -1));
 		
 		return mav;
 	}

@@ -40,24 +40,24 @@
 
 	function viewOutageProcessing(monitorId) {
 
-		$('outageMonitorId').value = monitorId;
+		$('viewProcessingForMonitorId').value = monitorId;
 		$('viewOutageProcessingForm').submit();
 	}
 
-	function viewScheduledGroupCommandRequestExecution(id) {
+	function viewScheduledGroupRequestExecution(id) {
 
 		$('jobId').value = id;
-		$('scheduledGroupCommandRequestExecutionForm').submit();
+		$('scheduledGroupRequestExecutionForm').submit();
 	}
 
 </script>
 
 <%-- FORMS --%>
 <form id="viewOutageProcessingForm" action="/spring/amr/outageProcessing/process/process" method="get">
-	<input type="hidden" id="outageMonitorId" name="outageMonitorId" value="">
+	<input type="hidden" id="viewProcessingForMonitorId" name="outageMonitorId" value="">
 </form>
 
-<form id="scheduledGroupCommandRequestExecutionForm" action="/spring/amr/scheduledGroupCommandRequestExecution/detail" method="get">
+<form id="scheduledGroupRequestExecutionForm" action="/spring/group/scheduledGroupRequestExecutionResults/detail" method="get">
 	<input type="hidden" id="jobId" name="jobId" value="">
 </form>
 
@@ -105,7 +105,7 @@
 				<%-- scheduled read --%>
 				<c:choose>
 					<c:when test="${scheduledCommandJobId > 0}">
-						<img onclick="viewScheduledGroupCommandRequestExecution(${scheduledCommandJobId});" 
+						<img onclick="viewScheduledGroupRequestExecution(${scheduledCommandJobId});" 
 							title="${scheduledReadActionTitleText} (${monitorName})" 
 							src="${script}" onmouseover="javascript:this.src='${scriptOver}'" onmouseout="javascript:this.src='${script}'">
 					</c:when>

@@ -173,24 +173,10 @@ public class GroupEditorController extends MultiActionController {
         // NodeAttributeSettingCallback to highlight node for selected group
         // This one has been given an additional responsibility of recording the node path of the selected node,
         // this path will be used to expand the tree to the selected node and ensure it is visible.
-        final DeviceGroup selectedDeviceGroup = group;
-        class HighlightSelectedGroup implements NodeAttributeSettingCallback {
-        	
-        	private String extSelectedNodePath;
-        	
-            public void setAdditionalAttributes(ExtTreeNode node, DeviceGroup deviceGroup) {
-                if (selectedDeviceGroup != null && selectedDeviceGroup.getFullName().equals(deviceGroup.getFullName())) {
-                    node.setAttribute("cls", "highlighted");
-                    extSelectedNodePath = node.getNodePath();
-                }
-            }
-            public String getExtSelectedNodePath() {
-				return extSelectedNodePath;
-			}
-        }
+        DeviceGroup selectedDeviceGroup = group;
         
         // ALL GROUPS TREE JSON
-        HighlightSelectedGroup callback = new HighlightSelectedGroup();
+        HighlightSelectedGroupNodeAttributeSettingCallback callback = new HighlightSelectedGroupNodeAttributeSettingCallback(selectedDeviceGroup);
         ExtTreeNode allGroupsRoot = DeviceGroupTreeUtils.makeDeviceGroupExtTree(allGroupsGroupHierarchy, "Groups", callback);
         
         // selected node Ext path

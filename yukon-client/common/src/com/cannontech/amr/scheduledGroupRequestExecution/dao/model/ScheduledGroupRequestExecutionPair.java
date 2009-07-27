@@ -1,6 +1,6 @@
 package com.cannontech.amr.scheduledGroupRequestExecution.dao.model;
 
-public class ScheduledGroupCommandRequestExecutionPair {
+public class ScheduledGroupRequestExecutionPair {
 
 	private Integer commandRequestExecutionId;
 	private int jobId;

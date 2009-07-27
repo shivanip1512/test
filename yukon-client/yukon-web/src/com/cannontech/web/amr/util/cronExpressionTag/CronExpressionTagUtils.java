@@ -1,6 +1,7 @@
 package com.cannontech.web.amr.util.cronExpressionTag;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -91,11 +92,18 @@ public class CronExpressionTagUtils {
 	
 	private static String[] getParts(String cronExpression) throws IllegalArgumentException {
 		
-		// although 5 part expressions are legal, the tag supports features up through the 6th part
-		// go ahead and assert that we only deal with 6 part expressions
+		// must have at lest parts 1-6 to be valid
 		String[] parts = StringUtils.split(cronExpression, " ");
 		if (parts.length < 6) {
 			throw new IllegalArgumentException("Incomplete expression.");
+		}
+		
+		// add optional year part
+		if (parts.length == 6) {
+			
+			List<String> partsList = new ArrayList<String>(Arrays.asList(parts));
+			partsList.add("*");
+			parts = partsList.toArray(new String[7]);
 		}
 		
 		return parts;

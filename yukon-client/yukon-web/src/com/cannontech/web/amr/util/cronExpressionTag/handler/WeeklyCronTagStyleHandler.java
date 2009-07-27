@@ -66,9 +66,10 @@ public class WeeklyCronTagStyleHandler extends CronTagStyleHandlerBase {
 		
 		String dayOfMonthStr = parts[3];
 		String dayOfWeek = parts[5];
+		String year = parts[6];
 		String[] dayStrsArray = {"1", "2", "3", "4", "5", "6", "7"};
 		List<String> dayStrsList = Arrays.asList(dayStrsArray);
-		if (dayOfMonthStr.equals("?")) {
+		if (dayOfMonthStr.equals("?") && year.equals("*")) {
 
 			// dayOfWeek must be single day number or list of day numbers
 			String[] dayStrs = dayOfWeek.split(",");

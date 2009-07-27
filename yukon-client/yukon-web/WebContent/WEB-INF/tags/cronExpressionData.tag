@@ -28,6 +28,7 @@
 			$('${id}_cronExpDailyDiv').show();
 			$('${id}_cronExpWeeklyDiv').hide();
 			$('${id}_cronExpMonthlyDiv').hide();
+			$('${id}_cronExpOneTimeDiv').hide();
 			$('${id}_cronExpCustomDiv').hide();
 		}
 		else if (selectedFreqVal == 'WEEKLY') {
@@ -35,6 +36,7 @@
 			$('${id}_cronExpDailyDiv').hide();
 			$('${id}_cronExpWeeklyDiv').show();
 			$('${id}_cronExpMonthlyDiv').hide();
+			$('${id}_cronExpOneTimeDiv').hide();
 			$('${id}_cronExpCustomDiv').hide();
 		}
 		else if (selectedFreqVal == 'MONTHLY') {
@@ -42,6 +44,15 @@
 			$('${id}_cronExpDailyDiv').hide();
 			$('${id}_cronExpWeeklyDiv').hide();
 			$('${id}_cronExpMonthlyDiv').show();
+			$('${id}_cronExpOneTimeDiv').hide();
+			$('${id}_cronExpCustomDiv').hide();
+		}
+		else if (selectedFreqVal == 'ONETIME') {
+			$('${id}_cronExpTimeDiv').show();
+			$('${id}_cronExpDailyDiv').hide();
+			$('${id}_cronExpWeeklyDiv').hide();
+			$('${id}_cronExpMonthlyDiv').hide();
+			$('${id}_cronExpOneTimeDiv').show();
 			$('${id}_cronExpCustomDiv').hide();
 		}
 		else if (selectedFreqVal == 'CUSTOM') {
@@ -49,6 +60,7 @@
 			$('${id}_cronExpDailyDiv').hide();
 			$('${id}_cronExpWeeklyDiv').hide();
 			$('${id}_cronExpMonthlyDiv').hide();
+			$('${id}_cronExpOneTimeDiv').hide();
 			$('${id}_cronExpCustomDiv').show();
 		}
 	}
@@ -63,6 +75,7 @@
 	<option value="DAILY" <c:if test="${state.cronTagStyleType == 'DAILY'}">selected</c:if>>Daily</option>
 	<option value="WEEKLY" <c:if test="${state.cronTagStyleType == 'WEEKLY'}">selected</c:if>>Weekly</option>
 	<option value="MONTHLY" <c:if test="${state.cronTagStyleType == 'MONTHLY'}">selected</c:if>>Monthly</option>
+	<option value="ONETIME" <c:if test="${state.cronTagStyleType == 'ONETIME'}">selected</c:if>>One-Time</option>
 	<option value="CUSTOM" <c:if test="${state.cronTagStyleType == 'CUSTOM'}">selected</c:if>>Custom</option>
 </select>
 </div>
@@ -130,6 +143,13 @@
 	<br>
 	<input type="radio" name="${id}_CRONEXP_MONTHLY_OPTION" value="LAST_DAY" <c:if test="${state.cronExpressionMontlyOption == 'LAST_DAY'}">checked</c:if>> On last day of month.
 	
+</div>
+
+<%-- ONE-TIME --%>
+<div id="${id}_cronExpOneTimeDiv" style="padding-top:6px;display:none;">
+
+<tags:dateInputCalendar fieldName="${id}_CRONEXP_ONETIME_DATE" fieldValue="${state.date}"/>
+
 </div>
 
 <%-- CUSTOM --%>

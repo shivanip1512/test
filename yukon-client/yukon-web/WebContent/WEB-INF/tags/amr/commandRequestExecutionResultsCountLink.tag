@@ -37,7 +37,7 @@
 
 </script>
 
-<form id="processDevices_${id}" action="/spring/amr/commandRequestExecution/processDevices" method="get">
+<form id="processDevices_${id}" action="/spring/amr/commandRequestExecutionResults/processDevices" method="get">
 	<input type="hidden" name="commandRequestExecutionId" value="${commandRequestExecutionId}">
 	<input type="hidden" name="commandRequestExecutionUpdaterType" value="${commandRequestExecutionUpdaterType}">
 </form>

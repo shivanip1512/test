@@ -37,15 +37,13 @@
 		<form id="groupMeterReadForm" action="/spring/group/groupMeterRead/readGroup" method="post">
 		
 			<%-- SELECT ATTRIBUTE --%>
-			<tags:nameValueContainer>
-				<tags:nameValue name="${selectAttributeLabel}" nameColumnWidth="150px">
-					<select name="attribute">
-						<c:forEach var="attr" items="${allAttributes}">
-							<option value="${attr}">${attr.description}</option>
-						</c:forEach>
-					</select>
-				</tags:nameValue>
-			</tags:nameValueContainer>
+	        <div class="largeBoldLabel">${selectAttributeLabel}:</div>
+	        <select name="attribute">
+				<c:forEach var="attr" items="${allAttributes}">
+					<option value="${attr}">${attr.description}</option>
+				</c:forEach>
+			</select>
+			<br>
 			
 			
 			<%-- SELECT DEVICE GROUP TREE INPUT --%>
@@ -65,7 +63,7 @@
 			      
 			      
 			<%-- READ BUTTON --%>
-			<tags:slowSubmit labelBusy="${readButtonText}" label="${readButtonText}"/>
+			<tags:slowInput myFormId="groupMeterReadForm" labelBusy="${readButtonText}" label="${readButtonText}"/>
 			
 			<%-- RECENT RESULTS --%>
 			<br><br>

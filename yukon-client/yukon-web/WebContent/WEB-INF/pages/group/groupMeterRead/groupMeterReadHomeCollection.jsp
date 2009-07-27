@@ -31,19 +31,17 @@
 	   		<cti:deviceCollection deviceCollection="${deviceCollection}" />
 	   		
 	   		<%-- SELECT ATTRIBUTE --%>
-			<tags:nameValueContainer>
-				<tags:nameValue name="${selectAttributeLabel}" nameColumnWidth="150px">
-					<select name="attribute">
-						<c:forEach var="attr" items="${allAttributes}">
-							<option value="${attr}">${attr.description}</option>
-						</c:forEach>
-					</select>
-				</tags:nameValue>
-			</tags:nameValueContainer>
+	        <div class="largeBoldLabel">${selectAttributeLabel}:</div>
+	        <select name="attribute">
+				<c:forEach var="attr" items="${allAttributes}">
+					<option value="${attr}">${attr.description}</option>
+				</c:forEach>
+			</select>
+			<br>
 			
 	   		<%-- READ BUTTON --%>
 	   		<br>
-			<tags:slowSubmit labelBusy="${readButtonText}" label="${readButtonText}"/>
+			<tags:slowInput myFormId="groupMeterReadForm" labelBusy="${readButtonText}" label="${readButtonText}"/>
    	
    		</form>
    	

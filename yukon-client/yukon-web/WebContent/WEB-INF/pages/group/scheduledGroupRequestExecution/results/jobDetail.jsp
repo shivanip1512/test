@@ -6,12 +6,13 @@
 <cti:msg var="pageTitle" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.pageTitle" />
 <cti:msg var="infoSectionText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.section" />
 <cti:msg var="jobTypeText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.jobType" />
-<cti:msg var="typeText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.type" />
+<cti:msg var="creTypeText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.creType" />
 <cti:msg var="enabledText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.enabled" />
 <cti:msg var="enabledYesText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.enabledYes" />
 <cti:msg var="enabledNoText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.enabledNo" />
 <cti:msg var="attributeText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.attribute" />
 <cti:msg var="commandText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.command" />
+<cti:msg var="scheduleDescriptionText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.scheduleDescription" />
 <cti:msg var="lastRunText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.lastRun" />
 <cti:msg var="lastResultsText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.lastResults" />
 <cti:msg var="lastResultsSuccessText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.lastResults.success" />
@@ -25,7 +26,7 @@
 <cti:msg var="executionsButtonText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.executionsButton" />
 <cti:msg var="deviceGroupPopupInfoText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.popInfo.deviceGroup" />
 <cti:msg var="executionsPopupInfoText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.popInfo.executions" />
-
+<cti:msg var="editScheduleButtonText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.editScheduleButton" />
     
 <c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
 <c:url var="helpOver" value="/WebConfig/yukon/Icons/help_over.gif"/>
@@ -42,7 +43,8 @@
         <cti:crumbLink url="/spring/meter/start" title="Metering" />
         
         <%-- jobs --%>
-        <cti:crumbLink url="/spring/amr/scheduledGroupCommandRequestExecution/list" title="Jobs" />
+        <cti:msg var="jobsPageTitle" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.pageTitle" />
+        <cti:crumbLink url="/spring/group/scheduledGroupRequestExecutionResults/jobs" title="${jobsPageTitle}" />
         
         <%-- job detail --%>
         <cti:crumbLink>${pageTitle}</cti:crumbLink>
@@ -52,7 +54,7 @@
 	<cti:includeScript link="/JavaScript/bulkDataUpdaterCallbacks.js"/>
 
     <script type="text/javascript">
-    
+
     </script>
     
     <h2 title="ID: ${jobWrapper.job.id}">${pageTitle}</h2>
@@ -63,13 +65,12 @@
 					
 		<tags:nameValueContainer>
 
-			<%-- job type/cre type/enabled --%>
-			<tags:nameValue name="${jobTypeText}" nameColumnWidth="160px">
-				${jobWrapper.job.jobDefinition.title}
-			</tags:nameValue>
-			<tags:nameValue name="${typeText}">
+			<%-- cre type --%>
+			<tags:nameValue name="${creTypeText}" nameColumnWidth="160px">
 				${jobWrapper.commandRequestTypeShortName}
 			</tags:nameValue>
+			
+			<%-- enabled --%>
 			<tags:nameValue name="${enabledText}">
 				<c:choose>
 					<c:when test="${jobWrapper.job.disabled}">
@@ -89,6 +90,13 @@
 				<tags:nameValue name="${commandText}">${jobWrapper.command}</tags:nameValue>
 			</c:if>
 			
+			<%-- schedule description --%>
+			<tags:nameValue name="${scheduleDescriptionText}">
+			
+				<cti:dataUpdaterValue type="JOB" identifier="${jobWrapper.job.id}/SCHEDULE_DESCRIPTION"/>
+			
+			</tags:nameValue>
+			
 			<%-- last run --%>
 			<tags:nameValue name="${lastRunText}">
 			
@@ -101,6 +109,18 @@
 			
 				<amr:scheduledGroupRequestExecutionJobLastRunStats jobId="${jobWrapper.job.id}" hasStatsInitially="${not empty lastCre}"/>
 				
+			</tags:nameValue>
+			
+			<%-- next run --%>
+			<tags:nameValue name="${nextRunText}">
+			<c:choose>
+				<c:when test="${jobWrapper.job.disabled}">
+					${nextRunDisabledText}
+				</c:when>
+				<c:otherwise>
+					<amr:scheduledGroupRequestExecutionJobNextRunDate jobId="${jobWrapper.job.id}"/>
+				</c:otherwise>
+			</c:choose>
 			</tags:nameValue>
 			
 			<%-- device group --%>
@@ -120,18 +140,6 @@
 			
 			</tags:nameValue>
 			
-			<%-- next run --%>
-			<tags:nameValue name="${nextRunText}">
-			<c:choose>
-				<c:when test="${jobWrapper.job.disabled}">
-					${nextRunDisabledText}
-				</c:when>
-				<c:otherwise>
-					<amr:scheduledGroupRequestExecutionJobNextRunDate jobId="${jobWrapper.job.id}"/>
-				</c:otherwise>
-			</c:choose>
-			</tags:nameValue>
-			
 			<%-- user --%>
 			<tags:nameValue name="${userText}">
 				${jobWrapper.job.userContext.yukonUser.username}
@@ -139,11 +147,14 @@
 			
 			<%-- all executions button --%>
 			<tags:nameValue name="${executionsText}">
-				<form name="viewAllExecutionsForm" action="/spring/amr/commandRequestExecution/list" method="get">
+				<form name="viewAllExecutionsForm" action="/spring/amr/commandRequestExecutionResults/list" method="get">
 				
-					<input type="hidden" name="jobId" value="${jobWrapper.job.id}">
-					<tags:slowSubmit label="${executionsButtonText}" labelBusy="${executionsButtonText}"/>
-					
+					<cti:url var="creListUrl" value="/spring/amr/commandRequestExecutionResults/list">
+						<cti:param name="jobId" value="${jobWrapper.job.id}"/>
+					</cti:url>
+				
+					<a href="${creListUrl}">${executionsButtonText}</a> 
+				
 					(<cti:dataUpdaterValue type="COMMAND_REQUEST_EXECUTION" identifier="${jobWrapper.job.id}/CRE_COUNT_FOR_JOB" />)
 					
 					<img onclick="$('viewAllExecutionsInfoPopup').toggle();" src="${help}" onmouseover="javascript:this.src='${helpOver}'" onmouseout="javascript:this.src='${help}'">
@@ -151,13 +162,22 @@
 					<tags:simplePopup id="viewAllExecutionsInfoPopup" title="View All Executions" onClose="$('viewAllExecutionsInfoPopup').toggle();">
 					     ${executionsPopupInfoText}
 					</tags:simplePopup>
-				
+					
 				</form>
 				
 			</tags:nameValue>
-				
-		
+			
 		</tags:nameValueContainer>
+		
+		<%-- edit button --%>
+		<br><br>
+		<form name="editScheduledGroupRequestExecutionForm" id="editScheduledGroupRequestExecutionForm" action="/spring/group/scheduledGroupRequestExecution/home" method="get">
+		
+			<input type="hidden" name="editJobId" value="${jobWrapper.job.id}">
+		
+			<tags:slowInput myFormId="editScheduledGroupRequestExecutionForm" labelBusy="${editScheduleButtonText}" label="${editScheduleButtonText}"/>
+			
+		</form>
 	
 	</tags:sectionContainer>
 					

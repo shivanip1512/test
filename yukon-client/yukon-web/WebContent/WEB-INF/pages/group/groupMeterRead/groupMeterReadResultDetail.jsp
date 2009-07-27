@@ -85,19 +85,24 @@
             
             <%-- cre action --%>
             <div id="creResultsDiv" style="display:none;">
-                <br>
-                
-                <cti:msg var="creResultsText" key="yukon.common.device.groupMeterRead.resultDetail.creResults"/>
-                
-                <cti:url var="creResultsUrl" value="/spring/amr/commandRequestExecution/detail">
-                	<cti:param name="commandRequestExecutionId" value="${resultWrapper.result.commandRequestExecutionIdentifier.commandRequestExecutionId}"/>
-                </cti:url>
-                
-                <cti:link href="${creResultsUrl}" key="yukon.common.device.groupMeterRead.resultDetail.creResults" class="small"/>
-                <img onclick="window.location='${creResultsUrl}';" 
-							title="${creResultsText}" 
-							src="${script}" onmouseover="javascript:this.src='${scriptOver}'" 
-							onmouseout="javascript:this.src='${script}'">
+            
+            	<c:if test="${not empty resultWrapper.result.commandRequestExecutionIdentifier}">
+            
+	                <br>
+	                
+	                <cti:msg var="creResultsText" key="yukon.common.device.groupMeterRead.resultDetail.creResults"/>
+	                
+	                <cti:url var="creResultsUrl" value="/spring/amr/commandRequestExecutionResults/detail">
+	                	<cti:param name="commandRequestExecutionId" value="${resultWrapper.result.commandRequestExecutionIdentifier.commandRequestExecutionId}"/>
+	                </cti:url>
+	                
+	                <cti:link href="${creResultsUrl}" key="yukon.common.device.groupMeterRead.resultDetail.creResults" class="small"/>
+	                <img onclick="window.location='${creResultsUrl}';" 
+								title="${creResultsText}" 
+								src="${script}" onmouseover="javascript:this.src='${scriptOver}'" 
+								onmouseout="javascript:this.src='${script}'">
+							
+				</c:if>
                 
             </div>
                                 

@@ -21,6 +21,8 @@
         	<props>
                 <prop key="/editor/*">groupEditorController</prop>
                 <prop key="/groupMeterRead/*">GroupMeterReadController</prop>
+                <prop key="/scheduledGroupRequestExecution/*">ScheduledGroupRequestExecutionController</prop>
+                <prop key="/scheduledGroupRequestExecutionResults/*">ScheduledGroupRequestExecutionResultsController</prop>
             </props>
         </property>
     </bean>    
@@ -46,10 +48,6 @@
         
     </bean>
     
-    <bean class="com.cannontech.web.group.GroupCommanderController" />
-    
-    <bean id="GroupMeterReadController" class="com.cannontech.web.group.GroupMeterReadController" />
-    
     <bean class="com.cannontech.web.group.DeviceGroupUpdaterController" />
     
 	<bean id="bulkDeviceAdd" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
@@ -59,5 +57,16 @@
 	<bean id="addDevicesResultUpdate" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
     	<property name="viewName" value="addDevicesResultUpdate.jsp"/>
     </bean>
+    
+    <!-- GROUP COMMAND -->
+    <bean class="com.cannontech.web.group.GroupCommanderController" />
+    
+    <!-- GROUP METER READ -->
+    <bean id="GroupMeterReadController" class="com.cannontech.web.group.GroupMeterReadController" />
+
+	<!-- SCHEDULED GROUP REQUEST EXECUTION -->
+    <bean id="ScheduledGroupRequestExecutionController" class="com.cannontech.web.amr.scheduledGroupRequestExecution.ScheduledGroupRequestExecutionController" />
+        
+    <bean id="ScheduledGroupRequestExecutionResultsController" class="com.cannontech.web.amr.scheduledGroupRequestExecution.ScheduledGroupRequestExecutionResultsController" />
     
 </beans>

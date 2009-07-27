@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletException;
@@ -23,7 +22,6 @@ import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
-import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -192,31 +190,6 @@ public class GroupMeterReadController extends MultiActionController {
 		mav.addObject("resultWrapper", resultWrapper);
 		
 		return mav;
-	}
-	
-	// RESULT WRAPPER
-	public class GroupMeterReadResultWrapper {
-		
-		private GroupMeterReadResult result;
-		
-		public GroupMeterReadResultWrapper(GroupMeterReadResult groupMeterReadResult) {
-			this.result = groupMeterReadResult;
-		}
-		
-		public GroupMeterReadResult getResult() {
-			return this.result;
-		}
-		
-		public String getAttributesDescription() {
-
-			Set<? extends Attribute> attributes = this.result.getAttributes();
-			List<String> descriptions = new ArrayList<String>();
-			for (Attribute attribute : attributes) {
-				descriptions.add(attribute.getDescription());
-			}
-			
-			return StringUtils.join(descriptions, ", ");
-		}
 	}
 	
 	

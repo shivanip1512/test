@@ -5,6 +5,7 @@
 <%@ taglib prefix="ext" tagdir="/WEB-INF/tags/ext" %>
 
 <cti:msg var="pageTitle" key="yukon.web.modules.amr.outageProcessing.pageTitle" />
+<cti:msg var="reportingLinkText" key="yukon.web.modules.amr.outageProcessing.reportingLink" />
 <cti:msg var="mainDetailNameText" key="yukon.web.modules.amr.outageProcessing.section.mainDetail.name" />
 <cti:msg var="mainDetailDeviceGroupText" key="yukon.web.modules.amr.outageProcessing.section.mainDetail.deviceGroup" />
 <cti:msg var="mainDetailOutagesGroupText" key="yukon.web.modules.amr.outageProcessing.section.mainDetail.outagesGroup" />
@@ -61,9 +62,6 @@
 	</c:if>
 	
 	<%-- MAIN DETAILS --%>
-	<table width="100%">
-	<tr><td>
-	
 	<tags:nameValueContainer>
 
 		<tags:nameValue name="${mainDetailNameText}" nameColumnWidth="250px">
@@ -71,26 +69,6 @@
 				<cti:param name="outageMonitorId" value="${outageMonitor.outageMonitorId}"/>
 			</cti:url>
 			<a href="${outageMonitorEditUrl}">${outageMonitor.name}</a>
-		</tags:nameValue>
-		
-		<tags:nameValue name="${mainDetailDeviceGroupText}">
-			
-			<cti:url var="deviceGroupUrl" value="/spring/group/editor/home">
-				<cti:param name="groupName">${outageMonitor.groupName}</cti:param>
-			</cti:url>
-			
-			<a href="${deviceGroupUrl}">${outageMonitor.groupName}</a>
-			
-		</tags:nameValue>
-		
-		<tags:nameValue name="${mainDetailOutagesGroupText}">
-			
-			<cti:url var="outageGroupUrl" value="/spring/group/editor/home">
-				<cti:param name="groupName">${outageGroupBase}${outageMonitor.name}</cti:param>
-			</cti:url>
-			
-			<a href="${outageGroupUrl}">${outageGroupBase}${outageMonitor.name}</a>
-			
 		</tags:nameValue>
 		
 		<tags:nameValue name="${mainDetailDevicesText}">
@@ -105,15 +83,42 @@
 			${outageMonitor.timePeriod}
 		</tags:nameValue>
 		
+		<tags:nameValue name="">
+			&nbsp;
+		</tags:nameValue>
+		
+		<tags:nameValue name="${mainDetailDeviceGroupText}">
+			
+			<cti:url var="deviceGroupUrl" value="/spring/group/editor/home">
+				<cti:param name="groupName">${outageMonitor.groupName}</cti:param>
+			</cti:url>
+			
+			<a href="${deviceGroupUrl}">${outageMonitor.groupName}</a>
+			<br>
+			
+		</tags:nameValue>
+		
+		<tags:nameValue name="${mainDetailOutagesGroupText}">
+			
+			<cti:url var="outageGroupUrl" value="/spring/group/editor/home">
+				<cti:param name="groupName">${outageGroupBase}${outageMonitor.name}</cti:param>
+			</cti:url>
+			
+			<a href="${outageGroupUrl}">${outageGroupBase}${outageMonitor.name}</a>
+			<br>
+			<cti:formatDate var="startDate" type="DATE" value="${reportStartDate}"/>
+			<cti:link href="/analysis/Reports.jsp" key="yukon.web.modules.amr.outageProcessing.reportingLink">
+				<cti:param name="groupType" value="METERING"/>
+				<cti:param name="type" value="METER_OUTAGE_LOG"/>
+				<cti:param name="selectedReportFilter" value="GROUPS"/>
+				<cti:param name="selectedReportFilterValues" value="${outageGroupBase}${outageMonitor.name}"/>
+				<cti:param name="startDate" value="${startDate}"/>
+			</cti:link>
+			
+		</tags:nameValue>
+		
 	</tags:nameValueContainer>
-	</td>
 
-	<td align="right" valign="top" style="padding-right:50px;">
-
-		<a href="">Go To Reporting</a>
-	
-	</td></tr>
-	</table>
 	<br>
 	<br>
 	
@@ -138,9 +143,11 @@
 	    	<br>
 		
 			<%-- remove after read checkbox --%>
-			<tags:slowSubmit labelBusy="${readOutageLogsButtonText}" label="${readOutageLogsButtonText}"/>
+			<span style="white-space:nowrap;">
+			<tags:slowInput myFormId="readOutagesForm" labelBusy="${readOutageLogsButtonText}" label="${readOutageLogsButtonText}"/>
 			<input type="checkbox" name="removeFromOutageGroupAfterRead" checked>
 			${readOutageLogsSectionRemoveAfterReadText}
+			</span>
 			<br>
 			<br>
 			

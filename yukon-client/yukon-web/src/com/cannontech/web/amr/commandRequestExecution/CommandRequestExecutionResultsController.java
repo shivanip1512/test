@@ -14,7 +14,7 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
-import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupCommandRequestExecutionDao;
+import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultsDao;
@@ -29,12 +29,12 @@ import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.commandRequestExecution.CommandRequestExecutionUpdaterTypeEnum;
 
-public class CommandRequestExecutionController extends MultiActionController {
+public class CommandRequestExecutionResultsController extends MultiActionController {
 	
 	private CommandRequestExecutionDao commandRequestExecutionDao;
 	private CommandRequestExecutionResultsDao commandRequestExecutionResultsDao;
 	private DateFormattingService dateFormattingService;
-	private ScheduledGroupCommandRequestExecutionDao scheduledGroupCommandRequestExecutionDao;
+	private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao;
 	private TemporaryDeviceGroupService temporaryDeviceGroupService;
 	private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
 	
@@ -92,7 +92,7 @@ public class CommandRequestExecutionController extends MultiActionController {
 		// CRES
 		List<CommandRequestExecution> cres;
 		if (jobId > 0) {
-			cres = scheduledGroupCommandRequestExecutionDao.getCommandRequestExecutionsByJobId(jobId, fromDate, toDate, false);
+			cres = scheduledGroupRequestExecutionDao.getCommandRequestExecutionsByJobId(jobId, fromDate, toDate, false);
 		} else {
 			cres = commandRequestExecutionDao.getByRange(commandRequestExecutionId, fromDate, toDate, typeFilter, false);
 		}
@@ -202,9 +202,9 @@ public class CommandRequestExecutionController extends MultiActionController {
 	}
 	
 	@Autowired
-	public void setScheduledGroupCommandRequestExecutionDao(
-			ScheduledGroupCommandRequestExecutionDao scheduledGroupCommandRequestExecutionDao) {
-		this.scheduledGroupCommandRequestExecutionDao = scheduledGroupCommandRequestExecutionDao;
+	public void setScheduledGroupRequestExecutionDao(
+			ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao) {
+		this.scheduledGroupRequestExecutionDao = scheduledGroupRequestExecutionDao;
 	}
 	
 	@Autowired

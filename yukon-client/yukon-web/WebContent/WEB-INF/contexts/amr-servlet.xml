@@ -14,8 +14,7 @@
                 <prop key="/reports/*">AMRReportsController</prop>
                 <prop key="/outageProcessing/monitorEditor/*">OutageMonitorEditorController</prop>
                 <prop key="/outageProcessing/process/*">OutageProcessingController</prop>
-                <prop key="/commandRequestExecution/*">CommandRequestExecutionController</prop>
-                <prop key="/scheduledGroupCommandRequestExecution/*">ScheduledGroupCommandRequestExecutionController</prop>
+                <prop key="/commandRequestExecutionResults/*">CommandRequestExecutionResultsController</prop>
             </props>
         </property>
     </bean>
@@ -114,10 +113,7 @@
     </bean>
     
     <!-- COMMAND REQUEST EXECUTION -->
-    <bean id="CommandRequestExecutionController" class="com.cannontech.web.amr.commandRequestExecution.CommandRequestExecutionController">
-    </bean>
-    
-    <bean id="ScheduledGroupCommandRequestExecutionController" class="com.cannontech.web.amr.scheduledGroupCommandRequestExecution.ScheduledGroupRequestExecutionController">
+    <bean id="CommandRequestExecutionResultsController" class="com.cannontech.web.amr.commandRequestExecution.CommandRequestExecutionResultsController">
     </bean>
     
 </beans>

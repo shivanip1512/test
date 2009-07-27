@@ -69,11 +69,19 @@
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.filter.typeAny">Any Scheduled</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.filter.button">Filter</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.filter.clear">Clear</entry>
+    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.filter.enabled">Enabled</entry>
+    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.filter.disabled">Disabled</entry>
+    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.filter.excludePending">Exclude Pending</entry>
+    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.filter.allWord">All</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.executions.section">Jobs</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.executions.tableHeader.type">Request Type</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.executions.tableHeader.executionCount">Execution Count</entry>
+    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.executions.tableHeader.attributeOrCommand">Attribute/Command</entry>
+    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.executions.tableHeader.attributeOrCommand.attribute">Attribute</entry>
+    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.executions.tableHeader.scheduleDescription">Run Schedule</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.executions.tableHeader.lastRun">Last Run</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.executions.tableHeader.nextRun">Next Run</entry>
+    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.executions.tableHeader.executionCount">Executions</entry>
+    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.executions.tableHeader.enabledStatus">Status</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.executions.tableHeader.user">User</entry>
     
     
@@ -83,12 +91,13 @@
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.pageTitle">Job Detail</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.section">Info</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.jobType">Job Type</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.type">Type</entry>
+    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.creType">Request Type</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.enabled">Enabled</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.enabledYes">Yes</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.enabledNo">No</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.attribute">Attribute</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.command">Command</entry>
+    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.scheduleDescription">Run Schedule</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.lastRun">Last Run</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.lastResults">Last Results</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.lastResults.success">Success</entry>
@@ -110,5 +119,6 @@
 	     View a listing of every time this job has run.
 	     <br><br>
     ]]></entry>
+    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.editScheduleButton">Edit Job</entry>
     
 </properties>

@@ -32,7 +32,7 @@
         <cti:crumbLink url="/spring/meter/start" title="Metering" />
         
         <%-- cre list --%>
-        <cti:url var="creListUrl" value="/spring/amr/commandRequestExecution/list">
+        <cti:url var="creListUrl" value="/spring/amr/commandRequestExecutionResults/list">
             <cti:param name="jobId">${jobId}</cti:param>
         </cti:url>
         <cti:crumbLink url="${creListUrl}" title="Command Request Executions" />
@@ -50,30 +50,22 @@
 
     <script type="text/javascript">
 
-    	function switchResultsFilterType(selectEl) {
-
-			var resultsFilterType = selectEl.options[selectEl.selectedIndex].value;
+    	function switchResultsFilterType(resultsFilterType) {
 
 			// init request
 			var url = '';
 			var params = $H();
 
-			// hide report
-			if (resultsFilterType == 'HIDE') {
-
-				$('detailsReportDiv').hide();
-				return;
-
 			// failure stats report
-			} else if (resultsFilterType == 'FAIL_STATS') {
+			if (resultsFilterType == 'FAIL_STATS') {
 
-				url = '/spring/amr/commandRequestExecution/failureStatsReport';
+				url = '/spring/amr/commandRequestExecutionResults/failureStatsReport';
 				params['commandRequestExecutionId'] = ${commandRequestExecutionId};
 
 			// detail report (success/fail/all)
 			} else {
 
-				url = '/spring/amr/commandRequestExecution/detailsReport';
+				url = '/spring/amr/commandRequestExecutionResults/detailsReport';
 				params['commandRequestExecutionId'] = ${commandRequestExecutionId};
 				params['resultsFilterType'] = resultsFilterType;
 				
@@ -81,7 +73,6 @@
 
 			// show indicator, disable select
 			$('viewHideDetailsReportButtonIndicator').show();
-			selectEl.disable();
 
 			// request report
 			new Ajax.Updater('detailsReportDiv', url, {
@@ -90,13 +81,11 @@
 			   'onSuccess': function(transport, json) {
 					$('viewHideDetailsReportButtonIndicator').hide();
 					$('detailsReportDiv').show();
-					selectEl.enable();
 			   },
 			   'onException': function(e) {
 				   $('viewHideDetailsReportButtonIndicator').hide();
 				   $('detailsReportDiv').show();
 				   $('detailsReportDiv').innerHTML = "Error getting report:" + e.responseText;
-				   selectEl.enable();
 			   }
 			 });
     	}
@@ -173,15 +162,10 @@
 			
 			<tags:nameValue name="${resultsViewReportText}">
 			
-				<select id="resultViewSelect" onchange="switchResultsFilterType(this);">
-				
-					<option value="HIDE">${resultsHideReportText}</option>
-					<option value=FAIL_STATS>${resultsFailStatsReportText}</option>
-					<c:forEach var="resultsFilterType" items="${resultsFilterTypes}">
-						<option value="${resultsFilterType}">${resultsFilterType.description}</option>
-					</c:forEach>
-				
-				</select>
+				<a href="javascript:void(0);" onclick="switchResultsFilterType('FAIL_STATS');">${resultsFailStatsReportText}</a>
+				<c:forEach var="resultsFilterType" items="${resultsFilterTypes}">
+					| <a href="javascript:void(0);" onclick="switchResultsFilterType('${resultsFilterType}');">${resultsFilterType.description}</a>
+				</c:forEach>
 			
 				<img id="viewHideDetailsReportButtonIndicator" style="display:none;" src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" alt="waiting"> 
 			

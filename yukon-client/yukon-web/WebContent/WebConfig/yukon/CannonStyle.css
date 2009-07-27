@@ -83,16 +83,18 @@ a.small {
 .smallBoldLabel {
    font-size:11px;
    font-weight:bold;
+   color:black;
  }
  
  .normalBoldLabel {
    font-size:14px;
    font-weight:bold;
+   color:black;
  }
  
-  .largeBoldLabel {
-   font-size:16px;
+.largeBoldLabel {
    font-weight:bold;
+   color:black;
  }
  
  .smallLink {

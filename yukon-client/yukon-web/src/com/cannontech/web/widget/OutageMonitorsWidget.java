@@ -12,7 +12,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.cannontech.amr.outageProcessing.OutageMonitor;
 import com.cannontech.amr.outageProcessing.dao.OutageMonitorDao;
 import com.cannontech.amr.outageProcessing.service.OutageMonitorService;
-import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupCommandRequestExecutionDao;
+import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.util.MappingList;
@@ -23,7 +23,7 @@ import com.cannontech.web.widget.support.WidgetControllerBase;
 public class OutageMonitorsWidget extends WidgetControllerBase {
 
 	private OutageMonitorDao outageMonitorDao;
-	private ScheduledGroupCommandRequestExecutionDao scheduledGroupCommandRequestExecutionDao;
+	private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao;
 	private OutageMonitorService outageMonitorService;
 	
 	@Override
@@ -79,7 +79,7 @@ public class OutageMonitorsWidget extends WidgetControllerBase {
 				
 				this.jobId = jobId;
 				
-				this.latestCommandRequestExecution = scheduledGroupCommandRequestExecutionDao.getLatestCommandRequestExecutionForJobId(jobId, null);
+				this.latestCommandRequestExecution = scheduledGroupRequestExecutionDao.getLatestCommandRequestExecutionForJobId(jobId, null);
 			}
 		}
 		
@@ -101,9 +101,9 @@ public class OutageMonitorsWidget extends WidgetControllerBase {
 	}
 	
 	@Autowired
-	public void setScheduledGroupCommandRequestExecutionDao(
-			ScheduledGroupCommandRequestExecutionDao scheduledGroupCommandRequestExecutionDao) {
-		this.scheduledGroupCommandRequestExecutionDao = scheduledGroupCommandRequestExecutionDao;
+	public void setScheduledGroupRequestExecutionDao(
+			ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao) {
+		this.scheduledGroupRequestExecutionDao = scheduledGroupRequestExecutionDao;
 	}
 	
 	@Autowired

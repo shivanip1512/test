@@ -1,7 +1,13 @@
 package com.cannontech.web.amr.util.cronExpressionTag;
 
-public class CronExpressionTagState {
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
+import com.cannontech.user.SystemUserContext;
+
+public class CronExpressionTagState {
+	
 	// custom
 	boolean custom = false;
 	String customExpression = "";
@@ -33,6 +39,21 @@ public class CronExpressionTagState {
 	// monthly
 	CronExprMonthlyOptionEnum cronExpressionMontlyOption = CronExprMonthlyOptionEnum.ON_DAY;
 	int cronExpressionMontlyOptionOnDayX = 1;
+	
+	// one time
+	String date = "";
+	
+	public CronExpressionTagState() {
+		
+		Date today = new Date();
+		SimpleDateFormat dateFormatter;
+		TimeZone systemTimeZone = new SystemUserContext().getTimeZone();
+		
+		dateFormatter = new SimpleDateFormat("MM/dd/yyyy");
+		dateFormatter.setTimeZone(systemTimeZone);
+		date = dateFormatter.format(today);
+		
+	}
 	
 	// setters/getters
 	public String getDescription() {
@@ -144,6 +165,12 @@ public class CronExpressionTagState {
 	public void setCronExpressionMontlyOptionOnDayX(
 			int cronExpressionMontlyOptionOnDayX) {
 		this.cronExpressionMontlyOptionOnDayX = cronExpressionMontlyOptionOnDayX;
+	}
+	public String getDate() {
+		return date;
+	}
+	public void setDate(String date) {
+		this.date = date;
 	}
 	
 }
