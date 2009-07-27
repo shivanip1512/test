@@ -18,6 +18,7 @@ import javax.faces.model.SelectItem;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 
+import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.dao.CapbankDao;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
@@ -37,12 +38,12 @@ import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.CCMonitorBankList;
 import com.cannontech.database.db.capcontrol.CapBankAdditional;
-import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.web.util.CBCDBUtil;
 import com.cannontech.web.util.CBCSelectionLists;
 import com.cannontech.web.util.JSFComparators;
+import com.cannontech.yukon.cbc.Feeder;
 
 public class CapBankEditorForm extends DBEditorForm {
 
@@ -51,10 +52,11 @@ public class CapBankEditorForm extends DBEditorForm {
     private MultiDBPersistent monitorPointsVector = null;
     private DeviceBase controller = null;
     private CapBank capBank = null;
-    private String[] DYNAMIC_TABLE_NAMES = { "DynamicCCMonitorBankHistory",
-            "DynamicCCMonitorPointResponse" };
+    private String[] DYNAMIC_TABLE_NAMES = { "DynamicCCMonitorBankHistory", "DynamicCCMonitorPointResponse" };
     private CapBankAdditional additionalInfo;
     
+    private static CapControlCache cache = (CapControlCache)YukonSpringHook.getBean("capControlCache");
+    private static CapbankDao dao = YukonSpringHook.getBean("capbankDao", CapbankDao.class);
     private static PointDao pointDao = YukonSpringHook.getBean("pointDao",PointDao.class);
     private static PaoDao paoDao = YukonSpringHook.getBean("paoDao",PaoDao.class);
     
@@ -166,58 +168,19 @@ public class CapBankEditorForm extends DBEditorForm {
         return unassignedPoints;
     }
 
-    private void setDefaultFeederLimits(CapBank capBank,
-            CapBankMonitorPointParams monitorPoint) {
-        
-        CapbankDao dao = YukonSpringHook.getBean("capbankDao", CapbankDao.class);
+    private void setDefaultFeederLimits(CapBank capBank, CapBankMonitorPointParams monitorPoint) {
         int fdrId = 0;
-        try{
+        try {
             fdrId = dao.getParentFeederId(capBank.getPAObjectID().intValue());
         }
-        catch( EmptyResultDataAccessException e)
-        {
-            CTILogger.debug("Feeder " + capBank.getPAObjectID().intValue() + " not found.");
+        catch( EmptyResultDataAccessException e) {
+            CTILogger.debug("Feeder " + capBank.getPAObjectID().intValue() + " not found. Capbank may be orphaned.");
         }
         
         if (fdrId != 0) {
-            LiteYukonPAObject liteFeeder = paoDao.getLiteYukonPAO(fdrId);
-            CapControlFeeder feeder = (CapControlFeeder) LiteFactory.convertLiteToDBPers(liteFeeder);
-            Connection conn = PoolManager.getInstance()
-                                         .getConnection(CtiUtilities.getDatabaseAlias());
-            try {
-
-                feeder.setDbConnection(conn);
-                feeder.retrieve();
-            } catch (SQLException e) {
-
-            }
-            int stratId = 0;
-            CapControlStrategy strategy = new CapControlStrategy();
-            strategy.setStrategyID(new Integer(stratId));
-
-            try {
-                strategy.setDbConnection(conn);
-                strategy.retrieve();
-
-                monitorPoint.setLowerBandwidth(strategy.getPeakLag()
-                                                       .floatValue());
-                monitorPoint.setUpperBandwidth(strategy.getPeakLead()
-                                                       .floatValue());
-
-            } catch (SQLException e) {
-                CTILogger.info("CapBankEditorForm -- setDefaultFeederLimits" + e.getMessage());
-            } finally {
-                feeder.setDbConnection(null);
-                strategy.setDbConnection(null);
-
-                try {
-                    if (conn != null)
-                        conn.close();
-                } catch (java.sql.SQLException e2) {
-                    CTILogger.info("CapBankEditorForm -- setDefaultFeederLimits" + e2.getMessage());
-
-                }
-            }
+            Feeder feeder = cache.getFeeder(fdrId);
+            monitorPoint.setLowerBandwidth(feeder.getPeakLag().floatValue());
+            monitorPoint.setUpperBandwidth(feeder.getPeakLead().floatValue());
         }
     }
 
