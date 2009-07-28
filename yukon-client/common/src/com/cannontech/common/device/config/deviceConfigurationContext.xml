@@ -1995,6 +1995,7 @@
 					</property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
+				
 				<bean class="com.cannontech.web.input.InputBase">
 					<property name="displayName" value="Channel #1 Multiplier" />
 					<property name="field" value="channel1Multiplier" />
@@ -2015,7 +2016,6 @@
 					<property name="security" ref="configEditSecurity" />
 				</bean>
 -->
-
 				<bean class="com.cannontech.web.input.InputBase">
 					<property name="displayName" value="Channel #2 Meter Type" />
 					<property name="field" value="channel2Type" />
@@ -2153,6 +2153,7 @@
 					</property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
+				-->
 				<bean class="com.cannontech.web.input.InputBase">
 					<property name="displayName" value="Channel #2 Multiplier" />
 					<property name="field" value="channel2Multiplier" />
@@ -2172,7 +2173,6 @@
 					</property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
--->
 
 				<bean class="com.cannontech.web.input.InputBase">
 					<property name="displayName" value="Channel #3 Meter Type" />
@@ -2311,6 +2311,7 @@
 					</property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
+				-->
 				<bean class="com.cannontech.web.input.InputBase">
 					<property name="displayName" value="Channel #3 Multiplier" />
 					<property name="field" value="channel3Multiplier" />
@@ -2330,7 +2331,6 @@
 					</property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
- -->
 				<bean class="com.cannontech.web.input.InputBase">
 					<property name="displayName" value="Channel #4 Meter Type" />
 					<property name="field" value="channel4Type" />
@@ -2468,6 +2468,7 @@
 					</property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
+				-->
  				<bean class="com.cannontech.web.input.InputBase">
 					<property name="displayName" value="Channel #4 Multiplier" />
 					<property name="field" value="channel4Multiplier" />
@@ -2487,7 +2488,6 @@
 					</property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
--->								
 			</list>
 		</property>
 	</bean>

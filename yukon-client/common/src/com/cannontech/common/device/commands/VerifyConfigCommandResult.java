@@ -15,15 +15,16 @@ public class VerifyConfigCommandResult {
     private List<YukonDevice> failureList = new ArrayList<YukonDevice>();
 
     public void addResultString(YukonDevice device, String value) {
-        if(value.contains("is NOT current")) {
-            verifyResultsMap.get(device).getDiscrepancies().add(value);
-        } else {
-            verifyResultsMap.get(device).getMatching().add(value);
-        }
+        verifyResultsMap.get(device).getMatching().add(value);
     }
     
     public void addError(YukonDevice device, String value) {
-        verifyResultsMap.get(device).getDiscrepancies().add(value);
+        List<String> desc = verifyResultsMap.get(device).getDiscrepancies();
+        if(value.contains("is NOT current")) {
+            String[] words = value.split(" ");
+            value = desc.isEmpty() ? words[1] : ", " + words[1];
+        }
+        desc.add(value);
     }
     
     public void handleSuccess(YukonDevice device) {
