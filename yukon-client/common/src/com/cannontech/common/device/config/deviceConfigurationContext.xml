@@ -39,7 +39,7 @@
 		<property name="categoryList">
 			<list>
 				<ref bean="dst430_470Category"/>
-				<ref bean="demandLP430_470Category"/>
+				<ref bean="demandLP470Category"/>
 				<ref bean="mct470lpChannelsCategory"/>
 				<ref bean="mct470CofigurationByte"/>
 				<ref bean="addressingCategory"/>
@@ -214,7 +214,7 @@
 		<property name="categoryList">
 			<list>
 				<ref bean="dst430_470Category"/>
-				<ref bean="demandLP430_470Category"/>
+				<ref bean="demandLP430Category"/>
 				<ref bean="mct430lpChannelsCategory"/>
 				<ref bean="mct430CofigurationByte"/>
 				<ref bean="addressingCategory"/>
@@ -1380,7 +1380,7 @@
 		</property>
 	</bean>
 	
-	<bean id="demandLP430_470Category" class="com.cannontech.common.device.config.model.CategoryTemplate">
+	<bean id="demandLP430Category" class="com.cannontech.common.device.config.model.CategoryTemplate">
 		<property name="name" value="MCT Demand and Load Profile" />
 		<property name="inputList">
 			<list>
@@ -1577,6 +1577,111 @@
 			</list>
 		</property>
 	</bean>
+	
+	<bean id="demandLP470Category" class="com.cannontech.common.device.config.model.CategoryTemplate">
+        <property name="name" value="MCT Demand and Load Profile" />
+        <property name="inputList">
+            <list>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="displayName" value="Demand Interval" />
+                    <property name="field" value="demandInterval" />
+                    <property name="description">
+                        <value>
+                            Interval in minutes over which most recent demand is calculatd
+                        </value>
+                    </property>
+                    <property name="type">
+                        <bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+                            <property name="enumeratedType" ref="inputIntegerType" />
+                            <property name="optionList">
+                                <list>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="5" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="15" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="30" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="60" />
+                                    </bean>
+                                </list>
+                            </property>
+                        </bean>
+                    </property>
+                    <property name="security" ref="configEditSecurity" />
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="displayName" value="Load Profile Interval 1" />
+                    <property name="field" value="loadProfileInterval1" />
+                    <property name="description">
+                        <value>
+                            Interval in minutes over which load profile values are kept. Valid values are 5, 15, 30, and 0
+                        </value>
+                    </property>
+                    <property name="type">
+                        <bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+                            <property name="enumeratedType" ref="inputIntegerType" />
+                            <property name="optionList">
+                                <list>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="0" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="5" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="15" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="30" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="60" />
+                                    </bean>
+                                </list>
+                            </property>
+                        </bean>
+                    </property>
+                    <property name="security" ref="configEditSecurity" />
+                </bean>
+            <!--    <bean class="com.cannontech.web.input.InputBase">
+                    <property name="displayName" value="Load Profile Interval 2" />
+                    <property name="field" value="loadProfileInterval2" />
+                    <property name="description">
+                        <value>
+                            Interval in minutes over which load profile values are kept. Valid values are 5, 15, 30, and 0
+                        </value>
+                    </property>
+                    <property name="type">
+                        <bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+                            <property name="enumeratedType" ref="inputIntegerType" />
+                            <property name="optionList">
+                                <list>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="5" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="15" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="30" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="60" />
+                                    </bean>
+                                </list>
+                            </property>
+                        </bean>
+                    </property>
+                    <property name="security" ref="configEditSecurity" />
+                </bean>
+            -->
+            </list>
+        </property>
+    </bean>
 
 	<bean id="voltageThresholdCategory" class="com.cannontech.common.device.config.model.CategoryTemplate">
 		<property name="name" value="MCT Voltage Threshold" />
