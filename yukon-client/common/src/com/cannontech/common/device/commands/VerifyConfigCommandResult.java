@@ -22,7 +22,7 @@ public class VerifyConfigCommandResult {
         List<String> desc = verifyResultsMap.get(device).getDiscrepancies();
         if(value.contains("is NOT current")) {
             String[] words = value.split(" ");
-            value = desc.isEmpty() ? words[1] : ", " + words[1];
+            value = words[1];
         }
         desc.add(value);
     }
