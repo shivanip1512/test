@@ -101,12 +101,16 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
          * except for the program ids.
          */
         final SqlStatementBuilder loadGroupInUseQuery = new SqlStatementBuilder();
-        loadGroupInUseQuery.append("Select count(*) ");
-        loadGroupInUseQuery.append("From LMHardwareControlGroup LMHCG");
-        loadGroupInUseQuery.append("Where LMHCG.LMGroupId = ?");
+        loadGroupInUseQuery.append("SELECT COUNT(*) ");
+        loadGroupInUseQuery.append("FROM LMHardwareControlGroup LMHCG");
+        loadGroupInUseQuery.append("WHERE LMHCG.LMGroupId = ?");
+        loadGroupInUseQuery.append("AND LMHCG.Type = ?");
+        loadGroupInUseQuery.append("AND LMHCG.GroupEnrollStop IS NULL");
         
         int enrollmentCount = simpleJdbcTemplate.queryForInt(loadGroupInUseQuery.toString(),
-                                                             loadGroupId);
+                                                             loadGroupId,
+                                                             1);
+                                                             
         if(enrollmentCount > 0)
             isUsed = true;
             

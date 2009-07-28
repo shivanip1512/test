@@ -56,7 +56,7 @@ private void connEtoC1(java.util.EventObject arg1) throws IllegalArgumentExcepti
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void connEtoC2(java.util.EventObject arg1) throws IllegalArgumentException {
-	Object[] lmProgPAOs = getAddRemovePanel().getLeftList().getSelectedValues();
+	Object[] lmProgPAOs = getAddRemovePanel().getRightList().getSelectedValues();
 	for (Object temp: lmProgPAOs) {
 	    LiteYukonPAObject lmProgPAO = (LiteYukonPAObject)temp;    int loadGroupId = lmProgPAO.getLiteID();
 	    LoadGroupDao loadGroupDao = YukonSpringHook.getBean("loadGroupDao", LoadGroupDao.class);
