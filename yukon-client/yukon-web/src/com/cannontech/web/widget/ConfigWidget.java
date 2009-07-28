@@ -104,7 +104,7 @@ public class ConfigWidget extends WidgetControllerBase {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         ModelAndView mav = new ModelAndView("configWidget/configWidgetResult.jsp");
         Meter meter = getMeter(request);
-        CommandResultHolder resultHolder = deviceConfigService.readConfig(meter, userContext.getYukonUser());
+        CommandResultHolder resultHolder = deviceConfigService.pushConfig(meter, userContext.getYukonUser());
         mav.addObject("pushResult", resultHolder);
         return mav;
     }
