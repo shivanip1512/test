@@ -255,11 +255,11 @@
 				<prop key="Table Type">tableType</prop>
 				<prop key="Configuration">configuration</prop>
 <!-- 			<prop key="Load Profile Interval 2">loadProfileInterval2</prop>
-				<prop key="Channel 1 Multiplier">channel1Multiplier</prop>
+				<prop key="Channel 1 Multiplier">channel1Multiplier</prop>-->
 				<prop key="Channel 2 Multiplier">channel2Multiplier</prop>
 				<prop key="Channel 3 Multiplier">channel3Multiplier</prop>
 				<prop key="Channel 4 Multiplier">channel4Multiplier</prop>
-				<prop key="Channel 1 LP Interval">channel1LPInterval</prop>
+<!--          <prop key="Channel 1 LP Interval">channel1LPInterval</prop>
 				<prop key="Channel 2 LP Interval">channel2LPInterval</prop>
 				<prop key="Channel 3 LP Interval">channel3LPInterval</prop>
 				<prop key="Channel 4 LP Interval">channel4LPInterval</prop>
