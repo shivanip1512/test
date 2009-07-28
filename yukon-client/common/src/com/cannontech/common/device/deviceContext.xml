@@ -33,7 +33,7 @@
     <bean id="commandRequestExecutionDao" class="com.cannontech.common.device.commands.dao.impl.CommandRequestExecutionDaoImpl">
     </bean>
     
-    <bean id="commandRequestExecutionResultsDao" class="com.cannontech.common.device.commands.dao.impl.CommandRequestExecutionResultsDaoImpl">
+    <bean id="commandRequestExecutionResultDao" class="com.cannontech.common.device.commands.dao.impl.CommandRequestExecutionResultDaoImpl">
     </bean>
     
     <bean id="attributeService" class="com.cannontech.common.device.attribute.service.AttributeServiceImpl" scope="singleton">

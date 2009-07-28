@@ -8,6 +8,7 @@ import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
+import com.cannontech.common.device.commands.CommandRequestType;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.porter.message.Request;
@@ -47,4 +48,8 @@ public class CommandRequestDeviceExecutorImpl extends
         return execute(cmdRequest, type, user);
     }
 
+    @Override
+    protected CommandRequestType getCommandRequestType() {
+    	return CommandRequestType.DEVICE;
+    }
 }

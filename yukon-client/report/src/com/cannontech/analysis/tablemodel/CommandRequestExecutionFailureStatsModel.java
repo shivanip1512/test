@@ -11,14 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
-import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultsDao;
+import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultsFilterType;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionResult;
 
 public class CommandRequestExecutionFailureStatsModel extends BareReportModelBase<CommandRequestExecutionFailureStatsModel.ModelRow> {
     
     // dependencies
-    private CommandRequestExecutionResultsDao commandRequestExecutionResultsDao;
+    private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
     private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     
     // inputs
@@ -38,7 +38,7 @@ public class CommandRequestExecutionFailureStatsModel extends BareReportModelBas
     
     public void doLoadData() {
     	
-    	List<CommandRequestExecutionResult> results = commandRequestExecutionResultsDao.getResultsByExecutionId(this.commandRequestExecutionId, CommandRequestExecutionResultsFilterType.FAIL);
+    	List<CommandRequestExecutionResult> results = commandRequestExecutionResultDao.getResultsByExecutionId(this.commandRequestExecutionId, CommandRequestExecutionResultsFilterType.FAIL);
     	
     	// organize
     	Map<Integer, CreStat> erroCodeCreStatMap = new HashMap<Integer, CreStat>();
@@ -143,9 +143,9 @@ public class CommandRequestExecutionFailureStatsModel extends BareReportModelBas
 	}
     
     @Autowired
-    public void setCommandRequestExecutionResultsDao(
-			CommandRequestExecutionResultsDao commandRequestExecutionResultsDao) {
-		this.commandRequestExecutionResultsDao = commandRequestExecutionResultsDao;
+    public void setCommandRequestExecutionResultDao(
+			CommandRequestExecutionResultDao commandRequestExecutionResultDao) {
+		this.commandRequestExecutionResultDao = commandRequestExecutionResultDao;
 	}
     
     @Autowired

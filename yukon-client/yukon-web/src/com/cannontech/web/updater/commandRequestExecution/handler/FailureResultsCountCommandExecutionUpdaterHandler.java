@@ -2,18 +2,18 @@ package com.cannontech.web.updater.commandRequestExecution.handler;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultsDao;
+import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.commandRequestExecution.CommandRequestExecutionUpdaterTypeEnum;
 
 public class FailureResultsCountCommandExecutionUpdaterHandler implements CommandRequestExecutionUpdaterHandler {
 
-	private CommandRequestExecutionResultsDao commandRequestExecutionResultsDao;
+	private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
 	
 	@Override
 	public String handle(int id, YukonUserContext userContext) {
 
-		int count = commandRequestExecutionResultsDao.getFailCountByExecutionId(id);
+		int count = commandRequestExecutionResultDao.getFailCountByExecutionId(id);
 		return String.valueOf(count);
 	}
 	
@@ -23,8 +23,8 @@ public class FailureResultsCountCommandExecutionUpdaterHandler implements Comman
 	}
 
 	@Autowired
-	public void setCommandRequestExecutionResultsDao(
-			CommandRequestExecutionResultsDao commandRequestExecutionResultsDao) {
-		this.commandRequestExecutionResultsDao = commandRequestExecutionResultsDao;
+	public void setCommandRequestExecutionResultDao(
+			CommandRequestExecutionResultDao commandRequestExecutionResultDao) {
+		this.commandRequestExecutionResultDao = commandRequestExecutionResultDao;
 	}
 }

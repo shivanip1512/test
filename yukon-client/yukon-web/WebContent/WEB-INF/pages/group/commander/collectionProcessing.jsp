@@ -32,7 +32,7 @@
 			<cti:deviceCollection deviceCollection="${deviceCollection}" />
       
       		<%-- SELECT COMMAND --%>
-            <ext:commandSelector fieldName="commandString" commands="${commands}"/>
+            <amr:commandSelector selectName="commandSelectValue" fieldName="commandString" commands="${commands}"/>
             <br><br>
             
             <%-- EMAIL --%>

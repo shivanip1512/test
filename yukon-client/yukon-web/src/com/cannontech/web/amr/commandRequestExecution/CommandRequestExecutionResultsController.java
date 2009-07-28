@@ -17,7 +17,7 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
-import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultsDao;
+import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultsFilterType;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
@@ -32,7 +32,7 @@ import com.cannontech.web.updater.commandRequestExecution.CommandRequestExecutio
 public class CommandRequestExecutionResultsController extends MultiActionController {
 	
 	private CommandRequestExecutionDao commandRequestExecutionDao;
-	private CommandRequestExecutionResultsDao commandRequestExecutionResultsDao;
+	private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
 	private DateFormattingService dateFormattingService;
 	private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao;
 	private TemporaryDeviceGroupService temporaryDeviceGroupService;
@@ -115,8 +115,8 @@ public class CommandRequestExecutionResultsController extends MultiActionControl
         mav.addObject("cre", cre);
         
         int requestCount = commandRequestExecutionDao.getRequestCountById(commandRequestExecutionId);
-        int successCount = commandRequestExecutionResultsDao.getSucessCountByExecutionId(commandRequestExecutionId);
-        int failCount = commandRequestExecutionResultsDao.getFailCountByExecutionId(commandRequestExecutionId);
+        int successCount = commandRequestExecutionResultDao.getSucessCountByExecutionId(commandRequestExecutionId);
+        int failCount = commandRequestExecutionResultDao.getFailCountByExecutionId(commandRequestExecutionId);
         boolean isComplete = commandRequestExecutionDao.isComplete(commandRequestExecutionId);
         mav.addObject("requestCount", requestCount);
         mav.addObject("successCount", successCount);
@@ -166,11 +166,11 @@ public class CommandRequestExecutionResultsController extends MultiActionControl
 		List<Integer> deviceIds;
 		
 		if (commandRequestExecutionType.equals(CommandRequestExecutionUpdaterTypeEnum.REQUEST_COUNT)) {
-			deviceIds = commandRequestExecutionResultsDao.getDeviceIdsByExecutionId(commandRequestExecutionId);
+			deviceIds = commandRequestExecutionResultDao.getDeviceIdsByExecutionId(commandRequestExecutionId);
 		} else if (commandRequestExecutionType.equals(CommandRequestExecutionUpdaterTypeEnum.SUCCESS_RESULTS_COUNT)) {
-			deviceIds = commandRequestExecutionResultsDao.getSucessDeviceIdsByExecutionId(commandRequestExecutionId);
+			deviceIds = commandRequestExecutionResultDao.getSucessDeviceIdsByExecutionId(commandRequestExecutionId);
 		} else if (commandRequestExecutionType.equals(CommandRequestExecutionUpdaterTypeEnum.FAILURE_RESULTS_COUNT)) {
-			deviceIds = commandRequestExecutionResultsDao.getFailDeviceIdsByExecutionId(commandRequestExecutionId);
+			deviceIds = commandRequestExecutionResultDao.getFailDeviceIdsByExecutionId(commandRequestExecutionId);
 		} else {
 			throw new IllegalArgumentException("Invalid commandRequestExecutionUpdaterType parameter: " + commandRequestExecutionUpdaterTypeStr);
 		}
@@ -191,9 +191,9 @@ public class CommandRequestExecutionResultsController extends MultiActionControl
 	}
 	
 	@Autowired
-	public void setCommandRequestExecutionResultsDao(
-			CommandRequestExecutionResultsDao commandRequestExecutionResultsDao) {
-		this.commandRequestExecutionResultsDao = commandRequestExecutionResultsDao;
+	public void setCommandRequestExecutionResultDao(
+			CommandRequestExecutionResultDao commandRequestExecutionResultDao) {
+		this.commandRequestExecutionResultDao = commandRequestExecutionResultDao;
 	}
 	
 	@Autowired

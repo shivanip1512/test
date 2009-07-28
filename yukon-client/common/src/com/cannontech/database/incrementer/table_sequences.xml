@@ -195,7 +195,7 @@
       </sequence>
       <sequence name="CRE">
         <table name="CommandRequestExecution" identitycolumn="CommandRequestExecutionId"/>
-        <table name="CommandRequestExecutionResults" identitycolumn="CommandRequestExecutionResultsId"/>
+        <table name="CommandRequestExecutionResult" identitycolumn="CommandRequestExecutionResultId"/>
       </sequence>
       <sequence name="PAOSchedule">
         <table name="PAOSchedule" identitycolumn="ScheduleId" initsequence="true"/>

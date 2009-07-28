@@ -10,6 +10,7 @@ import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandRequestRoute;
 import com.cannontech.common.device.commands.CommandRequestRouteExecutor;
+import com.cannontech.common.device.commands.CommandRequestType;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -59,4 +60,9 @@ public class CommandRequestRouteExecutorImpl extends
         
         return execute(Collections.singletonList(commandRequest), callback, type, user);
 	}
+	
+	@Override
+    protected CommandRequestType getCommandRequestType() {
+    	return CommandRequestType.ROUTE;
+    }
 }

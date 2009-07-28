@@ -219,4 +219,36 @@ public final class SqlUtils {
         }
         return object;
     }
+    
+    /**
+     * Get null from result set instead of the default value of 0 if the column value is NULL.
+     * @param rs
+     * @param columnName
+     * @return
+     * @throws SQLException
+     */
+    public static Integer getNullableInt(ResultSet rs, String columnName) throws SQLException {
+    	
+    	Integer value = rs.getInt(columnName);
+    	if (rs.wasNull()) {
+    		return null;
+    	}
+    	return value;
+    }
+    
+    /**
+     * Get null from result set instead of the default value of false if the column value is NULL.
+     * @param rs
+     * @param columnName
+     * @return
+     * @throws SQLException
+     */
+    public static Boolean getNullableBoolean(ResultSet rs, String columnName) throws SQLException {
+    	
+    	Boolean value = rs.getBoolean(columnName);
+    	if (rs.wasNull()) {
+    		return null;
+    	}
+    	return value;
+    }
 }

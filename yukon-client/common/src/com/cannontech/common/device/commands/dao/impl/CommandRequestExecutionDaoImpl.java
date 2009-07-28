@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
+import com.cannontech.common.device.commands.CommandRequestType;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -23,6 +24,7 @@ import com.cannontech.database.FieldMapper;
 import com.cannontech.database.ListRowCallbackHandler;
 import com.cannontech.database.MaxRowCalbackHandlerRse;
 import com.cannontech.database.SimpleTableAccessTemplate;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.incrementer.NextValueHelper;
 
 public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDao, InitializingBean {
@@ -160,7 +162,9 @@ public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDa
             	commandRequestExecution.setStopTime(rs.getTimestamp("StopTime"));
             	commandRequestExecution.setRequestCount(rs.getInt("RequestCount"));
             	commandRequestExecution.setType(CommandRequestExecutionType.valueOf(rs.getString("Type")));
-            	commandRequestExecution.setUserId(rs.getInt("UserID"));
+            	Integer userId = SqlUtils.getNullableInt(rs, "UserId");
+            	commandRequestExecution.setUserId(userId);
+            	commandRequestExecution.setCommandRequestType(CommandRequestType.valueOf(rs.getString("CommandRequestType")));
                 
             	return commandRequestExecution;
             }
@@ -176,6 +180,7 @@ public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDa
             p.addValue("RequestCount", commandRequestExecution.getRequestCount());
             p.addValue("Type", commandRequestExecution.getType().name());
             p.addValue("UserID", commandRequestExecution.getUserId());
+            p.addValue("CommandRequestType", commandRequestExecution.getCommandRequestType().name());
             
         }
         public Number getPrimaryKey(CommandRequestExecution commandRequestExecution) {

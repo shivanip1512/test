@@ -3,6 +3,7 @@ package com.cannontech.common.device.commands.dao.model;
 import java.util.Date;
 
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
+import com.cannontech.common.device.commands.CommandRequestType;
 
 public class CommandRequestExecution {
 
@@ -11,7 +12,8 @@ public class CommandRequestExecution {
 	private Date stopTime;
 	private int requestCount;
 	private CommandRequestExecutionType type;
-	private int userId;
+	private Integer userId;
+	private CommandRequestType commandRequestType;
 	
 	public Integer getId() {
 		return id;
@@ -43,10 +45,16 @@ public class CommandRequestExecution {
 	public void setType(CommandRequestExecutionType type) {
 		this.type = type;
 	}
-	public int getUserId() {
+	public Integer getUserId() {
 		return userId;
 	}
-	public void setUserId(int userId) {
+	public void setUserId(Integer userId) {
 		this.userId = userId;
+	}
+	public CommandRequestType getCommandRequestType() {
+		return commandRequestType;
+	}
+	public void setCommandRequestType(CommandRequestType commandRequestType) {
+		this.commandRequestType = commandRequestType;
 	}
 }

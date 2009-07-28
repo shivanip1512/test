@@ -37,9 +37,10 @@ import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandRequestExecutor;
 import com.cannontech.common.device.commands.CommandRequestRoute;
 import com.cannontech.common.device.commands.CommandRequestRouteAndDevice;
+import com.cannontech.common.device.commands.CommandRequestType;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
-import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultsDao;
+import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionResult;
@@ -73,7 +74,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
     private ConfigurationSource configurationSource;
     private Executor executor;
     private CommandRequestExecutionDao commandRequestExecutionDao;
-	private CommandRequestExecutionResultsDao commandRequestExecutionResultsDao;
+	private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
     
     private int defaultForegroundPriority = 14;
     private int defaultBackgroundPriority = 8;
@@ -251,7 +252,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         		commandRequestExecutionResult.setDeviceId(commandRequestRoute.getRouteId());
         	}
             
-            commandRequestExecutionResultsDao.saveOrUpdate(commandRequestExecutionResult);
+            commandRequestExecutionResultDao.saveOrUpdate(commandRequestExecutionResult);
         }
 
         private synchronized void handleUnknownReturn(long userMessageID, Object aResult) {
@@ -344,6 +345,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         commandRequestExecution.setRequestCount(commands.size());
         commandRequestExecution.setType(type);
         commandRequestExecution.setUserId(user.getUserID());
+        commandRequestExecution.setCommandRequestType(getCommandRequestType());
         
         commandRequestExecutionDao.saveOrUpdate(commandRequestExecution);
         
@@ -487,6 +489,8 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
     }
     
     protected abstract Request buildRequest(T commandRequest);
+    
+    protected abstract CommandRequestType getCommandRequestType();
 
     @Required
     public void setPorterConnection(BasicServerConnection porterConnection) {
@@ -549,9 +553,9 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
 	}
     
     @Autowired
-    public void setCommandRequestExecutionResultsDao(
-			CommandRequestExecutionResultsDao commandRequestExecutionResultsDao) {
-		this.commandRequestExecutionResultsDao = commandRequestExecutionResultsDao;
+    public void setCommandRequestExecutionResultDao(
+			CommandRequestExecutionResultDao commandRequestExecutionResultDao) {
+		this.commandRequestExecutionResultDao = commandRequestExecutionResultDao;
 	}
     
     @ManagedAttribute

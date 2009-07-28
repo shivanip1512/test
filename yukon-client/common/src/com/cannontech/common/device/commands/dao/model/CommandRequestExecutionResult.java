@@ -10,8 +10,8 @@ public class CommandRequestExecutionResult {
 	private String command;
 	private int errorCode;
 	private Date completeTime;
-	private int deviceId;
-	private int routeId;
+	private Integer deviceId;
+	private Integer routeId;
 	
 	public Integer getId() {
 		return id;
@@ -43,16 +43,16 @@ public class CommandRequestExecutionResult {
 	public void setCompleteTime(Date completeTime) {
 		this.completeTime = completeTime;
 	}
-	public int getDeviceId() {
+	public Integer getDeviceId() {
 		return deviceId;
 	}
-	public void setDeviceId(int deviceId) {
+	public void setDeviceId(Integer deviceId) {
 		this.deviceId = deviceId;
 	}
-	public int getRouteId() {
+	public Integer getRouteId() {
 		return routeId;
 	}
-	public void setRouteId(int routeId) {
+	public void setRouteId(Integer routeId) {
 		this.routeId = routeId;
 	}
 }

@@ -13,16 +13,18 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 @Configurable("userNameTagPrototype")
 public class UserNameTag extends YukonTagSupport {
 	
-    private int userId;
+    private Integer userId;
     private String var;
     private YukonUserDao yukonUserDao;
     
     @Override
     public void doTag() throws JspException, IOException {
     	
+    	String userName = "N/A";
     	LiteYukonUser liteYukonUser = yukonUserDao.getLiteYukonUser(this.userId);
-    	
-    	String userName = liteYukonUser.getUsername();
+    	if (liteYukonUser != null) {
+    		userName = liteYukonUser.getUsername();
+    	}
     	
     	if (this.var == null) {
             getJspContext().getOut().print(userName);
@@ -31,8 +33,12 @@ public class UserNameTag extends YukonTagSupport {
         }
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(Integer userId) {
 		this.userId = userId;
+	}
+    
+    public Integer getUserId() {
+		return userId;
 	}
     
     public void setVar(final String var) {

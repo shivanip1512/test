@@ -16,7 +16,7 @@ import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupReque
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.model.ScheduledGroupRequestExecutionPair;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
-import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultsDao;
+import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
 import com.cannontech.common.device.commands.dao.impl.CommandRequestExecutionDaoImpl;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -31,13 +31,11 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
 
 	private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
 	private CommandRequestExecutionDao commandRequestExecutionDao;
-	private CommandRequestExecutionResultsDao commandRequestExecutionResultsDao;
+	private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
 	
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private NextValueHelper nextValueHelper;
     private SimpleTableAccessTemplate<ScheduledGroupRequestExecutionPair> template;
-    
-    private static final String TABLE_NAME = "ScheduledGroupCommandRequests";
     
     // INSERT
     public void insert(ScheduledGroupRequestExecutionPair pair) {
@@ -52,7 +50,7 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
     	List<Object> args = new ArrayList<Object>();
     	
     	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	sql.append("SELECT CRE.* FROM " + TABLE_NAME + " SGCR");
+    	sql.append("SELECT CRE.* FROM ScheduledGroupCommandRequest SGCR");
     	sql.append("INNER JOIN CommandRequestExecution CRE ON (SGCR.CommandRequestExecutionId = CRE.CommandRequestExecutionId)");
     	sql.append("WHERE SGCR.JobID = ?");
     	
@@ -94,7 +92,7 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
     	CommandRequestExecution latestCre = getLatestCommandRequestExecutionForJobId(jobId, null);
     	
     	if (latestCre != null) {
-    		count = commandRequestExecutionResultsDao.getSucessCountByExecutionId(latestCre.getId());
+    		count = commandRequestExecutionResultDao.getSucessCountByExecutionId(latestCre.getId());
     	}
     	return count;
 	}
@@ -104,7 +102,7 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
     	CommandRequestExecution latestCre = getLatestCommandRequestExecutionForJobId(jobId, null);
     	
     	if (latestCre != null) {
-    		count = commandRequestExecutionResultsDao.getFailCountByExecutionId(latestCre.getId());
+    		count = commandRequestExecutionResultDao.getFailCountByExecutionId(latestCre.getId());
     	}
     	return count;
 	}
@@ -227,7 +225,7 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
     public List<CommandRequestExecution> getCommandRequestExecutionsByJobId(int jobId, Date startTime, Date stopTime, boolean acsending) {
     	
     	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	sql.append("SELECT CRE.* FROM " + TABLE_NAME + " SGCR");
+    	sql.append("SELECT CRE.* FROM ScheduledGroupCommandRequest SGCR");
         sql.append("INNER JOIN CommandRequestExecution CRE ON (SGCR.CommandRequestExecutionId = CRE.CommandRequestExecutionId)");
         
         List<Object> args = new ArrayList<Object>();
@@ -264,7 +262,7 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
     	
     	SqlStatementBuilder sql = new SqlStatementBuilder();
     	sql.append("SELECT COUNT(CRE.CommandRequestExecutionId) AS creCount ");
-    	sql.append("FROM " + TABLE_NAME + " SGCR");
+    	sql.append("FROM ScheduledGroupCommandRequest SGCR");
         sql.append("INNER JOIN CommandRequestExecution CRE ON (SGCR.CommandRequestExecutionId = CRE.CommandRequestExecutionId)");
         
         List<Object> args = new ArrayList<Object>();
@@ -306,7 +304,7 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
     
 	public void afterPropertiesSet() throws Exception {
         template = new SimpleTableAccessTemplate<ScheduledGroupRequestExecutionPair>(simpleJdbcTemplate, nextValueHelper);
-        template.withTableName(TABLE_NAME);
+        template.withTableName("ScheduledGroupCommandRequest");
         template.withPrimaryKeyField("CommandRequestExecutionId");
         template.withFieldMapper(fieldMapper); 
     }
@@ -330,8 +328,8 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
 		this.commandRequestExecutionDao = commandRequestExecutionDao;
 	}
 	@Autowired
-	public void setCommandRequestExecutionResultsDao(
-			CommandRequestExecutionResultsDao commandRequestExecutionResultsDao) {
-		this.commandRequestExecutionResultsDao = commandRequestExecutionResultsDao;
+	public void setCommandRequestExecutionResultDao(
+			CommandRequestExecutionResultDao commandRequestExecutionResultDao) {
+		this.commandRequestExecutionResultDao = commandRequestExecutionResultDao;
 	}
 }

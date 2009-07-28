@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.CommandRequestRouteAndDevice;
 import com.cannontech.common.device.commands.CommandRequestRouteAndDeviceExecutor;
+import com.cannontech.common.device.commands.CommandRequestType;
 import com.cannontech.message.porter.message.Request;
 
 public class CommandRequestRouteAndDeviceExecutorImpl extends CommandRequestExecutorBase<CommandRequestRouteAndDevice> implements CommandRequestRouteAndDeviceExecutor {
@@ -31,5 +32,10 @@ public class CommandRequestRouteAndDeviceExecutorImpl extends CommandRequestExec
         log.debug("Built request '" + command + "' for route " + routeId + ", deviceID " + deviceId + " with msg id " + requestId);
         
         return request;
+    }
+    
+    @Override
+    protected CommandRequestType getCommandRequestType() {
+    	return CommandRequestType.DEVICE_ROUTE;
     }
 }

@@ -12,16 +12,17 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultsDao;
+import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultsFilterType;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionResult;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.incrementer.NextValueHelper;
 
-public class CommandRequestExecutionResultsDaoImpl implements CommandRequestExecutionResultsDao, InitializingBean {
+public class CommandRequestExecutionResultDaoImpl implements CommandRequestExecutionResultDao, InitializingBean {
 
 	private static final ParameterizedRowMapper<CommandRequestExecutionResult> rowMapper;
     private SimpleJdbcTemplate simpleJdbcTemplate;
@@ -38,21 +39,19 @@ public class CommandRequestExecutionResultsDaoImpl implements CommandRequestExec
     private static final String selectSuccessDeviceIdsById;
     private static final String selectFailDeviceIdsById;
     
-    private static final String TABLE_NAME = "CommandRequestExecutionResults";
-    
     static {
     	
-		selectResultIdsById = "SELECT CRER.CommandRequestExecutionResultsId FROM " + TABLE_NAME + " CRER WHERE CommandRequestExecutionId = ? ORDER BY CompleteTime";
+		selectResultIdsById = "SELECT CRER.CommandRequestExecutionResultId FROM CommandRequestExecutionResult CRER WHERE CommandRequestExecutionId = ? ORDER BY CompleteTime";
 		
-		selectCountById = "SELECT COUNT(CRER.CommandRequestExecutionResultsId) AS CrerCount FROM " + TABLE_NAME + " CRER WHERE CommandRequestExecutionId = ?";
+		selectCountById = "SELECT COUNT(CRER.CommandRequestExecutionResultId) AS CrerCount FROM CommandRequestExecutionResult CRER WHERE CommandRequestExecutionId = ?";
 		selectSuccessCountById = selectCountById + " AND CRER.ErrorCode = 0";
 		selectFailCountById = selectCountById + " AND CRER.ErrorCode > 0";
 		
-		selectDeviceIdsById = "SELECT DISTINCT CRER.DeviceId FROM " + TABLE_NAME + " CRER WHERE CommandRequestExecutionId = ?";
+		selectDeviceIdsById = "SELECT DISTINCT CRER.DeviceId FROM CommandRequestExecutionResult CRER WHERE CommandRequestExecutionId = ?";
 		selectSuccessDeviceIdsById = selectDeviceIdsById + " AND CRER.ErrorCode = 0";
 		selectFailDeviceIdsById = selectDeviceIdsById + " AND CRER.ErrorCode > 0";
 		
-		rowMapper = CommandRequestExecutionResultsDaoImpl.createRowMapper();
+		rowMapper = CommandRequestExecutionResultDaoImpl.createRowMapper();
     }
     
     // SAVE OR UPDATE
@@ -65,7 +64,7 @@ public class CommandRequestExecutionResultsDaoImpl implements CommandRequestExec
     public List<CommandRequestExecutionResult> getResultsByExecutionId(int commandRequestExecutionId, CommandRequestExecutionResultsFilterType reportFilterType) {
 		    	
     	SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT * FROM " + TABLE_NAME);
+        sql.append("SELECT * FROM CommandRequestExecutionResult");
         sql.append("WHERE CommandRequestExecutionId = ?");
         
         String sqlCondition = reportFilterType.getSqlCondition();
@@ -84,7 +83,7 @@ public class CommandRequestExecutionResultsDaoImpl implements CommandRequestExec
     	
     	ParameterizedRowMapper<Integer> mapper = new ParameterizedRowMapper<Integer>() {
 	        public Integer mapRow(ResultSet rs, int num) throws SQLException{
-	        	return rs.getInt("CommandRequestExecutionResultsId");
+	        	return rs.getInt("CommandRequestExecutionResultId");
 	        }
 	    };
 	    
@@ -122,13 +121,13 @@ public class CommandRequestExecutionResultsDaoImpl implements CommandRequestExec
             	
             	CommandRequestExecutionResult commandRequestExecutionResult = new CommandRequestExecutionResult();
             	
-            	commandRequestExecutionResult.setId(rs.getInt("CommandRequestExecutionResultsId"));
+            	commandRequestExecutionResult.setId(rs.getInt("CommandRequestExecutionResultId"));
             	commandRequestExecutionResult.setCommandRequestExecutionId(rs.getInt("CommandRequestExecutionId"));
             	commandRequestExecutionResult.setCommand(rs.getString("Command"));
             	commandRequestExecutionResult.setErrorCode(rs.getInt("ErrorCode"));
             	commandRequestExecutionResult.setCompleteTime(rs.getTimestamp("CompleteTime"));
-            	commandRequestExecutionResult.setDeviceId(rs.getInt("DeviceId"));
-            	commandRequestExecutionResult.setRouteId(rs.getInt("RouteId"));
+            	commandRequestExecutionResult.setDeviceId(SqlUtils.getNullableInt(rs, "DeviceId"));
+            	commandRequestExecutionResult.setRouteId(SqlUtils.getNullableInt(rs, "RouteId"));
                 
             	return commandRequestExecutionResult;
             }
@@ -138,7 +137,7 @@ public class CommandRequestExecutionResultsDaoImpl implements CommandRequestExec
     
     private FieldMapper<CommandRequestExecutionResult> fieldMapper = new FieldMapper<CommandRequestExecutionResult>() {
         public void extractValues(MapSqlParameterSource p, CommandRequestExecutionResult commandRequestExecutionResult) {
-            p.addValue("CommandRequestExecutionResultsId", commandRequestExecutionResult.getId());
+            p.addValue("CommandRequestExecutionResultId", commandRequestExecutionResult.getId());
             p.addValue("CommandRequestExecutionId", commandRequestExecutionResult.getCommandRequestExecutionId());
             p.addValue("Command", commandRequestExecutionResult.getCommand());
             p.addValue("ErrorCode", commandRequestExecutionResult.getErrorCode());
@@ -157,8 +156,8 @@ public class CommandRequestExecutionResultsDaoImpl implements CommandRequestExec
     
     public void afterPropertiesSet() throws Exception {
     	template = new SimpleTableAccessTemplate<CommandRequestExecutionResult>(simpleJdbcTemplate, nextValueHelper);
-    	template.withTableName(TABLE_NAME);
-    	template.withPrimaryKeyField("CommandRequestExecutionResultsId");
+    	template.withTableName("CommandRequestExecutionResult");
+    	template.withPrimaryKeyField("CommandRequestExecutionResultId");
     	template.withFieldMapper(fieldMapper); 
     }
     

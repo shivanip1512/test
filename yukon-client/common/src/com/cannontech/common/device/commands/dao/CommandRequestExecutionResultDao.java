@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionResult;
 
-public interface CommandRequestExecutionResultsDao {
+public interface CommandRequestExecutionResultDao {
 
 	public void saveOrUpdate(CommandRequestExecutionResult commandRequestExecutionResult);
 	

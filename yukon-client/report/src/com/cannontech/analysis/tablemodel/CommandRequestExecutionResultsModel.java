@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
-import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultsDao;
+import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultsFilterType;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionResult;
 import com.cannontech.core.dao.DeviceDao;
@@ -18,7 +18,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 public class CommandRequestExecutionResultsModel extends BareReportModelBase<CommandRequestExecutionResultsModel.ModelRow> {
     
     // dependencies
-    private CommandRequestExecutionResultsDao commandRequestExecutionResultsDao;
+    private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
     private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     private DeviceDao deviceDao;
     private PaoDao paoDao;
@@ -45,7 +45,7 @@ public class CommandRequestExecutionResultsModel extends BareReportModelBase<Com
     	
     	CommandRequestExecutionResultsFilterType reportFilterType = CommandRequestExecutionResultsFilterType.valueOf(this.resultsFilterType);
         
-    	List<CommandRequestExecutionResult> results = commandRequestExecutionResultsDao.getResultsByExecutionId(this.commandRequestExecutionId, reportFilterType);
+    	List<CommandRequestExecutionResult> results = commandRequestExecutionResultDao.getResultsByExecutionId(this.commandRequestExecutionId, reportFilterType);
     	
     	for (CommandRequestExecutionResult result : results) {
     		
@@ -114,9 +114,9 @@ public class CommandRequestExecutionResultsModel extends BareReportModelBase<Com
 	}
     
     @Autowired
-    public void setCommandRequestExecutionResultsDao(
-			CommandRequestExecutionResultsDao commandRequestExecutionResultsDao) {
-		this.commandRequestExecutionResultsDao = commandRequestExecutionResultsDao;
+    public void setCommandRequestExecutionResultDao(
+			CommandRequestExecutionResultDao commandRequestExecutionResultDao) {
+		this.commandRequestExecutionResultDao = commandRequestExecutionResultDao;
 	}
     
     @Autowired

@@ -53,8 +53,8 @@ public class OutageMonitorEditorController extends MultiActionController {
         int outageMonitorId = ServletRequestUtils.getIntParameter(request, "outageMonitorId", 0);
         String name = ServletRequestUtils.getStringParameter(request, "name", null);
         String deviceGroupName = ServletRequestUtils.getStringParameter(request, "deviceGroupName", null);
-        int numberOfOutages = ServletRequestUtils.getIntParameter(request, "numberOfOutages", 0);
-        int timePeriod = ServletRequestUtils.getIntParameter(request, "timePeriod", 0);
+        int numberOfOutages = ServletRequestUtils.getIntParameter(request, "numberOfOutages", 2);
+        int timePeriod = ServletRequestUtils.getIntParameter(request, "timePeriod", 28);
         String expression = ServletRequestUtils.getStringParameter(request, "expression", null);
         boolean scheduleGroupCommand = ServletRequestUtils.getBooleanParameter(request, "scheduleGroupCommand", false);;
         

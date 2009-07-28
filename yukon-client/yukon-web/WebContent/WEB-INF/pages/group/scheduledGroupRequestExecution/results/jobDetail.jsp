@@ -187,10 +187,10 @@
 		<%-- enable/disable button --%>
 		<c:choose>
 			<c:when test="${jobWrapper.job.disabled}">
-				<tags:slowInput myFormId="toggleJobenabledForm" labelBusy="${enableJobButtonText}" label="${enableJobButtonText}"/>
+				<tags:slowInput myFormId="toggleJobEnabledForm" labelBusy="${enableJobButtonText}" label="${enableJobButtonText}"/>
 			</c:when>
 			<c:otherwise>
-				<tags:slowInput myFormId="toggleJobenabledForm" labelBusy="${disableJobButtonText}" label="${disableJobButtonText}"/>
+				<tags:slowInput myFormId="toggleJobEnabledForm" labelBusy="${disableJobButtonText}" label="${disableJobButtonText}"/>
 			</c:otherwise>
 		</c:choose>
 		
