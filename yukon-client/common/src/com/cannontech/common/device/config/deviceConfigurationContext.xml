@@ -237,6 +237,9 @@
 				<prop key="Time Zone Offset">timeZoneOffset</prop>
 				<prop key="Demand Interval">demandInterval</prop>
 				<prop key="Load Profile Interval 1">loadProfileInterval1</prop>
+				<prop key="Load Profile Resolution">loadProfileResolution</prop>
+				<prop key="Peak KW Resolution">peakKWResolution</prop>
+				<prop key="Last Intrvl Demand Resolution">lastIntervalDemandResolution</prop>
 				<prop key="Channel Config 1">channelConfig1</prop>
 				<prop key="Channel Config 2">channelConfig2</prop>
 				<prop key="Channel Config 3">channelConfig3</prop>
@@ -1446,6 +1449,99 @@
 					</property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+                    <property name="displayName" value="Load Profile Resolution" />
+                    <property name="field" value="loadProfileResolution" />
+                    <property name="description">
+                        <value>
+                            Resolution power for load profile.
+                        </value>
+                    </property>
+                    <property name="type">
+                        <bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+                            <property name="enumeratedType" ref="inputFloatType" />
+                            <property name="optionList">
+                                <list>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="10.0" />
+                                        <property name="text" value="10Wh" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="1.0" />
+                                        <property name="text" value="1Wh" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="0.1" />
+                                        <property name="text" value=".1Wh" />
+                                    </bean>
+                                </list>
+                            </property>
+                        </bean>
+                    </property>
+                    <property name="security" ref="configEditSecurity" />
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="displayName" value="Peak KW Resolution" />
+                    <property name="field" value="peakKWResolution" />
+                    <property name="description">
+                        <value>
+                            Resolution power for peak KW.
+                        </value>
+                    </property>
+                    <property name="type">
+                        <bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+                            <property name="enumeratedType" ref="inputFloatType" />
+                            <property name="optionList">
+                                <list>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="10.0" />
+                                        <property name="text" value="10W" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="1.0" />
+                                        <property name="text" value="1W" />
+                                    </bean>
+                                </list>
+                            </property>
+                        </bean>
+                    </property>
+                    <property name="security" ref="configEditSecurity" />
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="displayName" value="Last Intrvl Demand Resolution" />
+                    <property name="field" value="lastIntervalDemandResolution" />
+                    <property name="description">
+                        <value>
+                            Resolution power for last interval demand.
+                        </value>
+                    </property>
+                    <property name="type">
+                        <bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+                            <property name="enumeratedType" ref="inputFloatType" />
+                            <property name="optionList">
+                                <list>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="10.0" />
+                                        <property name="text" value="10Wh" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="1.0" />
+                                        <property name="text" value="1Wh" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="0.1" />
+                                        <property name="text" value=".1Wh" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="0.01" />
+                                        <property name="text" value=".01Wh" />
+                                    </bean>
+                                </list>
+                            </property>
+                        </bean>
+                    </property>
+                    <property name="security" ref="configEditSecurity" />
+                </bean>
 			<!-- 	<bean class="com.cannontech.web.input.InputBase">
 					<property name="displayName" value="Load Profile Interval 2" />
 					<property name="field" value="loadProfileInterval2" />

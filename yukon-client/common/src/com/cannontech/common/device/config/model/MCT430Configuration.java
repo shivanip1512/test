@@ -86,6 +86,9 @@ public class MCT430Configuration extends ConfigurationBase {
     private int channel1PhysicalChannel = 0;
     private int channel1LPInterval = 0;
     private float channel1Multiplier = 1.0f;
+    private float loadProfileResolution = 10.0f;
+    private float peakKWResolution = 10.0f;
+    private float lastIntervalDemandResolution = 10.0f;
 
     private int channel2Type = 0;
     private int channel2PhysicalChannel = 1;
@@ -596,6 +599,30 @@ public class MCT430Configuration extends ConfigurationBase {
 
     public void setChannel1Multiplier(float channel1Multiplier) {
         this.channel1Multiplier = channel1Multiplier;
+    }
+    
+    public float getLoadProfileResolution() {
+        return loadProfileResolution;
+    }
+
+    public void setLoadProfileResolution(float loadProfileResolution) {
+        this.loadProfileResolution = loadProfileResolution;
+    }
+    
+    public float getPeakKWResolution() {
+        return peakKWResolution;
+    }
+
+    public void setPeakKWResolution(float peakKWResolution) {
+        this.peakKWResolution = peakKWResolution;
+    }
+    
+    public float getLastIntervalDemandResolution() {
+        return lastIntervalDemandResolution;
+    }
+
+    public void setLastIntervalDemandResolution(float lastIntervalDemandResolution) {
+        this.lastIntervalDemandResolution = lastIntervalDemandResolution;
     }
 
     public int getChannel1PhysicalChannel() {
