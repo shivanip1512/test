@@ -9,22 +9,26 @@
 		    <ct:nameValue name="Current Configuration">
                 <c:out value="${currentConfigName}"/>
 		    </ct:nameValue>
-		    <ct:nameValue name="Device Configurations">
-                <select id="configuration" name="configuration">
-                    <option value="-1">(none)</option>
-                    <c:forEach var="config" items="${existingConfigs}">
-                        <option value="${config.id}" <c:if test="${config.id == currentConfigId}">selected</c:if>>${config.name}</option>
-                    </c:forEach>
-                </select>
-                <ct:widgetActionRefresh method="assignConfig" label="Assign" labelBusy="Assigning"/>
-            </ct:nameValue>
+		    <cti:checkRolesAndProperties value="ASSIGN_CONFIG">
+			    <ct:nameValue name="Device Configurations">
+	                <select id="configuration" name="configuration">
+	                    <option value="-1">(none)</option>
+	                    <c:forEach var="config" items="${existingConfigs}">
+	                        <option value="${config.id}" <c:if test="${config.id == currentConfigId}">selected</c:if>>${config.name}</option>
+	                    </c:forEach>
+	                </select>
+	                <ct:widgetActionRefresh method="assignConfig" label="Assign" labelBusy="Assigning"/>
+	            </ct:nameValue>
+            </cti:checkRolesAndProperties>
 		</ct:nameValueContainer>
                         
         <%-- ASSIGN BUTTON --%>
         <c:choose>
             <c:when test="${fn:length(existingConfigs) > 0}">
                 <div style="text-align: right">
-                    <ct:widgetActionUpdate method="pushConfig" label="Push" labelBusy="Pushing" container="${widgetParameters.widgetId}_config_results"/>
+                    <cti:checkRolesAndProperties value="PUSH_CONFIG">
+                        <ct:widgetActionUpdate method="pushConfig" label="Push" labelBusy="Pushing" container="${widgetParameters.widgetId}_config_results"/>
+                    </cti:checkRolesAndProperties>
                     <ct:widgetActionUpdate method="readConfig" label="Read" labelBusy="Reading" container="${widgetParameters.widgetId}_config_results"/>
                     <ct:widgetActionUpdate method="verifyConfig" label="Verify" labelBusy="Verifying" container="${widgetParameters.widgetId}_config_results"/>
 				</div>

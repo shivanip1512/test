@@ -195,7 +195,7 @@
             </cti:checkProperty>
             
             <%-- ASSIGN CONFIG --%>
-            <cti:checkRolesAndProperties value="MASS_CHANGE">
+            <cti:checkRolesAndProperties value="ASSIGN_CONFIG">
             <tr>
                 <td>
                     <form id="assignConfigForm" method="get" action="/spring/bulk/config/assignConfig">
@@ -208,7 +208,7 @@
             </cti:checkRolesAndProperties>
             
             <%-- PUSH CONFIG --%>
-            <cti:checkRolesAndProperties value="MASS_CHANGE">
+            <cti:checkRolesAndProperties value="PUSH_CONFIG">
             <tr>
                 <td>
                     <form id="pushConfigForm" method="get" action="/spring/bulk/config/pushConfig">

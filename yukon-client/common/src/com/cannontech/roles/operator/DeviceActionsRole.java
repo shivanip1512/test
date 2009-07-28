@@ -26,4 +26,8 @@ public interface DeviceActionsRole {
     public static final int MASS_DELETE = OperatorRoleDefs.DEVICE_ACTIONS_PROPERTYID_BASE - 7; // -21307
     /**Controls access to Add Points collection action. */
     public static final int ADD_REMOVE_POINTS = OperatorRoleDefs.DEVICE_ACTIONS_PROPERTYID_BASE - 8; // -21308
+    /**Controls access to Push Config collection action. */
+    public static final int PUSH_CONFIG = OperatorRoleDefs.DEVICE_ACTIONS_PROPERTYID_BASE - 9; // -21309
+    /**Controls access to Assign Config collection action. */
+    public static final int ASSIGN_CONFIG = OperatorRoleDefs.DEVICE_ACTIONS_PROPERTYID_BASE - 10; // -21310
 }
