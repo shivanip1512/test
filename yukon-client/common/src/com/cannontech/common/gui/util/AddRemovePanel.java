@@ -38,8 +38,9 @@ class IvjEventHandler implements java.awt.event.ActionListener, java.awt.event.M
                     try {
                          connEtoC10(e);
                          connEtoC1(e);
+                         connEtoC10(e);
                     } catch (Exception ex) {
-                         JOptionPane.showMessageDialog(null, ex.getMessage(), "Illigal Operation Exception", JOptionPane.ERROR_MESSAGE);
+                         JOptionPane.showMessageDialog(null, ex.getMessage(), "Illegal Operation Exception", JOptionPane.ERROR_MESSAGE);
                          handleException(ex);
                     }
                 } 
@@ -50,8 +51,9 @@ class IvjEventHandler implements java.awt.event.ActionListener, java.awt.event.M
                     try {
                         connEtoC12(e);                  
                         connEtoC2(e);
+                        connEtoC12(e);                  
                     } catch (Exception ex) {
-                        JOptionPane.showMessageDialog(null, ex.getMessage(), "Illigal Operation Exception", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, ex.getMessage(), "Illegal Operation Exception", JOptionPane.ERROR_MESSAGE);
                         handleException(ex);
                     } 
                 };
@@ -105,11 +107,15 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 	if (e.getSource() == getRemoveButton()) 
 		connEtoC2(e);
 	if (e.getSource() == getAddButton()) 
-		connEtoC10(e);
+        try {
+            connEtoC10(e);
+        } catch (IllegalArgumentException e1) {
+            handleException(e1);
+        }
 	if (e.getSource() == getRemoveButton())
         try {
             connEtoC12(e);
-        } catch (IllegalArgumentException e1) {
+       	} catch (IllegalArgumentException e1) {
             handleException(e1);
         }
 }

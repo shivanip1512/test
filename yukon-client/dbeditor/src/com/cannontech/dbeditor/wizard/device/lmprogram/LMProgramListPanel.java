@@ -44,13 +44,10 @@ private void connEtoC1(java.util.EventObject arg1) throws IllegalArgumentExcepti
 	    LiteYukonPAObject lmProgPAO = (LiteYukonPAObject)temp;
 	    int loadGroupId = lmProgPAO.getLiteID();
 	    LoadGroupDao loadGroupDao = YukonSpringHook.getBean("loadGroupDao", LoadGroupDao.class);
-	    boolean loadGroupInUse = loadGroupDao.isLoadGroupInUse(loadGroupId);
-	    if(!loadGroupInUse){
-	        this.fireInputUpdate();
-	    } else {
+	    if(loadGroupDao.isLoadGroupInUse(loadGroupId))
 	        throw new IllegalArgumentException("The load group you are trying to add is currently being used in customer enrollment.  Please unenroll all accounts before removing a load group from its program. ("+lmProgPAO.getPaoName()+")");
-	    }
 	}
+	this.fireInputUpdate();
 }
 /**
  * connEtoC2:  (AddRemovePanel.addRemovePanel.removeButtonAction_actionPerformed(java.util.EventObject) --> LMProgramListPanel.fireInputUpdate()V)
@@ -63,13 +60,10 @@ private void connEtoC2(java.util.EventObject arg1) throws IllegalArgumentExcepti
 	for (Object temp: lmProgPAOs) {
 	    LiteYukonPAObject lmProgPAO = (LiteYukonPAObject)temp;    int loadGroupId = lmProgPAO.getLiteID();
 	    LoadGroupDao loadGroupDao = YukonSpringHook.getBean("loadGroupDao", LoadGroupDao.class);
-	    boolean loadGroupInUse = loadGroupDao.isLoadGroupInUse(loadGroupId);
-	    if(!loadGroupInUse){
-	        this.fireInputUpdate();
-	    } else {
+	    if(loadGroupDao.isLoadGroupInUse(loadGroupId))
 	        throw new IllegalArgumentException("The load group you are trying to remove is currently being used in customer enrollment.  Please unenroll all accounts before removing a load group from its program. ("+lmProgPAO.getPaoName()+")");
-	    }
 	}
+	this.fireInputUpdate();
 }
 /**
  * Return the AddRemovePanel property value.

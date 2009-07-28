@@ -3,9 +3,9 @@ package com.cannontech.loadcontrol.loadgroup.model;
 import java.util.List;
 
 public class LoadGroup {
-    int loadGroupId;
-    String loadGroupName;
-    List<Integer> programIds;
+    private int loadGroupId;
+    private String loadGroupName;
+    private List<Integer> programIds;
     
     public LoadGroup (){}
     public LoadGroup (int loadGroupId, String loadGroupName, List<Integer> programIds){
