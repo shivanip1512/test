@@ -253,6 +253,14 @@
     
     <!-- verifyConfigResults.jsp -->
     <entry key="yukon.common.device.bulk.verifyConfigResults.pageTitle">Verify Config Results</entry>
+    <entry key="yukon.common.device.bulk.verifyConfigResults.successLabel">Verified Devices:</entry>
+    <entry key="yukon.common.device.bulk.verifyConfigResults.failureLabel">Devices with configuration discrepancies:</entry>
+    <entry key="yukon.common.device.bulk.verifyConfigResults.successResult">In Sync</entry>
+    <entry key="yukon.common.device.bulk.verifyConfigResults.failureResult">Some attributes did not match:</entry>
+    <entry key="yukon.common.device.bulk.verifyConfigResults.deviceNameColumn">Device Name</entry>
+    <entry key="yukon.common.device.bulk.verifyConfigResults.configNameColumn">Config Name</entry>
+    <entry key="yukon.common.device.bulk.verifyConfigResults.deviceTypeColumn">Device Type</entry>
+    <entry key="yukon.common.device.bulk.verifyConfigResults.verifyResultsColumn">Verify Results</entry>
     
     <!-- MASS DELETE -->
     <!-- ******************************************************************************************************************** -->

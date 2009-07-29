@@ -3,6 +3,14 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:msg var="pageTitle" key="yukon.common.device.bulk.verifyConfigResults.pageTitle"/>
+<cti:msg var="successLabel" key="yukon.common.device.bulk.verifyConfigResults.successLabel"/>
+<cti:msg var="failureLabel" key="yukon.common.device.bulk.verifyConfigResults.failureLabel"/>
+<cti:msg var="successResult" key="yukon.common.device.bulk.verifyConfigResults.successResult"/>
+<cti:msg var="failureResult" key="yukon.common.device.bulk.verifyConfigResults.failureResult"/>
+<cti:msg var="deviceNameColumn" key="yukon.common.device.bulk.verifyConfigResults.deviceNameColumn"/>
+<cti:msg var="configNameColumn" key="yukon.common.device.bulk.verifyConfigResults.configNameColumn"/>
+<cti:msg var="deviceTypeColumn" key="yukon.common.device.bulk.verifyConfigResults.deviceTypeColumn"/>
+<cti:msg var="verifyResultsColumn" key="yukon.common.device.bulk.verifyConfigResults.verifyResultsColumn"/>
 
 <cti:standardPage title="${pageTitle}" module="amr">
     <cti:includeCss link="/WebConfig/yukon/styles/YukonGeneralStyles.css"/>
@@ -43,7 +51,7 @@
     
     <%-- SUCCESS --%>
     <br>
-    <div class="normalBoldLabel">Verified Devices: <span class="okGreen">${successCollection.deviceCount}</span></div>
+    <div class="normalBoldLabel">${successLabel} <span class="okGreen">${successCollection.deviceCount}</span></div>
     <c:if test="${successCollection.deviceCount > 0}">
         <div id="successActionsDiv" style="padding:10px;">
     
@@ -58,7 +66,7 @@
     </c:if>
     
     <%-- FAILURE --%>
-    <div class="normalBoldLabel">Devices with configuration discrepancies: <span class="errorRed">${failureCollection.deviceCount}</span></div>
+    <div class="normalBoldLabel">${failureLabel} <span class="errorRed">${failureCollection.deviceCount}</span></div>
     
     <c:if test="${failureCollection.deviceCount > 0}">
 	    <div id="errorActionsDiv" style="padding:10px;">
@@ -74,28 +82,28 @@
      
     <table class="resultsTable activeResultsTable" align="center">
         <tr>
-            <th>Device Name</th>
-            <th>Config Name</th>
-            <th>Config Type</th>
-            <th>Verify Results</th>
+            <th nowrap="nowrap">${deviceNameColumn}</th>
+            <th nowrap="nowrap">${configNameColumn}</th>
+            <th nowrap="nowrap">${deviceTypeColumn}</th>
+            <th nowrap="nowrap">${verifyResultsColumn}</th>
         </tr>
         
         <c:forEach var="device" items="${devices}">
             <c:choose>
                 <c:when test="${resultsMap[device].synced}">
                     <tr>
-                        <td onclick="forwardToMeterHome(${device.deviceId});">${resultsMap[device].meter.name}</td>
-                        <td>${resultsMap[device].config.name}</td>
-                        <td>${resultsMap[device].config.type}</td>
-                        <td>In Sync</td>
+                        <td onclick="forwardToMeterHome(${device.deviceId});" nowrap="nowrap">${resultsMap[device].meter.name}</td>
+                        <td nowrap="nowrap">${resultsMap[device].config.name}</td>
+                        <td nowrap="nowrap">${resultsMap[device].config.type}</td>
+                        <td>${successResult}</td>
                     </tr>
                 </c:when>
                 <c:otherwise>
                     <tr class="lightRedBackground">
-                        <td onclick="forwardToMeterHome(${device.deviceId});">${resultsMap[device].meter.name}</td>
-                        <td>${resultsMap[device].config.name}</td>
-                        <td>${resultsMap[device].config.type}</td>
-                        <td>Some attributes did not match: ${resultsMap[device].discrepancies}</td>
+                        <td onclick="forwardToMeterHome(${device.deviceId});" nowrap="nowrap">${resultsMap[device].meter.name}</td>
+                        <td nowrap="nowrap">${resultsMap[device].config.name}</td>
+                        <td nowrap="nowrap">${resultsMap[device].config.type}</td>
+                        <td>${failureResult} ${resultsMap[device].discrepancies}</td>
                     </tr>
              </c:otherwise>
             </c:choose>
