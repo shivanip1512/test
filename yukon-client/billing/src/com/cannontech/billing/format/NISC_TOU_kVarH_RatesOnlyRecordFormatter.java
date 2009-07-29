@@ -132,7 +132,7 @@ public class NISC_TOU_kVarH_RatesOnlyRecordFormatter extends BillingFormatterBas
 
             //MeterNumber
             addToStringBufferWithTrailingFiller(writeToFile,
-                                                device.getData(Channel.ONE, ReadingType.ELECTRIC, BillableField.meterNumber),
+                                                device.getData(Channel.ONE, ReadingType.DEVICE_DATA, BillableField.meterNumber),
                                                 10,
                                                 " ",
                                                 true);
