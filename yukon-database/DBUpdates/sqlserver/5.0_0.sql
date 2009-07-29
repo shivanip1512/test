@@ -93,6 +93,22 @@ DELETE FROM YukonGroupRole WHERE GroupRoleId IN (-1084, -1085, -1086);
 DELETE FROM YukonUserRole WHERE UserRoleID IN (-350, -351, -352);
 /* End YUK-7662 */
 
+/* Start YUK-7637 */
+ALTER TABLE LMHardwareControlGroup ADD ProgramId INT;
+
+UPDATE LMHardwareControlGroup
+SET ProgramId = (SELECT LMPWP.ProgramID
+                 FROM LMProgramDirectGroup LMPDG, LMProgramWebPublishing LMPWP
+                 WHERE LMPDG.DeviceID =LMPWP.DeviceID
+                 AND LMPDG.LMGroupDeviceID = LMHardwareControlGroup.LMGroupID);
+                 
+UPDATE LMHardwareControlGroup
+SET ProgramId = 0
+WHERE ProgramId IS NULL;
+
+ALTER TABLE LMHardwareControlGroup ALTER COLUMN ProgramId INT NOT NULL;
+/* End YUK-7637 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

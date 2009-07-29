@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/22/2009 11:32:02 AM                        */
+/* Created on:     7/28/2009 12:51:02 PM                        */
 /*==============================================================*/
 
 
@@ -6176,6 +6176,7 @@ create table LMHardwareControlGroup  (
    Relay                INTEGER                         not null,
    UserIDFirstAction    INTEGER                         not null,
    UserIDSecondAction   INTEGER                         not null,
+   ProgramId            INTEGER                         not null,
    constraint PK_LMHARDWARECONTROLGROUP primary key (ControlEntryID)
 );
 

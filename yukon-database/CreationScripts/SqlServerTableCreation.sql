@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     7/22/2009 11:37:52 AM                        */
+/* Created on:     7/28/2009 12:48:22 PM                        */
 /*==============================================================*/
 
 
@@ -8961,6 +8961,7 @@ create table LMHardwareControlGroup (
    Relay                int                  not null,
    UserIDFirstAction    int                  not null,
    UserIDSecondAction   int                  not null,
+   ProgramId            int                  not null,
    constraint PK_LMHARDWARECONTROLGROUP primary key (ControlEntryID)
 )
 go
