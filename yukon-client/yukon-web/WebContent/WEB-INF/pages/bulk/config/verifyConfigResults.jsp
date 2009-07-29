@@ -58,7 +58,7 @@
     </c:if>
     
     <%-- FAILURE --%>
-    <div class="normalBoldLabel">Devices with configuration descrepancies: <span class="errorRed">${failureCollection.deviceCount}</span></div>
+    <div class="normalBoldLabel">Devices with configuration discrepancies: <span class="errorRed">${failureCollection.deviceCount}</span></div>
     
     <c:if test="${failureCollection.deviceCount > 0}">
 	    <div id="errorActionsDiv" style="padding:10px;">
