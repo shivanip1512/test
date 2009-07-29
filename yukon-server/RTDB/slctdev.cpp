@@ -201,6 +201,7 @@ DLLEXPORT CtiDeviceBase *createDeviceType(int type)
 
         case TYPEMCT410:        NewDevice = CTIDBG_new CtiDeviceMCT410;     break;
 
+        case TYPEMCT430:
         case TYPEMCT470:        NewDevice = CTIDBG_new CtiDeviceMCT470;     break;
 
         case TYPE_MODBUS:       NewDevice = CTIDBG_new Device::Modbus;      break;
@@ -253,7 +254,7 @@ DLLEXPORT CtiDeviceBase *createDeviceType(int type)
         case TYPE_LMGROUP_EXPRESSCOM:   NewDevice = CTIDBG_new CtiDeviceGroupExpresscom;    break;
 
         case TYPE_LMGROUP_XML:          NewDevice = CTIDBG_new CtiDeviceGroupXml;    break;
-            
+
         case TYPE_LMGROUP_ENERGYPRO:    NewDevice = CTIDBG_new CtiDeviceGroupEnergyPro;     break;
 
         case TYPE_LMGROUP_MCT:          NewDevice = CTIDBG_new CtiDeviceGroupMCT;           break;

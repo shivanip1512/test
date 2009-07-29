@@ -98,13 +98,14 @@ public:
 
     static const std::string UnderVoltageThreshold;
     static const std::string OverVoltageThreshold;
-    
+
+    static const std::string LoadProfileResolution;
     static const std::string DemandInterval;
     static const std::string LoadProfileInterval;
     static const std::string VoltageLPInterval;
     static const std::string VoltageDemandInterval;
     static const std::string LoadProfileInterval2;
-    
+
     static const std::string TimeAdjustTolerance;
     static const std::string AlarmMaskEvent1;
     static const std::string AlarmMaskEvent2;

@@ -1546,6 +1546,11 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
         {
             _cmd["model"] = CtiParseValue( "TRUE" );
         }
+        if(CmdStr.contains(" install"))
+        {
+            _cmd["install"] = CtiParseValue("TRUE");
+            _cmd["installvalue"] = CtiParseValue("all");
+        }
         if(CmdStr.contains(" options"))
         {
             _cmd["options"] = CtiParseValue( "TRUE" );

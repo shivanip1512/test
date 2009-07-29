@@ -92,6 +92,7 @@ const string MCTStrings::TimeZoneOffset = "time zone offset";
 const string MCTStrings::UnderVoltageThreshold = "under vthreshold";
 const string MCTStrings::OverVoltageThreshold = "over vthreshold";
 
+const string MCTStrings::LoadProfileResolution = "load profile resolution";
 const string MCTStrings::DemandInterval = "demand interval";
 const string MCTStrings::LoadProfileInterval = "load profile interval 1";
 const string MCTStrings::VoltageLPInterval = "voltage lp interval";

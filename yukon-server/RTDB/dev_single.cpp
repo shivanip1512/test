@@ -792,7 +792,7 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
             // is canceled, no message is returned on the final execution and this is NOT an error!
             // The code below overrides the outlist checking for only 410's and 470's. If this is not
             // done, canceling a LP request that is on a macro route is impossible.
-            if(cnt == outList.size() && (!(getType() == TYPEMCT410 || getType() == TYPEMCT470) && status != NoError) )
+            if(cnt == outList.size() && (!(getType() == TYPEMCT410 || getType() == TYPEMCT470 || getType() == TYPEMCT430) && status != NoError) )
             {
                 bLastFail = true;
             }
@@ -1247,7 +1247,7 @@ CtiDeviceSingle& CtiDeviceSingle::operator=(const CtiDeviceSingle& aRef)
             _scanData = *(aRef.getScanData());
         }
     }
-	CtiLockGuard<CtiMutex> guard(_classMutex);
+        CtiLockGuard<CtiMutex> guard(_classMutex);
     return *this;
 }
 
@@ -2060,12 +2060,12 @@ bool CtiDeviceSingle::isDeviceAddressGlobal()
             {
                 case RTUGLOBAL:
                 case CCUGLOBAL:
-            
-                    return true;            
+
+                    return true;
             }
         }
     }
- 
+
     return false;
 }
 

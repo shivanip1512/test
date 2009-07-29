@@ -318,10 +318,14 @@ INT resolveDeviceType(const string& _rwsTemp)
     {
         nRet = TYPEMCT410;
     }
-    else if(rwsTemp == "mct-470" || rwsTemp == "mct-430a"  || rwsTemp == "mct-430a3"
-                                 || rwsTemp == "mct-430s4" || rwsTemp == "mct-430sl")
+    else if(rwsTemp == "mct-470")
     {
         nRet = TYPEMCT470;
+    }
+    else if (rwsTemp == "mct-430a"  || rwsTemp == "mct-430a3"
+             || rwsTemp == "mct-430s4" || rwsTemp == "mct-430sl")
+    {
+        nRet = TYPEMCT430;
     }
     else if(rwsTemp == "lcr-3102")
     {
@@ -1213,6 +1217,7 @@ bool resolveIsDeviceTypeSingle(INT Type)
         case TYPEMCT360:
         case TYPEMCT370:
         case TYPEMCT410:
+        case TYPEMCT430:
         case TYPEMCT470:
         case TYPELCR3102:
         case TYPE_MODBUS:

@@ -1467,7 +1467,7 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
         {
             channels = CtiDeviceMCT410::ChannelCount;
         }
-        else if( getType() == TYPEMCT470 )
+        else if( getType() == TYPEMCT470 || getType() == TYPEMCT430)
         {
             channels = CtiDeviceMCT470::ChannelCount;
         }
@@ -1654,7 +1654,7 @@ INT CtiDeviceMCT::executePutValue(CtiRequestMsg                  *pReq,
                     }
                 }
             }
-            else if( getType() == TYPEMCT470 )
+            else if( getType() == TYPEMCT470 || getType() == TYPEMCT430)
             {
                 //  this should move to dev_mct470.cpp and use resolveIEDType() or some such
 
@@ -1796,7 +1796,7 @@ INT CtiDeviceMCT::executeGetStatus(CtiRequestMsg                  *pReq,
 
         if( found && parse.isKeyValid("loadprofile_offset") )
         {
-            if( getType() == TYPEMCT470 )
+            if( getType() == TYPEMCT470 || getType() == TYPEMCT430 )
             {
                 if( parse.getiValue("loadprofile_offset") == 1 ||
                     parse.getiValue("loadprofile_offset") == 2 )
@@ -1879,7 +1879,7 @@ INT CtiDeviceMCT::executePutStatus(CtiRequestMsg                  *pReq,
         function = Emetcon::PutStatus_Reset;
         found = getOperation(function, OutMessage->Buffer.BSt);
 
-        if( getType() != TYPEMCT410 && getType() != TYPEMCT470 )
+        if( getType() != TYPEMCT410 && getType() != TYPEMCT470 && getType() != TYPEMCT430 )
         {
             OutMessage->Buffer.BSt.Message[0] = 0;
             OutMessage->Buffer.BSt.Message[1] = 0;
@@ -2157,13 +2157,13 @@ INT CtiDeviceMCT::executeGetConfig(CtiRequestMsg                  *pReq,
     return nRet;
 }
 
-
 INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
                                    CtiCommandParser               &parse,
                                    OUTMESS                        *&OutMessage,
                                    list< CtiMessage* >      &vgList,
                                    list< CtiMessage* >      &retList,
-                                   list< OUTMESS* >         &outList)
+                                   list< OUTMESS* >         &outList,
+                                   bool readsOnly)
 {
     bool  found = false;
     INT   function;
@@ -2184,7 +2184,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
                                                    OutMessage->Request.UserID,
                                                    OutMessage->Request.SOE,
                                                    CtiMultiMsg_vec( ));
-
+    errRet->setExpectMore();
 
     if( parse.isKeyValid("install") )
     {

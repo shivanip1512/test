@@ -42,6 +42,7 @@
 #define TYPEMCT370                           80
 #define TYPEMCT410                           85
 #define TYPEMCT470                           90
+#define TYPEMCT430                           91
 
 #define TYPEDIALUP                           100
 

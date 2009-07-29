@@ -750,6 +750,7 @@ bool isMCT(INT type)
         case TYPEMCT360:
         case TYPEMCT370:
         case TYPEMCT410:
+        case TYPEMCT430:
         case TYPEMCT470:
         {
             return true;

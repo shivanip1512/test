@@ -98,6 +98,7 @@ public:
         Key_MCT_LoadProfileChannelConfig2,
         Key_MCT_LoadProfileChannelConfig3,
         Key_MCT_LoadProfileChannelConfig4,
+        Key_MCT_LoadProfileResolution,
         Key_MCT_RelayATimer,
         Key_MCT_RelayBTimer,
         Key_MCT_PrecannedTableReadInterval,

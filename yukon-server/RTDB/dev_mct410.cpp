@@ -992,7 +992,8 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
                                        OUTMESS                   *&OutMessage,
                                        list< CtiMessage* >  &vgList,
                                        list< CtiMessage* >  &retList,
-                                       list< OUTMESS* >     &outList )
+                                       list< OUTMESS* >     &outList,
+                                       bool readsOnly)
 {
     INT nRet = NoMethod;
 

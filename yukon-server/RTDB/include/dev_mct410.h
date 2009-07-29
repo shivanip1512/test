@@ -322,15 +322,10 @@ protected:
 
     virtual INT executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList );
     virtual INT executeGetConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList );
-    virtual INT executePutConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList );
+    virtual INT executePutConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList, bool readsOnly );
 
     CtiDeviceMCT4xx::ConfigPartsList getPartsList();
 
-    /*int executePutConfigDemandLP  ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * >&vgList, list< CtiMessage * >&retList, list< OUTMESS * > &outList );
-    int executePutConfigDisconnect( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * >&vgList, list< CtiMessage * >&retList, list< OUTMESS * > &outList );
-    int executePutConfigOptions   ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * >&vgList, list< CtiMessage * >&retList, list< OUTMESS * > &outList );
-    int executePutConfigCentron   ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * >&vgList, list< CtiMessage * >&retList, list< OUTMESS * > &outList );
-*/
     virtual const read_key_store_t &getReadKeyStore(void) const;
 
     virtual INT ModelDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList );

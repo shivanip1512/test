@@ -311,6 +311,8 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
     tempName = "mct-470";
     devType = TYPEMCT470;
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
+
+    devType = TYPEMCT430;
     tempName = "mct-430a";
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
     tempName = "mct-430s";
@@ -340,7 +342,7 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
     tempName = "expresscom group";
     devType = TYPE_LMGROUP_EXPRESSCOM;
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
-	tempName = "energypro group";
+        tempName = "energypro group";
     devType = TYPE_LMGROUP_ENERGYPRO;
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
     tempName = "mct group";
