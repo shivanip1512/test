@@ -29,7 +29,6 @@
         <mkdir dir="${log.dir}"/>
         <exec failonerror="false"
               dir="${basedir}"
-              error="${log.dir}/svn-info-error.log"
               output="${basedir}/yukon-client/common/src/com/cannontech/build-info.xml"
               resultproperty="errorcode"
               executable="svn.exe" >
@@ -115,12 +114,9 @@
         <echo message="building module yukon-client" />
         <mkdir dir="${log.dir}" />
 
-        <exec failonerror="false" dir="${basedir}/yukon-client/build" executable="cmd.exe" error="${log.dir}/client-error.log" output="${log.dir}/client-output.log" resultproperty="errorcode">
+        <exec failonerror="false" dir="${basedir}/yukon-client/build" executable="cmd.exe" resultproperty="errorcode">
             <arg line='/c antExit.bat -Dyukon.build.version="${yukon.build.label}" -Dyukon.build.details="${yukon.build.details}" clean build'/>
         </exec>
-
-        <loadfile property="errormessage" srcFile="${log.dir}/client-error.log" />
-        <loadfile property="erroroutput" srcFile="${log.dir}/client-output.log" />
 
         <condition property="out" value="${erroroutput}" else="">
             <isfailure code="${errorcode}"/>
@@ -284,7 +280,7 @@
         <!-- <property name="isfile" location="yukon-build/Yukon Installer/Yukon Installer.ism" /> -->
         <property name="isfile" location='${basedir}\yukon-install\YukonSetupX\Yukon Installer.ism' />
 
-        <exec failonerror="false" executable="${isshield}" error="${log.dir}/install-error.log" output="${log.dir}/install-output.log" resultproperty="errorcode">
+        <exec failonerror="false" executable="${isshield}" resultproperty="errorcode">
             <arg line="-p '${isfile}'" />
         </exec>
 
@@ -292,8 +288,6 @@
 
         <antcall target="symstore" />
 
-        <loadfile property="errormessage" srcFile="${log.dir}/install-error.log" />
-        <loadfile property="erroroutput" srcFile="${log.dir}/install-output.log" />
 
         <condition property="out" value="${erroroutput}" else="">
             <length file="${log.dir}/install-error.log" when="ne" length="0" />
