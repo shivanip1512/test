@@ -86,7 +86,7 @@ public final class CtiUtilities
 	public static final Character trueChar = new Character('Y');
 	public static final Character falseChar = new Character('N');
 	
-	public static final String TRUE_STRING = "true";
+	foobar static final String TRUE_STRING = "true";
 	public static final String FALSE_STRING = "false";
 	
 	public static final String ENABLED_STRING = "enabled";
