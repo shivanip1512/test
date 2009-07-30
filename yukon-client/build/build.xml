@@ -231,11 +231,17 @@
     </target>
 
 	<target name="sign">
-		<signjar alias="${jarsign.alias}" storepass="${jarsign.storepass}" keystore="${jarsign.keystore}">
+		<move todir="${yukon.base}/lib-temp">
 			<fileset dir="${yukon.lib}">
 				<include name="*.jar"/>
 			</fileset>
+		</move>
+		<signjar alias="${jarsign.alias}" storepass="${jarsign.storepass}" keystore="${jarsign.keystore}" destDir="${yukon.lib}>
+			<fileset dir="${yukon.base}/lib-temp">
+				<include name="*.jar"/>
+			</fileset>
 		</signjar>
+		<delete dir="${yukon.base}/lib-temp"/>
 	</target>
 	
 
