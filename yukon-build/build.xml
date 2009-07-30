@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<project name="Yukon CruiseControl Ant Build Script" default="targets" basedir="..">
+<project name="Yukon Ant Build Script" default="targets" basedir="..">
     
     <property environment="env" />
     <tstamp/>
