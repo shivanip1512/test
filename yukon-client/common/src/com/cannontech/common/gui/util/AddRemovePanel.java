@@ -8,7 +8,6 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
 import com.cannontech.common.util.CtiUtilities;
@@ -35,27 +34,14 @@ class IvjEventHandler implements java.awt.event.ActionListener, java.awt.event.M
 		public void actionPerformed(java.awt.event.ActionEvent e) {
 			if (e.getSource() == AddRemovePanel.this.getAddButton()) {
                 if(getLeftList().getSelectedValues().length > 0) {
-                    try {
-                         connEtoC10(e);
-                         connEtoC1(e);
-                         connEtoC10(e);
-                    } catch (Exception ex) {
-                         JOptionPane.showMessageDialog(null, ex.getMessage(), "Illegal Operation Exception", JOptionPane.ERROR_MESSAGE);
-                         handleException(ex);
-                    }
-                } 
-
+                    addSelectedListItems(e);
+                    connEtoC10(e);
+                }
             }
 			if (e.getSource() == AddRemovePanel.this.getRemoveButton()) {
                 if(getRightList().getSelectedValues().length > 0) {
-                    try {
-                        connEtoC12(e);                  
-                        connEtoC2(e);
-                        connEtoC12(e);                  
-                    } catch (Exception ex) {
-                        JOptionPane.showMessageDialog(null, ex.getMessage(), "Illegal Operation Exception", JOptionPane.ERROR_MESSAGE);
-                        handleException(ex);
-                    } 
+    				removeSelectedListItems(e);
+                    connEtoC12(e);
                 };
             }
 		};
@@ -103,21 +89,13 @@ public AddRemovePanel() {
  */
 public void actionPerformed(java.awt.event.ActionEvent e) {
 	if (e.getSource() == getAddButton()) 
-		connEtoC1(e);
+		addSelectedListItems(e);
 	if (e.getSource() == getRemoveButton()) 
-		connEtoC2(e);
+		removeSelectedListItems(e);
 	if (e.getSource() == getAddButton()) 
-        try {
-            connEtoC10(e);
-        } catch (IllegalArgumentException e1) {
-            handleException(e1);
-        }
-	if (e.getSource() == getRemoveButton())
-        try {
-            connEtoC12(e);
-       	} catch (IllegalArgumentException e1) {
-            handleException(e1);
-        }
+		connEtoC10(e);
+	if (e.getSource() == getRemoveButton()) 
+		connEtoC12(e);
 }
 /**
  * 
@@ -152,7 +130,7 @@ public void addButton_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
  * connEtoC1:  (AddButton.action.actionPerformed(java.awt.event.ActionEvent) --> AddRemovePanel.addButton_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
  * @param arg1 java.awt.event.ActionEvent
  */
-private void connEtoC1(java.awt.event.ActionEvent arg1) {
+private void addSelectedListItems(java.awt.event.ActionEvent arg1) {
 	try {
 		this.addButton_ActionPerformed(arg1);
 	} catch (java.lang.Throwable ivjExc) {
@@ -164,7 +142,11 @@ private void connEtoC1(java.awt.event.ActionEvent arg1) {
  * @param arg1 java.awt.event.ActionEvent
  */
 private void connEtoC10(java.awt.event.ActionEvent arg1) {
-	this.fireAddButtonAction_actionPerformed(new java.util.EventObject(this));
+	try {
+		this.fireAddButtonAction_actionPerformed(new java.util.EventObject(this));
+	} catch (java.lang.Throwable ivjExc) {
+		handleException(ivjExc);
+	}
 }
 /**
  * connEtoC11:  (RightList.mouse.mouseReleased(java.awt.event.MouseEvent) --> AddRemovePanel.fireRightListMouse_mouseReleased(Ljava.util.EventObject;)V)
@@ -180,10 +162,13 @@ private void connEtoC11(java.awt.event.MouseEvent arg1) {
 /**
  * connEtoC12:  (RemoveButton.action.actionPerformed(java.awt.event.ActionEvent) --> AddRemovePanel.fireRemoveButtonAction_actionPerformed(Ljava.util.EventObject;)V)
  * @param arg1 java.awt.event.ActionEvent
- * @throws IllegalArgumentException 
  */
-private void connEtoC12(java.awt.event.ActionEvent arg1) throws IllegalArgumentException {
-	this.fireRemoveButtonAction_actionPerformed(new java.util.EventObject(this));
+private void connEtoC12(java.awt.event.ActionEvent arg1) {
+	try {
+		this.fireRemoveButtonAction_actionPerformed(new java.util.EventObject(this));
+	} catch (java.lang.Throwable ivjExc) {
+		handleException(ivjExc);
+	}
 }
 /**
  * connEtoC13:  (RightList.mouse.mouseClicked(java.awt.event.MouseEvent) --> AddRemovePanel.fireRightListMouse_mouseClicked(Ljava.util.EventObject;)V)
@@ -211,7 +196,7 @@ private void connEtoC14(java.awt.event.MouseEvent arg1) {
  * connEtoC2:  (RemoveButton.action.actionPerformed(java.awt.event.ActionEvent) --> AddRemovePanel.removeButton_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
  * @param arg1 java.awt.event.ActionEvent
  */
-private void connEtoC2(java.awt.event.ActionEvent arg1) {
+private void removeSelectedListItems(java.awt.event.ActionEvent arg1) {
 	try {
 		this.removeButton_ActionPerformed(arg1);
 	} catch (java.lang.Throwable ivjExc) {
@@ -315,9 +300,8 @@ protected void fireLeftListListSelection_valueChanged(java.util.EventObject newE
 /**
  * Method to support listener events.
  * @param newEvent java.util.EventObject
- * @throws IllegalArgumentException 
  */
-protected void fireRemoveButtonAction_actionPerformed(java.util.EventObject newEvent) throws IllegalArgumentException {
+protected void fireRemoveButtonAction_actionPerformed(java.util.EventObject newEvent) {
 	if (fieldAddRemovePanelListenerEventMulticaster == null) {
 		return;
 	};

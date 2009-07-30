@@ -1,5 +1,12 @@
 package com.cannontech.dbeditor.wizard.device.lmprogram;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.JOptionPane;
+import javax.swing.ListModel;
+
+import com.cannontech.common.gui.util.AddRemovePanel;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
@@ -11,7 +18,10 @@ import com.cannontech.yukon.IDatabaseCache;
  */
 
 public class LMProgramListPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.cannontech.common.gui.util.AddRemovePanelListener {
-	private com.cannontech.common.gui.util.AddRemovePanel ivjAddRemovePanel = null;
+	private AddRemovePanel ivjAddRemovePanel = null;
+	// Temp lists that hold the previous state of the load groups for a given program
+	private List<Object> currentAvailableList;
+	private List<Object> currentSelectedList;
 /**
  * Constructor
  */
@@ -29,41 +39,35 @@ public void addButtonAction_actionPerformed(java.util.EventObject newEvent) {
 	// user code begin {1}
 	// user code end
 	if (newEvent.getSource() == getAddRemovePanel()) 
-		connEtoC1(newEvent);
+		addSelectedLoadGroup(newEvent);
 	// user code begin {2}
 	// user code end
 }
 /**
- * connEtoC1:  (AddRemovePanel.addRemovePanel.addButtonAction_actionPerformed(java.util.EventObject) --> LMProgramListPanel.fireInputUpdate()V)
+ * addSelectedLoadGroup:  (AddRemovePanel.addRemovePanel.addButtonAction_actionPerformed(java.util.EventObject) --> LMProgramListPanel.fireInputUpdate()V)
  * @param arg1 java.util.EventObject
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC1(java.util.EventObject arg1) throws IllegalArgumentException{
-	Object[] lmProgPAOs = getAddRemovePanel().getLeftList().getSelectedValues();
-	for (Object temp: lmProgPAOs) {
-	    LiteYukonPAObject lmProgPAO = (LiteYukonPAObject)temp;
-	    int loadGroupId = lmProgPAO.getLiteID();
-	    LoadGroupDao loadGroupDao = YukonSpringHook.getBean("loadGroupDao", LoadGroupDao.class);
-	    if(loadGroupDao.isLoadGroupInUse(loadGroupId))
-	        throw new IllegalArgumentException("The load group you are trying to add is currently being used in customer enrollment.  Please unenroll all accounts before removing a load group from its program. ("+lmProgPAO.getPaoName()+")");
+private void addSelectedLoadGroup(java.util.EventObject arg1) {
+	try {
+		checkForEnrollmentConflicts();
+		this.fireInputUpdate();
+	} catch (java.lang.Throwable ivjExc) {
+		handleException(ivjExc);
 	}
-	this.fireInputUpdate();
 }
 /**
- * connEtoC2:  (AddRemovePanel.addRemovePanel.removeButtonAction_actionPerformed(java.util.EventObject) --> LMProgramListPanel.fireInputUpdate()V)
+ * removeSelectedLoadGroup:  (AddRemovePanel.addRemovePanel.removeButtonAction_actionPerformed(java.util.EventObject) --> LMProgramListPanel.fireInputUpdate()V)
  * @param arg1 java.util.EventObject
- * @throws IllegalArgumentException 
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC2(java.util.EventObject arg1) throws IllegalArgumentException {
-	Object[] lmProgPAOs = getAddRemovePanel().getRightList().getSelectedValues();
-	for (Object temp: lmProgPAOs) {
-	    LiteYukonPAObject lmProgPAO = (LiteYukonPAObject)temp;    int loadGroupId = lmProgPAO.getLiteID();
-	    LoadGroupDao loadGroupDao = YukonSpringHook.getBean("loadGroupDao", LoadGroupDao.class);
-	    if(loadGroupDao.isLoadGroupInUse(loadGroupId))
-	        throw new IllegalArgumentException("The load group you are trying to remove is currently being used in customer enrollment.  Please unenroll all accounts before removing a load group from its program. ("+lmProgPAO.getPaoName()+")");
+private void removeSelectedLoadGroup(java.util.EventObject arg1) {
+	try {
+		checkForEnrollmentConflicts();
+		this.fireInputUpdate();
+	} catch (java.lang.Throwable ivjExc) {
+		handleException(ivjExc);
 	}
-	this.fireInputUpdate();
 }
 /**
  * Return the AddRemovePanel property value.
@@ -113,6 +117,22 @@ public Object getValue(Object o)
 	return o;
 	
 }
+
+/**
+ * Takes in a listModel and returns an arrayList
+ * 
+ * @param listModel
+ * @return
+ */
+private List<Object> getArrayListFromListModel(ListModel listModel){
+	List<Object> list = new ArrayList<Object>();
+	for (int i = 0; i < listModel.getSize(); i++) {
+		list.add(listModel.getElementAt(i));
+	}
+	
+	return list;
+}
+
 /**
  * Called whenever the part throws an exception.
  * @param exception java.lang.Throwable
@@ -207,6 +227,9 @@ public void initLeftList( boolean hideLMGroupPoints)
 		}
 
 		getAddRemovePanel().leftListSetListData( newList );
+		currentAvailableList = new ArrayList<Object>(newList);
+		currentSelectedList = new ArrayList<Object>();
+		
 	}
 	
 }
@@ -222,9 +245,66 @@ public boolean isInputValid()
 		return false;
 	}
 
+	if(!checkForEnrollmentConflicts()){
+		return false;
+	}
 	
 	return true;
 }
+
+/**
+ * Checks to see if the added/removed load groups  
+ *
+ * @return
+ */
+private boolean checkForEnrollmentConflicts(){
+	// Check available load group list
+	List<Object> availableListDiff = getArrayListFromListModel(getAddRemovePanel().getLeftList().getModel());
+	availableListDiff.removeAll(currentAvailableList);
+
+	if(!checkLoadGroupListForEnrollmentIssues(availableListDiff)) {
+		getAddRemovePanel().getLeftList().setListData(currentAvailableList.toArray());
+		getAddRemovePanel().getRightList().setListData(currentSelectedList.toArray());
+		return false;
+	}
+	
+	// Check selected load group list
+	List<Object> selectionListDiff = getArrayListFromListModel(getAddRemovePanel().getRightList().getModel());
+	selectionListDiff.removeAll(currentSelectedList);
+	
+	if(!checkLoadGroupListForEnrollmentIssues(selectionListDiff)) {
+		getAddRemovePanel().getLeftList().setListData(currentAvailableList.toArray());
+		getAddRemovePanel().getRightList().setListData(currentSelectedList.toArray());
+		return false;
+	}
+
+	// Update the temp lists
+	currentAvailableList = getArrayListFromListModel(getAddRemovePanel().getLeftList().getModel());
+	currentSelectedList = getArrayListFromListModel(getAddRemovePanel().getRightList().getModel());
+	
+	return true;
+}
+
+/**
+ * 
+ * 
+ * @param lmLoadGroupPAOs
+ * @return
+ */
+private boolean checkLoadGroupListForEnrollmentIssues(List<Object> lmLoadGroupPAOs){
+	for (Object temp: lmLoadGroupPAOs) {
+	    LiteYukonPAObject lmProgPAO = (LiteYukonPAObject)temp;
+	    int loadGroupId = lmProgPAO.getLiteID();
+	    LoadGroupDao loadGroupDao = YukonSpringHook.getBean("loadGroupDao", LoadGroupDao.class);
+	    if(loadGroupDao.isLoadGroupInUse(loadGroupId)) {
+	        setErrorString("The load group you are trying to move is currently being used in customer enrollment. ("+lmProgPAO.getPaoName()+")");
+	        JOptionPane.showMessageDialog(null, getErrorString(), "Illegal Operation Exception", JOptionPane.ERROR_MESSAGE);
+            return false;
+	    }
+	}
+	return true;
+}
+
 /**
  * Method to handle events for the AddRemovePanelListener interface.
  * @param newEvent java.util.EventObject
@@ -264,14 +344,13 @@ public static void main(java.lang.String[] args) {
 /**
  * Method to handle events for the AddRemovePanelListener interface.
  * @param newEvent java.util.EventObject
- * @throws IllegalArgumentException 
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-public void removeButtonAction_actionPerformed(java.util.EventObject newEvent) throws IllegalArgumentException {
+public void removeButtonAction_actionPerformed(java.util.EventObject newEvent) {
 	// user code begin {1}
 	// user code end
 	if (newEvent.getSource() == getAddRemovePanel()) 
-		connEtoC2(newEvent);
+		removeSelectedLoadGroup(newEvent);
 	// user code begin {2}
 	// user code end
 }
@@ -405,7 +484,11 @@ public void setValue(Object o)
 	}
 
 	getAddRemovePanel().leftListSetListData( allItems );
-	getAddRemovePanel().rightListSetListData( usedItems );		
+	currentAvailableList = new ArrayList<Object>(allItems);
+	
+	getAddRemovePanel().rightListSetListData( usedItems );
+	currentSelectedList = new ArrayList<Object>(usedItems);
+
 }
 
 public void setFirstFocus() 
