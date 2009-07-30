@@ -16,9 +16,9 @@ import java.util.Set;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.service.FixedDeviceGroupingHack;
 import com.cannontech.common.device.groups.service.FixedDeviceGroups;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.Pair;

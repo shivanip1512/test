@@ -9,9 +9,9 @@ import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.routeLocate.DeviceRouteLocation;
 import com.cannontech.common.device.routeLocate.RouteLocateExecutor;
 import com.cannontech.common.device.routeLocate.RouteLocateResult;
@@ -45,7 +45,7 @@ public class RouteLocateExecutorImpl implements RouteLocateExecutor {
         routeLocateResult.setSuccessGroup(temporaryDeviceGroupService.createTempGroup(null));
         routeLocateResult.setFailureGroup(temporaryDeviceGroupService.createTempGroup(null));
 
-        for (final YukonDevice device : deviceCollection) {
+        for (final SimpleDevice device : deviceCollection) {
 
             List<Integer> orderedRouteIds = new ArrayList<Integer>(routeIds);
         
@@ -128,7 +128,7 @@ public class RouteLocateExecutorImpl implements RouteLocateExecutor {
         routeLocateResult.emptyPendingDeviceRouteLocations();
     }
     
-    private void addInitialRoute(YukonDevice device, 
+    private void addInitialRoute(SimpleDevice device, 
                                  DeviceRouteLocation deviceRouteLocation,
                                  List<Integer> orderedRouteIds){
         LiteYukonPAObject devicePaoObj = paoDao.getLiteYukonPAO(device.getDeviceId());

@@ -6,19 +6,19 @@ import java.util.Map;
 
 import org.springframework.context.MessageSourceResolvable;
 
-import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.model.SimpleDevice;
 
 /**
  * Wrapper class for a collection of YukonDevice
  */
-public interface DeviceCollection extends Iterable<YukonDevice> {
+public interface DeviceCollection extends Iterable<SimpleDevice> {
 
     /**
      * Method to get the complete list of devices in this collection - for large
      * collections this method may take a while to return the list
      * @return List of yukon devices in this collection
      */
-    public List<YukonDevice> getDeviceList();
+    public List<SimpleDevice> getDeviceList();
     
     /**
      * Method to get just the count of how many devices are in the collection. Should be faster
@@ -32,7 +32,7 @@ public interface DeviceCollection extends Iterable<YukonDevice> {
      * 
      * @return An iterator for the devices in this collection
      */
-    public Iterator<YukonDevice> iterator();
+    public Iterator<SimpleDevice> iterator();
     
     /**
      * Method to get a list of devices from this collection
@@ -40,7 +40,7 @@ public interface DeviceCollection extends Iterable<YukonDevice> {
      * @param size - Number of devices to get including the start index
      * @return A list of devices from this collection
      */
-    public List<YukonDevice> getDevices(int start, int size);
+    public List<SimpleDevice> getDevices(int start, int size);
 
     /**
      * Method used to get the current map of parameters for this device

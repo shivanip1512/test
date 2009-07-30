@@ -1,8 +1,8 @@
 package com.cannontech.common.bulk.field.impl;
 
-import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.model.SimpleDevice;
 
 
-public class EnableBulkField extends BulkFieldBase<YukonDevice, String> {
+public class EnableBulkField extends BulkFieldBase<SimpleDevice, String> {
 
 }

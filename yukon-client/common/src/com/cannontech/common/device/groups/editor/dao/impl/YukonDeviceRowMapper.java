@@ -5,21 +5,21 @@ import java.sql.SQLException;
 
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
-import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
 
-public class YukonDeviceRowMapper implements ParameterizedRowMapper<YukonDevice> {
+public class YukonDeviceRowMapper implements ParameterizedRowMapper<SimpleDevice> {
     private PaoGroupsWrapper paoGroupsWrapper;
     
     public YukonDeviceRowMapper(PaoGroupsWrapper paoGroupsWrapper) {
         this.paoGroupsWrapper = paoGroupsWrapper;
     }
 
-    public YukonDevice mapRow(ResultSet rs, int rowNum) throws SQLException {
+    public SimpleDevice mapRow(ResultSet rs, int rowNum) throws SQLException {
         int deviceId = rs.getInt("paobjectid");
         String typeStr = rs.getString("type");
         int type = paoGroupsWrapper.getDeviceType(typeStr);
-        return new YukonDevice(deviceId, type);
+        return new SimpleDevice(deviceId, type);
     }
 
 }

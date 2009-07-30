@@ -5,7 +5,7 @@ import java.util.List;
 import com.cannontech.cbc.model.Capbank;
 import com.cannontech.cbc.model.CapbankController;
 import com.cannontech.cbc.model.LiteCapControlObject;
-import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.model.SimpleDevice;
 
 public interface CapbankControllerDao {
 
@@ -24,7 +24,7 @@ public interface CapbankControllerDao {
     public boolean unassignController(CapbankController controller);
     public boolean unassignController(int controller);
 	
-	public void changeSerialNumber(YukonDevice device, int newSerialNumber);
+	public void changeSerialNumber(SimpleDevice device, int newSerialNumber);
 	
 	public List<Integer> getUnassignedControllerIds();
 	public List<LiteCapControlObject> getOrphans();

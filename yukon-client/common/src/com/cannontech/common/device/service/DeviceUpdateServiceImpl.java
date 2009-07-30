@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.commands.CommandRequestDevice;
@@ -23,6 +22,7 @@ import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService.PointTemplateTransferPair;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.dao.DBPersistentDao;
@@ -71,7 +71,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     
     private Logger log = YukonLogManager.getLogger(DeviceUpdateServiceImpl.class);
     
-    public void changeAddress(YukonDevice device, int newAddress) throws IllegalArgumentException {
+    public void changeAddress(SimpleDevice device, int newAddress) throws IllegalArgumentException {
 
         boolean validAddressForType = DeviceAddressRange.isValidRange(device.getType(), newAddress);
 
@@ -82,7 +82,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         deviceDao.changeAddress(device, newAddress);
     }
 
-    public void changeRoute(YukonDevice device, String newRouteName) throws IllegalArgumentException {
+    public void changeRoute(SimpleDevice device, String newRouteName) throws IllegalArgumentException {
 
         Integer routeId = paoDao.getRouteIdForRouteName(newRouteName);
 
@@ -93,12 +93,12 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         deviceDao.changeRoute(device, routeId);
     }
     
-    public void changeRoute(YukonDevice device, int newRouteId) throws IllegalArgumentException {
+    public void changeRoute(SimpleDevice device, int newRouteId) throws IllegalArgumentException {
 
         deviceDao.changeRoute(device, newRouteId);
     }
 
-    public void changeMeterNumber(YukonDevice device, String newMeterNumber) throws IllegalArgumentException {
+    public void changeMeterNumber(SimpleDevice device, String newMeterNumber) throws IllegalArgumentException {
     
         if (StringUtils.isBlank(newMeterNumber)) {
             throw new IllegalArgumentException("Blank meter number.");
@@ -107,7 +107,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         deviceDao.changeMeterNumber(device, newMeterNumber);
     }
     
-    public void routeDiscovery(final YukonDevice device, List<Integer> routeIds, final LiteYukonUser liteYukonUser) {
+    public void routeDiscovery(final SimpleDevice device, List<Integer> routeIds, final LiteYukonUser liteYukonUser) {
         
         // callback to set routeId and do putconfig when route is discovered
         SimpleCallback<Integer> routeFoundCallback = new SimpleCallback<Integer> () {
@@ -145,7 +145,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     }
     
     @Transactional
-    public YukonDevice changeDeviceType(YukonDevice currentDevice,
+    public SimpleDevice changeDeviceType(SimpleDevice currentDevice,
             DeviceDefinition newDefinition) {
         
         DeviceBase yukonPAObject = (DeviceBase) PAOFactory.createPAObject(currentDevice.getDeviceId());
@@ -177,7 +177,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
             dbPersistentDao.processDBChange(msg);
         }
         
-        return new YukonDevice(changedDevice.getDevice().getDeviceID(), paoGroupsWrapper.getDeviceType(changedDevice.getPAOType()));
+        return new SimpleDevice(changedDevice.getDevice().getDeviceID(), paoGroupsWrapper.getDeviceType(changedDevice.getPAOType()));
     }
 
     @SuppressWarnings("unchecked")
@@ -267,7 +267,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
 
             boolean loadProfileExists = false;
             try {
-                YukonDevice meter = deviceDao.getYukonDeviceForDevice(oldDevice);
+                SimpleDevice meter = deviceDao.getYukonDeviceForDevice(oldDevice);
                 attributeService.getPointForAttribute(meter, BuiltInAttribute.LOAD_PROFILE);
                 loadProfileExists = true;
             } catch (NotFoundException e) {
@@ -323,10 +323,10 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     private void removePoints(DeviceBase device, DeviceDefinition newDefinition)
     throws TransactionException {
 
-    	YukonDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
+    	SimpleDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
         Set<PointIdentifier> removeTemplates = deviceDefinitionService.getPointTemplatesToRemove(yukonDevice, newDefinition);
 
-        YukonDevice meter = deviceDao.getYukonDeviceForDevice(device);
+        SimpleDevice meter = deviceDao.getYukonDeviceForDevice(device);
 
         for (PointIdentifier identifier : removeTemplates) {
             LitePoint litePoint = pointService.getPointForDevice(meter, identifier);
@@ -349,7 +349,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     private void addPoints(DeviceBase device, DeviceDefinition newDefinition)
     throws TransactionException {
 
-    	YukonDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
+    	SimpleDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
         Set<PointTemplate> addTemplates = deviceDefinitionService.getPointTemplatesToAdd(yukonDevice, newDefinition);
         for (PointTemplate template : addTemplates) {
         	
@@ -373,11 +373,11 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     private void transferPoints(DeviceBase device, DeviceDefinition newDefinition)
     throws TransactionException {
 
-    	YukonDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
+    	SimpleDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
         List<PointTemplateTransferPair> transferTemplates = deviceDefinitionService.getPointTemplatesToTransfer(yukonDevice,
                                                                                 newDefinition);
 
-        YukonDevice meter = deviceDao.getYukonDeviceForDevice(device);
+        SimpleDevice meter = deviceDao.getYukonDeviceForDevice(device);
 
         for (PointTemplateTransferPair pair : transferTemplates) {
         	

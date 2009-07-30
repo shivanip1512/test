@@ -21,12 +21,12 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService.PointTemplateTransferPair;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.DeviceUpdateService;
 import com.cannontech.common.device.service.PointService;
 import com.cannontech.common.gui.util.DataInputPanel;
@@ -212,7 +212,7 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
         // change to and sort the list by device type
         List<DeviceDefinition> deviceList = new ArrayList<DeviceDefinition>();
         DeviceDao deviceDao = (DeviceDao) YukonSpringHook.getBean("deviceDao");
-        YukonDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
+        SimpleDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
         deviceList.addAll(deviceDefinitionService.getChangeableDevices(yukonDevice));
         Collections.sort(deviceList);
 
@@ -235,7 +235,7 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
 
         DeviceDao deviceDao = (DeviceDao) YukonSpringHook.getBean("deviceDao");
         DeviceBase device = getCurrentDevice();
-        YukonDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
+        SimpleDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
 
         // Add text to explain what type the current device is and what it is
         // changing to
@@ -302,8 +302,8 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
 
     }
     
-    private YukonDevice getYukonDeviceForDevice(DeviceBase oldDevice) {
-        YukonDevice device = new YukonDevice();
+    private SimpleDevice getYukonDeviceForDevice(DeviceBase oldDevice) {
+        SimpleDevice device = new SimpleDevice();
         device.setDeviceId(oldDevice.getPAObjectID());
         String typeStr = oldDevice.getPAOType();
         int deviceType = PAOGroups.getDeviceType(typeStr);
@@ -324,7 +324,7 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
 
         StringBuffer buffer = new StringBuffer();
 
-        YukonDevice device = getYukonDeviceForDevice(getCurrentDevice());
+        SimpleDevice device = getYukonDeviceForDevice(getCurrentDevice());
         
         for (PointTemplateTransferPair pair : transferTemplates) {
         	LitePoint litePoint = pointService.getPointForDevice(device, pair.oldDefinitionTemplate);

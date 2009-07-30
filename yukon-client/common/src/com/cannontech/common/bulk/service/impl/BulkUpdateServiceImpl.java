@@ -13,7 +13,7 @@ import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.bulk.service.BulkUpdateFileInfo;
 import com.cannontech.common.bulk.service.BulkUpdateService;
 import com.cannontech.common.bulk.service.ParsedBulkUpdateFileInfo;
-import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.tools.csv.CSVReader;
 
@@ -49,7 +49,7 @@ public class BulkUpdateServiceImpl extends BaseBulkService implements BulkUpdate
             else {
                 
                 identifierColunHeader = headerColumnList.get(0);
-                BulkField<?, YukonDevice> identifierBulkField = getBulkYukonDeviceFieldFactory().getBulkField(identifierColunHeader.getFieldName());
+                BulkField<?, SimpleDevice> identifierBulkField = getBulkYukonDeviceFieldFactory().getBulkField(identifierColunHeader.getFieldName());
 
                 if (identifierBulkField.getIdentifierMapper() == null) {
                     result.addError(new YukonMessageSourceResolvable("yukon.common.device.bulk.columnHeader.update.error.badIdentifier", identifierColunHeader.name()));
@@ -99,7 +99,7 @@ public class BulkUpdateServiceImpl extends BaseBulkService implements BulkUpdate
         
         // assume header and id are ok or we wouldn't be here..
         BulkFieldColumnHeader identifierBulkFieldColumnHeader = result.getIdentifierBulkFieldColumnHeader();
-        BulkField<?, YukonDevice> bulkField = getBulkYukonDeviceFieldFactory().getBulkField(identifierBulkFieldColumnHeader.getFieldName());
+        BulkField<?, SimpleDevice> bulkField = getBulkYukonDeviceFieldFactory().getBulkField(identifierBulkFieldColumnHeader.getFieldName());
         
         f.readNext();
         String [] line = null;
@@ -124,14 +124,14 @@ public class BulkUpdateServiceImpl extends BaseBulkService implements BulkUpdate
     public String startBulkUpdate(ParsedBulkUpdateFileInfo parsedBulkUpdateFileInfo) throws IOException {
         
         BulkFieldColumnHeader identifierBulkFieldColumnHeader = parsedBulkUpdateFileInfo.getIdentifierBulkFieldColumnHeader();
-        final BulkField<?, YukonDevice> identifierBulkField = getBulkYukonDeviceFieldFactory().getBulkField(identifierBulkFieldColumnHeader.getFieldName());
+        final BulkField<?, SimpleDevice> identifierBulkField = getBulkYukonDeviceFieldFactory().getBulkField(identifierBulkFieldColumnHeader.getFieldName());
         
         return doStartBulkImport(parsedBulkUpdateFileInfo, BackgroundProcessTypeEnum.UPDATE, new YukonDeviceResolver() {
 
             @Override
-            public YukonDevice returnDevice(String[] from) {
+            public SimpleDevice returnDevice(String[] from) {
                 
-                YukonDevice device = getBulkFieldService().getYukonDeviceForIdentifier(identifierBulkField, StringUtils.trim(from[0]));
+                SimpleDevice device = getBulkFieldService().getYukonDeviceForIdentifier(identifierBulkField, StringUtils.trim(from[0]));
                 return device;
             }
         });

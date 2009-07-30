@@ -11,12 +11,12 @@ import com.cannontech.amr.deviceread.model.CommandWrapper;
 import com.cannontech.amr.deviceread.service.MeterReadCommandGeneratorService;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandResultHolder;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.exception.MeterReadRequestException;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -31,7 +31,7 @@ public class MeterReadServiceImpl implements MeterReadService {
     public boolean isReadable(Meter device, Set<? extends Attribute> attributes, LiteYukonUser user) {
     	log.debug("Validating Readability for" + attributes + " on device " + device + " for " + user);
     	
-        Multimap<YukonDevice, LitePoint> pointsToRead = meterReadCommandGeneratorService.getPointsToRead(device, attributes);
+        Multimap<SimpleDevice, LitePoint> pointsToRead = meterReadCommandGeneratorService.getPointsToRead(device, attributes);
     	
     	try {
             meterReadCommandGeneratorService.getRequiredCommands(pointsToRead);
@@ -51,9 +51,9 @@ public class MeterReadServiceImpl implements MeterReadService {
         log.info("Reading " + attributes + " on device " + device + " for " + user);
         
         // figure out which commands to send
-        Multimap<YukonDevice, LitePoint> pointsToRead = meterReadCommandGeneratorService.getPointsToRead(device, attributes);
+        Multimap<SimpleDevice, LitePoint> pointsToRead = meterReadCommandGeneratorService.getPointsToRead(device, attributes);
         
-        Multimap<YukonDevice, CommandWrapper> requiredCommands;
+        Multimap<SimpleDevice, CommandWrapper> requiredCommands;
         try {
             requiredCommands = meterReadCommandGeneratorService.getRequiredCommands(pointsToRead);
         } catch (UnreadableException e) {
@@ -62,12 +62,12 @@ public class MeterReadServiceImpl implements MeterReadService {
         return readMeterPoints(requiredCommands, user);
     }
     
-    private CommandResultHolder readMeterPoints(Multimap<YukonDevice, CommandWrapper> requiredCommands, LiteYukonUser user) {
+    private CommandResultHolder readMeterPoints(Multimap<SimpleDevice, CommandWrapper> requiredCommands, LiteYukonUser user) {
 //        log.debug("Reading " + pointSet + " on device " + device + " for " + user);
         // reduce number of commands
 
         List<CommandRequestDevice> allCommands = Lists.newArrayList();
-        for (YukonDevice device : requiredCommands.keySet()) {
+        for (SimpleDevice device : requiredCommands.keySet()) {
             // get command requests to send
             List<CommandRequestDevice> commands = meterReadCommandGeneratorService.getCommandRequests(device, requiredCommands.get(device));
             allCommands.addAll(commands);

@@ -17,7 +17,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.DeviceCollection;
-import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.routeLocate.DeviceRouteLocation;
 import com.cannontech.common.device.routeLocate.RouteLocateExecutor;
 import com.cannontech.common.device.routeLocate.RouteLocateResult;
@@ -216,7 +216,7 @@ public class RouteLocateController extends BulkControllerBase {
         int deviceRouteLocationId = ServletRequestUtils.getRequiredIntParameter(request, "deviceRouteLocationId");
         
         // update device
-        YukonDevice device = deviceDao.getYukonDevice(deviceId);
+        SimpleDevice device = deviceDao.getYukonDevice(deviceId);
         deviceUpdateService.changeRoute(device, routeId);
         
         // update DeviceRouteLocation

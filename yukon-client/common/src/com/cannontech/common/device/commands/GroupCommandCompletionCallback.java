@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
-import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.CancelStatus;
 import com.cannontech.common.util.Completable;
 import com.cannontech.common.util.ExceptionStatus;
@@ -17,11 +17,11 @@ import com.cannontech.core.dynamic.PointValueHolder;
 public class GroupCommandCompletionCallback implements
         CommandCompletionCallback<CommandRequestDevice>, Completable, CancelStatus, ExceptionStatus, MultipleDeviceResultHolder {
     
-    private Map<YukonDevice,DeviceErrorDescription> errors = new ConcurrentHashMap<YukonDevice, DeviceErrorDescription>(100, .75f, 1);
-    private Map<YukonDevice,String> resultStrings = new ConcurrentHashMap<YukonDevice, String>(100, .75f, 1);
-    private Map<YukonDevice, Object> allDevices = new ConcurrentHashMap<YukonDevice, Object>(100, .75f, 1);
+    private Map<SimpleDevice,DeviceErrorDescription> errors = new ConcurrentHashMap<SimpleDevice, DeviceErrorDescription>(100, .75f, 1);
+    private Map<SimpleDevice,String> resultStrings = new ConcurrentHashMap<SimpleDevice, String>(100, .75f, 1);
+    private Map<SimpleDevice, Object> allDevices = new ConcurrentHashMap<SimpleDevice, Object>(100, .75f, 1);
     private Object PRESENT = new Object(); // used as the value for the allDevices map
-    private MapList<YukonDevice,PointValueHolder> receivedValues = new MapList<YukonDevice, PointValueHolder>();
+    private MapList<SimpleDevice,PointValueHolder> receivedValues = new MapList<SimpleDevice, PointValueHolder>();
     private boolean complete = false;
     private boolean canceled = false;
     private boolean processingErrorOccured = false;
@@ -56,42 +56,42 @@ public class GroupCommandCompletionCallback implements
         receivedValues.add(command.getDevice(), value);
     }
     
-    public Set<YukonDevice> getAllDevices() {
+    public Set<SimpleDevice> getAllDevices() {
         return Collections.unmodifiableSet(allDevices.keySet());
     }
     
     @Override
-    public Set<YukonDevice> getSuccessfulDevices() {
+    public Set<SimpleDevice> getSuccessfulDevices() {
         return Collections.unmodifiableSet(resultStrings.keySet());
     }
     
     @Override
-    public Set<YukonDevice> getFailedDevices() {
+    public Set<SimpleDevice> getFailedDevices() {
         return Collections.unmodifiableSet(errors.keySet());
     }
     
-    public void handleSuccess(YukonDevice device) {
+    public void handleSuccess(SimpleDevice device) {
         // ignore
     }
     
-    public void handleFailure(YukonDevice device) {
+    public void handleFailure(SimpleDevice device) {
         // ignore
     }
 
-    public boolean isSuccessful(YukonDevice device) {
+    public boolean isSuccessful(SimpleDevice device) {
         return resultStrings.containsKey(device);
     }
     
-    public boolean isUnsuccessful(YukonDevice device) {
+    public boolean isUnsuccessful(SimpleDevice device) {
         return !errors.containsKey(device);
     }
     
     @Override
-    public List<PointValueHolder> getValues(YukonDevice device) {
+    public List<PointValueHolder> getValues(SimpleDevice device) {
         return Collections.unmodifiableList(receivedValues.get(device));
     }
     
-    public Map<YukonDevice, List<PointValueHolder>> getValues() {
+    public Map<SimpleDevice, List<PointValueHolder>> getValues() {
         return receivedValues.values();
     }
 
@@ -136,11 +136,11 @@ public class GroupCommandCompletionCallback implements
     	return processingErrorReason;
     }
 
-    public Map<YukonDevice, DeviceErrorDescription> getErrors() {
+    public Map<SimpleDevice, DeviceErrorDescription> getErrors() {
         return errors;
     }
 
-    public Map<YukonDevice, String> getResultStrings() {
+    public Map<SimpleDevice, String> getResultStrings() {
         return resultStrings;
     }
 

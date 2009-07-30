@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Required;
 import com.cannontech.amr.meter.service.MeterService;
 import com.cannontech.common.bulk.field.impl.YukonDeviceDto;
 import com.cannontech.common.bulk.processor.ProcessingException;
-import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.database.TransactionException;
 
 
@@ -14,7 +14,7 @@ public class DisconnectAddressBulkFieldProcessor extends BulkYukonDeviceFieldPro
     private MeterService meterService = null;
     
     @Override
-    public void updateField(YukonDevice device, YukonDeviceDto value) throws ProcessingException  {
+    public void updateField(SimpleDevice device, YukonDeviceDto value) throws ProcessingException  {
 
         try {
             

@@ -7,9 +7,9 @@ import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.field.BulkFieldColumnHeader;
 import com.cannontech.common.bulk.processor.ProcessorCallbackException;
 import com.cannontech.common.bulk.service.BulkFileInfo;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.device.model.SimpleDevice;
 
 public class ImportUpdateCallbackResult extends BackgroundProcessBulkProcessorCallback<String[]> implements BackgroundProcessResultHolder {
 
@@ -42,7 +42,7 @@ public class ImportUpdateCallbackResult extends BackgroundProcessBulkProcessorCa
 	
 	// callback overrides
 	@Override
-    public void processedObject(int rowNumber, YukonDevice object) {
+    public void processedObject(int rowNumber, SimpleDevice object) {
         super.processedObject(rowNumber, object);
         deviceGroupMemberEditorDao.addDevices(successGroup, object);
     }

@@ -26,9 +26,9 @@ import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ConverterType;
 import com.cannontech.common.chart.model.GraphType;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.peakReport.model.PeakReportPeakType;
 import com.cannontech.common.device.peakReport.model.PeakReportResult;
 import com.cannontech.common.device.peakReport.model.PeakReportRunType;
@@ -118,7 +118,7 @@ public class HighBillController extends MultiActionController {
         
         // CREATE POINT IF NEEDED
         //-------------------------------------------
-        YukonDevice device = deviceDao.getYukonDevice(deviceId);
+        SimpleDevice device = deviceDao.getYukonDevice(deviceId);
         boolean createLPPoint = ServletRequestUtils.getBooleanParameter(request, "createLPPoint", false);
         if (createLPPoint) {
             attributeService.createPointForAttribute(device, BuiltInAttribute.LOAD_PROFILE);

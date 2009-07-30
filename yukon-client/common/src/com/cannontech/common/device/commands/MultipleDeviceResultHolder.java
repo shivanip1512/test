@@ -5,31 +5,31 @@ import java.util.Map;
 import java.util.Set;
 
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
-import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.core.dynamic.PointValueHolder;
 
 public interface MultipleDeviceResultHolder {
 
-    public Set<YukonDevice> getAllDevices();
+    public Set<SimpleDevice> getAllDevices();
     
-    public Set<YukonDevice> getSuccessfulDevices();
+    public Set<SimpleDevice> getSuccessfulDevices();
     
-    public Set<YukonDevice> getFailedDevices();
+    public Set<SimpleDevice> getFailedDevices();
 
-    public boolean isSuccessful(YukonDevice device);
+    public boolean isSuccessful(SimpleDevice device);
 
-    public boolean isUnsuccessful(YukonDevice device);
+    public boolean isUnsuccessful(SimpleDevice device);
     
-    public List<PointValueHolder> getValues(YukonDevice device);
+    public List<PointValueHolder> getValues(SimpleDevice device);
     
-    public Map<YukonDevice, List<PointValueHolder>> getValues();
+    public Map<SimpleDevice, List<PointValueHolder>> getValues();
 
     public boolean isComplete();
     
     public boolean isCanceled();
 
-    public Map<YukonDevice, DeviceErrorDescription> getErrors();
+    public Map<SimpleDevice, DeviceErrorDescription> getErrors();
 
-    public Map<YukonDevice, String> getResultStrings();
+    public Map<SimpleDevice, String> getResultStrings();
 
 }

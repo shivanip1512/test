@@ -6,11 +6,11 @@ import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.field.BulkFieldColumnHeader;
 import com.cannontech.common.bulk.processor.ProcessorCallbackException;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.device.model.SimpleDevice;
 
-public class MassDeleteCallbackResult extends BackgroundProcessBulkProcessorCallback<YukonDevice> implements BackgroundProcessResultHolder {
+public class MassDeleteCallbackResult extends BackgroundProcessBulkProcessorCallback<SimpleDevice> implements BackgroundProcessResultHolder {
 
 	private DeviceCollection deviceCollection;
 	private StoredDeviceGroup processingExceptionGroup;
@@ -37,7 +37,7 @@ public class MassDeleteCallbackResult extends BackgroundProcessBulkProcessorCall
 	
 	// callback overrides
 	@Override
-    public void receivedProcessingException(int rowNumber, YukonDevice object, ProcessorCallbackException e) {
+    public void receivedProcessingException(int rowNumber, SimpleDevice object, ProcessorCallbackException e) {
         super.receivedProcessingException(rowNumber, object, e);
         deviceGroupMemberEditorDao.addDevices(processingExceptionGroup, object);
     }

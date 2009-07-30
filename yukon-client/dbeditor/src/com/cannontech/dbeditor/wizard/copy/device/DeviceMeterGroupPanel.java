@@ -12,9 +12,9 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
 
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.service.FixedDeviceGroupingHack;
 import com.cannontech.common.device.groups.service.FixedDeviceGroups;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.lite.LiteTypes;
@@ -306,7 +306,7 @@ public class DeviceMeterGroupPanel extends com.cannontech.common.gui.util.DataIn
     public Object getValue(Object val) {
         MCTBase pao = null;
         
-        YukonDevice yd = null;
+        SimpleDevice yd = null;
         if (val instanceof MultiDBPersistent)
         {
             if ((DBPersistent) ((MultiDBPersistent) val).getDBPersistentVector().get(0) instanceof MCTBase)
@@ -316,7 +316,7 @@ public class DeviceMeterGroupPanel extends com.cannontech.common.gui.util.DataIn
         } else {
             pao = (MCTBase) val;
         }
-        yd = new YukonDevice(pao.getPAObjectID(),PAOGroups.getDeviceType(pao.getPAOType()));
+        yd = new SimpleDevice(pao.getPAObjectID(),PAOGroups.getDeviceType(pao.getPAOType()));
         String cycleGroup = (String)getCycleGroupComboBox().getSelectedItem();
         String alternateGroup = (String)getAlternateGroupComboBox().getSelectedItem();
         String billingGroup = (String)getJComboBoxBillingGroup().getSelectedItem();
@@ -334,7 +334,7 @@ public class DeviceMeterGroupPanel extends com.cannontech.common.gui.util.DataIn
     {
         MCTBase pao = null;
         
-        YukonDevice yd = null;
+        SimpleDevice yd = null;
         if (o instanceof MultiDBPersistent)
         {
             if ((DBPersistent) ((MultiDBPersistent) o).getDBPersistentVector().get(0) instanceof MCTBase)
@@ -345,7 +345,7 @@ public class DeviceMeterGroupPanel extends com.cannontech.common.gui.util.DataIn
             pao = (MCTBase) o;
         }
         
-        yd = new YukonDevice(pao.getPAObjectID(),PAOGroups.getDeviceType(pao.getPAOType()));
+        yd = new SimpleDevice(pao.getPAObjectID(),PAOGroups.getDeviceType(pao.getPAOType()));
         String billingGroup = hacker.getGroupForDevice(FixedDeviceGroups.BILLINGGROUP, yd);
         String alternateGroup = hacker.getGroupForDevice(FixedDeviceGroups.TESTCOLLECTIONGROUP, yd);
         String collectionGroup = hacker.getGroupForDevice(FixedDeviceGroups.COLLECTIONGROUP, yd);

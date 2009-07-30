@@ -4,12 +4,12 @@ import org.apache.commons.lang.math.RandomUtils;
 import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandRequestType;
 import com.cannontech.common.device.commands.CommandResultHolder;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.porter.message.Request;
 
@@ -35,7 +35,7 @@ public class CommandRequestDeviceExecutorImpl extends
         return request;
     }
 
-    public CommandResultHolder execute(YukonDevice device, String command,
+    public CommandResultHolder execute(SimpleDevice device, String command,
     		CommandRequestExecutionType type, LiteYukonUser user) throws Exception {
 
         CommandRequestDevice cmdRequest = new CommandRequestDevice();

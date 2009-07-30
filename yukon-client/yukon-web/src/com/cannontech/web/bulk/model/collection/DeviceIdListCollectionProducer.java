@@ -14,7 +14,7 @@ import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.ListBasedDeviceCollection;
-import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 
@@ -53,13 +53,13 @@ public class DeviceIdListCollectionProducer extends DeviceCollectionProducerBase
                 return paramMap;
             }
 
-            public List<YukonDevice> getDeviceList() {
+            public List<SimpleDevice> getDeviceList() {
 
-                List<YukonDevice> deviceList = new ArrayList<YukonDevice>();
+                List<SimpleDevice> deviceList = new ArrayList<SimpleDevice>();
 
                 String[] idStrings = ids.split(",");
                 for (String id : idStrings) {
-                    YukonDevice device = deviceDao.getYukonDevice(Integer.valueOf(id));
+                    SimpleDevice device = deviceDao.getYukonDevice(Integer.valueOf(id));
                     deviceList.add(device);
                 }
 

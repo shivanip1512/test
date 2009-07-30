@@ -9,9 +9,9 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.DeviceTag;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -35,7 +35,7 @@ public class ProfileController extends MultiActionController {
 
         LiteYukonUser user = ServletUtil.getYukonUser(request);
         int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
-        YukonDevice device = deviceDao.getYukonDevice(deviceId);
+        SimpleDevice device = deviceDao.getYukonDevice(deviceId);
         
         mav.addObject("deviceId", deviceId);
         

@@ -14,8 +14,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.wizard.CancelInsertException;
@@ -350,7 +350,7 @@ private SmartMultiDBPersistent createSmartDBPersistent( DeviceBase deviceBase )
 
 	DeviceDefinitionService deviceDefinitionService = (DeviceDefinitionService) YukonSpringHook.getBean("deviceDefinitionService");
 	DeviceDao deviceDao = (DeviceDao) YukonSpringHook.getBean("deviceDao");
-	YukonDevice yukonDevice = deviceDao.getYukonDeviceForDevice(deviceBase);
+	SimpleDevice yukonDevice = deviceDao.getYukonDeviceForDevice(deviceBase);
     List<PointBase> defaultPoints = deviceDefinitionService.createDefaultPointsForDevice(yukonDevice);
 
     for (PointBase point : defaultPoints) {

@@ -2,9 +2,9 @@ package com.cannontech.common.device.config.dao;
 
 import java.util.List;
 
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.config.model.ConfigurationBase;
 import com.cannontech.common.device.config.model.ConfigurationTemplate;
+import com.cannontech.common.device.model.SimpleDevice;
 
 /**
  * Data Access class for device configurations
@@ -54,7 +54,7 @@ public interface DeviceConfigurationDao {
      * @param device - Device to assgin configuration to
      * @throws InvalidDeviceTypeException 
      */
-    public void assignConfigToDevice(ConfigurationBase configuration, YukonDevice device) throws InvalidDeviceTypeException;
+    public void assignConfigToDevice(ConfigurationBase configuration, SimpleDevice device) throws InvalidDeviceTypeException;
 
     /**
      * Method to get a list of devices that have been assigned the given
@@ -62,7 +62,7 @@ public interface DeviceConfigurationDao {
      * @param configuration - Configuration to get device list for
      * @return List of devices assigned the configuration
      */
-    public List<YukonDevice> getAssignedDevices(ConfigurationBase configuration);
+    public List<SimpleDevice> getAssignedDevices(ConfigurationBase configuration);
 
     /**
      * Method to remove the configuration assignment from the device
@@ -75,7 +75,7 @@ public interface DeviceConfigurationDao {
      * @param device
      * @return ConfigurationBase
      */
-    public ConfigurationBase findConfigurationForDevice(YukonDevice device);
+    public ConfigurationBase findConfigurationForDevice(SimpleDevice device);
     
     /**
      * Returns a list of configurations by type.

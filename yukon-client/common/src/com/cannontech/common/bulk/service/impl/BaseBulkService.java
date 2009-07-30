@@ -44,11 +44,11 @@ import com.cannontech.common.bulk.processor.Processor;
 import com.cannontech.common.bulk.processor.SingleProcessor;
 import com.cannontech.common.bulk.service.BulkFileInfo;
 import com.cannontech.common.bulk.service.ParsedBulkFileInfo;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -61,7 +61,7 @@ import com.cannontech.web.input.InputUtil;
 public abstract class BaseBulkService {
     
     protected static interface YukonDeviceResolver {
-        public YukonDevice returnDevice(String[] from);
+        public SimpleDevice returnDevice(String[] from);
     }
     
     private BulkFieldService bulkFieldService;
@@ -134,10 +134,10 @@ public abstract class BaseBulkService {
         List<BulkFieldColumnHeader> updateBulkFieldColumnHeaders = parsedBulkImportFileInfo.getUpdateBulkFieldColumnHeaders();
 
         // update bulk fields
-        final List<BulkField<?, YukonDevice>> bulkFieldList = bulkYukonDeviceFieldFactory.getBulkFieldsForBulkColumnHeaders(updateBulkFieldColumnHeaders);
+        final List<BulkField<?, SimpleDevice>> bulkFieldList = bulkYukonDeviceFieldFactory.getBulkFieldsForBulkColumnHeaders(updateBulkFieldColumnHeaders);
 
         // bulk field index map
-        final Map<BulkField<?, YukonDevice>, Integer> bulkFieldIndexMap = getBulkFieldIndexes(fileResource);
+        final Map<BulkField<?, SimpleDevice>, Integer> bulkFieldIndexMap = getBulkFieldIndexes(fileResource);
 
 
         // SETUP PROCESSOR
@@ -155,7 +155,7 @@ public abstract class BaseBulkService {
 
                     try {
 
-                        YukonDevice device = resolver.returnDevice(from);
+                        SimpleDevice device = resolver.returnDevice(from);
 
                         // setup updatable device
                         return setupUpdateableDevice(from, device, bulkFieldList, bulkFieldIndexMap);
@@ -177,13 +177,13 @@ public abstract class BaseBulkService {
     }
 
 
-    protected Map<BulkField<?, YukonDevice>, Integer> getBulkFieldIndexes(FileSystemResource fileResource) throws IOException {
+    protected Map<BulkField<?, SimpleDevice>, Integer> getBulkFieldIndexes(FileSystemResource fileResource) throws IOException {
 
         CSVReader csvReader = getCSVReader(fileResource);
         String[] headerRow = csvReader.readNext();
         csvReader.close();
 
-        Map<BulkField<?, YukonDevice>, Integer> bulkFieldIndexes = new HashMap<BulkField<?, YukonDevice>, Integer>();
+        Map<BulkField<?, SimpleDevice>, Integer> bulkFieldIndexes = new HashMap<BulkField<?, SimpleDevice>, Integer>();
 
         int index = 0;
         for (String columnHeaderName : headerRow) {
@@ -192,7 +192,7 @@ public abstract class BaseBulkService {
 
             try {
                 BulkFieldColumnHeader bulkFieldColumnHeader = BulkFieldColumnHeader.valueOf(columnHeaderName);
-                BulkField<? ,YukonDevice> bulkField = bulkYukonDeviceFieldFactory.getBulkField(bulkFieldColumnHeader.getFieldName());
+                BulkField<? ,SimpleDevice> bulkField = bulkYukonDeviceFieldFactory.getBulkField(bulkFieldColumnHeader.getFieldName());
                 bulkFieldIndexes.put(bulkField, index);
             }
             catch (IllegalArgumentException e) {
@@ -219,14 +219,14 @@ public abstract class BaseBulkService {
         return new CSVReader(reader);
     }
 
-    protected Processor<UpdateableDevice> getMultiBulkFieldUpdateProcessor(final List<BulkField<?, YukonDevice>> bulkFields) {
+    protected Processor<UpdateableDevice> getMultiBulkFieldUpdateProcessor(final List<BulkField<?, SimpleDevice>> bulkFields) {
 
         return new SingleProcessor<UpdateableDevice>() {
 
             @Override
             public void process(UpdateableDevice updateableDevice) throws ProcessingException {
 
-                YukonDevice device = updateableDevice.getDevice();
+                SimpleDevice device = updateableDevice.getDevice();
                 YukonDeviceDto deviceDto = updateableDevice.getDeviceDto();
                 
                 // get list of processors that should get run
@@ -243,7 +243,7 @@ public abstract class BaseBulkService {
 
     //
     protected List<BulkYukonDeviceFieldProcessor> findYukonDeviceFieldProcessors(UpdateableDevice updateableDevice,
-                                                                                 List<BulkField<?, YukonDevice>> bulkFields) {
+                                                                                 List<BulkField<?, SimpleDevice>> bulkFields) {
         
         // dto wraper
         YukonDeviceDto deviceDto = updateableDevice.getDeviceDto();
@@ -251,8 +251,8 @@ public abstract class BaseBulkService {
         
         // narrow list down to just those fields that need to process (i.e. cannot be ignored)
         // based on their blankness, and BlankHandlingEnum value
-        List<BulkField<?, YukonDevice>> nonIgnorableFields = new ArrayList<BulkField<?,YukonDevice>>();
-        for (BulkField<?, YukonDevice> updateableField : bulkFields) {
+        List<BulkField<?, SimpleDevice>> nonIgnorableFields = new ArrayList<BulkField<?,SimpleDevice>>();
+        for (BulkField<?, SimpleDevice> updateableField : bulkFields) {
             
             BlankHandlingEnum fieldBlankHandlingEnum = updateableField.getBlankHandlingEnum();
             
@@ -282,7 +282,7 @@ public abstract class BaseBulkService {
     }
 
     protected String runProcess(CsvReaderIterator csvReaderIterator, 
-            List<BulkField<?, YukonDevice>> bulkFieldList, 
+            List<BulkField<?, SimpleDevice>> bulkFieldList, 
             List<BulkFieldColumnHeader> updateBulkFieldColumnHeaders, 
             ObjectMapper<String[], UpdateableDevice> mapper,
             BulkFileInfo bulkFileInfo,
@@ -303,7 +303,7 @@ public abstract class BaseBulkService {
 																        		deviceGroupMemberEditorDao,
 																        		deviceGroupCollectionHelper);
 
-        BulkProcessorCallback<String[], UpdateableDevice> translatingCallback = new TranslatingBulkProcessorCallback<String[], UpdateableDevice, YukonDevice>(callbackResult, new UpdateableDeviceMapper());
+        BulkProcessorCallback<String[], UpdateableDevice> translatingCallback = new TranslatingBulkProcessorCallback<String[], UpdateableDevice, SimpleDevice>(callbackResult, new UpdateableDeviceMapper());
 
         // CACHE
         recentResultsCache.addResult(resultsId, callbackResult);
@@ -368,7 +368,7 @@ public abstract class BaseBulkService {
         this.temporaryDeviceGroupService = temporaryDeviceGroupService;
     }
 
-    public static UpdateableDevice setupUpdateableDevice(String[] row, YukonDevice device, List<BulkField<?, YukonDevice>> bulkFields, Map<BulkField<?, YukonDevice>, Integer> bulkFieldIndexMap) {
+    public static UpdateableDevice setupUpdateableDevice(String[] row, SimpleDevice device, List<BulkField<?, SimpleDevice>> bulkFields, Map<BulkField<?, SimpleDevice>, Integer> bulkFieldIndexMap) {
 
         UpdateableDevice updateableDevice = null;
         
@@ -377,7 +377,7 @@ public abstract class BaseBulkService {
             Map<String, String> valueMap = new HashMap<String, String>();
             List<Input<?>> inputList = new ArrayList<Input<?>>();
     
-            for (BulkField<?, YukonDevice> bulkField : bulkFields) {
+            for (BulkField<?, SimpleDevice> bulkField : bulkFields) {
     
                 try {
                     

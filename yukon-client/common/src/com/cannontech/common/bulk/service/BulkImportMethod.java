@@ -4,11 +4,11 @@ import java.util.Map;
 import java.util.Set;
 
 import com.cannontech.common.bulk.field.BulkFieldColumnHeader;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.creation.DeviceCreationException;
+import com.cannontech.common.device.model.SimpleDevice;
 
 public interface BulkImportMethod {
     
     public Set<BulkFieldColumnHeader> getRequiredColumns();
-    public YukonDevice initDevice(Map<BulkFieldColumnHeader, String> fields) throws DeviceCreationException;
+    public SimpleDevice initDevice(Map<BulkFieldColumnHeader, String> fields) throws DeviceCreationException;
 }

@@ -17,7 +17,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
@@ -27,6 +26,7 @@ import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionId
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
@@ -55,13 +55,13 @@ public class GroupMeterReadServiceImpl implements GroupMeterReadService {
 																	LiteYukonUser user) throws PaoAuthorizationException {
     	
 		// map devices+attribute => list of command requests
-		final List<YukonDevice> unsupportedDevices = new ArrayList<YukonDevice>();
+		final List<SimpleDevice> unsupportedDevices = new ArrayList<SimpleDevice>();
 		
-    	ObjectMapper<YukonDevice, List<CommandRequestDevice>> objectMapper = new ObjectMapper<YukonDevice, List<CommandRequestDevice>>() {
-            public List<CommandRequestDevice> map(YukonDevice from) throws ObjectMappingException {
+    	ObjectMapper<SimpleDevice, List<CommandRequestDevice>> objectMapper = new ObjectMapper<SimpleDevice, List<CommandRequestDevice>>() {
+            public List<CommandRequestDevice> map(SimpleDevice from) throws ObjectMappingException {
             	
-            	Multimap<YukonDevice, LitePoint> pointsToRead = meterReadCommandGeneratorService.getPointsToRead(from, attributes);
-                Multimap<YukonDevice, CommandWrapper> requiredCommands;
+            	Multimap<SimpleDevice, LitePoint> pointsToRead = meterReadCommandGeneratorService.getPointsToRead(from, attributes);
+                Multimap<SimpleDevice, CommandWrapper> requiredCommands;
                 try {
                     requiredCommands = meterReadCommandGeneratorService.getRequiredCommands(pointsToRead);
                 } catch (UnreadableException e) {
@@ -69,7 +69,7 @@ public class GroupMeterReadServiceImpl implements GroupMeterReadService {
                 }
                 
                 List<CommandRequestDevice> allCommands = Lists.newArrayList();
-                for (YukonDevice device : requiredCommands.keySet()) {
+                for (SimpleDevice device : requiredCommands.keySet()) {
                     // get command requests to send
                     List<CommandRequestDevice> commands = meterReadCommandGeneratorService.getCommandRequests(device, requiredCommands.get(device));
                     allCommands.addAll(commands);
@@ -85,7 +85,7 @@ public class GroupMeterReadServiceImpl implements GroupMeterReadService {
         
         // all requests
         List<CommandRequestDevice> allRequests = new ArrayList<CommandRequestDevice>();
-    	List<List<CommandRequestDevice>> deviceRequestLists = new MappingList<YukonDevice, List<CommandRequestDevice>>(deviceCollection.getDeviceList(), objectMapper);
+    	List<List<CommandRequestDevice>> deviceRequestLists = new MappingList<SimpleDevice, List<CommandRequestDevice>>(deviceCollection.getDeviceList(), objectMapper);
     	for (List<CommandRequestDevice> deviceRequestList : deviceRequestLists) {
     		allRequests.addAll(deviceRequestList);
     	}
@@ -114,12 +114,12 @@ public class GroupMeterReadServiceImpl implements GroupMeterReadService {
             }
             
             @Override
-            public void handleSuccess(YukonDevice device) {
+            public void handleSuccess(SimpleDevice device) {
                 deviceGroupMemberEditorDao.addDevices(successGroup, device);
             }
             
             @Override
-            public void handleFailure(YukonDevice device) {
+            public void handleFailure(SimpleDevice device) {
                 deviceGroupMemberEditorDao.addDevices(failureGroup, device);
             }
             

@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
@@ -91,7 +91,7 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
         }
     }
     
-    public Meter getForYukonDevice(YukonDevice yukonDevice) {
+    public Meter getForYukonDevice(SimpleDevice yukonDevice) {
         if (yukonDevice instanceof Meter) {
             return (Meter) yukonDevice;
         } else {

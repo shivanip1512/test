@@ -3,11 +3,11 @@ package com.cannontech.common.bulk.mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
-import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.dao.DeviceDao;
 
-public final class MeterNumberToYukonDeviceMapper implements ObjectMapper<String, YukonDevice> {
+public final class MeterNumberToYukonDeviceMapper implements ObjectMapper<String, SimpleDevice> {
     
     private DeviceDao deviceDao = null;
 
@@ -17,7 +17,7 @@ public final class MeterNumberToYukonDeviceMapper implements ObjectMapper<String
         this.deviceDao = deviceDao;
     }
 
-    public YukonDevice map(String from) throws ObjectMappingException {
+    public SimpleDevice map(String from) throws ObjectMappingException {
 
         try {
             return deviceDao.getYukonDeviceObjectByMeterNumber(from);

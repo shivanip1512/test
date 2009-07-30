@@ -1,21 +1,21 @@
 package com.cannontech.common.device.definition.model;
 
-import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.model.SimpleDevice;
 
 public class DevicePointIdentifier {
-    private YukonDevice yukonDevice;
+    private SimpleDevice yukonDevice;
     private PointIdentifier devicePointIdentifier;
     
-    public DevicePointIdentifier(YukonDevice yukonDevice,
+    public DevicePointIdentifier(SimpleDevice yukonDevice,
             PointIdentifier devicePointIdentifier) {
         super();
         this.yukonDevice = yukonDevice;
         this.devicePointIdentifier = devicePointIdentifier;
     }
-    public YukonDevice getYukonDevice() {
+    public SimpleDevice getYukonDevice() {
         return yukonDevice;
     }
-    public void setYukonDevice(YukonDevice yukonDevice) {
+    public void setYukonDevice(SimpleDevice yukonDevice) {
         this.yukonDevice = yukonDevice;
     }
     public PointIdentifier getDevicePointIdentifier() {

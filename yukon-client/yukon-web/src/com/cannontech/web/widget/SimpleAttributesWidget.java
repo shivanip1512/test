@@ -16,11 +16,11 @@ import org.springframework.web.servlet.ModelAndView;
 import com.cannontech.amr.deviceread.dao.MeterReadService;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.commands.CommandResultHolder;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
@@ -41,7 +41,7 @@ public class SimpleAttributesWidget extends WidgetControllerBase {
         
         // device
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
-        YukonDevice device = deviceDao.getYukonDevice(deviceId);
+        SimpleDevice device = deviceDao.getYukonDevice(deviceId);
         mav.addObject("device", device);
         
         // get attributes

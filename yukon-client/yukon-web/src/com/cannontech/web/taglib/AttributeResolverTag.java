@@ -8,9 +8,9 @@ import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Required;
 
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.lite.LitePoint;
 
@@ -21,7 +21,7 @@ public class AttributeResolverTag extends YukonTagSupport {
     
     // inputs
     private String var;
-    private YukonDevice device = null;
+    private SimpleDevice device = null;
     private Attribute attribute = null;
     
     @Override
@@ -49,7 +49,7 @@ public class AttributeResolverTag extends YukonTagSupport {
         this.var = var;
     }
     
-    public void setDevice(YukonDevice device) {
+    public void setDevice(SimpleDevice device) {
         this.device = device;
     }
     

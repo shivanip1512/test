@@ -21,7 +21,6 @@ import com.cannontech.amr.meter.dao.GroupMetersDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
@@ -34,6 +33,7 @@ import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.DeviceGroupUiService;
 import com.cannontech.common.device.groups.service.ModifiableDeviceGroupPredicate;
 import com.cannontech.common.device.groups.service.NonHiddenDeviceGroupPredicate;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.predicate.AggregateAndPredicate;
@@ -605,7 +605,7 @@ public class GroupEditorController extends MultiActionController {
             // Make sure we can remove the group
             if (removeGroup.isEditable()) {
                 
-                List<? extends YukonDevice> deviceList = groupMetersDao.getChildMetersByGroup(removeGroup);
+                List<? extends SimpleDevice> deviceList = groupMetersDao.getChildMetersByGroup(removeGroup);
                 deviceGroupMemberEditorDao.removeDevices(removeGroup, deviceList);
             } else {
                 membersErrorMessage = "Cannot remove Group: " + removeGroup.getFullName();

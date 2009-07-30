@@ -15,7 +15,6 @@ import com.cannontech.amr.scheduledGroupRequestExecution.dao.model.ScheduledGrou
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
@@ -23,6 +22,7 @@ import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
@@ -63,7 +63,7 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
 	        DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(deviceGroup);
 	        
 	        List<CommandRequestDevice> commandRequests = new ArrayList<CommandRequestDevice>();
-	        for (YukonDevice device : deviceCollection.getDeviceList()) {
+	        for (SimpleDevice device : deviceCollection.getDeviceList()) {
 	        	
 	        	CommandRequestDevice cmdReq = new CommandRequestDevice();
 	            cmdReq.setCommand(getCommand());

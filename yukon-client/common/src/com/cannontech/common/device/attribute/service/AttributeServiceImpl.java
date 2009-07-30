@@ -5,13 +5,13 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.dao.DataAccessException;
 
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.definition.attribute.lookup.AttributeDefinition;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.DevicePointTemplate;
 import com.cannontech.common.device.definition.model.DevicePointIdentifier;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.PointService;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -42,7 +42,7 @@ public class AttributeServiceImpl implements AttributeService {
         this.pointService = pointService;
     }
 
-    public LitePoint getPointForAttribute(YukonDevice device, Attribute attribute) {
+    public LitePoint getPointForAttribute(SimpleDevice device, Attribute attribute) {
 
         // if "extra device" functionality exists, look up attribute based on that
         
@@ -55,7 +55,7 @@ public class AttributeServiceImpl implements AttributeService {
         return litePoint;
     }
 
-    public Set<Attribute> getAvailableAttributes(YukonDevice device) {
+    public Set<Attribute> getAvailableAttributes(SimpleDevice device) {
         Set<Attribute> result = Sets.newHashSet();
         
         // first add type-based attributes
@@ -69,7 +69,7 @@ public class AttributeServiceImpl implements AttributeService {
         return result;
     }
 
-    public Set<Attribute> getAllExistingAttributes(YukonDevice device) {
+    public Set<Attribute> getAllExistingAttributes(SimpleDevice device) {
         // as written this method is "extra device" safe 
         Set<Attribute> result = Sets.newHashSet();
         Set<Attribute> availableAttribute = this.getAvailableAttributes(device);
@@ -88,12 +88,12 @@ public class AttributeServiceImpl implements AttributeService {
         return BuiltInAttribute.valueOf(name);
     }
 
-    public boolean isAttributeSupported(YukonDevice device, Attribute attribute) {
+    public boolean isAttributeSupported(SimpleDevice device, Attribute attribute) {
         boolean result = getAvailableAttributes(device).contains(attribute);
         return result;
     }
 
-    public boolean pointExistsForAttribute(YukonDevice device, Attribute attribute) {
+    public boolean pointExistsForAttribute(SimpleDevice device, Attribute attribute) {
 
         BuiltInAttribute builtInAttribute = (BuiltInAttribute) attribute;
         if (isAttributeSupported(device, builtInAttribute)) {
@@ -106,7 +106,7 @@ public class AttributeServiceImpl implements AttributeService {
         throw new IllegalArgumentException("Device: " + device + " does not support attribute: " + attribute.getKey());
     }
 
-    public DevicePointTemplate getDevicePointTemplateForAttribute(YukonDevice device, Attribute attribute) {
+    public DevicePointTemplate getDevicePointTemplateForAttribute(SimpleDevice device, Attribute attribute) {
         BuiltInAttribute builtInAttribute = (BuiltInAttribute) attribute;
         AttributeDefinition attributeDefinition = deviceDefinitionDao.getAttributeLookup(device.getDeviceType(), builtInAttribute);
         if (attributeDefinition.isPointTemplateAvailable()) {
@@ -115,7 +115,7 @@ public class AttributeServiceImpl implements AttributeService {
         throw new IllegalUseOfAttribute("Cannot create " + attribute + " on " + device);
     }
     
-    public void createPointForAttribute(YukonDevice device, Attribute attribute) {
+    public void createPointForAttribute(SimpleDevice device, Attribute attribute) {
         
 
         boolean pointExists = this.pointExistsForAttribute(device, attribute);

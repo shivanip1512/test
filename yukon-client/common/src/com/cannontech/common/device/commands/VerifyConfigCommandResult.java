@@ -5,20 +5,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.config.model.VerifyResult;
+import com.cannontech.common.device.model.SimpleDevice;
 
 public class VerifyConfigCommandResult {
     
-    Map<YukonDevice, VerifyResult> verifyResultsMap = new HashMap<YukonDevice, VerifyResult>();
-    private List<YukonDevice> successList = new ArrayList<YukonDevice>();
-    private List<YukonDevice> failureList = new ArrayList<YukonDevice>();
+    Map<SimpleDevice, VerifyResult> verifyResultsMap = new HashMap<SimpleDevice, VerifyResult>();
+    private List<SimpleDevice> successList = new ArrayList<SimpleDevice>();
+    private List<SimpleDevice> failureList = new ArrayList<SimpleDevice>();
 
-    public void addResultString(YukonDevice device, String value) {
+    public void addResultString(SimpleDevice device, String value) {
         verifyResultsMap.get(device).getMatching().add(value);
     }
     
-    public void addError(YukonDevice device, String value) {
+    public void addError(SimpleDevice device, String value) {
         List<String> desc = verifyResultsMap.get(device).getDiscrepancies();
         if(value.contains("is NOT current")) {
             String[] words = value.split(" ");
@@ -27,23 +27,23 @@ public class VerifyConfigCommandResult {
         desc.add(value);
     }
     
-    public void handleSuccess(YukonDevice device) {
+    public void handleSuccess(SimpleDevice device) {
         successList.add(device);
     }
     
-    public void handleFailure(YukonDevice device) {
+    public void handleFailure(SimpleDevice device) {
         failureList.add(device);
     }
     
-    public List<YukonDevice> getFailureList() {
+    public List<SimpleDevice> getFailureList() {
         return failureList;
     }
     
-    public List<YukonDevice> getSuccessList() {
+    public List<SimpleDevice> getSuccessList() {
         return successList;
     }
     
-    public Map<YukonDevice, VerifyResult> getVerifyResultsMap(){
+    public Map<SimpleDevice, VerifyResult> getVerifyResultsMap(){
         return verifyResultsMap;
     }
 }

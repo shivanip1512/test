@@ -1,9 +1,9 @@
 package com.cannontech.common.bulk.service;
 
 import com.cannontech.common.device.DeviceType;
-import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.model.SimpleDevice;
 
 public interface ChangeDeviceTypeService {
 
-    public YukonDevice changeDeviceType(YukonDevice device, DeviceType newDeviceType);
+    public SimpleDevice changeDeviceType(SimpleDevice device, DeviceType newDeviceType);
 }

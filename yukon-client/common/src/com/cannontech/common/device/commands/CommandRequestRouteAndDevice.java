@@ -2,21 +2,21 @@ package com.cannontech.common.device.commands;
 
 import org.springframework.core.style.ToStringCreator;
 
-import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.model.SimpleDevice;
 
 public class CommandRequestRouteAndDevice extends CommandRequestBase {
     
-    private YukonDevice device;
+    private SimpleDevice device;
     private int routeId;
     
-    public YukonDevice getDevice() {
+    public SimpleDevice getDevice() {
         return device;
     }
     public int getRouteId() {
         return routeId;
     }
     
-    public void setDevice(YukonDevice device) {
+    public void setDevice(SimpleDevice device) {
         this.device = device;
     }
     public void setRouteId(int routeId) {

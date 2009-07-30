@@ -11,7 +11,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.cannontech.common.device.DeviceType;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.service.AttributeServiceImpl;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDaoImplTest;
@@ -20,6 +19,7 @@ import com.cannontech.common.device.definition.model.DeviceDefinitionImpl;
 import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService.PointTemplateTransferPair;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.PointServiceImpl;
 import com.cannontech.common.mock.MockPointDao;
 import com.cannontech.core.dao.PointDao;
@@ -34,7 +34,7 @@ public class DeviceDefinitionServiceImplTest {
 
     private DeviceDefinitionServiceImpl service = null;
     private PointServiceImpl pointService = null;
-    private YukonDevice device = null;
+    private SimpleDevice device = null;
     private DeviceDefinitionDao deviceDefinitionDao = null;
     private AttributeServiceImpl attributeService = null;
     private PointDao pointDao;
@@ -64,7 +64,7 @@ public class DeviceDefinitionServiceImplTest {
         attributeService.setDeviceDefinitionDao(deviceDefinitionDao);
         attributeService.setPointService(pointService);
 
-        device = new YukonDevice(1, DeviceTypes.MCT310);
+        device = new SimpleDevice(1, DeviceTypes.MCT310);
 
     }
 
@@ -131,7 +131,7 @@ public class DeviceDefinitionServiceImplTest {
 
         // Test with changeable device
         Set<DeviceDefinition> expectedDevices = new HashSet<DeviceDefinition>();
-        YukonDevice device2 = new YukonDevice(11, DeviceTypes.MCT370);
+        SimpleDevice device2 = new SimpleDevice(11, DeviceTypes.MCT370);
         expectedDevices.add(deviceDefinitionDao.getDeviceDefinition(device2.getDeviceType()));
 
         Set<DeviceDefinition> actualDevices = service.getChangeableDevices(device);

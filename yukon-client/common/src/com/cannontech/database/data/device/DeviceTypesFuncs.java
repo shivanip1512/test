@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
@@ -1486,7 +1486,7 @@ public static Object changeType (String newType,
      * @param yukonDevice
      * @return
      */
-    public static boolean isDisconnectMCTOrHasCollar( YukonDevice yukonDevice )
+    public static boolean isDisconnectMCTOrHasCollar( SimpleDevice yukonDevice )
     {
         if (isDisconnectMCT(yukonDevice.getType()) )
             return true;

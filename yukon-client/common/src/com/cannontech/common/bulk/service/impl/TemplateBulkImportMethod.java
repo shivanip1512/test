@@ -7,9 +7,9 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.bulk.field.BulkFieldColumnHeader;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationService;
+import com.cannontech.common.device.model.SimpleDevice;
 
 public class TemplateBulkImportMethod extends BulkImportMethodBase {
     private DeviceCreationService deviceCreationService = null;
@@ -24,12 +24,12 @@ public class TemplateBulkImportMethod extends BulkImportMethodBase {
     }
     
     @Override
-    public YukonDevice initDevice(Map<BulkFieldColumnHeader, String> fields) throws DeviceCreationException {
+    public SimpleDevice initDevice(Map<BulkFieldColumnHeader, String> fields) throws DeviceCreationException {
         
         String creationFieldStringValue = fields.get(BulkFieldColumnHeader.TEMPLATE);
         String nameFieldStringValue = fields.get(BulkFieldColumnHeader.NAME);
         
-        YukonDevice device = deviceCreationService.createDeviceByTemplate(creationFieldStringValue, nameFieldStringValue, true);
+        SimpleDevice device = deviceCreationService.createDeviceByTemplate(creationFieldStringValue, nameFieldStringValue, true);
         
         return device;
     }

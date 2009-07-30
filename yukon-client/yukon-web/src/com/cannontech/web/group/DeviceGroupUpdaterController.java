@@ -25,10 +25,10 @@ import com.cannontech.common.bulk.field.BulkFieldService;
 import com.cannontech.common.bulk.field.impl.BulkYukonDeviceFieldFactory;
 import com.cannontech.common.bulk.field.processor.BulkFieldProcessor;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.tools.csv.CSVReader;
@@ -87,7 +87,7 @@ public class DeviceGroupUpdaterController {
             	int currentLineNumber = 1;
 	            String currentIdentifier = "";
 	            String currentColumnValue = "";
-	            BulkField<?, YukonDevice> identifierBulkField = null;
+	            BulkField<?, SimpleDevice> identifierBulkField = null;
 	            
             	try {
 		            
@@ -98,7 +98,7 @@ public class DeviceGroupUpdaterController {
 		            // processors
 		            DeviceGroupProcessorFactory deviceGroupProcessorFactory = new DeviceGroupProcessorFactory();
 		            
-		            List<BulkFieldProcessor<YukonDevice, String>> processors = new ArrayList<BulkFieldProcessor<YukonDevice, String>>();
+		            List<BulkFieldProcessor<SimpleDevice, String>> processors = new ArrayList<BulkFieldProcessor<SimpleDevice, String>>();
 		            for (int columnIdx = 1; columnIdx < headerRow.length; columnIdx++) {
 		            	
 		            	String header = headerRow[columnIdx].trim();
@@ -122,10 +122,10 @@ public class DeviceGroupUpdaterController {
 		            while((line = csvReader.readNext()) != null) {
 		            		
 		                currentIdentifier = StringUtils.trim(line[0]);
-		                YukonDevice device = bulkFieldService.getYukonDeviceForIdentifier(identifierBulkField, currentIdentifier);
+		                SimpleDevice device = bulkFieldService.getYukonDeviceForIdentifier(identifierBulkField, currentIdentifier);
 		                
 		                int idx = 1;
-		                for (BulkFieldProcessor<YukonDevice, String> processor : processors) {
+		                for (BulkFieldProcessor<SimpleDevice, String> processor : processors) {
 		                	
 		                	currentColumnValue = line[idx++].trim();
 	                		processor.updateField(device, currentColumnValue);
@@ -173,7 +173,7 @@ public class DeviceGroupUpdaterController {
 	}
 	
 	// PREFIX PROCESSOR
-	private class DeviceGroupPrefixProcessor implements BulkFieldProcessor<YukonDevice, String> {
+	private class DeviceGroupPrefixProcessor implements BulkFieldProcessor<SimpleDevice, String> {
 
 		private StoredDeviceGroup group;
 		private boolean createGroups;
@@ -184,7 +184,7 @@ public class DeviceGroupUpdaterController {
 		}
 
 		@Override
-		public void updateField(YukonDevice device, String subgroup) {
+		public void updateField(SimpleDevice device, String subgroup) {
 
 			// remove from all child groups
 			for (StoredDeviceGroup childGroup : deviceGroupEditorDao.getStaticGroups(this.group)) {
@@ -196,7 +196,7 @@ public class DeviceGroupUpdaterController {
 			deviceGroupMemberEditorDao.addDevices(subgroupGroup, device);
 		}
 		
-		private void removeDeviceFromChildGroup(StoredDeviceGroup removeFromGroup, YukonDevice device) {
+		private void removeDeviceFromChildGroup(StoredDeviceGroup removeFromGroup, SimpleDevice device) {
 			
 			deviceGroupMemberEditorDao.removeDevices(removeFromGroup, device);
 			
@@ -206,13 +206,13 @@ public class DeviceGroupUpdaterController {
 		}
 		
 		@Override
-		public Set<BulkField<?, YukonDevice>> getUpdatableFields() {
+		public Set<BulkField<?, SimpleDevice>> getUpdatableFields() {
 			return null;
 		}
 	}
 	
 	// GROUP PROCESSOR
-	private class DeviceGroupGroupProcessor implements BulkFieldProcessor<YukonDevice, String> {
+	private class DeviceGroupGroupProcessor implements BulkFieldProcessor<SimpleDevice, String> {
 		
 		private StoredDeviceGroup group;
 		
@@ -221,7 +221,7 @@ public class DeviceGroupUpdaterController {
 		}
 
 		@Override
-		public void updateField(YukonDevice device, String addStr) {
+		public void updateField(SimpleDevice device, String addStr) {
 
 			boolean add = Boolean.valueOf(addStr);
 			if (add) {
@@ -232,14 +232,14 @@ public class DeviceGroupUpdaterController {
 		}
 		
 		@Override
-		public Set<BulkField<?, YukonDevice>> getUpdatableFields() {
+		public Set<BulkField<?, SimpleDevice>> getUpdatableFields() {
 			return null;
 		}
 	}
 	
 	private class DeviceGroupProcessorFactory {
 		
-		public BulkFieldProcessor<YukonDevice, String> getProcessor(String columnType, String dataName, String dataValue, boolean createGroups) throws IllegalArgumentException {
+		public BulkFieldProcessor<SimpleDevice, String> getProcessor(String columnType, String dataName, String dataValue, boolean createGroups) throws IllegalArgumentException {
 			
 			DeviceGroupUpdaterColumn deviceGroupUpdaterColumn = DeviceGroupUpdaterColumn.valueOf(columnType);
 			

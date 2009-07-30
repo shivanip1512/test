@@ -8,13 +8,13 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.dao.NotFoundException;
@@ -31,11 +31,11 @@ public class FixedDeviceGroupingHack {
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     private SimpleJdbcOperations jdbcTemplate;
     
-    public Set<YukonDevice> getDevices(FixedDeviceGroups group, String groupName) {
+    public Set<SimpleDevice> getDevices(FixedDeviceGroups group, String groupName) {
         String fullName = group.getPrefix() + "/" + groupName;
         
         DeviceGroup resovledGroup = deviceGroupService.resolveGroupName(fullName);
-        Set<YukonDevice> devices = deviceGroupService.getDevices(Collections.singleton(resovledGroup));
+        Set<SimpleDevice> devices = deviceGroupService.getDevices(Collections.singleton(resovledGroup));
         
         return devices;
     }
@@ -62,7 +62,7 @@ public class FixedDeviceGroupingHack {
         return result;
     }
     
-    public String setGroup(FixedDeviceGroups group, YukonDevice device, String groupName) {
+    public String setGroup(FixedDeviceGroups group, SimpleDevice device, String groupName) {
         StoredDeviceGroup parentGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(group.getPrefix());
         
         stripFromGroup(parentGroup, device);
@@ -93,7 +93,7 @@ public class FixedDeviceGroupingHack {
      * @param device
      * @return
      */
-    public String getGroupForDevice(FixedDeviceGroups fixedGroup, YukonDevice device) {
+    public String getGroupForDevice(FixedDeviceGroups fixedGroup, SimpleDevice device) {
         StoredDeviceGroup parentGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(fixedGroup.getPrefix());
         Set<StoredDeviceGroup> groups = deviceGroupMemberEditorDao.getGroups(parentGroup, device);
         for (StoredDeviceGroup aGroup : groups) {
@@ -104,7 +104,7 @@ public class FixedDeviceGroupingHack {
         return null;
     }
     
-    private void stripFromGroup(StoredDeviceGroup group, YukonDevice device) {
+    private void stripFromGroup(StoredDeviceGroup group, SimpleDevice device) {
         deviceGroupMemberEditorDao.removeDevices(group, Collections.singletonList(device));
         List<StoredDeviceGroup> childGroups = deviceGroupEditorDao.getChildGroups(group);
         for (StoredDeviceGroup group2 : childGroups) {

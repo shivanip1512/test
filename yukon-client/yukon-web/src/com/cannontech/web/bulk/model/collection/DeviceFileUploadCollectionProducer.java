@@ -24,8 +24,8 @@ import com.cannontech.common.bulk.iterator.CsvColumnReaderIterator;
 import com.cannontech.common.bulk.mapper.ObjectMapperFactory;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.bulk.mapper.ObjectMapperFactory.FileMapperEnum;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.util.YukonDeviceToIdMapper;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.MappingIterator;
 import com.cannontech.common.util.ObjectMapper;
@@ -75,13 +75,13 @@ public class DeviceFileUploadCollectionProducer extends DeviceCollectionProducer
 
         InputStream inputStream = dataFile.getInputStream();
         
-        CloseableIterator<YukonDevice> deviceIterator =
+        CloseableIterator<SimpleDevice> deviceIterator =
             getDeviceIterator(inputStream, uploadType);
         
         DeviceCollection groupCollection;
         try {
-            MappingIterator<YukonDevice, Integer> deviceIds =
-                new MappingIterator<YukonDevice, Integer>(deviceIterator,
+            MappingIterator<SimpleDevice, Integer> deviceIds =
+                new MappingIterator<SimpleDevice, Integer>(deviceIterator,
                                                           new YukonDeviceToIdMapper());
             groupCollection = deviceGroupCollectionProducer.createDeviceGroupCollection(deviceIds, originalFilename);
         } catch (ObjectMappingException e) {
@@ -93,7 +93,7 @@ public class DeviceFileUploadCollectionProducer extends DeviceCollectionProducer
         return groupCollection;
     }
 
-    private CloseableIterator<YukonDevice> getDeviceIterator(InputStream inputStream,
+    private CloseableIterator<SimpleDevice> getDeviceIterator(InputStream inputStream,
                                                     final FileMapperEnum uploadType) throws IOException {
         // Create an iterator to iterate through the file line by line
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
@@ -104,10 +104,10 @@ public class DeviceFileUploadCollectionProducer extends DeviceCollectionProducer
             iterator.next();
         }
         
-        ObjectMapper<String, YukonDevice> yukonDeviceMapper =
+        ObjectMapper<String, SimpleDevice> yukonDeviceMapper =
             objectMapperFactory.getFileImportMapper(uploadType);
-        Iterator<YukonDevice> deviceIterator =
-            new MappingIterator<String, YukonDevice>(iterator, yukonDeviceMapper);
+        Iterator<SimpleDevice> deviceIterator =
+            new MappingIterator<String, SimpleDevice>(iterator, yukonDeviceMapper);
         return CloseableIteratorWrapper.getCloseableIterator(deviceIterator);
     }
     

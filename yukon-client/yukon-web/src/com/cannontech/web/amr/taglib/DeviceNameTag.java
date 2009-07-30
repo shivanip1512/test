@@ -9,7 +9,7 @@ import javax.servlet.jsp.JspWriter;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Required;
 
-import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.web.taglib.YukonTagSupport;
@@ -21,7 +21,7 @@ public class DeviceNameTag extends YukonTagSupport {
     private DeviceDao deviceDao; 
     private int deviceId = 0;
     private boolean deviceIdSet = false;
-    private YukonDevice device = null;
+    private SimpleDevice device = null;
     
     @Override
     public void doTag() throws JspException, IOException {
@@ -73,10 +73,10 @@ public class DeviceNameTag extends YukonTagSupport {
         deviceIdSet = true;
         this.deviceId = deviceId;
     }
-    public YukonDevice getDevice() {
+    public SimpleDevice getDevice() {
         return device;
     }
-    public void setDevice(YukonDevice device) {
+    public void setDevice(SimpleDevice device) {
         this.device = device;
     }
     

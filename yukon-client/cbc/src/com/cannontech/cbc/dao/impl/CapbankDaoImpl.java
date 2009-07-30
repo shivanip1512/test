@@ -20,8 +20,8 @@ import com.cannontech.cbc.model.Feeder;
 import com.cannontech.cbc.model.LiteCapControlObject;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.DeviceType;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -146,7 +146,7 @@ public class CapbankDaoImpl implements CapbankDao {
 		
 		SmartMultiDBPersistent smartDB = new SmartMultiDBPersistent();
 		smartDB.addOwnerDBPersistent(device);
-		List<PointBase> points = deviceDefinitionService.createAllPointsForDevice(new YukonDevice(newId, DeviceType.CAPBANK));
+		List<PointBase> points = deviceDefinitionService.createAllPointsForDevice(new SimpleDevice(newId, DeviceType.CAPBANK));
 		smartDB.addAllDBPersistent(points);
 		
 		try {

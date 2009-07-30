@@ -13,13 +13,13 @@ import org.springframework.web.servlet.ModelAndView;
 import com.cannontech.amr.deviceread.dao.MeterReadService;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandResultHolder;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -153,7 +153,7 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
     
     private int getPointId(HttpServletRequest request) throws ServletRequestBindingException {
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
-        YukonDevice device = deviceDao.getYukonDevice(deviceId);
+        SimpleDevice device = deviceDao.getYukonDevice(deviceId);
         LitePoint litePoint = attributeService.getPointForAttribute(device, BuiltInAttribute.DISCONNECT_STATUS);
         int pointId = litePoint.getLiteID();
         return pointId;

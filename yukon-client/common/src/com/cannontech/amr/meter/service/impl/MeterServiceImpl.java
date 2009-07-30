@@ -3,9 +3,9 @@ package com.cannontech.amr.meter.service.impl;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.amr.meter.service.MeterService;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
@@ -19,7 +19,7 @@ public class MeterServiceImpl implements MeterService {
     private DBPersistentDao dbPersistentDao = null;
     private AttributeService attributeService = null;
 
-    public void addDisconnectAddress(YukonDevice device, int disconnectAddress) throws IllegalArgumentException, TransactionException {
+    public void addDisconnectAddress(SimpleDevice device, int disconnectAddress) throws IllegalArgumentException, TransactionException {
         
         // must be 410 type to set disconnect
         if (!DeviceTypesFuncs.isMCT410(device.getType())) {
@@ -43,7 +43,7 @@ public class MeterServiceImpl implements MeterService {
         }
     }
     
-    public void removeDisconnectAddress(YukonDevice device) throws IllegalArgumentException, TransactionException {
+    public void removeDisconnectAddress(SimpleDevice device) throws IllegalArgumentException, TransactionException {
         
         // must be 410 type to remove disconnect
         if (!DeviceTypesFuncs.isMCT410(device.getType())) {

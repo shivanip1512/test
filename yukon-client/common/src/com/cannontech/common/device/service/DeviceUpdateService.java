@@ -2,8 +2,8 @@ package com.cannontech.common.device.service;
 
 import java.util.List;
 
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -17,7 +17,7 @@ public interface DeviceUpdateService {
      * @param newAddress
      * @throws IllegalArgumentException
      */
-    public void changeAddress(YukonDevice device, int newAddress) throws IllegalArgumentException;
+    public void changeAddress(SimpleDevice device, int newAddress) throws IllegalArgumentException;
     
     /**
      * Checks if route name is a valid route (a known route exists with that name), throws
@@ -26,13 +26,13 @@ public interface DeviceUpdateService {
      * @param newAddress
      * @throws IllegalArgumentException
      */
-    public void changeRoute(YukonDevice device, String newRouteName) throws IllegalArgumentException;
+    public void changeRoute(SimpleDevice device, String newRouteName) throws IllegalArgumentException;
     
-    public void changeRoute(YukonDevice device, int newRouteId) throws IllegalArgumentException;
+    public void changeRoute(SimpleDevice device, int newRouteId) throws IllegalArgumentException;
     
-    public void changeMeterNumber(YukonDevice device, String newMeterNumber) throws IllegalArgumentException;
+    public void changeMeterNumber(SimpleDevice device, String newMeterNumber) throws IllegalArgumentException;
     
-    public void routeDiscovery(YukonDevice device, List<Integer> routeIds, LiteYukonUser liteYukonUser);
+    public void routeDiscovery(SimpleDevice device, List<Integer> routeIds, LiteYukonUser liteYukonUser);
     
     /**
      * Method to change a device's type. Note: the returned device must be saved
@@ -49,6 +49,6 @@ public interface DeviceUpdateService {
      * @param currentDevice - Device to change
      * @param newDefinition - Definition of type to change to
      */
-    public YukonDevice changeDeviceType(YukonDevice currentDevice,
+    public SimpleDevice changeDeviceType(SimpleDevice currentDevice,
             DeviceDefinition newDefinition);
 }

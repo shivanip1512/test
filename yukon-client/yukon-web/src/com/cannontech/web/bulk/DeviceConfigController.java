@@ -28,7 +28,6 @@ import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.mapper.PassThroughMapper;
 import com.cannontech.common.bulk.processor.Processor;
 import com.cannontech.common.bulk.processor.ProcessorFactory;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.commands.GroupCommandResult;
 import com.cannontech.common.device.commands.VerifyConfigCommandResult;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
@@ -38,6 +37,7 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceConfigService;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.util.ResolvableTemplate;
@@ -127,9 +127,9 @@ public class DeviceConfigController extends BulkControllerBase {
             final int configId = ServletRequestUtils.getRequiredIntParameter(request, "configuration"); 
             ConfigurationBase configuration = deviceConfigurationDao.getConfiguration(configId);
 
-            Processor<YukonDevice> processor = processorFactory.createAssignConfigurationToYukonDeviceProcessor(configuration);
+            Processor<SimpleDevice> processor = processorFactory.createAssignConfigurationToYukonDeviceProcessor(configuration);
             
-            ObjectMapper<YukonDevice, YukonDevice> mapper = new PassThroughMapper<YukonDevice>();
+            ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<SimpleDevice>();
             bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, processor, callbackResult);
             
             mav = new ModelAndView("redirect:assignConfigResults");
@@ -182,8 +182,8 @@ public class DeviceConfigController extends BulkControllerBase {
         deviceGroupMemberEditorDao.addDevices(failureGroup, result.getFailureList());
         DeviceCollection successCollection = deviceGroupCollectionHelper.buildDeviceCollection(successGroup);
         DeviceCollection failureCollection = deviceGroupCollectionHelper.buildDeviceCollection(failureGroup);
-        Map<YukonDevice, VerifyResult> resultsMap = result.getVerifyResultsMap();
-        Set<YukonDevice> devices = resultsMap.keySet();
+        Map<SimpleDevice, VerifyResult> resultsMap = result.getVerifyResultsMap();
+        Set<SimpleDevice> devices = resultsMap.keySet();
         model.addAttribute("devices", devices);
         model.addAttribute("resultsMap", resultsMap);
         model.addAttribute("successCollection", successCollection);

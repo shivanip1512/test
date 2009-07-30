@@ -18,10 +18,10 @@ import com.cannontech.common.chart.model.AttributeGraphType;
 import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ChartPeriod;
 import com.cannontech.common.chart.model.GraphType;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.data.lite.LitePoint;
@@ -57,7 +57,7 @@ public class TrendWidget extends WidgetControllerBase {
         
         // DEVICE
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
-        YukonDevice device = deviceDao.getYukonDevice(deviceId);
+        SimpleDevice device = deviceDao.getYukonDevice(deviceId);
 
         // ATTRIBUTE, ATTRIBUTE GRAPH TYPE
         // - if selected attribute does not exist, choose first valid

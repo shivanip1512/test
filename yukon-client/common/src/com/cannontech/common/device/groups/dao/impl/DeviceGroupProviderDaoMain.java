@@ -7,13 +7,13 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Required;
 
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.dao.impl.providers.DeviceGroupProvider;
 import com.cannontech.common.device.groups.dao.impl.providers.StaticDeviceGroupProvider;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.CaseInsensitiveMap;
 import com.cannontech.common.util.SqlFragmentSource;
 
@@ -30,7 +30,7 @@ public class DeviceGroupProviderDaoMain implements DeviceGroupProviderDao {
     private Map<String, DeviceGroup> systemGroupCache = new CaseInsensitiveMap<DeviceGroup>();
 
 
-    public Set<YukonDevice> getChildDevices(DeviceGroup group) {
+    public Set<SimpleDevice> getChildDevices(DeviceGroup group) {
         return getProvider(group).getChildDevices(group);
     }
     
@@ -54,11 +54,11 @@ public class DeviceGroupProviderDaoMain implements DeviceGroupProviderDao {
         return getProvider(group).getDeviceIds(group);
     }
 
-    public Set<YukonDevice> getDevices(DeviceGroup group) {
+    public Set<SimpleDevice> getDevices(DeviceGroup group) {
         return getProvider(group).getDevices(group);
     }
     
-    public void collectDevices(DeviceGroup group, Set<YukonDevice> deviceSet, int maxSize) {
+    public void collectDevices(DeviceGroup group, Set<SimpleDevice> deviceSet, int maxSize) {
         getProvider(group).collectDevices(group, deviceSet, maxSize);
     }
 
@@ -114,12 +114,12 @@ public class DeviceGroupProviderDaoMain implements DeviceGroupProviderDao {
         return getProvider(group).getGroups(group);
     }
     
-    public Set<DeviceGroup> getGroupMembership(YukonDevice device) {
+    public Set<DeviceGroup> getGroupMembership(SimpleDevice device) {
         DeviceGroup rootGroup = getRootGroup();
         return getGroupMembership(rootGroup, device);
     }
     
-    public Set<DeviceGroup> getGroupMembership(DeviceGroup base, YukonDevice device) {
+    public Set<DeviceGroup> getGroupMembership(DeviceGroup base, SimpleDevice device) {
         DeviceGroupProvider provider = getProvider(base);
         Set<DeviceGroup> groups = provider.getGroupMembership(base, device);
         
@@ -140,12 +140,12 @@ public class DeviceGroupProviderDaoMain implements DeviceGroupProviderDao {
         this.staticProvider = staticProvider;
     }
 
-    public boolean isDeviceInGroup(DeviceGroup group, YukonDevice device) {
+    public boolean isDeviceInGroup(DeviceGroup group, SimpleDevice device) {
         return getProvider(group).isDeviceInGroup(group,device);
     }
     
     @Override
-    public boolean isChildDevice(DeviceGroup group, YukonDevice device) {
+    public boolean isChildDevice(DeviceGroup group, SimpleDevice device) {
         return getProvider(group).isChildDevice(group,device);
     }
 

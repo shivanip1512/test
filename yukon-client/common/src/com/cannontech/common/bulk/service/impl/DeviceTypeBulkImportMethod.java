@@ -8,9 +8,9 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.bulk.field.BulkFieldColumnHeader;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
 
@@ -47,9 +47,9 @@ public class DeviceTypeBulkImportMethod extends BulkImportMethodBase {
     }
 
     @Override
-    public YukonDevice initDevice(Map<BulkFieldColumnHeader, String> fields) throws DeviceCreationException {
+    public SimpleDevice initDevice(Map<BulkFieldColumnHeader, String> fields) throws DeviceCreationException {
         
-        YukonDevice device = null;
+        SimpleDevice device = null;
         
         try {
             

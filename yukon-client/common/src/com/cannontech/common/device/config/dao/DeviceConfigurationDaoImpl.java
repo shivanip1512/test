@@ -16,12 +16,12 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.config.model.ConfigurationBase;
 import com.cannontech.common.device.config.model.ConfigurationTemplate;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.DeviceTag;
 import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
@@ -174,7 +174,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         return configuration;
     }
     
-    public ConfigurationBase findConfigurationForDevice(YukonDevice device) {
+    public ConfigurationBase findConfigurationForDevice(SimpleDevice device) {
         String sql = "select * "
             + "from DeviceConfiguration dc "
             + "join DeviceConfigurationDeviceMap dcdm on dc.DeviceConfigurationId = dcdm.DeviceConfigurationId "
@@ -231,21 +231,21 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         dbPersistentDao.processDBChange(dbChange);
     }
 
-    public List<YukonDevice> getAssignedDevices(ConfigurationBase configuration) {
+    public List<SimpleDevice> getAssignedDevices(ConfigurationBase configuration) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT dcdm.DeviceId paobjectid, ypo.type");
         sql.append("FROM DeviceConfigurationDeviceMap dcdm");
         sql.append("JOIN YukonPaobject ypo on ypo.paobjectid = dcdm.DeviceId");
         sql.append("WHERE dcdm.DeviceConfigurationId = ?");
-        List<YukonDevice> deviceList = simpleJdbcTemplate.query(sql.toString(),
+        List<SimpleDevice> deviceList = simpleJdbcTemplate.query(sql.toString(),
                                                                 new YukonDeviceRowMapper(paoGroupsWrapper),
                                                                 configuration.getId());
 
         return deviceList;
     }
 
-    public void assignConfigToDevice(ConfigurationBase configuration, YukonDevice device) throws InvalidDeviceTypeException {
+    public void assignConfigToDevice(ConfigurationBase configuration, SimpleDevice device) throws InvalidDeviceTypeException {
         // Get the device types that the configuration supports
         DeviceTag tag = configuration.getType().getSupportedDeviceTag();
         

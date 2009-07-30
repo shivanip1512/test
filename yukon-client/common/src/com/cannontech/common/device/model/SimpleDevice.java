@@ -1,21 +1,22 @@
-package com.cannontech.common.device;
+package com.cannontech.common.device.model;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.springframework.core.style.ToStringCreator;
 
+import com.cannontech.common.device.DeviceType;
 import com.cannontech.common.pao.YukonPao;
 
-public class YukonDevice extends YukonPao {
-    public YukonDevice(int deviceId, int type) {
+public class SimpleDevice extends YukonPao {
+    public SimpleDevice(int deviceId, int type) {
         this(deviceId, DeviceType.getForId(type));
     }
 
-    public YukonDevice(int deviceId, DeviceType type) {
+    public SimpleDevice(int deviceId, DeviceType type) {
         super(deviceId, type.getDeviceTypeId());
     }
     
-    public YukonDevice() {
+    public SimpleDevice() {
     }
 
     public int getDeviceId() {
@@ -44,13 +45,13 @@ public class YukonDevice extends YukonPao {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof YukonDevice == false) {
+        if (obj instanceof SimpleDevice == false) {
             return false;
         }
         if (this == obj) {
             return true;
         }
-        YukonDevice device = (YukonDevice) obj;
+        SimpleDevice device = (SimpleDevice) obj;
         return new EqualsBuilder().append(getDeviceId(), device.getDeviceId())
                                   .append(getType(), device.getType())
                                   .isEquals();

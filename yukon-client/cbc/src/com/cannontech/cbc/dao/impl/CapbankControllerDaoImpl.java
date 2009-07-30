@@ -16,10 +16,10 @@ import com.cannontech.cbc.model.CapbankController;
 import com.cannontech.cbc.model.LiteCapControlObject;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.DeviceType;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -145,7 +145,7 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 			CTILogger.error("Update of controller information in DeviceCBC table failed for cbc with name: " + capbankController.getName());
 		}
 		if (addPoints) {
-			List<PointBase> points = deviceDefinitionService.createAllPointsForDevice(new YukonDevice(controller.getPAObjectID(), PAOGroups.getDeviceType(controller.getPAOType())));
+			List<PointBase> points = deviceDefinitionService.createAllPointsForDevice(new SimpleDevice(controller.getPAObjectID(), PAOGroups.getDeviceType(controller.getPAOType())));
 			MultiDBPersistent pointMulti = new MultiDBPersistent();
 	        pointMulti.getDBPersistentVector().addAll(points);
 			try {
@@ -460,7 +460,7 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
     }
 	
 	@Override
-	public void changeSerialNumber(YukonDevice device, int newSerialNumber) {
+	public void changeSerialNumber(SimpleDevice device, int newSerialNumber) {
 		String sql = "UPDATE DeviceCBC SET SERIALNUMBER = ? WHERE DEVICEID = ?";
 		
 		simpleJdbcTemplate.update(sql,newSerialNumber,device.getDeviceId());

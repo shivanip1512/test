@@ -9,7 +9,7 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import com.cannontech.common.device.DeviceType;
-import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.dao.DeviceDao;
@@ -26,7 +26,7 @@ import com.cannontech.database.db.pao.YukonPAObject;
 public class ObjectMapperFactoryImplTest extends TestCase {
 
     private ObjectMapperFactoryImpl mapper = null;
-    private YukonDevice testDevice = new YukonDevice(1, DeviceType.MCT310);
+    private SimpleDevice testDevice = new SimpleDevice(1, DeviceType.MCT310);
     private PaoDaoAdapter paoDaoAdapter;
     private DeviceDaoAdapter deviceDaoAdapter;
 
@@ -123,17 +123,17 @@ public class ObjectMapperFactoryImplTest extends TestCase {
 
         deviceDaoAdapter = new DeviceDaoAdapter() {
             @Override
-            public YukonDevice getYukonDevice(LiteYukonPAObject yukonPAObject) {
-                return new YukonDevice(yukonPAObject.getLiteID(),
+            public SimpleDevice getYukonDevice(LiteYukonPAObject yukonPAObject) {
+                return new SimpleDevice(yukonPAObject.getLiteID(),
                                        yukonPAObject.getType());
             }
 
             @Override
-            public YukonDevice getYukonDevice(int paoId) {
+            public SimpleDevice getYukonDevice(int paoId) {
 
                 switch (paoId) {
                 case 1:
-                    return new YukonDevice(1, DeviceType.MCT310);
+                    return new SimpleDevice(1, DeviceType.MCT310);
                 default:
                     throw new NotFoundException(paoId + " is not supported");
                 }
@@ -145,7 +145,7 @@ public class ObjectMapperFactoryImplTest extends TestCase {
 
     public void testCreateBulkImporterToYukonDeviceMapper() throws Exception {
 
-        ObjectMapper<String, YukonDevice> testMapper;
+        ObjectMapper<String, SimpleDevice> testMapper;
         {
             BulkImporterToYukonDeviceMapper origMapper = new BulkImporterToYukonDeviceMapper();
             origMapper.setDeviceDao(deviceDaoAdapter);
@@ -160,7 +160,7 @@ public class ObjectMapperFactoryImplTest extends TestCase {
             // expected exception
         }
 
-        YukonDevice device = testMapper.map("1");
+        SimpleDevice device = testMapper.map("1");
         assertEquals("Mapped device is not as expected", testDevice, device);
 
         device = testMapper.map("1,2,0");
@@ -341,7 +341,7 @@ public class ObjectMapperFactoryImplTest extends TestCase {
     private class DeviceDaoAdapter implements DeviceDao {
 
         @Override
-		public YukonDevice findYukonDeviceObjectByName(String name) {
+		public SimpleDevice findYukonDeviceObjectByName(String name) {
         	throw new UnsupportedOperationException("Method not implemented");
 		}
 
@@ -389,64 +389,64 @@ public class ObjectMapperFactoryImplTest extends TestCase {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
-        public YukonDevice getYukonDevice(int paoId) {
+        public SimpleDevice getYukonDevice(int paoId) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
-        public YukonDevice getYukonDevice(LiteYukonPAObject yukonPAObject) {
+        public SimpleDevice getYukonDevice(LiteYukonPAObject yukonPAObject) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
-        public void disableDevice(YukonDevice device) {
+        public void disableDevice(SimpleDevice device) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
-        public void enableDevice(YukonDevice device) {
-            throw new UnsupportedOperationException("Method not implemented");
-        }
-
-        @Override
-        public void removeDevice(YukonDevice device) {
+        public void enableDevice(SimpleDevice device) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
         @Override
-        public void changeAddress(YukonDevice device, int newAddress) {
+        public void removeDevice(SimpleDevice device) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
         @Override
-        public void changeMeterNumber(YukonDevice device, String newMeterNumber) {
+        public void changeAddress(SimpleDevice device, int newAddress) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
         @Override
-        public void changeName(YukonDevice device, String newName) {
+        public void changeMeterNumber(SimpleDevice device, String newMeterNumber) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
         @Override
-        public void changeRoute(YukonDevice device, int newRouteId) {
+        public void changeName(SimpleDevice device, String newName) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
         @Override
-        public YukonDevice getYukonDeviceObjectByAddress(Long address) {
+        public void changeRoute(SimpleDevice device, int newRouteId) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
         @Override
-        public YukonDevice getYukonDeviceObjectById(int deviceId) {
+        public SimpleDevice getYukonDeviceObjectByAddress(Long address) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
         @Override
-        public YukonDevice getYukonDeviceObjectByMeterNumber(String meterNumber) {
+        public SimpleDevice getYukonDeviceObjectById(int deviceId) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
         @Override
-        public YukonDevice getYukonDeviceObjectByName(String name) {
+        public SimpleDevice getYukonDeviceObjectByMeterNumber(String meterNumber) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+
+        @Override
+        public SimpleDevice getYukonDeviceObjectByName(String name) {
             throw new UnsupportedOperationException("Method not implemented");
         }
         
@@ -456,12 +456,12 @@ public class ObjectMapperFactoryImplTest extends TestCase {
         }
         
         @Override
-        public String getFormattedName(YukonDevice device) {
+        public String getFormattedName(SimpleDevice device) {
             throw new UnsupportedOperationException("Method not implemented");
         }
         
         @Override
-        public YukonDevice getYukonDeviceForDevice(DeviceBase oldDevice) {
+        public SimpleDevice getYukonDeviceForDevice(DeviceBase oldDevice) {
         	throw new UnsupportedOperationException("Method not implemented");
         }
 

@@ -13,12 +13,12 @@ import javax.swing.SwingUtilities;
 
 import org.springframework.dao.DataAccessException;
 
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.PointTemplate;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.MessageEvent;
 import com.cannontech.core.dao.DBPersistentDao;
@@ -71,7 +71,7 @@ public final class DatabaseEditorUtil {
                 if (checkBox == null || textField == null) return;
                 
                 final YukonPAObject paoObject = (YukonPAObject) object;
-                YukonDevice device = deviceDao.getYukonDevice(paoObject.getPAObjectID());
+                SimpleDevice device = deviceDao.getYukonDevice(paoObject.getPAObjectID());
                 
                 if (checkBox.isSelected()) {
                     
@@ -114,7 +114,7 @@ public final class DatabaseEditorUtil {
         });
     }
     
-    public static DBPersistent getDisconnectStatusPointForDevice(final YukonDevice device) {
+    public static DBPersistent getDisconnectStatusPointForDevice(final SimpleDevice device) {
         final Attribute att = BuiltInAttribute.DISCONNECT_STATUS;
         AttributeService attributeService = YukonSpringHook.getBean(AttributeService.class);
         LitePoint litePoint = attributeService.getPointForAttribute(device, att);

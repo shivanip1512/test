@@ -1,8 +1,8 @@
 package com.cannontech.common.bulk.callbackResult;
 
-import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.model.SimpleDevice;
 
-public abstract class BackgroundProcessBulkProcessorCallback<I> extends CollectingBulkProcessorCallback<I, YukonDevice> {
+public abstract class BackgroundProcessBulkProcessorCallback<I> extends CollectingBulkProcessorCallback<I, SimpleDevice> {
 
 	protected BackgroundProcessTypeEnum backgroundProcessType;
 	protected String resultsId = "";

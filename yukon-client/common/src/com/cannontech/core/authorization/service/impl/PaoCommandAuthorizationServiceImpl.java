@@ -1,6 +1,6 @@
 package com.cannontech.core.authorization.service.impl;
 
-import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.authorization.support.AuthorizationService;
@@ -31,12 +31,12 @@ public class PaoCommandAuthorizationServiceImpl implements PaoCommandAuthorizati
 		this.paoDao = paoDao;
 	}
     
-    public boolean isAuthorized(LiteYukonUser user, String command, YukonDevice device) {
+    public boolean isAuthorized(LiteYukonUser user, String command, SimpleDevice device) {
     	LiteYukonPAObject pao = paoDao.getLiteYukonPAO(device.getDeviceId());
     	return isAuthorized(user, command, pao);
     }
 
-    public void verifyAuthorized(LiteYukonUser user, String command, YukonDevice device) throws PaoAuthorizationException {
+    public void verifyAuthorized(LiteYukonUser user, String command, SimpleDevice device) throws PaoAuthorizationException {
     	LiteYukonPAObject pao = paoDao.getLiteYukonPAO(device.getDeviceId());
     	verifyAuthorized(user, command, pao);
     }

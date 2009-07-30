@@ -3,11 +3,11 @@ package com.cannontech.common.device.definition.attribute.lookup;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.definition.model.DevicePointTemplate;
 import com.cannontech.common.device.definition.model.DevicePointIdentifier;
 import com.cannontech.common.device.definition.model.PointTemplate;
+import com.cannontech.common.device.model.SimpleDevice;
 
 public class BasicAttributeDefinition extends AttributeDefinition {
 
@@ -24,12 +24,12 @@ public class BasicAttributeDefinition extends AttributeDefinition {
 	
 	
 	@Override
-	public DevicePointIdentifier getPointIdentifier(YukonDevice device) {
+	public DevicePointIdentifier getPointIdentifier(SimpleDevice device) {
 	    return new DevicePointIdentifier(device, pointTemplate.getPointIdentifier());
 	}
 	
 	@Override
-	public DevicePointTemplate getPointTemplate(YukonDevice device) {
+	public DevicePointTemplate getPointTemplate(SimpleDevice device) {
 	    return new DevicePointTemplate(device, pointTemplate);
 	}
 	

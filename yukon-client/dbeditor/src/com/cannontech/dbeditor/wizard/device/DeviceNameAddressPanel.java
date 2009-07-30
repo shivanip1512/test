@@ -10,8 +10,8 @@ import javax.swing.JOptionPane;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.gui.unchanging.LongRangeDocument;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.util.CtiUtilities;
@@ -461,7 +461,7 @@ public Object getValue(Object val)
 
             DeviceDefinitionService deviceDefinitionService = (DeviceDefinitionService) YukonSpringHook.getBean("deviceDefinitionService");
             DeviceDao deviceDao = (DeviceDao) YukonSpringHook.getBean("deviceDao");
-            YukonDevice yukonDevice = deviceDao.getYukonDeviceForDevice(deviceBase);
+            SimpleDevice yukonDevice = deviceDao.getYukonDeviceForDevice(deviceBase);
             List<PointBase> defaultPoints = deviceDefinitionService.createDefaultPointsForDevice(yukonDevice);
 
             SmartMultiDBPersistent persistant = new SmartMultiDBPersistent();

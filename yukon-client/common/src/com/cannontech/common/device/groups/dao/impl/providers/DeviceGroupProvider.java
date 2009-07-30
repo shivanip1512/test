@@ -3,8 +3,8 @@ package com.cannontech.common.device.groups.dao.impl.providers;
 import java.util.List;
 import java.util.Set;
 
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.core.dao.NotFoundException;
 
@@ -61,7 +61,7 @@ public interface DeviceGroupProvider {
      * @param group
      * @return - A list of YukonDevices (the order is arbitrary)
      */
-    public Set<YukonDevice> getDevices(DeviceGroup group);
+    public Set<SimpleDevice> getDevices(DeviceGroup group);
     
     /**
      * Adds unique YukonDevices to deviceSet for each device that is a descendant of the given
@@ -72,7 +72,7 @@ public interface DeviceGroupProvider {
      * @param maxSize
      * @return
      */
-    public void collectDevices(DeviceGroup group, Set<YukonDevice> deviceSet, int maxSize);
+    public void collectDevices(DeviceGroup group, Set<SimpleDevice> deviceSet, int maxSize);
     
     /**
      * This method gets a count of all of the devices that are a descendant of the
@@ -162,7 +162,7 @@ public interface DeviceGroupProvider {
      * @param group - The device group that the returned devices must be children of
      * @return - An unmodifiable list of YukonDevices (the order is arbitrary)
      */
-    public Set<YukonDevice> getChildDevices(DeviceGroup group);
+    public Set<SimpleDevice> getChildDevices(DeviceGroup group);
     
     /**
      * Tests if the device is a child of deviceGroup. The following should be true
@@ -174,7 +174,7 @@ public interface DeviceGroupProvider {
      * @param device - The device
      * @return - True if the device is found
      */
-    public boolean isChildDevice(DeviceGroup group, YukonDevice device);
+    public boolean isChildDevice(DeviceGroup group, SimpleDevice device);
 
     /**
      * Returns the DeviceGroup that is a child of base and has a name (not full name)
@@ -206,7 +206,7 @@ public interface DeviceGroupProvider {
      * @param device - The device
      * @return - True if the device is found
      */
-    public boolean isDeviceInGroup(DeviceGroup deviceGroup, YukonDevice device);
+    public boolean isDeviceInGroup(DeviceGroup deviceGroup, SimpleDevice device);
 
     /**
      * Returns a Set of DeviceGroups that are isEqualToOrDescendantOf of base and contain the device.
@@ -217,6 +217,6 @@ public interface DeviceGroupProvider {
      * @param device - The device
      * @return - A Set of groups under base which contain device
      */
-    public Set<DeviceGroup> getGroupMembership(DeviceGroup base, YukonDevice device);
+    public Set<DeviceGroup> getGroupMembership(DeviceGroup base, SimpleDevice device);
 
 }

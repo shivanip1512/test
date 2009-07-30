@@ -13,9 +13,9 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.CollectionRowCallbackHandler;
@@ -65,15 +65,15 @@ public abstract class DeviceGroupProviderSqlBase extends DeviceGroupProviderBase
     }
     
     @Override
-    public Set<YukonDevice> getChildDevices(DeviceGroup group) {
+    public Set<SimpleDevice> getChildDevices(DeviceGroup group) {
         
-        Set<YukonDevice> deviceSet = new HashSet<YukonDevice>();
+        Set<SimpleDevice> deviceSet = new HashSet<SimpleDevice>();
         collectChildDevices(group, deviceSet, Integer.MAX_VALUE);
         return deviceSet;
     }
     
     @Override
-    public void collectChildDevices(DeviceGroup group, final Set<YukonDevice> deviceSet, final int maxSize) {
+    public void collectChildDevices(DeviceGroup group, final Set<SimpleDevice> deviceSet, final int maxSize) {
         
         if (maxSize < Integer.MAX_VALUE) {
             log.debug("Collecting " + (maxSize - deviceSet.size()) + " child devices from group " + group.getFullName() + ".");
@@ -84,7 +84,7 @@ public abstract class DeviceGroupProviderSqlBase extends DeviceGroupProviderBase
         SqlStatementBuilder sql = new SqlStatementBuilder(deviceSql);
         sql.appendFragment(getChildDeviceGroupSqlWhereClause(group, "ypo.paobjectId"));
         
-        final ParameterizedRowMapper<YukonDevice> mapper = new YukonDeviceRowMapper(paoGroupsWrapper);
+        final ParameterizedRowMapper<SimpleDevice> mapper = new YukonDeviceRowMapper(paoGroupsWrapper);
         
         ResultSetExtractor rse = new ResultSetExtractor() {
 
@@ -93,7 +93,7 @@ public abstract class DeviceGroupProviderSqlBase extends DeviceGroupProviderBase
                 
                 int i = 0;
                 while (deviceSet.size() < maxSize && rs.next()) {
-                    YukonDevice device = mapper.mapRow(rs, i);
+                    SimpleDevice device = mapper.mapRow(rs, i);
                     deviceSet.add(device);
                     i++;
                 }
@@ -106,11 +106,11 @@ public abstract class DeviceGroupProviderSqlBase extends DeviceGroupProviderBase
     }
     
     @Override
-    public Set<YukonDevice> getDevices(DeviceGroup group) {
+    public Set<SimpleDevice> getDevices(DeviceGroup group) {
         SqlStatementBuilder sql = new SqlStatementBuilder(deviceSql);
         sql.appendFragment(getDeviceGroupSqlWhereClause(group, "ypo.paobjectId"));
-        Set<YukonDevice> result = new HashSet<YukonDevice>();
-        CollectionRowCallbackHandler<YukonDevice> rch = new CollectionRowCallbackHandler<YukonDevice>(new YukonDeviceRowMapper(paoGroupsWrapper), result);
+        Set<SimpleDevice> result = new HashSet<SimpleDevice>();
+        CollectionRowCallbackHandler<SimpleDevice> rch = new CollectionRowCallbackHandler<SimpleDevice>(new YukonDeviceRowMapper(paoGroupsWrapper), result);
         simpleJdbcTemplate.getJdbcOperations().query(sql.getSql(), sql.getArguments(), rch);
         return result;
     }

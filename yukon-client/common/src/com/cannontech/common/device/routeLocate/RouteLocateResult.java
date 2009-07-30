@@ -8,9 +8,9 @@ import java.util.Map;
 
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.Completable;
 import com.cannontech.common.util.SimpleCallback;
 
@@ -64,12 +64,12 @@ public class RouteLocateResult implements Completable {
         this.completedDeviceRouteLocations.put(deviceRouteLocation.getId(), deviceRouteLocation);
     }
     
-    public void addDeviceToSuccessGroup(YukonDevice device) {
+    public void addDeviceToSuccessGroup(SimpleDevice device) {
         locatedCount++;
         deviceGroupMemberEditorDao.addDevices(getSuccessGroup(), device);
     }
     
-    public void addDeviceToFailureGroup(YukonDevice device) {
+    public void addDeviceToFailureGroup(SimpleDevice device) {
         notFoundCount++;
         deviceGroupMemberEditorDao.addDevices(getFailureGroup(), device);
     }

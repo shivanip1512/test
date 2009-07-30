@@ -12,9 +12,9 @@ import javax.swing.JTextArea;
 import javax.swing.event.CaretListener;
 import javax.swing.text.JTextComponent;
 
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.service.FixedDeviceGroupingHack;
 import com.cannontech.common.device.groups.service.FixedDeviceGroups;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.util.CtiUtilities;
@@ -888,7 +888,7 @@ public Object getValue(Object val)
 		String billingGroup = (String)getJComboBoxBillingGroup().getSelectedItem();
 	    
 	    LiteYukonPAObject liteYuk = DaoFactory.getPaoDao().getLiteYukonPAO(dmg.getDeviceID());
-	    YukonDevice yukonDevice = DaoFactory.getDeviceDao().getYukonDevice(liteYuk);
+	    SimpleDevice yukonDevice = DaoFactory.getDeviceDao().getYukonDevice(liteYuk);
 	    
 	    billingGroup = hacker.setGroup(FixedDeviceGroups.BILLINGGROUP, yukonDevice, billingGroup);
 	    getJComboBoxBillingGroup().setSelectedItem(billingGroup);
@@ -1170,7 +1170,7 @@ public void setValue(Object val)
 		getMeterNumberTextField().setText( dmg.getMeterNumber() );
 	    
 	    LiteYukonPAObject liteYuk = DaoFactory.getPaoDao().getLiteYukonPAO(dmg.getDeviceID());
-	    YukonDevice yukonDevice = DaoFactory.getDeviceDao().getYukonDevice(liteYuk);
+	    SimpleDevice yukonDevice = DaoFactory.getDeviceDao().getYukonDevice(liteYuk);
 	    String billingGroup = hacker.getGroupForDevice(FixedDeviceGroups.BILLINGGROUP, yukonDevice);
 	    String alternateGroup = hacker.getGroupForDevice(FixedDeviceGroups.TESTCOLLECTIONGROUP, yukonDevice);
 	    String collectionGroup = hacker.getGroupForDevice(FixedDeviceGroups.COLLECTIONGROUP, yukonDevice);

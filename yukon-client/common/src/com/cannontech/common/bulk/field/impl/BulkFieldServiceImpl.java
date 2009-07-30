@@ -18,7 +18,7 @@ import com.cannontech.common.bulk.field.BulkFieldColumnHeader;
 import com.cannontech.common.bulk.field.BulkFieldService;
 import com.cannontech.common.bulk.field.processor.impl.BulkYukonDeviceFieldProcessor;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
-import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.web.input.InputSource;
 
@@ -84,8 +84,8 @@ public class BulkFieldServiceImpl implements BulkFieldService, ApplicationContex
         List<BulkYukonDeviceFieldProcessor> processors =  getBulkFieldProcessors();
         for (BulkYukonDeviceFieldProcessor p : processors) {
             
-            Set<BulkField<?, YukonDevice>> fields = p.getUpdatableFields();
-            for (BulkField<?, YukonDevice> field : fields) {
+            Set<BulkField<?, SimpleDevice>> fields = p.getUpdatableFields();
+            for (BulkField<?, SimpleDevice> field : fields) {
                 BulkFieldColumnHeader updateableField = getColumnHeaderForFieldName(field.getInputSource().getField());
                 updateableHeaders.add(updateableField);
             }

@@ -31,7 +31,6 @@ import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceType;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
@@ -40,6 +39,7 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.DeviceUpdateService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DBPersistentDao;
@@ -770,11 +770,11 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     	List<ErrorObject> errorObjects = new ArrayList<ErrorObject>();    	    	
     	
     	//Convert MeterNumbers to YukonDevices
-    	List<YukonDevice> yukonDevices = new ArrayList<YukonDevice>();
+    	List<SimpleDevice> yukonDevices = new ArrayList<SimpleDevice>();
 		if (meterGroup.getMeterList() != null) {
 	    	for (String meterNumber : meterGroup.getMeterList()) {
 	    		try {
-    				YukonDevice yukonDevice = deviceDao.getYukonDeviceObjectByMeterNumber(meterNumber);
+    				SimpleDevice yukonDevice = deviceDao.getYukonDeviceObjectByMeterNumber(meterNumber);
     				yukonDevices.add(yukonDevice);
     			}catch (EmptyResultDataAccessException e) {
 	    			ErrorObject errorObject = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "addMetersToGroup", mspVendor.getCompanyName());
@@ -794,14 +794,14 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     @Override
     public ErrorObject[] removeMetersFromGroup(String groupName, String[] meterNumbers, MultispeakVendor mspVendor) {
     	List<ErrorObject> errorObjects = new ArrayList<ErrorObject>();    	    	
-    	List<YukonDevice> yukonDevices = new ArrayList<YukonDevice>();
+    	List<SimpleDevice> yukonDevices = new ArrayList<SimpleDevice>();
     	
     	try {
     		StoredDeviceGroup storedGroup = deviceGroupEditorDao.getStoredGroup(groupName, false);
     		if(meterNumbers != null) {
     	    	for (String meterNumber : meterNumbers) {
     	    		try {
-    	    			YukonDevice yukonDevice = deviceDao.getYukonDeviceObjectByMeterNumber(meterNumber);
+    	    			SimpleDevice yukonDevice = deviceDao.getYukonDeviceObjectByMeterNumber(meterNumber);
     	    			yukonDevices.add(yukonDevice);
     	    		}catch (EmptyResultDataAccessException e) {
     	    			ErrorObject errorObject = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "removeMetersFromGroup", mspVendor.getCompanyName());
@@ -853,7 +853,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         String address = mspMeter.getNameplate().getTransponderID().trim();
         
         // CREATE DEVICE - new device is automatically added to template's device groups
-        YukonDevice newDevice = deviceCreationService.createDeviceByTemplate(templatePaoName, paoName, true);
+        SimpleDevice newDevice = deviceCreationService.createDeviceByTemplate(templatePaoName, paoName, true);
         mspObjectDao.logMSPActivity("MeterAddNotification", "DeviceName(" + paoName + ") - Meter created.", mspVendor.getCompanyName());
         
         // UPDATE DEVICE METERNUMBER, ADDRESS
@@ -873,11 +873,11 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     
     private void updateMeterRouteForSubstation(int paoId, MultispeakVendor mspVendor, String substationName, String meterNumber) {
     	
-    	YukonDevice meterDevice = deviceDao.getYukonDevice(paoId);
+    	SimpleDevice meterDevice = deviceDao.getYukonDevice(paoId);
     	updateMeterRouteForSubstation(meterDevice, mspVendor, substationName, meterNumber);
     }
     
-    private void updateMeterRouteForSubstation(YukonDevice meterDevice, MultispeakVendor mspVendor, String substationName, String meterNumber) {
+    private void updateMeterRouteForSubstation(SimpleDevice meterDevice, MultispeakVendor mspVendor, String substationName, String meterNumber) {
     	
     	try {
     		
@@ -972,7 +972,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
      * Adds the Meter to 'newBilling' Billing child group.  If the billing group does not already
      * exist, then a new Billing sub group is created. 
      */
-    private void updateBillingCyle(String newBilling, String meterNumber, YukonDevice meter,
+    private void updateBillingCyle(String newBilling, String meterNumber, SimpleDevice meter,
             String logActionStr, MultispeakVendor mspVendor) {
 
         boolean alreadyInGroup = false;

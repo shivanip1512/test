@@ -12,12 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 
 public class DeviceGroupCollectionHelperImpl implements DeviceGroupCollectionHelper {
@@ -70,24 +70,24 @@ public class DeviceGroupCollectionHelperImpl implements DeviceGroupCollectionHel
                 return paramMap;
             }
 
-            public List<YukonDevice> getDeviceList() {
-                List<YukonDevice> deviceList = new ArrayList<YukonDevice>();
+            public List<SimpleDevice> getDeviceList() {
+                List<SimpleDevice> deviceList = new ArrayList<SimpleDevice>();
 
-                Set<YukonDevice> devices = deviceGroupService.getDevices(Collections.singletonList(group));
+                Set<SimpleDevice> devices = deviceGroupService.getDevices(Collections.singletonList(group));
                 deviceList.addAll(devices);
 
                 return deviceList;
             }
             
             @Override
-            public List<YukonDevice> getDevices(int start, int size) {
+            public List<SimpleDevice> getDevices(int start, int size) {
 
                 // more than we need so we can skip past start devices and retrieve size devices
                 int retrieveCount = start + size;
                 
-                Set<YukonDevice> deviceSet = deviceGroupService.getDevices(Collections.singletonList(group), retrieveCount);
+                Set<SimpleDevice> deviceSet = deviceGroupService.getDevices(Collections.singletonList(group), retrieveCount);
                 
-                List<YukonDevice> deviceList = new ArrayList<YukonDevice>(deviceSet);
+                List<SimpleDevice> deviceList = new ArrayList<SimpleDevice>(deviceSet);
                  
                 return deviceList.subList(start, Math.min(retrieveCount, deviceList.size()));
             }

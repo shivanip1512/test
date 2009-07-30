@@ -11,13 +11,13 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
@@ -49,10 +49,10 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
     private DeviceDefinitionService deviceDefinitionService = null;
     
     @Transactional
-    public YukonDevice createDeviceByTemplate(String templateName, String newDeviceName, boolean copyPoints) {
+    public SimpleDevice createDeviceByTemplate(String templateName, String newDeviceName, boolean copyPoints) {
         
-        YukonDevice newYukonDevice = new YukonDevice();
-        YukonDevice templateYukonDevice = new YukonDevice();
+        SimpleDevice newYukonDevice = new SimpleDevice();
+        SimpleDevice templateYukonDevice = new SimpleDevice();
         
         try {
 
@@ -95,9 +95,9 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
     }
     
     @Transactional
-    public YukonDevice createDeviceByDeviceType(int deviceType, String name, int address, int routeId, boolean createPoints) throws SQLException {
+    public SimpleDevice createDeviceByDeviceType(int deviceType, String name, int address, int routeId, boolean createPoints) throws SQLException {
 
-        YukonDevice yukonDevice = new YukonDevice();
+        SimpleDevice yukonDevice = new SimpleDevice();
 
         try {
             
@@ -146,7 +146,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         
         try {
             
-            YukonDevice templateYukonDevice = deviceDao.getYukonDeviceObjectByName(templateName);
+            SimpleDevice templateYukonDevice = deviceDao.getYukonDeviceObjectByName(templateName);
             int templateDeviceId = templateYukonDevice.getDeviceId();
 
             templateDevice.setDeviceID(templateDeviceId);
@@ -163,7 +163,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         return templateDevice;
     }
     
-    private void addToTemplatesGroups(YukonDevice templateDevice, YukonDevice newDevice) {
+    private void addToTemplatesGroups(SimpleDevice templateDevice, SimpleDevice newDevice) {
         
         StoredDeviceGroup rootGroup = deviceGroupEditorDao.getRootGroup();
         Set<StoredDeviceGroup> templatesGroups = deviceGroupMemberEditorDao.getGroupMembership(rootGroup, templateDevice);

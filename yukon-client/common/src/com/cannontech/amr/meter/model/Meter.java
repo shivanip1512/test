@@ -2,10 +2,10 @@ package com.cannontech.amr.meter.model;
 
 import org.springframework.core.style.ToStringCreator;
 
-import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.model.SimpleDevice;
 
 
-public class Meter extends YukonDevice { // implements Cloneable{
+public class Meter extends SimpleDevice { // implements Cloneable{
     private String name;
     private String typeStr;
     

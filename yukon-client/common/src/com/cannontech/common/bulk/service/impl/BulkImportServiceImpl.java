@@ -19,8 +19,8 @@ import com.cannontech.common.bulk.service.BulkImportFileInfo;
 import com.cannontech.common.bulk.service.BulkImportMethod;
 import com.cannontech.common.bulk.service.BulkImportService;
 import com.cannontech.common.bulk.service.ParsedBulkImportFileInfo;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.creation.DeviceCreationException;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.tools.csv.CSVReader;
 
@@ -100,7 +100,7 @@ public class BulkImportServiceImpl extends BaseBulkService implements BulkImport
         return doStartBulkImport(parsedBulkImportFileInfo, BackgroundProcessTypeEnum.IMPORT, new YukonDeviceResolver() {
             
             @Override
-            public YukonDevice returnDevice(String[] from) {
+            public SimpleDevice returnDevice(String[] from) {
 
                 // DEVICE CREATION
                 final Map<BulkFieldColumnHeader, String> creationFields = new HashMap<BulkFieldColumnHeader, String>();
@@ -120,7 +120,7 @@ public class BulkImportServiceImpl extends BaseBulkService implements BulkImport
                     
                 }
 
-                YukonDevice device = parsedBulkImportFileInfo.getBulkImportMethod().initDevice(creationFields);
+                SimpleDevice device = parsedBulkImportFileInfo.getBulkImportMethod().initDevice(creationFields);
                 return device;
             }
         });

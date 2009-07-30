@@ -1,6 +1,6 @@
 package com.cannontech.common.bulk.mapper;
 
-import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.ObjectMapper;
 
 /**
@@ -42,6 +42,6 @@ public interface ObjectMapperFactory {
      * @param type
      * @return
      */
-    public ObjectMapper<String, YukonDevice> getFileImportMapper(FileMapperEnum type);
+    public ObjectMapper<String, SimpleDevice> getFileImportMapper(FileMapperEnum type);
 
 }

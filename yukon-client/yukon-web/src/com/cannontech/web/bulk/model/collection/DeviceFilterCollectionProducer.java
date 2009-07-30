@@ -22,7 +22,7 @@ import com.cannontech.amr.meter.search.model.OrderBy;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.RangeBasedDeviceCollection;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
-import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
@@ -105,16 +105,16 @@ public class DeviceFilterCollectionProducer extends DeviceCollectionProducerBase
             }
 
             @Override
-            public List<YukonDevice> getDevices(int start, int size) {
+            public List<SimpleDevice> getDevices(int start, int size) {
                 SearchResult<Meter> searchResult = meterSearchDao.search(filterBys, orderBy, start, size);
                 List<Meter> resultList = searchResult.getResultList();
-                ObjectMapper<Meter, YukonDevice> mapper = new ObjectMapper<Meter, YukonDevice>() {
-                    public YukonDevice map(Meter from) throws ObjectMappingException {
-                        YukonDevice yukonDevice = new YukonDevice(from.getDeviceId(), from.getType());
+                ObjectMapper<Meter, SimpleDevice> mapper = new ObjectMapper<Meter, SimpleDevice>() {
+                    public SimpleDevice map(Meter from) throws ObjectMappingException {
+                        SimpleDevice yukonDevice = new SimpleDevice(from.getDeviceId(), from.getType());
                         return yukonDevice;
                     }
                 };
-                List<YukonDevice> result = new MappingList<Meter, YukonDevice>(resultList, mapper);
+                List<SimpleDevice> result = new MappingList<Meter, SimpleDevice>(resultList, mapper);
                 
                 return result;
             }

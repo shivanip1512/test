@@ -6,11 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.analysis.data.group.SimpleReportGroup;
 import com.cannontech.analysis.service.ReportGroupService;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.device.model.SimpleDevice;
 
 public class ReportGroupServiceImpl implements ReportGroupService {
 
@@ -18,7 +18,7 @@ public class ReportGroupServiceImpl implements ReportGroupService {
     private DeviceGroupProviderDao deviceGroupDao;
     
     @Override
-    public SimpleReportGroup getSimpleGroupMembership(DeviceGroup base, YukonDevice device) {
+    public SimpleReportGroup getSimpleGroupMembership(DeviceGroup base, SimpleDevice device) {
 
         SimpleReportGroup simpleReportGroup;
         Set<DeviceGroup> membership = deviceGroupDao.getGroupMembership(base, device);
@@ -31,7 +31,7 @@ public class ReportGroupServiceImpl implements ReportGroupService {
     }
 
     @Override
-    public SimpleReportGroup getSimpleGroupMembership(SystemGroupEnum systemGroupEnum, YukonDevice device) {
+    public SimpleReportGroup getSimpleGroupMembership(SystemGroupEnum systemGroupEnum, SimpleDevice device) {
         DeviceGroup storedDeviceGroup = deviceGroupService.resolveGroupName(systemGroupEnum.getFullPath());
         return getSimpleGroupMembership(storedDeviceGroup, device);
     }

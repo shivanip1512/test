@@ -22,9 +22,9 @@ import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.processor.SingleProcessor;
 import com.cannontech.common.device.DeviceType;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.model.PointTemplate;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.AccumulatorPoint;
@@ -82,9 +82,9 @@ public class AddPointsController extends AddRemovePointsControllerBase {
     	
     	/// make a copy of device list if we'll be doing maskExistingPoints
     	// being able to remove devices from the list as we process each device type will speed up the next iteration building of the devicesOfTypeList
-    	List<YukonDevice> mutableDeviceList = null;
+    	List<SimpleDevice> mutableDeviceList = null;
     	if (maskExistingPoints) {
-    		mutableDeviceList = new ArrayList<YukonDevice>(deviceCollection.getDeviceList());
+    		mutableDeviceList = new ArrayList<SimpleDevice>(deviceCollection.getDeviceList());
     	}
     	
     	Map<Integer, Map<String, List<PointTemplateWrapper>>> pointsMap = new LinkedHashMap<Integer, Map<String, List<PointTemplateWrapper>>>();
@@ -101,8 +101,8 @@ public class AddPointsController extends AddRemovePointsControllerBase {
         		Set<PointTemplateWrapper> maskedPointTemplates = new HashSet<PointTemplateWrapper>();
         		
         		// first pull out all the device from the collection that match this device type
-        		List<YukonDevice> devicesOfTypeList = new ArrayList<YukonDevice>();
-        		for (YukonDevice device : mutableDeviceList) {
+        		List<SimpleDevice> devicesOfTypeList = new ArrayList<SimpleDevice>();
+        		for (SimpleDevice device : mutableDeviceList) {
         			if (device.getType() == deviceType) {
         				devicesOfTypeList.add(device);
         			}
@@ -114,7 +114,7 @@ public class AddPointsController extends AddRemovePointsControllerBase {
         			
         			// check each device of this type and see if it has the point or not
         			boolean allDevicesHavePoint = true;
-        			for (YukonDevice device : devicesOfTypeList) {
+        			for (SimpleDevice device : devicesOfTypeList) {
         				boolean pointExistsForDevice = pointService.pointExistsForDevice(device, pointTemplateWrapper.getPointTemplate().getPointIdentifier());
         				if (!pointExistsForDevice) {
         					allDevicesHavePoint = false;
@@ -176,7 +176,7 @@ public class AddPointsController extends AddRemovePointsControllerBase {
     	
     	// create processor
     	Map<Integer, Set<PointTemplate>> pointTemplatesMap = extractPointTemplatesMapFromParameters(request, deviceCollection, sharedPoints);
-    	SingleProcessor<YukonDevice> addPointsProcessor = getAddPointsProcessor(pointTemplatesMap, updatePoints);
+    	SingleProcessor<SimpleDevice> addPointsProcessor = getAddPointsProcessor(pointTemplatesMap, updatePoints);
     	
     	// start processor
     	String id = startBulkProcessor(deviceCollection, addPointsProcessor, BackgroundProcessTypeEnum.ADD_POINTS);
@@ -187,12 +187,12 @@ public class AddPointsController extends AddRemovePointsControllerBase {
     }
     
     // add points processor
-    private SingleProcessor<YukonDevice> getAddPointsProcessor(final Map<Integer, Set<PointTemplate>> pointTemplatesMap, final boolean updatePoints) {
+    private SingleProcessor<SimpleDevice> getAddPointsProcessor(final Map<Integer, Set<PointTemplate>> pointTemplatesMap, final boolean updatePoints) {
     	
-    	SingleProcessor<YukonDevice> addPointsProcessor = new SingleProcessor<YukonDevice>() {
+    	SingleProcessor<SimpleDevice> addPointsProcessor = new SingleProcessor<SimpleDevice>() {
 
             @Override
-            public void process(YukonDevice device) throws ProcessingException {
+            public void process(SimpleDevice device) throws ProcessingException {
             	
             	int deviceType = device.getType();
             	if (pointTemplatesMap.containsKey(deviceType)) {

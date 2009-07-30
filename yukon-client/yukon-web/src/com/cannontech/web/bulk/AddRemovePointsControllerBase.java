@@ -36,13 +36,13 @@ import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.bulk.mapper.PassThroughMapper;
 import com.cannontech.common.bulk.processor.SingleProcessor;
 import com.cannontech.common.device.DeviceType;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.PointService;
 import com.cannontech.common.util.MappingSet;
 import com.cannontech.common.util.ObjectMapper;
@@ -83,7 +83,7 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
     
     
     // START BULK PROCESSOR
-    public String startBulkProcessor(DeviceCollection deviceCollection, SingleProcessor<YukonDevice> processor, BackgroundProcessTypeEnum backgroundProcessType) throws ServletException, Exception {
+    public String startBulkProcessor(DeviceCollection deviceCollection, SingleProcessor<SimpleDevice> processor, BackgroundProcessTypeEnum backgroundProcessType) throws ServletException, Exception {
         
         // CALLBACK
     	String resultsId = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
@@ -102,7 +102,7 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
         recentResultsCache.addResult(resultsId, callbackResult);
         
         // PROCESS
-        ObjectMapper<YukonDevice, YukonDevice> mapper = new PassThroughMapper<YukonDevice>();
+        ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<SimpleDevice>();
         bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, processor, callbackResult);
         
         return resultsId;
@@ -124,7 +124,7 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
     protected Set<Integer> getDeviceTypesSet(DeviceCollection deviceCollection){
     	
     	Set<Integer> deviceTypeSet = new LinkedHashSet<Integer>();
-        for (YukonDevice device : deviceCollection.getDeviceList()) {
+        for (SimpleDevice device : deviceCollection.getDeviceList()) {
         	deviceTypeSet.add(device.getType());
         }
         return deviceTypeSet;
@@ -152,14 +152,14 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
     
     protected Map<Integer, DeviceCollection> getDeviceTypeDeviceCollectionMap(Set<Integer> deviceTypeSet, DeviceCollection deviceCollection) {
     	
-    	List<YukonDevice> devices = deviceCollection.getDeviceList();
+    	List<SimpleDevice> devices = deviceCollection.getDeviceList();
     	
     	Map<Integer, DeviceCollection> deviceTypeDeviceCollectionMap = new LinkedHashMap<Integer, DeviceCollection>();
         for (int deviceType : deviceTypeSet) {
         	
-        	List<YukonDevice> devicesOfType = new ArrayList<YukonDevice>();
+        	List<SimpleDevice> devicesOfType = new ArrayList<SimpleDevice>();
         	StoredDeviceGroup typeGroup = temporaryDeviceGroupService.createTempGroup(null);
-        	for (YukonDevice device : devices) {
+        	for (SimpleDevice device : devices) {
         		
         		if (device.getType() == deviceType) {
         			devicesOfType.add(device);
@@ -263,7 +263,7 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
         			if (commonPoints && deviceType == 0) {
         				
         				Set<Integer> allDeviceTypesSet = new HashSet<Integer>();
-        				for (YukonDevice device : deviceCollection.getDeviceList()) {
+        				for (SimpleDevice device : deviceCollection.getDeviceList()) {
         					allDeviceTypesSet.add(device.getType());
         				}
         				checkedDeviceTypes.addAll(allDeviceTypesSet);

@@ -2,8 +2,8 @@ package com.cannontech.core.dao;
 
 import java.util.List;
 
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -20,11 +20,11 @@ public interface DeviceDao {
      */
     public LiteYukonPAObject getLiteDevice(final int deviceID);
 
-    public YukonDevice getYukonDevice(int paoId);
-    public YukonDevice getYukonDevice(LiteYukonPAObject yukonPAObject);
+    public SimpleDevice getYukonDevice(int paoId);
+    public SimpleDevice getYukonDevice(LiteYukonPAObject yukonPAObject);
     
-    public YukonDevice getYukonDeviceObjectById(int deviceId);
-    public YukonDevice getYukonDeviceObjectByName(String name);
+    public SimpleDevice getYukonDeviceObjectById(int deviceId);
+    public SimpleDevice getYukonDeviceObjectByName(String name);
     
     /**
      * Search for Yukon device by name.
@@ -32,9 +32,9 @@ public interface DeviceDao {
      * @param name
      * @return
      */
-    public YukonDevice findYukonDeviceObjectByName(String name);
-    public YukonDevice getYukonDeviceObjectByMeterNumber(String meterNumber);
-    public YukonDevice getYukonDeviceObjectByAddress(Long address);
+    public SimpleDevice findYukonDeviceObjectByName(String name);
+    public SimpleDevice getYukonDeviceObjectByMeterNumber(String meterNumber);
+    public SimpleDevice getYukonDeviceObjectByAddress(Long address);
     
     public LiteDeviceMeterNumber getLiteDeviceMeterNumber(int deviceID);
     
@@ -98,19 +98,19 @@ public interface DeviceDao {
      * Method used to enable a device
      * @param device - Device to enable
      */
-    public void enableDevice(YukonDevice device);
+    public void enableDevice(SimpleDevice device);
 
     /**
      * Method used to disable a device
      * @param device - Device to disable
      */
-    public void disableDevice(YukonDevice device);
+    public void disableDevice(SimpleDevice device);
     
     /**
      * Method to remove a device
      * @param device - Device to remove
      */
-    public void removeDevice(YukonDevice device);
+    public void removeDevice(SimpleDevice device);
     
     /**
      * Method to change the route of a given device based on a route id
@@ -118,14 +118,14 @@ public interface DeviceDao {
      * name and checks if it is valid, then delegates here for update.
      * @param newRouteId
      */
-    public void changeRoute(YukonDevice device, int newRouteId);
+    public void changeRoute(SimpleDevice device, int newRouteId);
     
     /**
      * Method to change the pao name of a given device
      * @param device
      * @param newName
      */
-    public void changeName(YukonDevice device, String newName);
+    public void changeName(SimpleDevice device, String newName);
     
     /**
      * Method to change the devicecarriersettings address for givin device
@@ -134,14 +134,14 @@ public interface DeviceDao {
      * @param deviceId
      * @param newAddress
      */
-    public void changeAddress(YukonDevice device, int newAddress);
+    public void changeAddress(SimpleDevice device, int newAddress);
     
     /**
      * Method to change the meter number of givin device
      * @param deviceId
      * @param newMeterNumber
      */
-    public void changeMeterNumber(YukonDevice device, String newMeterNumber);
+    public void changeMeterNumber(SimpleDevice device, String newMeterNumber);
     
     /**
      * Method to get the name of a device. If device is a Meter, meterDao
@@ -149,7 +149,7 @@ public interface DeviceDao {
      * @param device
      * @return
      */
-    public String getFormattedName(YukonDevice device);
+    public String getFormattedName(SimpleDevice device);
     
     /**
      * Method to get the name of a device. If device is a Meter, meterDao
@@ -159,5 +159,5 @@ public interface DeviceDao {
      */
     public String getFormattedName(int deviceId);
     
-    public YukonDevice getYukonDeviceForDevice(DeviceBase oldDevice);
+    public SimpleDevice getYukonDeviceForDevice(DeviceBase oldDevice);
 }

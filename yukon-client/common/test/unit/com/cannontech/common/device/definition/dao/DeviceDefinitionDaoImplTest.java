@@ -13,7 +13,6 @@ import junit.framework.TestCase;
 import org.springframework.core.io.UrlResource;
 
 import com.cannontech.common.device.DeviceType;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.definition.attribute.lookup.AttributeDefinition;
@@ -23,6 +22,7 @@ import com.cannontech.common.device.definition.model.DeviceDefinitionImpl;
 import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.device.definition.model.DevicePointTemplate;
 import com.cannontech.common.device.definition.model.PointTemplate;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.data.lite.LiteState;
@@ -38,7 +38,7 @@ import com.google.common.collect.ImmutableSet.Builder;
 public class DeviceDefinitionDaoImplTest extends TestCase {
 
     private DeviceDefinitionDao dao = null;
-    private YukonDevice device = null;
+    private SimpleDevice device = null;
 
     public static DeviceDefinitionDao getTestDeviceDefinitionDao() throws Exception {
 
@@ -64,7 +64,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
 
         dao = DeviceDefinitionDaoImplTest.getTestDeviceDefinitionDao();
 
-        device = new YukonDevice(10, 1019);
+        device = new SimpleDevice(10, 1019);
         device.setType(1019);
     }
     

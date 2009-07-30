@@ -12,11 +12,11 @@ import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandRequestRouteAndDevice;
 import com.cannontech.common.device.commands.CommandRequestRouteAndDeviceExecutor;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.dao.PaoDao;
@@ -36,7 +36,7 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
     private static int NEXT_ATTEMPT_WAIT = 5;
     private Logger log = YukonLogManager.getLogger(RouteDiscoveryServiceImpl.class);
     
-    public void routeDiscovery(YukonDevice device, List<Integer> routeIds, SimpleCallback<Integer> routeFoundCallback, LiteYukonUser user) {
+    public void routeDiscovery(SimpleDevice device, List<Integer> routeIds, SimpleCallback<Integer> routeFoundCallback, LiteYukonUser user) {
         
         // init state for first route
         RouteDiscoveryState state = new RouteDiscoveryState();
@@ -48,7 +48,7 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
         doNextDiscoveryRequest(device, state);
     }
     
-    private void doNextDiscoveryRequest(final YukonDevice device, final RouteDiscoveryState state) {
+    private void doNextDiscoveryRequest(final SimpleDevice device, final RouteDiscoveryState state) {
 
         final String deviceLogStr = " DEVICE: " + paoDao.getYukonPAOName(device.getDeviceId()) + "' (" + device.getDeviceId() + ")";
         

@@ -17,10 +17,10 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.SimpleSqlFragment;
 import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -80,11 +80,11 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
         }        
     }
 
-    public Set<YukonDevice> getDevices(Collection<? extends DeviceGroup> groups) {
+    public Set<SimpleDevice> getDevices(Collection<? extends DeviceGroup> groups) {
         return getDevices(groups, Integer.MAX_VALUE);
     }
     
-    public Set<YukonDevice> getDevices(Collection<? extends DeviceGroup> groups, int maxSize) {
+    public Set<SimpleDevice> getDevices(Collection<? extends DeviceGroup> groups, int maxSize) {
         
         if (groups.isEmpty()) {
             return Collections.emptySet();
@@ -92,7 +92,7 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
         } else {
             
             groups = removeDuplicates(groups); // doesn't touch passed in collection
-            Set<YukonDevice> deviceSet = new LinkedHashSet<YukonDevice>();
+            Set<SimpleDevice> deviceSet = new LinkedHashSet<SimpleDevice>();
             for (DeviceGroup group: groups) {
 
                 deviceGroupDao.collectDevices(group, deviceSet, maxSize);

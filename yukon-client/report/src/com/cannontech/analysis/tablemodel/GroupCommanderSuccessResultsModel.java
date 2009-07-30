@@ -9,9 +9,9 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.commands.GroupCommandExecutor;
 import com.cannontech.common.device.commands.GroupCommandResult;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.PointValueHolder;
@@ -53,11 +53,11 @@ public class GroupCommanderSuccessResultsModel extends BareReportModelBase<Group
         this.command = result.getCommand();
         
         // success devices
-        Set<YukonDevice> devices = result.getResultHolder().getSuccessfulDevices();
-        Map<YukonDevice, String> resultStringsMap = result.getResultHolder().getResultStrings();
-        Map<YukonDevice, List<PointValueHolder>> pointValuesMap = result.getResultHolder().getValues();
+        Set<SimpleDevice> devices = result.getResultHolder().getSuccessfulDevices();
+        Map<SimpleDevice, String> resultStringsMap = result.getResultHolder().getResultStrings();
+        Map<SimpleDevice, List<PointValueHolder>> pointValuesMap = result.getResultHolder().getValues();
         
-        for (YukonDevice device : devices) {
+        for (SimpleDevice device : devices) {
             
             // device name
             LiteYukonPAObject paoObject = paoDao.getLiteYukonPAO(device.getDeviceId());

@@ -11,11 +11,11 @@ import java.util.List;
 import java.util.Set;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.Transaction;
@@ -148,7 +148,7 @@ public class MissListConverterServiceImpl implements MissListConverterService {
 			}
 			tempData.setTemplateName(liteYukonPAObject.getPaoName());
 
-            YukonDevice yukonDevice = deviceDao.getYukonDevice(liteYukonPAObject);
+            SimpleDevice yukonDevice = deviceDao.getYukonDevice(liteYukonPAObject);
             StoredDeviceGroup base = (StoredDeviceGroup)deviceGroupDao.getRootGroup();
             Set<StoredDeviceGroup> deviceGroups = deviceGroupMemberEditorDao.getGroupMembership(base, yukonDevice);
             

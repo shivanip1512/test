@@ -5,12 +5,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.model.SimpleDevice;
 
 public interface DeviceGroupMemberEditorDao {
-    public List<YukonDevice> getChildDevices(StoredDeviceGroup group);
+    public List<SimpleDevice> getChildDevices(StoredDeviceGroup group);
 
     /**
      * This returns only the StoredDeviceGroups which are a direct child of base and
@@ -21,7 +21,7 @@ public interface DeviceGroupMemberEditorDao {
      * @return
      */
     @Deprecated
-    public Set<StoredDeviceGroup> getGroups(StoredDeviceGroup base, YukonDevice device);
+    public Set<StoredDeviceGroup> getGroups(StoredDeviceGroup base, SimpleDevice device);
     
     /**
      * This is an improved version of getGroups. It returns all groups which are a descendant
@@ -30,21 +30,21 @@ public interface DeviceGroupMemberEditorDao {
      * @param device
      * @return
      */
-    public Set<StoredDeviceGroup> getGroupMembership(StoredDeviceGroup base, YukonDevice device);
+    public Set<StoredDeviceGroup> getGroupMembership(StoredDeviceGroup base, SimpleDevice device);
 
     /**
      * Method to add a list of devices to a group (quietly ignores duplicates)
      * @param group - Group to add devices to
      * @param devices - Devices to add
      */
-    public void addDevices(StoredDeviceGroup group, YukonDevice... device);
+    public void addDevices(StoredDeviceGroup group, SimpleDevice... device);
     
     /**
      * Extracts the deviceId for each device and delegates to addDevicesById.
      * @param group
      * @param devices
      */
-    public void addDevices(StoredDeviceGroup group, Collection<? extends YukonDevice> devices);
+    public void addDevices(StoredDeviceGroup group, Collection<? extends SimpleDevice> devices);
     
     /**
      * Add devices to the group by device id (yukon pao id). This is currently
@@ -63,7 +63,7 @@ public interface DeviceGroupMemberEditorDao {
      * @param group
      * @param device
      */
-    public void removeDevices(StoredDeviceGroup group, YukonDevice... device);
+    public void removeDevices(StoredDeviceGroup group, SimpleDevice... device);
     
     /**
      * Remove devices from the given group by device id (yukon pao id). Devices that 
@@ -80,7 +80,7 @@ public interface DeviceGroupMemberEditorDao {
      * @param group
      * @param devices
      */
-    public void removeDevices(StoredDeviceGroup group, Collection<? extends YukonDevice> devices);
+    public void removeDevices(StoredDeviceGroup group, Collection<? extends SimpleDevice> devices);
 
     /**
      * Determines if device is a direct child of group.
@@ -88,6 +88,6 @@ public interface DeviceGroupMemberEditorDao {
      * @param device
      * @return
      */
-    public boolean isChildDevice(StoredDeviceGroup group, YukonDevice device);
+    public boolean isChildDevice(StoredDeviceGroup group, SimpleDevice device);
 
 }

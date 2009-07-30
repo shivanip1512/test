@@ -7,15 +7,15 @@ import java.util.List;
 import com.cannontech.common.bulk.field.BulkField;
 import com.cannontech.common.bulk.field.BulkFieldColumnHeader;
 import com.cannontech.common.bulk.field.BulkFieldFactory;
-import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.model.SimpleDevice;
 
 public class BulkYukonDeviceFieldFactory implements BulkFieldFactory {
 
-    private List<BulkField<?, YukonDevice>> bulkFields = Collections.emptyList();
+    private List<BulkField<?, SimpleDevice>> bulkFields = Collections.emptyList();
     
-    public BulkField<?, YukonDevice> getBulkField(String fieldName) {
+    public BulkField<?, SimpleDevice> getBulkField(String fieldName) {
         
-        for (BulkField<?, YukonDevice> bulkField : getBulkFields()) {
+        for (BulkField<?, SimpleDevice> bulkField : getBulkFields()) {
             if (bulkField.getInputSource().getField().equals(fieldName)) {
                 return bulkField;
             }
@@ -25,19 +25,19 @@ public class BulkYukonDeviceFieldFactory implements BulkFieldFactory {
     }
     
     
-    public List<BulkField<?, YukonDevice>> getBulkFields() {
+    public List<BulkField<?, SimpleDevice>> getBulkFields() {
         return bulkFields;
     }
     
-    public void setBulkFields(List<BulkField<?, YukonDevice>> bulkFields) {
+    public void setBulkFields(List<BulkField<?, SimpleDevice>> bulkFields) {
         this.bulkFields = bulkFields;
     }
     
-    public List<BulkField<?, YukonDevice>> getBulkFieldsForBulkColumnHeaders(List<BulkFieldColumnHeader> columnHeaders) {
+    public List<BulkField<?, SimpleDevice>> getBulkFieldsForBulkColumnHeaders(List<BulkFieldColumnHeader> columnHeaders) {
         
-        final List<BulkField<?, YukonDevice>> bulkFieldList = new ArrayList<BulkField<?, YukonDevice>>();
+        final List<BulkField<?, SimpleDevice>> bulkFieldList = new ArrayList<BulkField<?, SimpleDevice>>();
         for (BulkFieldColumnHeader bulkFieldColumnHeader : columnHeaders) {
-            BulkField<?, YukonDevice> bulkField = this.getBulkField(bulkFieldColumnHeader.getFieldName());
+            BulkField<?, SimpleDevice> bulkField = this.getBulkField(bulkFieldColumnHeader.getFieldName());
             bulkFieldList.add(bulkField);
         }
         

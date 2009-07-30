@@ -5,7 +5,7 @@ import org.springframework.dao.DataAccessException;
 
 import com.cannontech.common.bulk.field.impl.YukonDeviceDto;
 import com.cannontech.common.bulk.processor.ProcessingException;
-import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.DeviceUpdateService;
 
 
@@ -14,7 +14,7 @@ public class AddressBulkFieldProcessor extends BulkYukonDeviceFieldProcessor {
     private DeviceUpdateService deviceUpdateService;
     
     @Override
-    public void updateField(YukonDevice device, YukonDeviceDto value) throws ProcessingException  {
+    public void updateField(SimpleDevice device, YukonDeviceDto value) throws ProcessingException  {
 
         try {
             deviceUpdateService.changeAddress(device, value.getAddress());

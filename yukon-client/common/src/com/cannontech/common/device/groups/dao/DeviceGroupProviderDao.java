@@ -3,9 +3,9 @@ package com.cannontech.common.device.groups.dao;
 import java.util.List;
 import java.util.Set;
 
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.dao.impl.providers.DeviceGroupProvider;
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.model.SimpleDevice;
 
 /**
  * This interface inherits most of its methods from the DeviceGroupProvider.
@@ -35,5 +35,5 @@ public interface DeviceGroupProviderDao extends DeviceGroupProvider {
      * @param device - the device which must be a child of each returned group
      * @return - all groups which have the device as a child
      */
-    public Set<DeviceGroup> getGroupMembership(YukonDevice device);
+    public Set<DeviceGroup> getGroupMembership(SimpleDevice device);
 }

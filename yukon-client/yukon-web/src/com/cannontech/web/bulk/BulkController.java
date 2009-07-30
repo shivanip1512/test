@@ -29,7 +29,7 @@ import com.cannontech.common.bulk.callbackResult.BackgroundProcessTypeEnum;
 import com.cannontech.common.bulk.callbackResult.ImportUpdateCallbackResult;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
-import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
@@ -150,7 +150,7 @@ public class BulkController extends BulkControllerBase {
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
         
         List<Map<String, Object>> deviceInfoList = new ArrayList<Map<String, Object>>();
-        for (YukonDevice device : deviceCollection.getDevices(0, MAX_SELECTED_DEVICES_DISPLAYED)) {
+        for (SimpleDevice device : deviceCollection.getDevices(0, MAX_SELECTED_DEVICES_DISPLAYED)) {
             
             Map<String, Object> deviceInfo = new LinkedHashMap<String, Object>();
             
@@ -183,7 +183,7 @@ public class BulkController extends BulkControllerBase {
         mav.addObject("columnInfo", columnInfo);
         
         List<Meter> meterList = new ArrayList<Meter>();
-        for (YukonDevice device : deviceCollection.getDeviceList()) {
+        for (SimpleDevice device : deviceCollection.getDeviceList()) {
             Meter meter = meterDao.getForId(device.getDeviceId());
             meterList.add(meter);
         }
@@ -200,7 +200,7 @@ public class BulkController extends BulkControllerBase {
         List<ColumnInfo> columnInfo = getDeviceCollectionReportColumnInfo(userContext);
         
         List<List<String>> data = new ArrayList<List<String>>();
-        for (YukonDevice device : deviceCollection.getDeviceList()) {
+        for (SimpleDevice device : deviceCollection.getDeviceList()) {
 
             Meter meter = meterDao.getForId(device.getDeviceId());
             

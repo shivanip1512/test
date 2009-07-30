@@ -8,9 +8,9 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Required;
 
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.MappingSet;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.SqlFragmentCollection;
@@ -32,18 +32,18 @@ public abstract class DeviceGroupProviderBase implements DeviceGroupProvider {
     
     private DeviceGroupProviderDao mainDelegator;
     
-    public abstract Set<YukonDevice> getChildDevices(DeviceGroup group);
+    public abstract Set<SimpleDevice> getChildDevices(DeviceGroup group);
     
-    public abstract void collectChildDevices(DeviceGroup group, Set<YukonDevice> deviceSet, int MaxSize);
+    public abstract void collectChildDevices(DeviceGroup group, Set<SimpleDevice> deviceSet, int MaxSize);
     
     public abstract SqlFragmentSource getChildDeviceGroupSqlWhereClause(DeviceGroup group, String identifier);
 
     public abstract List<DeviceGroup> getChildGroups(DeviceGroup group);
     
-    public abstract boolean isChildDevice(DeviceGroup group, YukonDevice device);
+    public abstract boolean isChildDevice(DeviceGroup group, SimpleDevice device);
     
     public Set<DeviceGroup> getGroupMembership(DeviceGroup base,
-            YukonDevice device) {
+            SimpleDevice device) {
         Set<DeviceGroup> result = new HashSet<DeviceGroup>();
         
         // is device a direct child of base
@@ -92,23 +92,23 @@ public abstract class DeviceGroupProviderBase implements DeviceGroupProvider {
     }
 
     public Set<Integer> getDeviceIds(DeviceGroup group) {
-        Set<YukonDevice> devices = getDevices(group);
-        Set<Integer> idList = new MappingSet<YukonDevice, Integer>(devices, new ObjectMapper<YukonDevice, Integer>() {
-            public Integer map(YukonDevice from) {
+        Set<SimpleDevice> devices = getDevices(group);
+        Set<Integer> idList = new MappingSet<SimpleDevice, Integer>(devices, new ObjectMapper<SimpleDevice, Integer>() {
+            public Integer map(SimpleDevice from) {
                 return from.getDeviceId();
             }
         });
         return idList;
     }
 
-    public Set<YukonDevice> getDevices(DeviceGroup group) {
+    public Set<SimpleDevice> getDevices(DeviceGroup group) {
         
-        Set<YukonDevice> deviceSet = new HashSet<YukonDevice>();
+        Set<SimpleDevice> deviceSet = new HashSet<SimpleDevice>();
         collectDevices(group, deviceSet, Integer.MAX_VALUE);
         return deviceSet;
     }
     
-    public void collectDevices(DeviceGroup group, Set<YukonDevice> deviceSet, int maxSize) {
+    public void collectDevices(DeviceGroup group, Set<SimpleDevice> deviceSet, int maxSize) {
         
         // Get child devices
         collectChildDevices(group, deviceSet, maxSize);
@@ -140,7 +140,7 @@ public abstract class DeviceGroupProviderBase implements DeviceGroupProvider {
     }
     
     @Override
-    public boolean isDeviceInGroup(DeviceGroup base, YukonDevice device) {
+    public boolean isDeviceInGroup(DeviceGroup base, SimpleDevice device) {
         // is device a direct child of base
         if (isChildDevice(base, device)) {
             return true;

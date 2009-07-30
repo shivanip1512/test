@@ -15,7 +15,7 @@ import org.springframework.web.bind.ServletRequestUtils;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.ListBasedDeviceCollection;
 import com.cannontech.common.bulk.mapper.LiteYukonPAObjectToYukonDeviceMapper;
-import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -68,11 +68,11 @@ public class DeviceAddressRangeCollectionProducer extends
                 return paramMap;
             }
 
-            public List<YukonDevice> getDeviceList() {
+            public List<SimpleDevice> getDeviceList() {
 
                 List<LiteYukonPAObject> litePaoList = paoDao.getLiteYukonPaobjectsByAddressRange(startAddress,
                                                                                                  endAddress);
-                List<YukonDevice> deviceList = new MappingList<LiteYukonPAObject, YukonDevice>(litePaoList, deviceMapper);
+                List<SimpleDevice> deviceList = new MappingList<LiteYukonPAObject, SimpleDevice>(litePaoList, deviceMapper);
                 return deviceList;
             }
 

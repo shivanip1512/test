@@ -16,7 +16,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.TemporaryDeviceGroupNotFoundException;
 import com.cannontech.common.device.groups.dao.DeviceGroupPermission;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
@@ -26,6 +25,7 @@ import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.util.YukonDeviceToIdMapper;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.MappingCollection;
 import com.cannontech.common.util.ReverseList;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -43,8 +43,8 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     private StoredDeviceGroup rootGroupCache = null;
     
     @Transactional(propagation=Propagation.REQUIRED)
-    public void addDevices(StoredDeviceGroup group, Collection<? extends YukonDevice> devices) {
-        Collection<Integer> deviceIds = new MappingCollection<YukonDevice, Integer>(devices, new YukonDeviceToIdMapper());
+    public void addDevices(StoredDeviceGroup group, Collection<? extends SimpleDevice> devices) {
+        Collection<Integer> deviceIds = new MappingCollection<SimpleDevice, Integer>(devices, new YukonDeviceToIdMapper());
         addDevicesById(group, deviceIds.iterator());
     }
     
@@ -70,7 +70,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         }
     }
 
-    public List<YukonDevice> getChildDevices(StoredDeviceGroup group) {
+    public List<SimpleDevice> getChildDevices(StoredDeviceGroup group) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select ypo.paobjectid, ypo.type");
         sql.append("from DeviceGroupMember dgm");
@@ -78,12 +78,12 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         sql.append("join YukonPaObject ypo on d.deviceid = ypo.paobjectid");
         sql.append("where dgm.devicegroupid = ?");
         YukonDeviceRowMapper mapper = new YukonDeviceRowMapper(paoGroupsWrapper);
-        List<YukonDevice> devices = jdbcTemplate.query(sql.toString(), mapper, group.getId());
+        List<SimpleDevice> devices = jdbcTemplate.query(sql.toString(), mapper, group.getId());
         return devices;
     }
     
     @Override
-    public boolean isChildDevice(StoredDeviceGroup group, YukonDevice device) {
+    public boolean isChildDevice(StoredDeviceGroup group, SimpleDevice device) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select count(*)");
         sql.append("from DeviceGroupMember dgm");
@@ -142,8 +142,8 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         return resolvedPartials;
     }
 
-    public void addDevices(StoredDeviceGroup group, YukonDevice... device) {
-        List<YukonDevice> devices = Arrays.asList(device);
+    public void addDevices(StoredDeviceGroup group, SimpleDevice... device) {
+        List<SimpleDevice> devices = Arrays.asList(device);
         addDevices(group, devices);
     }
     
@@ -300,13 +300,13 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         
     }
 
-    public void removeDevices(StoredDeviceGroup group, YukonDevice... device) {
-        List<YukonDevice> devices = Arrays.asList(device);
+    public void removeDevices(StoredDeviceGroup group, SimpleDevice... device) {
+        List<SimpleDevice> devices = Arrays.asList(device);
         removeDevices(group, devices);
     }
     
-    public void removeDevices(StoredDeviceGroup group, Collection<? extends YukonDevice> devices) {
-        Collection<Integer> deviceIds = new MappingCollection<YukonDevice, Integer>(devices, new YukonDeviceToIdMapper());
+    public void removeDevices(StoredDeviceGroup group, Collection<? extends SimpleDevice> devices) {
+        Collection<Integer> deviceIds = new MappingCollection<SimpleDevice, Integer>(devices, new YukonDeviceToIdMapper());
         removeDevicesById(group, deviceIds);
     }
     
@@ -325,7 +325,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
      * Deprecated via interface.
      */
     @Transactional(propagation=Propagation.REQUIRED)
-    public Set<StoredDeviceGroup> getGroups(StoredDeviceGroup base, YukonDevice device) {
+    public Set<StoredDeviceGroup> getGroups(StoredDeviceGroup base, SimpleDevice device) {
         PartialDeviceGroupRowMapper mapper = new PartialDeviceGroupRowMapper();
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select dg.*");
@@ -344,7 +344,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     }
     
     @Transactional(propagation=Propagation.REQUIRED)
-    public Set<StoredDeviceGroup> getGroupMembership(StoredDeviceGroup base, YukonDevice device) {
+    public Set<StoredDeviceGroup> getGroupMembership(StoredDeviceGroup base, SimpleDevice device) {
         // The thinking behind this implementation is that no matter how popular
         // a device is, it is likely to only be in a few groups. Therefore, we
         // might as well retrieve all of those groups and then filter out the groups

@@ -2,12 +2,12 @@ package com.cannontech.common.device.routeLocate;
 
 import org.apache.commons.lang.math.RandomUtils;
 
-import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.model.SimpleDevice;
 
 public class DeviceRouteLocation {
 
     Integer id = null; 
-    YukonDevice device = null;
+    SimpleDevice device = null;
     boolean located = false;
     boolean routeUpdated = false;
     Integer routeId = null;
@@ -16,16 +16,16 @@ public class DeviceRouteLocation {
     String routeName = "";
     String deviceName = "";
     
-    public DeviceRouteLocation(YukonDevice device) {
+    public DeviceRouteLocation(SimpleDevice device) {
         this.device = device;
         this.id = RandomUtils.nextInt();
     }
 
-    public YukonDevice getDevice() {
+    public SimpleDevice getDevice() {
         return device;
     }
 
-    public void setDevice(YukonDevice device) {
+    public void setDevice(SimpleDevice device) {
         this.device = device;
     }
 

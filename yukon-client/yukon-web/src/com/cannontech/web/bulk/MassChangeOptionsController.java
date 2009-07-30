@@ -32,10 +32,10 @@ import com.cannontech.common.bulk.mapper.PassThroughMapper;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.processor.Processor;
 import com.cannontech.common.bulk.processor.SingleProcessor;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -61,7 +61,7 @@ public class MassChangeOptionsController extends InputFormController {
     public InputRoot getInputRoot(HttpServletRequest request) throws Exception {
         
         String massChangeBulkFieldName = ServletRequestUtils.getRequiredStringParameter(request, "massChangeBulkFieldName");
-        BulkField<?, YukonDevice> bulkField = bulkYukonDeviceFieldFactory.getBulkField(massChangeBulkFieldName);
+        BulkField<?, SimpleDevice> bulkField = bulkYukonDeviceFieldFactory.getBulkField(massChangeBulkFieldName);
         
         Input<?> inputSource = bulkField.getInputSource();
         
@@ -81,7 +81,7 @@ public class MassChangeOptionsController extends InputFormController {
         
         // renderer model map
         String massChangeBulkFieldName = ServletRequestUtils.getRequiredStringParameter(request, "massChangeBulkFieldName");
-        BulkField<?, YukonDevice> bulkField = bulkYukonDeviceFieldFactory.getBulkField(massChangeBulkFieldName);
+        BulkField<?, SimpleDevice> bulkField = bulkYukonDeviceFieldFactory.getBulkField(massChangeBulkFieldName);
         
         // bulk field name
         refData.put("massChangeBulkFieldName", bulkField.getInputSource().getField());
@@ -110,7 +110,7 @@ public class MassChangeOptionsController extends InputFormController {
         
         // get selected bulk field
         String massChangeBulkFieldName = ServletRequestUtils.getRequiredStringParameter(request, "massChangeBulkFieldName");
-        BulkField<?, YukonDevice> bulkField = bulkYukonDeviceFieldFactory.getBulkField(massChangeBulkFieldName);
+        BulkField<?, SimpleDevice> bulkField = bulkYukonDeviceFieldFactory.getBulkField(massChangeBulkFieldName);
         BulkFieldColumnHeader bulkFieldColumnHeader = bulkFieldService.getColumnHeaderForFieldName(bulkField.getInputSource().getField());
         
         // PROCESS
@@ -134,8 +134,8 @@ public class MassChangeOptionsController extends InputFormController {
         
         // PROCESS
         BulkYukonDeviceFieldProcessor bulkFieldProcessor = findYukonDeviceFieldProcessor(bulkField);
-        Processor<YukonDevice> bulkUpdater = getBulkProcessor(bulkFieldProcessor, yukonDeviceDtoObj);
-        ObjectMapper<YukonDevice, YukonDevice> mapper = new PassThroughMapper<YukonDevice>();
+        Processor<SimpleDevice> bulkUpdater = getBulkProcessor(bulkFieldProcessor, yukonDeviceDtoObj);
+        ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<SimpleDevice>();
         
         bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, bulkUpdater, callbackResult);
         
@@ -146,9 +146,9 @@ public class MassChangeOptionsController extends InputFormController {
     
     
 
-    private BulkYukonDeviceFieldProcessor findYukonDeviceFieldProcessor(BulkField<?, YukonDevice> bulkField) {
+    private BulkYukonDeviceFieldProcessor findYukonDeviceFieldProcessor(BulkField<?, SimpleDevice> bulkField) {
         
-        Set<BulkField<?, YukonDevice>> requiredSet = new HashSet<BulkField<?, YukonDevice>>(1);
+        Set<BulkField<?, SimpleDevice>> requiredSet = new HashSet<BulkField<?, SimpleDevice>>(1);
         requiredSet.add(bulkField);
         
         // the following is a naive implementation and should be changed when more
@@ -164,12 +164,12 @@ public class MassChangeOptionsController extends InputFormController {
         return bulkFieldProcessor;
     }
 
-    private Processor<YukonDevice> getBulkProcessor(final BulkYukonDeviceFieldProcessor bulkFieldProcessor, final YukonDeviceDto yukonDeviceDtoObj) {
+    private Processor<SimpleDevice> getBulkProcessor(final BulkYukonDeviceFieldProcessor bulkFieldProcessor, final YukonDeviceDto yukonDeviceDtoObj) {
         
-        return new SingleProcessor<YukonDevice>() {
+        return new SingleProcessor<SimpleDevice>() {
             
             @Override
-            public void process(YukonDevice device) throws ProcessingException {
+            public void process(SimpleDevice device) throws ProcessingException {
                 bulkFieldProcessor.updateField(device, yukonDeviceDtoObj);
             }
         };

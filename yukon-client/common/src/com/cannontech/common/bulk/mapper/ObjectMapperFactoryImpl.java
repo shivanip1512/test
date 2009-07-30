@@ -5,7 +5,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 
-import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.ObjectMapper;
 
 /**
@@ -21,10 +21,10 @@ public class ObjectMapperFactoryImpl implements ObjectMapperFactory, BeanFactory
     }
     
     @SuppressWarnings("unchecked")
-    public ObjectMapper<String, YukonDevice> getFileImportMapper(FileMapperEnum type) {
+    public ObjectMapper<String, SimpleDevice> getFileImportMapper(FileMapperEnum type) {
         String beanName = type.getBeanName();
         Object bean = beanFactory.getBean(beanName, ObjectMapper.class);
-        return (ObjectMapper<String, YukonDevice>) bean;
+        return (ObjectMapper<String, SimpleDevice>) bean;
     }
 
 }

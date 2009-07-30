@@ -1,4 +1,4 @@
-<%@ attribute name="device" required="true" type="com.cannontech.common.device.YukonDevice"%>
+<%@ attribute name="device" required="true" type="com.cannontech.common.device.model.SimpleDevice"%>
 <%@ attribute name="attribute" required="true" type="com.cannontech.common.device.attribute.model.Attribute"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 

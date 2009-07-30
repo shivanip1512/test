@@ -23,13 +23,13 @@ import com.cannontech.amr.outageProcessing.dao.OutageMonitorDao;
 import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
@@ -95,7 +95,7 @@ public class OutageProcessingController extends MultiActionController {
 	            	if (removeFromOutageGroupAfterRead) {
 	            		
 	            		DeviceCollection successCollection = result.getSuccessCollection();
-	            		List<YukonDevice> successDeviceList = successCollection.getDeviceList();
+	            		List<SimpleDevice> successDeviceList = successCollection.getDeviceList();
 	            		deviceGroupMemberEditorDao.removeDevices(outageGroup, successDeviceList);
 	            	}
 	            	
@@ -141,7 +141,7 @@ public class OutageProcessingController extends MultiActionController {
 		String outageGroupName = SystemGroupEnum.OUTAGE_PROCESSING.getFullPath() + outageMonitor.getName();
 		StoredDeviceGroup outageGroup = deviceGroupEditorDao.getStoredGroup(outageGroupName, true);
 		
-		List<? extends YukonDevice> deviceList = groupMetersDao.getChildMetersByGroup(outageGroup);
+		List<? extends SimpleDevice> deviceList = groupMetersDao.getChildMetersByGroup(outageGroup);
         deviceGroupMemberEditorDao.removeDevices(outageGroup, deviceList);
         
 		mav.addObject("outageMonitorId", outageMonitorId);

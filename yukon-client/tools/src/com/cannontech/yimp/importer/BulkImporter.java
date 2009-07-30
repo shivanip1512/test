@@ -25,13 +25,13 @@ import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
@@ -518,7 +518,7 @@ public void runImport(List<ImportData> imps) {
                 }
                 
                 //update device groups if they changed
-                YukonDevice yukonDevice = new YukonDevice(yukonPaobject.getPAObjectID(), PAOGroups.getDeviceType(yukonPaobject.getPAOType()));
+                SimpleDevice yukonDevice = new SimpleDevice(yukonPaobject.getPAObjectID(), PAOGroups.getDeviceType(yukonPaobject.getPAOType()));
                 deviceGroupMemberEditorDao.addDevices(alternateGroup, yukonDevice);
                 deviceGroupMemberEditorDao.addDevices(billingGroup, yukonDevice);
                 deviceGroupMemberEditorDao.addDevices(collectionGroup, yukonDevice);
@@ -610,7 +610,7 @@ public void runImport(List<ImportData> imps) {
                 dbPersistentDao.performDBChangeWithNoMsg(pointsToAdd, Transaction.INSERT);
                 log.debug("Insert into DB with NO DBChangeMessage: " + points.size() + " Points for Device(" + current400Series.getPAObjectID() + ").");
 
-                YukonDevice yukonDevice = new YukonDevice(current400Series.getPAObjectID(), PAOGroups.getDeviceType(current400Series.getPAOType()));
+                SimpleDevice yukonDevice = new SimpleDevice(current400Series.getPAObjectID(), PAOGroups.getDeviceType(current400Series.getPAOType()));
                 deviceGroupMemberEditorDao.addDevices(alternateGroup, yukonDevice);
                 deviceGroupMemberEditorDao.addDevices(billingGroup, yukonDevice);
                 deviceGroupMemberEditorDao.addDevices(collectionGroup, yukonDevice);

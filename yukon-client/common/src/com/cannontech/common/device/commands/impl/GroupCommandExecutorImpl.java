@@ -9,7 +9,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
@@ -20,6 +19,7 @@ import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionId
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
@@ -63,13 +63,13 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
 
     public String execute(final DeviceCollection deviceCollection, final String command, final SimpleCallback<GroupCommandResult> callback, LiteYukonUser user) {
         
-        ObjectMapper<YukonDevice, CommandRequestDevice> objectMapper = new ObjectMapper<YukonDevice, CommandRequestDevice>() {
-            public CommandRequestDevice map(YukonDevice from) throws ObjectMappingException {
+        ObjectMapper<SimpleDevice, CommandRequestDevice> objectMapper = new ObjectMapper<SimpleDevice, CommandRequestDevice>() {
+            public CommandRequestDevice map(SimpleDevice from) throws ObjectMappingException {
                 return buildStandardRequest(from, command);
             }
         };
         
-    	List<CommandRequestDevice> requests = new MappingList<YukonDevice, CommandRequestDevice>(deviceCollection.getDeviceList(), objectMapper);
+    	List<CommandRequestDevice> requests = new MappingList<SimpleDevice, CommandRequestDevice>(deviceCollection.getDeviceList(), objectMapper);
     	
     	return execute(deviceCollection, command, requests, callback, user);
     }
@@ -93,12 +93,12 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
             }
             
             @Override
-            public void handleSuccess(YukonDevice device) {
+            public void handleSuccess(SimpleDevice device) {
                 deviceGroupMemberEditorDao.addDevices(successGroup, device);
             }
             
             @Override
-            public void handleFailure(YukonDevice device) {
+            public void handleFailure(SimpleDevice device) {
                 deviceGroupMemberEditorDao.addDevices(failureGroup, device);
             }
             
@@ -137,7 +137,7 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
         return commandsCanceled;
     }
     
-    private CommandRequestDevice buildStandardRequest(YukonDevice device, final String command) {
+    private CommandRequestDevice buildStandardRequest(SimpleDevice device, final String command) {
         CommandRequestDevice request = new CommandRequestDevice();
         request.setDevice(device);
         request.setBackgroundPriority(true);

@@ -1,16 +1,16 @@
 package com.cannontech.common.bulk.field.impl;
 
-import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.model.SimpleDevice;
 
 public class UpdateableDevice {
 
-    private YukonDevice device;
+    private SimpleDevice device;
     private YukonDeviceDto deviceDto;
     
-    public YukonDevice getDevice() {
+    public SimpleDevice getDevice() {
         return device;
     }
-    public void setDevice(YukonDevice device) {
+    public void setDevice(SimpleDevice device) {
         this.device = device;
     }
     

@@ -9,11 +9,11 @@ import java.util.Set;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Required;
 
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -23,10 +23,10 @@ public class StaticDeviceGroupProvider extends DeviceGroupProviderSqlBase {
     private DeviceGroupEditorDao deviceGroupEditorDao;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Override
-    public Set<YukonDevice> getChildDevices(DeviceGroup group) {
+    public Set<SimpleDevice> getChildDevices(DeviceGroup group) {
         StoredDeviceGroup sdg = getStoredGroup(group);
-        List<YukonDevice> childDevices = deviceGroupMemberEditorDao.getChildDevices(sdg);
-        return Collections.unmodifiableSet(new HashSet<YukonDevice>(childDevices));
+        List<SimpleDevice> childDevices = deviceGroupMemberEditorDao.getChildDevices(sdg);
+        return Collections.unmodifiableSet(new HashSet<SimpleDevice>(childDevices));
     }
 
     @Override
@@ -107,7 +107,7 @@ public class StaticDeviceGroupProvider extends DeviceGroupProviderSqlBase {
         return sdg;
     }
     
-    public Set<DeviceGroup> getGroupMembership(DeviceGroup base, YukonDevice device) {
+    public Set<DeviceGroup> getGroupMembership(DeviceGroup base, SimpleDevice device) {
         StoredDeviceGroup storedGroup = getStoredGroup(base);
 
         Set<StoredDeviceGroup> groups = deviceGroupMemberEditorDao.getGroupMembership(storedGroup, device);
@@ -127,7 +127,7 @@ public class StaticDeviceGroupProvider extends DeviceGroupProviderSqlBase {
     }
     
     @Override
-    public boolean isChildDevice(DeviceGroup group, YukonDevice device) {
+    public boolean isChildDevice(DeviceGroup group, SimpleDevice device) {
         StoredDeviceGroup storedGroup = getStoredGroup(group);
         boolean result = deviceGroupMemberEditorDao.isChildDevice(storedGroup,device);
         return result;

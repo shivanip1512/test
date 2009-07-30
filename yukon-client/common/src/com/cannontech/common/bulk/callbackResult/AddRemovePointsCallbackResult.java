@@ -6,11 +6,11 @@ import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.field.BulkFieldColumnHeader;
 import com.cannontech.common.bulk.processor.ProcessorCallbackException;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.device.model.SimpleDevice;
 
-public class AddRemovePointsCallbackResult extends BackgroundProcessBulkProcessorCallback<YukonDevice> implements BackgroundProcessResultHolder {
+public class AddRemovePointsCallbackResult extends BackgroundProcessBulkProcessorCallback<SimpleDevice> implements BackgroundProcessResultHolder {
 
 	private DeviceCollection deviceCollection;
 	private StoredDeviceGroup successGroup;
@@ -42,13 +42,13 @@ public class AddRemovePointsCallbackResult extends BackgroundProcessBulkProcesso
 	
 	// callback overrides
 	@Override
-    public void processedObject(int rowNumber, YukonDevice object) {
+    public void processedObject(int rowNumber, SimpleDevice object) {
         super.processedObject(rowNumber, object);
         deviceGroupMemberEditorDao.addDevices(successGroup, object);
     }
 	
 	@Override
-    public void receivedProcessingException(int rowNumber, YukonDevice object, ProcessorCallbackException e) {
+    public void receivedProcessingException(int rowNumber, SimpleDevice object, ProcessorCallbackException e) {
         super.receivedProcessingException(rowNumber, object, e);
         deviceGroupMemberEditorDao.addDevices(processingExceptionGroup, object);
     }

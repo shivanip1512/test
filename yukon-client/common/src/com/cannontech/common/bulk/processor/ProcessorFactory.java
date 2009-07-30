@@ -1,7 +1,7 @@
 package com.cannontech.common.bulk.processor;
 
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.config.model.ConfigurationBase;
+import com.cannontech.common.device.model.SimpleDevice;
 
 /**
  * Factory interface which generates Processors
@@ -14,7 +14,7 @@ public interface ProcessorFactory {
      * @param configuration - Configuration to assign to device
      * @return The processor
      */
-    public Processor<YukonDevice> createAssignConfigurationToYukonDeviceProcessor(
+    public Processor<SimpleDevice> createAssignConfigurationToYukonDeviceProcessor(
             final ConfigurationBase configuration);
 
 

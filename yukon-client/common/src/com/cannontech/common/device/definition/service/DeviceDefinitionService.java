@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.device.definition.model.PointTemplate;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.database.data.point.PointBase;
 
 /**
@@ -40,7 +40,7 @@ public interface DeviceDefinitionService {
      * @return A list of the default points for the device (returns a new copy
      *         each time the method is called)
      */
-    public abstract List<PointBase> createDefaultPointsForDevice(YukonDevice device);
+    public abstract List<PointBase> createDefaultPointsForDevice(SimpleDevice device);
 
     /**
      * Method to create all of the points for the given device. NOTE: this will
@@ -49,7 +49,7 @@ public interface DeviceDefinitionService {
      * @return A list of all the points for the device (returns a new copy each
      *         time the method is called)
      */
-    public abstract List<PointBase> createAllPointsForDevice(YukonDevice device);
+    public abstract List<PointBase> createAllPointsForDevice(SimpleDevice device);
 
     /**
      * Method to get a map of device display groups and their associated device
@@ -64,7 +64,7 @@ public interface DeviceDefinitionService {
      * @param device - Device to change
      * @return True if the device's type can be changed
      */
-    public abstract boolean isDeviceTypeChangeable(YukonDevice device);
+    public abstract boolean isDeviceTypeChangeable(SimpleDevice device);
 
     /**
      * Method to get a set of device definitions for devices that the given
@@ -73,7 +73,7 @@ public interface DeviceDefinitionService {
      * @return A set of device definitions that the given device can change into
      *         (returns a new copy each time the method is called)
      */
-    public abstract Set<DeviceDefinition> getChangeableDevices(YukonDevice device);
+    public abstract Set<DeviceDefinition> getChangeableDevices(SimpleDevice device);
     
     /**
      * Method to get a set of point templates that will be added to the given
@@ -83,7 +83,7 @@ public interface DeviceDefinitionService {
      * @return Set of points that will be added to the device (returns a new
      *         copy each time the method is called)
      */
-    public abstract Set<PointTemplate> getPointTemplatesToAdd(YukonDevice device,
+    public abstract Set<PointTemplate> getPointTemplatesToAdd(SimpleDevice device,
             DeviceDefinition deviceDefinition);
 
     /**
@@ -94,7 +94,7 @@ public interface DeviceDefinitionService {
      * @return Set of points that will be removed from the device (returns a new
      *         copy each time the method is called)
      */
-    public abstract Set<PointIdentifier> getPointTemplatesToRemove(YukonDevice device,
+    public abstract Set<PointIdentifier> getPointTemplatesToRemove(SimpleDevice device,
             DeviceDefinition deviceDefinition);
     
     /**
@@ -106,6 +106,6 @@ public interface DeviceDefinitionService {
      * @return Set of point templates that will be transfered from the device
      *         (returns a new copy each time the method is called)
      */
-    public abstract List<PointTemplateTransferPair> getPointTemplatesToTransfer(YukonDevice device,
+    public abstract List<PointTemplateTransferPair> getPointTemplatesToTransfer(SimpleDevice device,
             DeviceDefinition deviceDefinition);
 }

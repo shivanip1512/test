@@ -1,9 +1,9 @@
 package com.cannontech.common.bulk.processor;
 
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.ConfigurationBase;
+import com.cannontech.common.device.model.SimpleDevice;
 
 /**
  * Default implementation of ProcessorFactory
@@ -17,11 +17,11 @@ public class ProcessorFactoryImpl implements ProcessorFactory {
         this.deviceConfigurationDao = deviceConfigurationDao;
     }
 
-    public Processor<YukonDevice> createAssignConfigurationToYukonDeviceProcessor(final ConfigurationBase configuration) {
+    public Processor<SimpleDevice> createAssignConfigurationToYukonDeviceProcessor(final ConfigurationBase configuration) {
 
-        return new SingleProcessor<YukonDevice>() {
+        return new SingleProcessor<SimpleDevice>() {
 
-            public void process(YukonDevice device) throws ProcessingException {
+            public void process(SimpleDevice device) throws ProcessingException {
                 try {
                     deviceConfigurationDao.assignConfigToDevice(configuration, device);
                 } catch (InvalidDeviceTypeException e) {

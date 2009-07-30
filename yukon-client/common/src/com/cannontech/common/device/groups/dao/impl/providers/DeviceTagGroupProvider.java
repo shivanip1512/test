@@ -7,10 +7,10 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.model.DeviceTag;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.google.common.base.Function;
@@ -59,7 +59,7 @@ public class DeviceTagGroupProvider extends BinningDeviceGroupProviderBase<Devic
     }
 
     @Override
-    protected Set<DeviceTag> getBinsForDevice(YukonDevice device) {
+    protected Set<DeviceTag> getBinsForDevice(SimpleDevice device) {
         Set<DeviceTag> supportedTags = deviceDefinitionDao.getSupportedTags(device.getDeviceType());
         return supportedTags;
     }

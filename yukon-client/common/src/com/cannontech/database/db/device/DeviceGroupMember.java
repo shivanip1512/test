@@ -2,15 +2,15 @@ package com.cannontech.database.db.device;
 
 import java.sql.SQLException;
 
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.service.FixedDeviceGroupingHack;
 import com.cannontech.common.device.groups.service.FixedDeviceGroups;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.spring.YukonSpringHook;
 
 public class DeviceGroupMember extends DBPersistent {
     
-    private YukonDevice yukonDevice = null;
+    private SimpleDevice yukonDevice = null;
     private String collectionGroup = com.cannontech.common.util.CtiUtilities.STRING_DEFAULT;
     private String alternateGroup = com.cannontech.common.util.CtiUtilities.STRING_DEFAULT;
     private String billingGroup = com.cannontech.common.util.CtiUtilities.STRING_DEFAULT;
@@ -27,7 +27,7 @@ public class DeviceGroupMember extends DBPersistent {
         super();
     }
     
-    public DeviceGroupMember(YukonDevice yd, 
+    public DeviceGroupMember(SimpleDevice yd, 
                                    String billingGroup, 
                                    String collectionGroup, 
                                    String alternateGroup, 

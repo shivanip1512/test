@@ -13,13 +13,13 @@ import com.cannontech.amr.deviceread.dao.impl.UnreadableException;
 import com.cannontech.amr.deviceread.model.CommandWrapper;
 import com.cannontech.amr.deviceread.service.MeterReadCommandGeneratorService;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.CommandDefinition;
 import com.cannontech.common.device.definition.model.PointIdentifier;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LitePoint;
@@ -38,17 +38,17 @@ public class MeterReadCommandGeneratorServiceImpl implements MeterReadCommandGen
 	private boolean isUpdate = true;
     private boolean isNoqueue = true;
 	
-	public  Multimap<YukonDevice, LitePoint> getPointsToRead(YukonDevice device, Set<? extends Attribute> attributes) {
+	public  Multimap<SimpleDevice, LitePoint> getPointsToRead(SimpleDevice device, Set<? extends Attribute> attributes) {
         
 		// reduce number of commands
-    	Multimap<YukonDevice, LitePoint> pointsToRead = HashMultimap.create();
+    	Multimap<SimpleDevice, LitePoint> pointsToRead = HashMultimap.create();
     	for (Attribute attribute : attributes) {
     	    // consider wrapping in try/catch and returning false if this fails
     		LitePoint pointForAttribute = null;
     		try {
     			pointForAttribute = attributeService.getPointForAttribute(device, attribute);
     			
-    			YukonDevice deviceForPoint = null;
+    			SimpleDevice deviceForPoint = null;
                 if (pointForAttribute.getPaobjectID() == device.getDeviceId()) {
                     // prevent DAO call for common case
                     deviceForPoint = device;
@@ -66,11 +66,11 @@ public class MeterReadCommandGeneratorServiceImpl implements MeterReadCommandGen
         return pointsToRead;
     }
 	
-	public Multimap<YukonDevice, CommandWrapper> getRequiredCommands(Multimap<YukonDevice, LitePoint> pointsToRead) throws UnreadableException {
+	public Multimap<SimpleDevice, CommandWrapper> getRequiredCommands(Multimap<SimpleDevice, LitePoint> pointsToRead) throws UnreadableException {
 		
-        Multimap<YukonDevice, CommandWrapper> requiredCommands = HashMultimap.create();
+        Multimap<SimpleDevice, CommandWrapper> requiredCommands = HashMultimap.create();
     	
-    	for (YukonDevice deviceToRead : pointsToRead.keySet()) {
+    	for (SimpleDevice deviceToRead : pointsToRead.keySet()) {
     	    Set<PointIdentifier> pointSet = convertToDevicePointIdentifiers(pointsToRead.get(deviceToRead));
     	    Set<CommandWrapper> minimalCommands = getMinimalCommandSet(deviceToRead, pointSet);
             if (minimalCommands == null) {
@@ -81,7 +81,7 @@ public class MeterReadCommandGeneratorServiceImpl implements MeterReadCommandGen
         return requiredCommands;
     }
 	
-	public List<CommandRequestDevice> getCommandRequests(YukonDevice device, Iterable<CommandWrapper> commands) {
+	public List<CommandRequestDevice> getCommandRequests(SimpleDevice device, Iterable<CommandWrapper> commands) {
         List<CommandRequestDevice> commandRequests = new ArrayList<CommandRequestDevice>();
         for (CommandWrapper wrapper : commands) {
             List<String> commandStringList = wrapper.getCommandDefinition().getCommandStringList();
@@ -98,7 +98,7 @@ public class MeterReadCommandGeneratorServiceImpl implements MeterReadCommandGen
         return commandRequests;
     }
 	
-	private Set<CommandWrapper> getMinimalCommandSet(YukonDevice device, Set<PointIdentifier> pointSet) {
+	private Set<CommandWrapper> getMinimalCommandSet(SimpleDevice device, Set<PointIdentifier> pointSet) {
         Set<CommandDefinition> allPossibleCommands = deviceDefinitionDao.getCommandsThatAffectPoints(device.getDeviceType(), pointSet);
         
         Set<CommandWrapper> wrappedCommands = new HashSet<CommandWrapper>(allPossibleCommands.size());

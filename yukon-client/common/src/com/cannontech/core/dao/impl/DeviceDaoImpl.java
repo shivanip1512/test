@@ -10,8 +10,8 @@ import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -63,15 +63,15 @@ public DeviceDaoImpl() {
         this.yukonDeviceRowMapper = new YukonDeviceRowMapper(paoGroupsWrapper);
     }
 
-    public void disableDevice(YukonDevice device) {
+    public void disableDevice(SimpleDevice device) {
         this.enableDisableDevice(device, "Y");
         
     }
-    public void enableDevice(YukonDevice device) {
+    public void enableDevice(SimpleDevice device) {
         this.enableDisableDevice(device, "N");
     }
     
-    private void enableDisableDevice(YukonDevice device, String disableFlag) {
+    private void enableDisableDevice(SimpleDevice device, String disableFlag) {
         
         String sql = "UPDATE yukonpaobject SET disableflag = ? WHERE paobjectid = ?";
         jdbcOps.update(sql, new Object[] { disableFlag, device.getDeviceId() });
@@ -79,7 +79,7 @@ public DeviceDaoImpl() {
         processDeviceUpdateDBChange(device);
     }
     
-    public void removeDevice(YukonDevice device) {
+    public void removeDevice(SimpleDevice device) {
         
         LiteYukonPAObject liteDevice = this.getLiteDevice(device.getDeviceId());
         DBPersistent persistent = dbPersistantDao.retrieveDBPersistent(liteDevice);
@@ -94,39 +94,39 @@ public LiteYukonPAObject getLiteDevice(final int deviceID) {
 	return paoDao.getLiteYukonPAO( deviceID );
 }
 
-public YukonDevice getYukonDevice(int paoId) {
+public SimpleDevice getYukonDevice(int paoId) {
     return getYukonDevice(paoDao.getLiteYukonPAO(paoId));
 }
 
-public YukonDevice getYukonDevice(LiteYukonPAObject yukonPAObject) {
-    YukonDevice device = new YukonDevice(yukonPAObject.getYukonID(),yukonPAObject.getType());
+public SimpleDevice getYukonDevice(LiteYukonPAObject yukonPAObject) {
+    SimpleDevice device = new SimpleDevice(yukonPAObject.getYukonID(),yukonPAObject.getType());
     return device;
 }
 
 /**
  * A leaner version of getYukonDevice()
  */
-public YukonDevice getYukonDeviceObjectById(int deviceId) {
+public SimpleDevice getYukonDeviceObjectById(int deviceId) {
     
     String sql = "SELECT ypo.PAObjectID, ypo.Type FROM YukonPaObject ypo WHERE ypo.PAObjectID = ?";
-    YukonDevice device = (YukonDevice)jdbcOps.queryForObject(sql, new Object[] {deviceId}, this.yukonDeviceRowMapper);
+    SimpleDevice device = (SimpleDevice)jdbcOps.queryForObject(sql, new Object[] {deviceId}, this.yukonDeviceRowMapper);
     return device;
 }
 
-public YukonDevice getYukonDeviceObjectByName(String name) {
+public SimpleDevice getYukonDeviceObjectByName(String name) {
     
     String sql = "SELECT ypo.PAObjectID, ypo.Type " +
                  "FROM YukonPaObject ypo " +
                  "WHERE ypo.Category = 'DEVICE' " +
                  "AND ypo.PAOClass IN ('CARRIER','METER','IED') " +
                  "AND ypo.PAOName = ?";
-    YukonDevice device = (YukonDevice)jdbcOps.queryForObject(sql, new Object[] {name}, this.yukonDeviceRowMapper);
+    SimpleDevice device = (SimpleDevice)jdbcOps.queryForObject(sql, new Object[] {name}, this.yukonDeviceRowMapper);
     return device;
 }
 
-public YukonDevice findYukonDeviceObjectByName(String name) {
+public SimpleDevice findYukonDeviceObjectByName(String name) {
     
-	YukonDevice device = null;
+	SimpleDevice device = null;
 	try {
 		device = getYukonDeviceObjectByName(name);
 	} catch(EmptyResultDataAccessException e) {
@@ -135,23 +135,23 @@ public YukonDevice findYukonDeviceObjectByName(String name) {
     return device;
 }
 
-public YukonDevice getYukonDeviceObjectByMeterNumber(String meterNumber) {
+public SimpleDevice getYukonDeviceObjectByMeterNumber(String meterNumber) {
     
     String sql = "SELECT ypo.PAObjectID, ypo.Type " + 
     " FROM YukonPaObject ypo " +
     " INNER JOIN DeviceMeterGroup dmg ON ypo.PAObjectID = dmg.DeviceID " +
     " WHERE dmg.METERNUMBER = ? ";
-    YukonDevice device = (YukonDevice)jdbcOps.queryForObject(sql, new Object[] {meterNumber}, this.yukonDeviceRowMapper);
+    SimpleDevice device = (SimpleDevice)jdbcOps.queryForObject(sql, new Object[] {meterNumber}, this.yukonDeviceRowMapper);
     return device;
 }
 
-public YukonDevice getYukonDeviceObjectByAddress(Long address) {
+public SimpleDevice getYukonDeviceObjectByAddress(Long address) {
     
     String sql = "SELECT ypo.PAObjectID, ypo.Type " + 
     " FROM YukonPaObject ypo " +
     " INNER JOIN DeviceCarrierSettings dcs ON ypo.PAObjectID = dcs.DeviceID " +
     " WHERE dcs.ADDRESS = ? ";
-    YukonDevice device = (YukonDevice)jdbcOps.queryForObject(sql, new Object[] {address}, this.yukonDeviceRowMapper);
+    SimpleDevice device = (SimpleDevice)jdbcOps.queryForObject(sql, new Object[] {address}, this.yukonDeviceRowMapper);
     return device;
 }
 
@@ -272,7 +272,7 @@ public List getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddres
     return devicesByAddress;
 }
 
-public void changeRoute(YukonDevice device, int newRouteId) {
+public void changeRoute(SimpleDevice device, int newRouteId) {
     
     // Updates the meter's meter number
     String sql = " UPDATE DeviceRoutes SET RouteID = ? WHERE DeviceID = ?";
@@ -281,7 +281,7 @@ public void changeRoute(YukonDevice device, int newRouteId) {
     processDeviceUpdateDBChange(device);
 }
 
-public void changeName(YukonDevice device, String newName) {
+public void changeName(SimpleDevice device, String newName) {
     
     String sql = " UPDATE YukonPAObject SET PAOName = ? WHERE PAObjectID = ?";
     jdbcOps.update(sql, new Object[] {newName, device.getDeviceId()});
@@ -289,7 +289,7 @@ public void changeName(YukonDevice device, String newName) {
     processDeviceUpdateDBChange(device);
 }
 
-public void changeAddress(YukonDevice device, int newAddress) {
+public void changeAddress(SimpleDevice device, int newAddress) {
     
     String sql = " UPDATE " + DeviceCarrierSettings.TABLE_NAME +
                  " SET ADDRESS = ? WHERE DeviceID = ?";
@@ -298,7 +298,7 @@ public void changeAddress(YukonDevice device, int newAddress) {
     processDeviceUpdateDBChange(device);
 }
 
-public void changeMeterNumber(YukonDevice device, String newMeterNumber) {
+public void changeMeterNumber(SimpleDevice device, String newMeterNumber) {
     
     String sql = " UPDATE DEVICEMETERGROUP SET METERNUMBER = ? WHERE DeviceID = ?";
     jdbcOps.update(sql, new Object[] {newMeterNumber, device.getDeviceId()});
@@ -306,7 +306,7 @@ public void changeMeterNumber(YukonDevice device, String newMeterNumber) {
     processDeviceUpdateDBChange(device);
 }
 
-public String getFormattedName(YukonDevice device) {
+public String getFormattedName(SimpleDevice device) {
     
     if (device instanceof Meter) {
         return meterDao.getFormattedDeviceName((Meter)device);
@@ -329,8 +329,8 @@ public String getFormattedName(int deviceId) {
     }
 }
 
-public YukonDevice getYukonDeviceForDevice(DeviceBase oldDevice) {
-    YukonDevice device = new YukonDevice();
+public SimpleDevice getYukonDeviceForDevice(DeviceBase oldDevice) {
+    SimpleDevice device = new SimpleDevice();
     device.setDeviceId(oldDevice.getPAObjectID());
     String typeStr = oldDevice.getPAOType();
     int deviceType = paoGroupsWrapper.getDeviceType(typeStr);
@@ -338,7 +338,7 @@ public YukonDevice getYukonDeviceForDevice(DeviceBase oldDevice) {
     return device;
 }
 
-private void processDeviceUpdateDBChange(YukonDevice device) {
+private void processDeviceUpdateDBChange(SimpleDevice device) {
 
     DBChangeMsg msg = new DBChangeMsg(device.getDeviceId(),
                                       DBChangeMsg.CHANGE_PAO_DB,

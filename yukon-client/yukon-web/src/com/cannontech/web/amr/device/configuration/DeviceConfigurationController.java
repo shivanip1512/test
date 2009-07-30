@@ -33,7 +33,6 @@ import com.cannontech.common.bulk.mapper.PaoNameToYukonDeviceMapper;
 import com.cannontech.common.bulk.mapper.StringToIntegerMapper;
 import com.cannontech.common.bulk.processor.Processor;
 import com.cannontech.common.bulk.processor.ProcessorFactory;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.config.dao.ConfigurationType;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.ConfigurationBase;
@@ -41,6 +40,7 @@ import com.cannontech.common.device.config.model.ConfigurationTemplate;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.dao.PaoDao;
@@ -208,11 +208,11 @@ public class DeviceConfigurationController extends MultiActionController {
         ConfigurationBase configuration = deviceConfigurationDao.getConfiguration(configId);
         mav.addObject("configuration", configuration);
 
-        List<YukonDevice> deviceList = deviceConfigurationDao.getAssignedDevices(configuration);
+        List<SimpleDevice> deviceList = deviceConfigurationDao.getAssignedDevices(configuration);
         mav.addObject("deviceList", deviceList);
 
         List<Integer> deviceIdList = new ArrayList<Integer>();
-        for (YukonDevice device : deviceList) {
+        for (SimpleDevice device : deviceList) {
             deviceIdList.add(device.getDeviceId());
         }
 
@@ -239,8 +239,8 @@ public class DeviceConfigurationController extends MultiActionController {
         mav.addObject("configuration", configId);
         ConfigurationBase configuration = deviceConfigurationDao.getConfiguration(configId);
 
-        Processor<YukonDevice> processor = processorFactory.createAssignConfigurationToYukonDeviceProcessor(configuration);
-        ObjectMapper<String, YukonDevice> mapper = new ChainingMapper<String, YukonDevice>(new StringToIntegerMapper(), paoIdToYukonDeviceMapper);
+        Processor<SimpleDevice> processor = processorFactory.createAssignConfigurationToYukonDeviceProcessor(configuration);
+        ObjectMapper<String, SimpleDevice> mapper = new ChainingMapper<String, SimpleDevice>(new StringToIntegerMapper(), paoIdToYukonDeviceMapper);
 
         bulkProcessor.bulkProcess(deviceIdList.iterator(), mapper, processor);
 
@@ -276,8 +276,8 @@ public class DeviceConfigurationController extends MultiActionController {
         List<LiteYukonPAObject> litePaos = paoDao.getLiteYukonPaobjectsByAddressRange(startRange,
                                                                                       endRange);
 
-        ObjectMapper<LiteYukonPAObject, YukonDevice> mapper = liteYukonPAObjectToYukonDeviceMapper;
-        Processor<YukonDevice> processor = processorFactory.createAssignConfigurationToYukonDeviceProcessor(configuration);
+        ObjectMapper<LiteYukonPAObject, SimpleDevice> mapper = liteYukonPAObjectToYukonDeviceMapper;
+        Processor<SimpleDevice> processor = processorFactory.createAssignConfigurationToYukonDeviceProcessor(configuration);
 
         bulkProcessor.bulkProcess(litePaos.iterator(), mapper, processor);
 
@@ -294,13 +294,13 @@ public class DeviceConfigurationController extends MultiActionController {
         // Get the group and then all the devices in the group
         DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
         mav.addObject("group", groupName);
-        Set<YukonDevice> devices = deviceGroupService.getDevices(Collections.singletonList(group));
+        Set<SimpleDevice> devices = deviceGroupService.getDevices(Collections.singletonList(group));
 
         Integer configId = ServletRequestUtils.getIntParameter(request, "configuration");
         mav.addObject("configuration", configId);
         ConfigurationBase configuration = deviceConfigurationDao.getConfiguration(configId);
 
-        Processor<YukonDevice> processor = processorFactory.createAssignConfigurationToYukonDeviceProcessor(configuration);
+        Processor<SimpleDevice> processor = processorFactory.createAssignConfigurationToYukonDeviceProcessor(configuration);
 
         bulkProcessor.bulkProcess(devices.iterator(), processor);
 
@@ -328,7 +328,7 @@ public class DeviceConfigurationController extends MultiActionController {
                 return mav;
             }
 
-            ObjectMapper<String, YukonDevice> mapper = null;
+            ObjectMapper<String, SimpleDevice> mapper = null;
 
             CloseableIterator<String> iterator = null;
             try {
@@ -353,7 +353,7 @@ public class DeviceConfigurationController extends MultiActionController {
                 }
 
                 // Get the processor that adds devices to groups
-                Processor<YukonDevice> processor = processorFactory.createAssignConfigurationToYukonDeviceProcessor(configuration);
+                Processor<SimpleDevice> processor = processorFactory.createAssignConfigurationToYukonDeviceProcessor(configuration);
 
                 bulkProcessor.bulkProcess(iterator, mapper, processor);
 

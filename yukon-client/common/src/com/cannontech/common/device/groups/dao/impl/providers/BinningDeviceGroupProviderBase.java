@@ -8,10 +8,10 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.model.MutableDeviceGroup;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.SimpleSqlFragment;
@@ -33,13 +33,13 @@ public abstract class BinningDeviceGroupProviderBase<T> extends DeviceGroupProvi
     private SimpleJdbcOperations jdbcTemplate;
     
     @Override
-    public Set<YukonDevice> getChildDevices(DeviceGroup group) {
+    public Set<SimpleDevice> getChildDevices(DeviceGroup group) {
         
         if (group instanceof BinningDeviceGroupProviderBase.BinnedDeviceGroup) {
             
             BinnedDeviceGroup binnedDeviceGroup = (BinnedDeviceGroup) group;
             
-            Set<YukonDevice> devices = getDevicesInBin(binnedDeviceGroup.bin);
+            Set<SimpleDevice> devices = getDevicesInBin(binnedDeviceGroup.bin);
             
             return Collections.unmodifiableSet(devices);
         }
@@ -48,7 +48,7 @@ public abstract class BinningDeviceGroupProviderBase<T> extends DeviceGroupProvi
         return Collections.emptySet();
     }
 
-    protected Set<YukonDevice> getDevicesInBin(T bin) {
+    protected Set<SimpleDevice> getDevicesInBin(T bin) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ypo.paobjectid, ypo.type");
         sql.append("FROM YukonPaObject ypo");
@@ -56,9 +56,9 @@ public abstract class BinningDeviceGroupProviderBase<T> extends DeviceGroupProvi
         sql.append(getChildWhereForBin(bin, "ypo.paobjectid"));
         
         YukonDeviceRowMapper mapper = new YukonDeviceRowMapper(getPaoGroupsWrapper());
-        List<YukonDevice> devices = jdbcTemplate.query(sql.getSql(), mapper, sql.getArguments());
+        List<SimpleDevice> devices = jdbcTemplate.query(sql.getSql(), mapper, sql.getArguments());
         
-        return new HashSet<YukonDevice>(devices);
+        return new HashSet<SimpleDevice>(devices);
     }
 
    @Override
@@ -116,7 +116,7 @@ public abstract class BinningDeviceGroupProviderBase<T> extends DeviceGroupProvi
     protected abstract List<T> getAllBins();
 
     @Override
-    public boolean isChildDevice(DeviceGroup base, YukonDevice device) {
+    public boolean isChildDevice(DeviceGroup base, SimpleDevice device) {
         if (base instanceof BinningDeviceGroupProviderBase.BinnedDeviceGroup) {
             BinnedDeviceGroup bdg = (BinnedDeviceGroup) base;
             
@@ -129,12 +129,12 @@ public abstract class BinningDeviceGroupProviderBase<T> extends DeviceGroupProvi
         }
     }
     
-    protected boolean isDeviceInBin(T bin, YukonDevice device) {
+    protected boolean isDeviceInBin(T bin, SimpleDevice device) {
         Set<T> binsForDevice = getBinsForDevice(device);
         return binsForDevice.contains(bin);
     }
 
-    public Set<DeviceGroup> getGroupMembership(DeviceGroup base, YukonDevice device) {
+    public Set<DeviceGroup> getGroupMembership(DeviceGroup base, SimpleDevice device) {
         if (base instanceof BinningDeviceGroupProviderBase.BinnedDeviceGroup) {
             BinnedDeviceGroup bdg = (BinnedDeviceGroup) base;
             
@@ -163,7 +163,7 @@ public abstract class BinningDeviceGroupProviderBase<T> extends DeviceGroupProvi
     }
     
     @Override
-    public boolean isDeviceInGroup(DeviceGroup base, YukonDevice device) {
+    public boolean isDeviceInGroup(DeviceGroup base, SimpleDevice device) {
         Set<DeviceGroup> groupMembership = getGroupMembership(base, device);
         return !groupMembership.isEmpty();
     }
@@ -174,7 +174,7 @@ public abstract class BinningDeviceGroupProviderBase<T> extends DeviceGroupProvi
      * @param device
      * @return
      */
-    protected abstract Set<T> getBinsForDevice(YukonDevice device);
+    protected abstract Set<T> getBinsForDevice(SimpleDevice device);
 
     protected class BinnedDeviceGroup extends MutableDeviceGroup {
         public T bin;

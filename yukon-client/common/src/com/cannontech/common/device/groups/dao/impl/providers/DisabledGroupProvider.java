@@ -3,8 +3,8 @@ package com.cannontech.common.device.groups.dao.impl.providers;
 import java.util.Collections;
 import java.util.List;
 
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.SimpleSqlFragment;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -22,7 +22,7 @@ public class DisabledGroupProvider extends DeviceGroupProviderSqlBase {
     }
     
     @Override
-    public boolean isChildDevice(DeviceGroup group, YukonDevice device) {
+    public boolean isChildDevice(DeviceGroup group, SimpleDevice device) {
         boolean result = isDeviceDisabled(device);
         return result;
     }
@@ -31,7 +31,7 @@ public class DisabledGroupProvider extends DeviceGroupProviderSqlBase {
         this.paoDao = paoDao;
     }
 
-    private boolean isDeviceDisabled(YukonDevice device) {
+    private boolean isDeviceDisabled(SimpleDevice device) {
         LiteYukonPAObject devicePao = paoDao.getLiteYukonPAO(device.getDeviceId());
         return devicePao.getDisableFlag().equals(disableFlag);
     }

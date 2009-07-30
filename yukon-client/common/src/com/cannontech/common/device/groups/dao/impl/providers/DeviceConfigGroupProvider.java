@@ -6,7 +6,7 @@ import java.util.Set;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 
-import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.StringRowMapper;
@@ -30,7 +30,7 @@ public class DeviceConfigGroupProvider extends BinningDeviceGroupProviderBase<St
     }
 
     @Override
-    protected Set<String> getBinsForDevice(YukonDevice device) {
+    protected Set<String> getBinsForDevice(SimpleDevice device) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select dc.Name ");
         sql.append("from DeviceConfiguration dc");

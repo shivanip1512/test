@@ -9,7 +9,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
-import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
@@ -57,7 +57,7 @@ public class DeviceTypeGroupProvider extends BinningDeviceGroupProviderBase<Stri
     }
 
     @Override
-    protected Set<String> getBinsForDevice(YukonDevice device) {
+    protected Set<String> getBinsForDevice(SimpleDevice device) {
         LiteYukonPAObject devicePao = paoDao.getLiteYukonPAO(device.getDeviceId());
         String type = getPaoGroupsWrapper().getPAOTypeString(devicePao.getType());
         return Collections.singleton(type);

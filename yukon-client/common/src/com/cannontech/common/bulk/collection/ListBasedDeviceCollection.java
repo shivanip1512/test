@@ -4,23 +4,23 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.model.SimpleDevice;
 
 public abstract class ListBasedDeviceCollection implements DeviceCollection {
 
     @Override
-    public Iterator<YukonDevice> iterator() {
+    public Iterator<SimpleDevice> iterator() {
         return getDeviceList().iterator();
     }
 
-    public List<YukonDevice> getDevices(int start, int size) {
+    public List<SimpleDevice> getDevices(int start, int size) {
 
-        List<YukonDevice> list = this.getDeviceList();
+        List<SimpleDevice> list = this.getDeviceList();
 
         int end = start + size;
-        List<YukonDevice> subList = list.subList(start, Math.min(end, list.size()));
+        List<SimpleDevice> subList = list.subList(start, Math.min(end, list.size()));
 
-        return new ArrayList<YukonDevice>(subList);
+        return new ArrayList<SimpleDevice>(subList);
     }
     
     @Override

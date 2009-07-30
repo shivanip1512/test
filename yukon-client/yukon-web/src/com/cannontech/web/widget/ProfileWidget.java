@@ -25,10 +25,10 @@ import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.amr.toggleProfiling.service.ToggleProfilingService;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.TemplateProcessorFactory;
 import com.cannontech.core.dao.ContactDao;
@@ -593,7 +593,7 @@ public class ProfileWidget extends WidgetControllerBase {
         
         // get pointId
         int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
-        YukonDevice device = deviceDao.getYukonDeviceObjectById(deviceId);
+        SimpleDevice device = deviceDao.getYukonDeviceObjectById(deviceId);
         
         LitePoint point = attributeService.getPointForAttribute(device, BuiltInAttribute.LOAD_PROFILE);
         Integer pointId = point.getLiteID();

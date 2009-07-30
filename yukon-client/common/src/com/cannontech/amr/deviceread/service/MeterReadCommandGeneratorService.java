@@ -5,17 +5,17 @@ import java.util.Set;
 
 import com.cannontech.amr.deviceread.dao.impl.UnreadableException;
 import com.cannontech.amr.deviceread.model.CommandWrapper;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.commands.CommandRequestDevice;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.database.data.lite.LitePoint;
 import com.google.common.collect.Multimap;
 
 public interface MeterReadCommandGeneratorService {
 
-	public  Multimap<YukonDevice, LitePoint> getPointsToRead(YukonDevice device, Set<? extends Attribute> attributes);
+	public  Multimap<SimpleDevice, LitePoint> getPointsToRead(SimpleDevice device, Set<? extends Attribute> attributes);
 	
-	public Multimap<YukonDevice, CommandWrapper> getRequiredCommands(Multimap<YukonDevice, LitePoint> pointsToRead) throws UnreadableException;
+	public Multimap<SimpleDevice, CommandWrapper> getRequiredCommands(Multimap<SimpleDevice, LitePoint> pointsToRead) throws UnreadableException;
 	
-	public List<CommandRequestDevice> getCommandRequests(YukonDevice device, Iterable<CommandWrapper> commands);
+	public List<CommandRequestDevice> getCommandRequests(SimpleDevice device, Iterable<CommandWrapper> commands);
 }

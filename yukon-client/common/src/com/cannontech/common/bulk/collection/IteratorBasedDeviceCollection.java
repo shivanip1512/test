@@ -4,31 +4,31 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.model.SimpleDevice;
 
 public abstract class IteratorBasedDeviceCollection implements DeviceCollection {
 
-    public final  List<YukonDevice> getDeviceList() {
-        Iterator<YukonDevice> iterator = iterator();
+    public final  List<SimpleDevice> getDeviceList() {
+        Iterator<SimpleDevice> iterator = iterator();
         if (iterator == null) {
             throw new NullPointerException("Iterator must not be null");
         }
-        List<YukonDevice> list = new ArrayList<YukonDevice>(100);
+        List<SimpleDevice> list = new ArrayList<SimpleDevice>(100);
         while (iterator.hasNext()) {
             list.add(iterator.next());
         }
         return list;
     }
 
-    public final List<YukonDevice> getDevices(int start, int size) {
+    public final List<SimpleDevice> getDevices(int start, int size) {
 
-        List<YukonDevice> list = this.getDeviceList();
+        List<SimpleDevice> list = this.getDeviceList();
 
         int end = start + size;
-        List<YukonDevice> subList = list.subList(start, Math.min(end,
+        List<SimpleDevice> subList = list.subList(start, Math.min(end,
                                                                  list.size()));
 
-        return new ArrayList<YukonDevice>(subList);
+        return new ArrayList<SimpleDevice>(subList);
     }
     
     @Override

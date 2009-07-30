@@ -9,9 +9,9 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.commands.GroupCommandExecutor;
 import com.cannontech.common.device.commands.GroupCommandResult;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.user.YukonUserContext;
@@ -46,10 +46,10 @@ public class GroupCommanderFailureResultsModel extends BareReportModelBase<Group
         this.command = result.getCommand();
         
         // success devices
-        Set<YukonDevice> devices = result.getResultHolder().getFailedDevices();
-        Map<YukonDevice, DeviceErrorDescription> resultErrorsMap = result.getResultHolder().getErrors();
+        Set<SimpleDevice> devices = result.getResultHolder().getFailedDevices();
+        Map<SimpleDevice, DeviceErrorDescription> resultErrorsMap = result.getResultHolder().getErrors();
         
-        for (YukonDevice device : devices) {
+        for (SimpleDevice device : devices) {
             
             // device name
             LiteYukonPAObject paoObject = paoDao.getLiteYukonPAO(device.getDeviceId());

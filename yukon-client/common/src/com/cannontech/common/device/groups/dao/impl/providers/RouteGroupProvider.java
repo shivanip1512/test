@@ -7,7 +7,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
@@ -49,7 +49,7 @@ public class RouteGroupProvider extends BinningDeviceGroupProviderBase<LiteYukon
     }
     
     @Override
-    protected Set<LiteYukonPAObject> getBinsForDevice(YukonDevice device) {
+    protected Set<LiteYukonPAObject> getBinsForDevice(SimpleDevice device) {
         LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(device.getDeviceId());
         int routeID = liteYukonPAO.getRouteID();
         if (routeID > 0) {

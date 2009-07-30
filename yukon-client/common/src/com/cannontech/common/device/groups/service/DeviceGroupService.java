@@ -3,9 +3,9 @@ package com.cannontech.common.device.groups.service;
 import java.util.Collection;
 import java.util.Set;
 
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.predicate.Predicate;
 import com.cannontech.core.dao.NotFoundException;
@@ -56,7 +56,7 @@ public interface DeviceGroupService {
      * @param group
      * @return an unmodifiable List
      */
-    public Set<YukonDevice> getDevices(Collection<? extends DeviceGroup> groups);
+    public Set<SimpleDevice> getDevices(Collection<? extends DeviceGroup> groups);
     
     /**
      * Returns a YukonDevice for every device contained in the DeviceGroup.
@@ -66,7 +66,7 @@ public interface DeviceGroupService {
      * @param maxSize
      * @return
      */
-    public Set<YukonDevice> getDevices(Collection<? extends DeviceGroup> groups, int maxSize);
+    public Set<SimpleDevice> getDevices(Collection<? extends DeviceGroup> groups, int maxSize);
     
     /**
      * Returns a count of every device contained in the DeviceGroup.

@@ -4,13 +4,13 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
-public final class BulkImporterToYukonDeviceMapper implements ObjectMapper<String, YukonDevice> {
+public final class BulkImporterToYukonDeviceMapper implements ObjectMapper<String, SimpleDevice> {
     private PaoDao paoDao = null;
     private DeviceDao deviceDao = null;
 
@@ -24,7 +24,7 @@ public final class BulkImporterToYukonDeviceMapper implements ObjectMapper<Strin
         this.deviceDao = deviceDao;
     }
 
-    public YukonDevice map(String from) throws ObjectMappingException {
+    public SimpleDevice map(String from) throws ObjectMappingException {
 
         String[] strings = from.split(",");
         if (strings.length == 0 || strings[0] == null || strings[0] == "") {
@@ -49,7 +49,7 @@ public final class BulkImporterToYukonDeviceMapper implements ObjectMapper<Strin
         }
 
         LiteYukonPAObject liteYukonPAObject = deviceList.get(0);
-        YukonDevice device = deviceDao.getYukonDevice(liteYukonPAObject);
+        SimpleDevice device = deviceDao.getYukonDevice(liteYukonPAObject);
 
         return device;
 

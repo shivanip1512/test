@@ -2,8 +2,8 @@ package com.cannontech.stars.core.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.creation.DeviceCreationService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
@@ -92,7 +92,7 @@ public class StarsTwoWayLcrYukonDeviceAssignmentServiceImpl implements StarsTwoW
         			demandRateSeconds = 300;
         		}
         		
-        		YukonDevice yukonDevice = null;
+        		SimpleDevice yukonDevice = null;
         		try {
         			yukonDevice = deviceCreationService.createDeviceByDeviceType(yukonDeviceTypeId, deviceName, Integer.parseInt(serial), routeId, true);
         			
