@@ -2,11 +2,11 @@ package com.cannontech.common.device.definition.model;
 
 import com.cannontech.common.device.model.SimpleDevice;
 
-public class DevicePointIdentifier {
+public class PaoPointIdentifier {
     private SimpleDevice yukonDevice;
     private PointIdentifier devicePointIdentifier;
     
-    public DevicePointIdentifier(SimpleDevice yukonDevice,
+    public PaoPointIdentifier(SimpleDevice yukonDevice,
             PointIdentifier devicePointIdentifier) {
         super();
         this.yukonDevice = yukonDevice;

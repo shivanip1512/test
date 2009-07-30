@@ -10,7 +10,7 @@ import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.definition.model.CommandDefinition;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.model.DeviceTag;
-import com.cannontech.common.device.definition.model.DevicePointIdentifier;
+import com.cannontech.common.device.definition.model.PaoPointIdentifier;
 import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.pao.PaoType;

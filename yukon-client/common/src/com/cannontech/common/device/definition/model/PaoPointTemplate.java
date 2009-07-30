@@ -2,8 +2,8 @@ package com.cannontech.common.device.definition.model;
 
 import com.cannontech.common.device.model.SimpleDevice;
 
-public class DevicePointTemplate {
-    public DevicePointTemplate(SimpleDevice yukonDevice,
+public class PaoPointTemplate {
+    public PaoPointTemplate(SimpleDevice yukonDevice,
             PointTemplate pointTemplate) {
         super();
         this.yukonDevice = yukonDevice;
@@ -44,7 +44,7 @@ public class DevicePointTemplate {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        DevicePointTemplate other = (DevicePointTemplate) obj;
+        PaoPointTemplate other = (PaoPointTemplate) obj;
         if (pointTemplate == null) {
             if (other.pointTemplate != null)
                 return false;

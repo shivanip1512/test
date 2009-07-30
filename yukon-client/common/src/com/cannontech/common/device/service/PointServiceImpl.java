@@ -1,7 +1,7 @@
 package com.cannontech.common.device.service;
 
 import com.cannontech.common.device.definition.model.PointIdentifier;
-import com.cannontech.common.device.definition.model.DevicePointIdentifier;
+import com.cannontech.common.device.definition.model.PaoPointIdentifier;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.core.dao.NotFoundException;
@@ -105,7 +105,7 @@ public class PointServiceImpl implements PointService {
     }
     
     @Override
-    public LitePoint getPointForDevice(DevicePointIdentifier devicePointIdentifier) throws NotFoundException {
+    public LitePoint getPointForDevice(PaoPointIdentifier devicePointIdentifier) throws NotFoundException {
         return getPointForDevice(devicePointIdentifier.getYukonDevice(), devicePointIdentifier.getDevicePointIdentifier());
     }
 
@@ -124,7 +124,7 @@ public class PointServiceImpl implements PointService {
     }
     
     @Override
-    public boolean pointExistsForDevice(DevicePointIdentifier devicePointIdentifier) {
+    public boolean pointExistsForDevice(PaoPointIdentifier devicePointIdentifier) {
         return pointExistsForDevice(devicePointIdentifier.getYukonDevice(), devicePointIdentifier.getDevicePointIdentifier());
     }
 }

@@ -19,7 +19,7 @@ import com.cannontech.common.device.definition.model.CommandDefinition;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.model.DeviceDefinitionImpl;
 import com.cannontech.common.device.definition.model.PointIdentifier;
-import com.cannontech.common.device.definition.model.DevicePointTemplate;
+import com.cannontech.common.device.definition.model.PaoPointTemplate;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
@@ -103,10 +103,10 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
                                                                1.0,
                                                                1,
                                                                0);
-        DevicePointTemplate expectedDevicePointTemplate = new DevicePointTemplate(device, expectedPointTemplate);
+        PaoPointTemplate expectedDevicePointTemplate = new PaoPointTemplate(device, expectedPointTemplate);
 
         AttributeDefinition attributeDefinition = dao.getAttributeLookup(device.getDeviceType(), BuiltInAttribute.USAGE);
-        DevicePointTemplate actualDevicePointTemplate = attributeDefinition.getPointTemplate(device);
+        PaoPointTemplate actualDevicePointTemplate = attributeDefinition.getPointTemplate(device);
         
         assertEquals("Expected point template did not match: ", expectedDevicePointTemplate, actualDevicePointTemplate);
 

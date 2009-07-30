@@ -3,7 +3,7 @@ package com.cannontech.common.device.attribute.service;
 import java.util.Set;
 
 import com.cannontech.common.device.attribute.model.Attribute;
-import com.cannontech.common.device.definition.model.DevicePointTemplate;
+import com.cannontech.common.device.definition.model.PaoPointTemplate;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.database.data.lite.LitePoint;
 
@@ -51,7 +51,7 @@ public interface AttributeService {
      */
     public boolean pointExistsForAttribute(SimpleDevice device, Attribute attribute);
     
-    public DevicePointTemplate getDevicePointTemplateForAttribute(SimpleDevice device, Attribute attribute);
+    public PaoPointTemplate getDevicePointTemplateForAttribute(SimpleDevice device, Attribute attribute);
     
     /**
      * Method used to create a point for the device and given attribute

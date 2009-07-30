@@ -1,7 +1,7 @@
 package com.cannontech.common.device.service;
 
 import com.cannontech.common.device.definition.model.PointIdentifier;
-import com.cannontech.common.device.definition.model.DevicePointIdentifier;
+import com.cannontech.common.device.definition.model.PaoPointIdentifier;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.core.dao.NotFoundException;
@@ -42,7 +42,7 @@ public interface PointService {
      * @return - Existing point
      */
     public abstract LitePoint getPointForDevice(SimpleDevice device, PointIdentifier pointIdentifier)throws NotFoundException;
-    public abstract LitePoint getPointForDevice(DevicePointIdentifier devicePointIdentifier)throws NotFoundException;
+    public abstract LitePoint getPointForDevice(PaoPointIdentifier devicePointIdentifier)throws NotFoundException;
 
     /**
      * Method to determine if a point exists for the given device
@@ -51,6 +51,6 @@ public interface PointService {
      * @return True if point exists for the device
      */
     public abstract boolean pointExistsForDevice(SimpleDevice device, PointIdentifier pointIdentifier);
-    public abstract boolean pointExistsForDevice(DevicePointIdentifier devicePointIdentifier);
+    public abstract boolean pointExistsForDevice(PaoPointIdentifier devicePointIdentifier);
 
 }

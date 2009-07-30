@@ -4,8 +4,8 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import com.cannontech.common.device.attribute.model.Attribute;
-import com.cannontech.common.device.definition.model.DevicePointTemplate;
-import com.cannontech.common.device.definition.model.DevicePointIdentifier;
+import com.cannontech.common.device.definition.model.PaoPointTemplate;
+import com.cannontech.common.device.definition.model.PaoPointIdentifier;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.model.SimpleDevice;
 
@@ -29,13 +29,13 @@ public class BasicLookupAttrDef extends AttributeDefinition {
 	
 	
 	@Override
-	public DevicePointIdentifier getPointIdentifier(SimpleDevice device) {
-	    return new DevicePointIdentifier(device, pointTemplate.getPointIdentifier());
+	public PaoPointIdentifier getPointIdentifier(SimpleDevice device) {
+	    return new PaoPointIdentifier(device, pointTemplate.getPointIdentifier());
 	}
 	
 	@Override
-	public DevicePointTemplate getPointTemplate(SimpleDevice device) {
-	    return new DevicePointTemplate(device, pointTemplate);
+	public PaoPointTemplate getPointTemplate(SimpleDevice device) {
+	    return new PaoPointTemplate(device, pointTemplate);
 	}
 	
 	@Override

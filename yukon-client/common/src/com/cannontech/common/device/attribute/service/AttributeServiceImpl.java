@@ -9,8 +9,8 @@ import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.definition.attribute.lookup.AttributeDefinition;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
-import com.cannontech.common.device.definition.model.DevicePointTemplate;
-import com.cannontech.common.device.definition.model.DevicePointIdentifier;
+import com.cannontech.common.device.definition.model.PaoPointTemplate;
+import com.cannontech.common.device.definition.model.PaoPointIdentifier;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.PointService;
 import com.cannontech.core.dao.DBPersistentDao;
@@ -49,7 +49,7 @@ public class AttributeServiceImpl implements AttributeService {
         // otherwise, fallback to the type-based device definition lookup
         BuiltInAttribute builtInAttribute = (BuiltInAttribute) attribute;
         AttributeDefinition attributeDefinition = deviceDefinitionDao.getAttributeLookup(device.getDeviceType(), builtInAttribute);
-        DevicePointIdentifier devicePointIdentifier = attributeDefinition.getPointIdentifier(device);
+        PaoPointIdentifier devicePointIdentifier = attributeDefinition.getPointIdentifier(device);
         
         LitePoint litePoint = pointService.getPointForDevice(devicePointIdentifier);
         return litePoint;
@@ -98,7 +98,7 @@ public class AttributeServiceImpl implements AttributeService {
         BuiltInAttribute builtInAttribute = (BuiltInAttribute) attribute;
         if (isAttributeSupported(device, builtInAttribute)) {
             AttributeDefinition attributeDefinition = deviceDefinitionDao.getAttributeLookup(device.getDeviceType(), builtInAttribute);
-            DevicePointIdentifier devicePointIdentifier = attributeDefinition.getPointIdentifier(device);
+            PaoPointIdentifier devicePointIdentifier = attributeDefinition.getPointIdentifier(device);
 
             return pointService.pointExistsForDevice(devicePointIdentifier);
         }
@@ -106,7 +106,7 @@ public class AttributeServiceImpl implements AttributeService {
         throw new IllegalArgumentException("Device: " + device + " does not support attribute: " + attribute.getKey());
     }
 
-    public DevicePointTemplate getDevicePointTemplateForAttribute(SimpleDevice device, Attribute attribute) {
+    public PaoPointTemplate getDevicePointTemplateForAttribute(SimpleDevice device, Attribute attribute) {
         BuiltInAttribute builtInAttribute = (BuiltInAttribute) attribute;
         AttributeDefinition attributeDefinition = deviceDefinitionDao.getAttributeLookup(device.getDeviceType(), builtInAttribute);
         if (attributeDefinition.isPointTemplateAvailable()) {
@@ -120,7 +120,7 @@ public class AttributeServiceImpl implements AttributeService {
 
         boolean pointExists = this.pointExistsForAttribute(device, attribute);
         if (!pointExists) {
-            DevicePointTemplate devicePointTemplate = getDevicePointTemplateForAttribute(device, attribute);
+            PaoPointTemplate devicePointTemplate = getDevicePointTemplateForAttribute(device, attribute);
             PointBase point = pointService.createPoint(devicePointTemplate.getYukonDevice().getDeviceId(), devicePointTemplate.getPointTemplate());
             try {
                 dbPersistentDao.performDBChange(point, Transaction.INSERT);
