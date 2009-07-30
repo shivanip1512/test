@@ -5,7 +5,7 @@
 	<!-- ScheduledGroupRequestExecutionController home.jsp -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
-    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.pageTitle">Scheduled Group Request Execution</entry>
+    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.pageTitle">Create Schedule</entry>
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.pageTitle.editMode">Edit Scheduled Group Request Execution</entry>
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.requestType">Request Type</entry>
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.requestType.attribute">Attribute</entry>

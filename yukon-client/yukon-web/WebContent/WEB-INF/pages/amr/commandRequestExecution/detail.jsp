@@ -22,14 +22,12 @@
     
 <cti:standardPage title="${pageTitle}" module="amr">
 
-    <cti:standardMenu menuSelection="commandRequestExecution|allCommands"/>
+    <cti:standardMenu menuSelection=""/>
     
     <cti:breadCrumbs>
     
         <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
         
-        <%-- metering home --%>
-        <cti:crumbLink url="/spring/meter/start" title="Metering" />
         
         <%-- cre list --%>
         <cti:url var="creListUrl" value="/spring/amr/commandRequestExecutionResults/list">

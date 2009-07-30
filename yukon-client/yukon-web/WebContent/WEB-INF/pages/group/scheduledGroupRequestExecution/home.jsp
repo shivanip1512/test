@@ -26,13 +26,18 @@
 
 <cti:standardPage title="${pageTitle}" module="amr">
 
-    <cti:standardMenu menuSelection="devicegroups|scheduledGroupRequestExecution"/>
+    <cti:standardMenu menuSelection="commandRequestExecution|createSchedule"/>
 
 		<%-- BREAD CRUMBS --%>
        	<cti:breadCrumbs>
     	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-    	    <cti:crumbLink url="/spring/group/editor/home" title="Device Groups" />
+    	    <cti:crumbLink url="/spring/meter/start" title="Metering" />
+    	    
+			<cti:msg var="schedulesLink" key="yukon.web.menu.config.amr.commandRequestExecution"/>
+        	<cti:crumbLink url="/spring/meter/start" title="${schedulesLink}" />
+        
     	    <cti:crumbLink title="${pageTitle}"/>
+    	    
     	</cti:breadCrumbs>
         
         <%-- JAVASCRIPT --%>

@@ -95,9 +95,9 @@
 <entry key="yukon.web.menu.config.amr.devicegroups.groupMeterRead">Group Attribute Read</entry>
 <entry key="yukon.web.menu.config.amr.devicegroups.scheduledGroupRequestExecution">Scheduled Request</entry>
 <entry key="yukon.web.menu.config.amr.devicegroups.updater">Upload</entry>
-<entry key="yukon.web.menu.config.amr.commandRequestExecution">Logs</entry>
-<entry key="yukon.web.menu.config.amr.commandRequestExecution.allRequests">Requests</entry>
-<entry key="yukon.web.menu.config.amr.commandRequestExecution.scheduledGroupRequests">Scheduled Request Jobs</entry>
+<entry key="yukon.web.menu.config.amr.commandRequestExecution">Schedules</entry>
+<entry key="yukon.web.menu.config.amr.commandRequestExecution.createSchedule">Create</entry>
+<entry key="yukon.web.menu.config.amr.commandRequestExecution.scheduleLogs">Logs</entry>
 
 <!-- Capcontrol Module -->
 <entry key="yukon.web.menu.config.capcontrol.create">Create</entry>

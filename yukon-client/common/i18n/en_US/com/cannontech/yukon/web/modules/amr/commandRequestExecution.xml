@@ -61,7 +61,7 @@
     <!-- ScheduledGroupRequestExecutionController jobs.jsp -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
-    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.pageTitle">Scheduled Request Jobs</entry>
+    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.pageTitle">Schedule Logs</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.filter.section">Filters</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.filter.dateFrom">From</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.filter.dateTo">To</entry>
@@ -73,7 +73,7 @@
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.filter.disabled">Disabled</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.filter.excludePending">Exclude Pending</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.filter.allWord">All</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.executions.section">Jobs</entry>
+    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.executions.section">Logs</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.executions.tableHeader.type">Request Type</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.executions.tableHeader.attributeOrCommand">Attribute/Command</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.executions.tableHeader.attributeOrCommand.attribute">Attribute</entry>
@@ -88,7 +88,7 @@
     <!-- ScheduledGroupRequestExecutionController jobDetail.jsp -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
-    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.pageTitle">Job Detail</entry>
+    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.pageTitle">Schedule Detail</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.section">Info</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.jobType">Job Type</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.creType">Request Type</entry>
@@ -119,8 +119,8 @@
 	     View a listing of every time this job has run.
 	     <br><br>
     ]]></entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.editScheduleButton">Edit Job</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.enableJobButton">Enable Job</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.disableJobButton">Disable Job</entry>
+    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.editScheduleButton">Edit Schedule</entry>
+    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.enableJobButton">Enable Schedule</entry>
+    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.disableJobButton">Disable Schedule</entry>
     
 </properties>

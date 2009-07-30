@@ -300,21 +300,18 @@
             <option id="groupMeterRead">
               <link>/spring/group/groupMeterRead/homeGroup</link>
             </option>
-            <option id="scheduledGroupRequestExecution">
-              <link>/spring/group/scheduledGroupRequestExecution/home</link>
-            </option>
             <option id="updater">
               <link>/spring/group/updater/upload</link>
             </option>
           </links>
 	    </option>
 	    <option id="commandRequestExecution">
-		  <link>/spring/amr/commandRequestExecutionResults/list</link>
+		  <link>/spring/group/scheduledGroupRequestExecution/home</link>
 		  <links>
-		    <option id="allRequests">
-              <link>/spring/amr/commandRequestExecutionResults/list</link>
+		    <option id="createSchedule">
+              <link>/spring/group/scheduledGroupRequestExecution/home</link>
             </option>
-		    <option id="scheduledGroupRequests">
+		    <option id="scheduleLogs">
               <link>/spring/group/scheduledGroupRequestExecutionResults/jobs</link>
             </option>
           </links>
