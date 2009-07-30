@@ -1,5 +1,6 @@
 package com.cannontech.esub.util;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TimerTask;
@@ -291,38 +292,43 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
         AlarmTextElement te = (AlarmTextElement) lxComponent;
         boolean inAlarm = false;
 
-        int[] deviceIds = te.getDeviceIds();
-        for (int j = 0; j < deviceIds.length; j++) {
-            List deviceSignals = DaoFactory.getAlarmDao().getSignalsForPao(deviceIds[j]);
-            for (Iterator iter = deviceSignals.iterator(); iter.hasNext();) {
-                Signal signal = (Signal) iter.next();
-                // find out why there is a null in the list!
-                if(signal != null) {
-                    if (TagUtils.isAlarmUnacked(signal.getTags())) {
-                        inAlarm = true;
-                    }
+        int[] paoIds = te.getDeviceIds();
+        List<Integer> paoIdsList = new ArrayList<Integer>();
+        for(int paoId : paoIds) {
+            paoIdsList.add(paoId);
+        }
+        List<Signal> deviceSignals = DaoFactory.getAlarmDao().getSignalsForPaos(paoIdsList);
+        for (Iterator<Signal> iter = deviceSignals.iterator(); iter.hasNext();) {
+            Signal signal = iter.next();
+            // find out why there is a null in the list!
+            if(signal != null) {
+                if (TagUtils.isAlarmUnacked(signal.getTags())) {
+                    inAlarm = true;
                 }
             }
         }
 
         int[] pointIds = te.getPointIds();
-        for (int j = 0; !inAlarm && j < pointIds.length; j++) {
-            List pointSignals = DaoFactory.getAlarmDao().getSignalsForPoint(pointIds[j]);
-            for (Iterator iter = pointSignals.iterator(); iter.hasNext();) {
-                Signal signal = (Signal) iter.next();
-                //find out why there is a null in the list!
-                if(signal != null) {
-                    if (TagUtils.isAlarmUnacked(signal.getTags())) {
-                        inAlarm = true;
-                    }
+        List<Integer> pointIdsList = new ArrayList<Integer>();
+        for(int pointId : pointIds) {
+            pointIdsList.add(pointId);
+        }
+        List<Signal> pointSignals = DaoFactory.getAlarmDao().getSignalsForPoints(pointIdsList);
+        for (Iterator<Signal> iter = pointSignals.iterator(); iter.hasNext();) {
+            Signal signal = iter.next();
+            //find out why there is a null in the list!
+            if(signal != null) {
+                if (TagUtils.isAlarmUnacked(signal.getTags())) {
+                    inAlarm = true;
                 }
             }
         }
+            
         int[] alarmCategoryIds = te.getAlarmCategoryIds();
         for (int j = 0; !inAlarm && j < alarmCategoryIds.length; j++) {
-            List alarmCategorySignals = DaoFactory.getAlarmDao().getSignalsForAlarmCategory(alarmCategoryIds[j]);
-            for (Iterator iter = alarmCategorySignals.iterator(); iter.hasNext();) {
-                Signal signal = (Signal) iter.next();
+            List<Signal> alarmCategorySignals = DaoFactory.getAlarmDao().getSignalsForAlarmCategory(alarmCategoryIds[j]);
+            for (Iterator<Signal> iter = alarmCategorySignals.iterator(); iter.hasNext();) {
+                Signal signal = iter.next();
                 if (TagUtils.isAlarmUnacked(signal.getTags())) {
                     inAlarm = true;
                 }

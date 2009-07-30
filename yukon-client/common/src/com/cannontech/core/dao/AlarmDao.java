@@ -18,7 +18,7 @@ public interface AlarmDao {
      * @param 
      * @return	List<Signal>
      */
-    public List<Signal> getSignalsForPoints(int[] pointIds);
+    public List<Signal> getSignalsForPoints(List<Integer> pointIds);
 
     /**
      * Return a list of signals for the given pao id
@@ -32,7 +32,7 @@ public interface AlarmDao {
      * @param paoId
      * @return	List<Signal>
      */
-    public List<Signal> getSignalsForPao(int[] paoIds);
+    public List<Signal> getSignalsForPaos(List<Integer> paoIds);
 
     /**
      * Return a list of signals for the given alarm category
@@ -46,6 +46,6 @@ public interface AlarmDao {
      * @param acId
      * @return	List<Signal>
      */
-    public List<Signal> getSignalsForAlarmCategories(int[] acIds);
+    public List<Signal> getSignalsForAlarmCategories(List<Integer> acIds);
 
 }

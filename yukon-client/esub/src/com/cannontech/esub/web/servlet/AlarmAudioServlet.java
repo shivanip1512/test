@@ -65,11 +65,11 @@ public class AlarmAudioServlet extends HttpServlet {
         String pointIdStr = object.getString("pointIds");
         String alarmCategoryIdStr = object.getString("alarmCategoryIds");
 
-        int[] deviceIds = StringUtils.parseIntString(deviceIdStr);
-        int[] pointIds = StringUtils.parseIntString(pointIdStr);
-        int[] alarmCategoryIds = StringUtils.parseIntString(alarmCategoryIdStr);
+        List<Integer> deviceIds = StringUtils.parseIntStringForList(deviceIdStr);
+        List<Integer> pointIds = StringUtils.parseIntStringForList(pointIdStr);
+        List<Integer> alarmCategoryIds = StringUtils.parseIntStringForList(alarmCategoryIdStr);
 
-        List<Signal> deviceSigs = DaoFactory.getAlarmDao().getSignalsForPao(deviceIds);
+        List<Signal> deviceSigs = DaoFactory.getAlarmDao().getSignalsForPaos(deviceIds);
         List<Signal> pointSigs = DaoFactory.getAlarmDao().getSignalsForPoints(pointIds);
         List<Signal> alarmCategorySigs = DaoFactory.getAlarmDao().getSignalsForAlarmCategories(alarmCategoryIds);
 
@@ -82,8 +82,7 @@ public class AlarmAudioServlet extends HttpServlet {
         // Possibly flag the client to start alarm audio playing
         if (lastAlarmTimestamp != null && audioEnabled) {
             Date lastMuteTimestamp = (Date) session.getAttribute(MUTE_TIMESTAMP_SESSION_KEY);
-            if(lastMuteTimestamp == null ||
-                    lastMuteTimestamp.before(lastAlarmTimestamp)) {
+            if(lastMuteTimestamp == null || lastMuteTimestamp.before(lastAlarmTimestamp)) {
                 audioSounding = true;
             }
         }

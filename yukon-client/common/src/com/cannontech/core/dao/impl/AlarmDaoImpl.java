@@ -1,7 +1,11 @@
 package com.cannontech.core.dao.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.cannontech.core.dao.AlarmDao;
@@ -29,35 +33,33 @@ public final class AlarmDaoImpl implements AlarmDao {
         return array;
 	}
 	
-    public List<Signal> getSignalsForPoints(int[] pointIds) {
+    public List<Signal> getSignalsForPoints(List<Integer> pointIds) {
 		List<Signal> sigList = new ArrayList<Signal>();
-		for (int i = 0; i < pointIds.length; i++) {
-			List<Signal> sl = getSignalsForPoint(pointIds[i]);
-			sigList.addAll(sl);
-		}
+		Set<Integer> pointIdSet = new HashSet<Integer>(pointIds);
+		Map<Integer, Set<Signal>> signalMap = dynamicDataSource.getSignals(pointIdSet);
+		Collection<Set<Signal>> signalMapValues = signalMap.values();
+        Iterator<Set<Signal>> iter = signalMapValues.iterator();
+        while (iter.hasNext()) {
+            Set<Signal> singalSet = iter.next();
+            sigList.addAll(singalSet);
+        }
 		return sigList;
 	}
 	
     public List<Signal> getSignalsForPao(int paoId) {
-		List<Signal> paoSignals = new ArrayList<Signal>();
 		List<LitePoint> points = pointDao.getLitePointsByPaObjectId(paoId);
-		for (LitePoint point : points) {
-			List<Signal> signals = getSignalsForPoint(point.getPointID());
-			paoSignals.addAll(signals);
+		List<Integer> pointIds = new ArrayList<Integer>();
+		for(LitePoint point : points) {
+		    pointIds.add(point.getPointID());
 		}
-		return paoSignals;
+		
+		return getSignalsForPoints(pointIds);
 	}
 	
-    public List<Signal> getSignalsForPao(int[] paoIds) {
+    public List<Signal> getSignalsForPaos(List<Integer> paoIds) {
 		List<Signal> paoSignals = new ArrayList<Signal>();
-		
-		for (int i = 0; i < paoIds.length; i++) {
-			int paoId = paoIds[i];
-            List<LitePoint> points = pointDao.getLitePointsByPaObjectId(paoId);
-			for (LitePoint point : points) {
-				List<Signal> signals = getSignalsForPoint(point.getPointID());
-				paoSignals.addAll(signals);
-			}
+		for (Integer paoId : paoIds) {
+           paoSignals.addAll(getSignalsForPao(paoId));
 		}
 		return paoSignals;
 	}
@@ -66,10 +68,10 @@ public final class AlarmDaoImpl implements AlarmDao {
         return new ArrayList<Signal>(dynamicDataSource.getSignalsByCategory(acId));
 	}
 	
-	public List<Signal> getSignalsForAlarmCategories(int[] acIds) {
+	public List<Signal> getSignalsForAlarmCategories(List<Integer> acIds) {
 		List<Signal> acSignals = new ArrayList<Signal>();
-		for (int i = 0; i < acIds.length; i++) {
-			List<Signal> signals = new ArrayList<Signal>(dynamicDataSource.getSignalsByCategory(acIds[i]));
+		for (Integer acId : acIds) {
+			List<Signal> signals = new ArrayList<Signal>(dynamicDataSource.getSignalsByCategory(acId));
 			acSignals.addAll(signals);
 		}
 		return acSignals;

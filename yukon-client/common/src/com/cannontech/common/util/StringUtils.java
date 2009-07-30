@@ -1,5 +1,7 @@
 package com.cannontech.common.util;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 public final class StringUtils {
@@ -97,6 +99,25 @@ public final class StringUtils {
 
         return intArr;
     }
+    
+    /**
+     * Parase a comma separated string into an List<Integer>
+     * @param s
+     * @return List<Integer>
+     */
+    public static List<Integer> parseIntStringForList(String s) {
+        List<Integer> integerList = new ArrayList<Integer>();
+        if(s == null) {
+            return integerList;
+        }
+        StringTokenizer tok = new StringTokenizer(s, ",", false);
+        while(tok.hasMoreTokens()) {
+            Integer newInteger = Integer.parseInt(tok.nextToken());
+            integerList.add(newInteger);
+        }
+        return integerList;        
+    }
+    
     /**
 	 * Parase a comma separated string into an int[]
 	 * @param s

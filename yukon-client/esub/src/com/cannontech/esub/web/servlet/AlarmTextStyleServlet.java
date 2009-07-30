@@ -54,69 +54,65 @@ public class AlarmTextStyleServlet extends HttpServlet {
         String alarmCategoryIdStr = object.getString("alarmCategoryIds");
         String fill1 = object.getString("fill1");
         String fill2 = object.getString("fill2");
+        boolean inAlarm = false;
 	
-		/* check if any of the points are in alarm*/		
-		int[] deviceIds = StringUtils.parseIntString(deviceIdStr);
-		int[] pointIds = StringUtils.parseIntString(pointIdStr);	
-		int[] alarmCategoryIds = StringUtils.parseIntString(alarmCategoryIdStr);
-		
-		boolean inAlarm = false;
-		
-		breakDevice:
-		for(int j = 0; j < deviceIds.length; j++) {
-			List<Signal> deviceSignals = DaoFactory.getAlarmDao().getSignalsForPao(deviceIds[j]);
-			for (Iterator<Signal> iter = deviceSignals.iterator(); iter.hasNext();) {
-				Signal signal  = iter.next();
-				// find out why there is a null in the list!
-				if(signal != null) {
-    				if(TagUtils.isAlarmUnacked(signal.getTags())) {
-    					inAlarm = true;
-    					break breakDevice;
-    				}
-				}
-			}
-		}
-		breakPoint:
-		for(int j = 0; !inAlarm && j < pointIds.length; j++) {
-			List<Signal> pointSignals = DaoFactory.getAlarmDao().getSignalsForPoint(pointIds[j]);
-			for (Iterator<Signal> iter = pointSignals.iterator(); iter.hasNext();) {
-				Signal signal = iter.next();
-				// find out why there is a null in the list!
-				if(signal != null) {
-    				if(TagUtils.isAlarmUnacked(signal.getTags())) {
-    					inAlarm = true;
-    					break breakPoint;
-    				}
-				}
-			}
-		}
-		breakAlarmCategory:
-		for(int j = 0; !inAlarm && j < alarmCategoryIds.length; j++) {
-			List<Signal> alarmCategorySignals = DaoFactory.getAlarmDao().getSignalsForAlarmCategory(alarmCategoryIds[j]);
-			for (Iterator<Signal> iter = alarmCategorySignals.iterator(); iter.hasNext();) {
-				Signal signal = iter.next();
-				// find out why there is a null in the list!
-				if(signal != null) {
-    				if(TagUtils.isAlarmUnacked(signal.getTags())) {
-    					inAlarm = true;
-    					break breakAlarmCategory;
-    				}
-				}
-			}
-		}
-		
-		/* write the correct svg style */
-		Writer writer = resp.getWriter();
-		
-		if(!inAlarm) { 
-			writer.write(fill1);
-		}
-		else {
-			writer.write(fill2);
-		}
-		
-		writer.flush();
-	}
+        /* check if any of the points on these devices are in alarm*/
+        List<Integer> deviceIds = StringUtils.parseIntStringForList(deviceIdStr);
+        List<Signal> deviceSignals = DaoFactory.getAlarmDao().getSignalsForPaos(deviceIds);
+        for (Iterator<Signal> iter = deviceSignals.iterator(); iter.hasNext();) {
+            Signal signal  = iter.next();
+            // find out why there is a null in the list!
+            if(signal != null) {
+                if(TagUtils.isAlarmUnacked(signal.getTags())) {
+                    inAlarm = true;
+                    writeTextStyle(resp, fill1, fill2, inAlarm);
+                    return;
+                }
+            }
+        }
+
+        /* check if any of the points are in alarm*/    
+        List<Integer> pointIds = StringUtils.parseIntStringForList(pointIdStr);
+        List<Signal> pointSignals = DaoFactory.getAlarmDao().getSignalsForPoints(pointIds);
+        for (Iterator<Signal> iter = pointSignals.iterator(); iter.hasNext();) {
+            Signal signal = iter.next();
+            // find out why there is a null in the list!
+            if(signal != null) {
+                if(TagUtils.isAlarmUnacked(signal.getTags())) {
+                    inAlarm = true;
+                    writeTextStyle(resp, fill1, fill2, inAlarm);
+                    return;
+                }
+            }
+        }
+        
+        /* check if any of the alarm categories are in alarm*/
+        List<Integer> alarmCategoryIds = StringUtils.parseIntStringForList(alarmCategoryIdStr);
+        List<Signal> alarmCategorySignals = DaoFactory.getAlarmDao().getSignalsForAlarmCategories(alarmCategoryIds);
+        for (Iterator<Signal> iter = alarmCategorySignals.iterator(); iter.hasNext();) {
+            Signal signal = iter.next();
+            // find out why there is a null in the list!
+            if(signal != null) {
+                if(TagUtils.isAlarmUnacked(signal.getTags())) {
+                    inAlarm = true;
+                    writeTextStyle(resp, fill1, fill2, inAlarm);
+                    return;
+                }
+            }
+        }
+        
+        writeTextStyle(resp, fill1, fill2, inAlarm);
+    }
+	
+	private void writeTextStyle(HttpServletResponse resp, String fill1, String fill2, boolean inAlarm) throws IOException {
+        Writer writer = resp.getWriter();
+        if(!inAlarm) { 
+            writer.write(fill1);
+        } else {
+            writer.write(fill2);
+        }
+        writer.flush();
+    }
 
 	/**
 	 * @see javax.servlet.Servlet#init(ServletConfig)

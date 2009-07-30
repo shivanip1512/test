@@ -176,6 +176,14 @@ public abstract class BaseSVGGenerator implements ISVGGenerator {
             {
                 elem = createLxLine (doc, (LxLine) comp);
             }
+            else
+            if( comp instanceof DynamicGraphElement ) {
+                elem = createDynamicGraph(doc, (DynamicGraphElement) comp);
+            }
+            else 
+            if( comp instanceof CurrentAlarmsTable ) {
+                elem = createAlarmsTable(doc, (CurrentAlarmsTable) comp);
+            }
             else            
             if( comp instanceof LxAbstractRectangle) {
                 elem = createRectangle(doc, (LxAbstractRectangle) comp);
@@ -195,14 +203,6 @@ public abstract class BaseSVGGenerator implements ISVGGenerator {
             else 
             if( comp instanceof DynamicText ) {
                 elem = createDynamicText(doc, (DynamicText) comp);
-            }
-            else
-            if( comp instanceof DynamicGraphElement ) {
-                elem = createDynamicGraph(doc, (DynamicGraphElement) comp);
-            }
-            else 
-            if( comp instanceof CurrentAlarmsTable ) {
-                elem = createAlarmsTable(doc, (CurrentAlarmsTable) comp);
             }
             else
             if( comp instanceof AlarmTextElement ) {

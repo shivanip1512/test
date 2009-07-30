@@ -135,17 +135,19 @@ public class PointAlarmTableModel extends AbstractTableModel {
         HashSet<Signal> allSignals = new HashSet<Signal>();
 		rows = new ArrayList<AlarmRow>();
 		
-		for (int i = 0; i < _deviceIds.length; i++) {
-			int deviceId = _deviceIds[i];
-			List<Signal> deviceSignals = DaoFactory.getAlarmDao().getSignalsForPao(deviceId);
-            allSignals.addAll(deviceSignals);
-		}
+		List<Integer> paoIdsList = new ArrayList<Integer>();
+        for(int paoId : _deviceIds) {
+            paoIdsList.add(paoId);
+        }
+		List<Signal> deviceSignals = DaoFactory.getAlarmDao().getSignalsForPaos(paoIdsList);
+        allSignals.addAll(deviceSignals);
 		
-		for (int i = 0; i < _pointIds.length; i++) {
-			int pointId = _pointIds[i];
-			List<Signal> pointSignals = DaoFactory.getAlarmDao().getSignalsForPoint(pointId);
-			allSignals.addAll(pointSignals);
-		}
+		List<Integer> pointIdsList = new ArrayList<Integer>();
+        for(int pointId : _pointIds) {
+            pointIdsList.add(pointId);
+        }
+		List<Signal> pointSignals = DaoFactory.getAlarmDao().getSignalsForPoints(pointIdsList);
+		allSignals.addAll(pointSignals);
 		
 		for (int i = 0; i < _alarmCategoryIds.length; i++) {
 			int alarmCategoryId = _alarmCategoryIds[i];

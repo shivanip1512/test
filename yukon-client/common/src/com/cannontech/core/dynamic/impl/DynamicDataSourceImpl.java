@@ -76,10 +76,8 @@ public class DynamicDataSourceImpl implements DynamicDataSource {
     }
 
     public Map<Integer, Set<Signal>> getSignals(Set<Integer> pointIds) {
-        Set<Integer> notCachedPointIds =
-            new HashSet<Integer>(pointIds);
-        Map<Integer, Set<Signal>> signals =
-            new HashMap<Integer, Set<Signal>>((int)(pointIds.size()/0.75f)+1);
+        Set<Integer> notCachedPointIds = new HashSet<Integer>(pointIds);
+        Map<Integer, Set<Signal>> signals = new HashMap<Integer, Set<Signal>>((int)(pointIds.size()/0.75f)+1);
         
         // Get whatever we can out of the cache first
         for(Integer id : pointIds) {
@@ -91,10 +89,15 @@ public class DynamicDataSourceImpl implements DynamicDataSource {
         }
         
         // Request to dispatch for the rest
-        Map<Integer, Set<Signal>> retrievedSignals = 
-            dispatchProxy.getSignals(notCachedPointIds);
-        
-        signals.putAll(retrievedSignals);
+        if(!notCachedPointIds.isEmpty()) {
+            Map<Integer, Set<Signal>> retrievedSignals = dispatchProxy.getSignals(notCachedPointIds);
+            signals.putAll(retrievedSignals);
+            for(Integer pointId : notCachedPointIds) {
+                Set<Signal> pointSignals = retrievedSignals.get(pointId);
+                if(pointSignals == null) pointSignals = Collections.emptySet();
+                dynamicDataCache.handleSignals(pointSignals, pointId);
+            }
+        }
         return signals;
     }
     
