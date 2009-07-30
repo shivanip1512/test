@@ -57,14 +57,14 @@ public class CommandRequestExecutionResultsModel extends BareReportModelBase<Com
     		row.status = deviceErrorDescription.getDescription();
     		
     		row.deviceName = null;
-    		int deviceId = result.getDeviceId();
-    		if (deviceId > 0) {
+    		Integer deviceId = result.getDeviceId();
+    		if (deviceId != null) {
     			row.deviceName = deviceDao.getFormattedName(deviceId);
     		}
     		
     		row.routeName = null;
-    		int routeId = result.getRouteId();
-    		if (routeId > 0) {
+    		Integer routeId = result.getRouteId();
+    		if (routeId != null) {
     			LiteYukonPAObject routePao = paoDao.getLiteYukonPAO(deviceId);
     			row.routeName = routePao.getPaoName();
     		}
