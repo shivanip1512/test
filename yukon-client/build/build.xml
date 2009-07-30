@@ -236,7 +236,7 @@
 				<include name="*.jar"/>
 			</fileset>
 		</move>
-		<signjar alias="${jarsign.alias}" storepass="${jarsign.storepass}" keystore="${jarsign.keystore}" destDir="${yukon.lib}>
+		<signjar alias="${jarsign.alias}" storepass="${jarsign.storepass}" keystore="${jarsign.keystore}" destDir="${yukon.lib}">
 			<fileset dir="${yukon.base}/lib-temp">
 				<include name="*.jar"/>
 			</fileset>
