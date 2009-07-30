@@ -113,22 +113,25 @@
     <target name="build-client" depends="init,clean,svn-info-build">
         <echo message="building module yukon-client" />
         <mkdir dir="${log.dir}" />
-
+		
+		<ant dir="${basedir}/yukon-client/build" >
+			<target name="clean"/>
+			<target name="build"/>
+			<property name="yukon.build.version" value="${yukon.build.label}"/>
+			<property name="yukon.build.details" value="${yukon.build.details}"/>
+		</ant>
+		
+		<!--
         <exec failonerror="false" dir="${basedir}/yukon-client/build" executable="cmd.exe" resultproperty="errorcode">
             <arg line='/c antExit.bat -Dyukon.build.version="${yukon.build.label}" -Dyukon.build.details="${yukon.build.details}" clean build'/>
         </exec>
 
-        <condition property="out" value="${erroroutput}" else="">
-            <isfailure code="${errorcode}"/>
-        </condition>
-
-        <echo message="${out}" />
-
-        <fail message="${errormessage}">
+        <fail>
             <condition>
                 <isfailure code="${errorcode}" />
             </condition>
         </fail>
+		-->
 
         <!-- yukon-help.jar -->
         <ant dir="${basedir}/yukon-client/build"
