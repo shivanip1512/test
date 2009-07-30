@@ -11,6 +11,7 @@ import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.springframework.core.io.Resource;
@@ -94,7 +95,7 @@ public class SimpleTemplateProcessor {
                         }
                     }
                 } else {
-                    result = value.toString();
+                    result = ObjectUtils.toString(value);
                 }
             }
         }
