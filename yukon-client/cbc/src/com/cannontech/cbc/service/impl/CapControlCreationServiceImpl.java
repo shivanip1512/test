@@ -27,7 +27,7 @@ import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.common.device.DeviceType;
+import com.cannontech.common.pao.PaoType;
 
 public class CapControlCreationServiceImpl implements CapControlCreationService {
 
@@ -107,7 +107,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
                 
             default : // must be a cbc
                 CapbankController controller = new CapbankController();
-                DeviceType deviceType = DeviceType.getForId(type);
+                PaoType deviceType = PaoType.getForId(type);
                 controller.setScanGroup(0);
                 controller.setScanType(DeviceScanRate.TYPE_GENERAL);
                 controller.setName(name);
@@ -310,7 +310,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 		boolean success = capbankControllerDao.add(controller);
 
 		if (success) {
-			String type = DeviceType.getForId(controller.getType()).name();
+			String type = PaoType.getForId(controller.getType()).name();
 			sendDBChangeMessage(controller.getId(),DBChangeMsg.CHANGE_TYPE_ADD,type);
 		}
 		
@@ -323,7 +323,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 		boolean success = capbankControllerDao.createControllerFromTemplate(template, controller);
 
 		if (success) {
-			String devType = DeviceType.getForId(controller.getType()).name();
+			String devType = PaoType.getForId(controller.getType()).name();
 			sendDBChangeMessage(controller.getId(),DBChangeMsg.CHANGE_TYPE_ADD,devType);
 		}
 		
@@ -333,7 +333,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	@Override
 	public boolean assignController(CapbankController controller, int capbankId) {
 		boolean ret = capbankControllerDao.assignController(capbankId, controller.getId());
-		DeviceType deviceType = DeviceType.getForId(controller.getType());
+		PaoType deviceType = PaoType.getForId(controller.getType());
 		
 		if (ret) {
 			sendDBChangeMessage(controller.getId(),DBChangeMsg.CHANGE_TYPE_UPDATE, deviceType.getPaoTypeName());

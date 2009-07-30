@@ -10,7 +10,6 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.cannontech.common.device.DeviceType;
 import com.cannontech.common.device.attribute.service.AttributeServiceImpl;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDaoImplTest;
@@ -22,6 +21,7 @@ import com.cannontech.common.device.definition.service.DeviceDefinitionService.P
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.PointServiceImpl;
 import com.cannontech.common.mock.MockPointDao;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.point.PointBase;
@@ -215,7 +215,7 @@ public class DeviceDefinitionServiceImplTest {
 
         
         Set<PointTemplate> actualTemplates = service.getPointTemplatesToAdd(device,
-                                                                            new DeviceDefinitionImpl(DeviceType.getForId(1019),
+                                                                            new DeviceDefinitionImpl(PaoType.getForId(1019),
                                                                                                      "Device1",
                                                                                                      "display1",
                                                                                                      "MCT310",
@@ -257,7 +257,7 @@ public class DeviceDefinitionServiceImplTest {
         expectedTemplates.add(new PointIdentifier(3, 1));
 
         Set<PointIdentifier> actualTemplates = service.getPointTemplatesToRemove(device,
-                                                                               new DeviceDefinitionImpl(DeviceType.getForId(1022),
+                                                                               new DeviceDefinitionImpl(PaoType.getForId(1022),
                                                                                                         "Device2",
                                                                                                         "display2",
                                                                                                         "MCT370",
@@ -314,7 +314,7 @@ public class DeviceDefinitionServiceImplTest {
         pair.oldDefinitionTemplate = new PointIdentifier(1, 1);
         expectedTemplates.add(pair);
         List<PointTemplateTransferPair> actualTemplates = service.getPointTemplatesToTransfer(device,
-                                                                                 new DeviceDefinitionImpl(DeviceType.getForId(1022),
+                                                                                 new DeviceDefinitionImpl(PaoType.getForId(1022),
                                                                                                           "Device2",
                                                                                                           "display2",
                                                                                                           "MCT370",

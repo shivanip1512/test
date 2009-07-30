@@ -4,15 +4,15 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.springframework.core.style.ToStringCreator;
 
-import com.cannontech.common.device.DeviceType;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 
 public class SimpleDevice extends YukonPao {
     public SimpleDevice(int deviceId, int type) {
-        this(deviceId, DeviceType.getForId(type));
+        this(deviceId, PaoType.getForId(type));
     }
 
-    public SimpleDevice(int deviceId, DeviceType type) {
+    public SimpleDevice(int deviceId, PaoType type) {
         super(deviceId, type.getDeviceTypeId());
     }
     
@@ -27,11 +27,11 @@ public class SimpleDevice extends YukonPao {
         setPaoId(deviceId);
     }
     
-    public DeviceType getDeviceType() {
-        return DeviceType.getForId(getType());
+    public PaoType getDeviceType() {
+        return PaoType.getForId(getType());
     }
     
-    public void setDeviceType(DeviceType deviceType) {
+    public void setDeviceType(PaoType deviceType) {
         setType(deviceType.getDeviceTypeId());
     }
 

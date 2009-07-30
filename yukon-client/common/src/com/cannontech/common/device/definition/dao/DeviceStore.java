@@ -8,13 +8,13 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.cannontech.common.device.DeviceType;
 import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.device.definition.model.castor.Attribute;
 import com.cannontech.common.device.definition.model.castor.Command;
 import com.cannontech.common.device.definition.model.castor.Device;
 import com.cannontech.common.device.definition.model.castor.Point;
 import com.cannontech.common.device.definition.model.castor.Tag;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.point.PointTypes;
 
 public class DeviceStore {
@@ -24,7 +24,7 @@ public class DeviceStore {
 	private boolean enabled = true;
 	private List<String> inheritedIds = new ArrayList<String>();
 	private boolean isAbstract = false;
-	private DeviceType deviceType = null;
+	private PaoType deviceType = null;
 	
 	
 	// override-able if not already set by a child
@@ -45,7 +45,7 @@ public class DeviceStore {
 		this.setInheritedIds(castor.getInherits());
 		
 		if (!isAbstract()) {
-		    DeviceType deviceType = DeviceType.valueOf(getId());
+		    PaoType deviceType = PaoType.valueOf(getId());
 		    this.setDeviceType(deviceType);
 		}
 		
@@ -97,7 +97,7 @@ public class DeviceStore {
 	public void setAbstract(boolean isAbstract) {
 		this.isAbstract = isAbstract;
 	}
-	private void setDeviceType(DeviceType deviceType) {
+	private void setDeviceType(PaoType deviceType) {
 		this.deviceType = deviceType;
 	}
 	
@@ -236,7 +236,7 @@ public class DeviceStore {
 	public boolean isAbstract() {
 		return isAbstract;
 	}
-	public DeviceType getDeviceType() {
+	public PaoType getDeviceType() {
 		return deviceType;
 	}
 	

@@ -12,7 +12,6 @@ import junit.framework.TestCase;
 
 import org.springframework.core.io.UrlResource;
 
-import com.cannontech.common.device.DeviceType;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.definition.attribute.lookup.AttributeDefinition;
@@ -23,6 +22,7 @@ import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.device.definition.model.DevicePointTemplate;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.data.lite.LiteState;
@@ -193,7 +193,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
     public void testGetDeviceDefinition() {
 
         // Test with supported device type
-        DeviceDefinition expectedDefinition = new DeviceDefinitionImpl(DeviceType.getForId(1019),
+        DeviceDefinition expectedDefinition = new DeviceDefinitionImpl(PaoType.getForId(1019),
                                                                        "Device 1",
                                                                        "display1",
                                                                        "MCT310",
@@ -211,18 +211,18 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
 
         // Test with supported change group
         Set<DeviceDefinition> expectedDeviceTypesList = new HashSet<DeviceDefinition>();
-        expectedDeviceTypesList.add(new DeviceDefinitionImpl(DeviceType.getForId(1019),
+        expectedDeviceTypesList.add(new DeviceDefinitionImpl(PaoType.getForId(1019),
                                                              "Device 1",
                                                              "display1",
                                                              "MCT310",
                                                              "change1"));
-        expectedDeviceTypesList.add(new DeviceDefinitionImpl(DeviceType.getForId(1022),
+        expectedDeviceTypesList.add(new DeviceDefinitionImpl(PaoType.getForId(1022),
                                                              "Device 2",
                                                              "display1",
                                                              "MCT370",
                                                              "change1"));
 
-        DeviceDefinitionImpl definition = new DeviceDefinitionImpl(DeviceType.getForId(1019),
+        DeviceDefinitionImpl definition = new DeviceDefinitionImpl(PaoType.getForId(1019),
                                                                    "test",
                                                                    "test",
                                                                    "test",
@@ -325,7 +325,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
 		                                                0,
 		                                                0);
         
-        DeviceType deviceType = DeviceType.getForId(device.getType());
+        PaoType deviceType = PaoType.getForId(device.getType());
         PointIdentifier pointIdentifier = new PointIdentifier(2, 2);
         PointTemplate actualPulse1PointTemplate = dao.getPointTemplateByTypeAndOffset(deviceType, pointIdentifier);
         
@@ -359,7 +359,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         
         // Test with supported device type
         device.setType(1019);
-        DeviceDefinition expectedDefinition = new DeviceDefinitionImpl(DeviceType.getForId(1019),
+        DeviceDefinition expectedDefinition = new DeviceDefinitionImpl(PaoType.getForId(1019),
                                                                        "Custom Device 1",
                                                                        "customDisplay1",
                                                                        "MCT310",

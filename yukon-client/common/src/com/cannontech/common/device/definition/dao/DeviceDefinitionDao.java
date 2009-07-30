@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.cannontech.common.device.DeviceType;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.definition.attribute.lookup.AttributeDefinition;
 import com.cannontech.common.device.definition.model.CommandDefinition;
@@ -12,6 +11,7 @@ import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.model.DeviceTag;
 import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.device.definition.model.PointTemplate;
+import com.cannontech.common.pao.PaoType;
 
 /**
  * Data access object for device definition information
@@ -20,9 +20,9 @@ public interface DeviceDefinitionDao {
 
 	// ATTRIBUTES
 	//============================================
-    public abstract Set<AttributeDefinition> getDefinedAttributes(DeviceType deviceType);
+    public abstract Set<AttributeDefinition> getDefinedAttributes(PaoType deviceType);
     
-    public abstract AttributeDefinition getAttributeLookup(DeviceType deviceType, BuiltInAttribute attribute);
+    public abstract AttributeDefinition getAttributeLookup(PaoType deviceType, BuiltInAttribute attribute);
 
     // POINTS
     //============================================
@@ -33,7 +33,7 @@ public interface DeviceDefinitionDao {
      * @return A set of all point templates for the device (returns a new copy
      *         each time the method is called)
      */
-    public abstract Set<PointTemplate> getAllPointTemplates(DeviceType deviceType);
+    public abstract Set<PointTemplate> getAllPointTemplates(PaoType deviceType);
 
     /**
      * Method to get all of the point templates for a given device definition
@@ -50,7 +50,7 @@ public interface DeviceDefinitionDao {
      * @return A set of all point templates for the device that should be
      *         initialized (returns a new copy each time the method is called)
      */
-    public abstract Set<PointTemplate> getInitPointTemplates(DeviceType deviceType);
+    public abstract Set<PointTemplate> getInitPointTemplates(PaoType deviceType);
 
     /**
      * Method to get all of the point templates for a given device definition
@@ -68,7 +68,7 @@ public interface DeviceDefinitionDao {
      * @param pointType - Type of point template
      * @return Point template for device
      */
-    public abstract PointTemplate getPointTemplateByTypeAndOffset(DeviceType deviceType, PointIdentifier pointIdentifier);
+    public abstract PointTemplate getPointTemplateByTypeAndOffset(PaoType deviceType, PointIdentifier pointIdentifier);
 
     // COMMANDS
     //============================================
@@ -79,18 +79,18 @@ public interface DeviceDefinitionDao {
      * @param pointSet - Set of points to get affecting commands for
      * @return The set of commands affecting one or more of the points
      */
-    public Set<CommandDefinition> getCommandsThatAffectPoints(DeviceType deviceType, Set<? extends PointIdentifier> pointSet);
+    public Set<CommandDefinition> getCommandsThatAffectPoints(PaoType deviceType, Set<? extends PointIdentifier> pointSet);
     
     public Set<CommandDefinition> getAvailableCommands(DeviceDefinition newDefinition);
     
     // TAGS
     //============================================
-    public abstract Set<DeviceTag> getSupportedTags(DeviceType deviceType);
+    public abstract Set<DeviceTag> getSupportedTags(PaoType deviceType);
     public abstract Set<DeviceTag> getSupportedTags(DeviceDefinition deviceDefiniton);
     
     public abstract Set<DeviceDefinition> getDevicesThatSupportTag(DeviceTag feature);
     
-    public abstract boolean isTagSupported(DeviceType deviceType, DeviceTag feature);
+    public abstract boolean isTagSupported(PaoType deviceType, DeviceTag feature);
     public abstract boolean isTagSupported(DeviceDefinition deviceDefiniton, DeviceTag feature);
     
     // DEFINITIONS
@@ -110,7 +110,7 @@ public interface DeviceDefinitionDao {
      * @param device - Device to get definition for
      * @return The device's device definition
      */
-    public abstract DeviceDefinition getDeviceDefinition(DeviceType deviceType);
+    public abstract DeviceDefinition getDeviceDefinition(PaoType deviceType);
     
     /**
      * Method to get a set of device types that the given device can change into

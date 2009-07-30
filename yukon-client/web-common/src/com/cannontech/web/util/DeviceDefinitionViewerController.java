@@ -19,7 +19,6 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
-import com.cannontech.common.device.DeviceType;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.definition.attribute.lookup.AttributeDefinition;
 import com.cannontech.common.device.definition.attribute.lookup.BasicAttributeDefinition;
@@ -29,6 +28,7 @@ import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.model.DeviceTag;
 import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.device.definition.model.PointTemplate;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.data.lite.LiteStateGroup;
@@ -106,7 +106,7 @@ public class DeviceDefinitionViewerController extends AbstractController {
         	
         	// add to displayDefinitions
         	if (!StringUtils.isBlank(deviceTypeParam)) {
-        		if (DeviceType.valueOf(deviceTypeParam) == deviceDefiniton.getType()) {
+        		if (PaoType.valueOf(deviceTypeParam) == deviceDefiniton.getType()) {
         			displayDefinitions.add(deviceDefiniton);
         		}
         	} else if (!StringUtils.isBlank(displayGroupParam)) {

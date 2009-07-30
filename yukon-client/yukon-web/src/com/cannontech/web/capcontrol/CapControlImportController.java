@@ -30,7 +30,7 @@ import com.cannontech.cbc.model.Substation;
 import com.cannontech.cbc.model.SubstationBus;
 import com.cannontech.cbc.service.CapControlCreationService;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.device.DeviceType;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -375,7 +375,7 @@ public class CapControlImportController {
         
         while(line != null) {
         	try {
-	        	DeviceType deviceType = null;
+	        	PaoType deviceType = null;
 	    		
 	        	String cbcName = line[0];
 	        	String cbcType = line[1];
@@ -384,7 +384,7 @@ public class CapControlImportController {
 	    		if (typeId == -1) {
 	    			throw new UnsupportedOperationException("Import of " + cbcName + " failed. Unknown Type: " + cbcType);
 	    		}			            		
-	    		deviceType = DeviceType.getForId(typeId);
+	    		deviceType = PaoType.getForId(typeId);
 	
 	    		int cbcSerialNumber = Integer.decode(line[2]);
 	    		String capBankName = line[3];

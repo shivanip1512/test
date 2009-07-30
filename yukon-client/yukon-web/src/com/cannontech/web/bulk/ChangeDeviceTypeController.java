@@ -24,13 +24,13 @@ import com.cannontech.common.bulk.mapper.PassThroughMapper;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.processor.SingleProcessor;
 import com.cannontech.common.bulk.service.ChangeDeviceTypeService;
-import com.cannontech.common.device.DeviceType;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -118,7 +118,7 @@ public class ChangeDeviceTypeController extends BulkControllerBase {
 
                 @Override
                 public void process(SimpleDevice device) throws ProcessingException {
-                    changeDeviceTypeService.changeDeviceType(device, DeviceType.getForId(selectedDeviceType));
+                    changeDeviceTypeService.changeDeviceType(device, PaoType.getForId(selectedDeviceType));
                 }
             };
             

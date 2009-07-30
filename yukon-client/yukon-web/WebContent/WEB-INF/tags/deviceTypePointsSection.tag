@@ -1,7 +1,7 @@
 <%@ attribute name="title" required="true" type="java.lang.String"%>
 <%@ attribute name="pointTypesMap" required="true" type="java.util.Map"%>
 <%@ attribute name="deviceType" required="true" type="java.lang.Integer"%>
-<%@ attribute name="deviceTypeEnum" required="false" type="com.cannontech.common.device.DeviceType"%>
+<%@ attribute name="deviceTypeEnum" required="false" type="com.cannontech.common.pao.PaoType"%>
 <%@ attribute name="deviceTypeDeviceCollection" required="false" type="com.cannontech.common.bulk.collection.DeviceCollection"%>
 <%@ attribute name="columnCount" required="true" type="java.lang.Integer"%>
 

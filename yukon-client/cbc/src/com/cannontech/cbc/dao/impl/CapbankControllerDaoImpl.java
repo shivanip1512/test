@@ -15,11 +15,11 @@ import com.cannontech.cbc.model.Capbank;
 import com.cannontech.cbc.model.CapbankController;
 import com.cannontech.cbc.model.LiteCapControlObject;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.device.DeviceType;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -118,7 +118,7 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 		
 		int newId = paoDao.getNextPaoId();
 		capbankController.setId(newId);
-		DeviceType type = DeviceType.getForId(capbankController.getType());
+		PaoType type = PaoType.getForId(capbankController.getType());
 		
 		DeviceBase controller = DeviceFactory.createDevice(type.getDeviceTypeId());
 		controller.setPAOName(capbankController.getName());
@@ -176,7 +176,7 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 
 	@Override
 	public boolean update(CapbankController capbankController) {
-		DeviceType type = DeviceType.getForId(capbankController.getType());
+		PaoType type = PaoType.getForId(capbankController.getType());
 		
 		DeviceBase controller = DeviceFactory.createDevice(type.getDeviceTypeId());
 		controller.setPAOName(capbankController.getName());
@@ -235,7 +235,7 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 		controller.setId(newId);
 		base.setDeviceID(newId);
 		base.setPAOName(controller.getName());
-		setTypeSpecificCbcFields(DeviceType.getForId(type),base,controller);
+		setTypeSpecificCbcFields(PaoType.getForId(type),base,controller);
 		
 		try {
 			Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, base).execute();
@@ -326,7 +326,7 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 	 * @param device
 	 * @param controller
 	 */
-	private void setTypeSpecificCbcFields(DeviceType type, DeviceBase device, CapbankController controller ) {
+	private void setTypeSpecificCbcFields(PaoType type, DeviceBase device, CapbankController controller ) {
 		
 		switch(type) {
 			case CBC_7022:

@@ -30,7 +30,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.DeviceType;
 import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
@@ -41,6 +40,7 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.DeviceUpdateService;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
@@ -1585,7 +1585,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         String existingType = meter.getTypeStr();
         if( templateMeter.getType() != meter.getType()) {   //different types of meters...change type
             try {
-                DeviceDefinition deviceDefinition = deviceDefinitionDao.getDeviceDefinition(DeviceType.getForId(templateMeter.getType()));
+                DeviceDefinition deviceDefinition = deviceDefinitionDao.getDeviceDefinition(PaoType.getForId(templateMeter.getType()));
                 deviceUpdateService.changeDeviceType(meter, deviceDefinition);
                 mspObjectDao.logMSPActivity(method, "MeterNumber (" + meter.getMeterNumber() + ") - Changed DeviceType from:" + existingType + " to:" + templateMeter.getTypeStr() + ").", mspVendor.getCompanyName());
             } catch (DataRetrievalFailureException e) {

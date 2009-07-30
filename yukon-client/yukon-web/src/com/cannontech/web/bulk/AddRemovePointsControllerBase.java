@@ -35,7 +35,6 @@ import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.bulk.mapper.PassThroughMapper;
 import com.cannontech.common.bulk.processor.SingleProcessor;
-import com.cannontech.common.device.DeviceType;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.device.definition.model.PointTemplate;
@@ -44,6 +43,7 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.PointService;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.MappingSet;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
@@ -140,11 +140,11 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
         return deviceTypeNamesMap;
     }
     
-    protected Map<Integer, DeviceType> getDeviceTypeEnumMap(Set<Integer> deviceTypeSet) {
+    protected Map<Integer, PaoType> getDeviceTypeEnumMap(Set<Integer> deviceTypeSet) {
     	
-    	Map<Integer, DeviceType> deviceTypeEnumMap = new LinkedHashMap<Integer, DeviceType>();
+    	Map<Integer, PaoType> deviceTypeEnumMap = new LinkedHashMap<Integer, PaoType>();
         for (int deviceType : deviceTypeSet) {
-        	DeviceType type = DeviceType.getForId(deviceType);
+        	PaoType type = PaoType.getForId(deviceType);
         	deviceTypeEnumMap.put(deviceType, type);
         }
         return deviceTypeEnumMap;
@@ -278,7 +278,7 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
         			
         				log.debug("Selected point checkbox: deviceType=" + checkedDeviceType + " pointType=" + pointType + " offset=" + offset);
         			
-	        			PointTemplate pointTemplate = deviceDefinitionDao.getPointTemplateByTypeAndOffset(DeviceType.getForId(checkedDeviceType), new PointIdentifier(pointType, offset));
+	        			PointTemplate pointTemplate = deviceDefinitionDao.getPointTemplateByTypeAndOffset(PaoType.getForId(checkedDeviceType), new PointIdentifier(pointType, offset));
 	        			
 	        			if (!pointTemplatesMap.containsKey(checkedDeviceType)) {
 	        				pointTemplatesMap.put(checkedDeviceType, new HashSet<PointTemplate>());

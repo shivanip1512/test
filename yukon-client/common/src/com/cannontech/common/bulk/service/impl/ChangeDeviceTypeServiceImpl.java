@@ -7,12 +7,12 @@ import org.springframework.dao.DataRetrievalFailureException;
 
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.service.ChangeDeviceTypeService;
-import com.cannontech.common.device.DeviceType;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.DeviceUpdateService;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -24,7 +24,7 @@ public class ChangeDeviceTypeServiceImpl implements ChangeDeviceTypeService {
     private DeviceDefinitionService deviceDefinitionService;
     private DeviceUpdateService deviceUpdateService;
     
-    public SimpleDevice changeDeviceType(SimpleDevice device, DeviceType newDeviceType ) {
+    public SimpleDevice changeDeviceType(SimpleDevice device, PaoType newDeviceType ) {
 
         try {
 

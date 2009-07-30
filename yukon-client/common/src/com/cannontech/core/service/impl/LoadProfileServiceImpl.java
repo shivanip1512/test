@@ -20,10 +20,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.DeviceType;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.DeviceTag;
 import com.cannontech.common.exception.InitiateLoadProfileRequestException;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.MapQueue;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.dao.DBPersistentDao;
@@ -87,7 +87,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
     public synchronized void initiateLoadProfile(LiteYukonPAObject device, int channel, Date start, Date stop, LoadProfileService.CompletionCallback runner, YukonUserContext userContext) {
         Validate.isTrue(channel <= 4, "channel must be less than or equal to 4");
         Validate.isTrue(channel > 0, "channel must be greater than 0");
-        Validate.isTrue(deviceDefinitionDao.isTagSupported(DeviceType.getForId(device.getType()), DeviceTag.LOAD_PROFILE), "Device must support 4 channel load profile (DeviceTypesFuncs.isLoadProfile4Channel)");
+        Validate.isTrue(deviceDefinitionDao.isTagSupported(PaoType.getForId(device.getType()), DeviceTag.LOAD_PROFILE), "Device must support 4 channel load profile (DeviceTypesFuncs.isLoadProfile4Channel)");
 
         // build command
         Request req = new Request();

@@ -1,4 +1,4 @@
-package com.cannontech.common.device;
+package com.cannontech.common.pao;
 
 import org.apache.commons.lang.Validate;
 
@@ -7,7 +7,7 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
-public enum DeviceType {
+public enum PaoType {
     CCU710A(DeviceTypes.CCU710A),
     CCU711(DeviceTypes.CCU711),
     TCU5000(DeviceTypes.TCU5000),
@@ -121,23 +121,23 @@ public enum DeviceType {
     
     private final int deviceTypeId;
     
-    private final static ImmutableMap<Integer, DeviceType> lookup;
+    private final static ImmutableMap<Integer, PaoType> lookup;
     
     static {
-        Builder<Integer, DeviceType> builder = ImmutableMap.builder();
-        for (DeviceType deviceType : values()) {
+        Builder<Integer, PaoType> builder = ImmutableMap.builder();
+        for (PaoType deviceType : values()) {
             builder.put(deviceType.deviceTypeId, deviceType);
         }
         lookup = builder.build();
     }
 
-    public static DeviceType getForId(int deviceTypeId) throws IllegalArgumentException {
-        DeviceType deviceType = lookup.get(deviceTypeId);
+    public static PaoType getForId(int deviceTypeId) throws IllegalArgumentException {
+        PaoType deviceType = lookup.get(deviceTypeId);
         Validate.notNull(deviceType, Integer.toString(deviceTypeId));
         return deviceType;
     }
     
-    private DeviceType(int deviceTypeId) {
+    private PaoType(int deviceTypeId) {
         this.deviceTypeId = deviceTypeId;
     }
 

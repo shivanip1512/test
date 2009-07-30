@@ -3,21 +3,21 @@ package com.cannontech.common.device.definition.model;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-import com.cannontech.common.device.DeviceType;
+import com.cannontech.common.pao.PaoType;
 
 /**
  * Class which contains device definition data
  */
 public class DeviceDefinitionImpl implements DeviceDefinition {
 
-    private DeviceType type = null;
+    private PaoType type = null;
     private String displayName = null;
     private String displayGroup = null;
     private String javaConstant = null;
     private boolean changeable = false;
     private String changeGroup = null;
 
-    public DeviceDefinitionImpl(DeviceType type, String displayName, String displayGroup,
+    public DeviceDefinitionImpl(PaoType type, String displayName, String displayGroup,
             String javaConstant, String changeGroup) {
         this.type = type;
         this.displayName = displayName;
@@ -35,11 +35,11 @@ public class DeviceDefinitionImpl implements DeviceDefinition {
         this.displayName = displayName;
     }
 
-    public DeviceType getType() {
+    public PaoType getType() {
         return type;
     }
 
-    public void setType(DeviceType type) {
+    public void setType(PaoType type) {
         this.type = type;
     }
 

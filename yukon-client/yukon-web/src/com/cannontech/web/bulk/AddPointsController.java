@@ -21,10 +21,10 @@ import com.cannontech.common.bulk.callbackResult.BackgroundProcessTypeEnum;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.processor.SingleProcessor;
-import com.cannontech.common.device.DeviceType;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.AccumulatorPoint;
@@ -60,7 +60,7 @@ public class AddPointsController extends AddRemovePointsControllerBase {
         Map<Integer, String> deviceTypeNamesMap = getDeviceTypeNamesMap(deviceTypeSet);
         mav.addObject("deviceTypeNamesMap", deviceTypeNamesMap);
         
-        Map<Integer, DeviceType> deviceTypeEnumMap = getDeviceTypeEnumMap(deviceTypeSet);
+        Map<Integer, PaoType> deviceTypeEnumMap = getDeviceTypeEnumMap(deviceTypeSet);
         mav.addObject("deviceTypeEnumMap", deviceTypeEnumMap);
         
         Map<Integer, DeviceCollection> deviceTypeDeviceCollectionMap = getDeviceTypeDeviceCollectionMap(deviceTypeSet, deviceCollection);
@@ -91,7 +91,7 @@ public class AddPointsController extends AddRemovePointsControllerBase {
         for (int deviceType : deviceTypeSet) {
         	
         	// all defined point templates for device type, convert to wrappers that are all initially unmasked
-        	DeviceDefinition deviceDefiniton = deviceDefinitionDao.getDeviceDefinition(DeviceType.getForId(deviceType));
+        	DeviceDefinition deviceDefiniton = deviceDefinitionDao.getDeviceDefinition(PaoType.getForId(deviceType));
         	Set<PointTemplateWrapper> allPointTemplates = convertToPointTemplateWrapperSet(deviceDefinitionDao.getAllPointTemplates(deviceDefiniton), false);
         	
         	

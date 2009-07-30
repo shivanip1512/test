@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.cannontech.common.device.DeviceType;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.definition.attribute.lookup.AttributeDefinition;
 import com.cannontech.common.device.attribute.model.Attribute;
@@ -14,6 +13,7 @@ import com.cannontech.common.device.definition.model.DeviceTag;
 import com.cannontech.common.device.definition.model.DevicePointIdentifier;
 import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.device.definition.model.PointTemplate;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 public class DeviceDefinitionDaoAdapter implements DeviceDefinitionDao {
@@ -24,17 +24,17 @@ public class DeviceDefinitionDaoAdapter implements DeviceDefinitionDao {
 	}
 	
 	@Override
-	public Set<AttributeDefinition> getDefinedAttributes(DeviceType deviceType) {
+	public Set<AttributeDefinition> getDefinedAttributes(PaoType deviceType) {
 	    throw new UnsupportedOperationException("not implemented");
 	}
 	
 	@Override
-	public AttributeDefinition getAttributeLookup(DeviceType deviceType, BuiltInAttribute attribute) {
+	public AttributeDefinition getAttributeLookup(PaoType deviceType, BuiltInAttribute attribute) {
 	    throw new UnsupportedOperationException("not implemented");
 	}
 
 	@Override
-	public Set<PointTemplate> getAllPointTemplates(DeviceType deviceType) {
+	public Set<PointTemplate> getAllPointTemplates(PaoType deviceType) {
 		throw new UnsupportedOperationException("not implemented");
 	}
 
@@ -51,12 +51,12 @@ public class DeviceDefinitionDaoAdapter implements DeviceDefinitionDao {
 	}
 
 	@Override
-	public Set<CommandDefinition> getCommandsThatAffectPoints(DeviceType deviceType, Set<? extends PointIdentifier> pointSet) {
+	public Set<CommandDefinition> getCommandsThatAffectPoints(PaoType deviceType, Set<? extends PointIdentifier> pointSet) {
 		throw new UnsupportedOperationException("not implemented");
 	}
 
 	@Override
-	public DeviceDefinition getDeviceDefinition(DeviceType deviceType) {
+	public DeviceDefinition getDeviceDefinition(PaoType deviceType) {
 		throw new UnsupportedOperationException("not implemented");
 	}
 
@@ -78,7 +78,7 @@ public class DeviceDefinitionDaoAdapter implements DeviceDefinitionDao {
 	}
 
 	@Override
-	public Set<PointTemplate> getInitPointTemplates(DeviceType deviceType) {
+	public Set<PointTemplate> getInitPointTemplates(PaoType deviceType) {
 		throw new UnsupportedOperationException("not implemented");
 	}
 
@@ -94,12 +94,12 @@ public class DeviceDefinitionDaoAdapter implements DeviceDefinitionDao {
 	}
 
 	@Override
-	public PointTemplate getPointTemplateByTypeAndOffset(DeviceType deviceType, PointIdentifier pointIdentifier) {
+	public PointTemplate getPointTemplateByTypeAndOffset(PaoType deviceType, PointIdentifier pointIdentifier) {
 		throw new UnsupportedOperationException("not implemented");
 	}
 
 	@Override
-	public Set<DeviceTag> getSupportedTags(DeviceType deviceType) {
+	public Set<DeviceTag> getSupportedTags(PaoType deviceType) {
 		throw new UnsupportedOperationException("not implemented");
 	}
 
@@ -110,7 +110,7 @@ public class DeviceDefinitionDaoAdapter implements DeviceDefinitionDao {
 	}
 
 	@Override
-	public boolean isTagSupported(DeviceType deviceType, DeviceTag tag) {
+	public boolean isTagSupported(PaoType deviceType, DeviceTag tag) {
 		throw new UnsupportedOperationException("not implemented");
 	}
 

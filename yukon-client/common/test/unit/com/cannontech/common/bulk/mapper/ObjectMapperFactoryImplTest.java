@@ -8,8 +8,8 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
-import com.cannontech.common.device.DeviceType;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.dao.DeviceDao;
@@ -26,7 +26,7 @@ import com.cannontech.database.db.pao.YukonPAObject;
 public class ObjectMapperFactoryImplTest extends TestCase {
 
     private ObjectMapperFactoryImpl mapper = null;
-    private SimpleDevice testDevice = new SimpleDevice(1, DeviceType.MCT310);
+    private SimpleDevice testDevice = new SimpleDevice(1, PaoType.MCT310);
     private PaoDaoAdapter paoDaoAdapter;
     private DeviceDaoAdapter deviceDaoAdapter;
 
@@ -40,14 +40,14 @@ public class ObjectMapperFactoryImplTest extends TestCase {
             private LiteYukonPAObject lite1 = new LiteYukonPAObject(1,
                                                                     null,
                                                                     0,
-                                                                    DeviceType.MCT310.getDeviceTypeId(),
+                                                                    PaoType.MCT310.getDeviceTypeId(),
                                                                     0,
                                                                     null,
                                                                     null);
             private LiteYukonPAObject lite2 = new LiteYukonPAObject(2,
                                                                     null,
                                                                     0,
-                                                                    DeviceType.MCT310.getDeviceTypeId(),
+                                                                    PaoType.MCT310.getDeviceTypeId(),
                                                                     0,
                                                                     null,
                                                                     null);
@@ -133,7 +133,7 @@ public class ObjectMapperFactoryImplTest extends TestCase {
 
                 switch (paoId) {
                 case 1:
-                    return new SimpleDevice(1, DeviceType.MCT310);
+                    return new SimpleDevice(1, PaoType.MCT310);
                 default:
                     throw new NotFoundException(paoId + " is not supported");
                 }

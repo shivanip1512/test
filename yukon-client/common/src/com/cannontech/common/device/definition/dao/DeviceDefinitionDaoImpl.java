@@ -43,7 +43,6 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.DeviceType;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.definition.attribute.lookup.AttributeDefinition;
@@ -63,6 +62,7 @@ import com.cannontech.common.device.definition.model.castor.DeviceDefinitions;
 import com.cannontech.common.device.definition.model.castor.Point;
 import com.cannontech.common.device.definition.model.castor.PointRef;
 import com.cannontech.common.device.definition.model.castor.Tag;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.StateDao;
@@ -88,14 +88,14 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
     private Logger log = YukonLogManager.getLogger(DeviceDefinitionDaoImpl.class);
 
     // Maps containing all of the data in the deviceDefinition.xml file
-    private Map<DeviceType, Map<Attribute, AttributeDefinition>> deviceAttributeAttrDefinitionMap = null;
-    private Map<DeviceType, Set<PointTemplate>> deviceAllPointTemplateMap = null;
-    private Map<DeviceType, Set<PointTemplate>> deviceInitPointTemplateMap = null;
-    private Map<DeviceType, DeviceDefinition> deviceTypeMap = null;
+    private Map<PaoType, Map<Attribute, AttributeDefinition>> deviceAttributeAttrDefinitionMap = null;
+    private Map<PaoType, Set<PointTemplate>> deviceAllPointTemplateMap = null;
+    private Map<PaoType, Set<PointTemplate>> deviceInitPointTemplateMap = null;
+    private Map<PaoType, DeviceDefinition> deviceTypeMap = null;
     private Map<String, List<DeviceDefinition>> deviceDisplayGroupMap = null;
     private Map<String, Set<DeviceDefinition>> changeGroupDevicesMap = null;
-    private Map<DeviceType, Set<CommandDefinition>> deviceCommandMap = null;
-    private Map<DeviceType, Set<DeviceTagDefinition>> deviceFeatureMap = null;
+    private Map<PaoType, Set<CommandDefinition>> deviceCommandMap = null;
+    private Map<PaoType, Set<DeviceTagDefinition>> deviceFeatureMap = null;
     private List<String> fileIdOrder = null;
     
     public void setInputFile(Resource inputFile) {
@@ -127,7 +127,7 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
     // ATTRIBUTES
     //============================================
     @Override
-    public AttributeDefinition getAttributeLookup(DeviceType deviceType,
+    public AttributeDefinition getAttributeLookup(PaoType deviceType,
             BuiltInAttribute attribute) {
         Map<Attribute, AttributeDefinition> attributeLookupsForDevice = deviceAttributeAttrDefinitionMap.get(deviceType);
         Validate.notNull(attributeLookupsForDevice, "No AttributeLookups exist for " + deviceType);
@@ -137,7 +137,7 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
     }
     
     @Override
-    public Set<AttributeDefinition> getDefinedAttributes(DeviceType deviceType) {
+    public Set<AttributeDefinition> getDefinedAttributes(PaoType deviceType) {
         Map<Attribute, AttributeDefinition> attributeLookupsForDevice = deviceAttributeAttrDefinitionMap.get(deviceType);
         if (attributeLookupsForDevice == null) {
             return ImmutableSet.of();
@@ -154,7 +154,7 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         return this.getInitPointTemplates(deviceDefinition.getType());
     }
     
-    public PointTemplate getPointTemplateByTypeAndOffset(DeviceType deviceType, PointIdentifier pointIdentifier) {
+    public PointTemplate getPointTemplateByTypeAndOffset(PaoType deviceType, PointIdentifier pointIdentifier) {
 
     	int pointType = pointIdentifier.getType();
     	int offset = pointIdentifier.getOffset();
@@ -173,7 +173,7 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         throw new NotFoundException("Point template not found for device type: " + deviceType + ", point type: " + pointTypeString + ", offset: " + offset);
     }
     
-    private PointTemplate getPointTemplate(DeviceType deviceType, String pointName) {
+    private PointTemplate getPointTemplate(PaoType deviceType, String pointName) {
     	if (this.deviceAllPointTemplateMap.containsKey(deviceType)) {
         	Set<PointTemplate> templates = this.deviceAllPointTemplateMap.get(deviceType);
 
@@ -187,7 +187,7 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         }
     }
     
-    public Set<PointTemplate> getAllPointTemplates(DeviceType deviceType) {
+    public Set<PointTemplate> getAllPointTemplates(PaoType deviceType) {
         if (this.deviceAllPointTemplateMap.containsKey(deviceType)) {
             Set<PointTemplate> templates = this.deviceAllPointTemplateMap.get(deviceType);
             Set<PointTemplate> returnSet = new HashSet<PointTemplate>();
@@ -201,7 +201,7 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         }
     }
 
-    public Set<PointTemplate> getInitPointTemplates(DeviceType deviceType) {
+    public Set<PointTemplate> getInitPointTemplates(PaoType deviceType) {
 
         if (this.deviceInitPointTemplateMap.containsKey(deviceType)) {
         	Set<PointTemplate> templates = this.deviceInitPointTemplateMap.get(deviceType);
@@ -217,7 +217,7 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
     
     // COMMANDS
     //============================================
-    public Set<CommandDefinition> getCommandsThatAffectPoints(DeviceType deviceType, Set<? extends PointIdentifier> pointSet) {
+    public Set<CommandDefinition> getCommandsThatAffectPoints(PaoType deviceType, Set<? extends PointIdentifier> pointSet) {
 
         Set<CommandDefinition> commandSet = new HashSet<CommandDefinition>();
 
@@ -237,14 +237,14 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
     
     public Set<CommandDefinition> getAvailableCommands(DeviceDefinition newDefinition) {
     	
-    	DeviceType deviceType = newDefinition.getType();
+    	PaoType deviceType = newDefinition.getType();
         Set<CommandDefinition> allCommandSet = this.deviceCommandMap.get(deviceType);
         return allCommandSet;
     }
     
     // TAGS
     //============================================
-    public Set<DeviceTag> getSupportedTags(DeviceType deviceType) {
+    public Set<DeviceTag> getSupportedTags(PaoType deviceType) {
     	
     	return getSupportedTagsForDeviceType(deviceType);
     }
@@ -256,7 +256,7 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
     public Set<DeviceDefinition> getDevicesThatSupportTag(DeviceTag feature) {
     	
     	Set<DeviceDefinition> definitions = new HashSet<DeviceDefinition>();
-    	for (DeviceType deviceType : this.deviceFeatureMap.keySet()) {
+    	for (PaoType deviceType : this.deviceFeatureMap.keySet()) {
     		
     		Set<DeviceTagDefinition> allDeviceFeatureDefinitionsSet = this.deviceFeatureMap.get(deviceType);
     		for (DeviceTagDefinition featureDefinition : allDeviceFeatureDefinitionsSet) {
@@ -274,7 +274,7 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
     	return isTagSupported(deviceDefiniton.getType(), feature);
     }
     
-    public boolean isTagSupported(DeviceType deviceType, DeviceTag feature) {
+    public boolean isTagSupported(PaoType deviceType, DeviceTag feature) {
     	
     	Set<DeviceTagDefinition> allDeviceFeatureDefinitionsSet = this.deviceFeatureMap.get(deviceType);
     	if (allDeviceFeatureDefinitionsSet != null) {
@@ -287,7 +287,7 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
     	return false;
     }
     
-    private Set<DeviceTag> getSupportedTagsForDeviceType(DeviceType deviceType) {
+    private Set<DeviceTag> getSupportedTagsForDeviceType(PaoType deviceType) {
     	
     	Set<DeviceTag> supportedDeviceFeaturesSet = new HashSet<DeviceTag>();
     	Set<DeviceTagDefinition> allDeviceFeatureDefinitionsSet = this.deviceFeatureMap.get(deviceType);
@@ -314,7 +314,7 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         return Collections.unmodifiableMap(this.deviceDisplayGroupMap);
     }
     
-    public DeviceDefinition getDeviceDefinition(DeviceType deviceType) {
+    public DeviceDefinition getDeviceDefinition(PaoType deviceType) {
         
         if (this.deviceTypeMap.containsKey(deviceType)) {
             return this.deviceTypeMap.get(deviceType);
@@ -369,14 +369,14 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
     //============================================
     public void initialize() throws Exception {
 
-        this.deviceTypeMap = new LinkedHashMap<DeviceType, DeviceDefinition>();
-        this.deviceAllPointTemplateMap = new HashMap<DeviceType, Set<PointTemplate>>();
-        this.deviceInitPointTemplateMap = new HashMap<DeviceType, Set<PointTemplate>>();
+        this.deviceTypeMap = new LinkedHashMap<PaoType, DeviceDefinition>();
+        this.deviceAllPointTemplateMap = new HashMap<PaoType, Set<PointTemplate>>();
+        this.deviceInitPointTemplateMap = new HashMap<PaoType, Set<PointTemplate>>();
         this.deviceDisplayGroupMap = new LinkedHashMap<String, List<DeviceDefinition>>();
         this.changeGroupDevicesMap = new HashMap<String, Set<DeviceDefinition>>();
-        this.deviceAttributeAttrDefinitionMap = new HashMap<DeviceType, Map<Attribute, AttributeDefinition>>();
-        this.deviceCommandMap = new HashMap<DeviceType, Set<CommandDefinition>>();
-        this.deviceFeatureMap = new HashMap<DeviceType, Set<DeviceTagDefinition>>();
+        this.deviceAttributeAttrDefinitionMap = new HashMap<PaoType, Map<Attribute, AttributeDefinition>>();
+        this.deviceCommandMap = new HashMap<PaoType, Set<CommandDefinition>>();
+        this.deviceFeatureMap = new HashMap<PaoType, Set<DeviceTagDefinition>>();
         this.fileIdOrder = new ArrayList<String>();
         
         // definition resources (in order from lowest level overrides to highest)
@@ -597,7 +597,7 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
      */
     private void addDevice(DeviceStore device) {
 
-        DeviceType deviceType = device.getDeviceType();
+        PaoType deviceType = device.getDeviceType();
         String javaConstant = device.getId();
 
         String displayName = null;
