@@ -20,7 +20,7 @@ public interface BulkProcessor {
      * @return A bulk processing results object
      */
     public <I> BulkProcessorCallback<I,I> bulkProcess(Iterator<I> iterator,
-            Processor<I> processor);
+            Processor<? super I> processor);
 
     /**
      * Method to bulk process objects. This method will block until all bulk
@@ -33,11 +33,11 @@ public interface BulkProcessor {
      * @return A bulk processing results object
      */
     public <I, O> BulkProcessorCallback<I,O> bulkProcess(Iterator<I> iterator,
-            ObjectMapper<I, O> mapper, Processor<O> processor);
+            ObjectMapper<I, O> mapper, Processor<? super O> processor);
     
     public <I, O> void bulkProcess(Iterator<I> iterator,
             ObjectMapper<I, O> mapper, 
-            Processor<O> processor,
+            Processor<? super O> processor,
             BulkProcessorCallback<I,O> callback);
 
     /**
@@ -50,7 +50,7 @@ public interface BulkProcessor {
      *            runs in the background
      */
     public <I> void backgroundBulkProcess(Iterator<I> iterator,
-            Processor<I> processor, BulkProcessorCallback<I,I> callback);
+            Processor<? super I> processor, BulkProcessorCallback<I,I> callback);
 
     /**
      * Method to bulk process objects. This method will return immediately and
@@ -64,7 +64,7 @@ public interface BulkProcessor {
      *            runs in the background
      */
     public <I, O> void backgroundBulkProcess(Iterator<I> iterator,
-            ObjectMapper<I, O> mapper, Processor<O> processor,
+            ObjectMapper<I, O> mapper, Processor<? super O> processor,
             BulkProcessorCallback<I,O> callback);
 
 }

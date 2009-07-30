@@ -24,7 +24,7 @@ public abstract class RunnableBasedBulkProcessor extends BulkProcessorBase {
 
     public <I, O> void bulkProcess(Iterator<I> iterator,
             ObjectMapper<I, O> mapper, 
-            Processor<O> processor,
+            Processor<? super O> processor,
             BulkProcessorCallback<I,O> callback) {
 
         if (log.isDebugEnabled()) {
@@ -42,7 +42,7 @@ public abstract class RunnableBasedBulkProcessor extends BulkProcessorBase {
     }
 
     public <I, O> void backgroundBulkProcess(Iterator<I> iterator,
-            ObjectMapper<I, O> mapper, Processor<O> processor,
+            ObjectMapper<I, O> mapper, Processor<? super O> processor,
             BulkProcessorCallback<I,O> callback) {
 
         if (log.isDebugEnabled()) {
@@ -62,6 +62,6 @@ public abstract class RunnableBasedBulkProcessor extends BulkProcessorBase {
     
     protected abstract <I, O> Runnable getBulkProcessorRunnable(
             final Iterator<I> iterator, final ObjectMapper<I, O> mapper,
-            final Processor<O> processor, final BulkProcessorCallback<I,O> callback);
+            final Processor<? super O> processor, final BulkProcessorCallback<I,O> callback);
     
 }

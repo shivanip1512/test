@@ -45,7 +45,7 @@ public class TransactionPerItemProcessor extends RunnableBasedBulkProcessor impl
      */
     protected <I, O> Runnable getBulkProcessorRunnable(
             final Iterator<I> iterator, final ObjectMapper<I, O> mapper,
-            final Processor<O> processor, final BulkProcessorCallback<I, O> callback) {
+            final Processor<? super O> processor, final BulkProcessorCallback<I, O> callback) {
 
         return new Runnable() {
             public void run() {

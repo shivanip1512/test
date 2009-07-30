@@ -65,14 +65,14 @@ public class ResubmittingParallelBulkProcessor extends BulkProcessorBase {
     
     public <I, O> void bulkProcess(Iterator<I> iterator,
             ObjectMapper<I, O> mapper, 
-            Processor<O> processor,
+            Processor<? super O> processor,
             BulkProcessorCallback<I,O> callback) {
 
         throw new UnsupportedOperationException("This processor only supports background processing");
     }
 
     public <I, O> void backgroundBulkProcess(Iterator<I> iterator,
-            ObjectMapper<I, O> mapper, Processor<O> processor,
+            ObjectMapper<I, O> mapper, Processor<? super O> processor,
             BulkProcessorCallback<I,O> callback) {
 
         if (log.isDebugEnabled()) {
@@ -94,7 +94,7 @@ public class ResubmittingParallelBulkProcessor extends BulkProcessorBase {
     }
     
     private <I, O> Runnable getBulkProcessorRunnable(final Iterator<I> iterator,
-            final ObjectMapper<I, O> mapper, final Processor<O> processor,
+            final ObjectMapper<I, O> mapper, final Processor<? super O> processor,
             final BulkProcessorCallback<I,O> callback, final int thisRow) {
         return new Runnable() {
             public void run() {

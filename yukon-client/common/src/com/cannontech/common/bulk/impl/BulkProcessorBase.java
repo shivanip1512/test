@@ -12,7 +12,7 @@ import com.cannontech.common.util.ObjectMapper;
 
 public abstract class BulkProcessorBase implements BulkProcessor {
 
-    public <I> BulkProcessorCallback<I,I> bulkProcess(Iterator<I> iterator, Processor<I> processor) {
+    public <I> BulkProcessorCallback<I,I> bulkProcess(Iterator<I> iterator, Processor<? super I> processor) {
 
         // Use a pass through mapper
         ObjectMapper<I, I> passThroughMapper = new PassThroughMapper<I>();
@@ -23,7 +23,7 @@ public abstract class BulkProcessorBase implements BulkProcessor {
     @Override
     public <I, O> BulkProcessorCallback<I,O> bulkProcess(
             Iterator<I> iterator, ObjectMapper<I, O> mapper,
-            Processor<O> processor) {
+            Processor<? super O> processor) {
         
         CollectingBulkProcessorCallback<I,O> callback = new CollectingBulkProcessorCallback<I,O>();
         
@@ -32,7 +32,7 @@ public abstract class BulkProcessorBase implements BulkProcessor {
         return callback;
     }
 
-    public <I> void backgroundBulkProcess(Iterator<I> iterator, Processor<I> processor,
+    public <I> void backgroundBulkProcess(Iterator<I> iterator, Processor<? super I> processor,
             BulkProcessorCallback<I,I> callback) {
 
         // Use a pass through mapper
