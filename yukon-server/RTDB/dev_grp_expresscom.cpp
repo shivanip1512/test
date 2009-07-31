@@ -161,14 +161,17 @@ INT CtiDeviceGroupExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPars
             if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atProgram)       program     = (int)(getExpresscomGroup().getProgram());
             if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atSplinter)      splinter    = (int)(getExpresscomGroup().getSplinter());
 
-            parse.setValue("xc_spid",     spid);
-            parse.setValue("xc_geo",      geo);
-            parse.setValue("xc_sub",      substation);
+            // Only want to set these parse entries if the values are not zero.  Zeros screw up
+            // address validation code.  Exception is "xc_feeder" which CAN be zero.
+
             parse.setValue("xc_feeder",   feeder);
-            parse.setValue("xc_zip",      zip);
-            parse.setValue("xc_uda",      uda);
-            parse.setValue("xc_program",  program);
-            parse.setValue("xc_splinter", splinter);
+            if (spid        != 0) parse.setValue("xc_spid",     spid);
+            if (geo         != 0) parse.setValue("xc_geo",      geo);
+            if (substation  != 0) parse.setValue("xc_sub",      substation);
+            if (zip         != 0) parse.setValue("xc_zip",      zip);
+            if (uda         != 0) parse.setValue("xc_uda",      uda);
+            if (program     != 0) parse.setValue("xc_program",  program);
+            if (splinter    != 0) parse.setValue("xc_splinter", splinter);
         }
         else
         {

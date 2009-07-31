@@ -151,20 +151,21 @@ void  CtiCommandParser::parse()
 
         if(!(token = CmdStr.match(regexp)).empty())
         {
-            INT serial = 0;
+            UINT serial = 0;    // can't be negative
             CHAR *p;
 
             if(!(strnum = token.match(re_hexnum)).empty())
             {
                 // dout << __LINE__ << " " << strnum << endl;
-                serial = strtol(strnum.c_str(), &p, 16);
+                serial = strtoul(strnum.c_str(), &p, 16);
             }
             else if(!(strnum = token.match(re_num)).empty())
             {
                 // dout << __LINE__ << " " << strnum << endl;
-                serial = strtol(strnum.c_str(), &p, 10);
+                serial = strtoul(strnum.c_str(), &p, 10);
             }
             _cmd["serial"] = CtiParseValue( serial );
+            _cmd["serial_raw_input"] = CtiParseValue( strnum );     // store the input - use in validation
             CmdStr.replace(regexp, "");
         }
     }
@@ -4006,7 +4007,7 @@ void CtiCommandParser::doParseExpresscomAddressing(const string &_CmdStr)
     {
         CtiString temp;
 
-        if( !(temp = CmdStr.match(re_serial)).empty() )   _cmd["xc_serial"]   = atoi(temp.match((const boost::regex)str_num).data());
+        if( !(temp = CmdStr.match(re_serial)).empty() )   _cmd["xc_serial"]   = (int)strtoul(temp.match((const boost::regex)str_num).data(), NULL, 0);   // serial is 32 bit unsigned
         if( !(temp = CmdStr.match(re_spid)).empty() )     _cmd["xc_spid"]     = atoi(temp.match((const boost::regex)str_num).data());
         if( !(temp = CmdStr.match(re_geo)).empty() )      _cmd["xc_geo"]      = atoi(temp.match((const boost::regex)str_num).data());
         if( !(temp = CmdStr.match(re_sub)).empty() )      _cmd["xc_sub"]      = atoi(temp.match((const boost::regex)str_num).data());
@@ -4841,7 +4842,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
 
         if(!(valStr = token.match(CtiString("serial *") + str_anynum)).empty())
         {
-            _num = strtol(valStr.match(re_anynum).c_str(), &p, 0);
+            _num = strtoul(valStr.match(re_anynum).c_str(), &p, 0);
 
             _cmd["xca_serial_target"] = CtiParseValue( _num );
         }

@@ -41,23 +41,23 @@ public:
     enum AddressRanges
     {
         SerialMin       = 1,
-        SerialMax       = 4294967295,
+        SerialMax       = 0xFFFFFFFF,
         SpidMin         = 1,
-        SpidMax         = 65534,
+        SpidMax         = 0xFFFE,
         GeoMin          = 1,
-        GeoMax          = 65534,
+        GeoMax          = 0xFFFE,
         SubstationMin   = 1,
-        SubstationMax   = 65534,
+        SubstationMax   = 0xFFFE,
         FeederMin       = 0,        // Feeder is a 16 bit bitfield.  Range = 0x0000 to 0xFFFF
-        FeederMax       = 65535,
+        FeederMax       = 0xFFFF,
         ZipMin          = 1,
-        ZipMax          = 16777214,
+        ZipMax          = 0xFFFFFE,
         UserMin         = 1,
-        UserMax         = 65534,
+        UserMax         = 0xFFFE,
         ProgramMin      = 1,
-        ProgramMax      = 254,
+        ProgramMax      = 0xFE,
         SplinterMin     = 1,
-        SplinterMax     = 254
+        SplinterMax     = 0xFE
     };
 
     typedef enum
@@ -157,6 +157,8 @@ protected:
     bool    _heatingMode;                   // Default to true/yes;
     bool    _coolingMode;                   // Default to true/yes;
     bool    _absoluteTemps;                 // Default to false/no. (Implies delta)
+
+    INT parseTargetAddressing(CtiCommandParser &parse);
 
 private:
 
@@ -273,9 +275,9 @@ private:
     INT configureEmetconSilverAddress(CtiCommandParser &parse);
     INT configureTargetLoadAmps(CtiCommandParser &parse);
     INT priority(BYTE priority);
-    INT parseTargetAddressing(CtiCommandParser &parse);
 
     bool validateAddress(const unsigned int address, const AddressRanges min, const AddressRanges max);
+    bool validateParseAddressing(const CtiCommandParser &parse);
 
     unsigned short addCRC(unsigned short crc, unsigned char data);
     void calcCRC(std::vector< BYTE >::iterator data, unsigned char len);

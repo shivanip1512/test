@@ -75,14 +75,11 @@ CtiProtocolExpresscom& CtiProtocolExpresscom::operator=(const CtiProtocolExpress
     return *this;
 }
 
-/*
-    Input validation for Expresscom addresses (YUK-7224).
-*/
 bool CtiProtocolExpresscom::validateAddress(const unsigned int address, 
                                             const AddressRanges min, 
                                             const AddressRanges max)
 {
-    return (address == 0 || (min <= address && address <= max));
+    return (min <= address && address <= max);
 }
 
 INT CtiProtocolExpresscom::addAddressing( UINT    serial,
@@ -105,15 +102,15 @@ INT CtiProtocolExpresscom::addAddressing( UINT    serial,
     _programAddress     = program;
     _splinterAddress    = splinter;
 
-    bool valid = validateAddress(serial,     SerialMin,     SerialMax)     &&
-                 validateAddress(spid,       SpidMin,       SpidMax)       &&
-                 validateAddress(geo,        GeoMin,        GeoMax)        &&
-                 validateAddress(substation, SubstationMin, SubstationMax) &&
-                 validateAddress(feeder,     FeederMin,     FeederMax)     &&
-                 validateAddress(zip,        ZipMin,        ZipMax)        &&
-                 validateAddress(uda,        UserMin,       UserMax)       &&
-                 validateAddress(program,    ProgramMin,    ProgramMax)    &&
-                 validateAddress(splinter,   SplinterMin,   SplinterMax);
+    bool valid = ((serial     == 0) || validateAddress(serial,     SerialMin,     SerialMax))     &&
+                 ((spid       == 0) || validateAddress(spid,       SpidMin,       SpidMax))       &&
+                 ((geo        == 0) || validateAddress(geo,        GeoMin,        GeoMax))        &&
+                 ((substation == 0) || validateAddress(substation, SubstationMin, SubstationMax)) &&
+                 ((feeder     == 0) || validateAddress(feeder,     FeederMin,     FeederMax))     &&
+                 ((zip        == 0) || validateAddress(zip,        ZipMin,        ZipMax))        &&
+                 ((uda        == 0) || validateAddress(uda,        UserMin,       UserMax))       &&
+                 ((program    == 0) || validateAddress(program,    ProgramMin,    ProgramMax))    &&
+                 ((splinter   == 0) || validateAddress(splinter,   SplinterMin,   SplinterMax));
 
     resolveAddressLevel();
 
@@ -122,77 +119,37 @@ INT CtiProtocolExpresscom::addAddressing( UINT    serial,
 
 INT CtiProtocolExpresscom::parseAddressing(CtiCommandParser &parse)
 {
-    bool valid;
-    unsigned int address;
-
-    _uniqueAddress      = address = parse.getiValue("xc_serial",   0);  //( serial     != -1 ? serial     : 0 );
-    valid = validateAddress(address, SerialMin, SerialMax);
-
-    _spidAddress        = address = parse.getiValue("xc_spid",     0);  //( spid       != -1 ? spid       : 0);
-    valid &= validateAddress(address, SpidMin, SpidMax);
-
-    _geoAddress         = address = parse.getiValue("xc_geo",      0);  //( geo        != -1 ? geo        : 0);
-    valid &= validateAddress(address, GeoMin, GeoMax);
-
-    _substationAddress  = address = parse.getiValue("xc_sub",      0);  //( substation != -1 ? substation : 0);
-    valid &= validateAddress(address, SubstationMin, SubstationMax);
-
-    _feederAddress      = address = parse.getiValue("xc_feeder",   0);  //( feeder     != -1 ? feeder     : 0);
-    valid &= validateAddress(address, FeederMin, FeederMax);
-
-    _zipAddress         = address = parse.getiValue("xc_zip",      0);  //( zip        != -1 ? zip        : 0);
-    valid &= validateAddress(address, ZipMin, ZipMax);
-
-    _udaAddress         = address = parse.getiValue("xc_uda",      0);  //( uda        != -1 ? uda        : 0);
-    valid &= validateAddress(address, UserMin, UserMax);
-
-    _programAddress     = address = parse.getiValue("xc_program",  0);  //( program    != -1 ? program    : 0);
-    valid &= validateAddress(address, ProgramMin, ProgramMax);
-
-    _splinterAddress    = address = parse.getiValue("xc_splinter", 0);  //( splinter   != -1 ? splinter   : 0);
-    valid &= validateAddress(address, SplinterMin, SplinterMax);
+    _uniqueAddress      = parse.getiValue("xc_serial",   0);  //( serial     != -1 ? serial     : 0);
+    _spidAddress        = parse.getiValue("xc_spid",     0);  //( spid       != -1 ? spid       : 0);
+    _geoAddress         = parse.getiValue("xc_geo",      0);  //( geo        != -1 ? geo        : 0);
+    _substationAddress  = parse.getiValue("xc_sub",      0);  //( substation != -1 ? substation : 0);
+    _feederAddress      = parse.getiValue("xc_feeder",   0);  //( feeder     != -1 ? feeder     : 0);
+    _zipAddress         = parse.getiValue("xc_zip",      0);  //( zip        != -1 ? zip        : 0);
+    _udaAddress         = parse.getiValue("xc_uda",      0);  //( uda        != -1 ? uda        : 0);
+    _programAddress     = parse.getiValue("xc_program",  0);  //( program    != -1 ? program    : 0);
+    _splinterAddress    = parse.getiValue("xc_splinter", 0);  //( splinter   != -1 ? splinter   : 0);
 
     resolveAddressLevel();
 
-    return valid ? NORMAL : BADPARAM;
+    return validateParseAddressing(parse) ? NORMAL : BADPARAM;
 }
 
 INT CtiProtocolExpresscom::parseTargetAddressing(CtiCommandParser &parse)
 {
-    bool valid;
-    unsigned int address;
-
-    _uniqueAddress      = address = parse.getiValue("xca_serial_target",   0);  //( serial     != -1 ? serial     : 0 );
-    valid = validateAddress(address, SerialMin, SerialMax);
-
-    _spidAddress        = address = parse.getiValue("xca_spid_target",     0);  //( spid       != -1 ? spid       : 0);
-    valid &= validateAddress(address, SpidMin, SpidMax);
-
-    _geoAddress         = address = parse.getiValue("xca_geo_target",      0);  //( geo        != -1 ? geo        : 0);
-    valid &= validateAddress(address, GeoMin, GeoMax);
-
-    _substationAddress  = address = parse.getiValue("xca_sub_target",      0);  //( substation != -1 ? substation : 0);
-    valid &= validateAddress(address, SubstationMin, SubstationMax);
-
-    _feederAddress      = address = parse.getiValue("xca_feeder_target",   0);  //( feeder     != -1 ? feeder     : 0);
-    valid &= validateAddress(address, FeederMin, FeederMax);
-
-    _zipAddress         = address = parse.getiValue("xca_zip_target",      0);  //( zip        != -1 ? zip        : 0);
-    valid &= validateAddress(address, ZipMin, ZipMax);
-
-    _udaAddress         = address = parse.getiValue("xca_uda_target",      0);  //( uda        != -1 ? uda        : 0);
-    valid &= validateAddress(address, UserMin, UserMax);
-
-    _programAddress     = address = parse.getiValue("xca_program_target",  0);  //( program    != -1 ? program    : 0);
-    valid &= validateAddress(address, ProgramMin, ProgramMax);
-
-    _splinterAddress    = address = parse.getiValue("xca_splinter_target", 0);  //( splinter   != -1 ? splinter   : 0);
-    valid &= validateAddress(address, SplinterMin, SplinterMax);
+    _uniqueAddress      = parse.getiValue("xca_serial_target",   0);  //( serial     != -1 ? serial     : 0);
+    _spidAddress        = parse.getiValue("xca_spid_target",     0);  //( spid       != -1 ? spid       : 0);
+    _geoAddress         = parse.getiValue("xca_geo_target",      0);  //( geo        != -1 ? geo        : 0);
+    _substationAddress  = parse.getiValue("xca_sub_target",      0);  //( substation != -1 ? substation : 0);
+    _feederAddress      = parse.getiValue("xca_feeder_target",   0);  //( feeder     != -1 ? feeder     : 0);
+    _zipAddress         = parse.getiValue("xca_zip_target",      0);  //( zip        != -1 ? zip        : 0);
+    _udaAddress         = parse.getiValue("xca_uda_target",      0);  //( uda        != -1 ? uda        : 0);
+    _programAddress     = parse.getiValue("xca_program_target",  0);  //( program    != -1 ? program    : 0);
+    _splinterAddress    = parse.getiValue("xca_splinter_target", 0);  //( splinter   != -1 ? splinter   : 0);
 
     resolveAddressLevel();
 
     // Either not using unique address, or unique address is > 0
-    return (valid && (_uniqueAddress > 0 || _addressLevel != atIndividual)) ? NORMAL : BADPARAM;
+    return (validateParseAddressing(parse) && (_uniqueAddress > 0 || _addressLevel != atIndividual)) ? NORMAL : BADPARAM;
 }
 
 void CtiProtocolExpresscom::addressMessage()
@@ -1151,7 +1108,7 @@ INT CtiProtocolExpresscom::parseRequest(CtiCommandParser &parse, CtiOutMessage &
 
     calcCRC(_message.begin(), _message.size());
 
-    return status;
+    return validateParseAddressing(parse) ? status : BADPARAM;
 }
 
 
@@ -2570,5 +2527,241 @@ void CtiProtocolExpresscom::calcCRC(vector< BYTE >::iterator data, unsigned char
         _CRC = addCRC(_CRC,*data);
 
     data = start;
+}
+
+/*
+    Input validation for Expresscom addresses (YUK-7224).
+*/
+bool CtiProtocolExpresscom::validateParseAddressing(const CtiCommandParser &parse)
+{
+    bool valid = true;
+    unsigned int address;
+
+    static const string serial_("serial");
+    static const string xc_serial_("xc_serial");
+    static const string xca_serial_target_("xca_serial_target");
+    static const string serial_raw_("serial_raw_input");
+
+    if(parse.isKeyValid(serial_))
+    {
+        address = parse.getiValue(serial_, 0);
+        valid &= validateAddress(address, SerialMin, SerialMax);
+
+        // The call to strtoul() that parsed the original command line entered serial number returns
+        // UINT_MAX if it encounters an error.  Unfortunately UINT_MAX is a valid serial number, so we
+        // convert the serial to a string and compare to what we originally entered.  This will catch
+        // bad parameters that are outside the 32 bit space.
+        // eg: 'putconfig xcom ... serial 61234567890 ...' etc.
+        // NOTE: we also have to worry about serials entered in hexadecimal.
+
+        char buffer[64];
+        string entered_serial = parse.getsValue(serial_raw_);
+
+        // make any hex digits lower case.
+        transform(entered_serial.begin(), entered_serial.end(), entered_serial.begin(), ::tolower);
+
+        if( entered_serial[1] == 'x' )  // is it a hex number....
+        {
+            // convert - zero pad to the proper length
+            _snprintf(buffer, 64, "0x%0*x", (entered_serial.length() - 2), address);
+        }
+        else
+        {
+            // convert
+            _snprintf(buffer, 64, "%u", address);
+        }
+
+        valid &= ( entered_serial == string(buffer) );
+    }
+
+    if(parse.isKeyValid(xc_serial_))
+    {
+        address = parse.getiValue(xc_serial_, 0);
+        valid &= validateAddress(address, SerialMin, SerialMax);
+    }
+
+    if(parse.isKeyValid(xca_serial_target_))
+    {
+        address = parse.getiValue(xca_serial_target_, 0);
+        valid &= validateAddress(address, SerialMin, SerialMax);
+    }
+
+    static const string xc_spid_("xc_spid");
+    static const string xca_spid_("xca_spid");
+    static const string xca_spid_target_("xca_spid_target");
+
+    if(parse.isKeyValid(xc_spid_))
+    {
+        address = parse.getiValue(xc_spid_, 0);
+        valid &= validateAddress(address, SpidMin, SpidMax);
+    }
+
+    if(parse.isKeyValid(xca_spid_))
+    {
+        address = parse.getiValue(xca_spid_, 0);
+        valid &= validateAddress(address, SpidMin, SpidMax);
+    }
+
+    if(parse.isKeyValid(xca_spid_target_))
+    {
+        address = parse.getiValue(xca_spid_target_, 0);
+        valid &= validateAddress(address, SpidMin, SpidMax);
+    }
+
+    static const string xc_geo_("xc_geo");
+    static const string xca_geo_("xca_geo");
+    static const string xca_geo_target_("xca_geo_target");
+
+    if(parse.isKeyValid(xc_geo_))
+    {
+        address = parse.getiValue(xc_geo_, 0);
+        valid &= validateAddress(address, GeoMin, GeoMax);
+    }
+
+    if(parse.isKeyValid(xca_geo_))
+    {
+        address = parse.getiValue(xca_geo_, 0);
+        valid &= validateAddress(address, GeoMin, GeoMax);
+    }
+
+    if(parse.isKeyValid(xca_geo_target_))
+    {
+        address = parse.getiValue(xca_geo_target_, 0);
+        valid &= validateAddress(address, GeoMin, GeoMax);
+    }
+
+    static const string xc_sub_("xc_sub");
+    static const string xca_sub_("xca_sub");
+    static const string xca_sub_target_("xca_sub_target");
+
+    if(parse.isKeyValid(xc_sub_))
+    {
+        address = parse.getiValue(xc_sub_, 0);
+        valid &= validateAddress(address, SubstationMin, SubstationMax);
+    }
+
+    if(parse.isKeyValid(xca_sub_))
+    {
+        address = parse.getiValue(xca_sub_, 0);
+        valid &= validateAddress(address, SubstationMin, SubstationMax);
+    }
+
+    if(parse.isKeyValid(xca_sub_target_))
+    {
+        address = parse.getiValue(xca_sub_target_, 0);
+        valid &= validateAddress(address, SubstationMin, SubstationMax);
+    }
+
+    static const string xc_feeder_("xc_feeder");
+    static const string xca_feeder_("xca_feeder");
+    static const string xca_feeder_target_("xca_feeder_target");
+
+    if(parse.isKeyValid(xc_feeder_))
+    {
+        address = parse.getiValue(xc_feeder_, 0);
+        valid &= validateAddress(address, FeederMin, FeederMax);
+    }
+
+    if(parse.isKeyValid(xca_feeder_))
+    {
+        address = parse.getiValue(xca_feeder_, 0);
+        valid &= validateAddress(address, FeederMin, FeederMax);
+    }
+
+    if(parse.isKeyValid(xca_feeder_target_))
+    {
+        address = parse.getiValue(xca_feeder_target_, 0);
+        valid &= validateAddress(address, FeederMin, FeederMax);
+    }
+
+    static const string xc_zip_("xc_zip");
+    static const string xca_zip_("xca_zip");
+    static const string xca_zip_target_("xca_zip_target");
+
+    if(parse.isKeyValid(xc_zip_))
+    {
+        address = parse.getiValue(xc_zip_, 0);
+        valid &= validateAddress(address, ZipMin, ZipMax);
+    }
+
+    if(parse.isKeyValid(xca_zip_))
+    {
+        address = parse.getiValue(xca_zip_, 0);
+        valid &= validateAddress(address, ZipMin, ZipMax);
+    }
+
+    if(parse.isKeyValid(xca_zip_target_))
+    {
+        address = parse.getiValue(xca_zip_target_, 0);
+        valid &= validateAddress(address, ZipMin, ZipMax);
+    }
+
+    static const string xc_uda_("xc_uda");
+    static const string xca_uda_("xca_uda");
+    static const string xca_uda_target_("xca_uda_target");
+
+    if(parse.isKeyValid(xc_uda_))
+    {
+        address = parse.getiValue(xc_uda_, 0);
+        valid &= validateAddress(address, UserMin, UserMax);
+    }
+
+    if(parse.isKeyValid(xca_uda_))
+    {
+        address = parse.getiValue(xca_uda_, 0);
+        valid &= validateAddress(address, UserMin, UserMax);
+    }
+
+    if(parse.isKeyValid(xca_uda_target_))
+    {
+        address = parse.getiValue(xca_uda_target_, 0);
+        valid &= validateAddress(address, UserMin, UserMax);
+    }
+
+    static const string xc_program_("xc_program");
+    static const string xca_program_("xca_program");
+    static const string xca_program_target_("xca_program_target");
+
+    if(parse.isKeyValid(xc_program_))
+    {
+        address = parse.getiValue(xc_program_, 0);
+        valid &= validateAddress(address, ProgramMin, ProgramMax);
+    }
+
+    if(parse.isKeyValid(xca_program_))
+    {
+        address = parse.getiValue(xca_program_, 0);
+        valid &= validateAddress(address, ProgramMin, ProgramMax);
+    }
+
+    if(parse.isKeyValid(xca_program_target_))
+    {
+        address = parse.getiValue(xca_program_target_, 0);
+        valid &= validateAddress(address, ProgramMin, ProgramMax);
+    }
+
+    static const string xc_splinter_("xc_splinter");
+    static const string xca_splinter_("xca_splinter");
+    static const string xca_splinter_target_("xca_splinter_target");
+
+    if(parse.isKeyValid(xc_splinter_))
+    {
+        address = parse.getiValue(xc_splinter_, 0);
+        valid &= validateAddress(address, SplinterMin, SplinterMax);
+    }
+
+    if(parse.isKeyValid(xca_splinter_))
+    {
+        address = parse.getiValue(xca_splinter_, 0);
+        valid &= validateAddress(address, SplinterMin, SplinterMax);
+    }
+
+    if(parse.isKeyValid(xca_splinter_target_))
+    {
+        address = parse.getiValue(xca_splinter_target_, 0);
+        valid &= validateAddress(address, SplinterMin, SplinterMax);
+    }
+
+    return valid;
 }
 

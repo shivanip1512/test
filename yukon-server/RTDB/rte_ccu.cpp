@@ -476,7 +476,7 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg          *pReq,
      */
     CtiProtocolExpresscom  xcom;
     xcom.parseAddressing(parse);                    // The parse holds all the addressing for the group.
-    xcom.parseRequest(parse, *OutMessage);          // OutMessage->Buffer.TAPSt has been filled with xcom.entries() messages.
+    status = xcom.parseRequest(parse, *OutMessage); // OutMessage->Buffer.TAPSt has been filled with xcom.entries() messages.
 
     /* the transmitter is an EMETCON device so load up the Preamble, B, and C words */
 
@@ -491,7 +491,7 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg          *pReq,
     BSt.DlcRoute.RepFixed   = Carrier.getCCUFixBits();
     BSt.DlcRoute.Stages     = getStages();                // How many repeaters on this route?
 
-    if(xcom.entries() > 0)
+    if(!status && xcom.entries() > 0)
     {
         OUTMESS *NewOutMessage = CTIDBG_new OUTMESS( *OutMessage );  // Create and copy
         int size = xcom.messageSize();
@@ -755,6 +755,18 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg          *pReq,
         {
             delete NewOutMessage;
             NewOutMessage = NULL;
+        }
+    }
+    else
+    {
+        status = BADPARAM;
+        resultString = "Bad parameter in Expresscom command: \"" + parse.getCommandStr()+ "\" failed. Error " + CtiNumStr(status) + " - " + FormatError(status);
+
+        CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
+
+        if(retReturn)
+        {
+            retList.push_back(retReturn);
         }
     }
 

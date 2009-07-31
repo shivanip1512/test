@@ -591,7 +591,19 @@ VOID FillerThread (PVOID Arg)
 
     if( !(gConfigParms.getValueAsString("PORTER_EXPRESSCOM_SPID")).empty() )
     {
-        gsSPID = atoi(gConfigParms.getValueAsString("PORTER_EXPRESSCOM_SPID").c_str());
+        unsigned int value = atoi(gConfigParms.getValueAsString("PORTER_EXPRESSCOM_SPID").c_str());
+        if( value <= CtiProtocolExpresscom::SpidMax)
+        {
+            gsSPID = value;
+        }
+        else
+        {
+            gsSPID = 0;     // disable the Expresscom fill messages.
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Invalid value for PORTER_EXPRESSCOM_SPID cparm.  Disabling Expresscom fill messages." << endl;
+            }
+        }
     }
 
     if(gConfigParms.isOpt("PORTER_FILLER_RATE"))
