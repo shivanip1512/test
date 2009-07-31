@@ -52,6 +52,7 @@ public class DataUpdaterController extends AbstractController {
         }
         jsonUpdates.put("data", jsonValueHash);
         
+        response.setContentType("application/json");
         PrintWriter writer = response.getWriter();
         
         String responseJsonStr = jsonUpdates.toString();
