@@ -100,6 +100,10 @@ WHERE ProgramId IS NULL;
 ALTER TABLE LMHardwareControlGroup MODIFY ProgramId NOT NULL;
 /* End YUK-7637 */
 
+/* Start YUK-7175 */
+DELETE RawPointHistory WHERE PointId NOT IN (SELECT DISTINCT PointId FROM Point);
+/* End YUK-7175 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
