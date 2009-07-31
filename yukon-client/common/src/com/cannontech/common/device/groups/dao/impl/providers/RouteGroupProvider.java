@@ -7,7 +7,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
@@ -29,9 +29,8 @@ public class RouteGroupProvider extends BinningDeviceGroupProviderBase<LiteYukon
     @Override
     protected SqlFragmentSource getChildSqlSelectForBin(LiteYukonPAObject bin) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ypo.paobjectid");
-        sql.append("FROM DeviceMeterGroup d");
-        sql.append("JOIN YukonPaObject ypo ON (d.deviceid = ypo.paobjectid)");
+        sql.append("SELECT d.deviceid");
+        sql.append("FROM Device d");
         sql.append("JOIN DeviceRoutes dr ON (d.deviceid = dr.deviceid)");
         sql.append("WHERE dr.routeid = ").appendArgument(bin.getLiteID());
         return sql;
@@ -40,17 +39,16 @@ public class RouteGroupProvider extends BinningDeviceGroupProviderBase<LiteYukon
     @Override
     protected SqlFragmentSource getAllBinnedDeviceSqlSelect() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ypo.paobjectid");
-        sql.append("FROM DeviceMeterGroup d");
-        sql.append("JOIN YukonPaObject ypo ON (d.deviceid = ypo.paobjectid)");
+        sql.append("SELECT d.deviceid");
+        sql.append("FROM Device d");
         sql.append("JOIN DeviceRoutes dr ON (d.deviceid = dr.deviceid)");
         sql.append("WHERE dr.routeid > 0");
         return sql;
     }
     
     @Override
-    protected Set<LiteYukonPAObject> getBinsForDevice(SimpleDevice device) {
-        LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(device.getDeviceId());
+    protected Set<LiteYukonPAObject> getBinsForDevice(YukonDevice device) {
+        LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(device.getPaoIdentifier().getPaoId());
         int routeID = liteYukonPAO.getRouteID();
         if (routeID > 0) {
             LiteYukonPAObject routePao = paoDao.getLiteYukonPAO(routeID);

@@ -22,6 +22,7 @@ import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.DeviceTag;
 import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
@@ -174,13 +175,13 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         return configuration;
     }
     
-    public ConfigurationBase findConfigurationForDevice(SimpleDevice device) {
+    public ConfigurationBase findConfigurationForDevice(YukonDevice device) {
         String sql = "select * "
             + "from DeviceConfiguration dc "
             + "join DeviceConfigurationDeviceMap dcdm on dc.DeviceConfigurationId = dcdm.DeviceConfigurationId "
             + "where dcdm.DeviceId = ?";
         try {
-            return simpleJdbcTemplate.queryForObject(sql, new ConfigurationBaseRowMapper(), device.getDeviceId());
+            return simpleJdbcTemplate.queryForObject(sql, new ConfigurationBaseRowMapper(), device.getPaoIdentifier().getPaoId());
         }catch(IncorrectResultSizeDataAccessException e) {
             return null;
         }
@@ -245,20 +246,20 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         return deviceList;
     }
 
-    public void assignConfigToDevice(ConfigurationBase configuration, SimpleDevice device) throws InvalidDeviceTypeException {
+    public void assignConfigToDevice(ConfigurationBase configuration, YukonDevice device) throws InvalidDeviceTypeException {
         // Get the device types that the configuration supports
         DeviceTag tag = configuration.getType().getSupportedDeviceTag();
         
         // Only add the devices whose type is supported by the configuration
-        if (!deviceDefinitionDao.isTagSupported(device.getDeviceType(), tag)) {
+        if (!deviceDefinitionDao.isTagSupported(device.getPaoIdentifier().getPaoType(), tag)) {
             throw new InvalidDeviceTypeException("Device type: " 
-                + device.getDeviceType().name() 
+                + device.getPaoIdentifier().getPaoType().name() 
                 + " is invalid for config: " + configuration.getName());
         }
         
         // Clean out any assigned configs - device can only be assigned one
         // config
-        unassignConfig(device.getDeviceId());
+        unassignConfig(device.getPaoIdentifier().getPaoId());
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("insert into DeviceConfigurationDeviceMap");
@@ -266,9 +267,9 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         sql.append("values");
         sql.append("(?, ?)");
 
-        simpleJdbcTemplate.update(sql.toString(), configuration.getId(), device.getDeviceId());
+        simpleJdbcTemplate.update(sql.toString(), configuration.getId(), device.getPaoIdentifier().getPaoId());
 
-        DBChangeMsg dbChange = new DBChangeMsg(device.getDeviceId(),
+        DBChangeMsg dbChange = new DBChangeMsg(device.getPaoIdentifier().getPaoId(),
                                                DBChangeMsg.CHANGE_CONFIG_DB,
                                                DBChangeMsg.CAT_DEVICE_CONFIG,
                                                "device",

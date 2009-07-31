@@ -25,7 +25,6 @@ import com.cannontech.common.util.SimpleSqlFragment;
 import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.common.util.predicate.Predicate;
 import com.cannontech.core.dao.NotFoundException;
 
 public class DeviceGroupServiceImpl implements DeviceGroupService {

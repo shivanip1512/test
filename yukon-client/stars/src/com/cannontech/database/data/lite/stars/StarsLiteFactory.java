@@ -52,7 +52,6 @@ import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.*;
 import com.cannontech.stars.xml.serialize.types.StarsThermoModeSettings;
-import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * @author yao
@@ -1945,10 +1944,10 @@ public class StarsLiteFactory {
 		for (int j = 0; j < liteProg.getGroupIDs().length; j++) {
 		    YukonPao yukonPao = DaoFactory.getPaoDao().getYukonPao(liteProg.getGroupIDs()[j]);
 			
-			if (yukonPao.getType() == PAOGroups.MACRO_GROUP) {
+			if (yukonPao.getPaoIdentifier().getPaoType().getDeviceTypeId() == PAOGroups.MACRO_GROUP) {
 			    java.sql.Connection conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
 			    try {
-			        GenericMacro[] groups = GenericMacro.getGenericMacros(new Integer(yukonPao.getPaoId()),
+			        GenericMacro[] groups = GenericMacro.getGenericMacros(new Integer(yukonPao.getPaoIdentifier().getPaoId()),
                                                                           MacroTypes.GROUP,
                                                                           conn);
                     List<Integer> paoIds = new ArrayList<Integer>();
@@ -1977,7 +1976,7 @@ public class StarsLiteFactory {
 			else {
 			    AddressingGroup addrGroup = new AddressingGroup();
 			    addrGroup.setEntryID( liteProg.getGroupIDs()[j] );
-			    addrGroup.setContent( DaoFactory.getPaoDao().getYukonPAOName(yukonPao.getPaoId()) );
+			    addrGroup.setContent( DaoFactory.getPaoDao().getYukonPAOName(yukonPao.getPaoIdentifier().getPaoId()) );
 			    starsProg.addAddressingGroup( addrGroup );
 			}
 		}

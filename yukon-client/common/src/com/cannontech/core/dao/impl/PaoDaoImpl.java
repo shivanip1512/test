@@ -4,7 +4,6 @@ package com.cannontech.core.dao.impl;
  * Implementation of PaoDao Creation date: (7/1/2006 9:40:33 AM)
  * @author: alauinger
  */
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -16,20 +15,21 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
-import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.JdbcTemplateHelper;
-import com.cannontech.database.PoolManager;
+import com.cannontech.database.YukonJdbcOperations;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -55,10 +55,11 @@ public final class PaoDaoImpl implements PaoDao {
         + "left outer join devicecarriersettings DCS ON Y.PAOBJECTID = DCS.DEVICEID " 
         + "left outer join deviceroutes dr ON y.paobjectid = dr.deviceid ";
     
-    private final RowMapper yukonPaoRowMapper = new YukonPaoRowMapper();
+    private final ParameterizedRowMapper<PaoIdentifier> yukonPaoRowMapper = new YukonPaoRowMapper();
     private final RowMapper litePaoRowMapper = new LitePaoRowMapper();
 
     private JdbcOperations jdbcOps;
+    private YukonJdbcOperations yukonJdbcOperations;
     private IDatabaseCache databaseCache;
     private NextValueHelper nextValueHelper;
     private AuthDao authDao;
@@ -70,9 +71,9 @@ public final class PaoDaoImpl implements PaoDao {
     public YukonPao getYukonPao(int paoId) {
         try {
             String sql = yukonPaoSql + "where y.paobjectid=?";
-            YukonPao pao = (YukonPao) jdbcOps.queryForObject(sql,
-                                                             new Object[] { paoId },
-                                                             yukonPaoRowMapper);
+            YukonPao pao = yukonJdbcOperations.queryForObject(sql,
+                                                              yukonPaoRowMapper, 
+                                                              paoId);
             return pao;
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("A PAObject with id " + paoId + " cannot be found.");
@@ -446,6 +447,11 @@ public final class PaoDaoImpl implements PaoDao {
 
     public void setAuthDao(AuthDao authDao) {
         this.authDao = authDao;
+    }
+    
+    @Autowired
+    public void setYukonJdbcOperations(YukonJdbcOperations yukonJdbcOperations) {
+        this.yukonJdbcOperations = yukonJdbcOperations;
     }
 
     public List getAllSubsForUser(LiteYukonUser user) {

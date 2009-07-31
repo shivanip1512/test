@@ -46,11 +46,7 @@
 				<c:forEach var="device" items="${deviceList}">
 					<tr class="<tags:alternateRow odd="" even="altRow"/>">
 						<td style="border: none;">
-                           <cti:url value="/spring/meter/home" var="meterHomeUrl">
-                             <cti:param name="deviceId" value="${device.deviceId}"/>
-                           </cti:url>
-            
-							<a href="${meterHomeUrl}"><cti:deviceName device="${device}" /></a>
+                            <cti:paoDetailUrl yukonPao="${device}">${device.name}</cti:paoDetailUrl>
 						</td>
                         
                         <c:if test="${hasModifyRoleProperty}">
@@ -60,7 +56,7 @@
 								<c:when test="${group.modifiable}">
 									<cti:uniqueIdentifier prefix="groupHierarchy_" var="thisId"/>
 									<form style="display: inline;" id="${thisId}_removeDevice" action="/spring/group/editor/removeDevice" method="post">
-										<input type="hidden" name="deviceId" value="${device.deviceId}" />
+										<input type="hidden" name="deviceId" value="${device.paoIdentifier.paoId}" />
 										<input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}" />
 										<input type="hidden" name="showDevices" value="true" />
 										<input type="image" title="Remove device from group" class="cssicon" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/close.gif"/>" />

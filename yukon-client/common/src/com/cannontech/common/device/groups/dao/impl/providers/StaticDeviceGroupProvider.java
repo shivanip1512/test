@@ -14,6 +14,7 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -127,7 +128,7 @@ public class StaticDeviceGroupProvider extends DeviceGroupProviderSqlBase {
     }
     
     @Override
-    public boolean isChildDevice(DeviceGroup group, SimpleDevice device) {
+    public boolean isChildDevice(DeviceGroup group, YukonDevice device) {
         StoredDeviceGroup storedGroup = getStoredGroup(group);
         boolean result = deviceGroupMemberEditorDao.isChildDevice(storedGroup,device);
         return result;

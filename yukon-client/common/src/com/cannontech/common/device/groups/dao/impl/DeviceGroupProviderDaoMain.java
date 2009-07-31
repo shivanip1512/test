@@ -14,6 +14,7 @@ import com.cannontech.common.device.groups.dao.impl.providers.StaticDeviceGroupP
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.CaseInsensitiveMap;
 import com.cannontech.common.util.SqlFragmentSource;
 
@@ -32,6 +33,11 @@ public class DeviceGroupProviderDaoMain implements DeviceGroupProviderDao {
 
     public Set<SimpleDevice> getChildDevices(DeviceGroup group) {
         return getProvider(group).getChildDevices(group);
+    }
+    
+    @Override
+    public Set<SimpleDevice> getChildDevices(DeviceGroup group, int maxSize) {
+    	return getProvider(group).getChildDevices(group, maxSize);
     }
     
     public int getChildDeviceCount(DeviceGroup group) {
@@ -114,12 +120,12 @@ public class DeviceGroupProviderDaoMain implements DeviceGroupProviderDao {
         return getProvider(group).getGroups(group);
     }
     
-    public Set<DeviceGroup> getGroupMembership(SimpleDevice device) {
+    public Set<DeviceGroup> getGroupMembership(YukonDevice device) {
         DeviceGroup rootGroup = getRootGroup();
         return getGroupMembership(rootGroup, device);
     }
     
-    public Set<DeviceGroup> getGroupMembership(DeviceGroup base, SimpleDevice device) {
+    public Set<DeviceGroup> getGroupMembership(DeviceGroup base, YukonDevice device) {
         DeviceGroupProvider provider = getProvider(base);
         Set<DeviceGroup> groups = provider.getGroupMembership(base, device);
         
@@ -140,12 +146,12 @@ public class DeviceGroupProviderDaoMain implements DeviceGroupProviderDao {
         this.staticProvider = staticProvider;
     }
 
-    public boolean isDeviceInGroup(DeviceGroup group, SimpleDevice device) {
+    public boolean isDeviceInGroup(DeviceGroup group, YukonDevice device) {
         return getProvider(group).isDeviceInGroup(group,device);
     }
     
     @Override
-    public boolean isChildDevice(DeviceGroup group, SimpleDevice device) {
+    public boolean isChildDevice(DeviceGroup group, YukonDevice device) {
         return getProvider(group).isChildDevice(group,device);
     }
 

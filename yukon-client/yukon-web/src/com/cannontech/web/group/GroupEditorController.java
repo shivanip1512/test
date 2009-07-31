@@ -18,7 +18,6 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.amr.meter.dao.GroupMetersDao;
-import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
@@ -33,8 +32,9 @@ import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.DeviceGroupUiService;
 import com.cannontech.common.device.groups.service.ModifiableDeviceGroupPredicate;
 import com.cannontech.common.device.groups.service.NonHiddenDeviceGroupPredicate;
-import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.predicate.AggregateAndPredicate;
 import com.cannontech.common.util.predicate.Predicate;
@@ -123,7 +123,7 @@ public class GroupEditorController extends MultiActionController {
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
 		this.rolePropertyDao = rolePropertyDao;
 	}
-
+    
     public ModelAndView home(HttpServletRequest request, HttpServletResponse response)
             throws Exception, ServletException {
 
@@ -251,8 +251,7 @@ public class GroupEditorController extends MultiActionController {
     }
     
     private void addMaxDevicesToMav(ModelAndView mav, DeviceGroup group) {
-        
-        List<Meter> deviceList = groupMetersDao.getChildMetersByGroup(group, maxGetDevicesSize + 1);
+        List<DisplayablePao> deviceList = deviceGroupUiService.getChildDevicesByGroup(group, maxGetDevicesSize + 1);
         if (deviceList.size() > maxGetDevicesSize) {
             mav.addObject("limted", true);
             deviceList = deviceList.subList(0, maxGetDevicesSize);
@@ -605,7 +604,7 @@ public class GroupEditorController extends MultiActionController {
             // Make sure we can remove the group
             if (removeGroup.isEditable()) {
                 
-                List<? extends SimpleDevice> deviceList = groupMetersDao.getChildMetersByGroup(removeGroup);
+                List<? extends YukonDevice> deviceList = groupMetersDao.getChildMetersByGroup(removeGroup);
                 deviceGroupMemberEditorDao.removeDevices(removeGroup, deviceList);
             } else {
                 membersErrorMessage = "Cannot remove Group: " + removeGroup.getFullName();

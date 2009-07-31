@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.common.bulk.collection.DeviceCollection;
@@ -17,6 +16,7 @@ import com.cannontech.common.device.routeLocate.RouteLocateExecutor;
 import com.cannontech.common.device.routeLocate.RouteLocateResult;
 import com.cannontech.common.device.service.DeviceUpdateService;
 import com.cannontech.common.device.service.RouteDiscoveryService;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.dao.PaoDao;
@@ -128,10 +128,10 @@ public class RouteLocateExecutorImpl implements RouteLocateExecutor {
         routeLocateResult.emptyPendingDeviceRouteLocations();
     }
     
-    private void addInitialRoute(SimpleDevice device, 
+    private void addInitialRoute(YukonDevice device, 
                                  DeviceRouteLocation deviceRouteLocation,
                                  List<Integer> orderedRouteIds){
-        LiteYukonPAObject devicePaoObj = paoDao.getLiteYukonPAO(device.getDeviceId());
+        LiteYukonPAObject devicePaoObj = paoDao.getLiteYukonPAO(device.getPaoIdentifier().getPaoId());
         Integer initialRouteId = devicePaoObj.getRouteID();
         if (initialRouteId != PAOGroups.INVALID) {
             deviceRouteLocation.setInitialRouteId(initialRouteId);

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+
+  <tx:annotation-driven transaction-manager="transactionManager"/>
+  <context:annotation-config/>
+  <aop:aspectj-autoproxy/>
+    
+  <bean id="porterQueueDataService" class="com.cannontech.core.service.impl.PorterQueueDataServiceImpl">
+    <property name="porterConnection" ref="porterConnection"/>
+  </bean>
+  
+  <bean id="templateProcessorFactory" class="com.cannontech.common.util.TemplateProcessorFactory"/>
+  
+  <bean id="pointFormattingService"
+      class="com.cannontech.core.service.impl.PointFormattingServiceImpl" abstract="false"
+      scope="singleton" lazy-init="default" autowire="default" dependency-check="default">
+      <property name="stateDao">
+          <ref bean="stateDao" />
+      </property>
+      <property name="pointDao">
+          <ref bean="pointDao" />
+      </property>
+      <property name="unitMeasureDao">
+          <ref bean="unitMeasureDao" />
+      </property>
+  </bean>
+  
+  <bean id="activityLoggerService"
+      class="com.cannontech.core.service.impl.ActivityLoggerServiceImpl" abstract="false"
+      scope="singleton" lazy-init="default" autowire="default" dependency-check="default">
+  </bean>
+
+  <bean id="durationFormattingService" class="com.cannontech.core.service.impl.DurationFormattingServiceImpl"/>
+
+  <bean id="phoneNumberFormattingService" class="com.cannontech.core.service.impl.PhoneNumberFormattingServiceImpl"/>
+  
+  <bean id="contactNotificationFormattingService" class="com.cannontech.core.service.impl.ContactNotificationFormattingServiceImpl"/>
+  
+  <bean id="paoLoadingService" class="com.cannontech.core.service.impl.PaoLoadingServiceImpl"/>
+  
+</beans>

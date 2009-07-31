@@ -1,26 +1,25 @@
 package com.cannontech.core.dao.impl;
 
-/**
- * SQL Result RowMapper for YukonPao object
- */
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
-import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.pao.PAOGroups;
 
-public class YukonPaoRowMapper implements ParameterizedRowMapper<YukonPao> {
+public class YukonPaoRowMapper implements ParameterizedRowMapper<PaoIdentifier> {
 
-    public YukonPao mapRow(ResultSet rs, int rowNum) throws SQLException {
+    public PaoIdentifier mapRow(ResultSet rs, int rowNum) throws SQLException {
         int paoID = rs.getInt("PAObjectID");
         String paoCategory = rs.getString("Category").trim();
         String paoType = rs.getString("Type").trim();
 
-        YukonPao pao = new YukonPao(paoID, PAOGroups.getPAOType(paoCategory,
-                                                                paoType));
+        int type = PAOGroups.getPAOType(paoCategory, paoType);
+        PaoIdentifier paoIdentifier = new PaoIdentifier(paoID, PaoType.getForId(type), PaoCategory.valueOf(paoCategory));
 
-        return pao;
+        return paoIdentifier;
     }
 }

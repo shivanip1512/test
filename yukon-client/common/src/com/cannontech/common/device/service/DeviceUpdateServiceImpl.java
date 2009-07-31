@@ -23,6 +23,7 @@ import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService.PointTemplateTransferPair;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.dao.DBPersistentDao;
@@ -71,9 +72,9 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     
     private Logger log = YukonLogManager.getLogger(DeviceUpdateServiceImpl.class);
     
-    public void changeAddress(SimpleDevice device, int newAddress) throws IllegalArgumentException {
+    public void changeAddress(YukonDevice device, int newAddress) throws IllegalArgumentException {
 
-        boolean validAddressForType = DeviceAddressRange.isValidRange(device.getType(), newAddress);
+        boolean validAddressForType = DeviceAddressRange.isValidRange(device.getPaoIdentifier().getPaoType().getDeviceTypeId(), newAddress);
 
         if (!validAddressForType) {
             throw new IllegalArgumentException("Address not in valid range for device type: " + newAddress);
@@ -82,7 +83,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         deviceDao.changeAddress(device, newAddress);
     }
 
-    public void changeRoute(SimpleDevice device, String newRouteName) throws IllegalArgumentException {
+    public void changeRoute(YukonDevice device, String newRouteName) throws IllegalArgumentException {
 
         Integer routeId = paoDao.getRouteIdForRouteName(newRouteName);
 
@@ -93,12 +94,12 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         deviceDao.changeRoute(device, routeId);
     }
     
-    public void changeRoute(SimpleDevice device, int newRouteId) throws IllegalArgumentException {
+    public void changeRoute(YukonDevice device, int newRouteId) throws IllegalArgumentException {
 
         deviceDao.changeRoute(device, newRouteId);
     }
 
-    public void changeMeterNumber(SimpleDevice device, String newMeterNumber) throws IllegalArgumentException {
+    public void changeMeterNumber(YukonDevice device, String newMeterNumber) throws IllegalArgumentException {
     
         if (StringUtils.isBlank(newMeterNumber)) {
             throw new IllegalArgumentException("Blank meter number.");
@@ -107,7 +108,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         deviceDao.changeMeterNumber(device, newMeterNumber);
     }
     
-    public void routeDiscovery(final SimpleDevice device, List<Integer> routeIds, final LiteYukonUser liteYukonUser) {
+    public void routeDiscovery(final YukonDevice device, List<Integer> routeIds, final LiteYukonUser liteYukonUser) {
         
         // callback to set routeId and do putconfig when route is discovered
         SimpleCallback<Integer> routeFoundCallback = new SimpleCallback<Integer> () {
@@ -117,7 +118,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
                 
                 if (routeId == null) {
                     
-                    log.warn("Route was not found for device '" + paoDao.getYukonPAOName(device.getDeviceId()) + "' (" + device.getDeviceId() + ").");
+                    log.warn("Route was not found for device '" + paoDao.getYukonPAOName(device.getPaoIdentifier().getPaoId()) + "' (" + device.getPaoIdentifier() + ").");
                 
                 } else {
                     
@@ -125,10 +126,10 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
                     changeRoute(device, routeId);
 
                     // putconfig command
-                    if (DeviceTypesFuncs.isMCT410(device.getType())) {
+                    if (DeviceTypesFuncs.isMCT410(device.getPaoIdentifier().getPaoType().getDeviceTypeId())) {
 
                         CommandRequestDevice configCmd = new CommandRequestDevice();
-                        configCmd.setDevice(device);
+                        configCmd.setDevice(new SimpleDevice(device.getPaoIdentifier()));
                         configCmd.setCommand("putconfig emetcon intervals");
 
                         CommandCompletionCallbackAdapter<CommandRequestDevice> dummyCallback = new CommandCompletionCallbackAdapter<CommandRequestDevice>() {
@@ -145,10 +146,10 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     }
     
     @Transactional
-    public SimpleDevice changeDeviceType(SimpleDevice currentDevice,
+    public SimpleDevice changeDeviceType(YukonDevice currentDevice,
             DeviceDefinition newDefinition) {
         
-        DeviceBase yukonPAObject = (DeviceBase) PAOFactory.createPAObject(currentDevice.getDeviceId());
+        DeviceBase yukonPAObject = (DeviceBase) PAOFactory.createPAObject(currentDevice.getPaoIdentifier().getPaoId());
         
         // Load the device to change
         try {

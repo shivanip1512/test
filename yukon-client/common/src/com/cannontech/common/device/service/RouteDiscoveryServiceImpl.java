@@ -17,6 +17,7 @@ import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandRequestRouteAndDevice;
 import com.cannontech.common.device.commands.CommandRequestRouteAndDeviceExecutor;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.dao.PaoDao;
@@ -36,7 +37,7 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
     private static int NEXT_ATTEMPT_WAIT = 5;
     private Logger log = YukonLogManager.getLogger(RouteDiscoveryServiceImpl.class);
     
-    public void routeDiscovery(SimpleDevice device, List<Integer> routeIds, SimpleCallback<Integer> routeFoundCallback, LiteYukonUser user) {
+    public void routeDiscovery(YukonDevice device, List<Integer> routeIds, SimpleCallback<Integer> routeFoundCallback, LiteYukonUser user) {
         
         // init state for first route
         RouteDiscoveryState state = new RouteDiscoveryState();
@@ -48,9 +49,9 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
         doNextDiscoveryRequest(device, state);
     }
     
-    private void doNextDiscoveryRequest(final SimpleDevice device, final RouteDiscoveryState state) {
+    private void doNextDiscoveryRequest(final YukonDevice device, final RouteDiscoveryState state) {
 
-        final String deviceLogStr = " DEVICE: " + paoDao.getYukonPAOName(device.getDeviceId()) + "' (" + device.getDeviceId() + ")";
+        final String deviceLogStr = " DEVICE: " + paoDao.getYukonPAOName(device.getPaoIdentifier().getPaoId()) + "' (" + device.getPaoIdentifier() + ")";
         
         // The Callback has been canceled.  Ending the recursive call for that given Callback.
         if(cancelationCallbackList.contains(state.getRouteFoundCallback())) {
@@ -80,7 +81,7 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
                     // cmd
                     CommandRequestRouteAndDevice cmdReq = new CommandRequestRouteAndDevice();
                     cmdReq.setCommand("ping");
-                    cmdReq.setDevice(device);
+                    cmdReq.setDevice(new SimpleDevice(device.getPaoIdentifier()));
                     cmdReq.setRouteId(state.getRouteIds().get(state.getRouteIdx()));
 
                     // callback
@@ -98,7 +99,7 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
                             int errorCode = error.getErrorCode();
                             int currentAttemptCount = state.getAttemptCount();
                             int currentRouteId = state.getRouteIds().get(state.getRouteIdx());
-                            int currentDeviceId = command.getDevice().getDeviceId();
+                            int currentDeviceId = command.getDevice().getPaoIdentifier().getPaoId();
                             String routeLogStr = " ROUTE: " + paoDao.getYukonPAOName(currentRouteId) + "' (" + currentRouteId + ")";
                             String deviceLogStr = " DEVICE: " + paoDao.getYukonPAOName(currentDeviceId) + "' (" + currentDeviceId + ")";
 
@@ -147,7 +148,7 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
                         public void receivedLastResultString(CommandRequestRouteAndDevice command, String value) {
 
                             int foundRouteId = command.getRouteId();
-                            int foundDeviceId = command.getDevice().getDeviceId();
+                            int foundDeviceId = command.getDevice().getPaoIdentifier().getPaoId();
                             String routeLogStr = " ROUTE: " + paoDao.getYukonPAOName(foundRouteId) + "' (" + foundRouteId + ")";
                             String deviceLogStr = " DEVICE: " +paoDao.getYukonPAOName(foundDeviceId) + "' (" + foundDeviceId + ")";
                             

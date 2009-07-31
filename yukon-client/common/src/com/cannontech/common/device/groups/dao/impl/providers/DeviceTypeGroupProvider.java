@@ -9,7 +9,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
-import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
@@ -24,7 +24,6 @@ public class DeviceTypeGroupProvider extends BinningDeviceGroupProviderBase<Stri
         sql.append("SELECT DISTINCT ypo.type");
         sql.append("FROM Device d");
         sql.append("JOIN YukonPaObject ypo ON (d.deviceid = ypo.paobjectid)");
-        sql.append("JOIN devicemetergroup dmg ON (dmg.deviceid = ypo.paobjectid)");
         sql.append("ORDER BY ypo.type");
 
         ParameterizedRowMapper<String> mapper = new ParameterizedRowMapper<String>() {
@@ -40,7 +39,7 @@ public class DeviceTypeGroupProvider extends BinningDeviceGroupProviderBase<Stri
     protected SqlFragmentSource getChildSqlSelectForBin(String bin) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ypo.paobjectid");
-        sql.append("FROM DeviceMeterGroup d");
+        sql.append("FROM Device d");
         sql.append("JOIN YukonPaObject ypo ON (d.deviceid = ypo.paobjectid)");
         sql.append("WHERE ypo.type = ");
         sql.appendArgument(bin);
@@ -51,14 +50,14 @@ public class DeviceTypeGroupProvider extends BinningDeviceGroupProviderBase<Stri
     protected SqlFragmentSource getAllBinnedDeviceSqlSelect() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ypo.paobjectid");
-        sql.append("FROM DeviceMeterGroup d");
+        sql.append("FROM Device d");
         sql.append("JOIN YukonPaObject ypo ON (d.deviceid = ypo.paobjectid)");
         return sql;
     }
 
     @Override
-    protected Set<String> getBinsForDevice(SimpleDevice device) {
-        LiteYukonPAObject devicePao = paoDao.getLiteYukonPAO(device.getDeviceId());
+    protected Set<String> getBinsForDevice(YukonDevice device) {
+        LiteYukonPAObject devicePao = paoDao.getLiteYukonPAO(device.getPaoIdentifier().getPaoId());
         String type = getPaoGroupsWrapper().getPAOTypeString(devicePao.getType());
         return Collections.singleton(type);
     }

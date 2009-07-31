@@ -12,6 +12,7 @@ import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.common.device.commands.GroupCommandExecutor;
 import com.cannontech.common.device.commands.GroupCommandResult;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.user.YukonUserContext;
@@ -49,10 +50,10 @@ public class GroupCommanderFailureResultsModel extends BareReportModelBase<Group
         Set<SimpleDevice> devices = result.getResultHolder().getFailedDevices();
         Map<SimpleDevice, DeviceErrorDescription> resultErrorsMap = result.getResultHolder().getErrors();
         
-        for (SimpleDevice device : devices) {
+        for (YukonDevice device : devices) {
             
             // device name
-            LiteYukonPAObject paoObject = paoDao.getLiteYukonPAO(device.getDeviceId());
+            LiteYukonPAObject paoObject = paoDao.getLiteYukonPAO(device.getPaoIdentifier().getPaoId());
             String deviceName = paoObject.getPaoName();
             
             // error

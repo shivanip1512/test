@@ -242,11 +242,11 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         	
         	if (command instanceof CommandRequestRouteAndDevice) {
         		CommandRequestRouteAndDevice commandRequestRouteAndDevice = (CommandRequestRouteAndDevice)command;
-        		commandRequestExecutionResult.setDeviceId(commandRequestRouteAndDevice.getDevice().getDeviceId());
+        		commandRequestExecutionResult.setDeviceId(commandRequestRouteAndDevice.getDevice().getPaoIdentifier().getPaoId());
         		commandRequestExecutionResult.setRouteId(commandRequestRouteAndDevice.getRouteId());
         	} else if (command instanceof CommandRequestDevice) {
         		CommandRequestDevice commandRequestDevice = (CommandRequestDevice)command;
-        		commandRequestExecutionResult.setDeviceId(commandRequestDevice.getDevice().getDeviceId());
+        		commandRequestExecutionResult.setDeviceId(commandRequestDevice.getDevice().getPaoIdentifier().getPaoId());
         	} else if (command instanceof CommandRequestRoute) {
         		CommandRequestRoute commandRequestRoute = (CommandRequestRoute)command;
         		commandRequestExecutionResult.setDeviceId(commandRequestRoute.getRouteId());

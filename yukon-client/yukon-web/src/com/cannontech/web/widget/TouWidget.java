@@ -19,7 +19,7 @@ import com.cannontech.amr.tou.model.TouAttributeMapping;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.commands.CommandResultHolder;
-import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.widget.support.WidgetControllerBase;
@@ -114,7 +114,7 @@ public class TouWidget extends WidgetControllerBase {
      * @param touList
      * @return
      */
-    private Set<Attribute> getExistingAttributes(SimpleDevice device,  List<TouAttributeMapping> touList){
+    private Set<Attribute> getExistingAttributes(YukonDevice device,  List<TouAttributeMapping> touList){
         List<Attribute> neededAttributes = new ArrayList<Attribute>();;
         Set<Attribute> allExistingAttributes = attributeService.getAllExistingAttributes(device);
 

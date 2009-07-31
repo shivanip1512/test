@@ -25,6 +25,7 @@ import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
@@ -168,7 +169,7 @@ public class RemovePointsController extends AddRemovePointsControllerBase {
     	
     	// create processor
     	Map<Integer, Set<PointTemplate>> pointTemplatesMap = extractPointTemplatesMapFromParameters(request, deviceCollection, sharedPoints);
-    	SingleProcessor<SimpleDevice> addPointsProcessor = getRemovePointsProcessor(pointTemplatesMap);
+    	SingleProcessor<YukonDevice> addPointsProcessor = getRemovePointsProcessor(pointTemplatesMap);
     	
     	// start processor
     	String id = startBulkProcessor(deviceCollection, addPointsProcessor, BackgroundProcessTypeEnum.REMOVE_POINTS);
@@ -179,14 +180,14 @@ public class RemovePointsController extends AddRemovePointsControllerBase {
     }
     
     // remove points processor
-    private SingleProcessor<SimpleDevice> getRemovePointsProcessor(final Map<Integer, Set<PointTemplate>> pointTemplatesMap) {
+    private SingleProcessor<YukonDevice> getRemovePointsProcessor(final Map<Integer, Set<PointTemplate>> pointTemplatesMap) {
     	
-    	SingleProcessor<SimpleDevice> removePointsProcessor = new SingleProcessor<SimpleDevice>() {
+    	SingleProcessor<YukonDevice> removePointsProcessor = new SingleProcessor<YukonDevice>() {
 
             @Override
-            public void process(SimpleDevice device) throws ProcessingException {
+            public void process(YukonDevice device) throws ProcessingException {
             	
-            	int deviceType = device.getType();
+            	int deviceType = device.getPaoIdentifier().getPaoType().getDeviceTypeId();
             	if (pointTemplatesMap.containsKey(deviceType)) {
 	            	Set<PointTemplate> pointSet = pointTemplatesMap.get(deviceType);
 					for (PointTemplate pointTemplate : pointSet) {
@@ -197,15 +198,15 @@ public class RemovePointsController extends AddRemovePointsControllerBase {
 							LitePoint liteDeletePoint = pointService.getPointForDevice(device, pointTemplate.getPointIdentifier());
 				            PointBase deletePoint = (PointBase)LiteFactory.convertLiteToDBPers(liteDeletePoint);
 				            
-				            log.debug("Removing point from device: deletePointId=" + liteDeletePoint.getLiteID() + " point=" + pointTemplate + " deviceId=" + device.getDeviceId());
+				            log.debug("Removing point from device: deletePointId=" + liteDeletePoint.getLiteID() + " point=" + pointTemplate + " deviceId=" + device.getPaoIdentifier().getPaoId());
 				            dbPersistentDao.performDBChange(deletePoint, Transaction.DELETE);
 							
 						} else {
-							log.debug("Point does not exist for device, not removing: point=" + pointTemplate + " deviceId=" + device.getDeviceId());
+							log.debug("Point does not exist for device, not removing: point=" + pointTemplate + " deviceId=" + device.getPaoIdentifier().getPaoId());
 						}
 					}
             	} else {
-            		log.debug("Not points selected for device type, none removed: deviceId=" + device.getDeviceId());
+            		log.debug("Not points selected for device type, none removed: deviceId=" + device.getPaoIdentifier().getPaoId());
             	}
             }
         };

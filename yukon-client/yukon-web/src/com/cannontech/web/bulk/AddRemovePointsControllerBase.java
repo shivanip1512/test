@@ -44,6 +44,7 @@ import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.PointService;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.MappingSet;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
@@ -83,7 +84,7 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
     
     
     // START BULK PROCESSOR
-    public String startBulkProcessor(DeviceCollection deviceCollection, SingleProcessor<SimpleDevice> processor, BackgroundProcessTypeEnum backgroundProcessType) throws ServletException, Exception {
+    public String startBulkProcessor(DeviceCollection deviceCollection, SingleProcessor<? super YukonDevice> processor, BackgroundProcessTypeEnum backgroundProcessType) throws ServletException, Exception {
         
         // CALLBACK
     	String resultsId = StringUtils.replace(UUID.randomUUID().toString(), "-", "");

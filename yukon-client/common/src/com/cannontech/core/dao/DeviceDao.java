@@ -3,7 +3,11 @@ package com.cannontech.core.dao;
 import java.util.List;
 
 import com.cannontech.common.device.definition.service.DeviceDefinitionService;
+import com.cannontech.common.device.model.DeviceCollectionReportDevice;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -98,19 +102,19 @@ public interface DeviceDao {
      * Method used to enable a device
      * @param device - Device to enable
      */
-    public void enableDevice(SimpleDevice device);
+    public void enableDevice(YukonDevice device);
 
     /**
      * Method used to disable a device
      * @param device - Device to disable
      */
-    public void disableDevice(SimpleDevice device);
+    public void disableDevice(YukonDevice device);
     
     /**
      * Method to remove a device
      * @param device - Device to remove
      */
-    public void removeDevice(SimpleDevice device);
+    public void removeDevice(YukonDevice device);
     
     /**
      * Method to change the route of a given device based on a route id
@@ -118,46 +122,50 @@ public interface DeviceDao {
      * name and checks if it is valid, then delegates here for update.
      * @param newRouteId
      */
-    public void changeRoute(SimpleDevice device, int newRouteId);
+    public void changeRoute(YukonDevice device, int newRouteId);
     
     /**
      * Method to change the pao name of a given device
      * @param device
      * @param newName
      */
-    public void changeName(SimpleDevice device, String newName);
+    public void changeName(YukonDevice device, String newName);
     
     /**
-     * Method to change the devicecarriersettings address for givin device
+     * Method to change the devicecarriersettings address for given device
      * Higher level method exists in {@link DeviceDefinitionService} that checks if address
      * is in valid range for device.
      * @param deviceId
      * @param newAddress
      */
-    public void changeAddress(SimpleDevice device, int newAddress);
+    public void changeAddress(YukonDevice device, int newAddress);
     
     /**
-     * Method to change the meter number of givin device
+     * Method to change the meter number of given device
      * @param deviceId
      * @param newMeterNumber
      */
-    public void changeMeterNumber(SimpleDevice device, String newMeterNumber);
+    public void changeMeterNumber(YukonDevice device, String newMeterNumber);
     
     /**
      * Method to get the name of a device. If device is a Meter, meterDao
-     * is used to get formatted name. PaoName oterwise.
+     * is used to get formatted name. PaoName otherwise.
      * @param device
      * @return
      */
-    public String getFormattedName(SimpleDevice device);
+    public String getFormattedName(YukonDevice device);
     
     /**
      * Method to get the name of a device. If device is a Meter, meterDao
-     * is used to get formatted name. PaoName oterwise.
+     * is used to get formatted name. PaoName otherwise.
      * @param deviceId
      * @return
      */
     public String getFormattedName(int deviceId);
     
     public SimpleDevice getYukonDeviceForDevice(DeviceBase oldDevice);
+    
+    public PaoLoader<DisplayablePao> getDisplayableDeviceLoader();
+    
+    public PaoLoader<DeviceCollectionReportDevice> getDeviceCollectionReportDeviceLoader();
 }

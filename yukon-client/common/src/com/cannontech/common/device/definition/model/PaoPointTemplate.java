@@ -1,23 +1,24 @@
 package com.cannontech.common.device.definition.model;
 
-import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoIdentifier;
 
 public class PaoPointTemplate {
-    public PaoPointTemplate(SimpleDevice yukonDevice,
+
+	public PaoPointTemplate(PaoIdentifier paoIdentifier,
             PointTemplate pointTemplate) {
         super();
-        this.yukonDevice = yukonDevice;
+		this.paoIdentifier = paoIdentifier;
         this.pointTemplate = pointTemplate;
     }
-    private SimpleDevice yukonDevice;
+    private PaoIdentifier paoIdentifier;
     private PointTemplate pointTemplate;
     
-    public SimpleDevice getYukonDevice() {
-        return yukonDevice;
-    }
-    public void setYukonDevice(SimpleDevice yukonDevice) {
-        this.yukonDevice = yukonDevice;
-    }
+    public void setPaoIdentifier(PaoIdentifier paoIdentifier) {
+		this.paoIdentifier = paoIdentifier;
+	}
+    public PaoIdentifier getPaoIdentifier() {
+		return paoIdentifier;
+	}
     public PointTemplate getPointTemplate() {
         return pointTemplate;
     }
@@ -31,8 +32,8 @@ public class PaoPointTemplate {
         int result = 1;
         result = prime * result + ((pointTemplate == null) ? 0
                 : pointTemplate.hashCode());
-        result = prime * result + ((yukonDevice == null) ? 0
-                : yukonDevice.hashCode());
+        result = prime * result + ((paoIdentifier == null) ? 0
+                : paoIdentifier.hashCode());
         return result;
     }
     
@@ -50,10 +51,10 @@ public class PaoPointTemplate {
                 return false;
         } else if (!pointTemplate.equals(other.pointTemplate))
             return false;
-        if (yukonDevice == null) {
-            if (other.yukonDevice != null)
+        if (paoIdentifier == null) {
+            if (other.paoIdentifier != null)
                 return false;
-        } else if (!yukonDevice.equals(other.yukonDevice))
+        } else if (!paoIdentifier.equals(other.paoIdentifier))
             return false;
         return true;
     }

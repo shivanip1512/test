@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beansProjectDescription>
 	<version>1</version>
-	<pluginVersion><![CDATA[2.1.0.v200808011800]]></pluginVersion>
+	<pluginVersion><![CDATA[2.2.2.RELEASE]]></pluginVersion>
 	<configSuffixes>
 		<configSuffix><![CDATA[xml]]></configSuffix>
 	</configSuffixes>
+	<enableImports><![CDATA[false]]></enableImports>
 	<configs>
 		<config>WebContent/WEB-INF/contexts/amr-servlet.xml</config>
 		<config>WebContent/WEB-INF/contexts/applicationContext.xml</config>
@@ -19,7 +20,6 @@
 		<config>WebContent/WEB-INF/contexts/group-servlet.xml</config>
 		<config>WebContent/WEB-INF/contexts/httpRemote-servlet.xml</config>
 		<config>WebContent/WEB-INF/contexts/jws-servlet.xml</config>
-		<config>WebContent/WEB-INF/contexts/loadProfile-servlet.xml</config>
 		<config>WebContent/WEB-INF/contexts/logging-servlet.xml</config>
 		<config>WebContent/WEB-INF/contexts/login-servlet.xml</config>
 		<config>WebContent/WEB-INF/contexts/lucene-index-servlet.xml</config>
@@ -56,7 +56,6 @@
 				<config>WebContent/WEB-INF/contexts/group-servlet.xml</config>
 				<config>WebContent/WEB-INF/contexts/httpRemote-servlet.xml</config>
 				<config>WebContent/WEB-INF/contexts/jws-servlet.xml</config>
-				<config>WebContent/WEB-INF/contexts/loadProfile-servlet.xml</config>
 				<config>WebContent/WEB-INF/contexts/logging-servlet.xml</config>
 				<config>WebContent/WEB-INF/contexts/login-servlet.xml</config>
 				<config>WebContent/WEB-INF/contexts/lucene-index-servlet.xml</config>
@@ -73,9 +72,7 @@
 				<config>WebContent/WEB-INF/contexts/stars-workorder.xml</config>
 				<config>WebContent/WEB-INF/contexts/static-servlet.xml</config>
 				<config>WebContent/WEB-INF/contexts/widgetDispatcher-servlet.xml</config>
-				<config>/billing/src/beanRefContext.xml</config>
 				<config>/billing/src/com/cannontech/billing/billingContext.xml</config>
-				<config>/commercialcurtailment/src/com/cannontech/cc/applicationContext.xml</config>
 				<config>/common/src/com/cannontech/amr/amrContext.xml</config>
 				<config>/common/src/com/cannontech/amr/amrContext-client.xml</config>
 				<config>/common/src/com/cannontech/common/bulk/bulkContext.xml</config>
@@ -87,18 +84,15 @@
 				<config>/common/src/com/cannontech/core/authorization/applicationContext.xml</config>
 				<config>/common/src/com/cannontech/core/dao/applicationContext.xml</config>
 				<config>/common/src/com/cannontech/core/dynamic/applicationContext.xml</config>
-				<config>/common/src/com/cannontech/core/service/applicationContext.xml</config>
 				<config>/common/src/com/cannontech/mainContext.xml</config>
 				<config>/multispeak/src/com/cannontech/multispeak/client/applicationContext.xml</config>
 				<config>/stars/src/com/cannontech/stars/starsContext.xml</config>
-				<config>/tools/src/beanRefContext.xml</config>
 				<config>/tools/src/com/cannontech/tools/toolsContext.xml</config>
 				<config>/cbc/src/com/cannontech/cbc/cbcContext.xml</config>
 				<config>/loadcontrol/src/com/cannontech/loadcontrol/applicationContext.xml</config>
 				<config>/yukonappserver/src/com/cannontech/yukon/server/cache/cacheContext.xml</config>
 				<config>/common/src/com/cannontech/hibernate/hibernateContext.xml</config>
 				<config>/common/src/com/cannontech/jobs/jobContext.xml</config>
-				<config>/common/src/com/cannontech/report/reportContext.xml</config>
 			</configs>
 		</configSet>
 	</configSets>

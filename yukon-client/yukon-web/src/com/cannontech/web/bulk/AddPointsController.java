@@ -25,6 +25,7 @@ import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.AccumulatorPoint;
@@ -176,7 +177,7 @@ public class AddPointsController extends AddRemovePointsControllerBase {
     	
     	// create processor
     	Map<Integer, Set<PointTemplate>> pointTemplatesMap = extractPointTemplatesMapFromParameters(request, deviceCollection, sharedPoints);
-    	SingleProcessor<SimpleDevice> addPointsProcessor = getAddPointsProcessor(pointTemplatesMap, updatePoints);
+    	SingleProcessor<YukonDevice> addPointsProcessor = getAddPointsProcessor(pointTemplatesMap, updatePoints);
     	
     	// start processor
     	String id = startBulkProcessor(deviceCollection, addPointsProcessor, BackgroundProcessTypeEnum.ADD_POINTS);
@@ -187,14 +188,14 @@ public class AddPointsController extends AddRemovePointsControllerBase {
     }
     
     // add points processor
-    private SingleProcessor<SimpleDevice> getAddPointsProcessor(final Map<Integer, Set<PointTemplate>> pointTemplatesMap, final boolean updatePoints) {
+    private SingleProcessor<YukonDevice> getAddPointsProcessor(final Map<Integer, Set<PointTemplate>> pointTemplatesMap, final boolean updatePoints) {
     	
-    	SingleProcessor<SimpleDevice> addPointsProcessor = new SingleProcessor<SimpleDevice>() {
+    	SingleProcessor<YukonDevice> addPointsProcessor = new SingleProcessor<YukonDevice>() {
 
             @Override
-            public void process(SimpleDevice device) throws ProcessingException {
+            public void process(YukonDevice device) throws ProcessingException {
             	
-            	int deviceType = device.getType();
+            	int deviceType = device.getPaoIdentifier().getPaoType().getDeviceTypeId();
             	if (pointTemplatesMap.containsKey(deviceType)) {
 	            	Set<PointTemplate> pointSet = pointTemplatesMap.get(deviceType);
 					for (PointTemplate pointTemplate : pointSet) {
@@ -205,17 +206,17 @@ public class AddPointsController extends AddRemovePointsControllerBase {
 						if (!pointExistsForDevice) {
 							
 							// add new
-							PointBase newPoint = pointService.createPoint(device.getPaoId(), pointTemplate);
+							PointBase newPoint = pointService.createPoint(device.getPaoIdentifier().getPaoId(), pointTemplate);
 							dbPersistentDao.performDBChange(newPoint, Transaction.INSERT);
 							
-							log.debug("Added point to device: deviceId=" + device.getDeviceId() + " pointTemplate=" + pointTemplate);
+							log.debug("Added point to device: deviceId=" + device.getPaoIdentifier().getPaoId() + " pointTemplate=" + pointTemplate);
 							
 						} else {
 							
 							// update point
 							if (updatePoints) {
 								
-								log.debug("Point already exists for device, updatePoints=true, will attempt update: deviceId=" + device.getDeviceId() + " pointTemplate=" + pointTemplate);
+								log.debug("Point already exists for device, updatePoints=true, will attempt update: deviceId=" + device.getPaoIdentifier().getPaoId() + " pointTemplate=" + pointTemplate);
 								
 								LitePoint litePoint = pointService.getPointForDevice(device, pointTemplate.getPointIdentifier());
 					            //PointBase pointBase = (PointBase)LiteFactory.convertLiteToDBPers(litePoint);
@@ -246,21 +247,21 @@ public class AddPointsController extends AddRemovePointsControllerBase {
 					            	
 					            } else {
 					            	
-					            	log.debug("Point type not supported, not updating: deviceId=" + device.getDeviceId() + " pointId=" + litePoint.getLiteID() + " pointType=" + litePoint.getLiteType());
+					            	log.debug("Point type not supported, not updating: deviceId=" + device.getPaoIdentifier().getPaoId() + " pointId=" + litePoint.getLiteID() + " pointType=" + litePoint.getLiteType());
 					            }
 					            
-					            log.debug("Updated point for device: deviceId=" + device.getDeviceId() + " point=" + pointTemplate);
+					            log.debug("Updated point for device: deviceId=" + device.getPaoIdentifier().getPaoId() + " point=" + pointTemplate);
 					            
 							} else {
 								
-								log.debug("Point already exists for device and updatePoints=false, not updating: deviceId=" + device.getDeviceId() + " point=" + pointTemplate + " deviceId=" + device.getDeviceId());
+								log.debug("Point already exists for device and updatePoints=false, not updating: deviceId=" + device.getPaoIdentifier().getPaoId() + " point=" + pointTemplate);
 							}
 						}
 					}
 					
             	} else {
             		
-            		log.debug("No points selected for device type, none added or updated: deviceId=" + device.getDeviceId());
+            		log.debug("No points selected for device type, none added or updated: deviceId=" + device.getPaoIdentifier().getPaoId());
             	}
             }
         };

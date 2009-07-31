@@ -41,6 +41,7 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.DeviceUpdateService;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
@@ -972,7 +973,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
      * Adds the Meter to 'newBilling' Billing child group.  If the billing group does not already
      * exist, then a new Billing sub group is created. 
      */
-    private void updateBillingCyle(String newBilling, String meterNumber, SimpleDevice meter,
+    private void updateBillingCyle(String newBilling, String meterNumber, YukonDevice meter,
             String logActionStr, MultispeakVendor mspVendor) {
 
         boolean alreadyInGroup = false;

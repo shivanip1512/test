@@ -3,6 +3,8 @@ package com.cannontech.amr.meter.dao.impl;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
@@ -13,20 +15,32 @@ import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.amr.meter.model.DisplayableMeter;
 import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.device.model.DeviceCollectionReportDevice;
+import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.SqlFragmentGenerator;
+import com.cannontech.common.util.SqlFragmentSource;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dao.RoleDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.ListRowCallbackHandler;
 import com.cannontech.database.MaxRowCalbackHandlerRse;
 import com.cannontech.database.SqlProvidingRowMapper;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.roles.yukon.ConfigurationRole;
 import com.cannontech.util.NaturalOrderComparator;
+import com.google.common.base.Function;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 
 public class MeterDaoImpl implements MeterDao, InitializingBean {
     private DBPersistentDao dbPersistentDao;
@@ -34,7 +48,7 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
     private JdbcOperations jdbcOps;
     private SqlProvidingRowMapper<Meter> meterRowMapper;
     private PaoDao paoDao;
-    private RoleDao roleDao;
+    private RolePropertyDao rolePropertyDao;
     
     private String retrieveOneByIdSql;
     private String retrieveOneByMeterNumberSql;
@@ -91,11 +105,11 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
         }
     }
     
-    public Meter getForYukonDevice(SimpleDevice yukonDevice) {
+    public Meter getForYukonDevice(YukonDevice yukonDevice) {
         if (yukonDevice instanceof Meter) {
             return (Meter) yukonDevice;
         } else {
-            return getForId(yukonDevice.getDeviceId());
+            return getForId(yukonDevice.getPaoIdentifier().getPaoId());
         }
     }
 
@@ -138,18 +152,86 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
 
     public String getFormattedDeviceName(Meter device) throws IllegalArgumentException{
         
-        MeterDisplayFieldEnum meterDisplayFieldEnumVal = roleDao.getGlobalRolePropertyValue(MeterDisplayFieldEnum.class,
-                                                                                      ConfigurationRole.DEVICE_DISPLAY_TEMPLATE);
+        MeterDisplayFieldEnum meterDisplayFieldEnum = 
+        	rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.DEVICE_DISPLAY_TEMPLATE, MeterDisplayFieldEnum.class, null);
 
-        String formattedName = meterDisplayFieldEnumVal.getField(device);
-        if (formattedName == null) {
-            String defaultName = "n/a";
-            if (!meterDisplayFieldEnumVal.equals(MeterDisplayFieldEnum.DEVICE_NAME)) {
-                return defaultName + " (" + device.getName() + ")";
-            }
-            return defaultName;
-        }
+        String formattedName = new DisplayableMeter(device, meterDisplayFieldEnum).getName();
         return formattedName;
+    }
+    
+    @Override
+    public PaoLoader<DisplayablePao> getDisplayableDeviceLoader() {
+        return new PaoLoader<DisplayablePao>() {
+            @Override
+            public <T extends YukonPao> Map<T, DisplayablePao> getForPaos(Iterable<? extends T> identifiers) {
+                MeterDisplayFieldEnum meterDisplayFieldEnum = 
+                    rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.DEVICE_DISPLAY_TEMPLATE, MeterDisplayFieldEnum.class, null);
+
+                Map<? extends T, Meter> metersForYukonDevices = getMetersForYukonDevices(identifiers);
+
+                Map<T, DisplayablePao> result = Maps.newHashMapWithExpectedSize(metersForYukonDevices.size());
+
+                for (Entry<? extends T, Meter> entry : metersForYukonDevices.entrySet()) {
+                    DisplayableMeter displayableMeter = new DisplayableMeter(entry.getValue(), meterDisplayFieldEnum);
+                    T key = entry.getKey();
+                    result.put(key, displayableMeter);
+                }
+
+                return result;
+            }
+        };
+    }
+    
+    @Override
+    public PaoLoader<DeviceCollectionReportDevice> getDeviceCollectionReportDeviceLoader() {
+        return new PaoLoader<DeviceCollectionReportDevice>() {
+            @Override
+            public <T extends YukonPao> Map<T, DeviceCollectionReportDevice> getForPaos(Iterable<? extends T> identifiers) {
+
+                Map<? extends T, Meter> metersForYukonDevices = getMetersForYukonDevices(identifiers);
+
+                Map<T, DeviceCollectionReportDevice> result = Maps.newHashMapWithExpectedSize(metersForYukonDevices.size());
+
+                for (Entry<? extends T, Meter> entry : metersForYukonDevices.entrySet()) {
+                    T key = entry.getKey();
+                    DeviceCollectionReportDevice dcrd = new DeviceCollectionReportDevice(key.getPaoIdentifier());
+                    Meter meter = entry.getValue();
+                    dcrd.setName(getFormattedDeviceName(meter));
+                    dcrd.setAddress(meter.getAddress());
+                    dcrd.setMeterNumber(meter.getMeterNumber());
+                    dcrd.setRoute(meter.getRoute());
+                    result.put(key, dcrd);
+                }
+
+                return result;
+            }
+        };
+    }
+    
+    public <I extends YukonPao> Map<I, Meter> getMetersForYukonDevices(Iterable<I> identifiers) {
+    	final ImmutableMap<Integer, I> deviceLookup = Maps.uniqueIndex(identifiers, new Function<I, Integer>() {
+    		@Override
+    		public Integer apply(I device) {
+    			return device.getPaoIdentifier().getPaoId();
+    		}
+    	});
+    	ChunkingSqlTemplate<Integer> template = new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
+    	
+    	List<Meter> meters = template.query(new SqlFragmentGenerator<Integer>() {
+    		public SqlFragmentSource generate(List<Integer> subList) {
+    			SqlStatementBuilder sql = new SqlStatementBuilder(meterRowMapper.getSql());
+    			sql.append("where ypo.paObjectId in (").appendList(subList).append(")");
+    			return sql;
+    		}
+    	}, deviceLookup.keySet(), meterRowMapper);
+    	
+    	ImmutableMap<I, Meter> result = Maps.uniqueIndex(meters, new Function<Meter, I>() {
+    		public I apply(Meter meter) {
+    			return deviceLookup.get(meter.getPaoIdentifier().getPaoId());
+    		}
+    	});
+    	
+    	return result;
     }
 
     /**
@@ -221,14 +303,15 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
 
-    public void setRoleDao(RoleDao roleDao) {
-        this.roleDao = roleDao;
-    }
-
     public void setJdbcOps(JdbcOperations jdbcOps) {
         this.jdbcOps = jdbcOps;
     }
 
+    @Required
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+    	this.rolePropertyDao = rolePropertyDao;
+    }
+    
     @Required
     public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
         this.dbPersistentDao = dbPersistentDao;

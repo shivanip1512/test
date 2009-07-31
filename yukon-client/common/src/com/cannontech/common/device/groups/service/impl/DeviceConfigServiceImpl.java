@@ -26,6 +26,7 @@ import com.cannontech.common.device.config.model.VerifyResult;
 import com.cannontech.common.device.groups.service.DeviceConfigService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.SimpleCallback;
@@ -51,26 +52,26 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     }
     
     @Override
-    public VerifyConfigCommandResult verifyConfigs(Iterable<? extends SimpleDevice> devices, LiteYukonUser user) {
-        List<SimpleDevice> deviceList = Lists.newArrayList(devices);
+    public VerifyConfigCommandResult verifyConfigs(Iterable<? extends YukonDevice> devices, LiteYukonUser user) {
+        List<YukonDevice> deviceList = Lists.newArrayList(devices);
         
         final String commandString = "putconfig emetcon install all verify";
         
-        ObjectMapper<SimpleDevice, CommandRequestDevice> objectMapper = new ObjectMapper<SimpleDevice, CommandRequestDevice>() {
-            public CommandRequestDevice map(SimpleDevice from) throws ObjectMappingException {
+        ObjectMapper<YukonDevice, CommandRequestDevice> objectMapper = new ObjectMapper<YukonDevice, CommandRequestDevice>() {
+            public CommandRequestDevice map(YukonDevice from) throws ObjectMappingException {
                 return buildStandardRequest(from, commandString);
             }
         };
         
-        List<CommandRequestDevice> requests = new MappingList<SimpleDevice, CommandRequestDevice>(deviceList, objectMapper);
+        List<CommandRequestDevice> requests = new MappingList<YukonDevice, CommandRequestDevice>(deviceList, objectMapper);
 
         final VerifyConfigCommandResult result = new VerifyConfigCommandResult();
         
-        for(SimpleDevice device : devices) {
+        for(YukonDevice device : devices) {
             Meter meter = meterDao.getForYukonDevice(device);
             VerifyResult verifyResult = new VerifyResult(meter);
             verifyResult.setConfig(deviceConfigurationDao.findConfigurationForDevice(device));
-            result.getVerifyResultsMap().put(device, verifyResult);
+            result.getVerifyResultsMap().put(new SimpleDevice(device.getPaoIdentifier()), verifyResult);
         }
         
         CommandCompletionCallbackAdapter<CommandRequestDevice> commandCompletionCallback = new CommandCompletionCallbackAdapter<CommandRequestDevice>() {
@@ -120,28 +121,28 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     }
     
     @Override
-    public VerifyResult verifyConfig(SimpleDevice device, LiteYukonUser user) {
+    public VerifyResult verifyConfig(YukonDevice device, LiteYukonUser user) {
         VerifyConfigCommandResult verifyConfigResult = verifyConfigs(Collections.singleton(device), user);
         return verifyConfigResult.getVerifyResultsMap().get(device);
     }
     
     @Override
-    public CommandResultHolder readConfig(SimpleDevice device, LiteYukonUser user) throws Exception {
+    public CommandResultHolder readConfig(YukonDevice device, LiteYukonUser user) throws Exception {
         String commandString = "getconfig model";
         CommandResultHolder resultHolder = commandRequestExecutor.execute(device, commandString, CommandRequestExecutionType.DEVICE_COMMAND, user);
         return resultHolder;
     }
     
     @Override
-    public CommandResultHolder pushConfig(SimpleDevice device, LiteYukonUser user) throws Exception {
+    public CommandResultHolder pushConfig(YukonDevice device, LiteYukonUser user) throws Exception {
         String commandString = "putconfig emetcon install all force";
         CommandResultHolder resultHolder = commandRequestExecutor.execute(device, commandString, CommandRequestExecutionType.DEVICE_CONFIG_PUSH, user);
         return resultHolder;
     }
     
-    private CommandRequestDevice buildStandardRequest(SimpleDevice device, final String command) {
+    private CommandRequestDevice buildStandardRequest(YukonDevice device, final String command) {
         CommandRequestDevice request = new CommandRequestDevice();
-        request.setDevice(device);
+        request.setDevice(new SimpleDevice(device.getPaoIdentifier()));
         request.setBackgroundPriority(true);
         
         final String commandStr = command + " update";

@@ -2,20 +2,29 @@ package com.cannontech.amr.meter.model;
 
 import org.springframework.core.style.ToStringCreator;
 
-import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonDevice;
 
 
-public class Meter extends SimpleDevice { // implements Cloneable{
+public class Meter implements YukonDevice { 
+    private int deviceId;
+    private PaoType type;
+
     private String name;
     private String typeStr;
-    
+
     private boolean disabled;
-    
+
     private String route;
     private int routeId;
     private String address;
-    
+
     private String meterNumber;
+
+    public Meter() {
+    }
 
     /**
      * @return the address or "" if none is assigned
@@ -50,39 +59,43 @@ public class Meter extends SimpleDevice { // implements Cloneable{
     public void setDisabled(boolean disabled) {
         this.disabled = disabled;
     }
-    
+
     public boolean isDisabled() {
         return disabled;
     }
-    
+
     public String getTypeStr() {
         return typeStr;
     }
-    
+
     public void setTypeStr(String typeStr) {
         this.typeStr = typeStr;
     }
-    
+
     /**
      * @return the route name or "" if no route is assigned
      */
     public String getRoute() {
         return route;
     }
-    
+
     public void setRoute(String route) {
         this.route = route;
     }
-    
+
     public int getRouteId() {
         return routeId;
     }
-    
+
     public void setRouteId(int routeId) {
         this.routeId = routeId;
     }
-    
-/*    
+
+    @Override
+    public PaoIdentifier getPaoIdentifier() {
+        return new PaoIdentifier(deviceId, type, PaoCategory.DEVICE);
+    }
+
     @Override
     public String toString() {
         ToStringCreator tsc = new ToStringCreator(this);
@@ -91,5 +104,28 @@ public class Meter extends SimpleDevice { // implements Cloneable{
         tsc.append("type", getTypeStr());
         return tsc.toString();
     }
-*/
+
+    public int getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(int deviceId) {
+        this.deviceId = deviceId;
+    }
+
+    public PaoType getDeviceType() {
+        return PaoType.getForId(getType());
+    }
+
+    public void setDeviceType(PaoType deviceType) {
+        setType(deviceType.getDeviceTypeId());
+    }
+
+    public int getType() {
+        return type.getDeviceTypeId();
+    }
+
+    public void setType(int type) {
+        this.type = PaoType.getForId(type);
+    }
 }

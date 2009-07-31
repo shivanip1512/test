@@ -5,6 +5,7 @@ import java.util.List;
 import com.cannontech.common.device.config.model.ConfigurationBase;
 import com.cannontech.common.device.config.model.ConfigurationTemplate;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.YukonDevice;
 
 /**
  * Data Access class for device configurations
@@ -54,7 +55,7 @@ public interface DeviceConfigurationDao {
      * @param device - Device to assgin configuration to
      * @throws InvalidDeviceTypeException 
      */
-    public void assignConfigToDevice(ConfigurationBase configuration, SimpleDevice device) throws InvalidDeviceTypeException;
+    public void assignConfigToDevice(ConfigurationBase configuration, YukonDevice device) throws InvalidDeviceTypeException;
 
     /**
      * Method to get a list of devices that have been assigned the given
@@ -75,7 +76,7 @@ public interface DeviceConfigurationDao {
      * @param device
      * @return ConfigurationBase
      */
-    public ConfigurationBase findConfigurationForDevice(SimpleDevice device);
+    public ConfigurationBase findConfigurationForDevice(YukonDevice device);
     
     /**
      * Returns a list of configurations by type.

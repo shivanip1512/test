@@ -20,6 +20,7 @@ import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.CommandDefinition;
 import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LitePoint;
@@ -38,22 +39,22 @@ public class MeterReadCommandGeneratorServiceImpl implements MeterReadCommandGen
 	private boolean isUpdate = true;
     private boolean isNoqueue = true;
 	
-	public  Multimap<SimpleDevice, LitePoint> getPointsToRead(SimpleDevice device, Set<? extends Attribute> attributes) {
+	public  Multimap<PaoIdentifier, LitePoint> getPointsToRead(PaoIdentifier device, Set<? extends Attribute> attributes) {
         
 		// reduce number of commands
-    	Multimap<SimpleDevice, LitePoint> pointsToRead = HashMultimap.create();
+    	Multimap<PaoIdentifier, LitePoint> pointsToRead = HashMultimap.create();
     	for (Attribute attribute : attributes) {
     	    // consider wrapping in try/catch and returning false if this fails
     		LitePoint pointForAttribute = null;
     		try {
-    			pointForAttribute = attributeService.getPointForAttribute(device, attribute);
+    			pointForAttribute = attributeService.getPointForAttribute(new SimpleDevice(device), attribute);
     			
-    			SimpleDevice deviceForPoint = null;
-                if (pointForAttribute.getPaobjectID() == device.getDeviceId()) {
+    			PaoIdentifier deviceForPoint = null;
+                if (pointForAttribute.getPaobjectID() == device.getPaoId()) {
                     // prevent DAO call for common case
                     deviceForPoint = device;
                 } else {
-                    deviceForPoint = deviceDao.getYukonDevice(pointForAttribute.getPaobjectID());
+                    deviceForPoint = deviceDao.getYukonDevice(pointForAttribute.getPaobjectID()).getPaoIdentifier();
                 }
                 pointsToRead.put(deviceForPoint, pointForAttribute);
                 
@@ -66,11 +67,11 @@ public class MeterReadCommandGeneratorServiceImpl implements MeterReadCommandGen
         return pointsToRead;
     }
 	
-	public Multimap<SimpleDevice, CommandWrapper> getRequiredCommands(Multimap<SimpleDevice, LitePoint> pointsToRead) throws UnreadableException {
+	public Multimap<PaoIdentifier, CommandWrapper> getRequiredCommands(Multimap<PaoIdentifier, LitePoint> pointsToRead) throws UnreadableException {
 		
-        Multimap<SimpleDevice, CommandWrapper> requiredCommands = HashMultimap.create();
+        Multimap<PaoIdentifier, CommandWrapper> requiredCommands = HashMultimap.create();
     	
-    	for (SimpleDevice deviceToRead : pointsToRead.keySet()) {
+    	for (PaoIdentifier deviceToRead : pointsToRead.keySet()) {
     	    Set<PointIdentifier> pointSet = convertToDevicePointIdentifiers(pointsToRead.get(deviceToRead));
     	    Set<CommandWrapper> minimalCommands = getMinimalCommandSet(deviceToRead, pointSet);
             if (minimalCommands == null) {
@@ -81,13 +82,13 @@ public class MeterReadCommandGeneratorServiceImpl implements MeterReadCommandGen
         return requiredCommands;
     }
 	
-	public List<CommandRequestDevice> getCommandRequests(SimpleDevice device, Iterable<CommandWrapper> commands) {
+	public List<CommandRequestDevice> getCommandRequests(PaoIdentifier device, Iterable<CommandWrapper> commands) {
         List<CommandRequestDevice> commandRequests = new ArrayList<CommandRequestDevice>();
         for (CommandWrapper wrapper : commands) {
             List<String> commandStringList = wrapper.getCommandDefinition().getCommandStringList();
             for (String commandStr : commandStringList) {
                 CommandRequestDevice request = new CommandRequestDevice();
-                request.setDevice(device);
+                request.setDevice(new SimpleDevice(device));
                 commandStr += (isUpdate ? " update " : "");
                 commandStr += (isNoqueue ? " noqueue " : "");
 
@@ -98,8 +99,8 @@ public class MeterReadCommandGeneratorServiceImpl implements MeterReadCommandGen
         return commandRequests;
     }
 	
-	private Set<CommandWrapper> getMinimalCommandSet(SimpleDevice device, Set<PointIdentifier> pointSet) {
-        Set<CommandDefinition> allPossibleCommands = deviceDefinitionDao.getCommandsThatAffectPoints(device.getDeviceType(), pointSet);
+	private Set<CommandWrapper> getMinimalCommandSet(PaoIdentifier device, Set<PointIdentifier> pointSet) {
+        Set<CommandDefinition> allPossibleCommands = deviceDefinitionDao.getCommandsThatAffectPoints(device.getPaoType(), pointSet);
         
         Set<CommandWrapper> wrappedCommands = new HashSet<CommandWrapper>(allPossibleCommands.size());
         for (CommandDefinition definition : allPossibleCommands) {

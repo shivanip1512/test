@@ -15,6 +15,7 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.CopyDeviceGroupService;
 import com.cannontech.common.device.groups.util.YukonDeviceToIdMapper;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.MappingSet;
 
 public class CopyDeviceGroupServiceImpl implements CopyDeviceGroupService {
@@ -28,7 +29,7 @@ public class CopyDeviceGroupServiceImpl implements CopyDeviceGroupService {
         // copy devices in fromGroup to the the new parent
         Set<Integer> deviceIdsToAdd = new HashSet<Integer>();
         Set<SimpleDevice> deviceList = deviceGroupDao.getChildDevices(fromGroup);
-        Set<Integer> deviceIdsInGroup = new MappingSet<SimpleDevice, Integer>(deviceList, new YukonDeviceToIdMapper());
+        Set<Integer> deviceIdsInGroup = new MappingSet<YukonDevice, Integer>(deviceList, new YukonDeviceToIdMapper());
         for (Integer deviceId : deviceIdsInGroup) {
             deviceIdsToAdd.add(deviceId);
         }

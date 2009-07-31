@@ -23,12 +23,12 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessTypeEnum;
 import com.cannontech.common.bulk.callbackResult.ImportUpdateCallbackResult;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
+import com.cannontech.common.device.model.DeviceCollectionReportDevice;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.MappingList;
@@ -38,7 +38,7 @@ import com.cannontech.common.util.ReverseList;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
@@ -57,6 +57,7 @@ public class BulkController extends BulkControllerBase {
     private final static int MAX_SELECTED_DEVICES_DISPLAYED = 1000;
     
     private PaoDao paoDao = null;
+    private PaoLoadingService paoLoadingService = null;
     private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache = null;
     private MeterDao meterDao = null;
     private YukonUserContextMessageSourceResolver messageSourceResolver = null;
@@ -148,16 +149,17 @@ public class BulkController extends BulkControllerBase {
         ModelAndView mav = new ModelAndView("selectedDevicesPopup.jsp");
         
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
+        List<SimpleDevice> devicesToLoad = deviceCollection.getDevices(0, MAX_SELECTED_DEVICES_DISPLAYED);
+        List<DeviceCollectionReportDevice> deviceCollectionReportDevices = paoLoadingService.getDeviceCollectionReportDevices(devicesToLoad);
         
         List<Map<String, Object>> deviceInfoList = new ArrayList<Map<String, Object>>();
-        for (SimpleDevice device : deviceCollection.getDevices(0, MAX_SELECTED_DEVICES_DISPLAYED)) {
+        for (DeviceCollectionReportDevice device : deviceCollectionReportDevices) {
             
             Map<String, Object> deviceInfo = new LinkedHashMap<String, Object>();
             
-            LiteYukonPAObject devicePaoObj = paoDao.getLiteYukonPAO(device.getDeviceId());
-            deviceInfo.put("Device Name", devicePaoObj.getPaoName());
-            deviceInfo.put("Address", devicePaoObj.getAddress());
-            deviceInfo.put("Route", paoDao.getRouteNameForRouteId(devicePaoObj.getRouteID()));
+            deviceInfo.put("Device Name", device.getName());
+            deviceInfo.put("Address", device.getAddress());
+            deviceInfo.put("Route", device.getRoute());
             
             deviceInfoList.add(deviceInfo);
         }
@@ -182,13 +184,6 @@ public class BulkController extends BulkControllerBase {
         List<ColumnInfo> columnInfo = getDeviceCollectionReportColumnInfo(userContext);
         mav.addObject("columnInfo", columnInfo);
         
-        List<Meter> meterList = new ArrayList<Meter>();
-        for (SimpleDevice device : deviceCollection.getDeviceList()) {
-            Meter meter = meterDao.getForId(device.getDeviceId());
-            meterList.add(meter);
-        }
-        mav.addObject("meterList", meterList);
-        
         return mav;
     }
     
@@ -200,16 +195,17 @@ public class BulkController extends BulkControllerBase {
         List<ColumnInfo> columnInfo = getDeviceCollectionReportColumnInfo(userContext);
         
         List<List<String>> data = new ArrayList<List<String>>();
-        for (SimpleDevice device : deviceCollection.getDeviceList()) {
+        
+        List<DeviceCollectionReportDevice> deviceCollectionReportDevices = paoLoadingService.getDeviceCollectionReportDevices(deviceCollection);
+        
+        for (DeviceCollectionReportDevice device : deviceCollectionReportDevices) {
 
-            Meter meter = meterDao.getForId(device.getDeviceId());
-            
             List<String> cols = new ArrayList<String>();
-            cols.add(meter.getName());
-            cols.add(meter.getMeterNumber());
-            cols.add(meter.getTypeStr());
-            cols.add(meter.getAddress());
-            cols.add(meter.getRoute());
+            cols.add(device.getName());
+            cols.add(device.getMeterNumber());
+            cols.add(device.getType());
+            cols.add(device.getAddress());
+            cols.add(device.getRoute());
             data.add(cols);
         }
         
@@ -396,4 +392,9 @@ public class BulkController extends BulkControllerBase {
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
 		this.rolePropertyDao = rolePropertyDao;
 	}
+    
+    @Autowired
+    public void setPaoLoadingService(PaoLoadingService paoLoadingService) {
+        this.paoLoadingService = paoLoadingService;
+    }
 }

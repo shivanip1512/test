@@ -5,6 +5,7 @@ import java.util.Set;
 
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.core.dao.NotFoundException;
 
@@ -165,6 +166,17 @@ public interface DeviceGroupProvider {
     public Set<SimpleDevice> getChildDevices(DeviceGroup group);
     
     /**
+     * Returns a set of up to maxSize YukonDevices for each device that is a direct child of 
+     * the given group. The implementation of this may be faster than calling 
+     * getDeviceIds() if the YukonDevice object is needed.
+     * 
+     * @param group - The device group that the returned devices must be children of
+     * @param maxSize - The maximum number of devices to return
+     * @return - An unmodifiable list of YukonDevices (the order is arbitrary)
+     */
+    public Set<SimpleDevice> getChildDevices(DeviceGroup group, int maxSize);
+    
+    /**
      * Tests if the device is a child of deviceGroup. The following should be true
      * for any DeviceGroup i and YukonDevice j:
      * 
@@ -174,7 +186,7 @@ public interface DeviceGroupProvider {
      * @param device - The device
      * @return - True if the device is found
      */
-    public boolean isChildDevice(DeviceGroup group, SimpleDevice device);
+    public boolean isChildDevice(DeviceGroup group, YukonDevice device);
 
     /**
      * Returns the DeviceGroup that is a child of base and has a name (not full name)
@@ -206,7 +218,7 @@ public interface DeviceGroupProvider {
      * @param device - The device
      * @return - True if the device is found
      */
-    public boolean isDeviceInGroup(DeviceGroup deviceGroup, SimpleDevice device);
+    public boolean isDeviceInGroup(DeviceGroup deviceGroup, YukonDevice device);
 
     /**
      * Returns a Set of DeviceGroups that are isEqualToOrDescendantOf of base and contain the device.
@@ -217,6 +229,6 @@ public interface DeviceGroupProvider {
      * @param device - The device
      * @return - A Set of groups under base which contain device
      */
-    public Set<DeviceGroup> getGroupMembership(DeviceGroup base, SimpleDevice device);
+    public Set<DeviceGroup> getGroupMembership(DeviceGroup base, YukonDevice device);
 
 }

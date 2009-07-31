@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beansProjectDescription>
 	<version>1</version>
-	<pluginVersion><![CDATA[2.2.1.v200811281800]]></pluginVersion>
+	<pluginVersion><![CDATA[2.2.2.RELEASE]]></pluginVersion>
 	<configSuffixes>
 		<configSuffix><![CDATA[xml]]></configSuffix>
 	</configSuffixes>
@@ -26,12 +26,10 @@
 				<config>/common/src/com/cannontech/core/authorization/applicationContext.xml</config>
 				<config>/common/src/com/cannontech/core/dao/applicationContext.xml</config>
 				<config>/common/src/com/cannontech/core/dynamic/applicationContext.xml</config>
-				<config>/common/src/com/cannontech/core/service/applicationContext.xml</config>
 				<config>/common/src/com/cannontech/mainContext.xml</config>
 				<config>src/com/cannontech/yukon/server/cache/cacheContext.xml</config>
 				<config>/common/src/com/cannontech/hibernate/hibernateContext.xml</config>
 				<config>/common/src/com/cannontech/jobs/jobContext.xml</config>
-				<config>/common/src/com/cannontech/report/reportContext.xml</config>
 			</configs>
 		</configSet>
 	</configSets>

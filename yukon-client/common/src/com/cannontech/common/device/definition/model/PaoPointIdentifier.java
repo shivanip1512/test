@@ -1,23 +1,23 @@
 package com.cannontech.common.device.definition.model;
 
-import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoIdentifier;
 
 public class PaoPointIdentifier {
-    private SimpleDevice yukonDevice;
+    private PaoIdentifier paoIdentifier;
     private PointIdentifier devicePointIdentifier;
     
-    public PaoPointIdentifier(SimpleDevice yukonDevice,
+    public PaoPointIdentifier(PaoIdentifier paoIdentifier,
             PointIdentifier devicePointIdentifier) {
         super();
-        this.yukonDevice = yukonDevice;
+		this.paoIdentifier = paoIdentifier;
         this.devicePointIdentifier = devicePointIdentifier;
     }
-    public SimpleDevice getYukonDevice() {
-        return yukonDevice;
-    }
-    public void setYukonDevice(SimpleDevice yukonDevice) {
-        this.yukonDevice = yukonDevice;
-    }
+    public void setPaoIdentifier(PaoIdentifier paoIdentifier) {
+		this.paoIdentifier = paoIdentifier;
+	}
+    public PaoIdentifier getPaoIdentifier() {
+		return paoIdentifier;
+	}
     public PointIdentifier getDevicePointIdentifier() {
         return devicePointIdentifier;
     }

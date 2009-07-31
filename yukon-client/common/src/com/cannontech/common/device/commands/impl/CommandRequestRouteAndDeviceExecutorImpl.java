@@ -18,7 +18,7 @@ public class CommandRequestRouteAndDeviceExecutorImpl extends CommandRequestExec
 
         String command = commandRequest.getCommand();
         int routeId = commandRequest.getRouteId();
-        int deviceId = commandRequest.getDevice().getDeviceId();
+        int deviceId = commandRequest.getDevice().getPaoIdentifier().getPaoId();
         long requestId = RandomUtils.nextInt();
         int priority = commandRequest.isBackgroundPriority() ? getDefaultBackgroundPriority() : getDefaultForegroundPriority();
         

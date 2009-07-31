@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Required;
 import com.cannontech.common.device.groups.dao.impl.providers.helpers.ScanIndicatingDevice;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 
@@ -17,12 +18,12 @@ public class ScanningMetersGroupProvider extends DeviceGroupProviderSqlBase {
     private ScanIndicatingDevice scanIndicatingDevice;
     
     @Override
-    public boolean isChildDevice(DeviceGroup group, SimpleDevice device) {
+    public boolean isChildDevice(DeviceGroup group, YukonDevice device) {
         // is this device scanning? if so, it belongs to the base group
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(*) AS c");
         sql.append("FROM (" , scanIndicatingDevice.getDeviceIdSql(), ") ypo ");
-        sql.append("WHERE ypo.deviceid = ").appendArgument(device.getDeviceId());
+        sql.append("WHERE ypo.deviceid = ").appendArgument(device.getPaoIdentifier().getPaoId());
         
         Integer deviceCount = getSimpleJdbcTemplate().queryForInt(sql.getSql(), sql.getArguments());
         

@@ -706,6 +706,10 @@
         <property name="updaterService" ref="dataUpdaterService" />
     </bean>
     
+    <bean id="paoDetailUrlTagPrototype" class="com.cannontech.web.taglib.PaoDetailUrlTag">
+        <property name="paoDetailUrlHelper" ref="paoDetailUrlHelper"/>
+    </bean>
+    
     <bean id="formatTemplateTagPrototype" class="com.cannontech.web.i18n.FormatTemplateTag">
         <property name="templateProcessorFactory" ref="templateProcessorFactory" />
         <property name="messageSourceResolver" ref="yukonUserContextMessageSourceResolver" />
@@ -1068,5 +1072,7 @@
     <!-- Cayenta API Service -->
     <bean id="cayentaApiService" class="com.cannontech.web.cayenta.service.impl.CayentaApiServiceImpl">
     </bean>
+    
+    <bean id="paoDetailUrlHelper" class="com.cannontech.web.common.pao.PaoDetailUrlHelper"/>
     
 </beans>

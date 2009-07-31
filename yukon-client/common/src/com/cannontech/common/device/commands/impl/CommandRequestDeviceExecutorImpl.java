@@ -10,6 +10,7 @@ import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandRequestType;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.porter.message.Request;
 
@@ -25,7 +26,7 @@ public class CommandRequestDeviceExecutorImpl extends
     protected Request buildRequest(CommandRequestDevice commandRequest) {
         Request request = new Request();
         request.setCommandString(commandRequest.getCommand());
-        request.setDeviceID(commandRequest.getDevice().getDeviceId());
+        request.setDeviceID(commandRequest.getDevice().getPaoIdentifier().getPaoId());
         long requestId = RandomUtils.nextInt();
         request.setUserMessageID(requestId);
         int priority = commandRequest.isBackgroundPriority() ? getDefaultBackgroundPriority()
@@ -35,11 +36,11 @@ public class CommandRequestDeviceExecutorImpl extends
         return request;
     }
 
-    public CommandResultHolder execute(SimpleDevice device, String command,
+    public CommandResultHolder execute(YukonDevice device, String command,
     		CommandRequestExecutionType type, LiteYukonUser user) throws Exception {
 
         CommandRequestDevice cmdRequest = new CommandRequestDevice();
-        cmdRequest.setDevice(device);
+        cmdRequest.setDevice(new SimpleDevice(device.getPaoIdentifier()));
 
         String commandStr = command;
         commandStr += " update";

@@ -103,7 +103,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
                                                                1.0,
                                                                1,
                                                                0);
-        PaoPointTemplate expectedDevicePointTemplate = new PaoPointTemplate(device, expectedPointTemplate);
+        PaoPointTemplate expectedDevicePointTemplate = new PaoPointTemplate(device.getPaoIdentifier(), expectedPointTemplate);
 
         AttributeDefinition attributeDefinition = dao.getAttributeLookup(device.getDeviceType(), BuiltInAttribute.USAGE);
         PaoPointTemplate actualDevicePointTemplate = attributeDefinition.getPointTemplate(device);

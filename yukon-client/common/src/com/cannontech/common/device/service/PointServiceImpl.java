@@ -1,9 +1,9 @@
 package com.cannontech.common.device.service;
 
-import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.device.definition.model.PaoPointIdentifier;
+import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.device.definition.model.PointTemplate;
-import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
@@ -95,9 +95,9 @@ public class PointServiceImpl implements PointService {
                                 template.getStateGroupId());
     }
 
-    public LitePoint getPointForDevice(SimpleDevice device, PointIdentifier pointIdentifier) throws NotFoundException {
+    public LitePoint getPointForDevice(YukonPao pao, PointIdentifier pointIdentifier) throws NotFoundException {
 
-        LitePoint point = pointDao.getLitePointIdByDeviceId_Offset_PointType(device.getDeviceId(),
+        LitePoint point = pointDao.getLitePointIdByDeviceId_Offset_PointType(pao.getPaoIdentifier().getPaoId(),
 																        		pointIdentifier.getOffset(),
 																        		pointIdentifier.getType());
 
@@ -105,14 +105,14 @@ public class PointServiceImpl implements PointService {
     }
     
     @Override
-    public LitePoint getPointForDevice(PaoPointIdentifier devicePointIdentifier) throws NotFoundException {
-        return getPointForDevice(devicePointIdentifier.getYukonDevice(), devicePointIdentifier.getDevicePointIdentifier());
+    public LitePoint getPointForDevice(PaoPointIdentifier paoPointIdentifier) throws NotFoundException {
+        return getPointForDevice(paoPointIdentifier.getPaoIdentifier(), paoPointIdentifier.getDevicePointIdentifier());
     }
 
-    public boolean pointExistsForDevice(SimpleDevice device, PointIdentifier pointIdentifier) {
+    public boolean pointExistsForDevice(YukonPao pao, PointIdentifier pointIdentifier) {
 
         try {
-            LitePoint point = this.getPointForDevice(device, pointIdentifier);
+            LitePoint point = this.getPointForDevice(pao, pointIdentifier);
             if (point.getPointType() == PointTypes.SYSTEM_POINT) {
                 return false;
             }
@@ -125,6 +125,6 @@ public class PointServiceImpl implements PointService {
     
     @Override
     public boolean pointExistsForDevice(PaoPointIdentifier devicePointIdentifier) {
-        return pointExistsForDevice(devicePointIdentifier.getYukonDevice(), devicePointIdentifier.getDevicePointIdentifier());
+        return pointExistsForDevice(devicePointIdentifier.getPaoIdentifier(), devicePointIdentifier.getDevicePointIdentifier());
     }
 }

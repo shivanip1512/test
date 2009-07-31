@@ -4,10 +4,10 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import com.cannontech.common.device.attribute.model.Attribute;
-import com.cannontech.common.device.definition.model.PaoPointTemplate;
 import com.cannontech.common.device.definition.model.PaoPointIdentifier;
+import com.cannontech.common.device.definition.model.PaoPointTemplate;
 import com.cannontech.common.device.definition.model.PointTemplate;
-import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.YukonDevice;
 
 public class BasicLookupAttrDef extends AttributeDefinition {
 
@@ -29,13 +29,13 @@ public class BasicLookupAttrDef extends AttributeDefinition {
 	
 	
 	@Override
-	public PaoPointIdentifier getPointIdentifier(SimpleDevice device) {
-	    return new PaoPointIdentifier(device, pointTemplate.getPointIdentifier());
+	public PaoPointIdentifier getPointIdentifier(YukonDevice device) {
+	    return new PaoPointIdentifier(device.getPaoIdentifier(), pointTemplate.getPointIdentifier());
 	}
 	
 	@Override
-	public PaoPointTemplate getPointTemplate(SimpleDevice device) {
-	    return new PaoPointTemplate(device, pointTemplate);
+	public PaoPointTemplate getPointTemplate(YukonDevice device) {
+	    return new PaoPointTemplate(device.getPaoIdentifier(), pointTemplate);
 	}
 	
 	@Override

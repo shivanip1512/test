@@ -35,7 +35,7 @@
             <tags:deviceSelection   action="/spring/group/editor/addDevicesByCollection" 
                                     groupDataJson="${groupDataJson}"
                                     groupName="${groupName}"
-                                    pickerConstraint="com.cannontech.common.search.criteria.MeterCriteria"/>
+                                    pickerConstraint="com.cannontech.common.search.criteria.DeviceCriteria"/>
 		</tags:boxContainer>
 	
 	</div>

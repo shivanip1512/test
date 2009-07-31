@@ -28,6 +28,7 @@
                 <value>com/cannontech/core/authorization/applicationContext.xml</value>
                 <value>com/cannontech/core/dao/applicationContext.xml</value>
                 <value>com/cannontech/core/dynamic/applicationContext.xml</value>
+                <value>com/cannontech/core/service/coreServicesContext.xml</value>
                 <value>com/cannontech/core/service/dateContext.xml</value>
                 <value>com/cannontech/loadcontrol/applicationContext.xml</value>
                 <value>com/cannontech/cc/applicationContext.xml</value>
@@ -45,7 +46,7 @@
         <constructor-arg index="0">
             <list merge="true">
                 <value>com/cannontech/notif/applicationContext.xml</value>
-                <value>com/cannontech/core/service/applicationContext.xml</value>
+                <value>com/cannontech/core/service/serverServicesContext.xml</value>
             </list>
         </constructor-arg>
         <constructor-arg index="1" value="true" />
@@ -59,7 +60,7 @@
         lazy-init="true">
         <constructor-arg index="0">
             <list>
-                <value> com/cannontech/core/service/applicationContext.xml</value>
+                <value> com/cannontech/core/service/serverServicesContext.xml</value>
                 <value>com/cannontech/stars/starsContext.xml</value>
             </list>
         </constructor-arg>

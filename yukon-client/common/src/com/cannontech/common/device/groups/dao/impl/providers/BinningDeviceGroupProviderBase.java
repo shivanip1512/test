@@ -12,6 +12,7 @@ import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.model.MutableDeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.SimpleSqlFragment;
@@ -116,7 +117,7 @@ public abstract class BinningDeviceGroupProviderBase<T> extends DeviceGroupProvi
     protected abstract List<T> getAllBins();
 
     @Override
-    public boolean isChildDevice(DeviceGroup base, SimpleDevice device) {
+    public boolean isChildDevice(DeviceGroup base, YukonDevice device) {
         if (base instanceof BinningDeviceGroupProviderBase.BinnedDeviceGroup) {
             BinnedDeviceGroup bdg = (BinnedDeviceGroup) base;
             
@@ -129,7 +130,7 @@ public abstract class BinningDeviceGroupProviderBase<T> extends DeviceGroupProvi
         }
     }
     
-    protected boolean isDeviceInBin(T bin, SimpleDevice device) {
+    protected boolean isDeviceInBin(T bin, YukonDevice device) {
         Set<T> binsForDevice = getBinsForDevice(device);
         return binsForDevice.contains(bin);
     }
@@ -163,7 +164,7 @@ public abstract class BinningDeviceGroupProviderBase<T> extends DeviceGroupProvi
     }
     
     @Override
-    public boolean isDeviceInGroup(DeviceGroup base, SimpleDevice device) {
+    public boolean isDeviceInGroup(DeviceGroup base, YukonDevice device) {
         Set<DeviceGroup> groupMembership = getGroupMembership(base, device);
         return !groupMembership.isEmpty();
     }
@@ -174,7 +175,7 @@ public abstract class BinningDeviceGroupProviderBase<T> extends DeviceGroupProvi
      * @param device
      * @return
      */
-    protected abstract Set<T> getBinsForDevice(SimpleDevice device);
+    protected abstract Set<T> getBinsForDevice(YukonDevice device);
 
     protected class BinnedDeviceGroup extends MutableDeviceGroup {
         public T bin;

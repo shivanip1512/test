@@ -4,10 +4,8 @@ import java.util.Collection;
 import java.util.Set;
 
 import com.cannontech.common.device.groups.model.DeviceGroup;
-import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.SqlFragmentSource;
-import com.cannontech.common.util.predicate.Predicate;
 import com.cannontech.core.dao.NotFoundException;
 
 /**

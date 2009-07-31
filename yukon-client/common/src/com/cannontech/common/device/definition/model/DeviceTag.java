@@ -12,6 +12,7 @@ public enum DeviceTag {
 	VOLTAGE_PROFILE("Voltage Profile"),
 	DEVICE_CONFIGURATION_470("Device Configuration 470"),
 	DEVICE_CONFIGURATION_430("Device Configuration 430"),
+	METER_DETAIL_DISPLAYABLE("Meter Detail Displayable"),
 	;
 
 	private String description;

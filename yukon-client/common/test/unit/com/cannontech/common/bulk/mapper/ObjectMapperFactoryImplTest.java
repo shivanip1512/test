@@ -8,17 +8,20 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
+import com.cannontech.common.device.model.DeviceCollectionReportDevice;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.db.pao.YukonPAObject;
 
 /**
  * Test class for ObjectMapperFactoryImpl
@@ -346,87 +349,100 @@ public class ObjectMapperFactoryImplTest extends TestCase {
 		}
 
 		@SuppressWarnings("unchecked")
+		@Override
         public List getDevicesByDeviceAddress(Integer masterAddress,
                 Integer slaveAddress) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
         @SuppressWarnings("unchecked")
+        @Override
         public List getDevicesByPort(int portId) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
+        @Override
         public LiteYukonPAObject getLiteDevice(int deviceID) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
+        @Override
         public LiteDeviceMeterNumber getLiteDeviceMeterNumber(int deviceID) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
+        @Override
         public LiteYukonPAObject getLiteYukonPAObject(String deviceName,
                 int category, int paoClass, int type) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
+        @Override
         public LiteYukonPAObject getLiteYukonPAObject(String deviceName,
                 String category, String paoClass, String type) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
+        @Override
         public LiteYukonPAObject getLiteYukonPaobjectByDeviceName(
                 String deviceName) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
+        @Override
         public LiteYukonPAObject getLiteYukonPaobjectByMeterNumber(
                 String meterNumber) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
+        @Override
         public List<LiteYukonPAObject> getLiteYukonPaobjectListByMeterNumber(
                 String meterNumber) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
+        @Override
         public SimpleDevice getYukonDevice(int paoId) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
+        @Override
         public SimpleDevice getYukonDevice(LiteYukonPAObject yukonPAObject) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
-        public void disableDevice(SimpleDevice device) {
-            throw new UnsupportedOperationException("Method not implemented");
-        }
-
-        public void enableDevice(SimpleDevice device) {
+        @Override
+        public void disableDevice(YukonDevice device) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
         @Override
-        public void removeDevice(SimpleDevice device) {
+        public void enableDevice(YukonDevice device) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
         @Override
-        public void changeAddress(SimpleDevice device, int newAddress) {
+        public void removeDevice(YukonDevice device) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
         @Override
-        public void changeMeterNumber(SimpleDevice device, String newMeterNumber) {
+        public void changeAddress(YukonDevice device, int newAddress) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
         @Override
-        public void changeName(SimpleDevice device, String newName) {
+        public void changeMeterNumber(YukonDevice device, String newMeterNumber) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
         @Override
-        public void changeRoute(SimpleDevice device, int newRouteId) {
+        public void changeName(YukonDevice device, String newName) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+
+        @Override
+        public void changeRoute(YukonDevice device, int newRouteId) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
@@ -456,7 +472,7 @@ public class ObjectMapperFactoryImplTest extends TestCase {
         }
         
         @Override
-        public String getFormattedName(SimpleDevice device) {
+        public String getFormattedName(YukonDevice device) {
             throw new UnsupportedOperationException("Method not implemented");
         }
         
@@ -464,7 +480,14 @@ public class ObjectMapperFactoryImplTest extends TestCase {
         public SimpleDevice getYukonDeviceForDevice(DeviceBase oldDevice) {
         	throw new UnsupportedOperationException("Method not implemented");
         }
-
+        @Override
+        public PaoLoader<DisplayablePao> getDisplayableDeviceLoader() {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+        @Override
+        public PaoLoader<DeviceCollectionReportDevice> getDeviceCollectionReportDeviceLoader() {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
     }
 
 }

@@ -30,6 +30,7 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
@@ -141,7 +142,7 @@ public class OutageProcessingController extends MultiActionController {
 		String outageGroupName = SystemGroupEnum.OUTAGE_PROCESSING.getFullPath() + outageMonitor.getName();
 		StoredDeviceGroup outageGroup = deviceGroupEditorDao.getStoredGroup(outageGroupName, true);
 		
-		List<? extends SimpleDevice> deviceList = groupMetersDao.getChildMetersByGroup(outageGroup);
+		List<? extends YukonDevice> deviceList = groupMetersDao.getChildMetersByGroup(outageGroup);
         deviceGroupMemberEditorDao.removeDevices(outageGroup, deviceList);
         
 		mav.addObject("outageMonitorId", outageMonitorId);

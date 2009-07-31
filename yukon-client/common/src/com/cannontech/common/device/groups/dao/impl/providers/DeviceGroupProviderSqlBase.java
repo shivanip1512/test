@@ -16,10 +16,12 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.CollectionRowCallbackHandler;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
+import com.google.common.collect.Sets;
 
 public abstract class DeviceGroupProviderSqlBase extends DeviceGroupProviderBase {
     private SimpleJdbcTemplate simpleJdbcTemplate;
@@ -70,6 +72,13 @@ public abstract class DeviceGroupProviderSqlBase extends DeviceGroupProviderBase
         Set<SimpleDevice> deviceSet = new HashSet<SimpleDevice>();
         collectChildDevices(group, deviceSet, Integer.MAX_VALUE);
         return deviceSet;
+    }
+    
+    @Override
+    public Set<SimpleDevice> getChildDevices(DeviceGroup group, int maxSize) {
+    	Set<SimpleDevice> result = Sets.newHashSetWithExpectedSize(maxSize == Integer.MAX_VALUE ? 200 : maxSize);
+    	collectChildDevices(group, result, maxSize);
+    	return result;
     }
     
     @Override

@@ -2,15 +2,11 @@ package com.cannontech.amr.deviceread.dao;
 
 import java.util.Set;
 
-import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.commands.CommandResultHolder;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
-/**
- * @author tmack
- *
- */
 public interface MeterReadService {
     /**
      * This method will determine which commands need to be sent to read
@@ -19,7 +15,7 @@ public interface MeterReadService {
      * @param device
      * @param attribute
      */
-    public CommandResultHolder readMeter(Meter device, Set<? extends Attribute> attribute, LiteYukonUser user);
+    public CommandResultHolder readMeter(YukonDevice device, Set<? extends Attribute> attribute, LiteYukonUser user);
 
     /**
      * This method will verify which commands need to be sent to read the attributes.  If there
@@ -32,6 +28,6 @@ public interface MeterReadService {
      * @param user
      * @return
      */
-    public boolean isReadable(Meter device, Set<? extends Attribute> attributes, LiteYukonUser user);
+    public boolean isReadable(YukonDevice device, Set<? extends Attribute> attributes, LiteYukonUser user);
     
 }

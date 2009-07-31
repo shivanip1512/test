@@ -5,14 +5,15 @@ import java.util.Collection;
 import java.util.List;
 
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 public class ChunkingSqlTemplate<E> {
     public static final int DEFAULT_SIZE = 1000;
-    private SimpleJdbcTemplate simpleJdbcTemplate;
+    private SimpleJdbcOperations simpleJdbcTemplate;
     private int chunkSize;
     
-    public ChunkingSqlTemplate(final SimpleJdbcTemplate simpleJdbcTemplate) {
+    public ChunkingSqlTemplate(final SimpleJdbcOperations simpleJdbcTemplate) {
         this.chunkSize = DEFAULT_SIZE;
         this.simpleJdbcTemplate = simpleJdbcTemplate;
     }

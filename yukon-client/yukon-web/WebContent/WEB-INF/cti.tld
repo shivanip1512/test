@@ -1468,6 +1468,17 @@
     </attribute>
   </tag>
  
+  <tag>
+    <name>paoDetailUrl</name>
+    <tag-class>com.cannontech.web.taglib.PaoDetailUrlTag</tag-class>
+    <body-content>scriptless</body-content>
+    <attribute>
+        <name>yukonPao</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+ 
   <function>
     <name>equalsIgnoreCase</name>
     <function-class>com.cannontech.common.util.StringUtils</function-class>

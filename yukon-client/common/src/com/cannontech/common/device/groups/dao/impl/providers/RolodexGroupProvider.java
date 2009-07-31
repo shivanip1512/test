@@ -9,7 +9,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
-import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.SimpleSqlFragment;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -51,8 +51,8 @@ public class RolodexGroupProvider extends BinningDeviceGroupProviderBase<Charact
     }
     
     @Override
-    protected Set<Character> getBinsForDevice(SimpleDevice device) {
-        LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(device.getDeviceId());
+    protected Set<Character> getBinsForDevice(YukonDevice device) {
+        LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(device.getPaoIdentifier().getPaoId());
         Character firstLetter = liteYukonPAO.getPaoName().toUpperCase().charAt(0);
         return Collections.singleton(firstLetter);
     }

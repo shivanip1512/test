@@ -4,9 +4,9 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import org.springframework.core.style.ToStringCreator;
 
 import com.cannontech.common.device.attribute.model.Attribute;
-import com.cannontech.common.device.definition.model.PaoPointTemplate;
 import com.cannontech.common.device.definition.model.PaoPointIdentifier;
-import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.device.definition.model.PaoPointTemplate;
+import com.cannontech.common.pao.YukonDevice;
 
 public abstract class AttributeDefinition implements Comparable<AttributeDefinition> {
 
@@ -35,7 +35,7 @@ public abstract class AttributeDefinition implements Comparable<AttributeDefinit
             .toComparison();
     }
 
-    public abstract PaoPointIdentifier getPointIdentifier(SimpleDevice device);
+    public abstract PaoPointIdentifier getPointIdentifier(YukonDevice device);
     public abstract boolean isPointTemplateAvailable();
-    public abstract PaoPointTemplate getPointTemplate(SimpleDevice device);
+    public abstract PaoPointTemplate getPointTemplate(YukonDevice device);
 }

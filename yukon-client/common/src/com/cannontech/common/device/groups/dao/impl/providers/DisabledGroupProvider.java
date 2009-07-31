@@ -4,8 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.cannontech.common.device.groups.model.DeviceGroup;
-import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.util.SimpleSqlFragment;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
@@ -22,7 +21,7 @@ public class DisabledGroupProvider extends DeviceGroupProviderSqlBase {
     }
     
     @Override
-    public boolean isChildDevice(DeviceGroup group, SimpleDevice device) {
+    public boolean isChildDevice(DeviceGroup group, YukonDevice device) {
         boolean result = isDeviceDisabled(device);
         return result;
     }
@@ -31,8 +30,8 @@ public class DisabledGroupProvider extends DeviceGroupProviderSqlBase {
         this.paoDao = paoDao;
     }
 
-    private boolean isDeviceDisabled(SimpleDevice device) {
-        LiteYukonPAObject devicePao = paoDao.getLiteYukonPAO(device.getDeviceId());
+    private boolean isDeviceDisabled(YukonDevice device) {
+        LiteYukonPAObject devicePao = paoDao.getLiteYukonPAO(device.getPaoIdentifier().getPaoId());
         return devicePao.getDisableFlag().equals(disableFlag);
     }
 
@@ -42,7 +41,7 @@ public class DisabledGroupProvider extends DeviceGroupProviderSqlBase {
         sql.append(identifier, " IN ( ");
         sql.append("SELECT ypo.PAObjectID ");
         sql.append("FROM YukonPAObject ypo ");
-        sql.append("JOIN DeviceMeterGroup dmg ON ypo.PAObjectID = dmg.DEVICEID ");
+        sql.append("JOIN Device d ON ypo.PAObjectID = d.DEVICEID ");
         sql.append("WHERE ypo.DisableFlag = ").appendArgument(disableFlag).append(") ");
         return sql;
 	    

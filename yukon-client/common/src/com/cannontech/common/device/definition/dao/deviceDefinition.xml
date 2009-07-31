@@ -76,6 +76,11 @@
     <device id="MCT_BASE" abstract="true">
     	<displayGroup>MCT</displayGroup>
     	<changeGroup>mct</changeGroup>
+        <tags>
+            <tag name="METER_DETAIL_DISPLAYABLE">
+                <value>true</value>
+            </tag>
+        </tags>
 	</device>
     
     <!-- MCT 470 -->

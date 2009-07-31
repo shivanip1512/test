@@ -1,48 +1,74 @@
 package com.cannontech.common.device.model;
 
+import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.springframework.core.style.ToStringCreator;
 
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.YukonDevice;
 
-public class SimpleDevice extends YukonPao {
-    public SimpleDevice(int deviceId, int type) {
+public final class SimpleDevice implements YukonDevice {
+    private int deviceId;
+	private PaoType type;
+
+	public SimpleDevice(int deviceId, int type) {
         this(deviceId, PaoType.getForId(type));
     }
 
     public SimpleDevice(int deviceId, PaoType type) {
-        super(deviceId, type.getDeviceTypeId());
+		this.deviceId = deviceId;
+		this.type = type;
+    }
+    
+    public SimpleDevice(PaoIdentifier paoIdentifier) {
+    	Validate.isTrue(paoIdentifier.getPaoCategory() == PaoCategory.DEVICE);
+    	this.deviceId = paoIdentifier.getPaoId();
+    	this.type = paoIdentifier.getPaoType();
     }
     
     public SimpleDevice() {
     }
 
     public int getDeviceId() {
-        return getPaoId();
+        return deviceId;
     }
 
     public void setDeviceId(int deviceId) {
-        setPaoId(deviceId);
+		this.deviceId = deviceId;
     }
     
     public PaoType getDeviceType() {
-        return PaoType.getForId(getType());
+        return type;
     }
     
     public void setDeviceType(PaoType deviceType) {
-        setType(deviceType.getDeviceTypeId());
+		type = deviceType;
+    }
+    
+    public int getType() {
+    	return type.getDeviceTypeId();
+    }
+    
+    public void setType(int type) {
+    	this.type = PaoType.getForId(type);
+    }
+    
+    @Override
+    public PaoIdentifier getPaoIdentifier() {
+    	return new PaoIdentifier(deviceId, type, PaoCategory.DEVICE);
     }
 
     @Override
     public String toString() {
         ToStringCreator tsc = new ToStringCreator(this);
         tsc.append("deviceId", getDeviceId());
-        tsc.append("type", getType());
+        tsc.append("type", type);
         return tsc.toString();
     }
-
+    
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof SimpleDevice == false) {
@@ -53,13 +79,13 @@ public class SimpleDevice extends YukonPao {
         }
         SimpleDevice device = (SimpleDevice) obj;
         return new EqualsBuilder().append(getDeviceId(), device.getDeviceId())
-                                  .append(getType(), device.getType())
+                                  .append(getDeviceType(), device.getDeviceType())
                                   .isEquals();
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(getDeviceId()).append(getType()).toHashCode();
+        return new HashCodeBuilder().append(getDeviceId()).append(getDeviceType()).toHashCode();
     }
 
 }

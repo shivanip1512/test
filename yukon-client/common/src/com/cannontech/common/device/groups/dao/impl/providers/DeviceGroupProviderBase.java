@@ -11,10 +11,10 @@ import org.springframework.beans.factory.annotation.Required;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.MappingSet;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.SqlFragmentCollection;
-import com.cannontech.common.util.SimpleSqlFragment;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.core.dao.NotFoundException;
 
@@ -40,10 +40,10 @@ public abstract class DeviceGroupProviderBase implements DeviceGroupProvider {
 
     public abstract List<DeviceGroup> getChildGroups(DeviceGroup group);
     
-    public abstract boolean isChildDevice(DeviceGroup group, SimpleDevice device);
+    public abstract boolean isChildDevice(DeviceGroup group, YukonDevice device);
     
     public Set<DeviceGroup> getGroupMembership(DeviceGroup base,
-            SimpleDevice device) {
+            YukonDevice device) {
         Set<DeviceGroup> result = new HashSet<DeviceGroup>();
         
         // is device a direct child of base
@@ -140,7 +140,7 @@ public abstract class DeviceGroupProviderBase implements DeviceGroupProvider {
     }
     
     @Override
-    public boolean isDeviceInGroup(DeviceGroup base, SimpleDevice device) {
+    public boolean isDeviceInGroup(DeviceGroup base, YukonDevice device) {
         // is device a direct child of base
         if (isChildDevice(base, device)) {
             return true;

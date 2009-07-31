@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.model.DeviceTag;
-import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.google.common.base.Function;
@@ -37,7 +37,7 @@ public class DeviceTagGroupProvider extends BinningDeviceGroupProviderBase<Devic
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ypo.paobjectid");
-        sql.append("FROM DeviceMeterGroup d");
+        sql.append("FROM Device d");
         sql.append("JOIN YukonPaObject ypo ON (d.deviceid = ypo.paobjectid)");
         sql.append("WHERE ypo.type in (").appendArgumentList(collection).append(")");
         return sql;
@@ -48,7 +48,7 @@ public class DeviceTagGroupProvider extends BinningDeviceGroupProviderBase<Devic
         // assuming every type has at least one tag
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ypo.paobjectid");
-        sql.append("FROM DeviceMeterGroup d");
+        sql.append("FROM Device d");
         sql.append("JOIN YukonPaObject ypo ON (d.deviceid = ypo.paobjectid)");
         return sql;
     }
@@ -59,8 +59,8 @@ public class DeviceTagGroupProvider extends BinningDeviceGroupProviderBase<Devic
     }
 
     @Override
-    protected Set<DeviceTag> getBinsForDevice(SimpleDevice device) {
-        Set<DeviceTag> supportedTags = deviceDefinitionDao.getSupportedTags(device.getDeviceType());
+    protected Set<DeviceTag> getBinsForDevice(YukonDevice device) {
+        Set<DeviceTag> supportedTags = deviceDefinitionDao.getSupportedTags(device.getPaoIdentifier().getPaoType());
         return supportedTags;
     }
     
