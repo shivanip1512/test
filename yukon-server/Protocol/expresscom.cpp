@@ -2553,7 +2553,7 @@ bool CtiProtocolExpresscom::validateParseAddressing(const CtiCommandParser &pars
         // bad parameters that are outside the 32 bit space.
         // eg: 'putconfig xcom ... serial 61234567890 ...' etc.
         // NOTE: we also have to worry about serials entered in hexadecimal.
-
+/*
         char buffer[64];
         string entered_serial = parse.getsValue(serial_raw_);
 
@@ -2572,6 +2572,8 @@ bool CtiProtocolExpresscom::validateParseAddressing(const CtiCommandParser &pars
         }
 
         valid &= ( entered_serial == string(buffer) );
+*/
+
     }
 
     if(parse.isKeyValid(xc_serial_))

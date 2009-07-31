@@ -165,7 +165,7 @@ void  CtiCommandParser::parse()
                 serial = strtoul(strnum.c_str(), &p, 10);
             }
             _cmd["serial"] = CtiParseValue( serial );
-            _cmd["serial_raw_input"] = CtiParseValue( strnum );     // store the input - use in validation
+//            _cmd["serial_raw_input"] = CtiParseValue( strnum );     // store the input - use in validation
             CmdStr.replace(regexp, "");
         }
     }
