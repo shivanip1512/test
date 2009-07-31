@@ -116,6 +116,7 @@ private:
     void getBytesFromString(string &values, BYTE* buffer, int buffLen, int &numValues, int fillCount, int bytesPerValue);
     int sendDNPConfigMessages(int startMCTID,  list< OUTMESS * > &outList, OUTMESS *&OutMessage, string &dataA, string &dataB, CtiTableDynamicPaoInfo::PaoInfoKeys key, bool force, bool verifyOnly);
 
+    unsigned char computeResolutionByte(double lpResolution, double peakKwResolution, double lastIntervalDemandResolution);
     bool computeMultiplierFactors(double multiplier, unsigned &numerator, unsigned &denominator) const;
     string describeChannel(unsigned char channel_config) const;
 

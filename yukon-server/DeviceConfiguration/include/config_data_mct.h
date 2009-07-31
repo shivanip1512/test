@@ -100,6 +100,8 @@ public:
     static const std::string OverVoltageThreshold;
 
     static const std::string LoadProfileResolution;
+    static const std::string PeakKwResolution;
+    static const std::string LastIntervalDemandResolution;
     static const std::string DemandInterval;
     static const std::string LoadProfileInterval;
     static const std::string VoltageLPInterval;

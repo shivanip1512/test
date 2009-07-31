@@ -2705,9 +2705,15 @@ int CtiDeviceMCT470::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiC
 
         long channel1 = deviceConfig->getLongValueFromKey(MCTStrings::ChannelConfig1);
         long channel2 = deviceConfig->getLongValueFromKey(MCTStrings::ChannelConfig2);
-        double multiplier1 = deviceConfig->getFloatValueFromKey(MCTStrings::ChannelMultiplier1);
         double multiplier2 = deviceConfig->getFloatValueFromKey(MCTStrings::ChannelMultiplier2);
-        long resolutionByte = deviceConfig->getFloatValueFromKey(MCTStrings::LoadProfileResolution);
+
+        //If this is a 470, Multiplier1 will be there.
+        double multiplier1 = deviceConfig->getFloatValueFromKey(MCTStrings::ChannelMultiplier1);
+
+        //If this is a 430,  the three resolutions will be in the config instead
+        long peakKwResolution = deviceConfig->getLongValueFromKey(MCTStrings::PeakKwResolution);
+        long lastIntervalDemandResolution = deviceConfig->getLongValueFromKey(MCTStrings::LastIntervalDemandResolution);;
+        long lpResoluion = deviceConfig->getLongValueFromKey(MCTStrings::LoadProfileResolution);;
 
         long spid = CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_AddressServiceProviderID);
 
@@ -2729,7 +2735,9 @@ int CtiDeviceMCT470::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiC
             || (is470 && multiplier1 == std::numeric_limits<double>::min())
             || multiplier2 == std::numeric_limits<double>::min()
             || spid == std::numeric_limits<long>::min()
-            || (!is470 && resolutionByte == std::numeric_limits<long>::min()))
+            || (!is470 && peakKwResolution == std::numeric_limits<long>::min())
+            || (!is470 && lastIntervalDemandResolution == std::numeric_limits<long>::min())
+            || (!is470 && lpResoluion == std::numeric_limits<long>::min()))
         {
             if( getMCTDebugLevel(DebugLevel_Configs) )
             {
@@ -2738,7 +2746,7 @@ int CtiDeviceMCT470::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiC
             }
             nRet = NoConfigData;
         }
-        else if( is470 && !computeMultiplierFactors(multiplier1, ratio1, kRatio1) || !computeMultiplierFactors(multiplier2, ratio2, kRatio2) )
+        else if( (is470 && !computeMultiplierFactors(multiplier1, ratio1, kRatio1)) || !computeMultiplierFactors(multiplier2, ratio2, kRatio2) )
         {
             if( getMCTDebugLevel(DebugLevel_Configs) )
             {
@@ -2749,16 +2757,18 @@ int CtiDeviceMCT470::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiC
         }
         else
         {
+            //If this is a 430, we are using 0x89 to hold a resolutionByte instead of the ratio
             if (!is470)
             {
-                //If this is a 430, we are using 0x89 to hold a resolutionByte instead of the ratio
+                unsigned char resolutionByte = computeResolutionByte(lpResoluion,peakKwResolution,lastIntervalDemandResolution);
+
                 ratio1 = (unsigned)resolutionByte;
-				kRatio1 = 0;
+                kRatio1 = 0;// 0 ok here?
             }
 
             if (parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig1)  != channel1
                                            || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig2) != channel2
-                                           || (is470 && CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio1) != ratio1)
+                                           || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio1) != ratio1
                                            || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio2)    != ratio2
                                            || (is470 && CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio1) != kRatio1)
                                            || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio2)        != kRatio2)
@@ -5401,4 +5411,70 @@ long CtiDeviceMCT470::resolveScheduleName(const string & scheduleName)
     {
         return 4;
     }
+}
+
+unsigned char CtiDeviceMCT470::computeResolutionByte(double lpResolution, double peakKwResolution, double lastIntervalDemandResolution)
+{
+    unsigned char resolutionByte;
+    unsigned char lpByte;
+    unsigned char peakKwByte;
+    unsigned char lastIntrvlByte;
+
+    unsigned int resolution = lpResolution * 10;//Doing this to factor out the .1 case
+
+    switch (resolution)
+    { //Possibles are 10, 1 and .1 (*10)
+        case 100://10Wh
+            lpByte = 1;
+            break;
+        case 10://1wh
+            lpByte = 2;
+            break;
+        case 1://.1wh
+            lpByte = 3;
+            break;
+        default:
+            lpByte = 1;//default
+            break;
+    }
+
+    switch ((int)peakKwResolution)
+    { //Possibles are 10 and 1
+
+        case 10://10wh
+            peakKwByte = 0;
+            break;
+        case 1://1wh
+            peakKwByte = 1;
+            break;
+        default:
+            peakKwByte = 0;//default
+            break;
+    }
+
+    resolution = lastIntervalDemandResolution * 100;//Doing this to factor out the .01 case
+    switch (resolution)
+    { //Possibles are 10, 1, .1, and .001 (*10)
+        case 1000://10Wh
+            lastIntrvlByte = 0;
+            break;
+        case 100://1Wh
+            lastIntrvlByte = 1;
+            break;
+        case 10://.1wh
+            lastIntrvlByte = 2;
+            break;
+        case 1://.01wh
+            lastIntrvlByte = 3;
+            break;
+        default:
+            lastIntrvlByte = 0;//default
+            break;
+    }
+
+    resolutionByte = lpByte & 0x07;
+    resolutionByte |= (peakKwByte & 0x01) << 3;
+    resolutionByte |= (lastIntrvlByte & 0x07) << 4;
+
+    return resolutionByte;
 }
