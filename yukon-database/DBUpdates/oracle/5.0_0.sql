@@ -34,7 +34,7 @@ WHERE RolePropertyId = -1600;
 /* End YUK-7618 */
 
 /* Start YUK-7461 */
-INSERT INTO YukonRoleProperty VALUES (-21308,-213,'Add/Remove Points','false','Controls access to Add/Remove Points mass change action.');
+INSERT INTO YukonRoleProperty VALUES (-21308,-213,'Add/Remove Points','false','Controls access to Add/Remove Points collection action.');
 /* End YUK-7461 */
 
 /* Start YUK-7594 */
