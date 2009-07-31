@@ -1,7 +1,6 @@
 <%@ attribute name="resultId" required="true" type="java.lang.String"%>
 <%@ attribute name="cancelButtonText" required="true" type="java.lang.String"%>
 <%@ attribute name="cancelUrl" required="true" type="java.lang.String"%>
-<%@ attribute name="onClickEvent" required="false" type="java.lang.String"%>
 
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>

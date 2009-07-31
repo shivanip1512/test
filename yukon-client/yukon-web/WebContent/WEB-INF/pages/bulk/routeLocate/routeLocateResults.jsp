@@ -48,12 +48,12 @@
                 var isCanceled = data['isCanceled'];
 
                 if (isComplete == 'true') {
-                    $('setViewRoutesButton').disabled = false;
+                    $('setViewRoutesButton').enable();
                     $('cancelLocateDiv').hide();
                 }
 
                 if (isCanceled == 'true') {
-                    $('setViewRoutesButton').disabled = false;
+                    $('setViewRoutesButton').enable();
                     $('cancelLocateDiv').hide();
 
                     $('commandsCanceledDiv').show();
@@ -62,7 +62,7 @@
         }
 
         function slowInput(buttonObj, formId) {
-            buttonObj.disabled = true;
+            buttonObj.disable();
             $('waitImg').show();
             $(formId).submit();
         }
