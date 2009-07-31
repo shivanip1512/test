@@ -4037,6 +4037,11 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
 
                 insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, (offset + rate * 2 + 1), AnalogPointType);
                 insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, (offset + rate * 2), AnalogPointType);
+                if( parse.getFlags() & CMD_FLAG_FROZEN && (offset + rate * 2) == PointOffset_TOU_KWBase ) //Currently we only support frozen rate A
+                {
+                    insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, (PointOffset_TOU_KWBase + 1 + PointOffset_FrozenPointOffset), AnalogPointType);
+                    insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, (PointOffset_TOU_KWBase +     PointOffset_FrozenPointOffset), AnalogPointType);
+                }
             }
             else if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) )
             {
@@ -4126,8 +4131,15 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 pointname += string(1, (char)('A' + rate));
                 pointname += " total";
 
-                insertPointDataReport(AnalogPointType, offset + rate * 2 + 1,
+                unsigned int pointOffset = offset + rate * 2 + 1;
+
+                insertPointDataReport(AnalogPointType, pointOffset,
                                       ReturnMsg, pi, pointname, CtiTime(), 1.0, tags);
+                if( parse.getFlags() & CMD_FLAG_FROZEN && pointOffset == PointOffset_TOU_KWBase + 1 ) //Currently we only support frozen rate A
+                {
+                    insertPointDataReport(AnalogPointType, PointOffset_TOU_KWBase + 1 + PointOffset_FrozenPointOffset,
+                                      ReturnMsg, pi, pointname, CtiTime(), 1.0, tags);
+                }
 
                 //  this is CRAZY WIN32 SPECIFIC
                 _TIME_ZONE_INFORMATION tzinfo;
@@ -4164,8 +4176,14 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                     }
                 }
 
-                insertPointDataReport(AnalogPointType, offset + rate * 2,
+                pointOffset = offset + rate * 2;
+                insertPointDataReport(AnalogPointType, pointOffset,
                                       ReturnMsg, pi, pointname, peak_time);
+                if( parse.getFlags() & CMD_FLAG_FROZEN && pointOffset == PointOffset_TOU_KWBase ) //Currently we only support frozen rate A
+                {
+                    insertPointDataReport(AnalogPointType, PointOffset_TOU_KWBase + PointOffset_FrozenPointOffset,
+                                      ReturnMsg, pi, pointname, peak_time);
+                }
             }
         }
 
@@ -4205,6 +4223,10 @@ int CtiDeviceMCT470::decodeGetValueIEDPrecannedTable11Peak(const CtiCommandParse
         }
 
         insertPointDataReport(AnalogPointType, consumption_offset, ReturnMsg, consumption_value, consumption_name, consumption_timestamp, 1.0, TAG_POINT_MUST_ARCHIVE);
+        if( parse.getFlags() & CMD_FLAG_FROZEN && consumption_offset == (PointOffset_TOU_KWBase + 1) ) //Currently we only support frozen rate A
+        {
+            insertPointDataReport(AnalogPointType, PointOffset_TOU_KWBase + 1 + PointOffset_FrozenPointOffset, ReturnMsg, consumption_value, consumption_name, consumption_timestamp, 1.0, TAG_POINT_MUST_ARCHIVE);
+        }
     }
 
     {
@@ -4229,6 +4251,10 @@ int CtiDeviceMCT470::decodeGetValueIEDPrecannedTable11Peak(const CtiCommandParse
         }
 
         insertPointDataReport(AnalogPointType, demand_offset, ReturnMsg, demand_value, demand_name, demand_timestamp);
+        if( parse.getFlags() & CMD_FLAG_FROZEN && demand_offset == PointOffset_TOU_KWBase ) //Currently we only support frozen rate A
+        {
+            insertPointDataReport(AnalogPointType, PointOffset_TOU_KWBase + PointOffset_FrozenPointOffset, ReturnMsg, demand_value, demand_name, demand_timestamp);
+        }
     }
 
     return status;

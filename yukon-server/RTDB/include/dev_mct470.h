@@ -78,6 +78,8 @@ private:
         PointOffset_VoltsPhaseB = 42,
         PointOffset_VoltsPhaseC = 43,
 
+        PointOffset_FrozenPointOffset = 100,        // Frozen points are 100 more than the corresponding non frozen
+
         PointOffset_DNPStatus_RealTime1   = 501,
         PointOffset_DNPStatus_RealTime2   = 516,
         PointOffset_DNPStatus_PrecannedStart = 531,
