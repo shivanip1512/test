@@ -402,6 +402,16 @@
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Counts"/>
             </point>
+            <point type="Analog" offset="102">
+                <name>Peak kW Frozen (Rate A kW)</name>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point type="Analog" offset="103">
+                <name>Rate A kWh Frozen</name>
+                <multiplier value="0.0001"/>
+                <unitofmeasure value="kWH"/>
+            </point>
             
             <point type="Status" offset="2000">
                 <name>Comm Status</name>
@@ -810,6 +820,16 @@
                 <name>IED Blink Count</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Counts"/>
+            </point>
+            <point type="Analog" offset="102">
+                <name>Peak kW Frozen (Rate A kW)</name>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point type="Analog" offset="103">
+                <name>Rate A kWh Frozen</name>
+                <multiplier value="0.0001"/>
+                <unitofmeasure value="kWH"/>
             </point>
             <point type="DemandAccumulator" offset="101">
             	<init>true</init>
