@@ -2,14 +2,7 @@
 *
 * File:   test_lmprogram
 *
-* Date:   10/22/2008
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2008/10/28 19:21:39 $
-*
-* Copyright (c) 2007 Cannon Technologies. All rights reserved.
+* Copyright (c) 2009 Cooper Industries. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
@@ -45,7 +38,7 @@ BOOST_AUTO_TEST_CASE(test_get_control_window)
 
     // Loops a day boundary
     window1->setAvailableStartTime(79200);
-    window1->setAvailableStopTime(4000);
+    window1->setAvailableStopTime(90400); // 86400 + 4000
 
     resultWindow = lmProgram.getControlWindow(1200);
     BOOST_CHECK_EQUAL((void *)resultWindow, (void *)window1);

@@ -1198,9 +1198,8 @@ CtiLMProgramControlWindow* CtiLMProgramBase::getControlWindow(LONG secondsFromBe
         CtiLMProgramControlWindow* currentControlWindow = (CtiLMProgramControlWindow*)_lmprogramcontrolwindows[i];
 
         if((currentControlWindow->getAvailableStartTime() <= currentTime && currentTime <= currentControlWindow->getAvailableStopTime()) ||
-           (currentControlWindow->getAvailableStartTime() > currentControlWindow->getAvailableStopTime() && //Do the below check if we span midnight
-          ((currentControlWindow->getAvailableStartTime() <= currentTime && currentControlWindow->getAvailableStopTime() < currentTime) ||
-           (currentControlWindow->getAvailableStartTime() > currentTime  && currentControlWindow->getAvailableStopTime() > currentTime))) )
+           (currentControlWindow->getAvailableStartTime().day() < currentControlWindow->getAvailableStopTime().day() && //Do the below check if we span midnight
+            tomorrowTime <= currentControlWindow->getAvailableStopTime()) )
         {
             return currentControlWindow;
         }
