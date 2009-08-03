@@ -38,10 +38,8 @@ public final class AlarmDaoImpl implements AlarmDao {
 		Set<Integer> pointIdSet = new HashSet<Integer>(pointIds);
 		Map<Integer, Set<Signal>> signalMap = dynamicDataSource.getSignals(pointIdSet);
 		Collection<Set<Signal>> signalMapValues = signalMap.values();
-        Iterator<Set<Signal>> iter = signalMapValues.iterator();
-        while (iter.hasNext()) {
-            Set<Signal> singalSet = iter.next();
-            sigList.addAll(singalSet);
+        for(Set<Signal> signalSet : signalMapValues) {
+            sigList.addAll(signalSet);
         }
 		return sigList;
 	}

@@ -23,7 +23,6 @@ import com.cannontech.message.dispatch.message.PointRegistration;
 import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.message.server.ServerResponseMsg;
 import com.cannontech.message.util.Command;
-import com.cannontech.message.util.Message;
 import com.cannontech.message.util.ServerRequest;
 import com.cannontech.yukon.IServerConnection;
 
@@ -58,14 +57,15 @@ class DispatchProxy {
     
     /**
      * Get the current set of PointData's for the given set of point ids
-     * @param pointId
+     * @param pointIds
      * @return
      */
-    Set<PointData> getPointData(Set<Integer> pointId) {
-        Multi m = getPointDataMulti(pointId);
-        Set<PointData> pointData = 
-            new HashSet<PointData>((int)(pointId.size()/0.75f)+1);
-        extractPointData(pointData, m);
+    Set<PointData> getPointData(Set<Integer> pointIds) {
+        Set<PointData> pointData = new HashSet<PointData>((int)(pointIds.size()/0.75f)+1);
+        if(!pointIds.isEmpty()) {
+            Multi m = getPointDataMulti(pointIds);
+            extractPointData(pointData, m);
+        }
         return pointData;
     }
     
@@ -90,11 +90,12 @@ class DispatchProxy {
      * @return
      */
     Map<Integer, Set<Signal>> getSignals(Set<Integer> pointIds) {
-        Multi m = getPointDataMulti(pointIds);
-        Map<Integer, Set<Signal>> signals = 
-            new HashMap<Integer, Set<Signal>>((int)(pointIds.size()/0.75f)+1);        
+        Map<Integer, Set<Signal>> signals = new HashMap<Integer, Set<Signal>>((int)(pointIds.size()/0.75f)+1);        
+        if(!pointIds.isEmpty()) {
+            Multi m = getPointDataMulti(pointIds);
+            extractSignals(signals, m);
+        }
         
-        extractSignals(signals, m);
         return signals;
     }
     
