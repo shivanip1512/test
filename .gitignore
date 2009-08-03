@@ -97,6 +97,7 @@ yukon-client/yukon-web/build_jsp
 yukon-client/yukon-web/build_jsp_std
 yukon-client/yukon-web/build_src
 yukon-client/yukon-web/deploy
+yukon-client/yukon-web/fragment_web.xml
 yukon-client/yukon-web/generated_web.xml
 yukon-client/yukon-web/jspbuild
 yukon-client/yukon-web/srcbuild
