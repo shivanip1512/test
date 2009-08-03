@@ -115,44 +115,33 @@ function submitEnrollment() {
                         <c:set var="enrollmentPrograms" value="${enrollment.enrollmentPrograms}"/>
                         <c:set var="enrollmentProgramsSize" value="${fn:length(enrollmentPrograms)}"/>
 
-                        <c:set var="enrollmentProgramIds" value="${fn:join(enrollment.programIds, ',')}"/>
+                        <c:set var="enrollmentProgramIds" value=""/>
+                        <c:if test="${!perProgram}">
+                            <c:set var="enrollmentProgramIds" value="${fn:join(enrollment.programIds, ',')}"/>
+                        </c:if>
                         <c:set var="rowspan" value="${enrollmentProgramsSize > 0 ? enrollmentProgramsSize * 2 : 1}"/>
                     
                         <c:set var="applianceCategoryId" value="${enrollment.applianceCategory.applianceCategoryId}"/>
                     
                     
-                        <c:choose>
-	                        <c:when test="${!perProgram}">
-		                        <tr>
-		                            <td valign="top" class="${tableDataClass}" rowspan="${rowspan + 1}" width="5%">
-		                                <img src="../../../WebConfig/${enrollment.applianceLogo}">
-		                            </td>
-		                            <td valign="top" class="${tableDataClass}" rowspan="${rowspan + 1}" width="20%">
-		                                <input 
-		                                    type="checkbox" 
-		                                    id="check_${applianceCategoryId}" 
-		                                    <c:if test="${enrollment.enrolled}">checked</c:if>
-		                                    onclick="categoryAction(${applianceCategoryId}, this.checked, '${enrollmentProgramIds}')"
-		                                >
-		                                <b><c:out value="${enrollment.applianceCategory.categoryLabel}"/></b>
-		                            </td>
-		                            <td colspan="2"></td>
-		                        </tr>
-
+                        <tr>
+                            <td valign="top" class="${tableDataClass}" rowspan="${rowspan + 1}" width="5%">
+                                <img src="../../../WebConfig/${enrollment.applianceLogo}">
+                            </td>
+                            <td valign="top" class="${tableDataClass}" rowspan="${rowspan + 1}" width="20%">
+                                <c:if test="{!perProgram}">
+                                    <input type="checkbox" 
+                                        id="check_${applianceCategoryId}" 
+                                        <c:if test="${enrollment.enrolled}">checked</c:if>
+                                        onclick="categoryAction(${applianceCategoryId}, this.checked, '${enrollmentProgramIds}')">
+                                </c:if>
+                                <b><c:out value="${enrollment.applianceCategory.categoryLabel}"/></b>
+	                        <c:if test="${!perProgram}">
 	                            <c:set var="inventoryIds" value="${fn:join(enrollment.enrolledInventoryIds, ',')}"/>
-	                        </c:when>
-	                        <c:otherwise>
-		                        <tr>
-		                            <td valign="top" class="${tableDataClass}" rowspan="${rowspan + 1}" width="5%">
-		                                <img src="../../../WebConfig/${enrollment.applianceLogo}">
-		                            </td>
-		                            <td valign="top" class="${tableDataClass}" rowspan="${rowspan + 1}" width="20%">
-		                                <b><c:out value="${enrollment.applianceCategory.categoryLabel}"/></b>
-		                            </td>
-		                            <td colspan="2"></td>
-		                        </tr>
-	                        </c:otherwise>
-                        </c:choose>
+	                        </c:if>
+                            </td>
+                            <td colspan="3"></td>
+                        </tr>
 
                         <c:set var="programCount" value="0"/>
                         <c:forEach var="enrollmentProgram" items="${enrollmentPrograms}">
@@ -164,77 +153,49 @@ function submitEnrollment() {
                             <c:set var="inventorySize" value="${fn:length(inventories)}"/>
 
                             
-                            <c:choose>
-                                <c:when test="${!perProgram}">
-		                            <tr valign="top" class="">
-		                                <td>
-		                                    <input 
-		                                        type="radio" 
-		                                        id="program_${programId}"
-		                                        <c:if test="${enrollmentProgram.enrolled}">checked</c:if>
-		                                        name="radio_${applianceCategoryId}"
-		                                        onclick="enrollmentAction('${inventoryIds}',${programId}, ${applianceCategoryId}, this.checked, '${enrollmentProgramIds}');"
-		                                    >
-		                                    <cti:msg key="${enrollmentProgram.program.displayName}"/>
-		                                </td>
-		                                <td class="images">
-		                                    <c:if test="${!empty enrollmentProgram.program.savingsDescriptionIcon}">
-		                                    	<img src="../../../WebConfig/yukon/Icons/${enrollmentProgram.program.savingsDescriptionIcon}">
-												<c:set var="savingsDescriptionIconDisplayed" value="true"/>
-		                                    </c:if>
-		                                    <c:if test="${!empty enrollmentProgram.program.controlPercentDescriptionIcon}">
-		                                    	<img src="../../../WebConfig/yukon/Icons/${enrollmentProgram.program.controlPercentDescriptionIcon}">
-												<c:set var="controlPercentDescriptionIconDisplayed" value="true"/>
-		                                    </c:if>
-		                                    <c:if test="${!empty enrollmentProgram.program.environmentDescriptionIcon}">
-		                                    	<img src="../../../WebConfig/yukon/Icons/${enrollmentProgram.program.environmentDescriptionIcon}">
-												<c:set var="environmentDescriptionIconDisplayed" value="true"/>
-		                                    </c:if>
-		                                </td>
-		                                <td>
-                                            <a href="/spring/stars/consumer/enrollment/details?categoryId=${applianceCategoryId}&programId=${programId}">
-                                                <cti:msg key="yukon.dr.consumer.enrollment.details"/>
-                                            </a>
-		                                </td>
-		                                
-		                                <script type="text/javascript">
-		                                    enrollmentAction('${inventoryIds}',${programId}, ${applianceCategoryId}, ${enrollmentProgram.enrolled}, '');        
-		                                </script>
-		                            </tr>
-		                            <tr valign="top" class="">
-		                                <td class="${programClass}" colspan="2">
-		                                    <spring:escapeBody htmlEscape="true">${enrollmentProgram.program.description}</spring:escapeBody>
-		                                </td>
-		                                <td class="${programClass}">&nbsp;</td>
-                                    </tr>
-		                        </c:when>
-		                        <c:otherwise>    
+                            <tr valign="top" class="">
+                            	<c:set var="inputType" value="radio"/>
+                            	<c:if test="${perProgram}">
 		                            <c:set var="inventoryIds" value="${fn:join(enrollmentProgram.programInventoryIds, ',')}"/>
-		                            <tr valign="top" class="">
-		                                <td class="${programClass}">
-		                                    <input 
-		                                        type="checkbox" 
-		                                        id="program_${programId}"
-		                                        <c:if test="${enrollmentProgram.enrolled}">checked</c:if>
-		                                        onclick="enrollmentAction('${inventoryIds}',${programId}, ${applianceCategoryId}, this.checked, '');"
-		                                    >
-		                                    <cti:msg key="${enrollmentProgram.program.displayName}"/>
-		                                </td>
-		                                <td class="${programClass}" rowspan="${inventoryRowspan}">
-		                                    <spring:escapeBody htmlEscape="true">${enrollmentProgram.program.description}</spring:escapeBody>
-		                                </td>
-		                                <td class="${programClass}" rowspan="${inventoryRowspan}">
-                                            <a href="/spring/stars/consumer/enrollment/details?categoryId=${applianceCategoryId}&programId=${programId}">
-                                                <cti:msg key="yukon.dr.consumer.enrollment.details"/>
-                                            </a>
-                                        </td>
-		                                
-		                                <script type="text/javascript">
-		                                    enrollmentAction('${inventoryIds}',${programId}, ${applianceCategoryId}, ${enrollmentProgram.enrolled}, '');        
-		                                </script>
-		                            </tr> 
-		                        </c:otherwise>
-		                    </c:choose>   
+                            	    <c:set var="inputType" value="checkbox"/>
+                            	</c:if>
+                                <td class="${programClass}">
+                                    <input type="${inputType}"
+                                        id="program_${programId}"
+                                        <c:if test="${enrollmentProgram.enrolled}">checked</c:if>
+                                        name="radio_${applianceCategoryId}"
+                                        onclick="enrollmentAction('${inventoryIds}',${programId}, ${applianceCategoryId}, this.checked, '${enrollmentProgramIds}');">
+                                    <cti:msg key="${enrollmentProgram.program.displayName}"/>
+                                </td>
+                                <td class="images">
+                                    <c:if test="${!empty enrollmentProgram.program.savingsDescriptionIcon}">
+                                    	<img src="../../../WebConfig/yukon/Icons/${enrollmentProgram.program.savingsDescriptionIcon}">
+										<c:set var="savingsDescriptionIconDisplayed" value="true"/>
+                                    </c:if>
+                                    <c:if test="${!empty enrollmentProgram.program.controlPercentDescriptionIcon}">
+                                    	<img src="../../../WebConfig/yukon/Icons/${enrollmentProgram.program.controlPercentDescriptionIcon}">
+										<c:set var="controlPercentDescriptionIconDisplayed" value="true"/>
+                                    </c:if>
+                                    <c:if test="${!empty enrollmentProgram.program.environmentDescriptionIcon}">
+                                    	<img src="../../../WebConfig/yukon/Icons/${enrollmentProgram.program.environmentDescriptionIcon}">
+										<c:set var="environmentDescriptionIconDisplayed" value="true"/>
+                                    </c:if>
+                                </td>
+                                <td class="${programClass}">
+                                    <a href="/spring/stars/consumer/enrollment/details?categoryId=${applianceCategoryId}&programId=${programId}">
+                                        <cti:msg key="yukon.dr.consumer.enrollment.details"/>
+                                    </a>
+                                    <script type="text/javascript">
+                                        enrollmentAction('${inventoryIds}',${programId}, ${applianceCategoryId}, ${enrollmentProgram.enrolled}, '');        
+                                    </script>
+                                </td>
+                            </tr> 
+                            <tr valign="top" class="">
+                                <td class="${programClass}" colspan="2">
+                                    <spring:escapeBody htmlEscape="true">${enrollmentProgram.program.description}</spring:escapeBody>
+                                </td>
+                                <td class="${programClass}">&nbsp;</td>
+                            </tr>
                         </c:forEach>
                     </c:forEach>    
                 </table>
