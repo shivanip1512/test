@@ -65,7 +65,12 @@
 		      </td>
               <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
     		  <td width="657" valign="top" bgcolor="#FFFFFF" bordercolor="#333399"> 
-                <div style="margin: 5px 5px;">
+                <div align="center" style="margin: 5px 5px;"> 
+                  <% String header = null; %>
+                  <%@ include file="include/InfoSearchBar.jspf" %>
+                  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+                  <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
+
                   <cti:url var="thermostatUrl" value="/spring/stars/operator/thermostat/view">
                     <cti:param name="thermostatIds" value="${thermostatIds}" />
                   </cti:url>
