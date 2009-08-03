@@ -22,6 +22,8 @@ public class CommandCategory
 {
 	public static final String STRING_CMD_ALPHA_BASE = "All Alpha Meters";
 	public static final String STRING_CMD_CBC_BASE = "All CBCs";
+	public static final String STRING_CMD_CBC_ONEWAY = "Oneway CBCs";
+	public static final String STRING_CMD_CBC_TWOWAY = "Twoway CBCs";
 	public static final String STRING_CMD_CCU_BASE = "All CCUs";
 	public static final String STRING_CMD_DISCONNECT_BASE = "All Disconnect Meters";
 	public static final String STRING_CMD_LOAD_GROUP_BASE = "All Load Group";
@@ -143,6 +145,14 @@ public class CommandCategory
 		{
 			return getAllCBCDevTypes();
 		}
+		else if( category.equalsIgnoreCase(STRING_CMD_CBC_ONEWAY))
+        {
+            return getAllOnewayCBCDevTypes();
+        }
+		else if( category.equalsIgnoreCase(STRING_CMD_CBC_TWOWAY))
+        {
+            return getAllTwowayCBCDevTypes();
+        }
 		else if( category.equalsIgnoreCase(STRING_CMD_CCU_BASE))
 		{
 			return getAllCCUDevTypes();
@@ -473,6 +483,36 @@ public class CommandCategory
 		}
 		return CAT_CBC_BASE_DEVTYPES;
 	}
+	
+	public final static ArrayList<String> getAllOnewayCBCDevTypes()
+    {
+        if( CAT_CBC_BASE_DEVTYPES == null)
+        {
+            CAT_CBC_BASE_DEVTYPES = new ArrayList<String>();
+            for (int i = DeviceTypes.DEVICE_OFFSET; i <= DeviceTypes.DEVICE_OFFSET + DeviceTypes.DEVICE_TYPES_COUNT; i++)
+            {
+                if( DeviceTypesFuncs.isCBCOneWay(i) )
+                    CAT_CBC_BASE_DEVTYPES.add(PAOGroups.getPAOTypeString(i));
+            }
+            CAT_CBC_BASE_DEVTYPES.add(DeviceTypes.STRING_CAP_BANK[0]);
+        }
+        return CAT_CBC_BASE_DEVTYPES;
+    }
+	
+	public final static ArrayList<String> getAllTwowayCBCDevTypes()
+    {
+        if( CAT_CBC_BASE_DEVTYPES == null)
+        {
+            CAT_CBC_BASE_DEVTYPES = new ArrayList<String>();
+            for (int i = DeviceTypes.DEVICE_OFFSET; i <= DeviceTypes.DEVICE_OFFSET + DeviceTypes.DEVICE_TYPES_COUNT; i++)
+            {
+                if( DeviceTypesFuncs.isCBCTwoWay(i) )
+                    CAT_CBC_BASE_DEVTYPES.add(PAOGroups.getPAOTypeString(i));
+            }
+            CAT_CBC_BASE_DEVTYPES.add(DeviceTypes.STRING_CAP_BANK[0]);
+        }
+        return CAT_CBC_BASE_DEVTYPES;
+    }
 
 	public final static ArrayList<String> getAllCCUDevTypes() 
 	{

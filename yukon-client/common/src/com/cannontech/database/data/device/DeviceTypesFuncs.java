@@ -1509,4 +1509,18 @@ public static Object changeType (String newType,
 				return false;
 		}
     }
+    
+    public static boolean isCBCOneWay(int deviceType) {
+        switch (deviceType) {
+            case CBC_7010:
+            case CBC_7011:
+            case CBC_7012:
+            case CBC_EXPRESSCOM:
+            case CAPBANKCONTROLLER:
+                return true;
+        
+            default:
+                return false;
+        }
+    }
 }
