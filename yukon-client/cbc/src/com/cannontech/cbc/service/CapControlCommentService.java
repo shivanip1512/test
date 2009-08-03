@@ -11,4 +11,5 @@ public interface CapControlCommentService {
     
     public List<String> getComments(int paoId, int size);
     
+    public List<String> getLastTenCommentsForActionAndType(final int paoId, final int cmdId);
 }

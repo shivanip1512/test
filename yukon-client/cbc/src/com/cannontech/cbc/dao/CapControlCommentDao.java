@@ -28,4 +28,5 @@ public interface CapControlCommentDao {
     
     public List<CapControlComment> getAllCommentsByPao(int paoId);
     
+    public List<String> getLastTenCommentsByActionAndType(int paoId, CommentAction action );
 }

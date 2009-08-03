@@ -317,13 +317,13 @@ public class TierPopupMenuController extends MultiActionController {
     
     public ModelAndView opStateChangeMenu(HttpServletRequest request, HttpServletResponse response) throws Exception {
         final ModelAndView mav = new ModelAndView();
-        final Integer id = ServletRequestUtils.getRequiredIntParameter(request, "id");
+        final Integer paoId = ServletRequestUtils.getRequiredIntParameter(request, "id");
         final LiteYukonUser user = ServletUtil.getYukonUser(request);
         
-        final CapBankDevice capBank = capControlCache.getCapBankDevice(id);
-        String operationalStateReason = capControlCommentService.getReason(id, CommentAction.STANDALONE_REASON, CapControlType.CAPBANK);
+        final CapBankDevice capBank = capControlCache.getCapBankDevice(paoId);
+        String operationalStateReason = capControlCommentService.getReason(paoId, CommentAction.STANDALONE_REASON, CapControlType.CAPBANK);
         CapBankOperationalState operationalState = CapBankOperationalState.valueOf(capBank.getOperationalState());
-        mav.addObject("paoId", id);
+        mav.addObject("paoId", paoId);
         
         String paoName = capBank.getCcName();
         mav.addObject("paoName", paoName);
@@ -331,7 +331,7 @@ public class TierPopupMenuController extends MultiActionController {
         boolean allowAddComments = authDao.checkRoleProperty(user, CBCSettingsRole.ADD_COMMENTS);
         mav.addObject("allowAddComments", allowAddComments);
         
-        List<String> comments = capControlCommentService.getComments(id, 15);
+        List<String> comments = capControlCommentService.getLastTenCommentsForActionAndType(paoId, CapControlCommand.OPERATIONAL_STATECHANGE);
         mav.addObject("comments", comments);
         
         mav.addObject("changeOpStateCmdHolder", CommandHolder.OPERATIONAL_STATECHANGE);
@@ -394,7 +394,7 @@ public class TierPopupMenuController extends MultiActionController {
         mav.addObject("commandName", commandName);
         mav.addObject("controlType", controlType);
         
-        List<String> comments = capControlCommentService.getComments(paoId, 15);
+        List<String> comments = capControlCommentService.getLastTenCommentsForActionAndType(paoId, cmdId);
         mav.addObject("comments", comments);
         
         mav.setViewName("tier/popupmenu/reasonMenu.jsp");

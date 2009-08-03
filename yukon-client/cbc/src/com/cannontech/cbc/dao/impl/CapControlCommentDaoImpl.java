@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
@@ -16,6 +17,8 @@ import com.cannontech.cbc.dao.CapControlCommentDao;
 import com.cannontech.cbc.dao.CommentAction;
 import com.cannontech.cbc.model.CapControlComment;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.MaxListResultSetExtractor;
+import com.cannontech.database.StringRowMapper;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.incrementer.NextValueHelper;
 
@@ -31,6 +34,7 @@ public class CapControlCommentDaoImpl implements CapControlCommentDao {
     private static final String selectPaoIdsByFeederId;
     private static final String selectPaoIdsBySubBusId;
     private static final String selectPaoIdBySubstationId;
+    private static final String selectLastTenForPaoAndActon;
     private static final ParameterizedRowMapper<CapControlComment> rowMapper;
     private static final ParameterizedRowMapper<List<Integer>> paoIdRowMapper;
     private SimpleJdbcTemplate simpleJdbcTemplate;
@@ -73,6 +77,11 @@ public class CapControlCommentDaoImpl implements CapControlCommentDao {
             selectPaoIdBySubstationId = "SELECT sa.areaid " +
                                         "FROM ccsubareaassignment sa " +
                                         "WHERE substationbusid = ?";
+            
+            selectLastTenForPaoAndActon = "select distinct ccc.CapComment from CapControlComment ccc " +
+                                     "join YukonPAObject pao on pao.PAObjectId = ccc.PaoID " +
+                                     "where ccc.action = ? " +
+                                     "and pao.type = (select type from yukonpaobject where paobjectid = ?)";
             
             rowMapper = createRowMapper();
             
@@ -203,6 +212,17 @@ public class CapControlCommentDaoImpl implements CapControlCommentDao {
         String sql = selectAllSql + " WHERE paoId = ? ORDER BY commentTime desc";
         List<CapControlComment> list = simpleJdbcTemplate.query(sql, rowMapper, paoId);
         return list;
+    }
+    
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public List<String> getLastTenCommentsByActionAndType(int paoId, CommentAction action ) {
+        MaxListResultSetExtractor<String> rse = new MaxListResultSetExtractor<String>(new StringRowMapper(), 10);
+        String sql = selectLastTenForPaoAndActon;
+        JdbcOperations oldTemplate = simpleJdbcTemplate.getJdbcOperations();
+        Object[] arguments = new Object[] {action.name(), paoId};
+        oldTemplate.query(sql, arguments, rse);
+        List<String> result = rse.getResult();
+        return result;
     }
     
     private static final ParameterizedRowMapper<CapControlComment> createRowMapper() {

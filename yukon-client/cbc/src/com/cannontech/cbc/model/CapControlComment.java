@@ -2,6 +2,9 @@ package com.cannontech.cbc.model;
 
 import java.sql.Timestamp;
 
+import com.cannontech.cbc.dao.CommentAction;
+import com.cannontech.yukon.cbc.CapControlCommand;
+
 public class CapControlComment {
     private int id;
     private int paoId;
@@ -69,6 +72,68 @@ public class CapControlComment {
 
     public void setAction(String action) {
         this.action = action;
+    }
+    
+    public static CommentAction getActionForCommandId(int cmdId) {
+        CommentAction action;
+        
+        if (cmdId == CapControlCommand.BANK_ENABLE_OVUV || cmdId == CapControlCommand.SEND_ALL_ENABLE_OVUV) {
+            
+            action = CommentAction.ENABLED_OVUV;
+            
+        } else if (cmdId == CapControlCommand.BANK_DISABLE_OVUV || cmdId == CapControlCommand.SEND_ALL_DISABLE_OVUV) {
+            
+            action = CommentAction.DISABLED_OVUV;
+
+        } else if ( cmdId == CapControlCommand.ENABLE_CAPBANK || 
+                    cmdId == CapControlCommand.ENABLE_AREA || 
+                    cmdId == CapControlCommand.ENABLE_FEEDER ||
+                    cmdId == CapControlCommand.ENABLE_SUBBUS) {
+
+            action = CommentAction.ENABLED;
+
+        } else if ( cmdId == CapControlCommand.DISABLE_CAPBANK || 
+                cmdId == CapControlCommand.DISABLE_AREA || 
+                cmdId == CapControlCommand.DISABLE_FEEDER ||
+                cmdId == CapControlCommand.DISABLE_SUBBUS) {
+
+            action = CommentAction.DISABLED;
+
+        } else if (cmdId == CapControlCommand.OPERATIONAL_STATECHANGE) {
+
+            action = CommentAction.STANDALONE_REASON;
+
+        } else if (cmdId == CapControlCommand.SEND_ALL_OPEN || 
+                cmdId == CapControlCommand.SEND_ALL_CLOSE || 
+                cmdId == CapControlCommand.SEND_ALL_ENABLE_OVUV || 
+                cmdId == CapControlCommand.SEND_ALL_DISABLE_OVUV || 
+                cmdId == CapControlCommand.SEND_ALL_SCAN_2WAY || 
+                cmdId == CapControlCommand.SEND_TIMESYNC || 
+                cmdId == CapControlCommand.CONFIRM_SUBSTATION || 
+                cmdId == CapControlCommand.CONFIRM_AREA || 
+                cmdId == CapControlCommand.CONFIRM_SUB ||
+                cmdId == CapControlCommand.CONFIRM_FEEDER ||
+                cmdId == CapControlCommand.RESET_OPCOUNT) { 
+            action = CommentAction.SEND_ALL_CONTROL; 
+        } else if (cmdId == CapControlCommand.OPEN_CAPBANK || 
+                cmdId == CapControlCommand.CLOSE_CAPBANK || 
+                cmdId == CapControlCommand.CONFIRM_OPEN || 
+                cmdId == CapControlCommand.CONFIRM_CLOSE || 
+                cmdId == CapControlCommand.SCAN_2WAY_DEV || 
+                cmdId == CapControlCommand.FLIP_7010_CAPBANK){ 
+            action = CommentAction.CAPBANK_CONTROL; 
+        } else if (cmdId == CapControlCommand.CMD_ALL_BANKS || 
+                cmdId == CapControlCommand.CMD_FQ_BANKS || 
+                cmdId == CapControlCommand.CMD_FAILED_BANKS || 
+                cmdId == CapControlCommand.CMD_QUESTIONABLE_BANKS || 
+                cmdId == CapControlCommand.CMD_DISABLE_VERIFY || 
+                cmdId == CapControlCommand.CMD_STANDALONE_VERIFY){ 
+            action = CommentAction.VERIFY_CONTROL; 
+        } else {
+            throw new RuntimeException("Unsupported Action: " + cmdId);
+        }
+
+        return action;
     }
     
     @Override

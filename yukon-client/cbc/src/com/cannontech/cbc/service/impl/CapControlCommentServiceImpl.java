@@ -60,6 +60,21 @@ public class CapControlCommentServiceImpl implements CapControlCommentService {
         return list;
     }
     
+    
+    /**
+     * Returns a list of hmtl escaped comment strings.
+     */
+    public List<String> getLastTenCommentsForActionAndType(final int paoId, final int cmdId) {
+        final List<String> list = new ArrayList<String>(10);
+        CommentAction action = CapControlComment.getActionForCommandId(cmdId);
+        final List<String> commentList = capControlCommentDao.getLastTenCommentsByActionAndType(paoId, action);
+        
+        for (String comment : commentList) {
+            list.add(StringEscapeUtils.escapeHtml(comment));
+        }
+        return list;
+    }
+    
     public void setCapControlCommentDao(CapControlCommentDao capControlCommentDao) {
         this.capControlCommentDao = capControlCommentDao;
     }
