@@ -27,6 +27,7 @@
 #include "fdr.h"
 #include "fdrdebuglevel.h"
 #include "mgr_fdrpoint.h"
+#include "FdrException.h"
 
 #include "logger.h"
 #include "guard.h"
@@ -176,7 +177,7 @@ RWDBStatus CtiFDRManager::loadPointList()
 }
 
 
-RWDBStatus CtiFDRManager::loadPoint(long pointId)
+RWDBStatus CtiFDRManager::loadPoint(long pointId, CtiFDRPointSPtr & point)
 {
     RWDBStatus  retStatus = RWDBStatus::ok;
 
@@ -207,13 +208,19 @@ RWDBStatus CtiFDRManager::loadPoint(long pointId)
         std::map<long,CtiFDRPointSPtr > fdrTempMap;
         retStatus = getPointsFromDB(selector,fdrTempMap);
 
-         //move all from tempMap to main Map.
-        for (std::map<long,CtiFDRPointSPtr >::iterator itr = fdrTempMap.begin(); itr != fdrTempMap.end(); itr++)
+        if (fdrTempMap.size() == 1)
         {
+            std::map<long,CtiFDRPointSPtr >::iterator itr = fdrTempMap.begin();
+            point = (*itr).second;
             pointMap.insert((*itr).second->getPointID(),(*itr).second);
         }
-        fdrTempMap.clear();
+        else if (fdrTempMap.size() > 1)
+        {
+            throw FdrDatabaseException();
+        }
 
+        //Cleanup
+        fdrTempMap.clear();
         if(getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
         {
             string loggedSQLstring = selector.asString();
@@ -223,7 +230,7 @@ RWDBStatus CtiFDRManager::loadPoint(long pointId)
             }
         }
     }
-    catch(RWExternalErr e )
+    catch(RWExternalErr e)
     {
         //Make sure the list is cleared
         {
@@ -236,6 +243,14 @@ RWDBStatus CtiFDRManager::loadPoint(long pointId)
             dout << "loadFDRList:  " << e.why() << endl;
         }
         RWTHROW(e);
+    }
+    catch (FdrDatabaseException e)
+    {
+        retStatus = RWDBStatus::ok;
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " DB Error: expected only one translation for point: " << pointId << endl;
+        }
     }
     catch(...)
     {
@@ -438,9 +453,9 @@ CtiFDRPointSPtr CtiFDRManager::removeFDRPointID(long myPointId)
     return pFdrPoint;
 }
 
-bool CtiFDRManager::addFDRPointId(long myPointId)
+bool CtiFDRManager::addFDRPointId(long myPointId, CtiFDRPointSPtr & point)
 {
-    RWDBStatus loaded = loadPoint(myPointId);
+    RWDBStatus loaded = loadPoint(myPointId,point);
 
     return (loaded.errorCode() == RWDBStatus::ok);
 }

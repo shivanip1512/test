@@ -17,7 +17,7 @@
 *    DESCRIPTION: This class implements a base interface class for those foreign systems
 *                   that use a single socket to exchange data
 *    ---------------------------------------------------
-*    History: 
+*    History:
 *     $Log: fdrsinglesocket.cpp,v $
 *     Revision 1.13.2.1  2008/11/13 17:23:47  jmarks
 *     YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
@@ -110,7 +110,7 @@ CtiFDRSingleSocket::CtiFDRSingleSocket(string &name)
     iLayer (NULL)
 {
     // init these lists so they have something
-    CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),string(FDR_INTERFACE_RECEIVE)); 
+    CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),string(FDR_INTERFACE_RECEIVE));
     getReceiveFromList().setPointList (recList);
     recList = NULL;
 
@@ -173,7 +173,7 @@ bool CtiFDRSingleSocket::isClientConnectionValid()
 BOOL CtiFDRSingleSocket::init( void )
 {
     // init the base class
-    Inherited::init();    
+    Inherited::init();
 
     if ( !readConfig( ) )
     {
@@ -181,17 +181,17 @@ BOOL CtiFDRSingleSocket::init( void )
     }
 
     loadTranslationLists();
-    
+
     // start up the socket layer
     iLayer = NULL;
 
-    iThreadConnection = rwMakeThreadFunction(*this, 
+    iThreadConnection = rwMakeThreadFunction(*this,
                                             &CtiFDRSingleSocket::threadFunctionConnection);
 
 
     if (isInterfaceInDebugMode())
     {
-        iThreadSendDebugData = rwMakeThreadFunction(*this, 
+        iThreadSendDebugData = rwMakeThreadFunction(*this,
                                                 &CtiFDRSingleSocket::threadFunctionSendDebugData);
     }
     return TRUE;
@@ -201,11 +201,11 @@ BOOL CtiFDRSingleSocket::init( void )
 * Function Name: CtiFDRSingleSocket::run()
 *
 * Description: runs the interface
-* 
+*
 **************************************************
 */
 BOOL CtiFDRSingleSocket::run( void )
-{                      
+{
 
     // crank up the base class
     Inherited::run();
@@ -213,7 +213,7 @@ BOOL CtiFDRSingleSocket::run( void )
     // startup our interfaces
     iThreadConnection.start();
 
-    // log this now so we dont' have to everytime one comes in 
+    // log this now so we dont' have to everytime one comes in
     if (!shouldUpdatePCTime())
     {
         string desc = getInterfaceName() + string (" has been configured to NOT process time sync updates to PC clock");
@@ -229,9 +229,9 @@ BOOL CtiFDRSingleSocket::run( void )
     if (linkID)
     {
         CtiPointDataMsg     *pData;
-        pData = new CtiPointDataMsg(linkID, 
-                                    FDR_NOT_CONNECTED, 
-                                    NormalQuality, 
+        pData = new CtiPointDataMsg(linkID,
+                                    FDR_NOT_CONNECTED,
+                                    NormalQuality,
                                     StatusPointType);
         sendMessageToDispatch (pData);
     }
@@ -243,8 +243,8 @@ BOOL CtiFDRSingleSocket::run( void )
 /*************************************************
 * Function Name: CtiFDRSingleSocket::stop()
 *
-* Description: stops all threads 
-* 
+* Description: stops all threads
+*
 **************************************************
 */
 BOOL CtiFDRSingleSocket::stop( void )
@@ -267,9 +267,9 @@ BOOL CtiFDRSingleSocket::stop( void )
 /************************************************************************
 * Function Name: CtiFDRSingleSocket::loadList()
 *
-* Description: Creates a collection of points and their translations for the 
-*				specified direction
-* 
+* Description: Creates a collection of points and their translations for the
+*                               specified direction
+*
 *************************************************************************
 */
 bool CtiFDRSingleSocket::loadList(string &aDirection,  CtiFDRPointList &aList)
@@ -312,7 +312,7 @@ bool CtiFDRSingleSocket::loadList(string &aDirection,  CtiFDRPointList &aList)
                 }
 
                 // lock the list I'm inserting into so it doesn't get deleted on me
-                CtiLockGuard<CtiMutex> sendGuard(aList.getMutex());  
+                CtiLockGuard<CtiMutex> sendGuard(aList.getMutex());
                 if (aList.getPointList() != NULL)
                 {
                     aList.deletePointList();
@@ -380,7 +380,8 @@ void CtiFDRSingleSocket::signalPointRemoved(string &pointName)
 
 bool CtiFDRSingleSocket::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send)
 {
-    bool successful = false;
+    bool success = false;
+
     for (int x = 0; x < translationPoint->getDestinationList().size(); x++)
     {
         if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
@@ -389,14 +390,10 @@ bool CtiFDRSingleSocket::translateSinglePoint(CtiFDRPointSPtr & translationPoint
             dout << CtiTime() << " Point ID " << translationPoint->getPointID();
             dout << " translate: " << translationPoint->getDestinationList()[0].getTranslation() << endl;
         }
-        // translate and put the point id the list
-        if (translateAndUpdatePoint (translationPoint, x))
-        {
-            successful = true;
-        }
+        success = translateAndUpdatePoint (translationPoint, x);
     }
 
-    return successful;
+    return success;
 }
 
 void CtiFDRSingleSocket::cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool recvList)
@@ -438,9 +435,9 @@ void CtiFDRSingleSocket::setCurrentClientLinkStates()
         if (linkID)
         {
             CtiPointDataMsg     *pData;
-            pData = new CtiPointDataMsg(linkID, 
-                                        FDR_NOT_CONNECTED, 
-                                        NormalQuality, 
+            pData = new CtiPointDataMsg(linkID,
+                                        FDR_NOT_CONNECTED,
+                                        NormalQuality,
                                         StatusPointType);
             sendMessageToDispatch (pData);
         }
@@ -449,8 +446,8 @@ void CtiFDRSingleSocket::setCurrentClientLinkStates()
 /**************************************************************************
 * Function Name: CtiFDRSingleSocket::sendMessageToForeignSys ()
 *
-* Description: 
-* 
+* Description:
+*
 ***************************************************************************
 */
 
@@ -617,7 +614,7 @@ string CtiFDRSingleSocket::decodeClientName(CHAR * aBuffer)
 * Function Name: CtiFDRSingleSocket::threadFunctionConnection
 *
 * Description: thread that watches connection status and re-establishes it as needed
-* 
+*
 ***************************************************************************
 */
 void CtiFDRSingleSocket::threadFunctionConnection( void )
@@ -688,7 +685,7 @@ void CtiFDRSingleSocket::threadFunctionConnection( void )
                         }
 
                         shutdown(listener, 2);
-                        closesocket(listener);     
+                        closesocket(listener);
                     }
                     else
                     {
@@ -706,7 +703,7 @@ void CtiFDRSingleSocket::threadFunctionConnection( void )
                             }
 
                             shutdown(listener, 2);
-                            closesocket(listener);     
+                            closesocket(listener);
                         }
                         else
                         {
@@ -734,7 +731,7 @@ void CtiFDRSingleSocket::threadFunctionConnection( void )
                             if (listen(getListener()->getConnection(), SOMAXCONN))
                             {
                                 shutdown(getListener()->getConnection(), 2);
-                                closesocket(getListener()->getConnection());     
+                                closesocket(getListener()->getConnection());
                             }
                             else
                             {
@@ -748,20 +745,20 @@ void CtiFDRSingleSocket::threadFunctionConnection( void )
                                 tmpConnection = accept(getListener()->getConnection(), (struct sockaddr *) &returnAddr, &returnLength);
 
                                 shutdown(getListener()->getConnection(), 2);
-                                closesocket(getListener()->getConnection());     
+                                closesocket(getListener()->getConnection());
                                 listener = NULL;
 
                                 if (tmpConnection == INVALID_SOCKET)
                                 {
                                     shutdown(tmpConnection, 2);
-                                    closesocket(tmpConnection);     
+                                    closesocket(tmpConnection);
                                     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                                         dout << CtiTime() << " Accept call failed in " << getInterfaceName() <<endl;
                                     }
                                 }
-                                else 
+                                else
                                 {
                                     // set to non blocking mode
                                     ULONG param=1;

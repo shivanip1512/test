@@ -35,12 +35,12 @@ using boost::shared_ptr;
 
 class IM_EX_FDRBASE CtiFDRManager
 {
-    
+
     public:
         // constructors, destructor
         CtiFDRManager(string & InterfaceName);
         CtiFDRManager(string & InterfaceName, string & aWhereSelectStr);
-    
+
         virtual ~CtiFDRManager();
 
         typedef CtiSmartMap<CtiFDRPoint> FdrPointMap;
@@ -62,12 +62,12 @@ class IM_EX_FDRBASE CtiFDRManager
         CtiFDRManager & setWhereSelectStr(string &);
 
         RWDBStatus loadPointList(void);
-        RWDBStatus loadPoint(long pointId);
+        RWDBStatus loadPoint(long pointId, CtiFDRPointSPtr & point);
         RWDBStatus refreshPointList(void);
-    
+
         CtiFDRPointSPtr findFDRPointID(LONG myPointId);
         CtiFDRPointSPtr removeFDRPointID(long myPointId);
-        bool addFDRPointId(long myPointId);
+        bool addFDRPointId(long myPointId, CtiFDRPointSPtr & point);
 
         void printIds(CtiLogger& dout);
 
@@ -100,7 +100,7 @@ class IM_EX_FDRBASE CtiFDRManager
         string   iInterfaceName;
         string   iWhereSelectStr;
         CtiSmartMap<CtiFDRPoint> pointMap;
-    
+
 };
 
 #endif                  // #ifndef __MGR_FDRPOINT_H__

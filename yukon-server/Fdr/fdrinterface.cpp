@@ -1003,7 +1003,6 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
                             {
                                 processFDRPointChange(changeId, false);
                                 reRegisterWithDispatch();
-
                             }
 
                         }
@@ -1022,6 +1021,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
                                     int pid = *itr;
                                     CtiDBChangeMsg* ptr = new CtiDBChangeMsg(pid, 0, "", "", changeType);
                                     processFDRPointChange(pid,false);//always false.  Tested up top.
+                                    reRegisterWithDispatch();
                                     delete ptr;
                                 }
                             }
@@ -1673,28 +1673,26 @@ bool CtiFDRInterface::loadTranslationPoint(long pointId)
 
     if (recvMgr != NULL)
     {
-        inRecv = recvMgr->addFDRPointId(pointId);
+        bool foundPoint = false;
+        CtiFDRPointSPtr fdrPoint;
+        recvMgr->addFDRPointId(pointId,fdrPoint);
+
+        if (fdrPoint)
+        {
+            ret = translateSinglePoint(fdrPoint,false);
+        }
     }
+
     if (sendMgr != NULL)
     {
-        inSend = sendMgr->addFDRPointId(pointId);
-    }
+        bool foundPoint = false;
+        CtiFDRPointSPtr fdrPoint;
+        sendMgr->addFDRPointId(pointId,fdrPoint);
 
-    CtiFDRPointSPtr fdrPoint;
-
-    if (inSend)
-    {
-        fdrPoint = sendMgr->findFDRPointID(pointId);
-    }
-    else if (inRecv)
-    {
-        fdrPoint = recvMgr->findFDRPointID(pointId);
-    }
-
-    if (fdrPoint)
-    {
-        translateSinglePoint(fdrPoint,inSend);
-        ret = true;
+        if (fdrPoint)
+        {
+            ret = translateSinglePoint(fdrPoint,true);
+        }
     }
 
     printLists(" After point add call for ", pointId);
