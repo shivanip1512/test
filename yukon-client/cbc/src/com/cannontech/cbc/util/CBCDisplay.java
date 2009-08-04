@@ -13,13 +13,15 @@ import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.UnknownRolePropertyException;
+import com.cannontech.core.roleproperties.UserNotInRoleException;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
-import com.cannontech.roles.capcontrol.CBCOnelineSettingsRole;
-import com.cannontech.roles.capcontrol.CBCSettingsRole;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ColorUtil;
 import com.cannontech.yukon.cbc.CCArea;
 import com.cannontech.yukon.cbc.CapBankDevice;
@@ -142,10 +144,7 @@ public class CBCDisplay {
      */
     public Object getCapBankValueAt(CapBankDevice capBank, int col) {
         if (capBank == null) return "";
-
-        String fixedCapbankLabel = DaoFactory.getAuthDao().getRolePropertyValue(user, CBCOnelineSettingsRole.CAP_BANK_FIXED_TEXT);
-        if (StringUtils.isBlank(fixedCapbankLabel)) fixedCapbankLabel = "Fixed";
-
+        
         Integer controlDeviceID = capBank.getControlDeviceID();
         String controllerName = (controlDeviceID != 0) ? DaoFactory.getPaoDao().getYukonPAOName(controlDeviceID) : DASH_LINE;
 
@@ -158,8 +157,17 @@ public class CBCDisplay {
         }
 
         case CB_STATUS_COLUMN: {
-            boolean capBankInUnknownState = capBank.getControlStatus().intValue() < 0 || capBank.getControlStatus()
-            .intValue() >= CBCUtils.getCBCStateNames().length;
+            String fixedCapbankLabel = "Fixed";
+            RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
+            try{
+                fixedCapbankLabel = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.CAP_BANK_FIXED_TEXT, user);
+            }catch(UserNotInRoleException e){
+                CTILogger.warn("User not in Cap Bank Display role, using default Fixed text.");
+            }
+            if (StringUtils.isBlank(fixedCapbankLabel)) fixedCapbankLabel = "Fixed";
+            
+            boolean capBankInUnknownState = capBank.getControlStatus().intValue() < 0 
+                || capBank.getControlStatus().intValue() >= CBCUtils.getCBCStateNames().length;
             int controlStatus = capBank.getControlStatus().intValue();                                                                    
             if (capBankInUnknownState) {
                 CTILogger.info("*** A CapBank state was found that has no corresponding status.");
@@ -173,9 +181,7 @@ public class CBCDisplay {
             boolean showIgnoreReason = capBank.isIgnoreFlag();
 
             if (isCapBankDisabled) {
-
-                String disStateString = "DISABLED : " + (isFixedState ? fixedCapbankLabel 
-                        : currentState);
+                String disStateString = "DISABLED : " + (isFixedState ? fixedCapbankLabel : currentState);
                 disStateString += capBank.getControlStatusQualityString();                    
                 if (capBank.getOvUVDisabled()){
                     disStateString += "-V";
@@ -909,8 +915,9 @@ public class CBCDisplay {
      */
     public String getPowerFactorText(double value, boolean compute) {
         int decPlaces;
+        RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
         try {
-            String propertyValue = DaoFactory.getAuthDao().getRolePropertyValueEx(user, CBCSettingsRole.PFACTOR_DECIMAL_PLACES);
+            String propertyValue = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.PFACTOR_DECIMAL_PLACES, user);
             decPlaces = Integer.parseInt(propertyValue);
         } catch (UnknownRolePropertyException e) {
             CTILogger.warn(e);
