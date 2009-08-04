@@ -321,11 +321,20 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
 
      case request:
         {
+            short pktSize;
+            if ((_currentBytesExpected - _currentTableOffset) < _maxPktSize.sh)
+            {
+                pktSize = _currentBytesExpected - _currentTableOffset;
+            }
+            else
+            {
+                pktSize = _maxPktSize.sh;
+            }
+
             if (_currentTableID == 64)
             {
                 // make this generic
-                //getDatalinkLayer().buildTableRequest( xfer, _currentTableID, pread_offset, _currentTableOffset, _currentType );
-                getDatalinkLayer().buildTableRequest( xfer, _currentTableID, pread_offset, _currentTableOffset, _currentType, _maxPktSize.sh, _maxNbrPkts );
+                getDatalinkLayer().buildTableRequest( xfer, _currentTableID, pread_offset, _currentTableOffset, _currentType, pktSize, _maxNbrPkts );
                 if( getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )
                 {
                    CtiLockGuard< CtiLogger > doubt_guard( dout );
@@ -340,7 +349,6 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
             {
                 // make this generic
                 BYTE operation;
-                short pktSize;
                 // sentinel likes full reads, kv2 likes partial read offsets
                 if  ((int)_ansiDeviceType == sentinel)
                 {
@@ -353,16 +361,6 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
                 }
                 else
                     operation =  pread_offset;
-
-
-                if ((_currentBytesExpected - _currentTableOffset) < _maxPktSize.sh)
-                {
-                    pktSize = _currentBytesExpected - _currentTableOffset;
-                }
-                else
-                {
-                    pktSize = _maxPktSize.sh;
-                }
 
                 if( getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )//DEBUGLEVEL_LUDICROUS )
                 {
@@ -610,6 +608,10 @@ bool CtiANSIApplication::analyzePacket()
              {
                  if ( !getDatalinkLayer().compareToggleBits() )
                  {
+                     if (getRetries() > 0)
+                     {
+                         getDatalinkLayer().toggleToggle();
+                     }
                      retFlag = false;
                      break;
                  }
