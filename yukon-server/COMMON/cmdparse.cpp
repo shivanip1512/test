@@ -26,7 +26,7 @@ static const CtiString str_signed_num     ("(\\+|\\-)?([0-9]+)");
 static const CtiString str_num     ("([0-9]+)");
 static const CtiString str_floatnum("([0-9]+(\\.[0-9]*)?)");
 static const CtiString str_hexnum  ("(0x[0-9a-f]+)");
-static const CtiString str_anynum  ( CtiString("(") + str_num + CtiString("|") + str_hexnum + CtiString(")") );
+static const CtiString str_anynum  ( CtiString("(") + str_hexnum + CtiString("|") + str_num + CtiString(")") );
 
 static const CtiString str_date("([0-9]+[/-][0-9]+[/-][0-9]+)");
 static const CtiString str_time("([0-9]+:[0-9]+(:[0-9]+)?)");
@@ -165,7 +165,6 @@ void  CtiCommandParser::parse()
                 serial = strtoul(strnum.c_str(), &p, 10);
             }
             _cmd["serial"] = CtiParseValue( serial );
-//            _cmd["serial_raw_input"] = CtiParseValue( strnum );     // store the input - use in validation
             CmdStr.replace(regexp, "");
         }
     }

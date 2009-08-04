@@ -2553,27 +2553,29 @@ bool CtiProtocolExpresscom::validateParseAddressing(const CtiCommandParser &pars
         // bad parameters that are outside the 32 bit space.
         // eg: 'putconfig xcom ... serial 61234567890 ...' etc.
         // NOTE: we also have to worry about serials entered in hexadecimal.
-/*
-        char buffer[64];
-        string entered_serial = parse.getsValue(serial_raw_);
 
-        // make any hex digits lower case.
-        transform(entered_serial.begin(), entered_serial.end(), entered_serial.begin(), ::tolower);
-
-        if( entered_serial[1] == 'x' )  // is it a hex number....
+        if(address == UINT_MAX)
         {
-            // convert - zero pad to the proper length
-            _snprintf(buffer, 64, "0x%0*x", (entered_serial.length() - 2), address);
-        }
-        else
-        {
-            // convert
-            _snprintf(buffer, 64, "%u", address);
-        }
+            static const boost::regex   number_regexp( CtiString("((0x[0-9a-f]+)|([0-9]+))") );
+            static const boost::regex   regexp( CtiString("serial[= ]+((0x[0-9a-f]+)|([0-9]+))") );
 
-        valid &= ( entered_serial == string(buffer) );
-*/
+            char        buffer[64];
+            CtiString   command = parse.getCommandStr();
+            CtiString   token = command.match(regexp);
+            CtiString   number_token = token.match(number_regexp);
 
+            if(number_token.length() >= 2 && number_token[0] == '0' && number_token[1] == 'x')   // entered in hex...
+            {
+                // convert - zero pad to the proper length
+                _snprintf(buffer, 64, "0x%0*x", (number_token.length() - 2), address);
+            }
+            else
+            {
+                _snprintf(buffer, 64, "%u", address);
+            }
+
+            valid &= ( number_token == CtiString(buffer) );
+        }
     }
 
     if(parse.isKeyValid(xc_serial_))
