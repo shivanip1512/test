@@ -123,7 +123,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     @Override
     public VerifyResult verifyConfig(YukonDevice device, LiteYukonUser user) {
         VerifyConfigCommandResult verifyConfigResult = verifyConfigs(Collections.singleton(device), user);
-        return verifyConfigResult.getVerifyResultsMap().get(device);
+        return verifyConfigResult.getVerifyResultsMap().get(new SimpleDevice(device));
     }
     
     @Override

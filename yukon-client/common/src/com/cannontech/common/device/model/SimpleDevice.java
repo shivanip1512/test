@@ -9,6 +9,7 @@ import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.YukonPao;
 
 public final class SimpleDevice implements YukonDevice {
     private int deviceId;
@@ -23,10 +24,10 @@ public final class SimpleDevice implements YukonDevice {
 		this.type = type;
     }
     
-    public SimpleDevice(PaoIdentifier paoIdentifier) {
-    	Validate.isTrue(paoIdentifier.getPaoCategory() == PaoCategory.DEVICE);
-    	this.deviceId = paoIdentifier.getPaoId();
-    	this.type = paoIdentifier.getPaoType();
+    public SimpleDevice(YukonPao pao) {
+    	Validate.isTrue(pao.getPaoIdentifier().getPaoCategory() == PaoCategory.DEVICE);
+    	this.deviceId = pao.getPaoIdentifier().getPaoId();
+    	this.type = pao.getPaoIdentifier().getPaoType();
     }
     
     public SimpleDevice() {
