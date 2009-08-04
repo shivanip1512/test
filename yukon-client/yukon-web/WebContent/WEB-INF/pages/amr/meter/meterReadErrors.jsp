@@ -3,21 +3,22 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 
-
 <c:if test="${not empty errorMsg}">
     <br>
-    <div class="notAuthorized">${errorMsg}</div>
+    <div class="errorRed">${errorMsg}</div>
 </c:if>
 
 <c:if test="${not empty results}">
 
     <br>
-    <div class="notAuthorized">There was an error reading the meter</div>
+    <div class="errorRed">There was an error reading the meter:</div>
     
     <c:forEach items="${results}" var="result">
     
-        <br>
-    
+    	<c:if test="${not empty result.deviceError}">
+        	${result.deviceError}
+        </c:if>
+        
         <c:forEach items="${result.errors}" var="error">
             <tags:hideReveal title="${error.description} (${error.errorCode})" showInitially="false">
             ${error.porter}<br>

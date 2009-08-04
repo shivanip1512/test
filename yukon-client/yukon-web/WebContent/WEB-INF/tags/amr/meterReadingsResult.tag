@@ -5,14 +5,14 @@
 <%@ attribute name="errorMsg" required="false" type="java.lang.String"%>
 <%@ attribute name="successMsg" required="false" type="java.lang.String"%>
 
-<c:if test="${result.errorsExist}">
+<c:if test="${result.anyErrorOrException}">
 <div style="max-height: 240px; overflow: auto">
     <c:choose>
         <c:when test="${not empty errorMsg}">
-            ${errorMsg}
+            <span class="errorRed">${errorMsg}</span>
         </c:when>
         <c:otherwise>
-            There was an error reading the meter
+            <span class="errorRed">There was an error reading the meter:</span>
         </c:otherwise>
     </c:choose>
     <br>
@@ -22,10 +22,15 @@
     ${error.troubleshooting}<br>
     </tags:hideReveal><br>
   </c:forEach>
+  
+  <c:if test="${not empty result.exceptionReason}">
+  	${result.exceptionReason}
+  </c:if>
+  
 </div>
 </c:if>
 
-<c:if test="${!result.errorsExist}">
+<c:if test="${!result.anyErrorOrException}">
   <span title="${result.lastResultString}">
     <c:choose>
         <c:when test="${not empty successMsg}">

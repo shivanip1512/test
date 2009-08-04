@@ -99,7 +99,6 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         CommandResultHolder result = meterReadService.readMeter(meter, disconnectAttribute, user);
         
         mav.addObject("state", getDisconnectedState(meter, result));
-        mav.addObject("errorsExist", result.isErrorsExist());
         String configStr = "";
         if ( result.getErrors().isEmpty() )
             configStr = result.getLastResultString().replaceAll("\n", "<BR>");
@@ -181,7 +180,6 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         mav.addObject("state", getDisconnectedState(meter, result));
         mav.addObject("configString", "");
         
-        mav.addObject("errorsExist", result.isErrorsExist());
         mav.addObject("result", result);
         
         boolean controllable = commandAuthorizationService.isAuthorized(user, "control connect", meter);

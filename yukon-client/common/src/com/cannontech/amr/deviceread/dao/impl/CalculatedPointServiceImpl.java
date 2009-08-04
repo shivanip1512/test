@@ -55,9 +55,15 @@ public class CalculatedPointServiceImpl implements CalculatedPointService {
 				userContext.getYukonUser());
 
         PointValueHolder currentPVH = null;
-		if (meterReadResults.isErrorsExist()) {
-            results.setErrors(meterReadResults.getErrors());
+		if (meterReadResults.isAnyErrorOrException()) {
+			
+			if (meterReadResults.isErrorsExist()) {
+				results.setErrors(meterReadResults.getErrors());
+			} else if (meterReadResults.isExceptionOccured()) {
+				results.setDeviceError(meterReadResults.getExceptionReason());
+			}
 			return results;
+			
 		} else {
 			LitePoint lp = attributeService.getPointForAttribute(meter,
 					BuiltInAttribute.USAGE);

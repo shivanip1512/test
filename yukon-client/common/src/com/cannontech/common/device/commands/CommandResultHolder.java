@@ -5,9 +5,10 @@ import java.util.List;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
 import com.cannontech.common.util.Completable;
+import com.cannontech.common.util.ExceptionStatus;
 import com.cannontech.core.dynamic.PointValueHolder;
 
-public interface CommandResultHolder extends Completable {
+public interface CommandResultHolder extends Completable, ExceptionStatus {
 
     /**
      * Returns a list of friendly error messages for errors
@@ -28,6 +29,7 @@ public interface CommandResultHolder extends Completable {
      */
     public List<String> getResultStrings();
     
+    public boolean isAnyErrorOrException();
     public boolean isErrorsExist();
     
     /**

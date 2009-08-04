@@ -91,16 +91,27 @@ public class PeakReportServiceImpl implements PeakReportService {
         peakResult.setResultString(resultString);
         
         // device errors!
-        if (commandResultHolder.isErrorsExist()) {
+        if (commandResultHolder.isAnyErrorOrException()) {
             
-            peakResult.setErrors(commandResultHolder.getErrors());
-            
-            StringBuffer sb = new StringBuffer();
-            List<DeviceErrorDescription> errors = commandResultHolder.getErrors();
-            for (DeviceErrorDescription ded : errors) {
-                sb.append(ded.toString() + "\n");
-            }
-            peakResult.setDeviceError(sb.toString());
+        	String deviceError = "";
+        	
+        	if (commandResultHolder.isErrorsExist()) {
+	            peakResult.setErrors(commandResultHolder.getErrors());
+	            
+	            StringBuffer sb = new StringBuffer();
+	            List<DeviceErrorDescription> errors = commandResultHolder.getErrors();
+	            for (DeviceErrorDescription ded : errors) {
+	                sb.append(ded.toString() + "\n");
+	            }
+	            
+	            deviceError = sb.toString();
+	            
+        	} else if (commandResultHolder.isExceptionOccured()) {
+        		
+        		deviceError = commandResultHolder.getExceptionReason();
+        	}
+        	
+        	peakResult.setDeviceError(deviceError);
             peakResult.setNoData(true);
             
         // results exist, parse result string into peakResult

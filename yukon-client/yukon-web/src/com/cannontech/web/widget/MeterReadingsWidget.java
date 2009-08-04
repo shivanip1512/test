@@ -97,8 +97,6 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         meteringEventLogService.readNowPushedForReadingsWidget(user, meter.getDeviceId());
         CommandResultHolder result = meterReadService.readMeter(meter, allExistingAttributes, user);
         
-        mav.addObject("errorsExist", result.isErrorsExist());
-        
         mav.addObject("result", result);
         
         boolean readable = meterReadService.isReadable(meter, allExistingAttributes, user);

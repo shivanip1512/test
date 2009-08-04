@@ -10,6 +10,7 @@ public class CalculatedPointResults {
     PointValueHolder differencePVH;
     PointValueHolder currentPVH;
     List<DeviceErrorDescription> errors;
+    String deviceError;
 
     public PointValueHolder getCalculatedPVH() {
         return calculatedPVH;
@@ -42,4 +43,12 @@ public class CalculatedPointResults {
     public void setErrors(List<DeviceErrorDescription> errors) {
         this.errors = errors;
     }
+    
+    public String getDeviceError() {
+		return deviceError;
+	}
+    
+    public void setDeviceError(String deviceError) {
+		this.deviceError = deviceError;
+	}
 }

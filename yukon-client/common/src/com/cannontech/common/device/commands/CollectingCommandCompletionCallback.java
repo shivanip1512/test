@@ -7,11 +7,10 @@ import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
 import com.cannontech.common.util.CancelStatus;
 import com.cannontech.common.util.Completable;
-import com.cannontech.common.util.ExceptionStatus;
 import com.cannontech.core.dynamic.PointValueHolder;
 
 public class CollectingCommandCompletionCallback implements
-        CommandCompletionCallback<Object>, CommandResultHolder, Completable, CancelStatus, ExceptionStatus {
+        CommandCompletionCallback<Object>, CommandResultHolder, Completable, CancelStatus {
     
 	private CommandRequestExecutionIdentifier commandRequestExecutionIdentifier = null;
     private List<DeviceErrorDescription> errors = new ArrayList<DeviceErrorDescription>();
@@ -56,6 +55,12 @@ public class CollectingCommandCompletionCallback implements
 			CommandRequestExecutionIdentifier commandRequestExecutionIdentifier) {
 		this.commandRequestExecutionIdentifier = commandRequestExecutionIdentifier;
 	}
+    
+    @Override
+    public boolean isAnyErrorOrException() {
+    	
+    	return isExceptionOccured() || isErrorsExist();
+    }
     
     public boolean isErrorsExist() {
         return !errors.isEmpty();

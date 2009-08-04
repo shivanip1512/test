@@ -9,6 +9,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
@@ -105,10 +106,21 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
                                                                                   Collections.singleton(BuiltInAttribute.USAGE),
                                                                                   moveInFormObj.getUserContext().getYukonUser());
                 
-                if (meterReadResults.isErrorsExist()) {
-                    logger.info("Move in for " + moveInResult.getPreviousMeter()
-                                .toString() + " failed. " + moveInResult.getErrors());
-                    resultHolder.setErrors(meterReadResults.getErrors());
+                if (meterReadResults.isAnyErrorOrException()) {
+                    
+                	if (meterReadResults.isErrorsExist()) {
+                	
+	                	logger.info("Move in for " + moveInResult.getPreviousMeter()
+	                                .toString() + " failed. " + meterReadResults.getErrors());
+	                	moveInResult.setErrors(meterReadResults.getErrors());
+	                	
+                	} else if (meterReadResults.isExceptionOccured()) {
+                		
+                		logger.info("Move in for " + moveInResult.getPreviousMeter()
+                                .toString() + " failed. " + meterReadResults.getExceptionReason());
+                		moveInResult.setErrorMessage(meterReadResults.getExceptionReason());
+                	}
+                    
                     return moveInResult;
                 }   
                     
@@ -135,10 +147,19 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
                                                                          moveInFormObj.getUserContext());
             
                     if (!resultHolder.getErrors().isEmpty()) {
+                    	
                         logger.info("Move in for " + moveInResult.getPreviousMeter()
                                                                     .toString() + " failed. " + moveInResult.getErrors());
                         moveInResult.setErrors(resultHolder.getErrors());
                         return moveInResult;
+                    }
+                    
+                    if (!StringUtils.isBlank(resultHolder.getDeviceError())) {
+                    	
+                    	logger.info("Move in for " + moveInResult.getPreviousMeter()
+                                .toString() + " failed. " + resultHolder.getDeviceError());
+						moveInResult.setErrorMessage(resultHolder.getDeviceError());
+						return moveInResult;
                     }
                     
                     moveInResult.setCurrentReading(resultHolder.getCurrentPVH());
@@ -236,11 +257,23 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
                                                                                   moveOutFormObj.getUserContext().getYukonUser());
     
                 
-                if (meterReadResults.isErrorsExist()) {
-                    logger.info("Move out for " + moveOutResult.getPreviousMeter()
-                                .toString() + " failed. " + moveOutResult.getErrors());
-                    moveOutResult.setErrors(resultHolder.getErrors());
+                if (meterReadResults.isAnyErrorOrException()) {
+                    
+                	if (meterReadResults.isErrorsExist()) {
+                	
+	                	logger.info("Move in for " + moveOutResult.getPreviousMeter()
+	                                .toString() + " failed. " + meterReadResults.getErrors());
+	                	moveOutResult.setErrors(meterReadResults.getErrors());
+	                    
+                	} else if (meterReadResults.isExceptionOccured()) {
+                		
+                		logger.info("Move in for " + moveOutResult.getPreviousMeter()
+                                .toString() + " failed. " + meterReadResults.getExceptionReason());
+                		moveOutResult.setErrorMessage(meterReadResults.getExceptionReason());
+                	}
+                    
                     return moveOutResult;
+                    
                 } else {
                     
                     PointValueHolder currentPVH = null;
@@ -269,6 +302,13 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
                         logger.info("Move out for " + moveOutResult.getPreviousMeter()
                                                                       .toString() + " failed. " + moveOutResult.getErrors());
                         moveOutResult.setErrors(resultHolder.getErrors());
+                        return moveOutResult;
+                    }
+                    
+                    if (!StringUtils.isBlank(resultHolder.getDeviceError())) {
+                        logger.info("Move out for " + moveOutResult.getPreviousMeter()
+                                                                      .toString() + " failed. " + resultHolder.getDeviceError());
+                        moveOutResult.setErrorMessage(resultHolder.getDeviceError());
                         return moveOutResult;
                     }
             
