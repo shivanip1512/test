@@ -1,4 +1,4 @@
-package com.cannontech.common.device.groups.service.impl;
+package com.cannontech.common.device.config.service.impl;
 
 import java.util.Collections;
 import java.util.List;
@@ -23,7 +23,7 @@ import com.cannontech.common.device.commands.VerifyConfigCommandResult;
 import com.cannontech.common.device.commands.impl.WaitableCommandCompletionCallback;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.VerifyResult;
-import com.cannontech.common.device.groups.service.DeviceConfigService;
+import com.cannontech.common.device.config.service.DeviceConfigService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.pao.YukonDevice;

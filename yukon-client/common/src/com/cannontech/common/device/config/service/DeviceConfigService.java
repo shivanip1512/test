@@ -1,4 +1,4 @@
-package com.cannontech.common.device.groups.service;
+package com.cannontech.common.device.config.service;
 
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.device.commands.CommandResultHolder;
