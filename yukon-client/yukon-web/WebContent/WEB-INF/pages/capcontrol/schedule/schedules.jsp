@@ -44,6 +44,7 @@
 	<cti:standardMenu menuSelection="view|schedules" />
 	<cti:breadCrumbs>
 		<cti:crumbLink url="/spring/capcontrol/tier/areas" title="Home" />
+		<cti:crumbLink title="Schedules"/>
 	</cti:breadCrumbs>
 	<b>
 	<div id="errorElement" style="text-align: center; color: red"></div>

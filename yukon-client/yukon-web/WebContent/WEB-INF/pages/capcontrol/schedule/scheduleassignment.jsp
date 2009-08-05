@@ -19,6 +19,7 @@
 <cti:standardMenu menuSelection="view|scheduleassignment"/>
 <cti:breadCrumbs>
 	<cti:crumbLink url="/spring/capcontrol/tier/areas" title="Home" />
+	<cti:crumbLink title="Schedule Assignments"/>
 </cti:breadCrumbs>
 
 

@@ -44,6 +44,7 @@
     <cti:standardMenu menuSelection="view|strategies" />
     <cti:breadCrumbs>
         <cti:crumbLink url="/spring/capcontrol/tier/areas" title="Home" />
+        <cti:crumbLink title="Strategies"/>
     </cti:breadCrumbs>
     <b>
         <div id="errorElement" style="text-align: center; color: red"></div>

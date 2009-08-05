@@ -22,6 +22,7 @@
 	<cti:standardMenu menuSelection="view|recentcapbankmoves" />
 	<cti:breadCrumbs>
 		<cti:crumbLink url="/spring/capcontrol/tier/areas" title="Home" />
+		<cti:crumbLink title="Recent Cap Bank Moves"/>
 	</cti:breadCrumbs>
 
     <div class="scrollLarge">
