@@ -128,7 +128,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     
     @Override
     public CommandResultHolder readConfig(YukonDevice device, LiteYukonUser user) throws Exception {
-        String commandString = "getconfig model";
+        String commandString = "getconfig install";
         CommandResultHolder resultHolder = commandRequestExecutor.execute(device, commandString, CommandRequestExecutionType.DEVICE_COMMAND, user);
         return resultHolder;
     }
