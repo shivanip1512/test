@@ -317,7 +317,7 @@
         <copy todir="${temp.dir}/installer">
             <fileset dir="${basedir}/yukon-install/YukonSetupX/Media/CD/Disk Images/Disk1" />
         </copy>
-        <copy todir="${temp.dir}/eSubImages">
+        <copy todir="${temp.dir}/YukonImages">
             <fileset dir="${basedir}/yukon-client/esub/images" />
         </copy>
         <copy todir="${temp.dir}/YukonDatabase/DatabaseCreation">
