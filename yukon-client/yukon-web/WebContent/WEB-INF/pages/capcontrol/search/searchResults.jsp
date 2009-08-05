@@ -22,18 +22,21 @@
         <h4>Search Results For: ${label}  (${resultsFound} found)</h4>
         <table id="resTable" class="resultsTable activeResultsTable" align="center">
             <tr>
-                <th/>
                 <th>Name</th>
                 <th nowrap="nowrap">Item Type</th>
                 <th>Description</th>
                 <th>Parent</th>
+                <th/>
             </tr>
             <c:forEach items="${rows}" var="row">
                 <tr height="18px" valign="middle" style="vertical-align : middle;"  class="<ct:alternateRow odd="altTableCell" even="tableCell"/>">
-                    <td width="80px" nowrap="nowrap">
+	                <td nowrap="nowrap">${row.name}</td>
+	                <td nowrap="nowrap">${row.itemType}</td>
+	                <td nowrap="nowrap">${row.itemDescription}</td>
+	                <td>${row.parentString}</td>
+	                <td width="80px" nowrap="nowrap">
                         <c:choose>
                             <c:when test="${row.paobject}">
-                                <input type="checkbox" name="cti_chkbxSubBuses" value="${row.itemId}"/>
                                 <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
                                     <a href="/editor/cbcBase.jsf?type=2&itemid=${row.itemId}" class="editImg">
                                         <img class="rAlign editImg" src="/WebConfig/yukon/Icons/pencil.gif"/>
@@ -43,27 +46,23 @@
                                     </a>
                                 </cti:checkProperty>
                             </c:when>
-	                        <c:otherwise>
-	                            <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
-	                                <a href="/editor/pointBase.jsf?parentId=${row.parentId}&itemid=${row.itemId}" class="editImg">
-	                                    <img class="rAlign editImg" src="/WebConfig/yukon/Icons/pencil.gif"/>
-	                                </a>
-	                                <a href="/editor/deleteBasePoint.jsf?value=${row.itemId}" class="editImg">
-	                                    <img class="rAlign editImg" src="/WebConfig/yukon/Icons/delete.gif" height="16" width="16"/>
-	                                </a>
-	                            </cti:checkProperty>
-	                        </c:otherwise>
-	                    </c:choose>
-	                    <c:if test="${row.controller}">
-	                        <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
-	                            <a href="/editor/copyBase.jsf?itemid=${row.itemId}&type=1>"><img src="/WebConfig/yukon/Icons/copy.gif" border="0" height="16" width="16"/></a>
-	                        </cti:checkProperty>
-	                    </c:if>
-	                </td>
-	                <td nowrap="nowrap">${row.name}</td>
-	                <td nowrap="nowrap">${row.itemType}</td>
-	                <td nowrap="nowrap">${row.itemDescription}</td>
-	                <td>${row.parentString}</td>
+                            <c:otherwise>
+                                <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
+                                    <a href="/editor/pointBase.jsf?parentId=${row.parentId}&itemid=${row.itemId}" class="editImg">
+                                        <img class="rAlign editImg" src="/WebConfig/yukon/Icons/pencil.gif"/>
+                                    </a>
+                                    <a href="/editor/deleteBasePoint.jsf?value=${row.itemId}" class="editImg">
+                                        <img class="rAlign editImg" src="/WebConfig/yukon/Icons/delete.gif" height="16" width="16"/>
+                                    </a>
+                                </cti:checkProperty>
+                            </c:otherwise>
+                        </c:choose>
+                        <c:if test="${row.controller}">
+                            <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
+                                <a href="/editor/copyBase.jsf?itemid=${row.itemId}&type=1>"><img src="/WebConfig/yukon/Icons/copy.gif" border="0" height="16" width="16"/></a>
+                            </cti:checkProperty>
+                        </c:if>
+                    </td>
 	            </tr>
 	        </c:forEach>
 	    </table>
