@@ -6,13 +6,45 @@
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.pageTitle">Create Schedule</entry>
-    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.pageTitle.editMode">Edit Scheduled Group Request Execution</entry>
+    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.pageTitle.editMode">Edit Schedule</entry>
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.requestType">Request Type</entry>
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.requestType.attribute">Attribute</entry>
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.requestType.command">Command</entry>
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.group">Group</entry>
+    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.group.chooseGroup">Select</entry>
+    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.group.changeGroup">Change</entry>
+    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.group.selectDeviceGroup">Select Device Group</entry>
+    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.group.selectDeviceGroupChoose">Select</entry>
+    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.group.selectDeviceGroupCancel">Cancel</entry>
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.timeFrequency">Time/Frequency</entry>
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.scheduleButton">Schedule</entry>
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.updateButton">Update</entry>
+    
+    <!-- ScheduledGroupRequstExecutionWidget render.jsp -->
+    <!-- ================================================================================================================================================= -->
+    <!-- ================================================================================================================================================= -->
+    <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.popupInfo"><![CDATA[
+    	 <br><div style="font-weight:normal;">
+	     <img src="/WebConfig/yukon/Icons/edit.gif"> Edit the schedule.
+	     <br><br>
+	     <img src="/WebConfig/yukon/Icons/script.gif"> View the details of the schedule.
+	     <br><br>
+	     <img src="/WebConfig/yukon/Icons/enable.gif"> Enabled the schedule.
+	     <br><br>
+	     <img src="/WebConfig/yukon/Icons/stop.gif"> Disable the schedule.
+	     <br><br>
+	     </div>
+    ]]></entry>
+    <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.tableHeader.attributeOrCommand">Attribute/Command</entry>
+    <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.tableHeader.scheduleDescription">Run Schedule</entry>
+    <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.tableHeader.enabledStatus">Status</entry>
+    <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.tableHeader.attributeOrCommand.attribute">Attribute</entry>
+    <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.actions.editSchedule">Edit the schedule.</entry>
+    <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.actions.viewScheduleDetails">View the details of the schedule.</entry>
+    <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.actions.toggleEnabled">Enable the schedule</entry>
+    <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.actions.toggleDisabled">Disable the schedule.</entry>
+    <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.enabled">Enabled</entry>
+    <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.disabled">Disabled</entry>
+    <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.createButton">Create New Schedule</entry>
     
 </properties>

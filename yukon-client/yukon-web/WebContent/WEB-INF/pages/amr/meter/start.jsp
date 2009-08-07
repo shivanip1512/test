@@ -20,8 +20,13 @@
 			<tr>
 		
 				<td class="widgetColumnCell" valign="top">
+					
 					<cti:msg var="outagesWidgetPopupInfoText" key="yukon.web.modules.amr.outageMonitorsWidget.popupInfo"/>
 					<ct:widget bean="outageMonitorsWidget" helpText="${outagesWidgetPopupInfoText}"/>
+					
+					<cti:msg var="scheduledGroupRequstExecutionWidgetPopupInfoText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.popupInfo"/>
+					<ct:widget bean="scheduledGroupRequstExecutionWidget" helpText="${scheduledGroupRequstExecutionWidgetPopupInfoText}"/>
+					
 				</td>
 				
 				<td class="widgetColumnCell" valign="top">

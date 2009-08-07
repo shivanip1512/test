@@ -2,6 +2,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="ext" tagdir="/WEB-INF/tags/ext" %>
+<%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
 
 <cti:msg var="pageTitle" key="yukon.common.device.groupMeterRead.home.pageTitle"/>
 <cti:msg var="selectAttributeLabel" key="yukon.common.device.groupMeterRead.home.selectAttributeLabel"/>
@@ -32,11 +33,7 @@
 	   		
 	   		<%-- SELECT ATTRIBUTE --%>
 	        <div class="largeBoldLabel">${selectAttributeLabel}:</div>
-	        <select name="attribute">
-				<c:forEach var="attr" items="${allAttributes}">
-					<option value="${attr}">${attr.description}</option>
-				</c:forEach>
-			</select>
+	        <amr:attributeSelector attributes="${allAttributes}" fieldName="attribute" selectedAttribute="${attribute}" includeDummyOption="true"/>
 			<br>
 			
 	   		<%-- READ BUTTON --%>

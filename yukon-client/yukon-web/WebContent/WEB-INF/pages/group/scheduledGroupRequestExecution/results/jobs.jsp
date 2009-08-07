@@ -31,13 +31,8 @@
     
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-         <cti:crumbLink url="/spring/meter/start" title="Metering" />
-        
-        <cti:msg var="schedulesLink" key="yukon.web.menu.config.amr.commandRequestExecution"/>
-        <cti:crumbLink url="/spring/meter/start" title="${schedulesLink}" />
-        
+		<cti:crumbLink url="/spring/meter/start" title="Metering" />
         <cti:crumbLink>${pageTitle}</cti:crumbLink>
-        
     </cti:breadCrumbs>
     
     <cti:includeScript link="/JavaScript/extjs/ext-base.js"/>

@@ -20,19 +20,22 @@
   
     <tags:bulkActionContainer key="yukon.common.device.group" deviceCollection="${deviceCollection}">
   
-	<c:if test="${param.errorMsg != null}">
-    		<div style="color: red;margin: 10px 0px;">Error: <spring:escapeBody htmlEscape="true">${param.errorMsg}</spring:escapeBody></div>
-		<c:set var="errorMsg" value="" scope="request"/>
-	</c:if>
+	<%-- ERROR MSG --%>
+    <c:if test="${not empty param.errorMsg}">
+    	<div class="errorRed">${param.errorMsg}</div>
+    	<c:set var="errorMsg" value="" scope="request"/>
+    	<br>
+    </c:if>
 	
-	<br>
 	<div style="width: 700px;">
 		<form id="collectionProcessingForm" action="<cti:url value="/spring/group/commander/executeCollectionCommand" />" method="post">
         
 			<cti:deviceCollection deviceCollection="${deviceCollection}" />
       
       		<%-- SELECT COMMAND --%>
-            <amr:commandSelector selectName="commandSelectValue" fieldName="commandString" commands="${commands}"/>
+      		<cti:msg var="selectCommandLabel" key="yukon.common.device.commander.commandSelector.selectCommand"/>
+      		<div class="largeBoldLabel">${selectCommandLabel}:</div>
+            <amr:commandSelector selectName="commandSelectValue" fieldName="commandString" commands="${commands}" selectedCommandString="${param.commandString}" selectedSelectValue="${param.commandSelectValue}" includeDummyOption="true" />
             <br><br>
             
             <%-- EMAIL --%>

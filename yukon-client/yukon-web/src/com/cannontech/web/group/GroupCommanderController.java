@@ -150,10 +150,10 @@ public class GroupCommanderController implements InitializingBean {
     }
     
     @RequestMapping(method=RequestMethod.POST)
-    public String executeGroupCommand(HttpServletRequest request, String groupName, String commandString, String emailAddress, YukonUserContext userContext, ModelMap map) throws ServletException {
+    public String executeGroupCommand(HttpServletRequest request, String groupName, String commandSelectValue, String commandString, String emailAddress, YukonUserContext userContext, ModelMap map) throws ServletException {
         DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
         DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(group);
-        boolean success = doCollectionCommand(request, deviceCollection, commandString, emailAddress, userContext, map);
+        boolean success = doCollectionCommand(request, deviceCollection, commandSelectValue, commandString, emailAddress, groupName, userContext, map);
         if (success) {
             return "redirect:resultDetail";
         } else {
@@ -162,9 +162,9 @@ public class GroupCommanderController implements InitializingBean {
     }
 
     @RequestMapping(method=RequestMethod.POST)
-    public String executeCollectionCommand(HttpServletRequest request, DeviceCollection deviceCollection, String commandString, final String emailAddress, final YukonUserContext userContext, ModelMap map)
+    public String executeCollectionCommand(HttpServletRequest request, DeviceCollection deviceCollection, String commandSelectValue, String commandString, final String emailAddress, final YukonUserContext userContext, ModelMap map)
     throws ServletException {
-        boolean success = doCollectionCommand(request, deviceCollection, commandString, emailAddress, userContext, map);
+        boolean success = doCollectionCommand(request, deviceCollection, commandSelectValue, commandString, emailAddress, null, userContext, map);
         if (success) {
             return "redirect:resultDetail";
         } else {
@@ -176,8 +176,10 @@ public class GroupCommanderController implements InitializingBean {
 
     public boolean doCollectionCommand(HttpServletRequest request, 
             DeviceCollection deviceCollection, 
+            String commandSelectValue, 
             String commandString, 
             final String emailAddress, 
+            String groupName,
             final YukonUserContext userContext, 
             ModelMap map)
             throws ServletException {
@@ -188,12 +190,12 @@ public class GroupCommanderController implements InitializingBean {
         boolean error = false;
         if (StringUtils.isBlank(commandString)) {
             error = true;
-            map.addAttribute("errorMsg", "You must enter a valid command");
+            addErrorStateToMap(map, "No Command Selected", commandSelectValue, commandString, groupName);
         } else if (rolePropertyDao.checkProperty(YukonRoleProperty.EXECUTE_MANUAL_COMMAND, userContext.getYukonUser())) {
             // check that it is authorized
             if (!commandAuthorizationService.isAuthorized(userContext.getYukonUser(), commandString)) {
                 error = true;
-                map.addAttribute("errorMsg", "You are not authorized to execute that command.");
+                addErrorStateToMap(map, "You are not authorized to execute that command.", commandSelectValue, commandString, groupName);
             }
         } else {
             // check that the command is in the authorized list (implies that it is authorized)
@@ -242,6 +244,14 @@ public class GroupCommanderController implements InitializingBean {
         return true;
     }
 
+    private void addErrorStateToMap(ModelMap map, String errorMsg, String commandSelectValue, String commandString, String groupName) {
+    	
+    	map.addAttribute("errorMsg", errorMsg);
+        map.addAttribute("commandSelectValue", commandSelectValue);
+        map.addAttribute("commandString", commandString);
+        map.addAttribute("groupName", groupName);
+    }
+    
     private void sendEmail(String emailAddress, URL hostUrl, GroupCommandResult result, YukonUserContext userContext) {
         try {
             if (StringUtils.isBlank(emailAddress)) return;

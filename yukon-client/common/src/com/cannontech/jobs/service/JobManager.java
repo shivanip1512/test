@@ -24,6 +24,7 @@ public interface JobManager {
     
     public void enableJob(YukonJob job);
     public void disableJob(YukonJob job);
+    public void deleteJob(YukonJob job);
     public boolean abortJob(YukonJob job);
     public Collection<YukonJob> getCurrentlyExecuting();
     public YukonTask instantiateTask(YukonJob job);

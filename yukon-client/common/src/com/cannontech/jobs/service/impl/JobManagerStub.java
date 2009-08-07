@@ -39,6 +39,11 @@ public class JobManagerStub implements JobManager {
     public void disableJob(YukonJob job) {
         throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
     }
+    
+    @Override
+    public void deleteJob(YukonJob job) {
+        throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
+    }
 
     @Override
     public void enableJob(YukonJob job) {

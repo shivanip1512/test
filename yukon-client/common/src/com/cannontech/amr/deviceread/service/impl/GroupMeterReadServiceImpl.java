@@ -16,7 +16,6 @@ import com.cannontech.amr.deviceread.service.MeterReadCommandGeneratorService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
-import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
@@ -30,8 +29,6 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoCollections;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonDevice;
-import com.cannontech.common.util.MappingList;
-import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
@@ -58,37 +55,38 @@ public class GroupMeterReadServiceImpl implements GroupMeterReadService {
 																	LiteYukonUser user) throws PaoAuthorizationException {
     	
 		// map devices+attribute => list of command requests
-		final List<PaoIdentifier> unsupportedDevices = new ArrayList<PaoIdentifier>();
-		
-    	ObjectMapper<YukonDevice, List<CommandRequestDevice>> objectMapper = new ObjectMapper<YukonDevice, List<CommandRequestDevice>>() {
-            public List<CommandRequestDevice> map(YukonDevice from) throws ObjectMappingException {
-            	
-            	Multimap<PaoIdentifier, LitePoint> pointsToRead = meterReadCommandGeneratorService.getPointsToRead(from.getPaoIdentifier(), attributes);
-                Multimap<PaoIdentifier, CommandWrapper> requiredCommands;
-                try {
-                    requiredCommands = meterReadCommandGeneratorService.getRequiredCommands(pointsToRead);
-                } catch (UnreadableException e) {
-                    throw new RuntimeException("It isn't possible to read " + attributes + " for  " + from, e);
-                }
-                
-                List<CommandRequestDevice> allCommands = Lists.newArrayList();
-                for (PaoIdentifier device : requiredCommands.keySet()) {
-                    // get command requests to send
-                    List<CommandRequestDevice> commands = meterReadCommandGeneratorService.getCommandRequests(device, requiredCommands.get(device));
-                    allCommands.addAll(commands);
-                }
-                
-                if (allCommands.size() == 0) {
-                	unsupportedDevices.add(from.getPaoIdentifier());
-                }
-                
-                return allCommands;
+		List<PaoIdentifier> unsupportedDevices = new ArrayList<PaoIdentifier>();
+        List<List<CommandRequestDevice>> deviceRequestLists = new ArrayList<List<CommandRequestDevice>>();
+        
+        for (YukonDevice device : deviceCollection.getDeviceList()) {
+        	
+        	Multimap<PaoIdentifier, LitePoint> pointsToRead = meterReadCommandGeneratorService.getPointsToRead(device.getPaoIdentifier(), attributes);
+            Multimap<PaoIdentifier, CommandWrapper> requiredCommands;
+            try {
+                requiredCommands = meterReadCommandGeneratorService.getRequiredCommands(pointsToRead);
+            } catch (UnreadableException e) {
+            	unsupportedDevices.add(device.getPaoIdentifier());
+            	log.debug("It isn't possible to read " + attributes + " for  " + device, e);
+            	continue;
             }
-        };
+            
+            List<CommandRequestDevice> allCommands = Lists.newArrayList();
+            for (PaoIdentifier paoId : requiredCommands.keySet()) {
+                // get command requests to send
+                List<CommandRequestDevice> commands = meterReadCommandGeneratorService.getCommandRequests(paoId, requiredCommands.get(paoId));
+                allCommands.addAll(commands);
+            }
+            
+            if (allCommands.size() == 0) {
+            	unsupportedDevices.add(device.getPaoIdentifier());
+            }
+
+            deviceRequestLists.add(allCommands);
+        }
+        
         
         // all requests
         List<CommandRequestDevice> allRequests = new ArrayList<CommandRequestDevice>();
-    	List<List<CommandRequestDevice>> deviceRequestLists = new MappingList<YukonDevice, List<CommandRequestDevice>>(deviceCollection.getDeviceList(), objectMapper);
     	for (List<CommandRequestDevice> deviceRequestList : deviceRequestLists) {
     		allRequests.addAll(deviceRequestList);
     	}

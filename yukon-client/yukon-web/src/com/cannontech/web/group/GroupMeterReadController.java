@@ -1,6 +1,7 @@
 package com.cannontech.web.group;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -22,6 +23,7 @@ import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
+import com.cannontech.common.device.attribute.model.AttributeNameComparator;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -49,9 +51,15 @@ public class GroupMeterReadController extends MultiActionController {
 		ModelAndView mav = new ModelAndView("groupMeterRead/groupMeterReadHomeGroup.jsp");
 		
 		String errorMsg = ServletRequestUtils.getStringParameter(request, "errorMsg");
-		mav.addObject("errorMsg", errorMsg);
+		String groupName = ServletRequestUtils.getStringParameter(request, "groupName");
+		String attribute = ServletRequestUtils.getStringParameter(request, "attribute");
 		
-		BuiltInAttribute[] allAttributes = BuiltInAttribute.values();
+		mav.addObject("errorMsg", errorMsg);
+		mav.addObject("groupName", groupName);
+		mav.addObject("attribute", attribute);
+		
+		List<BuiltInAttribute> allAttributes = Arrays.asList(BuiltInAttribute.values());
+		Collections.sort(allAttributes, new AttributeNameComparator());
 		mav.addObject("allAttributes", allAttributes);
 		
 		return mav;
@@ -66,9 +74,13 @@ public class GroupMeterReadController extends MultiActionController {
 		mav.addObject("deviceCollection", deviceCollection);
 		
 		String errorMsg = ServletRequestUtils.getStringParameter(request, "errorMsg");
-		mav.addObject("errorMsg", errorMsg);
+		String attribute = ServletRequestUtils.getStringParameter(request, "attribute");
 		
-		BuiltInAttribute[] allAttributes = BuiltInAttribute.values();
+		mav.addObject("errorMsg", errorMsg);
+		mav.addObject("attribute", attribute);
+		
+		List<BuiltInAttribute> allAttributes = Arrays.asList(BuiltInAttribute.values());
+		Collections.sort(allAttributes, new AttributeNameComparator());
 		mav.addObject("allAttributes", allAttributes);
 		
 		return mav;
@@ -90,7 +102,7 @@ public class GroupMeterReadController extends MultiActionController {
 		DeviceGroup deviceGroup = deviceGroupService.resolveGroupName(groupName);
 		DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(deviceGroup);
 		
-		return read(request, response, deviceCollection, errorPage);
+		return read(request, response, deviceCollection, errorPage, groupName);
 	}
 	
 	// READ COLLECTION
@@ -100,11 +112,11 @@ public class GroupMeterReadController extends MultiActionController {
 		
 		DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
 		
-		return read(request, response, deviceCollection, errorPage);
+		return read(request, response, deviceCollection, errorPage, null);
 	}
 	
 	// READ
-	private ModelAndView read(HttpServletRequest request, HttpServletResponse response, DeviceCollection deviceCollection, String errorPage) throws ServletException {
+	private ModelAndView read(HttpServletRequest request, HttpServletResponse response, DeviceCollection deviceCollection, String errorPage, String groupName) throws ServletException {
 		
 		ModelAndView mav = new ModelAndView("redirect:resultDetail");
 		ModelAndView errorMav = new ModelAndView("redirect:" + errorPage);
@@ -112,6 +124,11 @@ public class GroupMeterReadController extends MultiActionController {
 		
 		// attribute
 		String attributeStr = ServletRequestUtils.getRequiredStringParameter(request, "attribute");
+		if (StringUtils.isBlank(attributeStr)) {
+			
+			addErrorStateToMav(errorMav, "No Attribute Selected", groupName, null);
+			return errorMav;
+		}
 		BuiltInAttribute attribute = BuiltInAttribute.valueOf(attributeStr);
 		
 		
@@ -145,12 +162,24 @@ public class GroupMeterReadController extends MultiActionController {
 		
         } catch (PaoAuthorizationException e) {
         	
-        	errorMav.addObject("errorMsg", "User does not have access to read attribute: " + attribute.getDescription());
+        	addErrorStateToMav(errorMav, "User does not have access to read attribute: " + attribute.getDescription(), groupName, attributeStr);
+			return errorMav;
+			
+        } catch (Exception e) {
+
+        	addErrorStateToMav(errorMav, e.getMessage(), groupName, attributeStr);
 			return errorMav;
         }
 		
         
 		return mav;
+	}
+	
+	private void addErrorStateToMav(ModelAndView mav, String errorMsg, String groupName, String attribute) {
+		
+		mav.addObject("errorMsg", errorMsg);
+		mav.addObject("groupName", groupName);
+		mav.addObject("attribute", attribute);
 	}
 	
 	// RESULT LIST

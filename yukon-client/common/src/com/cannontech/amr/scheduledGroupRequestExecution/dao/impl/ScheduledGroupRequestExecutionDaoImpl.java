@@ -25,6 +25,7 @@ import com.cannontech.database.MaxListResultSetExtractor;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
+import com.cannontech.jobs.dao.impl.JobDisabledStatus;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 
 public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequestExecutionDao, InitializingBean {
@@ -47,25 +48,20 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
     // LATEST CRE FOR JOB ID
     public CommandRequestExecution getLatestCommandRequestExecutionForJobId(int jobId, Date cutoff) {
     	
-    	List<Object> args = new ArrayList<Object>();
-    	
     	SqlStatementBuilder sql = new SqlStatementBuilder();
     	sql.append("SELECT CRE.* FROM ScheduledGroupCommandRequest SGCR");
     	sql.append("INNER JOIN CommandRequestExecution CRE ON (SGCR.CommandRequestExecutionId = CRE.CommandRequestExecutionId)");
-    	sql.append("WHERE SGCR.JobID = ?");
-    	
-    	args.add(jobId);
+    	sql.append("WHERE SGCR.JobID = ").appendArgument(jobId);
     	
     	if (cutoff != null) {
-        	sql.append("AND CRE.StartTime <= ?");
-        	args.add(cutoff);
+        	sql.append("AND CRE.StartTime <= ").appendArgument(cutoff);
         }
     	
     	sql.append("ORDER BY CRE.StartTime DESC");
     	
     	MaxListResultSetExtractor<CommandRequestExecution> rse = new MaxListResultSetExtractor<CommandRequestExecution>(CommandRequestExecutionDaoImpl.createRowMapper(), 1);
     	JdbcOperations jdbcOperations = simpleJdbcTemplate.getJdbcOperations();
-    	jdbcOperations.query(sql.getSql(), args.toArray(), rse);
+    	jdbcOperations.query(sql.getSql(), sql.getArguments(), rse);
     	
     	List<CommandRequestExecution> result = rse.getResult();
     	if (result.size() > 0) {
@@ -111,7 +107,7 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
 	public List<ScheduledRepeatingJob> getJobs(int jobId, 
 												Date startTime, 
 												Date stopTime, 
-												CommandRequestExecutionType type, 
+												List<CommandRequestExecutionType> types, 
 												ScheduleGroupRequestExecutionDaoEnabledFilter enabled, 
 												ScheduleGroupRequestExecutionDaoPendingFilter pending,
 												boolean acsending) {
@@ -120,16 +116,14 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
     	sql.append("SELECT DISTINCT Job.*, JSR.* FROM Job");
         sql.append("INNER JOIN JobScheduledRepeating JSR ON (Job.JobId = JSR.JobId)");
         sql.append("LEFT JOIN JobStatus JS ON (Job.JobId = JS.JobId)");
-        if (type != null) {
+        if (types != null) {
         	sql.append("INNER JOIN JOBPROPERTY JP ON (Job.JobId = JP.JobId)");
         }
         
-        List<Object> args = new ArrayList<Object>();
         
         // single job
         if (jobId > 0) {
-    		sql.append("WHERE Job.JobId = ?");
-    		args.add(jobId);
+    		sql.append("WHERE Job.JobId = ").appendArgument(jobId);
         } else {
         	sql.append("WHERE Job.JobId > 0");
         }
@@ -139,8 +133,7 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
         	
         	if (pending.equals(ScheduleGroupRequestExecutionDaoPendingFilter.ANY)) {
         		
-        		sql.append("AND (JS.StartTime >= ? OR JS.StartTime IS NULL)");
-            	args.add(startTime);
+        		sql.append("AND (JS.StartTime >= ").appendArgument(startTime).append(" OR JS.StartTime IS NULL)");
         	
         	} else if (pending.equals(ScheduleGroupRequestExecutionDaoPendingFilter.PENDING_ONLY)) {
         		
@@ -148,8 +141,7 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
         	
         	} else if (pending.equals(ScheduleGroupRequestExecutionDaoPendingFilter.EXECUTED_ONLY)) {
         		
-        		sql.append("AND JS.StartTime >= ?");
-            	args.add(startTime);
+        		sql.append("AND JS.StartTime >= ").appendArgument(startTime);
         	}
         	
         } else {
@@ -169,8 +161,7 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
         	
         	if (pending.equals(ScheduleGroupRequestExecutionDaoPendingFilter.ANY)) {
         		
-        		sql.append("AND (JS.StopTime < ? OR JS.StopTime IS NULL)");
-            	args.add(stopTime);
+        		sql.append("AND (JS.StopTime < ").appendArgument(stopTime).append(" OR JS.StopTime IS NULL)");
         	
         	} else if (pending.equals(ScheduleGroupRequestExecutionDaoPendingFilter.PENDING_ONLY)) {
         		
@@ -178,8 +169,7 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
         	
         	} else if (pending.equals(ScheduleGroupRequestExecutionDaoPendingFilter.EXECUTED_ONLY)) {
         		
-        		sql.append("AND JS.StopTime < ?");
-            	args.add(stopTime);
+        		sql.append("AND JS.StopTime < ").appendArgument(stopTime);
         	}
 
         } else {
@@ -194,19 +184,36 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
         }
         
         // enabled disabled status
+        sql.append("AND Job.Disabled != ").appendArgument(JobDisabledStatus.D.name());
         if (enabled.equals(ScheduleGroupRequestExecutionDaoEnabledFilter.ENABLED_ONLY)) {
-        	sql.append("AND Job.Disabled = ?");
-        	args.add("N");
+        	sql.append("AND Job.Disabled = ").appendArgument(JobDisabledStatus.N.name());
         }
         else if (enabled.equals(ScheduleGroupRequestExecutionDaoEnabledFilter.DISABLED_ONLY)) {
-        	sql.append("AND Job.Disabled = ?");
-        	args.add("Y");
+        	sql.append("AND Job.Disabled = ").appendArgument(JobDisabledStatus.Y.name());
         }
         
         // type
-        if (type != null) {
-        	sql.append("AND JP.Value = ?");
-        	args.add(type.name());
+        if (types != null) {
+        	
+        	if (types.size() == 1) {
+        		
+        		sql.append("AND JP.Value = ").appendArgument(types.get(0).name());
+        	
+        	} else if (types.size() > 1) {
+        		
+        		sql.append("AND JP.Value IN (");
+        		
+        		List<String> typeStrs = new ArrayList<String>();
+        		for (CommandRequestExecutionType type : types) {
+        			typeStrs.add(type.name());
+        		}
+        		
+            	sql.appendArgumentList(typeStrs);
+            	
+            	sql.append(")");
+        		
+        	}
+        	
         }
         
         // order
@@ -216,7 +223,7 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
         	sql.append("ORDER BY Job.JobID DESC");
         }
 	    
-    	List<ScheduledRepeatingJob> jobs = simpleJdbcTemplate.query(sql.getSql(), scheduledRepeatingJobDao.getJobRowMapper(), args.toArray());
+    	List<ScheduledRepeatingJob> jobs = simpleJdbcTemplate.query(sql.getSql(), scheduledRepeatingJobDao.getJobRowMapper(), sql.getArguments());
     	return jobs;
 	}
 	
@@ -228,23 +235,18 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
     	sql.append("SELECT CRE.* FROM ScheduledGroupCommandRequest SGCR");
         sql.append("INNER JOIN CommandRequestExecution CRE ON (SGCR.CommandRequestExecutionId = CRE.CommandRequestExecutionId)");
         
-        List<Object> args = new ArrayList<Object>();
-        
         if (jobId > 0) {
-    		sql.append("WHERE SGCR.JobId = ?");
-    		args.add(jobId);
+    		sql.append("WHERE SGCR.JobId = ").appendArgument(jobId);
         } else {
         	sql.append("WHERE SGCR.JobId > 0");
         }
     	
         if (startTime != null) {
-        	sql.append("AND CRE.StartTime >= ?");
-        	args.add(startTime);
+        	sql.append("AND CRE.StartTime >= ").appendArgument(startTime);
         }
         
         if (stopTime != null) {
-        	sql.append("AND CRE.StartTime <= ?");
-        	args.add(stopTime);
+        	sql.append("AND CRE.StartTime <= ").appendArgument(stopTime);
         }
     	
         if (acsending) {
@@ -253,7 +255,7 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
         	sql.append("ORDER BY CRE.StartTime DESC");
         }
         
-        List<CommandRequestExecution> cres = simpleJdbcTemplate.query(sql.getSql(), CommandRequestExecutionDaoImpl.createRowMapper(), args.toArray());
+        List<CommandRequestExecution> cres = simpleJdbcTemplate.query(sql.getSql(), CommandRequestExecutionDaoImpl.createRowMapper(), sql.getArguments());
     	return cres;
     }
     
@@ -265,26 +267,21 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
     	sql.append("FROM ScheduledGroupCommandRequest SGCR");
         sql.append("INNER JOIN CommandRequestExecution CRE ON (SGCR.CommandRequestExecutionId = CRE.CommandRequestExecutionId)");
         
-        List<Object> args = new ArrayList<Object>();
-        
         if (jobId > 0) {
-    		sql.append("WHERE SGCR.JobId = ?");
-    		args.add(jobId);
+    		sql.append("WHERE SGCR.JobId = ").appendArgument(jobId);
         } else {
         	sql.append("WHERE SGCR.JobId > 0");
         }
     	
         if (startTime != null) {
-        	sql.append("AND CRE.StartTime >= ?");
-        	args.add(startTime);
+        	sql.append("AND CRE.StartTime >= ").appendArgument(startTime);
         }
         
         if (stopTime != null) {
-        	sql.append("AND CRE.StartTime <= ?");
-        	args.add(stopTime);
+        	sql.append("AND CRE.StartTime <= ").appendArgument(stopTime);
         }
     	
-        int creCount = simpleJdbcTemplate.queryForInt(sql.getSql(), args.toArray());
+        int creCount = simpleJdbcTemplate.queryForInt(sql.getSql(), sql.getArguments());
     	return creCount;
     }
 	

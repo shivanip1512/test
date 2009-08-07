@@ -498,6 +498,11 @@
         <property name="identityPath" value="common/deviceIdentity.jsp" />
     </bean>
     
+    <bean id="scheduledGroupRequstExecutionWidget" class="com.cannontech.web.widget.ScheduledGroupRequstExecutionWidget">
+    	<property name="title" value="Scheduled Requests"/>
+        <property name="identityPath" value="common/deviceIdentity.jsp" />
+    </bean>
+    
     <!-- Update Service -->
     <bean id="dataUpdaterService" class="com.cannontech.web.updater.DefaultDataUpdaterService"
         abstract="false" lazy-init="default" autowire="default"
@@ -1074,5 +1079,7 @@
     </bean>
     
     <bean id="paoDetailUrlHelper" class="com.cannontech.web.common.pao.PaoDetailUrlHelper"/>
+    
+    <bean id="scheduledGroupRequestExecutionJobWrapperFactory" class="com.cannontech.web.amr.scheduledGroupRequestExecution.ScheduledGroupRequestExecutionJobWrapperFactory"/>
     
 </beans>

@@ -21,7 +21,7 @@ public interface ScheduledGroupRequestExecutionDao {
 	public List<ScheduledRepeatingJob> getJobs(int jobId, 
 												Date startTime, 
 												Date stopTime, 
-												CommandRequestExecutionType type, 
+												List<CommandRequestExecutionType> types, 
 												ScheduleGroupRequestExecutionDaoEnabledFilter enabled, 
 												ScheduleGroupRequestExecutionDaoPendingFilter pending,
 												boolean acsending);

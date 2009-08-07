@@ -12,6 +12,7 @@ public class YukonJob {
     private Integer id;
     private String beanName;
     private boolean disabled;
+    private boolean deleted;
     private Map<String,String> jobProperties;
     private YukonJobDefinition<? extends YukonTask> jobDefinition;
     private YukonUserContext userContext;
@@ -35,6 +36,12 @@ public class YukonJob {
     public void setDisabled(boolean disabled) {
         this.disabled = disabled;
     }
+    public boolean isDeleted() {
+		return deleted;
+	}
+    public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
     public void setUserContext(YukonUserContext userContext) {
         this.userContext = userContext;
     }

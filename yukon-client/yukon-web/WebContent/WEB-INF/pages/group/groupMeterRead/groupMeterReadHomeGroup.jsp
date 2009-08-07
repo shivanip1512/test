@@ -2,6 +2,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="ext" tagdir="/WEB-INF/tags/ext" %>
+<%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
 
 <cti:msg var="pageTitle" key="yukon.common.device.groupMeterRead.home.pageTitle"/>
 <cti:msg var="selectAttributeLabel" key="yukon.common.device.groupMeterRead.home.selectAttributeLabel"/>
@@ -38,11 +39,7 @@
 		
 			<%-- SELECT ATTRIBUTE --%>
 	        <div class="largeBoldLabel">${selectAttributeLabel}:</div>
-	        <select name="attribute">
-				<c:forEach var="attr" items="${allAttributes}">
-					<option value="${attr}">${attr.description}</option>
-				</c:forEach>
-			</select>
+	        <amr:attributeSelector attributes="${allAttributes}" fieldName="attribute" selectedAttribute="${attribute}" includeDummyOption="true"/>
 			<br>
 			
 			
@@ -50,15 +47,17 @@
 			<br>
 			<div class="largeBoldLabel">${selectGroupLabel}</div>
 			
-			<cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="dataJson" />
+			<cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="dataJson" selectGroupName="${groupName}" selectedNodePathVar="selectedNodePath"/>
 			<ext:nodeValueSelectingInlineTree   fieldId="groupName" 
 			                                    fieldName="groupName"
 			                                    nodeValueName="groupName" 
+			                                    fieldValue="${groupName}"
 			                                    multiSelect="false"
 			                                    id="selectGroupTree" 
 			                                    dataJson="${dataJson}" 
 			                                    width="500"
-			                                    height="400" treeAttributes="{'border':true}" />
+			                                    height="400" treeAttributes="{'border':true}"
+			                                    highlightNodePath="${selectedNodePath}" />
 			                                    
 			      
 			      

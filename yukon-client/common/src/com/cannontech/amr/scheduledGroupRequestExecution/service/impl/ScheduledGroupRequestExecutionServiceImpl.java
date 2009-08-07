@@ -87,12 +87,12 @@ public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroup
         	|| !existingJob.getCronString().equals(cronExpression)
         	|| (existingJob.getUserContext().getYukonUser().getUserID() != userContext.getYukonUser().getUserID())) {
         	
-        	jobManager.disableJob(existingJob);
+        	jobManager.deleteJob(existingJob);
         	
         	// schedule new job
         	YukonJob replacementJob = schedule(groupName, command, attribute, type, cronExpression, userContext);
         	
-        	log.info("Job replaced. old jobId=" + existingJob.getId() + " disabled, replacment jobId=" + replacementJob.getId() + ", groupName=" + groupName + ", attribute=" + attribute + ", command=" + command + ", cronExpression=" + cronExpression + ", user=" + userContext.getYukonUser().getUsername() + ".");
+        	log.info("Job replaced. old jobId=" + existingJob.getId() + " deleted, replacement jobId=" + replacementJob.getId() + ", groupName=" + groupName + ", attribute=" + attribute + ", command=" + command + ", cronExpression=" + cronExpression + ", user=" + userContext.getYukonUser().getUsername() + ".");
         	
     		return replacementJob;
     		

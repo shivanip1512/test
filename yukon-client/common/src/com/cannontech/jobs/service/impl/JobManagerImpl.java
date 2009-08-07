@@ -312,6 +312,15 @@ public class JobManagerImpl implements JobManager {
         
     }
     
+    public void deleteJob(YukonJob job) {
+    	
+    	disableJob(job);
+    	
+    	log.info("deleting job: " + job);
+    	job.setDeleted(true);
+        yukonJobDao.update(job);
+    }
+    
     public void enableJob(YukonJob job) {
         log.info("enabling job: " + job);
         job.setDisabled(false);

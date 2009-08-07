@@ -6,7 +6,7 @@
 	<!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
     <entry key="yukon.web.modules.amr.commandRequestExecution.results.list.pageTitle">Command Request Executions</entry>
-    <entry key="yukon.web.modules.amr.commandRequestExecution.results.list.filter.section">Filter</entry>
+    <entry key="yukon.web.modules.amr.commandRequestExecution.results.list.filter.section">Filters</entry>
     <entry key="yukon.web.modules.amr.commandRequestExecution.results.list.filter.dateFrom">From</entry>
     <entry key="yukon.web.modules.amr.commandRequestExecution.results.list.filter.dateTo">To</entry>
     <entry key="yukon.web.modules.amr.commandRequestExecution.results.list.filter.type">Type</entry>

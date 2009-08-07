@@ -57,37 +57,38 @@
 			
 			<input type="hidden" name="commandRequestExecutionId" value="${commandRequestExecutionId}">
 			<input type="hidden" name="jobId" value="${jobId}">
-		
-			<table width="50%">
-				<tr>
-					<td>
-						<cti:formatDate var="fromDateStr" type="DATE" value="${fromDate}" nullText=""/>
-						<span class="normalBoldLabel">${filerDateFromText}:</span> 
-						<tags:dateInputCalendar fieldName="fromDate" fieldValue="${fromDateStr}"/>
-					</td>
-					<td>
-						<cti:formatDate var="toDateStr" type="DATE" value="${toDate}" nullText=""/>
-						<span class="normalBoldLabel">${filerDateToText}:</span> 
-						<tags:dateInputCalendar fieldName="toDate" fieldValue="${toDateStr}"/>
-					</td>
-					<td>
-						<span class="normalBoldLabel">${filterTypeText}:</span> 
+			
+			<tags:nameValueContainer>
+			
+				<tags:nameValue name="${filerDateFromText}" nameColumnWidth="100px">
+					<cti:formatDate var="fromDateStr" type="DATE" value="${fromDate}" nullText=""/>
+					<tags:dateInputCalendar fieldName="fromDate" fieldValue="${fromDateStr}"/>
+				</tags:nameValue>
+				
+				<tags:nameValue name="${filerDateToText}">
+					<cti:formatDate var="toDateStr" type="DATE" value="${toDate}" nullText=""/>
+					<tags:dateInputCalendar fieldName="toDate" fieldValue="${toDateStr}"/>
+				</tags:nameValue>
+				
+				<c:if test="${empty jobId || jobId == 0}">
+				
+					<tags:nameValue name="${filterTypeText}">
 						<select name="typeFilter">
 							<option value="ANY">${filterTypeAnyText}</option>
 							<c:forEach var="commandRequestExecutionType" items="${commandRequestExecutionTypes}">
 								<option value="${commandRequestExecutionType}" title="${commandRequestExecutionType.description}" <c:if test="${typeFilter eq commandRequestExecutionType}">selected</c:if>>${commandRequestExecutionType.shortName}</option>
 							</c:forEach>
 						</select>
-					</td>
-					<td>
-						<tags:slowInput myFormId="filterForm" label="${filterButtonText}" labelBusy="${filterButtonText}"/>
-					</td>
-					<td>
-						<tags:slowInput myFormId="clearForm" label="${filterClearText}" labelBusy="${filterClearText}"/>
-					</td>
-				</tr>
-			</table>
+					</tags:nameValue>
+				
+				</c:if>
+			
+			</tags:nameValueContainer>
+			
 			<br>
+			<tags:slowInput myFormId="filterForm" label="${filterButtonText}" labelBusy="${filterButtonText}"/>
+			<tags:slowInput myFormId="clearForm" label="${filterClearText}" labelBusy="${filterClearText}"/>
+			<br><br>
 		
 		</form>
 	

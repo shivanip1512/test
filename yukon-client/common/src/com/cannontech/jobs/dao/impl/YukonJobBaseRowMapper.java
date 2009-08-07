@@ -11,7 +11,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -42,7 +41,9 @@ final class YukonJobBaseRowMapper extends SeparableRowMapper<YukonJob> {
         YukonJobDefinition<? extends YukonTask> jobDefinition =
             beanDefinitionFactory.getJobDefinition(job.getBeanName());
         job.setJobDefinition(jobDefinition);
-        job.setDisabled(CtiUtilities.isTrue(rs.getString("disabled").charAt(0)));
+        JobDisabledStatus jobDisabledStatus = JobDisabledStatus.valueOf(rs.getString("disabled"));
+        job.setDisabled(!jobDisabledStatus.equals(JobDisabledStatus.N));
+        job.setDeleted(jobDisabledStatus.equals(JobDisabledStatus.D));
         int userId = rs.getInt("userId");
         LiteYukonUser liteYukonUser = yukonUserDao.getLiteYukonUser(userId);
         String localeStr = rs.getString("locale");

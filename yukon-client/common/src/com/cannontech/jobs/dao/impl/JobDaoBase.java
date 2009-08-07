@@ -22,8 +22,13 @@ public class JobDaoBase implements InitializingBean {
         public void extractValues(MapSqlParameterSource p, YukonJob job) {
             String beanNaem = job.getBeanName();
             p.addValue("beanName", beanNaem);
+            
             String disabled = String.valueOf(CtiUtilities.getBooleanCharacter(job.isDisabled()));
+            if (job.isDeleted()) {
+            	disabled = "D";
+            }
             p.addValue("disabled", disabled);
+            
             int userId = job.getUserContext().getYukonUser().getLiteID();
             p.addValue("userId", userId);
             String locale = job.getUserContext().getLocale().toString();

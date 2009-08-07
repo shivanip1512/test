@@ -8,5 +8,8 @@ public interface MeteringEventLogService {
     
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="amr.meterReading")
     public void readNowPushedForReadingsWidget(LiteYukonUser user, long deviceId);
+    
+    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="amr.schedules")
+    public void scheduleDeleted(LiteYukonUser user, String scheduleName);
 
 }

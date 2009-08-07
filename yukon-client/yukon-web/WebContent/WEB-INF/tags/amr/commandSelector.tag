@@ -7,6 +7,11 @@
 <%@ attribute name="commands" required="true" type="java.util.List"%>
 <%@ attribute name="selectedSelectValue" required="false" type="java.lang.String"%>
 <%@ attribute name="selectedCommandString" required="false" type="java.lang.String"%>
+<%@ attribute name="includeDummyOption" required="false" type="java.lang.Boolean"%>
+
+<c:if test="${empty includeDummyOption}">
+	<c:set var="includeDummyOption" value="false"/>
+</c:if>
 
 <cti:includeScript link="/JavaScript/extjs/ext-base.js"/>
 <cti:includeScript link="/JavaScript/extjs/ext-all.js"/>
@@ -14,22 +19,8 @@
 
 <cti:uniqueIdentifier var="uniqueId" prefix="commandSelector_"/>
 
-<cti:msg var="selectCommandLabel" key="yukon.common.device.commander.commandSelector.selectCommand"/>
 <cti:msg var="noAuthorizedCommandsText" key="yukon.common.device.commander.commandSelector.noAuthorizedCommands"/>
 
-<script type="text/javascript">
-        	
-	function selectCommand() {
-		//$('${fieldName}').value = $F('${selectName}');
-		//loadCommanderCommand($('${selectName}'), '${fieldName}');
-	}
-	
-	Event.observe (window, 'load', selectCommand);
-
-</script>
-
-<div class="largeBoldLabel">${selectCommandLabel}</div>
-            
 <c:choose>
     <c:when test="${fn:length(commands) <= 0}">
         ${noAuthorizedCommandsText}
@@ -37,6 +28,12 @@
     
     <c:otherwise>
         <select id="${uniqueId}" name="${selectName}" onChange="loadCommanderCommand(this, '${fieldName}');">
+        
+        	<c:if test="${includeDummyOption}">
+				<cti:msg var="selectOneLabel" key="yukon.common.device.commander.selector.selectOne"/>
+				<option value="">${selectOneLabel}</option>
+			</c:if>
+        
             <c:forEach var="commandOption" items="${commands}">
             
             	<c:set var="selected" value=""/>

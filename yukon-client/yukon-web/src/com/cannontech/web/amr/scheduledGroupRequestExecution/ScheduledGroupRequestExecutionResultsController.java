@@ -2,6 +2,7 @@ package com.cannontech.web.amr.scheduledGroupRequestExecution;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -19,35 +20,27 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoEnabledFilter;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoPendingFilter;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
-import com.cannontech.amr.scheduledGroupRequestExecution.tasks.ScheduledGroupRequestExecutionTask;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
-import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
-import com.cannontech.jobs.dao.JobStatusDao;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.service.JobManager;
-import com.cannontech.jobs.support.ScheduleException;
-import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagUtils;
-import com.cannontech.web.input.InputRoot;
-import com.cannontech.web.input.InputUtil;
+import com.cannontech.web.amr.scheduledGroupRequestExecution.ScheduledGroupRequestExecutionJobWrapperFactory.ScheduledGroupRequestExecutionJobWrapper;
 
 public class ScheduledGroupRequestExecutionResultsController extends MultiActionController {
 	
 	private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao;
 	private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
-	private JobStatusDao jobStatusDao;
 	private JobManager jobManager;
 	private DateFormattingService dateFormattingService;
-	private YukonJobDefinition<ScheduledGroupRequestExecutionTask> scheduledGroupRequestExecutionJobDefinition;
+	private ScheduledGroupRequestExecutionJobWrapperFactory scheduledGroupRequestExecutionJobWrapperFactory;
 	
 	// JOBS
 	public ModelAndView jobs(HttpServletRequest request, HttpServletResponse response) throws ServletException {
@@ -61,7 +54,7 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
 		// DEFAULT FILTERS
 		Date toDate = new Date();
 		Date fromDate = DateUtils.addMonths(toDate, -1);
-		CommandRequestExecutionType typeFilter = null;
+		List<CommandRequestExecutionType> typeFilters = null;
 		
 		// FILTERS
 		
@@ -99,9 +92,13 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
 		}
 		
 		// type
+		CommandRequestExecutionType typeFilter = null;
 		String typeFilterStr = ServletRequestUtils.getStringParameter(request, "typeFilter", null);
-		if (typeFilterStr != null && !typeFilterStr.equals("ANY") && !typeFilterStr.equals("ANY")) {
+		if (typeFilterStr != null && !typeFilterStr.equals("ANY")) {
 			typeFilter = CommandRequestExecutionType.valueOf(typeFilterStr);
+			typeFilters = Collections.singletonList(typeFilter);
+		} else {
+			typeFilters = null;
 		}
 		
 		
@@ -126,17 +123,17 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
 		mav.addObject("scheduledCommandRequestExecutionTypes", scheduledCommandRequestExecutionTypes);
 		
 		// JOBS
-		List<ScheduledRepeatingJob> jobs = scheduledGroupRequestExecutionDao.getJobs(jobId, fromDate, toDate, typeFilter, statusFilter, excludePendingFilter, false);
+		List<ScheduledRepeatingJob> jobs = scheduledGroupRequestExecutionDao.getJobs(jobId, fromDate, toDate, typeFilters, statusFilter, excludePendingFilter, false);
 		
 		final Date startTime = fromDate;
 		final Date stopTime = toDate;
-		ObjectMapper<ScheduledRepeatingJob, JobWrapper> mapper = new ObjectMapper<ScheduledRepeatingJob, JobWrapper>() {
-			public JobWrapper map(ScheduledRepeatingJob from) throws ObjectMappingException {
-                return new JobWrapper(from, startTime, stopTime);
+		ObjectMapper<ScheduledRepeatingJob, ScheduledGroupRequestExecutionJobWrapper> mapper = new ObjectMapper<ScheduledRepeatingJob, ScheduledGroupRequestExecutionJobWrapper>() {
+			public ScheduledGroupRequestExecutionJobWrapper map(ScheduledRepeatingJob from) throws ObjectMappingException {
+                return scheduledGroupRequestExecutionJobWrapperFactory.createJobWrapper(from, startTime, stopTime);
             }
 		};
 		
-		MappingList<ScheduledRepeatingJob, JobWrapper> jobWrappers = new MappingList<ScheduledRepeatingJob, JobWrapper>(jobs, mapper);
+		MappingList<ScheduledRepeatingJob, ScheduledGroupRequestExecutionJobWrapper> jobWrappers = new MappingList<ScheduledRepeatingJob, ScheduledGroupRequestExecutionJobWrapper>(jobs, mapper);
 		mav.addObject("jobWrappers", jobWrappers);
 		
 		return mav;
@@ -151,7 +148,7 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
         
         ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(jobId);
         
-        JobWrapper jobWrapper = new JobWrapper(job, null, null);
+        ScheduledGroupRequestExecutionJobWrapper jobWrapper = scheduledGroupRequestExecutionJobWrapperFactory.createJobWrapper(job, null, null);
         mav.addObject("jobWrapper", jobWrapper);
         
         CommandRequestExecution lastCre = scheduledGroupRequestExecutionDao.getLatestCommandRequestExecutionForJobId(jobId, null);
@@ -182,66 +179,6 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
 		
 	}
 	
-	// JOB WRAPPER
-	public class JobWrapper {
-		
-		private ScheduledRepeatingJob job;
-		private ScheduledGroupRequestExecutionTask task;
-		private int creCount;
-		
-		public JobWrapper(ScheduledRepeatingJob job, Date startTime, Date stopTime) {
-			this.job = job;
-			
-			this.task = new ScheduledGroupRequestExecutionTask();
-			InputRoot inputRoot = scheduledGroupRequestExecutionJobDefinition.getInputs();
-	        InputUtil.applyProperties(inputRoot, this.task, getJob().getJobProperties());
-	        
-	        this.creCount = scheduledGroupRequestExecutionDao.getCreCountByJobId(this.job.getId(), startTime, stopTime);
-		}
-		
-		public ScheduledRepeatingJob getJob() {
-			return job;
-		}
-		
-		public String getCommandRequestTypeShortName() {
-			return this.task.getCommandRequestExecutionType().getShortName();
-		}
-		
-		public Date getLastRun() {
-			return jobStatusDao.getJobLastSuccessfulRunDate(this.job.getId());
-		}
-		
-		public Date getNextRun() {
-			
-			Date nextRun = null;
-			try {
-				nextRun = jobManager.getNextRuntime(job, new Date());
-			} catch (ScheduleException e) {
-			}
-			
-			return nextRun;
-		}
-		
-		public String getCommand() {
-			return this.task.getCommand();
-		}
-		
-		public Attribute getAttribute() {
-			return this.task.getAttribute();
-		}
-		
-		public String getDeviceGroupName() {
-			return this.task.getGroupName();
-		}
-		
-		public int getCreCount() {
-			return creCount;
-		}
-		
-		public String getScheduleDescription() {
-			return CronExpressionTagUtils.getDescription(this.job.getCronString());
-		}
-	}
 
 	@Autowired
 	public void setScheduledGroupRequestExecutionDao(
@@ -255,11 +192,6 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
 		this.scheduledRepeatingJobDao = scheduledRepeatingJobDao;
 	}
 	
-	@Autowired
-	public void setJobStatusDao(JobStatusDao jobStatusDao) {
-		this.jobStatusDao = jobStatusDao;
-	}
-	
 	@Resource(name="jobManager")
 	public void setJobManager(JobManager jobManager) {
 		this.jobManager = jobManager;
@@ -270,9 +202,8 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
 		this.dateFormattingService = dateFormattingService;
 	}
 	
-	@Resource(name="scheduledGroupRequestExecutionJobDefinition")
-	public void setScheduledGroupRequestExecutionJobDefinition(
-			YukonJobDefinition<ScheduledGroupRequestExecutionTask> scheduledGroupRequestExecutionJobDefinition) {
-		this.scheduledGroupRequestExecutionJobDefinition = scheduledGroupRequestExecutionJobDefinition;
+	@Autowired
+	public void setScheduledGroupRequestExecutionJobWrapperFactory(ScheduledGroupRequestExecutionJobWrapperFactory scheduledGroupRequestExecutionJobWrapperFactory) {
+		this.scheduledGroupRequestExecutionJobWrapperFactory = scheduledGroupRequestExecutionJobWrapperFactory;
 	}
 }

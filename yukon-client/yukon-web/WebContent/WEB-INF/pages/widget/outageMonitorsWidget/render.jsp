@@ -38,29 +38,9 @@
 		}
 	}
 
-	function viewOutageProcessing(monitorId) {
-
-		$('viewProcessingForMonitorId').value = monitorId;
-		$('viewOutageProcessingForm').submit();
-	}
-
-	function viewScheduledGroupRequestExecution(id) {
-
-		$('jobId').value = id;
-		$('scheduledGroupRequestExecutionForm').submit();
-	}
-
 </script>
 
 <%-- FORMS --%>
-<form id="viewOutageProcessingForm" action="/spring/amr/outageProcessing/process/process" method="get">
-	<input type="hidden" id="viewProcessingForMonitorId" name="outageMonitorId" value="">
-</form>
-
-<form id="scheduledGroupRequestExecutionForm" action="/spring/group/scheduledGroupRequestExecutionResults/detail" method="get">
-	<input type="hidden" id="jobId" name="jobId" value="">
-</form>
-
 <form id="createForm" action="/spring/amr/outageProcessing/monitorEditor/edit" method="get">
 </form>
 
@@ -77,7 +57,7 @@
 	<tr>
 		<th>&nbsp;</th>
 		<th>${nameText}</th>
-		<th>${scheduleDescriptionText}</th>
+		<%-- <th>${scheduleDescriptionText}</th> --%>
 		<th>${devicesText}</th>
 		
 	</tr>
@@ -94,20 +74,27 @@
 			<td>
 			
 				<%-- monitor widget --%>
-				<cti:url var="outageGroupUrl" value="/spring/group/editor/home">
-					<cti:param name="groupName">${monitorWrapper.monitor.groupName}</cti:param>
+				<cti:url var="viewOutageProcessingUrl" value="/spring/amr/outageProcessing/process/process">
+					<cti:param name="outageMonitorId" value="${monitorId}"/>
 				</cti:url>
-				<img onclick="viewOutageProcessing(${monitorId});" 
-					title="${outageProcessingActionTitleText} (${monitorName})" 
-					src="${cog}" onmouseover="javascript:this.src='${cogOver}'" onmouseout="javascript:this.src='${cog}'">
+				
+				<a href="${viewOutageProcessingUrl}" title="${outageProcessingActionTitleText} (${monitorName})" style="text-decoration:none;">
+					<img src="${cog}" onmouseover="javascript:this.src='${cogOver}'" onmouseout="javascript:this.src='${cog}'">
+				</a>
 				&nbsp;&nbsp;
 			
 				<%-- scheduled read --%>
 				<c:choose>
 					<c:when test="${scheduledCommandJobId > 0}">
-						<img onclick="viewScheduledGroupRequestExecution(${scheduledCommandJobId});" 
-							title="${scheduledReadActionTitleText} (${monitorName})" 
-							src="${script}" onmouseover="javascript:this.src='${scriptOver}'" onmouseout="javascript:this.src='${script}'">
+					
+						<cti:url var="viewScheduledGroupRequestExecutionUrl" value="/spring/group/scheduledGroupRequestExecutionResults/detail">
+							<cti:param name="jobId" value="${scheduledCommandJobId}"/>
+						</cti:url>
+						
+						<a href="${viewScheduledGroupRequestExecutionUrl}" title="${scheduledReadActionTitleText} (${monitorName})" style="text-decoration:none;">
+							<img src="${script}" onmouseover="javascript:this.src='${scriptOver}'" onmouseout="javascript:this.src='${script}'">
+						</a>
+							
 					</c:when>
 					<c:otherwise>
 						<img src="${placeholder}">
@@ -129,10 +116,11 @@
 			</td>
 			
 			
-			<%-- schedule description --%>
+			<%-- schedule description 
 			<td>
 				<cti:dataUpdaterValue type="JOB" identifier="${scheduledCommandJobId}/SCHEDULE_DESCRIPTION"/>
 			</td>
+			--%>
 			
 			<%-- outage count --%>
 			<td>

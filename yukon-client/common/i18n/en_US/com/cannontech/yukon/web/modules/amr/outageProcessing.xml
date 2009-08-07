@@ -26,7 +26,7 @@
     <entry key="yukon.web.modules.amr.outageMonitorsWidget.actionTitle.delete">Delete Outage Monitor</entry>
     
     
-    <!-- OutageMonitorEditorController config.jsp -->
+    <!-- OutageMonitorEditorController edit.jsp -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
     <entry key="yukon.web.modules.amr.outageMonitorConfig.pageTitle">Outage Monitoring</entry>
@@ -34,11 +34,11 @@
     <entry key="yukon.web.modules.amr.outageMonitorConfig.label.name">Name</entry>
     <entry key="yukon.web.modules.amr.outageMonitorConfig.label.deviceGroup">Device Group</entry>
     <entry key="yukon.web.modules.amr.outageMonitorConfig.label.selectDeviceGroup">Select Device Group</entry>
-    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.selectDeviceGroupChoose">Choose</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.selectDeviceGroupChoose">Select</entry>
     <entry key="yukon.web.modules.amr.outageMonitorConfig.label.selectDeviceGroupCancel">Cancel</entry>
     <entry key="yukon.web.modules.amr.outageMonitorConfig.label.outagesGroup">Outages Group</entry>
-    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.chooseGroup">Choose Group</entry>
-    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.changeGroup">Change Group</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.chooseGroup">Select</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.changeGroup">Change</entry>
     <entry key="yukon.web.modules.amr.outageMonitorConfig.label.numberOfOutages">Number of Outages Allowed</entry>
     <entry key="yukon.web.modules.amr.outageMonitorConfig.label.numberOfOutagesOutages">Outages</entry>
     <entry key="yukon.web.modules.amr.outageMonitorConfig.label.timePeriod">Time Period</entry>
