@@ -22,9 +22,6 @@ import com.cannontech.esub.element.FunctionElement;
 import com.cannontech.esub.element.LineElement;
 import com.cannontech.esub.element.RectangleElement;
 import com.cannontech.esub.util.Util;
-import com.cannontech.message.dispatch.ClientConnection;
-import com.cannontech.message.util.Command;
-import com.cannontech.yukon.conns.ConnPool;
 import com.loox.jloox.LxAbstractAction;
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;
@@ -176,17 +173,6 @@ class EditorActions {
 		public void processAction(ActionEvent evt) {
 			int r = editor.saveOption();
 			if (r != JOptionPane.CANCEL_OPTION) {			
-                // Ugly cast.  We want to call disconnect though so that our shutdown message gets
-                // written out.
-				ClientConnection conn = (ClientConnection) ConnPool.getInstance().getDefDispatchConn();
-				if ( conn != null && conn.isValid() ) {  // free up Dispatchs resources		
-					Command comm = new Command();
-					comm.setPriority(15);				
-					comm.setOperation( Command.CLIENT_APP_SHUTDOWN );
-					conn.write( comm );
-                    conn.disconnect();
-				}
-			
 				System.exit(0);
 			}
 		}

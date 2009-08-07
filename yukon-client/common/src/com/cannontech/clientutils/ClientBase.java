@@ -11,22 +11,24 @@ package com.cannontech.clientutils;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.PointRegistration;
 import com.cannontech.message.dispatch.message.Signal;
-import com.cannontech.message.util.Command;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
-import com.cannontech.roles.yukon.SystemRole;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.user.SystemUserContext;
+import com.cannontech.yukon.IServerConnection;
+import com.cannontech.yukon.conns.ConnPool;
 
 
 public abstract class ClientBase extends java.util.Observable implements ClientBaseInterface, MessageListener
 {
-	private ClientConnection connection = null;
+    private IServerConnection connection = null;
 
 	// just in case someone wants to observe the connection
 	private java.util.Observer observer = null;
@@ -76,16 +78,9 @@ protected void finalize() throws Throwable
 	// This implementation simply forwards the message to super.  You may replace or supplement this.
 	super.finalize();
 
-		
-	// NEED TO GET THIS METHOD WORKING!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	this.stop();
-
-	if( connected() )
-	{
+	if(connected()) {
 		if( observer != null )
 			connection.deleteObserver( observer );
-			
-		getConnection().disconnect();
 	}
 }
 
@@ -93,22 +88,22 @@ protected void finalize() throws Throwable
  * This method was created in VisualAge.
  * @return boolean
  */
-private ClientConnection getConnection() 
-{
-	return connection;
+private IServerConnection getConnection() {
+    getExternalResources();
+    return ConnPool.getInstance().getDefDispatchConn();
 }
 /**
  * Insert the method's description here.
  * Creation date: (3/21/00 2:26:52 PM)
  */
+
 private void getExternalResources() 
 {
 	try
 	{
-      HOST = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
-
-      PORT = Integer.parseInt(
-					DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.DISPATCH_PORT ) ); 
+	    RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
+        HOST = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DISPATCH_MACHINE, new SystemUserContext().getYukonUser());
+        PORT = rolePropertyDao.getPropertyIntegerValue(YukonRoleProperty.DISPATCH_PORT, new SystemUserContext().getYukonUser());
    }
    catch( Exception e)
    {
@@ -116,6 +111,7 @@ private void getExternalResources()
    }
 
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (5/8/00 4:56:37 PM)
@@ -163,12 +159,12 @@ private void handleException(Throwable e)
 private void initialize() 
 {
 	//make sure we have a created connection before trying to connect!
-	connection = new com.cannontech.message.dispatch.ClientConnection();
+	connection = ConnPool.getInstance().getDefDispatchConn();
 	
 	if( observer != null )
    {
       //connection list
-		getConnection().addObserver( observer );
+      getConnection().addObserver( observer );
 
       //our own list
       addObserver( observer );
@@ -212,58 +208,12 @@ public void messageReceived( MessageEvent e )
 }
 
 /**
- * Insert the method's description here.
- * Creation date: (3/8/2002 12:51:17 PM)
- */
-public void startConnection() 
-{
-	tryConnection();
-}
-
-/**
- * This method was created in VisualAge.
- */
-public void stop() 
-{
-
-	if ( connected() )  // free up VanGogh's resources
-    {
-    	Command comm = new Command();
-    	comm.setPriority(15);
-    	
-    	comm.setOperation( Command.CLIENT_APP_SHUTDOWN );
-
-    	getConnection().write( comm );
-
-    	getConnection().disconnect();
-    }
-	
-}
-/**
- * This method was created in VisualAge.
- */
-private void tryConnection() 
-{	
-	getExternalResources();
-    
-    com.cannontech.clientutils.CTILogger.info("Trying to connect to:  " + HOST + " " + PORT );
-
-    getConnection().setHost(HOST);		
-    getConnection().setPort(PORT);		
-
-    getConnection().setRegistrationMsg( buildRegistrationMessage() );
-    getConnection().connectWithoutWait();
-
-    com.cannontech.clientutils.CTILogger.info("....Connection & Registration to Server Established.");
-	
-}
-/**
  * Write a message to dispatch if it is available
  * Creation date: (1/24/2001 1:47:59 PM)
  * @param obj java.lang.Object
  */
 public void write(Message obj) {
-    ClientConnection conn = getConnection();
+    IServerConnection conn = getConnection();
 	if(conn.isValid()) { 
 		getConnection().write( obj);
     }

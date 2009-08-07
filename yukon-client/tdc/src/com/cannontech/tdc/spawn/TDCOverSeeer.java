@@ -147,7 +147,6 @@ public void otherTDCMainFrameActionPerformed(SpawnTDCMainFrameEvent e)
 		if( getTdcMainFrames().size() == 1 )
 		{
 			((TDCMainFrame)e.getSource()).destroySpawn();
-			((TDCMainFrame)e.getSource()).destroySingularities();
 			System.exit(0);
 		}
 		else

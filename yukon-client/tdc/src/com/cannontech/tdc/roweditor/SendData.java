@@ -71,26 +71,6 @@ public static synchronized boolean classExists()
 }
 /**
  * Insert the method's description here.
- * Creation date: (3/20/00 5:49:33 PM)
- */
-public void destroyConnection() 
-{
-	if ( connection != null && connection.isValid() )  // free up VanGogh's resources
-    {
-    	Command comm = new Command();
-    	comm.setPriority(15);
-    	comm.setUserName( com.cannontech.common.util.CtiUtilities.getUserName() );
-    	
-    	comm.setOperation( Command.CLIENT_APP_SHUTDOWN );
-
-    	sendCommandMsg( comm );
-    	
-    	connection.disconnect();
-    	connection = null;
-    }
-}
-/**
- * Insert the method's description here.
  * Creation date: (3/14/00 3:19:19 PM)
  */
 public static synchronized SendData getInstance()

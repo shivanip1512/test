@@ -355,9 +355,6 @@ public static void main(String[] args)
         if(session == null) 
             System.exit(-1);
             
-        LoggerClient client = new LoggerClient( null, new Logger() );
-        client.startConnection();
-    
         while( true )
         {
             try

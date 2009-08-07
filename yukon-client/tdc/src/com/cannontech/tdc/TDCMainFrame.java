@@ -1140,26 +1140,6 @@ private String[] createPrintableText()
 	return tableData;
 }
 
-
-/**
- * Insert the method's description here.
- * Creation date: (1/3/01 1:06:50 PM)
- */
-// This method is used to eliminate any sigle/static instances that exist
-//  ( ie: clientConnections, clients etc )
-public void destroySingularities()
-{
-	// this will destroy any client sender connection the main panel is using
-	// SHOULD ONLY BE CALLED ONCE SINCE THE SENDER CAN ONLY EXIST ONCE
-	if( com.cannontech.tdc.roweditor.SendData.classExists() )
-		com.cannontech.tdc.roweditor.SendData.getInstance().destroyConnection();
-
-}/**
- * Insert the method's description here.
- * Creation date: (1/25/2001 10:11:44 AM)
- */
-
-
 /**
  * Insert the method's description here.
  * Creation date: (10/13/00 1:06:50 PM)
@@ -1168,9 +1148,8 @@ public void destroySpawn()
 {
 	// this will destroy any client connections in the main panel
 	// if we are a specialClient display.
+    
 	getMainPanel().resetMainPanel();
-
-	getTdcClient().stop();
 
 	// destroy all other independent threads below
 	destroyClockThread();
@@ -1205,21 +1184,6 @@ private boolean exitConfirm()
 		return true;
 	else
 		return false;
-}
-
-
-/**
- * Insert the method's description here.
- * Creation date: (3/28/00 3:43:14 PM)
- */
-protected void finalize() throws Throwable
-{
-	super.finalize();  // NEVER FORGET THIS!!
-	
-/*	if( getMainPanel().tdcClient != null )
-		getMainPanel().tdcClient.stop();
-*/
-	getTdcClient().stop();
 }
 
 
@@ -2731,8 +2695,6 @@ public TDCClient getTdcClient()
 			getMainPanel().setTdcClient( tdcClient );
 
 		//start trying to connect immediately
-		tdcClient.startConnection();
-		
 		
 		//force our out bound TDC connection to connect immediately
 		SendData.getInstance();

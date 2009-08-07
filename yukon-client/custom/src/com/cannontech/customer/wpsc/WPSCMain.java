@@ -1,7 +1,7 @@
 package com.cannontech.customer.wpsc;
 
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.message.util.Command;
+import com.cannontech.yukon.conns.ConnPool;
 
 /**
  * This is the entry point for Wisconsin Public Service Co's custom app
@@ -78,8 +78,8 @@ public class WPSCMain implements Runnable
 public WPSCMain(String dispatchHost, int dispatchPort, String porterHost, int porterPort, String CFDATADir, String CFDATAFileExt, long CFDATACheckFreq, String outputFile) {
 	super();
 	
-	dispatchConn = new com.cannontech.message.dispatch.ClientConnection( dispatchHost, dispatchPort );	
-	porterConn = new com.cannontech.message.porter.ClientConnection( porterHost, porterPort );
+	dispatchConn = (com.cannontech.message.dispatch.ClientConnection) ConnPool.getInstance().getDefDispatchConn();
+	porterConn = (com.cannontech.message.porter.ClientConnection) ConnPool.getInstance().getDefPorterConn();
 
 	dispatchConn.setAutoReconnect(true);
 	dispatchConn.setQueueMessages( true );
@@ -91,27 +91,6 @@ public WPSCMain(String dispatchHost, int dispatchPort, String porterHost, int po
 
 	LDCNTSUMInstance = new LDCNTSUM( dispatchConn, outputFile );
 	
-}
-/**
- * Insert the method's description here.
- * Creation date: (6/6/2002 9:45:33 AM)
- */
-public void exit()
-{
-	// Send a shutdown message to Dispatch
-	try
-	{
-		Command comm = new Command();
-		comm.setPriority(15);
-
-		comm.setOperation( Command.CLIENT_APP_SHUTDOWN );
-		dispatchConn.write( comm );
-		dispatchConn.disconnect();
-	}
-	finally
-	{
-		System.exit(0);
-	}
 }
 /**
  * Insert the method's description here.
@@ -269,7 +248,7 @@ public void run()
 	}
 	finally
 	{
-		exit();
+	    System.exit(0);
 	}
 }
 public static void stopApplication()

@@ -5,11 +5,13 @@ package com.cannontech.message.dispatch;
  */
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.message.dispatch.message.Registration;
 import com.cannontech.message.util.Command;
 import com.cannontech.message.util.Message;
-import com.cannontech.roles.yukon.SystemRole;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.user.SystemUserContext;
 import com.roguewave.vsj.CollectableStreamer;
 
 public class ClientConnection extends com.cannontech.message.util.ClientConnection {
@@ -63,9 +65,9 @@ public class ClientConnection extends com.cannontech.message.util.ClientConnecti
         int defaultPort = 1510;
 
         try {
-            defaultHost = DaoFactory.getRoleDao().getGlobalPropertyValue(SystemRole.DISPATCH_MACHINE);
-
-            defaultPort = Integer.parseInt(DaoFactory.getRoleDao().getGlobalPropertyValue(SystemRole.DISPATCH_PORT));
+            RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
+            defaultHost = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DISPATCH_MACHINE, new SystemUserContext().getYukonUser());
+            defaultPort = rolePropertyDao.getPropertyIntegerValue(YukonRoleProperty.DISPATCH_PORT, new SystemUserContext().getYukonUser());
         } catch (Exception e) {
             CTILogger.warn("Could not get host and port for dispatch connection from Role Properties, using defaults",
                            e);

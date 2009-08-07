@@ -59,7 +59,6 @@ import com.cannontech.esub.element.StaticImage;
 import com.cannontech.esub.element.StaticText;
 import com.cannontech.esub.util.ESubDrawingUpdater;
 import com.cannontech.message.dispatch.ClientConnection;
-import com.cannontech.message.util.Command;
 import com.cannontech.roles.application.EsubEditorRole;
 import com.cannontech.user.SystemUserContext;
 import com.cannontech.yukon.conns.ConnPool;
@@ -530,21 +529,6 @@ public class Editor extends JPanel {
             frame.addWindowListener(new java.awt.event.WindowAdapter() {
                 @Override
                 public void windowClosing(java.awt.event.WindowEvent e) {
-                    // Make sure to shutdown properly so dispatch is not left
-                    // with a vagrant connect for a while.
-                    // Ugly cast. We want to call disconnect though so that our
-                    // shutdown message gets
-                    // written out.
-                    ClientConnection conn = (ClientConnection) ConnPool.getInstance().getDefDispatchConn();
-                    if (conn != null && conn.isValid()) { 
-                        // Free up Dispatchs resources
-                        Command comm = new Command();
-                        comm.setPriority(15);
-                        comm.setOperation(Command.CLIENT_APP_SHUTDOWN);
-                        conn.write(comm);
-                        conn.disconnect();
-                    }
-
                     System.exit(0);
                 }
             });

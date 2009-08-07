@@ -39,8 +39,7 @@ public class AlarmHandler implements Observer, MessageListener
 
 		yukonSysTray = sysTrya_;
 
-		//start trying to connect immediately
-		getAlarmClient().startConnection();
+		getAlarmClient();
 	}
 
 

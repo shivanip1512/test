@@ -262,14 +262,6 @@ private boolean executeCheckDispatchConnection()
 			//wait 60 seconds at most for a response then stop
 			ret = connection.read( 60000 );
 			CTILogger.info("Loopback returned = " + ret.toString() );
-
-
-			Command cmd1 = new Command();
-
-			cmd1.setOperation( Command.CLIENT_APP_SHUTDOWN );
-			connection.write( cmd1 );
-
-			connection.disconnect();
 		}
 
 		connection = null;
@@ -369,8 +361,6 @@ private boolean executeCheckPorterConnection()
 			{
 				CTILogger.info("No message returned!");	
 			}
-
-			portConn.disconnect();
 		}
 
 		return success;

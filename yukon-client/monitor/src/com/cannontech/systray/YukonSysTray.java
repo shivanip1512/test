@@ -186,7 +186,6 @@ public class YukonSysTray implements SysTrayMenuListener, ActionListener, ISystr
 	
 	private void exitApp()
 	{
-		System.exit(0);
 	}
 
 
@@ -195,9 +194,9 @@ public class YukonSysTray implements SysTrayMenuListener, ActionListener, ISystr
 		if( e.getSource() == getMenuItemExit() )
 		{
 			yukonSysTray.hideIcon();
-			getAlarmHandler().getAlarmClient().stop();
 
-			exitApp();
+			// Exiting application
+	        System.exit(0);
 		}		
 		else if( e.getSource() == getMenuItemAbout() )
 		{
