@@ -56,7 +56,7 @@ public class CBCPointFactory {
             new StatusPointParams(7, "Last Control - OVUV"),
             new StatusPointParams(8, "Last Control - Neutral Fault"),
             new StatusPointParams(9, "Last Control - Scheduled"),
-            new StatusPointParams(10, "Last Control - Var"),
+            new StatusPointParams(10, "Last Control - VAR"),
             new StatusPointParams(11, "Last Control - Analog"),
             new StatusPointParams(12, "Last Control - Temperature"),
             new StatusPointParams(13, "OV Condition"),
