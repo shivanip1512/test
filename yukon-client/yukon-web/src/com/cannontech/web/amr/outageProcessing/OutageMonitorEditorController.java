@@ -26,7 +26,6 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.OutageMonitorNotFoundException;
-import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
@@ -79,13 +78,6 @@ public class OutageMonitorEditorController extends MultiActionController {
 	        	if (timePeriod <= 0) {
 	        		timePeriod = outageMonitor.getTimePeriod();
 	        	}
-	        	if (outageMonitor.getScheduledCommandJobId() > 0) {
-	        		
-	        		scheduleGroupCommand = true;
-	        		
-	        		int scheduledCommandJobId = outageMonitor.getScheduledCommandJobId();
-	        		expression = scheduledGroupRequestExecutionService.getCronExpression(scheduledCommandJobId);
-	        	}
 	        }
 	        
         } catch (OutageMonitorNotFoundException e) {
@@ -125,13 +117,7 @@ public class OutageMonitorEditorController extends MultiActionController {
         int numberOfOutages = ServletRequestUtils.getIntParameter(request, "numberOfOutages", 0);
         int timePeriod = ServletRequestUtils.getIntParameter(request, "timePeriod", 0);
         boolean scheduleGroupCommand = ServletRequestUtils.getBooleanParameter(request, "scheduleGroupCommand", false);
-        
         String expression = "";
-        try {
-        	expression = CronExpressionTagUtils.build(CRON_TAG_ID, request);
-        } catch (IllegalArgumentException e) {
-        	editError = e.getMessage();
-        }
         
         // new processor?
         boolean isNewMonitor = true;
@@ -146,6 +132,15 @@ public class OutageMonitorEditorController extends MultiActionController {
         } catch (OutageMonitorNotFoundException e) {
         	mav.addObject("editError", e.getMessage());
         	return mav;
+        }
+        
+        
+        if (isNewMonitor && scheduleGroupCommand) {
+	        try {
+	        	expression = CronExpressionTagUtils.build(CRON_TAG_ID, request);
+	        } catch (IllegalArgumentException e) {
+	        	editError = e.getMessage();
+	        }
         }
         
         if (StringUtils.isBlank(name)) {
@@ -182,34 +177,9 @@ public class OutageMonitorEditorController extends MultiActionController {
         	YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         	
         	// SCHEDULED BLINK COUNT REQUEST JOB
-        	if (scheduleGroupCommand) {
-        		
-        		// new job
-            	if (isNewMonitor || (!isNewMonitor && outageMonitor.getScheduledCommandJobId() <= 0)) {
+        	if (isNewMonitor && scheduleGroupCommand) {
             		
-                	YukonJob newJob = scheduledGroupRequestExecutionService.schedule(deviceGroupName, BLINK_COUNT_ATTRIBUTE, CommandRequestExecutionType.OUTAGE_PROCESSING_BLINK_COUNT_READ, expression, userContext);
-                    outageMonitor.setScheduledCommandJobId(newJob.getId());
-            	
-            	// replacement job
-            	} else {
-            		
-            		int exisitingJobId = outageMonitor.getScheduledCommandJobId();
-            		YukonJob replacementJob = scheduledGroupRequestExecutionService.scheduleReplacement(exisitingJobId, deviceGroupName, BLINK_COUNT_ATTRIBUTE, CommandRequestExecutionType.OUTAGE_PROCESSING_BLINK_COUNT_READ, expression, userContext);
-            		
-            		outageMonitor.setScheduledCommandJobId(replacementJob.getId());
-            	}
-        		
-            // disable scheduled command job if processor has one
-        	} else {
-        		
-        		if (!isNewMonitor) {
-        			
-        			int scheduleCommandJobId = outageMonitor.getScheduledCommandJobId();
-        			if (scheduleCommandJobId > 0) {
-        				scheduledGroupRequestExecutionService.disableJob(scheduleCommandJobId);
-        				outageMonitor.setScheduledCommandJobId(0);
-        			}
-        		}
+            	scheduledGroupRequestExecutionService.schedule(deviceGroupName, BLINK_COUNT_ATTRIBUTE, CommandRequestExecutionType.SCHEDULED_GROUP_ATTRIBUTE_READ, expression, userContext);
         	}
         	
         	// OUTAGE GROUP

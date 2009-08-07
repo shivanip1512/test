@@ -11,7 +11,6 @@ public enum CommandRequestExecutionType {
 	SCHEDULED_GROUP_COMMAND("Scheduled Group Command", "A command sent to a group of devices periodically.", true),
 	SCHEDULED_GROUP_ATTRIBUTE_READ("Scheduled Group Attribute Read", "An attribute read command sent to a group of devices periodically.", true),
 	
-	OUTAGE_PROCESSING_BLINK_COUNT_READ("Outage Processing Blink Count Read", "Blink count read for the purpose of Outage Processing on a group of devices.", true),
 	OUTAGE_PROCESSING_OUTAGE_LOGS_READ("Outage Processing Outage Logs Read", "Outage logs read for the pupose of Outage Processing on the Outages Group of an Outage Monitor.", false),
 	
 	DEVICE_CONFIG_VERIFY("Device Config Verify", "Verify command sent to a collection of devices for the purpose of Device Configuration.", false),

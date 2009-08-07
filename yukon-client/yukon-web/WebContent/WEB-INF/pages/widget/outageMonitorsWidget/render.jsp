@@ -57,16 +57,14 @@
 	<tr>
 		<th>&nbsp;</th>
 		<th>${nameText}</th>
-		<%-- <th>${scheduleDescriptionText}</th> --%>
 		<th>${devicesText}</th>
 		
 	</tr>
 
-	<c:forEach var="monitorWrapper" items="${monitors}">
+	<c:forEach var="monitor" items="${monitors}">
 	
-		<c:set var="monitorId" value="${monitorWrapper.monitor.outageMonitorId}"/>
-		<c:set var="monitorName" value="${monitorWrapper.monitor.name}"/>
-		<c:set var="scheduledCommandJobId" value="${monitorWrapper.jobId}"/>
+		<c:set var="monitorId" value="${monitor.outageMonitorId}"/>
+		<c:set var="monitorName" value="${monitor.name}"/>
 
 		<tr>
 			
@@ -83,25 +81,6 @@
 				</a>
 				&nbsp;&nbsp;
 			
-				<%-- scheduled read --%>
-				<c:choose>
-					<c:when test="${scheduledCommandJobId > 0}">
-					
-						<cti:url var="viewScheduledGroupRequestExecutionUrl" value="/spring/group/scheduledGroupRequestExecutionResults/detail">
-							<cti:param name="jobId" value="${scheduledCommandJobId}"/>
-						</cti:url>
-						
-						<a href="${viewScheduledGroupRequestExecutionUrl}" title="${scheduledReadActionTitleText} (${monitorName})" style="text-decoration:none;">
-							<img src="${script}" onmouseover="javascript:this.src='${scriptOver}'" onmouseout="javascript:this.src='${script}'">
-						</a>
-							
-					</c:when>
-					<c:otherwise>
-						<img src="${placeholder}">
-					</c:otherwise>
-				</c:choose>
-				&nbsp;&nbsp;
-				
 				<%-- delete --%>
 				<img onclick="deleteOutageMonitor(${monitorId});" 
 					title="${deleteActionTitleText} (${monitorName})" 
@@ -114,13 +93,6 @@
 					${monitorName}
 				</a>
 			</td>
-			
-			
-			<%-- schedule description 
-			<td>
-				<cti:dataUpdaterValue type="JOB" identifier="${scheduledCommandJobId}/SCHEDULE_DESCRIPTION"/>
-			</td>
-			--%>
 			
 			<%-- outage count --%>
 			<td>

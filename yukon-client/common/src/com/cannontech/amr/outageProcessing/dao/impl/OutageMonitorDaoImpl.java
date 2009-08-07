@@ -104,7 +104,6 @@ public class OutageMonitorDaoImpl implements OutageMonitorDao, InitializingBean 
             	outageMonitor.setGroupName(rs.getString("GroupName"));
             	outageMonitor.setTimePeriod(rs.getInt("TimePeriod"));
             	outageMonitor.setNumberOfOutages(rs.getInt("NumberOfOutages"));
-            	outageMonitor.setScheduledCommandJobId(rs.getInt("ScheduledCommandJobId"));
             	outageMonitor.setEvaluatorStatus(OutageMonitorEvaluatorStatus.valueOf(rs.getString("EvaluatorStatus")));
                 return outageMonitor;
             }
@@ -119,7 +118,6 @@ public class OutageMonitorDaoImpl implements OutageMonitorDao, InitializingBean 
             p.addValue("GroupName", outageMonitor.getGroupName());
             p.addValue("TimePeriod", outageMonitor.getTimePeriod());
             p.addValue("NumberOfOutages", outageMonitor.getNumberOfOutages());
-            p.addValue("ScheduledCommandJobId", outageMonitor.getScheduledCommandJobId());
             p.addValue("EvaluatorStatus", outageMonitor.getEvaluatorStatus().name());
             
         }

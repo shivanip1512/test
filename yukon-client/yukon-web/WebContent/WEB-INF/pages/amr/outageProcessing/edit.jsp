@@ -209,34 +209,38 @@
 				
 				<%-- time period --%>
 				<tags:nameValue name="${timePeriodText}">
+						
+						<input type="text" name="timePeriod" maxlength="3" size="3" style="text-align:right;" value="${timePeriod}">
+						${timePeriodDaysText}
+						<img onclick="$('timePeriodInfoPopup').toggle();" src="${help}" onmouseover="javascript:this.src='${helpOver}'" onmouseout="javascript:this.src='${help}'">
 					
-					<input type="text" name="timePeriod" maxlength="3" size="3" style="text-align:right;" value="${timePeriod}">
-					${timePeriodDaysText}
-					<img onclick="$('timePeriodInfoPopup').toggle();" src="${help}" onmouseover="javascript:this.src='${helpOver}'" onmouseout="javascript:this.src='${help}'">
-				
-					<tags:simplePopup id="timePeriodInfoPopup" title="${timePeriodText}" onClose="$('timePeriodInfoPopup').toggle();">
-					     ${timePeriodPopupInfoText}
-					</tags:simplePopup>
+						<tags:simplePopup id="timePeriodInfoPopup" title="${timePeriodText}" onClose="$('timePeriodInfoPopup').toggle();">
+						     ${timePeriodPopupInfoText}
+						</tags:simplePopup>
+						
+					</tags:nameValue>
 					
-				</tags:nameValue>
-				
-				<%-- schedule read --%>
-				<tags:nameValue name="${scheduleReadText}">
-				
-					<input type="checkbox" id="scheduleGroupCommand" name="scheduleGroupCommand" onclick="toggleReadFrequencyOptions();" <c:if test="${scheduleGroupCommand}">checked</c:if>> 
-					${scheduleReadDescriptionText}
-					<img onclick="$('scheduleReadInfoPopup').toggle();" src="${help}" onmouseover="javascript:this.src='${helpOver}'" onmouseout="javascript:this.src='${help}'">
-				
-					<tags:simplePopup id="scheduleReadInfoPopup" title="${scheduleReadText}" onClose="$('scheduleReadInfoPopup').toggle();">
-					     ${scheduleReadPopupInfoText}
-					</tags:simplePopup>
+				<c:if test="${outageMonitorId == 0}">
 					
-				</tags:nameValue>
+					<%-- schedule read --%>
+					<tags:nameValue name="${scheduleReadText}">
+					
+						<input type="checkbox" id="scheduleGroupCommand" name="scheduleGroupCommand" onclick="toggleReadFrequencyOptions();" <c:if test="${scheduleGroupCommand}">checked</c:if>> 
+						${scheduleReadDescriptionText}
+						<img onclick="$('scheduleReadInfoPopup').toggle();" src="${help}" onmouseover="javascript:this.src='${helpOver}'" onmouseout="javascript:this.src='${help}'">
+					
+						<tags:simplePopup id="scheduleReadInfoPopup" title="${scheduleReadText}" onClose="$('scheduleReadInfoPopup').toggle();">
+						     ${scheduleReadPopupInfoText}
+						</tags:simplePopup>
+						
+					</tags:nameValue>
+					
+					<%-- time / frequency --%>
+					<tags:nameValue name="${readFrequencyText}" id="readFrequencyTr">
+						<tags:cronExpressionData id="${cronExpressionTagId}" state="${cronExpressionTagState}"/>
+					</tags:nameValue>
 				
-				<%-- time / frequency --%>
-				<tags:nameValue name="${readFrequencyText}" id="readFrequencyTr">
-					<tags:cronExpressionData id="${cronExpressionTagId}" state="${cronExpressionTagState}"/>
-				</tags:nameValue>
+				</c:if>
 				
 				<%-- enable/disable monitoring --%>
 				<c:if test="${outageMonitorId > 0}">

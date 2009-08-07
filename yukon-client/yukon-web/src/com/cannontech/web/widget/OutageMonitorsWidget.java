@@ -12,18 +12,12 @@ import org.springframework.web.servlet.ModelAndView;
 import com.cannontech.amr.outageProcessing.OutageMonitor;
 import com.cannontech.amr.outageProcessing.dao.OutageMonitorDao;
 import com.cannontech.amr.outageProcessing.service.OutageMonitorService;
-import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
-import com.cannontech.common.bulk.mapper.ObjectMappingException;
-import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
-import com.cannontech.common.util.MappingList;
-import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.dao.OutageMonitorNotFoundException;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 
 public class OutageMonitorsWidget extends WidgetControllerBase {
 
 	private OutageMonitorDao outageMonitorDao;
-	private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao;
 	private OutageMonitorService outageMonitorService;
 	
 	@Override
@@ -31,16 +25,7 @@ public class OutageMonitorsWidget extends WidgetControllerBase {
 		
 		ModelAndView mav = new ModelAndView("outageMonitorsWidget/render.jsp");
 		
-		List<OutageMonitor> rawMonitors = outageMonitorDao.getAll();
-		
-		ObjectMapper<OutageMonitor, OutageMonitorWrapper> objectMapper = new ObjectMapper<OutageMonitor, OutageMonitorWrapper>() {
-            public OutageMonitorWrapper map(OutageMonitor from) throws ObjectMappingException {
-                return new OutageMonitorWrapper(from);
-            }
-        };
-		
-		MappingList<OutageMonitor, OutageMonitorWrapper> monitors = new MappingList<OutageMonitor, OutageMonitorWrapper>(rawMonitors, objectMapper);
-		
+		List<OutageMonitor> monitors = outageMonitorDao.getAll();
 		mav.addObject("monitors", monitors);
 		
 		return mav;
@@ -64,46 +49,10 @@ public class OutageMonitorsWidget extends WidgetControllerBase {
         return mav;
 	}
 
-	public class OutageMonitorWrapper {
-		
-		private OutageMonitor monitor;
-		private int jobId = 0;
-		private CommandRequestExecution latestCommandRequestExecution = null;
-		
-		public OutageMonitorWrapper(OutageMonitor monitor) {
-			
-			this.monitor = monitor;
-			
-			int jobId = monitor.getScheduledCommandJobId();
-			if (jobId > 0) {
-				
-				this.jobId = jobId;
-				
-				this.latestCommandRequestExecution = scheduledGroupRequestExecutionDao.getLatestCommandRequestExecutionForJobId(jobId, null);
-			}
-		}
-		
-		public OutageMonitor getMonitor() {
-			return monitor;
-		}
-		public int getJobId() {
-			return jobId;
-		}
-		public CommandRequestExecution getLatestCommandRequestExecution() {
-			return latestCommandRequestExecution;
-		}
-	}
-	
 	
 	@Autowired
 	public void setOutageMonitorDao(OutageMonitorDao outageMonitorDao) {
 		this.outageMonitorDao = outageMonitorDao;
-	}
-	
-	@Autowired
-	public void setScheduledGroupRequestExecutionDao(
-			ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao) {
-		this.scheduledGroupRequestExecutionDao = scheduledGroupRequestExecutionDao;
 	}
 	
 	@Autowired

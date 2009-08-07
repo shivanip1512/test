@@ -9,7 +9,6 @@ public class OutageMonitor {
 	private String groupName;
 	private int timePeriod;
 	private int numberOfOutages;
-	private int scheduledCommandJobId = 0;
 	private OutageMonitorEvaluatorStatus evaluatorStatus;
 	
 	
@@ -53,14 +52,6 @@ public class OutageMonitor {
 		this.numberOfOutages = numberOfOutages;
 	}
 
-	public int getScheduledCommandJobId() {
-		return scheduledCommandJobId;
-	}
-	
-	public void setScheduledCommandJobId(int scheduledCommandJobId) {
-		this.scheduledCommandJobId = scheduledCommandJobId;
-	}
-	
 	public OutageMonitorEvaluatorStatus getEvaluatorStatus() {
 		return evaluatorStatus;
 	}
@@ -77,7 +68,6 @@ public class OutageMonitor {
         tsc.append("groupName", getGroupName());
         tsc.append("timePeriod", getTimePeriod());
         tsc.append("numberOfOutages", getNumberOfOutages());
-        tsc.append("scheduledCommandJobId", getScheduledCommandJobId());
         tsc.append("evaluatorStatus", getEvaluatorStatus());
         return tsc.toString();
     }
