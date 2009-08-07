@@ -88,11 +88,11 @@
 			        <tr class="<ct:alternateRow odd="altRow" even=""/>">
 						<td>
 						    <input type="checkbox" name="cti_chkbxSubStation" value="${subStation.ccId}" />
-	                        <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${subStation.ccId}&ignoreBookmark=true">
+	                        <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${subStation.ccId}&ignoreBookmark=true" style="text-decoration:none;">
 	                            <img class="rAlign editImg" src="${editInfoImage}"/>
 	                        </a>
 	                        <c:if test="${hasEditingRole}">
-		                        <a class="editImg" href="/editor/deleteBasePAO.jsf?value=${subStation.ccId}">
+		                        <a class="editImg" href="/editor/deleteBasePAO.jsf?value=${subStation.ccId}" style="text-decoration:none;">
 		                            <img class="rAlign editImg" src="/WebConfig/yukon/Icons/delete.gif"/>
 		                        </a>
 		                    </c:if>

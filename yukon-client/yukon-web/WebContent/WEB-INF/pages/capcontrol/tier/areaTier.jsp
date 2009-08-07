@@ -78,11 +78,11 @@
 	        				<input type="checkbox" name="cti_chkbxAreas" value="${thisAreaId}"/>
 							<input type="image" id="showAreas${thisAreaId}" src="/capcontrol/images/nav-plus.gif"
 								 onclick="showRowElems( 'allAreas${thisAreaId}', 'showAreas${thisAreaId}'); return false;"/>
-		                        <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${thisAreaId}">
+		                        <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${thisAreaId}" style="text-decoration:none;">
 		                            <img class="rAlign editImg" src="${editInfoImage}"/>
 		                        </a>
 		                        <c:if test="${hasEditingRole}">
-			                        <a class="editImg" href="/editor/deleteBasePAO.jsf?value=${thisAreaId}">
+			                        <a class="editImg" href="/editor/deleteBasePAO.jsf?value=${thisAreaId}" style="text-decoration:none;">
 			                            <img class="rAlign editImg" src="/WebConfig/yukon/Icons/delete.gif"/>
 			                        </a>
                                 </c:if>

@@ -135,15 +135,15 @@
 			</tr>
                 <tr class="altTableCell" id="tr_substation_${substation.ccId}">
                     <td id="anc_${thisSubStationId}">
-                        <a title="Edit" class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${substation.ccId}">
+                        <a title="Edit" class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${substation.ccId}" style="text-decoration:none;">
                             <img class="rAlign editImg" src="${editInfoImage}" style="vertical-align: middle;">
 	                    </a>
 	                    <c:if test="${hasEditingRole}">
-		                    <a title="Delete" class="editImg" href="/editor/deleteBasePAO.jsf?value=${substation.ccId}">
+		                    <a title="Delete" class="editImg" href="/editor/deleteBasePAO.jsf?value=${substation.ccId}" style="text-decoration:none;">
 		                        <img class="rAlign editImg" src="/WebConfig/yukon/Icons/delete.gif" style="vertical-align: middle;"/>
 		                    </a>
 	                    </c:if>
-                    	<a title="Bank Locations" class="editImg" href="/spring/capcontrol/capbank/capBankLocations?value=${substation.ccId}&specialArea=${isSpecialArea}">
+                    	<a title="Bank Locations" class="editImg" href="/spring/capcontrol/capbank/capBankLocations?value=${substation.ccId}&specialArea=${isSpecialArea}" style="text-decoration:none;">
 	                        <img class="rAlign editImg" src="/WebConfig/yukon/Icons/find.gif" style="vertical-align: middle;"/>
 	                    </a>
                         ${substation.ccName}
@@ -209,15 +209,15 @@
 				</td>
                 
 				<td id="subName">
-				    <a title="Edit" class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${thisSubBusId}">
+				    <a title="Edit" class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${thisSubBusId}" style="text-decoration:none;">
                         <img class="rAlign editImg" src="${editInfoImage}" style="vertical-align: middle;"/>
                     </a>
 	                <c:if test="${hasEditingRole}">
-	                    <a title="Delete" class="editImg" href="/editor/deleteBasePAO.jsf?value=${thisSubBusId}">
+	                    <a title="Delete" class="editImg" href="/editor/deleteBasePAO.jsf?value=${thisSubBusId}" style="text-decoration:none;">
 	                        <img class="rAlign editImg" src="/WebConfig/yukon/Icons/delete.gif" style="vertical-align: middle;"/>
 	                    </a>
 	                </c:if>
-                   	<a title="Bank Locations" class="editImg" href="/spring/capcontrol/capbank/capBankLocations?value=${thisSubBusId}&specialArea=${isSpecialArea}">
+                   	<a title="Bank Locations" class="editImg" href="/spring/capcontrol/capbank/capBankLocations?value=${thisSubBusId}&specialArea=${isSpecialArea}" style="text-decoration:none;">
                         <img class="rAlign editImg" src="/WebConfig/yukon/Icons/find.gif" style="vertical-align: middle;"/>
                     </a>
                 </td>
@@ -387,15 +387,15 @@
 					<td>
 						<input type="checkbox" name="cti_chkbxFdrs" value="${thisFeederId}" style="vertical-align: middle;"/>
 						
-						<a title="Edit" class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${thisFeederId}">
+						<a title="Edit" class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${thisFeederId}" style="text-decoration:none;">
                             <img class="rAlign editImg" src="${editInfoImage}" style="vertical-align: middle;"/>
                         </a>
 	                    <c:if test="${hasEditingRole}">
-	                        <a title="Delete" class="editImg" href="/editor/deleteBasePAO.jsf?value=${thisFeederId}">
+	                        <a title="Delete" class="editImg" href="/editor/deleteBasePAO.jsf?value=${thisFeederId}" style="text-decoration:none;">
 	                            <img class="rAlign editImg" src="/WebConfig/yukon/Icons/delete.gif" style="vertical-align: middle;"/>
 	                        </a>
                         </c:if>
-                    	<a title="Bank Locations" class="editImg" href="/spring/capcontrol/capbank/capBankLocations?value=${thisFeederId}&specialArea=${isSpecialArea}">
+                    	<a title="Bank Locations" class="editImg" href="/spring/capcontrol/capbank/capBankLocations?value=${thisFeederId}&specialArea=${isSpecialArea}" style="text-decoration:none;">
 	                        <img class="rAlign editImg" src="/WebConfig/yukon/Icons/find.gif" style="vertical-align: middle;"/>
 	                    </a>
 						<span>${viewfeeder.feeder.ccName}</span>
@@ -513,11 +513,11 @@
 					<c:choose>
 						<c:when test="${viewableCapBank.capBankDevice.controlDeviceID != 0}">
 					        
-					        <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${viewableCapBank.capBankDevice.controlDeviceID}">
+					        <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${viewableCapBank.capBankDevice.controlDeviceID}" style="text-decoration:none;">
 	                            <img class="rAlign editImg" src="${editInfoImage}" style="vertical-align: middle;"/>
 	                        </a>
 	                        <c:if test="${hasEditingRole}">
-		                        <a href="/editor/copyBase.jsf?itemid=${viewableCapBank.capBankDevice.controlDeviceID}&type=1>">
+		                        <a href="/editor/copyBase.jsf?itemid=${viewableCapBank.capBankDevice.controlDeviceID}&type=1>" style="text-decoration:none;">
 	                               <img src="/WebConfig/yukon/Icons/copy.gif" border="0" height="15" width="15" style="vertical-align: middle;"/>
 	                            </a>
 	                        </c:if>
@@ -531,7 +531,7 @@
 					<c:if test="${viewableCapBank.twoWayCbc}">
                         <a href="#" onclick="return GB_show(' ', 
                             '/spring/capcontrol/oneline/popupmenu?menu=pointTimestamp&cbcID=${viewableCapBank.controlDevice.liteID}',
-                             500, 600)" >
+                             500, 600)" style="text-decoration:none;">
                             <img class="rAlign magnifierImg" style="vertical-align: middle;"
                                 src="/WebConfig/yukon/Icons/magnifier.gif" 
                                 onmouseover="statusMsg(this,'Click here to see the timestamp information for the cap bank controller device.');" />
@@ -547,11 +547,11 @@
 	                        <input id="showFlip_${thisCapBankId}" type="hidden" value="${showFlip}"/>
 	                        <input id="is701x_${thisCapBankId}" type="hidden" value="${viewableCapBank.device701x}"/>
 	                        
-	                        <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${thisCapBankId}">
+	                        <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${thisCapBankId}" style="text-decoration:none;">
 	                            <img class="rAlign editImg" src="${editInfoImage}" style="vertical-align: middle;"/>
 	                        </a>
 		                    <c:if test="${hasEditingRole}">
-		                        <a class="editImg" href="/editor/deleteBasePAO.jsf?value=${thisCapBankId}">
+		                        <a class="editImg" href="/editor/deleteBasePAO.jsf?value=${thisCapBankId}" style="text-decoration:none;">
 		                            <img class="rAlign editImg" src="/WebConfig/yukon/Icons/delete.gif" style="vertical-align: middle;"/>
 		                        </a>
 	                        </c:if>
@@ -561,11 +561,11 @@
 						</c:when>
 						<c:otherwise>
 	                        
-	                        <a href="/editor/cbcBase.jsf?type=2&itemid=${thisCapBankId}">
+	                        <a href="/editor/cbcBase.jsf?type=2&itemid=${thisCapBankId}" style="text-decoration:none;">
 	                            <img class="rAlign editImg" src="${editInfoImage}" style="vertical-align: middle;"/>
 	                        </a>
 		                    <c:if test="${hasEditingRole}">
-		                        <a href="/editor/deleteBasePAO.jsf?value=${thisCapBankId}">
+		                        <a href="/editor/deleteBasePAO.jsf?value=${thisCapBankId}" style="text-decoration:none;">
 		                            <img class="rAlign editImg" src="/WebConfig/yukon/Icons/delete.gif" style="vertical-align: middle;"/>
 		                        </a>
 	                        </c:if>
@@ -573,7 +573,7 @@
 						</c:otherwise>
 					</c:choose>
 					<cti:checkRolesAndProperties value="SHOW_CB_ADDINFO">
-					   <a href="#" onclick="return GB_show('<center> Cap Bank Additional Information </center>', '/spring/capcontrol/capAddInfo?paoID=${thisCapBankId}', 500, 600)" >
+					   <a href="#" onclick="return GB_show('<center> Cap Bank Additional Information </center>', '/spring/capcontrol/capAddInfo?paoID=${thisCapBankId}', 500, 600)" style="text-decoration:none;">
 					       <img class="rAlign magnifierImg" src="/WebConfig/yukon/Icons/magnifier.gif" onmouseover="statusMsg(this, 'Click to see additional information for the cap bank.');" style="vertical-align: middle;"/>
 					   </a>
 					</cti:checkRolesAndProperties>
