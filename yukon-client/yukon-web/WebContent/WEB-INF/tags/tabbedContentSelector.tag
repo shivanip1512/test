@@ -2,8 +2,8 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<%@ attribute name="name" required="true" type="java.lang.String"%>
-
+<cti:includeScript link="/JavaScript/extjs/ext-base.js"/>
+<cti:includeScript link="/JavaScript/extjs/ext-all.js"/>
 <cti:includeScript link="/JavaScript/tabbedContentSelectorContainer.js"/>
 <cti:includeCss link="/JavaScript/extjs_cannon/resources/css/tabs.css"/>
 
@@ -12,7 +12,7 @@
 <script type="text/javascript">
 
 	function setup_${thisId}() {
-		setupTabbedControl('${thisId}', '${name}');
+		setupTabbedControl('${thisId}');
 	}
 		
 	Event.observe (window, 'load', setup_${thisId});

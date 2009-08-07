@@ -68,7 +68,7 @@
         <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson" selectGroupName="${deviceGroupName}" selectedNodePathVar="selectedNodePath" />
         
         <%-- TABS --%>
-		<tags:tabbedContentSelector name="requestType">
+		<tags:tabbedContentSelector>
 		        
 			<%-- ATTRIBUTE TAB --%>
 			<tags:tabbedContentSelectorContent selectorName="${attibuteRequestTypeLabel}" initiallySelected="${empty requestType || requestType == 'SCHEDULED_GROUP_ATTRIBUTE_READ'}">

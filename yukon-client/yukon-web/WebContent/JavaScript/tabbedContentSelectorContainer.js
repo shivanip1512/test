@@ -1,4 +1,4 @@
-function setupTabbedControl(id, controlName) {
+function setupTabbedControl(id) {
 
 	var tabPanelId = $('tabbedControl_' + id);
 	var contentContainer = $('contentContainer_' + id);
