@@ -218,6 +218,9 @@ public final static DeviceBase createDevice(int deviceType) {
 		case PAOGroups.TAPTERMINAL:
 			returnDevice = new PagingTapTerminal();
 			break;
+	    case PAOGroups.TNPP_TERMINAL:
+	        returnDevice = new TNPPTerminal();
+	        break;
 		case PAOGroups.WCTP_TERMINAL:
 			returnDevice = new WCTPTerminal();
 			break;

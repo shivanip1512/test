@@ -3144,6 +3144,9 @@
     <device id="TAPTERMINAL" inherits="SIGNAL_TRANSMITTER_BASE">
         <displayName>PAGING TAP TERMINAL</displayName>
     </device>
+    <device id="TNPPTERMINAL" inherits="SIGNAL_TRANSMITTER_BASE">
+        <displayName>TNPP TERMINAL</displayName>
+    </device>
     <device id="REPEATER" inherits="REPEATER_BASE">
         <displayName>REPEATER 900</displayName>
     </device>

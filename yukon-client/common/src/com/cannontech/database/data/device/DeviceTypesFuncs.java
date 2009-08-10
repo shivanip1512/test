@@ -930,6 +930,7 @@ public final static boolean isTransmitter(int deviceType)
         case REPEATER_801:
         case REPEATER_921:
 		case TAPTERMINAL:
+		case TNPP_TERMINAL:
 		case WCTP_TERMINAL:
 		case SNPP_TERMINAL:
 		case SERIES_5_LMI:

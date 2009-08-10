@@ -140,9 +140,11 @@ public interface DeviceTypes extends TypeBase
     public final static int MCT430A3                  = DEVICE_OFFSET + 107;
     
     public final static int LCR3102                 = DEVICE_OFFSET + 108;
+    public final static int TNPP_TERMINAL    = DEVICE_OFFSET + 109;
+
     
     //***IMPORTANT ** If you add a deviceType, please update the total device type count!
-	public final static int DEVICE_TYPES_COUNT = 108;
+	public final static int DEVICE_TYPES_COUNT = 109;
 	
 	//all the possible text representation of each device type.
 	//If you want the string of any type, just access the zeroth element, example: STRING_CCU_710[0]
@@ -212,6 +214,7 @@ public interface DeviceTypes extends TypeBase
                                                 };
 	
     public static final String[] STRING_TAP_TERMINAL = {"TAP TERMINAL", "TAPTERMINAL", "PAGING TAP TERMINAL"};
+    public static final String[] STRING_TNPP_TERMINAL = {"TNPP TERMINAL"};
 	public static final String[] STRING_WCTP_TERMINAL = {"WCTP TERMINAL"};
 	public static final String[] STRING_SNPP_TERMINAL = {"SNPP TERMINAL"};
 	public static final String[] STRING_EMETCON_GROUP = {"EMETCON GROUP"};

@@ -16,7 +16,8 @@ public class DeviceWizardPanel extends com.cannontech.common.wizard.WizardPanel
 	private DeviceTypePanel deviceTypePanel;
 	private DeviceCommChannelPanel deviceCommChannelPanel;
 	private DeviceTapTerminalPanel deviceTapTerminalPanel;
-	private DeviceTapVerizonPanel deviceTapVerizonPanel;
+	private DeviceTNPPTerminalPanel deviceTNPPTerminalPanel;
+    private DeviceTapVerizonPanel deviceTapVerizonPanel;
 	private DeviceIEDNamePanel deviceIEDNamePanel;
 	private DeviceVirtualNamePanel deviceVirtualNamePanel;
     private DeviceGridPanel deviceGridPanel;
@@ -147,6 +148,13 @@ protected DeviceTapTerminalPanel getDeviceTapTerminalPanel() {
 	return deviceTapTerminalPanel;
 }
 
+protected DeviceTNPPTerminalPanel getDeviceTNPPTerminalPanel() {
+    if( deviceTNPPTerminalPanel == null )
+        deviceTNPPTerminalPanel = new DeviceTNPPTerminalPanel();
+        
+    return deviceTNPPTerminalPanel;
+}
+
 protected DeviceTapVerizonPanel getDeviceTapVerizonPanel() {
 	if( deviceTapVerizonPanel == null )
 		deviceTapVerizonPanel = new DeviceTapVerizonPanel();
@@ -244,17 +252,18 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 	{
 		int devType = getDeviceTypePanel().getDeviceType();
 		
-		if( devType == PAOGroups.TAPTERMINAL)
+		if( devType == PAOGroups.TAPTERMINAL ||
+		    devType == PAOGroups.TNPP_TERMINAL)
 		{
 			getDeviceTapTerminalPanel().setFirstFocus();
             return getDeviceTapTerminalPanel();
 		}
 		else if( devType == PAOGroups.WCTP_TERMINAL)
-		{
-			getDeviceTapVerizonPanel().setFirstFocus();
+        {
+            getDeviceTapVerizonPanel().setFirstFocus();
             return getDeviceTapVerizonPanel();
-		}
-		else if( devType == PAOGroups.SNPP_TERMINAL )
+        }
+        else if( devType == PAOGroups.SNPP_TERMINAL )
 		{
 			getDeviceTapVerizonPanel().setFirstFocus();
             getDeviceTapVerizonPanel().setIsSNPP(true);
@@ -334,7 +343,6 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 			return getDeviceScanRatePanel();
 		}
 	}
-
 	else if (currentInputPanel == getDeviceMeterNumberPanel())
 	{
 
@@ -375,7 +383,23 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
         getDeviceCommChannelPanel().setFirstFocus();
 		return getDeviceCommChannelPanel();
 	}
-	else if (currentInputPanel == getDeviceTapTerminalPanel() || currentInputPanel == getDeviceTapVerizonPanel())
+	else if( currentInputPanel == getDeviceTapTerminalPanel())
+	{
+       int devType = getDeviceTypePanel().getDeviceType();
+       
+       if (devType == PAOGroups.TAPTERMINAL) {
+           getDeviceCommChannelPanel().setValue(null);
+           getDeviceCommChannelPanel().setFirstFocus();
+           return getDeviceCommChannelPanel();
+       }
+       if (devType == PAOGroups.TNPP_TERMINAL) {
+           getDeviceTNPPTerminalPanel().setFirstFocus();
+           return getDeviceTNPPTerminalPanel();
+       }
+       return null;
+	}
+	else if (currentInputPanel == getDeviceTapVerizonPanel() ||
+	         currentInputPanel == getDeviceTNPPTerminalPanel())
 	{
 		getDeviceCommChannelPanel().setValue(null);
         getDeviceCommChannelPanel().setFirstFocus();

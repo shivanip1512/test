@@ -29,6 +29,7 @@ import com.cannontech.database.data.device.IDLCBase;
 import com.cannontech.database.data.device.PagingTapTerminal;
 import com.cannontech.database.data.device.RemoteBase;
 import com.cannontech.database.data.device.Series5Base;
+import com.cannontech.database.data.device.TNPPTerminal;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -234,6 +235,8 @@ private void checkAddress()
 
         if (val instanceof PagingTapTerminal) {
             ((PagingTapTerminal) val).getDeviceDirectCommSettings().setPortID(portID);
+        } else if (val instanceof TNPPTerminal) {
+            ((TNPPTerminal) val).getDeviceDirectCommSettings().setPortID(portID);
         } else if (val instanceof RemoteBase) {
             ((RemoteBase) val).getDeviceDirectCommSettings().setPortID(portID);
 
@@ -279,6 +282,8 @@ private void checkAddress()
                 routeType = RouteTypes.STRING_TCU;
             else if (devType == PAOGroups.TAPTERMINAL)
                 routeType = RouteTypes.STRING_TAP_PAGING;
+            else if (devType == PAOGroups.TNPP_TERMINAL)
+                routeType = RouteTypes.STRING_TNPP_TERMINAL_ROUTE;
             else if (devType == PAOGroups.WCTP_TERMINAL)
                 routeType = RouteTypes.STRING_WCTP_TERMINAL_ROUTE;
             else if (devType == PAOGroups.SNPP_TERMINAL)

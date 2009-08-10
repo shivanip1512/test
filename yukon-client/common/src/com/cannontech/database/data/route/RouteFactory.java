@@ -46,6 +46,10 @@ public final static RouteBase createRoute(int routeType)
 			returnRoute = new TapPagingRoute();
 			returnRoute.setRouteType( RouteTypes.STRING_TAP_PAGING );
 			break;
+        case RouteTypes.ROUTE_TNPP_TERNIMAL:
+            returnRoute = new TNPPTerminalRoute();
+            returnRoute.setRouteType( RouteTypes.STRING_TNPP_TERMINAL_ROUTE);
+            break;
 		case RouteTypes.ROUTE_WCTP_TERMINAL:
 			returnRoute = new WCTPTerminalRoute();
 			returnRoute.setRouteType( RouteTypes.STRING_WCTP_TERMINAL_ROUTE );
@@ -114,6 +118,11 @@ public final static RouteBase createRoute( String routeType)
 		returnRoute = new TapPagingRoute();
 		returnRoute.setRouteType( RouteTypes.STRING_TAP_PAGING );
 	}
+    else if( routeType.equalsIgnoreCase(RouteTypes.STRING_TNPP_TERMINAL_ROUTE) )
+    {
+        returnRoute = new TNPPTerminalRoute();
+        returnRoute.setRouteType( RouteTypes.STRING_TNPP_TERMINAL_ROUTE );
+    }
 	else if( routeType.equalsIgnoreCase(RouteTypes.STRING_WCTP_TERMINAL_ROUTE) )
 	{
 		returnRoute = new WCTPTerminalRoute();

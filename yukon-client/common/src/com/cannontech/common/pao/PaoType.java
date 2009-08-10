@@ -41,6 +41,7 @@ public enum PaoType {
     DCT_501(DeviceTypes.DCT_501),
     RTU_DNP(DeviceTypes.RTU_DNP),
     TAPTERMINAL(DeviceTypes.TAPTERMINAL),
+    TNPPTERMINAL(DeviceTypes.TNPP_TERMINAL),
     MCT310ID(DeviceTypes.MCT310ID),
     MCT310IL(DeviceTypes.MCT310IL),
     MCT318L(DeviceTypes.MCT318L),

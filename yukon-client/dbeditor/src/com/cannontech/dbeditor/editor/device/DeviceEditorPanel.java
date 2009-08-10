@@ -5,6 +5,7 @@ import com.cannontech.common.login.ClientSession;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.dbeditor.DatabaseEditor;
 import com.cannontech.dbeditor.editor.device.configuration.DeviceConfigurationComboPanel;
+import com.cannontech.dbeditor.wizard.device.DeviceTNPPTerminalPanel;
 import com.cannontech.roles.application.DBEditorRole;
 
 /**
@@ -26,7 +27,7 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 			PAOGroups.MCT360, PAOGroups.MCT370, PAOGroups.MCT240, PAOGroups.LMT_2, 
 			PAOGroups.MCT248, PAOGroups.MCT250, PAOGroups.MCT210, PAOGroups.MCT213,
 			PAOGroups.REPEATER, PAOGroups.REPEATER_902, PAOGroups.REPEATER_800, PAOGroups.REPEATER_801, PAOGroups.REPEATER_921, PAOGroups.RTUILEX, PAOGroups.RTUWELCO, 
-			PAOGroups.DR_87, PAOGroups.TAPTERMINAL, PAOGroups.WCTP_TERMINAL, PAOGroups.SNPP_TERMINAL,
+			PAOGroups.DR_87, PAOGroups.TAPTERMINAL, PAOGroups.TNPP_TERMINAL, PAOGroups.WCTP_TERMINAL, PAOGroups.SNPP_TERMINAL,
 			PAOGroups.VIRTUAL_SYSTEM, PAOGroups.DCT_501, PAOGroups.RTU_DNP, PAOGroups.RTU_DART,
 			PAOGroups.ION_7700, PAOGroups.ION_7330, PAOGroups.ION_8300, PAOGroups.RTU_MODBUS,
 			PAOGroups.MCTBROADCAST, PAOGroups.MCT310CT, PAOGroups.MCT310IM, PAOGroups.MCT310IDL,
@@ -107,14 +108,14 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 		{	//10 - PAOExclusionEditorPanel
 			PAOGroups.CCU710A, PAOGroups.CCU711, PAOGroups.CCU721, PAOGroups.TCU5000, PAOGroups.TCU5500, 
 			PAOGroups.LCU415, PAOGroups.LCU_T3026, PAOGroups.LCULG, PAOGroups.LCU_ER, 
-			PAOGroups.TAPTERMINAL, PAOGroups.WCTP_TERMINAL,
+			PAOGroups.TAPTERMINAL, PAOGroups.TNPP_TERMINAL, PAOGroups.WCTP_TERMINAL,
 			PAOGroups.SERIES_5_LMI, PAOGroups.RTC, PAOGroups.SNPP_TERMINAL
 			
 		},
 		{	//11 - ExclusionTimingEditorPanel
 			PAOGroups.CCU710A, PAOGroups.CCU711, PAOGroups.CCU721, PAOGroups.TCU5000, PAOGroups.TCU5500, 
 			PAOGroups.LCU415, PAOGroups.LCU_T3026, PAOGroups.LCULG, PAOGroups.LCU_ER, 
-			PAOGroups.TAPTERMINAL, PAOGroups.WCTP_TERMINAL,
+			PAOGroups.TAPTERMINAL, PAOGroups.TNPP_TERMINAL, PAOGroups.WCTP_TERMINAL,
 			PAOGroups.SERIES_5_LMI, PAOGroups.RTC, PAOGroups.SNPP_TERMINAL
 		},
 		{	//12 - DeviceVerificationAssignmentPanel
@@ -123,7 +124,11 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 		{
 			//13 - DeviceMCT400SeriesOptionPanel
 			PAOGroups.MCT410IL, PAOGroups.MCT410CL, PAOGroups.MCT410FL, PAOGroups.MCT410GL
-		}
+		},
+        {
+            //14 - TNPPTermOptionPanel
+            PAOGroups.TNPP_TERMINAL
+        }
 
 };
 	private javax.swing.JTabbedPane ivjDeviceEditorTabbedPane = null;
@@ -216,6 +221,12 @@ public Object[] createNewPanel(int panelIndex)
 			objs[0] = new com.cannontech.dbeditor.editor.device.DeviceMCT400SeriesOptionsPanel();
 			objs[1] = "MCT Settings";
 			break;
+			
+		case 14:
+		    objs[0] = new DeviceTNPPTerminalPanel();
+	        objs[1] = "TNPP Settings";
+	        break;
+
 	}
 		
 	return objs;
