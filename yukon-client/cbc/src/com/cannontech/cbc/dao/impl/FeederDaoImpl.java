@@ -25,7 +25,7 @@ import com.cannontech.core.dao.SeasonScheduleDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
-import com.cannontech.database.data.pao.CapControlTypes;
+import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -103,7 +103,7 @@ public class FeederDaoImpl implements FeederDao {
 		pao.setCategory(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoClass(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoName(feeder.getName());
-		pao.setType(CapControlTypes.STRING_CAPCONTROL_FEEDER);
+		pao.setType(CapControlType.FEEDER.getDisplayValue());
 		pao.setDescription(feeder.getDescription());
 				
 		try {
@@ -182,7 +182,7 @@ public class FeederDaoImpl implements FeederDao {
 		pao.setCategory(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoClass(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoName(feeder.getName());
-		pao.setType(CapControlTypes.STRING_CAPCONTROL_FEEDER);
+		pao.setType(CapControlType.FEEDER.getDisplayValue());
 		pao.setDescription(feeder.getDescription());
 		pao.setPaObjectID(feeder.getId());
 		

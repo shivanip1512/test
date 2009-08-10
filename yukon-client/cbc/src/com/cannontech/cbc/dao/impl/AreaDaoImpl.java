@@ -2,24 +2,20 @@ package com.cannontech.cbc.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.cbc.dao.AreaDao;
 import com.cannontech.cbc.model.Area;
 import com.cannontech.cbc.model.SpecialArea;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.HolidayScheduleDao;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.SeasonScheduleDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.data.pao.CapControlTypes;
+import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -82,7 +78,7 @@ public class AreaDaoImpl implements AreaDao {
 		pao.setCategory(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoClass(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoName(area.getName());
-		pao.setType(CapControlTypes.STRING_CAPCONTROL_AREA);
+		pao.setType(CapControlType.AREA.getDisplayValue());
 		pao.setDescription(area.getDescription());
 		pao.setDisableFlag(area.getDisabled() ? 'Y' : 'N');
 				
@@ -120,7 +116,7 @@ public class AreaDaoImpl implements AreaDao {
         pao.setCategory(PAOGroups.STRING_CAT_CAPCONTROL);
         pao.setPaoClass(PAOGroups.STRING_CAT_CAPCONTROL);
         pao.setPaoName(specialArea.getName());
-        pao.setType(CapControlTypes.STRING_CAPCONTROL_SPECIAL_AREA);
+        pao.setType(CapControlType.SPECIAL_AREA.getDisplayValue());
         pao.setDescription(specialArea.getDescription());
         pao.setDisableFlag(specialArea.getDisabled() ? 'Y' : 'N');
                 
@@ -157,7 +153,7 @@ public class AreaDaoImpl implements AreaDao {
 		pao.setCategory(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoClass(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoName(area.getName());
-		pao.setType(CapControlTypes.STRING_CAPCONTROL_AREA);
+		pao.setType(CapControlType.AREA.getDisplayValue());
 		pao.setDescription(area.getDescription());
 		pao.setPaObjectID(area.getId());
 				

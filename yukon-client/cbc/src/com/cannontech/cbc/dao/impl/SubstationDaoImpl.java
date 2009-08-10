@@ -19,7 +19,7 @@ import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.data.pao.CapControlTypes;
+import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -88,7 +88,7 @@ public class SubstationDaoImpl implements SubstationDao {
 		pao.setCategory(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoClass(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoName(substation.getName());
-		pao.setType(CapControlTypes.STRING_CAPCONTROL_SUBSTATION);
+		pao.setType(CapControlType.SUBSTATION.getDisplayValue());
 		pao.setDescription(substation.getDescription());
 		pao.setDisableFlag(substation.getDisabled() ? 'Y' : 'N');
 
@@ -141,7 +141,7 @@ public class SubstationDaoImpl implements SubstationDao {
 		pao.setCategory(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoClass(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoName(substation.getName());
-		pao.setType(CapControlTypes.STRING_CAPCONTROL_SUBSTATION);
+		pao.setType(CapControlType.SUBSTATION.getDisplayValue());
 		pao.setDescription(substation.getDescription());
 		
 		pao.setPaObjectID(substation.getId());

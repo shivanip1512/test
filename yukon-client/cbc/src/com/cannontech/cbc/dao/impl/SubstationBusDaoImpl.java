@@ -24,7 +24,7 @@ import com.cannontech.core.dao.SeasonScheduleDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
-import com.cannontech.database.data.pao.CapControlTypes;
+import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -110,7 +110,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
 		pao.setCategory(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoClass(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoName(bus.getName());
-		pao.setType(CapControlTypes.STRING_CAPCONTROL_SUBBUS);
+		pao.setType(CapControlType.SUBBUS.getDisplayValue());
 		pao.setDescription(bus.getDescription());
 		pao.setDisableFlag(bus.getDisabled() ? 'Y' : 'N');
 		
@@ -186,7 +186,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
 		pao.setCategory(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoClass(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoName(bus.getName());
-		pao.setType(CapControlTypes.STRING_CAPCONTROL_SUBBUS);
+		pao.setType(CapControlType.SUBBUS.getDisplayValue());
 		pao.setDescription(bus.getDescription());
 		pao.setPaObjectID(bus.getId());
 		
