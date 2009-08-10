@@ -100,12 +100,12 @@ public class ConfigWidget extends WidgetControllerBase {
     }
     
     @RequestMapping
-    public ModelAndView pushConfig(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public ModelAndView sendConfig(HttpServletRequest request, HttpServletResponse response) throws Exception {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         ModelAndView mav = new ModelAndView("configWidget/configWidgetResult.jsp");
         Meter meter = getMeter(request);
-        CommandResultHolder resultHolder = deviceConfigService.pushConfig(meter, userContext.getYukonUser());
-        mav.addObject("pushResult", resultHolder);
+        CommandResultHolder resultHolder = deviceConfigService.sendConfig(meter, userContext.getYukonUser());
+        mav.addObject("sendResult", resultHolder);
         return mav;
     }
     

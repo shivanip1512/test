@@ -12,6 +12,8 @@ import javax.swing.JTextArea;
 import javax.swing.event.CaretListener;
 import javax.swing.text.JTextComponent;
 
+import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
+import com.cannontech.common.device.config.model.ConfigurationBase;
 import com.cannontech.common.device.groups.service.FixedDeviceGroupingHack;
 import com.cannontech.common.device.groups.service.FixedDeviceGroups;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -1018,7 +1020,9 @@ public static void main(java.lang.String[] args) {
 public void setValue(Object val) 
 {
 	int deviceType = PAOGroups.getDeviceType( ((DeviceBase)val).getPAOType() );
-
+	
+	DeviceConfigurationDao deviceConfigDao = YukonSpringHook.getBean("deviceConfigurationDao", DeviceConfigurationDao.class);
+	
 	getLastIntervalDemandRateLabel().setVisible( val instanceof MCTBase);
 	getLastIntervalDemandRateComboBox().setVisible( val instanceof MCTBase);
 	getLoadProfileCollectionPanel().setVisible( val instanceof MCTBase );
@@ -1032,11 +1036,12 @@ public void setValue(Object val)
 	//The default object is either a MCT or a IEDmeter
 	if( val instanceof MCTBase )
 	{
-		getLastIntervalDemandRateLabel().setVisible(true);
+	    MCTBase mctBase = (MCTBase)val;
+		
+	    getLastIntervalDemandRateLabel().setVisible(true);
 		getLastIntervalDemandRateComboBox().setVisible(true);
 		getLoadProfileCollectionPanel().setVisible(true);
-
-
+		
 		DeviceLoadProfile dlp = ((MCTBase)val).getDeviceLoadProfile();
 
 		String loadProfileCollection = dlp.getLoadProfileCollection();
@@ -1121,20 +1126,23 @@ public void setValue(Object val)
 		 CtiUtilities.setCheckBoxState(getChannel2CheckBox(), new Character(loadProfileCollection.charAt(1)));
 		 CtiUtilities.setCheckBoxState(getChannel3CheckBox(), new Character(loadProfileCollection.charAt(2)));
 		 getChannel4CheckBox().setVisible(false);
-	  }
-      
-	  else if( deviceType == PAOGroups.MCT470 || DeviceTypesFuncs.isMCT430(deviceType) )
-	  {
-	  	getChannel2CheckBox().setEnabled(true);
-		getChannel3CheckBox().setEnabled(true);	
-		getChannel4CheckBox().setEnabled(true);
-		CtiUtilities.setCheckBoxState(getChannel1CheckBox(), new Character(loadProfileCollection.charAt(0)));
-		CtiUtilities.setCheckBoxState(getChannel2CheckBox(), new Character(loadProfileCollection.charAt(1)));
-		CtiUtilities.setCheckBoxState(getChannel3CheckBox(), new Character(loadProfileCollection.charAt(2)));
-		CtiUtilities.setCheckBoxState(getChannel4CheckBox(), new Character(loadProfileCollection.charAt(3)));
-	  }
-		else if( DeviceTypesFuncs.isLoadProfile4Channel(deviceType) )
-		{
+	  } else if( deviceType == PAOGroups.MCT470 || DeviceTypesFuncs.isMCT430(deviceType) ) {
+	      SimpleDevice device = new SimpleDevice(mctBase.getPAObjectID(), deviceType);
+          ConfigurationBase config = deviceConfigDao.findConfigurationForDevice(device);
+          CtiUtilities.setCheckBoxState(getChannel1CheckBox(), new Character(loadProfileCollection.charAt(0)));
+          CtiUtilities.setCheckBoxState(getChannel2CheckBox(), new Character(loadProfileCollection.charAt(1)));
+          CtiUtilities.setCheckBoxState(getChannel3CheckBox(), new Character(loadProfileCollection.charAt(2)));
+          CtiUtilities.setCheckBoxState(getChannel4CheckBox(), new Character(loadProfileCollection.charAt(3)));
+		
+          if(config != null) {
+              getLastIntervalDemandRateComboBox().setEnabled(false);
+              getLoadProfileDemandRateComboBox().setEnabled(false);
+              getChannel1CheckBox().setEnabled(false);
+              getChannel2CheckBox().setEnabled(false);
+              getChannel3CheckBox().setEnabled(false);
+              getChannel4CheckBox().setEnabled(false);
+          }
+	  } else if( DeviceTypesFuncs.isLoadProfile4Channel(deviceType) ) {
 			CtiUtilities.setCheckBoxState(getChannel1CheckBox(), new Character(loadProfileCollection.charAt(0)));
 			CtiUtilities.setCheckBoxState(getChannel2CheckBox(), new Character(loadProfileCollection.charAt(1)));
 			CtiUtilities.setCheckBoxState(getChannel3CheckBox(), new Character(loadProfileCollection.charAt(2)));

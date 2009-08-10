@@ -25,7 +25,7 @@ public interface DeviceConfigurationDao {
     public List<ConfigurationBase> getAllConfigurations();
 
     /**
-     * Method to get a configuration by id
+     * Method to get a configuration by id. Returns null if no config by that id exists.
      * @param id - Id of configuration
      * @return Configuration
      */

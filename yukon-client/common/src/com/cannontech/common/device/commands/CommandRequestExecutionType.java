@@ -14,7 +14,7 @@ public enum CommandRequestExecutionType {
 	OUTAGE_PROCESSING_OUTAGE_LOGS_READ("Outage Processing Outage Logs Read", "Outage logs read for the pupose of Outage Processing on the Outages Group of an Outage Monitor.", false),
 	
 	DEVICE_CONFIG_VERIFY("Device Config Verify", "Verify command sent to a collection of devices for the purpose of Device Configuration.", false),
-	DEVICE_CONFIG_PUSH("Device Config Push", "Push config settings to a devices for the purpose of Device Configuration.", false),
+	DEVICE_CONFIG_SEND("Device Config Send", "Send config settings to a devices for the purpose of Device Configuration.", false),
 	;
 	
 	private String shortName;

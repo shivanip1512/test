@@ -57,168 +57,194 @@
         <cti:msg var="deviceCollectionReportDescription" key="yukon.common.device.bulk.collectionActions.deviceCollectionReportDescription"/>
         <cti:msg var="assignConfigLabel" key="yukon.common.device.bulk.collectionActions.assignConfigLabel"/>
         <cti:msg var="assignConfigDescription" key="yukon.common.device.bulk.collectionActions.assignConfigDescription"/>
-        <cti:msg var="pushConfigLabel" key="yukon.common.device.bulk.collectionActions.pushConfigLabel"/>
-        <cti:msg var="pushConfigDescription" key="yukon.common.device.bulk.collectionActions.pushConfigDescription"/>
+        <cti:msg var="sendConfigLabel" key="yukon.common.device.bulk.collectionActions.sendConfigLabel"/>
+        <cti:msg var="sendConfigDescription" key="yukon.common.device.bulk.collectionActions.sendConfigDescription"/>
+        <cti:msg var="readConfigLabel" key="yukon.common.device.bulk.collectionActions.readConfigLabel"/>
+        <cti:msg var="readConfigDescription" key="yukon.common.device.bulk.collectionActions.readConfigDescription"/>
+        <cti:msg var="verifyConfigLabel" key="yukon.common.device.bulk.collectionActions.verifyConfigLabel"/>
+        <cti:msg var="verifyConfigDescription" key="yukon.common.device.bulk.collectionActions.verifyConfigDescription"/>
         
         <table cellspacing="10">
         
             <cti:checkRole role="operator.DeviceActionsRole.ROLEID">        
             
-            <%-- ADD TO GROUP --%>
-            <cti:checkProperty property="operator.DeviceActionsRole.DEVICE_GROUP_MODIFY">
-            <tr>
-                <td>
-                    <form id="deviceGroupAddForm" method="get" action="/spring/bulk/group/selectGroup">
-                        <input type="hidden" name="addRemove" value="ADD" />
-                        <cti:deviceCollection deviceCollection="${deviceCollection}" />
-                        <input type="submit" id="groupEditorButton" value="${addToGroupLabel}" style="width:140px;"/>
-                    </form>
-                </td>
-                <td>${addToGroupDescription}</td>
-            </tr>
-            </cti:checkProperty>
-            
-            <%-- REMOVE FROM GROUP --%>
-            <cti:checkProperty property="operator.DeviceActionsRole.DEVICE_GROUP_MODIFY">
-            <tr>
-                <td>
-                    <form id="deviceGroupRemoveForm" method="get" action="/spring/bulk/group/selectGroup">
-                        <input type="hidden" name="addRemove" value="REMOVE" />
-                        <cti:deviceCollection deviceCollection="${deviceCollection}" />
-                        <input type="submit" id="groupEditorButton" value="${removeFromGroupLabel}" style="width:140px;"/>
-                    </form>
-                </td>
-                <td>${removeFromGroupDescription}</td>
-            </tr>
-            </cti:checkProperty>
-            
-            <%-- GROUP COMMANDER --%>
-            <cti:checkProperty property="operator.DeviceActionsRole.GROUP_COMMANDER">
-            <tr>
-                <td>
-                    <form id="groupCommanderForm" method="get" action="/spring/group/commander/collectionProcessing">
-                        <cti:deviceCollection deviceCollection="${deviceCollection}" />
-                        <input type="submit" id="groupCommanderButton" value="${sendCommandLabel}" style="width:140px;"/>
-                    </form>
-                </td>
-                <td>${sendCommandDescription}</td>
-            </tr>
-            </cti:checkProperty>
-            
-            <%-- GROUP ATTRIBUTE READ --%>
-            <tr>
-                <td>
-                    <form id="groupAttributeReadForm" method="get" action="/spring/group/groupMeterRead/homeCollection">
-                        <cti:deviceCollection deviceCollection="${deviceCollection}" />
-                        <input type="submit" id="groupCommanderButton" value="${readAttributeLabel}" style="width:140px;"/>
-                    </form>
-                </td>
-                <td>${readAttributeDescription}</td>
-            </tr>
-            
-            <%-- MASS CHANGE --%>
-            <cti:checkProperty property="operator.DeviceActionsRole.MASS_CHANGE">
-            <tr>
-                <td>
-                    <form id="massChangeForm" method="get" action="/spring/bulk/massChange/massChangeSelect">
-                        <cti:deviceCollection deviceCollection="${deviceCollection}" />
-                        <input type="submit" id="massChangeButton" value="${massChangeLabel}" style="width:140px;"/>
-                    </form>
-                </td>
-                <td>${massChangeDescription}</td>
-            </tr>
-            </cti:checkProperty>
-            
-            <%-- CHANGE TYPE --%>
-            <cti:checkProperty property="operator.DeviceActionsRole.MASS_CHANGE">
-            <tr>
-                <td>
-                    <form id="changeDeviceTypeForm" method="get" action="/spring/bulk/changeDeviceType/chooseDeviceType">
-                        <cti:deviceCollection deviceCollection="${deviceCollection}" />
-                        <input type="submit" id="changeDeviceTypeButton" value="${changeDeviceTypeLabel}" style="width:140px;"/>
-                    </form>
-                </td>
-                <td>${changeDeviceTypeDescription}</td>
-            </tr>
-            </cti:checkProperty>
-            
-            <%-- LOCATE ROUTE --%>
-            <cti:checkProperty property="operator.DeviceActionsRole.LOCATE_ROUTE">
-            <tr>
-                <td>
-                    <form id="routeLocateForm" method="get" action="/spring/bulk/routeLocate/home">
-                        <cti:deviceCollection deviceCollection="${deviceCollection}" />
-                        <input type="submit" id="routeLocateButton" value="${routeLocateLabel}" style="width:140px;"/>
-                    </form>
-                </td>
-                <td>${routeLocateDescription}</td>
-            </tr>
-            </cti:checkProperty>
-            
-            <%-- ADD POINTS --%>
-            <cti:checkProperty property="operator.DeviceActionsRole.ADD_REMOVE_POINTS">
-            <tr>
-                <td>
-                    <form id="addPointsForm" method="get" action="/spring/bulk/addPoints/home">
-                        <cti:deviceCollection deviceCollection="${deviceCollection}" />
-                        <input type="submit" id="addPointsButton" value="${addPointsLabel}" style="width:140px;"/>
-                    </form>
-                </td>
-                <td>${addPointsDescription}</td>
-            </tr>
-            </cti:checkProperty>
-            
-            <%-- REMOVE POINTS --%>
-            <cti:checkProperty property="operator.DeviceActionsRole.ADD_REMOVE_POINTS">
-            <tr>
-                <td>
-                    <form id="removePointsForm" method="get" action="/spring/bulk/removePoints/home">
-                        <cti:deviceCollection deviceCollection="${deviceCollection}" />
-                        <input type="submit" id="removePointsButton" value="${removePointsLabel}" style="width:140px;"/>
-                    </form>
-                </td>
-                <td>${removePointsDescription}</td>
-            </tr>
-            </cti:checkProperty>
-            
-            <%-- MASS DELETE --%>
-            <cti:checkProperty property="operator.DeviceActionsRole.MASS_DELETE">
-            <tr>
-                <td>
-                    <form id="massDeleteForm" method="get" action="/spring/bulk/massDelete/massDelete">
-                        <cti:deviceCollection deviceCollection="${deviceCollection}" />
-                        <input type="submit" id="massDeleteButton" value="${massDeleteLabel}" style="width:140px;"/>
-                    </form>
-                </td>
-                <td>${massDeleteDescription}</td>
-            </tr>
-            </cti:checkProperty>
-            
-            <%-- ASSIGN CONFIG --%>
-            <cti:checkRolesAndProperties value="ASSIGN_CONFIG">
-            <tr>
-                <td>
-                    <form id="assignConfigForm" method="get" action="/spring/bulk/config/assignConfig">
-                        <cti:deviceCollection deviceCollection="${deviceCollection}" />
-                        <input type="submit" id="assignConfigButton" value="${assignConfigLabel}" style="width:140px;"/>
-                    </form>
-                </td>
-                <td>${assignConfigDescription}</td>
-            </tr>
-            </cti:checkRolesAndProperties>
-            
-            <%-- PUSH CONFIG --%>
-            <cti:checkRolesAndProperties value="PUSH_CONFIG">
-            <tr>
-                <td>
-                    <form id="pushConfigForm" method="get" action="/spring/bulk/config/pushConfig">
-                        <cti:deviceCollection deviceCollection="${deviceCollection}" />
-                        <input type="submit" id="pushConfigButton" value="${pushConfigLabel}" style="width:140px;"/>
-                    </form>
-                </td>
-                <td>${pushConfigDescription}</td>
-            </tr>
-            </cti:checkRolesAndProperties>
+	            <%-- ADD TO GROUP --%>
+	            <cti:checkProperty property="operator.DeviceActionsRole.DEVICE_GROUP_MODIFY">
+	            <tr>
+	                <td>
+	                    <form id="deviceGroupAddForm" method="get" action="/spring/bulk/group/selectGroup">
+	                        <input type="hidden" name="addRemove" value="ADD" />
+	                        <cti:deviceCollection deviceCollection="${deviceCollection}" />
+	                        <input type="submit" id="groupEditorButton" value="${addToGroupLabel}" style="width:140px;"/>
+	                    </form>
+	                </td>
+	                <td>${addToGroupDescription}</td>
+	            </tr>
+	            </cti:checkProperty>
+	            
+	            <%-- REMOVE FROM GROUP --%>
+	            <cti:checkProperty property="operator.DeviceActionsRole.DEVICE_GROUP_MODIFY">
+	            <tr>
+	                <td>
+	                    <form id="deviceGroupRemoveForm" method="get" action="/spring/bulk/group/selectGroup">
+	                        <input type="hidden" name="addRemove" value="REMOVE" />
+	                        <cti:deviceCollection deviceCollection="${deviceCollection}" />
+	                        <input type="submit" id="groupEditorButton" value="${removeFromGroupLabel}" style="width:140px;"/>
+	                    </form>
+	                </td>
+	                <td>${removeFromGroupDescription}</td>
+	            </tr>
+	            </cti:checkProperty>
+	            
+	            <%-- GROUP COMMANDER --%>
+	            <cti:checkProperty property="operator.DeviceActionsRole.GROUP_COMMANDER">
+	            <tr>
+	                <td>
+	                    <form id="groupCommanderForm" method="get" action="/spring/group/commander/collectionProcessing">
+	                        <cti:deviceCollection deviceCollection="${deviceCollection}" />
+	                        <input type="submit" id="groupCommanderButton" value="${sendCommandLabel}" style="width:140px;"/>
+	                    </form>
+	                </td>
+	                <td>${sendCommandDescription}</td>
+	            </tr>
+	            </cti:checkProperty>
+	            
+	            <%-- GROUP ATTRIBUTE READ --%>
+	            <tr>
+	                <td>
+	                    <form id="groupAttributeReadForm" method="get" action="/spring/group/groupMeterRead/homeCollection">
+	                        <cti:deviceCollection deviceCollection="${deviceCollection}" />
+	                        <input type="submit" id="groupCommanderButton" value="${readAttributeLabel}" style="width:140px;"/>
+	                    </form>
+	                </td>
+	                <td>${readAttributeDescription}</td>
+	            </tr>
+	            
+	            <%-- MASS CHANGE --%>
+	            <cti:checkProperty property="operator.DeviceActionsRole.MASS_CHANGE">
+	            <tr>
+	                <td>
+	                    <form id="massChangeForm" method="get" action="/spring/bulk/massChange/massChangeSelect">
+	                        <cti:deviceCollection deviceCollection="${deviceCollection}" />
+	                        <input type="submit" id="massChangeButton" value="${massChangeLabel}" style="width:140px;"/>
+	                    </form>
+	                </td>
+	                <td>${massChangeDescription}</td>
+	            </tr>
+	            </cti:checkProperty>
+	            
+	            <%-- CHANGE TYPE --%>
+	            <cti:checkProperty property="operator.DeviceActionsRole.MASS_CHANGE">
+	            <tr>
+	                <td>
+	                    <form id="changeDeviceTypeForm" method="get" action="/spring/bulk/changeDeviceType/chooseDeviceType">
+	                        <cti:deviceCollection deviceCollection="${deviceCollection}" />
+	                        <input type="submit" id="changeDeviceTypeButton" value="${changeDeviceTypeLabel}" style="width:140px;"/>
+	                    </form>
+	                </td>
+	                <td>${changeDeviceTypeDescription}</td>
+	            </tr>
+	            </cti:checkProperty>
+	            
+	            <%-- LOCATE ROUTE --%>
+	            <cti:checkProperty property="operator.DeviceActionsRole.LOCATE_ROUTE">
+	            <tr>
+	                <td>
+	                    <form id="routeLocateForm" method="get" action="/spring/bulk/routeLocate/home">
+	                        <cti:deviceCollection deviceCollection="${deviceCollection}" />
+	                        <input type="submit" id="routeLocateButton" value="${routeLocateLabel}" style="width:140px;"/>
+	                    </form>
+	                </td>
+	                <td>${routeLocateDescription}</td>
+	            </tr>
+	            </cti:checkProperty>
+	            
+	            <%-- ADD POINTS --%>
+	            <cti:checkProperty property="operator.DeviceActionsRole.ADD_REMOVE_POINTS">
+	            <tr>
+	                <td>
+	                    <form id="addPointsForm" method="get" action="/spring/bulk/addPoints/home">
+	                        <cti:deviceCollection deviceCollection="${deviceCollection}" />
+	                        <input type="submit" id="addPointsButton" value="${addPointsLabel}" style="width:140px;"/>
+	                    </form>
+	                </td>
+	                <td>${addPointsDescription}</td>
+	            </tr>
+	            </cti:checkProperty>
+	            
+	            <%-- REMOVE POINTS --%>
+	            <cti:checkProperty property="operator.DeviceActionsRole.ADD_REMOVE_POINTS">
+	            <tr>
+	                <td>
+	                    <form id="removePointsForm" method="get" action="/spring/bulk/removePoints/home">
+	                        <cti:deviceCollection deviceCollection="${deviceCollection}" />
+	                        <input type="submit" id="removePointsButton" value="${removePointsLabel}" style="width:140px;"/>
+	                    </form>
+	                </td>
+	                <td>${removePointsDescription}</td>
+	            </tr>
+	            </cti:checkProperty>
+	            
+	            <%-- MASS DELETE --%>
+	            <cti:checkProperty property="operator.DeviceActionsRole.MASS_DELETE">
+	            <tr>
+	                <td>
+	                    <form id="massDeleteForm" method="get" action="/spring/bulk/massDelete/massDelete">
+	                        <cti:deviceCollection deviceCollection="${deviceCollection}" />
+	                        <input type="submit" id="massDeleteButton" value="${massDeleteLabel}" style="width:140px;"/>
+	                    </form>
+	                </td>
+	                <td>${massDeleteDescription}</td>
+	            </tr>
+	            </cti:checkProperty>
+	            
+	            <%-- ASSIGN CONFIG --%>
+	            <cti:checkRolesAndProperties value="ASSIGN_CONFIG">
+	            <tr>
+	                <td>
+	                    <form id="assignConfigForm" method="get" action="/spring/bulk/config/assignConfig">
+	                        <cti:deviceCollection deviceCollection="${deviceCollection}" />
+	                        <input type="submit" id="assignConfigButton" value="${assignConfigLabel}" style="width:140px;"/>
+	                    </form>
+	                </td>
+	                <td>${assignConfigDescription}</td>
+	            </tr>
+	            </cti:checkRolesAndProperties>
+	            
+	            <%-- SEND CONFIG --%>
+	            <cti:checkRolesAndProperties value="SEND_READ_CONFIG">
+	            <tr>
+	                <td>
+	                    <form id="sendConfigForm" method="get" action="/spring/bulk/config/sendConfig">
+	                        <cti:deviceCollection deviceCollection="${deviceCollection}" />
+	                        <input type="submit" id="sendConfigButton" value="${sendConfigLabel}" style="width:140px;"/>
+	                    </form>
+	                </td>
+	                <td>${sendConfigDescription}</td>
+	            </tr>
+	            
+	            <%-- READ CONFIG --%>
+                <tr>
+                    <td>
+                        <form id="readConfigForm" method="get" action="/spring/bulk/config/readConfig">
+                            <cti:deviceCollection deviceCollection="${deviceCollection}" />
+                            <input type="submit" id="readConfigButton" value="${readConfigLabel}" style="width:140px;"/>
+                        </form>
+                    </td>
+                    <td>${readConfigDescription}</td>
+                </tr>
+                </cti:checkRolesAndProperties>
+                
+                <%-- VERIFY CONFIG --%>
+                <tr>
+                    <td>
+                        <form id="verifyConfigForm" method="get" action="/spring/bulk/config/verifyConfig">
+                            <cti:deviceCollection deviceCollection="${deviceCollection}" />
+                            <input type="submit" id="verifyConfigButton" value="${verifyConfigLabel}" style="width:140px;"/>
+                        </form>
+                    </td>
+                    <td>${verifyConfigDescription}</td>
+                </tr>
             
             </cti:checkRole>
 

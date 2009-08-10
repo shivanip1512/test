@@ -41,13 +41,18 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     private DeviceConfigurationDao deviceConfigurationDao;
     private MeterDao meterDao;
     
-    public String pushConfigs(DeviceCollection deviceCollection, String method, SimpleCallback<GroupCommandResult> callback, LiteYukonUser user) {
+    @Override
+    public String sendConfigs(DeviceCollection deviceCollection, String method, SimpleCallback<GroupCommandResult> callback, LiteYukonUser user) {
         String commandString = "putconfig emetcon install all";
         if (method.equalsIgnoreCase("force")) {
             commandString += " force";
-        } else if (method.equalsIgnoreCase("read")) {
-            commandString = "getconfig install";
         }
+        return groupCommandExecutor.execute(deviceCollection,commandString, callback, user);
+    }
+    
+    @Override
+    public String readConfigs(DeviceCollection deviceCollection, SimpleCallback<GroupCommandResult> callback, LiteYukonUser user) {
+        String commandString = "getconfig install";
         return groupCommandExecutor.execute(deviceCollection,commandString, callback, user);
     }
     
@@ -134,9 +139,9 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     }
     
     @Override
-    public CommandResultHolder pushConfig(YukonDevice device, LiteYukonUser user) throws Exception {
+    public CommandResultHolder sendConfig(YukonDevice device, LiteYukonUser user) throws Exception {
         String commandString = "putconfig emetcon install all force";
-        CommandResultHolder resultHolder = commandRequestExecutor.execute(device, commandString, CommandRequestExecutionType.DEVICE_CONFIG_PUSH, user);
+        CommandResultHolder resultHolder = commandRequestExecutor.execute(device, commandString, CommandRequestExecutionType.DEVICE_CONFIG_SEND, user);
         return resultHolder;
     }
     

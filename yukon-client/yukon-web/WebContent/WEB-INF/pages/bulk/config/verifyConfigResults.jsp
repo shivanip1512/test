@@ -32,7 +32,7 @@
         <%-- collection actions --%>
         <tags:collectionActionsCrumbLink deviceCollection="${deviceCollection}" />
         
-        <tags:crumbLinkByMap url="/spring/bulk/config/pushConfig" parameterMap="${deviceCollection.collectionParameters}" titleKey="yukon.common.device.bulk.pushConfig.pageTitle" />
+        <tags:crumbLinkByMap url="/spring/bulk/config/sendConfig" parameterMap="${deviceCollection.collectionParameters}" titleKey="yukon.common.device.bulk.sendConfig.pageTitle" />
         
         <%-- verify config results --%>
         <cti:crumbLink>${pageTitle}</cti:crumbLink>

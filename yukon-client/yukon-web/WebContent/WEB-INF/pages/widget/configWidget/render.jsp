@@ -2,7 +2,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-
+<cti:includeCss link="/WebConfig/yukon/styles/YukonGeneralStyles.css"/>
     <div>
         <ct:nameValueContainer>
             
@@ -26,10 +26,10 @@
         <c:choose>
             <c:when test="${fn:length(existingConfigs) > 0}">
                 <div style="text-align: right">
-                    <cti:checkRolesAndProperties value="PUSH_CONFIG">
-                        <ct:widgetActionUpdate method="pushConfig" label="Push" labelBusy="Pushing" container="${widgetParameters.widgetId}_config_results"/>
+                    <cti:checkRolesAndProperties value="SEND_READ_CONFIG">
+                        <ct:widgetActionUpdate method="sendConfig" label="Send" labelBusy="Sending" container="${widgetParameters.widgetId}_config_results"/>
+                        <ct:widgetActionUpdate method="readConfig" label="Read" labelBusy="Reading" container="${widgetParameters.widgetId}_config_results"/>
                     </cti:checkRolesAndProperties>
-                    <ct:widgetActionUpdate method="readConfig" label="Read" labelBusy="Reading" container="${widgetParameters.widgetId}_config_results"/>
                     <ct:widgetActionUpdate method="verifyConfig" label="Verify" labelBusy="Verifying" container="${widgetParameters.widgetId}_config_results"/>
 				</div>
             </c:when>

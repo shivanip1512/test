@@ -49,6 +49,7 @@
 	                </td>
 	                <td>
 	                    <select id="configuration" name="configuration">
+                            <option value="-1">(none)</option>
 	                        <c:forEach var="config" items="${existingConfigs}">
 	                            <option value="${config.id}">${config.name}</option>
 	                        </c:forEach>

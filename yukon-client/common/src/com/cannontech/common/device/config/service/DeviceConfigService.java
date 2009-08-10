@@ -11,7 +11,9 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface DeviceConfigService {
 
-    public String pushConfigs(DeviceCollection deviceCollection, String method, SimpleCallback<GroupCommandResult> callback, LiteYukonUser user);
+    public String sendConfigs(DeviceCollection deviceCollection, String method, SimpleCallback<GroupCommandResult> callback, LiteYukonUser user);
+    
+    public String readConfigs(DeviceCollection deviceCollection, SimpleCallback<GroupCommandResult> callback, LiteYukonUser user);
     
     public VerifyConfigCommandResult verifyConfigs(Iterable<? extends YukonDevice> deviceCollection, LiteYukonUser user);
 
@@ -19,5 +21,5 @@ public interface DeviceConfigService {
     
     public CommandResultHolder readConfig(YukonDevice device, LiteYukonUser user) throws Exception;
 
-    public CommandResultHolder pushConfig(YukonDevice device, LiteYukonUser user) throws Exception;
+    public CommandResultHolder sendConfig(YukonDevice device, LiteYukonUser user) throws Exception;
 }

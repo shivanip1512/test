@@ -157,23 +157,62 @@ public class DeviceConfigController extends BulkControllerBase {
     }
 
     /**
-     * CONFIRM CONFIG PUSH
+     * CONFIRM CONFIG SEND
      * @param deviceCollection
      * @param model
      * @return
      * @throws ServletException
      */
     @RequestMapping
-    public String pushConfig(DeviceCollection deviceCollection, ModelMap model) throws ServletException {
+    public String sendConfig(DeviceCollection deviceCollection, ModelMap model) throws ServletException {
         model.addAttribute("deviceCollection", deviceCollection);
         long deviceCount = deviceCollection.getDeviceCount();
         model.addAttribute("deviceCount", deviceCount);
         
-        return "config/pushConfig.jsp";
+        return "config/sendConfig.jsp";
     }
     
+    /**
+     * CONFIRM CONFIG VERIFY
+     * @param deviceCollection
+     * @param model
+     * @return
+     * @throws ServletException
+     */
     @RequestMapping
-    public String verifyConfigs(DeviceCollection deviceCollection, LiteYukonUser user, ModelMap model) {
+    public String verifyConfig(DeviceCollection deviceCollection, ModelMap model) throws ServletException {
+        model.addAttribute("deviceCollection", deviceCollection);
+        long deviceCount = deviceCollection.getDeviceCount();
+        model.addAttribute("deviceCount", deviceCount);
+        
+        return "config/verifyConfig.jsp";
+    }
+    
+    /**
+     * CONFIRM CONFIG READ
+     * @param deviceCollection
+     * @param model
+     * @return
+     * @throws ServletException
+     */
+    @RequestMapping
+    public String readConfig(DeviceCollection deviceCollection, ModelMap model) throws ServletException {
+        model.addAttribute("deviceCollection", deviceCollection);
+        long deviceCount = deviceCollection.getDeviceCount();
+        model.addAttribute("deviceCount", deviceCount);
+        
+        return "config/readConfig.jsp";
+    }
+    
+    /**
+     * DO VERIFY CONFIG
+     * @param deviceCollection
+     * @param user
+     * @param model
+     * @return
+     */
+    @RequestMapping
+    public String doVerifyConfigs(DeviceCollection deviceCollection, LiteYukonUser user, ModelMap model) {
         model.addAttribute("deviceCollection", deviceCollection);
         VerifyConfigCommandResult result = deviceConfigService.verifyConfigs(deviceCollection, user);
         StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup(null);
@@ -193,7 +232,7 @@ public class DeviceConfigController extends BulkControllerBase {
     }
     
     /**
-     * DO PUSH CONFIG
+     * DO READ CONFIG
      * @param deviceCollection
      * @param cancelButton
      * @param method
@@ -203,7 +242,7 @@ public class DeviceConfigController extends BulkControllerBase {
      * @throws ServletException
      */
     @RequestMapping(method=RequestMethod.POST)
-    public String doPushConfig(DeviceCollection deviceCollection, String cancelButton, String verifyButton, String method, LiteYukonUser user, ModelMap model) throws ServletException {
+    public String doReadConfig(DeviceCollection deviceCollection, String cancelButton, LiteYukonUser user, ModelMap model) throws ServletException {
         
         // CANCEL
         if (cancelButton != null) {
@@ -212,13 +251,7 @@ public class DeviceConfigController extends BulkControllerBase {
             return "redirect:/spring/bulk/collectionActions";
         }
 
-        // DO VERIFY
-        if (verifyButton != null) {
-            model.addAllAttributes(deviceCollection.getCollectionParameters());
-            return "redirect:verifyConfigs";
-        }
-        
-        // DO PUSH
+        // DO SEND
         SimpleCallback<GroupCommandResult> callback = new SimpleCallback<GroupCommandResult>() {
             @Override
             public void handle(GroupCommandResult result) {
@@ -238,7 +271,52 @@ public class DeviceConfigController extends BulkControllerBase {
             
         };
         
-        String key = deviceConfigService.pushConfigs(deviceCollection, method, callback, user);
+        String key = deviceConfigService.readConfigs(deviceCollection, callback, user);
+        model.addAttribute("resultKey", key);
+        return "redirect:/spring/group/commander/resultDetail";
+    }
+    
+    /**
+     * DO SEND CONFIG
+     * @param deviceCollection
+     * @param cancelButton
+     * @param method
+     * @param user
+     * @param model
+     * @return
+     * @throws ServletException
+     */
+    @RequestMapping(method=RequestMethod.POST)
+    public String doSendConfig(DeviceCollection deviceCollection, String cancelButton, String method, LiteYukonUser user, ModelMap model) throws ServletException {
+        
+        // CANCEL
+        if (cancelButton != null) {
+            // redirect
+            model.addAllAttributes(deviceCollection.getCollectionParameters());
+            return "redirect:/spring/bulk/collectionActions";
+        }
+
+        // DO SEND
+        SimpleCallback<GroupCommandResult> callback = new SimpleCallback<GroupCommandResult>() {
+            @Override
+            public void handle(GroupCommandResult result) {
+                ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.alerts.commandCompletion");
+                int successCount = result.getResultHolder().getResultStrings().size();
+                resolvableTemplate.addData("successCount", successCount);
+                int failureCount = result.getResultHolder().getErrors().size();
+                resolvableTemplate.addData("failureCount", failureCount);
+                int total = failureCount + successCount;
+                resolvableTemplate.addData("percentSuccess", (float)successCount *100 / total);
+                resolvableTemplate.addData("command", result.getCommand());
+                resolvableTemplate.addData("resultKey", result.getKey());
+                
+                CommandCompletionAlert commandCompletionAlert = new CommandCompletionAlert(new Date(), resolvableTemplate);
+                alertService.add(commandCompletionAlert);
+            }
+            
+        };
+        
+        String key = deviceConfigService.sendConfigs(deviceCollection, method, callback, user);
         model.addAttribute("resultKey", key);
         return "redirect:/spring/group/commander/resultDetail";
     }

@@ -17,10 +17,10 @@
             </ct:nameValue>
         </ct:nameValueContainer>
     </c:when>
-    <c:when test="${pushResult != null}">
+    <c:when test="${sendResult != null}">
         <ct:nameValueContainer>
-            <ct:nameValue name="Push Result">
-            	<amr:meterReadingsResult result="${pushResult}" errorMsg="Failed" successMsg="Push Sent Successfully"/>
+            <ct:nameValue name="Send Result">
+            	<amr:meterReadingsResult result="${sendResult}" errorMsg="Failed" successMsg="Send Config Sent Successfully"/>
             </ct:nameValue>
         </ct:nameValueContainer>
     </c:when>

@@ -4330,7 +4330,7 @@
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="10">
-                <name>Last Control - Var</name>
+                <name>Last Control - VAR</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="11">

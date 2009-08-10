@@ -23,7 +23,11 @@ public class ProcessorFactoryImpl implements ProcessorFactory {
 
             public void process(SimpleDevice device) throws ProcessingException {
                 try {
-                    deviceConfigurationDao.assignConfigToDevice(configuration, device);
+                    if(configuration == null) {
+                        deviceConfigurationDao.unassignConfig(device.getDeviceId());
+                    }else {
+                        deviceConfigurationDao.assignConfigToDevice(configuration, device);
+                    }
                 } catch (InvalidDeviceTypeException e) {
                     throw new ProcessingException(e.getMessage());
                 }
