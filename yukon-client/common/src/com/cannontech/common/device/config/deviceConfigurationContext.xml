@@ -1909,7 +1909,7 @@
 				                    </bean>
 				                    <bean class="com.cannontech.web.input.type.InputOption">
 				                        <property name="value" value="0.1" />
-				                        <property name="text" value=".1Wh" />
+				                        <property name="text" value="0.1Wh" />
 				                    </bean>
 				                </list>
 				            </property>
@@ -1967,11 +1967,11 @@
 				                    </bean>
 				                    <bean class="com.cannontech.web.input.type.InputOption">
 				                        <property name="value" value="0.1" />
-				                        <property name="text" value=".1Wh" />
+				                        <property name="text" value="0.1Wh" />
 				                    </bean>
 				                    <bean class="com.cannontech.web.input.type.InputOption">
 				                        <property name="value" value="0.01" />
-				                        <property name="text" value=".01Wh" />
+				                        <property name="text" value="0.01Wh" />
 				                    </bean>
 				                </list>
 				            </property>
@@ -2160,7 +2160,7 @@
                                     </bean>
                                     <bean class="com.cannontech.web.input.type.InputOption">
                                         <property name="value" value="0.1" />
-                                        <property name="text" value=".1Wh" />
+                                        <property name="text" value="0.1Wh" />
                                     </bean>
                                 </list>
                             </property>
@@ -2218,11 +2218,11 @@
                                     </bean>
                                     <bean class="com.cannontech.web.input.type.InputOption">
                                         <property name="value" value="0.1" />
-                                        <property name="text" value=".1Wh" />
+                                        <property name="text" value="0.1Wh" />
                                     </bean>
                                     <bean class="com.cannontech.web.input.type.InputOption">
                                         <property name="value" value="0.01" />
-                                        <property name="text" value=".01Wh" />
+                                        <property name="text" value="0.01Wh" />
                                     </bean>
                                 </list>
                             </property>
@@ -2391,7 +2391,7 @@
                                     </bean>
                                     <bean class="com.cannontech.web.input.type.InputOption">
                                         <property name="value" value="0.1" />
-                                        <property name="text" value=".1Wh" />
+                                        <property name="text" value="0.1Wh" />
                                     </bean>
                                 </list>
                             </property>
@@ -2449,11 +2449,11 @@
                                     </bean>
                                     <bean class="com.cannontech.web.input.type.InputOption">
                                         <property name="value" value="0.1" />
-                                        <property name="text" value=".1Wh" />
+                                        <property name="text" value="0.1Wh" />
                                     </bean>
                                     <bean class="com.cannontech.web.input.type.InputOption">
                                         <property name="value" value="0.01" />
-                                        <property name="text" value=".01Wh" />
+                                        <property name="text" value="0.01Wh" />
                                     </bean>
                                 </list>
                             </property>
@@ -2622,7 +2622,7 @@
                                     </bean>
                                     <bean class="com.cannontech.web.input.type.InputOption">
                                         <property name="value" value="0.1" />
-                                        <property name="text" value=".1Wh" />
+                                        <property name="text" value="0.1Wh" />
                                     </bean>
                                 </list>
                             </property>
@@ -2680,11 +2680,11 @@
                                     </bean>
                                     <bean class="com.cannontech.web.input.type.InputOption">
                                         <property name="value" value="0.1" />
-                                        <property name="text" value=".1Wh" />
+                                        <property name="text" value="0.1Wh" />
                                     </bean>
                                     <bean class="com.cannontech.web.input.type.InputOption">
                                         <property name="value" value="0.01" />
-                                        <property name="text" value=".01Wh" />
+                                        <property name="text" value="0.01Wh" />
                                     </bean>
                                 </list>
                             </property>
