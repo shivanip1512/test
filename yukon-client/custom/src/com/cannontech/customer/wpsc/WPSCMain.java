@@ -26,7 +26,6 @@ public class WPSCMain implements Runnable
 	static boolean DEBUG = true;
 	
 	private com.cannontech.message.dispatch.ClientConnection dispatchConn = null;
-	private com.cannontech.message.porter.ClientConnection  porterConn = null;
 
 	private CFDATA CFDATAInstance = null;
 	private LDCNTSUM LDCNTSUMInstance = null;
@@ -79,14 +78,9 @@ public WPSCMain(String dispatchHost, int dispatchPort, String porterHost, int po
 	super();
 	
 	dispatchConn = (com.cannontech.message.dispatch.ClientConnection) ConnPool.getInstance().getDefDispatchConn();
-	porterConn = (com.cannontech.message.porter.ClientConnection) ConnPool.getInstance().getDefPorterConn();
-
-	dispatchConn.setAutoReconnect(true);
 	dispatchConn.setQueueMessages( true );
 
-	porterConn.setAutoReconnect(true);
-	
-	CFDATAInstance = new CFDATA( porterConn, CFDATADir, CFDATAFileExt );
+	CFDATAInstance = new CFDATA(CFDATADir, CFDATAFileExt );
 	CFDATAInstance.setCheckFrequency(CFDATACheckFreq);
 
 	LDCNTSUMInstance = new LDCNTSUM( dispatchConn, outputFile );
@@ -220,8 +214,6 @@ public void run()
 		
 		dispatchConn.setRegistrationMsg(multiReg);
 		dispatchConn.connectWithoutWait();
-
-		porterConn.connectWithoutWait();
 
 		// Start LogWriter Thread (watches for date change for log file generation).
 		logWriter = new LogWriterThread();

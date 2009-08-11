@@ -2694,8 +2694,6 @@ public TDCClient getTdcClient()
 		if( getMainPanel() != null )
 			getMainPanel().setTdcClient( tdcClient );
 
-		//start trying to connect immediately
-		
 		//force our out bound TDC connection to connect immediately
 		SendData.getInstance();
 	}

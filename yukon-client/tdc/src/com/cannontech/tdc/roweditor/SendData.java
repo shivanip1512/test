@@ -14,13 +14,12 @@ import com.cannontech.message.dispatch.message.Registration;
 import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.message.util.Command;
 import com.cannontech.tags.TagManager;
-import com.cannontech.tdc.TDCClient;
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
+import com.cannontech.yukon.conns.ConnPool;
 
 public class SendData 
 {
-	private static ClientConnection connection = null;
 	private static SendData sendData = null;
 	
 	private static TagManager tagManager = null;
@@ -55,7 +54,7 @@ private void buildRegistration()
 	multi.getVector().addElement(reg);
 	multi.getVector().addElement(pReg);
 	
-	connection.setRegistrationMsg( multi );	
+	getConnection().setRegistrationMsg( multi );	
 }
 
 /**
@@ -69,6 +68,11 @@ public static synchronized boolean classExists()
 	else
 		return true;
 }
+
+private ClientConnection getConnection() {
+    return (ClientConnection)ConnPool.getInstance().getDefDispatchConn();
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (3/14/00 3:19:19 PM)
@@ -108,20 +112,9 @@ private void handleException(java.lang.Throwable exception) {
  */
 private void initialize() 
 {
-	// only connect and register once (for now)
-	if( connection == null )
-	{
-		connection = new ClientConnection();
-		connection.setHost( TDCClient.HOST );
-		connection.setPort( TDCClient.PORT );
-		connection.setAutoReconnect( true );
-				
-		buildRegistration();
-		
-		connection.connectWithoutWait();
-		
-		tagManager = new TagManager( connection );
-	}
+    ClientConnection connection = getConnection();
+	buildRegistration();
+	tagManager = new TagManager( connection );
 	
 }
 
@@ -131,6 +124,7 @@ private void initialize()
  */
 public void sendCommandMsg( Command cmd )
 {
+    ClientConnection connection = getConnection();
 	if( connection != null && connection.isValid() )
 	{
 		cmd.setUserName( com.cannontech.common.util.CtiUtilities.getUserName() );
@@ -151,6 +145,7 @@ public void sendCommandMsg( Command cmd )
  */
 public void sendPointData( PointData point )
 {
+    ClientConnection connection = getConnection();
 	if( connection != null && connection.isValid() )
 	{
 		point.setUserName( com.cannontech.common.util.CtiUtilities.getUserName() );
@@ -171,6 +166,7 @@ public void sendPointData( PointData point )
  */
 public void sendSignal( Signal point )
 {
+    ClientConnection connection = getConnection();
 	if( connection != null && connection.isValid() )
 	{
 		point.setUserName( com.cannontech.common.util.CtiUtilities.getUserName() );

@@ -1,21 +1,24 @@
 package com.cannontech.customer.wpsc;
 
+import com.cannontech.yukon.IServerConnection;
+import com.cannontech.yukon.conns.ConnPool;
+
 /**
  * Insert the type's description here.
  * Creation date: (5/17/00 3:30:31 PM)
  * @author: 
  */
 public class CFDATA extends com.cannontech.common.util.FileInterface {
-	private com.cannontech.message.porter.ClientConnection porterConn = null;
+
 /**
  * CFDATA constructor comment.
  * @param dirToWatch java.lang.String
  * @param fileExt java.lang.String
  */
-public CFDATA(com.cannontech.message.porter.ClientConnection newPorterConn, String dirToWatch, String fileExt) {
+public CFDATA(String dirToWatch, String fileExt) {
 	super(dirToWatch, fileExt);
-	porterConn = newPorterConn;
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (5/17/00 3:54:41 PM)
@@ -130,6 +133,7 @@ protected void handleFile(java.io.InputStream in)
 {
 	try
 	{
+	    IServerConnection porterConn = ConnPool.getInstance().getDefPorterConn();
 		int countSent = 0;
 		java.io.BufferedReader rdr = new java.io.BufferedReader( new java.io.InputStreamReader(in) );
 

@@ -11,8 +11,6 @@ package com.cannontech.clientutils;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.PointRegistration;
@@ -20,16 +18,12 @@ import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
-import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.user.SystemUserContext;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
 
 
 public abstract class ClientBase extends java.util.Observable implements ClientBaseInterface, MessageListener
 {
-    private IServerConnection connection = null;
-
 	// just in case someone wants to observe the connection
 	private java.util.Observer observer = null;
 	
@@ -64,7 +58,7 @@ public boolean connected()
 	if( getConnection() == null )
 		return false;
 	else
-		return connection.isValid();
+		return getConnection().isValid();
 }
 /**
  * Code to perform when this object is garbage collected.
@@ -80,7 +74,7 @@ protected void finalize() throws Throwable
 
 	if(connected()) {
 		if( observer != null )
-			connection.deleteObserver( observer );
+			getConnection().deleteObserver( observer );
 	}
 }
 
@@ -89,27 +83,7 @@ protected void finalize() throws Throwable
  * @return boolean
  */
 private IServerConnection getConnection() {
-    getExternalResources();
     return ConnPool.getInstance().getDefDispatchConn();
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/21/00 2:26:52 PM)
- */
-
-private void getExternalResources() 
-{
-	try
-	{
-	    RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
-        HOST = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DISPATCH_MACHINE, new SystemUserContext().getYukonUser());
-        PORT = rolePropertyDao.getPropertyIntegerValue(YukonRoleProperty.DISPATCH_PORT, new SystemUserContext().getYukonUser());
-   }
-   catch( Exception e)
-   {
-      handleException( e );
-   }
-
 }
 
 /**
@@ -158,8 +132,7 @@ private void handleException(Throwable e)
  */
 private void initialize() 
 {
-	//make sure we have a created connection before trying to connect!
-	connection = ConnPool.getInstance().getDefDispatchConn();
+	getConnection();
 	
 	if( observer != null )
    {
@@ -229,5 +202,12 @@ public void removeMessageListener( MessageListener ml )
 	getConnection().removeMessageListener( ml );
 }
 
+public String getHost(){
+    return getConnection().getHost();
+}
+
+public int getPort(){
+    return getConnection().getPort();
+}
 
 }
