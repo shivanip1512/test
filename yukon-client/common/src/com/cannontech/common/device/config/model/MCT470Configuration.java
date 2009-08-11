@@ -92,21 +92,34 @@ public class MCT470Configuration extends ConfigurationBase {
     private int channel1PhysicalChannel = 0;
     private int channel1LPInterval = 0;
     private float channel1Multiplier = 1.0f;
+    
+    private float channel1LoadProfileResolution = 10.0f;
+    private float channel1PeakKWResolution = 10.0f;
+    private float channel1LastIntervalDemandResolution = 10.0f;
 
     private int channel2Type = 0;
     private int channel2PhysicalChannel = 1;
     private int channel2LPInterval = 0;
     private float channel2Multiplier = 1.0f;
+    private float channel2LoadProfileResolution = 10.0f;
+    private float channel2PeakKWResolution = 10.0f;
+    private float channel2LastIntervalDemandResolution = 10.0f;
 
     private int channel3Type = 0;
     private int channel3PhysicalChannel = 2;
     private int channel3LPInterval = 0;
     private float channel3Multiplier = 1.0f;
+    private float channel3LoadProfileResolution = 10.0f;
+    private float channel3PeakKWResolution = 10.0f;
+    private float channel3LastIntervalDemandResolution = 10.0f;
 
     private int channel4Type = 0;
     private int channel4PhysicalChannel = 3;
     private int channel4LPInterval = 0;
     private float channel4Multiplier = 1.0f;
+    private float channel4LoadProfileResolution = 10.0f;
+    private float channel4PeakKWResolution = 10.0f;
+    private float channel4LastIntervalDemandResolution = 10.0f;
 
     // Relays
      private Integer relayATimer = null;
@@ -577,7 +590,31 @@ public class MCT470Configuration extends ConfigurationBase {
     public void setChannel1Type(int channel1Type) {
         this.channel1Type = channel1Type;
     }
+    
+    public float getChannel1LoadProfileResolution() {
+        return channel1LoadProfileResolution;
+    }
+    
+    public void setChannel1LoadProfileResolution(float channel1LoadProfileResolution) {
+        this.channel1LoadProfileResolution = channel1LoadProfileResolution;
+    }
+    
+    public float getChannel1PeakKWResolution() {
+        return channel1PeakKWResolution;
+    }
 
+    public void setChannel1PeakKWResolution(float channel1PeakKWResolution) {
+        this.channel1PeakKWResolution = channel1PeakKWResolution;
+    }
+    
+    public float getChannel1LastIntervalDemandResolution() {
+        return channel1LastIntervalDemandResolution;
+    }
+
+    public void setChannel1LastIntervalDemandResolution(float channel1LastIntervalDemandResolution) {
+        this.channel1LastIntervalDemandResolution = channel1LastIntervalDemandResolution;
+    }
+    
     public Integer getChannelConfig2() {
         // Get the bits and mask them to throw out erroneous values, also shift
         // them to their correct position
@@ -619,6 +656,30 @@ public class MCT470Configuration extends ConfigurationBase {
 
         // bit 7 - unused
 
+    }
+    
+    public float getChannel2LoadProfileResolution() {
+        return channel2LoadProfileResolution;
+    }
+
+    public void setChannel2LoadProfileResolution(float channel2LoadProfileResolution) {
+        this.channel2LoadProfileResolution = channel2LoadProfileResolution;
+    }
+    
+    public float getChannel2PeakKWResolution() {
+        return channel2PeakKWResolution;
+    }
+
+    public void setChannel2PeakKWResolution(float channel2PeakKWResolution) {
+        this.channel2PeakKWResolution = channel2PeakKWResolution;
+    }
+    
+    public float getChannel2LastIntervalDemandResolution() {
+        return channel2LastIntervalDemandResolution;
+    }
+
+    public void setChannel2LastIntervalDemandResolution(float channel2LastIntervalDemandResolution) {
+        this.channel2LastIntervalDemandResolution = channel2LastIntervalDemandResolution;
     }
 
     public int getChannel2LPInterval() {
@@ -695,6 +756,30 @@ public class MCT470Configuration extends ConfigurationBase {
         // bit 7 - unused
 
     }
+    
+    public float getChannel3LoadProfileResolution() {
+        return channel3LoadProfileResolution;
+    }
+
+    public void setChannel3LoadProfileResolution(float channel3LoadProfileResolution) {
+        this.channel3LoadProfileResolution = channel3LoadProfileResolution;
+    }
+    
+    public float getChannel3PeakKWResolution() {
+        return channel3PeakKWResolution;
+    }
+
+    public void setChannel3PeakKWResolution(float channel3PeakKWResolution) {
+        this.channel3PeakKWResolution = channel3PeakKWResolution;
+    }
+    
+    public float getChannel3LastIntervalDemandResolution() {
+        return channel3LastIntervalDemandResolution;
+    }
+
+    public void setChannel3LastIntervalDemandResolution(float channel3LastIntervalDemandResolution) {
+        this.channel3LastIntervalDemandResolution = channel3LastIntervalDemandResolution;
+    }
 
     public int getChannel3LPInterval() {
         return channel3LPInterval;
@@ -769,6 +854,30 @@ public class MCT470Configuration extends ConfigurationBase {
 
         // bit 7 - unused
 
+    }
+    
+    public float getChannel4LoadProfileResolution() {
+        return channel4LoadProfileResolution;
+    }
+
+    public void setChannel4LoadProfileResolution(float channel4LoadProfileResolution) {
+        this.channel4LoadProfileResolution = channel4LoadProfileResolution;
+    }
+    
+    public float getChannel4PeakKWResolution() {
+        return channel4PeakKWResolution;
+    }
+
+    public void setChannel4PeakKWResolution(float channel4PeakKWResolution) {
+        this.channel4PeakKWResolution = channel4PeakKWResolution;
+    }
+    
+    public float getChannel4LastIntervalDemandResolution() {
+        return channel4LastIntervalDemandResolution;
+    }
+
+    public void setChannel4LastIntervalDemandResolution(float channel4LastIntervalDemandResolution) {
+        this.channel4LastIntervalDemandResolution = channel4LastIntervalDemandResolution;
     }
 
     public int getChannel4LPInterval() {

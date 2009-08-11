@@ -76,6 +76,9 @@
 				<c:forEach var="category" items="${configurationTemplate.categoryList}">
 				
 					<tags:boxContainer title="${category.name}" showInitially="false">
+                        <div>
+                            ${category.description}
+                        </div>
 						<c:forEach var="item" items="${category.inputList}">
 							<div style="margin: 0px 0px 5px 0px;">
 								<cti:renderInput input="${item}" /><br/>

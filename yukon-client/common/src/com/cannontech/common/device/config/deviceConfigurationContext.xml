@@ -62,18 +62,35 @@
 				<prop key="Time Zone Offset">timeZoneOffset</prop>
 				<prop key="Demand Interval">demandInterval</prop>
 				<prop key="Load Profile Interval 1">loadProfileInterval1</prop>
+				<!-- Channel 1 fields -->
 				<prop key="Channel Config 1">channelConfig1</prop>
-				<prop key="Channel Config 2">channelConfig2</prop>
-				<prop key="Channel Config 3">channelConfig3</prop>
-				<prop key="Channel Config 4">channelConfig4</prop>
-				<prop key="Channel 1 Multiplier">channel1Multiplier</prop>
-				<prop key="Channel 2 Multiplier">channel2Multiplier</prop>
-				<prop key="Channel 3 Multiplier">channel3Multiplier</prop>
-				<prop key="Channel 4 Multiplier">channel4Multiplier</prop>
 				<prop key="Channel 1 Length">channel1Length</prop>
+				<prop key="Channel 1 Load Profile Resolution">channel1LoadProfileResolution</prop>
+                <prop key="Channel 1 Peak KW Resolution">channel1PeakKWResolution</prop>
+                <prop key="Channel 1 Last Interval Demand Resolution">channel1LastIntervalDemandResolution</prop>
+				<prop key="Channel 1 Multiplier">channel1Multiplier</prop>
+				<!-- Channel 2 fields -->
+				<prop key="Channel Config 2">channelConfig2</prop>
 				<prop key="Channel 2 Length">channel2Length</prop>
+				<prop key="Channel 2 Multiplier">channel2Multiplier</prop>
+                <prop key="Channel 2 Load Profile Resolution">channel2LoadProfileResolution</prop>
+                <prop key="Channel 2 Peak KW Resolution">channel2PeakKWResolution</prop>
+                <prop key="Channel 2 Last Interval Demand Resolution">channel2LastIntervalDemandResolution</prop>
+				<!-- Channel 3 fields -->
+				<prop key="Channel Config 3">channelConfig3</prop>
 				<prop key="Channel 3 Length">channel3Length</prop>
+				<prop key="Channel 3 Multiplier">channel3Multiplier</prop>
+                <prop key="Channel 3 Load Profile Resolution">channel3LoadProfileResolution</prop>
+                <prop key="Channel 3 Peak KW Resolution">channel3PeakKWResolution</prop>
+                <prop key="Channel 3 Last Interval Demand Resolution">channel3LastIntervalDemandResolution</prop>
+				<!-- Channel 4 fields -->
+				<prop key="Channel Config 4">channelConfig4</prop>
 				<prop key="Channel 4 Length">channel4Length</prop>
+				<prop key="Channel 4 Multiplier">channel4Multiplier</prop>
+                <prop key="Channel 4 Load Profile Resolution">channel4LoadProfileResolution</prop>
+                <prop key="Channel 4 Peak KW Resolution">channel4PeakKWResolution</prop>
+                <prop key="Channel 4 Last Interval Demand Resolution">channel4LastIntervalDemandResolution</prop>
+				
 				<prop key="Service Provider ID">serviceProviderId</prop>
 				<prop key="Configuration">configuration</prop>
 				
@@ -1774,6 +1791,11 @@
 	
 	<bean id="mct430lpChannelsCategory" class="com.cannontech.common.device.config.model.CategoryTemplate">
 		<property name="name" value="MCT Load Profile Channels" />
+		<property name="description">
+            <value>
+                &lt;b&gt;&lt;font color="red"&gt;*&lt;/font&gt; Only valid for electronic meter type selection.&lt;/b&gt;&lt;br&gt;&lt;hr style="background-color: #CCCCCC;color: #CCCCCC;"&gt;
+            </value>
+        </property>
 		<property name="inputList">
 			<list>
 				<bean class="com.cannontech.web.input.InputBase">
@@ -1887,7 +1909,11 @@
 					<property name="security" ref="configEditSecurity" />
 				</bean>
 				<bean class="com.cannontech.web.input.InputBase">
-				    <property name="displayName" value="Channel #1 Load Profile Resolution" />
+				    <property name="displayName">
+                       <value>
+                           &lt;b&gt;&lt;font color="red"&gt;*&lt;/font&gt;&lt;/b&gt; Channel #1 Load Profile Resolution
+                       </value>
+                    </property>
 				    <property name="field" value="channel1LoadProfileResolution" />
 				    <property name="description">
 				        <value>
@@ -1918,7 +1944,11 @@
 				    <property name="security" ref="configEditSecurity" />
 				    </bean>
 				    <bean class="com.cannontech.web.input.InputBase">
-				    <property name="displayName" value="Channel #1 Peak KW Resolution" />
+				    <property name="displayName">
+                       <value>
+                           &lt;b&gt;&lt;font color="red"&gt;*&lt;/font&gt;&lt;/b&gt; Channel #1 Peak KW Resolution
+                       </value>
+                    </property>
 				    <property name="field" value="channel1PeakKWResolution" />
 				    <property name="description">
 				        <value>
@@ -1945,7 +1975,11 @@
 				    <property name="security" ref="configEditSecurity" />
 				    </bean>
 				    <bean class="com.cannontech.web.input.InputBase">
-				    <property name="displayName" value="Channel #1 Last Interval Demand Resolution" />
+				    <property name="displayName">
+                       <value>
+                           &lt;b&gt;&lt;font color="red"&gt;*&lt;/font&gt;&lt;/b&gt; Channel #1 Last Interval Demand Resolution
+                       </value>
+                    </property>
 				    <property name="field" value="channel1LastIntervalDemandResolution" />
 				    <property name="description">
 				        <value>
@@ -2028,7 +2062,11 @@
 				</bean>
 -->
 				<bean class="com.cannontech.web.input.InputBase">
-					<property name="displayName" value="Channel #2 Meter Type" />
+					<property name="displayName">
+                        <value>
+                            &lt;hr style="background-color: #CCCCCC;color: #CCCCCC;"&gt;Channel #2 Meter Type
+                        </value>
+                    </property>
 					<property name="field" value="channel2Type" />
 					<property name="description">
 						<value>
@@ -2138,7 +2176,11 @@
 					<property name="security" ref="configEditSecurity" />
 				</bean>
 				<bean class="com.cannontech.web.input.InputBase">
-                    <property name="displayName" value="Channel #2 Load Profile Resolution" />
+                    <property name="displayName">
+                       <value>
+                           &lt;b&gt;&lt;font color="red"&gt;*&lt;/font&gt;&lt;/b&gt; Channel #2 Load Profile Resolution
+                       </value>
+                    </property>
                     <property name="field" value="channel2LoadProfileResolution" />
                     <property name="description">
                         <value>
@@ -2169,7 +2211,11 @@
                     <property name="security" ref="configEditSecurity" />
                     </bean>
                     <bean class="com.cannontech.web.input.InputBase">
-                    <property name="displayName" value="Channel #2 Peak KW Resolution" />
+                    <property name="displayName">
+                       <value>
+                           &lt;b&gt;&lt;font color="red"&gt;*&lt;/font&gt;&lt;/b&gt; Channel #2 Peak KW Resolution
+                       </value>
+                    </property>
                     <property name="field" value="channel2PeakKWResolution" />
                     <property name="description">
                         <value>
@@ -2196,7 +2242,11 @@
                     <property name="security" ref="configEditSecurity" />
                     </bean>
                     <bean class="com.cannontech.web.input.InputBase">
-                    <property name="displayName" value="Channel #2 Last Interval Demand Resolution" />
+                    <property name="displayName">
+                       <value>
+                           &lt;b&gt;&lt;font color="red"&gt;*&lt;/font&gt;&lt;/b&gt; Channel #2 Last Interval Demand Resolution
+                       </value>
+                    </property>
                     <property name="field" value="channel2LastIntervalDemandResolution" />
                     <property name="description">
                         <value>
@@ -2259,7 +2309,11 @@
 				</bean>
                 -->
 				<bean class="com.cannontech.web.input.InputBase">
-					<property name="displayName" value="Channel #3 Meter Type" />
+					<property name="displayName">
+                        <value>
+                            &lt;hr style="background-color: #CCCCCC;color: #CCCCCC;"&gt;Channel #3 Meter Type
+                        </value>
+                    </property>
 					<property name="field" value="channel3Type" />
 					<property name="description">
 						<value>
@@ -2369,7 +2423,11 @@
 					<property name="security" ref="configEditSecurity" />
 				</bean>
 				<bean class="com.cannontech.web.input.InputBase">
-                    <property name="displayName" value="Channel #3 Load Profile Resolution" />
+                    <property name="displayName">
+                       <value>
+                           &lt;b&gt;&lt;font color="red"&gt;*&lt;/font&gt;&lt;/b&gt; Channel #3 Load Profile Resolution
+                       </value>
+                    </property>
                     <property name="field" value="channel3LoadProfileResolution" />
                     <property name="description">
                         <value>
@@ -2400,7 +2458,11 @@
                     <property name="security" ref="configEditSecurity" />
                     </bean>
                     <bean class="com.cannontech.web.input.InputBase">
-                    <property name="displayName" value="Channel #3 Peak KW Resolution" />
+                    <property name="displayName">
+                       <value>
+                           &lt;b&gt;&lt;font color="red"&gt;*&lt;/font&gt;&lt;/b&gt; Channel #3 Peak KW Resolution
+                       </value>
+                    </property>
                     <property name="field" value="channel3PeakKWResolution" />
                     <property name="description">
                         <value>
@@ -2427,7 +2489,11 @@
                     <property name="security" ref="configEditSecurity" />
                     </bean>
                     <bean class="com.cannontech.web.input.InputBase">
-                    <property name="displayName" value="Channel #3 Last Interval Demand Resolution" />
+                    <property name="displayName">
+                       <value>
+                           &lt;b&gt;&lt;font color="red"&gt;*&lt;/font&gt;&lt;/b&gt; Channel #3 Last Interval Demand Resolution
+                       </value>
+                    </property>
                     <property name="field" value="channel3LastIntervalDemandResolution" />
                     <property name="description">
                         <value>
@@ -2490,7 +2556,11 @@
 				</bean>
 				-->
 				<bean class="com.cannontech.web.input.InputBase">
-					<property name="displayName" value="Channel #4 Meter Type" />
+                    <property name="displayName">
+                        <value>
+                            &lt;hr style="background-color: #CCCCCC;color: #CCCCCC;"&gt;Channel #4 Meter Type
+                        </value>
+                    </property>
 					<property name="field" value="channel4Type" />
 					<property name="description">
 						<value>
@@ -2600,7 +2670,11 @@
 					<property name="security" ref="configEditSecurity" />
 				</bean>
 				<bean class="com.cannontech.web.input.InputBase">
-                    <property name="displayName" value="Channel #4 Load Profile Resolution" />
+                    <property name="displayName">
+                       <value>
+                           &lt;b&gt;&lt;font color="red"&gt;*&lt;/font&gt;&lt;/b&gt; Channel #4 Load Profile Resolution
+                       </value>
+                    </property>
                     <property name="field" value="channel4LoadProfileResolution" />
                     <property name="description">
                         <value>
@@ -2631,7 +2705,11 @@
                     <property name="security" ref="configEditSecurity" />
                     </bean>
                     <bean class="com.cannontech.web.input.InputBase">
-                    <property name="displayName" value="Channel #4 Peak KW Resolution" />
+                    <property name="displayName">
+                       <value>
+                           &lt;b&gt;&lt;font color="red"&gt;*&lt;/font&gt;&lt;/b&gt; Channel #4 Peak KW Resolution
+                       </value>
+                    </property>
                     <property name="field" value="channel4PeakKWResolution" />
                     <property name="description">
                         <value>
@@ -2658,7 +2736,11 @@
                     <property name="security" ref="configEditSecurity" />
                     </bean>
                     <bean class="com.cannontech.web.input.InputBase">
-                    <property name="displayName" value="Channel #4 Last Interval Demand Resolution" />
+                    <property name="displayName">
+                       <value>
+                           &lt;b&gt;&lt;font color="red"&gt;*&lt;/font&gt;&lt;/b&gt; Channel #4 Last Interval Demand Resolution
+                       </value>
+                    </property>
                     <property name="field" value="channel4LastIntervalDemandResolution" />
                     <property name="description">
                         <value>
@@ -2726,6 +2808,12 @@
 	
 	<bean id="mct470lpChannelsCategory" class="com.cannontech.common.device.config.model.CategoryTemplate">
 		<property name="name" value="MCT Load Profile Channels" />
+		<property name="description">
+            <value>
+				&lt;b&gt;&lt;font color="red"&gt;*&lt;/font&gt; Only valid for electronic meter type selection.&lt;br&gt;
+				&lt;font color="red"&gt;**&lt;/font&gt; Only valid for KYZ input meter type selection.&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;hr style="background-color: #CCCCCC;color: #CCCCCC;"&gt;
+			</value>
+		</property>
 		<property name="inputList">
 			<list>
 				<bean class="com.cannontech.web.input.InputBase">
@@ -2874,7 +2962,11 @@
 					<property name="security" ref="configEditSecurity" />
 				</bean>
  -->			<bean class="com.cannontech.web.input.InputBase">
-					<property name="displayName" value="Channel #1 KYZ Multiplier" />
+					<property name="displayName">
+					   <value>
+					       &lt;b&gt;&lt;font color="red"&gt;**&lt;/font&gt;&lt;/b&gt; Channel #1 KYZ Multiplier
+					   </value>
+					</property>
 					<property name="field" value="channel1Multiplier" />
 					<property name="description">
 						<value>
@@ -2892,10 +2984,118 @@
 					</property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
-
-
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="displayName">
+                       <value>
+                           &lt;b&gt;&lt;font color="red"&gt;*&lt;/font&gt;&lt;/b&gt; Channel #1 Load Profile Resolution
+                       </value>
+                    </property>
+                    <property name="field" value="channel1LoadProfileResolution" />
+                    <property name="description">
+                        <value>
+                            Resolution power for load profile.
+                        </value>
+                    </property>
+                    <property name="type">
+                        <bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+                            <property name="enumeratedType" ref="inputFloatType" />
+                            <property name="optionList">
+                                <list>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="10.0" />
+                                        <property name="text" value="10Wh" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="1.0" />
+                                        <property name="text" value="1Wh" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="0.1" />
+                                        <property name="text" value=".1Wh" />
+                                    </bean>
+                                </list>
+                            </property>
+                        </bean>
+                    </property>
+                    <property name="security" ref="configEditSecurity" />
+                    </bean>
+                    <bean class="com.cannontech.web.input.InputBase">
+                    <property name="displayName">
+                       <value>
+                           &lt;b&gt;&lt;font color="red"&gt;*&lt;/font&gt;&lt;/b&gt; Channel #1 Peak KW Resolution
+                       </value>
+                    </property>
+                    <property name="field" value="channel1PeakKWResolution" />
+                    <property name="description">
+                        <value>
+                            Resolution power for peak KW.
+                        </value>
+                    </property>
+                    <property name="type">
+                        <bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+                            <property name="enumeratedType" ref="inputFloatType" />
+                            <property name="optionList">
+                                <list>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="10.0" />
+                                        <property name="text" value="10W" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="1.0" />
+                                        <property name="text" value="1W" />
+                                    </bean>
+                                </list>
+                            </property>
+                        </bean>
+                    </property>
+                    <property name="security" ref="configEditSecurity" />
+                    </bean>
+                    <bean class="com.cannontech.web.input.InputBase">
+                    <property name="displayName">
+                       <value>
+                           &lt;b&gt;&lt;font color="red"&gt;*&lt;/font&gt;&lt;/b&gt; Channel #1 Last Interval Demand Resolution
+                       </value>
+                    </property>
+                    <property name="field" value="channel1LastIntervalDemandResolution" />
+                    <property name="description">
+                        <value>
+                            Resolution power for last interval demand.
+                        </value>
+                    </property>
+                    <property name="type">
+                        <bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+                            <property name="enumeratedType" ref="inputFloatType" />
+                            <property name="optionList">
+                                <list>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="10.0" />
+                                        <property name="text" value="10Wh" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="1.0" />
+                                        <property name="text" value="1Wh" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="0.1" />
+                                        <property name="text" value=".1Wh" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="0.01" />
+                                        <property name="text" value=".01Wh" />
+                                    </bean>
+                                </list>
+                            </property>
+                        </bean>
+                    </property>
+                    <property name="security" ref="configEditSecurity" />
+                </bean>
+                
 				<bean class="com.cannontech.web.input.InputBase">
-					<property name="displayName" value="Channel #2 Meter Type" />
+					<property name="displayName">
+                        <value>
+                            &lt;hr style="background-color: #CCCCCC;color: #CCCCCC;"&gt;Channel #2 Meter Type
+                        </value>
+					</property>
 					<property name="field" value="channel2Type" />
 					<property name="description">
 						<value>
@@ -3040,7 +3240,11 @@
 					<property name="security" ref="configEditSecurity" />
 				</bean>
  -->			<bean class="com.cannontech.web.input.InputBase">
-					<property name="displayName" value="Channel #2 KYZ Multiplier" />
+					<property name="displayName">
+                       <value>
+                           &lt;b&gt;&lt;font color="red"&gt;**&lt;/font&gt;&lt;/b&gt; Channel #2 KYZ Multiplier
+                       </value>
+                    </property>
 					<property name="field" value="channel2Multiplier" />
 					<property name="description">
 						<value>
@@ -3058,10 +3262,118 @@
 					</property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
-
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="displayName">
+                       <value>
+                           &lt;b&gt;&lt;font color="red"&gt;*&lt;/font&gt;&lt;/b&gt; Channel #2 Load Profile Resolution
+                       </value>
+                    </property>
+                    <property name="field" value="channel2LoadProfileResolution" />
+                    <property name="description">
+                        <value>
+                            Resolution power for load profile.
+                        </value>
+                    </property>
+                    <property name="type">
+                        <bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+                            <property name="enumeratedType" ref="inputFloatType" />
+                            <property name="optionList">
+                                <list>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="10.0" />
+                                        <property name="text" value="10Wh" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="1.0" />
+                                        <property name="text" value="1Wh" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="0.1" />
+                                        <property name="text" value=".1Wh" />
+                                    </bean>
+                                </list>
+                            </property>
+                        </bean>
+                    </property>
+                    <property name="security" ref="configEditSecurity" />
+                    </bean>
+                    <bean class="com.cannontech.web.input.InputBase">
+                    <property name="displayName">
+                       <value>
+                           &lt;b&gt;&lt;font color="red"&gt;*&lt;/font&gt;&lt;/b&gt; Channel #2 Peak KW Resolution
+                       </value>
+                    </property>
+                    <property name="field" value="channel2PeakKWResolution" />
+                    <property name="description">
+                        <value>
+                            Resolution power for peak KW.
+                        </value>
+                    </property>
+                    <property name="type">
+                        <bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+                            <property name="enumeratedType" ref="inputFloatType" />
+                            <property name="optionList">
+                                <list>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="10.0" />
+                                        <property name="text" value="10W" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="1.0" />
+                                        <property name="text" value="1W" />
+                                    </bean>
+                                </list>
+                            </property>
+                        </bean>
+                    </property>
+                    <property name="security" ref="configEditSecurity" />
+                    </bean>
+                    <bean class="com.cannontech.web.input.InputBase">
+                    <property name="displayName">
+                       <value>
+                           &lt;b&gt;&lt;font color="red"&gt;*&lt;/font&gt;&lt;/b&gt; Channel #2 Last Interval Demand Resolution
+                       </value>
+                    </property>
+                    <property name="field" value="channel2LastIntervalDemandResolution" />
+                    <property name="description">
+                        <value>
+                            Resolution power for last interval demand.
+                        </value>
+                    </property>
+                    <property name="type">
+                        <bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+                            <property name="enumeratedType" ref="inputFloatType" />
+                            <property name="optionList">
+                                <list>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="10.0" />
+                                        <property name="text" value="10Wh" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="1.0" />
+                                        <property name="text" value="1Wh" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="0.1" />
+                                        <property name="text" value=".1Wh" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="0.01" />
+                                        <property name="text" value=".01Wh" />
+                                    </bean>
+                                </list>
+                            </property>
+                        </bean>
+                    </property>
+                    <property name="security" ref="configEditSecurity" />
+                </bean>
 
 				<bean class="com.cannontech.web.input.InputBase">
-					<property name="displayName" value="Channel #3 Meter Type" />
+					<property name="displayName">
+                        <value>
+                            &lt;hr style="background-color: #CCCCCC;color: #CCCCCC;"&gt;Channel #3 Meter Type
+                        </value>
+                    </property>
 					<property name="field" value="channel3Type" />
 					<property name="description">
 						<value>
@@ -3206,7 +3518,11 @@
 					<property name="security" ref="configEditSecurity" />
 				</bean>
  -->			<bean class="com.cannontech.web.input.InputBase">
-					<property name="displayName" value="Channel #3 KYZ Multiplier" />
+					<property name="displayName">
+                       <value>
+                           &lt;b&gt;&lt;font color="red"&gt;**&lt;/font&gt;&lt;/b&gt; Channel #3 KYZ Multiplier
+                       </value>
+                    </property>
 					<property name="field" value="channel3Multiplier" />
 					<property name="description">
 						<value>
@@ -3224,9 +3540,118 @@
 					</property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
-
 				<bean class="com.cannontech.web.input.InputBase">
-					<property name="displayName" value="Channel #4 Meter Type" />
+                    <property name="displayName">
+                       <value>
+                           &lt;b&gt;&lt;font color="red"&gt;*&lt;/font&gt;&lt;/b&gt; Channel #3 Load Profile Resolution
+                       </value>
+                    </property>
+                    <property name="field" value="channel3LoadProfileResolution" />
+                    <property name="description">
+                        <value>
+                            Resolution power for load profile.
+                        </value>
+                    </property>
+                    <property name="type">
+                        <bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+                            <property name="enumeratedType" ref="inputFloatType" />
+                            <property name="optionList">
+                                <list>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="10.0" />
+                                        <property name="text" value="10Wh" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="1.0" />
+                                        <property name="text" value="1Wh" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="0.1" />
+                                        <property name="text" value=".1Wh" />
+                                    </bean>
+                                </list>
+                            </property>
+                        </bean>
+                    </property>
+                    <property name="security" ref="configEditSecurity" />
+                    </bean>
+                    <bean class="com.cannontech.web.input.InputBase">
+                    <property name="displayName">
+                       <value>
+                           &lt;b&gt;&lt;font color="red"&gt;*&lt;/font&gt;&lt;/b&gt; Channel #3 Peak KW Resolution
+                       </value>
+                    </property>
+                    <property name="field" value="channel3PeakKWResolution" />
+                    <property name="description">
+                        <value>
+                            Resolution power for peak KW.
+                        </value>
+                    </property>
+                    <property name="type">
+                        <bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+                            <property name="enumeratedType" ref="inputFloatType" />
+                            <property name="optionList">
+                                <list>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="10.0" />
+                                        <property name="text" value="10W" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="1.0" />
+                                        <property name="text" value="1W" />
+                                    </bean>
+                                </list>
+                            </property>
+                        </bean>
+                    </property>
+                    <property name="security" ref="configEditSecurity" />
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="displayName">
+                       <value>
+                           &lt;b&gt;&lt;font color="red"&gt;*&lt;/font&gt;&lt;/b&gt; Channel #3 Last Interval Demand Resolution
+                       </value>
+                    </property>
+                    <property name="field" value="channel3LastIntervalDemandResolution" />
+                    <property name="description">
+                        <value>
+                            Resolution power for last interval demand.
+                        </value>
+                    </property>
+                    <property name="type">
+                        <bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+                            <property name="enumeratedType" ref="inputFloatType" />
+                            <property name="optionList">
+                                <list>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="10.0" />
+                                        <property name="text" value="10Wh" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="1.0" />
+                                        <property name="text" value="1Wh" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="0.1" />
+                                        <property name="text" value=".1Wh" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="0.01" />
+                                        <property name="text" value=".01Wh" />
+                                    </bean>
+                                </list>
+                            </property>
+                        </bean>
+                    </property>
+                    <property name="security" ref="configEditSecurity" />
+                </bean>
+                
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName">
+                        <value>
+                            &lt;hr style="background-color: #CCCCCC;color: #CCCCCC;"&gt;Channel #4 Meter Type
+                        </value>
+                    </property>
 					<property name="field" value="channel4Type" />
 					<property name="description">
 						<value>
@@ -3371,7 +3796,11 @@
 					<property name="security" ref="configEditSecurity" />
 				</bean>
  -->			<bean class="com.cannontech.web.input.InputBase">
-					<property name="displayName" value="Channel #4 KYZ Multiplier" />
+					<property name="displayName">
+                       <value>
+                           &lt;b&gt;&lt;font color="red"&gt;**&lt;/font&gt;&lt;/b&gt; Channel #4 KYZ Multiplier
+                       </value>
+                    </property>
 					<property name="field" value="channel4Multiplier" />
 					<property name="description">
 						<value>
@@ -3389,6 +3818,111 @@
 					</property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+                    <property name="displayName">
+                       <value>
+                           &lt;b&gt;&lt;font color="red"&gt;*&lt;/font&gt;&lt;/b&gt; Channel #4 Load Profile Resolution
+                       </value>
+                    </property>
+                    <property name="field" value="channel4LoadProfileResolution" />
+                    <property name="description">
+                        <value>
+                            Resolution power for load profile.
+                        </value>
+                    </property>
+                    <property name="type">
+                        <bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+                            <property name="enumeratedType" ref="inputFloatType" />
+                            <property name="optionList">
+                                <list>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="10.0" />
+                                        <property name="text" value="10Wh" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="1.0" />
+                                        <property name="text" value="1Wh" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="0.1" />
+                                        <property name="text" value=".1Wh" />
+                                    </bean>
+                                </list>
+                            </property>
+                        </bean>
+                    </property>
+                    <property name="security" ref="configEditSecurity" />
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="displayName">
+                       <value>
+                           &lt;b&gt;&lt;font color="red"&gt;*&lt;/font&gt;&lt;/b&gt; Channel #4 Peak KW Resolution
+                       </value>
+                    </property>
+                    <property name="field" value="channel4PeakKWResolution" />
+                    <property name="description">
+                        <value>
+                            Resolution power for peak KW.
+                        </value>
+                    </property>
+                    <property name="type">
+                        <bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+                            <property name="enumeratedType" ref="inputFloatType" />
+                            <property name="optionList">
+                                <list>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="10.0" />
+                                        <property name="text" value="10W" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="1.0" />
+                                        <property name="text" value="1W" />
+                                    </bean>
+                                </list>
+                            </property>
+                        </bean>
+                    </property>
+                    <property name="security" ref="configEditSecurity" />
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="displayName">
+                       <value>
+                           &lt;b&gt;&lt;font color="red"&gt;*&lt;/font&gt;&lt;/b&gt; Channel #4 Last Interval Demand Resolution
+                       </value>
+                    </property>
+                    <property name="field" value="channel4LastIntervalDemandResolution" />
+                    <property name="description">
+                        <value>
+                            Resolution power for last interval demand.
+                        </value>
+                    </property>
+                    <property name="type">
+                        <bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+                            <property name="enumeratedType" ref="inputFloatType" />
+                            <property name="optionList">
+                                <list>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="10.0" />
+                                        <property name="text" value="10Wh" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="1.0" />
+                                        <property name="text" value="1Wh" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="0.1" />
+                                        <property name="text" value=".1Wh" />
+                                    </bean>
+                                    <bean class="com.cannontech.web.input.type.InputOption">
+                                        <property name="value" value="0.01" />
+                                        <property name="text" value=".01Wh" />
+                                    </bean>
+                                </list>
+                            </property>
+                        </bean>
+                    </property>
+                    <property name="security" ref="configEditSecurity" />
+                </bean>
 			</list>
 		</property>
 	</bean>
