@@ -13,6 +13,7 @@ public class VerifyConfigCommandResult {
     Map<SimpleDevice, VerifyResult> verifyResultsMap = new HashMap<SimpleDevice, VerifyResult>();
     private List<SimpleDevice> successList = new ArrayList<SimpleDevice>();
     private List<SimpleDevice> failureList = new ArrayList<SimpleDevice>();
+    private List<SimpleDevice> unsupportedList = new ArrayList<SimpleDevice>();
 
     public void addResultString(SimpleDevice device, String value) {
         verifyResultsMap.get(device).getMatching().add(value);
@@ -35,12 +36,20 @@ public class VerifyConfigCommandResult {
         failureList.add(device);
     }
     
+    public void handleUnsupported(SimpleDevice device) {
+        unsupportedList.add(device);
+    }
+    
     public List<SimpleDevice> getFailureList() {
         return failureList;
     }
     
     public List<SimpleDevice> getSuccessList() {
         return successList;
+    }
+    
+    public List<SimpleDevice> getUnsupportedList() {
+        return unsupportedList;
     }
     
     public Map<SimpleDevice, VerifyResult> getVerifyResultsMap(){

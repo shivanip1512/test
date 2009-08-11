@@ -259,6 +259,7 @@
     <entry key="yukon.common.device.bulk.verifyConfigResults.pageTitle">Verify Config Results</entry>
     <entry key="yukon.common.device.bulk.verifyConfigResults.successLabel">Verified Devices:</entry>
     <entry key="yukon.common.device.bulk.verifyConfigResults.failureLabel">Devices with configuration discrepancies:</entry>
+    <entry key="yukon.common.device.bulk.verifyConfigResults.unsupportedLabel">Devices that do not support this action:</entry>
     <entry key="yukon.common.device.bulk.verifyConfigResults.successResult">In Sync</entry>
     <entry key="yukon.common.device.bulk.verifyConfigResults.failureResult">Some attributes did not match:</entry>
     <entry key="yukon.common.device.bulk.verifyConfigResults.deviceNameColumn">Device Name</entry>

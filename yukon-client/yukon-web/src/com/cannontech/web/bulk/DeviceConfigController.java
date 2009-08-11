@@ -217,16 +217,20 @@ public class DeviceConfigController extends BulkControllerBase {
         VerifyConfigCommandResult result = deviceConfigService.verifyConfigs(deviceCollection, user);
         StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup(null);
         StoredDeviceGroup failureGroup = temporaryDeviceGroupService.createTempGroup(null);
+        StoredDeviceGroup unsupportedGroup = temporaryDeviceGroupService.createTempGroup(null);
         deviceGroupMemberEditorDao.addDevices(successGroup, result.getSuccessList());
         deviceGroupMemberEditorDao.addDevices(failureGroup, result.getFailureList());
+        deviceGroupMemberEditorDao.addDevices(unsupportedGroup, result.getUnsupportedList());
         DeviceCollection successCollection = deviceGroupCollectionHelper.buildDeviceCollection(successGroup);
         DeviceCollection failureCollection = deviceGroupCollectionHelper.buildDeviceCollection(failureGroup);
+        DeviceCollection unsupportedCollection = deviceGroupCollectionHelper.buildDeviceCollection(unsupportedGroup);
         Map<SimpleDevice, VerifyResult> resultsMap = result.getVerifyResultsMap();
         Set<SimpleDevice> devices = resultsMap.keySet();
         model.addAttribute("devices", devices);
         model.addAttribute("resultsMap", resultsMap);
         model.addAttribute("successCollection", successCollection);
         model.addAttribute("failureCollection", failureCollection);
+        model.addAttribute("unsupportedCollection", unsupportedCollection);
         
         return "config/verifyConfigResults.jsp";
     }
