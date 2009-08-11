@@ -147,7 +147,7 @@ public class RouteLocateResult implements Completable {
         return pendingDeviceRouteLocations;
     }
     
-    public void emptyPendingDeviceRouteLocations(){
+    public void clearPendingDeviceRouteLocations(){
         pendingDeviceRouteLocations.clear();
     }
 

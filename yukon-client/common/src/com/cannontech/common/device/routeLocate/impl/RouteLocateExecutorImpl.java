@@ -125,7 +125,7 @@ public class RouteLocateExecutorImpl implements RouteLocateExecutor {
         
         routeLocateResult.setCanceled(true);
         routeLocateResult.setStopTime(new Date());
-        routeLocateResult.emptyPendingDeviceRouteLocations();
+        routeLocateResult.clearPendingDeviceRouteLocations();
     }
     
     private void addInitialRoute(YukonDevice device, 

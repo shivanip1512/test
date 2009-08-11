@@ -87,14 +87,13 @@
                 <input type="hidden" name="resultId" value="${resultId}">
                 
                 <%-- cancel commands --%>
-                <div id="cancelLocateDiv">
+                <div id="cancelLocateDiv" style="margin-bottom:20px;">
                     <c:url var="cancelUrl" value="/spring/bulk/routeLocate/cancelCommands" />
                     <cti:msg var="cancelText" key="yukon.web.modules.amr.routeLocateResults.cancelLocateButtonLabel" />
                     <tags:cancelCommands resultId="${resultId}"
                                          cancelUrl="${cancelUrl}"
                                          cancelButtonText="${cancelText}"/>
                 </div>
-                
                 <c:choose>
                     <c:when test="${result.autoUpdateRoute}">
                         <span id="setRoutesSpan">
