@@ -157,21 +157,23 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 		} catch (Exception e) {
 			
 			cronExpression = null;
+			String deviceGroupName = ServletRequestUtils.getStringParameter(request, "deviceGroupName");
 			String scheduleName = ServletRequestUtils.getStringParameter(request, "scheduleName");
 			String attributeStr = ServletRequestUtils.getStringParameter(request, "attribute");
 			String commandSelectValue = ServletRequestUtils.getStringParameter(request, "commandSelectValue");
 			String commandString = ServletRequestUtils.getStringParameter(request, "commandString");
-			return makeErrorMav("Invalid Schedule Time.", requestType, scheduleName, cronExpression, attributeStr, commandSelectValue, commandString, null);
+			return makeErrorMav("Invalid Schedule Time.", requestType, scheduleName, cronExpression, attributeStr, commandSelectValue, commandString, deviceGroupName);
 		}
 		
 		// schedule name
 		String scheduleName = ServletRequestUtils.getStringParameter(request, "scheduleName");
 		if (StringUtils.isBlank(scheduleName)) {
 			
+			String deviceGroupName = ServletRequestUtils.getStringParameter(request, "deviceGroupName");
 			String attributeStr = ServletRequestUtils.getStringParameter(request, "attribute");
 			String commandSelectValue = ServletRequestUtils.getStringParameter(request, "commandSelectValue");
 			String commandString = ServletRequestUtils.getStringParameter(request, "commandString");
-			return makeErrorMav("Schedule Must Have Name.", requestType, scheduleName, cronExpression, attributeStr, commandSelectValue, commandString, null);
+			return makeErrorMav("Schedule Must Have Name.", requestType, scheduleName, cronExpression, attributeStr, commandSelectValue, commandString, deviceGroupName);
 		}
 		
 		// device group
