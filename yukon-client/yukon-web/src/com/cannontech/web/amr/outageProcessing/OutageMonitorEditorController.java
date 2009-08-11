@@ -56,6 +56,7 @@ public class OutageMonitorEditorController extends MultiActionController {
         int timePeriod = ServletRequestUtils.getIntParameter(request, "timePeriod", 28);
         String expression = ServletRequestUtils.getStringParameter(request, "expression", null);
         boolean scheduleGroupCommand = ServletRequestUtils.getBooleanParameter(request, "scheduleGroupCommand", false);;
+        String scheduleName = ServletRequestUtils.getStringParameter(request, "scheduleName", null);
         
         OutageMonitor outageMonitor = null;
         try {
@@ -94,6 +95,7 @@ public class OutageMonitorEditorController extends MultiActionController {
         mav.addObject("numberOfOutages", numberOfOutages);
         mav.addObject("timePeriod", timePeriod);
         mav.addObject("scheduleGroupCommand", scheduleGroupCommand);
+        mav.addObject("scheduleName", scheduleName);
         
         mav.addObject("outageGroupBase", SystemGroupEnum.OUTAGE_PROCESSING.getFullPath());
         mav.addObject("outageMonitor", outageMonitor);
@@ -117,6 +119,7 @@ public class OutageMonitorEditorController extends MultiActionController {
         int numberOfOutages = ServletRequestUtils.getIntParameter(request, "numberOfOutages", 0);
         int timePeriod = ServletRequestUtils.getIntParameter(request, "timePeriod", 0);
         boolean scheduleGroupCommand = ServletRequestUtils.getBooleanParameter(request, "scheduleGroupCommand", false);
+        String scheduleName = ServletRequestUtils.getStringParameter(request, "scheduleName", null);
         String expression = "";
         
         // new processor?
@@ -135,14 +138,21 @@ public class OutageMonitorEditorController extends MultiActionController {
         }
         
         
+        // schedule errors
         if (isNewMonitor && scheduleGroupCommand) {
 	        try {
 	        	expression = CronExpressionTagUtils.build(CRON_TAG_ID, request);
-	        } catch (IllegalArgumentException e) {
-	        	editError = e.getMessage();
+	        } catch (Exception e) {
+	        	editError = "Invalid Schedule Time.";
+	        	expression = null;
+	        }
+	        
+	        if (StringUtils.isBlank(scheduleName)) {
+	        	editError = "Schedule Must Have Name.";
 	        }
         }
         
+        // monitor errors
         if (StringUtils.isBlank(name)) {
         	editError = "Name required.";
         } else if (CtiUtilities.isContainsInvalidDeviceGroupNameCharacters(name)) {
@@ -169,6 +179,7 @@ public class OutageMonitorEditorController extends MultiActionController {
             mav.addObject("numberOfOutages", numberOfOutages);
             mav.addObject("timePeriod", timePeriod);
             mav.addObject("scheduleGroupCommand", scheduleGroupCommand);
+            mav.addObject("scheduleName", scheduleName);
             mav.addObject("expression", expression);
         	
         // ok. save or update
@@ -179,7 +190,7 @@ public class OutageMonitorEditorController extends MultiActionController {
         	// SCHEDULED BLINK COUNT REQUEST JOB
         	if (isNewMonitor && scheduleGroupCommand) {
             		
-            	scheduledGroupRequestExecutionService.schedule(deviceGroupName, BLINK_COUNT_ATTRIBUTE, CommandRequestExecutionType.SCHEDULED_GROUP_ATTRIBUTE_READ, expression, userContext);
+            	scheduledGroupRequestExecutionService.schedule(scheduleName, deviceGroupName, BLINK_COUNT_ATTRIBUTE, CommandRequestExecutionType.SCHEDULED_GROUP_ATTRIBUTE_READ, expression, userContext);
         	}
         	
         	// OUTAGE GROUP

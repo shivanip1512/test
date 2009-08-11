@@ -19,7 +19,7 @@
     <entry key="yukon.web.modules.amr.outageMonitorsWidget.tableHeader.scheduleDescription">Read Schedule</entry>
     <entry key="yukon.web.modules.amr.outageMonitorsWidget.tableHeader.devices">Devices</entry>
     <entry key="yukon.web.modules.amr.outageMonitorsWidget.createNew">Create New Outage Monitor</entry>
-    <entry key="yukon.web.modules.amr.outageMonitorsWidget.deleteConfirm">Are you sure you want to delete this Outage Monitor?\n\nIf there is a scheduled group command associated with the processor, it will be disabled.\n</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorsWidget.deleteConfirm">Are you sure you want to delete this Outage Monitor?\n</entry>
     <entry key="yukon.web.modules.amr.outageMonitorsWidget.actionTitle.outageProcessing">Manage Processor Output</entry>
     <entry key="yukon.web.modules.amr.outageMonitorsWidget.actionTitle.scheduledRead">View Scheduled Read</entry>
     <entry key="yukon.web.modules.amr.outageMonitorsWidget.actionTitle.startReadNow">Start Outage Count Read Now</entry>
@@ -31,6 +31,9 @@
     <!-- ================================================================================================================================================= -->
     <entry key="yukon.web.modules.amr.outageMonitorConfig.pageTitle">Outage Monitoring</entry>
     <entry key="yukon.web.modules.amr.outageMonitorConfig.headerTitle">Outage Monitoring Setup</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.section.setup">Setup</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.section.editSetup">Edit Setup</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.section.schedule">Schedule Blink Count Read (Optional)</entry>
     <entry key="yukon.web.modules.amr.outageMonitorConfig.label.name">Name</entry>
     <entry key="yukon.web.modules.amr.outageMonitorConfig.label.deviceGroup">Device Group</entry>
     <entry key="yukon.web.modules.amr.outageMonitorConfig.label.selectDeviceGroup">Select Device Group</entry>
@@ -45,6 +48,7 @@
     <entry key="yukon.web.modules.amr.outageMonitorConfig.label.timePeriodDays">Days</entry>
     <entry key="yukon.web.modules.amr.outageMonitorConfig.label.scheduleRead">Schedule Read</entry>
     <entry key="yukon.web.modules.amr.outageMonitorConfig.label.scheduleReadDescription">Read Outage Counts</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.scheduleName">Schedule Name</entry>
     <entry key="yukon.web.modules.amr.outageMonitorConfig.label.readFrequency">Time/Frequency</entry>
     <entry key="yukon.web.modules.amr.outageMonitorConfig.label.outageMonitoring">Outage Monitoring</entry>
     <entry key="yukon.web.modules.amr.outageMonitorConfig.label.outageMonitoringEnable">Enable</entry>
@@ -95,6 +99,10 @@
     	 <br>
 	     Outage count read commands will be sent to each of the devices in the selected device group periodically based on the Read Time/Frequency defined below.
 	     <br><br>
+    ]]></entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.popupInfo.scheduleReadNoteLabelText">Note:</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.popupInfo.scheduleReadNoteBodyText"><![CDATA[
+	     Creating a scheduled read at this time does not link the schedule to this Outage Monitor in any way, but instead is simply a shortcut to add a scheduled blink count read at this time.
     ]]></entry>
     
     

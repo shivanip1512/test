@@ -16,6 +16,7 @@
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.group.selectDeviceGroup">Select Device Group</entry>
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.group.selectDeviceGroupChoose">Select</entry>
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.group.selectDeviceGroupCancel">Cancel</entry>
+    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.scheduleName">Schedule Name</entry>
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.timeFrequency">Time/Frequency</entry>
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.scheduleButton">Schedule</entry>
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.updateButton">Update</entry>

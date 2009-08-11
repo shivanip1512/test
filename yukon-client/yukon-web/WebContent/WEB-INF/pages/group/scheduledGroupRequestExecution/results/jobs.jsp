@@ -16,6 +16,7 @@
 <cti:msg var="filterAllWordText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.filter.allWord" />
 <cti:msg var="filterExcludePendingText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.filter.excludePending" />
 <cti:msg var="executionsSectionText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.executions.section" />
+<cti:msg var="scheduleNameText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.executions.tableHeader.scheduleName" />
 <cti:msg var="executionsTypeText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.executions.tableHeader.type" />
 <cti:msg var="attributeOrCommandText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.executions.tableHeader.attributeOrCommand" />
 <cti:msg var="attributeWord" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.executions.tableHeader.attributeOrCommand.attribute" />
@@ -109,6 +110,7 @@
 		<table id="jobsTable" class="resultsTable activeResultsTable">
 		
 			<tr>
+				<th>${scheduleNameText}</th>
 				<th>${executionsTypeText}</th>
 				<th>${attributeOrCommandText}</th>
 				<th>${scheduleDescriptionText}</th>
@@ -126,6 +128,7 @@
 					onmouseout="activeResultsTable_unHighLightRow(this)"
 					title="ID: ${jobWrapper.job.id}">
 					
+					<td>${jobWrapper.name}</td>
 					<td>${jobWrapper.commandRequestTypeShortName}</td>
 					<td>
 						<c:if test="${not empty jobWrapper.attribute}">

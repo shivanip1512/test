@@ -80,6 +80,10 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 			return this.task.getAttribute();
 		}
 		
+		public String getName() {
+			return this.task.getName();
+		}
+		
 		public String getDeviceGroupName() {
 			return this.task.getGroupName();
 		}

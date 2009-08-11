@@ -5,6 +5,7 @@
 
 <cti:msg var="pageTitle" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.pageTitle" />
 <cti:msg var="infoSectionText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.section" />
+<cti:msg var="scheduleNameText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.scheduleName" />
 <cti:msg var="jobTypeText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.jobType" />
 <cti:msg var="creTypeText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.creType" />
 <cti:msg var="enabledText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.enabled" />
@@ -67,8 +68,13 @@
 					
 		<tags:nameValueContainer>
 
+			<%-- name --%>
+			<tags:nameValue name="${scheduleNameText}" nameColumnWidth="160px">
+				${jobWrapper.name}
+			</tags:nameValue>
+			
 			<%-- cre type --%>
-			<tags:nameValue name="${creTypeText}" nameColumnWidth="160px">
+			<tags:nameValue name="${creTypeText}">
 				${jobWrapper.commandRequestTypeShortName}
 			</tags:nameValue>
 			

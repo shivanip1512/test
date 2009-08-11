@@ -256,6 +256,14 @@
                     <list>
                         <bean
                             class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="name" />
+                            <property name="displayName" value="Name" />
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.StringType" />
+                            </property>
+                        </bean>
+                        <bean
+                            class="com.cannontech.web.input.InputBase">
                             <property name="field" value="groupName" />
                             <property name="displayName" value="Group Name" />
                             <property name="type">

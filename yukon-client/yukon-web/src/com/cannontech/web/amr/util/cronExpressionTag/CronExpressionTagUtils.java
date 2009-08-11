@@ -35,7 +35,10 @@ public class CronExpressionTagUtils {
 		
 		CronTagStyleHandler handler = type.getHandler();
 		
-		return handler.build(id, request);
+		String expression =  handler.build(id, request);
+		validateExpression(expression);
+		
+		return expression;
 	}
 	
 	

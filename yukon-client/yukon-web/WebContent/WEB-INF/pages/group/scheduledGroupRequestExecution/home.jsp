@@ -16,6 +16,7 @@
 <cti:msg var="selectDeviceGroupText" key="yukon.common.device.scheduledGroupRequestExecution.home.group.selectDeviceGroup"/>
 <cti:msg var="selectDeviceGroupChooseText" key="yukon.common.device.scheduledGroupRequestExecution.home.group.selectDeviceGroupChoose"/>
 <cti:msg var="selectDeviceGroupCancelText" key="yukon.common.device.scheduledGroupRequestExecution.home.group.selectDeviceGroupCancel"/>
+<cti:msg var="scheduleNameLabel" key="yukon.common.device.scheduledGroupRequestExecution.home.scheduleName"/>
 <cti:msg var="timeFrequencyLabel" key="yukon.common.device.scheduledGroupRequestExecution.home.timeFrequency"/>
 <cti:msg var="scheduleButtonText" key="yukon.common.device.scheduledGroupRequestExecution.home.scheduleButton"/>
 <cti:msg var="updateButtonText" key="yukon.common.device.scheduledGroupRequestExecution.home.updateButton"/>
@@ -85,6 +86,10 @@
         		 		<tags:nameValue name="${selectAttributeLabel}" nameColumnWidth="160px">
         		 			<amr:attributeSelector fieldName="attribute" attributes="${allAttributes}" selectedAttribute="${attribute}" includeDummyOption="true"/>
         		 			<br><br>
+        		 		</tags:nameValue>
+        		 		
+        		 		<tags:nameValue name="${scheduleNameLabel}">
+        		 			<input type="text" name="scheduleName" value="${scheduleName}">
         		 		</tags:nameValue>
         		 	
         		 		<tags:nameValue name="${timeFrequencyLabel}">
@@ -162,6 +167,10 @@
         		 		<tags:nameValue name="${selectCommandLabel}" nameColumnWidth="160px">
         		 			<amr:commandSelector selectName="commandSelectValue" fieldName="commandString" commands="${commands}" selectedSelectValue="${commandSelectValue}" selectedCommandString="${commandString}" includeDummyOption="true"/>  
         		 			<br><br>
+        		 		</tags:nameValue>
+        		 		
+        		 		<tags:nameValue name="${scheduleNameLabel}">
+        		 			<input type="text" name="scheduleName" value="${scheduleName}">
         		 		</tags:nameValue>
         		 	
         		 		<tags:nameValue name="${timeFrequencyLabel}">

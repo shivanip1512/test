@@ -67,6 +67,7 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 		String attribute = ServletRequestUtils.getStringParameter(request, "attribute", null);
 		String commandSelectValue = ServletRequestUtils.getStringParameter(request, "commandSelectValue", null);
 		String commandString = ServletRequestUtils.getStringParameter(request, "commandString", null);
+		String scheduleName = ServletRequestUtils.getStringParameter(request, "scheduleName", null);
 		String cronExpression = ServletRequestUtils.getStringParameter(request, "cronExpression", null);
 		String deviceGroupName = ServletRequestUtils.getStringParameter(request, "deviceGroupName", null);
 		
@@ -104,6 +105,9 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 					}
 				}
 			}
+			if (scheduleName == null) {
+				scheduleName = existingTask.getName();
+			}
 			if (cronExpression == null) {
 				cronExpression = existingJob.getCronString();
 			}
@@ -118,6 +122,7 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 		mav.addObject("attribute", attribute);
 		mav.addObject("commandSelectValue", commandSelectValue);
 		mav.addObject("commandString", commandString);
+		mav.addObject("scheduleName", scheduleName);
 		mav.addObject("cronExpression", cronExpression);
 		mav.addObject("deviceGroupName", deviceGroupName);
 		
@@ -146,7 +151,28 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 		
 		// cron
 		String cronTagId = ServletRequestUtils.getRequiredStringParameter(request, "cronTagId");
-		String cronExpression = CronExpressionTagUtils.build(cronTagId, request);
+		String cronExpression = null;
+		try {
+			cronExpression = CronExpressionTagUtils.build(cronTagId, request);
+		} catch (Exception e) {
+			
+			cronExpression = null;
+			String scheduleName = ServletRequestUtils.getStringParameter(request, "scheduleName");
+			String attributeStr = ServletRequestUtils.getStringParameter(request, "attribute");
+			String commandSelectValue = ServletRequestUtils.getStringParameter(request, "commandSelectValue");
+			String commandString = ServletRequestUtils.getStringParameter(request, "commandString");
+			return makeErrorMav("Invalid Schedule Time.", requestType, scheduleName, cronExpression, attributeStr, commandSelectValue, commandString, null);
+		}
+		
+		// schedule name
+		String scheduleName = ServletRequestUtils.getStringParameter(request, "scheduleName");
+		if (StringUtils.isBlank(scheduleName)) {
+			
+			String attributeStr = ServletRequestUtils.getStringParameter(request, "attribute");
+			String commandSelectValue = ServletRequestUtils.getStringParameter(request, "commandSelectValue");
+			String commandString = ServletRequestUtils.getStringParameter(request, "commandString");
+			return makeErrorMav("Schedule Must Have Name.", requestType, scheduleName, cronExpression, attributeStr, commandSelectValue, commandString, null);
+		}
 		
 		// device group
 		String deviceGroupName = ServletRequestUtils.getStringParameter(request, "deviceGroupName");
@@ -155,7 +181,7 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 			String attributeStr = ServletRequestUtils.getStringParameter(request, "attribute");
 			String commandSelectValue = ServletRequestUtils.getStringParameter(request, "commandSelectValue");
 			String commandString = ServletRequestUtils.getStringParameter(request, "commandString");
-			return makeErrorMav("No Device Group Selected", requestType, cronExpression, attributeStr, commandSelectValue, commandString, null);
+			return makeErrorMav("No Device Group Selected.", requestType, scheduleName, cronExpression, attributeStr, commandSelectValue, commandString, null);
 		}
 		
 		// edit job
@@ -164,11 +190,11 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 		// schedule / edit
 		if (requestType.equals(CommandRequestExecutionType.SCHEDULED_GROUP_ATTRIBUTE_READ)) {
 			
-			return scheduleAttributeRead(request, response, cronExpression, deviceGroupName, editJobId);
+			return scheduleAttributeRead(request, response, scheduleName, cronExpression, deviceGroupName, editJobId);
 		
 		} else if (requestType.equals(CommandRequestExecutionType.SCHEDULED_GROUP_COMMAND)) {
 		
-			return scheduleCommand(request, response, cronExpression, deviceGroupName, editJobId);
+			return scheduleCommand(request, response, scheduleName, cronExpression, deviceGroupName, editJobId);
 		
 		} else {
 			throw new IllegalArgumentException("Unsupported requestType: " + requestType);
@@ -176,7 +202,7 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 	}
 	
 	// SCHEDULE ATTRIBUTE READ
-	private ModelAndView scheduleAttributeRead(HttpServletRequest request, HttpServletResponse response, String cronExpression, String deviceGroupName, int editJobId) throws ServletException {
+	private ModelAndView scheduleAttributeRead(HttpServletRequest request, HttpServletResponse response, String scheduleName, String cronExpression, String deviceGroupName, int editJobId) throws ServletException {
 	
 		ModelAndView mav = new ModelAndView("redirect:/spring/group/scheduledGroupRequestExecutionResults/detail");
 		YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
@@ -184,7 +210,7 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 		// attribute
 		String attributeStr = ServletRequestUtils.getRequiredStringParameter(request, "attribute");
 		if (StringUtils.isBlank(attributeStr)) {
-			return makeErrorMav("No Attribute Selected", CommandRequestExecutionType.SCHEDULED_GROUP_ATTRIBUTE_READ, cronExpression, attributeStr, null, null, deviceGroupName);
+			return makeErrorMav("No Attribute Selected", CommandRequestExecutionType.SCHEDULED_GROUP_ATTRIBUTE_READ, scheduleName, cronExpression, attributeStr, null, null, deviceGroupName);
 		}
 		BuiltInAttribute attribute = BuiltInAttribute.valueOf(attributeStr);
 		
@@ -192,9 +218,9 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 		YukonJob job = null;
 		
 		if (editJobId <= 0) {
-			job = scheduledGroupRequestExecutionService.schedule(deviceGroupName, attribute, CommandRequestExecutionType.SCHEDULED_GROUP_ATTRIBUTE_READ, cronExpression, userContext);
+			job = scheduledGroupRequestExecutionService.schedule(scheduleName, deviceGroupName, attribute, CommandRequestExecutionType.SCHEDULED_GROUP_ATTRIBUTE_READ, cronExpression, userContext);
 		} else {
-			job = scheduledGroupRequestExecutionService.scheduleReplacement(editJobId, deviceGroupName, attribute, CommandRequestExecutionType.SCHEDULED_GROUP_ATTRIBUTE_READ, cronExpression, userContext);
+			job = scheduledGroupRequestExecutionService.scheduleReplacement(editJobId, scheduleName, deviceGroupName, attribute, CommandRequestExecutionType.SCHEDULED_GROUP_ATTRIBUTE_READ, cronExpression, userContext);
 		}
 		
 		mav.addObject("jobId", job.getId());
@@ -202,7 +228,7 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 	}
 	
 	// SCHEDULE COMMAND
-	private ModelAndView scheduleCommand(HttpServletRequest request, HttpServletResponse response, String cronExpression, String deviceGroupName, int editJobId) throws ServletException {
+	private ModelAndView scheduleCommand(HttpServletRequest request, HttpServletResponse response, String scheduleName, String cronExpression, String deviceGroupName, int editJobId) throws ServletException {
 	
 		ModelAndView mav = new ModelAndView("redirect:/spring/group/scheduledGroupRequestExecutionResults/detail");
 		YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
@@ -211,19 +237,19 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 		String commandSelectValue = ServletRequestUtils.getStringParameter(request, "commandSelectValue");
 		String commandString = ServletRequestUtils.getStringParameter(request, "commandString");
 		if (StringUtils.isBlank(commandString)) {
-			return makeErrorMav("No Command Selected", CommandRequestExecutionType.SCHEDULED_GROUP_COMMAND, cronExpression, null, commandSelectValue, commandString, deviceGroupName);
+			return makeErrorMav("No Command Selected", CommandRequestExecutionType.SCHEDULED_GROUP_COMMAND, scheduleName, cronExpression, null, commandSelectValue, commandString, deviceGroupName);
 		}
 		
         if (StringUtils.isBlank(commandString)) {
         	
-        	return makeErrorMav("You must enter a valid command", CommandRequestExecutionType.SCHEDULED_GROUP_COMMAND, cronExpression, null, commandSelectValue, commandString, deviceGroupName);
+        	return makeErrorMav("You must enter a valid command", CommandRequestExecutionType.SCHEDULED_GROUP_COMMAND, scheduleName, cronExpression, null, commandSelectValue, commandString, deviceGroupName);
         
         } else if (rolePropertyDao.checkProperty(YukonRoleProperty.EXECUTE_MANUAL_COMMAND, userContext.getYukonUser())) {
         
         	// check that it is authorized
             if (!paoCommandAuthorizationService.isAuthorized(userContext.getYukonUser(), commandString)) {
             	
-            	return makeErrorMav("You are not authorized to execute that command.", CommandRequestExecutionType.SCHEDULED_GROUP_COMMAND, cronExpression, null, commandSelectValue, commandString, deviceGroupName);
+            	return makeErrorMav("You are not authorized to execute that command.", CommandRequestExecutionType.SCHEDULED_GROUP_COMMAND, scheduleName, cronExpression, null, commandSelectValue, commandString, deviceGroupName);
             }
             
         } else {
@@ -239,7 +265,7 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
             });
             if (!commandStrings.contains(commandString)) {
             	
-            	return makeErrorMav("You are not authorized to execute that command.", CommandRequestExecutionType.SCHEDULED_GROUP_COMMAND, cronExpression, null, commandSelectValue, commandString, deviceGroupName);
+            	return makeErrorMav("You are not authorized to execute that command.", CommandRequestExecutionType.SCHEDULED_GROUP_COMMAND, scheduleName, cronExpression, null, commandSelectValue, commandString, deviceGroupName);
             }
         }
         
@@ -247,9 +273,9 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
         YukonJob job = null;
         
         if (editJobId <= 0) {
-        	job = scheduledGroupRequestExecutionService.schedule(deviceGroupName, commandString, CommandRequestExecutionType.SCHEDULED_GROUP_COMMAND, cronExpression, userContext);
+        	job = scheduledGroupRequestExecutionService.schedule(scheduleName, deviceGroupName, commandString, CommandRequestExecutionType.SCHEDULED_GROUP_COMMAND, cronExpression, userContext);
         } else {
-        	job = scheduledGroupRequestExecutionService.scheduleReplacement(editJobId, deviceGroupName, commandString, CommandRequestExecutionType.SCHEDULED_GROUP_COMMAND, cronExpression, userContext);
+        	job = scheduledGroupRequestExecutionService.scheduleReplacement(editJobId, scheduleName, deviceGroupName, commandString, CommandRequestExecutionType.SCHEDULED_GROUP_COMMAND, cronExpression, userContext);
         }
 		
         mav.addObject("jobId", job.getId());
@@ -258,7 +284,7 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 	}
 	
 	// ERROR MAV
-	private ModelAndView makeErrorMav(String errorMsg, CommandRequestExecutionType requestType, String cronExpression, String attribute, String commandSelectValue, String commandString, String deviceGroupName) {
+	private ModelAndView makeErrorMav(String errorMsg, CommandRequestExecutionType requestType, String scheduleName, String cronExpression, String attribute, String commandSelectValue, String commandString, String deviceGroupName) {
 		
 		ModelAndView mav = new ModelAndView("redirect:home");
 		mav.addObject("errorMsg", errorMsg);
@@ -266,6 +292,7 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 		mav.addObject("attribute", attribute);
 		mav.addObject("commandSelectValue", commandSelectValue);
 		mav.addObject("commandString", commandString);
+		mav.addObject("scheduleName", scheduleName);
 		mav.addObject("cronExpression", cronExpression);
 		mav.addObject("deviceGroupName", deviceGroupName);
 		

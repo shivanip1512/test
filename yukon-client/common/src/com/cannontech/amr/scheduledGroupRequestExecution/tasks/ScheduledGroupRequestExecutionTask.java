@@ -35,6 +35,7 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
 	private Logger log = YukonLogManager.getLogger(ScheduledGroupRequestExecutionTask.class);
 
     // Injected variables
+	private String name;
     private String groupName;
     private Attribute attribute = null;
     private String command = null;
@@ -108,9 +109,9 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
 	        scheduledGroupRequestExecutionResultsDao.insert(pair);
 	        
         } catch (NotFoundException e) {
-        	log.error("Could not run command due to missing device group. command = " + getCommand() + ", groupName = " + getGroupName() + ", user = " + user.getUsername() + ".", e);
+        	log.error("Could not run command due to missing device group. command = " + getCommand() + ", name=" + getName() + ", groupName = " + getGroupName() + ", user = " + user.getUsername() + ".", e);
         } catch (PaoAuthorizationException e) {
-        	log.error("Could not run command due to authorization exception. command = " + getCommand() + ", groupName = " + getGroupName() + ", user = " + user.getUsername() + ".", e);
+        	log.error("Could not run command due to authorization exception. command = " + getCommand() + ", name=" + getName() + ", groupName = " + getGroupName() + ", user = " + user.getUsername() + ".", e);
         }
         
     }
@@ -120,6 +121,14 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
     }
 
     // Setters for injected parameters
+    public String getName() {
+		return name;
+	}
+    
+    public void setName(String name) {
+		this.name = name;
+	}
+    
     public String getGroupName() {
 		return groupName;
 	}
