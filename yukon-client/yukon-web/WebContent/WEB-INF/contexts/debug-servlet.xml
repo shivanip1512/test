@@ -12,21 +12,11 @@
         <property name="viewName" value="main.jsp"/>
     </bean>
     
-    <bean name="/scheduler/*" class="com.cannontech.web.debug.SchedulerDebugController">
-        <property name="jobManager" ref="jobManager"/>
-        <property name="yukonJobDao" ref="yukonJobDao"/>
-        <property name="jobStatusDao" ref="jobStatusDao"/>
-        <property name="scheduledOneTimeJobDao" ref="scheduledOneTimeJobDao"/>
-        <property name="scheduledRepeatingJobDao" ref="scheduledRepeatingJobDao"/>
-    </bean>
-    
-    <bean name="/loadControlService/inputs/*" class="com.cannontech.web.debug.LoadControlServiceInputsTestController" >
+     <bean name="/loadControlService/inputs/*" class="com.cannontech.web.debug.LoadControlServiceInputsTestController" >
     </bean>
     
     <bean name="/accountService/inputs/*" class="com.cannontech.web.debug.AccountServiceInputsTestController" >
     </bean>
-    
-    <bean name="/threadDump" class="com.cannontech.web.debug.ThreadDumpController"/>
     
     <bean name="/webservice/xml/*" class="com.cannontech.web.debug.webservice.XMLTestController" >
     	<property name="exampleRequestXmls">

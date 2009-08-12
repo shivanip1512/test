@@ -4,12 +4,12 @@
 <cti:url var="updateUrl" value='/logging/tail/update?file=/${file}' />
 
 
-<cti:standardPage title="Log File View" module="blank">
-<cti:standardMenu/>
+<cti:standardPage module="support">
+<cti:standardMenu menuSelection="logs"/>
 <cti:breadCrumbs>
     <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
-    <cti:crumbLink url="/logging/menu" title="Log File Menu"  />
-    &gt; Log Tailer
+    <cti:crumbLink url="/spring/support/logging/menu" title="Log File Menu"  />
+    <cti:crumbLink>Log Tailer</cti:crumbLink>
 </cti:breadCrumbs>
 
 <cti:includeScript link="/JavaScript/scriptaculous/effects.js"/>

@@ -1,4 +1,4 @@
-package com.cannontech.web.logging;
+package com.cannontech.web.support.logging;
 
 import java.io.File;
 import java.io.IOException;

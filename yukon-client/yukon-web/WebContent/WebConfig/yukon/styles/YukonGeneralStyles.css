@@ -622,11 +622,11 @@ span.progressBarCompletedCount {
     font-size:11px;display:inline;
 }
 
-div.indentedList > h3 {
+h3.indentedElementHeading {
     margin: 15px 0 0 0;
 }
 
-div.indentedList > div {
+h3.indentedElementHeading + * {
     margin: 0 0 0 12px;
 }
 

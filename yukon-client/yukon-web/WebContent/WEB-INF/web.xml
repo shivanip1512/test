@@ -306,7 +306,7 @@
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	<servlet>
-		<servlet-name>logging</servlet-name>
+		<servlet-name>support</servlet-name>
 		<servlet-class>
 			com.cannontech.web.spring.CannonDispatcherServlet
 		</servlet-class>
@@ -842,8 +842,8 @@
 	</servlet-mapping>
 
 	<servlet-mapping>
-		<servlet-name>logging</servlet-name>
-		<url-pattern>/logging/*</url-pattern>
+		<servlet-name>support</servlet-name>
+		<url-pattern>/spring/support/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>

@@ -1,4 +1,4 @@
-package com.cannontech.web.logging;
+package com.cannontech.web.support.logging;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -50,7 +50,7 @@ public class LogMenuController extends LogController {
             HttpServletResponse response) throws Exception {
 
         // Sets up the ModelAndView Object
-        ModelAndView mav = new ModelAndView("menu.jsp");
+        ModelAndView mav = new ModelAndView("logging/menu.jsp");
 
         mav.addObject("versionDetails", VersionTools.getYukonDetails());
         mav.addObject("dbUser", poolManager.getPrimaryUser());

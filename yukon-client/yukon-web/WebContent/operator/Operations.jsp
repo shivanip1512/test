@@ -335,7 +335,7 @@
 			</cti:checkProperty>
 			<cti:checkProperty property="AdministratorRole.ADMIN_VIEW_LOGS"> 
                     <tags:sectionLink>
-            	        <a href="/logging/menu">View Logs</a>
+            	        <a href="/spring/support/logging/menu">View Logs</a>
                     </tags:sectionLink>
 			</cti:checkProperty>
 			<cti:checkProperty property="AdministratorRole.ADMIN_MANAGE_INDEXES"> 

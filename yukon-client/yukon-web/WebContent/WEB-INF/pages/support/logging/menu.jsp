@@ -1,19 +1,12 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<cti:standardPage title="Log File Menu" module="blank">
-<cti:standardMenu/>
+<cti:standardPage module="support">
+<cti:standardMenu menuSelection="logs"/>
 <cti:breadCrumbs>
     <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
-    &gt; Log File Menu
+    <cti:crumbLink>Log File Menu</cti:crumbLink>
 </cti:breadCrumbs>
-
-<h4>Version Details</h4>
-&nbsp&nbsp&nbsp ${versionDetails}
-
-<h4>DB Connection</h4>
-&nbsp&nbsp&nbsp JDBC URL: ${dbUrl}<br />
-&nbsp&nbsp&nbsp JDBC User: ${dbUser}<br />
 
 <h4>SortBy:: <a href="?file=${file}&sortType=alphabetic" id="alphabetic" name="alphabetic">Alphabetic</a> or <a href="?file=${file}&sortType=date" id="date" name="alphabetic">Date</a></h4>
 

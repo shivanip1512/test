@@ -22,7 +22,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -89,7 +88,11 @@ public class LayoutController {
             String titleKey = "yukon.web.modules." + pageKey + ".pageTitle";
             MessageSourceResolvable messageSourceResolvable = YukonMessageSourceResolvable.createDefault(titleKey, info.getTitle());
             title = messageSourceAccessor.getMessage(messageSourceResolvable);
-        } else if (StringUtils.isBlank(info.getTitle()) && StringUtils.isNotBlank(info.getPageName())) {
+        } else if (StringUtils.isNotBlank(info.getTitle()) && StringUtils.isNotBlank(info.getPageName())) {
+            // specifying both is a special case, but may be required for generated titles
+            pageKey = info.getModuleName() + "." + info.getPageName();
+            title = info.getTitle();
+        } else {
             // this will be a common pairing for new pages
             pageKey = info.getModuleName() + "." + info.getPageName();
             String titleKey = "yukon.web.modules." + pageKey + ".pageTitle";
@@ -97,12 +100,6 @@ public class LayoutController {
             String defaultTitle = "yukon.web.defaults.pageTitle";
             MessageSourceResolvable messageSourceResolvable = YukonMessageSourceResolvable.createMultipleCodes(titleKey, defaultModuleTitle, defaultTitle);
             title = messageSourceAccessor.getMessage(messageSourceResolvable);
-        } else if (StringUtils.isNotBlank(info.getTitle()) && StringUtils.isNotBlank(info.getPageName())) {
-            // specifying both is a special case, but may be required for generated titles
-            pageKey = info.getModuleName() + "." + info.getPageName();
-            title = info.getTitle();
-        } else {
-            throw new BadConfigurationException("At least one of 'page' or 'title' must be set on the standardPage element");
         }
         
         map.addAttribute("title", title);

@@ -990,6 +990,8 @@
                 <value>DENY|/spring/capcontrol/**|!CBC_SETTINGS</value>            
                 <value>DENY|/capcontrol/**|!CBC_SETTINGS</value>
                 
+                <value>DENY|/spring/support/**|!ADMIN_VIEW_LOGS</value>
+                
                 <value>ALLOW|/**|WEB_CLIENT</value>
                 <value>DENY|/**|*</value>
                 <!-- DO NOT REMOVE -->

@@ -1,4 +1,4 @@
-package com.cannontech.web.debug;
+package com.cannontech.web.support;
 
 import java.util.Collection;
 import java.util.Date;

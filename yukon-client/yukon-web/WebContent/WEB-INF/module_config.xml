@@ -243,7 +243,7 @@
         </option>
 
         <option id="viewLogs">
-          <link>/logging/menu</link>
+          <link>/spring/support/logging/menu</link>
           <requireRoleProperty value="ADMIN_VIEW_LOGS"/>
         </option>
 
@@ -629,19 +629,6 @@
     <skin name="standard"/>
     
     <links>
-    <option id="scheduler">
-    	<links>
-    	  <option id="active" >
-    		<link>/spring/debug/scheduler/active</link>
-    	  </option>
-    	  <option id="status">
-    		<link>/spring/debug/scheduler/status</link>
-    	  </option>
-    	  <option id="jobs">
-    		<link>/spring/debug/scheduler/jobs</link>
-    	  </option>
-    	</links>
-      </option>
       <option id="loadControlService">
         <links>
           <option id="inputs" >
@@ -663,15 +650,54 @@
           </option>
         </links>
       </option>
-      <option id="other">
-        <links>
-          <option id="threadDump" >
-            <link>/spring/debug/threadDump</link>
-          </option>
-        </links>
-      </option>
-    </links>
+     </links>
   </module>
+
+    <module name="support">
+        <skin name="standard" />
+
+        <links>
+            <option id="information">
+                <link>/spring/support/</link>
+            </option>
+            <option id="logs">
+                <link>/spring/support/logging/menu</link>
+            </option>
+            <option id="database">
+                <link>/spring/support/database/info</link>
+                <links>
+                    <option id="info">
+                        <link>/spring/support/database/info</link>
+                    </option>
+                    <option id="compare">
+                        <link>/spring/support/database/info</link>
+                    </option>
+                </links>
+            </option>
+            <option id="scheduler">
+                <link>/spring/support/scheduler/active</link>
+                <links>
+                    <option id="active">
+                        <link>/spring/support/scheduler/active</link>
+                    </option>
+                    <option id="status">
+                        <link>/spring/support/scheduler/status</link>
+                    </option>
+                    <option id="jobs">
+                        <link>/spring/support/scheduler/jobs</link>
+                    </option>
+                </links>
+            </option>
+            <option id="other">
+                <link>/spring/support/threadDump</link>
+                <links>
+                    <option id="threadDump">
+                        <link>/spring/support/threadDump</link>
+                    </option>
+                </links>
+            </option>
+        </links>
+    </module>
         
    <module name="blank">
     <skin name="standard"/>

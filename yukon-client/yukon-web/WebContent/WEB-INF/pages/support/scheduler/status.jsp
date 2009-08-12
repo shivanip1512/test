@@ -2,7 +2,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="ct" tagdir="/WEB-INF/tags"%>
 
-<cti:standardPage title="Debug Home Page" module="debug">
+<cti:standardPage module="support">
   <cti:standardMenu menuSelection="scheduler|status" />
 
 

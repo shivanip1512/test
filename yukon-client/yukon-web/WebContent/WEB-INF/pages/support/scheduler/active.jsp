@@ -2,14 +2,14 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="ct" tagdir="/WEB-INF/tags"%>
 
-<cti:standardPage title="Debug Home Page" module="debug">
+<cti:standardPage module="support">
   <cti:standardMenu menuSelection="scheduler|active" />
 
   <table class="resultsTable">
     <tr>
       <th>Job Name</th>
       <th>Start Time</th>
-      <th>Running?</th>
+      <th>Running</th>
     </tr>
     <c:forEach items="${activeJobs}" var="job">
       <tr>
