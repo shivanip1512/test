@@ -178,7 +178,7 @@ function sameAsDisplayName(isChecked) {
     if (!program) return;
     
     var value = (isChecked) ? '' : program.getShortName();    
-    $('shortName').value = displayName;
+    $('shortName').value = program.getDisplayName();
     $('shortName').disabled = isChecked;
     setProgramChanged(program);    
 }
@@ -220,7 +220,7 @@ function setProgramChanged(program) {
     var deviceId = <%=program.getDeviceID()%>;
     jsProgram.setDeviceId(deviceId);
     
-    var programName = (deviceId == 0) ? '*' + '<%=progName%>' : '<%=progName%>';
+    var programName = (deviceId == 0) ? '*' + '<%=StringEscapeUtils.escapeHtml(progName)%>' : '<%=StringEscapeUtils.escapeHtml(progName)%>';
     jsProgram.setProgramName(programName);
     
     var displayName = '<%=(dispNames.length > 0)? dispNames[0].replaceAll("\"", "&quot;") : ""%>'.replace(/&quot;/g, '"').replace(/&/g, '&amp;'); 
@@ -238,13 +238,13 @@ function setProgramChanged(program) {
     var ctrlOdds = <%=(program.getChanceOfControl() == null) ? 0 : program.getChanceOfControl().getEntryID()%>;
     jsProgram.setCtrlOdds(ctrlOdds);
     
-    var iconNameSavings = '<%=imgNames[0]%>';
+    var iconNameSavings = '<%=StringEscapeUtils.escapeHtml(imgNames[0]).replaceAll("\'", "&#39")%>';
     jsProgram.setIconNameSavings(iconNameSavings);
     
     var iconNameControl = '<%=imgNames[1]%>';
     jsProgram.setIconNameControl(iconNameControl);
     
-    var iconNameEnvrn = '<%=imgNames[2]%>';
+    var iconNameEnvrn = '<%=StringEscapeUtils.escapeHtml(imgNames[2]).replaceAll("\'", "&#39")%>';
     jsProgram.setIconNameEnvrn(iconNameEnvrn);
     
     programArray.push(jsProgram);
@@ -643,7 +643,7 @@ function updateMessageCode(input) {
                           <table width="100%" border="0" cellspacing="0" cellpadding="0">
                             <tr> 
                               <td width="50%"> 
-                                <input type="text" name="IconName" size="20" value="<%= category.getStarsWebConfig().getLogoLocation() %>" onchange="setContentChanged(true)">
+                                <input type="text" name="IconName" size="20" value="<%= StringEscapeUtils.escapeHtml(category.getStarsWebConfig().getLogoLocation()) %>" onchange="setContentChanged(true)">
                                 <input type="button" name="Preview" value="Preview" onClick="changeIcon(this.form)" <%= viewOnly %>>
                               </td>
                               <td width="50%"> <img id="CategoryIcon" align="middle"></td>

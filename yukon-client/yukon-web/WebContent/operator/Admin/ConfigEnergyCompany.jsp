@@ -328,7 +328,7 @@ function deleteWarehouse(form, warehouseId) {
                                       <%
 		if (!category.getStarsWebConfig().getLogoLocation().equals("")) {
 %>
-                                      <img src="../../WebConfig/<%= category.getStarsWebConfig().getLogoLocation() %>"> 
+                                      <img src="../../WebConfig/<%= StringEscapeUtils.escapeHtml(category.getStarsWebConfig().getLogoLocation()) %>"> 
                                       <%
 		}
 %>

@@ -1,4 +1,5 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
+<%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
 <%
 	String listName = request.getParameter("List");
 	YukonSelectionList list = liteEC.getYukonSelectionList(listName);
@@ -79,7 +80,7 @@ var dftListIndices = new Array();
 		YukonListEntry entry = (YukonListEntry) list.getYukonListEntries().get(i);
 %>
 	entryIDs[<%= i %>] = <%= entry.getEntryID() %>;
-	entryTexts[<%= i %>] = "<%= entry.getEntryText().replaceAll("\"", "&quot;") %>";
+	entryTexts[<%= i %>] = "<%= StringEscapeUtils.escapeHtml(entry.getEntryText()).replaceAll("\"", "&quot;") %>";
 	entryYukDefIDs[<%= i %>] = <%= entry.getYukonDefID() %>;
 	dftListIndices[<%= i %>] = getDefaultListIndex(entryTexts[<%= i %>], entryYukDefIDs[<%= i %>]);
 <%	} %>
@@ -362,7 +363,7 @@ function init() {
 					  <tr> 
                         <td width="15%" align="right" class="TableCell">Description:</td>
                         <td width="85%" class="TableCell"> 
-                          <input type="text" name="WhereIsList" size="50" value="<%= list.getWhereIsList() %>" onchange="setContentChanged(true)">
+                          <input type="text" name="WhereIsList" size="50" value="<%= StringEscapeUtils.escapeHtml(list.getWhereIsList()) %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -378,7 +379,7 @@ function init() {
                       <tr> 
                         <td width="15%" align="right" class="TableCell"> Label:</td>
                         <td width="85%" class="TableCell"> 
-                          <input type="text" name="Label" size="30" value="<%= list.getSelectionLabel() %>" onchange="setContentChanged(true)">
+                          <input type="text" name="Label" size="30" value="<%= StringEscapeUtils.escapeHtml(list.getSelectionLabel()) %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
 <%	} %>
@@ -400,7 +401,7 @@ function init() {
             continue;
         }
 %>
-                                  <option value="<%= validEntryCounter %>"><%= entry.getEntryText() %></option>
+                                  <option value="<%= validEntryCounter %>"><%= StringEscapeUtils.escapeHtml(entry.getEntryText()) %></option>
 <%
         validEntryCounter++;
     }
