@@ -63,7 +63,7 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ltmeOuter.*, lceb.EventDateTime");
         sql.append("FROM LMThermostatManualEvent ltmeOuter, LMCustomerEventBase lceb");
-        sql.append("WHERE ltmeOuter.EventId = ");
+        sql.append("WHERE ltmeOuter.EventId IN ");
         sql.append("    (SELECT lceb1.eventid");
         sql.append("     FROM LMThermostatManualEvent ltme1");
         sql.append("         JOIN LMCustomerEventBase lceb1 ON lceb1.EventId = ltme1.EventId");
