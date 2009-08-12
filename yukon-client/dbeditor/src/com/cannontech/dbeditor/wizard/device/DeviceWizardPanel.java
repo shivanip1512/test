@@ -255,6 +255,7 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 		if( devType == PAOGroups.TAPTERMINAL ||
 		    devType == PAOGroups.TNPP_TERMINAL)
 		{
+		    getDeviceTapTerminalPanel().setDeviceType(devType);
 			getDeviceTapTerminalPanel().setFirstFocus();
             return getDeviceTapTerminalPanel();
 		}

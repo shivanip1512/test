@@ -3,12 +3,17 @@ package com.cannontech.dbeditor.wizard.device;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
+
+import com.cannontech.common.gui.unchanging.LongRangeDocument;
+import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.database.data.device.TNPPTerminal;
 import com.cannontech.database.db.device.DeviceTNPPSettings;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.ImmutableBiMap;
+import com.google.common.collect.ImmutableBiMap.Builder;
 
 public class DeviceTNPPTerminalPanel extends com.cannontech.common.gui.util.DataInputPanel implements javax.swing.event.CaretListener, java.awt.event.ActionListener {
     private javax.swing.JPanel ivjJPanel1 = null;
@@ -35,9 +40,9 @@ public class DeviceTNPPTerminalPanel extends com.cannontech.common.gui.util.Data
     private javax.swing.JTextField ivjPagerIdTextField = null;
 
     
-    Map<String, Character> identifierFormatMap;
-    Map<String, Character> protocolMap;
-    Map<String, Character> dataFormatMap;
+    BiMap<String, Character> identifierFormatMap;
+    BiMap<String, Character> protocolMap;
+    BiMap<String, Character> dataFormatMap;
     
 /**
  * Constructor
@@ -312,7 +317,7 @@ private javax.swing.JTextField getOriginAddressTextField() {
             ivjOriginAddressTextField.setName("OriginAddressTextField");
             ivjOriginAddressTextField.setFont(new java.awt.Font("sansserif", 0, 14));
             ivjOriginAddressTextField.setColumns(20);
-            ivjOriginAddressTextField.setDocument(new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_PAGER_NUMBER_LENGTH));
+            ivjOriginAddressTextField.setDocument(new LongRangeDocument(0, 65535));
         } catch (java.lang.Throwable ivjExc) {
             handleException(ivjExc);
         }
@@ -349,7 +354,7 @@ private javax.swing.JTextField getDestinationAddressTextField() {
             ivjDestinationAddressTextField.setName("DestinationAddressTextField");
             ivjDestinationAddressTextField.setFont(new java.awt.Font("sansserif", 0, 14));
             ivjDestinationAddressTextField.setColumns(20);
-            ivjDestinationAddressTextField.setDocument(new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_PAGER_NUMBER_LENGTH));
+            ivjDestinationAddressTextField.setDocument(new LongRangeDocument(0, 65535));
         } catch (java.lang.Throwable ivjExc) {
             handleException(ivjExc);
         }
@@ -387,9 +392,10 @@ private javax.swing.JComboBox getIdentifierFormatComboBox() {
 		    ivjIdentifierFormatComboBox.setFont(new java.awt.Font("sansserif", 0, 14));
 
 		    // A map of all the formats and corresponding values
-	        identifierFormatMap = new LinkedHashMap<String, Character>();
-	        identifierFormatMap.put("Cap Page",'A');
-	        identifierFormatMap.put("Id Page",'B');
+		    Builder<String, Character> builder = ImmutableBiMap.builder();
+		    builder.put("Cap Page",'A');
+		    builder.put("Id Page",'B');
+		    identifierFormatMap = builder.build();
 	        
             // Add all the key values to the JComboBox.
             Set<String> keySet = identifierFormatMap.keySet();
@@ -432,13 +438,14 @@ private javax.swing.JComboBox getProtocolComboBox() {
             ivjProtocolComboBox.setFont(new java.awt.Font("sansserif", 0, 14));
 
             // A map of all the protocol and corresponding values
-            protocolMap = new LinkedHashMap<String, Character>();
-            protocolMap.put("FLEX",'F');
-            protocolMap.put("Golay Sequential Code",'G');
-            protocolMap.put("POCSAG - 512 baud (CCIR #1)",'P');
-            protocolMap.put("POCSAG - 1200 baud",'p');
-            protocolMap.put("POCSAG - 2400 baud",'Q');
-
+            Builder<String, Character> builder = ImmutableBiMap.builder();
+            builder.put("FLEX",'F');
+            builder.put("Golay Sequential Code",'G');
+            builder.put("POCSAG - 512 baud (CCIR #1)",'P');
+            builder.put("POCSAG - 1200 baud",'p');
+            builder.put("POCSAG - 2400 baud",'Q');
+            protocolMap = builder.build();
+            
             // Add all the key values to the JComboBox.
             Set<String> keySet = protocolMap.keySet();
             for (String key : keySet) {
@@ -483,10 +490,11 @@ private javax.swing.JComboBox getDataFormatComboBox() {
             ivjDataFormatComboBox.setFont(new java.awt.Font("sansserif", 0, 14));
             
             // A map of all the data formats and corresponding values
-            dataFormatMap = new LinkedHashMap<String, Character>();
-            dataFormatMap.put("Alphanumeric Display",'A');
-            dataFormatMap.put("Beep Only",'B');
-            dataFormatMap.put("Numeric Display",'N');
+            Builder<String, Character> builder = ImmutableBiMap.builder();
+            builder.put("Alphanumeric Display",'A');
+            builder.put("Beep Only",'B');
+            builder.put("Numeric Display",'N');
+            dataFormatMap = builder.build();
 
             // Add all the key values to the JComboBox.
             Set<String> keySet = dataFormatMap.keySet();
@@ -532,7 +540,7 @@ private javax.swing.JTextField getChannelTextField() {
             ivjChannelTextField.setName("ChannelTextField");
             ivjChannelTextField.setFont(new java.awt.Font("sansserif", 0, 14));
             ivjChannelTextField.setColumns(2);
-            ivjChannelTextField.setDocument(new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_DEVICE_NAME_LENGTH));
+            ivjChannelTextField.setDocument(new LongRangeDocument(0, 63));
         } catch (java.lang.Throwable ivjExc) {
             handleException(ivjExc);
         }
@@ -567,7 +575,7 @@ private javax.swing.JTextField getZoneTextField() {
             ivjZoneTextField.setName("ZoneTextField");
             ivjZoneTextField.setFont(new java.awt.Font("sansserif", 0, 14));
             ivjZoneTextField.setColumns(2);
-            ivjZoneTextField.setDocument(new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_PAGER_NUMBER_LENGTH));
+            ivjZoneTextField.setDocument(new LongRangeDocument(0, 63));
         } catch (java.lang.Throwable ivjExc) {
             handleException(ivjExc);
         }
@@ -604,7 +612,7 @@ private javax.swing.JTextField getFunctionCodeTextField() {
             ivjFunctionCodeTextField.setName("FunctionCodeTextField");
             ivjFunctionCodeTextField.setFont(new java.awt.Font("sansserif", 0, 14));
             ivjFunctionCodeTextField.setColumns(2);
-            ivjFunctionCodeTextField.setDocument(new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_PAGER_NUMBER_LENGTH));
+            ivjFunctionCodeTextField.setDocument(new LongRangeDocument(0, 63));
         } catch (java.lang.Throwable ivjExc) {
             handleException(ivjExc);
         }
@@ -641,7 +649,7 @@ private javax.swing.JTextField getInertiaTextField() {
             ivjInertiaTextField.setName("InertiaTextField");
             ivjInertiaTextField.setFont(new java.awt.Font("sansserif", 0, 14));
             ivjInertiaTextField.setColumns(20);
-            ivjInertiaTextField.setDocument(new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_PAGER_NUMBER_LENGTH));
+            ivjInertiaTextField.setDocument(new LongRangeDocument(-999999999L, 999999999L));
         } catch (java.lang.Throwable ivjExc) {
             handleException(ivjExc);
         }
@@ -678,7 +686,7 @@ private javax.swing.JTextField getPagerIdTextField() {
             ivjPagerIdTextField.setName("PagerIdTextField");
             ivjPagerIdTextField.setFont(new java.awt.Font("sansserif", 0, 14));
             ivjPagerIdTextField.setColumns(10);
-            ivjPagerIdTextField.setDocument(new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_PAGER_NUMBER_LENGTH));
+            ivjPagerIdTextField.setDocument(new TextFieldDocument(10));
         } catch (java.lang.Throwable ivjExc) {
             handleException(ivjExc);
         }
@@ -765,27 +773,6 @@ private void initConnections() throws java.lang.Exception {
 }
 
 /**
- * Gets the corresponding string key from the map.  
- * This method will only grab the first value it finds.
- * @param map
- * @param value
- * @return
- */
-private String getKeyForValue(Map<String, Character> map, Character value) {
-    if(map.containsValue(value)) {
-        Set<String> keySet = map.keySet();
-        for (String key : keySet) {
-            Character keyValue = map.get(key);
-            if(value.equals(keyValue)){
-                return key;
-            }
-        }
-    }
-    
-    return null;
-}
-
-/**
  * Initialize the class.
  */
 private void initialize() {
@@ -841,8 +828,7 @@ public boolean isInputValid() {
 
     // Origin Address Validation
     String originAddressErrorMessage = "The Origin Address text field must be filled in and must be a number";
-    if( getOriginAddressTextField().getText() == null   ||
-        getOriginAddressTextField().getText().length() < 1 )
+    if( StringUtils.isBlank(getOriginAddressTextField().getText()))
     {
         setErrorString(originAddressErrorMessage);
         return false;
@@ -856,8 +842,7 @@ public boolean isInputValid() {
     
     // Destination Address Validation
     String destinationAddressErrorMessage = "The Destination Address text field must be filled in and must be a number";
-    if( getDestinationAddressTextField().getText() == null   ||
-        getDestinationAddressTextField().getText().length() < 1 )
+    if( StringUtils.isBlank(getDestinationAddressTextField().getText()))
     {
         setErrorString(destinationAddressErrorMessage);
         return false;
@@ -871,8 +856,7 @@ public boolean isInputValid() {
     
     // Channel Validation
     String channelErrorMessage = "The Channel value must be a number between 0 - 63";
-    if( getChannelTextField().getText() == null    ||
-        getChannelTextField().getText().length() < 1 )
+    if( StringUtils.isBlank(getChannelTextField().getText()))
     {
         setErrorString(channelErrorMessage);
         return false;
@@ -890,8 +874,7 @@ public boolean isInputValid() {
     
     // Zone Validation
     String zoneErrorMessage = "The zone value must be a number between 0 - 63";
-    if( getZoneTextField().getText() == null    ||
-        getZoneTextField().getText().length() < 1 )
+    if( StringUtils.isBlank(getZoneTextField().getText()))
     {
         setErrorString(zoneErrorMessage);
         return false;
@@ -910,8 +893,7 @@ public boolean isInputValid() {
     
     // Function Code Validation
     String functionCodeErrorMessage = "The function code value must be a number between 0 - 63";
-    if( getFunctionCodeTextField().getText() == null    ||
-        getFunctionCodeTextField().getText().length() < 1 )
+    if( StringUtils.isBlank(getFunctionCodeTextField().getText()))
     {
         setErrorString(functionCodeErrorMessage);
         return false;
@@ -929,8 +911,7 @@ public boolean isInputValid() {
     
     // Inertia Validation
     String InertiaErrorMessage = "The inertia text field must be filled in and be a valid number";
-    if( getInertiaTextField().getText() == null    ||
-        getInertiaTextField().getText().length() < 1 )
+    if( StringUtils.isBlank(getInertiaTextField().getText()))
     {
         setErrorString(InertiaErrorMessage);
         return false;
@@ -946,8 +927,7 @@ public boolean isInputValid() {
     String identifierFormatStr = (String)getIdentifierFormatComboBox().getSelectedItem();
     if(identifierFormatMap.get(identifierFormatStr).equals('A') ){
         String PagerIdFormatErrorMessage = "The pager id must be a number with only eight digits when using the cap page format.";
-        if( getPagerIdTextField().getText() == null    ||
-            getPagerIdTextField().getText().length() < 1 ||
+        if( StringUtils.isBlank(getPagerIdTextField().getText()) ||
             getPagerIdTextField().getText().length() > 8)
         {
             setErrorString(PagerIdFormatErrorMessage);
@@ -963,8 +943,7 @@ public boolean isInputValid() {
 
     if(identifierFormatMap.get(identifierFormatStr).equals('B') ){
         String PagerIdFormatErrorMessage = "The pager id must be a string with only ten alphanumeric characters when using the id page format.";
-        if( getPagerIdTextField().getText() == null    ||
-            getPagerIdTextField().getText().length() < 1 ||
+        if( StringUtils.isBlank(getPagerIdTextField().getText()) ||
             getPagerIdTextField().getText().length() > 10)
         {
             setErrorString(PagerIdFormatErrorMessage);
@@ -1006,9 +985,9 @@ public void setValue(Object o) {
         getOriginAddressTextField().setText(deviceTNPPSettings.getOriginAddress().toString());
         getDestinationAddressTextField().setText(deviceTNPPSettings.getDestinationAddress().toString());
         getInertiaTextField().setText(deviceTNPPSettings.getInertia().toString());
-        getProtocolComboBox().setSelectedItem(getKeyForValue(protocolMap,deviceTNPPSettings.getProtocol()));
-        getDataFormatComboBox().setSelectedItem(getKeyForValue(dataFormatMap,deviceTNPPSettings.getDataFormat()));
-        getIdentifierFormatComboBox().setSelectedItem(getKeyForValue(identifierFormatMap,deviceTNPPSettings.getIdentifierFormat()));
+        getProtocolComboBox().setSelectedItem(protocolMap.inverse().get(deviceTNPPSettings.getProtocol()));
+        getDataFormatComboBox().setSelectedItem(dataFormatMap.inverse().get(deviceTNPPSettings.getDataFormat()));
+        getIdentifierFormatComboBox().setSelectedItem(identifierFormatMap.inverse().get(deviceTNPPSettings.getIdentifierFormat()));
         getPagerIdTextField().setText(deviceTNPPSettings.getPagerId());
         Integer channelInt = DeviceTNPPSettings.convertToIntAndRemoveMask(deviceTNPPSettings.getChannel());
         getChannelTextField().setText(channelInt.toString());

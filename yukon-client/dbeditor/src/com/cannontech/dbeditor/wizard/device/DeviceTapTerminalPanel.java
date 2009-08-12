@@ -140,19 +140,17 @@ private javax.swing.JPanel getJPanel1() {
 			constraintsNameTextField.insets = new java.awt.Insets(5, 8, 5, 0);
 			getJPanel1().add(getNameTextField(), constraintsNameTextField);
 
-			if (deviceType == PAOGroups.TAPTERMINAL){
-    			java.awt.GridBagConstraints constraintsPagerNumberLabel = new java.awt.GridBagConstraints();
-    			constraintsPagerNumberLabel.gridx = 0; constraintsPagerNumberLabel.gridy = 1;
-    			constraintsPagerNumberLabel.fill = java.awt.GridBagConstraints.HORIZONTAL;
-    			constraintsPagerNumberLabel.anchor = java.awt.GridBagConstraints.WEST;
-    			getJPanel1().add(getPagerNumberLabel(), constraintsPagerNumberLabel);
-    			
-    			java.awt.GridBagConstraints constraintsPagerNumberTextField = new java.awt.GridBagConstraints();
-    			constraintsPagerNumberTextField.gridx = 1; constraintsPagerNumberTextField.gridy = 1;
-    			constraintsPagerNumberTextField.anchor = java.awt.GridBagConstraints.WEST;
-    			constraintsPagerNumberTextField.insets = new java.awt.Insets(5, 8, 5, 0);
-    			getJPanel1().add(getPagerNumberTextField(), constraintsPagerNumberTextField);
-			}
+			java.awt.GridBagConstraints constraintsPagerNumberLabel = new java.awt.GridBagConstraints();
+			constraintsPagerNumberLabel.gridx = 0; constraintsPagerNumberLabel.gridy = 1;
+			constraintsPagerNumberLabel.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			constraintsPagerNumberLabel.anchor = java.awt.GridBagConstraints.WEST;
+			getJPanel1().add(getPagerNumberLabel(), constraintsPagerNumberLabel);
+			
+			java.awt.GridBagConstraints constraintsPagerNumberTextField = new java.awt.GridBagConstraints();
+			constraintsPagerNumberTextField.gridx = 1; constraintsPagerNumberTextField.gridy = 1;
+			constraintsPagerNumberTextField.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsPagerNumberTextField.insets = new java.awt.Insets(5, 8, 5, 0);
+			getJPanel1().add(getPagerNumberTextField(), constraintsPagerNumberTextField);
 
 			java.awt.GridBagConstraints constraintsPasswordLabel = new java.awt.GridBagConstraints();
 			constraintsPasswordLabel.gridx = 0; constraintsPasswordLabel.gridy = 3;
@@ -402,6 +400,7 @@ public Object getValue(Object val)
     
         //Tap Terminals cannot be slaves like some IED meters
         tnppTerm.getDeviceIED().setSlaveAddress("Master");
+        
     }
 
 	return val;
@@ -557,4 +556,15 @@ public void setFirstFocus()
     });    
 }
 
+public void setDeviceType(int deviceType){
+    this.deviceType = deviceType;
+    if (deviceType == PAOGroups.TAPTERMINAL) {
+        getPagerNumberLabel().setVisible(true);
+        getPagerNumberTextField().setVisible(true);
+    } else {
+        getPagerNumberLabel().setVisible(false);
+        getPagerNumberTextField().setVisible(false);
+    }
 }
+}
+
