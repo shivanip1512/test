@@ -29,8 +29,8 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
     private ScheduledExecutor scheduledExecutor = null;
     private PaoDao paoDao = null;
     private Map<SimpleCallback<Integer>, List<CommandCompletionCallback<CommandRequestRouteAndDevice>>> simpleCallbacksToCommandCompleteCallbacks = 
-        new HashMap<SimpleCallback<Integer>, List<CommandCompletionCallback<CommandRequestRouteAndDevice>>>();
-    private List<SimpleCallback<Integer>> cancelationCallbackList = new ArrayList<SimpleCallback<Integer>>(); 
+        Collections.synchronizedMap(new HashMap<SimpleCallback<Integer>, List<CommandCompletionCallback<CommandRequestRouteAndDevice>>>());
+    private List<SimpleCallback<Integer>> cancelationCallbackList = Collections.synchronizedList(new ArrayList<SimpleCallback<Integer>>()); 
     
 
     private static int MAX_ROUTE_RETRY = 10;
@@ -163,15 +163,17 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
 
                     };
 
-                    List<CommandCompletionCallback<CommandRequestRouteAndDevice>> commandCompletionCallbackList = 
-                        simpleCallbacksToCommandCompleteCallbacks.get(state.getRouteFoundCallback());
-                    
-                    if(commandCompletionCallbackList == null){
-                        commandCompletionCallbackList = new ArrayList<CommandCompletionCallback<CommandRequestRouteAndDevice>>();
-                        simpleCallbacksToCommandCompleteCallbacks.put(state.getRouteFoundCallback(),commandCompletionCallbackList);
+                    synchronized(simpleCallbacksToCommandCompleteCallbacks){
+                        List<CommandCompletionCallback<CommandRequestRouteAndDevice>> commandCompletionCallbackList = 
+                            simpleCallbacksToCommandCompleteCallbacks.get(state.getRouteFoundCallback());
+                        
+                        if(commandCompletionCallbackList == null){
+                            commandCompletionCallbackList = new ArrayList<CommandCompletionCallback<CommandRequestRouteAndDevice>>();
+                            simpleCallbacksToCommandCompleteCallbacks.put(state.getRouteFoundCallback(),commandCompletionCallbackList);
+                        }
+                        commandCompletionCallbackList.add(callback);
                     }
-                    commandCompletionCallbackList.add(callback);
-
+                    
                     // execute
                     try {
                         commandRequestRouteAndDeviceExecutor.execute(Collections.singletonList(cmdReq), callback, CommandRequestExecutionType.DEVICE_COMMAND, state.getUser());
@@ -221,27 +223,31 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
     public void cancelRouteDiscovery(final List<SimpleCallback<Integer>> routeFoundCallbacks, final LiteYukonUser user) {
         
         // Stops any further commands from being sent out by currently running callbacks.
-        for (SimpleCallback<Integer> routeFoundCallback : routeFoundCallbacks) {
-            this.cancelationCallbackList.add(routeFoundCallback);
-        }        
+        synchronized(routeFoundCallbacks){
+            for (SimpleCallback<Integer> routeFoundCallback : routeFoundCallbacks) {
+                this.cancelationCallbackList.add(routeFoundCallback);
+            }        
+        }
         
         // Sends out a cancel request for all the pings that have not had responses
-        scheduledExecutor.schedule(new Runnable() {
+        scheduledExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 for (SimpleCallback<Integer> routeFoundCallback : routeFoundCallbacks) {
-                    List<CommandCompletionCallback<CommandRequestRouteAndDevice>> commandCompletionCallbacks = 
-                        simpleCallbacksToCommandCompleteCallbacks.get(routeFoundCallback);
-                    
-                    // Sends a cancel command to all the commands that have been sent out.
-                    if(commandCompletionCallbacks != null){
-                        for ( CommandCompletionCallback<CommandRequestRouteAndDevice> commandCompletionCallback : commandCompletionCallbacks) {
-                            commandRequestRouteAndDeviceExecutor.cancelExecution(commandCompletionCallback, user);
+                    synchronized(simpleCallbacksToCommandCompleteCallbacks){
+                        List<CommandCompletionCallback<CommandRequestRouteAndDevice>> commandCompletionCallbacks = 
+                            simpleCallbacksToCommandCompleteCallbacks.get(routeFoundCallback);
+                        
+                        // Sends a cancel command to all the commands that have been sent out.
+                        if(commandCompletionCallbacks != null){
+                            for ( CommandCompletionCallback<CommandRequestRouteAndDevice> commandCompletionCallback : commandCompletionCallbacks) {
+                                commandRequestRouteAndDeviceExecutor.cancelExecution(commandCompletionCallback, user);
+                            }
                         }
                     }
                 }
             }
-        }, 5, TimeUnit.MILLISECONDS);
+        });
     }
 
     @Required
