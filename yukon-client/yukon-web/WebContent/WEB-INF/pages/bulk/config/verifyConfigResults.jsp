@@ -50,79 +50,87 @@
     <h2>${pageTitle}</h2>
     <br>
     
-    <%-- SUCCESS --%>
-    <br>
-    <div class="normalBoldLabel">${successLabel} <span class="okGreen">${successCollection.deviceCount}</span></div>
-    <c:if test="${successCollection.deviceCount > 0}">
-        <div id="successActionsDiv" style="padding:10px;">
-    
-        <%-- device collection action --%>
-        <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.commander.collectionActionOnDevicesLabel.successResults" class="small">
-            <cti:mapParam value="${successCollection.collectionParameters}"/>
-        </cti:link>
-        <tags:selectedDevicesPopup deviceCollection="${successCollection}" />
-        
-    </div>
-    <br>
-    </c:if>
-    
-    <%-- FAILURE --%>
-    <div class="normalBoldLabel">${failureLabel} <span class="errorRed">${failureCollection.deviceCount}</span></div>
-    
-    <c:if test="${failureCollection.deviceCount > 0}">
-	    <div id="errorActionsDiv" style="padding:10px;">
-	    
-	        <%-- device collection action --%>
-	        <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.commander.collectionActionOnDevicesLabel.failureResults" class="small">
-	            <cti:mapParam value="${failureCollection.collectionParameters}"/>
-	        </cti:link>
-	        <tags:selectedDevicesPopup deviceCollection="${failureCollection}" />
-	        
-	    </div>
-    </c:if>
-    
-    <%-- UNSUPPORTED --%>
-    <div class="normalBoldLabel">${unsupportedLabel} <span class="errorRed">${unsupportedCollection.deviceCount}</span></div>
-    
-    <c:if test="${unsupportedCollection.deviceCount > 0}">
-        <div id="errorActionsDiv" style="padding:10px;">
-        
-            <%-- device collection action --%>
-            <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.commander.collectionActionOnDevicesLabel.failureResults" class="small">
-                <cti:mapParam value="${unsupportedCollection.collectionParameters}"/>
-            </cti:link>
-            <tags:selectedDevicesPopup deviceCollection="${unsupportedCollection}" />
-            
-        </div>
-    </c:if>
-     
-    <table class="resultsTable activeResultsTable" align="center">
-        <tr>
-            <th nowrap="nowrap">${deviceNameColumn}</th>
-            <th nowrap="nowrap">${configNameColumn}</th>
-            <th nowrap="nowrap">${deviceTypeColumn}</th>
-            <th nowrap="nowrap">${verifyResultsColumn}</th>
-        </tr>
-        
-        <c:forEach var="device" items="${devices}">
-            <c:choose>
-                <c:when test="${resultsMap[device].synced}">
-                    <tr>
-                        <td onclick="forwardToMeterHome(${device.deviceId});" nowrap="nowrap">${resultsMap[device].meter.name}</td>
-                        <td nowrap="nowrap">${resultsMap[device].config.name}</td>
-                        <td nowrap="nowrap">${resultsMap[device].config.type}</td>
-                        <td>${successResult}</td>
-                    </tr>
-                </c:when>
-                <c:otherwise>
-                    <tr class="lightRedBackground">
-                        <td onclick="forwardToMeterHome(${device.deviceId});" nowrap="nowrap">${resultsMap[device].meter.name}</td>
-                        <td nowrap="nowrap">${resultsMap[device].config.name}</td>
-                        <td nowrap="nowrap">${resultsMap[device].config.type}</td>
-                        <td>${failureResult} ${resultsMap[device].discrepancies}</td>
-                    </tr>
-             </c:otherwise>
-            </c:choose>
-        </c:forEach>
-    </table>
+    <c:choose>
+        <c:when test="${not empty exceptionReason}">
+            <span class="errorRed"><b>Error Occured: ${exceptionReason}</b></span>
+        </c:when>
+        <c:otherwise>
+            <span class="okGreen"><b>Verify Completed Successfully</b></span>
+		    <%-- SUCCESS --%>
+		    <br><br>
+		    <div class="normalBoldLabel">${successLabel} <span class="okGreen">${successCollection.deviceCount}</span></div>
+		    <c:if test="${successCollection.deviceCount > 0}">
+		        <div id="successActionsDiv" style="padding:10px;">
+		    
+		        <%-- device collection action --%>
+		        <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.commander.collectionActionOnDevicesLabel.successResults" class="small">
+		            <cti:mapParam value="${successCollection.collectionParameters}"/>
+		        </cti:link>
+		        <tags:selectedDevicesPopup deviceCollection="${successCollection}" />
+		        
+		    </div>
+		    <br>
+		    </c:if>
+		    
+		    <%-- FAILURE --%>
+		    <div class="normalBoldLabel">${failureLabel} <span class="errorRed">${failureCollection.deviceCount}</span></div>
+		    
+		    <c:if test="${failureCollection.deviceCount > 0}">
+			    <div id="errorActionsDiv" style="padding:10px;">
+			    
+			        <%-- device collection action --%>
+			        <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.commander.collectionActionOnDevicesLabel.failureResults" class="small">
+			            <cti:mapParam value="${failureCollection.collectionParameters}"/>
+			        </cti:link>
+			        <tags:selectedDevicesPopup deviceCollection="${failureCollection}" />
+			        
+			    </div>
+		    </c:if>
+		    
+		    <%-- UNSUPPORTED --%>
+		    <div class="normalBoldLabel">${unsupportedLabel} <span class="errorRed">${unsupportedCollection.deviceCount}</span></div>
+		    
+		    <c:if test="${unsupportedCollection.deviceCount > 0}">
+		        <div id="errorActionsDiv" style="padding:10px;">
+		        
+		            <%-- device collection action --%>
+		            <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.commander.collectionActionOnDevicesLabel.failureResults" class="small">
+		                <cti:mapParam value="${unsupportedCollection.collectionParameters}"/>
+		            </cti:link>
+		            <tags:selectedDevicesPopup deviceCollection="${unsupportedCollection}" />
+		            
+		        </div>
+		    </c:if>
+            <br>
+		    <table class="resultsTable activeResultsTable" align="center">
+		        <tr>
+		            <th nowrap="nowrap">${deviceNameColumn}</th>
+		            <th nowrap="nowrap">${configNameColumn}</th>
+		            <th nowrap="nowrap">${deviceTypeColumn}</th>
+		            <th nowrap="nowrap">${verifyResultsColumn}</th>
+		        </tr>
+		        
+		        <c:forEach var="device" items="${devices}">
+		            <c:choose>
+		                <c:when test="${resultsMap[device].synced}">
+		                    <tr>
+		                        <td onclick="forwardToMeterHome(${device.deviceId});" nowrap="nowrap">${resultsMap[device].meter.name}</td>
+		                        <td nowrap="nowrap">${resultsMap[device].config.name}</td>
+		                        <td nowrap="nowrap">${resultsMap[device].config.type}</td>
+		                        <td>${successResult}</td>
+		                    </tr>
+		                </c:when>
+		                <c:otherwise>
+		                    <tr class="lightRedBackground">
+		                        <td onclick="forwardToMeterHome(${device.deviceId});" nowrap="nowrap">${resultsMap[device].meter.name}</td>
+		                        <td nowrap="nowrap">${resultsMap[device].config.name}</td>
+		                        <td nowrap="nowrap">${resultsMap[device].config.type}</td>
+		                        <td>${failureResult} ${resultsMap[device].discrepancies}</td>
+		                    </tr>
+		             </c:otherwise>
+		            </c:choose>
+		        </c:forEach>
+		    </table>
+        </c:otherwise>
+    </c:choose>
 </cti:standardPage>

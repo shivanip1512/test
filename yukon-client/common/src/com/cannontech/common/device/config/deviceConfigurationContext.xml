@@ -573,7 +573,7 @@
 						<list>
 							<bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
 								<property name="minValue" value="0" />
-								<property name="maxValue" value="255" />
+								<property name="maxValue" value="254" />
 							</bean>
 						</list>
 					</property>

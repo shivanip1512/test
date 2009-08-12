@@ -14,6 +14,7 @@ public class VerifyConfigCommandResult {
     private List<SimpleDevice> successList = new ArrayList<SimpleDevice>();
     private List<SimpleDevice> failureList = new ArrayList<SimpleDevice>();
     private List<SimpleDevice> unsupportedList = new ArrayList<SimpleDevice>();
+    private String exceptionReason = null;
 
     public void addResultString(SimpleDevice device, String value) {
         verifyResultsMap.get(device).getMatching().add(value);
@@ -26,6 +27,14 @@ public class VerifyConfigCommandResult {
             value = words[1];
         }
         desc.add(value);
+    }
+    
+    public void setExceptionReason(String reason) {
+        this.exceptionReason = reason;
+    }
+    
+    public String getExceptionReason() {
+        return exceptionReason;
     }
     
     public void handleSuccess(SimpleDevice device) {

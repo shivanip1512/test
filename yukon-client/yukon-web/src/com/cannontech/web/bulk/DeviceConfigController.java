@@ -226,6 +226,8 @@ public class DeviceConfigController extends BulkControllerBase {
         DeviceCollection unsupportedCollection = deviceGroupCollectionHelper.buildDeviceCollection(unsupportedGroup);
         Map<SimpleDevice, VerifyResult> resultsMap = result.getVerifyResultsMap();
         Set<SimpleDevice> devices = resultsMap.keySet();
+        String exceptionReason = result.getExceptionReason();
+        model.addAttribute("exceptionReason", exceptionReason);
         model.addAttribute("devices", devices);
         model.addAttribute("resultsMap", resultsMap);
         model.addAttribute("successCollection", successCollection);

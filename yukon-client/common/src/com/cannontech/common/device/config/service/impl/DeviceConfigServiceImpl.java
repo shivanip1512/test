@@ -116,6 +116,11 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                     result.handleFailure(device);
                 }
             }
+            
+            @Override
+            public void processingExceptionOccured(String reason) {
+                result.setExceptionReason(reason);
+            }
         };
         
         WaitableCommandCompletionCallback<CommandRequestDevice> waitableCallback = new WaitableCommandCompletionCallback<CommandRequestDevice>(commandCompletionCallback);
