@@ -24,6 +24,8 @@ import com.cannontech.common.device.commands.impl.WaitableCommandCompletionCallb
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.VerifyResult;
 import com.cannontech.common.device.config.service.DeviceConfigService;
+import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
+import com.cannontech.common.device.definition.model.DeviceTag;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.pao.YukonDevice;
@@ -40,6 +42,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     private Logger log = YukonLogManager.getLogger(DeviceConfigServiceImpl.class);
     private DeviceConfigurationDao deviceConfigurationDao;
     private MeterDao meterDao;
+    private DeviceDefinitionDao deviceDefinitionDao;
     
     @Override
     public String sendConfigs(DeviceCollection deviceCollection, String method, SimpleCallback<GroupCommandResult> callback, LiteYukonUser user) {
@@ -58,9 +61,9 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     
     @Override
     public VerifyConfigCommandResult verifyConfigs(Iterable<? extends YukonDevice> devices, LiteYukonUser user) {
-        List<YukonDevice> deviceList = Lists.newArrayList(devices);
-        
+        final VerifyConfigCommandResult result = new VerifyConfigCommandResult();
         final String commandString = "putconfig emetcon install all verify";
+        List<YukonDevice> deviceList = Lists.newArrayList(devices);
         
         ObjectMapper<YukonDevice, CommandRequestDevice> objectMapper = new ObjectMapper<YukonDevice, CommandRequestDevice>() {
             public CommandRequestDevice map(YukonDevice from) throws ObjectMappingException {
@@ -68,16 +71,20 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
             }
         };
         
-        List<CommandRequestDevice> requests = new MappingList<YukonDevice, CommandRequestDevice>(deviceList, objectMapper);
-
-        final VerifyConfigCommandResult result = new VerifyConfigCommandResult();
-        
         for(YukonDevice device : devices) {
             Meter meter = meterDao.getForYukonDevice(device);
-            VerifyResult verifyResult = new VerifyResult(meter);
-            verifyResult.setConfig(deviceConfigurationDao.findConfigurationForDevice(device));
-            result.getVerifyResultsMap().put(new SimpleDevice(device.getPaoIdentifier()), verifyResult);
+            if(deviceDefinitionDao.isTagSupported(meter.getDeviceType(), DeviceTag.DEVICE_CONFIGURATION_430)
+                    || deviceDefinitionDao.isTagSupported(meter.getDeviceType(), DeviceTag.DEVICE_CONFIGURATION_470)) {
+                VerifyResult verifyResult = new VerifyResult(meter);
+                verifyResult.setConfig(deviceConfigurationDao.findConfigurationForDevice(device));
+                result.getVerifyResultsMap().put(new SimpleDevice(device.getPaoIdentifier()), verifyResult);
+            }else {
+                deviceList.remove(device);
+                result.getUnsupportedList().add(new SimpleDevice(device));
+            }
         }
+
+        List<CommandRequestDevice> requests = new MappingList<YukonDevice, CommandRequestDevice>(deviceList, objectMapper);
         
         CommandCompletionCallbackAdapter<CommandRequestDevice> commandCompletionCallback = new CommandCompletionCallbackAdapter<CommandRequestDevice>() {
             @Override
@@ -168,6 +175,11 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     @Autowired
     public void setDeviceConfigurationDao(DeviceConfigurationDao deviceConfigurationDao) {
         this.deviceConfigurationDao = deviceConfigurationDao;
+    }
+    
+    @Autowired
+    public void setDeviceDefinitionDao(DeviceDefinitionDao deviceDefinitionDao) {
+        this.deviceDefinitionDao = deviceDefinitionDao;
     }
     
     @Autowired

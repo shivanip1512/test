@@ -46,8 +46,8 @@
 				<ref bean="relaysCategory"/>
 				<ref bean="mct470PrecannedTableCategory"/>				
 				<ref bean="touCategory"/>
-				<ref bean="dnpCategory"/>				 
-		<!-- 	<ref bean="optionsCategory"/>
+         <!-- <ref bean="dnpCategory"/>				 
+                <ref bean="optionsCategory"/>
 				<ref bean="longLPCategory"/>
 		 		<ref bean="voltageThresholdCategory"/>
 			 	<ref bean="holidaysCategory"/>

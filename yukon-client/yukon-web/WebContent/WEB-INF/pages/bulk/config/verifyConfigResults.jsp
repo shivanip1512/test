@@ -5,6 +5,7 @@
 <cti:msg var="pageTitle" key="yukon.common.device.bulk.verifyConfigResults.pageTitle"/>
 <cti:msg var="successLabel" key="yukon.common.device.bulk.verifyConfigResults.successLabel"/>
 <cti:msg var="failureLabel" key="yukon.common.device.bulk.verifyConfigResults.failureLabel"/>
+<cti:msg var="unsupportedLabel" key="yukon.common.device.bulk.verifyConfigResults.unsupportedLabel"/>
 <cti:msg var="successResult" key="yukon.common.device.bulk.verifyConfigResults.successResult"/>
 <cti:msg var="failureResult" key="yukon.common.device.bulk.verifyConfigResults.failureResult"/>
 <cti:msg var="deviceNameColumn" key="yukon.common.device.bulk.verifyConfigResults.deviceNameColumn"/>
@@ -78,6 +79,21 @@
 	        <tags:selectedDevicesPopup deviceCollection="${failureCollection}" />
 	        
 	    </div>
+    </c:if>
+    
+    <%-- UNSUPPORTED --%>
+    <div class="normalBoldLabel">${unsupportedLabel} <span class="errorRed">${unsupportedCollection.deviceCount}</span></div>
+    
+    <c:if test="${unsupportedCollection.deviceCount > 0}">
+        <div id="errorActionsDiv" style="padding:10px;">
+        
+            <%-- device collection action --%>
+            <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.commander.collectionActionOnDevicesLabel.failureResults" class="small">
+                <cti:mapParam value="${unsupportedCollection.collectionParameters}"/>
+            </cti:link>
+            <tags:selectedDevicesPopup deviceCollection="${unsupportedCollection}" />
+            
+        </div>
     </c:if>
      
     <table class="resultsTable activeResultsTable" align="center">
