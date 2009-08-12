@@ -193,6 +193,9 @@
       <sequence name="OutageMonitor">
         <table name="OutageMonitor" identitycolumn="OutageMonitorId" initsequence="true"/>
       </sequence>
+      <sequence name="TamperFlagMonitor">
+        <table name="TamperFlagMonitor" identitycolumn="TamperFlagMonitorId" initsequence="true"/>
+      </sequence>
       <sequence name="CRE">
         <table name="CommandRequestExecution" identitycolumn="CommandRequestExecutionId"/>
         <table name="CommandRequestExecutionResult" identitycolumn="CommandRequestExecutionResultId"/>

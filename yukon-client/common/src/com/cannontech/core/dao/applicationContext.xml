@@ -193,4 +193,6 @@
   
   <bean id="outageMonitorDao" class="com.cannontech.amr.outageProcessing.dao.impl.OutageMonitorDaoImpl"/>
   
+  <bean id="tamperFlagMonitorDao" class="com.cannontech.amr.tamperFlagProcessing.dao.impl.TamperFlagMonitorDaoImpl"/>
+  
 </beans>

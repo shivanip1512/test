@@ -498,6 +498,11 @@
         <property name="identityPath" value="common/deviceIdentity.jsp" />
     </bean>
     
+    <bean id="tamperFlagMonitorsWidget" class="com.cannontech.web.widget.TamperFlagMonitorsWidget">
+    	<property name="title" value="Tamper Flag Monitors"/>
+        <property name="identityPath" value="common/deviceIdentity.jsp" />
+    </bean>
+    
     <bean id="scheduledGroupRequstExecutionWidget" class="com.cannontech.web.widget.ScheduledGroupRequstExecutionWidget">
     	<property name="title" value="Scheduled Requests"/>
         <property name="identityPath" value="common/deviceIdentity.jsp" />
@@ -550,6 +555,9 @@
                 </entry>
                 <entry key="OUTAGE_PROCESSING">
                     <ref local="outageMonitorBackingService"/>
+                </entry>
+                <entry key="TAMPER_FLAG_PROCESSING">
+                    <ref local="tamperFlagMonitorBackingService"/>
                 </entry>
                 <entry key="JOB">
                     <ref local="jobBackingService"/>
@@ -672,6 +680,11 @@
     <bean id="outageMonitorBackingService" class="com.cannontech.web.updater.outageProcessing.OutageMonitorBackingService">
     </bean>
     <bean id="outageCountOutageProcessingUpdaterHandler" class="com.cannontech.web.updater.outageProcessing.handler.OutageCountOutageProcessingUpdaterHandler"/>
+    
+    <bean id="tamperFlagMonitorBackingService" class="com.cannontech.web.updater.tamperFlagProcessing.TamperFlagMonitorBackingService">
+    </bean>
+    <bean id="violationsCountTamperFlagProcessingUpdaterHandler" class="com.cannontech.web.updater.tamperFlagProcessing.handler.ViolationsCountTamperFlagProcessingUpdaterHandler"/>
+    <bean id="monitoringCountTamperFlagProcessingUpdaterHandler" class="com.cannontech.web.updater.tamperFlagProcessing.handler.MonitoringCountTamperFlagProcessingUpdaterHandler"/>
     
     <bean id="jobBackingService" class="com.cannontech.web.updater.job.JobBackingService">
     </bean>

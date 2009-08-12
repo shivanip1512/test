@@ -20,10 +20,16 @@
 			<tr>
 		
 				<td class="widgetColumnCell" valign="top">
+				
+					<%-- OUTAGE MONITORS WIDGET --%>
+					<cti:msg var="outageMonitorsWidgetPopupInfoText" key="yukon.web.modules.amr.outageMonitorsWidget.popupInfo"/>
+					<ct:widget bean="outageMonitorsWidget" helpText="${outageMonitorsWidgetPopupInfoText}"/>
 					
-					<cti:msg var="outagesWidgetPopupInfoText" key="yukon.web.modules.amr.outageMonitorsWidget.popupInfo"/>
-					<ct:widget bean="outageMonitorsWidget" helpText="${outagesWidgetPopupInfoText}"/>
+					<%-- TAMPER FLAGS WIDGET --%>
+					<cti:msg var="tamperFlagMonitorsWidgetPopupInfoText" key="yukon.web.modules.amr.tamperFlagMonitorsWidget.popupInfo"/>
+					<ct:widget bean="tamperFlagMonitorsWidget" helpText="${tamperFlagMonitorsWidgetPopupInfoText}"/>
 					
+					<%-- SCHEDULED GROUP REQUESTS WIDGET --%>
 					<cti:msg var="scheduledGroupRequstExecutionWidgetPopupInfoText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.popupInfo"/>
 					<ct:widget bean="scheduledGroupRequstExecutionWidget" helpText="${scheduledGroupRequstExecutionWidgetPopupInfoText}"/>
 					
