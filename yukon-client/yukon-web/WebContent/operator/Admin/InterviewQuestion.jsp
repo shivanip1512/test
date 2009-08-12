@@ -1,4 +1,5 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
+<%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
 <%
 	ArrayList questions = new ArrayList();
 	String qType = request.getParameter("Type");
@@ -20,7 +21,7 @@ var answerTypes = new Array();
 	for (int i = 0; i < questions.size(); i++) {
 		StarsQuestionAnswer question = (StarsQuestionAnswer) questions.get(i);
 %>
-	questions[<%= i %>] = "<%= question.getQuestion().replaceAll("\"", "&quot;") %>".replace(/&quot;/g, "\"");
+	questions[<%= i %>] = "<%= StringEscapeUtils.escapeHtml(question.getQuestion().replaceAll("\"", "&quot;")) %>".replace(/&quot;/g, "\"");
 	answerTypes[<%= i %>] = <%= question.getAnswerType().getEntryID() %>;
 <%	} %>
 
@@ -193,6 +194,7 @@ function prepareSubmit(form) {
 	for (int i = 0; i < questions.size(); i++) {
 		StarsQuestionAnswer question = (StarsQuestionAnswer) questions.get(i);
 		String qStr = (question.getQuestion().length() <= 50) ? question.getQuestion() : question.getQuestion().substring(0,47).concat("...");
+		qStr = StringEscapeUtils.escapeHtml(qStr);
 %>
                                   <option><%= qStr %></option>
 <%	} %>

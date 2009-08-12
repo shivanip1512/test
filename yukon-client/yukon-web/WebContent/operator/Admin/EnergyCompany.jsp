@@ -1,5 +1,6 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonGroup" %>
+<%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
 <%
 	String action = request.getParameter("action");
 	if (action == null) action = "";
@@ -159,7 +160,7 @@ function addCustomerGroup(form) {
                         <td width="25%" align="right" class="TableCell">Company 
                           Name:</td>
                         <td width="75%" class="TableCell"> 
-                          <input type="text" name="CompanyName" value="<%= ec.getCompanyName() %>" size="30" onchange="setContentChanged(true)">
+                          <input type="text" name="CompanyName" value="<%= StringEscapeUtils.escapeHtml(ec.getCompanyName()) %>" size="30" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -181,7 +182,7 @@ function addCustomerGroup(form) {
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Email:</td>
                         <td width="75%" class="TableCell"> 
-                          <input type="text" name="Email" value="<%= ec.getEmail() %>" size="30" onchange="setContentChanged(true)">
+                          <input type="text" name="Email" value="<%= StringEscapeUtils.escapeHtml(ec.getEmail()) %>" size="30" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -189,7 +190,7 @@ function addCustomerGroup(form) {
                         <td width="75%" class="TableCell"> 
                           <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
                             <tr> 
-                              <td width="75%"><%= address %></td>
+                              <td width="75%"><%= StringEscapeUtils.escapeHtml(address) %></td>
                               <td width="25%"> 
                                 <input type="button" name="EditAddress" value="Edit" onclick="editAddress(this.form)">
                               </td>
@@ -286,13 +287,13 @@ function addCustomerGroup(form) {
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Admin. Email Sender:</td>
                         <td class="TableCell"> 
-                          <input type="text" name="AdminEmail" size="50" value="<%= adminEmail %>" onchange="setContentChanged(true)">
+                          <input type="text" name="AdminEmail" size="50" value="<%= StringEscapeUtils.escapeHtml(adminEmail) %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Opt out Notif. Recipients:</td>
                         <td class="TableCell"> 
-                          <input type="text" name="OptOutNotif" size="50" value="<%= optOutNotif %>" onchange="setContentChanged(true)">
+                          <input type="text" name="OptOutNotif" size="50" value="<%= StringEscapeUtils.escapeHtml(optOutNotif) %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                     </table>

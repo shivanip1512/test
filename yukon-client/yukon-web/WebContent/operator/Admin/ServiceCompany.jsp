@@ -1,6 +1,7 @@
 <%@ page import="com.cannontech.user.UserUtils" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
+<%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
 <jsp:useBean id="servComp" scope="page" class="com.cannontech.stars.web.bean.ServiceCompanyBean" />
 <%
 	StarsServiceCompany company = null;
@@ -141,7 +142,7 @@ function newCode(form) {
                         <td width="25%" align="right" class="TableCell">Company 
                           Name:</td>
                         <td width="75%" class="TableCell"> 
-                          <input type="text" name="CompanyName" value="<%= sc.getCompanyName() %>" onchange="setContentChanged(true)">
+                          <input type="text" name="CompanyName" value="<%= StringEscapeUtils.escapeHtml(sc.getCompanyName()) %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -167,7 +168,7 @@ function newCode(form) {
 	String emailAddr = (email != null)? email.getNotification() : "";
 %>
                         <td width="75%" class="TableCell"> 
-                          <input type="text" name="Email" value="<%= emailAddr %>" onchange="setContentChanged(true)">
+                          <input type="text" name="Email" value="<%= StringEscapeUtils.escapeHtml(emailAddr) %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -177,10 +178,10 @@ function newCode(form) {
                           <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
                             <tr> 
                               <td>Last Name: 
-                                <input type="text" name="ContactLastName" value="<%= sc.getPrimaryContact().getLastName() %>" size=14 onchange="setContentChanged(true)">
+                                <input type="text" name="ContactLastName" value="<%= StringEscapeUtils.escapeHtml(sc.getPrimaryContact().getLastName()) %>" size=14 onchange="setContentChanged(true)">
                               </td>
                               <td>First Name: 
-                                <input type="text" name="ContactFirstName" value="<%= sc.getPrimaryContact().getFirstName() %>" size=14 onchange="setContentChanged(true)">
+                                <input type="text" name="ContactFirstName" value="<%= StringEscapeUtils.escapeHtml(sc.getPrimaryContact().getFirstName()) %>" size=14 onchange="setContentChanged(true)">
                               </td>
                               <td>Contact Login: 
                                 <select name="ContactLogin" onchange="setContentChanged(true)">

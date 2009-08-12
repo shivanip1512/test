@@ -4,6 +4,7 @@
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramDirect" %>
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramBase" %>
 <%@ page import="com.cannontech.core.dao.NotFoundException" %>
+<%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
 
 <%
 	StarsApplianceCategory category = null;
@@ -611,13 +612,13 @@ function updateMessageCode(input) {
                       <tr> 
                         <td width="15%" align="right" class="TableCell">Category Name:</td>
                         <td width="85%" class="TableCell"> 
-                          <input type="text" id="applianceCategoryNameInput" name="Name" value="<%= category.getDescription() %>" onchange="setContentChanged(true)">
+                          <input type="text" id="applianceCategoryNameInput" name="Name" value="<%= StringEscapeUtils.escapeHtml(category.getDescription()) %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
                         <td width="15%" align="right" class="TableCell">Display Name:</td>
                         <td width="85%" class="TableCell"> 
-                          <input type="text" id="DispName" name="DispName" value="<%= category.getStarsWebConfig().getAlternateDisplayName() %>" onchange="setContentChanged(true);">
+                          <input type="text" id="DispName" name="DispName" value="<%= StringEscapeUtils.escapeHtml(category.getStarsWebConfig().getAlternateDisplayName()) %>" onchange="setContentChanged(true);">
                           <input type="checkbox" id="SameAsName" name="SameAsName" value="true" onclick="sameAsCategoryName(this.checked, false);setContentChanged(true);" <%= viewOnly %>>
                           Same as category name </td>
                       </tr>

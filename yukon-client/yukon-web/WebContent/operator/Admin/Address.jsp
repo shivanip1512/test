@@ -1,4 +1,5 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
+<%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
 <%
 	String referer = request.getParameter("referer");
     referer = ServletUtil.createSafeRedirectUrl(request, referer);
@@ -70,20 +71,20 @@
                         <td width="25%" align="right" class="TableCell">Street 
                           Address 1:</td>
                         <td width="75%" class="TableCell">
-                          <input type="text" name="StreetAddr1" value="<%= address.getStreetAddr1() %>" onchange="setContentChanged(true)">
+                          <input type="text" name="StreetAddr1" value="<%= StringEscapeUtils.escapeHtml(address.getStreetAddr1()) %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Street 
                           Address 2:</td>
                         <td width="75%" class="TableCell">
-                          <input type="text" name="StreetAddr2" value="<%= address.getStreetAddr2() %>" onchange="setContentChanged(true)">
+                          <input type="text" name="StreetAddr2" value="<%= StringEscapeUtils.escapeHtml(address.getStreetAddr2()) %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
                         <td width="25%" align="right" class="TableCell">City:</td>
                         <td width="75%" class="TableCell">
-                          <input type="text" name="City" value="<%= address.getCity() %>" onchange="setContentChanged(true)">
+                          <input type="text" name="City" value="<%= StringEscapeUtils.escapeHtml(address.getCity()) %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -101,7 +102,7 @@
                       <tr> 
                         <td width="25%" align="right" class="TableCell" height="2">County:</td>
                         <td width="75%" class="TableCell" height="2"> 
-                          <input type="text" name="County" value="<%= address.getCounty() %>" onchange="setContentChanged(true)">
+                          <input type="text" name="County" value="<%= StringEscapeUtils.escapeHtml(address.getCounty()) %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                     </table>

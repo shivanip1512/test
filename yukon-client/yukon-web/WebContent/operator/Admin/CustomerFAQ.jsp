@@ -1,4 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
 
 <%@ include file="../Consumer/include/StarsHeader.jsp"%>
 
@@ -79,7 +80,7 @@
                                                         <input type="radio" name="Source" value="Link" <% if (!inherited && faqLink != null) out.print("checked"); %>>Use a link to your company's website:
                                                     </td>
                                                     <td>
-                                                        <input style="width: 25em;" type="text" name="FAQLink" size="30" value="<c:if test='${!isInherited}'><%=StarsUtils.forceNotNone(faqLink)%></c:if>">
+                                                        <input style="width: 25em;" type="text" name="FAQLink" size="30" value="<c:if test='${!isInherited}'><%= StringEscapeUtils.escapeHtml(StarsUtils.forceNotNone(faqLink)) %></c:if>">
                                                     </td>
                                                 </tr>
                                                 

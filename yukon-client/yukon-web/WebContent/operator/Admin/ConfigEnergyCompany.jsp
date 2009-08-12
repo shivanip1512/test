@@ -5,6 +5,7 @@
 <%@ page import="com.cannontech.roles.consumer.ResidentialCustomerRole" %>
 <%@ page import="com.cannontech.web.navigation.CtiNavObject" %>
 <%@ page import="com.cannontech.stars.dr.hardware.model.HardwareType" %>
+<%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
 
 <jsp:useBean id="wareAdmin" scope="page" class="com.cannontech.stars.web.bean.WarehouseAdminBean" />
 <%	if (!DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY)
@@ -247,7 +248,7 @@ function deleteWarehouse(form, warehouseId) {
                                 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
                                   <tr> 
                                     <td width="5%">&nbsp;</td>
-                                    <td width="70%"><%= energyCompany.getCompanyName() %></td>
+                                    <td width="70%"><%= StringEscapeUtils.escapeHtml(energyCompany.getCompanyName()) %></td>
                                     <td width="25%"> 
                                       <input type="submit" name="Edit3" value="Edit">
                                     </td>
@@ -332,11 +333,11 @@ function deleteWarehouse(form, warehouseId) {
 		}
 %>
                                     </td>
-                                    <td width="60%" class="TableCell" valign="top"><%= category.getDescription() %> 
+                                    <td width="60%" class="TableCell" valign="top"><%= StringEscapeUtils.escapeHtml(category.getDescription()) %> 
                                       <%
 		if (!category.getStarsWebConfig().getAlternateDisplayName().equals( category.getDescription() )) {
 %>
-                                      (<%= category.getStarsWebConfig().getAlternateDisplayName() %>) 
+                                      (<%= StringEscapeUtils.escapeHtml(category.getStarsWebConfig().getAlternateDisplayName()) %>) 
                                       <%
 		}
 %>
@@ -366,7 +367,7 @@ function deleteWarehouse(form, warehouseId) {
                                         <tr> 
                                           <td width="15" class="TableCell">&nbsp;</td>
                                           <td width="458" class="TableCell"><%= progName %> 
-                                            <%= progAlias %></td>
+                                            <%= StringEscapeUtils.escapeHtml(progAlias) %></td>
                                         </tr>
                                         <%
 		}
@@ -467,7 +468,7 @@ function deleteWarehouse(form, warehouseId) {
 %>
                                   <tr> 
                                     <td class="TableCell" width="5%">&nbsp;</td>
-                                    <td class="TableCell" width="70%"><%= company.getCompanyName() %></td>
+                                    <td class="TableCell" width="70%"><%= StringEscapeUtils.escapeHtml(company.getCompanyName()) %></td>
                                     <%
 			if (company.getInherited()) {
 %>
@@ -559,7 +560,7 @@ function deleteWarehouse(form, warehouseId) {
 %>
                                   <tr> 
                                     <td class="TableCell" width="5%">&nbsp;</td>
-                                    <td class="TableCell" width="70%"><%= substation.getSubstationName() %></td>
+                                    <td class="TableCell" width="70%"><%= StringEscapeUtils.escapeHtml(substation.getSubstationName()) %></td>
 <%
 			if (substation.getInherited()) {
 %>
@@ -621,7 +622,7 @@ function deleteWarehouse(form, warehouseId) {
         if (isInherited) {
             out.print("(Inherited)");    
         } else if (faqLink != null) {
-			out.print(faqLink);
+			out.print(StringEscapeUtils.escapeHtml(faqLink));
         }
 %>
                                   </td>
@@ -658,7 +659,7 @@ function deleteWarehouse(form, warehouseId) {
 			StarsExitInterviewQuestion question = exitQuestions.getStarsExitInterviewQuestion(i);
 			String qStr = (question.getQuestion().length() <= 50) ? question.getQuestion() : question.getQuestion().substring(0,47).concat("...");
 %>
-                                    <%= qStr %><br>
+                                    <%= StringEscapeUtils.escapeHtml(qStr) %><br>
                                     <%
 		}
 %>
