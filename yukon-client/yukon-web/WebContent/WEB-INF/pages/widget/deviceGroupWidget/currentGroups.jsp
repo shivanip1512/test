@@ -14,7 +14,7 @@
         <c:when test="${not empty currentGroups}">
 
             <div style="overflow:auto; height:160px;">
-	            <table>
+	            <table width="97%">
 	                <c:forEach var="group" items="${currentGroups}">
 	                
 	                    <c:if test="${not group.hidden}">
