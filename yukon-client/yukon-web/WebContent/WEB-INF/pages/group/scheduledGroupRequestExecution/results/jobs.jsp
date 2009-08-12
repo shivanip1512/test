@@ -119,18 +119,25 @@
 				<th>${executionsEnabledStatusText}</th>
 				<th>${executionsUserText}</th>
 			</tr>
+			
+			
 		
 			<c:forEach var="jobWrapper" items="${jobWrappers}">
 		    				
+		    	<c:set var="tdClass" value=""/>
+				<c:if test="${jobWrapper.job.disabled}">
+					<c:set var="tdClass" value="subtleGray"/>
+				</c:if>
+			
 				<tr class="<tags:alternateRow odd="" even="altRow"/>" 
 					onclick="forwardToJobDetail(this, ${jobWrapper.job.id})" 
 					onmouseover="activeResultsTable_highLightRow(this)" 
 					onmouseout="activeResultsTable_unHighLightRow(this)"
 					title="ID: ${jobWrapper.job.id}">
 					
-					<td>${jobWrapper.name}</td>
-					<td>${jobWrapper.commandRequestTypeShortName}</td>
-					<td>
+					<td class="${tdClass}">${jobWrapper.name}</td>
+					<td class="${tdClass}">${jobWrapper.commandRequestTypeShortName}</td>
+					<td class="${tdClass}">
 						<c:if test="${not empty jobWrapper.attribute}">
 							${jobWrapper.attribute.description} ${attributeWord}
 						</c:if>
@@ -138,20 +145,11 @@
 							${jobWrapper.command}
 						</c:if>
 					</td>
-					<td>${jobWrapper.scheduleDescription}</td>
-					<td style="text-align:center;"><cti:formatDate type="DATEHM" value="${jobWrapper.lastRun}" nullText="N/A"/></td>
-					<td style="text-align:center;"><cti:formatDate type="DATEHM" value="${jobWrapper.nextRun}" nullText="N/A"/></td>
-					<td style="text-align:center;">
-						<c:choose>
-							<c:when test="${jobWrapper.job.disabled}">
-								<span class="errorRed">${filterDisabledText}</span>
-							</c:when>
-							<c:otherwise>
-								${filterEnabledText}
-							</c:otherwise>
-						</c:choose>
-					</td>
-					<td style="text-align:center;">${jobWrapper.job.userContext.yukonUser.username}</td>
+					<td class="${tdClass}">${jobWrapper.scheduleDescription}</td>
+					<td class="${tdClass}" style="text-align:center;"><cti:formatDate type="DATEHM" value="${jobWrapper.lastRun}" nullText="N/A"/></td>
+					<td class="${tdClass}" style="text-align:center;"><cti:formatDate type="DATEHM" value="${jobWrapper.nextRun}" nullText="N/A"/></td>
+					<td class="${tdClass}" style="text-align:center;"">${filterDisabledText}</td>
+					<td class="${tdClass}" style="text-align:center;">${jobWrapper.job.userContext.yukonUser.username}</td>
 					
 				</tr>
 			

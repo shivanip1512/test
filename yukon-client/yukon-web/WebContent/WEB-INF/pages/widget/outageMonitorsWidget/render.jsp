@@ -1,8 +1,11 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 
+<c:url var="pencil" value="/WebConfig/yukon/Icons/pencil.gif"/>
+<c:url var="pencilOver" value="/WebConfig/yukon/Icons/pencil_over.gif"/>
 <c:url var="cog" value="/WebConfig/yukon/Icons/cog.gif"/>
 <c:url var="cogOver" value="/WebConfig/yukon/Icons/cog_over.gif"/>
 <c:url var="script" value="/WebConfig/yukon/Icons/script.gif"/>
@@ -15,20 +18,21 @@
 <c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
 <c:url var="helpOver" value="/WebConfig/yukon/Icons/help_over.gif"/>
 
+<cti:msg var="noMonitorsSetupText" key="yukon.web.modules.amr.outageMonitorsWidget.noMonitorsSetup"/>
 <cti:msg var="nameText" key="yukon.web.modules.amr.outageMonitorsWidget.tableHeader.name"/>
-<cti:msg var="scheduleDescriptionText" key="yukon.web.modules.amr.outageMonitorsWidget.tableHeader.scheduleDescription"/>
 <cti:msg var="devicesText" key="yukon.web.modules.amr.outageMonitorsWidget.tableHeader.devices"/>
+<cti:msg var="statusText" key="yukon.web.modules.amr.outageMonitorsWidget.tableHeader.status"/>
+<cti:msg var="deleteText" key="yukon.web.modules.amr.outageMonitorsWidget.tableHeader.delete"/>
 <cti:msg var="createNewText" key="yukon.web.modules.amr.outageMonitorsWidget.createNew"/>
 <cti:msg var="deleteConfirmText" key="yukon.web.modules.amr.outageMonitorsWidget.deleteConfirm"/>
+<cti:msg var="editActionTitleText" key="yukon.web.modules.amr.outageMonitorsWidget.actionTitle.edit"/>
 <cti:msg var="outageProcessingActionTitleText" key="yukon.web.modules.amr.outageMonitorsWidget.actionTitle.outageProcessing"/>
-<cti:msg var="scheduledReadActionTitleText" key="yukon.web.modules.amr.outageMonitorsWidget.actionTitle.scheduledRead"/>
-<cti:msg var="startReadNowActionTitleText" key="yukon.web.modules.amr.outageMonitorsWidget.actionTitle.startReadNow"/>
 <cti:msg var="deleteActionTitleText" key="yukon.web.modules.amr.outageMonitorsWidget.actionTitle.delete"/>
 
 
 <script type="text/javascript">
 
-	function deleteOutageMonitor(id) {
+	function outageMonitorsWidget_deleteOutageMonitorId(id) {
 
 		var deleteOk = confirm('${deleteConfirmText}');
 
@@ -52,12 +56,17 @@
 </c:if>
 		
 <%-- TABLE --%>
+<c:choose>
+<c:when test="${fn:length(monitors) > 0}">
+
 <table class="compactResultsTable">
 	
 	<tr>
-		<th>&nbsp;</th>
+		<th style="width:70px;">&nbsp;</th>
 		<th>${nameText}</th>
-		<th>${devicesText}</th>
+		<th style="text-align:right;">${devicesText}</th>
+		<th style="text-align:center;width:80px;">${statusText}</th>
+		<th style="text-align:right;width:20px;"></th>
 		
 	</tr>
 
@@ -66,11 +75,26 @@
 		<c:set var="monitorId" value="${monitor.outageMonitorId}"/>
 		<c:set var="monitorName" value="${monitor.name}"/>
 
+		<c:set var="tdClass" value=""/>
+		<c:if test="${monitor.evaluatorStatus == 'DISABLED'}">
+			<c:set var="tdClass" value="subtleGray"/>
+		</c:if>
+		
 		<tr>
 			
 			<%-- action icons --%>
 			<td>
 			
+				<%-- edit monitor --%>
+				<cti:url var="viewOutageMonitorEditorUrl" value="/spring/amr/outageProcessing/monitorEditor/edit">
+					<cti:param name="outageMonitorId" value="${monitorId}"/>
+				</cti:url>
+				
+				<a href="${viewOutageMonitorEditorUrl}" title="${editActionTitleText} (${monitorName})" style="text-decoration:none;">
+					<img src="${pencil}" onmouseover="javascript:this.src='${pencilOver}'" onmouseout="javascript:this.src='${pencil}'">
+				</a>
+				&nbsp;&nbsp;
+				
 				<%-- monitor widget --%>
 				<cti:url var="viewOutageProcessingUrl" value="/spring/amr/outageProcessing/process/process">
 					<cti:param name="outageMonitorId" value="${monitorId}"/>
@@ -79,24 +103,25 @@
 				<a href="${viewOutageProcessingUrl}" title="${outageProcessingActionTitleText} (${monitorName})" style="text-decoration:none;">
 					<img src="${cog}" onmouseover="javascript:this.src='${cogOver}'" onmouseout="javascript:this.src='${cog}'">
 				</a>
-				&nbsp;&nbsp;
-			
-				<%-- delete --%>
-				<img onclick="deleteOutageMonitor(${monitorId});" 
-					title="${deleteActionTitleText} (${monitorName})" 
-					src="${delete}" onmouseover="javascript:this.src='${deleteOver}'" onmouseout="javascript:this.src='${delete}'">
+				
 			</td>
 			
-			<%-- monitor name / edit link --%>
-			<td>
-				<a href="/spring/amr/outageProcessing/monitorEditor/edit?outageMonitorId=${monitorId}">
-					${monitorName}
-				</a>
-			</td>
+			<%-- monitor name --%>
+			<td class="${tdClass}">${monitorName}</td>
 			
 			<%-- outage count --%>
-			<td>
+			<td class="${tdClass}" style="text-align:right;">
 				<cti:dataUpdaterValue type="OUTAGE_PROCESSING" identifier="${monitorId}/OUTAGE_COUNT"/>
+			</td>
+			
+			<%-- status --%>
+			<td class="${tdClass}" style="text-align:center;">${monitor.evaluatorStatus.description}</td>
+			
+			<%-- delete --%>
+			<td class="${tdClass}" style="text-align:right;">
+				<img onclick="outageMonitorsWidget_deleteOutageMonitorId(${monitorId});" 
+					title="${deleteActionTitleText} (${monitorName})" 
+					src="${delete}" onmouseover="javascript:this.src='${deleteOver}'" onmouseout="javascript:this.src='${delete}'">
 			</td>
 			
 		</tr>
@@ -104,8 +129,14 @@
 	</c:forEach>
 
 </table>
-
 <br>
+</c:when>
+
+<c:otherwise>
+	${noMonitorsSetupText}
+</c:otherwise>
+</c:choose>
+
 <div style="text-align: right">
 	<tags:slowInput myFormId="createForm" labelBusy="${createNewText}" label="${createNewText}"/>
 </div>

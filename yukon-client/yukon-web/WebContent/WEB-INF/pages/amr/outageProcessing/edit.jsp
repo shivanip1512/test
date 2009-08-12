@@ -93,7 +93,7 @@
 			}
 		}
 
-		function configDeleteOutageMonitor(id) {
+		function outageMonitorEditor_deleteOutageMonitor(id) {
 
 			var deleteOk = confirm('${deleteConfirmText}');
 
@@ -321,7 +321,7 @@
 			<c:choose>
 				<c:when test="${outageMonitorId > 0}">
 					<tags:slowInput myFormId="updateForm" labelBusy="${updateBusyText}" label="${updateText}"/>
-					<input type="button" onclick="configDeleteOutageMonitor(${outageMonitorId});" value="${deleteText}"/>
+					<input type="button" onclick="outageMonitorEditor_deleteOutageMonitor(${outageMonitorId});" value="${deleteText}"/>
 				</c:when>
 				<c:otherwise>
 					<tags:slowInput myFormId="updateForm" labelBusy="${createBusyText}" label="${createText}"/>

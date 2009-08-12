@@ -73,6 +73,17 @@ public class ScheduledGroupRequstExecutionWidget extends WidgetControllerBase {
         return mav;
 	}
 	
+	public ModelAndView delete(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		
+		int jobId = ServletRequestUtils.getRequiredIntParameter(request, "scheduledGroupRequestsWidget_deleteJobId");
+		
+		YukonJob job = jobManager.getJob(jobId);
+		jobManager.deleteJob(job);
+	
+		ModelAndView mav = render(request, response);
+        return mav;
+	}
+	
 	
 	@Autowired
 	public void setScheduledGroupRequestExecutionDao(ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao) {
