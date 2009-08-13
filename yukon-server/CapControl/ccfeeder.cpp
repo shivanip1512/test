@@ -3339,17 +3339,17 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                         }
-                        if (!getCorrectionNeededNoBankAvailFlag())
-                        {
-                            setCorrectionNeededNoBankAvailFlag(TRUE);
-                            string textInfo;
-                            textInfo = ("Sub: ");
-                            textInfo += getPAOName();
-                            textInfo += " Cannot Decrease Var Level.  No Cap Banks Available to Close.";
-                            LONG stationId, areaId, spAreaId;
-                            store->getFeederParentInfo(this, spAreaId, areaId, stationId);
-                            ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, getParentId(), getPAOId(), capControlPointOutsideOperatingLimits, getEventSequence(), -1, textInfo, "cap control", getCurrentVarLoadPointValue(), getCurrentVarLoadPointValue(), 0));
-                        }
+                    }
+                    if (!getCorrectionNeededNoBankAvailFlag())
+                    {
+                        setCorrectionNeededNoBankAvailFlag(TRUE);
+                        string textInfo;
+                        textInfo = ("Sub: ");
+                        textInfo += getPAOName();
+                        textInfo += " Cannot Decrease Var Level.  No Cap Banks Available to Close.";
+                        LONG stationId, areaId, spAreaId;
+                        store->getFeederParentInfo(this, spAreaId, areaId, stationId);
+                        ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, getParentId(), getPAOId(), capControlPointOutsideOperatingLimits, getEventSequence(), -1, textInfo, "cap control", getCurrentVarLoadPointValue(), getCurrentVarLoadPointValue(), 0));
                     }
                     else
                     {
