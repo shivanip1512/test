@@ -212,8 +212,16 @@ public class DeviceConfigController extends BulkControllerBase {
      * @return
      */
     @RequestMapping
-    public String doVerifyConfigs(DeviceCollection deviceCollection, LiteYukonUser user, ModelMap model) {
+    public String doVerifyConfigs(DeviceCollection deviceCollection, String cancelButton, LiteYukonUser user, ModelMap model) {
         model.addAttribute("deviceCollection", deviceCollection);
+        // CANCEL
+        if (cancelButton != null) {
+            // redirect
+            model.addAllAttributes(deviceCollection.getCollectionParameters());
+            return "redirect:/spring/bulk/collectionActions";
+        }
+        
+        // DO VERIFY
         VerifyConfigCommandResult result = deviceConfigService.verifyConfigs(deviceCollection, user);
         StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup(null);
         StoredDeviceGroup failureGroup = temporaryDeviceGroupService.createTempGroup(null);

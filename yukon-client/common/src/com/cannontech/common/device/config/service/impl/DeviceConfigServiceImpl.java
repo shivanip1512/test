@@ -129,8 +129,10 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         try {
             waitableCallback.waitForCompletion(60, 120);
         } catch (InterruptedException e) {
+            result.setExceptionReason(e.getMessage());
             log.error(e);
         } catch (TimeoutException e) {
+            result.setExceptionReason("Operation Timed Out");
             log.error(e);
         }
         
