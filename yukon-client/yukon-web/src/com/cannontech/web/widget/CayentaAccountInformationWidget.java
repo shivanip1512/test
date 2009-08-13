@@ -31,11 +31,11 @@ public class CayentaAccountInformationWidget extends WidgetControllerBase {
         int deviceId = WidgetParameterHelper.getIntParameter(request, "deviceId");
         
         Meter meter = meterDao.getForId(deviceId);
-        String meterNumber = meter.getMeterNumber();
+        String meterName = meter.getName();
         
         try {
-	        CayentaLocationInfo locationInfo = cayentaApiService.getLocationInfoForMeterNumber(meterNumber);
-	        CayentaMeterInfo meterInfo = cayentaApiService.getMeterInfoForMeterNumber(meterNumber);
+	        CayentaLocationInfo locationInfo = cayentaApiService.getLocationInfoForMeterName(meterName);
+	        CayentaMeterInfo meterInfo = cayentaApiService.getMeterInfoForMeterName(meterName);
 	        CayentaPhoneInfo phoneInfo = cayentaApiService.getPhoneInfoForAccountNumber(meterInfo.getAccountNumber());
 	        
 	        Address address = new Address();
@@ -44,6 +44,7 @@ public class CayentaAccountInformationWidget extends WidgetControllerBase {
 	        address.setStateCode(locationInfo.getLocationState());
 	        address.setZipCode(locationInfo.getLocationZipCode());
 	        
+	        mav.addObject("locationInfo", locationInfo);
 	        mav.addObject("address", address);
 	        mav.addObject("meterInfo", meterInfo);
 	        mav.addObject("phoneInfo", phoneInfo);

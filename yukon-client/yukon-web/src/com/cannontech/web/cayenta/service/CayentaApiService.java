@@ -7,9 +7,9 @@ import com.cannontech.web.cayenta.util.CayentaRequestException;
 
 public interface CayentaApiService {
 
-	public CayentaLocationInfo getLocationInfoForMeterNumber(String meterNumber) throws CayentaRequestException;
+	public CayentaLocationInfo getLocationInfoForMeterName(String meterName) throws CayentaRequestException;
 	
-	public CayentaMeterInfo getMeterInfoForMeterNumber(String meterNumber) throws CayentaRequestException;
+	public CayentaMeterInfo getMeterInfoForMeterName(String meterName) throws CayentaRequestException;
 	
 	public CayentaPhoneInfo getPhoneInfoForAccountNumber(String accountNumber) throws CayentaRequestException;
 }

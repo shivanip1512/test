@@ -61,7 +61,7 @@ public class CayentaXmlUtils {
 		String expression = "/Reply/" + replyTypeName + "/STATUS";
         Long requestStatus = replyTemplate.evaluateAsLong(expression);
         if (requestStatus == null) {
-        	log.debug("Reply does not contain a value for status: " + xmlOutputter.outputString(replyElement));
+        	log.debug("Reply does not contain a value for status: " + xmlOutputter.outputString(replyElement) + " replyTypeName: " + replyTypeName);
 			throw new CayentaRequestException("Reply does not contain a value for status.");
         }
 		return requestStatus.intValue();
@@ -73,7 +73,7 @@ public class CayentaXmlUtils {
 		String expression = "/Reply/" + replyTypeName + "/STATUS_DESC";
         String requestStatusDesc = replyTemplate.evaluateAsString(expression);
         if (requestStatusDesc == null) {
-        	log.debug("Reply does not contain a value for system status description: " + xmlOutputter.outputString(replyElement));
+        	log.debug("Reply does not contain a value for system status description: " + xmlOutputter.outputString(replyElement) + " replyTypeName: " + replyTypeName);
 			throw new CayentaRequestException("Reply does not contain a value for system status description.");
         }
 		return requestStatusDesc;
@@ -86,7 +86,7 @@ public class CayentaXmlUtils {
 		String expression = "/Reply/" + replyTypeName + "/Params/STATUS";
         Long functionStatus = replyTemplate.evaluateAsLong(expression);
         if (functionStatus == null) {
-        	log.debug("Reply does not contain a value for function status: " + xmlOutputter.outputString(replyElement));
+        	log.debug("Reply does not contain a value for function status: " + xmlOutputter.outputString(replyElement) + " replyTypeName: " + replyTypeName);
 			throw new CayentaRequestException("Reply does not contain a value for function status.");
         }
 		return functionStatus.intValue();
@@ -98,7 +98,7 @@ public class CayentaXmlUtils {
 		String expression = "/Reply/" + replyTypeName + "/Params/STATUS_DESC";
         String requestStatusDesc = replyTemplate.evaluateAsString(expression);
         if (requestStatusDesc == null) {
-        	log.debug("Reply does not contain a value for function status description: " + xmlOutputter.outputString(replyElement));
+        	log.debug("Reply does not contain a value for function status description: " + xmlOutputter.outputString(replyElement) + " replyTypeName: " + replyTypeName);
 			throw new CayentaRequestException("Reply does not contain a value for function status description.");
         }
 		return requestStatusDesc;
@@ -110,10 +110,12 @@ public class CayentaXmlUtils {
 		String locationCity = replyTemplate.evaluateAsString("/Reply/GetLocation/Params/LOCATION/CITY");
 		String locationZipCode = replyTemplate.evaluateAsString("/Reply/GetLocation/Params/LOCATION/POSTAL_CODE");
 		String locationState = replyTemplate.evaluateAsString("/Reply/GetLocation/Params/LOCATION/PROVINCE_CD");
+		String mapNumber = replyTemplate.evaluateAsString("/Reply/GetLocation/Params/LOCATION/LOCATION_ID_CUSTOM");
 		
 		info.setLocationCity(locationCity);
 		info.setLocationZipCode(locationZipCode);
 		info.setLocationState(locationState);
+		info.setMapNumber(mapNumber);
 	}
 	
 	// APPLY GetInstalledMeters DATA

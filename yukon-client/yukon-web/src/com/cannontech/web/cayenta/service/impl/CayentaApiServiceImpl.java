@@ -35,13 +35,13 @@ public class CayentaApiServiceImpl implements CayentaApiService {
 	private static String postElementName = "XMLREQUEST";
 	
 	// GET LOCATION
-	public CayentaLocationInfo getLocationInfoForMeterNumber(String meterNumber) throws CayentaRequestException {
+	public CayentaLocationInfo getLocationInfoForMeterName(String meterName) throws CayentaRequestException {
 		
 		CayentaLocationInfo info = new CayentaLocationInfo();
 		String getLocationReply = "";
 		
 		try {
-			getLocationReply = doRequestWithMeterNumber("GetLocation", meterNumber);
+			getLocationReply = doRequestWithMeterNameAsLocationNumber("GetLocation", meterName);
 			SimpleXPathTemplate getLocationTemplate = getReplyTemplate(getLocationReply);
 			CayentaXmlUtils.applyGetLocationData(info, getLocationTemplate);
 		} catch (JDOMException e) {
@@ -59,13 +59,13 @@ public class CayentaApiServiceImpl implements CayentaApiService {
 	}
 	
 	// GET METER
-	public CayentaMeterInfo getMeterInfoForMeterNumber(String meterNumber) throws CayentaRequestException {
+	public CayentaMeterInfo getMeterInfoForMeterName(String meterName) throws CayentaRequestException {
 		
 		CayentaMeterInfo info = new CayentaMeterInfo();
 		String getMeterReply = "";
 		
 		try {
-			getMeterReply = doRequestWithMeterNumber("GetInstalledMeters", meterNumber);
+			getMeterReply = doRequestWithMeterNameAsLocationNumber("GetInstalledMeters", meterName);
 			SimpleXPathTemplate getMeterReplyTemplate = getReplyTemplate(getMeterReply);
 			CayentaXmlUtils.applyGetMeterData(info, getMeterReplyTemplate);
 		} catch (JDOMException e) {
@@ -107,15 +107,15 @@ public class CayentaApiServiceImpl implements CayentaApiService {
 	}
 	
 	// BUILD POST
-	private String doRequestWithMeterNumber(String methodName, String meterNumber) throws CayentaRequestException {
+	private String doRequestWithMeterNameAsLocationNumber(String methodName, String meterName) throws CayentaRequestException {
 		
 		// build account request
 		Element requestElement = new Element("Request");
 		Element methodNameElement = new Element(methodName);
 		Element paramsElement = new Element("Params");
-		Element meterNumberElement = new Element("METER_NO");
-		meterNumberElement.addContent(meterNumber);
-		paramsElement.addContent(meterNumberElement);
+		Element meterNameElement = new Element("LOCATION_NO");
+		meterNameElement.addContent(meterName);
+		paramsElement.addContent(meterNameElement);
 		methodNameElement.addContent(paramsElement);
 		requestElement.addContent(methodNameElement);
 		
@@ -166,11 +166,23 @@ public class CayentaApiServiceImpl implements CayentaApiService {
 			throw new CayentaRequestException("Reply contains system error status.");
 		}
 		
-		int replyFunctionStatus = CayentaXmlUtils.getReplyFunctionStatusValue(replyTypeName, replyElement);
+		int replyFunctionStatus;
+		try {
+			replyFunctionStatus= CayentaXmlUtils.getReplyFunctionStatusValue(replyTypeName, replyElement);
+		} catch (CayentaRequestException e) {
+			// no function failure if function has no status param
+			log.debug("Reply has no function status param, assume no function error");
+			return;
+		}
+		
 		if (replyFunctionStatus != 0) {
 			
 			// expected failure types
 			if (replyTypeName.equals("GetInstalledMeters") && replyFunctionStatus == -3) {
+				throw new CayentaMeterNotFoundException("");
+			}
+			
+			if (replyTypeName.equals("GetLocation") && replyFunctionStatus == -4) {
 				throw new CayentaMeterNotFoundException("");
 			}
 			
@@ -193,7 +205,7 @@ public class CayentaApiServiceImpl implements CayentaApiService {
 			String url = configurationSource.getRequiredString("CAYENTA_API_SERVER_URL");
 			int port = configurationSource.getRequiredInteger("CAYENTA_API_SERVER_PORT");
 			String userName = configurationSource.getRequiredString("CAYENTA_API_SERVER_USERNAME");
-			String password = configurationSource.getRequiredString("CAYENTA_API_SERVER_PASSSWORD");
+			String password = configurationSource.getRequiredString("CAYENTA_API_SERVER_PASSWORD");
 			SimpleHttpPostService postService = simpleHttpPostServiceFactory.getSimpleHttpPostService(url, port, userName, password);
 			
 			String resp = postService.postValue(postElementName, value);

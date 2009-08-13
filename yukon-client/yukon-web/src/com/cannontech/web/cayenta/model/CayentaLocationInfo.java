@@ -7,6 +7,7 @@ public class CayentaLocationInfo {
 	private String locationCity;
 	private String locationZipCode;
 	private String locationState;
+	private String mapNumber;
 	
 	public String getLocationCity() {
 		return locationCity;
@@ -25,6 +26,12 @@ public class CayentaLocationInfo {
 	}
 	public void setLocationState(String locationState) {
 		this.locationState = locationState;
+	}
+	public String getMapNumber() {
+		return mapNumber;
+	}
+	public void setMapNumber(String mapNumber) {
+		this.mapNumber = mapNumber;
 	}
 	
 	public String toString() {

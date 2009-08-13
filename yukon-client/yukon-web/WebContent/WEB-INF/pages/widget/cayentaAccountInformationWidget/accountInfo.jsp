@@ -49,7 +49,7 @@
 		    
 		    <tr>
 		        <td width="30%" class="label">Map Number:</td>
-		        <td></td>
+		        <td>${locationInfo.mapNumber}</td>
 		    </tr>
 		    
 		</table>
