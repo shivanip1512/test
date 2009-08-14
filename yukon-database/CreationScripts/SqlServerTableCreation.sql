@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     7/31/2009 3:26:10 PM                         */
+/* Created on:     8/14/2009 10:24:36 AM                        */
 /*==============================================================*/
 
 
@@ -3958,6 +3958,7 @@ go
 create table CAPCONTROLSUBSTATION (
    SubstationID         numeric              not null,
    VoltReductionPointId numeric              not null,
+   MapLocationId        varchar(64)          not null,
    constraint PK_CAPCONTROLSUBSTATION primary key (SubstationID)
 )
 go
