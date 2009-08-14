@@ -97,7 +97,7 @@
 				&nbsp;&nbsp;
 				
 				<%-- monitor widget --%>
-				<cti:url var="viewTamperFlagProcessingUrl" value="/spring/amr/tamperFlagProcessing/process">
+				<cti:url var="viewTamperFlagProcessingUrl" value="/spring/amr/tamperFlagProcessing/process/process">
 					<cti:param name="tamperFlagMonitorId" value="${monitorId}"/>
 				</cti:url>
 				

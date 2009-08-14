@@ -1,5 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="ext" tagdir="/WEB-INF/tags/ext" %>
@@ -9,7 +10,8 @@
 <cti:msg var="mainDetailNameText" key="yukon.web.modules.amr.outageProcessing.section.mainDetail.name" />
 <cti:msg var="mainDetailDeviceGroupText" key="yukon.web.modules.amr.outageProcessing.section.mainDetail.deviceGroup" />
 <cti:msg var="mainDetailOutagesGroupText" key="yukon.web.modules.amr.outageProcessing.section.mainDetail.outagesGroup" />
-<cti:msg var="mainDetailDevicesText" key="yukon.web.modules.amr.outageProcessing.section.mainDetail.devices" />
+<cti:msg var="mainDetailViolationsText" key="yukon.web.modules.amr.outageProcessing.section.mainDetail.violations" />
+<cti:msg var="mainDetailMonitoringText" key="yukon.web.modules.amr.outageProcessing.section.mainDetail.monitoring" />
 <cti:msg var="mainDetailNumberOfOutagesText" key="yukon.web.modules.amr.outageProcessing.section.mainDetail.numberOfOutages" />
 <cti:msg var="mainDetailTimePeriodText" key="yukon.web.modules.amr.outageProcessing.section.mainDetail.timePeriod" />
 <cti:msg var="readOutageLogsSectionTitleText" key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.title" />
@@ -71,8 +73,16 @@
 			<a href="${outageMonitorEditUrl}">${outageMonitor.name}</a>
 		</tags:nameValue>
 		
-		<tags:nameValue name="${mainDetailDevicesText}">
-			<cti:dataUpdaterValue type="OUTAGE_PROCESSING" identifier="${outageMonitor.outageMonitorId}/OUTAGE_COUNT"/>
+		<tags:nameValue name="${mainDetailViolationsText}">
+			<cti:dataUpdaterValue type="OUTAGE_PROCESSING" identifier="${outageMonitor.outageMonitorId}/VIOLATIONS_COUNT"/>
+		</tags:nameValue>
+		
+		<tags:nameValue name="${mainDetailMonitoringText}">
+			<cti:dataUpdaterValue type="OUTAGE_PROCESSING" identifier="${outageMonitor.outageMonitorId}/MONITORING_COUNT"/>
+		</tags:nameValue>
+		
+		<tags:nameValue name="">
+			&nbsp;
 		</tags:nameValue>
 		
 		<tags:nameValue name="${mainDetailNumberOfOutagesText}">
@@ -118,10 +128,9 @@
 		</tags:nameValue>
 		
 	</tags:nameValueContainer>
-
 	<br>
 	<br>
-	
+		
 	<%-- READ OUTAGE LOGS --%>
 	<tags:sectionContainer id="readOutageLogsSection" title="${readOutageLogsSectionTitleText}">
 	
@@ -148,60 +157,60 @@
 			<input type="checkbox" name="removeFromOutageGroupAfterRead" checked>
 			${readOutageLogsSectionRemoveAfterReadText}
 			</span>
-			<br>
-			<br>
 			
 			<%-- recent reads --%>
-			<div class="normalBoldLabel">${readOutageLogsSectionRecentReadLogsResultsText}</div>
-			<br>
-			<table class="miniResultsTable">
-				<tr>
-					<th>${readOutageLogsSectiondateTimeText}</th>
-					<th>${readOutageLogsSectionSuccessCountText}</th>
-					<th>${readOutageLogsSectionFailureCountText}</th>
-					<th>${readOutageLogsSectionUnsupportedCountText}</th>
-					<th>${readOutageLogsSectionDetailText}</th>
-					<th>${readOutageLogsSectionStatusText}</th>
-				</tr>
+			<c:if test="${fn:length(readResults) > 0}">
+			
+				<br><br>
+				<div class="normalBoldLabel">${readOutageLogsSectionRecentReadLogsResultsText}</div>
+				<br>
 				
-				<c:forEach var="result" items="${allReads}">
+				<table class="miniResultsTable">
 					<tr>
-					
-						<td>
-							<cti:formatDate type="BOTH" value="${result.startTime}"/>
-						</td>
-						<td>
-							<cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${result.key}/SUCCESS_COUNT"/>
-						</td>
-						<td>
-							<cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${result.key}/FAILURE_COUNT"/>
-						</td>
-						<td>
-							<cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${result.key}/UNSUPPORTED_COUNT"/>
-						</td>
-						<td>
-							<cti:url var="readLogsDetailUrl" value="/spring/group/groupMeterRead/resultDetail">
-								<cti:param name="resultKey" value="${result.key}"/>
-							</cti:url>
-							<a href="${readLogsDetailUrl}">${readOutageLogsSectionVieDetailLinkText}</a>
-						</td>
-						<td>
-							<cti:classUpdater type="GROUP_METER_READ" identifier="${result.key}/STATUS_CLASS">
-	                        	<cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${result.key}/STATUS_TEXT"/>
-	                        </cti:classUpdater>
-						</td>
-					
+						<th>${readOutageLogsSectiondateTimeText}</th>
+						<th>${readOutageLogsSectionSuccessCountText}</th>
+						<th>${readOutageLogsSectionFailureCountText}</th>
+						<th>${readOutageLogsSectionUnsupportedCountText}</th>
+						<th>${readOutageLogsSectionDetailText}</th>
+						<th>${readOutageLogsSectionStatusText}</th>
 					</tr>
-				</c:forEach>
-				
-			</table>
-		
+					
+					<c:forEach var="result" items="${readResults}">
+						<tr>
+						
+							<td>
+								<cti:formatDate type="BOTH" value="${result.startTime}"/>
+							</td>
+							<td>
+								<cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${result.key}/SUCCESS_COUNT"/>
+							</td>
+							<td>
+								<cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${result.key}/FAILURE_COUNT"/>
+							</td>
+							<td>
+								<cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${result.key}/UNSUPPORTED_COUNT"/>
+							</td>
+							<td>
+								<cti:url var="readLogsDetailUrl" value="/spring/group/groupMeterRead/resultDetail">
+									<cti:param name="resultKey" value="${result.key}"/>
+								</cti:url>
+								<a href="${readLogsDetailUrl}">${readOutageLogsSectionVieDetailLinkText}</a>
+							</td>
+							<td>
+								<cti:classUpdater type="GROUP_METER_READ" identifier="${result.key}/STATUS_CLASS">
+		                        	<cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${result.key}/STATUS_TEXT"/>
+		                        </cti:classUpdater>
+							</td>
+						
+						</tr>
+					</c:forEach>
+				</table>
+			</c:if>
 		</form>
 	
 	</tags:sectionContainer>
 	<br>
 	<br>
-	
 	
 	<%-- OPTIONS SECTION --%>
 	<tags:sectionContainer id="optionsSection" title="${optionsSectionTitleText}">
@@ -229,6 +238,5 @@
 		<a href="${otherActionsUrl}">${otherActionsText}</a>
 	    	
 	</tags:sectionContainer>
-    
 
 </cti:standardPage>

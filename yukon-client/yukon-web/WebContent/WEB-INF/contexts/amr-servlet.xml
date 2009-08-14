@@ -129,6 +129,8 @@
     <!-- TAMPER FLAG PROCESSING -->
     <bean class="com.cannontech.web.amr.tamperFlagProcessing.TamperFlagEditorController" />
     
+    <bean class="com.cannontech.web.amr.tamperFlagProcessing.TamperFlagProcessingController" />
+    
     <!-- COMMAND REQUEST EXECUTION -->
     <bean id="CommandRequestExecutionResultsController" class="com.cannontech.web.amr.commandRequestExecution.CommandRequestExecutionResultsController">
     </bean>

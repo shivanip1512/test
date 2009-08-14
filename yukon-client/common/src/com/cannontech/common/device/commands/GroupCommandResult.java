@@ -1,17 +1,20 @@
 package com.cannontech.common.device.commands;
 
+import java.util.Date;
+
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
 import com.cannontech.common.util.CancelStatus;
 import com.cannontech.common.util.Completable;
 import com.cannontech.common.util.ExceptionStatus;
 
-public class GroupCommandResult implements Completable, CancelStatus, ExceptionStatus {
+public class GroupCommandResult implements Completable, CancelStatus, ExceptionStatus, Comparable<GroupCommandResult> {
     private String key;
     private String command;
     private DeviceCollection deviceCollection;
     private MultipleDeviceResultHolder resultHolder;
     private GroupCommandCompletionCallback callback;
+    private Date startTime;
     private CommandRequestExecutionType commandRequestExecutionType;
     private CommandRequestExecutionIdentifier commandRequestExecutionIdentifier;
     
@@ -24,6 +27,13 @@ public class GroupCommandResult implements Completable, CancelStatus, ExceptionS
     public void setCommand(String command) {
         this.command = command;
     }
+    
+    public Date getStartTime() {
+		return startTime;
+	}
+    public void setStartTime(Date startTime) {
+		this.startTime = startTime;
+	}
     public DeviceCollection getDeviceCollection() {
         return deviceCollection;
     }
@@ -104,5 +114,17 @@ public class GroupCommandResult implements Completable, CancelStatus, ExceptionS
     
     public boolean isAborted() {
     	return callback.isCanceled() || callback.isExceptionOccured();
+    }
+    
+    @Override
+    public int compareTo(GroupCommandResult o) {
+    	
+    	if (this.getStartTime().after(o.getStartTime())) {
+    		return -1;
+    	} else if (this.getStartTime().before(o.getStartTime())) {
+    		return 1;
+    	} else {
+    		return 0;
+    	}
     }
 }

@@ -2,6 +2,7 @@ package com.cannontech.web.updater.outageProcessing;
 
 public enum OutageMonitorUpdaterTypeEnum {
 
-	OUTAGE_COUNT,
+	VIOLATIONS_COUNT,
+	MONITORING_COUNT,
 	;
 }

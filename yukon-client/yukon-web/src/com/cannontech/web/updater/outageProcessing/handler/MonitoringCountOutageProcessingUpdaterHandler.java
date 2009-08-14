@@ -6,19 +6,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.outageProcessing.OutageMonitor;
 import com.cannontech.amr.outageProcessing.dao.OutageMonitorDao;
-import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
-import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
-import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.OutageMonitorNotFoundException;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.outageProcessing.OutageMonitorUpdaterTypeEnum;
 
-public class OutageCountOutageProcessingUpdaterHandler implements OutageProcessingUpdaterHandler {
+public class MonitoringCountOutageProcessingUpdaterHandler implements OutageProcessingUpdaterHandler {
 
 	private OutageMonitorDao outageMonitorDao;
-	private DeviceGroupEditorDao deviceGroupEditorDao;
 	private DeviceGroupService deviceGroupService;
 
 	@Override
@@ -29,10 +26,10 @@ public class OutageCountOutageProcessingUpdaterHandler implements OutageProcessi
 		try {
 			
 			OutageMonitor outageMonitor = outageMonitorDao.getById(outageMonitorId);
-			String outageGroupName = SystemGroupEnum.OUTAGE_PROCESSING.getFullPath() + outageMonitor.getName();
+			String groupName = outageMonitor.getGroupName();
 			
-			StoredDeviceGroup outageGroup = deviceGroupEditorDao.getStoredGroup(outageGroupName, false);
-			int deviceCount = deviceGroupService.getDeviceCount(Collections.singletonList(outageGroup));
+			DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
+			int deviceCount = deviceGroupService.getDeviceCount(Collections.singletonList(group));
 			countStr = String.valueOf(deviceCount);
 			
 		} catch (OutageMonitorNotFoundException e) {
@@ -46,17 +43,12 @@ public class OutageCountOutageProcessingUpdaterHandler implements OutageProcessi
 
 	@Override
 	public OutageMonitorUpdaterTypeEnum getUpdaterType() {
-		return OutageMonitorUpdaterTypeEnum.OUTAGE_COUNT;
+		return OutageMonitorUpdaterTypeEnum.MONITORING_COUNT;
 	}
 	
 	@Autowired
 	public void setOutageMonitorDao(OutageMonitorDao outageMonitorDao) {
 		this.outageMonitorDao = outageMonitorDao;
-	}
-	
-	@Autowired
-	public void setDeviceGroupEditorDao(DeviceGroupEditorDao deviceGroupEditorDao) {
-		this.deviceGroupEditorDao = deviceGroupEditorDao;
 	}
 	
 	@Autowired

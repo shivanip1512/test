@@ -50,13 +50,13 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         if (method.equalsIgnoreCase("force")) {
             commandString += " force";
         }
-        return groupCommandExecutor.execute(deviceCollection,commandString, callback, user);
+        return groupCommandExecutor.execute(deviceCollection,commandString, null, callback, user);
     }
     
     @Override
     public String readConfigs(DeviceCollection deviceCollection, SimpleCallback<GroupCommandResult> callback, LiteYukonUser user) {
         String commandString = "getconfig install";
-        return groupCommandExecutor.execute(deviceCollection,commandString, callback, user);
+        return groupCommandExecutor.execute(deviceCollection,commandString, null, callback, user);
     }
     
     @Override

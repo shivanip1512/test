@@ -22,6 +22,7 @@ public enum BuiltInAttribute implements Attribute {
     KVARH("kVArh"),
     MINIMUM_VOLTAGE("Minimum Voltage"),
     MAXIMUM_VOLTAGE("Maximum Voltage"),
+    GENERAL_ALARM_FLAG("General Alarm Flag"),
     ;
     
     private BuiltInAttribute(String description) {

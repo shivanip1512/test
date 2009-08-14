@@ -677,15 +677,19 @@
     <bean id="lastFailureResultsCountForJobCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.LastFailureResultsCountForJobCommandExecutionUpdaterHandler"/>
     <bean id="creCountForJobCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.CreCountForJobCommandExecutionUpdaterHandler"/>
     
+    <!-- outage -->
     <bean id="outageMonitorBackingService" class="com.cannontech.web.updater.outageProcessing.OutageMonitorBackingService">
     </bean>
-    <bean id="outageCountOutageProcessingUpdaterHandler" class="com.cannontech.web.updater.outageProcessing.handler.OutageCountOutageProcessingUpdaterHandler"/>
+    <bean id="violationsCountOutageProcessingUpdaterHandler" class="com.cannontech.web.updater.outageProcessing.handler.ViolationsCountOutageProcessingUpdaterHandler"/>
+    <bean id="monitoringCountOutageProcessingUpdaterHandler" class="com.cannontech.web.updater.outageProcessing.handler.MonitoringCountOutageProcessingUpdaterHandler"/>
     
+    <!-- tamper -->
     <bean id="tamperFlagMonitorBackingService" class="com.cannontech.web.updater.tamperFlagProcessing.TamperFlagMonitorBackingService">
     </bean>
     <bean id="violationsCountTamperFlagProcessingUpdaterHandler" class="com.cannontech.web.updater.tamperFlagProcessing.handler.ViolationsCountTamperFlagProcessingUpdaterHandler"/>
     <bean id="monitoringCountTamperFlagProcessingUpdaterHandler" class="com.cannontech.web.updater.tamperFlagProcessing.handler.MonitoringCountTamperFlagProcessingUpdaterHandler"/>
     
+    <!-- jobs -->
     <bean id="jobBackingService" class="com.cannontech.web.updater.job.JobBackingService">
     </bean>
     <bean id="lastRunJobUpdaterHandler" class="com.cannontech.web.updater.job.handler.LastRunJobUpdaterHandler"/>

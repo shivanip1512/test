@@ -76,6 +76,60 @@
     <!-- TamperFlagProcessingController process.jsp -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
-	
+	<entry key="yukon.web.modules.amr.tamperFlagProcessing.pageTitle">Tamper Flag Processing</entry>
+	<entry key="yukon.web.modules.amr.tamperFlagProcessing.section.mainDetail.name">Name</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.mainDetail.deviceGroup">Device Group</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.mainDetail.tamperFlagGroup">Tamper Flag Group</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.mainDetail.violations">Violations</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.mainDetail.monitoring">Monitoring</entry>
+    
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.readInternalFlags.title">Read Internal Flags</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.readInternalFlags.button">Read Flags</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.readInternalFlags.readOk">Read Internal Flags Commands Have Been Sent.</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.readInternalFlags.noteLabel">Note:</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.readInternalFlags.noteBody"><![CDATA[
+    	The flag points must exist on the device in order to archive this information.
+    ]]></entry>
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.readInternalFlags.viewPointsDescription">You may view device points, and add them if needed here:</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.readInternalFlags.viewPointsLink">View Current Points</entry>
+    
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.resetInternalFlags.title">Reset Internal Flags</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.resetInternalFlags.button">Reset Flags</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.resetInternalFlags.resetOk">Reset Internal Flags Commands Have Been Sent.</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.resetInternalFlags.noteLabel">Note:</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.resetInternalFlags.noteBody"><![CDATA[
+    	This option will reset all flags in the meter.
+    	<br>
+    	Be sure you have collected all the flag information you need from the meter before resetting the flags.
+    ]]></entry>
+    
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.readFlags.recentReadFlagsResults">Recent Read Internal Flags Results:</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.readFlags.recentReadFlagsResults.tableHeader.dateTime">Read Date/Time</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.readFlags.recentReadFlagsResults.tableHeader.successCount">Success Count</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.readFlags.recentReadFlagsResults.tableHeader.failureCount">Failure Count</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.readFlags.recentReadFlagsResults.tableHeader.unsupportedCount">Not Supported</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.readFlags.recentReadFlagsResults.tableHeader.detail">Detail</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.readFlags.recentReadFlagsResults.tableHeader.status">Status</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.readFlags.recentReadFlagsResults.viewDetailLink">View</entry>
+    
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.readInternalFlags.completionAlert"><![CDATA[
+	Internal Flags read has completed for Tamper Flag Monitor "{tamperFlagMonitorName}" with {percentSuccess|#0.0#}% success 
+	  <a href="/spring/group/groupMeterRead/resultDetail?resultKey={resultKey}" title="Click to see complete details">
+	    <img src="/WebConfig/yukon/Icons/magnifier_zoom_in.gif" alt="detail" style="border-style: none; vertical-align:middle">
+	  </a>
+	]]></entry>
 
+	<entry key="yukon.web.modules.amr.tamperFlagProcessing.section.resetFlags.recentResetFlagsResults">Recent Reset Internal Flags Results:</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.resetFlags.recentResetFlagsResults.tableHeader.dateTime">Reset Date/Time</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.resetFlags.recentResetFlagsResults.tableHeader.successCount">Success Count</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.resetFlags.recentResetFlagsResults.tableHeader.failureCount">Failure Count</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.resetFlags.recentResetFlagsResults.tableHeader.detail">Detail</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.resetFlags.recentResetFlagsResults.tableHeader.status">Status</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.resetFlags.recentResetFlagsResults.viewDetailLink">View</entry>
+    
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.options.title">Options</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.options.tamperFlagGroupReport">View Tamper Flag Group Devices Report</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.options.clearTamperFlagGroup">Clear Tamper Flag Group</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.options.otherActions">Other Actions</entry>
+    
 </properties>

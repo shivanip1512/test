@@ -239,7 +239,7 @@ public class GroupCommanderController implements InitializingBean {
 
         };
 
-        String key = groupCommandExecutor.execute(deviceCollection, commandString, callback, userContext.getYukonUser());
+        String key = groupCommandExecutor.execute(deviceCollection, commandString, null, callback, userContext.getYukonUser());
         map.addAttribute("resultKey", key);
         return true;
     }

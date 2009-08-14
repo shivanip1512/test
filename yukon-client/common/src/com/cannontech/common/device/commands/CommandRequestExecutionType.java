@@ -11,7 +11,10 @@ public enum CommandRequestExecutionType {
 	SCHEDULED_GROUP_COMMAND("Scheduled Group Command", "A command sent to a group of devices periodically.", true),
 	SCHEDULED_GROUP_ATTRIBUTE_READ("Scheduled Group Attribute Read", "An attribute read command sent to a group of devices periodically.", true),
 	
-	OUTAGE_PROCESSING_OUTAGE_LOGS_READ("Outage Processing Outage Logs Read", "Outage logs read for the pupose of Outage Processing on the Outages Group of an Outage Monitor.", false),
+	OUTAGE_PROCESSING_OUTAGE_LOGS_READ("Outage Processing Outage Logs Read", "Outage logs read for the purpose of Outage Processing on the Outages Group of an Outage Monitor.", false),
+	TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_READ("Tamper Flag Processing Internal Flags Read", "Internal flags read for the purpose of Tamper Flag Processing on the Tamper Flag Group of a Tamper Flag Monitor.", false),
+	TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_RESET("Tamper Flag Processing Internal Flags Reset", "Internal flags reset for the purpose of Tamper Flag Processing on the Tamper Flag Group of a Tamper Flag Monitor.", false),
+	
 	
 	DEVICE_CONFIG_VERIFY("Device Config Verify", "Verify command sent to a collection of devices for the purpose of Device Configuration.", false),
 	DEVICE_CONFIG_SEND("Device Config Send", "Send config settings to a devices for the purpose of Device Configuration.", false),

@@ -1,5 +1,7 @@
 package com.cannontech.common.device.commands.impl;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -62,7 +64,7 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
         this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
     }
 
-    public String execute(final DeviceCollection deviceCollection, final String command, final SimpleCallback<GroupCommandResult> callback, LiteYukonUser user) {
+    public String execute(DeviceCollection deviceCollection, final String command, CommandRequestExecutionType commandRequestExecutionType, SimpleCallback<GroupCommandResult> callback, LiteYukonUser user) {
         
         ObjectMapper<YukonDevice, CommandRequestDevice> objectMapper = new ObjectMapper<YukonDevice, CommandRequestDevice>() {
             public CommandRequestDevice map(YukonDevice from) throws ObjectMappingException {
@@ -72,10 +74,10 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
         
     	List<CommandRequestDevice> requests = new MappingList<YukonDevice, CommandRequestDevice>(deviceCollection.getDeviceList(), objectMapper);
     	
-    	return execute(deviceCollection, command, requests, callback, user);
+    	return execute(deviceCollection, command, requests, commandRequestExecutionType, callback, user);
     }
     
-    public String execute(final DeviceCollection deviceCollection, final String command, List<CommandRequestDevice> requests, final SimpleCallback<GroupCommandResult> callback, LiteYukonUser user) {
+    public String execute(final DeviceCollection deviceCollection, final String command, List<CommandRequestDevice> requests, CommandRequestExecutionType commandRequestExecutionType, final SimpleCallback<GroupCommandResult> callback, LiteYukonUser user) {
         
         // create temporary groups
         final StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup(null);
@@ -105,7 +107,9 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
             
         };
         
-        CommandRequestExecutionType commandRequestExecutionType = CommandRequestExecutionType.GROUP_COMMAND;
+        if (commandRequestExecutionType == null) {
+        	commandRequestExecutionType = CommandRequestExecutionType.GROUP_COMMAND;
+        }
         
         groupCommandResult.setCommandRequestExecutionType(commandRequestExecutionType);
         groupCommandResult.setCommand(command);
@@ -117,6 +121,7 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
         groupCommandResult.setSuccessCollection(successCollection);
         DeviceCollection failureCollectioin = deviceGroupCollectionHelper.buildDeviceCollection(failureGroup);
         groupCommandResult.setFailureCollection(failureCollectioin);
+        groupCommandResult.setStartTime(new Date());
         
         String key = resultsCache.addResult(groupCommandResult);
         groupCommandResult.setKey(key);
@@ -151,9 +156,31 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
     public List<GroupCommandResult> getCompleted() {
         return resultsCache.getCompleted();
     }
+    
+    public List<GroupCommandResult> getCompletedByType(CommandRequestExecutionType type) {
+    	List<GroupCommandResult> completedOfType = new ArrayList<GroupCommandResult>();
+    	List<GroupCommandResult> completed = getCompleted();
+    	for (GroupCommandResult result : completed) {
+    		if (result.getCommandRequestExecutionType().equals(type)) {
+    			completedOfType.add(result);
+    		}
+    	}
+    	return completedOfType;
+    }
 
     public List<GroupCommandResult> getPending() {
         return resultsCache.getPending();
+    }
+    
+    public List<GroupCommandResult> getPendingByType(CommandRequestExecutionType type) {
+    	List<GroupCommandResult> pendingOfType = new ArrayList<GroupCommandResult>();
+    	List<GroupCommandResult> pending = getPending();
+    	for (GroupCommandResult result : pending) {
+    		if (result.getCommandRequestExecutionType().equals(type)) {
+    			pendingOfType.add(result);
+    		}
+    	}
+    	return pendingOfType;
     }
 
     public GroupCommandResult getResult(String id) {

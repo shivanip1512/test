@@ -3,13 +3,16 @@ package com.cannontech.web.amr.outageProcessing;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.time.DateUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -20,12 +23,12 @@ import com.cannontech.amr.deviceread.service.GroupMeterReadService;
 import com.cannontech.amr.meter.dao.GroupMetersDao;
 import com.cannontech.amr.outageProcessing.OutageMonitor;
 import com.cannontech.amr.outageProcessing.dao.OutageMonitorDao;
+import com.cannontech.amr.outageProcessing.service.OutageMonitorService;
 import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
-import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
@@ -37,15 +40,23 @@ import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 
-public class OutageProcessingController extends MultiActionController {
+public class OutageProcessingController extends MultiActionController implements InitializingBean {
 
 	private OutageMonitorDao outageMonitorDao;
-	private DeviceGroupEditorDao deviceGroupEditorDao;
+	private OutageMonitorService outageMonitorService;
 	private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
 	private GroupMetersDao groupMetersDao;
 	private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
 	private GroupMeterReadService groupMeterReadService;
 	private AlertService alertService;
+	
+	private Map<Integer, List<String>> monitorToRecentReadKeysCache;
+	
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		
+		monitorToRecentReadKeysCache = new HashMap<Integer, List<String>>();
+	}
 	
 	// PROCESS
 	public ModelAndView process(HttpServletRequest request, HttpServletResponse response) throws ServletException {
@@ -55,15 +66,30 @@ public class OutageProcessingController extends MultiActionController {
 		int outageMonitorId = ServletRequestUtils.getRequiredIntParameter(request, "outageMonitorId");
 		OutageMonitor outageMonitor = outageMonitorDao.getById(outageMonitorId);
 		
+		String processError = ServletRequestUtils.getStringParameter(request, "processError");
+		Boolean readOk = ServletRequestUtils.getBooleanParameter(request, "readOk");
+		mav.addObject("processError", processError);
+		mav.addObject("readOk", readOk);
+		
 		// read results
-		List<GroupMeterReadResult> allReads = new ArrayList<GroupMeterReadResult>();
-		allReads.addAll(groupMeterReadService.getPendingByType(CommandRequestExecutionType.OUTAGE_PROCESSING_OUTAGE_LOGS_READ));
-		allReads.addAll(groupMeterReadService.getCompletedByType(CommandRequestExecutionType.OUTAGE_PROCESSING_OUTAGE_LOGS_READ));
-		Collections.sort(allReads);
+		List<GroupMeterReadResult> allReadsResults = new ArrayList<GroupMeterReadResult>();
+		allReadsResults.addAll(groupMeterReadService.getPendingByType(CommandRequestExecutionType.OUTAGE_PROCESSING_OUTAGE_LOGS_READ));
+		allReadsResults.addAll(groupMeterReadService.getCompletedByType(CommandRequestExecutionType.OUTAGE_PROCESSING_OUTAGE_LOGS_READ));
+		
+		List<GroupMeterReadResult> readResults = new ArrayList<GroupMeterReadResult>();
+		List<String> readResultKeysForMonitor = monitorToRecentReadKeysCache.get(outageMonitorId);
+		if (readResultKeysForMonitor != null) {
+			for (GroupMeterReadResult result : allReadsResults) {
+				if (readResultKeysForMonitor.contains(result.getKey())) {
+					readResults.add(result);
+				}
+			}
+			Collections.sort(readResults);
+		}
+		mav.addObject("readResults", readResults);
 		
 		mav.addObject("outageMonitor", outageMonitor);
 		mav.addObject("outageGroupBase", SystemGroupEnum.OUTAGE_PROCESSING.getFullPath());
-		mav.addObject("allReads", allReads);
 		mav.addObject("reportStartDate", DateUtils.addMonths(new Date(), -1));
 		
 		return mav;
@@ -83,8 +109,7 @@ public class OutageProcessingController extends MultiActionController {
 		
 		try {
 			
-			String outageGroupName = SystemGroupEnum.OUTAGE_PROCESSING.getFullPath() + outageMonitor.getName();
-			final StoredDeviceGroup outageGroup = deviceGroupEditorDao.getStoredGroup(outageGroupName, true);
+			final StoredDeviceGroup outageGroup = outageMonitorService.getOutageGroup(outageMonitor.getName());
 			DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(outageGroup);
 			
 			// alert callback
@@ -105,9 +130,8 @@ public class OutageProcessingController extends MultiActionController {
 	                resolvableTemplate.addData("outageMonitorName", outageMonitor.getName());
 	                resolvableTemplate.addData("outageMonitorId", outageMonitor.getOutageMonitorId());
 	                int successCount = result.getResultHolder().getResultStrings().size();
-	                int failureCount = result.getResultHolder().getErrors().size();
-	                int total = failureCount + successCount;
-	                resolvableTemplate.addData("percentSuccess", (float)successCount *100 / total);
+	                int total = (int)result.getOriginalDeviceCollectionCopy().getDeviceCount();
+	                resolvableTemplate.addData("percentSuccess", (float)((successCount * 100) / total));
 	                resolvableTemplate.addData("resultKey", result.getKey());
 	                
 	                OutageProcessingReadLogsCompletionAlert readLogsCompletionAlert = new OutageProcessingReadLogsCompletionAlert(new Date(), resolvableTemplate);
@@ -116,14 +140,18 @@ public class OutageProcessingController extends MultiActionController {
 	            }
 	        };
 		
-	        groupMeterReadService.readDeviceCollection(deviceCollection, Collections.singleton(BuiltInAttribute.OUTAGE_LOG), CommandRequestExecutionType.OUTAGE_PROCESSING_OUTAGE_LOGS_READ, alertCallback, userContext.getYukonUser());
+	        String resultKey = groupMeterReadService.readDeviceCollection(deviceCollection, Collections.singleton(BuiltInAttribute.OUTAGE_LOG), CommandRequestExecutionType.OUTAGE_PROCESSING_OUTAGE_LOGS_READ, alertCallback, userContext.getYukonUser());
+	        addReadResultKeyToCache(outageMonitorId, resultKey);
 		
 		} catch (PaoAuthorizationException e) {
 			processError = "User does not have access to run outage logs command.";
+		} catch (Exception e) {
+			processError = e.getMessage();
 		}
 		
 		mav.addObject("outageMonitorId", outageMonitorId);
 		mav.addObject("processError", processError);
+		mav.addObject("readOk", processError == null);
 		
 		return mav;
 	}
@@ -137,10 +165,9 @@ public class OutageProcessingController extends MultiActionController {
 		ModelAndView mav = new ModelAndView("redirect:process");
 		
 		int outageMonitorId = ServletRequestUtils.getRequiredIntParameter(request, "outageMonitorId");
-		
 		OutageMonitor outageMonitor = outageMonitorDao.getById(outageMonitorId);
-		String outageGroupName = SystemGroupEnum.OUTAGE_PROCESSING.getFullPath() + outageMonitor.getName();
-		StoredDeviceGroup outageGroup = deviceGroupEditorDao.getStoredGroup(outageGroupName, true);
+		
+		StoredDeviceGroup outageGroup = outageMonitorService.getOutageGroup(outageMonitor.getName());
 		
 		List<? extends YukonDevice> deviceList = groupMetersDao.getChildMetersByGroup(outageGroup);
         deviceGroupMemberEditorDao.removeDevices(outageGroup, deviceList);
@@ -150,6 +177,14 @@ public class OutageProcessingController extends MultiActionController {
 		return mav;
 	}
 	
+	
+	private void addReadResultKeyToCache(int outageMonitorId, String resultKey) {
+		
+		if (!monitorToRecentReadKeysCache.containsKey(outageMonitorId)) {
+			monitorToRecentReadKeysCache.put(outageMonitorId, new ArrayList<String>());
+		}
+		monitorToRecentReadKeysCache.get(outageMonitorId).add(resultKey);
+	}
 
 	@Autowired
 	public void setOutageMonitorDao(OutageMonitorDao outageMonitorDao) {
@@ -157,8 +192,8 @@ public class OutageProcessingController extends MultiActionController {
 	}
 	
 	@Autowired
-	public void setDeviceGroupEditorDao(DeviceGroupEditorDao deviceGroupEditorDao) {
-		this.deviceGroupEditorDao = deviceGroupEditorDao;
+	public void setOutageMonitorService(OutageMonitorService outageMonitorService) {
+		this.outageMonitorService = outageMonitorService;
 	}
 	
 	@Autowired

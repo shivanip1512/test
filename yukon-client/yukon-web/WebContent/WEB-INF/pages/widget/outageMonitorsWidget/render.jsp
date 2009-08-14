@@ -20,7 +20,8 @@
 
 <cti:msg var="noMonitorsSetupText" key="yukon.web.modules.amr.outageMonitorsWidget.noMonitorsSetup"/>
 <cti:msg var="nameText" key="yukon.web.modules.amr.outageMonitorsWidget.tableHeader.name"/>
-<cti:msg var="devicesText" key="yukon.web.modules.amr.outageMonitorsWidget.tableHeader.devices"/>
+<cti:msg var="violationsText" key="yukon.web.modules.amr.outageMonitorsWidget.tableHeader.violations"/>
+<cti:msg var="monitoringText" key="yukon.web.modules.amr.outageMonitorsWidget.tableHeader.monitoring"/>
 <cti:msg var="statusText" key="yukon.web.modules.amr.outageMonitorsWidget.tableHeader.status"/>
 <cti:msg var="deleteText" key="yukon.web.modules.amr.outageMonitorsWidget.tableHeader.delete"/>
 <cti:msg var="createNewText" key="yukon.web.modules.amr.outageMonitorsWidget.createNew"/>
@@ -64,7 +65,8 @@
 	<tr>
 		<th style="width:70px;">&nbsp;</th>
 		<th>${nameText}</th>
-		<th style="text-align:right;">${devicesText}</th>
+		<th style="text-align:right;">${violationsText}</th>
+		<th style="text-align:right;">${monitoringText}</th>
 		<th style="text-align:center;width:80px;">${statusText}</th>
 		<th style="text-align:right;width:20px;"></th>
 		
@@ -109,9 +111,14 @@
 			<%-- monitor name --%>
 			<td class="${tdClass}">${monitorName}</td>
 			
-			<%-- outage count --%>
+			<%-- violations count --%>
 			<td class="${tdClass}" style="text-align:right;">
-				<cti:dataUpdaterValue type="OUTAGE_PROCESSING" identifier="${monitorId}/OUTAGE_COUNT"/>
+				<cti:dataUpdaterValue type="OUTAGE_PROCESSING" identifier="${monitorId}/VIOLATIONS_COUNT"/>
+			</td>
+			
+			<%-- monitoring count --%>
+			<td class="${tdClass}" style="text-align:right;">
+				<cti:dataUpdaterValue type="OUTAGE_PROCESSING" identifier="${monitorId}/MONITORING_COUNT"/>
 			</td>
 			
 			<%-- status --%>
