@@ -40,12 +40,12 @@ public class SubstationDaoImpl implements SubstationDao {
     
     static {
             insertSql = "INSERT INTO CAPCONTROLSUBSTATION "
-				+ "(SubstationID,VoltReductionPointId) VALUES (?,?)";
+				+ "(SubstationID,VoltReductionPointId,maplocationid) VALUES (?,?,?)";
             
             removeSql = "DELETE FROM CAPCONTROLSUBSTATION WHERE SubstationID = ?";
             
             updateSql = "UPDATE CAPCONTROLSUBSTATION " 
-            	      + " SET VoltReductionPointId = ? WHERE SubstationID = ?";
+            	      + " SET VoltReductionPointId = ?, SET maplocationid =?, WHERE SubstationID = ?";
             
             selectAllSql = "SELECT yp.PAOName,SubstationID,VoltReductionPointId "
 				+ "FROM CAPCONTROLSUBSTATION, YukonPAObject yp ";
@@ -62,7 +62,7 @@ public class SubstationDaoImpl implements SubstationDao {
             	Substation station = new Substation();
                 station.setId(rs.getInt("SubstationID"));
                 station.setVoltReductionPointId(rs.getInt("VoltReductionPointId"));
-
+                station.setMapLocationId(rs.getString("maplocationid"));
                 return station;
             }
         };
@@ -101,7 +101,8 @@ public class SubstationDaoImpl implements SubstationDao {
 		
 		substation.setId(pao.getPaObjectID());
 		int rowsAffected = simpleJdbcTemplate.update(insertSql, substation.getId(),
-				substation.getVoltReductionPointId());
+				substation.getVoltReductionPointId(),
+				substation.getMapLocationId());
 		
 		boolean result = (rowsAffected == 1);
 		
@@ -143,7 +144,7 @@ public class SubstationDaoImpl implements SubstationDao {
 		pao.setPaoName(substation.getName());
 		pao.setType(CapControlType.SUBSTATION.getDisplayValue());
 		pao.setDescription(substation.getDescription());
-		
+		pao.setDisableFlag(substation.getDisabled() ? 'Y' : 'N');
 		pao.setPaObjectID(substation.getId());
 		
 		try {
@@ -154,7 +155,9 @@ public class SubstationDaoImpl implements SubstationDao {
 		}
 
 		//Added to YukonPAObject table, now add to CAPCONTROLSUBSTATION table
-		rowsAffected = simpleJdbcTemplate.update(updateSql, substation.getVoltReductionPointId(), substation.getId());
+		rowsAffected = simpleJdbcTemplate.update(updateSql, substation.getVoltReductionPointId(), 
+															substation.getMapLocationId(), 
+															substation.getId());
 		
 		boolean result = (rowsAffected == 1);
 		

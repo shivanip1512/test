@@ -10,6 +10,7 @@ public class Area {
 	private int id;
 	private int voltReductionPointId = 0;
     private boolean disabled = false;
+	private String mapLocationId = "0";
 	
 	public Area() {
 		
@@ -27,6 +28,10 @@ public class Area {
 		return description;
 	}
 	
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	
 	public void setDesctiption(String description) {
 		this.description = description;
 	}
@@ -39,6 +44,14 @@ public class Area {
         this.disabled = disabled;
     }
 	
+	public String getMapLocationId() {
+		return mapLocationId;
+	}
+
+	public void setMapLocationId(String mapLocationId) {
+		this.mapLocationId = mapLocationId;
+	}
+
 	public int getId() {
 		return id;
 	}
@@ -61,7 +74,10 @@ public class Area {
 		int result = 1;
 		result = prime * result
 				+ ((description == null) ? 0 : description.hashCode());
+		result = prime * result + (disabled ? 1231 : 1237);
 		result = prime * result + id;
+		result = prime * result
+				+ ((mapLocationId == null) ? 0 : mapLocationId.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + voltReductionPointId;
 		return result;
@@ -81,7 +97,14 @@ public class Area {
 				return false;
 		} else if (!description.equals(other.description))
 			return false;
+		if (disabled != other.disabled)
+			return false;
 		if (id != other.id)
+			return false;
+		if (mapLocationId == null) {
+			if (other.mapLocationId != null)
+				return false;
+		} else if (!mapLocationId.equals(other.mapLocationId))
 			return false;
 		if (name == null) {
 			if (other.name != null)
@@ -92,5 +115,4 @@ public class Area {
 			return false;
 		return true;
 	}
-	
 }

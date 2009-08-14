@@ -10,7 +10,8 @@ public class Substation {
 	private int id;
 	private int voltReductionPointId = 0;
 	private boolean disabled = false;
-	
+	private String mapLocationId = "0";
+
 	public Substation () {
 		
 	}
@@ -39,6 +40,14 @@ public class Substation {
         this.disabled = disabled;
     }
 	
+	public String getMapLocationId() {
+		return mapLocationId;
+	}
+
+	public void setMapLocationId(String mapLocationId) {
+		this.mapLocationId = mapLocationId;
+	}
+    
 	public int getId() {
 		return id;
 	}
@@ -61,7 +70,10 @@ public class Substation {
 		int result = 1;
 		result = prime * result
 				+ ((description == null) ? 0 : description.hashCode());
+		result = prime * result + (disabled ? 1231 : 1237);
 		result = prime * result + id;
+		result = prime * result
+				+ ((mapLocationId == null) ? 0 : mapLocationId.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + voltReductionPointId;
 		return result;
@@ -81,7 +93,14 @@ public class Substation {
 				return false;
 		} else if (!description.equals(other.description))
 			return false;
+		if (disabled != other.disabled)
+			return false;
 		if (id != other.id)
+			return false;
+		if (mapLocationId == null) {
+			if (other.mapLocationId != null)
+				return false;
+		} else if (!mapLocationId.equals(other.mapLocationId))
 			return false;
 		if (name == null) {
 			if (other.name != null)
@@ -92,5 +111,4 @@ public class Substation {
 			return false;
 		return true;
 	}
-	
 }

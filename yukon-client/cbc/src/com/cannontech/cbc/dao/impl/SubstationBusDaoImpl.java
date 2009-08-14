@@ -189,6 +189,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
 		pao.setType(CapControlType.SUBBUS.getDisplayValue());
 		pao.setDescription(bus.getDescription());
 		pao.setPaObjectID(bus.getId());
+		pao.setDisableFlag(bus.getDisabled() ? 'Y' : 'N');
 		
 		try {
 			Transaction.createTransaction(com.cannontech.database.Transaction.UPDATE, pao).execute();

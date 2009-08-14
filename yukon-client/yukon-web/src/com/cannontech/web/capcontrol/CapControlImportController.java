@@ -55,7 +55,9 @@ public class CapControlImportController {
 	private static String [] hierarchyRequiredColumns = { HierarchyColumns.TYPE.name(),
 														  HierarchyColumns.NAME.name(),
 														  HierarchyColumns.PARENT.name(),
-														  HierarchyColumns.DESCRIPTION.name()};
+														  HierarchyColumns.DESCRIPTION.name(),
+														  HierarchyColumns.MAPLOCATIONID.name(),
+														  HierarchyColumns.DISABLED.name() };
 	
 	private static String [] cbcNewDeviceRequiredColumns = { CbcColumns.CBC_NAME.name(),
 															 CbcColumns.CBC_TYPE.name(),
@@ -84,7 +86,9 @@ public class CapControlImportController {
 		TYPE,
 		NAME,
 		PARENT,
-		DESCRIPTION
+		DESCRIPTION,
+		MAPLOCATIONID,
+		DISABLED
 	}
 	
 	private enum CbcColumns {
@@ -185,9 +189,19 @@ public class CapControlImportController {
         	String name = line[1];
         	String parent = line[2];
         	String description = CtiUtilities.STRING_NONE;
+        	String mapLocationId = CtiUtilities.STRING_NONE;
+        	boolean disabled = false;
         	
         	if (StringUtils.isNotBlank(line[3])) {
         		description = line[3];
+        	}
+
+        	if (StringUtils.isNotBlank(line[4])) {
+        		disabled = line[4].equalsIgnoreCase("Y")?true:false;
+        	}
+
+        	if (StringUtils.isNotBlank(line[5])) {
+        		mapLocationId = line[5];
         	}
         	
         	try{
@@ -198,6 +212,8 @@ public class CapControlImportController {
 	            		Area area = new Area();
 	            		area.setName(name);
 	            		area.setDesctiption(description);
+	            		area.setDisabled(disabled);
+	            		area.setMapLocationId(mapLocationId);
 	            		
 	            		boolean ret = capControlCreationService.createArea(area);
 	            		if (!ret) {
@@ -212,8 +228,10 @@ public class CapControlImportController {
 	            		Substation substation = new Substation();
 	            		substation.setName(name);
 	            		substation.setDesctiption(description);
+	            		substation.setDisabled(disabled);
+	            		substation.setMapLocationId(mapLocationId);
+	            		
 	            		boolean ret = capControlCreationService.createSubstation(substation);
-	            			            		
             			if (ret) {
             				if (StringUtils.isNotBlank(parent)) {
             					//Not blank, so attempt to assign.
@@ -248,8 +266,10 @@ public class CapControlImportController {
 	            		SubstationBus subBus = new SubstationBus();
 	            		subBus.setName(name);
 	            		subBus.setDescription(description);
+	            		subBus.setDisabled(disabled);
+	            		subBus.setMapLocationId(mapLocationId);
+	            		
 	            		boolean ret = capControlCreationService.createSubstationBus(subBus);
-            			
 	            		if (ret) {
             				if (StringUtils.isNotBlank(parent)) {
             					//Not blank, so attempt to assign.
@@ -283,8 +303,10 @@ public class CapControlImportController {
 	            		Feeder feeder = new Feeder();
 	            		feeder.setDescription(description);
 	            		feeder.setName(name);
-	            		boolean ret = capControlCreationService.createFeeder(feeder);
+	            		feeder.setDisabled(disabled);
+	            		feeder.setMapLocationId(mapLocationId);
 	            		
+	            		boolean ret = capControlCreationService.createFeeder(feeder);
 	            		if (ret) {
             				if (StringUtils.isNotBlank(parent)) {
             					//Not blank, so attempt to assign.
@@ -319,8 +341,10 @@ public class CapControlImportController {
 	            		bank.setName(name);
 	            		bank.setDescription(description);
 	            		bank.setCapbankAdditional(new CapbankAdditional());
-	            		boolean ret = capControlCreationService.createCapbank(bank);
+	            		bank.setDisabled(disabled);
+	            		bank.setMapLocationId(mapLocationId);
 	            		
+	            		boolean ret = capControlCreationService.createCapbank(bank);
 	            		if (ret) {
             				if (StringUtils.isNotBlank(parent)) {
             					//Not blank, so attempt to assign.

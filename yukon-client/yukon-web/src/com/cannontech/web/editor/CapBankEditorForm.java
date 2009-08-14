@@ -61,8 +61,9 @@ public class CapBankEditorForm extends DBEditorForm {
     private static PaoDao paoDao = YukonSpringHook.getBean("paoDao",PaoDao.class);
     
    //over-rides the drop-down values
-    private boolean customSize = Boolean.FALSE;
-
+    private boolean customSize = false;
+    private boolean customCommMedium = false;
+    
     public CapBankEditorForm() {
         super();
     }
@@ -558,5 +559,11 @@ public class CapBankEditorForm extends DBEditorForm {
         this.customSize = customSize;
     }
 
-
+    public boolean isCustomCommMedium() {
+    	return customCommMedium;
+    }
+    
+    public void setCustomCommMedium (boolean customCommMedium) {
+    	this.customCommMedium = customCommMedium;
+    }
 }

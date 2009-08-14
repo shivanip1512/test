@@ -143,7 +143,7 @@ public class CapbankDaoImpl implements CapbankDao {
 		device.setPAOName(bank.getName());		
 		device.setPAODescription(bank.getDescription());
 		device.setDisabled(bank.getDisabled());
-		
+
 		SmartMultiDBPersistent smartDB = new SmartMultiDBPersistent();
 		smartDB.addOwnerDBPersistent(device);
 		List<PointBase> points = deviceDefinitionService.createAllPointsForDevice(new SimpleDevice(newId, PaoType.CAPBANK));

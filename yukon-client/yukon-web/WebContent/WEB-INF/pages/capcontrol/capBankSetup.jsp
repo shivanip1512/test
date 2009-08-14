@@ -79,6 +79,7 @@
 						<f:selectItem itemValue="Trinetics" />
 						<f:selectItem itemValue="Siemens" />
 						<f:selectItem itemValue="Westinghouse" />
+						<f:selectItem itemValue="Mix" />
 					</x:selectOneMenu>
 	
 					<x:outputLabel for="cntrlerType" value="Controller Type: "
@@ -101,6 +102,7 @@
 						<f:selectItem itemValue="Oil" />
 						<f:selectItem itemValue="Vacuum" />
 						<f:selectItem itemValue="Mix" />
+						<f:selectItem itemValue="Hybrid" />
 					</x:selectOneMenu>
 				
 				</x:panelGrid>

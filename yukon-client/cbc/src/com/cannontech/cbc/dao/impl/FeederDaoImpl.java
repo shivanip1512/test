@@ -105,7 +105,8 @@ public class FeederDaoImpl implements FeederDao {
 		pao.setPaoName(feeder.getName());
 		pao.setType(CapControlType.FEEDER.getDisplayValue());
 		pao.setDescription(feeder.getDescription());
-				
+		pao.setDisableFlag(feeder.getDisabled()?'Y':'N');
+		
 		try {
 			Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, pao).execute();
 		} catch (TransactionException e) {
@@ -185,6 +186,7 @@ public class FeederDaoImpl implements FeederDao {
 		pao.setType(CapControlType.FEEDER.getDisplayValue());
 		pao.setDescription(feeder.getDescription());
 		pao.setPaObjectID(feeder.getId());
+		pao.setDisableFlag(feeder.getDisabled()?'Y':'N');
 		
 		try {
 			Transaction.createTransaction(com.cannontech.database.Transaction.UPDATE, pao).execute();

@@ -49,16 +49,33 @@
                 <x:htmlTag value="legend"><x:outputText value="Communication"/></x:htmlTag>			
                 
                 <x:panelGrid columns="2">
-                                
-					<x:outputLabel for="SelectCommMed" value="Comm. Medium " title="" />
-					<x:selectOneMenu id="SelectCommMed"
-                        disabled="#{!capControlForm.editingAuthorized}"
-						value="#{capBankEditor.additionalInfo.commMedium}"
-						onchange="submit();">
-						<f:selectItems id="CommMedList"
-							value="#{selLists.capBankCommMedium}" />
-					</x:selectOneMenu>
-					
+                    <x:outputLabel for="bankSize" value="Bank Size: "
+                        title="The total size of the CapBank" />
+
+                    <x:panelGroup>
+						<x:outputLabel for="SelectCommMed" value="Comm. Medium " title="" />
+						<x:selectOneMenu id="SelectCommMed"
+	                        disabled="#{!capControlForm.editingAuthorized}"
+							value="#{capBankEditor.additionalInfo.commMedium}"
+							onchange="submit();" rendered="#{!capBankEditor.customCommMedium}">
+							<f:selectItems id="CommMedList"
+								value="#{selLists.capBankCommMedium}" />
+						</x:selectOneMenu>
+						
+						<f:verbatim>&nbsp;&nbsp;</f:verbatim>
+						
+						<x:inputText id="bankMedium" styleClass="char8Label" required="true"
+                            value="#{capBankEditor.additionalInfo.commMedium}"
+                            rendered="#{capBankEditor.customCommMedium}">
+                        </x:inputText>
+						<f:verbatim>&nbsp;&nbsp;</f:verbatim>
+						<x:outputLabel for="isCustomCommMedium" value="Custom?" 
+	                            title="The Comm Medium" />
+	                        <x:selectBooleanCheckbox id="isCustomCommMedium"
+	                            disabled="#{!capControlForm.editingAuthorized}"
+	                            value="#{capBankEditor.customCommMedium}" onclick="submit()" />
+					</x:panelGroup>
+										
 					<x:outputLabel for="CapBank_CommStrength" value="Comm. Strength "
 						title="" />
 					<x:inputText id="CapBank_CommStrength" value="#{capBankEditor.additionalInfo.commStrengh}" required="true" maxlength="10" size="10">

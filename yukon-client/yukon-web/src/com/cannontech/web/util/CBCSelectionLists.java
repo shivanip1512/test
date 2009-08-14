@@ -182,6 +182,7 @@ public class CBCSelectionLists {
 		new SelectItem(new Integer(50), "50 kVar"),
 		new SelectItem(new Integer(100), "100 kVar"),
 		new SelectItem(new Integer(150), "120 kVar"),
+		new SelectItem(new Integer(275), "200 kVar"),
 		new SelectItem(new Integer(275), "275 kVar"),
 		new SelectItem(new Integer(300), "300 kVar"),
 		new SelectItem(new Integer(450), "450 kVar"),
