@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.cannontech.common.bulk.collection.DeviceCollection;
-import com.cannontech.common.bulk.field.BulkFieldColumnHeader;
 import com.cannontech.common.bulk.processor.ProcessorCallbackException;
 import com.cannontech.common.util.Completable;
 
@@ -50,10 +49,5 @@ public interface BackgroundProcessResultHolder extends Completable {
     
     // failure file
     public boolean isFailureFileSupported();
-    
-    // bulk field listing
-    public boolean isBulkFieldListingSupported();
-    public List<BulkFieldColumnHeader> getBulkFieldColumnHeaders();
-    
     
 }

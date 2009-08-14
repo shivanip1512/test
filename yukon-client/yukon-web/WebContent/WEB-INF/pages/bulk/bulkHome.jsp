@@ -215,9 +215,9 @@
                             <div style="width:20px;"></div>
                         </td>
                         <td>
-                        	<c:if test="${callbackResult.bulkFieldListingSupported}">
-	                            <c:forEach var="field" items="${callbackResult.bulkFieldColumnHeaders}" varStatus="fieldStatus">
-	                                ${field}<c:if test="${fieldStatus.count < fn:length(callbackResult.bulkFieldColumnHeaders)}">,</c:if>
+                        	<c:if test="${displayableResult.bulkFieldColumnHeaders != null}">
+	                            <c:forEach var="field" items="${displayableResult.bulkFieldColumnHeaders}" varStatus="fieldStatus">
+	                                ${field}<c:if test="${fieldStatus.count < fn:length(displayableResult.bulkFieldColumnHeaders)}">,</c:if>
 	                            </c:forEach>
                             </c:if>
                         </td>

@@ -50,7 +50,6 @@
     <!-- BASIC BULK CONTROLLER -->
 	<bean id="BulkController" class="com.cannontech.web.bulk.BulkController" >
         
-        <property name="paoDao" ref="paoDao" />
         <property name="deviceCollectionFactory" ref="deviceCollectionFactory" />
         <property name="recentResultsCache" ref="recentResultsCache" />
         

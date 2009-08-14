@@ -11,7 +11,7 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
 
-public class MassChangeCallbackResult extends BackgroundProcessBulkProcessorCallback<SimpleDevice> implements BackgroundProcessResultHolder {
+public class MassChangeCallbackResult extends BackgroundProcessBulkProcessorCallback<SimpleDevice> implements BulkFieldBackgroupProcessResultHolder {
 
 	private BulkFieldColumnHeader massChangeBulkFieldColumnHeader;
 	private DeviceCollection deviceCollection;
@@ -87,10 +87,6 @@ public class MassChangeCallbackResult extends BackgroundProcessBulkProcessorCall
 		return false;
 	}
 	
-	@Override
-	public boolean isBulkFieldListingSupported() {
-		return true;
-	}
 	@Override
     public List<BulkFieldColumnHeader> getBulkFieldColumnHeaders() {
 		return Collections.singletonList(massChangeBulkFieldColumnHeader);

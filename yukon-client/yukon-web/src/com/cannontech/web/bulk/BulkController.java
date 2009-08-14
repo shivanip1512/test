@@ -22,11 +22,12 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessTypeEnum;
+import com.cannontech.common.bulk.callbackResult.BulkFieldBackgroupProcessResultHolder;
 import com.cannontech.common.bulk.callbackResult.ImportUpdateCallbackResult;
 import com.cannontech.common.bulk.collection.DeviceCollection;
+import com.cannontech.common.bulk.field.BulkFieldColumnHeader;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -35,7 +36,6 @@ import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.util.ReverseList;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.PaoLoadingService;
@@ -56,10 +56,8 @@ public class BulkController extends BulkControllerBase {
 
     private final static int MAX_SELECTED_DEVICES_DISPLAYED = 1000;
     
-    private PaoDao paoDao = null;
     private PaoLoadingService paoLoadingService = null;
     private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache = null;
-    private MeterDao meterDao = null;
     private YukonUserContextMessageSourceResolver messageSourceResolver = null;
     private RolePropertyDao rolePropertyDao;
     
@@ -300,12 +298,18 @@ public class BulkController extends BulkControllerBase {
 
         public BulkOperationDisplayableResult map(BackgroundProcessResultHolder from) throws ObjectMappingException {
         	
+        	List<BulkFieldColumnHeader> bulkFieldColumnHeaders = null;
+        	if (from instanceof BulkFieldBackgroupProcessResultHolder) {
+        		bulkFieldColumnHeaders = ((BulkFieldBackgroupProcessResultHolder)from).getBulkFieldColumnHeaders();
+        	}
+        	
             return new BulkOperationDisplayableResult(from,
                                                       this.hasBulkImportRP,
                                                       this.hasBulkUpdateRP,
                                                       this.hasMassChangeRP,
                                                       this.hasMassDeleteRP,
-                                                      this.hasAddRemovePointsRP);
+                                                      this.hasAddRemovePointsRP,
+                                                      bulkFieldColumnHeaders);
         }
     }
     
@@ -317,18 +321,21 @@ public class BulkController extends BulkControllerBase {
         private boolean hasMassChangeRP = false;
         private boolean hasMassDeleteRP = false;
         private boolean hasAddRemovePointsRP = false;
+        private List<BulkFieldColumnHeader> bulkFieldColumnHeaders = null;
 
         public BulkOperationDisplayableResult(
         		BackgroundProcessResultHolder result,
                 boolean hasBulkImportRP, boolean hasBulkUpdateRP,
                 boolean hasMassChangeRP, boolean hasMassDeleteRP,
-                boolean hasAddRemovePointsRP) {
+                boolean hasAddRemovePointsRP,
+                List<BulkFieldColumnHeader> bulkFieldColumnHeaders) {
             this.result = result;
             this.hasBulkImportRP = hasBulkImportRP;
             this.hasBulkUpdateRP = hasBulkUpdateRP;
             this.hasMassChangeRP = hasMassChangeRP;
             this.hasMassDeleteRP = hasMassDeleteRP;
             this.hasAddRemovePointsRP = hasAddRemovePointsRP;
+            this.bulkFieldColumnHeaders = bulkFieldColumnHeaders;
         }
 
         public BackgroundProcessResultHolder getResult() {
@@ -354,6 +361,10 @@ public class BulkController extends BulkControllerBase {
 		public boolean isHasAddRemovePointsRP() {
 			return hasAddRemovePointsRP;
 		}
+		
+		public List<BulkFieldColumnHeader> getBulkFieldColumnHeaders() {
+			return bulkFieldColumnHeaders;
+		}
         
         public boolean isDetailViewable() {
 
@@ -368,20 +379,10 @@ public class BulkController extends BulkControllerBase {
     }
     
     @Required
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-    
-    @Required
     public void setRecentResultsCache(RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache) {
         this.recentResultsCache = recentResultsCache;
     }
 
-    @Autowired
-    public void setMeterDao(MeterDao meterDao) {
-        this.meterDao = meterDao;
-    }
-    
     @Autowired
     public void setMessageSourceResolver(
             YukonUserContextMessageSourceResolver messageSourceResolver) {

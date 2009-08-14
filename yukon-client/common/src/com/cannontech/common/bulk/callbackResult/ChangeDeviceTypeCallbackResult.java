@@ -1,10 +1,7 @@
 package com.cannontech.common.bulk.callbackResult;
 
-import java.util.List;
-
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
-import com.cannontech.common.bulk.field.BulkFieldColumnHeader;
 import com.cannontech.common.bulk.processor.ProcessorCallbackException;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
@@ -78,14 +75,5 @@ public class ChangeDeviceTypeCallbackResult extends BackgroundProcessBulkProcess
 	@Override
 	public boolean isFailureFileSupported() {
 		return false;
-	}
-	
-	@Override
-	public boolean isBulkFieldListingSupported() {
-		return false;
-	}
-	@Override
-    public List<BulkFieldColumnHeader> getBulkFieldColumnHeaders() {
-		throw new UnsupportedOperationException();
 	}
 }

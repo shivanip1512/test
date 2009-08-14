@@ -11,7 +11,7 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
 
-public class ImportUpdateCallbackResult extends BackgroundProcessBulkProcessorCallback<String[]> implements BackgroundProcessResultHolder {
+public class ImportUpdateCallbackResult extends BackgroundProcessBulkProcessorCallback<String[]> implements BulkFieldBackgroupProcessResultHolder {
 
 	private List<BulkFieldColumnHeader> bulkFieldColumnHeaders;
 	private BulkFileInfo bulkFileInfo;
@@ -81,10 +81,6 @@ public class ImportUpdateCallbackResult extends BackgroundProcessBulkProcessorCa
 		return true;
 	}
 	
-	@Override
-	public boolean isBulkFieldListingSupported() {
-		return true;
-	}
 	@Override
     public List<BulkFieldColumnHeader> getBulkFieldColumnHeaders() {
 		return bulkFieldColumnHeaders;
