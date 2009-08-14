@@ -33,13 +33,15 @@
 	</cti:breadCrumbs>
 	
 	<c:if test="${!isSpecialArea}">
-		<cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
-			<div id="systemCommandLink" align="right"></div>
-			<div align="right">
-				<a href="javascript:void(0);" id="systemResetOpCountsLink" onclick="sendResetOpCountCommand()">Reset All Op Counters</a>
-			</div>
-			<br>
-		</cti:checkProperty>
+        <cti:checkRolesAndProperties value="SYSTEM_WIDE_CONTROLS">
+			<cti:checkRolesAndProperties value="CBC_DATABASE_EDIT" >
+				<div id="systemCommandLink" align="right"></div>
+				<div align="right">
+					<a href="javascript:void(0);" id="systemResetOpCountsLink" onclick="sendResetOpCountCommand()">Reset All Op Counters</a>
+				</div>
+				<br>
+			</cti:checkRolesAndProperties>
+		</cti:checkRolesAndProperties>
 	</c:if>
 	
 	<c:choose>
