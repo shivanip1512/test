@@ -9,6 +9,8 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
+<c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
+<c:url var="helpOver" value="/WebConfig/yukon/Icons/help_over.gif"/>
 
 <cti:uniqueIdentifier prefix="sectionContainer_" var="thisId"/>
 <div class="titledContainer sectionContainer id="${thisId}">
@@ -21,7 +23,11 @@
             	<cti:url var="definitionUrl" value="/spring/common/deviceDefinition.xml">	
             		<cti:param name="deviceType" value="${deviceTypeEnum}"/>
             	</cti:url>
-            	<img src="<cti:url value="/WebConfig/yukon/Icons/help.gif"/>" onclick="window.open('${definitionUrl}');return false;" title="${viewDefinitionDetailPopupTitle}">
+            	
+            	<a href="${definitionUrl}" title="${viewDefinitionDetailPopupTitle} style="text-decoration:none;">
+					<img src="${help}" onmouseover="javascript:this.src='${helpOver}'" onmouseout="javascript:this.src='${help}'">
+				</a>
+            	
            	</c:if>
            	<c:if test="${not empty deviceTypeDeviceCollection}">
             	<tags:selectedDevicesPopup  deviceCollection="${deviceTypeDeviceCollection}" />
