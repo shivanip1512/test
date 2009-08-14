@@ -104,6 +104,33 @@ ALTER TABLE LMHardwareControlGroup MODIFY ProgramId NOT NULL;
 DELETE RawPointHistory WHERE PointId NOT IN (SELECT DISTINCT PointId FROM Point);
 /* End YUK-7175 */
 
+/* Start YUK-7731 */
+ALTER TABLE DeviceConfigurationItem DROP CONSTRAINT FK_DEVICECO_REF_DEVICEC2; 
+
+ALTER TABLE DeviceConfigurationItem RENAME TO DeviceConfigurationItemTemp;
+ALTER TABLE DeviceConfigurationItemTemp DROP CONSTRAINT PK_DeviceConfigurationItem;
+COMMIT;
+
+CREATE TABLE DeviceConfigurationItem (
+   DeviceConfigurationItemId NUMBER                          NOT NULL,
+   DeviceConfigurationId NUMBER                          NOT NULL,
+   FieldName            VARCHAR2(60)                    NOT NULL,
+   Value                VARCHAR2(60)                    NOT NULL,
+   CONSTRAINT PK_DeviceConfigurationItem PRIMARY KEY (DeviceConfigurationItemId)
+);
+
+INSERT INTO DeviceConfigurationItem
+SELECT DeviceConfigurationItemId, DeviceConfigurationId, FieldName, Value
+FROM DeviceConfigurationItemTemp;
+
+ALTER TABLE DeviceConfigurationItem
+   ADD CONSTRAINT FK_DevConfItem_DevConf FOREIGN KEY (DeviceConfigurationId)
+      REFERENCES DeviceConfiguration (DeviceConfigurationId)
+      ON DELETE CASCADE;
+
+DROP TABLE DeviceConfigurationItemTemp;
+/* End YUK-7731 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

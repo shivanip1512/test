@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     8/14/2009 10:24:36 AM                        */
+/* Created on:     8/14/2009 2:55:11 PM                         */
 /*==============================================================*/
 
 
@@ -5408,11 +5408,11 @@ go
 /* Table: DEVICECONFIGURATIONITEM                               */
 /*==============================================================*/
 create table DEVICECONFIGURATIONITEM (
-   DEVICECONFIGURATIONITEMID numeric              not null,
-   DeviceConfigurationID numeric              not null,
-   FieldName            varchar(30)          not null,
-   Value                varchar(30)          not null,
-   constraint PK_DEVICECONFIGURATIONITEM primary key (DEVICECONFIGURATIONITEMID)
+   DeviceConfigurationItemId numeric              not null,
+   DeviceConfigurationId numeric              not null,
+   FieldName            varchar(60)          not null,
+   Value                varchar(60)          not null,
+   constraint PK_DEVICECONFIGURATIONITEM primary key (DeviceConfigurationItemId)
 )
 go
 
@@ -14070,7 +14070,7 @@ alter table DEVICECONFIGURATIONDEVICEMAP
 go
 
 alter table DEVICECONFIGURATIONITEM
-   add constraint FK_DEVICECO_REF_DEVICEC2 foreign key (DeviceConfigurationID)
+   add constraint FK_DevConfItem_DevConf foreign key (DeviceConfigurationId)
       references DEVICECONFIGURATION (DeviceConfigurationID)
          on delete cascade
 go
