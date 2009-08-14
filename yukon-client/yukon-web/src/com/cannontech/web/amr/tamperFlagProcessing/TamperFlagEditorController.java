@@ -55,7 +55,7 @@ public class TamperFlagEditorController {
 	        	
 	        	// use entered values instead of existing value if present
 	        	if (name == null) {
-	        		name = tamperFlagMonitor.getName();
+	        		name = tamperFlagMonitor.getTamperFlagMonitorName();
 	        	}
 	        	if (deviceGroupName == null) {
 	        		deviceGroupName = tamperFlagMonitor.getGroupName();
@@ -108,7 +108,7 @@ public class TamperFlagEditorController {
         	editError = "Name may not contain slashes.";
         } else if (isNewMonitor && tamperFlagMonitorDao.processorExistsWithName(name)) { // new monitor, check name
         	editError = "Tamper Flag Monitor with name \"" + name + "\" already exists.";
-        } else if (!isNewMonitor && !tamperFlagMonitor.getName().equals(name) && tamperFlagMonitorDao.processorExistsWithName(name)) { // existing monitor, new name, check name
+        } else if (!isNewMonitor && !tamperFlagMonitor.getTamperFlagMonitorName().equals(name) && tamperFlagMonitorDao.processorExistsWithName(name)) { // existing monitor, new name, check name
         	editError = "Tamper Flag Monitor with name \"" + name + "\" already exists.";
         } else if (StringUtils.isBlank(deviceGroupName)) {
         	editError = "Device group required.";
@@ -134,7 +134,7 @@ public class TamperFlagEditorController {
         	} else {
         		
         		// tamper flag group needs new name 
-        		String currentProcessorName = tamperFlagMonitor.getName();
+        		String currentProcessorName = tamperFlagMonitor.getTamperFlagMonitorName();
         		if (!currentProcessorName.equals(name)) {
         			
         			String newTamperFlagGroupName = SystemGroupEnum.TAMPER_FLAG_PROCESSING.getFullPath() + name;
@@ -162,7 +162,7 @@ public class TamperFlagEditorController {
         	}
         	
         	// finish processor setup, save/update
-        	tamperFlagMonitor.setName(name);
+        	tamperFlagMonitor.setTamperFlagMonitorName(name);
         	tamperFlagMonitor.setGroupName(deviceGroupName);
     		
     		log.debug("Saving tamperFlagMonitor: isNewMonitor=" + isNewMonitor + ", tamperFlagMonitor=" + tamperFlagMonitor.toString());

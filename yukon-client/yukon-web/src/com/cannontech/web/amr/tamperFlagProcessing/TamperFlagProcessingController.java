@@ -79,7 +79,7 @@ public class TamperFlagProcessingController implements InitializingBean {
 		model.addAttribute("resetOk", resetOk);
 		
 		// tamper flag group device collection
-		StoredDeviceGroup tamperFlagGroup = tamperFlagMonitorService.getTamperFlagGroup(tamperFlagMonitor.getName());
+		StoredDeviceGroup tamperFlagGroup = tamperFlagMonitorService.getTamperFlagGroup(tamperFlagMonitor.getTamperFlagMonitorName());
 		DeviceCollection tamperFlagGroupDeviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(tamperFlagGroup);
 		
 		// read results
@@ -133,7 +133,7 @@ public class TamperFlagProcessingController implements InitializingBean {
 			
 			final TamperFlagMonitor tamperFlagMonitor = tamperFlagMonitorDao.getById(tamperFlagMonitorId);
 			
-			StoredDeviceGroup tamperFlagGroup = tamperFlagMonitorService.getTamperFlagGroup(tamperFlagMonitor.getName());
+			StoredDeviceGroup tamperFlagGroup = tamperFlagMonitorService.getTamperFlagGroup(tamperFlagMonitor.getTamperFlagMonitorName());
 			DeviceCollection tamperFlagGroupDeviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(tamperFlagGroup);
 			
 			// alert callback
@@ -143,7 +143,7 @@ public class TamperFlagProcessingController implements InitializingBean {
 	            	
 	            	// alert
 	                ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.web.modules.amr.tamperFlagProcessing.readInternalFlags.completionAlert");
-	                resolvableTemplate.addData("tamperFlagMonitorName", tamperFlagMonitor.getName());
+	                resolvableTemplate.addData("tamperFlagMonitorName", tamperFlagMonitor.getTamperFlagMonitorName());
 	                resolvableTemplate.addData("tamperFlagMonitorId", tamperFlagMonitor.getTamperFlagMonitorId());
 	                int successCount = result.getResultHolder().getResultStrings().size();
 	                int total = (int)result.getOriginalDeviceCollectionCopy().getDeviceCount();
@@ -183,7 +183,7 @@ public class TamperFlagProcessingController implements InitializingBean {
 			
 			final TamperFlagMonitor tamperFlagMonitor = tamperFlagMonitorDao.getById(tamperFlagMonitorId);
 			
-			StoredDeviceGroup tamperFlagGroup = tamperFlagMonitorService.getTamperFlagGroup(tamperFlagMonitor.getName());
+			StoredDeviceGroup tamperFlagGroup = tamperFlagMonitorService.getTamperFlagGroup(tamperFlagMonitor.getTamperFlagMonitorName());
 			DeviceCollection tamperFlagGroupDeviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(tamperFlagGroup);
 			
 			SimpleCallback<GroupCommandResult> dummyCallback = new SimpleCallback<GroupCommandResult>() {
@@ -212,7 +212,7 @@ public class TamperFlagProcessingController implements InitializingBean {
 		int tamperFlagMonitorId = ServletRequestUtils.getRequiredIntParameter(request, "tamperFlagMonitorId");
 		TamperFlagMonitor tamperFlagMonitor = tamperFlagMonitorDao.getById(tamperFlagMonitorId);
 		
-		StoredDeviceGroup tamperFlagGroup = tamperFlagMonitorService.getTamperFlagGroup(tamperFlagMonitor.getName());
+		StoredDeviceGroup tamperFlagGroup = tamperFlagMonitorService.getTamperFlagGroup(tamperFlagMonitor.getTamperFlagMonitorName());
 		
 		List<? extends YukonDevice> deviceList = groupMetersDao.getChildMetersByGroup(tamperFlagGroup);
         deviceGroupMemberEditorDao.removeDevices(tamperFlagGroup, deviceList);

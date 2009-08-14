@@ -43,7 +43,7 @@ public class TamperFlagMonitorDaoImpl implements TamperFlagMonitorDao, Initializ
     	selectAllSql = "SELECT * FROM " + TABLE_NAME;
 
 		selectById = selectAllSql + " WHERE TamperFlagMonitorId = ?";
-		selectCountByName = "SELECT COUNT(*) FROM " + TABLE_NAME + " WHERE Name = ?";
+		selectCountByName = "SELECT COUNT(*) FROM " + TABLE_NAME + " WHERE TamperFlagMonitorName = ?";
 		
 		deleteById = "DELETE FROM " + TABLE_NAME + " WHERE TamperFlagMonitorId = ?";
 		
@@ -99,7 +99,7 @@ public class TamperFlagMonitorDaoImpl implements TamperFlagMonitorDao, Initializ
             public TamperFlagMonitor mapRow(ResultSet rs, int rowNum) throws SQLException {
             	TamperFlagMonitor tamperFlagMonitor = new TamperFlagMonitor();
             	tamperFlagMonitor.setTamperFlagMonitorId(rs.getInt("TamperFlagMonitorId"));
-            	tamperFlagMonitor.setName(rs.getString("Name"));
+            	tamperFlagMonitor.setTamperFlagMonitorName(rs.getString("TamperFlagMonitorName"));
             	tamperFlagMonitor.setGroupName(rs.getString("GroupName"));
             	tamperFlagMonitor.setEvaluatorStatus(TamperFlagMonitorEvaluatorStatus.valueOf(rs.getString("EvaluatorStatus")));
                 return tamperFlagMonitor;
@@ -111,7 +111,7 @@ public class TamperFlagMonitorDaoImpl implements TamperFlagMonitorDao, Initializ
     private FieldMapper<TamperFlagMonitor> tamperFlagMonitorFieldMapper = new FieldMapper<TamperFlagMonitor>() {
         public void extractValues(MapSqlParameterSource p, TamperFlagMonitor tamperFlagMonitor) {
             p.addValue("TamperFlagMonitorId", tamperFlagMonitor.getTamperFlagMonitorId());
-            p.addValue("Name", tamperFlagMonitor.getName());
+            p.addValue("TamperFlagMonitorName", tamperFlagMonitor.getTamperFlagMonitorName());
             p.addValue("GroupName", tamperFlagMonitor.getGroupName());
             p.addValue("EvaluatorStatus", tamperFlagMonitor.getEvaluatorStatus().name());
             

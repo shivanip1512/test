@@ -75,7 +75,7 @@
 			<cti:url var="tamperFlagMonitorEditUrl" value="/spring/amr/tamperFlagProcessing/edit">
 				<cti:param name="tamperFlagMonitorId" value="${tamperFlagMonitor.tamperFlagMonitorId}"/>
 			</cti:url>
-			<a href="${tamperFlagMonitorEditUrl}">${tamperFlagMonitor.name}</a>
+			<a href="${tamperFlagMonitorEditUrl}">${tamperFlagMonitor.tamperFlagMonitorName}</a>
 		</tags:nameValue>
 		
 		<tags:nameValue name="${mainDetailViolationsText}">
@@ -104,10 +104,10 @@
 		<tags:nameValue name="${mainDetailTamperFlagGroupText}">
 			
 			<cti:url var="tamperFlagGroupUrl" value="/spring/group/editor/home">
-				<cti:param name="groupName">${tamperFlagGroupBase}${tamperFlagMonitor.name}</cti:param>
+				<cti:param name="groupName">${tamperFlagGroupBase}${tamperFlagMonitor.tamperFlagMonitorName}</cti:param>
 			</cti:url>
 			
-			<a href="${tamperFlagGroupUrl}">${tamperFlagGroupBase}${tamperFlagMonitor.name}</a>
+			<a href="${tamperFlagGroupUrl}">${tamperFlagGroupBase}${tamperFlagMonitor.tamperFlagMonitorName}</a>
 			
 		</tags:nameValue>
 		
@@ -287,7 +287,7 @@
 	
 		<%-- tamper flag group report --%>
 		<cti:url var="tamperFlagGroupReportUrl" value="/spring/amr/reports/groupDevicesReport">
-			<cti:param name="groupName" value="${tamperFlagGroupBase}${tamperFlagMonitor.name}"/>
+			<cti:param name="groupName" value="${tamperFlagGroupBase}${tamperFlagMonitor.tamperFlagMonitorName}"/>
 			<cti:param name="def" value="groupDevicesDefinition"/>
 		</cti:url>
 		<a href="${tamperFlagGroupReportUrl}">${tamperFlagGroupReportText}</a>
@@ -303,7 +303,7 @@
 		<%-- other actions --%>
 		<cti:url var="otherActionsUrl" value="/spring/bulk/collectionActions">
 			<cti:param name="collectionType" value="group"/>
-			<cti:param name="group.name" value="${tamperFlagGroupBase}${tamperFlagMonitor.name}"/>
+			<cti:param name="group.name" value="${tamperFlagGroupBase}${tamperFlagMonitor.tamperFlagMonitorName}"/>
 		</cti:url>
 		<a href="${otherActionsUrl}">${otherActionsText}</a>
 	    	

@@ -74,7 +74,7 @@
 	<c:forEach var="monitor" items="${monitors}">
 	
 		<c:set var="monitorId" value="${monitor.tamperFlagMonitorId}"/>
-		<c:set var="monitorName" value="${monitor.name}"/>
+		<c:set var="monitorName" value="${monitor.tamperFlagMonitorName}"/>
 
 		<c:set var="tdClass" value=""/>
 		<c:if test="${monitor.evaluatorStatus == 'DISABLED'}">
