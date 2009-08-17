@@ -42,7 +42,7 @@
 </ct:nameValueContainer>
 
 <%-- The following js and dataUpdaters are for updating the USAGE values, don't write unless USAGE is supported and exists --%>
-<c:if test="${existingAttributes['USAGE']}">
+<c:if test="${usageAttributeExists}">
 
 <script type="text/javascript">
 <%--

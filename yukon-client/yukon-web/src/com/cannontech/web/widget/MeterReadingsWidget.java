@@ -69,10 +69,12 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         mav.addObject("existingAttributes", existingAttributes);
         
         // don't attempt unless USAGE is supported and exists
-        if (existingAttributes.containsKey(BuiltInAttribute.USAGE)) {
+        boolean usageAttributeExists = existingAttributes.containsKey(BuiltInAttribute.USAGE);
+        if (usageAttributeExists) {
 	        LitePoint lp = attributeService.getPointForAttribute(meter, BuiltInAttribute.USAGE);
 	        fillInPreviousReadings(mav, lp, "VALUE");
         }
+        mav.addObject("usageAttributeExists", usageAttributeExists);
         
         allExistingAttributes.retainAll(attributesToShow);
         LiteYukonUser user = ServletUtil.getYukonUser(request);
