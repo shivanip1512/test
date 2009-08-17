@@ -135,9 +135,6 @@ CREATE TABLE TamperFlagMonitor (
 );
 GO
 
-/*==============================================================*/
-/* Index: INDX_TampFlagMonName_UNQ                              */
-/*==============================================================*/
 CREATE UNIQUE INDEX INDX_TampFlagMonName_UNQ ON TamperFlagMonitor (
     TamperFlagMonitorName ASC
 );
