@@ -331,6 +331,17 @@ begin
 	calcText = "Calc Logic";
 	calcCheck = FeatureIsItemSelected(MEDIA, "Yukon Server\\Calculation Server");;
     
+    //attempt to set the description field on each service
+    LaunchAppAndWait("", "cmd.exe /c sc description \"Yukon Real-Time Scan Service\" \"Collects real-time and interval data from a list of devices.\"", LAAW_OPTION_WAIT);
+    LaunchAppAndWait("", "cmd.exe /c sc description \"Yukon Port Control Service\" \"Controls communication channel and field hardware communications.\"", LAAW_OPTION_WAIT);
+	LaunchAppAndWait("", "cmd.exe /c sc description \"Yukon MAC Scheduler Service\" \"Runs scheduled meter data collection and basic control operation.\"", LAAW_OPTION_WAIT);
+	LaunchAppAndWait("", "cmd.exe /c sc description \"Yukon Load Management Service\" \"Runs Demand Response operations based on data gathered by the Yukon system.\"", LAAW_OPTION_WAIT);
+	LaunchAppAndWait("", "cmd.exe /c sc description \"Yukon Foreign Data Service\" \"Transmits and receives data to and from other systems outside of Yukon.\"", LAAW_OPTION_WAIT);
+	LaunchAppAndWait("", "cmd.exe /c sc description \"Yukon Dispatch Service\" \"Transmits and receives real-time data to and from the Yukon server and client applications.\"", LAAW_OPTION_WAIT);
+	LaunchAppAndWait("", "cmd.exe /c sc description \"Yukon Cap Control Service\" \"Runs Distribution Automation operations based on data gathered by the system.\"", LAAW_OPTION_WAIT);
+	LaunchAppAndWait("", "cmd.exe /c sc description \"Yukon Calc-Logic Service\" \"Processes real-time and historical calculations on data gathered by the system.\"", LAAW_OPTION_WAIT);
+
+    
     Dlg_SetServices1:
 		//There's no going back now!
 		Disable(BACKBUTTON);
