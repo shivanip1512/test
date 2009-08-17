@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/17/2009 10:34:40 AM                        */
+/* Created on:     8/17/2009 1:08:04 PM                         */
 /*==============================================================*/
 
 
@@ -3670,7 +3670,7 @@ create table DeviceTNPPSettings  (
    Channel              CHAR(1)                         not null,
    Zone                 CHAR(1)                         not null,
    FunctionCode         CHAR(1)                         not null,
-   PagerID              NUMBER                          not null,
+   PagerID              VARCHAR2(10)                    not null,
    constraint PK_DEVICETNPPSETTINGS primary key (DeviceID)
 );
 

@@ -145,6 +145,39 @@ CREATE UNIQUE INDEX INDX_TampFlagMonName_UNQ ON TamperFlagMonitor (
 );
 /* End YUK-7735 */
 
+/* Start YUK-7719 */
+ALTER TABLE DeviceTNPPSettings DROP CONSTRAINT FK_DevTNPP_Dev; 
+
+ALTER TABLE DeviceTNPPSettings RENAME TO DeviceTNPPSettingsTemp;
+ALTER TABLE DeviceTNPPSettingsTemp DROP CONSTRAINT PK_DEVICETNPPSETTINGS CASCADE;
+
+CREATE TABLE DeviceTNPPSettings  (
+   DeviceID             NUMBER                          not null,
+   Inertia              NUMBER                          not null,
+   DestinationAddress   NUMBER                          not null,
+   OriginAddress        NUMBER                          not null,
+   IdentifierFormat     CHAR(1)                         not null,
+   Protocol             VARCHAR2(32)                    not null,
+   DataFormat           CHAR(1)                         not null,
+   Channel              CHAR(1)                         not null,
+   Zone                 CHAR(1)                         not null,
+   FunctionCode         CHAR(1)                         not null,
+   PagerID              VARCHAR2(10)                    not null,
+   CONSTRAINT PK_DEVICETNPPSETTINGS PRIMARY KEY (DeviceID)
+);
+
+INSERT INTO DeviceTNPPSettings
+SELECT DeviceID, Inertia, DestinationAddress, OriginAddress, IdentifierFormat,
+       Protocol, DataFormat, Channel, Zone, FunctionCode, PagerID
+FROM DeviceTNPPSettingsTemp;
+
+alter table DeviceTNPPSettings
+   add constraint FK_DevTNPP_Dev foreign key (DeviceID)
+      references DEVICE (DEVICEID);
+
+DROP TABLE DeviceTNPPSettingsTemp;
+/* End YUK-7719 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

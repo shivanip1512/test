@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     8/17/2009 9:59:36 AM                         */
+/* Created on:     8/17/2009 1:58:09 PM                         */
 /*==============================================================*/
 
 
@@ -6348,7 +6348,7 @@ create table DeviceTNPPSettings (
    Channel              char(1)              not null,
    Zone                 char(1)              not null,
    FunctionCode         char(1)              not null,
-   PagerID              numeric              not null,
+   PagerID              varchar(10)          not null,
    constraint PK_DEVICETNPPSETTINGS primary key (DeviceID)
 )
 go

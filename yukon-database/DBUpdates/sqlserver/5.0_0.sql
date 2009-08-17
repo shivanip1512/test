@@ -141,6 +141,11 @@ CREATE UNIQUE INDEX INDX_TampFlagMonName_UNQ ON TamperFlagMonitor (
 GO
 /* End YUK-7735 */
 
+/* Start YUK-7719 */
+ALTER TABLE DeviceTNPPSettings
+ALTER COLUMN PagerID VARCHAR(10);
+/* End YUK-7719 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
