@@ -125,6 +125,25 @@ ALTER TABLE DeviceConfigurationItem
       ON DELETE CASCADE;
 /* End YUK-7731 */
 
+/* Start YUK-7735 */
+CREATE TABLE TamperFlagMonitor (
+   TamperFlagMonitorId  NUMERIC              NOT NULL,
+   TamperFlagMonitorName VARCHAR(255)         NOT NULL,
+   GroupName            VARCHAR(255)         NOT NULL,
+   EvaluatorStatus      VARCHAR(255)         NOT NULL,
+   constraint PK_TAMPERFLAGMONITOR PRIMARY KEY (TamperFlagMonitorId)
+);
+GO
+
+/*==============================================================*/
+/* Index: INDX_TampFlagMonName_UNQ                              */
+/*==============================================================*/
+CREATE UNIQUE INDEX INDX_TampFlagMonName_UNQ ON TamperFlagMonitor (
+    TamperFlagMonitorName ASC
+);
+GO
+/* End YUK-7735 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

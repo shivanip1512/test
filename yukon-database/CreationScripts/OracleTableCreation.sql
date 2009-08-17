@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/14/2009 2:58:21 PM                         */
+/* Created on:     8/17/2009 9:33:44 AM                         */
 /*==============================================================*/
 
 
@@ -240,6 +240,8 @@ drop index Indx_SYSLG_Date;
 drop index Indx_SYSLG_PtId;
 
 drop index Indx_todsw_idoff;
+
+drop index INDX_TampFlagMonName_UNQ;
 
 drop index Indx_YukonGroup_groupName_UNQ;
 
@@ -892,6 +894,8 @@ drop table TOUSchedule cascade constraints;
 drop table TagLog cascade constraints;
 
 drop table Tags cascade constraints;
+
+drop table TamperFlagMonitor cascade constraints;
 
 drop table TemplateDisplay cascade constraints;
 
@@ -7733,6 +7737,24 @@ insert into tags values(-2, 'Info', 1, 'N', 6, 0);
 insert into tags values (-3, 'Cap Bank Operational State', 1, 'N', 0, 0);
 insert into tags values (-4, 'Enablement State', 1, 'N', 0, 0);
 insert into tags values (-5, 'OVUV Enablement State', 1, 'N', 0, 0); 
+
+/*==============================================================*/
+/* Table: TamperFlagMonitor                                     */
+/*==============================================================*/
+create table TamperFlagMonitor  (
+   TamperFlagMonitorId  NUMBER                          not null,
+   TamperFlagMonitorName varchar(255)                    not null,
+   GroupName            varchar(255)                    not null,
+   EvaluatorStatus      varchar(255)                    not null,
+   constraint PK_TAMPERFLAGMONITOR primary key (TamperFlagMonitorId)
+);
+
+/*==============================================================*/
+/* Index: INDX_TampFlagMonName_UNQ                              */
+/*==============================================================*/
+create unique index INDX_TampFlagMonName_UNQ on TamperFlagMonitor (
+   TamperFlagMonitorName ASC
+);
 
 /*==============================================================*/
 /* Table: TemplateDisplay                                       */

@@ -131,6 +131,20 @@ ALTER TABLE DeviceConfigurationItem
 DROP TABLE DeviceConfigurationItemTemp;
 /* End YUK-7731 */
 
+/* Start YUK-7735 */
+CREATE TABLE TamperFlagMonitor  (
+   TamperFlagMonitorId  NUMBER                          NOT NULL,
+   TamperFlagMonitorName VARCHAR(255)                    NOT NULL,
+   GroupName            VARCHAR(255)                    NOT NULL,
+   EvaluatorStatus      VARCHAR(255)                    NOT NULL,
+   CONSTRAINT PK_TamperFlagMonitor PRIMARY KEY (TamperFlagMonitorId)
+);
+
+CREATE UNIQUE INDEX INDX_TampFlagMonName_UNQ ON TamperFlagMonitor (
+   TamperFlagMonitorName ASC
+);
+/* End YUK-7735 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

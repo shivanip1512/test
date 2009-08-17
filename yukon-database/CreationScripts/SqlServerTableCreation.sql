@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     8/14/2009 2:55:11 PM                         */
+/* Created on:     8/17/2009 9:59:36 AM                         */
 /*==============================================================*/
 
 
@@ -993,6 +993,15 @@ if exists (select 1
             and   indid > 0
             and   indid < 255)
    drop index TOUDayRateSwitches.Indx_todsw_idoff
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('TamperFlagMonitor')
+            and   name  = 'INDX_TampFlagMonName_UNQ'
+            and   indid > 0
+            and   indid < 255)
+   drop index TamperFlagMonitor.INDX_TampFlagMonName_UNQ
 go
 
 if exists (select 1
@@ -3285,6 +3294,13 @@ if exists (select 1
            where  id = object_id('Tags')
             and   type = 'U')
    drop table Tags
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('TamperFlagMonitor')
+            and   type = 'U')
+   drop table TamperFlagMonitor
 go
 
 if exists (select 1
@@ -10638,6 +10654,26 @@ insert into tags values(-2, 'Info', 1, 'N', 6, 0);
 insert into tags values (-3, 'Cap Bank Operational State', 1, 'N', 0, 0);
 insert into tags values (-4, 'Enablement State', 1, 'N', 0, 0);
 insert into tags values (-5, 'OVUV Enablement State', 1, 'N', 0, 0); 
+
+/*==============================================================*/
+/* Table: TamperFlagMonitor                                     */
+/*==============================================================*/
+create table TamperFlagMonitor (
+   TamperFlagMonitorId  numeric              not null,
+   TamperFlagMonitorName varchar(255)         not null,
+   GroupName            varchar(255)         not null,
+   EvaluatorStatus      varchar(255)         not null,
+   constraint PK_TAMPERFLAGMONITOR primary key (TamperFlagMonitorId)
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_TampFlagMonName_UNQ                              */
+/*==============================================================*/
+create unique index INDX_TampFlagMonName_UNQ on TamperFlagMonitor (
+TamperFlagMonitorName ASC
+)
+go
 
 /*==============================================================*/
 /* Table: TemplateDisplay                                       */
