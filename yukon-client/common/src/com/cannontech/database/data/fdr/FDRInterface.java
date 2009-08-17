@@ -138,11 +138,17 @@ public static FDRTranslation createDefaultTranslation( FDRInterface inter, Integ
 		values[i] = fdrOption.getAllOptionValues()[0]; //default to the first value in the list		
 	}
 	
-	return new FDRTranslation(
-		pointID,
-		inter.getFdrInterface().getAllDirections()[0],
-		inter.getFdrInterface().getInterfaceName(),
-		inter.getFdrInterface().getInterfaceName(), //dest
-		createFDRTranslation(labels, values, pointType) );
+	String dest = inter.getFdrInterface().getInterfaceName();
+	for ( int i = 0; i < labels.length; i++) {
+		String lowercase = labels[i].toLowerCase();
+		if (lowercase.contains("destination")) {
+			dest = values[i];
+			break;
+		}
+	}
+	
+	return new FDRTranslation(pointID, inter.getFdrInterface().getAllDirections()[0],
+							  inter.getFdrInterface().getInterfaceName(), dest, 
+							  createFDRTranslation(labels, values,pointType));
 }
 }

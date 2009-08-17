@@ -1,5 +1,7 @@
 package com.cannontech.dbeditor.editor.point;
 
+import com.cannontech.database.db.point.fdr.FDRTranslation;
+
 /**
  * This type was created in VisualAge.
  */
@@ -303,24 +305,7 @@ private javax.swing.JComponent[][] getDataOptions()
 	
 	return dataOptions;
 }
-/**
- * Insert the method's description here.
- * Creation date: (12/5/2001 9:34:07 AM)
- * @return java.lang.String
- */
-private String getDestinationField( String trans ) 
-{
-	int i = 0;
-	java.util.StringTokenizer tokenizer = new java.util.StringTokenizer( trans, ";" );
-	while( tokenizer.hasMoreTokens() )
-	{
-		String token = tokenizer.nextElement().toString();
-		if( token.toLowerCase().indexOf("estination") >= 0 )
-			return token.substring( token.indexOf(":")+1, token.length() );
-	}
 
-	return "(not found)";
-}
 /**
  * Insert the method's description here.
  * Creation date: (7/16/2001 12:10:34 PM)
@@ -1095,7 +1080,7 @@ public Object getValue(Object val)
 		
 		for(int i=0;i<getJTableFDR().getRowCount();i++)
 		{
-			newFDRTranslation = new com.cannontech.database.db.point.fdr.FDRTranslation(pointID);
+			newFDRTranslation = new FDRTranslation(pointID);
 			newFDRTranslation.setDirectionType(getJTableFDR().getModel().getValueAt(i,0).toString());
 			newFDRTranslation.setTranslation(getJTableFDR().getModel().getValueAt(i,2).toString());
 
@@ -1103,11 +1088,17 @@ public Object getValue(Object val)
 				(com.cannontech.database.data.fdr.FDRInterface)getJTableFDR().getModel().getValueAt(i,1);
 
 			newFDRTranslation.setInterfaceType( iface.toString().toUpperCase() );
-
-			if( iface.getFdrInterface().hasDestination() )
-				newFDRTranslation.setDestination( getDestinationField(newFDRTranslation.getTranslation()) );
-			else
-				newFDRTranslation.setDestination( newFDRTranslation.getInterfaceType() );
+			
+			String temp = newFDRTranslation.getTranslation();
+			temp = temp.toLowerCase();
+			
+			if(temp.contains("destination")) {
+				temp = FDRTranslation.getDestinationField(newFDRTranslation.getTranslation());
+			} else {
+				temp = iface.toString().toUpperCase(); 
+			}
+			
+			newFDRTranslation.setDestination(temp);
 
 			fdrTranslationVector.addElement(newFDRTranslation);
 		}

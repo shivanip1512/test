@@ -60,8 +60,9 @@ public FDRTranslation( Integer pointID, String directionType, String interfaceTy
 	setPointID( pointID );
 	setDirectionType( directionType );
 	setInterfaceType( interfaceType );
-	setDestination( destination );
 	setTranslation( translation );
+	setDestination( destination );
+
 }
 /**
  * add method comment.
@@ -230,7 +231,7 @@ public void retrieve() throws java.sql.SQLException {
 	{
 		setDirectionType( (String) results[0] );
 		setInterfaceType( (String) results[1]);
-		setDestination( (String) results[2]);
+		setDestination( (String) results[2] );
 		setTranslation( (String) results[3] );
 	}
 	else
@@ -241,8 +242,8 @@ public void retrieve() throws java.sql.SQLException {
  * This method was created in VisualAge.
  * @param newValue java.lang.String
  */
-public void setDestination(String newValue) {
-	this.destination = newValue;
+public void setDestination(String destination) {
+		this.destination = destination;
 }
 /**
  * This method was created in VisualAge.
@@ -284,5 +285,24 @@ public void update() throws java.sql.SQLException {
 	Object constraintValues[] = { getPointID() };
 
 	update( TABLE_NAME, setColumns, setValues, constraintColumns, constraintValues );
+}
+
+/**
+ * Insert the method's description here.
+ * Creation date: (12/5/2001 9:34:07 AM)
+ * @return java.lang.String
+ */
+static public String getDestinationField( String trans ) 
+{
+	int i = 0;
+	java.util.StringTokenizer tokenizer = new java.util.StringTokenizer( trans, ";" );
+	while( tokenizer.hasMoreTokens() )
+	{
+		String token = tokenizer.nextElement().toString();
+		if( token.toLowerCase().indexOf("estination") >= 0 )
+			return token.substring( token.indexOf(":")+1, token.length() );
+	}
+
+	return "(not found)";
 }
 }
