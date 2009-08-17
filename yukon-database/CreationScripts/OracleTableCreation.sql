@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/17/2009 9:33:44 AM                         */
+/* Created on:     8/17/2009 10:34:40 AM                        */
 /*==============================================================*/
 
 
@@ -7743,9 +7743,9 @@ insert into tags values (-5, 'OVUV Enablement State', 1, 'N', 0, 0);
 /*==============================================================*/
 create table TamperFlagMonitor  (
    TamperFlagMonitorId  NUMBER                          not null,
-   TamperFlagMonitorName varchar(255)                    not null,
-   GroupName            varchar(255)                    not null,
-   EvaluatorStatus      varchar(255)                    not null,
+   TamperFlagMonitorName VARCHAR2(255)                   not null,
+   GroupName            VARCHAR2(255)                   not null,
+   EvaluatorStatus      VARCHAR2(255)                   not null,
    constraint PK_TAMPERFLAGMONITOR primary key (TamperFlagMonitorId)
 );
 

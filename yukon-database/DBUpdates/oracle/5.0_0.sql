@@ -134,9 +134,9 @@ DROP TABLE DeviceConfigurationItemTemp;
 /* Start YUK-7735 */
 CREATE TABLE TamperFlagMonitor  (
    TamperFlagMonitorId  NUMBER                          NOT NULL,
-   TamperFlagMonitorName VARCHAR(255)                    NOT NULL,
-   GroupName            VARCHAR(255)                    NOT NULL,
-   EvaluatorStatus      VARCHAR(255)                    NOT NULL,
+   TamperFlagMonitorName VARCHAR2(255)                    NOT NULL,
+   GroupName            VARCHAR2(255)                    NOT NULL,
+   EvaluatorStatus      VARCHAR2(255)                    NOT NULL,
    CONSTRAINT PK_TamperFlagMonitor PRIMARY KEY (TamperFlagMonitorId)
 );
 
