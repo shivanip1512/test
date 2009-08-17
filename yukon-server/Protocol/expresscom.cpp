@@ -119,7 +119,7 @@ INT CtiProtocolExpresscom::addAddressing( UINT    serial,
 
 INT CtiProtocolExpresscom::parseAddressing(CtiCommandParser &parse)
 {
-    _uniqueAddress      = parse.getiValue("xc_serial",   0);  //( serial     != -1 ? serial     : 0);
+    _uniqueAddress      = static_cast<UINT>(parse.getiValue("xc_serial",   0));  //( serial     != -1 ? serial     : 0);
     _spidAddress        = parse.getiValue("xc_spid",     0);  //( spid       != -1 ? spid       : 0);
     _geoAddress         = parse.getiValue("xc_geo",      0);  //( geo        != -1 ? geo        : 0);
     _substationAddress  = parse.getiValue("xc_sub",      0);  //( substation != -1 ? substation : 0);
@@ -136,7 +136,7 @@ INT CtiProtocolExpresscom::parseAddressing(CtiCommandParser &parse)
 
 INT CtiProtocolExpresscom::parseTargetAddressing(CtiCommandParser &parse)
 {
-    _uniqueAddress      = parse.getiValue("xca_serial_target",   0);  //( serial     != -1 ? serial     : 0);
+    _uniqueAddress      = static_cast<UINT>(parse.getiValue("xca_serial_target",   0));  //( serial     != -1 ? serial     : 0);
     _spidAddress        = parse.getiValue("xca_spid_target",     0);  //( spid       != -1 ? spid       : 0);
     _geoAddress         = parse.getiValue("xca_geo_target",      0);  //( geo        != -1 ? geo        : 0);
     _substationAddress  = parse.getiValue("xca_sub_target",      0);  //( substation != -1 ? substation : 0);

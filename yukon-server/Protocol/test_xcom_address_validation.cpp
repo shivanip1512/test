@@ -23,8 +23,8 @@ using boost::unit_test_framework::test_suite;
  
         FEEDER is a 16 bit bitfield, hence ALL values are allowed: 0 to 0xFFFF
  
-        ZIP is only 24 bits wide, but is held in a 32 bit quantity.  So values greater than
-            0x01000000 also return BADPARAM.
+        ZIP is only 24 bits wide, but is held in a 32 bit quantity.  So values >= 0x01000000
+            also return BADPARAM.
 */
 BOOST_AUTO_TEST_CASE(test_xcom_addAddressing_default)
 {
@@ -139,9 +139,37 @@ BOOST_AUTO_TEST_CASE(test_xcom_addAddressing_splinter)
 */
 BOOST_AUTO_TEST_CASE(test_xcom_parseAddressing_serial)
 {
-    // test the serial# -- fixed and assigned in the factory.....
+    CtiProtocolExpresscom   xcom;
 
-    BOOST_CHECK_EQUAL(true , true);
+    {
+        CtiCommandParser    parse( "putconfig xcom assign serial 0" );    
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
+    }
+
+    {
+        CtiCommandParser    parse( "putconfig xcom assign serial 1" );    
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
+    }
+
+    {
+        CtiCommandParser    parse( "putconfig xcom assign serial 123456" );    
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
+    }
+
+    {
+        CtiCommandParser    parse( "putconfig xcom assign serial 4294967295" );    
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
+    }
+
+    {
+        CtiCommandParser    parse( "putconfig xcom assign serial 4294967296" );    
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
+    }
+
+    {
+        CtiCommandParser    parse( "putconfig xcom assign serial 5000000000" );    
+        BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
+    }
 }
 
 BOOST_AUTO_TEST_CASE(test_xcom_parseAddressing_spid)

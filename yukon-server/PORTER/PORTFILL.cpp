@@ -591,10 +591,10 @@ VOID FillerThread (PVOID Arg)
 
     if( !(gConfigParms.getValueAsString("PORTER_EXPRESSCOM_SPID")).empty() )
     {
-        unsigned int value = atoi(gConfigParms.getValueAsString("PORTER_EXPRESSCOM_SPID").c_str());
-        if( value <= CtiProtocolExpresscom::SpidMax)
+        ULONG value = gConfigParms.getValueAsULong("PORTER_EXPRESSCOM_SPID", 0);
+        if(value <= CtiProtocolExpresscom::SpidMax)
         {
-            gsSPID = value;
+            gsSPID = static_cast<USHORT>(value);       // truncate from ULONG to USHORT...
         }
         else
         {

@@ -26,6 +26,8 @@ static const CtiString str_signed_num     ("(\\+|\\-)?([0-9]+)");
 static const CtiString str_num     ("([0-9]+)");
 static const CtiString str_floatnum("([0-9]+(\\.[0-9]*)?)");
 static const CtiString str_hexnum  ("(0x[0-9a-f]+)");
+
+// str_hexnum must come before str_num: if str_num is first it will only match the 0 of an input value in hex.
 static const CtiString str_anynum  ( CtiString("(") + str_hexnum + CtiString("|") + str_num + CtiString(")") );
 
 static const CtiString str_date("([0-9]+[/-][0-9]+[/-][0-9]+)");
@@ -151,7 +153,7 @@ void  CtiCommandParser::parse()
 
         if(!(token = CmdStr.match(regexp)).empty())
         {
-            UINT serial = 0;    // can't be negative
+            UINT serial = 0;    // can't be negative - uses entire 32-bit range for values.
             CHAR *p;
 
             if(!(strnum = token.match(re_hexnum)).empty())
@@ -4006,7 +4008,7 @@ void CtiCommandParser::doParseExpresscomAddressing(const string &_CmdStr)
     {
         CtiString temp;
 
-        if( !(temp = CmdStr.match(re_serial)).empty() )   _cmd["xc_serial"]   = (int)strtoul(temp.match((const boost::regex)str_num).data(), NULL, 0);   // serial is 32 bit unsigned
+        if( !(temp = CmdStr.match(re_serial)).empty() )   _cmd["xc_serial"]   = static_cast<int>(strtoul(temp.match((const boost::regex)str_num).data(), NULL, 0));   // serial is 32 bit unsigned
         if( !(temp = CmdStr.match(re_spid)).empty() )     _cmd["xc_spid"]     = atoi(temp.match((const boost::regex)str_num).data());
         if( !(temp = CmdStr.match(re_geo)).empty() )      _cmd["xc_geo"]      = atoi(temp.match((const boost::regex)str_num).data());
         if( !(temp = CmdStr.match(re_sub)).empty() )      _cmd["xc_sub"]      = atoi(temp.match((const boost::regex)str_num).data());
