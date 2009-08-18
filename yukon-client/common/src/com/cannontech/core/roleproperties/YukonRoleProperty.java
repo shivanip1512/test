@@ -348,6 +348,8 @@ public enum YukonRoleProperty {
     HIGH_BILL_COMPLAINT(METERING, com.cannontech.roles.operator.MeteringRole.HIGH_BILL_COMPLAINT, booleanType()),
     CIS_DETAIL_WIDGET_ENABLED(METERING, com.cannontech.roles.operator.MeteringRole.CIS_DETAIL_WIDGET_ENABLED, booleanType()),
     CIS_DETAIL_TYPE(METERING, com.cannontech.roles.operator.MeteringRole.CIS_DETAIL_TYPE, InputTypeFactory.enumType(CisDetailRolePropertyEnum.class)),
+    OUTAGE_PROCESSING(METERING, com.cannontech.roles.operator.MeteringRole.OUTAGE_PROCESSING, booleanType()),
+    TAMPER_FLAG_PROCESSING(METERING, com.cannontech.roles.operator.MeteringRole.TAMPER_FLAG_PROCESSING, booleanType()),
     
     ODDS_FOR_CONTROL_LABEL(ODDS_FOR_CONTROL, com.cannontech.roles.operator.OddsForControlRole.ODDS_FOR_CONTROL_LABEL, stringType()),
     

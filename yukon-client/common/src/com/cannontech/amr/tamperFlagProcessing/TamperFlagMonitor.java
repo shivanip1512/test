@@ -1,5 +1,7 @@
 package com.cannontech.amr.tamperFlagProcessing;
 
+import com.cannontech.amr.MonitorEvaluatorStatus;
+
 
 
 public class TamperFlagMonitor {
@@ -7,7 +9,7 @@ public class TamperFlagMonitor {
 	private Integer tamperFlagMonitorId;
 	private String tamperFlagMonitorName;
 	private String groupName;
-	private TamperFlagMonitorEvaluatorStatus evaluatorStatus;
+	private MonitorEvaluatorStatus evaluatorStatus;
 	
 	public Integer getTamperFlagMonitorId() {
 		return tamperFlagMonitorId;
@@ -27,10 +29,10 @@ public class TamperFlagMonitor {
 	public void setGroupName(String groupName) {
 		this.groupName = groupName;
 	}
-	public TamperFlagMonitorEvaluatorStatus getEvaluatorStatus() {
+	public MonitorEvaluatorStatus getEvaluatorStatus() {
 		return evaluatorStatus;
 	}
-	public void setEvaluatorStatus(TamperFlagMonitorEvaluatorStatus evaluatorStatus) {
+	public void setEvaluatorStatus(MonitorEvaluatorStatus evaluatorStatus) {
 		this.evaluatorStatus = evaluatorStatus;
 	}
 	

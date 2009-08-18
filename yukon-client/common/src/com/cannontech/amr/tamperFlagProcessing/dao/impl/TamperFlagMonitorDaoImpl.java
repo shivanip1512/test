@@ -16,8 +16,8 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.amr.MonitorEvaluatorStatus;
 import com.cannontech.amr.tamperFlagProcessing.TamperFlagMonitor;
-import com.cannontech.amr.tamperFlagProcessing.TamperFlagMonitorEvaluatorStatus;
 import com.cannontech.amr.tamperFlagProcessing.dao.TamperFlagMonitorDao;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.TamperFlagMonitorNotFoundException;
@@ -101,7 +101,7 @@ public class TamperFlagMonitorDaoImpl implements TamperFlagMonitorDao, Initializ
             	tamperFlagMonitor.setTamperFlagMonitorId(rs.getInt("TamperFlagMonitorId"));
             	tamperFlagMonitor.setTamperFlagMonitorName(rs.getString("TamperFlagMonitorName"));
             	tamperFlagMonitor.setGroupName(rs.getString("GroupName"));
-            	tamperFlagMonitor.setEvaluatorStatus(TamperFlagMonitorEvaluatorStatus.valueOf(rs.getString("EvaluatorStatus")));
+            	tamperFlagMonitor.setEvaluatorStatus(MonitorEvaluatorStatus.valueOf(rs.getString("EvaluatorStatus")));
                 return tamperFlagMonitor;
             }
         };

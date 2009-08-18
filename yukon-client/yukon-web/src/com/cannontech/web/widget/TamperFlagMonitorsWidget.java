@@ -13,8 +13,11 @@ import com.cannontech.amr.tamperFlagProcessing.TamperFlagMonitor;
 import com.cannontech.amr.tamperFlagProcessing.dao.TamperFlagMonitorDao;
 import com.cannontech.amr.tamperFlagProcessing.service.TamperFlagMonitorService;
 import com.cannontech.core.dao.TamperFlagMonitorNotFoundException;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 
+@CheckRoleProperty(YukonRoleProperty.TAMPER_FLAG_PROCESSING)
 public class TamperFlagMonitorsWidget extends WidgetControllerBase {
 
 	private TamperFlagMonitorDao tamperFlagMonitorDao;

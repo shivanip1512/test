@@ -24,5 +24,9 @@ public interface MeteringRole {
     public static final int CIS_DETAIL_WIDGET_ENABLED = OperatorRoleDefs.METERING_PROPERTYID_BASE - 11; // -20211
     /** Defines what type is CIS Detail widget is to be displayed (i.e. NONE, MULTISPEAK, CAYENTA, etc). See {@link CisDetailRolePropertyEnum}. */
     public static final int CIS_DETAIL_TYPE = OperatorRoleDefs.METERING_PROPERTYID_BASE - 12; // -20212
+    /** Access to Outage Processing */
+    public static final int OUTAGE_PROCESSING = OperatorRoleDefs.METERING_PROPERTYID_BASE - 13; // -20213
+    /** Access to Tamper Flag Processing */
+    public static final int TAMPER_FLAG_PROCESSING = OperatorRoleDefs.METERING_PROPERTYID_BASE - 14; // -20214
     
 }

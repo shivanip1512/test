@@ -20,9 +20,9 @@ public class TamperFlagMonitorServiceImpl implements TamperFlagMonitorService {
 	public StoredDeviceGroup getTamperFlagGroup(String name) {
 
 		String tameprFlagGroupName = SystemGroupEnum.TAMPER_FLAG_PROCESSING.getFullPath() + name;
-		StoredDeviceGroup outageGroup = deviceGroupEditorDao.getStoredGroup(tameprFlagGroupName, true);
+		StoredDeviceGroup tamperFlagGroup = deviceGroupEditorDao.getStoredGroup(tameprFlagGroupName, true);
 		
-		return outageGroup;
+		return tamperFlagGroup;
 	}
 	
 	@Override

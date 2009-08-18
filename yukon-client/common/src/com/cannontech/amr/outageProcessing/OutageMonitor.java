@@ -2,6 +2,8 @@ package com.cannontech.amr.outageProcessing;
 
 import org.springframework.core.style.ToStringCreator;
 
+import com.cannontech.amr.MonitorEvaluatorStatus;
+
 public class OutageMonitor {
 
 	private Integer outageMonitorId;
@@ -9,7 +11,7 @@ public class OutageMonitor {
 	private String groupName;
 	private int timePeriod;
 	private int numberOfOutages;
-	private OutageMonitorEvaluatorStatus evaluatorStatus;
+	private MonitorEvaluatorStatus evaluatorStatus;
 	
 	
 	public Integer getOutageMonitorId() {
@@ -52,11 +54,11 @@ public class OutageMonitor {
 		this.numberOfOutages = numberOfOutages;
 	}
 
-	public OutageMonitorEvaluatorStatus getEvaluatorStatus() {
+	public MonitorEvaluatorStatus getEvaluatorStatus() {
 		return evaluatorStatus;
 	}
 	
-	public void setEvaluatorStatus(OutageMonitorEvaluatorStatus status) {
+	public void setEvaluatorStatus(MonitorEvaluatorStatus status) {
 		this.evaluatorStatus = status;
 	}
 	

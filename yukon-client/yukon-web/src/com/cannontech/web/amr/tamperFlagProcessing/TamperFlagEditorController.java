@@ -11,8 +11,8 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.amr.MonitorEvaluatorStatus;
 import com.cannontech.amr.tamperFlagProcessing.TamperFlagMonitor;
-import com.cannontech.amr.tamperFlagProcessing.TamperFlagMonitorEvaluatorStatus;
 import com.cannontech.amr.tamperFlagProcessing.dao.TamperFlagMonitorDao;
 import com.cannontech.amr.tamperFlagProcessing.service.TamperFlagMonitorService;
 import com.cannontech.clientutils.YukonLogManager;
@@ -158,7 +158,7 @@ public class TamperFlagEditorController {
         	// ENABLE MONITORING
         	if (isNewMonitor) {
         		
-        		tamperFlagMonitor.setEvaluatorStatus(TamperFlagMonitorEvaluatorStatus.ENABLED);
+        		tamperFlagMonitor.setEvaluatorStatus(MonitorEvaluatorStatus.ENABLED);
         	}
         	
         	// finish processor setup, save/update
@@ -204,11 +204,11 @@ public class TamperFlagEditorController {
 	        TamperFlagMonitor tamperFlagMonitor = tamperFlagMonitorDao.getById(tamperFlagMonitorId);
 	        
 	        // set status
-	        TamperFlagMonitorEvaluatorStatus newEvaluatorStatus;
+	        MonitorEvaluatorStatus newEvaluatorStatus;
 	        if (enable) {
-	        	newEvaluatorStatus = TamperFlagMonitorEvaluatorStatus.ENABLED;
+	        	newEvaluatorStatus = MonitorEvaluatorStatus.ENABLED;
 	        } else {
-	        	newEvaluatorStatus = TamperFlagMonitorEvaluatorStatus.DISABLED;
+	        	newEvaluatorStatus = MonitorEvaluatorStatus.DISABLED;
 	        }
 	        tamperFlagMonitor.setEvaluatorStatus(newEvaluatorStatus);
 	        

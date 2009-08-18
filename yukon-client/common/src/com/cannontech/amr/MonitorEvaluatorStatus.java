@@ -1,12 +1,12 @@
-package com.cannontech.amr.tamperFlagProcessing;
+package com.cannontech.amr;
 
-public enum TamperFlagMonitorEvaluatorStatus {
+public enum MonitorEvaluatorStatus {
 
 	ENABLED("Enabled"),
 	DISABLED("Disabled"),
 	;
 	
-	TamperFlagMonitorEvaluatorStatus(String description) {
+	MonitorEvaluatorStatus(String description) {
 		this.description = description;
 	}
 	

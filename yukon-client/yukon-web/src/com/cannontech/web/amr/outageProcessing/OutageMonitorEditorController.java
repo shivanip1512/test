@@ -11,8 +11,8 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
+import com.cannontech.amr.MonitorEvaluatorStatus;
 import com.cannontech.amr.outageProcessing.OutageMonitor;
-import com.cannontech.amr.outageProcessing.OutageMonitorEvaluatorStatus;
 import com.cannontech.amr.outageProcessing.dao.OutageMonitorDao;
 import com.cannontech.amr.outageProcessing.service.OutageMonitorService;
 import com.cannontech.amr.scheduledGroupRequestExecution.service.ScheduledGroupRequestExecutionService;
@@ -226,7 +226,7 @@ public class OutageMonitorEditorController extends MultiActionController {
         	// ENABLE MONITORING
         	if (isNewMonitor) {
         		
-        		outageMonitor.setEvaluatorStatus(OutageMonitorEvaluatorStatus.ENABLED);
+        		outageMonitor.setEvaluatorStatus(MonitorEvaluatorStatus.ENABLED);
         	}
         	
         	// finish processor setup, save/update
@@ -277,11 +277,11 @@ public class OutageMonitorEditorController extends MultiActionController {
 	        OutageMonitor outageMonitor = outageMonitorDao.getById(outageMonitorId);
 	        
 	        // set status
-	        OutageMonitorEvaluatorStatus newEvaluatorStatus;
+	        MonitorEvaluatorStatus newEvaluatorStatus;
 	        if (enable) {
-	        	newEvaluatorStatus = OutageMonitorEvaluatorStatus.ENABLED;
+	        	newEvaluatorStatus = MonitorEvaluatorStatus.ENABLED;
 	        } else {
-	        	newEvaluatorStatus = OutageMonitorEvaluatorStatus.DISABLED;
+	        	newEvaluatorStatus = MonitorEvaluatorStatus.DISABLED;
 	        }
 	        outageMonitor.setEvaluatorStatus(newEvaluatorStatus);
 	        

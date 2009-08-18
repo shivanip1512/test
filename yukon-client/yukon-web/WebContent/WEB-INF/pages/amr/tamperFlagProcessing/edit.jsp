@@ -217,4 +217,4 @@
 	<cti:msg var="tamperFlagMonitorsWidgetPopupInfoText" key="yukon.web.modules.amr.tamperFlagMonitorsWidget.popupInfo"/>
 	<tags:widget bean="tamperFlagMonitorsWidget" helpText="${tamperFlagMonitorsWidgetPopupInfoText}"/>
 
-</cti:standardPage>\ No newline at end of file
+</cti:standardPage>

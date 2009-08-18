@@ -16,8 +16,8 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.amr.MonitorEvaluatorStatus;
 import com.cannontech.amr.outageProcessing.OutageMonitor;
-import com.cannontech.amr.outageProcessing.OutageMonitorEvaluatorStatus;
 import com.cannontech.amr.outageProcessing.dao.OutageMonitorDao;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.OutageMonitorNotFoundException;
@@ -104,7 +104,7 @@ public class OutageMonitorDaoImpl implements OutageMonitorDao, InitializingBean 
             	outageMonitor.setGroupName(rs.getString("GroupName"));
             	outageMonitor.setTimePeriod(rs.getInt("TimePeriod"));
             	outageMonitor.setNumberOfOutages(rs.getInt("NumberOfOutages"));
-            	outageMonitor.setEvaluatorStatus(OutageMonitorEvaluatorStatus.valueOf(rs.getString("EvaluatorStatus")));
+            	outageMonitor.setEvaluatorStatus(MonitorEvaluatorStatus.valueOf(rs.getString("EvaluatorStatus")));
                 return outageMonitor;
             }
         };

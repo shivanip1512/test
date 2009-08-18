@@ -13,8 +13,11 @@ import com.cannontech.amr.outageProcessing.OutageMonitor;
 import com.cannontech.amr.outageProcessing.dao.OutageMonitorDao;
 import com.cannontech.amr.outageProcessing.service.OutageMonitorService;
 import com.cannontech.core.dao.OutageMonitorNotFoundException;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 
+@CheckRoleProperty(YukonRoleProperty.OUTAGE_PROCESSING)
 public class OutageMonitorsWidget extends WidgetControllerBase {
 
 	private OutageMonitorDao outageMonitorDao;

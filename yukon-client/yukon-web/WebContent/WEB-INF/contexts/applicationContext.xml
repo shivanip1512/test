@@ -496,11 +496,21 @@
     <bean id="outageMonitorsWidget" class="com.cannontech.web.widget.OutageMonitorsWidget">
     	<property name="title" value="Outage Monitors"/>
         <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="roleAndPropertiesChecker">
+	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                <constructor-arg value="OUTAGE_PROCESSING"/>
+            </bean>
+	   	</property>
     </bean>
     
     <bean id="tamperFlagMonitorsWidget" class="com.cannontech.web.widget.TamperFlagMonitorsWidget">
     	<property name="title" value="Tamper Flag Monitors"/>
         <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="roleAndPropertiesChecker">
+	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                <constructor-arg value="TAMPER_FLAG_PROCESSING"/>
+            </bean>
+	   	</property>
     </bean>
     
     <bean id="scheduledGroupRequstExecutionWidget" class="com.cannontech.web.widget.ScheduledGroupRequstExecutionWidget">
