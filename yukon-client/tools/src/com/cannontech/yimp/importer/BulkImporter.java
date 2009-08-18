@@ -647,7 +647,6 @@ public void runImport(List<ImportData> imps) {
 			finally {
 				try {
 					if( conn != null ) {
-						conn.commit();
 						conn.close();
 					}
 				}
@@ -670,7 +669,6 @@ public void runImport(List<ImportData> imps) {
 	finally {
 		try {
 			if( conn != null ) {
-				conn.commit();
 				conn.close();
 			}
 		}
@@ -697,7 +695,6 @@ public void runImport(List<ImportData> imps) {
 	finally {
 		try {
 			if( conn != null ) {
-				conn.commit();
 				conn.close();
 			}
 		}
