@@ -183,7 +183,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
                         }
                         
                         // insert CommandRequestExecutionResult record
-                    	makeCommandRequestExecutionResult(commandRequestExecution, command, status);
+                    	makeCommandRequestExecutionResult(this.commandRequestExecution, command, status);
                         
                         pendingUserMessageIds.remove(userMessageId);
                         
@@ -287,10 +287,6 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         	return commandsAreWritingLatch;
         }
         
-        public CommandRequestExecution getCommandRequestExecution() {
-			return this.commandRequestExecution;
-		}
-
         @Override
         public synchronized String toString() {
             ToStringCreator tsc = new ToStringCreator(this);
@@ -343,7 +339,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         final CommandRequestExecution commandRequestExecution = new CommandRequestExecution();
         commandRequestExecution.setStartTime(new Date());
         commandRequestExecution.setRequestCount(commands.size());
-        commandRequestExecution.setType(type);
+        commandRequestExecution.setCommandRequestExecutionType(type);
         commandRequestExecution.setUserId(user.getUserID());
         commandRequestExecution.setCommandRequestType(getCommandRequestType());
         

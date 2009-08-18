@@ -75,7 +75,7 @@
 	<c:forEach var="monitor" items="${monitors}">
 	
 		<c:set var="monitorId" value="${monitor.outageMonitorId}"/>
-		<c:set var="monitorName" value="${monitor.name}"/>
+		<c:set var="monitorName" value="${monitor.outageMonitorName}"/>
 
 		<c:set var="tdClass" value=""/>
 		<c:if test="${monitor.evaluatorStatus == 'DISABLED'}">

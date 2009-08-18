@@ -70,7 +70,7 @@
 			<cti:url var="outageMonitorEditUrl" value="/spring/amr/outageProcessing/monitorEditor/edit">
 				<cti:param name="outageMonitorId" value="${outageMonitor.outageMonitorId}"/>
 			</cti:url>
-			<a href="${outageMonitorEditUrl}">${outageMonitor.name}</a>
+			<a href="${outageMonitorEditUrl}">${outageMonitor.outageMonitorName}</a>
 		</tags:nameValue>
 		
 		<tags:nameValue name="${mainDetailViolationsText}">
@@ -111,17 +111,17 @@
 		<tags:nameValue name="${mainDetailOutagesGroupText}">
 			
 			<cti:url var="outageGroupUrl" value="/spring/group/editor/home">
-				<cti:param name="groupName">${outageGroupBase}${outageMonitor.name}</cti:param>
+				<cti:param name="groupName">${outageGroupBase}${outageMonitor.outageMonitorName}</cti:param>
 			</cti:url>
 			
-			<a href="${outageGroupUrl}">${outageGroupBase}${outageMonitor.name}</a>
+			<a href="${outageGroupUrl}">${outageGroupBase}${outageMonitor.outageMonitorName}</a>
 			<br>
 			<cti:formatDate var="startDate" type="DATE" value="${reportStartDate}"/>
 			<cti:link href="/analysis/Reports.jsp" key="yukon.web.modules.amr.outageProcessing.reportingLink">
 				<cti:param name="groupType" value="METERING"/>
 				<cti:param name="type" value="METER_OUTAGE_LOG"/>
 				<cti:param name="selectedReportFilter" value="GROUPS"/>
-				<cti:param name="selectedReportFilterValues" value="${outageGroupBase}${outageMonitor.name}"/>
+				<cti:param name="selectedReportFilterValues" value="${outageGroupBase}${outageMonitor.outageMonitorName}"/>
 				<cti:param name="startDate" value="${startDate}"/>
 			</cti:link>
 			
@@ -217,7 +217,7 @@
 	
 		<%-- outages group report --%>
 		<cti:url var="outagesGroupReportUrl" value="/spring/amr/reports/groupDevicesReport">
-			<cti:param name="groupName" value="${outageGroupBase}${outageMonitor.name}"/>
+			<cti:param name="groupName" value="${outageGroupBase}${outageMonitor.outageMonitorName}"/>
 			<cti:param name="def" value="groupDevicesDefinition"/>
 		</cti:url>
 		<a href="${outagesGroupReportUrl}">${outagesGroupReportText}</a>
@@ -233,7 +233,7 @@
 		<%-- other actions --%>
 		<cti:url var="otherActionsUrl" value="/spring/bulk/collectionActions">
 			<cti:param name="collectionType" value="group"/>
-			<cti:param name="group.name" value="${outageGroupBase}${outageMonitor.name}"/>
+			<cti:param name="group.name" value="${outageGroupBase}${outageMonitor.outageMonitorName}"/>
 		</cti:url>
 		<a href="${otherActionsUrl}">${otherActionsText}</a>
 	    	

@@ -117,7 +117,7 @@
 					
 		<tags:nameValueContainer>
 
-			<tags:nameValue name="${infoTypeText}" nameColumnWidth="160px">${cre.type.shortName}</tags:nameValue>
+			<tags:nameValue name="${infoTypeText}" nameColumnWidth="160px">${cre.commandRequestExecutionType.shortName}</tags:nameValue>
 			<tags:nameValue name="${infoStartTimeText}"><cti:formatDate type="DATEHM" value="${cre.startTime}" nullText="N/A"/></tags:nameValue>
 			<tags:nameValue name="${infoStopTimeText}">
 				

@@ -7,7 +7,7 @@ import com.cannontech.amr.MonitorEvaluatorStatus;
 public class OutageMonitor {
 
 	private Integer outageMonitorId;
-	private String name;
+	private String outageMonitorName;
 	private String groupName;
 	private int timePeriod;
 	private int numberOfOutages;
@@ -22,12 +22,12 @@ public class OutageMonitor {
 		this.outageMonitorId = outageMonitorId;
 	}
 
-	public String getName() {
-		return name;
+	public String getOutageMonitorName() {
+		return outageMonitorName;
 	}
 	
-	public void setName(String name) {
-		this.name = name;
+	public void setOutageMonitorName(String outageMonitorName) {
+		this.outageMonitorName = outageMonitorName;
 	}
 	
 	public String getGroupName() {
@@ -66,7 +66,7 @@ public class OutageMonitor {
     public String toString() {
         ToStringCreator tsc = new ToStringCreator(this);
         tsc.append("outageMonitorId", getOutageMonitorId());
-        tsc.append("name", getName());
+        tsc.append("outageMonitorName", getOutageMonitorName());
         tsc.append("groupName", getGroupName());
         tsc.append("timePeriod", getTimePeriod());
         tsc.append("numberOfOutages", getNumberOfOutages());

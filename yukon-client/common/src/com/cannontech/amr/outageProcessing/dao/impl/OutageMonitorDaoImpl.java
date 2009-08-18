@@ -43,7 +43,7 @@ public class OutageMonitorDaoImpl implements OutageMonitorDao, InitializingBean 
     	selectAllSql = "SELECT * FROM " + TABLE_NAME;
 
 		selectById = selectAllSql + " WHERE OutageMonitorId = ?";
-		selectCountByName = "SELECT COUNT(*) FROM " + TABLE_NAME + " WHERE Name = ?";
+		selectCountByName = "SELECT COUNT(*) FROM " + TABLE_NAME + " WHERE OutageMonitorName = ?";
 		
 		deleteById = "DELETE FROM " + TABLE_NAME + " WHERE OutageMonitorId = ?";
 		
@@ -100,7 +100,7 @@ public class OutageMonitorDaoImpl implements OutageMonitorDao, InitializingBean 
             	OutageMonitor outageMonitor = new OutageMonitor();
             	
             	outageMonitor.setOutageMonitorId(rs.getInt("OutageMonitorId"));
-            	outageMonitor.setName(rs.getString("Name"));
+            	outageMonitor.setOutageMonitorName(rs.getString("OutageMonitorName"));
             	outageMonitor.setGroupName(rs.getString("GroupName"));
             	outageMonitor.setTimePeriod(rs.getInt("TimePeriod"));
             	outageMonitor.setNumberOfOutages(rs.getInt("NumberOfOutages"));
@@ -114,7 +114,7 @@ public class OutageMonitorDaoImpl implements OutageMonitorDao, InitializingBean 
     private FieldMapper<OutageMonitor> outageMonitorFieldMapper = new FieldMapper<OutageMonitor>() {
         public void extractValues(MapSqlParameterSource p, OutageMonitor outageMonitor) {
             p.addValue("OutageMonitorId", outageMonitor.getOutageMonitorId());
-            p.addValue("Name", outageMonitor.getName());
+            p.addValue("OutageMonitorName", outageMonitor.getOutageMonitorName());
             p.addValue("GroupName", outageMonitor.getGroupName());
             p.addValue("TimePeriod", outageMonitor.getTimePeriod());
             p.addValue("NumberOfOutages", outageMonitor.getNumberOfOutages());

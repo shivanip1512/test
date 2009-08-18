@@ -31,7 +31,7 @@ public class OutageMonitorServiceImpl implements OutageMonitorService {
         
         // delete outage group
         try {
-        	String outageGroupName = SystemGroupEnum.OUTAGE_PROCESSING.getFullPath() + outageMonitor.getName();
+        	String outageGroupName = SystemGroupEnum.OUTAGE_PROCESSING.getFullPath() + outageMonitor.getOutageMonitorName();
 			StoredDeviceGroup outageGroup = deviceGroupEditorDao.getStoredGroup(outageGroupName, false);
 			deviceGroupEditorDao.removeGroup(outageGroup);
 		} catch (NotFoundException e) {

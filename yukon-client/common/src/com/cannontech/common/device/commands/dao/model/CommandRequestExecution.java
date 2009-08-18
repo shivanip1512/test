@@ -11,7 +11,7 @@ public class CommandRequestExecution {
 	private Date startTime;
 	private Date stopTime;
 	private int requestCount;
-	private CommandRequestExecutionType type;
+	private CommandRequestExecutionType commandRequestExecutionType;
 	private Integer userId;
 	private CommandRequestType commandRequestType;
 	
@@ -39,11 +39,11 @@ public class CommandRequestExecution {
 	public void setRequestCount(int requestCount) {
 		this.requestCount = requestCount;
 	}
-	public CommandRequestExecutionType getType() {
-		return type;
+	public CommandRequestExecutionType getCommandRequestExecutionType() {
+		return commandRequestExecutionType;
 	}
-	public void setType(CommandRequestExecutionType type) {
-		this.type = type;
+	public void setCommandRequestExecutionType(CommandRequestExecutionType commandRequestExecutionType) {
+		this.commandRequestExecutionType = commandRequestExecutionType;
 	}
 	public Integer getUserId() {
 		return userId;

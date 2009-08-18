@@ -68,7 +68,7 @@ public class OutageMonitorEditorController extends MultiActionController {
 	        	
 	        	// use entered values instead of existing value if present
 	        	if (name == null) {
-	        		name = outageMonitor.getName();
+	        		name = outageMonitor.getOutageMonitorName();
 	        	}
 	        	if (deviceGroupName == null) {
 	        		deviceGroupName = outageMonitor.getGroupName();
@@ -159,7 +159,7 @@ public class OutageMonitorEditorController extends MultiActionController {
         	editError = "Name may not contain slashes.";
         } else if (isNewMonitor && outageMonitorDao.processorExistsWithName(name)) { // new monitor, check name
         	editError = "Outage Monitor with name \"" + name + "\" already exists.";
-        } else if (!isNewMonitor && !outageMonitor.getName().equals(name) && outageMonitorDao.processorExistsWithName(name)) { // existing monitor, new name, check name
+        } else if (!isNewMonitor && !outageMonitor.getOutageMonitorName().equals(name) && outageMonitorDao.processorExistsWithName(name)) { // existing monitor, new name, check name
         	editError = "Outage Monitor with name \"" + name + "\" already exists.";
         } else if (StringUtils.isBlank(deviceGroupName)) {
         	editError = "Device group required.";
@@ -202,7 +202,7 @@ public class OutageMonitorEditorController extends MultiActionController {
         	} else {
         		
         		// outage group needs new name 
-        		String currentProcessorName = outageMonitor.getName();
+        		String currentProcessorName = outageMonitor.getOutageMonitorName();
         		if (!currentProcessorName.equals(name)) {
         			
         			String newOutageGroupName = SystemGroupEnum.OUTAGE_PROCESSING.getFullPath() + name;
@@ -230,7 +230,7 @@ public class OutageMonitorEditorController extends MultiActionController {
         	}
         	
         	// finish processor setup, save/update
-        	outageMonitor.setName(name);
+        	outageMonitor.setOutageMonitorName(name);
     		outageMonitor.setGroupName(deviceGroupName);
     		outageMonitor.setNumberOfOutages(numberOfOutages);
     		outageMonitor.setTimePeriod(timePeriod);

@@ -161,7 +161,7 @@ public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDa
             	commandRequestExecution.setStartTime(rs.getTimestamp("StartTime"));
             	commandRequestExecution.setStopTime(rs.getTimestamp("StopTime"));
             	commandRequestExecution.setRequestCount(rs.getInt("RequestCount"));
-            	commandRequestExecution.setType(CommandRequestExecutionType.valueOf(rs.getString("Type")));
+            	commandRequestExecution.setCommandRequestExecutionType(CommandRequestExecutionType.valueOf(rs.getString("CommandRequestExecutionType")));
             	Integer userId = SqlUtils.getNullableInt(rs, "UserId");
             	commandRequestExecution.setUserId(userId);
             	commandRequestExecution.setCommandRequestType(CommandRequestType.valueOf(rs.getString("CommandRequestType")));
@@ -178,7 +178,7 @@ public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDa
             p.addValue("StartTime", commandRequestExecution.getStartTime());
             p.addValue("StopTime", commandRequestExecution.getStopTime());
             p.addValue("RequestCount", commandRequestExecution.getRequestCount());
-            p.addValue("Type", commandRequestExecution.getType().name());
+            p.addValue("CommandRequestExecutionType", commandRequestExecution.getCommandRequestExecutionType().name());
             p.addValue("UserID", commandRequestExecution.getUserId());
             p.addValue("CommandRequestType", commandRequestExecution.getCommandRequestType().name());
             

@@ -109,7 +109,7 @@ public class OutageProcessingController extends MultiActionController implements
 		
 		try {
 			
-			final StoredDeviceGroup outageGroup = outageMonitorService.getOutageGroup(outageMonitor.getName());
+			final StoredDeviceGroup outageGroup = outageMonitorService.getOutageGroup(outageMonitor.getOutageMonitorName());
 			DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(outageGroup);
 			
 			// alert callback
@@ -127,7 +127,7 @@ public class OutageProcessingController extends MultiActionController implements
 	            	
 	            	// alert
 	                ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.web.modules.amr.outageProcessing.readOutagesLog.completionAlert");
-	                resolvableTemplate.addData("outageMonitorName", outageMonitor.getName());
+	                resolvableTemplate.addData("outageMonitorName", outageMonitor.getOutageMonitorName());
 	                resolvableTemplate.addData("outageMonitorId", outageMonitor.getOutageMonitorId());
 	                int successCount = result.getResultHolder().getResultStrings().size();
 	                int total = (int)result.getOriginalDeviceCollectionCopy().getDeviceCount();
@@ -167,7 +167,7 @@ public class OutageProcessingController extends MultiActionController implements
 		int outageMonitorId = ServletRequestUtils.getRequiredIntParameter(request, "outageMonitorId");
 		OutageMonitor outageMonitor = outageMonitorDao.getById(outageMonitorId);
 		
-		StoredDeviceGroup outageGroup = outageMonitorService.getOutageGroup(outageMonitor.getName());
+		StoredDeviceGroup outageGroup = outageMonitorService.getOutageGroup(outageMonitor.getOutageMonitorName());
 		
 		List<? extends YukonDevice> deviceList = groupMetersDao.getChildMetersByGroup(outageGroup);
         deviceGroupMemberEditorDao.removeDevices(outageGroup, deviceList);

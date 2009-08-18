@@ -112,9 +112,9 @@
 					onclick="forwardToCreDetail(this, ${cre.id})" 
 					onmouseover="activeResultsTable_highLightRow(this)" 
 					onmouseout="activeResultsTable_unHighLightRow(this)"
-					title="${cre.type.description} ID: ${cre.id}">
+					title="${cre.commandRequestExecutionType.description} ID: ${cre.id}">
 					
-					<td>${cre.type.shortName}</td>
+					<td>${cre.commandRequestExecutionType.shortName}</td>
 					<td><cti:formatDate type="DATEHM" value="${cre.startTime}"/></td>
 					<td><cti:formatDate type="DATEHM" value="${cre.stopTime}" nullText="In Progress"/></td>
 					<td><cti:userName userId="${cre.userId}"/></td>
