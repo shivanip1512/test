@@ -1,5 +1,9 @@
 package com.cannontech.yc.gui;
 
+import java.awt.Dimension;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
+
 /**
  * Insert the type's description here.
  * Creation date: (4/11/2002 3:51:40 PM)
@@ -19,9 +23,6 @@ public class AdvancedOptionsPanel extends com.cannontech.common.gui.util.DataInp
 	private javax.swing.JCheckBox ivjQueueCommandCheckBox = null;
 	private javax.swing.JCheckBox ivjShowMessageLogCheckBox = null;
 	private java.awt.Panel ivjAdvancedOptionsPanel = null;
-	private javax.swing.JButton ivjBrowseButton = null;
-	private javax.swing.JLabel ivjCommandFileDirectoryLabel = null;
-	private javax.swing.JTextField ivjCommandFileDirectoryTextField = null;
 
 	private int CANCEL = 0;
 	private int OK = 1;
@@ -49,10 +50,7 @@ public class AdvancedOptionsPanel extends com.cannontech.common.gui.util.DataInp
 	 */
 	public void actionPerformed(java.awt.event.ActionEvent event)
 	{
-		if( event.getSource() == getBrowseButton() )
-			getCommandFileDirectoryTextField().setText( browse() );
-				
-		else if( event.getSource() == getOkButton())
+		if( event.getSource() == getOkButton())
 		{
 			setButtonPushed(OK);
 			exit();
@@ -63,24 +61,6 @@ public class AdvancedOptionsPanel extends com.cannontech.common.gui.util.DataInp
 			exit();
 		}
 	
-	}
-	/**
-	 * Comment
-	 */
-	public String browse()
-	{
-		javax.swing.JFileChooser chooser = new javax.swing.JFileChooser();
-		
-		chooser.setCurrentDirectory(new java.io.File(ycDefaults.getCommandFileDirectory()));
-		chooser.setFileSelectionMode(javax.swing.JFileChooser.DIRECTORIES_ONLY);
-		
-		int returnVal = chooser.showDialog(this, "Folder");
-		
-		if( returnVal == javax.swing.JFileChooser.APPROVE_OPTION )
-		{
-			return chooser.getCurrentDirectory().toString();
-		}
-		return ycDefaults.getCommandFileDirectory();
 	}
 	/**
 	 * Insert the method's description here.
@@ -179,26 +159,7 @@ public class AdvancedOptionsPanel extends com.cannontech.common.gui.util.DataInp
 				constraintsShowMessageLogCheckBox.weighty = 1.0;
 				constraintsShowMessageLogCheckBox.insets = new java.awt.Insets(5, 10, 5, 10);
 				getAdvancedPanel().add(getShowMessageLogCheckBox(), constraintsShowMessageLogCheckBox);
-	
-				java.awt.GridBagConstraints constraintsCommandFileDirectoryTextField = new java.awt.GridBagConstraints();
-				constraintsCommandFileDirectoryTextField.gridx = 0; constraintsCommandFileDirectoryTextField.gridy = 5;
-				constraintsCommandFileDirectoryTextField.gridwidth = 2;
-				constraintsCommandFileDirectoryTextField.fill = java.awt.GridBagConstraints.HORIZONTAL;
-				constraintsCommandFileDirectoryTextField.anchor = java.awt.GridBagConstraints.WEST;
-				constraintsCommandFileDirectoryTextField.weightx = 1.0;
-				constraintsCommandFileDirectoryTextField.insets = new java.awt.Insets(0, 5, 10, 5);
-				getAdvancedPanel().add(getCommandFileDirectoryTextField(), constraintsCommandFileDirectoryTextField);
-	
-				java.awt.GridBagConstraints constraintsCommandFileDirectoryLabel = new java.awt.GridBagConstraints();
-				constraintsCommandFileDirectoryLabel.gridx = 0; constraintsCommandFileDirectoryLabel.gridy = 4;
-				constraintsCommandFileDirectoryLabel.anchor = java.awt.GridBagConstraints.WEST;
-				constraintsCommandFileDirectoryLabel.insets = new java.awt.Insets(5, 5, 0, 5);
-				getAdvancedPanel().add(getCommandFileDirectoryLabel(), constraintsCommandFileDirectoryLabel);
-	
-				java.awt.GridBagConstraints constraintsBrowseButton = new java.awt.GridBagConstraints();
-				constraintsBrowseButton.gridx = 2; constraintsBrowseButton.gridy = 5;
-				constraintsBrowseButton.insets = new java.awt.Insets(0, 5, 10, 5);
-				getAdvancedPanel().add(getBrowseButton(), constraintsBrowseButton);
+				
 				// user code begin {1}
 				// user code end
 			} catch (java.lang.Throwable ivjExc) {
@@ -210,33 +171,6 @@ public class AdvancedOptionsPanel extends com.cannontech.common.gui.util.DataInp
 		return ivjAdvancedPanel;
 	}
 	
-	/**
-	 * Return the BrowseButton property value.
-	 * @return javax.swing.JButton
-	 */
-	/* WARNING: THIS METHOD WILL BE REGENERATED. */
-	private javax.swing.JButton getBrowseButton() {
-		if (ivjBrowseButton == null) {
-			try {
-				ivjBrowseButton = new javax.swing.JButton();
-				ivjBrowseButton.setName("BrowseButton");
-				ivjBrowseButton.setFont(new java.awt.Font("Arial", 1, 12));
-				ivjBrowseButton.setText("Browse");
-				// user code begin {1}
-				ivjBrowseButton.addActionListener(this);
-	
-				// Not in use currently.  Can't figure out a way to select 
-				// only the directory without specifying a file name.
-				ivjBrowseButton.setVisible(false);
-				// user code end
-			} catch (java.lang.Throwable ivjExc) {
-				// user code begin {2}
-				// user code end
-				handleException(ivjExc);
-			}
-		}
-		return ivjBrowseButton;
-	}
 	/**
 	 * 
 	 */
@@ -302,48 +236,6 @@ public class AdvancedOptionsPanel extends com.cannontech.common.gui.util.DataInp
 			}
 		}
 		return ivjCancelButton;
-	}
-	/**
-	 * Return the CommandFileDirectoryLabel property value.
-	 * @return javax.swing.JLabel
-	 */
-	/* WARNING: THIS METHOD WILL BE REGENERATED. */
-	private javax.swing.JLabel getCommandFileDirectoryLabel() {
-		if (ivjCommandFileDirectoryLabel == null) {
-			try {
-				ivjCommandFileDirectoryLabel = new javax.swing.JLabel();
-				ivjCommandFileDirectoryLabel.setName("CommandFileDirectoryLabel");
-				ivjCommandFileDirectoryLabel.setFont(new java.awt.Font("dialog", 0, 12));
-				ivjCommandFileDirectoryLabel.setText("Command Files Directory:");
-				// user code begin {1}
-				// user code end
-			} catch (java.lang.Throwable ivjExc) {
-				// user code begin {2}
-				// user code end
-				handleException(ivjExc);
-			}
-		}
-		return ivjCommandFileDirectoryLabel;
-	}
-	/**
-	 * Return the CommandFileDirectoryTextField property value.
-	 * @return javax.swing.JTextField
-	 */
-	/* WARNING: THIS METHOD WILL BE REGENERATED. */
-	public javax.swing.JTextField getCommandFileDirectoryTextField() {
-		if (ivjCommandFileDirectoryTextField == null) {
-			try {
-				ivjCommandFileDirectoryTextField = new javax.swing.JTextField();
-				ivjCommandFileDirectoryTextField.setName("CommandFileDirectoryTextField");
-				// user code begin {1}
-				// user code end
-			} catch (java.lang.Throwable ivjExc) {
-				// user code begin {2}
-				// user code end
-				handleException(ivjExc);
-			}
-		}
-		return ivjCommandFileDirectoryTextField;
 	}
 	/**
 	 * Return the JLabel1 property value.
@@ -575,8 +467,7 @@ public class AdvancedOptionsPanel extends com.cannontech.common.gui.util.DataInp
 			(new Integer((String)getCommandPriorityTextField().getText())).intValue(),
 			getQueueCommandCheckBox().isSelected(),
 			getShowMessageLogCheckBox().isSelected(),
-			getConfirmCommandCheckBox().isSelected(),
-			getCommandFileDirectoryTextField().getText().toString());
+			getConfirmCommandCheckBox().isSelected());
 
 		ycDefaults.writeDefaultsFile();
 		return ycDefaults;
@@ -596,8 +487,6 @@ public class AdvancedOptionsPanel extends com.cannontech.common.gui.util.DataInp
 		getQueueCommandCheckBox().setSelected(ycDefaults.getQueueExecuteCommand());
 		getShowMessageLogCheckBox().setSelected(ycDefaults.getShowMessageLog());
 		getConfirmCommandCheckBox().setSelected(ycDefaults.getConfirmCommandExecute());
-		getCommandFileDirectoryTextField().setText(ycDefaults.getCommandFileDirectory());
-			
 	}
 	/**
 	 * Show AdvancedOptionsPanel with a JDialog to control the closing time.
@@ -612,8 +501,18 @@ public class AdvancedOptionsPanel extends com.cannontech.common.gui.util.DataInp
 		dialog.setContentPane(getAdvancedOptionsPanel());
 		dialog.setModal(true);	
 		dialog.getContentPane().add(this);
-		dialog.setSize(379, 283);
+		dialog.setSize(379, 220);
 		
+		//get the location of the center of the screen
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        Rectangle defaultSize = new Rectangle();
+        float percent = .25f;
+        defaultSize.setSize( (int) (screenSize.width * percent), (int)( screenSize.height * percent) );
+        //set the location of the frame to the center of the screen
+        dialog.setLocation( (screenSize.width - defaultSize.getSize().width) / 2,
+                       (screenSize.height - defaultSize.getSize().height) / 2);
+		
+        
 		// Add a keyListener to the Escape key.
 		javax.swing.KeyStroke ks = javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_ESCAPE, 0, true);
 		dialog.getRootPane().getInputMap().put(ks, "CloseAction");

@@ -16,14 +16,12 @@ public class YCDefaults
 	private final String QUEUE_COMMAND_KEY = "QUEUE";
 	private final String SHOW_MESSAGE_LOG_KEY = "SHOWLOG";
 	private final String CONFIRM_COMMAND_KEY = "CONFIRM";
-	private final String COMMAND_FILE_DIR_KEY = "FILEDIR";
 	private final String OUTPUT_DIVIDER_LOC_KEY = "DIVIDER";
 		
 	private int commandPriority = 14;
 	private boolean queueExecuteCommand = false;
 	private boolean showMessageLog = true;
 	private boolean confirmCommandExecute = false;
-	private String commandFileDirectory = null;
 	private int outputDividerLoc = 190;
 	
 //	private final String VALID_TEXT = "Valid Text";
@@ -48,36 +46,25 @@ public class YCDefaults
 	/**
 	 * YCDefaults constructor comment.
 	 */
-	public YCDefaults(int priority, boolean queueCommand, boolean showLog, boolean confirmExecute, String commandFileDir) 
+	public YCDefaults(int priority, boolean queueCommand, boolean showLog, boolean confirmExecute) 
 	{
 		super();
 		setCommandPriority(priority);
 		setQueueExecuteCommand(queueCommand);
 		setShowMessageLog(showLog);
 		setConfirmCommandExecute(confirmExecute);
-		setCommandFileDirectory(commandFileDir);
 	}
 	/**
 	 * YCDefaults constructor comment.
 	 */
-	public YCDefaults(int priority, boolean queueCommand, boolean showLog, boolean confirmExecute, String commandFileDir, int divLoc) 
+	public YCDefaults(int priority, boolean queueCommand, boolean showLog, boolean confirmExecute, int divLoc) 
 	{
 		super();
 		setCommandPriority(priority);
 		setQueueExecuteCommand(queueCommand);
 		setShowMessageLog(showLog);
 		setConfirmCommandExecute(confirmExecute);
-		setCommandFileDirectory(commandFileDir);
 		setOutputDividerLoc(divLoc);
-	}
-	public String getCommandFileDirectory()
-	{
-		if( commandFileDirectory == null)
-		{
-			String dirPath = com.cannontech.common.util.CtiUtilities.getCommandsDirPath();
-			commandFileDirectory = com.cannontech.common.util.CtiUtilities.getCanonicalFile(dirPath); 
-		}
-		return commandFileDirectory;
 	}
 	public int getCommandPriority()
 	{
@@ -131,10 +118,6 @@ public class YCDefaults
 				{
 					setConfirmCommandExecute(Boolean.valueOf(values[i].toString()).booleanValue());
 				}
-				else if( keys[i].equalsIgnoreCase(COMMAND_FILE_DIR_KEY))
-				{
-					setCommandFileDirectory(values[i].toString());
-				}
 				else if( keys[i].equalsIgnoreCase(OUTPUT_DIVIDER_LOC_KEY))
 				{
 					setOutputDividerLoc(Integer.parseInt(values[i].toString()));
@@ -158,15 +141,9 @@ public class YCDefaults
 			case 3 :
 				return CONFIRM_COMMAND_KEY;
 			case 4 :
-				return COMMAND_FILE_DIR_KEY;
-			case 5 :
 				return OUTPUT_DIVIDER_LOC_KEY;
 		}
 		return key;
-	}
-	private void setCommandFileDirectory(String newDirectory)
-	{
-		commandFileDirectory = newDirectory;
 	}
 	private void  setCommandPriority(int newPriority)
 	{
@@ -242,9 +219,6 @@ public class YCDefaults
 
 		keys.add(CONFIRM_COMMAND_KEY); 
 		values.add(String.valueOf(getConfirmCommandExecute()));
-
-		keys.add(COMMAND_FILE_DIR_KEY); 
-		values.add(getCommandFileDirectory());
 
 		keys.add(OUTPUT_DIVIDER_LOC_KEY);
 		values.add(String.valueOf(getOutputDividerLoc()));
