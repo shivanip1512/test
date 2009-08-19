@@ -631,6 +631,84 @@ WHERE NOT RolePropertyId IN (SELECT RolePropertyId
 DROP TABLE YukonRolePropertyTemp;
 /* End YUK-7176 */
 
+/* Start YUK-7681 */
+CREATE TABLE CommandRequestExec (
+   CommandRequestExecId NUMERIC              NOT NULL,
+   StartTime            datetime             NOT NULL,
+   StopTime             datetime             NULL,
+   RequestCount         NUMERIC              NULL,
+   CommandRequestExecType VARCHAR(255)         NOT NULL,
+   UserName             NUMERIC              NULL,
+   CommandRequestType   VARCHAR(100)         NOT NULL,
+   CONSTRAINT PK_CommandRequestExec PRIMARY KEY (CommandRequestExecId)
+);
+GO
+
+CREATE TABLE CommandRequestExecResult (
+   CommandRequestExecResultId NUMERIC              NOT NULL,
+   CommandRequestExecId NUMERIC              NULL,
+   Command              VARCHAR(255)         NOT NULL,
+   ErrorCode            NUMERIC              NULL,
+   CompleteTime         datetime             NULL,
+   DeviceId             NUMERIC              NULL,
+   RouteId              NUMERIC              NULL,
+   CONSTRAINT PK_CommandRequestExecResult PRIMARY KEY (CommandRequestExecResultId)
+);
+GO
+
+CREATE TABLE OutageMonitor (
+   OutageMonitorId      NUMERIC              NOT NULL,
+   OutageMonitorName    VARCHAR(255)         NOT NULL,
+   GroupName            VARCHAR(255)         NOT NULL,
+   TimePeriod           NUMERIC              NOT NULL,
+   NumberOfOutages      NUMERIC              NOT NULL,
+   EvaluatorStatus      VARCHAR(255)         NOT NULL,
+   CONSTRAINT PK_OutageMonitor PRIMARY KEY (OutageMonitorId)
+);
+GO
+
+CREATE UNIQUE INDEX INDX_OutMonName_UNQ ON OutageMonitor (
+   OutageMonitorName ASC
+);
+GO
+
+CREATE TABLE ScheduledGrpCommandRequest (
+   CommandRequestExecId NUMERIC              NOT NULL,
+   JobId                INT                  NOT NULL,
+   CONSTRAINT PK_ScheduledGrpCommandRequest PRIMARY KEY (CommandRequestExecId)
+);
+GO
+
+ALTER TABLE CommandRequestExecResult
+   ADD CONSTRAINT FK_ComReqExecResult_ComReqExec foreign key (CommandRequestExecId)
+      REFERENCES CommandRequestExec (CommandRequestExecId)
+         ON DELETE CASCADE;
+GO
+
+ALTER TABLE CommandRequestExecResult
+   ADD CONSTRAINT FK_ComReqExecResult_Device foreign key (DeviceId)
+      REFERENCES DEVICE (DeviceId)
+         ON DELETE SET NULL;
+GO
+
+ALTER TABLE CommandRequestExecResult
+   ADD CONSTRAINT FK_ComReqExecResult_Route foreign key (RouteId)
+      REFERENCES Route (RouteId)
+         ON DELETE SET NULL;
+GO
+
+ALTER TABLE ScheduledGrpCommandRequest
+   ADD CONSTRAINT FK_SchGrpComReq_ComReqExec foreign key (CommandRequestExecId)
+      REFERENCES CommandRequestExec (CommandRequestExecId)
+         ON DELETE CASCADE;
+GO
+
+ALTER TABLE ScheduledGrpCommandRequest
+   ADD CONSTRAINT FK_SchGrpComReq_Job foreign key (JobId)
+      REFERENCES Job (JobId);
+GO
+/* End YUK-7681 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

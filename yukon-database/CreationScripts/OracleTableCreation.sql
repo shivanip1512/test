@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/17/2009 4:56:27 PM                         */
+/* Created on:     8/19/2009 5:35:57 PM                         */
 /*==============================================================*/
 
 
@@ -201,6 +201,8 @@ drop index INDX_StratName_SubName_UNQ;
 
 drop index Indx_NOTIFGRPNme;
 
+drop index INDX_OutMonName_UNQ;
+
 drop index Indx_PAOExclus;
 
 drop index Indx_SchedName;
@@ -392,6 +394,10 @@ drop table CommPort cascade constraints;
 drop table Command cascade constraints;
 
 drop table CommandGroup cascade constraints;
+
+drop table CommandRequestExec cascade constraints;
+
+drop table CommandRequestExecResult cascade constraints;
 
 drop table Contact cascade constraints;
 
@@ -799,6 +805,8 @@ drop table OptOutEventLog cascade constraints;
 
 drop table OptOutTemporaryOverride cascade constraints;
 
+drop table OutageMonitor cascade constraints;
+
 drop table PAOExclusion cascade constraints;
 
 drop table PAOSchedule cascade constraints;
@@ -858,6 +866,8 @@ drop table SYSTEMLOG cascade constraints;
 drop table ScheduleShipmentMapping cascade constraints;
 
 drop table ScheduleTimePeriod cascade constraints;
+
+drop table ScheduledGrpCommandRequest cascade constraints;
 
 drop table SeasonSchedule cascade constraints;
 
@@ -2395,6 +2405,34 @@ insert into CommandGroup values (-1, 'Default Commands');
 /*==============================================================*/
 create unique index AK_KEY_CmdGrp_Name on CommandGroup (
    CommandGroupName ASC
+);
+
+/*==============================================================*/
+/* Table: CommandRequestExec                                    */
+/*==============================================================*/
+create table CommandRequestExec  (
+   CommandRequestExecId NUMBER                          not null,
+   StartTime            DATE                            not null,
+   StopTime             DATE,
+   RequestCount         NUMBER,
+   CommandRequestExecType VARCHAR2(255)                   not null,
+   UserName             NUMBER,
+   CommandRequestType   VARCHAR2(100)                   not null,
+   constraint PK_CommandRequestExec primary key (CommandRequestExecId)
+);
+
+/*==============================================================*/
+/* Table: CommandRequestExecResult                              */
+/*==============================================================*/
+create table CommandRequestExecResult  (
+   CommandRequestExecResultId NUMBER                          not null,
+   CommandRequestExecId NUMBER,
+   Command              VARCHAR2(255)                   not null,
+   ErrorCode            NUMBER,
+   CompleteTime         DATE,
+   DeviceId             NUMBER,
+   RouteId              NUMBER,
+   constraint PK_CommandRequestExecResult primary key (CommandRequestExecResultId)
 );
 
 /*==============================================================*/
@@ -6814,6 +6852,26 @@ create table OptOutTemporaryOverride  (
 );
 
 /*==============================================================*/
+/* Table: OutageMonitor                                         */
+/*==============================================================*/
+create table OutageMonitor  (
+   OutageMonitorId      NUMBER                          not null,
+   OutageMonitorName    VARCHAR2(255)                   not null,
+   GroupName            VARCHAR2(255)                   not null,
+   TimePeriod           NUMBER                          not null,
+   NumberOfOutages      NUMBER                          not null,
+   EvaluatorStatus      VARCHAR2(255)                   not null,
+   constraint PK_OutageMonitor primary key (OutageMonitorId)
+);
+
+/*==============================================================*/
+/* Index: INDX_OutMonName_UNQ                                   */
+/*==============================================================*/
+create unique index INDX_OutMonName_UNQ on OutageMonitor (
+   OutageMonitorName ASC
+);
+
+/*==============================================================*/
 /* Table: PAOExclusion                                          */
 /*==============================================================*/
 create table PAOExclusion  (
@@ -7457,6 +7515,15 @@ create table ScheduleTimePeriod  (
    Quantity             NUMBER                          not null,
    PredictedShipDate    DATE                            not null,
    constraint PK_SCHEDULETIMEPERIOD primary key (TimePeriodID)
+);
+
+/*==============================================================*/
+/* Table: ScheduledGrpCommandRequest                            */
+/*==============================================================*/
+create table ScheduledGrpCommandRequest  (
+   CommandRequestExecId NUMBER                          not null,
+   JobId                INTEGER                         not null,
+   constraint PK_ScheduledGrpCommandRequest primary key (CommandRequestExecId)
 );
 
 /*==============================================================*/
@@ -10725,6 +10792,21 @@ alter table CommPort
    add constraint FK_COMMPORT_REF_COMPO_YUKONPAO foreign key (PORTID)
       references YukonPAObject (PAObjectID);
 
+alter table CommandRequestExecResult
+   add constraint FK_ComReqExecResult_ComReqExec foreign key (CommandRequestExecId)
+      references CommandRequestExec (CommandRequestExecId)
+      on delete cascade;
+
+alter table CommandRequestExecResult
+   add constraint FK_ComReqExecResult_Device foreign key (DeviceId)
+      references DEVICE (DEVICEID)
+      on delete set null;
+
+alter table CommandRequestExecResult
+   add constraint FK_ComReqExecResult_Route foreign key (RouteId)
+      references Route (RouteID)
+      on delete set null;
+
 alter table Contact
    add constraint FK_CONTACT_REF_CNT_A_ADDRESS foreign key (AddressID)
       references Address (AddressID);
@@ -12105,6 +12187,15 @@ alter table ScheduleShipmentMapping
 alter table ScheduleTimePeriod
    add constraint FK_SCHDTMPRD_REF_DS foreign key (ScheduleID)
       references DeliverySchedule (ScheduleID);
+
+alter table ScheduledGrpCommandRequest
+   add constraint FK_SchGrpComReq_ComReqExec foreign key (CommandRequestExecId)
+      references CommandRequestExec (CommandRequestExecId)
+      on delete cascade;
+
+alter table ScheduledGrpCommandRequest
+   add constraint FK_SchGrpComReq_Job foreign key (JobId)
+      references JOB (JobID);
 
 alter table ServiceCompany
    add constraint FK_CstAdd_SrC foreign key (AddressID)
