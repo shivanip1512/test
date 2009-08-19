@@ -54,7 +54,7 @@
 			
 				<select id="configuration" name="configuration">
 					<c:forEach var="config" items="${existingConfigs}">
-						<option value="${config.id}">${config.name}</option>	
+						<option value="${config.id}">${fn:escapeXml(config.name)}</option>	
 					</c:forEach>
 				</select>
 				

@@ -1,5 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <cti:url var="routeUrl"
     value="/spring/multispeak/setup/routemapping/route" />
 
@@ -47,7 +48,7 @@ Assigned Routes
                     style="width:185px">
                     <c:forEach var="avroute" items="${avlist}">
                         <option value="${avroute.id}">
-                            ${avroute.name}
+                            ${fn:escapeXml(avroute.name)}
                         </option>
                     </c:forEach>
                 </select>

@@ -1,6 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
@@ -98,7 +98,7 @@
 		
 	</script>
 	
-	<h2>Device Configuration: ${configuration.name}</h2>
+	<h2>Device Configuration: <spring:escapeBody htmlEscape="true">${configuration.name}</spring:escapeBody></h2>
 	
 	<c:if test="${not empty param.errorMessage}">
 		<div style="color: red;">

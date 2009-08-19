@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -91,7 +92,7 @@ public class DeviceConfigurationFormController extends InputFormController {
 
         ModelAndView mav = new ModelAndView(getSuccessView());
 
-        mav.addObject("message", "Successfully saved: " + config.getName());
+        mav.addObject("message", "Successfully saved: " + StringEscapeUtils.escapeHtml(config.getName()));
 
         return mav;
     }

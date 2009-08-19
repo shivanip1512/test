@@ -1,5 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <cti:url var="routeUrl"
     value="/spring/multispeak/setup/routemapping/route" />
 <cti:url var="subUrl"
@@ -13,7 +14,7 @@ Substation Name
             onclick='javascript:SubstationToRouteMappings_SelectListener("${routeUrl}")'>
             <c:forEach var="substation" items="${list}">
                 <option value="${substation.id}">
-                    ${substation.name}
+                    ${fn:escapeXml(substation.name)}
                 </option>
             </c:forEach>
         </select>
