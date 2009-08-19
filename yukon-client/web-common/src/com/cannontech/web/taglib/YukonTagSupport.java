@@ -6,6 +6,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspContext;
 import javax.servlet.jsp.PageContext;
+import javax.servlet.jsp.tagext.JspTag;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 
 import org.apache.log4j.Level;
@@ -44,6 +45,11 @@ public class YukonTagSupport extends SimpleTagSupport {
     protected YukonUserContext getUserContext() {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(getJspContext());
         return userContext;
+    }
+    
+    protected <T> T getParent(Class<T> clazz) {
+        JspTag findAncestorWithClass = findAncestorWithClass(this, clazz);
+        return clazz.cast(findAncestorWithClass);
     }
     
     protected HttpServletRequest getRequest() {
