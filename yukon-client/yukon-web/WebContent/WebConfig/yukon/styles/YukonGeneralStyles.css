@@ -609,6 +609,14 @@ tr.lightRedBackground {
     color:#777777;
 }
 
+table.collectionActionAlignment > tbody > tr > td {
+    vertical-align: top;
+} 
+
+table.collectionActionCellPadding td {
+    padding-right: 30px;
+}
+
 div.progressBarBorder {
     height:12px; width:100px; border:1px solid black; padding:0px; background-color:#CCCCCC;
 }

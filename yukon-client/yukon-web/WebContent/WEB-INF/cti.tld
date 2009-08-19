@@ -1467,6 +1467,59 @@
         <rtexprvalue>true</rtexprvalue>
     </attribute>
   </tag>
+  
+  <tag>
+    <name>dataGrid</name>
+    <tag-class>com.cannontech.web.taglib.DataGridTag</tag-class>
+    <body-content>scriptless</body-content>
+    <description>
+        Organizes content into columns using cti:dataGridCell tags.
+    </description>
+    <attribute>
+        <name>cols</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>tableClasses</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>List of css classes for the table element.</description>
+    </attribute>
+    <attribute>
+        <name>tableStyle</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>Becomes the table element's style attribute.</description>
+    </attribute>
+    <attribute>
+        <name>tableAlign</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>Becomes the table element's align attribute.</description>
+    </attribute>
+    <attribute>
+        <name>rowStyle</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>Becomes the tr element's sytle attribute.</description>
+    </attribute>
+    <attribute>
+        <name>cellStyle</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>Becomes the td element's sytle attribute.</description>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>dataGridCell</name>
+    <tag-class>com.cannontech.web.taglib.DataGridCellTag</tag-class>
+    <body-content>scriptless</body-content>
+    <description>
+        Container for a column cell inside a cti:dataGrid tag.
+    </description>
+  </tag>
  
   <tag>
     <name>paoDetailUrl</name>

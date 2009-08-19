@@ -108,6 +108,8 @@ public class BulkController extends BulkControllerBase {
     public ModelAndView collectionActions(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 
         ModelAndView mav;
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        LiteYukonUser user = userContext.getYukonUser();
         
         try {
         
@@ -119,6 +121,16 @@ public class BulkController extends BulkControllerBase {
             } else {
                 mav = new ModelAndView("collectionActions.jsp");
                 this.addDeviceCollectionToModel(mav, request);
+                boolean showGroupManagement = rolePropertyDao.checkProperty(YukonRoleProperty.DEVICE_GROUP_MODIFY, user);
+                boolean showAddRemovePoints = rolePropertyDao.checkProperty(YukonRoleProperty.ADD_REMOVE_POINTS, user);
+                boolean hasMassDelete = rolePropertyDao.checkProperty(YukonRoleProperty.MASS_DELETE, user);
+                boolean hasMassChange = rolePropertyDao.checkProperty(YukonRoleProperty.MASS_CHANGE, user);
+                boolean showEditing = hasMassChange || hasMassDelete;
+                
+                
+                mav.addObject("showGroupManagement", showGroupManagement);
+                mav.addObject("showEditing", showEditing);
+                mav.addObject("showAddRemovePoints", showAddRemovePoints);
             }
         } catch (ObjectMappingException e) {
             
