@@ -12,9 +12,24 @@ import com.cannontech.yukon.INotifConnection;
 public class NotificationStatusController {
     private INotifConnection notifClientConnection;
 
+    /**
+     * This method should be invoked after the call was dialed.
+     * @param callToken
+     * @param success
+     */
     @RequestMapping(method = RequestMethod.POST)
     public void callComplete(String callToken, boolean success) {
         notifClientConnection.sendConfirmation(callToken, success);
+    }
+    
+    /**
+     * This method should be invoked if the call failed to dial.
+     * @param callToken
+     * @param success
+     */
+    @RequestMapping(method = RequestMethod.POST)
+    public void callFailure(String callToken, boolean transientError) {
+        notifClientConnection.sendFailure(callToken, transientError);
     }
     
     @Autowired
