@@ -669,7 +669,7 @@ CREATE TABLE CommandRequestExec  (
    StopTime             DATE,
    RequestCount         NUMBER,
    CommandRequestExecType VARCHAR2(255)                   NOT NULL,
-   UserName             NUMBER,
+   UserName             VARCHAR2(64),
    CommandRequestType   VARCHAR2(100)                   NOT NULL,
    CONSTRAINT PK_CommandRequestExec PRIMARY KEY (CommandRequestExecId)
 );
