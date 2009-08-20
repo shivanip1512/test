@@ -167,6 +167,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL getIntegrateFlag() const;
     LONG getIntegratePeriod() const;
     BOOL getLikeDayFallBack() const;
+    const string& getEndDaySettings() const;
     DOUBLE getIVControlTot() const;
     LONG getIVCount() const;
     DOUBLE getIWControlTot() const;
@@ -293,6 +294,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setIntegrateFlag(BOOL flag);
     CtiCCSubstationBus& setIntegratePeriod(LONG period);
     CtiCCSubstationBus& setLikeDayFallBack(BOOL flag);
+    CtiCCSubstationBus& setEndDaySettings(const string& settings);
     CtiCCSubstationBus& setIVControlTot(DOUBLE value);
     CtiCCSubstationBus& setIVCount(LONG value);
     CtiCCSubstationBus& setIWControlTot(DOUBLE value);
@@ -523,6 +525,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL _integrateflag;
     LONG _integrateperiod;
     BOOL _likedayfallback;
+    string _enddaysettings;
 
     string _additionalFlags;
     LONG _currentVerificationCapBankId;

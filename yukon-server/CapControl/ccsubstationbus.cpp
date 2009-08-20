@@ -253,6 +253,17 @@ BOOL CtiCCSubstationBus::getLikeDayFallBack() const
 }
 
 /*---------------------------------------------------------------------------
+    getEndDaySettings
+
+    Returns the EndDaySettings of the substation
+---------------------------------------------------------------------------*/
+const string& CtiCCSubstationBus::getEndDaySettings() const
+{
+    return _enddaysettings;
+}
+
+
+/*---------------------------------------------------------------------------
     getIVControlTot
 
     Returns the Integrate Volt/Var Control total of the substation
@@ -1406,6 +1417,17 @@ CtiCCSubstationBus& CtiCCSubstationBus::setIntegratePeriod(LONG period)
 CtiCCSubstationBus& CtiCCSubstationBus::setLikeDayFallBack(BOOL flag)
 {
     _likedayfallback = flag;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setEndDaySettings
+
+    Sets the EndDaySettings of the substation
+---------------------------------------------------------------------------*/
+CtiCCSubstationBus& CtiCCSubstationBus::setEndDaySettings(const string& settings)
+{
+    _enddaysettings = settings;
     return *this;
 }
 /*---------------------------------------------------------------------------
@@ -3506,7 +3528,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                 else
                 {
                     setCorrectionNeededNoBankAvailFlag(FALSE);
-
+                
                 }
             }
             else
@@ -3516,7 +3538,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " - Max Daily Ops Hit. Control Inhibited on: " << getPAOName() << endl;
                 }
-
+            
             }
         }
         else if( (!stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::PF_BY_KVARControlUnits) ||
@@ -10608,6 +10630,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::operator=(const CtiCCSubstationBus& righ
         _integrateflag = right._integrateflag;
         _integrateperiod = right._integrateperiod;
         _likedayfallback = right._likedayfallback;
+        _enddaysettings = right._enddaysettings;
         _iVControlTot = right._iVControlTot;
         _iVCount = right._iVCount;
         _iWControlTot = right._iWControlTot;
@@ -10899,7 +10922,7 @@ void CtiCCSubstationBus::setStrategyValues(CtiCCStrategyPtr strategy)
     _integrateflag = strategy->getIntegrateFlag();
     _integrateperiod = strategy->getIntegratePeriod();
     _likedayfallback = strategy->getLikeDayFallBack();
-
+    _enddaysettings = strategy->getEndDaySettings();
     setTODControls(strategy);
 
 }

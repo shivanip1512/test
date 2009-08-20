@@ -85,6 +85,7 @@ RWDECLARE_COLLECTABLE( CtiCCStrategy )
     BOOL getIntegrateFlag() const;
     LONG getIntegratePeriod() const;
     BOOL getLikeDayFallBack() const;
+    const string& getEndDaySettings() const;
 
 
     CtiTODC_SVector& getTimeOfDayControllers();
@@ -120,6 +121,7 @@ RWDECLARE_COLLECTABLE( CtiCCStrategy )
     CtiCCStrategy& setIntegrateFlag(BOOL flag);
     CtiCCStrategy& setIntegratePeriod(LONG period);
     CtiCCStrategy& setLikeDayFallBack(BOOL flag);
+    CtiCCStrategy& setEndDaySettings(const string& endDaySettings);
 
     void setTimeAndCloseValues(RWDBReader& rdr);
 
@@ -165,6 +167,7 @@ RWDECLARE_COLLECTABLE( CtiCCStrategy )
     BOOL  _integrateFlag;
     LONG _integratePeriod;
     BOOL _likeDayFallBack;
+    string _endDaySettings;
 
     CtiTODC_SVector _todc;
 

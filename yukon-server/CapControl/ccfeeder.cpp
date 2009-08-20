@@ -544,6 +544,17 @@ BOOL CtiCCFeeder::getLikeDayFallBack() const
 }
 
 /*---------------------------------------------------------------------------
+    getEndDaySettings
+
+    Returns the EndDaySettings of the feeder
+---------------------------------------------------------------------------*/
+const string& CtiCCFeeder::getEndDaySettings() const
+{
+    return _enddaysettings;
+}
+
+
+/*---------------------------------------------------------------------------
     getIVControlTot
 
     Returns the Integrate Volt/Var Control total of the feeder
@@ -5833,6 +5844,17 @@ CtiCCFeeder& CtiCCFeeder::setLikeDayFallBack(BOOL flag)
 }
 
 /*---------------------------------------------------------------------------
+    setEndDaySettings
+
+    Sets the setEndDaySettings of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setEndDaySettings(const string& settings)
+{
+    _enddaysettings = settings;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
     setIVControlTot
 
     Sets the Integrated Volt or var Control Total of the feeder
@@ -7399,6 +7421,7 @@ CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
         _integrateflag = right._integrateflag;
         _integrateperiod = right._integrateperiod;
         _likedayfallback = right._likedayfallback;
+        _enddaysettings = right._enddaysettings;
         _iVControlTot = right._iVControlTot;
         _iVCount = right._iVCount;
         _iWControlTot = right._iWControlTot;
@@ -7648,6 +7671,7 @@ void CtiCCFeeder::setStrategyValues(CtiCCStrategyPtr strategy)
     _integrateflag = strategy->getIntegrateFlag();
     _integrateperiod = strategy->getIntegratePeriod();
     _likedayfallback = strategy->getLikeDayFallBack();
+    _enddaysettings = strategy->getEndDaySettings();
 }
 void CtiCCFeeder::setDynamicData(RWDBReader& rdr)
 {

@@ -184,6 +184,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     BOOL getIntegrateFlag() const;
     LONG getIntegratePeriod() const;
     BOOL getLikeDayFallBack() const;
+    const string& getEndDaySettings() const;
     DOUBLE getIVControlTot() const;
     LONG getIVCount() const;
     DOUBLE getIWControlTot() const;
@@ -304,6 +305,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setIntegrateFlag(BOOL flag);
     CtiCCFeeder& setIntegratePeriod(LONG period);
     CtiCCFeeder& setLikeDayFallBack(BOOL flag);
+    CtiCCFeeder& setEndDaySettings(const string& settings);
     CtiCCFeeder& setIVControlTot(DOUBLE value);
     CtiCCFeeder& setIVCount(LONG value);
     CtiCCFeeder& setIWControlTot(DOUBLE value);
@@ -522,6 +524,7 @@ private:
     BOOL _integrateflag;
     LONG _integrateperiod;
     BOOL _likedayfallback;
+    string _enddaysettings;
 
     string _parentControlUnits;
     string _parentName;

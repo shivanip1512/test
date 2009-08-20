@@ -146,6 +146,7 @@ CtiCCStrategy& CtiCCStrategy::operator=(const CtiCCStrategy& right)
         _integrateFlag = right._integrateFlag;
         _integratePeriod = right._integratePeriod;
         _likeDayFallBack = right._likeDayFallBack;
+        _endDaySettings = right._endDaySettings;
 
         _todc.clear();
         for(LONG i=0;i<right._todc.size();i++)
@@ -276,6 +277,7 @@ void CtiCCStrategy::restore(RWDBReader &rdr)
     rdr["likedayfallback"] >> tempBoolString;
     CtiToLower(tempBoolString);
     _likeDayFallBack = (tempBoolString=="y"?TRUE:FALSE);
+    rdr["enddaysettings"] >> _endDaySettings;
     //_todc.clear();
 
 }
@@ -425,6 +427,13 @@ BOOL CtiCCStrategy::getLikeDayFallBack() const
 {
     return _likeDayFallBack;
 }
+
+const string& CtiCCStrategy::getEndDaySettings() const
+{
+    return _endDaySettings;
+}
+
+
 CtiCCStrategy& CtiCCStrategy::setStrategyId(LONG id)
 {
     _strategyid = id;
@@ -590,6 +599,12 @@ CtiCCStrategy& CtiCCStrategy::setLikeDayFallBack(BOOL flag)
     return *this;
 }
 
+
+CtiCCStrategy& CtiCCStrategy::setEndDaySettings(const string& endDaySettings)
+{
+    _endDaySettings = endDaySettings;
+    return *this;
+}
 
 /* Public Static members */
 /*const string CtiCCStrategy::IndividualFeederControlMethod   = "IndividualFeeder";
