@@ -160,6 +160,16 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
                  */
 				if (newServiceCompanyID != null && invDB.getInstallationCompanyID().compareTo(newServiceCompanyID) != 0)
                 {
+				    //see if newServiceCompanyID is available for the energyCompany of the device
+				    if (newMember.getServiceCompany(newServiceCompanyID) == null) {
+				        String msg = "Service company [" + newServiceCompanyID + "] is not available to energy company [" + newMember.getName() + "]";
+		                CTILogger.error( msg );
+		                hardwareSet.add( liteHw );
+		                failedSerialNumbers.add("Serial #: " + liteHw.getManufacturerSerialNumber() + " - " + msg);
+		                numFailure++;
+		                continue;
+				    }
+				    
 					invDB.setInstallationCompanyID( newServiceCompanyID );
                     hasChanged = true;
                 }
@@ -178,6 +188,15 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
                 Integer oldWarehouseID = Warehouse.getWarehouseIDFromInventoryID(invDB.getInventoryID());
                 if (newWarehouseID != null && oldWarehouseID.compareTo(newWarehouseID) != 0)
                 {
+                    //see if newWarehouseID is available for the energyCompany of the device
+                    if (newMember.getWarehouse(newWarehouseID) == null) {
+                        String msg = "Warehouse [" + newWarehouseID + "] is not available to energy company [" + newMember.getName() + "]";
+                        CTILogger.error( msg );
+                        hardwareSet.add( liteHw );
+                        failedSerialNumbers.add("Serial #: " + liteHw.getManufacturerSerialNumber() + " - " + msg);
+                        numFailure++;
+                        continue;
+                    }
                     warehouseChanged = true;
                 }
 

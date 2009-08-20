@@ -195,20 +195,7 @@ public class OptOutServiceImpl implements OptOutService {
 				optOutEventDao.save(event, OptOutAction.START_OPT_OUT, user);
 				
 				// Update the LMHardwareControlGroup table
-				List<LMHardwareConfiguration> configurationList = 
-					lmHardwareControlGroupDao.getOldConfigDataByInventoryId(inventoryId);
-				
-				for(LMHardwareConfiguration configuration : configurationList) {
-		    		
-					int loadGroupId = configuration.getAddressingGroupId();
-					lmHardwareControlInformationService.startOptOut(
-		    				inventoryId, 
-		    				loadGroupId, 
-		    				customerAccountId, 
-		    				user, 
-		    				event.getStartDate());
-				}
-				
+				lmHardwareControlInformationService.startOptOut(inventoryId, customerAccountId, user, event.getStartDate());
 			}
     		
 	    	// Log the event
@@ -824,22 +811,7 @@ public class OptOutServiceImpl implements OptOutService {
 			int inventoryId, CustomerAccount customerAccount, OptOutEvent event, LiteYukonUser user) {
 		
 		// Update the LMHardwareControlGroup table
-		List<LMHardwareConfiguration> configurationList = 
-			lmHardwareControlGroupDao.getOldConfigDataByInventoryId(inventoryId);
-		
-		int accountId = customerAccount.getAccountId();
-		for(LMHardwareConfiguration configuration : configurationList) {
-    		
-			int loadGroupId = configuration.getAddressingGroupId();
-			
-			lmHardwareControlInformationService.stopOptOut(
-					inventoryId, 
-					loadGroupId, 
-					accountId, 
-					user,
-					event.getStopDate());
-		}
-		
+	    lmHardwareControlInformationService.stopOptOut(inventoryId, customerAccount.getAccountId(), user, event.getStopDate());
 	}
 	
 	/**

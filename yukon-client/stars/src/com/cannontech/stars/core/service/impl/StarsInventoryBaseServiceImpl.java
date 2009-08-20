@@ -27,14 +27,20 @@ import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.service.StarsInventoryBaseService;
 import com.cannontech.stars.core.service.StarsTwoWayLcrYukonDeviceAssignmentService;
+import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
+import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
+import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
+import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
+import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
 import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
+import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
-import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceAlreadyAssignedException;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
 import com.cannontech.stars.dr.hardware.exception.StarsTwoWayLcrYukonDeviceCreationException;
 import com.cannontech.stars.dr.hardware.model.HardwareType;
+import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.model.ThermostatSchedule;
@@ -53,10 +59,12 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
     private ThermostatScheduleDao thermostatScheduleDao;
     private LMHardwareConfigurationDao lmHardwareConfigurationDao;
     private LMHardwareEventDao hardwareEventDao;
-    private LMHardwareControlGroupDao lmHardwareControlGroupDao;
     private ApplianceDao applianceDao;
     private StarsTwoWayLcrYukonDeviceAssignmentService starsTwoWayLcrYukonDeviceAssignmentService;
     private YukonListDao yukonListDao;
+    private EnrollmentHelperService enrollmentService;
+    private CustomerAccountDao customerAccountDao;
+    private LMHardwareBaseDao hardwareBaseDao;
     
     @Autowired
     public void setStarsSearchDao(StarsSearchDao starsSearchDao) {
@@ -92,12 +100,6 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
         this.hardwareEventDao = hardwareEventDao;
     }
 
-    @Autowired    
-    public void setLmHardwareControlGroupDao(
-            LMHardwareControlGroupDao lmHardwareControlGroupDao) {
-        this.lmHardwareControlGroupDao = lmHardwareControlGroupDao;
-    }
-
     @Autowired
     public void setApplianceDao(ApplianceDao applianceDao) {
         this.applianceDao = applianceDao;
@@ -113,6 +115,21 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
 		this.yukonListDao = yukonListDao;
 	}
     
+    @Autowired
+    public void setEnrollmentService(EnrollmentHelperService enrollmentService) {
+        this.enrollmentService = enrollmentService;
+    }
+
+    @Autowired
+    public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
+        this.customerAccountDao = customerAccountDao;
+    }
+
+    @Autowired
+    public void setHardwareBaseDao(LMHardwareBaseDao hardwareBaseDao) {
+        this.hardwareBaseDao = hardwareBaseDao;
+    }
+
     // ADD DEVICE TO ACCOUNT
     @Override
     @Transactional
@@ -383,11 +400,11 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
             }
             liteInv.setRemoveDate(removeDate);
 
+            // Unenroll the inventory from all its programs
+            unenrollHardware(liteInv, user);
+            
             // add UnInstall hardware event
             addUnInstallHardwareEvent(liteInv, energyCompany, user);
-
-            // UnEnrolls the inventory from all its programs
-            lmHardwareControlGroupDao.unenrollHardware(liteInv.getInventoryID());
 
             // Delete appliances for the account/inventory id
             boolean lmHardware = InventoryUtils.isLMHardware(liteInv.getCategoryID());
@@ -403,6 +420,18 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
         }
     }
 
+    // Unenrolls the inventory from all its programs
+    private void unenrollHardware(LiteInventoryBase liteInv, LiteYukonUser user) {
+        EnrollmentHelper enrollmentHelper = new EnrollmentHelper();
+        CustomerAccount customerAccount = customerAccountDao.getById(liteInv.getAccountID());
+        enrollmentHelper.setAccountNumber(customerAccount.getAccountNumber());
+
+        LMHardwareBase lmHardwareBase = hardwareBaseDao.getById(liteInv.getInventoryID());
+        enrollmentHelper.setSerialNumber(lmHardwareBase.getManufacturerSerialNumber());
+        
+        enrollmentService.doEnrollment(enrollmentHelper, EnrollmentEnum.UNENROLL, user);        
+    }
+    
     // adds the UnInstall hardware event
     private void addUnInstallHardwareEvent(LiteInventoryBase liteInv,
             LiteStarsEnergyCompany energyCompany, LiteYukonUser user) {
@@ -422,5 +451,4 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
 
         hardwareEventDao.add(lmHwEvent, energyCompany.getEnergyCompanyID());
     }
-
 }

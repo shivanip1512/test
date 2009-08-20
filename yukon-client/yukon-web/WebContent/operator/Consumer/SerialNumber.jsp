@@ -25,8 +25,8 @@
 			referer = request.getContextPath() + "/operator/Consumer/CreateHardware.jsp";
 			if (request.getParameter("Wizard") != null) referer += "?Wizard=true";
             if(configBean.isWriteToFileAllowed() && accountInfo != null) {
-                for(int i = 0; i < accountInfo.getStarsAppliances().getStarsApplianceCount(); i++) {
-                    if(accountInfo.getStarsAppliances().getStarsAppliance(i).getInventoryID() < 1) {
+                for(int i = 0; i < accountInfo.getUnassignedStarsAppliances().getStarsApplianceCount(); i++) {
+                    if(accountInfo.getUnassignedStarsAppliances().getStarsAppliance(i).getInventoryID() < 1) {
                         needAppliance = false;
                         session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "");          
                         break;

@@ -10,18 +10,16 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.jdbc.core.JdbcOperations;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsSearchDao;
+import com.cannontech.stars.dr.program.dao.ProgramDao;
 
 
 /**
@@ -244,21 +242,14 @@ public class InventoryUtils {
         return convert;
     }
     
-    //TODO: need to start putting these in an appropriate services/DAO structure
     public static Integer getYukonLoadGroupIDFromSTARSProgramID(int progID) {
-        String sql = "select distinct LMGroupDeviceID from LMProgramDirectGroup ldg, LMProgramWebPublishing lwp " +
-                "where ldg.DeviceID = lwp.DeviceID AND lwp.ProgramID = " + progID;
-        
         Integer groupID = new Integer(0);
-        
-        try {
-            JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
-            groupID = jdbcOps.queryForInt(sql);
-        } 
-        catch (IncorrectResultSizeDataAccessException e) {
-            return groupID;
+        ProgramDao starsProgramDao = YukonSpringHook.getBean("starsProgramDao",
+                                                        ProgramDao.class);
+        List<Integer> loadGroupList = starsProgramDao.getGroupIdsByProgramId(progID);
+        if (loadGroupList.size() > 0) {
+            groupID = loadGroupList.get(0);
         }
-        
         return groupID;
     }
 

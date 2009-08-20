@@ -1,6 +1,8 @@
 package com.cannontech.stars.web.bean;
 
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.DaoFactory;
@@ -13,8 +15,8 @@ import com.cannontech.stars.util.StarsUtils;
 
 public class ConfigBean 
 {
-    private List<StaticLoadGroupMapping> currentStaticGroups;
     private List<StaticLoadGroupMapping> allStaticGroups;
+    private final ConcurrentMap<Integer, List<StaticLoadGroupMapping>> staticGroupMap = new ConcurrentHashMap<Integer, List<StaticLoadGroupMapping>>();
     private int currentApplianceCategoryID;
     private LiteYukonUser currentUser = null;
     private boolean hasResetPermission;
@@ -36,14 +38,12 @@ public class ConfigBean
 
     public List<StaticLoadGroupMapping> getCurrentStaticGroups() 
     {
-        if(currentStaticGroups == null)
+        List<StaticLoadGroupMapping> currentStaticGroups = staticGroupMap.get(currentApplianceCategoryID);
+        if(currentStaticGroups == null) {
             currentStaticGroups = StaticLoadGroupMapping.getAllLoadGroupsForApplianceCat(getCurrentApplianceCategoryID());
+            staticGroupMap.put(currentApplianceCategoryID, currentStaticGroups);
+        }
         return currentStaticGroups;
-    }
-    
-    public void setCurrentStaticGroups(List<StaticLoadGroupMapping> staticGroups) 
-    {
-        this.currentStaticGroups = staticGroups;
     }
     
     public int getCurrentApplianceCategoryID() 

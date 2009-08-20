@@ -17,6 +17,7 @@ public class LMHardwareControlGroup implements Cloneable{
     private int relay;
     private int userIdFirstAction;
     private int userIdSecondAction;
+    private int programId;
     
     public static final int ENROLLMENT_ENTRY = 1;
     public static final int OPT_OUT_ENTRY = 2;
@@ -24,32 +25,35 @@ public class LMHardwareControlGroup implements Cloneable{
     public LMHardwareControlGroup() { 
     }
     
-    public LMHardwareControlGroup(int inventoryId, int loadGroupId, int accountId, int type) { 
+    public LMHardwareControlGroup(int inventoryId, int loadGroupId, int accountId, int type, int programId) { 
         this.inventoryId = inventoryId;
         this.lmGroupId = loadGroupId;
         this.accountId = accountId;
         this.type = type;
         this.relay = 0;
+        this.programId = programId;
         this.userIdFirstAction = UserUtils.USER_DEFAULT_ID;
         this.userIdSecondAction = UserUtils.USER_DEFAULT_ID;
     }
-    
-    public LMHardwareControlGroup(int inventoryId, int loadGroupId, int accountId, int type, int userId) { 
+
+    public LMHardwareControlGroup(int inventoryId, int loadGroupId, int accountId, int type, int programId, int userId) { 
         this.inventoryId = inventoryId;
         this.lmGroupId = loadGroupId;
         this.accountId = accountId;
         this.type = type;
         this.relay = 0;
+        this.programId = programId;
         this.userIdFirstAction = userId;
         this.userIdSecondAction = UserUtils.USER_DEFAULT_ID;
     }
     
-    public LMHardwareControlGroup(int inventoryId, int loadGroupId, int accountId, int type, int relay, int userId) { 
+    public LMHardwareControlGroup(int inventoryId, int loadGroupId, int accountId, int type, int relay, int programId, int userId) { 
         this.inventoryId = inventoryId;
         this.lmGroupId = loadGroupId;
         this.accountId = accountId;
         this.type = type;
         this.relay = relay;
+        this.programId = programId;
         this.userIdFirstAction = userId;
         this.userIdSecondAction = UserUtils.USER_DEFAULT_ID;
     }
@@ -73,6 +77,7 @@ public class LMHardwareControlGroup implements Cloneable{
         hardwareControlGroup.setRelay(this.relay);
         hardwareControlGroup.setUserIdFirstAction(this.userIdFirstAction);
         hardwareControlGroup.setUserIdSecondAction(this.userIdSecondAction);
+        hardwareControlGroup.setProgramId(this.programId);
         return hardwareControlGroup;
     }
     
@@ -140,6 +145,13 @@ public class LMHardwareControlGroup implements Cloneable{
         this.optOutStop = optOutStop;
     }
 
+    public int getProgramId() {
+        return programId;
+    }
+    public void setProgramId(int programId) {
+        this.programId = programId;
+    }
+    
     @Override
     public boolean equals(Object obj) {
         if (this == obj)

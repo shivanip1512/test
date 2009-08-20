@@ -216,15 +216,12 @@ public class ProgramSignUpAction implements ActionBase {
                 {
                     int progID = progSignUp.getStarsSULMPrograms().getSULMProgram(j).getProgramID();
                     LiteLMProgramWebPublishing webProg = energyCompany.getProgram(progID);
-                    int grpID = webProg.getGroupIDs()[0];
-                    if(grpID > 0)
-                    {
-                        progSignUp.getStarsSULMPrograms().getSULMProgram(j).setAddressingGroupID(grpID);
-                    }
-                    else
+                    int grpID = webProg.getDefaultGroupId();
+                    if(!webProg.isVirtualProgram() && grpID <= 0)
                     {
                         throw new WebClientException("Program not defined correctly.  Contact your administrator.");
                     }
+                    progSignUp.getStarsSULMPrograms().getSULMProgram(j).setAddressingGroupID(grpID);
                 }
             }
             
@@ -402,8 +399,8 @@ public class ProgramSignUpAction implements ActionBase {
         final int ACCT = 1;
         final int GROUP = 2;
         final int RELAY = 3;
-        //final int APPCAT = 4;
-        //final int PROG = 5;
+        final int PROG = 4;
+        //final int APPCAT = 5;        
         /*-------------------------------------------------------------------------------
          * */
         
@@ -552,15 +549,15 @@ public class ProgramSignUpAction implements ActionBase {
                          * here we catch hardware that are ONLY be unenrolled.  If they are simply being enrolled in a different
                          * program, then the service's startEnrollment will handle the appropriate un-enrollments.
                          */
-                        int[] currentUnenrollmentInfo = new int[6];
+                        int[] currentUnenrollmentInfo = new int[5];
                         currentUnenrollmentInfo[INV] = liteHw.getInventoryID();
                         currentUnenrollmentInfo[ACCT] = liteHw.getAccountID();
                         currentUnenrollmentInfo[GROUP] = liteApp.getAddressingGroupID();
                         if(currentUnenrollmentInfo[GROUP] == 0)
                             currentUnenrollmentInfo[GROUP] = InventoryUtils.getYukonLoadGroupIDFromSTARSProgramID(liteApp.getProgramID());
                         currentUnenrollmentInfo[RELAY] = liteApp.getLoadNumber();
+                        currentUnenrollmentInfo[PROG] = liteApp.getProgramID();
                         //currentUnenrollmentInfo[APPCAT] = liteApp.getApplianceCategoryID();
-                        //currentUnenrollmentInfo[PROG] = liteApp.getProgramID();
                         hwInfoToUnenroll.add(currentUnenrollmentInfo);
                         /*-------------------------------------------------------------------------------*/
 					}
@@ -610,7 +607,7 @@ public class ProgramSignUpAction implements ActionBase {
 				int groupID = program.getAddressingGroupID();
                 int relay = program.getLoadNumber();
 				if (!program.hasAddressingGroupID() && !useHardwareAddressing && starsProg.getAddressingGroupCount() > 1)
-					groupID = starsProg.getAddressingGroup(1).getEntryID();
+					groupID = starsProg.getAddressingGroup(0).getEntryID();
                 if(groupID == 0) {
                     groupID = InventoryUtils.getYukonLoadGroupIDFromSTARSProgramID(program.getProgramID());
                 }
@@ -667,6 +664,7 @@ public class ProgramSignUpAction implements ActionBase {
 					liteApp.setInventoryID( program.getInventoryID() );
 					int oldApplianceRelay = liteApp.getLoadNumber();
                     int oldLoadGroupId = liteApp.getAddressingGroupID();
+                    int oldProgramId = liteApp.getProgramID();
                     liteApp.setLoadNumber( relay );
 					
                     //the appliance is on a different program then the current, this is an enrollment switch
@@ -692,11 +690,12 @@ public class ProgramSignUpAction implements ActionBase {
                              * TODO Refactor this
                              *-------------------------------------------------------------------------------
                              */
-                            int[] currentEnrollmentInformation = new int[4];
+                            int[] currentEnrollmentInformation = new int[5];
                             currentEnrollmentInformation[INV] = liteHw.getInventoryID();
                             currentEnrollmentInformation[ACCT] = liteHw.getAccountID();
                             currentEnrollmentInformation[GROUP] = groupID;
                             currentEnrollmentInformation[RELAY] = relay;
+                            currentEnrollmentInformation[PROG] = program.getProgramID();
                             hwInfoToEnroll.add(currentEnrollmentInformation);
                             /*
                              * TODO: What about different relays?  Are we handling this correctly?
@@ -704,11 +703,12 @@ public class ProgramSignUpAction implements ActionBase {
                             if(program.getApplianceCategoryID() == liteApp.getApplianceCategoryID() && 
                                     program.getLoadNumber() == oldApplianceRelay &&
                                     oldLoadGroupId != 0) {
-                                int[] currentUnenrollmentInformation = new int[4];
+                                int[] currentUnenrollmentInformation = new int[5];
                                 currentUnenrollmentInformation[INV] = liteHw.getInventoryID();
                                 currentUnenrollmentInformation[ACCT] = liteHw.getAccountID();
                                 currentUnenrollmentInformation[GROUP] = oldLoadGroupId;
                                 currentUnenrollmentInformation[RELAY] = oldApplianceRelay;
+                                currentUnenrollmentInformation[PROG] = oldProgramId;
                                 hwInfoToUnenroll.add(currentUnenrollmentInformation);
                             }
                             /*
@@ -752,19 +752,21 @@ public class ProgramSignUpAction implements ActionBase {
                              * TODO Refactor this
                              *-------------------------------------------------------------------------------
                              */
-                            int[] currentEnrollmentInformation = new int[6];
+                            int[] currentEnrollmentInformation = new int[5];
                             currentEnrollmentInformation[INV] = liteHw.getInventoryID();
                             currentEnrollmentInformation[ACCT] = liteHw.getAccountID();
                             currentEnrollmentInformation[GROUP] = groupID;
                             currentEnrollmentInformation[RELAY] = relay;
+                            currentEnrollmentInformation[PROG] = program.getProgramID();
                             hwInfoToEnroll.add(currentEnrollmentInformation);
                             
                             //  We need remove the old enrollment entry to eliminate duplicate entries.
-                            int[] pastEnrollmentInformation = new int [6];
+                            int[] pastEnrollmentInformation = new int [5];
                             pastEnrollmentInformation[INV] = liteHw.getInventoryID();
                             pastEnrollmentInformation[ACCT] = liteHw.getAccountID();
                             pastEnrollmentInformation[GROUP] = oldLoadGroupId;
                             pastEnrollmentInformation[RELAY] = oldApplianceRelay;
+                            pastEnrollmentInformation[PROG] = oldProgramId;
                             hwInfoToUnenroll.add(pastEnrollmentInformation);
                             
                             /*
@@ -836,11 +838,12 @@ public class ProgramSignUpAction implements ActionBase {
                          * TODO Refactor this
                          *-------------------------------------------------------------------------------
                          */
-                        int[] currentEnrollmentInformation = new int[6];
+                        int[] currentEnrollmentInformation = new int[5];
                         currentEnrollmentInformation[INV] = liteHw.getInventoryID();
                         currentEnrollmentInformation[ACCT] = liteHw.getAccountID();
                         currentEnrollmentInformation[GROUP] = groupID;
                         currentEnrollmentInformation[RELAY] = relay;
+                        currentEnrollmentInformation[PROG] = program.getProgramID();
                         hwInfoToEnroll.add(currentEnrollmentInformation);
                         /*
                          * here we catch hardware that are ONLY being unenrolled.  If they are simply being enrolled in a different
@@ -958,7 +961,8 @@ public class ProgramSignUpAction implements ActionBase {
                 boolean success = lmHardwareControlInformationService.stopEnrollment(currentUnenrollmentInfo[INV], 
                                                                                      currentUnenrollmentInfo[GROUP], 
                                                                                      currentUnenrollmentInfo[ACCT], 
-                                                                                     currentUnenrollmentInfo[RELAY], 
+                                                                                     currentUnenrollmentInfo[RELAY],
+                                                                                     currentUnenrollmentInfo[PROG],
                                                                                      currentUser);
                 if(!success) {
                     CTILogger.error( "Enrollment STOP occurred for InventoryId: " + currentUnenrollmentInfo[INV] + 
@@ -974,7 +978,8 @@ public class ProgramSignUpAction implements ActionBase {
                 boolean success = lmHardwareControlInformationService.startEnrollment(currentEnrollmentInfo[INV], 
                                                                                      currentEnrollmentInfo[GROUP], 
                                                                                      currentEnrollmentInfo[ACCT], 
-                                                                                     currentEnrollmentInfo[RELAY], 
+                                                                                     currentEnrollmentInfo[RELAY],
+                                                                                     currentEnrollmentInfo[PROG],
                                                                                      currentUser);
                 if(!success) {
                     CTILogger.error( "Enrollment START occurred for InventoryId: " + currentEnrollmentInfo[INV] + 

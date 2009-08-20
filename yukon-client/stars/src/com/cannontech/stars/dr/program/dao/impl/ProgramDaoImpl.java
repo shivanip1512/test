@@ -172,8 +172,8 @@ public class ProgramDaoImpl implements ProgramDao {
         programQuery.append(selectSQLHeader);
         programQuery.append("INNER JOIN ECToGenericMapping ECTGM ON (ECTGM.itemId = LMPWP.applianceCategoryId");
         programQuery.append("                                        AND ECTGM.mappingCategory = 'ApplianceCategory')");
-        programQuery.append("WHERE PAO.paoClass = ?");
-        programQuery.append("AND PAO.category = ?");
+        programQuery.append("WHERE ((PAO.paobjectId > 0 AND PAO.paoClass = ? AND PAO.category = ?)");
+        programQuery.append("    OR (PAO.paobjectId = 0))");
         programQuery.append("AND (YWC.alternateDisplayName = ?");
         programQuery.append("     OR YWC.alternateDisplayName like ?");
         programQuery.append("     OR YWC.alternateDisplayName like ?)");
@@ -248,10 +248,8 @@ public class ProgramDaoImpl implements ProgramDao {
     public List<Integer> getGroupIdsByProgramId(final int programId) {
         final SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
         sqlBuilder.append("SELECT lmpdg.LMGroupDeviceId");
-        sqlBuilder.append("FROM YukonPAObject yp, LMProgramWebPublishing lmwp, YukonWebConfiguration ywc, LMProgramDirectGroup lmpdg"); 
-        sqlBuilder.append("WHERE yp.PAObjectId = lmwp.DeviceId");
-        sqlBuilder.append("AND lmwp.WebSettingsId = ywc.ConfigurationId");
-        sqlBuilder.append("AND lmwp.DeviceId = lmpdg.DeviceId");
+        sqlBuilder.append("FROM LMProgramWebPublishing lmwp, LMProgramDirectGroup lmpdg"); 
+        sqlBuilder.append("WHERE lmwp.DeviceId = lmpdg.DeviceId");
         sqlBuilder.append("AND lmwp.ProgramID = ?");
         String sql = sqlBuilder.toString();
         

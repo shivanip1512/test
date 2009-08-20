@@ -184,19 +184,17 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                 LiteLMProgramWebPublishing webProg = energyCompany.getProgram(programId);
                 List<ProgramEnrollment> activeProgramEnrollments = enrollmentDao.getActiveEnrollmentsByAccountId(customerAccount.getAccountId());
                 
-                int grpID = webProg.getGroupIDs()[0];
+                int grpID = webProg.getDefaultGroupId();
                 for (ProgramEnrollment programEnrollment : activeProgramEnrollments) {
                     if (programEnrollment.getProgramId() == webProg.getProgramID() && 
                         programEnrollment.getApplianceCategoryId() == webProg.getApplianceCategoryID()) {
                         grpID = programEnrollment.getLmGroupId();
                     }
                 }
-                
-                if (grpID > 0) {
-                    programSignUp.getStarsSULMPrograms().getSULMProgram(j).setAddressingGroupID(grpID);
-                } else {
+                if (!webProg.isVirtualProgram() && grpID <= 0) {
                     throw new InvalidParameterException("Program not defined correctly");
                 }
+                programSignUp.getStarsSULMPrograms().getSULMProgram(j).setAddressingGroupID(grpID);
             }
         }
 
@@ -236,18 +234,10 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
 
     @Override
     public boolean isProgramEnrolled(final int customerAccountId, final int inventoryId, final int programId) {
-        final List<LMHardwareControlGroup> entryList = new ArrayList<LMHardwareControlGroup>();
-        final List<Integer> groupIds = programDao.getGroupIdsByProgramId(programId);
-
-        for (final Integer groupId : groupIds) {
-            List<LMHardwareControlGroup> enrolledEntryList =
-                lmHardwareControlGroupDao.getByInventoryIdAndGroupIdAndAccountIdAndType(inventoryId,
-                                                                                        groupId,
-                                                                                        customerAccountId,
-                                                                                        LMHardwareControlGroup.ENROLLMENT_ENTRY);
-            entryList.addAll(enrolledEntryList);
-        }
-
+        final List<LMHardwareControlGroup> entryList = 
+                    lmHardwareControlGroupDao.getCurrentEnrollmentByInventoryIdAndProgramIdAndAccountId(inventoryId, 
+                                                                                                        programId,
+                                                                                                        customerAccountId);
         boolean isProgramEnrolled = ControlGroupUtil.isEnrolled(entryList, new Date());
         return isProgramEnrolled;
     }

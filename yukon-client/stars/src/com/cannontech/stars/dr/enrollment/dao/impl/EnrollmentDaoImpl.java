@@ -14,7 +14,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.common.util.Pair;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
@@ -31,14 +30,12 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
      *  strings you will have the right table connections and data returned.
      */
     private final String enrollmentSQLHeader = 
-        "SELECT LMPWP.applianceCategoryId, LMPWP.programId, LMHCG.lmGroupId, "+
+        "SELECT AB.applianceCategoryId, AB.programId, LMHCG.lmGroupId, "+
         "       LMHCG.relay, LMHCG.inventoryId, AB.KWCapacity "+
         "FROM LMHardwareControlGroup LMHCG "+
-        "INNER JOIN LMProgramDirectGroup LMPDG ON LMPDG.lmGroupDeviceId = LMHCG.lmGroupId "+
-        "INNER JOIN LMProgramWebPublishing LMPWP ON LMPDG.deviceId = LMPWP.deviceId "+
-        "INNER JOIN LMHardwareConfiguration LMHC ON (LMHC.inventoryId = LMHCG.inventoryId "+
-        "                                            AND LMHC.addressingGroupId = LMHCG.lmGroupId) "+
-        "INNER JOIN ApplianceBase AB ON LMHC.applianceId = AB.ApplianceId ";
+        "INNER JOIN LMHardwareConfiguration LMHC ON LMHC.inventoryId = LMHCG.inventoryId "+
+        "INNER JOIN ApplianceBase AB ON LMHC.applianceId = AB.ApplianceId " + 
+        "                           AND LMHCG.programId = AB.programId ";
 
 
     /**
@@ -68,21 +65,21 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 	public List<Program> getCurrentlyEnrolledProgramsByInventoryId(int inventoryId) {
 
 		SqlStatementBuilder sql = new SqlStatementBuilder();
-		sql.append("SELECT ProgramID, ProgramOrder, ywc.Description, ywc.url, AlternateDisplayName");
+		sql.append("SELECT pwp.ProgramID, ProgramOrder, ywc.Description, ywc.url, AlternateDisplayName");
 		sql.append("	, PAOName, yle.EntryText as ChanceOfControl, ApplianceCategoryID, LogoLocation ");
 		sql.append("FROM LMProgramWebPublishing pwp");
 		sql.append("	JOIN YukonWebConfiguration ywc ON pwp.WebsettingsID = ywc.ConfigurationID");
 		sql.append("	JOIN YukonPAObject ypo ON ypo.PAObjectID = pwp.DeviceID");
 		sql.append("	JOIN YukonListEntry yle ON yle.EntryID = pwp.ChanceOfControlID");
-		sql.append("	JOIN LMProgramDirectGroup lmpdg ON pwp.DeviceID = lmpdg.DeviceId");
-		sql.append("	JOIN LMHardwareControlGroup lmhcg ON lmhcg.LMGroupID = lmpdg.LMGroupDeviceId");
-		sql.append("WHERE pwp.WebsettingsID = ywc.ConfigurationID");
-		sql.append("	AND lmhcg.InventoryId = ?");
+		sql.append("	JOIN LMHardwareControlGroup lmhcg ON lmhcg.ProgramID = pwp.ProgramID");
+		sql.append("WHERE lmhcg.InventoryId = ? AND lmhcg.Type = ?");
 		sql.append("	AND NOT lmhcg.groupEnrollStart IS NULL");
 		sql.append("	AND lmhcg.groupEnrollStop IS NULL");
 		
-		List<Program> programList = 
-			simpleJdbcTemplate.query(sql.toString(), new ProgramRowMapper(simpleJdbcTemplate), inventoryId);
+		List<Program> programList = simpleJdbcTemplate.query(sql.toString(),
+                                                             new ProgramRowMapper(simpleJdbcTemplate),
+                                                             inventoryId,
+                                                             LMHardwareControlGroup.ENROLLMENT_ENTRY);
 		
 		return programList;
 	}
@@ -92,17 +89,14 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 			Date startTime, Date stopTime) {
 		
 		SqlStatementBuilder sql = new SqlStatementBuilder();
-		sql.append("SELECT ProgramID, ProgramOrder, ywc.Description, ywc.url, AlternateDisplayName");
+		sql.append("SELECT pwp.ProgramID, ProgramOrder, ywc.Description, ywc.url, AlternateDisplayName");
 		sql.append("	, PAOName, yle.EntryText as ChanceOfControl, ApplianceCategoryID, LogoLocation ");
 		sql.append("FROM LMProgramWebPublishing pwp");
 		sql.append("	JOIN YukonWebConfiguration ywc ON pwp.WebsettingsID = ywc.ConfigurationID");
 		sql.append("	JOIN YukonPAObject ypo ON ypo.PAObjectID = pwp.DeviceID");
 		sql.append("	JOIN YukonListEntry yle ON yle.EntryID = pwp.ChanceOfControlID");
-		sql.append("	JOIN LMProgramDirectGroup lmpdg ON pwp.DeviceID = lmpdg.DeviceId");
-		sql.append("	JOIN LMHardwareControlGroup lmhcg ON lmhcg.LMGroupID = lmpdg.LMGroupDeviceId");
-		sql.append("WHERE pwp.WebsettingsID = ywc.ConfigurationID");
-		sql.append("	AND lmhcg.InventoryId = ?");
-		sql.append("	AND lmhcg.Type = ?");
+		sql.append("	JOIN LMHardwareControlGroup lmhcg ON lmhcg.ProgramID = pwp.ProgramID");
+		sql.append("WHERE lmhcg.InventoryId = ? AND lmhcg.Type = ?");
 		sql.append("	AND lmhcg.GroupEnrollStart <= ?");
 		sql.append("	AND (lmhcg.GroupEnrollStop IS NULL OR lmhcg.GroupEnrollStop >= ?)");
 		
@@ -123,9 +117,7 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("SELECT DISTINCT lmhcg.InventoryId ");
 		sql.append("FROM LMHardwareControlGroup lmhcg");
-		sql.append("	JOIN LMProgramDirectGroup pdg ON pdg.LMGroupDeviceId = lmhcg.LMGroupId");
-		sql.append("	JOIN LMProgramWebPublishing pwp ON pwp.DeviceId = pdg.DeviceId");
-		sql.append("WHERE pwp.ProgramId = ?");
+		sql.append("WHERE lmhcg.ProgramId = ?");
 		sql.append("	AND lmhcg.Type = ?");
 		sql.append("	AND lmhcg.OptOutStart <= ?");
 		sql.append("	AND (lmhcg.OptOutStop IS NULL OR lmhcg.OptOutStop >= ?)");
@@ -163,9 +155,7 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("SELECT lmhcg.* ");
 		sql.append("FROM LMHardwareControlGroup lmhcg");
-		sql.append("	JOIN LMProgramDirectGroup pdg ON pdg.LMGroupDeviceId = lmhcg.LMGroupId");
-		sql.append("	JOIN LMProgramWebPublishing pwp ON pwp.DeviceId = pdg.DeviceId");
-		sql.append("WHERE pwp.ProgramId = ?");
+		sql.append("WHERE lmhcg.ProgramId = ?");
 		sql.append("	AND lmhcg.Type = ?");
 		sql.append("	AND lmhcg.OptOutStart <= ?");
 		sql.append("	AND (lmhcg.OptOutStop IS NULL OR lmhcg.OptOutStop >= ?)");
@@ -193,7 +183,6 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 		sql.append("	AND lmhcg.InventoryId not in ");
 		sql.append("		(SELECT DISTINCT lmhcg2.InventoryId ");
 		sql.append("		FROM LMHardwareControlGroup lmhcg2");
-		sql.append("		JOIN LMProgramDirectGroup pdg2 ON pdg2.LMGroupDeviceId = lmhcg2.LMGroupId");
 		sql.append("			WHERE lmhcg2.Type = ").appendArgument(LMHardwareControlGroup.OPT_OUT_ENTRY);
 		sql.append("			AND lmhcg2.OptOutStart <= ").appendArgument(stopDate);
 		sql.append("			AND (lmhcg2.OptOutStop IS NULL OR lmhcg2.OptOutStop >= ").appendArgument(startDate);
@@ -245,6 +234,7 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
             hardwareControlGroup.setRelay(rs.getInt("Relay"));
             hardwareControlGroup.setUserIdFirstAction(rs.getInt("UserIdFirstAction"));
             hardwareControlGroup.setUserIdSecondAction(rs.getInt("UserIdSecondAction"));
+            hardwareControlGroup.setProgramId(rs.getInt("ProgramId"));
             
             return hardwareControlGroup;
         }

@@ -36,7 +36,8 @@
     	   `
             
 		<form name="MForm" method="post" action="<%=request.getContextPath()%>/servlet/InventoryManager">
-	    	<input type="hidden" name="action" value="StaticLoadGroupMapMasterReset">
+	    	<input type="hidden" name="action" value="StaticLoadGroupMap">
+	    	<input type="hidden" name="actionTask" value="StaticLoadGroupMapMasterReset">
 	    	
             <div align="center">
                 <c:choose>
@@ -156,19 +157,19 @@
         
         function setDefaults(form)
         {
-            form.action.value="StaticLoadGroupMapSetDefaults";
+            form.actionTask.value="StaticLoadGroupMapSetDefaults";
             form.submit();
         }
         
         function setDefaultsNoConfig(form)
         {
-            form.action.value="StaticLoadGroupMapSetDefaultsNoConfig";
+            form.actionTask.value="StaticLoadGroupMapSetDefaultsNoConfig";
             form.submit();
         }
         
         function resetAllNoConfig(form)
         {
-            form.action.value="StaticLoadGroupMapMasterResetNoConfig";
+            form.actionTask.value="StaticLoadGroupMapMasterResetNoConfig";
             form.submit();
         }
 		

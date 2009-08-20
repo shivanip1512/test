@@ -73,6 +73,27 @@ public class LiteLMProgramWebPublishing extends LiteBase {
 	}
 
 	/**
+	 * Returns the default group id
+	 * @return
+	 */
+	public int getDefaultGroupId() {
+        int defaultGroupId = 0;
+        if (groupIDs.length > 0) {
+            defaultGroupId = groupIDs[0];
+        }
+        return defaultGroupId;
+    }
+	
+	/**
+     * Returns true, if this is a Virtual program, i.e., No Yukon load control; false otherwise.
+     * @return
+     */
+	public boolean isVirtualProgram() {
+        boolean virtualProgram = (getDeviceID() > 0) ? false : true;
+        return virtualProgram;
+    }
+	
+	/**
 	 * Returns the chanceOfControlID.
 	 * @return int
 	 */

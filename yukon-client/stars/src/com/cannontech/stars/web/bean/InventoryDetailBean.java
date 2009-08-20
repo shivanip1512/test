@@ -25,6 +25,7 @@ public class InventoryDetailBean
     private YukonSelectionList availableDeviceTypes;
     private List<LiteServiceCompany> availableServiceCompanies;
     private List<Warehouse> availableWarehouses;
+    private List<Warehouse> assignableWarehouses;    
     private YukonSelectionList availableDeviceStates;
     
     private LiteInventoryBase currentInventory;
@@ -67,7 +68,7 @@ public class InventoryDetailBean
     public List<LiteServiceCompany> getAvailableServiceCompanies()
     {
         if(availableServiceCompanies == null)
-            availableServiceCompanies = energyCompany.getAllServiceCompaniesDownward();
+            availableServiceCompanies = energyCompany.getAllServiceCompaniesUpDown();
         return availableServiceCompanies;
     }
 
@@ -77,6 +78,13 @@ public class InventoryDetailBean
             availableWarehouses = energyCompany.getAllWarehousesDownward();
         return availableWarehouses;
     }
+    
+    public List<Warehouse> getAssignableWarehouses()
+    {
+        if(assignableWarehouses == null)
+            assignableWarehouses = energyCompany.getWarehouses();
+        return assignableWarehouses;
+    }    
     
     public YukonSelectionList getAvailableDeviceStates()
     {

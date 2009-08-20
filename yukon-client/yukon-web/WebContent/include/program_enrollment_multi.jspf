@@ -183,7 +183,7 @@ function confirmCancel() {
                                     <td> 
                                       <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
                                         <tr> 
-                                          <td width="70%" class="SubtitleHeader"><%= ServletUtils.getProgramDisplayNames(prog)[1] %></td>
+                                          <td width="70%" class="SubtitleHeader"><%= ServletUtils.getProgramDisplayNames(prog)[0] %></td>
                                           <td width="30%"> 
 <% if (!progIcons[0].equals("")) {
 	savingsIconExists = true;

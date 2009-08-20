@@ -107,12 +107,12 @@ public class EnrollmentController extends AbstractConsumerController {
 	                enrollmentRequest.setInventoryId(inventoryId);
 	                enrollmentRequest.setApplianceCategoryId(applianceCategoryId);
 	                enrollmentRequest.setEnroll(enroll);
-	                setExistingLMGroupAndRelay(enrollmentRequest, customerAccount.getAccountId());
-                
                     requestList.add(enrollmentRequest);
                 }    
             }
         }
+        // set the group, relay at one go
+        setExistingLMGroupAndRelay(requestList, customerAccount.getAccountId());
         
         // verify all ids with accountCheckerService in one go
         accountCheckerService.checkInventory(user, reqInventoryIds.toArray(new Integer[reqInventoryIds.size()]));
@@ -134,22 +134,23 @@ public class EnrollmentController extends AbstractConsumerController {
         return "consumer/enrollment/enrollmentResult.jsp";
     }
 
-    private void setExistingLMGroupAndRelay(ProgramEnrollment enrollmentRequest, int accountId){
-        List<LMHardwareControlGroup> lmHardwareControlGroup = 
-        	lmHardwareControlGroupDao.getCurrentEnrollmentByInventoryIdAndAccountId(enrollmentRequest.getInventoryId(),
-                                                                          			accountId);
-        List<Integer> groupIds = 
-        	programDao.getDistinctGroupIdsByProgramIds(Collections.singleton(enrollmentRequest.getProgramId()));
-	    for (LMHardwareControlGroup hardwareControlGroup : lmHardwareControlGroup) {
-			for (Integer groupId : groupIds) {
-				if(groupId.intValue() == hardwareControlGroup.getLmGroupId()){
-					enrollmentRequest.setLmGroupId(hardwareControlGroup.getLmGroupId());
-					enrollmentRequest.setRelay(hardwareControlGroup.getRelay());
-				}
-			}
-		}
+    private void setExistingLMGroupAndRelay(List<ProgramEnrollment> enrollRequestList, int accountId){
+        List<LMHardwareControlGroup> lmHardwareControlGroupList = 
+            lmHardwareControlGroupDao.getCurrentEnrollmentByAccountId(accountId);
+
+        for (ProgramEnrollment enrollRequest : enrollRequestList) {
+            if (enrollRequest.isEnroll()) {
+                for (LMHardwareControlGroup existingEntry : lmHardwareControlGroupList) {
+                    if(existingEntry.getInventoryId() == enrollRequest.getInventoryId() && existingEntry.getProgramId() == enrollRequest.getProgramId()){
+                        enrollRequest.setLmGroupId(existingEntry.getLmGroupId());
+                        enrollRequest.setRelay(existingEntry.getRelay());
+                        break;
+                    }
+                }
+            }
+        }
     }
-    
+
     @Autowired
     public void setDisplayableEnrollmentDao(
             DisplayableEnrollmentDao displayableEnrollmentDao) {

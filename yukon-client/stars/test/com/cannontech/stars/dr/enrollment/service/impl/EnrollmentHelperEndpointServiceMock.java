@@ -7,9 +7,8 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.dao.impl.CustomerAccountDaoImpl;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.dao.impl.ApplianceDaoImpl;
+import com.cannontech.stars.dr.appliance.model.Appliance;
 import com.cannontech.stars.dr.enrollment.dao.impl.EnrollmentDaoImpl;
-import com.cannontech.stars.dr.hardware.dao.impl.LMHardwareControlGroupDaoImpl;
-import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
 import com.cannontech.stars.dr.program.model.ProgramEnrollmentResultEnum;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.cannontech.stars.dr.program.service.impl.ProgramEnrollmentServiceImpl;
@@ -20,7 +19,6 @@ public class EnrollmentHelperEndpointServiceMock extends EnrollmentHelperService
     CustomerAccountDaoMock customerAccountDao;
     EnrollmentDaoMock enrollmentDao;
     ProgramEnrollmentServiceMock programEnrollmentService;
-    LmHardwareControlGroupDaoMock lmHardwareControlGroupDao;
 
     public EnrollmentHelperEndpointServiceMock() throws Exception {
         setUp();
@@ -35,8 +33,6 @@ public class EnrollmentHelperEndpointServiceMock extends EnrollmentHelperService
         super.setEnrollmentDao(enrollmentDao);
         programEnrollmentService = new ProgramEnrollmentServiceMock();
         super.setProgramEnrollmentService(programEnrollmentService);
-        lmHardwareControlGroupDao = new LmHardwareControlGroupDaoMock();
-        super.setLmHardwareControlGroupDao(lmHardwareControlGroupDao);
     }
     
     public ProgramEnrollment getEnrollmentOne(){
@@ -55,6 +51,14 @@ public class EnrollmentHelperEndpointServiceMock extends EnrollmentHelperService
     private class ApplianceDaoMock extends ApplianceDaoImpl{
         @Override
         public void updateApplianceKW(int applianceId, float applianceKW) {}
+        
+        @Override
+        public List<Appliance> getByAccountIdAndProgramIdAndInventoryId(int accountId, int programId, int inventoryId){
+            List<Appliance> appList = new ArrayList<Appliance>();
+            Appliance app = new Appliance();
+            appList.add(app);
+            return appList;
+        }
     }
     
     private class CustomerAccountDaoMock extends CustomerAccountDaoImpl{
@@ -87,17 +91,6 @@ public class EnrollmentHelperEndpointServiceMock extends EnrollmentHelperService
                                                                    List<ProgramEnrollment> requests, 
                                                                    LiteYukonUser user) {
             return null;
-        }
-    }
-    
-    private class LmHardwareControlGroupDaoMock extends LMHardwareControlGroupDaoImpl {
-        @Override
-        public List<LMHardwareConfiguration> getOldConfigDataByInventoryIdAndGroupId(int inventoryId, 
-                                                                                     int lmGroupId) {
-            List<LMHardwareConfiguration> lmHardwareConfigs = new ArrayList<LMHardwareConfiguration>();
-            LMHardwareConfiguration lmHardwareConfig = new LMHardwareConfiguration();
-            lmHardwareConfigs.add(lmHardwareConfig);
-            return lmHardwareConfigs;
         }
     }
 }

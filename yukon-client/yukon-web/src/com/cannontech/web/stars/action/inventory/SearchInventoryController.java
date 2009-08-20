@@ -59,7 +59,7 @@ public class SearchInventoryController extends StarsInventoryActionController {
         }
         else {
             LiteInventoryBase liteInv = null;
-            if (invList.size() == 1) {
+            if (invList.size() == 1 && invList.get(0).getEnergyCompanyId() == user.getEnergyCompanyID()) {
             	liteInv = invList.get(0);
             
             	String redirect = request.getContextPath() + "/operator/Hardware/InventoryDetail.jsp?InvId=" + liteInv.getInventoryID() + "&src=Search";

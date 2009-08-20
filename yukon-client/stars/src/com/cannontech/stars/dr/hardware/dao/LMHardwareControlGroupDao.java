@@ -3,6 +3,7 @@ package com.cannontech.stars.dr.hardware.dao;
 import java.util.Date;
 import java.util.List;
 
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 
@@ -15,6 +16,8 @@ public interface LMHardwareControlGroupDao {
     public void update(LMHardwareControlGroup hardwareControlGroup);
     
     public void unenrollHardware(int inventoryId);
+    
+    public void stopOptOut(int inventoryId, int accountId, LiteYukonUser currentUser, Date stopDate);    
     
     public LMHardwareControlGroup getById(int controlEntryId);
     
@@ -36,9 +39,17 @@ public interface LMHardwareControlGroupDao {
     
     public List<LMHardwareControlGroup> getByOptOutStopDateRange(Date first, Date second);
     
-    public List<LMHardwareControlGroup> getCurrentOptOutByGroupIdAndAccountId(int lmGroupId, int accountId);
-
+    public List<LMHardwareControlGroup> getCurrentOptOutByProgramIdAndAccountId(int programId, int accountId);
+    
+    public List<LMHardwareControlGroup> getCurrentOptOutByInventoryIdProgramIdAndAccountId(int inventoryId, int programId, int accountId);
+    
+    public List<LMHardwareControlGroup> getCurrentEnrollmentByAccountId(int accountId);
+    
     public List<LMHardwareControlGroup> getCurrentEnrollmentByInventoryIdAndAccountId(int inventoryId, int accountId);
+    
+    public List<LMHardwareControlGroup> getCurrentEnrollmentByProgramIdAndAccountId(int programId, int accountId);
+    
+    public List<LMHardwareControlGroup> getCurrentEnrollmentByInventoryIdAndProgramIdAndAccountId(int inventoryId, int programId, int accountId);    
     
     public List<LMHardwareControlGroup> getByInventoryIdAndAccountIdAndType(int inventoryId, int accountId, int type);
 

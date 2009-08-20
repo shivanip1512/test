@@ -1327,7 +1327,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
                         catch(NotFoundException e) {}
 					}
 					
-					if (suProg[2] == -1)
+					if (!liteProg.isVirtualProgram() && suProg[2] == -1)
 						throw new WebClientException( "The group '" + fields[ImportManagerUtil.IDX_ADDR_GROUP] + "' doesn't belong to program '" + progName + "'" );
 				}
 				

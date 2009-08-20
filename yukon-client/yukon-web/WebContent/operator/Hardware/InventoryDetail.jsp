@@ -560,7 +560,7 @@ var setChoosenYukonDevice = function() {
                                 <td width="210"> 
                                     <select id='Warehouse' name='Warehouse' size="1" onChange="setContentChanged(true)">
                                         <option value="0" selected> <c:out value="(none)"/> </option>
-                                        <c:forEach var="warehouse" items="${detailBean.availableWarehouses}">
+                                        <c:forEach var="warehouse" items="${detailBean.assignableWarehouses}">
                                             <c:choose>
                                                 <c:when test="${warehouse.warehouseID == detailBean.currentWarehouse.warehouseID}">
                                                     <option value='<c:out value="${warehouse.warehouseID}"/>' selected> <c:out value="${warehouse.warehouseName}"/> </option>

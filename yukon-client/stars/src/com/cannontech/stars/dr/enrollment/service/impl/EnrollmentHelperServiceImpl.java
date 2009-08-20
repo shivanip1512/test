@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.common.exception.DuplicateEnrollmentException;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -21,13 +22,12 @@ import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
+import com.cannontech.stars.dr.appliance.model.Appliance;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
-import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
-import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.dr.program.model.ProgramEnrollmentResultEnum;
@@ -44,7 +44,6 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     private CustomerAccountDao customerAccountDao;
     private EnrollmentDao enrollmentDao;
     private LoadGroupDao loadGroupDao;
-    private LMHardwareControlGroupDao lmHardwareControlGroupDao;
     private ProgramDao programDao;
     private ProgramEnrollmentService programEnrollmentService;
     private StarsDatabaseCache starsDatabaseCache;
@@ -81,12 +80,13 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         
         // Updates the applianceKW if the process was an enrollment.
         if (enrollmentEnum == EnrollmentEnum.ENROLL) {
-            List<LMHardwareConfiguration> lmHardwareConfigurations = 
-                lmHardwareControlGroupDao.getOldConfigDataByInventoryIdAndGroupId(programEnrollment.getInventoryId(),
-                                                                                  programEnrollment.getLmGroupId());
-            if (lmHardwareConfigurations.size() == 1) {
+            List<Appliance> appliances = 
+                applianceDao.getByAccountIdAndProgramIdAndInventoryId(customerAccount.getAccountId(),
+                                                                      programEnrollment.getProgramId(),
+                                                                      programEnrollment.getInventoryId());
+            if (appliances.size() == 1) {
                 if (enrollmentHelper.getApplianceKW() != null){
-                    applianceDao.updateApplianceKW(lmHardwareConfigurations.get(0).getApplianceId(),
+                    applianceDao.updateApplianceKW(appliances.get(0).getApplianceId(),
                                                    enrollmentHelper.getApplianceKW());
                 }
             } else {
@@ -243,19 +243,24 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     	List<ProgramEnrollment> programEnrollmentResults = new ArrayList<ProgramEnrollment>();
     	programEnrollmentResults.addAll(programEnrollments);
     	
+    	boolean found = false;
     	for (int i = 0;i < programEnrollments.size();i++) {
     		ProgramEnrollment programEnrollment = programEnrollments.get(i);
     		if (removedProgramEnrollment.getProgramId() == 0){
     			if(removedProgramEnrollment.getInventoryId() == programEnrollment.getInventoryId()){
     				programEnrollmentResults.remove(programEnrollment);
+    				found = true;
     			}
     		}
     			
     		if (removedProgramEnrollment.equivalent(programEnrollment)) {
     			programEnrollmentResults.remove(programEnrollment);
+    			found = true;
     		}
     	}
-        
+        if (!found && removedProgramEnrollment.getProgramId() > 0) {
+            throw new NotFoundException("Enrollment not found for program [" + removedProgramEnrollment.getProgramId() + "]");            
+        }
     	programEnrollments.retainAll(programEnrollmentResults);
     }           
 
@@ -311,12 +316,6 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     @Autowired
     public void setLoadGroupDao(LoadGroupDao loadGroupDao) {
         this.loadGroupDao = loadGroupDao;
-    }
-
-    @Autowired
-    public void setLmHardwareControlGroupDao(
-            LMHardwareControlGroupDao lmHardwareControlGroupDao) {
-        this.lmHardwareControlGroupDao = lmHardwareControlGroupDao;
     }
 
     @Autowired

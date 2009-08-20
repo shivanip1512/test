@@ -6,6 +6,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.web.bind.ServletRequestUtils;
 
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.util.ProgressChecker;
 import com.cannontech.stars.util.ServletUtils;
@@ -23,14 +24,17 @@ public class StaticLoadGroupMapController extends StarsInventoryActionController
             final HttpSession session, final StarsYukonUser user, 
                 final LiteStarsEnergyCompany energyCompany) throws Exception {
     	
+        // verify user has access to admin config energy company
+        rolePropertyDao.verifyProperty(YukonRoleProperty.ADMIN_CONFIG_ENERGY_COMPANY, user.getYukonUser());
+        
     	boolean resetAll = true;
         boolean sendConfig = true;
-        String action = ServletRequestUtils.getStringParameter(request, "action");
+        String actionTask = ServletRequestUtils.getStringParameter(request, "actionTask");
         String redirect = null;
         
-        if(action.startsWith("StaticLoadGroupMapSetDefaults"))
+        if(actionTask.startsWith("StaticLoadGroupMapSetDefaults"))
             resetAll = false;
-        if(action.endsWith("NoConfig"))
+        if(actionTask.endsWith("NoConfig"))
             sendConfig = false;
         
         String redirectUrl = ServletUtil.createSafeRedirectUrl(request, "/operator/Hardware/PowerUserStaticLoadGroupReset.jsp");

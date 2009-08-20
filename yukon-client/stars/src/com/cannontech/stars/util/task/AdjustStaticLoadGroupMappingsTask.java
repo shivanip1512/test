@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.ActivityLogger;
@@ -30,6 +29,8 @@ import com.cannontech.database.db.stars.hardware.StaticLoadGroupMapping;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
+import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
@@ -122,6 +123,8 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
         
         StarsInventoryBaseDao starsInventoryBaseDao = 
         	YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+        LMHardwareControlGroupDao lmHardwareControlGroupDao = 
+            YukonSpringHook.getBean("lmHardwareControlGroupDao", LMHardwareControlGroupDao.class);        
         
 		List<LiteStarsEnergyCompany> energyCompanyList = null;
 		if (!searchMembers) {
@@ -196,9 +199,13 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
                 consumptionType = ((LiteCICustomer)cust).getCICustType();
             //get ApplianceCategoryID
             Integer applianceCatID = -1;
+            int programId = -1;
             for(int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
-                if(liteAcctInfo.getAppliances().get(j).getApplianceID() == configDB.getApplianceID().intValue())
+                if(liteAcctInfo.getAppliances().get(j).getApplianceID() == configDB.getApplianceID().intValue()){
                     applianceCatID = liteAcctInfo.getAppliances().get(j).getApplianceCategoryID();
+                    programId = liteAcctInfo.getAppliances().get(j).getProgramID();
+                    break;
+                }
             }
             if(applianceCatID == -1) {
                 configurationSet.add( hwsToAdjust.get(i) );
@@ -224,6 +231,20 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
                 configDB.setAddressingGroupID(groupMapping.getLoadGroupID());
                 try {
                     Transaction.createTransaction( Transaction.UPDATE, configDB ).execute();
+                    
+                    List<LMHardwareControlGroup> existingGroups = 
+                        lmHardwareControlGroupDao.getCurrentEnrollmentByInventoryIdAndProgramIdAndAccountId(liteHw.getInventoryID(), programId, liteHw.getAccountID());
+                    if (existingGroups.size() > 0) {
+                        LMHardwareControlGroup harwareControlGroup = existingGroups.get(0);
+                        harwareControlGroup.setLmGroupId(groupMapping.getLoadGroupID());
+                        lmHardwareControlGroupDao.update(harwareControlGroup);
+                    } else {
+                        configurationSet.add( hwsToAdjust.get(i) );
+                        numFailure++;
+                        failureInfo.add("An LMHardwareControlGroup entry for switch " + liteHw.getManufacturerSerialNumber() 
+                                        + " could not be found.  It is likely this switch has not been added to an account.");
+                        continue;                        
+                    }
                 } 
                 catch(TransactionException e) {
                     throw new WebClientException(e.getMessage());

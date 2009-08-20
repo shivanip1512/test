@@ -102,8 +102,9 @@ public static StaticLoadGroupMapping getAStaticLoadGroupMapping(int appCategoryI
 {
     List<StaticLoadGroupMapping> groups = new ArrayList<StaticLoadGroupMapping>();
     
-    SqlStatement stmt = new SqlStatement("Select distinct LoadGroupID, ApplianceCategoryID, ZipCode, ConsumptionTypeID, SwitchTypeID from " + TABLE_NAME 
-                                         + " where ApplianceCategoryID = " + appCategoryID + " and ZipCode like '" + zip + "%' and consumptionTypeID = " + consumptionTypeID  
+    SqlStatement stmt = new SqlStatement("Select distinct slg.LoadGroupID, slg.ApplianceCategoryID, slg.ZipCode, slg.ConsumptionTypeID, slg.SwitchTypeID, yp.PAOName from " + TABLE_NAME 
+                                         + " slg, YukonPAObject yp where yp.paobjectID = slg.loadGroupID"  
+                                         + " and ApplianceCategoryID = " + appCategoryID + " and ZipCode like '" + zip + "%' and consumptionTypeID = " + consumptionTypeID  
                                          + " and switchTypeID = " + switchTypeID, CtiUtilities.getDatabaseAlias());
     
     try

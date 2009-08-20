@@ -35,7 +35,8 @@ public class DeleteWarehouseController extends StarsAdminActionController {
                 for (final Warehouse warehouse : wareHouseList) {
                     Transaction.createTransaction(Transaction.DELETE, warehouse).execute();
                 }
-            }    
+            }
+            energyCompany.clearWarehouseCache();
             session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Warehouse(s) successfully deleted.");
         } catch (Exception e) {
             CTILogger.error(e.getMessage(), e);

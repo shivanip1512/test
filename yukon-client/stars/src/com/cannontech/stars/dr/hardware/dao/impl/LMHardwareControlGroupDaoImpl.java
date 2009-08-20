@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
@@ -36,11 +37,15 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
     private static final String selectByEnrollStopRange;
     private static final String selectByOptOutStartRange;
     private static final String selectByOptOutStopRange;
+    private static final String selectCurrentEnrollmentByAccountId;
     private static final String selectCurrentEnrollmentByInventoryIdAndAccountId;
-    private static final String selectCurrentOptOutsByInventoryIdAndGroupIdAndAccountId;
+    private static final String selectCurrentEnrollmentByProgramIdAndAccountId;
+    private static final String selectCurrentOptOutsByProgramIdAndAccountId;
+    private static final String selectCurrentOptOutsByInventoryIdProgramIdAndAccountId;
     private static final String selectByInventoryIdAndAccountIdAndType;
     private static final String selectByInventoryIdAndGroupIdAndAccountId;
     private static final String selectByInventoryIdAndGroupIdAndAccountIdAndType;
+    private static final String selectCurrentEnrollmentByInventoryIdProgramIdAndAccountId;
     private static final String selectAllByEnergyCompanyId;
     private static final ParameterizedRowMapper<LMHardwareControlGroup> rowMapper;
     private SimpleJdbcTemplate simpleJdbcTemplate;
@@ -60,7 +65,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
         removeSql = "DELETE from " + TABLE_NAME + " WHERE ControlEntryId = ?";
          
         selectAllSql = "SELECT ControlEntryId, InventoryId, LMGroupId, AccountId, GroupEnrollStart, GroupEnrollStop, OptOutStart, " +
-                "OptOutStop, Type, Relay, UserIdFirstAction, UserIdSecondAction FROM " + TABLE_NAME;
+                "OptOutStop, Type, Relay, UserIdFirstAction, UserIdSecondAction, ProgramId FROM " + TABLE_NAME;
     
         selectById = selectAllSql + " WHERE ControlEntryId = ?";
         
@@ -82,9 +87,17 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
         
         selectByOptOutStopRange = selectAllSql + " WHERE OptOutStop > ? AND OptOutStop <= ?";
         
+        selectCurrentEnrollmentByAccountId = selectAllSql + " WHERE AccountId = ? AND GroupEnrollStop IS NULL AND NOT GroupEnrollStart IS NULL";
+        
         selectCurrentEnrollmentByInventoryIdAndAccountId = selectAllSql + " WHERE InventoryId = ? AND AccountId = ? AND GroupEnrollStop IS NULL AND NOT GroupEnrollStart IS NULL";
         
-        selectCurrentOptOutsByInventoryIdAndGroupIdAndAccountId = selectAllSql + " WHERE LMGroupId = ? AND AccountId = ? AND OptOutStop IS NULL AND NOT OptOutStart IS NULL";
+        selectCurrentEnrollmentByProgramIdAndAccountId = selectAllSql + " WHERE ProgramId = ? AND AccountId = ? AND GroupEnrollStop IS NULL AND NOT GroupEnrollStart IS NULL";        
+        
+        selectCurrentEnrollmentByInventoryIdProgramIdAndAccountId = selectAllSql + " WHERE InventoryId = ? AND ProgramId = ? AND AccountId = ? AND GroupEnrollStop IS NULL AND NOT GroupEnrollStart IS NULL";
+        
+        selectCurrentOptOutsByProgramIdAndAccountId = selectAllSql + " WHERE ProgramId = ? AND AccountId = ? AND OptOutStop IS NULL AND NOT OptOutStart IS NULL";
+        
+        selectCurrentOptOutsByInventoryIdProgramIdAndAccountId = selectAllSql + " WHERE InventoryId = ? AND ProgramId = ? AND AccountId = ? AND OptOutStop IS NULL AND NOT OptOutStart IS NULL";
         
         selectByInventoryIdAndAccountIdAndType = selectAllSql + " WHERE InventoryId = ? AND AccountId = ? AND Type = ?";
         
@@ -113,7 +126,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
     
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean remove(final LMHardwareControlGroup hardwareControlGroup) {
-        int rowsAffected = simpleJdbcTemplate.update(removeSql, hardwareControlGroup.getInventoryId());
+        int rowsAffected = simpleJdbcTemplate.update(removeSql, hardwareControlGroup.getControlEntryId());
         boolean result = (rowsAffected == 1);
         return result;
     }
@@ -135,6 +148,18 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
         Date now = new Date();
         simpleJdbcTemplate.update(unenrollHardwareSQL.toString(), now, inventoryId);
     }
+    
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+    public void stopOptOut(int inventoryId, int accountId, LiteYukonUser currentUser, Date stopDate) {
+        
+        SqlStatementBuilder optOutSQL = new SqlStatementBuilder();
+        optOutSQL.append("UPDATE LMHardwareControlGroup");
+        optOutSQL.append("SET OptOutStop = ?, UserIdSecondAction = ?");
+        optOutSQL.append("WHERE InventoryId = ? AND AccountId = ?");
+        optOutSQL.append("AND NOT OptOutStart IS NULL");
+        optOutSQL.append("AND OptOutStop IS NULL");
+        simpleJdbcTemplate.update(optOutSQL.toString(), stopDate, currentUser.getUserID(), inventoryId, accountId);
+    }    
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public LMHardwareControlGroup getById(final int controlEntryId) {
@@ -261,20 +286,54 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
         }
     }
 
+    public List<LMHardwareControlGroup> getCurrentEnrollmentByAccountId(int accountId) {
+        List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectCurrentEnrollmentByAccountId, rowMapper, accountId);
+        return list;
+    }    
+    
     public List<LMHardwareControlGroup> getCurrentEnrollmentByInventoryIdAndAccountId(int inventoryId, int accountId) {
             List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectCurrentEnrollmentByInventoryIdAndAccountId, rowMapper, inventoryId, accountId);
             return list;
     }
     
-    public List<LMHardwareControlGroup> getCurrentOptOutByGroupIdAndAccountId(int lmGroupId, int accountId) {
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public List<LMHardwareControlGroup> getCurrentEnrollmentByProgramIdAndAccountId(int programId, int accountId) {
         try {
-            List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectCurrentOptOutsByInventoryIdAndGroupIdAndAccountId, rowMapper, lmGroupId, accountId);
+            List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectCurrentEnrollmentByProgramIdAndAccountId, rowMapper, programId, accountId);
+            return list;
+        } catch (DataAccessException e) {
+            return Collections.emptyList();
+        }
+    }      
+
+    public List<LMHardwareControlGroup> getCurrentEnrollmentByInventoryIdAndProgramIdAndAccountId(int inventoryId, int programId, int accountId) {
+        try {
+            List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectCurrentEnrollmentByInventoryIdProgramIdAndAccountId, rowMapper, inventoryId, programId, accountId);
+            return list;
+        } catch (DataAccessException e) {
+            return Collections.emptyList();
+        }
+    }    
+    
+    public List<LMHardwareControlGroup> getCurrentOptOutByProgramIdAndAccountId(int programId, int accountId) {
+        try {
+            List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectCurrentOptOutsByProgramIdAndAccountId, rowMapper, programId, accountId);
             return list;
         } catch (DataAccessException e) {
             return Collections.emptyList();
             
         }
     }
+    
+    public List<LMHardwareControlGroup> getCurrentOptOutByInventoryIdProgramIdAndAccountId(int inventoryId, int programId, int accountId) {
+        try {
+            List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectCurrentOptOutsByInventoryIdProgramIdAndAccountId, rowMapper, inventoryId, programId, accountId);
+            return list;
+        } catch (DataAccessException e) {
+            return Collections.emptyList();
+            
+        }
+    }    
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareControlGroup> getAll() {
@@ -312,6 +371,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
                 hardwareControlGroup.setRelay(rs.getInt("Relay"));
                 hardwareControlGroup.setUserIdFirstAction(rs.getInt("UserIdFirstAction"));
                 hardwareControlGroup.setUserIdSecondAction(rs.getInt("UserIdSecondAction"));
+                hardwareControlGroup.setProgramId(rs.getInt("ProgramId"));
                 return hardwareControlGroup;
             }
         };
@@ -355,6 +415,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
             p.addValue("relay", controlInfo.getRelay());
             p.addValue("userIdFirstAction", controlInfo.getUserIdFirstAction());
             p.addValue("userIdSecondAction", controlInfo.getUserIdSecondAction());
+            p.addValue("programId", controlInfo.getProgramId());
         }
         public Number getPrimaryKey(LMHardwareControlGroup controlInfo) {
             return controlInfo.getControlEntryId();

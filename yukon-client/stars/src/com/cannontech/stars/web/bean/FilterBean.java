@@ -110,7 +110,7 @@ public class FilterBean
     public List<LiteServiceCompany> getAvailableServiceCompanies()
     {
         if(availableServiceCompanies == null) {
-            availableServiceCompanies = energyCompany.getAllServiceCompaniesDownward();
+            availableServiceCompanies = energyCompany.getAllServiceCompaniesUpDown();
         }
         return availableServiceCompanies;
     }

@@ -159,7 +159,8 @@ function changeProgSelection(chkBox) {
 
 					<c:set target="${configBean}" property="currentApplianceCategoryID" value="${appCategoryID}" />
 					<td width="35%" height="2"> 
-                       <select id="Group_Prog<%= program.getProgramID() %>" name="GroupID" onchange="setContentChanged(true)">
+                       <select id="Group_Prog<%= program.getProgramID() %>" name="GroupID" onchange="setContentChanged(true)"
+                       <% if (!assigned) out.print("disabled"); %>>
 		                  <option value="0" selected> <c:out value="(none)"/> </option>
 	                      <c:forEach var="group" items="${configBean.currentStaticGroups}">
 								<c:if test="${group.loadGroupID == groupID}">

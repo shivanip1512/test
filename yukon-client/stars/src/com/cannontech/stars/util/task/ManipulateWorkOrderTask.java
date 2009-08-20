@@ -106,10 +106,19 @@ public class ManipulateWorkOrderTask extends TimeConsumingTask {
 			
 			LiteWorkOrderBase liteWorkOrder = workOrderList.get(i);
 			WorkOrderBase workOrderBase = (WorkOrderBase)StarsLiteFactory.createDBPersistent(liteWorkOrder);
+            LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany(liteWorkOrder.getEnergyCompanyID());			
 			//Do not retrieve the whole work order again, it is already all there since the lite and the heavy are the same.  This may change though!
 			
 			if( changeServiceCompanyID != null && workOrderBase.getWorkOrderBase().getServiceCompanyID().intValue() != changeServiceCompanyID.intValue())
 			{
+                //see if newServiceCompanyID is available for the energyCompany of the device
+                if (energyCompany.getServiceCompany(changeServiceCompanyID) == null) {
+                    String msg = "Service company [" + changeServiceCompanyID + "] is not available to energy company [" + energyCompany.getName() + "]";
+                    CTILogger.error( msg );
+                    failedWorkOrderMessages.add("Work Order#: " + liteWorkOrder.getOrderNumber() + " - " + msg);
+                    numFailure++;                    
+                    continue;
+                }			    
 				workOrderBase.getWorkOrderBase().setServiceCompanyID(changeServiceCompanyID);
 				isChanged = true;
 			}

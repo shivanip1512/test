@@ -170,6 +170,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
     private LiteYukonUser user = null;
 
     private List<LiteServiceCompany> serviceCompanies = null;
+    private volatile List<Warehouse> warehouses = null;
     private List<LiteSubstation> substations = null;
     private List<LiteInterviewQuestion> interviewQuestions = null;
 
@@ -667,7 +668,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
     }
     
     /**
-     * @return A copy of the serviceCompany list
+     * Returns list of inherited and energy company's own service companies,
+     * that are allowed to be assigned to a device, work order etc
+     * 
+     * @return A copy of the serviceCompany list 
      */
     public List<LiteServiceCompany> getAllServiceCompanies() {
         List<LiteServiceCompany> allCompanies = new ArrayList<LiteServiceCompany>();
@@ -677,6 +681,28 @@ public class LiteStarsEnergyCompany extends LiteBase {
         List<LiteServiceCompany> companies = getServiceCompanies();
         synchronized (companies) {
             allCompanies.addAll(companies);
+        }
+        
+        return allCompanies;
+    }
+
+    /**
+     * Returns list of inherited, energy company's own and its descendants' service companies,
+     * used to search/display list of devices, work orders etc for viewing purposes.
+     * 
+     * @return A copy of the serviceCompany list 
+     */
+    public List<LiteServiceCompany> getAllServiceCompaniesUpDown() {
+        List<LiteServiceCompany> allCompanies = new ArrayList<LiteServiceCompany>();
+        if (getParent() != null) {
+            allCompanies.addAll(getParent().getAllServiceCompanies());
+        }
+        List<LiteServiceCompany> companies = getServiceCompanies();
+        synchronized (companies) {
+            allCompanies.addAll(companies);
+        }
+        for (LiteStarsEnergyCompany child : getChildren()) {
+            allCompanies.addAll(child.getAllServiceCompaniesDownward());
         }
         
         return allCompanies;
@@ -707,10 +733,35 @@ public class LiteStarsEnergyCompany extends LiteBase {
         return descEnergyCompanies;
     }
 
+    /**
+     * Returns list of energy company's own warehouses,
+     * that are allowed to be assigned to a device, shipment, work order etc
+     * 
+     * @return A copy of the warehouse list 
+     */
+    public List<Warehouse> getWarehouses() {
+        List<Warehouse> tempWarehouses = warehouses;
+        if (tempWarehouses == null) {
+            tempWarehouses = new ArrayList<Warehouse>();
+            tempWarehouses = Warehouse.getAllWarehousesForEnergyCompany(getEnergyCompanyID().intValue());
+            CTILogger.info( "All Warehouses loaded for energy company #" + getEnergyCompanyID() );            
+
+            warehouses = tempWarehouses;
+        }
+        return Collections.unmodifiableList(tempWarehouses);        
+    }
+    
+    /**
+     * Returns list of energy company's own and its descendants' warehouses,
+     * used to search/display list of devices, work orders etc for viewing purposes.
+     * 
+     * @return A copy of the warehouse list 
+     */
     public List<Warehouse> getAllWarehousesDownward() 
     {
-        List<Warehouse> descWarehouses = Warehouse.getAllWarehousesForEnergyCompany(getEnergyCompanyID().intValue());
-        
+        List<Warehouse> descWarehouses = new ArrayList<Warehouse>(); 
+        descWarehouses.addAll(getWarehouses());
+                 
         for (LiteStarsEnergyCompany child : getChildren()) {
             descWarehouses.addAll(child.getAllWarehousesDownward());
         }
@@ -1051,6 +1102,19 @@ public class LiteStarsEnergyCompany extends LiteBase {
         }
         
         return null;
+    }
+    
+    public Warehouse getWarehouse(int warehouseId) {
+        List<Warehouse> warehouses = getWarehouses();
+        for (Warehouse warehouse : warehouses) {
+            if (warehouse.getWarehouseID() == warehouseId)
+                return warehouse;
+        }
+        return null;
+    }
+    
+    public synchronized void clearWarehouseCache() {
+        warehouses = null;
     }
     
     public LiteSubstation getSubstation(int substationID) {

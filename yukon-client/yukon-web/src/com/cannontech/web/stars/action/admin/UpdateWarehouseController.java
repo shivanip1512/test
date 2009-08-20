@@ -51,12 +51,14 @@ public class UpdateWarehouseController extends StarsAdminActionController {
                 currentWarehouse.setAddressID(currentAddress.getAddressID());
                 currentWarehouse.setEnergyCompanyID(new Integer(user.getEnergyCompanyID()));
                 currentWarehouse = (Warehouse)Transaction.createTransaction(Transaction.INSERT, currentWarehouse).execute();
+                energyCompany.clearWarehouseCache();
                 session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Warehouse successfully created.");
             
             } else {
             
                 currentAddress = (Address)Transaction.createTransaction(Transaction.UPDATE, currentAddress).execute();
                 currentWarehouse = (Warehouse)Transaction.createTransaction(Transaction.UPDATE, currentWarehouse).execute();
+                energyCompany.clearWarehouseCache();
                 session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Changes to warehouse completed successfully.");
             
             }

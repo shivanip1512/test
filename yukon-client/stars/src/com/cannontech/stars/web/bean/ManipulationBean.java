@@ -76,7 +76,7 @@ public class ManipulationBean
     public List<LiteServiceCompany> getAvailableServiceCompanies()
     {
         if(availableServiceCompanies == null)
-            availableServiceCompanies = energyCompany.getAllServiceCompaniesDownward();
+            availableServiceCompanies = energyCompany.getAllServiceCompaniesUpDown();
         return availableServiceCompanies;
     }
     

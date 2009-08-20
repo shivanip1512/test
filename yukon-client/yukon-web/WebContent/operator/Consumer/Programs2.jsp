@@ -179,7 +179,7 @@ function prepareSubmit(form) {
                     <% if (configBean.isWriteToFileAllowed()) 
                     {   
                     pageContext.setAttribute("groupID", groupID);
-                    pageContext.setAttribute("appCatID",program.getApplianceCategoryID());
+                    pageContext.setAttribute("appCatID",suProg.getApplianceCategoryID());
                 %>
                     <c:set target="${configBean}" property="currentApplianceCategoryID" value="${appCatID}" />
                     <td width="25%" class="TableCell"> 
