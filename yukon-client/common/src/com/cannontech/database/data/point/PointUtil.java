@@ -14,6 +14,7 @@ import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.point.Point;
 import com.cannontech.database.db.point.PointAlarming;
+import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 
@@ -36,7 +37,8 @@ public class PointUtil {
                                                                       validPointOffset,
                                                                       PointUnits.UOMID_VOLTS,
                                                                       1.0, 
-                                                                      StateGroupUtils.STATEGROUP_ANALOG);
+                                                                      StateGroupUtils.STATEGROUP_ANALOG,
+                                                                      PointUnit.DEFAULT_DECIMAL_PLACES);
            dbPersistentVector.getDBPersistentVector().add(point);
            break;
        case PointTypes.STATUS_POINT:
@@ -54,7 +56,8 @@ public class PointUtil {
                                                                       TypeBase.POINT_OFFSET, 
                                                                       PointUnits.UOMID_UNDEF, 
                                                                       0.1, 
-                                                                      StateGroupUtils.STATEGROUP_ANALOG);
+                                                                      StateGroupUtils.STATEGROUP_ANALOG,
+                                                                      PointUnit.DEFAULT_DECIMAL_PLACES);
            
            dbPersistentVector.getDBPersistentVector().add(point);
            break;

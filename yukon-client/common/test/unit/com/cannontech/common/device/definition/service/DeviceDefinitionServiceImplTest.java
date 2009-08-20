@@ -76,9 +76,9 @@ public class DeviceDefinitionServiceImplTest {
 
         // Test with supported device
         List<PointBase> expectedPoints = new ArrayList<PointBase>();
-        expectedPoints.add(pointService.createPoint(2, "pulse1", 1, 1, 1.0, 1, 0));
-        expectedPoints.add(pointService.createPoint(3, "demand1", 1, 1, 1.0, 0, 0));
-        expectedPoints.add(pointService.createPoint(1, "analog1", 1, 1, 1.0, 1, 0));
+        expectedPoints.add(pointService.createPoint(2, "pulse1", 1, 1, 1.0, 1, 0, 3));
+        expectedPoints.add(pointService.createPoint(3, "demand1", 1, 1, 1.0, 0, 0, 3));
+        expectedPoints.add(pointService.createPoint(1, "analog1", 1, 1, 1.0, 1, 0, 3));
 
         List<PointBase> actualPoints = service.createDefaultPointsForDevice(device);
 
@@ -164,11 +164,11 @@ public class DeviceDefinitionServiceImplTest {
 
         // Test with supported device
         List<PointBase> expectedPoints = new ArrayList<PointBase>();
-        expectedPoints.add(pointService.createPoint(0, "status1", 1, 1, 1.0, 0, 0));
-        expectedPoints.add(pointService.createPoint(2, "pulse1", 1, 1, 1.0, 1, 0));
-        expectedPoints.add(pointService.createPoint(2, "pulse2", 1, 2, 0.1, 1, 0));
-        expectedPoints.add(pointService.createPoint(3, "demand1", 1, 1, 1.0, 0, 0));
-        expectedPoints.add(pointService.createPoint(1, "analog1", 1, 1, 1.0, 1, 0));
+        expectedPoints.add(pointService.createPoint(0, "status1", 1, 1, 1.0, 0, 0, 3));
+        expectedPoints.add(pointService.createPoint(2, "pulse1", 1, 1, 1.0, 1, 0, 3));
+        expectedPoints.add(pointService.createPoint(2, "pulse2", 1, 2, 0.1, 1, 0, 3));
+        expectedPoints.add(pointService.createPoint(3, "demand1", 1, 1, 1.0, 0, 0, 3));
+        expectedPoints.add(pointService.createPoint(1, "analog1", 1, 1, 1.0, 1, 0, 3));
 
         List<PointBase> actualPoints = service.createAllPointsForDevice(device);
 
@@ -203,7 +203,8 @@ public class DeviceDefinitionServiceImplTest {
                                                     2,
                                                     1.0,
                                                     1,
-                                                    0));
+                                                    0,
+                                                    3));
 
         // Demand Accumulators
         expectedTemplates.add(new PointTemplate("demand1",
@@ -211,7 +212,8 @@ public class DeviceDefinitionServiceImplTest {
                                                     1,
                                                     1.0,
                                                     0,
-                                                    0));
+                                                    0,
+                                                    3));
 
         
         Set<PointTemplate> actualTemplates = service.getPointTemplatesToAdd(device,
@@ -300,7 +302,8 @@ public class DeviceDefinitionServiceImplTest {
                 3,
                 .1,
                 1,
-                0);
+                0,
+                3);
         pair.oldDefinitionTemplate = new PointIdentifier(2, 4);
         expectedTemplates.add(pair);
 
@@ -310,7 +313,8 @@ public class DeviceDefinitionServiceImplTest {
                 1,
                 .0001,
                 1,
-                0);
+                0,
+                3);
         pair.oldDefinitionTemplate = new PointIdentifier(1, 1);
         expectedTemplates.add(pair);
         List<PointTemplateTransferPair> actualTemplates = service.getPointTemplatesToTransfer(device,

@@ -3,6 +3,7 @@ package com.cannontech.common.device.definition.model;
 import org.springframework.core.style.ToStringCreator;
 
 import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.state.StateGroupUtils;
 
 /**
@@ -15,6 +16,7 @@ public class PointTemplate implements Comparable<PointTemplate> {
     private double multiplier = 1.0;
     private int unitOfMeasure = PointUnits.UOMID_INVALID;
     private int stateGroupId = StateGroupUtils.STATEGROUP_ANALOG;
+    private int decimalPlaces = PointUnit.DEFAULT_DECIMAL_PLACES;
 
     public PointTemplate(int type, int offset) {
         pointIdentifier = new PointIdentifier(type, offset);
@@ -33,12 +35,13 @@ public class PointTemplate implements Comparable<PointTemplate> {
     }
 
     public PointTemplate(String name, int type, int offset, double multiplier,
-            int unitOfMeasure, int stateGroupId) {
+            int unitOfMeasure, int stateGroupId, int decimalPlaces) {
         pointIdentifier = new PointIdentifier(type, offset);
         this.name = name;
         this.multiplier = multiplier;
         this.unitOfMeasure = unitOfMeasure;
         this.stateGroupId = stateGroupId;
+        this.decimalPlaces = decimalPlaces;
     }
 
     public double getMultiplier() {
@@ -71,6 +74,14 @@ public class PointTemplate implements Comparable<PointTemplate> {
 
     public void setUnitOfMeasure(int unitOfMeasure) {
         this.unitOfMeasure = unitOfMeasure;
+    }
+    
+    public int getDecimalPlaces() {
+        return decimalPlaces;
+    }
+    
+    public void setDecimalPlaces(int decimalPlaces) {
+        this.decimalPlaces = decimalPlaces;
     }
 
     public int compareTo(PointTemplate o) {

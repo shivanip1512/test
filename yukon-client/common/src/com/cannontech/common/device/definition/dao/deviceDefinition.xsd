@@ -77,6 +77,11 @@
 	                                    <xs:attribute name="value" type="xs:string" use="required" />
 	                                </xs:complexType>
 	                            </xs:element>
+	                            <xs:element name="decimalplaces">
+	                                <xs:complexType>
+	                                    <xs:attribute name="value" type="xs:integer" use="required" />
+	                                </xs:complexType>
+	                            </xs:element>
 	                        </xs:sequence>
 	                        <xs:element name="stategroup">
 	                            <xs:complexType>

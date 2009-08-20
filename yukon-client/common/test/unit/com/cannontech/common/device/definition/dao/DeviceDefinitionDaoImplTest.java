@@ -64,7 +64,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
 
         dao = DeviceDefinitionDaoImplTest.getTestDeviceDefinitionDao();
 
-        device = new SimpleDevice(10, 1019);
+        device = new SimpleDevice(10, 1019); // 1019 = MCT 310
         device.setType(1019);
     }
     
@@ -102,7 +102,8 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
                                                                2,
                                                                1.0,
                                                                1,
-                                                               0);
+                                                               0,
+                                                               3);
         PaoPointTemplate expectedDevicePointTemplate = new PaoPointTemplate(device.getPaoIdentifier(), expectedPointTemplate);
 
         AttributeDefinition attributeDefinition = dao.getAttributeLookup(device.getDeviceType(), BuiltInAttribute.USAGE);
@@ -323,7 +324,8 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
 		                                                2,
 		                                                2.5,
 		                                                0,
-		                                                0);
+		                                                0,
+		                                                3);
         
         PaoType deviceType = PaoType.getForId(device.getType());
         PointIdentifier pointIdentifier = new PointIdentifier(2, 2);
@@ -384,7 +386,8 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
                                                     2,
                                                     1.0,
                                                     1,
-                                                    0));
+                                                    0,
+                                                    3));
 
         // Demand Accumulators
         expectedTemplates.add(new PointTemplate("demand1",
@@ -392,7 +395,8 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
                                                     1,
                                                     1.0,
                                                     0,
-                                                    0));
+                                                    0,
+                                                    3));
 
         // Analog
         expectedTemplates.add(new PointTemplate("analog1",
@@ -400,7 +404,8 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
                                                     1,
                                                     1.0,
                                                     1,
-                                                    0));
+                                                    0,
+                                                    3));
 
         return expectedTemplates;
 
@@ -423,10 +428,11 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
                                                     4,
                                                     1.0,
                                                     1,
-                                                    0));
+                                                    0,
+                                                    3));
 
         // Status
-        expectedTemplates.add(new PointTemplate("status1", 0, 1, 1.0, -1, 0));
+        expectedTemplates.add(new PointTemplate("status1", 0, 1, 1.0, -1, 0,3));
 
         return expectedTemplates;
     }

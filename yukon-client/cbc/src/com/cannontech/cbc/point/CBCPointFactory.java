@@ -206,7 +206,8 @@ public class CBCPointFactory {
                                                        param.getOffset(),
                                                        ((AnalogPointParams) param).getUofm(),
                                                        ((AnalogPointParams) param).getMult(), 
-                                                       StateGroupUtils.STATEGROUP_ANALOG);
+                                                       StateGroupUtils.STATEGROUP_ANALOG,
+                                                       PointUnit.DEFAULT_DECIMAL_PLACES);
 
                 break;
 
@@ -220,7 +221,8 @@ public class CBCPointFactory {
                                                            param.getOffset(),
                                                            ((AccumPointParams) param).getUofm(),
                                                            ((AccumPointParams) param).getMult(), 
-                                                           StateGroupUtils.STATEGROUP_ANALOG);
+                                                           StateGroupUtils.STATEGROUP_ANALOG,
+                                                           PointUnit.DEFAULT_DECIMAL_PLACES);
 
                 PointUnit punit = new PointUnit(point.getPoint().getPointID(),
                                                 new Integer(PointUnits.UOMID_COUNTS),

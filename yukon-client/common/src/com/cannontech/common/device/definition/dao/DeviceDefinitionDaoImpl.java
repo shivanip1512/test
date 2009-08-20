@@ -71,6 +71,7 @@ import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.google.common.collect.ImmutableSet;
 
@@ -790,6 +791,7 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
 
         double multiplier = 1.0;
         int unitOfMeasure = PointUnits.UOMID_INVALID;
+        int decimalPlaces = PointUnit.DEFAULT_DECIMAL_PLACES;
         if (point.getPointChoice().getPointChoiceSequence() != null) {
             if (point.getPointChoice().getPointChoiceSequence().getMultiplier() != null) {
                 multiplier = point.getPointChoice()
@@ -812,9 +814,13 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
                 }
                 unitOfMeasure = unitMeasure.getUomID();
             }
+            if (point.getPointChoice().getPointChoiceSequence().getDecimalplaces() != null) {
+                decimalPlaces = point.getPointChoice().getPointChoiceSequence().getDecimalplaces().getValue();
+            }
         }
         template.setMultiplier(multiplier);
         template.setUnitOfMeasure(unitOfMeasure);
+        template.setDecimalPlaces(decimalPlaces);
 
         int stateGroupId = StateGroupUtils.SYSTEM_STATEGROUPID;
         if (point.getPointChoice().getStategroup() != null) {

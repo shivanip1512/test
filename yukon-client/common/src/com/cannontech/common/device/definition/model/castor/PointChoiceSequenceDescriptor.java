@@ -136,6 +136,41 @@ public class PointChoiceSequenceDescriptor extends org.exolab.castor.xml.util.XM
         { //-- local scope
         }
         desc.setValidator(fieldValidator);
+        //-- _decimalplaces
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(com.cannontech.common.device.definition.model.castor.Decimalplaces.class, "_decimalplaces", "decimalplaces", org.exolab.castor.xml.NodeType.Element);
+        handler = new org.exolab.castor.xml.XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                PointChoiceSequence target = (PointChoiceSequence) object;
+                return target.getDecimalplaces();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    PointChoiceSequence target = (PointChoiceSequence) object;
+                    target.setDecimalplaces( (com.cannontech.common.device.definition.model.castor.Decimalplaces) value);
+                }
+                catch (java.lang.Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new com.cannontech.common.device.definition.model.castor.Decimalplaces();
+            }
+        };
+        desc.setHandler(handler);
+        desc.setRequired(true);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _decimalplaces
+        fieldValidator = new org.exolab.castor.xml.FieldValidator();
+        fieldValidator.setMinOccurs(1);
+        { //-- local scope
+        }
+        desc.setValidator(fieldValidator);
     } //-- com.cannontech.common.device.definition.model.castor.PointChoiceSequenceDescriptor()
 
 

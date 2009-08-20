@@ -43,6 +43,11 @@ public class PointChoiceSequence implements java.io.Serializable {
      */
     private com.cannontech.common.device.definition.model.castor.Unitofmeasure _unitofmeasure;
 
+    /**
+     * Field _decimalplaces
+     */
+    private com.cannontech.common.device.definition.model.castor.Decimalplaces _decimalplaces;
+
 
       //----------------/
      //- Constructors -/
@@ -57,6 +62,17 @@ public class PointChoiceSequence implements java.io.Serializable {
       //-----------/
      //- Methods -/
     //-----------/
+
+    /**
+     * Returns the value of field 'decimalplaces'.
+     * 
+     * @return Decimalplaces
+     * @return the value of field 'decimalplaces'.
+     */
+    public com.cannontech.common.device.definition.model.castor.Decimalplaces getDecimalplaces()
+    {
+        return this._decimalplaces;
+    } //-- com.cannontech.common.device.definition.model.castor.Decimalplaces getDecimalplaces() 
 
     /**
      * Returns the value of field 'multiplier'.
@@ -125,6 +141,16 @@ public class PointChoiceSequence implements java.io.Serializable {
         
         Marshaller.marshal(this, handler);
     } //-- void marshal(org.xml.sax.ContentHandler) 
+
+    /**
+     * Sets the value of field 'decimalplaces'.
+     * 
+     * @param decimalplaces the value of field 'decimalplaces'.
+     */
+    public void setDecimalplaces(com.cannontech.common.device.definition.model.castor.Decimalplaces decimalplaces)
+    {
+        this._decimalplaces = decimalplaces;
+    } //-- void setDecimalplaces(com.cannontech.common.device.definition.model.castor.Decimalplaces) 
 
     /**
      * Sets the value of field 'multiplier'.

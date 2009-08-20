@@ -6,6 +6,7 @@ import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
@@ -191,7 +192,8 @@ public Object getValue(Object o)
                                                1,
                                                0.0,
                                                0,
-                                               StateGroupUtils.STATEGROUP_TWO_STATE_ACTIVE);
+                                               StateGroupUtils.STATEGROUP_TWO_STATE_ACTIVE,
+                                               PointUnit.DEFAULT_DECIMAL_PLACES);
 
         SmartMultiDBPersistent persistant = new SmartMultiDBPersistent();
         persistant.addOwnerDBPersistent(program);

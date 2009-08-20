@@ -32,7 +32,7 @@ public class PointServiceImpl implements PointService {
     }
 
     public PointBase createPoint(int type, String name, int paoId, int offset, double multiplier,
-            int unitOfMeasure, int stateGroupId) {
+            int unitOfMeasure, int stateGroupId, int decimalPlaces) {
 
         PointBase point = null;
         int pointId = nextValueHelper.getNextValue("point");
@@ -45,7 +45,8 @@ public class PointServiceImpl implements PointService {
                                                                  offset,
                                                                  unitOfMeasure,
                                                                  multiplier,
-                                                                 stateGroupId);
+                                                                 stateGroupId,
+                                                                 decimalPlaces);
             break;
 
         case PointTypes.STATUS_POINT:
@@ -63,7 +64,8 @@ public class PointServiceImpl implements PointService {
                                                                         offset,
                                                                         unitOfMeasure,
                                                                         multiplier, 
-                                                                        stateGroupId);
+                                                                        stateGroupId,
+                                                                        decimalPlaces);
 
             break;
 
@@ -74,7 +76,8 @@ public class PointServiceImpl implements PointService {
                                                                           offset,
                                                                           unitOfMeasure,
                                                                           multiplier, 
-                                                                          stateGroupId);
+                                                                          stateGroupId,
+                                                                          decimalPlaces);
 
             break;
 
@@ -92,7 +95,8 @@ public class PointServiceImpl implements PointService {
                                 template.getOffset(),
                                 template.getMultiplier(),
                                 template.getUnitOfMeasure(),
-                                template.getStateGroupId());
+                                template.getStateGroupId(),
+                                template.getDecimalPlaces());
     }
 
     public LitePoint getPointForDevice(YukonPao pao, PointIdentifier pointIdentifier) throws NotFoundException {

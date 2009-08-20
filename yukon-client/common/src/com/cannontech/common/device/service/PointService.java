@@ -23,10 +23,11 @@ public interface PointService {
      * @param multiplier - Multiplier for point
      * @param unitOfMeasure - Unit of measure for point
      * @param stateGroupId - State group id for point
+     * @param decimalPlaces - Number of decimal places
      * @return A new point of the given type
      */
     public abstract PointBase createPoint(int type, String name, int paoId, int offset,
-            double multiplier, int unitOfMeasure, int stateGroupId);
+            double multiplier, int unitOfMeasure, int stateGroupId, int decimalplaces);
 
     /**
      * Method to create a point based on a point template
