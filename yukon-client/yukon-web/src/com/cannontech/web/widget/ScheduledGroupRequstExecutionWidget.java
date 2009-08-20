@@ -24,6 +24,7 @@ import com.cannontech.jobs.service.JobManager;
 import com.cannontech.web.amr.scheduledGroupRequestExecution.ScheduledGroupRequestExecutionJobWrapperFactory;
 import com.cannontech.web.amr.scheduledGroupRequestExecution.ScheduledGroupRequestExecutionJobWrapperFactory.ScheduledGroupRequestExecutionJobWrapper;
 import com.cannontech.web.widget.support.WidgetControllerBase;
+import com.cannontech.web.widget.support.WidgetParameterHelper;
 
 public class ScheduledGroupRequstExecutionWidget extends WidgetControllerBase {
 
@@ -75,7 +76,7 @@ public class ScheduledGroupRequstExecutionWidget extends WidgetControllerBase {
 	
 	public ModelAndView delete(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		
-		int jobId = ServletRequestUtils.getRequiredIntParameter(request, "scheduledGroupRequestsWidget_deleteJobId");
+		int jobId = WidgetParameterHelper.getRequiredIntParameter(request, "jobId");
 		
 		YukonJob job = jobManager.getJob(jobId);
 		jobManager.deleteJob(job);

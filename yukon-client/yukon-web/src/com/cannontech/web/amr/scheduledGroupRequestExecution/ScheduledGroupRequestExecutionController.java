@@ -73,10 +73,13 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 		
 		// edit existing job
 		int editJobId = ServletRequestUtils.getIntParameter(request, "editJobId", 0);
-		mav.addObject("editJobId", editJobId);
+		boolean editMode = false;
+		if (editJobId > 0) {
+			editMode = true;
+		}
 		
 		// set the parameters to those of the current job if they are not already present in the request (which may exist due to error pass-through)
-		if (editJobId > 0) {
+		if (editMode) {
 			
 			ScheduledRepeatingJob existingJob = (ScheduledRepeatingJob)jobManager.getJob(editJobId);
 			ScheduledGroupRequestExecutionTask existingTask = new ScheduledGroupRequestExecutionTask();
@@ -116,7 +119,8 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 			}
 		}
 		
-		
+		mav.addObject("editJobId", editJobId);
+		mav.addObject("editMode", editMode);
 		mav.addObject("errorMsg", errorMsg);
 		mav.addObject("requestType", requestType);
 		mav.addObject("attribute", attribute);

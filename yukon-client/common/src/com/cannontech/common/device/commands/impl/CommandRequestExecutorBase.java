@@ -340,7 +340,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         commandRequestExecution.setStartTime(new Date());
         commandRequestExecution.setRequestCount(commands.size());
         commandRequestExecution.setCommandRequestExecutionType(type);
-        commandRequestExecution.setUserId(user.getUserID());
+        commandRequestExecution.setUserName(user.getUsername());
         commandRequestExecution.setCommandRequestType(getCommandRequestType());
         
         commandRequestExecutionDao.saveOrUpdate(commandRequestExecution);

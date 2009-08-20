@@ -37,11 +37,14 @@ import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @Controller
 @RequestMapping("/tamperFlagProcessing/process/*")
+@CheckRoleProperty(YukonRoleProperty.TAMPER_FLAG_PROCESSING)
 public class TamperFlagProcessingController implements InitializingBean {
 
 	private TamperFlagMonitorDao tamperFlagMonitorDao;
@@ -147,7 +150,11 @@ public class TamperFlagProcessingController implements InitializingBean {
 	                resolvableTemplate.addData("tamperFlagMonitorId", tamperFlagMonitor.getTamperFlagMonitorId());
 	                int successCount = result.getResultHolder().getResultStrings().size();
 	                int total = (int)result.getOriginalDeviceCollectionCopy().getDeviceCount();
-	                resolvableTemplate.addData("percentSuccess", (float)((successCount * 100) / total));
+	                float percentSuccess = 100.0f;
+	                if (total > 0) {
+	                	percentSuccess = (float)((successCount * 100) / total);
+	                }
+	                resolvableTemplate.addData("percentSuccess", percentSuccess);
 	                resolvableTemplate.addData("resultKey", result.getKey());
 	                
 	                TamperFlagProcessingReadInternalFlagsCompletionAlert readInternalFlagsCompletionAlert = new TamperFlagProcessingReadInternalFlagsCompletionAlert(new Date(), resolvableTemplate);
@@ -161,8 +168,6 @@ public class TamperFlagProcessingController implements InitializingBean {
 		
 		} catch (PaoAuthorizationException e) {
 			processError = "User does not have access to run read flags command.";
-		} catch (Exception e) {
-			processError = e.getMessage();
 		}
 		
 		model.addAttribute("tamperFlagMonitorId", tamperFlagMonitorId);

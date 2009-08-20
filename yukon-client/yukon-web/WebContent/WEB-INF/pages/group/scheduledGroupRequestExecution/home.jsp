@@ -22,7 +22,7 @@
 <cti:msg var="updateButtonText" key="yukon.common.device.scheduledGroupRequestExecution.home.updateButton"/>
 
 <c:choose>
-	<c:when test="${editJobId <= 0}">
+	<c:when test="${!editMode}">
 		<c:set var="pageTitle" value="${normalPageTitle}"/>
 	</c:when>
 	<c:otherwise>
@@ -69,10 +69,10 @@
         <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson" selectGroupName="${deviceGroupName}" selectedNodePathVar="selectedNodePath" />
         
         <%-- TABS --%>
-		<tags:tabbedContentSelector>
+		<cti:tabbedContentSelector>
 		        
 			<%-- ATTRIBUTE TAB --%>
-			<tags:tabbedContentSelectorContent selectorName="${attibuteRequestTypeLabel}" initiallySelected="${empty requestType || requestType == 'SCHEDULED_GROUP_ATTRIBUTE_READ'}">
+			<cti:tabbedContentSelectorContent selectorName="${attibuteRequestTypeLabel}" initiallySelected="${empty requestType || requestType == 'SCHEDULED_GROUP_ATTRIBUTE_READ'}">
         		
 				<form id="scheduledGroupRequestExecutionForm_attr" action="/spring/group/scheduledGroupRequestExecution/schedule" method="post" >
         		 
@@ -134,7 +134,7 @@
 					<div class="scheduleButtonDiv">
 			        <c:choose>
 			       	 	<%-- SCHDULE MODE --%>
-						<c:when test="${editJobId <= 0}">
+						<c:when test="${!editMode}">
 							<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_attr" labelBusy="${scheduleButtonText}" label="${scheduleButtonText}"/>
 						</c:when>
 						
@@ -148,12 +148,12 @@
         	
         		</form>
         	
-        	</tags:tabbedContentSelectorContent>
+        	</cti:tabbedContentSelectorContent>
         	
         	
         	
         	<%-- COMMAND TAB --%>
-        	<tags:tabbedContentSelectorContent selectorName="${commandRequestTypeLabel}" initiallySelected="${requestType == 'SCHEDULED_GROUP_COMMAND'}">
+        	<cti:tabbedContentSelectorContent selectorName="${commandRequestTypeLabel}" initiallySelected="${requestType == 'SCHEDULED_GROUP_COMMAND'}">
         	
         		<form id="scheduledGroupRequestExecutionForm_cmd" action="/spring/group/scheduledGroupRequestExecution/schedule" method="post" >
         		 
@@ -215,7 +215,7 @@
         			<div class="scheduleButtonDiv">
 			        <c:choose>
 			       	 	<%-- SCHDULE MODE --%>
-						<c:when test="${editJobId <= 0}">
+						<c:when test="${!editMode}">
 							<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_cmd" labelBusy="${scheduleButtonText}" label="${scheduleButtonText}"/>
 						</c:when>
 						
@@ -229,8 +229,8 @@
         	
         		</form>
         	
-        	</tags:tabbedContentSelectorContent>
+        	</cti:tabbedContentSelectorContent>
         
-        </tags:tabbedContentSelector>
+        </cti:tabbedContentSelector>
             
 </cti:standardPage>

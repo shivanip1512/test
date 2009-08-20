@@ -11,6 +11,12 @@
 
 <cti:uniqueIdentifier var="thisId" prefix="contentSelectorContent_" />
 
+<script type="text/javascript">
+
+	var 
+
+</script>
+
 <div id="${thisId}" 
 	 class="x-hide-display"
 	 selectorName="${selectorName}" 

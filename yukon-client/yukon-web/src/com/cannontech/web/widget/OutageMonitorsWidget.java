@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.outageProcessing.OutageMonitor;
@@ -16,6 +15,7 @@ import com.cannontech.core.dao.OutageMonitorNotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.widget.support.WidgetControllerBase;
+import com.cannontech.web.widget.support.WidgetParameterHelper;
 
 @CheckRoleProperty(YukonRoleProperty.OUTAGE_PROCESSING)
 public class OutageMonitorsWidget extends WidgetControllerBase {
@@ -36,7 +36,7 @@ public class OutageMonitorsWidget extends WidgetControllerBase {
 	
 	public ModelAndView delete(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
-        int outageMonitorId = ServletRequestUtils.getRequiredIntParameter(request, "outageMonitorsWidget_deleteOutageMonitorId");
+        int outageMonitorId = WidgetParameterHelper.getRequiredIntParameter(request, "outageMonitorId");
         
         String outageMonitorsWidgetError = null;
         

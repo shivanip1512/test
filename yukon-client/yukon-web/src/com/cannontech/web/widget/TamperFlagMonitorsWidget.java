@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.tamperFlagProcessing.TamperFlagMonitor;
@@ -16,6 +15,7 @@ import com.cannontech.core.dao.TamperFlagMonitorNotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.widget.support.WidgetControllerBase;
+import com.cannontech.web.widget.support.WidgetParameterHelper;
 
 @CheckRoleProperty(YukonRoleProperty.TAMPER_FLAG_PROCESSING)
 public class TamperFlagMonitorsWidget extends WidgetControllerBase {
@@ -36,8 +36,8 @@ public class TamperFlagMonitorsWidget extends WidgetControllerBase {
 	
 	public ModelAndView delete(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
-        int tamperFlagMonitorId = ServletRequestUtils.getRequiredIntParameter(request, "tamperFlagMonitorsWidget_deleteTamperFlagMonitorId");
-        
+		int tamperFlagMonitorId = WidgetParameterHelper.getRequiredIntParameter(request, "tamperFlagMonitorId");
+		
         String tamperFlagMonitorsWidgetError = null;
         
         try {

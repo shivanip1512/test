@@ -37,9 +37,12 @@ import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
+@CheckRoleProperty(YukonRoleProperty.OUTAGE_PROCESSING)
 public class OutageProcessingController extends MultiActionController implements InitializingBean {
 
 	private OutageMonitorDao outageMonitorDao;
@@ -131,7 +134,11 @@ public class OutageProcessingController extends MultiActionController implements
 	                resolvableTemplate.addData("outageMonitorId", outageMonitor.getOutageMonitorId());
 	                int successCount = result.getResultHolder().getResultStrings().size();
 	                int total = (int)result.getOriginalDeviceCollectionCopy().getDeviceCount();
-	                resolvableTemplate.addData("percentSuccess", (float)((successCount * 100) / total));
+	                float percentSuccess = 100.0f;
+	                if (total > 0) {
+	                	percentSuccess = (float)((successCount * 100) / total);
+	                }
+	                resolvableTemplate.addData("percentSuccess", percentSuccess);
 	                resolvableTemplate.addData("resultKey", result.getKey());
 	                
 	                OutageProcessingReadLogsCompletionAlert readLogsCompletionAlert = new OutageProcessingReadLogsCompletionAlert(new Date(), resolvableTemplate);
@@ -145,8 +152,6 @@ public class OutageProcessingController extends MultiActionController implements
 		
 		} catch (PaoAuthorizationException e) {
 			processError = "User does not have access to run outage logs command.";
-		} catch (Exception e) {
-			processError = e.getMessage();
 		}
 		
 		mav.addObject("outageMonitorId", outageMonitorId);

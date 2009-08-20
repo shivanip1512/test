@@ -26,11 +26,14 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.OutageMonitorNotFoundException;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagUtils;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
+@CheckRoleProperty(YukonRoleProperty.OUTAGE_PROCESSING)
 public class OutageMonitorEditorController extends MultiActionController {
 	
 	private OutageMonitorDao outageMonitorDao;

@@ -30,26 +30,9 @@
 <cti:msg var="outageProcessingActionTitleText" key="yukon.web.modules.amr.outageMonitorsWidget.actionTitle.outageProcessing"/>
 <cti:msg var="deleteActionTitleText" key="yukon.web.modules.amr.outageMonitorsWidget.actionTitle.delete"/>
 
-
-<script type="text/javascript">
-
-	function outageMonitorsWidget_deleteOutageMonitorId(id) {
-
-		var deleteOk = confirm('${deleteConfirmText}');
-
-		if (deleteOk) {
-			$('outageMonitorsWidget_deleteOutageMonitorId').value = id;
-			${widgetParameters.jsWidget}.doDirectActionRefresh('delete');
-		}
-	}
-
-</script>
-
-<%-- FORMS --%>
-<form id="createForm" action="/spring/amr/outageProcessing/monitorEditor/edit" method="get">
+<%-- CREATE NEW OUTAGE MONITOR FORM --%>
+<form id="createNewOutageMonitorForm_${widgetParameters.widgetId}" action="/spring/amr/outageProcessing/monitorEditor/edit" method="get">
 </form>
-
-<input type="hidden" id="outageMonitorsWidget_deleteOutageMonitorId" name="outageMonitorsWidget_deleteOutageMonitorId" value="">
 
 <%-- ERROR --%>
 <c:if test="${not empty outageMonitorsWidgetError}">
@@ -126,9 +109,7 @@
 			
 			<%-- delete --%>
 			<td class="${tdClass}" style="text-align:right;">
-				<img onclick="outageMonitorsWidget_deleteOutageMonitorId(${monitorId});" 
-					title="${deleteActionTitleText} (${monitorName})" 
-					src="${delete}" onmouseover="javascript:this.src='${deleteOver}'" onmouseout="javascript:this.src='${delete}'">
+				<tags:widgetActionRefreshImage outageMonitorId="${monitorId}" confirmText="${deleteConfirmText}" imgSrc="${delete}" imgSrcHover="${deleteOver}"  title="${deleteActionTitleText} (${monitorName})" method="delete"/>
 			</td>
 			
 		</tr>
@@ -145,7 +126,7 @@
 </c:choose>
 
 <div style="text-align: right">
-	<tags:slowInput myFormId="createForm" labelBusy="${createNewText}" label="${createNewText}"/>
+	<tags:slowInput myFormId="createNewOutageMonitorForm_${widgetParameters.widgetId}" labelBusy="${createNewText}" label="${createNewText}"/>
 </div>
 
 

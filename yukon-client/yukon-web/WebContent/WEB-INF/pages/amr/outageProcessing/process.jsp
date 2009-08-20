@@ -81,9 +81,7 @@
 			<cti:dataUpdaterValue type="OUTAGE_PROCESSING" identifier="${outageMonitor.outageMonitorId}/MONITORING_COUNT"/>
 		</tags:nameValue>
 		
-		<tags:nameValue name="">
-			&nbsp;
-		</tags:nameValue>
+		<tags:nameValueGap gapHeight="20px"/>
 		
 		<tags:nameValue name="${mainDetailNumberOfOutagesText}">
 			${outageMonitor.numberOfOutages}
@@ -93,9 +91,7 @@
 			${outageMonitor.timePeriod}
 		</tags:nameValue>
 		
-		<tags:nameValue name="">
-			&nbsp;
-		</tags:nameValue>
+		<tags:nameValueGap gapHeight="20px"/>
 		
 		<tags:nameValue name="${mainDetailDeviceGroupText}">
 			

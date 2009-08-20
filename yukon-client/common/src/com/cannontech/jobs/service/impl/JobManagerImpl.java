@@ -244,8 +244,12 @@ public class JobManagerImpl implements JobManager {
             };
 
             Date nextRuntime = getNextRuntime(job, timeSource.getCurrentTime());
-            doSchedule(job, runnable, nextRuntime);
-            log.info("job " + job + " scheduled for " + nextRuntime);
+            if (nextRuntime != null) {
+            	
+            	doSchedule(job, runnable, nextRuntime);
+                log.info("job " + job + " scheduled for " + nextRuntime);
+                
+            }
         } catch (Exception e) {
             log.error("unable to schedule job " + job, e);
         }

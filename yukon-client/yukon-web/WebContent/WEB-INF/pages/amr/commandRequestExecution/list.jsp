@@ -117,7 +117,7 @@
 					<td>${cre.commandRequestExecutionType.shortName}</td>
 					<td><cti:formatDate type="DATEHM" value="${cre.startTime}"/></td>
 					<td><cti:formatDate type="DATEHM" value="${cre.stopTime}" nullText="In Progress"/></td>
-					<td><cti:userName userId="${cre.userId}"/></td>
+					<td>${cre.userName}"</td>
 					
 				</tr>
 			

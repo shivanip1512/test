@@ -132,7 +132,7 @@
 				</div>
 				
 			</tags:nameValue>
-			<tags:nameValue name="${infoUserText}"><cti:userName userId="${cre.userId}"/></tags:nameValue>
+			<tags:nameValue name="${infoUserText}">${cre.userName}</tags:nameValue>
 		
 		</tags:nameValueContainer>
 	

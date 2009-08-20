@@ -36,16 +36,15 @@ public class TamperFlagMonitorDaoImpl implements TamperFlagMonitorDao, Initializ
     private static final String selectById;
     private static final String selectCountByName;
     private static final String deleteById;
-    private static final String TABLE_NAME = "TamperFlagMonitor";
     
     static {
         
-    	selectAllSql = "SELECT * FROM " + TABLE_NAME;
+    	selectAllSql = "SELECT * FROM TamperFlagMonitor";
 
 		selectById = selectAllSql + " WHERE TamperFlagMonitorId = ?";
-		selectCountByName = "SELECT COUNT(*) FROM " + TABLE_NAME + " WHERE TamperFlagMonitorName = ?";
+		selectCountByName = "SELECT COUNT(*) FROM TamperFlagMonitor WHERE TamperFlagMonitorName = ?";
 		
-		deleteById = "DELETE FROM " + TABLE_NAME + " WHERE TamperFlagMonitorId = ?";
+		deleteById = "DELETE FROM TamperFlagMonitor WHERE TamperFlagMonitorId = ?";
 		
         rowMapper = TamperFlagMonitorDaoImpl.createRowMapper();
     }
@@ -110,7 +109,6 @@ public class TamperFlagMonitorDaoImpl implements TamperFlagMonitorDao, Initializ
     
     private FieldMapper<TamperFlagMonitor> tamperFlagMonitorFieldMapper = new FieldMapper<TamperFlagMonitor>() {
         public void extractValues(MapSqlParameterSource p, TamperFlagMonitor tamperFlagMonitor) {
-            p.addValue("TamperFlagMonitorId", tamperFlagMonitor.getTamperFlagMonitorId());
             p.addValue("TamperFlagMonitorName", tamperFlagMonitor.getTamperFlagMonitorName());
             p.addValue("GroupName", tamperFlagMonitor.getGroupName());
             p.addValue("EvaluatorStatus", tamperFlagMonitor.getEvaluatorStatus().name());
@@ -126,7 +124,7 @@ public class TamperFlagMonitorDaoImpl implements TamperFlagMonitorDao, Initializ
     
     public void afterPropertiesSet() throws Exception {
         template = new SimpleTableAccessTemplate<TamperFlagMonitor>(simpleJdbcTemplate, nextValueHelper);
-        template.withTableName(TABLE_NAME);
+        template.withTableName("TamperFlagMonitor");
         template.withPrimaryKeyField("TamperFlagMonitorId");
         template.withFieldMapper(tamperFlagMonitorFieldMapper); 
     }

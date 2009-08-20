@@ -8,10 +8,18 @@
 <cti:includeCss link="/JavaScript/extjs_cannon/resources/css/tabs.css"/>
 
 <cti:uniqueIdentifier var="thisId" prefix="tabbedContentSelectorContainer_" />
+<c:set var="containerId" value="${thisId}" scope="request"/>
+
+<c:set var="selectedTabName_${thisId}" value="" scope="request"/>
 
 <script type="text/javascript">
 
 	function setup_${thisId}() {
+
+		
+
+		alert('selectedTabName_${thisId}');
+		
 		setupTabbedControl('${thisId}');
 	}
 		

@@ -30,31 +30,15 @@
 <cti:msg var="tamperFlagProcessingActionTitleText" key="yukon.web.modules.amr.tamperFlagMonitorsWidget.actionTitle.tamperFlagProcessing"/>
 <cti:msg var="deleteActionTitleText" key="yukon.web.modules.amr.tamperFlagMonitorsWidget.actionTitle.delete"/>
 
-<script type="text/javascript">
-
-	function tamperFlagMonitorsWidget_deleteTamperFlagMonitor(id) {
-
-		var deleteOk = confirm('${deleteConfirmText}');
-
-		if (deleteOk) {
-			$('tamperFlagMonitorsWidget_deleteTamperFlagMonitorId').value = id;
-			${widgetParameters.jsWidget}.doDirectActionRefresh('delete');
-		}
-	}
-
-</script>
-
-<%-- FORMS --%>
-<form id="createNewTamperFlagMonitorForm" action="/spring/amr/tamperFlagProcessing/edit" method="get">
+<%-- CREATE NEW TAMPERFLAG MONITOR FORM --%>
+<form id="createNewTamperFlagMonitorForm_${widgetParameters.widgetId}" action="/spring/amr/tamperFlagProcessing/edit" method="get">
 </form>
-
-<input type="hidden" id="tamperFlagMonitorsWidget_deleteTamperFlagMonitorId" name="tamperFlagMonitorsWidget_deleteTamperFlagMonitorId" value="">
 
 <%-- ERROR --%>
 <c:if test="${not empty tamperFlagMonitorsWidgetError}">
   	<div class="errorRed">${tamperFlagMonitorsWidgetError}</div>
 </c:if>
-		
+
 <%-- TABLE --%>
 <c:choose>
 <c:when test="${fn:length(monitors) > 0}">
@@ -125,9 +109,7 @@
 			
 			<%-- delete --%>
 			<td class="${tdClass}" style="text-align:right;">
-				<img onclick="tamperFlagMonitorsWidget_deleteTamperFlagMonitor(${monitorId});" 
-					title="${deleteActionTitleText} (${monitorName})" 
-					src="${delete}" onmouseover="javascript:this.src='${deleteOver}'" onmouseout="javascript:this.src='${delete}'">
+				<tags:widgetActionRefreshImage tamperFlagMonitorId="${monitorId}" confirmText="${deleteConfirmText}" imgSrc="${delete}" imgSrcHover="${deleteOver}"  title="${deleteActionTitleText} (${monitorName})" method="delete"/>
 			</td>
 			
 		</tr>
@@ -144,7 +126,7 @@
 </c:choose>
 
 <div style="text-align: right">
-	<tags:slowInput myFormId="createNewTamperFlagMonitorForm" labelBusy="${createNewText}" label="${createNewText}"/>
+	<tags:slowInput myFormId="createNewTamperFlagMonitorForm_${widgetParameters.widgetId}" labelBusy="${createNewText}" label="${createNewText}"/>
 </div>
 
 

@@ -28,26 +28,9 @@
 <cti:msg var="disabledText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.disabled" />
 <cti:msg var="createButtonText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.createButton" />
 
-
-<script type="text/javascript">
-
-	function scheduledGroupRequestsWidget_deleteJobId(id) {
-
-		var deleteOk = confirm('${deleteConfirmText}');
-
-		if (deleteOk) {
-			$('scheduledGroupRequestsWidget_deleteJobId').value = id;
-			${widgetParameters.jsWidget}.doDirectActionRefresh('delete');
-		}
-	}
-	
-</script>
-
-<%-- FORMS --%>
-<form id="createNewSchduleForm" action="/spring/group/scheduledGroupRequestExecution/home" method="get">
+<%-- CREATE NEW SCHEDULE FORM --%>
+<form id="createNewSchduleForm_${widgetParameters.widgetId}" action="/spring/group/scheduledGroupRequestExecution/home" method="get">
 </form>
-
-<input type="hidden" id="scheduledGroupRequestsWidget_deleteJobId" name="scheduledGroupRequestsWidget_deleteJobId" value="">
 
 
 <%-- TABLE --%>
@@ -117,9 +100,7 @@
 			
 			<%-- delete --%>
 			<td class="${tdClass}" style="text-align:right;">
-				<img onclick="scheduledGroupRequestsWidget_deleteJobId(${jobWrapper.job.id});" 
-					title="${deleteTitleText} (${jobWrapper.name})" 
-					src="${delete}" onmouseover="javascript:this.src='${deleteOver}'" onmouseout="javascript:this.src='${delete}'">
+				<tags:widgetActionRefreshImage jobId="${jobWrapper.job.id}" confirmText="${deleteConfirmText}" imgSrc="${delete}" imgSrcHover="${deleteOver}"  title="${deleteTitleText} (${jobWrapper.name})" method="delete"/>
 			</td>
 				
 		</tr>
@@ -136,7 +117,7 @@
 </c:choose>
 
 <div style="text-align: right">
-	<tags:slowInput myFormId="createNewSchduleForm" labelBusy="${createButtonText}" label="${createButtonText}"/>
+	<tags:slowInput myFormId="createNewSchduleForm_${widgetParameters.widgetId}" labelBusy="${createButtonText}" label="${createButtonText}"/>
 </div>
 
 

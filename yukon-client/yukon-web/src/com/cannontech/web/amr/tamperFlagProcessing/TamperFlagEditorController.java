@@ -23,10 +23,13 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.OutageMonitorNotFoundException;
 import com.cannontech.core.dao.TamperFlagMonitorNotFoundException;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @Controller
 @RequestMapping("/tamperFlagProcessing/*")
+@CheckRoleProperty(YukonRoleProperty.TAMPER_FLAG_PROCESSING)
 public class TamperFlagEditorController {
 	
 	private TamperFlagMonitorDao tamperFlagMonitorDao;

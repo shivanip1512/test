@@ -197,8 +197,8 @@
         <table name="TamperFlagMonitor" identitycolumn="TamperFlagMonitorId" initsequence="true"/>
       </sequence>
       <sequence name="CRE">
-        <table name="CommandRequestExecution" identitycolumn="CommandRequestExecutionId"/>
-        <table name="CommandRequestExecutionResult" identitycolumn="CommandRequestExecutionResultId"/>
+        <table name="CommandRequestExec" identitycolumn="CommandRequestExecId"/>
+        <table name="CommandRequestExecResult" identitycolumn="CommandRequestExecResultId"/>
       </sequence>
       <sequence name="PAOSchedule">
         <table name="PAOSchedule" identitycolumn="ScheduleId" initsequence="true"/>

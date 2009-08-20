@@ -17,7 +17,7 @@ import com.cannontech.amr.scheduledGroupRequestExecution.dao.model.ScheduledGrou
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
-import com.cannontech.common.device.commands.dao.impl.CommandRequestExecutionDaoImpl;
+import com.cannontech.common.device.commands.dao.impl.CommandRequestExecutionRowAndFieldMapper;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
@@ -49,8 +49,8 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
     public CommandRequestExecution getLatestCommandRequestExecutionForJobId(int jobId, Date cutoff) {
     	
     	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	sql.append("SELECT CRE.* FROM ScheduledGroupCommandRequest SGCR");
-    	sql.append("INNER JOIN CommandRequestExecution CRE ON (SGCR.CommandRequestExecutionId = CRE.CommandRequestExecutionId)");
+    	sql.append("SELECT CRE.* FROM ScheduledGrpCommandRequest SGCR");
+    	sql.append("INNER JOIN CommandRequestExec CRE ON (SGCR.CommandRequestExecId = CRE.CommandRequestExecId)");
     	sql.append("WHERE SGCR.JobID = ").appendArgument(jobId);
     	
     	if (cutoff != null) {
@@ -59,7 +59,7 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
     	
     	sql.append("ORDER BY CRE.StartTime DESC");
     	
-    	MaxListResultSetExtractor<CommandRequestExecution> rse = new MaxListResultSetExtractor<CommandRequestExecution>(CommandRequestExecutionDaoImpl.createRowMapper(), 1);
+    	MaxListResultSetExtractor<CommandRequestExecution> rse = new MaxListResultSetExtractor<CommandRequestExecution>(new CommandRequestExecutionRowAndFieldMapper(), 1);
     	JdbcOperations jdbcOperations = simpleJdbcTemplate.getJdbcOperations();
     	jdbcOperations.query(sql.getSql(), sql.getArguments(), rse);
     	
@@ -232,8 +232,8 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
     public List<CommandRequestExecution> getCommandRequestExecutionsByJobId(int jobId, Date startTime, Date stopTime, boolean acsending) {
     	
     	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	sql.append("SELECT CRE.* FROM ScheduledGroupCommandRequest SGCR");
-        sql.append("INNER JOIN CommandRequestExecution CRE ON (SGCR.CommandRequestExecutionId = CRE.CommandRequestExecutionId)");
+    	sql.append("SELECT CRE.* FROM ScheduledGrpCommandRequest SGCR");
+        sql.append("INNER JOIN CommandRequestExec CRE ON (SGCR.CommandRequestExecId = CRE.CommandRequestExecId)");
         
         if (jobId > 0) {
     		sql.append("WHERE SGCR.JobId = ").appendArgument(jobId);
@@ -255,7 +255,7 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
         	sql.append("ORDER BY CRE.StartTime DESC");
         }
         
-        List<CommandRequestExecution> cres = simpleJdbcTemplate.query(sql.getSql(), CommandRequestExecutionDaoImpl.createRowMapper(), sql.getArguments());
+        List<CommandRequestExecution> cres = simpleJdbcTemplate.query(sql.getSql(), new CommandRequestExecutionRowAndFieldMapper(), sql.getArguments());
     	return cres;
     }
     
@@ -263,9 +263,9 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
     public int getCreCountByJobId(int jobId, Date startTime, Date stopTime) {
     	
     	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	sql.append("SELECT COUNT(CRE.CommandRequestExecutionId) AS creCount ");
-    	sql.append("FROM ScheduledGroupCommandRequest SGCR");
-        sql.append("INNER JOIN CommandRequestExecution CRE ON (SGCR.CommandRequestExecutionId = CRE.CommandRequestExecutionId)");
+    	sql.append("SELECT COUNT(CRE.CommandRequestExecId) AS creCount ");
+    	sql.append("FROM ScheduledGrpCommandRequest SGCR");
+        sql.append("INNER JOIN CommandRequestExec CRE ON (SGCR.CommandRequestExecId = CRE.CommandRequestExecId)");
         
         if (jobId > 0) {
     		sql.append("WHERE SGCR.JobId = ").appendArgument(jobId);
@@ -287,7 +287,6 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
 	
 	private FieldMapper<ScheduledGroupRequestExecutionPair> fieldMapper = new FieldMapper<ScheduledGroupRequestExecutionPair>() {
         public void extractValues(MapSqlParameterSource p, ScheduledGroupRequestExecutionPair pair) {
-            p.addValue("CommandRequestExecutionId", pair.getCommandRequestExecutionId());
             p.addValue("JobId", pair.getJobId());
             
         }
@@ -301,8 +300,8 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
     
 	public void afterPropertiesSet() throws Exception {
         template = new SimpleTableAccessTemplate<ScheduledGroupRequestExecutionPair>(simpleJdbcTemplate, nextValueHelper);
-        template.withTableName("ScheduledGroupCommandRequest");
-        template.withPrimaryKeyField("CommandRequestExecutionId");
+        template.withTableName("ScheduledGrpCommandRequest");
+        template.withPrimaryKeyField("CommandRequestExecId");
         template.withFieldMapper(fieldMapper); 
     }
     
