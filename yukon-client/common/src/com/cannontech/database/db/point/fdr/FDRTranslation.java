@@ -287,14 +287,8 @@ public void update() throws java.sql.SQLException {
 	update( TABLE_NAME, setColumns, setValues, constraintColumns, constraintValues );
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (12/5/2001 9:34:07 AM)
- * @return java.lang.String
- */
 static public String getDestinationField( String trans ) 
 {
-	int i = 0;
 	java.util.StringTokenizer tokenizer = new java.util.StringTokenizer( trans, ";" );
 	while( tokenizer.hasMoreTokens() )
 	{
