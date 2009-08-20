@@ -187,3 +187,37 @@ JOIN AMIBillingReadLookup LKUP ON (PAO.Type = LKUP.PAOType AND
 JOIN (SELECT Timestamp, Value, PointId 
       FROM RawPointHistory
       WHERE Timestamp > add_months(sysdate, -2)) RPH ON P.PointId = RPH.PointId;
+
+
+
+            
+-- FOR UPDATE to add RegisterLoc column - 20090803 SNelson
+ALTER TABLE AMIBillingReadLookup ADD RegisterLoc VARCHAR2(15);
+UPDATE AMIBillingReadLookup SET RegisterLoc = 'Current';
+ALTER TABLE AMIBillingReadLookup MODIFY RegisterLoc VARCHAR2(15) NOT NULL;
+
+INSERT INTO AMIBillingReadLookup VALUES('MCT-430A', 'Analog', 102, 'KW', 1, 'Frozen');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-430A', 'Analog', 103, 'KWH', 1, 'Frozen');
+
+INSERT INTO AMIBillingReadLookup VALUES('MCT-430A3', 'Analog', 102, 'KW', 1, 'Frozen');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-430A3', 'Analog', 103, 'KWH', 1, 'Frozen');
+
+INSERT INTO AMIBillingReadLookup VALUES('MCT-430S4', 'Analog', 102, 'KW', 1, 'Frozen');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-430S4', 'Analog', 103, 'KWH', 1, 'Frozen');
+
+INSERT INTO AMIBillingReadLookup VALUES('MCT-430SL', 'Analog', 102, 'KW', 1, 'Frozen');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-430SL', 'Analog', 103, 'KWH', 1, 'Frozen');
+
+INSERT INTO AMIBillingReadLookup VALUES('MCT-470', 'Analog', 102, 'KW', 1, 'Frozen');
+INSERT INTO AMIBillingReadLookup VALUES('MCT-470', 'Analog', 103, 'KWH', 1, 'Frozen');
+
+CREATE OR REPLACE VIEW AMIBillingRead(METER_NO, READ_AMT, READ_DT, REGISTER_TP, REGISTER_NO, POINTID, REGISTER_LOC) as
+SELECT MeterNumber, RPH.Value, RPH.Timestamp, RegisterTP, RegisterNO, P.PointId, RegisterLoc
+FROM YukonPAObject PAO JOIN DeviceMeterGroup DMG ON PAO.PAObjectId = DMG.DeviceId
+JOIN Point P on PAO.PAObjectId = P.PAObjectId
+JOIN AMIBillingReadLookup LKUP ON (PAO.Type = LKUP.PAOType AND 
+                                   P.PointType = LKUP.PointType AND 
+                                   P.PointOffset = LKUP.PointOffset)
+JOIN (SELECT Timestamp, Value, PointId 
+      FROM RawPointHistory
+      WHERE Timestamp > add_months(sysdate, -2)) RPH ON P.PointId = RPH.PointId;
