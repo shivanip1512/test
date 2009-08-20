@@ -7,7 +7,7 @@
 <cti:verifyRolesAndProperties value="CONSUMER_INFO"/>
     
 <cti:standardPage module="dr" page="optOutAdmin">
-    <cti:standardMenu />
+    <cti:standardMenu menuSelection="optout|admin"/>
 
     <table style="width: 100%">
         <tr>

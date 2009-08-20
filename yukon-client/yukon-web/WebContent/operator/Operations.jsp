@@ -162,6 +162,9 @@
             <tags:sectionLink>
             	<a href="../loadmgmt/controlareas.jsp">3-Tier Direct</a>
             </tags:sectionLink>
+            <tags:sectionLink>
+            	<a href="/spring/dr/home">3-Tier Direct (new)</a>
+            </tags:sectionLink>
 		</cti:isPropertyTrue>
 	</tags:operationSection>
 

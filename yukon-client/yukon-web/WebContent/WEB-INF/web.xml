@@ -449,7 +449,15 @@
 		</servlet-class>
 		<load-on-startup>2</load-on-startup>
 	</servlet>
-	
+
+    <servlet>
+        <servlet-name>dr</servlet-name>
+        <servlet-class>
+            com.cannontech.web.spring.CannonDispatcherServlet
+        </servlet-class>
+        <load-on-startup>2</load-on-startup>
+    </servlet>
+
 	<servlet>
 		<servlet-name>reports</servlet-name>
 		<servlet-class>
@@ -935,7 +943,12 @@
 		<servlet-name>debug</servlet-name>
 		<url-pattern>/spring/debug/*</url-pattern>
 	</servlet-mapping>
-	
+
+    <servlet-mapping>
+        <servlet-name>dr</servlet-name>
+        <url-pattern>/spring/dr/*</url-pattern>
+    </servlet-mapping>
+
 	<servlet-mapping>
 		<servlet-name>reports</servlet-name>
 		<url-pattern>/spring/reports/*</url-pattern>

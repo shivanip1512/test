@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+<entry key="yukon.web.dr.home.pageTitle">Demand Response</entry>
+<entry key="yukon.web.dr.home.breadcrumb.operationsHome">Operations Home</entry>
+<entry key="yukon.web.dr.home.breadcrumb.home">Demand Response</entry>
+
+<entry key="yukon.web.dr.scenario.list.pageTitle">Scenarios</entry>
+<entry key="yukon.web.dr.scenario.list.breadcrumb.operationsHome">Operations Home</entry>
+<entry key="yukon.web.dr.scenario.list.breadcrumb.scenarios">Scenarios</entry>
+<entry key="yukon.web.dr.scenario.list.scenarios">Scenarios</entry>
+<entry key="yukon.web.dr.scenario.list.heading.name">Name</entry>
+
+<entry key="yukon.web.dr.scenario.detail.pageTitle">Scenario {0}</entry>
+<entry key="yukon.web.dr.scenario.detail.breadcrumb.operationsHome">Operations Home</entry>
+<entry key="yukon.web.dr.scenario.detail.breadcrumb.scenarios">Scenarios</entry>
+<entry key="yukon.web.dr.scenario.detail.breadcrumb.scenario">Scenario {0}</entry>
+<entry key="yukon.web.dr.scenario.detail.scenario">Scenario {0}</entry>
+
+<entry key="yukon.web.dr.scenario.detail.heading.info">Info</entry>
+
+<entry key="yukon.web.dr.scenario.detail.heading.actions">Actions</entry>
+<entry key="yukon.web.dr.scenario.detail.actions.start">Start</entry>
+<entry key="yukon.web.dr.scenario.detail.actions.stop">Stop</entry>
+
+<entry key="yukon.web.dr.scenario.detail.heading.programs">Programs</entry>
+<entry key="yukon.web.dr.scenario.detail.programs.heading.name">Name</entry>
+
+</properties>

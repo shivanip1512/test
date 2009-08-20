@@ -99,6 +99,17 @@
 <entry key="yukon.web.menu.config.amr.commandRequestExecution.createSchedule">Create</entry>
 <entry key="yukon.web.menu.config.amr.commandRequestExecution.scheduleLogs">Logs</entry>
 
+<!-- Demand Response module -->
+<entry key="yukon.web.menu.config.dr.home">Demand Response</entry>
+<entry key="yukon.web.menu.config.dr.details">Details</entry>
+<entry key="yukon.web.menu.config.dr.details.controlareas">Control Areas</entry>
+<entry key="yukon.web.menu.config.dr.details.scenarios">Scenarios</entry>
+<entry key="yukon.web.menu.config.dr.details.programs">Programs</entry>
+<entry key="yukon.web.menu.config.dr.details.loadgroups">Load Groups</entry>
+<entry key="yukon.web.menu.config.dr.optout">Opt Out</entry>
+<entry key="yukon.web.menu.config.dr.optout.admin">Admin</entry>
+<entry key="yukon.web.menu.config.dr.optout.scheduledevents">Scheduled Events</entry>
+
 <!-- Capcontrol Module -->
 <entry key="yukon.web.menu.config.capcontrol.create">Create</entry>
 <entry key="yukon.web.menu.config.capcontrol.create.area">Area</entry>

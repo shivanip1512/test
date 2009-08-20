@@ -320,6 +320,35 @@
     <search action="/spring/meter/search" method="post" fieldname="Quick Search"/>
   </module>
 
+  <module name="dr">
+    <skin name="standard"/>
+    <links>
+      <option id="home">
+        <link>/spring/dr/home</link>
+      </option>
+      <option id="details">
+<!--        <link>/spring/dr/controlarea/list</link>-->
+        <link>/spring/dr/scenario/list</link>
+        <links>
+          <option id="scenarios">
+            <link>/spring/dr/scenario/list</link>
+          </option>
+          <option id="controlareas">
+            <link>/spring/dr/controlarea/list</link>
+          </option>
+          <option id="programs">
+            <link>/spring/dr/program/list</link>
+          </option>
+          <option id="loadgroups">
+            <link>/spring/dr/loadgroup/list</link>
+          </option>
+        </links>
+      </option>
+      <dynamicOptions bean="drOptOutMenuOption"/>
+    </links>
+    <search action="/spring/threetier/search" method="post" fieldname="Quick Search"/>
+  </module>
+
   <module name="consumer">
     <skin name="leftSideMenu"/>
    	<links>
@@ -596,10 +625,6 @@
   
   <module name="stars">
     <skin name="purple"/>
-  </module>
-    
-  <module name="dr">
-    <skin name="standard"/>
   </module>
 
   <module name="multispeak">
