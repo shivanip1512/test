@@ -35,6 +35,9 @@ public class CronExpressionTagUtils {
 		
 		CronTagStyleHandler handler = type.getHandler();
 		
+		int x = 3;
+		System.out.println(x);
+		
 		String expression =  handler.build(id, request);
 		validateExpression(expression);
 		
