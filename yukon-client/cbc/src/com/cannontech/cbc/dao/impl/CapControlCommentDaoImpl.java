@@ -18,7 +18,6 @@ import com.cannontech.cbc.dao.CommentAction;
 import com.cannontech.cbc.model.CapControlComment;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.MaxListResultSetExtractor;
-import com.cannontech.database.StringRowMapper;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.incrementer.NextValueHelper;
 
@@ -78,11 +77,14 @@ public class CapControlCommentDaoImpl implements CapControlCommentDao {
                                         "FROM ccsubareaassignment sa " +
                                         "WHERE substationbusid = ?";
             
-            selectLastTenForPaoAndActon = "select distinct ccc.CapComment from CapControlComment ccc " +
-                                     "join YukonPAObject pao on pao.PAObjectId = ccc.PaoID " +
-                                     "where ccc.action = ? " +
-                                     "and pao.type = (select type from yukonpaobject where paobjectid = ?)";
-            
+            selectLastTenForPaoAndActon = "SELECT DISTINCT CCC.CapComment AS Comment, MAX(CCC.CommentTime) AS CommentTime " +
+                                    "FROM CapControlComment CCC " +
+                                    "JOIN YukonPAObject PAO ON PAO.PAObjectId = CCC.PaoId " +
+                                    "WHERE CCC.Action = ? " +
+                                    "AND PAO.Type = (SELECT Type FROM YukonPAObject WHERE PAObjectId = ?) " +
+                                    "GROUP BY CCC.CapComment " +
+                                    "ORDER BY MAX(CCC.CommentTime) DESC";
+
             rowMapper = createRowMapper();
             
             paoIdRowMapper = createPaoIdRowMapper();
@@ -216,13 +218,24 @@ public class CapControlCommentDaoImpl implements CapControlCommentDao {
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<String> getLastTenCommentsByActionAndType(int paoId, CommentAction action ) {
-        MaxListResultSetExtractor<String> rse = new MaxListResultSetExtractor<String>(new StringRowMapper(), 10);
+        MaxListResultSetExtractor<String> rse = new MaxListResultSetExtractor<String>(createSimpleCommentRowMapper(), 10);
         String sql = selectLastTenForPaoAndActon;
         JdbcOperations oldTemplate = simpleJdbcTemplate.getJdbcOperations();
         Object[] arguments = new Object[] {action.name(), paoId};
         oldTemplate.query(sql, arguments, rse);
         List<String> result = rse.getResult();
         return result;
+    }
+    
+    private static final ParameterizedRowMapper<String> createSimpleCommentRowMapper() {
+        ParameterizedRowMapper<String> rowMapper = new ParameterizedRowMapper<String>() {
+            public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+                
+                String comment = rs.getString("Comment");
+                return comment;
+            }
+        };
+        return rowMapper;
     }
     
     private static final ParameterizedRowMapper<CapControlComment> createRowMapper() {
