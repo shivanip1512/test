@@ -131,12 +131,6 @@ public class GroupMeterReadResult implements Completable, ExceptionStatus, Compa
     @Override
     public int compareTo(GroupMeterReadResult o) {
     	
-    	if (this.getStartTime().after(o.getStartTime())) {
-    		return -1;
-    	} else if (this.getStartTime().before(o.getStartTime())) {
-    		return 1;
-    	} else {
-    		return 0;
-    	}
+    	return this.getStartTime().compareTo(o.getStartTime()); 
     }
 }

@@ -1,4 +1,4 @@
-package com.cannontech.amr.deviceread.model;
+package com.cannontech.amr.deviceread.service.impl;
 
 import java.util.Set;
 

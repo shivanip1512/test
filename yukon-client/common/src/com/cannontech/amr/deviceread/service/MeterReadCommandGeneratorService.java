@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.cannontech.amr.deviceread.dao.impl.UnreadableException;
-import com.cannontech.amr.deviceread.model.CommandWrapper;
+import com.cannontech.amr.deviceread.service.impl.CommandWrapper;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.pao.PaoIdentifier;

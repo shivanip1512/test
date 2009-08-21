@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.deviceread.dao.impl.SetCoveringSolver;
 import com.cannontech.amr.deviceread.dao.impl.UnreadableException;
-import com.cannontech.amr.deviceread.model.CommandWrapper;
 import com.cannontech.amr.deviceread.service.MeterReadCommandGeneratorService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.attribute.model.Attribute;

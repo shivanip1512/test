@@ -7,8 +7,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.deviceread.dao.MeterReadService;
-import com.cannontech.amr.deviceread.model.CommandWrapper;
 import com.cannontech.amr.deviceread.service.MeterReadCommandGeneratorService;
+import com.cannontech.amr.deviceread.service.impl.CommandWrapper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.commands.CommandRequestDevice;
