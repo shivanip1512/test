@@ -94,6 +94,8 @@
     <entry key="yukon.common.device.bulk.collectionActions.routeLocateDescription">Find route that devices respond on.</entry>
     <entry key="yukon.common.device.bulk.collectionActions.addPointsLabel">Add Points</entry>
     <entry key="yukon.common.device.bulk.collectionActions.addPointsDescription">Add points to multiple devices.</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.updatePointsLabel">Update Points</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.updatePointsDescription">Update points on multiple devices.</entry>
     <entry key="yukon.common.device.bulk.collectionActions.removePointsLabel">Remove Points</entry>
     <entry key="yukon.common.device.bulk.collectionActions.removePointsDescription">Remove points from multiple devices.</entry>
     <entry key="yukon.common.device.bulk.collectionActions.massDeleteLabel">Mass Delete</entry>
@@ -413,6 +415,17 @@
     <entry key="yukon.common.device.bulk.addPointsResults.processingExceptionErrorListLabel">View Failure Reasons</entry>
     
     <entry key="yukon.common.device.bulk.addPointsResults.noProcessingExceptionErrorListLabel">No processing errors.</entry>
+    
+    <!-- UPDATE POINTS -->
+    <!-- ******************************************************************************************************************** -->
+    <!-- ******************************************************************************************************************** -->
+    
+    <!-- updatePointsHome.jsp -->
+    <entry key="yukon.common.device.bulk.updatePointsHome.pageTitle">Update Points</entry>
+    <entry key="yukon.common.device.bulk.updatePointsHome.header">Choose Points</entry>
+    <entry key="yukon.common.device.bulk.updatePointsHome.noteLabel"></entry>
+    <entry key="yukon.common.device.bulk.updatePointsHome.noteText"></entry>
+    <entry key="yukon.common.device.bulk.updatePointsHome.viewDefinitionDetailPopupTitle">View Device Definition</entry>
     
     <!-- REMOVE POINTS -->
     <!-- ******************************************************************************************************************** -->
