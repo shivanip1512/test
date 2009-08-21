@@ -3,16 +3,13 @@ package com.cannontech.web.amr.outageProcessing;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.time.DateUtils;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -36,14 +33,15 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.common.util.SimpleCallback;
-import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
 
 @CheckRoleProperty(YukonRoleProperty.OUTAGE_PROCESSING)
-public class OutageProcessingController extends MultiActionController implements InitializingBean {
+public class OutageProcessingController extends MultiActionController {
 
 	private OutageMonitorDao outageMonitorDao;
 	private OutageMonitorService outageMonitorService;
@@ -53,13 +51,7 @@ public class OutageProcessingController extends MultiActionController implements
 	private GroupMeterReadService groupMeterReadService;
 	private AlertService alertService;
 	
-	private Map<Integer, List<String>> monitorToRecentReadKeysCache;
-	
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		
-		monitorToRecentReadKeysCache = new HashMap<Integer, List<String>>();
-	}
+	private ListMultimap<Integer, String> monitorToRecentReadKeysCache = ArrayListMultimap.create();
 	
 	// PROCESS
 	public ModelAndView process(HttpServletRequest request, HttpServletResponse response) throws ServletException {
@@ -68,11 +60,6 @@ public class OutageProcessingController extends MultiActionController implements
 		
 		int outageMonitorId = ServletRequestUtils.getRequiredIntParameter(request, "outageMonitorId");
 		OutageMonitor outageMonitor = outageMonitorDao.getById(outageMonitorId);
-		
-		String processError = ServletRequestUtils.getStringParameter(request, "processError");
-		Boolean readOk = ServletRequestUtils.getBooleanParameter(request, "readOk");
-		mav.addObject("processError", processError);
-		mav.addObject("readOk", readOk);
 		
 		// read results
 		List<GroupMeterReadResult> allReadsResults = new ArrayList<GroupMeterReadResult>();
@@ -103,60 +90,52 @@ public class OutageProcessingController extends MultiActionController implements
 	public ModelAndView readOutageLogs(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		
 		ModelAndView mav = new ModelAndView("redirect:process");
-		String processError = null;
 		
 		YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 		int outageMonitorId = ServletRequestUtils.getRequiredIntParameter(request, "outageMonitorId");
 		final boolean removeFromOutageGroupAfterRead = ServletRequestUtils.getBooleanParameter(request, "removeFromOutageGroupAfterRead", false);
 		final OutageMonitor outageMonitor = outageMonitorDao.getById(outageMonitorId);
 		
-		try {
-			
-			final StoredDeviceGroup outageGroup = outageMonitorService.getOutageGroup(outageMonitor.getOutageMonitorName());
-			DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(outageGroup);
-			
-			// alert callback
-			SimpleCallback<GroupMeterReadResult> alertCallback = new SimpleCallback<GroupMeterReadResult>() {
-	            @Override
-	            public void handle(GroupMeterReadResult result) {
-	            	
-	            	// remove success devices from outages group
-	            	if (removeFromOutageGroupAfterRead) {
-	            		
-	            		DeviceCollection successCollection = result.getSuccessCollection();
-	            		List<SimpleDevice> successDeviceList = successCollection.getDeviceList();
-	            		deviceGroupMemberEditorDao.removeDevices(outageGroup, successDeviceList);
-	            	}
-	            	
-	            	// alert
-	                ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.web.modules.amr.outageProcessing.readOutagesLog.completionAlert");
-	                resolvableTemplate.addData("outageMonitorName", outageMonitor.getOutageMonitorName());
-	                resolvableTemplate.addData("outageMonitorId", outageMonitor.getOutageMonitorId());
-	                int successCount = result.getResultHolder().getResultStrings().size();
-	                int total = (int)result.getOriginalDeviceCollectionCopy().getDeviceCount();
-	                float percentSuccess = 100.0f;
-	                if (total > 0) {
-	                	percentSuccess = (float)((successCount * 100) / total);
-	                }
-	                resolvableTemplate.addData("percentSuccess", percentSuccess);
-	                resolvableTemplate.addData("resultKey", result.getKey());
-	                
-	                OutageProcessingReadLogsCompletionAlert readLogsCompletionAlert = new OutageProcessingReadLogsCompletionAlert(new Date(), resolvableTemplate);
-	                
-	                alertService.add(readLogsCompletionAlert);
-	            }
-	        };
+		final StoredDeviceGroup outageGroup = outageMonitorService.getOutageGroup(outageMonitor.getOutageMonitorName());
+		DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(outageGroup);
 		
-	        String resultKey = groupMeterReadService.readDeviceCollection(deviceCollection, Collections.singleton(BuiltInAttribute.OUTAGE_LOG), CommandRequestExecutionType.OUTAGE_PROCESSING_OUTAGE_LOGS_READ, alertCallback, userContext.getYukonUser());
-	        addReadResultKeyToCache(outageMonitorId, resultKey);
-		
-		} catch (PaoAuthorizationException e) {
-			processError = "User does not have access to run outage logs command.";
-		}
+		// alert callback
+		SimpleCallback<GroupMeterReadResult> alertCallback = new SimpleCallback<GroupMeterReadResult>() {
+            @Override
+            public void handle(GroupMeterReadResult result) {
+            	
+            	// remove success devices from outages group
+            	if (removeFromOutageGroupAfterRead) {
+            		
+            		DeviceCollection successCollection = result.getSuccessCollection();
+            		List<SimpleDevice> successDeviceList = successCollection.getDeviceList();
+            		deviceGroupMemberEditorDao.removeDevices(outageGroup, successDeviceList);
+            	}
+            	
+            	// alert
+                ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.web.modules.amr.outageProcessing.readOutagesLog.completionAlert");
+                resolvableTemplate.addData("outageMonitorName", outageMonitor.getOutageMonitorName());
+                resolvableTemplate.addData("outageMonitorId", outageMonitor.getOutageMonitorId());
+                int successCount = result.getResultHolder().getResultStrings().size();
+                int total = (int)result.getOriginalDeviceCollectionCopy().getDeviceCount();
+                float percentSuccess = 100.0f;
+                if (total > 0) {
+                	percentSuccess = (float)((successCount * 100) / total);
+                }
+                resolvableTemplate.addData("percentSuccess", percentSuccess);
+                resolvableTemplate.addData("resultKey", result.getKey());
+                
+                OutageProcessingReadLogsCompletionAlert readLogsCompletionAlert = new OutageProcessingReadLogsCompletionAlert(new Date(), resolvableTemplate);
+                
+                alertService.add(readLogsCompletionAlert);
+            }
+        };
+	
+        String resultKey = groupMeterReadService.readDeviceCollection(deviceCollection, Collections.singleton(BuiltInAttribute.OUTAGE_LOG), CommandRequestExecutionType.OUTAGE_PROCESSING_OUTAGE_LOGS_READ, alertCallback, userContext.getYukonUser());
+        monitorToRecentReadKeysCache.put(outageMonitorId, resultKey);
 		
 		mav.addObject("outageMonitorId", outageMonitorId);
-		mav.addObject("processError", processError);
-		mav.addObject("readOk", processError == null);
+		mav.addObject("readOk", true);
 		
 		return mav;
 	}
@@ -182,15 +161,6 @@ public class OutageProcessingController extends MultiActionController implements
 		return mav;
 	}
 	
-	
-	private void addReadResultKeyToCache(int outageMonitorId, String resultKey) {
-		
-		if (!monitorToRecentReadKeysCache.containsKey(outageMonitorId)) {
-			monitorToRecentReadKeysCache.put(outageMonitorId, new ArrayList<String>());
-		}
-		monitorToRecentReadKeysCache.get(outageMonitorId).add(resultKey);
-	}
-
 	@Autowired
 	public void setOutageMonitorDao(OutageMonitorDao outageMonitorDao) {
 		this.outageMonitorDao = outageMonitorDao;

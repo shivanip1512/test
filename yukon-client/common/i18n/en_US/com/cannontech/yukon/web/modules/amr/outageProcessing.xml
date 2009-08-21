@@ -123,6 +123,7 @@
     
     <entry key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.title">Read Outage Logs</entry>
     <entry key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.button">Read Logs</entry>
+    <entry key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.readOk">Read Outage Log Commands Have Been Sent.</entry>
     <entry key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.noteLabel">Note:</entry>
     <entry key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.noteBody"><![CDATA[
     	Read outage logs 1-6 from all meters in the Outages Group.

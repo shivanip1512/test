@@ -64,8 +64,8 @@
     <h2>${pageTitle}</h2>
     <br>
 	
-	<c:if test="${not empty processError}">
-		<div class="errorRed">${processError}</div>
+	<c:if test="${not empty param.processError}">
+		<div class="errorRed">${param.processError}</div>
 	</c:if>
 	
 	<%-- MAIN DETAILS --%>
@@ -145,7 +145,7 @@
 			<tags:slowInput myFormId="readInternalFlagsForm" labelBusy="${readInternalFlagsButtonText}" label="${readInternalFlagsButtonText}"/>
 			
 			<%-- read ok --%>
-	    	<c:if test="${readOk}">
+	    	<c:if test="${param.readOk}">
 	    		${readOkText}
 	    	</c:if>
 	    	</span>
@@ -228,7 +228,7 @@
 			<tags:slowInput myFormId="resetInternalFlagsForm" labelBusy="${resetInternalFlagsButtonText}" label="${resetInternalFlagsButtonText}"/>
 			
 			<%-- reset ok --%>
-	    	<c:if test="${resetOk == true}">
+	    	<c:if test="${param.resetOk}">
 	    		${resetOkText}
 	    	</c:if>
 	    	

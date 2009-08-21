@@ -25,7 +25,6 @@ import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.util.SimpleCallback;
-import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.jobs.support.YukonTaskBase;
@@ -110,8 +109,6 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
 	        
         } catch (NotFoundException e) {
         	log.error("Could not run command due to missing device group. command = " + getCommand() + ", name=" + getName() + ", groupName = " + getGroupName() + ", user = " + user.getUsername() + ".", e);
-        } catch (PaoAuthorizationException e) {
-        	log.error("Could not run command due to authorization exception. command = " + getCommand() + ", name=" + getName() + ", groupName = " + getGroupName() + ", user = " + user.getUsername() + ".", e);
         }
         
     }

@@ -66,6 +66,10 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
 
     public String execute(DeviceCollection deviceCollection, final String command, CommandRequestExecutionType commandRequestExecutionType, SimpleCallback<GroupCommandResult> callback, LiteYukonUser user) {
         
+        if (commandRequestExecutionType == null) {
+            throw new IllegalArgumentException("commandRequestExecutionType cannot be null");
+        }
+        
         ObjectMapper<YukonDevice, CommandRequestDevice> objectMapper = new ObjectMapper<YukonDevice, CommandRequestDevice>() {
             public CommandRequestDevice map(YukonDevice from) throws ObjectMappingException {
                 return buildStandardRequest(from, command);
@@ -79,6 +83,10 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
     
     public String execute(final DeviceCollection deviceCollection, final String command, List<CommandRequestDevice> requests, CommandRequestExecutionType commandRequestExecutionType, final SimpleCallback<GroupCommandResult> callback, LiteYukonUser user) {
         
+        if (commandRequestExecutionType == null) {
+            throw new IllegalArgumentException("commandRequestExecutionType cannot be null");
+        }
+
         // create temporary groups
         final StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup(null);
         final StoredDeviceGroup failureGroup = temporaryDeviceGroupService.createTempGroup(null);
@@ -106,10 +114,6 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
             }
             
         };
-        
-        if (commandRequestExecutionType == null) {
-        	commandRequestExecutionType = CommandRequestExecutionType.GROUP_COMMAND;
-        }
         
         groupCommandResult.setCommandRequestExecutionType(commandRequestExecutionType);
         groupCommandResult.setCommand(command);

@@ -7,7 +7,6 @@ import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.util.SimpleCallback;
-import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface GroupMeterReadService {
@@ -16,7 +15,7 @@ public interface GroupMeterReadService {
 																final Set<? extends Attribute> attributes, 
 																CommandRequestExecutionType type, 
 																SimpleCallback<GroupMeterReadResult> callback, 
-																LiteYukonUser user) throws PaoAuthorizationException;
+																LiteYukonUser user);
 
 	public List<GroupMeterReadResult> getCompleted();
 	public List<GroupMeterReadResult> getCompletedByType(CommandRequestExecutionType type);

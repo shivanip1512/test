@@ -32,7 +32,6 @@ import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.common.util.SimpleCallback;
-import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.bulk.model.DeviceCollectionFactory;
@@ -160,11 +159,6 @@ public class GroupMeterReadController extends MultiActionController {
         	String resultKey = groupMeterReadService.readDeviceCollection(deviceCollection, Collections.singleton(attribute), CommandRequestExecutionType.GROUP_ATTRIBUTE_READ, alertCallback, userContext.getYukonUser());
         	mav.addObject("resultKey", resultKey);
 		
-        } catch (PaoAuthorizationException e) {
-        	
-        	addErrorStateToMav(errorMav, "User does not have access to read attribute: " + attribute.getDescription(), groupName, attributeStr);
-			return errorMav;
-			
         } catch (Exception e) {
 
         	addErrorStateToMav(errorMav, e.getMessage(), groupName, attributeStr);

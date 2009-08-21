@@ -19,6 +19,7 @@
 <cti:msg var="readOutageLogsSectionNoteLabelText" key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.noteLabel" />
 <cti:msg var="readOutageLogsSectionNoteBodyText" key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.noteBody" />
 <cti:msg var="readOutageLogsSectionRemoveAfterReadText" key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.removeAfterRead" />
+<cti:msg var="readOkText" key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.readOk" />
 <cti:msg var="readOutageLogsSectionRecentReadLogsResultsText" key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.recentReadLogsResults" />
 <cti:msg var="readOutageLogsSectiondateTimeText" key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.recentReadLogsResults.tableHeader.dateTime" />
 <cti:msg var="readOutageLogsSectionSuccessCountText" key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.recentReadLogsResults.tableHeader.successCount" />
@@ -59,8 +60,8 @@
     <h2>${pageTitle}</h2>
     <br>
 	
-	<c:if test="${not empty processError}">
-		<div class="errorRed">${processError}</div>
+	<c:if test="${not empty param.processError}">
+		<div class="errorRed">${param.processError}</div>
 	</c:if>
 	
 	<%-- MAIN DETAILS --%>
@@ -153,6 +154,12 @@
 			<input type="checkbox" name="removeFromOutageGroupAfterRead" checked>
 			${readOutageLogsSectionRemoveAfterReadText}
 			</span>
+			
+			<%-- read ok --%>
+	    	<c:if test="${param.readOk}">
+	    		<br>
+	    		${readOkText}
+	    	</c:if>
 			
 			<%-- recent reads --%>
 			<c:if test="${fn:length(readResults) > 0}">

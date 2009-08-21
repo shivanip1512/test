@@ -3,14 +3,11 @@ package com.cannontech.web.amr.tamperFlagProcessing;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -36,16 +33,17 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.common.util.SimpleCallback;
-import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
 
 @Controller
 @RequestMapping("/tamperFlagProcessing/process/*")
 @CheckRoleProperty(YukonRoleProperty.TAMPER_FLAG_PROCESSING)
-public class TamperFlagProcessingController implements InitializingBean {
+public class TamperFlagProcessingController {
 
 	private TamperFlagMonitorDao tamperFlagMonitorDao;
 	private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
@@ -56,16 +54,9 @@ public class TamperFlagProcessingController implements InitializingBean {
 	private GroupMetersDao groupMetersDao;
 	private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
 	
-	private Map<Integer, List<String>> monitorToRecentReadKeysCache;
-	private Map<Integer, List<String>> monitorToRecentResetKeysCache;
+	private ListMultimap<Integer, String> monitorToRecentReadKeysCache = ArrayListMultimap.create();
+	private ListMultimap<Integer, String> monitorToRecentResetKeysCache = ArrayListMultimap.create();
 	private static final String RESET_FLAGS_COMMAND = "putstatus reset";
-	
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		
-		monitorToRecentReadKeysCache = new HashMap<Integer, List<String>>();
-		monitorToRecentResetKeysCache = new HashMap<Integer, List<String>>();
-	}
 	
 	// EDIT
 	@RequestMapping
@@ -73,13 +64,6 @@ public class TamperFlagProcessingController implements InitializingBean {
 		
 		int tamperFlagMonitorId = ServletRequestUtils.getRequiredIntParameter(request, "tamperFlagMonitorId");
 		TamperFlagMonitor tamperFlagMonitor = tamperFlagMonitorDao.getById(tamperFlagMonitorId);
-		
-		String processError = ServletRequestUtils.getStringParameter(request, "processError");
-		Boolean readOk = ServletRequestUtils.getBooleanParameter(request, "readOk");
-		Boolean resetOk = ServletRequestUtils.getBooleanParameter(request, "resetOk");
-		model.addAttribute("processError", processError);
-		model.addAttribute("readOk", readOk);
-		model.addAttribute("resetOk", resetOk);
 		
 		// tamper flag group device collection
 		StoredDeviceGroup tamperFlagGroup = tamperFlagMonitorService.getTamperFlagGroup(tamperFlagMonitor.getTamperFlagMonitorName());
@@ -129,50 +113,42 @@ public class TamperFlagProcessingController implements InitializingBean {
 	@RequestMapping
     public String readFlags(HttpServletRequest request, YukonUserContext userContext, ModelMap model) throws ServletException {
 		
-		String processError = null;
 		int tamperFlagMonitorId = ServletRequestUtils.getRequiredIntParameter(request, "tamperFlagMonitorId");
+		final TamperFlagMonitor tamperFlagMonitor = tamperFlagMonitorDao.getById(tamperFlagMonitorId);
 		
-		try {
-			
-			final TamperFlagMonitor tamperFlagMonitor = tamperFlagMonitorDao.getById(tamperFlagMonitorId);
-			
-			StoredDeviceGroup tamperFlagGroup = tamperFlagMonitorService.getTamperFlagGroup(tamperFlagMonitor.getTamperFlagMonitorName());
-			DeviceCollection tamperFlagGroupDeviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(tamperFlagGroup);
-			
-			// alert callback
-			SimpleCallback<GroupMeterReadResult> alertCallback = new SimpleCallback<GroupMeterReadResult>() {
-	            @Override
-	            public void handle(GroupMeterReadResult result) {
-	            	
-	            	// alert
-	                ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.web.modules.amr.tamperFlagProcessing.readInternalFlags.completionAlert");
-	                resolvableTemplate.addData("tamperFlagMonitorName", tamperFlagMonitor.getTamperFlagMonitorName());
-	                resolvableTemplate.addData("tamperFlagMonitorId", tamperFlagMonitor.getTamperFlagMonitorId());
-	                int successCount = result.getResultHolder().getResultStrings().size();
-	                int total = (int)result.getOriginalDeviceCollectionCopy().getDeviceCount();
-	                float percentSuccess = 100.0f;
-	                if (total > 0) {
-	                	percentSuccess = (float)((successCount * 100) / total);
-	                }
-	                resolvableTemplate.addData("percentSuccess", percentSuccess);
-	                resolvableTemplate.addData("resultKey", result.getKey());
-	                
-	                TamperFlagProcessingReadInternalFlagsCompletionAlert readInternalFlagsCompletionAlert = new TamperFlagProcessingReadInternalFlagsCompletionAlert(new Date(), resolvableTemplate);
-	                
-	                alertService.add(readInternalFlagsCompletionAlert);
-	            }
-	        };
+		StoredDeviceGroup tamperFlagGroup = tamperFlagMonitorService.getTamperFlagGroup(tamperFlagMonitor.getTamperFlagMonitorName());
+		DeviceCollection tamperFlagGroupDeviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(tamperFlagGroup);
 		
-	        String resultKey = groupMeterReadService.readDeviceCollection(tamperFlagGroupDeviceCollection, Collections.singleton(BuiltInAttribute.GENERAL_ALARM_FLAG), CommandRequestExecutionType.TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_READ, alertCallback, userContext.getYukonUser());
-	        addReadResultKeyToCache(tamperFlagMonitorId, resultKey);
+		// alert callback
+		SimpleCallback<GroupMeterReadResult> alertCallback = new SimpleCallback<GroupMeterReadResult>() {
+            @Override
+            public void handle(GroupMeterReadResult result) {
+            	
+            	// alert
+                ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.web.modules.amr.tamperFlagProcessing.readInternalFlags.completionAlert");
+                resolvableTemplate.addData("tamperFlagMonitorName", tamperFlagMonitor.getTamperFlagMonitorName());
+                resolvableTemplate.addData("tamperFlagMonitorId", tamperFlagMonitor.getTamperFlagMonitorId());
+                int successCount = result.getResultHolder().getResultStrings().size();
+                int total = (int)result.getOriginalDeviceCollectionCopy().getDeviceCount();
+                float percentSuccess = 100.0f;
+                if (total > 0) {
+                	percentSuccess = (float)((successCount * 100) / total);
+                }
+                resolvableTemplate.addData("percentSuccess", percentSuccess);
+                resolvableTemplate.addData("resultKey", result.getKey());
+                
+                TamperFlagProcessingReadInternalFlagsCompletionAlert readInternalFlagsCompletionAlert = new TamperFlagProcessingReadInternalFlagsCompletionAlert(new Date(), resolvableTemplate);
+                
+                alertService.add(readInternalFlagsCompletionAlert);
+            }
+        };
+	
+        String resultKey = groupMeterReadService.readDeviceCollection(tamperFlagGroupDeviceCollection, Collections.singleton(BuiltInAttribute.GENERAL_ALARM_FLAG), CommandRequestExecutionType.TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_READ, alertCallback, userContext.getYukonUser());
+        monitorToRecentReadKeysCache.put(tamperFlagMonitorId, resultKey);
 		
-		} catch (PaoAuthorizationException e) {
-			processError = "User does not have access to run read flags command.";
-		}
 		
 		model.addAttribute("tamperFlagMonitorId", tamperFlagMonitorId);
-		model.addAttribute("processError", processError);
-		model.addAttribute("readOk", processError == null);
+		model.addAttribute("readOk", true);
 		
 		return "redirect:process";
 	}
@@ -197,7 +173,7 @@ public class TamperFlagProcessingController implements InitializingBean {
 	        };
 	        
 			String resultKey = groupCommandExecutor.execute(tamperFlagGroupDeviceCollection, RESET_FLAGS_COMMAND, CommandRequestExecutionType.TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_RESET, dummyCallback, userContext.getYukonUser());
-			addResetResultKeyToCache(tamperFlagMonitorId, resultKey);
+			monitorToRecentResetKeysCache.put(tamperFlagMonitorId, resultKey);
 			
 		} catch (Exception e) {
 			processError = e.getMessage();
@@ -225,22 +201,6 @@ public class TamperFlagProcessingController implements InitializingBean {
         model.addAttribute("tamperFlagMonitorId", tamperFlagMonitorId);
 		
         return "redirect:process";
-	}
-	
-	private void addReadResultKeyToCache(int tamperFlagMonitorId, String resultKey) {
-		
-		if (!monitorToRecentReadKeysCache.containsKey(tamperFlagMonitorId)) {
-			monitorToRecentReadKeysCache.put(tamperFlagMonitorId, new ArrayList<String>());
-		}
-		monitorToRecentReadKeysCache.get(tamperFlagMonitorId).add(resultKey);
-	}
-	
-	private void addResetResultKeyToCache(int tamperFlagMonitorId, String resultKey) {
-		
-		if (!monitorToRecentResetKeysCache.containsKey(tamperFlagMonitorId)) {
-			monitorToRecentResetKeysCache.put(tamperFlagMonitorId, new ArrayList<String>());
-		}
-		monitorToRecentResetKeysCache.get(tamperFlagMonitorId).add(resultKey);
 	}
 	
 	@Autowired

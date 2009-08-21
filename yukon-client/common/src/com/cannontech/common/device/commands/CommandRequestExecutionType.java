@@ -17,7 +17,8 @@ public enum CommandRequestExecutionType {
 	
 	
 	DEVICE_CONFIG_VERIFY("Device Config Verify", "Verify command sent to a collection of devices for the purpose of Device Configuration.", false),
-	DEVICE_CONFIG_SEND("Device Config Send", "Send config settings to a devices for the purpose of Device Configuration.", false),
+	DEVICE_CONFIG_SEND("Device Config Send", "Send config settings to a collection of devices for the purpose of Device Configuration.", false),
+	DEVICE_CONFIG_READ("Device Config Read", "Send getconfig install command to a collection of devices for the purpose of Device Configuration.", false),
 	;
 	
 	private String shortName;
