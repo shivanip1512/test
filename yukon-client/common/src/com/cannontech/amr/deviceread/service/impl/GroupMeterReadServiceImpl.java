@@ -9,7 +9,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.deviceread.dao.impl.UnreadableException;
-import com.cannontech.amr.deviceread.model.CommandWrapper;
 import com.cannontech.amr.deviceread.service.GroupMeterReadResult;
 import com.cannontech.amr.deviceread.service.GroupMeterReadService;
 import com.cannontech.amr.deviceread.service.MeterReadCommandGeneratorService;
@@ -31,7 +30,6 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.util.SimpleCallback;
-import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.google.common.collect.Lists;
@@ -52,7 +50,7 @@ public class GroupMeterReadServiceImpl implements GroupMeterReadService {
 																	final Set<? extends Attribute> attributes, 
 																	CommandRequestExecutionType type, 
 																	final SimpleCallback<GroupMeterReadResult> callback, 
-																	LiteYukonUser user) throws PaoAuthorizationException {
+																	LiteYukonUser user) {
     	
 		// map devices+attribute => list of command requests
 		List<PaoIdentifier> unsupportedDevices = new ArrayList<PaoIdentifier>();
