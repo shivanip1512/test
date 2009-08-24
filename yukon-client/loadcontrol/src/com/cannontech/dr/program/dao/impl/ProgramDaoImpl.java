@@ -17,10 +17,17 @@ import com.cannontech.dr.program.dao.ProgramDao;
 public class ProgramDaoImpl implements ProgramDao {
     private SimpleJdbcTemplate simpleJdbcTemplate;
 
-    private final static String programsForScenarioQuery =
+    private final static String baseProgramQuery =
         "SELECT paObjectId, paoName FROM yukonPAObject"
-            + " WHERE paObjectId IN (SELECT programId"
+            + " WHERE category = 'LOADMANAGEMENT'"
+            + " AND paoClass = 'LOADMANAGEMENT'"
+            + " AND type = 'LM DIRECT PROGRAM'";
+    private final static String programsForScenarioQuery =
+        baseProgramQuery + " AND paObjectId IN (SELECT programId"
             + " FROM lmControlScenarioProgram WHERE scenarioId = ?)";
+    private final static String programsForControlAreaQuery =
+        baseProgramQuery + " AND paObjectId IN (SELECT lmProgramDeviceId"
+            + " FROM lmControlAreaProgram WHERE deviceId = ?)";
 
     private final static ParameterizedRowMapper<DisplayableDevice> programRowMapper =
         new ParameterizedRowMapper<DisplayableDevice>() {
@@ -40,6 +47,14 @@ public class ProgramDaoImpl implements ProgramDao {
         List<DisplayableDevice> retVal = simpleJdbcTemplate.query(programsForScenarioQuery,
                                                                   programRowMapper,
                                                                   scenarioId);
+        return retVal;
+    }
+
+    @Override
+    public List<DisplayableDevice> getProgramsForControlArea(int controlAreaId) {
+        List<DisplayableDevice> retVal = simpleJdbcTemplate.query(programsForControlAreaQuery,
+                                                                  programRowMapper,
+                                                                  controlAreaId);
         return retVal;
     }
 

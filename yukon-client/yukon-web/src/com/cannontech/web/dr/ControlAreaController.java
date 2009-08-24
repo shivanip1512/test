@@ -9,35 +9,35 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.device.model.DisplayableDevice;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
+import com.cannontech.dr.controlarea.dao.ControlAreaDao;
 import com.cannontech.dr.program.dao.ProgramDao;
-import com.cannontech.dr.scenario.dao.ScenarioDao;
 
 @Controller
-public class ScenarioController {
-    private ScenarioDao scenarioDao = null;
+public class ControlAreaController {
+    private ControlAreaDao controlAreaDao = null;
     private ProgramDao programDao = null;
     private PaoAuthorizationService paoAuthorizationService;
 
-    @RequestMapping("/scenario/list")
+    @RequestMapping("/controlArea/list")
     public String list(ModelMap modelMap) {
-        List<DisplayableDevice> scenarios = scenarioDao.getScenarios();
-        modelMap.addAttribute("scenarios", scenarios);
-        return "/dr/scenario/list.jsp";
+        List<DisplayableDevice> controlAreas = controlAreaDao.getControlAreas();
+        modelMap.addAttribute("controlAreas", controlAreas);
+        return "/dr/controlArea/list.jsp";
     }
 
-    @RequestMapping("/scenario/detail")
-    public String detail(int scenarioId, ModelMap modelMap) {
-        DisplayableDevice scenario = scenarioDao.getScenario(scenarioId);
-        // TODO:  check permissions of scenario
-        modelMap.addAttribute("scenario", scenario);
-        List<DisplayableDevice> programs = programDao.getProgramsForScenario(scenarioId);
+    @RequestMapping("/controlArea/detail")
+    public String detail(int controlAreaId, ModelMap modelMap) {
+        DisplayableDevice controlArea = controlAreaDao.getControlArea(controlAreaId);
+        // TODO:  check permissions of control area
+        modelMap.addAttribute("controlArea", controlArea);
+        List<DisplayableDevice> programs = programDao.getProgramsForControlArea(controlAreaId);
         modelMap.addAttribute("programs", programs);
-        return "/dr/scenario/detail.jsp";
+        return "/dr/controlArea/detail.jsp";
     }
 
     @Autowired
-    public void setScenarioDao(ScenarioDao scenarioDao) {
-        this.scenarioDao = scenarioDao;
+    public void setControlAreaDao(ControlAreaDao controlAreaDao) {
+        this.controlAreaDao = controlAreaDao;
     }
 
     @Autowired

@@ -327,20 +327,19 @@
         <link>/spring/dr/home</link>
       </option>
       <option id="details">
-<!--        <link>/spring/dr/controlarea/list</link>-->
-        <link>/spring/dr/scenario/list</link>
+        <link>/spring/dr/controlArea/list</link>
         <links>
           <option id="scenarios">
             <link>/spring/dr/scenario/list</link>
           </option>
           <option id="controlareas">
-            <link>/spring/dr/controlarea/list</link>
+            <link>/spring/dr/controlArea/list</link>
           </option>
           <option id="programs">
             <link>/spring/dr/program/list</link>
           </option>
           <option id="loadgroups">
-            <link>/spring/dr/loadgroup/list</link>
+            <link>/spring/dr/loadGroup/list</link>
           </option>
         </links>
       </option>

@@ -21,7 +21,7 @@
 			<th><cti:msg key="yukon.web.dr.scenario.list.heading.name"/></th>
 		</tr>
 		<c:forEach var="scenario" items="${scenarios}">
-			<tr>
+			<tr class="<tags:alternateRow odd="" even="altRow"/>">
 				<td>
 				<c:url var="scenarioURL" value="/spring/dr/scenario/detail">
 					<c:param name="scenarioId" value="${scenario.paoIdentifier.paoId}"/>

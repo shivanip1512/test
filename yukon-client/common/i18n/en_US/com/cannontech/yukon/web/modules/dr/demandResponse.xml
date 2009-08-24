@@ -6,11 +6,13 @@
 <entry key="yukon.web.dr.home.breadcrumb.operationsHome">Operations Home</entry>
 <entry key="yukon.web.dr.home.breadcrumb.home">Demand Response</entry>
 
+
 <entry key="yukon.web.dr.scenario.list.pageTitle">Scenarios</entry>
 <entry key="yukon.web.dr.scenario.list.breadcrumb.operationsHome">Operations Home</entry>
 <entry key="yukon.web.dr.scenario.list.breadcrumb.scenarios">Scenarios</entry>
 <entry key="yukon.web.dr.scenario.list.scenarios">Scenarios</entry>
 <entry key="yukon.web.dr.scenario.list.heading.name">Name</entry>
+
 
 <entry key="yukon.web.dr.scenario.detail.pageTitle">Scenario {0}</entry>
 <entry key="yukon.web.dr.scenario.detail.breadcrumb.operationsHome">Operations Home</entry>
@@ -26,5 +28,32 @@
 
 <entry key="yukon.web.dr.scenario.detail.heading.programs">Programs</entry>
 <entry key="yukon.web.dr.scenario.detail.programs.heading.name">Name</entry>
+
+
+<entry key="yukon.web.dr.controlArea.list.pageTitle">Control Areas</entry>
+<entry key="yukon.web.dr.controlArea.list.breadcrumb.operationsHome">Operations Home</entry>
+<entry key="yukon.web.dr.controlArea.list.breadcrumb.controlAreas">ControlAreas</entry>
+<entry key="yukon.web.dr.controlArea.list.controlAreas">ControlAreas</entry>
+<entry key="yukon.web.dr.controlArea.list.heading.name">Name</entry>
+
+
+<entry key="yukon.web.dr.controlArea.detail.pageTitle">ControlArea {0}</entry>
+<entry key="yukon.web.dr.controlArea.detail.breadcrumb.operationsHome">Operations Home</entry>
+<entry key="yukon.web.dr.controlArea.detail.breadcrumb.controlAreas">ControlAreas</entry>
+<entry key="yukon.web.dr.controlArea.detail.breadcrumb.controlArea">ControlArea {0}</entry>
+<entry key="yukon.web.dr.controlArea.detail.controlArea">ControlArea {0}</entry>
+
+<entry key="yukon.web.dr.controlArea.detail.heading.info">Info</entry>
+
+<entry key="yukon.web.dr.controlArea.detail.heading.actions">Actions</entry>
+<entry key="yukon.web.dr.controlArea.detail.actions.start">Start</entry>
+<entry key="yukon.web.dr.controlArea.detail.actions.stop">Stop</entry>
+<entry key="yukon.web.dr.controlArea.detail.actions.triggersChange">Triggers Change</entry>
+<entry key="yukon.web.dr.controlArea.detail.actions.dailyTimeChange">Daily Time Change</entry>
+<entry key="yukon.web.dr.controlArea.detail.actions.disable">Disable</entry>
+<entry key="yukon.web.dr.controlArea.detail.actions.enable">Enable</entry>
+
+<entry key="yukon.web.dr.controlArea.detail.heading.programs">Programs</entry>
+<entry key="yukon.web.dr.controlArea.detail.programs.heading.name">Name</entry>
 
 </properties>

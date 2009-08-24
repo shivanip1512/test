@@ -5,7 +5,7 @@
 
 <cti:msg var="pageTitle" key="yukon.web.dr.scenario.detail.pageTitle" argument="${scenario.name}"/>
 <cti:standardPage module="dr" title="${pageTitle}">
-    <cti:standardMenu menuSelection="details|scenario"/>
+    <cti:standardMenu menuSelection="details|scenarios"/>
 
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp">
@@ -46,7 +46,7 @@
 			<th><cti:msg key="yukon.web.dr.scenario.detail.programs.heading.name"/></th>
 		</tr>
 		<c:forEach var="program" items="${programs}">
-			<tr>
+			<tr class="<tags:alternateRow odd="" even="altRow"/>">
 				<td>
 				<c:url var="programURL" value="/spring/dr/program/detail">
 					<c:param name="programId" value="${program.paoIdentifier.paoId}"/>
