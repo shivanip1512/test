@@ -685,8 +685,8 @@ public class WorkOrderModel extends ReportModelBase<WorkOrder> {
 						return "";
                 case PRESENCE_REQUIRED_COLUMN:
                     if (lAcctInfo != null) { 
-                        if( lAcctInfo.getAccountSite().getCustAtHome().equalsIgnoreCase("Y"))
-                            return "* Appointment Required";
+                        return (lAcctInfo.getAccountSite().getCustAtHome().equalsIgnoreCase("Y") ?
+                            "* Appointment Required" : "* Appointment Not Required");
                     }
                     return "";
 				case ADDRESS1_COLUMN:
@@ -711,7 +711,7 @@ public class WorkOrderModel extends ReportModelBase<WorkOrder> {
                         return "";                    
 				case COMPANY_NAME_COLUMN:
 					if (lAcctInfo != null && lAcctInfo.getCustomer() instanceof LiteCICustomer && lAcctInfo.getCustomer().getCustomerTypeID() == CustomerTypes.CUSTOMER_CI
-                            && ((LiteCICustomer)lAcctInfo.getCustomer()).getCompanyName() == null)
+                            && ((LiteCICustomer)lAcctInfo.getCustomer()).getCompanyName() != null)
 						return ((LiteCICustomer)lAcctInfo.getCustomer()).getCompanyName();
 					else
 						return "";
