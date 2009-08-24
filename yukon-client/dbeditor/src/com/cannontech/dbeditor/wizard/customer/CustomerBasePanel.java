@@ -17,6 +17,7 @@ import com.cannontech.common.gui.util.OkCancelDialog;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.dao.ContactDao;
+import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.customer.CICustomerBase;
 import com.cannontech.database.data.customer.Contact;
@@ -40,6 +41,8 @@ public class CustomerBasePanel extends com.cannontech.common.gui.util.DataInputP
 	private javax.swing.JTextField jTextFieldCustomerNumber = null;
 	private javax.swing.JLabel jLabelCustNumber = null;
 
+	private int customerId = -1;
+	private LiteContact newContact = null; 
 /**
  * Constructor
  */
@@ -572,20 +575,12 @@ public void jButtonNewContact_ActionPerformed(java.awt.event.ActionEvent actionE
 			
 			refillContactComboBox();
 			
-			//select the newly created contact in our JComboBox, seems reasonable
-			for (int j = 0; j < getJComboBoxPrimaryContact().getModel().getSize(); j++)
-			{
-				if( getJComboBoxPrimaryContact().getItemAt(j) instanceof LiteContact )	
-					if( cnt.getContact().getContactID().intValue()
-						 == ((LiteContact)getJComboBoxPrimaryContact().getItemAt(j)).getContactID() )
-					{
-						getJComboBoxPrimaryContact().setSelectedIndex(j);
-						break;
-					}
-			}		
+			// Holds on to a temp copy of the new contact 
+			// so it can be set as the new primary contact in the panel.
+			ContactDao contactDao = DaoFactory.getContactDao();
+			newContact = contactDao.getContact(cnt.getContact().getContactID());
+			
 		}
-
-		
 	}
 	
 	dialog.dispose();
@@ -608,6 +603,8 @@ private void refillContactComboBox()
     final ProgressMonitor monitor = new ProgressMonitor(this, "Loading contents", "", 0, 0);
 
     final ContactDao contactDao = DaoFactory.getContactDao();
+    final CustomerDao customerDao = DaoFactory.getCustomerDao();
+
     SwingWorker<Object, LiteContact> worker = new SwingWorker<Object, LiteContact>() {
         private int count = 0;
         private volatile int contactCount = 0;
@@ -643,7 +640,15 @@ private void refillContactComboBox()
             // this happens automatically, but if we cancel via the worker.cancel() method
             // we want to make sure the dialog goes away
             monitor.close();
-            
+
+            if(newContact == null) {
+            	LiteContact primaryContact = customerDao.getPrimaryContact(customerId);
+                getJComboBoxPrimaryContact().setSelectedItem(primaryContact);
+            } else {
+            	getJComboBoxPrimaryContact().setSelectedItem(newContact);
+            	newContact = null;
+            }
+
         }
     };
     
@@ -698,23 +703,7 @@ public void setValue(Object o)
 		return;
 
 	Customer customer = (Customer)o;
-
-	if( customer.getCustomer().getPrimaryContactID().intValue() 
-		 >= CtiUtilities.NONE_ZERO_ID )
-	{
-		for( int i = 0; i < getJComboBoxPrimaryContact().getItemCount(); i++ )
-		{
-			if( !(getJComboBoxPrimaryContact().getItemAt(i) instanceof LiteContact) )
-				continue;
-
-			LiteContact cnt = (LiteContact)getJComboBoxPrimaryContact().getItemAt(i);
-			if( cnt.getContactID() == customer.getCustomer().getPrimaryContactID().intValue() )
-			{
-				getJComboBoxPrimaryContact().setSelectedIndex( i );
-				break;
-			}
-		}
-	}
+	customerId = customer.getCustomerID();
 
 	//try to find our timezone in the combo box
 	getJComboBoxTimeZone().setSelectedIndex(-1);

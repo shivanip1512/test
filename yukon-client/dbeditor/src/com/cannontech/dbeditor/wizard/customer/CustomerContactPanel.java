@@ -13,6 +13,7 @@ import org.apache.commons.lang.ArrayUtils;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.customer.Customer;
+import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.spring.YukonSpringHook;
 
@@ -339,7 +340,10 @@ public Object getValue(Object o)
 	{
 		//build a totally new CustomerContact object
 		LiteContact cnt = getJTableModel().getLiteContactAt(i);
-		if(contactDao.getCICustomer(cnt.getContactID())!= null){
+		LiteCICustomer liteCICustomer = contactDao.getCICustomer(cnt.getContactID());
+		if(liteCICustomer != null &&
+		   liteCICustomer.getCustomerID() != customer.getCustomerID()){
+		    
 			JOptionPane.showMessageDialog(this, cnt.getContLastName()+ ", "
 							+ cnt.getContFirstName() 
 							+ " is already used by another customer.", "Contact already in use.", 
