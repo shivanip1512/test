@@ -29,7 +29,7 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
     private ScheduledExecutor scheduledExecutor = null;
     private PaoDao paoDao = null;
     private Map<SimpleCallback<Integer>, List<CommandCompletionCallback<CommandRequestRouteAndDevice>>> simpleCallbacksToCommandCompleteCallbacks = 
-        Collections.synchronizedMap(new HashMap<SimpleCallback<Integer>, List<CommandCompletionCallback<CommandRequestRouteAndDevice>>>());
+        new HashMap<SimpleCallback<Integer>, List<CommandCompletionCallback<CommandRequestRouteAndDevice>>>();
     private List<SimpleCallback<Integer>> cancelationCallbackList = Collections.synchronizedList(new ArrayList<SimpleCallback<Integer>>()); 
     
 
@@ -223,11 +223,9 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
     public void cancelRouteDiscovery(final List<SimpleCallback<Integer>> routeFoundCallbacks, final LiteYukonUser user) {
         
         // Stops any further commands from being sent out by currently running callbacks.
-        synchronized(routeFoundCallbacks){
-            for (SimpleCallback<Integer> routeFoundCallback : routeFoundCallbacks) {
-                this.cancelationCallbackList.add(routeFoundCallback);
-            }        
-        }
+        for (SimpleCallback<Integer> routeFoundCallback : routeFoundCallbacks) {
+            this.cancelationCallbackList.add(routeFoundCallback);
+        }        
         
         // Sends out a cancel request for all the pings that have not had responses
         scheduledExecutor.execute(new Runnable() {
