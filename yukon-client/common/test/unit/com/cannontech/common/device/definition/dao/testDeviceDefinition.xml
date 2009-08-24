@@ -18,12 +18,14 @@ This file contains default device and point information for all of the devices i
                 <name>pulse1</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="measure1"/>
+                <decimalplaces value="3"/>
             </point>
 
             <point type="PulseAccumulator" offset="4">
                 <name>pulse2</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="measure1"/>
+                <decimalplaces value="3"/>
             </point>
             
             <point type="DemandAccumulator" offset="1">
@@ -31,6 +33,7 @@ This file contains default device and point information for all of the devices i
                 <name>demand1</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="measure0"/>
+                <decimalplaces value="3"/>
             </point>
             
             <point type="Analog" offset="1">
@@ -38,7 +41,7 @@ This file contains default device and point information for all of the devices i
                 <name>analog1</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="measure1"/>
-                
+                <decimalplaces value="3"/>
             </point>
             <point type="Status" offset="1">
                 <name>status1</name>
@@ -81,12 +84,14 @@ This file contains default device and point information for all of the devices i
                 <name>pulse2</name>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="measure1"/>
+                <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="1">
             	<init>true</init>
                 <name>analog1</name>
                 <multiplier value=".0001"/>
                 <unitofmeasure value="measure1"/>
+                <decimalplaces value="3"/>
             </point>
         </points>
 		<attributes>

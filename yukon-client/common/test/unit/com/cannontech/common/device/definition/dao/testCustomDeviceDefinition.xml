@@ -17,6 +17,7 @@ This file contains a custom device definition.
                 <name>pulse1</name>
                 <multiplier value="2.5"/>
                 <unitofmeasure value="measure0"/>
+                <decimalplaces value="3"/>
             </point>
         </points>
         <commands>
