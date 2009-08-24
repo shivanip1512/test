@@ -36,4 +36,7 @@ public abstract class BaseAlert implements Alert {
         return message;
     }
 
+    protected void setMessage(ResolvableTemplate message) {
+        this.message = message;
+    }
 }

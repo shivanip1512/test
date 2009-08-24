@@ -150,6 +150,10 @@ public class JobManagerImpl implements JobManager {
         return yukonJobDao.getById(jobId);
     }
     
+    public ScheduledRepeatingJob getRepeatingJob(int jobId) {
+        return (ScheduledRepeatingJob)yukonJobDao.getById(jobId);
+    }
+    
     public Set<ScheduledOneTimeJob> getUnRunOneTimeJobsByDefinition(YukonJobDefinition<? extends YukonTask> definition) {
         Set<ScheduledOneTimeJob> defJobs =  scheduledOneTimeJobDao.getJobsByDefinition(definition);
         

@@ -22,7 +22,7 @@ public class ScheduleDescriptionJobUpdaterHandler implements JobUpdaterHandler {
 			
 			ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(jobId);
 			String cronString = job.getCronString();
-			scheduleDescription = CronExpressionTagUtils.getDescription(cronString);
+			scheduleDescription = CronExpressionTagUtils.getDescription(cronString,userContext);
 			
 		} catch (IllegalArgumentException e) {
 			// N/A

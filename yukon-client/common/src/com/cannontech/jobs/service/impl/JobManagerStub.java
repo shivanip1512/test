@@ -59,6 +59,11 @@ public class JobManagerStub implements JobManager {
     public YukonJob getJob(int jobId) {
         throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
     }
+    
+    @Override
+    public ScheduledRepeatingJob getRepeatingJob(int jobId) {
+        throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
+    }
 
     @Override
     public Set<ScheduledOneTimeJob> getUnRunOneTimeJobsByDefinition(

@@ -9,6 +9,7 @@ import org.quartz.CronExpression;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
 import com.cannontech.web.amr.util.cronExpressionTag.CronTagStyleType;
 
@@ -48,9 +49,9 @@ public class CustomCronTagStyleHandler extends CronTagStyleHandlerBase {
 	
 	// PARSE
 	@Override
-	public CronExpressionTagState parse(String[] parts) {
+	public CronExpressionTagState parse(String[] parts, YukonUserContext userContext) {
 
-		CronExpressionTagState state = new CronExpressionTagState();
+		CronExpressionTagState state = new CronExpressionTagState(userContext);
 		state.setCronTagStyleType(CronTagStyleType.CUSTOM);
 		
 		String cronExpression = StringUtils.join(parts, " ").trim();

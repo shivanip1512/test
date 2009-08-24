@@ -13,6 +13,7 @@ import com.cannontech.jobs.dao.JobStatusDao;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.ScheduleException;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagUtils;
 
 public class ScheduledGroupRequestExecutionJobWrapperFactory {
@@ -21,8 +22,8 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 	private JobStatusDao jobStatusDao;
 	private JobManager jobManager;
 	
-	public ScheduledGroupRequestExecutionJobWrapper createJobWrapper(ScheduledRepeatingJob job, Date startTime, Date stopTime) {
-		return new ScheduledGroupRequestExecutionJobWrapper(job, startTime, stopTime, scheduledGroupRequestExecutionDao, jobStatusDao, jobManager);
+	public ScheduledGroupRequestExecutionJobWrapper createJobWrapper(ScheduledRepeatingJob job, Date startTime, Date stopTime, YukonUserContext userContext) {
+		return new ScheduledGroupRequestExecutionJobWrapper(job, startTime, stopTime, userContext, scheduledGroupRequestExecutionDao, jobStatusDao, jobManager);
 	}
 	
 	public class ScheduledGroupRequestExecutionJobWrapper {
@@ -31,11 +32,12 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 		private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao;
 		private JobStatusDao jobStatusDao;
 		private JobManager jobManager;
+		private YukonUserContext userContext;
 		
 		private ScheduledGroupRequestExecutionTask task;
 		private int creCount;
 		
-		public ScheduledGroupRequestExecutionJobWrapper(ScheduledRepeatingJob job, Date startTime, Date stopTime,
+		public ScheduledGroupRequestExecutionJobWrapper(ScheduledRepeatingJob job, Date startTime, Date stopTime, YukonUserContext userContext,
 							ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao,
 							JobStatusDao jobStatusDao,
 							JobManager jobManager) {
@@ -44,6 +46,7 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 			this.scheduledGroupRequestExecutionDao = scheduledGroupRequestExecutionDao;
 			this.jobStatusDao = jobStatusDao;
 			this.jobManager = jobManager;
+			this.userContext = userContext;
 			
 			this.task = (ScheduledGroupRequestExecutionTask)this.jobManager.instantiateTask(this.job);
 	        this.creCount = this.scheduledGroupRequestExecutionDao.getCreCountByJobId(this.job.getId(), startTime, stopTime);
@@ -93,7 +96,7 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 		}
 		
 		public String getScheduleDescription() {
-			return CronExpressionTagUtils.getDescription(this.job.getCronString());
+			return CronExpressionTagUtils.getDescription(this.job.getCronString(), this.userContext);
 		}
 	}
 	

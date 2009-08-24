@@ -15,6 +15,7 @@ import org.springframework.web.bind.ServletRequestUtils;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.util.cronExpressionTag.handler.CronTagStyleHandler;
 
 public class CronExpressionTagUtils {
@@ -43,10 +44,10 @@ public class CronExpressionTagUtils {
 	
 	
 	// PARSE
-	public static CronExpressionTagState parse(String cronExpression) throws IllegalArgumentException {
+	public static CronExpressionTagState parse(String cronExpression, YukonUserContext userContext) throws IllegalArgumentException {
 		
 		// blank expression => default state
-		CronExpressionTagState state = new CronExpressionTagState();
+		CronExpressionTagState state = new CronExpressionTagState(userContext);
 		if (StringUtils.isBlank(cronExpression)) {
 			return state;
 		}
@@ -65,7 +66,7 @@ public class CronExpressionTagUtils {
     			continue;
     		}
     		
-    		state = handler.parse(parts);
+    		state = handler.parse(parts, userContext);
     		break; 
     	}
     	
@@ -75,9 +76,9 @@ public class CronExpressionTagUtils {
 		return state;
 	}
 	
-	public static String getDescription(String cronExpression) throws IllegalArgumentException {
+	public static String getDescription(String cronExpression, YukonUserContext userContext) throws IllegalArgumentException {
 		
-		CronExpressionTagState cronExpressionTagState = parse(cronExpression);
+		CronExpressionTagState cronExpressionTagState = parse(cronExpression, userContext);
 		CronTagStyleType cronTagStyleType = cronExpressionTagState.getCronTagStyleType();
 		
 		CronTagStyleHandler cronTagStyleHandler = cronTagStyleType.getHandler();

@@ -46,7 +46,7 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
 	public ModelAndView jobs(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		
 		ModelAndView mav = new ModelAndView("scheduledGroupRequestExecution/results/jobs.jsp");
-		YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+		final YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 		String error = null;
 		
 		int jobId = ServletRequestUtils.getIntParameter(request, "jobId", 0);
@@ -129,7 +129,7 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
 		final Date stopTime = toDate;
 		ObjectMapper<ScheduledRepeatingJob, ScheduledGroupRequestExecutionJobWrapper> mapper = new ObjectMapper<ScheduledRepeatingJob, ScheduledGroupRequestExecutionJobWrapper>() {
 			public ScheduledGroupRequestExecutionJobWrapper map(ScheduledRepeatingJob from) throws ObjectMappingException {
-                return scheduledGroupRequestExecutionJobWrapperFactory.createJobWrapper(from, startTime, stopTime);
+                return scheduledGroupRequestExecutionJobWrapperFactory.createJobWrapper(from, startTime, stopTime, userContext);
             }
 		};
 		
@@ -143,12 +143,13 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
 	public ModelAndView detail(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		
 		ModelAndView mav = new ModelAndView("scheduledGroupRequestExecution/results/jobDetail.jsp");
+		YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 		
 		int jobId = ServletRequestUtils.getRequiredIntParameter(request, "jobId");
         
         ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(jobId);
         
-        ScheduledGroupRequestExecutionJobWrapper jobWrapper = scheduledGroupRequestExecutionJobWrapperFactory.createJobWrapper(job, null, null);
+        ScheduledGroupRequestExecutionJobWrapper jobWrapper = scheduledGroupRequestExecutionJobWrapperFactory.createJobWrapper(job, null, null, userContext);
         mav.addObject("jobWrapper", jobWrapper);
         
         CommandRequestExecution lastCre = scheduledGroupRequestExecutionDao.getLatestCommandRequestExecutionForJobId(jobId, null);

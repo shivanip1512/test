@@ -7,6 +7,7 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
 import com.cannontech.web.amr.util.cronExpressionTag.CronTagStyleType;
 
@@ -58,9 +59,9 @@ public class OneTimeCronTagStyleHandler extends CronTagStyleHandlerBase {
 	
 	// PARSE
 	@Override
-	public CronExpressionTagState parse(String[] parts) {
+	public CronExpressionTagState parse(String[] parts, YukonUserContext userContext) {
 
-		CronExpressionTagState state = new CronExpressionTagState();
+		CronExpressionTagState state = new CronExpressionTagState(userContext);
 		parseTime(parts, state);
 		state.setCronTagStyleType(CronTagStyleType.ONETIME);
 		

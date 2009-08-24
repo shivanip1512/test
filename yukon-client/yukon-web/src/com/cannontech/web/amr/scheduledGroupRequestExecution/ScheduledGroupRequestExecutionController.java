@@ -81,7 +81,7 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 		// set the parameters to those of the current job if they are not already present in the request (which may exist due to error pass-through)
 		if (editMode) {
 			
-			ScheduledRepeatingJob existingJob = (ScheduledRepeatingJob)jobManager.getJob(editJobId);
+			ScheduledRepeatingJob existingJob = jobManager.getRepeatingJob(editJobId);
 			ScheduledGroupRequestExecutionTask existingTask = new ScheduledGroupRequestExecutionTask();
 			InputRoot inputRoot = scheduledGroupRequestExecutionJobDefinition.getInputs();
 	        InputUtil.applyProperties(inputRoot, existingTask, existingJob.getJobProperties());
@@ -140,7 +140,7 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 		mav.addObject("commands", commands);
 		
 		// cron
-		CronExpressionTagState cronExpressionTagState = CronExpressionTagUtils.parse(cronExpression);
+		CronExpressionTagState cronExpressionTagState = CronExpressionTagUtils.parse(cronExpression, userContext);
         mav.addObject("cronExpressionTagState", cronExpressionTagState);
         
 		return mav;

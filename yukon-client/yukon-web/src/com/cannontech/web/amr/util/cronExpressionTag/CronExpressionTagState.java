@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
-import com.cannontech.user.SystemUserContext;
+import com.cannontech.user.YukonUserContext;
 
 public class CronExpressionTagState {
 	
@@ -43,11 +43,11 @@ public class CronExpressionTagState {
 	// one time
 	String date = "";
 	
-	public CronExpressionTagState() {
+	public CronExpressionTagState(YukonUserContext userContext) {
 		
 		Date today = new Date();
 		SimpleDateFormat dateFormatter;
-		TimeZone systemTimeZone = new SystemUserContext().getTimeZone();
+		TimeZone systemTimeZone = userContext.getTimeZone();
 		
 		dateFormatter = new SimpleDateFormat("MM/dd/yyyy");
 		dateFormatter.setTimeZone(systemTimeZone);

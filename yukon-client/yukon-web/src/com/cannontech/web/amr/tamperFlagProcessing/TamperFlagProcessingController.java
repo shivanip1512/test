@@ -20,6 +20,9 @@ import com.cannontech.amr.meter.dao.GroupMetersDao;
 import com.cannontech.amr.tamperFlagProcessing.TamperFlagMonitor;
 import com.cannontech.amr.tamperFlagProcessing.dao.TamperFlagMonitorDao;
 import com.cannontech.amr.tamperFlagProcessing.service.TamperFlagMonitorService;
+import com.cannontech.common.alert.model.Alert;
+import com.cannontech.common.alert.model.AlertType;
+import com.cannontech.common.alert.model.BaseAlert;
 import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
@@ -137,8 +140,13 @@ public class TamperFlagProcessingController {
                 resolvableTemplate.addData("percentSuccess", percentSuccess);
                 resolvableTemplate.addData("resultKey", result.getKey());
                 
-                TamperFlagProcessingReadInternalFlagsCompletionAlert readInternalFlagsCompletionAlert = new TamperFlagProcessingReadInternalFlagsCompletionAlert(new Date(), resolvableTemplate);
-                
+                Alert readInternalFlagsCompletionAlert = new BaseAlert(new Date(), resolvableTemplate) {
+                    @Override
+                    public com.cannontech.common.alert.model.AlertType getType() {
+                        return AlertType.TAMPER_FLAG_PROCESSING_READ_INTERNAL_FLAGS_COMPLETION;
+                    };
+                };
+                                
                 alertService.add(readInternalFlagsCompletionAlert);
             }
         };

@@ -40,11 +40,10 @@ import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
-import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.web.group.CommandCompletionAlert;
+import com.cannontech.web.group.GroupCommandCompletionAlert;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @RequestMapping("/config/*")
@@ -269,17 +268,7 @@ public class DeviceConfigController extends BulkControllerBase {
         SimpleCallback<GroupCommandResult> callback = new SimpleCallback<GroupCommandResult>() {
             @Override
             public void handle(GroupCommandResult result) {
-                ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.alerts.commandCompletion");
-                int successCount = result.getResultHolder().getResultStrings().size();
-                resolvableTemplate.addData("successCount", successCount);
-                int failureCount = result.getResultHolder().getErrors().size();
-                resolvableTemplate.addData("failureCount", failureCount);
-                int total = failureCount + successCount;
-                resolvableTemplate.addData("percentSuccess", (float)successCount *100 / total);
-                resolvableTemplate.addData("command", result.getCommand());
-                resolvableTemplate.addData("resultKey", result.getKey());
-                
-                CommandCompletionAlert commandCompletionAlert = new CommandCompletionAlert(new Date(), resolvableTemplate);
+                GroupCommandCompletionAlert commandCompletionAlert = new GroupCommandCompletionAlert(new Date(), result);
                 alertService.add(commandCompletionAlert);
             }
             
@@ -314,17 +303,7 @@ public class DeviceConfigController extends BulkControllerBase {
         SimpleCallback<GroupCommandResult> callback = new SimpleCallback<GroupCommandResult>() {
             @Override
             public void handle(GroupCommandResult result) {
-                ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.alerts.commandCompletion");
-                int successCount = result.getResultHolder().getResultStrings().size();
-                resolvableTemplate.addData("successCount", successCount);
-                int failureCount = result.getResultHolder().getErrors().size();
-                resolvableTemplate.addData("failureCount", failureCount);
-                int total = failureCount + successCount;
-                resolvableTemplate.addData("percentSuccess", (float)successCount *100 / total);
-                resolvableTemplate.addData("command", result.getCommand());
-                resolvableTemplate.addData("resultKey", result.getKey());
-                
-                CommandCompletionAlert commandCompletionAlert = new CommandCompletionAlert(new Date(), resolvableTemplate);
+                GroupCommandCompletionAlert commandCompletionAlert = new GroupCommandCompletionAlert(new Date(), result);
                 alertService.add(commandCompletionAlert);
             }
             

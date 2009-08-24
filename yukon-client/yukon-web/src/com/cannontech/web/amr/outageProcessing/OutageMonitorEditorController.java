@@ -49,6 +49,7 @@ public class OutageMonitorEditorController extends MultiActionController {
 	public ModelAndView edit(HttpServletRequest request, HttpServletResponse response) throws Exception, ServletException {
         
         ModelAndView mav = new ModelAndView("outageProcessing/edit.jsp");
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         
         // pass through due to error
         String editError = ServletRequestUtils.getStringParameter(request, "editError", null);
@@ -105,7 +106,7 @@ public class OutageMonitorEditorController extends MultiActionController {
         
         // cron tag setup
         mav.addObject("cronExpressionTagId", CRON_TAG_ID);
-        CronExpressionTagState cronExpressionTagState = CronExpressionTagUtils.parse(expression);
+        CronExpressionTagState cronExpressionTagState = CronExpressionTagUtils.parse(expression, userContext);
         mav.addObject("cronExpressionTagState", cronExpressionTagState);
         
         return mav;

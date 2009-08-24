@@ -21,6 +21,9 @@ import com.cannontech.amr.meter.dao.GroupMetersDao;
 import com.cannontech.amr.outageProcessing.OutageMonitor;
 import com.cannontech.amr.outageProcessing.dao.OutageMonitorDao;
 import com.cannontech.amr.outageProcessing.service.OutageMonitorService;
+import com.cannontech.common.alert.model.Alert;
+import com.cannontech.common.alert.model.AlertType;
+import com.cannontech.common.alert.model.BaseAlert;
 import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
@@ -125,7 +128,12 @@ public class OutageProcessingController extends MultiActionController {
                 resolvableTemplate.addData("percentSuccess", percentSuccess);
                 resolvableTemplate.addData("resultKey", result.getKey());
                 
-                OutageProcessingReadLogsCompletionAlert readLogsCompletionAlert = new OutageProcessingReadLogsCompletionAlert(new Date(), resolvableTemplate);
+                Alert readLogsCompletionAlert = new BaseAlert(new Date(), resolvableTemplate) {
+                    @Override
+                    public com.cannontech.common.alert.model.AlertType getType() {
+                        return AlertType.OUTAGE_PROCESSING_READ_LOGS_COMPLETION;
+                    };
+                };
                 
                 alertService.add(readLogsCompletionAlert);
             }

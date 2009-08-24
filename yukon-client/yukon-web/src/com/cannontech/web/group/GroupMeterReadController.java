@@ -19,6 +19,9 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.amr.deviceread.service.GroupMeterReadResult;
 import com.cannontech.amr.deviceread.service.GroupMeterReadService;
+import com.cannontech.common.alert.model.Alert;
+import com.cannontech.common.alert.model.AlertType;
+import com.cannontech.common.alert.model.BaseAlert;
 import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
@@ -147,7 +150,12 @@ public class GroupMeterReadController extends MultiActionController {
                 resolvableTemplate.addData("percentSuccess", (float)successCount *100 / total);
                 resolvableTemplate.addData("resultKey", result.getKey());
                 
-                GroupMeterReadCompletionAlert groupMeterReadCompletionAlert = new GroupMeterReadCompletionAlert(new Date(), resolvableTemplate);
+                Alert groupMeterReadCompletionAlert = new BaseAlert(new Date(), resolvableTemplate) {
+                    @Override
+                    public com.cannontech.common.alert.model.AlertType getType() {
+                        return AlertType.GROUP_METER_READ_COMPLETION;
+                    };
+                };
                 
                 alertService.add(groupMeterReadCompletionAlert);
             }

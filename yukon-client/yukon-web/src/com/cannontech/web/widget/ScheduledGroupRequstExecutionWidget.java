@@ -21,6 +21,8 @@ import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.jobs.service.JobManager;
+import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.scheduledGroupRequestExecution.ScheduledGroupRequestExecutionJobWrapperFactory;
 import com.cannontech.web.amr.scheduledGroupRequestExecution.ScheduledGroupRequestExecutionJobWrapperFactory.ScheduledGroupRequestExecutionJobWrapper;
 import com.cannontech.web.widget.support.WidgetControllerBase;
@@ -36,7 +38,7 @@ public class ScheduledGroupRequstExecutionWidget extends WidgetControllerBase {
 	public ModelAndView render(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		
 		ModelAndView mav = new ModelAndView("scheduledGroupRequestExecution/render.jsp");
-		
+		final YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 		
 		List<CommandRequestExecutionType> types = new ArrayList<CommandRequestExecutionType>();
 		for (CommandRequestExecutionType type : CommandRequestExecutionType.values()) {
@@ -49,7 +51,7 @@ public class ScheduledGroupRequstExecutionWidget extends WidgetControllerBase {
 		
 		ObjectMapper<ScheduledRepeatingJob, ScheduledGroupRequestExecutionJobWrapper> mapper = new ObjectMapper<ScheduledRepeatingJob, ScheduledGroupRequestExecutionJobWrapper>() {
 			public ScheduledGroupRequestExecutionJobWrapper map(ScheduledRepeatingJob from) throws ObjectMappingException {
-                return scheduledGroupRequestExecutionJobWrapperFactory.createJobWrapper(from, null, null);
+                return scheduledGroupRequestExecutionJobWrapperFactory.createJobWrapper(from, null, null, userContext);
             }
 		};
 		

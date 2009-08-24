@@ -40,7 +40,6 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
-import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.dao.CommandDao;
@@ -220,22 +219,10 @@ public class GroupCommanderController implements InitializingBean {
         SimpleCallback<GroupCommandResult> callback = new SimpleCallback<GroupCommandResult>() {
             @Override
             public void handle(GroupCommandResult result) {
-                ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.alerts.commandCompletion");
-                int successCount = result.getResultHolder().getResultStrings().size();
-                resolvableTemplate.addData("successCount", successCount);
-                int failureCount = result.getResultHolder().getErrors().size();
-                resolvableTemplate.addData("failureCount", failureCount);
-                int total = failureCount + successCount;
-                resolvableTemplate.addData("percentSuccess", (float)successCount *100 / total);
-                resolvableTemplate.addData("command", result.getCommand());
-                resolvableTemplate.addData("resultKey", result.getKey());
-                
-                CommandCompletionAlert commandCompletionAlert = new CommandCompletionAlert(new Date(), resolvableTemplate);
-                
+                GroupCommandCompletionAlert commandCompletionAlert = new GroupCommandCompletionAlert(new Date(), result);
                 alertService.add(commandCompletionAlert);
                 
                 sendEmail(emailAddress, hostURL, result, userContext);
-
             }
 
         };
