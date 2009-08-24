@@ -144,6 +144,24 @@
             <tags:selectedDevicesPopup deviceCollection="${result.failureCollection}" />
             
         </div> 
+        
+        <c:if test="${result.handleUnsupported}">
+	        <%-- UNSUPPORTED --%>
+	        <br>
+	        <div class="normalBoldLabel">Unsupported Devices: <span class="errorRed"><cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/UNSUPPORTED_COUNT"/></span></div>
+	        
+	        <c:if test="${not empty result.unsupportedCollection.deviceList}">
+		        <div id="unsupportedActionsDiv" style="padding:10px;">
+		        
+		            <%-- device collection action --%>
+		            <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.commander.collectionActionOnDevicesLabel.unsupportedResults" class="small">
+		                <cti:mapParam value="${result.unsupportedCollection.collectionParameters}"/>
+		            </cti:link>
+		            <tags:selectedDevicesPopup deviceCollection="${result.unsupportedCollection}" />
+		            
+		        </div>
+	        </c:if>
+        </c:if>
 
         </jsp:body>
         

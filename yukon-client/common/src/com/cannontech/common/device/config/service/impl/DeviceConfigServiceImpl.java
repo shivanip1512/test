@@ -1,5 +1,6 @@
 package com.cannontech.common.device.config.service.impl;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
@@ -12,6 +13,7 @@ import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.DeviceCollection;
+import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
@@ -26,6 +28,9 @@ import com.cannontech.common.device.config.model.VerifyResult;
 import com.cannontech.common.device.config.service.DeviceConfigService;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.DeviceTag;
+import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
+import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.pao.YukonDevice;
@@ -43,6 +48,9 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     private DeviceConfigurationDao deviceConfigurationDao;
     private MeterDao meterDao;
     private DeviceDefinitionDao deviceDefinitionDao;
+    private TemporaryDeviceGroupService temporaryDeviceGroupService;
+    private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+    private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     
     @Override
     public String sendConfigs(DeviceCollection deviceCollection, String method, SimpleCallback<GroupCommandResult> callback, LiteYukonUser user) {
@@ -50,13 +58,63 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         if (method.equalsIgnoreCase("force")) {
             commandString += " force";
         }
-        return groupCommandExecutor.execute(deviceCollection,commandString, CommandRequestExecutionType.DEVICE_CONFIG_SEND, callback, user);
+        
+        List<SimpleDevice> unsupportedDevices = new ArrayList<SimpleDevice>();
+        List<SimpleDevice> supportedDevices = new ArrayList<SimpleDevice>();
+        List<SimpleDevice> devices = new ArrayList<SimpleDevice>(deviceCollection.getDeviceList());
+        for(SimpleDevice device : devices){
+            if(!deviceDefinitionDao.isTagSupported(device.getDeviceType(), DeviceTag.DEVICE_CONFIGURATION_430)
+                    && !deviceDefinitionDao.isTagSupported(device.getDeviceType(), DeviceTag.DEVICE_CONFIGURATION_470)) {
+                unsupportedDevices.add(device);
+            }else{
+                supportedDevices.add(device);
+            }
+        }
+        
+        StoredDeviceGroup unsupportedGroup = temporaryDeviceGroupService.createTempGroup(null);
+        StoredDeviceGroup supportedGroup = temporaryDeviceGroupService.createTempGroup(null);
+        deviceGroupMemberEditorDao.addDevices(unsupportedGroup, unsupportedDevices);
+        deviceGroupMemberEditorDao.addDevices(supportedGroup, supportedDevices);
+        DeviceCollection unsupportedCollection = deviceGroupCollectionHelper.buildDeviceCollection(unsupportedGroup);
+        DeviceCollection supportedCollection = deviceGroupCollectionHelper.buildDeviceCollection(supportedGroup);
+        
+        String key = groupCommandExecutor.execute(supportedCollection, commandString, CommandRequestExecutionType.DEVICE_CONFIG_SEND, callback, user);
+        GroupCommandResult result = groupCommandExecutor.getResult(key);
+        result.setHandleUnsupported(true);
+        result.setUnsupportedCollection(unsupportedCollection);
+        
+        return key;
     }
     
     @Override
     public String readConfigs(DeviceCollection deviceCollection, SimpleCallback<GroupCommandResult> callback, LiteYukonUser user) {
         String commandString = "getconfig install";
-        return groupCommandExecutor.execute(deviceCollection,commandString, CommandRequestExecutionType.DEVICE_CONFIG_READ, callback, user);
+        
+        List<SimpleDevice> unsupportedDevices = new ArrayList<SimpleDevice>();
+        List<SimpleDevice> supportedDevices = new ArrayList<SimpleDevice>();
+        List<SimpleDevice> devices = new ArrayList<SimpleDevice>(deviceCollection.getDeviceList());
+        for(SimpleDevice device : devices){
+            if(!deviceDefinitionDao.isTagSupported(device.getDeviceType(), DeviceTag.DEVICE_CONFIGURATION_430)
+                    && !deviceDefinitionDao.isTagSupported(device.getDeviceType(), DeviceTag.DEVICE_CONFIGURATION_470)) {
+                unsupportedDevices.add(device);
+            }else{
+                supportedDevices.add(device);
+            }
+        }
+        
+        StoredDeviceGroup unsupportedGroup = temporaryDeviceGroupService.createTempGroup(null);
+        StoredDeviceGroup supportedGroup = temporaryDeviceGroupService.createTempGroup(null);
+        deviceGroupMemberEditorDao.addDevices(unsupportedGroup, unsupportedDevices);
+        deviceGroupMemberEditorDao.addDevices(supportedGroup, supportedDevices);
+        DeviceCollection unsupportedCollection = deviceGroupCollectionHelper.buildDeviceCollection(unsupportedGroup);
+        DeviceCollection supportedCollection = deviceGroupCollectionHelper.buildDeviceCollection(supportedGroup);
+
+        String key = groupCommandExecutor.execute(supportedCollection, commandString, CommandRequestExecutionType.DEVICE_CONFIG_READ, callback, user);
+        GroupCommandResult result = groupCommandExecutor.getResult(key);
+        result.setHandleUnsupported(true);
+        result.setUnsupportedCollection(unsupportedCollection);
+        
+        return key;
     }
     
     @Override
@@ -148,7 +206,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     @Override
     public CommandResultHolder readConfig(YukonDevice device, LiteYukonUser user) throws Exception {
         String commandString = "getconfig install";
-        CommandResultHolder resultHolder = commandRequestExecutor.execute(device, commandString, CommandRequestExecutionType.DEVICE_COMMAND, user);
+        CommandResultHolder resultHolder = commandRequestExecutor.execute(device, commandString, CommandRequestExecutionType.DEVICE_CONFIG_READ, user);
         return resultHolder;
     }
     
@@ -187,6 +245,21 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     @Autowired
     public void setDeviceDefinitionDao(DeviceDefinitionDao deviceDefinitionDao) {
         this.deviceDefinitionDao = deviceDefinitionDao;
+    }
+    
+    @Autowired
+    public void setTemporaryDeviceGroupService(TemporaryDeviceGroupService temporaryDeviceGroupService) {
+        this.temporaryDeviceGroupService = temporaryDeviceGroupService;
+    }
+    
+    @Autowired
+    public void setDeviceGroupMemberEditorDao(DeviceGroupMemberEditorDao deviceGroupMemberEditorDao) {
+        this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
+    }
+    
+    @Autowired
+    public void setDeviceGroupCollectionHelper(DeviceGroupCollectionHelper deviceGroupCollectionHelper) {
+        this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
     }
     
     @Autowired

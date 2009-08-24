@@ -17,9 +17,11 @@ public class GroupCommandResult implements Completable, CancelStatus, ExceptionS
     private Date startTime;
     private CommandRequestExecutionType commandRequestExecutionType;
     private CommandRequestExecutionIdentifier commandRequestExecutionIdentifier;
+    private boolean handleUnsupported = false;
     
     private DeviceCollection successCollection;
     private DeviceCollection failureCollection;
+    private DeviceCollection unsupportedCollection;
     
     public String getCommand() {
         return command;
@@ -56,6 +58,10 @@ public class GroupCommandResult implements Completable, CancelStatus, ExceptionS
     public DeviceCollection getFailureCollection() {
         return failureCollection;
     }
+
+    public DeviceCollection getUnsupportedCollection() {
+        return unsupportedCollection;
+    }
     
     public DeviceCollection getSuccessCollection() {
         return successCollection;
@@ -64,11 +70,17 @@ public class GroupCommandResult implements Completable, CancelStatus, ExceptionS
     public GroupCommandCompletionCallback getCallback() {
         return callback;
     }
+    
     public void setCallback(GroupCommandCompletionCallback callback) {
         this.callback = callback;
     }
+    
     public void setFailureCollection(DeviceCollection failureCollection) {
         this.failureCollection = failureCollection;
+    }
+
+    public void setUnsupportedCollection(DeviceCollection unsupportedCollection) {
+        this.unsupportedCollection = unsupportedCollection;
     }
     
     public void setSuccessCollection(DeviceCollection successCollection) {
@@ -78,12 +90,15 @@ public class GroupCommandResult implements Completable, CancelStatus, ExceptionS
     public CommandRequestExecutionType getCommandRequestExecutionType() {
 		return commandRequestExecutionType;
 	}
+    
     public void setCommandRequestExecutionType(CommandRequestExecutionType commandRequestExecutionType) {
 		this.commandRequestExecutionType = commandRequestExecutionType;
 	}
+    
     public CommandRequestExecutionIdentifier getCommandRequestExecutionIdentifier() {
 		return commandRequestExecutionIdentifier;
 	}
+    
     public void setCommandRequestExecutionIdentifier(CommandRequestExecutionIdentifier commandRequestExecutionIdentifier) {
 		this.commandRequestExecutionIdentifier = commandRequestExecutionIdentifier;
 	}
@@ -120,5 +135,13 @@ public class GroupCommandResult implements Completable, CancelStatus, ExceptionS
     public int compareTo(GroupCommandResult o) {
     	
         return this.getStartTime().compareTo(o.getStartTime());
+    }
+    
+    public boolean isHandleUnsupported() {
+        return handleUnsupported;
+    }
+    
+    public void setHandleUnsupported(boolean handleUnsupported) {
+        this.handleUnsupported = handleUnsupported;
     }
 }

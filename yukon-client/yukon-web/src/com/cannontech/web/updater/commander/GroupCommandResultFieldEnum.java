@@ -20,6 +20,12 @@ public enum GroupCommandResultFieldEnum {
         }
     }),
     
+    UNSUPPORTED_COUNT(new ResultAccessor<GroupCommandResult>() {
+        public Object getValue(GroupCommandResult groupCommandResult) {
+            return groupCommandResult.getUnsupportedCollection().getDeviceList().size();
+        }
+    }),
+    
     COMPLETED_ITEMS(new ResultAccessor<GroupCommandResult>() {
         public Object getValue(GroupCommandResult groupCommandResult) {
             

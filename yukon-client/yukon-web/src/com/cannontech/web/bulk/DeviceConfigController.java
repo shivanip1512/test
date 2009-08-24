@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.annotation.Resource;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -344,11 +345,6 @@ public class DeviceConfigController extends BulkControllerBase {
         this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
     }
     
-    @Required
-    public void setRecentResultsCache(RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache) {
-        this.recentResultsCache = recentResultsCache;
-    }
-    
     @Autowired
     public void setDeviceConfigService(DeviceConfigService deviceConfigService) {
         this.deviceConfigService = deviceConfigService;
@@ -357,5 +353,10 @@ public class DeviceConfigController extends BulkControllerBase {
     @Autowired
     public void setAlertService(AlertService alertService) {
         this.alertService = alertService;
+    }
+    
+    @Resource(name="recentResultsCache")
+    public void setRecentResultsCache(RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache) {
+        this.recentResultsCache = recentResultsCache;
     }
 }
