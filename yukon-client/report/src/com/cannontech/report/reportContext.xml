@@ -58,6 +58,11 @@
         </property>
     </bean>
 
+    <!-- MCT Config Model -->
+   <bean id="mctConfigModel" class="com.cannontech.analysis.tablemodel.MCTConfigModel" scope="prototype">
+        <property name="jdbcOps" ref="jdbcTemplate"/>
+    </bean>
+    
    <!-- Cap Control Disabled Devices -->
    <bean id="capControlDisabledDevicesModel" class="com.cannontech.analysis.tablemodel.CapControlDisabledDevicesModel"
         scope="prototype">

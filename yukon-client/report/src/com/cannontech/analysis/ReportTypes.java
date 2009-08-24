@@ -36,6 +36,8 @@ public enum ReportTypes {
     LP_POINT_DATA_SUMMARY("LP Point Data Summary", LPDataSummaryModel.class, ReportGroup.METERING),
     SCHEDULED_METER_READS("Scheduled Meter Reads", ScheduledMeterReadModel.class, ReportGroup.METERING),
     METER_USAGE("Meter Usage", MeterUsageModel.class, ReportGroup.METERING),
+    MCT_CONFIG("MCT 430/470 Config To Device Report", MCTConfigController.class, ReportGroup.METERING,
+               "Report showing 430/470 mcts, config assignments and profile and demand rates."),
     DISCONNECT_COLLAR_DATA("Disconnect Collar Data", DisconnectCollarController.class, ReportGroup.METERING),
     SCAN_RATE_SETUP_DATA("Scan Rate Setup Data", ScanRateSetupDBModel.class, ReportGroup.METERING),
     
