@@ -618,14 +618,14 @@ INSERT INTO YukonRolePropertyTemp VALUES(-100205,-1002, 'Capbank Fixed/Static Te
 INSERT INTO YukonRolePropertyTemp VALUES(-100206,-1002, 'Daily/Max/Total Operation Count', 'true', 'is Daily/Max/Total Operation Count displayed.');
 
 DELETE FROM YukonUserRole
-WHERE NOT RolePropertyId IN (SELECT RolePropertyId
+WHERE RolePropertyId NOT IN (SELECT RolePropertyId
                              FROM YukonRolePropertyTemp);
 DELETE FROM YukonGroupRole
-WHERE NOT RolePropertyId IN (SELECT RolePropertyId
+WHERE RolePropertyId NOT IN (SELECT RolePropertyId
                              FROM YukonRolePropertyTemp);
 GO
 DELETE FROM YukonRoleProperty
-WHERE NOT RolePropertyId IN (SELECT RolePropertyId
+WHERE RolePropertyId NOT IN (SELECT RolePropertyId
                              FROM YukonRolePropertyTemp);
 
 DROP TABLE YukonRolePropertyTemp;
