@@ -152,6 +152,9 @@ std::string inputString[TEST_SIZE] = {
 "control xcom cpp 3600 min minheat 71 delta wake=+2 sleep =+4 return=-1 leave -2 serial 200148000",
 "control xcom cpp 3600 minutes maxcool 71 wake=78 sleep =72 return=76 serial 200148000",
 "control xcom cpp 3600 mins celsius maxcool 29 delta wake=+1 sleep =-2 leave +3 serial 200148000",
+"putconfig emetcon phasedetect clear",
+"putconfig emetcon phasedetect phase A delta=3 interval=30 num 4",
+"getconfig phasedetect read",
 };
 
 

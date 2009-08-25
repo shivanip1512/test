@@ -81,7 +81,8 @@ protected:
     enum Commands
     {
         Command_Connect          = 0x4c,
-        Command_Disconnect       = 0x4d
+        Command_Disconnect       = 0x4d,
+        Command_PhaseDetectClear = 0x84,
     };
 
     enum MemoryMap
@@ -206,6 +207,9 @@ protected:
 
     enum Functions
     {
+        FuncRead_PhaseDetect      = 0x0f,
+        FuncRead_PhaseDetectLen   = 13,
+
         FuncRead_OutagePos        = 0x10,
         FuncRead_OutageLen        =   13,
 
@@ -266,6 +270,12 @@ protected:
 
         FuncWrite_IntervalsPos       = 0x03,
         FuncWrite_IntervalsLen       =    4,
+
+        FuncWrite_PhaseDetect        = 0x10,
+        FuncWrite_PhaseDetectLen     = 5,
+
+        FuncWrite_PhaseDetectClear        = 0x00,
+        FuncWrite_PhaseDetectClearLen     = 2,
 
         FuncWrite_DailyReadInterestPos = 0x50,
         FuncWrite_DailyReadInterestLen =    4,
@@ -349,6 +359,7 @@ protected:
     INT decodeGetConfigFreeze      ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigDisconnect  ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigAddress     ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
+    INT decodeGetConfigPhaseDetect (INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
 
     virtual INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, list< OUTMESS* > &outList );
     virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );

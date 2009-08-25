@@ -1615,6 +1615,14 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
                 _cmd["multchannel"] = CtiParseValue(atoi(cmdtok().c_str()));
             }
         }
+        if(CmdStr.contains(" phasedetect"))
+        {
+            _cmd["phasedetect"] = CtiParseValue(TRUE);
+            if(CmdStr.contains("read"))
+            {  
+                _cmd["phasedetectread"] = CtiParseValue(TRUE);
+            }
+        }
         if(CmdStr.contains(" raw"))
         {
             if(!(token = CmdStr.match(re_rawcmd)).empty())
@@ -2178,11 +2186,14 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
     static const boost::regex  re_holiday(CtiString("holiday ") + str_num + CtiString("( ") + str_date + CtiString(")+") );
     static const boost::regex  re_channel(CtiString("channel ") + str_num + CtiString(" (ied|2-wire|3-wire|none)( input ") + str_num + CtiString(")?( multiplier ") + str_floatnum + CtiString(")?") );
 
+    static const CtiString str_phase("[ =][a-cA-C]");
+    static const boost::regex    re_phase(str_phase);
+
     //  matches any of AKT, HT, PT, MT, CT, ET, the standard/daylight versions of each, and whole/fractional hour offsets
     static const boost::regex  re_timezone(CtiString("timezone (((ak|h|p|m|c|e)[ds]?t)|(-?") + str_floatnum + CtiString("))"));
 
     char *p;
-
+ 
     CtiTokenizer   tok(CmdStr);
 
     token = tok(); // Get the first one into the hopper....
@@ -2444,6 +2455,50 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
         if(CmdStr.contains(" arms"))
         {
             _cmd["arms"] = CtiParseValue("TRUE");
+        }
+        if(CmdStr.contains(" phasedetect"))
+        {
+            CtiString val;
+            INT setpoint = 0;
+            _cmd["phasedetect"] = CtiParseValue("TRUE");
+            if(!(temp2 = CmdStr.match( CtiString(" clear"))).empty())  
+            {
+                _cmd["phasedetectclear"] = CtiParseValue("TRUE");
+            }
+            else
+            {
+                if(!(temp2 = CmdStr.match( (const boost::regex) (CtiString(" phase") + str_phase) )).empty() )
+               {
+                    if(!(val = temp2.match(re_phase)).empty())
+                    {
+                        val = val.strip(CtiString::both, '=');
+                        val = val.strip(CtiString::both, ' ');
+                        _cmd["phase"] = CtiParseValue(val.c_str());
+                    }
+                }
+                if(!(temp2 = CmdStr.match( (const boost::regex) (CtiString(" delta[ =]+") + str_signed_num)) ).empty())
+                {
+                    if(!(val = temp2.match(re_signed_num)).empty())
+                    {
+                        _cmd["phasedelta"] = CtiParseValue(atoi(val.c_str()) & 0xFF);
+                    }
+                }
+                if(!(temp2 = CmdStr.match( (const boost::regex) (CtiString(" interval[ =]+") + str_num) )).empty())
+                {
+                    if(!(val = temp2.match(str_num)).empty())
+                    {
+                        _cmd["phaseinterval"] = CtiParseValue(atoi(val.c_str()));
+                    }
+                }
+                if(!(temp2 = CmdStr.match((const boost::regex) (CtiString("num[ =]+") + str_num) )).empty())
+                {
+                    if(!(val = temp2.match(str_num)).empty())
+                    {
+                        _cmd["phasenum"] = CtiParseValue(atoi(val.c_str()));
+                    }
+                }
+            }
+
         }
         if(CmdStr.contains(" raw"))
         {

@@ -464,6 +464,13 @@ CtiDeviceMCT410::CommandSet CtiDeviceMCT410::initCommandStore()
     cs.insert(CommandStore(Emetcon::PutConfig_Outage,           Emetcon::IO_Write,          Memory_OutageCyclesPos,         Memory_OutageCyclesLen));
     cs.insert(CommandStore(Emetcon::PutConfig_TimeAdjustTolerance, Emetcon::IO_Write,       Memory_TimeAdjustTolPos,        Memory_TimeAdjustTolLen));
 
+    cs.insert(CommandStore(Emetcon::GetConfig_PhaseDetect, Emetcon::IO_Function_Read,       FuncRead_PhaseDetect,           FuncRead_PhaseDetectLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_PhaseDetect, Emetcon::IO_Function_Write,      FuncWrite_PhaseDetect,          FuncWrite_PhaseDetectLen));
+    
+    cs.insert(CommandStore(Emetcon::PutConfig_PhaseDetectClear,   Emetcon::IO_Function_Write,    FuncWrite_PhaseDetectClear,             FuncWrite_PhaseDetectClearLen));
+
+
+
     //************************************ End Config related *****************************
 
     return cs;
@@ -859,6 +866,7 @@ INT CtiDeviceMCT410::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
         case Emetcon::GetConfig_Multiplier:
         case Emetcon::GetConfig_CentronParameters:  status = decodeGetConfigCentron(InMessage, TimeNow, vgList, retList, outList);      break;
+        case Emetcon::GetConfig_PhaseDetect:        status = decodeGetConfigPhaseDetect(InMessage, TimeNow, vgList, retList, outList);      break;
 
         default:
         {
@@ -1270,6 +1278,49 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
             OutMessage->Sequence = function;
 
             OutMessage->Buffer.BSt.Message[0] = freeze_day;
+        }
+    }
+    else if(parse.isKeyValid("phasedetect"))
+    {
+        if(parse.isKeyValid("phasedetectclear"))
+        {
+            function = Emetcon::PutConfig_PhaseDetectClear;
+            found = getOperation(function, OutMessage->Buffer.BSt);
+            OutMessage->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
+            OutMessage->Buffer.BSt.Message[0] = Command_PhaseDetectClear;
+            OutMessage->Sequence = function;
+        }
+        else if(parse.isKeyValid("phase") )
+        {
+        
+            function = Emetcon::PutConfig_PhaseDetect;
+            found = getOperation(function, OutMessage->Buffer.BSt);
+            string phase = parse.getsValue("phase");
+            CtiToUpper(phase);
+            int phaseVal = 0;
+
+            if (phase == "A")
+            {   
+                phaseVal = 1;
+            }
+            else if (phase == "B")
+            {
+                phaseVal = 2;
+            }
+            else if (phase == "C")
+            {
+                phaseVal = 3;
+            }
+            else
+            {
+                phaseVal = 0;
+            }
+            OutMessage->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
+            OutMessage->Buffer.BSt.Message[1] = phaseVal  & 0xff;
+            OutMessage->Buffer.BSt.Message[2] = parse.getiValue("phasedelta")  & 0xff;
+            OutMessage->Buffer.BSt.Message[3] = parse.getiValue("phaseinterval")  & 0xff;
+            OutMessage->Buffer.BSt.Message[4] = parse.getiValue("phasenum")  & 0xff;
+            OutMessage->Sequence = function;
         }
     }
     else
@@ -1797,6 +1848,13 @@ INT CtiDeviceMCT410::executeGetConfig( CtiRequestMsg              *pReq,
         OutMessage->Buffer.BSt.IO       = Emetcon::IO_Read;
 
         OutMessage->Sequence = Emetcon::GetConfig_Freeze;
+    }
+    else if(parse.isKeyValid("phasedetectread"))
+    {
+        OutMessage->Buffer.BSt.Function = Emetcon::GetConfig_PhaseDetect;
+        found = getOperation(OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt);
+
+        OutMessage->Sequence = Emetcon::GetConfig_PhaseDetect;
     }
     else
     {
@@ -3966,6 +4024,95 @@ INT CtiDeviceMCT410::decodeGetConfigAddress(INMESS *InMessage, CtiTime &TimeNow,
     return status;
 }
 
+
+INT CtiDeviceMCT410::decodeGetConfigPhaseDetect(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+{
+    INT status = NORMAL;
+
+    INT ErrReturn  = InMessage->EventCode & 0x3fff;
+    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+
+    string resultStr;
+//Voltage Phase(byte0) 
+//Voltage Phase Timestamp(byte 1-4) 
+//First Interval Voltage (byte 5-6) 
+//Last Interval Voltage (byte 7-8)
+    int phase = 0;
+    string phaseStr;
+    unsigned long volt_timestamp;
+    short first_interval_voltage, last_interval_voltage;
+
+    CtiTime voltTimeStamp;
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+
+        CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+
+ //       Binary Values: 00 - Phase Unknown (default)
+ //                      01 - Phase A
+ //                      10 - Phase B
+ //                      11 - Phase C
+ //                      Other - Invalid
+
+        phase = DSt->Message[0] & 0xFF;
+        switch( phase )
+        {
+            case 1:
+            {
+                phaseStr = "A";
+                break;
+            }
+            case 2:
+            {
+                phaseStr = "B";
+                break;
+            }
+            case 3:
+            {
+                phaseStr = "C";
+                break;
+            }
+            case 0:
+            default:
+            {
+                phaseStr = "Unknown";
+                break;
+            }
+        }
+        volt_timestamp =  DSt->Message[1] << 24 |
+                          DSt->Message[2] << 16 |
+                          DSt->Message[3] <<  8 |
+                          DSt->Message[4];
+        first_interval_voltage = DSt->Message[5] <<  8 |
+                                DSt->Message[6];
+        last_interval_voltage =  DSt->Message[7] <<  8 |
+                                DSt->Message[8];
+
+        resultStr  = getName() + " / Phase: " + phaseStr ;
+        resultStr += " ( " + CtiTime(volt_timestamp).asString() + " )";
+        resultStr  += " First Interval Voltage: " + CtiNumStr(first_interval_voltage);
+        resultStr  += " / Last Interval Voltage: " + CtiNumStr(last_interval_voltage);
+
+        if(ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr))
+        {
+            ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+            ReturnMsg->setResultString(resultStr);
+
+            retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            status = MEMORY;
+        }
+    }
+
+    return status;
+}
 
 INT CtiDeviceMCT410::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {

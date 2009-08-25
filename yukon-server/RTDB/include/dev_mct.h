@@ -146,6 +146,8 @@ protected:
 
         Command_LPInt               = 0x70,
 
+        Command_PhaseDetectClear    = 0x84,
+
         Command_Restore     = 0x00,
         Command_Shed_07m    = 0x00,
         Command_Shed_15m    = 0x10,

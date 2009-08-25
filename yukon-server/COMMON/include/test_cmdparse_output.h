@@ -149,9 +149,9 @@ std::string parse_asString[TEST_SIZE] = {
 "command=8:flags=0::sa_f1bit=(none),0,0.000:serial=(none),200148000,200148000.000:type=expresscom,8,8.000:xccontroltime=(none),3600,3600.000:xccpp=(none),1,1.000:xcdelta=(none),1,1.000:xcleave=(none),254,254.000:xcminheat=(none),71,71.000:xcreturn=(none),255,255.000:xcsleep=(none),4,4.000:xcwake=(none),2,2.000",
 "command=8:flags=0::sa_f1bit=(none),0,0.000:serial=(none),200148000,200148000.000:type=expresscom,8,8.000:xccontroltime=(none),3600,3600.000:xccpp=(none),1,1.000:xcmaxcool=(none),71,71.000:xcmode=(none),1,1.000:xcreturn=(none),76,76.000:xcsleep=(none),72,72.000:xcwake=(none),78,78.000",
 "command=8:flags=0::sa_f1bit=(none),0,0.000:serial=(none),200148000,200148000.000:type=expresscom,8,8.000:xccelsius=(none),1,1.000:xccontroltime=(none),3600,3600.000:xccpp=(none),1,1.000:xcdelta=(none),1,1.000:xcleave=(none),3,3.000:xcmaxcool=(none),29,29.000:xcmode=(none),1,1.000:xcsleep=(none),254,254.000:xcwake=(none),1,1.000",
-"command=0:flags=0::type=versacom,0,0.000",
-"command=0:flags=0::type=versacom,0,0.000",
-"command=0:flags=0::type=versacom,0,0.000",
+"command=6:flags=0::phasedetect=TRUE,-2147483648,0.000:phasedetectclear=TRUE,-2147483648,0.000:type=emetcon,7,7.000",
+"command=6:flags=0::phase=a,-2147483648,0.000:phasedelta=(none),3,3.000:phasedetect=TRUE,-2147483648,0.000:phaseinterval=(none),30,30.000:phasenum=(none),4,4.000:type=emetcon,7,7.000",
+"command=5:flags=0::phasedetect=(none),1,1.000:phasedetectread=(none),1,1.000:type=versacom,0,0.000",
 "command=0:flags=0::type=versacom,0,0.000",
 "command=0:flags=0::type=versacom,0,0.000"
 };

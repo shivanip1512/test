@@ -161,7 +161,8 @@ public:
         GetConfig_Holiday,
         GetConfig_CentronParameters,  //  not ideal - hopefully we can manage the InMessage->Sequence better for very specialized
         GetConfig_Freeze,             //    commands like this one, i don't like this being a big mess of non-general commands
-
+        GetConfig_PhaseDetect,
+        
         // PutConfig commands
         PutConfig_Install,
         PutConfig_GroupAddressInhibit,
@@ -205,6 +206,8 @@ public:
         PutConfig_TOUDisable,
         PutConfig_FreezeDay,
         PutConfig_PrecannedTable,
+        PutConfig_PhaseDetect,
+        PutConfig_PhaseDetectClear,
 
         PutConfig_ARMC,
         PutConfig_ARML,
@@ -216,7 +219,7 @@ public:
         Control_Connect,
         Control_Disconnect,
         Control_Latch,
-
+        
         Command_Loop,
 
         DLCCmd_LAST    // PLACEHOLDER!!!
