@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
@@ -22,6 +23,9 @@ public class ControlAreaDaoImpl implements ControlAreaDao {
             + " WHERE type = 'LM CONTROL AREA'";
     private final static String singleControlAreaByIdQuery =
         baseControlAreaQuery + " AND paObjectId = ?";
+    private final static String singleControlAreaByProgramIdQuery =
+        baseControlAreaQuery + " AND paObjectId IN (SELECT deviceId"
+        + " FROM lmControlAreaProgram WHERE lmProgramDeviceId = ?)";
 
     private final static ParameterizedRowMapper<DisplayableDevice> controlAreaRowMapper =
         new ParameterizedRowMapper<DisplayableDevice>() {
@@ -49,6 +53,18 @@ public class ControlAreaDaoImpl implements ControlAreaDao {
         return simpleJdbcTemplate.queryForObject(singleControlAreaByIdQuery,
                                                  controlAreaRowMapper,
                                                  controlAreaId);
+    }
+
+    @Override
+    public DisplayableDevice getControlAreaForProgram(int programId) {
+        try {
+            return simpleJdbcTemplate.queryForObject(singleControlAreaByProgramIdQuery,
+                                                     controlAreaRowMapper,
+                                                     programId);
+        } catch (EmptyResultDataAccessException emptyResultSetException) {
+            // in case the program doesn't have a parent control area yet
+            return null;
+        }
     }
 
     @Autowired

@@ -28,6 +28,8 @@ public class ProgramDaoImpl implements ProgramDao {
     private final static String programsForControlAreaQuery =
         baseProgramQuery + " AND paObjectId IN (SELECT lmProgramDeviceId"
             + " FROM lmControlAreaProgram WHERE deviceId = ?)";
+    private final static String singleProgramByIdQuery =
+        baseProgramQuery + " AND paObjectId = ?";
 
     private final static ParameterizedRowMapper<DisplayableDevice> programRowMapper =
         new ParameterizedRowMapper<DisplayableDevice>() {
@@ -56,6 +58,20 @@ public class ProgramDaoImpl implements ProgramDao {
                                                                   programRowMapper,
                                                                   controlAreaId);
         return retVal;
+    }
+
+    @Override
+    public List<DisplayableDevice> getPrograms() {
+        List<DisplayableDevice> retVal = simpleJdbcTemplate.query(baseProgramQuery,
+                                                                  programRowMapper);
+        return retVal;
+    }
+
+    @Override
+    public DisplayableDevice getProgram(int programId) {
+        return simpleJdbcTemplate.queryForObject(singleProgramByIdQuery,
+                                                 programRowMapper,
+                                                 programId);
     }
 
     @Autowired

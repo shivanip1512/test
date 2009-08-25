@@ -7,4 +7,5 @@ import com.cannontech.common.device.model.DisplayableDevice;
 public interface ScenarioDao {
     public List<DisplayableDevice> getScenarios();
     public DisplayableDevice getScenario(int scenarioId);
+    public List<DisplayableDevice> getScenariosForProgram(int programId);
 }

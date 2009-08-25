@@ -22,6 +22,9 @@ public class ScenarioDaoImpl implements ScenarioDao {
             + " WHERE type = 'LMSCENARIO'";
     private final static String singleScenarioByIdQuery = baseScenarioQuery
         + " AND paObjectId = ?";
+    private final static String scenariosByProgramIdQuery = baseScenarioQuery
+        + " AND paObjectId IN (SELECT scenarioId FROM lmControlScenarioProgram"
+        + " WHERE programId = ?)";
 
     private final static ParameterizedRowMapper<DisplayableDevice> scenarioRowMapper =
         new ParameterizedRowMapper<DisplayableDevice>() {
@@ -48,6 +51,14 @@ public class ScenarioDaoImpl implements ScenarioDao {
         return simpleJdbcTemplate.queryForObject(singleScenarioByIdQuery,
                                                  scenarioRowMapper,
                                                  scenarioId);
+    }
+
+    @Override
+    public List<DisplayableDevice> getScenariosForProgram(int programId) {
+        List<DisplayableDevice> retVal = simpleJdbcTemplate.query(scenariosByProgramIdQuery,
+                                                                  scenarioRowMapper,
+                                                                  programId);
+        return retVal;
     }
 
     @Autowired

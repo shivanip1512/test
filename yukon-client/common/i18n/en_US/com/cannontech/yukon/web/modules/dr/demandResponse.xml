@@ -2,11 +2,13 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 
+<!-- Demand Response Home -->
 <entry key="yukon.web.dr.home.pageTitle">Demand Response</entry>
 <entry key="yukon.web.dr.home.breadcrumb.operationsHome">Operations Home</entry>
 <entry key="yukon.web.dr.home.breadcrumb.home">Demand Response</entry>
 
 
+<!-- Scenario List -->
 <entry key="yukon.web.dr.scenario.list.pageTitle">Scenarios</entry>
 <entry key="yukon.web.dr.scenario.list.breadcrumb.operationsHome">Operations Home</entry>
 <entry key="yukon.web.dr.scenario.list.breadcrumb.scenarios">Scenarios</entry>
@@ -14,6 +16,7 @@
 <entry key="yukon.web.dr.scenario.list.heading.name">Name</entry>
 
 
+<!-- Scenario Detail -->
 <entry key="yukon.web.dr.scenario.detail.pageTitle">Scenario {0}</entry>
 <entry key="yukon.web.dr.scenario.detail.breadcrumb.operationsHome">Operations Home</entry>
 <entry key="yukon.web.dr.scenario.detail.breadcrumb.scenarios">Scenarios</entry>
@@ -30,6 +33,7 @@
 <entry key="yukon.web.dr.scenario.detail.programs.heading.name">Name</entry>
 
 
+<!-- Control Area List -->
 <entry key="yukon.web.dr.controlArea.list.pageTitle">Control Areas</entry>
 <entry key="yukon.web.dr.controlArea.list.breadcrumb.operationsHome">Operations Home</entry>
 <entry key="yukon.web.dr.controlArea.list.breadcrumb.controlAreas">ControlAreas</entry>
@@ -37,6 +41,7 @@
 <entry key="yukon.web.dr.controlArea.list.heading.name">Name</entry>
 
 
+<!-- Control Area Detail -->
 <entry key="yukon.web.dr.controlArea.detail.pageTitle">ControlArea {0}</entry>
 <entry key="yukon.web.dr.controlArea.detail.breadcrumb.operationsHome">Operations Home</entry>
 <entry key="yukon.web.dr.controlArea.detail.breadcrumb.controlAreas">ControlAreas</entry>
@@ -55,5 +60,47 @@
 
 <entry key="yukon.web.dr.controlArea.detail.heading.programs">Programs</entry>
 <entry key="yukon.web.dr.controlArea.detail.programs.heading.name">Name</entry>
+
+
+<!-- Program List -->
+<entry key="yukon.web.dr.program.list.pageTitle">Programs</entry>
+<entry key="yukon.web.dr.program.list.breadcrumb.operationsHome">Operations Home</entry>
+<entry key="yukon.web.dr.program.list.breadcrumb.programs">Programs</entry>
+<entry key="yukon.web.dr.program.list.programs">Programs</entry>
+<entry key="yukon.web.dr.program.list.heading.name">Name</entry>
+
+
+<!-- Program Detail -->
+<entry key="yukon.web.dr.program.detail.pageTitle">Program {0}</entry>
+<entry key="yukon.web.dr.program.detail.breadcrumb.operationsHome">Operations Home</entry>
+<entry key="yukon.web.dr.program.detail.breadcrumb.programs">Programs</entry>
+<entry key="yukon.web.dr.program.detail.breadcrumb.program">Program {0}</entry>
+<entry key="yukon.web.dr.program.detail.program">Program {0}</entry>
+
+<entry key="yukon.web.dr.program.detail.heading.info">Info</entry>
+
+<entry key="yukon.web.dr.program.detail.heading.actions">Actions</entry>
+<entry key="yukon.web.dr.program.detail.actions.start">Start</entry>
+<entry key="yukon.web.dr.program.detail.actions.stop">Stop</entry>
+<entry key="yukon.web.dr.program.detail.actions.changeGears">Change Gears</entry>
+<entry key="yukon.web.dr.program.detail.actions.enable">Enable</entry>
+<entry key="yukon.web.dr.program.detail.actions.disable">Disable</entry>
+
+<entry key="yukon.web.dr.program.detail.heading.loadGroups">Load Groups</entry>
+<entry key="yukon.web.dr.program.detail.loadGroups.heading.name">Name</entry>
+
+<entry key="yukon.web.dr.program.detail.heading.parents">Parents</entry>
+<entry key="yukon.web.dr.program.detail.loadGroups.parents.controlArea">
+    This program belongs to the following control area.
+</entry>
+<entry key="yukon.web.dr.program.detail.loadGroups.parents.noControlArea">
+    This program has no parent control area.
+</entry>
+<entry key="yukon.web.dr.program.detail.loadGroups.parents.scenarios">
+    This program belongs to the following scenarios.
+</entry>
+<entry key="yukon.web.dr.program.detail.loadGroups.parents.noScenarios">
+    This program has no parent scenarios.
+</entry>
 
 </properties>
