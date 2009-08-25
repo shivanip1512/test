@@ -66,9 +66,9 @@
     <cti:msg var="boxTitle" key="yukon.web.dr.program.detail.heading.parents"/>
     <tags:abstractContainer type="box" title="${boxTitle}">
 
-        <p><cti:msg key="yukon.web.dr.program.detail.loadGroups.parents.controlArea"/></p>
+        <p><cti:msg key="yukon.web.dr.program.detail.parents.controlArea"/></p>
         <c:if test="${empty parentControlArea}">
-            <p><cti:msg key="yukon.web.dr.program.detail.loadGroups.parents.noControlArea"/></p>
+            <p><cti:msg key="yukon.web.dr.program.detail.parents.noControlArea"/></p>
         </c:if>
         <c:if test="${!empty parentControlArea}">
             <c:url var="controlAreaURL" value="/spring/dr/controlArea/detail">
@@ -78,9 +78,9 @@
         </c:if>
         <br>
 
-        <p><cti:msg key="yukon.web.dr.program.detail.loadGroups.parents.scenarios"/></p>
+        <p><cti:msg key="yukon.web.dr.program.detail.parents.scenarios"/></p>
         <c:if test="${empty parentScenarios}">
-            <p><cti:msg key="yukon.web.dr.program.detail.loadGroups.parents.noScenarios"/></p>
+            <p><cti:msg key="yukon.web.dr.program.detail.parents.noScenarios"/></p>
         </c:if>
         <c:if test="${!empty parentScenarios}">
 	        <c:forEach var="parentScenario" items="${parentScenarios}">

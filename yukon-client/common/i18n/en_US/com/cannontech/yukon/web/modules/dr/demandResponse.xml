@@ -90,17 +90,49 @@
 <entry key="yukon.web.dr.program.detail.loadGroups.heading.name">Name</entry>
 
 <entry key="yukon.web.dr.program.detail.heading.parents">Parents</entry>
-<entry key="yukon.web.dr.program.detail.loadGroups.parents.controlArea">
+<entry key="yukon.web.dr.program.detail.parents.controlArea">
     This program belongs to the following control area.
 </entry>
-<entry key="yukon.web.dr.program.detail.loadGroups.parents.noControlArea">
+<entry key="yukon.web.dr.program.detail.parents.noControlArea">
     This program has no parent control area.
 </entry>
-<entry key="yukon.web.dr.program.detail.loadGroups.parents.scenarios">
+<entry key="yukon.web.dr.program.detail.parents.scenarios">
     This program belongs to the following scenarios.
 </entry>
-<entry key="yukon.web.dr.program.detail.loadGroups.parents.noScenarios">
+<entry key="yukon.web.dr.program.detail.parents.noScenarios">
     This program has no parent scenarios.
+</entry>
+
+
+<!-- Load Group List -->
+<entry key="yukon.web.dr.loadGroup.list.pageTitle">Load Groups</entry>
+<entry key="yukon.web.dr.loadGroup.list.breadcrumb.operationsHome">Operations Home</entry>
+<entry key="yukon.web.dr.loadGroup.list.breadcrumb.loadGroups">Load Groups</entry>
+<entry key="yukon.web.dr.loadGroup.list.loadGroups">Load Groups</entry>
+<entry key="yukon.web.dr.loadGroup.list.heading.name">Name</entry>
+
+
+<!-- Load Group Detail -->
+<entry key="yukon.web.dr.loadGroup.detail.pageTitle">Load Group {0}</entry>
+<entry key="yukon.web.dr.loadGroup.detail.breadcrumb.operationsHome">Operations Home</entry>
+<entry key="yukon.web.dr.loadGroup.detail.breadcrumb.loadGroups">Load Groups</entry>
+<entry key="yukon.web.dr.loadGroup.detail.breadcrumb.loadGroup">Load Group {0}</entry>
+<entry key="yukon.web.dr.loadGroup.detail.loadGroup">Load Group {0}</entry>
+
+<entry key="yukon.web.dr.loadGroup.detail.heading.info">Info</entry>
+
+<entry key="yukon.web.dr.loadGroup.detail.heading.actions">Actions</entry>
+<entry key="yukon.web.dr.loadGroup.detail.actions.sendShed">Send Shed</entry>
+<entry key="yukon.web.dr.loadGroup.detail.actions.sendRestore">Send Restore</entry>
+<entry key="yukon.web.dr.loadGroup.detail.actions.enable">Enable</entry>
+<entry key="yukon.web.dr.loadGroup.detail.actions.disable">Disable</entry>
+
+<entry key="yukon.web.dr.loadGroup.detail.heading.parents">Parents</entry>
+<entry key="yukon.web.dr.loadGroup.detail.parents.programs">
+    This load group belongs to the following programs.
+</entry>
+<entry key="yukon.web.dr.loadGroup.detail.parents.noPrograms">
+    This load group has no parent programs.
 </entry>
 
 </properties>

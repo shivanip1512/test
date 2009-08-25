@@ -9,4 +9,5 @@ public interface ProgramDao {
     public List<DisplayableDevice> getProgramsForControlArea(int controlAreaId);
     public List<DisplayableDevice> getPrograms();
     public DisplayableDevice getProgram(int programId);
+    public List<DisplayableDevice> getProgramsForLoadGroup(int loadGroupId);
 }

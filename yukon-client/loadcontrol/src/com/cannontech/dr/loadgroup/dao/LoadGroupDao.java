@@ -6,4 +6,6 @@ import com.cannontech.common.device.model.DisplayableDevice;
 
 public interface LoadGroupDao {
     public List<DisplayableDevice> getLoadGroupsForProgram(int programId);
+    public List<DisplayableDevice> getLoadGroups();
+    public DisplayableDevice getLoadGroup(int loadGroupId);
 }

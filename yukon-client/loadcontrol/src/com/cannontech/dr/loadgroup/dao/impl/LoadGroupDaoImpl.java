@@ -21,9 +21,11 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
     private final static String baseLoadGroupQuery =
         "SELECT paObjectId, paoName, type FROM yukonPAObject"
             + " WHERE category = 'DEVICE' AND paoClass = 'GROUP'";
-    private final static String scenariosByProgramIdQuery = baseLoadGroupQuery
+    private final static String loadGroupsByProgramIdQuery = baseLoadGroupQuery
         + " AND paObjectId IN (SELECT lmGroupDeviceId FROM lmProgramDirectGroup"
         + " WHERE deviceId = ?)";
+    private final static String singleLoadGroupByIdQuery = baseLoadGroupQuery
+        + " AND paObjectId = ?";
 
     private final static ParameterizedRowMapper<DisplayableDevice> loadGroupRowMapper =
         new ParameterizedRowMapper<DisplayableDevice>() {
@@ -43,10 +45,24 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
 
     @Override
     public List<DisplayableDevice> getLoadGroupsForProgram(int programId) {
-        List<DisplayableDevice> retVal = simpleJdbcTemplate.query(scenariosByProgramIdQuery,
+        List<DisplayableDevice> retVal = simpleJdbcTemplate.query(loadGroupsByProgramIdQuery,
                                                                   loadGroupRowMapper,
                                                                   programId);
         return retVal;
+    }
+
+    @Override
+    public List<DisplayableDevice> getLoadGroups() {
+        List<DisplayableDevice> retVal = simpleJdbcTemplate.query(baseLoadGroupQuery,
+                                                                  loadGroupRowMapper);
+        return retVal;
+    }
+
+    @Override
+    public DisplayableDevice getLoadGroup(int loadGroupId) {
+        return simpleJdbcTemplate.queryForObject(singleLoadGroupByIdQuery,
+                                                 loadGroupRowMapper,
+                                                 loadGroupId);
     }
 
     @Autowired
