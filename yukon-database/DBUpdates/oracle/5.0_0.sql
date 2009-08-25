@@ -730,6 +730,11 @@ ALTER TABLE ScheduledGrpCommandRequest
       REFERENCES JOB (JobID);
 /* End YUK-7681 */
 
+/* Start YUK-7762 */
+INSERT INTO YukonRoleProperty VALUES(-20213,-202,'Outage Processing','true','Controls access to Outage Processing');
+INSERT INTO YukonRoleProperty VALUES(-20214,-202,'Tamper Flag Processing','true','Controls access to Tamper Flag Processing');
+/* End YUK-7762 */
+      
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
