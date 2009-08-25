@@ -1,7 +1,11 @@
 package com.cannontech.core.authentication.dao.impl;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -17,9 +21,11 @@ public class YukonUserPasswordDaoImpl implements YukonUserPasswordDao {
     
     {
         checkSql = new SqlStatementBuilder();
-        checkSql.append("select UserID from YukonUser");
-        checkSql.append("where UserID = ? and Password = ?");
-
+        checkSql.append("SELECT UserId, Password ");
+        checkSql.append("FROM YukonUser");
+        checkSql.append("WHERE UserId = ?");
+        checkSql.append("AND Password = ?");
+        
         recoverSql = new SqlStatementBuilder();
         recoverSql.append("select Password from YukonUser");
         recoverSql.append("where UserID = ?");
@@ -36,13 +42,20 @@ public class YukonUserPasswordDaoImpl implements YukonUserPasswordDao {
     }
 
     public boolean checkPassword(LiteYukonUser user, String password) {
-        int returnedId;
+        UserIdPassPair userIdPassPair;
         try {
-            returnedId = template.queryForInt(checkSql.toString(), user.getUserID(), password);
+            userIdPassPair = template.queryForObject(checkSql.toString(),
+                                                     new UserIdPassPairMapper(), 
+                                                     user.getUserID(), 
+                                                     password);
+            
+            // Checks to make sure the password is of the right case.
+            if (!userIdPassPair.getPass().equals(password))
+            	return false;
         } catch (DataAccessException e) {
             return false;
         }
-        return returnedId == user.getUserID();
+        return userIdPassPair.getUserId() == user.getUserID();
     }
     
     public boolean changePassword(LiteYukonUser user, String newPassword) {
@@ -75,6 +88,32 @@ public class YukonUserPasswordDaoImpl implements YukonUserPasswordDao {
         this.template = template;
     }
 
-
-
+    private final class UserIdPassPairMapper implements
+    ParameterizedRowMapper<UserIdPassPair> {
+        @Override
+        public UserIdPassPair mapRow(ResultSet rs, int rowNum) throws SQLException {
+            UserIdPassPair userIdPassPair = new UserIdPassPair();
+            userIdPassPair.setUserId(rs.getInt("UserId"));
+            userIdPassPair.setPass(rs.getString("Password"));
+            return userIdPassPair;
+        }
+    }
+    
+    class UserIdPassPair{
+    	int userId;
+    	String pass;
+    	
+    	public int getUserId() {
+    		return userId;
+    	}
+    	public void setUserId(int userId) {
+    		this.userId = userId;
+    	}
+    	public String getPass() {
+    		return pass;
+    	}
+    	public void setPass(String pass) {
+    		this.pass = pass;
+    	}
+    }
 }
