@@ -201,7 +201,7 @@
 
     <!-- Mass Change Fields -->
     <entry key="yukon.common.device.bulk.massChange.route">Change Route</entry>
-    <entry key="yukon.common.device.bulk.massChange.route.description">Choose from availabe routes.</entry>
+    <entry key="yukon.common.device.bulk.massChange.route.description">Choose from available routes.</entry>
     <entry key="yukon.common.device.bulk.massChange.enable">Enable/Disable</entry>
     <entry key="yukon.common.device.bulk.massChange.enable.description">Enable or Disable all of the selected devices</entry>
     <entry key="yukon.common.device.bulk.massChange.substation">Change Substation</entry>
