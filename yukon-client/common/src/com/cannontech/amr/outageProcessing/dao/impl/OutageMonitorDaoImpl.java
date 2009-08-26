@@ -106,7 +106,6 @@ public class OutageMonitorDaoImpl implements OutageMonitorDao, InitializingBean 
     
     private FieldMapper<OutageMonitor> outageMonitorFieldMapper = new FieldMapper<OutageMonitor>() {
         public void extractValues(MapSqlParameterSource p, OutageMonitor outageMonitor) {
-            p.addValue("OutageMonitorId", outageMonitor.getOutageMonitorId());
             p.addValue("OutageMonitorName", outageMonitor.getOutageMonitorName());
             p.addValue("GroupName", outageMonitor.getGroupName());
             p.addValue("TimePeriod", outageMonitor.getTimePeriodDays());
