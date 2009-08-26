@@ -10,6 +10,7 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.authorization.model.GroupPaoPermission;
 import com.cannontech.core.authorization.model.PaoPermission;
@@ -17,7 +18,6 @@ import com.cannontech.core.authorization.support.AllowDeny;
 import com.cannontech.core.authorization.support.AuthorizationResponse;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.database.data.lite.LiteYukonGroup;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.incrementer.NextValueHelper;
 
 /**
@@ -52,20 +52,20 @@ public class GroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonGrou
         return this.getPermissions(groupIds);
     }
 
-    public List<PaoPermission> getPermissionsForPao(LiteYukonGroup group, LiteYukonPAObject pao) {
-        return this.getPermissionsForPao(group.getGroupID(), pao.getYukonID());
+    public List<PaoPermission> getPermissionsForPao(LiteYukonGroup group, YukonPao pao) {
+        return this.getPermissionsForPao(group.getGroupID(), pao.getPaoIdentifier().getPaoId());
     }
 
-    public AuthorizationResponse hasPermissionForPao(LiteYukonGroup group, LiteYukonPAObject pao,
+    public AuthorizationResponse hasPermissionForPao(LiteYukonGroup group, YukonPao pao,
             Permission permission) {
         List<Integer> idList = new ArrayList<Integer>();
         idList.add(new Integer(group.getGroupID()));
         return this.isHasPermissionForPao(idList,
-                                          pao.getYukonID(),
+                                          pao.getPaoIdentifier().getPaoId(),
                                           permission);
     }
 
-    public AuthorizationResponse hasPermissionForPao(List<LiteYukonGroup> groupList, LiteYukonPAObject pao,
+    public AuthorizationResponse hasPermissionForPao(List<LiteYukonGroup> groupList, YukonPao pao,
             Permission permission) {
         List<Integer> idList = new ArrayList<Integer>();
         for (LiteYukonGroup group : groupList) {
@@ -73,15 +73,15 @@ public class GroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonGrou
             idList.add(group.getGroupID());
         }
 
-        return this.isHasPermissionForPao(idList, pao.getYukonID(), permission);
+        return this.isHasPermissionForPao(idList, pao.getPaoIdentifier().getPaoId(), permission);
     }
 
-    public void addPermission(LiteYukonGroup group, LiteYukonPAObject pao, Permission permission, boolean allow) {
-        this.addPermission(group.getGroupID(), pao.getYukonID(), permission, allow);
+    public void addPermission(LiteYukonGroup group, YukonPao pao, Permission permission, boolean allow) {
+        this.addPermission(group.getGroupID(), pao.getPaoIdentifier().getPaoId(), permission, allow);
     }
 
-    public void removePermission(LiteYukonGroup group, LiteYukonPAObject pao, Permission permission) {
-        this.removePermission(group.getGroupID(), pao.getYukonID(), permission);
+    public void removePermission(LiteYukonGroup group, YukonPao pao, Permission permission) {
+        this.removePermission(group.getGroupID(), pao.getPaoIdentifier().getPaoId(), permission);
     }
 
     public void removeAllPaoPermissions(int paoId) {
@@ -157,9 +157,9 @@ public class GroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonGrou
         
         String sql = "select allow from GroupPaoPermission where groupid in ( " + groupIds
                 + ") and paoid = ? " + "and permission = ?";
-       
-        List allowList = jdbcTemplate.queryForList(sql, new Object[] { paoId, permission.name() }, String.class);
-        
+
+        List<?> allowList = jdbcTemplate.queryForList(sql, new Object[] { paoId, permission.name() }, String.class);
+
         if (allowList.size() == 0) {
             return AuthorizationResponse.UNKNOWN;
         } else if (allowList.size() == 1) {

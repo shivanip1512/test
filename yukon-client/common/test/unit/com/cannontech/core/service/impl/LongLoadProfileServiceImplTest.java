@@ -20,6 +20,7 @@ import org.junit.Test;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDaoAdapter;
 import com.cannontech.common.device.definition.model.DeviceTag;
 import com.cannontech.common.exception.BadConfigurationException;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.ScheduledExecutorMock;
 import com.cannontech.core.dao.DBPersistentDao;
@@ -29,8 +30,6 @@ import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.pao.DeviceTypes;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.device.DeviceLoadProfile;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -136,7 +135,8 @@ public class LongLoadProfileServiceImplTest {
                 
 
                     return new MCTBase(){
-                        
+                        private final static long serialVersionUID = 1L;
+
                         @Override
                         public DeviceLoadProfile getDeviceLoadProfile() {
                            
@@ -206,8 +206,7 @@ public class LongLoadProfileServiceImplTest {
     
     @Test
     public void testCommandStringWithStart() throws ParseException {
-        LiteYukonPAObject myDevice = new LiteYukonPAObject(5); // five is arbitrary
-        myDevice.setType(DeviceTypes.MCT410IL);
+        LiteYukonPAObject myDevice = new LiteYukonPAObject(new PaoIdentifier(5, PaoType.MCT410IL)); // five is arbitrary
         int channel = 4;
         DateFormat dateTimeInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
         Date start = dateTimeInstance.parse("5/5/05 4:30 pm");
@@ -227,9 +226,7 @@ public class LongLoadProfileServiceImplTest {
     public void testInitiateLongLoadProfileBasic() throws ParseException {
         // check that outQueue is empty
         Assert.assertEquals("out queue should be empty", 0, porterConnection.writtenOut.size());
-        LiteYukonPAObject myDevice = new LiteYukonPAObject(5); // five is arbitrary
-        myDevice.setType(DeviceTypes.MCT410IL);
-        myDevice.setCategory(PAOGroups.CAT_DEVICE);
+        LiteYukonPAObject myDevice = new LiteYukonPAObject(new PaoIdentifier(5, PaoType.MCT410IL)); // five is arbitrary
         int channel = 1;
         DateFormat dateTimeInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
         Date start = dateTimeInstance.parse("10/13/06 1:50 pm");
@@ -275,12 +272,8 @@ public class LongLoadProfileServiceImplTest {
 
     @Test
     public void testInitiateLongLoadProfileMultiple() throws ParseException {
-        LiteYukonPAObject myDevice1 = new LiteYukonPAObject(5); // five is arbitrary
-        myDevice1.setType(DeviceTypes.MCT410IL);
-        myDevice1.setCategory(PAOGroups.CAT_DEVICE);
-        LiteYukonPAObject myDevice2 = new LiteYukonPAObject(8); // eight is arbitrary
-        myDevice2.setType(DeviceTypes.MCT410IL);
-        myDevice2.setCategory(PAOGroups.CAT_DEVICE);
+        LiteYukonPAObject myDevice1 = new LiteYukonPAObject(new PaoIdentifier(5, PaoType.MCT410IL)); // five is arbitrary
+        LiteYukonPAObject myDevice2 = new LiteYukonPAObject(new PaoIdentifier(8, PaoType.MCT410IL)); // eight is arbitrary
         int channel = 1;
         DateFormat dateTimeInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
         Date start = dateTimeInstance.parse("12/13/06 1:50 pm");
@@ -345,12 +338,7 @@ public class LongLoadProfileServiceImplTest {
     
     @Test
     public void testWriteError() throws ParseException {
-        LiteYukonPAObject myDevice1 = new LiteYukonPAObject(5); // five is arbitrary
-        myDevice1.setType(DeviceTypes.MCT410IL);
-        myDevice1.setCategory(PAOGroups.CAT_DEVICE);
-        LiteYukonPAObject myDevice2 = new LiteYukonPAObject(8); // eight is arbitrary
-        myDevice2.setType(DeviceTypes.MCT410IL);
-        myDevice2.setCategory(PAOGroups.CAT_DEVICE);
+        LiteYukonPAObject myDevice1 = new LiteYukonPAObject(new PaoIdentifier(5, PaoType.MCT410IL)); // five is arbitrary
         int channel = 1;
         DateFormat dateTimeInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
         Date start = dateTimeInstance.parse("12/13/06 1:50 pm");
@@ -386,12 +374,8 @@ public class LongLoadProfileServiceImplTest {
 
     @Test
     public void testPorterTimeout() throws ParseException, Exception {
-        LiteYukonPAObject myDevice1 = new LiteYukonPAObject(5); // five is arbitrary
-        myDevice1.setType(DeviceTypes.MCT410IL);
-        myDevice1.setCategory(PAOGroups.CAT_DEVICE);
-        LiteYukonPAObject myDevice2 = new LiteYukonPAObject(8); // eight is arbitrary
-        myDevice2.setType(DeviceTypes.MCT410IL);
-        myDevice2.setCategory(PAOGroups.CAT_DEVICE);
+        LiteYukonPAObject myDevice1 = new LiteYukonPAObject(new PaoIdentifier(5, PaoType.MCT410IL)); // five is arbitrary
+        LiteYukonPAObject myDevice2 = new LiteYukonPAObject(new PaoIdentifier(8, PaoType.MCT410IL)); // eight is arbitrary
         int channel = 1;
         DateFormat dateTimeInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
         Date start = dateTimeInstance.parse("12/13/06 1:50 pm");
@@ -409,12 +393,11 @@ public class LongLoadProfileServiceImplTest {
         Assert.assertEquals("runner should not have run", 0, failureRan);
         Assert.assertEquals("runner should not have run", 0, cancelRan);
         
-        // eat the two requests
-        Request temp1 = (Request) porterConnection.writtenOut.remove(); 
-        Request temp2 = (Request) porterConnection.writtenOut.remove(); 
+        porterConnection.writtenOut.remove(); 
+        porterConnection.writtenOut.remove(); 
         
         // some time has passed and porter hasn't responded, run timers
-        queueDataService.setReturnValue(0); // forgotten messagess...
+        queueDataService.setReturnValue(0); // forgotten messages...
         scheduledExecutorMock.doAllTasks();
 
         // this should have queued two LLP request

@@ -8,12 +8,12 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.authorization.model.PaoPermission;
 import com.cannontech.core.authorization.model.UserPaoPermission;
 import com.cannontech.core.authorization.support.AllowDeny;
 import com.cannontech.core.authorization.support.AuthorizationResponse;
 import com.cannontech.core.authorization.support.Permission;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
 
@@ -37,21 +37,21 @@ public class UserPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonUser>
         return this.getPermissions(user.getUserID());
     }
 
-    public List<PaoPermission> getPermissionsForPao(LiteYukonUser user, LiteYukonPAObject pao) {
-        return this.getPermissionsForPao(user.getUserID(), pao.getYukonID());
+    public List<PaoPermission> getPermissionsForPao(LiteYukonUser user, YukonPao pao) {
+        return this.getPermissionsForPao(user.getUserID(), pao.getPaoIdentifier().getPaoId());
     }
 
-    public AuthorizationResponse hasPermissionForPao(LiteYukonUser user, LiteYukonPAObject pao,
+    public AuthorizationResponse hasPermissionForPao(LiteYukonUser user, YukonPao pao,
             Permission permission) {
-        return this.hasPermissionForPao(user.getUserID(), pao.getYukonID(), permission);
+        return this.hasPermissionForPao(user.getUserID(), pao.getPaoIdentifier().getPaoId(), permission);
     }
 
-    public void addPermission(LiteYukonUser user, LiteYukonPAObject pao, Permission permission, boolean allow) {
-        this.addPermission(user.getUserID(), pao.getYukonID(), permission, allow);
+    public void addPermission(LiteYukonUser user, YukonPao pao, Permission permission, boolean allow) {
+        this.addPermission(user.getUserID(), pao.getPaoIdentifier().getPaoId(), permission, allow);
     }
 
-    public void removePermission(LiteYukonUser user, LiteYukonPAObject pao, Permission permission) {
-        this.removePermission(user.getUserID(), pao.getYukonID(), permission);
+    public void removePermission(LiteYukonUser user, YukonPao pao, Permission permission) {
+        this.removePermission(user.getUserID(), pao.getPaoIdentifier().getPaoId(), permission);
     }
 
     public void removeAllPermissions(LiteYukonUser it) {
@@ -95,7 +95,7 @@ public class UserPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonUser>
         throw new UnsupportedOperationException("Not implemented for users");
     }
 
-    public AuthorizationResponse hasPermissionForPao(List<LiteYukonUser> itList, LiteYukonPAObject pao,
+    public AuthorizationResponse hasPermissionForPao(List<LiteYukonUser> itList, YukonPao pao,
             Permission permission) {
         throw new UnsupportedOperationException("Not implemented for users");
     }

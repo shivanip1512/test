@@ -4,6 +4,8 @@ import java.util.GregorianCalendar;
 
 import com.cannontech.common.device.configuration.model.Category;
 import com.cannontech.common.device.configuration.model.DeviceConfiguration;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.command.DeviceTypeCommand;
@@ -435,11 +437,11 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 	else if( val instanceof com.cannontech.database.data.pao.YukonPAObject )
 	{
 		YukonPAObject yukonPAObject = ((com.cannontech.database.data.pao.YukonPAObject)val);
-        LiteYukonPAObject thisLite = new LiteYukonPAObject( 
-			yukonPAObject.getPAObjectID().intValue(),
-			yukonPAObject.getPAOName() );
-        int type = PAOGroups.getPAOType(yukonPAObject.getPAOCategory(), yukonPAObject.getPAOType());
-        thisLite.setType(type);
+        int deviceTypeId = PAOGroups.getPAOType(yukonPAObject.getPAOCategory(), yukonPAObject.getPAOType());
+		PaoType paoType = PaoType.getForId(deviceTypeId);
+        LiteYukonPAObject thisLite = new LiteYukonPAObject(
+			new PaoIdentifier(yukonPAObject.getPAObjectID().intValue(), paoType),
+			yukonPAObject.getPAOName());
         returnLite = thisLite;
 	}
    else if( val instanceof com.cannontech.database.db.state.YukonImage )
@@ -541,7 +543,7 @@ public static DBPersistent convertLiteToDBPersAndRetrieve( LiteBase lBase ) {
 	
 	try
     {
-       Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, userObject);
+       Transaction<DBPersistent> t = Transaction.createTransaction(Transaction.RETRIEVE, userObject);
        userObject = t.execute();	
     }
     catch (Exception e)

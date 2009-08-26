@@ -1,127 +1,163 @@
 package com.cannontech.common.pao;
 
+
 import org.apache.commons.lang.Validate;
 
+import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.pao.PortTypes;
+import com.cannontech.database.data.pao.RouteTypes;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
 public enum PaoType {
-    CCU710A(DeviceTypes.CCU710A),
-    CCU711(DeviceTypes.CCU711),
-    TCU5000(DeviceTypes.TCU5000),
-    TCU5500(DeviceTypes.TCU5500),
-    LCU415(DeviceTypes.LCU415),
-    LCULG(DeviceTypes.LCULG),
-    LCU_ER(DeviceTypes.LCU_ER),
-    LCU_T3026(DeviceTypes.LCU_T3026),
-    ALPHA_PPLUS(DeviceTypes.ALPHA_PPLUS),
-    FULCRUM(DeviceTypes.FULCRUM),
-    VECTRON(DeviceTypes.VECTRON),
-    LANDISGYRS4(DeviceTypes.LANDISGYRS4),
-    DAVISWEATHER(DeviceTypes.DAVISWEATHER),
-    ALPHA_A1(DeviceTypes.ALPHA_A1),
-    DR_87(DeviceTypes.DR_87),
-    QUANTUM(DeviceTypes.QUANTUM),
-    SIXNET(DeviceTypes.SIXNET),
-    REPEATER_800(DeviceTypes.REPEATER_800),
-    MCT310(DeviceTypes.MCT310),
-    MCT318(DeviceTypes.MCT318),
-    MCT360(DeviceTypes.MCT360),
-    MCT370(DeviceTypes.MCT370),
-    MCT240(DeviceTypes.MCT240),
-    MCT248(DeviceTypes.MCT248),
-    MCT250(DeviceTypes.MCT250),
-    MCT210(DeviceTypes.MCT210),
-    REPEATER(DeviceTypes.REPEATER),
-    LMT_2(DeviceTypes.LMT_2),
-    RTUILEX(DeviceTypes.RTUILEX),
-    RTUWELCO(DeviceTypes.RTUWELCO),
-    DCT_501(DeviceTypes.DCT_501),
-    RTU_DNP(DeviceTypes.RTU_DNP),
-    TAPTERMINAL(DeviceTypes.TAPTERMINAL),
-    TNPPTERMINAL(DeviceTypes.TNPP_TERMINAL),
-    MCT310ID(DeviceTypes.MCT310ID),
-    MCT310IL(DeviceTypes.MCT310IL),
-    MCT318L(DeviceTypes.MCT318L),
-    MCT213(DeviceTypes.MCT213),
-    WCTP_TERMINAL(DeviceTypes.WCTP_TERMINAL),
-    MCT310CT(DeviceTypes.MCT310CT),
-    MCT310IM(DeviceTypes.MCT310IM),
-    LM_GROUP_EMETCON(DeviceTypes.LM_GROUP_EMETCON),
-    LM_GROUP_VERSACOM(DeviceTypes.LM_GROUP_VERSACOM),
-    LM_GROUP_EXPRESSCOMM(DeviceTypes.LM_GROUP_EXPRESSCOMM),
-    LM_GROUP_RIPPLE(DeviceTypes.LM_GROUP_RIPPLE),
-    LM_DIRECT_PROGRAM(DeviceTypes.LM_DIRECT_PROGRAM),
-    LM_CURTAIL_PROGRAM(DeviceTypes.LM_CURTAIL_PROGRAM),
-    LM_CONTROL_AREA(DeviceTypes.LM_CONTROL_AREA),
-    LM_ENERGY_EXCHANGE_PROGRAM(DeviceTypes.LM_ENERGY_EXCHANGE_PROGRAM),
-    MACRO_GROUP(DeviceTypes.MACRO_GROUP),
-    CAPBANK(DeviceTypes.CAPBANK),
-    CAPBANKCONTROLLER(DeviceTypes.CAPBANKCONTROLLER),
-    VIRTUAL_SYSTEM(DeviceTypes.VIRTUAL_SYSTEM),
-    CBC_FP_2800(DeviceTypes.CBC_FP_2800),
-    LM_GROUP_POINT(DeviceTypes.LM_GROUP_POINT),
-    DNP_CBC_6510(DeviceTypes.DNP_CBC_6510),
-    SYSTEM(DeviceTypes.SYSTEM),
-    EDITABLEVERSACOMSERIAL(DeviceTypes.EDITABLEVERSACOMSERIAL),
-    MCTBROADCAST(DeviceTypes.MCTBROADCAST),
-    ION_7700(DeviceTypes.ION_7700),
-    ION_8300(DeviceTypes.ION_8300),
-    ION_7330(DeviceTypes.ION_7330),
-    RTU_DART(DeviceTypes.RTU_DART),
-    MCT310IDL(DeviceTypes.MCT310IDL),
-    LM_GROUP_MCT(DeviceTypes.LM_GROUP_MCT),
-    MCT410IL(DeviceTypes.MCT410IL),
-    TRANSDATA_MARKV(DeviceTypes.TRANSDATA_MARKV),
-    LM_GROUP_SA305(DeviceTypes.LM_GROUP_SA305),
-    LM_GROUP_SA205(DeviceTypes.LM_GROUP_SA205),
-    LM_GROUP_SADIGITAL(DeviceTypes.LM_GROUP_SADIGITAL),
-    LM_GROUP_GOLAY(DeviceTypes.LM_GROUP_GOLAY),
-    SERIES_5_LMI(DeviceTypes.SERIES_5_LMI),
-    RTC(DeviceTypes.RTC),
-    LM_SCENARIO(DeviceTypes.LM_SCENARIO),
-    KV(DeviceTypes.KV),
-    KVII(DeviceTypes.KVII),
-    RTM(DeviceTypes.RTM),
-    CBC_EXPRESSCOM(DeviceTypes.CBC_EXPRESSCOM),
-    SENTINEL(DeviceTypes.SENTINEL),
-    ALPHA_A3(DeviceTypes.ALPHA_A3),
-    MCT470(DeviceTypes.MCT470),
-    MCT410CL(DeviceTypes.MCT410CL),
-    CBC_7010(DeviceTypes.CBC_7010),
-    CBC_7020(DeviceTypes.CBC_7020),
-    SNPP_TERMINAL(DeviceTypes.SNPP_TERMINAL),
-    RTU_MODBUS(DeviceTypes.RTU_MODBUS),
-    MCT430A(DeviceTypes.MCT430A),
-    MCT430S4(DeviceTypes.MCT430S4),
-    CBC_7022(DeviceTypes.CBC_7022),
-    CBC_7023(DeviceTypes.CBC_7023),
-    CBC_7024(DeviceTypes.CBC_7024),
-    CBC_7011(DeviceTypes.CBC_7011),
-    CBC_7012(DeviceTypes.CBC_7012),
-    REPEATER_801(DeviceTypes.REPEATER_801),
-    REPEATER_921(DeviceTypes.REPEATER_921),
-    MCT410FL(DeviceTypes.MCT410FL),
-    MCT410GL(DeviceTypes.MCT410GL),
-    MCT430SL(DeviceTypes.MCT430SL),
-    CCU721(DeviceTypes.CCU721),
-    SIMPLE_SCHEDULE(DeviceTypes.SIMPLE_SCHEDULE),
-    SCRIPT(DeviceTypes.SCRIPT),
-    REPEATER_902(DeviceTypes.REPEATER_902),
-    FAULT_CI(DeviceTypes.FAULT_CI),
-    NEUTRAL_MONITOR(DeviceTypes.NEUTRAL_MONITOR),
-    CBC_DNP(DeviceTypes.CBC_DNP),
-    LM_GROUP_XML(DeviceTypes.LM_GROUP_XML),
-    XML_TRANSMITTER(DeviceTypes.XML_TRANSMITTER),
-    MCT430A3(DeviceTypes.MCT430A3),
-    LCR3102(DeviceTypes.LCR3102),
+    CCU710A(DeviceTypes.CCU710A, "CCU-710A", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
+    CCU711(DeviceTypes.CCU711, "CCU-711", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
+    TCU5000(DeviceTypes.TCU5000, "TCU-5000", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
+    TCU5500(DeviceTypes.TCU5500, "TCU-5500", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
+    LCU415(DeviceTypes.LCU415, "LCU-415", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
+    LCULG(DeviceTypes.LCULG, "LCU-LG", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
+    LCU_ER(DeviceTypes.LCU_ER, "LCU-EASTRIVER", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
+    LCU_T3026(DeviceTypes.LCU_T3026, "LCU-T3026", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
+    ALPHA_PPLUS(DeviceTypes.ALPHA_PPLUS, "ALPHA POWER PLUS", PaoCategory.DEVICE, PaoClass.METER),
+    FULCRUM(DeviceTypes.FULCRUM, "FULCRUM", PaoCategory.DEVICE, PaoClass.METER),
+    VECTRON(DeviceTypes.VECTRON, "VECTRON", PaoCategory.DEVICE, PaoClass.METER),
+    LANDISGYRS4(DeviceTypes.LANDISGYRS4, "LANDIS-GYR S4", PaoCategory.DEVICE, PaoClass.METER),
+    DAVISWEATHER(DeviceTypes.DAVISWEATHER, "DAVIS WEATHER", PaoCategory.DEVICE, PaoClass.IED),
+    ALPHA_A1(DeviceTypes.ALPHA_A1, "ALPHA A1", PaoCategory.DEVICE, PaoClass.METER),
+    DR_87(DeviceTypes.DR_87, "DR-87", PaoCategory.DEVICE, PaoClass.METER),
+    QUANTUM(DeviceTypes.QUANTUM, "QUANTUM", PaoCategory.DEVICE, PaoClass.METER),
+    SIXNET(DeviceTypes.SIXNET, "SIXNET", PaoCategory.DEVICE, PaoClass.METER),
+    REPEATER_800(DeviceTypes.REPEATER_800, "REPEATER 800", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
+    MCT310(DeviceTypes.MCT310, "MCT-310", PaoCategory.DEVICE, PaoClass.CARRIER),
+    MCT318(DeviceTypes.MCT318, "MCT-318", PaoCategory.DEVICE, PaoClass.CARRIER),
+    MCT360(DeviceTypes.MCT360, "MCT-360", PaoCategory.DEVICE, PaoClass.CARRIER),
+    MCT370(DeviceTypes.MCT370, "MCT-370", PaoCategory.DEVICE, PaoClass.CARRIER),
+    MCT240(DeviceTypes.MCT240, "MCT-240", PaoCategory.DEVICE, PaoClass.CARRIER),
+    MCT248(DeviceTypes.MCT248, "MCT-248", PaoCategory.DEVICE, PaoClass.CARRIER),
+    MCT250(DeviceTypes.MCT250, "MCT-250", PaoCategory.DEVICE, PaoClass.CARRIER),
+    MCT210(DeviceTypes.MCT210, "MCT-210", PaoCategory.DEVICE, PaoClass.CARRIER),
+    REPEATER(DeviceTypes.REPEATER, "REPEATER", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
+    LMT_2(DeviceTypes.LMT_2, "LMT-2", PaoCategory.DEVICE, PaoClass.CARRIER),
+    RTUILEX(DeviceTypes.RTUILEX, "RTU-ILEX", PaoCategory.DEVICE, PaoClass.RTU),
+    RTUWELCO(DeviceTypes.RTUWELCO, "RTU-WELCO", PaoCategory.DEVICE, PaoClass.RTU),
+    DCT_501(DeviceTypes.DCT_501, "DCT-501", PaoCategory.DEVICE, PaoClass.CARRIER),
+    RTU_DNP(DeviceTypes.RTU_DNP, "RTU-DNP", PaoCategory.DEVICE, PaoClass.RTU),
+    TAPTERMINAL(DeviceTypes.TAPTERMINAL, "TAP TERMINAL", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
+    TNPP_TERMINAL(DeviceTypes.TNPP_TERMINAL, "TNPP TERMINAL", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
+    MCT310ID(DeviceTypes.MCT310ID, "MCT-310ID", PaoCategory.DEVICE, PaoClass.CARRIER),
+    MCT310IL(DeviceTypes.MCT310IL, "MCT-310IL", PaoCategory.DEVICE, PaoClass.CARRIER),
+    MCT318L(DeviceTypes.MCT318L, "MCT-318L", PaoCategory.DEVICE, PaoClass.CARRIER),
+    MCT213(DeviceTypes.MCT213, "MCT-213", PaoCategory.DEVICE, PaoClass.CARRIER),
+    WCTP_TERMINAL(DeviceTypes.WCTP_TERMINAL, "WCTP TERMINAL", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
+    MCT310CT(DeviceTypes.MCT310CT, "MCT-310CT", PaoCategory.DEVICE, PaoClass.CARRIER),
+    MCT310IM(DeviceTypes.MCT310IM, "MCT-310IM", PaoCategory.DEVICE, PaoClass.CARRIER),
+    LM_GROUP_EMETCON(DeviceTypes.LM_GROUP_EMETCON, "EMETCON GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
+    LM_GROUP_VERSACOM(DeviceTypes.LM_GROUP_VERSACOM, "VERSACOM GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
+    LM_GROUP_EXPRESSCOMM(DeviceTypes.LM_GROUP_EXPRESSCOMM, "EXPRESSCOM GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
+    LM_GROUP_RIPPLE(DeviceTypes.LM_GROUP_RIPPLE, "RIPPLE GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
+    LM_DIRECT_PROGRAM(DeviceTypes.LM_DIRECT_PROGRAM, "LM DIRECT PROGRAM", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
+    LM_CURTAIL_PROGRAM(DeviceTypes.LM_CURTAIL_PROGRAM, "LM CURTAIL PROGRAM", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
+    LM_CONTROL_AREA(DeviceTypes.LM_CONTROL_AREA, "LM CONTROL AREA", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
+    LM_ENERGY_EXCHANGE_PROGRAM(DeviceTypes.LM_ENERGY_EXCHANGE_PROGRAM, "LM ENERGY EXCHANGE", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
+    MACRO_GROUP(DeviceTypes.MACRO_GROUP, "MACRO GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
+    CAPBANK(DeviceTypes.CAPBANK, "CAP BANK", PaoCategory.DEVICE, PaoClass.CAPCONTROL),
+    CAPBANKCONTROLLER(DeviceTypes.CAPBANKCONTROLLER, "CBC Versacom", PaoCategory.DEVICE, PaoClass.CAPCONTROL),
+    VIRTUAL_SYSTEM(DeviceTypes.VIRTUAL_SYSTEM, "VIRTUAL SYSTEM", PaoCategory.DEVICE, PaoClass.VIRTUAL),
+    CBC_FP_2800(DeviceTypes.CBC_FP_2800, "CBC FP-2800", PaoCategory.DEVICE, PaoClass.CAPCONTROL),
+    LM_GROUP_POINT(DeviceTypes.LM_GROUP_POINT, "POINT GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
+    DNP_CBC_6510(DeviceTypes.DNP_CBC_6510, "CBC 6510", PaoCategory.DEVICE, PaoClass.CAPCONTROL),
+    SYSTEM(DeviceTypes.SYSTEM, "SYSTEM", PaoCategory.DEVICE, PaoClass.SYSTEM),
+    MCTBROADCAST(DeviceTypes.MCTBROADCAST, "MCT Broadcast", PaoCategory.DEVICE, PaoClass.CARRIER),
+    ION_7700(DeviceTypes.ION_7700, "ION-7700", PaoCategory.DEVICE, PaoClass.RTU),
+    ION_8300(DeviceTypes.ION_8300, "ION-8300", PaoCategory.DEVICE, PaoClass.RTU),
+    ION_7330(DeviceTypes.ION_7330, "ION-7330", PaoCategory.DEVICE, PaoClass.RTU),
+    RTU_DART(DeviceTypes.RTU_DART, "RTU-DART", PaoCategory.DEVICE, PaoClass.RTU),
+    MCT310IDL(DeviceTypes.MCT310IDL, "MCT-310IDL", PaoCategory.DEVICE, PaoClass.CARRIER),
+    LM_GROUP_MCT(DeviceTypes.LM_GROUP_MCT, "MCT GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
+    MCT410IL(DeviceTypes.MCT410IL, "MCT-410IL", PaoCategory.DEVICE, PaoClass.CARRIER),
+    TRANSDATA_MARKV(DeviceTypes.TRANSDATA_MARKV, "TRANSDATA MARK-V", PaoCategory.DEVICE, PaoClass.METER),
+    LM_GROUP_SA305(DeviceTypes.LM_GROUP_SA305, "SA-305 Group", PaoCategory.DEVICE, PaoClass.GROUP),
+    LM_GROUP_SA205(DeviceTypes.LM_GROUP_SA205, "SA-205 Group", PaoCategory.DEVICE, PaoClass.GROUP),
+    LM_GROUP_SADIGITAL(DeviceTypes.LM_GROUP_SADIGITAL, "SA-Digital Group", PaoCategory.DEVICE, PaoClass.GROUP),
+    LM_GROUP_GOLAY(DeviceTypes.LM_GROUP_GOLAY, "Golay Group", PaoCategory.DEVICE, PaoClass.GROUP),
+    SERIES_5_LMI(DeviceTypes.SERIES_5_LMI, "RTU-LMI", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
+    RTC(DeviceTypes.RTC, "RTC", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
+    LM_SCENARIO(DeviceTypes.LM_SCENARIO, "LMSCENARIO", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
+    KV(DeviceTypes.KV, "KV", PaoCategory.DEVICE, PaoClass.METER),
+    KVII(DeviceTypes.KVII, "KV2", PaoCategory.DEVICE, PaoClass.METER),
+    RTM(DeviceTypes.RTM, "RTM", PaoCategory.DEVICE, PaoClass.RTU),
+    CBC_EXPRESSCOM(DeviceTypes.CBC_EXPRESSCOM, "CBC Expresscom", PaoCategory.DEVICE, PaoClass.CAPCONTROL),
+    SENTINEL(DeviceTypes.SENTINEL, "SENTINEL", PaoCategory.DEVICE, PaoClass.METER),
+    ALPHA_A3(DeviceTypes.ALPHA_A3, "ALPHA A3", PaoCategory.DEVICE, PaoClass.METER),
+    MCT470(DeviceTypes.MCT470, "MCT-470", PaoCategory.DEVICE, PaoClass.CARRIER),
+    MCT410CL(DeviceTypes.MCT410CL, "MCT-410CL", PaoCategory.DEVICE, PaoClass.CARRIER),
+    CBC_7010(DeviceTypes.CBC_7010, "CBC 7010", PaoCategory.DEVICE, PaoClass.CAPCONTROL),
+    CBC_7020(DeviceTypes.CBC_7020, "CBC 7020", PaoCategory.DEVICE, PaoClass.CAPCONTROL),
+    SNPP_TERMINAL(DeviceTypes.SNPP_TERMINAL, "SNPP TERMINAL", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
+    RTU_MODBUS(DeviceTypes.RTU_MODBUS, "RTU-MODBUS", PaoCategory.DEVICE, PaoClass.RTU),
+    MCT430A(DeviceTypes.MCT430A, "MCT-430A", PaoCategory.DEVICE, PaoClass.CARRIER),
+    MCT430S4(DeviceTypes.MCT430S4, "MCT-430S4", PaoCategory.DEVICE, PaoClass.CARRIER),
+    CBC_7022(DeviceTypes.CBC_7022, "CBC 7022", PaoCategory.DEVICE, PaoClass.CAPCONTROL),
+    CBC_7023(DeviceTypes.CBC_7023, "CBC 7023", PaoCategory.DEVICE, PaoClass.CAPCONTROL),
+    CBC_7024(DeviceTypes.CBC_7024, "CBC 7024", PaoCategory.DEVICE, PaoClass.CAPCONTROL),
+    CBC_7011(DeviceTypes.CBC_7011, "CBC 7011", PaoCategory.DEVICE, PaoClass.CAPCONTROL),
+    CBC_7012(DeviceTypes.CBC_7012, "CBC 7012", PaoCategory.DEVICE, PaoClass.CAPCONTROL),
+    REPEATER_801(DeviceTypes.REPEATER_801, "REPEATER 801", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
+    REPEATER_921(DeviceTypes.REPEATER_921, "REPEATER 921", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
+    MCT410FL(DeviceTypes.MCT410FL, "MCT-410FL", PaoCategory.DEVICE, PaoClass.CARRIER),
+    MCT410GL(DeviceTypes.MCT410GL, "MCT-410GL", PaoCategory.DEVICE, PaoClass.CARRIER),
+    MCT430SL(DeviceTypes.MCT430SL, "MCT-430SL", PaoCategory.DEVICE, PaoClass.CARRIER),
+    CCU721(DeviceTypes.CCU721, "CCU-721", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
+    SIMPLE_SCHEDULE(DeviceTypes.SIMPLE_SCHEDULE, "Simple", PaoCategory.SCHEDULE, PaoClass.SCHEDULE),
+    SCRIPT(DeviceTypes.SCRIPT, "Script", PaoCategory.SCHEDULE, PaoClass.SCHEDULE),
+    REPEATER_902(DeviceTypes.REPEATER_902, "REPEATER 902", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
+    FAULT_CI(DeviceTypes.FAULT_CI, "Faulted Circuit Indicator", PaoCategory.DEVICE, PaoClass.GRID),
+    NEUTRAL_MONITOR(DeviceTypes.NEUTRAL_MONITOR, "Capacitor Bank Neutral Monitor", PaoCategory.DEVICE, PaoClass.GRID),
+    CBC_DNP(DeviceTypes.CBC_DNP, "CBC DNP", PaoCategory.DEVICE, PaoClass.CAPCONTROL),
+    LM_GROUP_XML(DeviceTypes.LM_GROUP_XML, "XML GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
+    XML_TRANSMITTER(DeviceTypes.XML_TRANSMITTER, "XML", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
+    MCT430A3(DeviceTypes.MCT430A3, "MCT-430A3", PaoCategory.DEVICE, PaoClass.CARRIER),
+    LCR3102(DeviceTypes.LCR3102, "LCR-3102", PaoCategory.DEVICE, PaoClass.CARRIER),
+
+    ROUTE_CCU(RouteTypes.ROUTE_CCU, "CCU", PaoCategory.ROUTE, PaoClass.ROUTE),
+    ROUTE_TCU(RouteTypes.ROUTE_TCU, "TCU", PaoCategory.ROUTE, PaoClass.ROUTE),
+    ROUTE_LCU(RouteTypes.ROUTE_LCU, "LCU", PaoCategory.ROUTE, PaoClass.ROUTE),
+    ROUTE_MACRO(RouteTypes.ROUTE_MACRO, "Macro", PaoCategory.ROUTE, PaoClass.ROUTE),
+    ROUTE_VERSACOM(RouteTypes.ROUTE_VERSACOM, "Versacom", PaoCategory.ROUTE, PaoClass.ROUTE),
+    ROUTE_TAP_PAGING(RouteTypes.ROUTE_TAP_PAGING, "Tap Paging", PaoCategory.ROUTE, PaoClass.ROUTE),
+    ROUTE_WCTP_TERMINAL(RouteTypes.ROUTE_WCTP_TERMINAL, "WCTP Terminal", PaoCategory.ROUTE, PaoClass.ROUTE),
+    ROUTE_SERIES_5_LMI(RouteTypes.ROUTE_SERIES_5_LMI, "Series 5 LMI", PaoCategory.ROUTE, PaoClass.ROUTE),
+    ROUTE_RTC(RouteTypes.ROUTE_RTC, "RTC", PaoCategory.ROUTE, PaoClass.ROUTE),
+    ROUTE_SNPP_TERMINAL(RouteTypes.ROUTE_SNPP_TERMINAL, "SNPP Terminal", PaoCategory.ROUTE, PaoClass.ROUTE),
+    ROUTE_XML(RouteTypes.ROUTE_XML, "XML", PaoCategory.ROUTE, PaoClass.ROUTE),
+    ROUTE_TNPP_TERMINAL(RouteTypes.ROUTE_TNPP_TERMINAL, "TNPP Terminal", PaoCategory.ROUTE, PaoClass.ROUTE),
+
+    LOCAL_DIRECT(PortTypes.LOCAL_DIRECT, "Local Direct", PaoCategory.PORT, PaoClass.PORT),
+    LOCAL_SHARED(PortTypes.LOCAL_SHARED, "Local Serial Port", PaoCategory.PORT, PaoClass.PORT),
+    LOCAL_RADIO(PortTypes.LOCAL_RADIO, "Local Radio", PaoCategory.PORT, PaoClass.PORT),
+    LOCAL_DIALUP(PortTypes.LOCAL_DIALUP, "Local Dialup", PaoCategory.PORT, PaoClass.PORT),
+    TSERVER_DIRECT(PortTypes.TSERVER_DIRECT, "Terminal Server Direct", PaoCategory.PORT, PaoClass.PORT),
+    TSERVER_SHARED(PortTypes.TSERVER_SHARED, "Terminal Server", PaoCategory.PORT, PaoClass.PORT),
+    TSERVER_RADIO(PortTypes.TSERVER_RADIO, "Terminal Server Radio", PaoCategory.PORT, PaoClass.PORT),
+    TSERVER_DIALUP(PortTypes.TSERVER_DIALUP, "Terminal Server Dialup", PaoCategory.PORT, PaoClass.PORT),
+    LOCAL_DIALBACK(PortTypes.LOCAL_DIALBACK, "Local Dialback", PaoCategory.PORT, PaoClass.PORT),
+    DIALOUT_POOL(PortTypes.DIALOUT_POOL, "Dialout Pool", PaoCategory.PORT, PaoClass.PORT),
+
+    CAP_CONTROL_SUBBUS(CapControlTypes.CAP_CONTROL_SUBBUS, "CCSUBBUS", PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
+    CAP_CONTROL_FEEDER(CapControlTypes.CAP_CONTROL_FEEDER, "CCFEEDER", PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
+    CAP_CONTROL_AREA(CapControlTypes.CAP_CONTROL_AREA, "CCAREA", PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
+    CAP_CONTROL_SPECIAL_AREA(CapControlTypes.CAP_CONTROL_SPECIAL_AREA, "CCSPECIALAREA", PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
+    CAP_CONTROL_SUBSTATION(CapControlTypes.CAP_CONTROL_SUBSTATION, "CCSUBSTATION", PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL)
     ;
     
     
     private final int deviceTypeId;
-    
+    private final String dbString;
+    private final PaoCategory paoCategory;
+    private final PaoClass paoClass;
+
     private final static ImmutableMap<Integer, PaoType> lookup;
     
     static {
@@ -137,15 +173,31 @@ public enum PaoType {
         Validate.notNull(deviceType, Integer.toString(deviceTypeId));
         return deviceType;
     }
-    
-    private PaoType(int deviceTypeId) {
+
+    private PaoType(int deviceTypeId, String dbString, PaoCategory paoCategory,
+            PaoClass paoClass) {
         this.deviceTypeId = deviceTypeId;
+        this.dbString = dbString;
+        this.paoCategory = paoCategory;
+        this.paoClass = paoClass;
     }
 
     public int getDeviceTypeId() {
         return deviceTypeId;
     }
-    
+
+    public String getDbString() {
+        return dbString;
+    }
+
+    public PaoCategory getPaoCategory() {
+        return paoCategory;
+    }
+
+    public PaoClass getPaoClass() {
+        return paoClass;
+    }
+
     public String getPaoTypeName() {
     	return PAOGroups.getPAOTypeString(this.deviceTypeId);
     }

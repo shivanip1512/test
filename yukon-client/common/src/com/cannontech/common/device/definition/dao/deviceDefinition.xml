@@ -3430,7 +3430,7 @@
     <device id="TAPTERMINAL" inherits="SIGNAL_TRANSMITTER_BASE">
         <displayName>PAGING TAP TERMINAL</displayName>
     </device>
-    <device id="TNPPTERMINAL" inherits="SIGNAL_TRANSMITTER_BASE">
+    <device id="TNPP_TERMINAL" inherits="SIGNAL_TRANSMITTER_BASE">
         <displayName>TNPP TERMINAL</displayName>
     </device>
     <device id="REPEATER" inherits="REPEATER_BASE">

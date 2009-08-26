@@ -9,7 +9,6 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.common.device.model.DisplayableDevice;
-import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -36,8 +35,7 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
             int deviceTypeId = PAOGroups.getPAOType("DEVICE", paoTypeStr);
             PaoType paoType = PaoType.getForId(deviceTypeId);
             PaoIdentifier paoId = new PaoIdentifier(rs.getInt("paObjectId"),
-                                                    paoType,
-                                                    PaoCategory.DEVICE);
+                                                    paoType);
             DisplayableDevice retVal = new DisplayableDevice(paoId,
                                                              rs.getString("paoName"));
             return retVal;

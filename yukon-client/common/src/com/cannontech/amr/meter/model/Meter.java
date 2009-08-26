@@ -2,7 +2,6 @@ package com.cannontech.amr.meter.model;
 
 import org.springframework.core.style.ToStringCreator;
 
-import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
@@ -93,7 +92,7 @@ public class Meter implements YukonDevice {
 
     @Override
     public PaoIdentifier getPaoIdentifier() {
-        return new PaoIdentifier(deviceId, type, PaoCategory.DEVICE);
+        return new PaoIdentifier(deviceId, type);
     }
 
     @Override

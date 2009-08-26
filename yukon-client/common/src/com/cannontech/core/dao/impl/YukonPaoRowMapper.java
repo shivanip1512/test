@@ -5,7 +5,6 @@ import java.sql.SQLException;
 
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
-import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -18,7 +17,8 @@ public class YukonPaoRowMapper implements ParameterizedRowMapper<PaoIdentifier> 
         String paoType = rs.getString("Type").trim();
 
         int type = PAOGroups.getPAOType(paoCategory, paoType);
-        PaoIdentifier paoIdentifier = new PaoIdentifier(paoID, PaoType.getForId(type), PaoCategory.valueOf(paoCategory));
+        PaoIdentifier paoIdentifier = new PaoIdentifier(paoID,
+                                                        PaoType.getForId(type));
 
         return paoIdentifier;
     }

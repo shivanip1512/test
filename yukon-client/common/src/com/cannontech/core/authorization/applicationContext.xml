@@ -68,13 +68,13 @@
 			<list>
 				<!-- LM Pao -->
 				<bean class="com.cannontech.core.authorization.support.pao.PaoCheckCategoryClass$PaoCategoryClass">
-					<property name="category"><util:constant static-field="com.cannontech.database.data.pao.PAOGroups.CAT_LOADCONTROL" /></property>
-					<property name="paoClass"><util:constant static-field="com.cannontech.database.data.pao.DeviceClasses.LOADMANAGEMENT" /></property>
+					<property name="category"><util:constant static-field="com.cannontech.common.pao.PaoCategory.LOADMANAGEMENT" /></property>
+					<property name="paoClass"><util:constant static-field="com.cannontech.common.pao.PaoClass.LOADMANAGEMENT" /></property>
 				</bean>
 				<!-- LM Group -->
 				<bean class="com.cannontech.core.authorization.support.pao.PaoCheckCategoryClass$PaoCategoryClass">
-					<property name="category"><util:constant static-field="com.cannontech.database.data.pao.PAOGroups.CAT_DEVICE" /></property>
-					<property name="paoClass"><util:constant static-field="com.cannontech.database.data.pao.DeviceClasses.GROUP" /></property>
+					<property name="category"><util:constant static-field="com.cannontech.common.pao.PaoCategory.DEVICE" /></property>
+					<property name="paoClass"><util:constant static-field="com.cannontech.common.pao.PaoClass.GROUP" /></property>
 				</bean>
 			</list>
 		</property>
@@ -86,8 +86,8 @@
 			<list>
 				<!-- Cap Control device -->
 				<bean class="com.cannontech.core.authorization.support.pao.PaoCheckCategoryClass$PaoCategoryClass">
-					<property name="category"><util:constant static-field="com.cannontech.database.data.pao.PAOGroups.CAT_DEVICE" /></property>
-					<property name="paoClass"><util:constant static-field="com.cannontech.database.data.pao.PAOGroups.CAT_CAPCONTROL" /></property>
+					<property name="category"><util:constant static-field="com.cannontech.common.pao.PaoCategory.DEVICE" /></property>
+					<property name="paoClass"><util:constant static-field="com.cannontech.common.pao.PaoClass.CAPCONTROL" /></property>
 				</bean>
 			</list>
 		</property>

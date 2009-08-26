@@ -5,13 +5,15 @@ public final class PaoIdentifier implements YukonPao {
 
     private int paoId;
     private PaoType paoType;
-    private PaoCategory paoCategory;
 
-    public PaoIdentifier(int paoId, PaoType paoType, PaoCategory paoCategory) {
+    public PaoIdentifier(int paoId, PaoType paoType) {
         super();
         this.paoId = paoId;
         this.paoType = paoType;
-        this.paoCategory = paoCategory;
+        if (paoType == null) {
+            System.out.println("null paoType");
+            new Throwable().printStackTrace();
+        }
     }
 
     public int getPaoId() {
@@ -19,9 +21,6 @@ public final class PaoIdentifier implements YukonPao {
     }
     public PaoType getPaoType() {
         return paoType;
-    }
-    public PaoCategory getPaoCategory() {
-        return paoCategory;
     }
 
     @Override
@@ -31,15 +30,13 @@ public final class PaoIdentifier implements YukonPao {
     
     @Override
     public String toString() {
-        return paoCategory + ":" + paoType + ":" + paoId;
+        return paoType + ":" + paoId;
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((paoCategory == null) ? 0
-                : paoCategory.hashCode());
         result = prime * result + paoId;
         result = prime * result + ((paoType == null) ? 0 : paoType.hashCode());
         return result;
@@ -54,11 +51,6 @@ public final class PaoIdentifier implements YukonPao {
         if (getClass() != obj.getClass())
             return false;
         PaoIdentifier other = (PaoIdentifier) obj;
-        if (paoCategory == null) {
-            if (other.paoCategory != null)
-                return false;
-        } else if (!paoCategory.equals(other.paoCategory))
-            return false;
         if (paoId != other.paoId)
             return false;
         if (paoType == null) {
@@ -68,6 +60,4 @@ public final class PaoIdentifier implements YukonPao {
             return false;
         return true;
     }
-
-
 }

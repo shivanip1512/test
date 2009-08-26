@@ -9,7 +9,6 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.common.device.model.DisplayableDevice;
-import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.dr.program.dao.ProgramDao;
@@ -40,8 +39,7 @@ public class ProgramDaoImpl implements ProgramDao {
         public DisplayableDevice mapRow(ResultSet rs, int rowNum)
                 throws SQLException {
             PaoIdentifier paoId = new PaoIdentifier(rs.getInt("paObjectId"),
-                                                    PaoType.LM_DIRECT_PROGRAM,
-                                                    PaoCategory.LOADMANAGEMENT);
+                                                    PaoType.LM_DIRECT_PROGRAM);
             DisplayableDevice retVal = new DisplayableDevice(paoId,
                                                              rs.getString("paoName"));
             return retVal;

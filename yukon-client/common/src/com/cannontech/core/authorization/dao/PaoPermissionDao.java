@@ -2,10 +2,10 @@ package com.cannontech.core.authorization.dao;
 
 import java.util.List;
 
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.authorization.model.PaoPermission;
 import com.cannontech.core.authorization.support.AuthorizationResponse;
 import com.cannontech.core.authorization.support.Permission;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 /**
  * Dao for pao permissions
@@ -32,7 +32,7 @@ public interface PaoPermissionDao<T> {
      * @param pao - Pao to get permissions for
      * @return List of permissions
      */
-    public List<PaoPermission> getPermissionsForPao(T it, LiteYukonPAObject pao);
+    public List<PaoPermission> getPermissionsForPao(T it, YukonPao pao);
 
     /**
      * Method to get all paoids for which the thing has the given permission
@@ -58,7 +58,7 @@ public interface PaoPermissionDao<T> {
      * @param permission - Permission in question
      * @return True if the thing has the permission for the pao
      */
-    public AuthorizationResponse hasPermissionForPao(T it, LiteYukonPAObject pao, Permission permission);
+    public AuthorizationResponse hasPermissionForPao(T it, YukonPao pao, Permission permission);
     
     /**
      * Method to determine if a thing has permission for a pao
@@ -78,7 +78,7 @@ public interface PaoPermissionDao<T> {
      * @return True if any of the things in the list have the permission for the
      *         pao
      */
-    public AuthorizationResponse hasPermissionForPao(List<T> itList, LiteYukonPAObject pao, Permission permission);
+    public AuthorizationResponse hasPermissionForPao(List<T> itList, YukonPao pao, Permission permission);
 
     /**
      * Method to add a pao permission for a thing
@@ -86,7 +86,7 @@ public interface PaoPermissionDao<T> {
      * @param pao - Pao for the permission
      * @param permission - Permission to add
      */
-    public void addPermission(T it, LiteYukonPAObject pao, Permission permission, boolean allow);
+    public void addPermission(T it, YukonPao pao, Permission permission, boolean allow);
 
     /**
      * Method to remove a pao permission for a thing
@@ -94,7 +94,7 @@ public interface PaoPermissionDao<T> {
      * @param pao - Pao for the permission
      * @param permission - Permission to remove
      */
-    public void removePermission(T it, LiteYukonPAObject pao, Permission permission);
+    public void removePermission(T it, YukonPao pao, Permission permission);
 
     /**
      * Method to remove all permissions for a given thing. (Can be used when

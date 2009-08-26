@@ -9,7 +9,6 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.common.device.model.DisplayableDevice;
-import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
@@ -32,8 +31,7 @@ public class ScenarioDaoImpl implements ScenarioDao {
         public DisplayableDevice mapRow(ResultSet rs, int rowNum)
                 throws SQLException {
             PaoIdentifier paoId = new PaoIdentifier(rs.getInt("paObjectId"),
-                                                    PaoType.LM_SCENARIO,
-                                                    PaoCategory.LOADMANAGEMENT);
+                                                    PaoType.LM_SCENARIO);
             DisplayableDevice retVal = new DisplayableDevice(paoId,
                                                              rs.getString("paoName"));
             return retVal;

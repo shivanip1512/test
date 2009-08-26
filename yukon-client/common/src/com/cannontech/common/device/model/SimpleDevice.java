@@ -25,7 +25,7 @@ public final class SimpleDevice implements YukonDevice {
     }
     
     public SimpleDevice(YukonPao pao) {
-    	Validate.isTrue(pao.getPaoIdentifier().getPaoCategory() == PaoCategory.DEVICE);
+    	Validate.isTrue(pao.getPaoIdentifier().getPaoType().getPaoCategory() == PaoCategory.DEVICE);
     	this.deviceId = pao.getPaoIdentifier().getPaoId();
     	this.type = pao.getPaoIdentifier().getPaoType();
     }
@@ -59,7 +59,7 @@ public final class SimpleDevice implements YukonDevice {
     
     @Override
     public PaoIdentifier getPaoIdentifier() {
-    	return new PaoIdentifier(deviceId, type, PaoCategory.DEVICE);
+    	return new PaoIdentifier(deviceId, type);
     }
 
     @Override

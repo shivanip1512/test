@@ -46,7 +46,7 @@ public final static RouteBase createRoute(int routeType)
 			returnRoute = new TapPagingRoute();
 			returnRoute.setRouteType( RouteTypes.STRING_TAP_PAGING );
 			break;
-        case RouteTypes.ROUTE_TNPP_TERNIMAL:
+        case RouteTypes.ROUTE_TNPP_TERMINAL:
             returnRoute = new TNPPTerminalRoute();
             returnRoute.setRouteType( RouteTypes.STRING_TNPP_TERMINAL_ROUTE);
             break;

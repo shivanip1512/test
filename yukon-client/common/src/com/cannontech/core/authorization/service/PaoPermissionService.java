@@ -3,12 +3,12 @@ package com.cannontech.core.authorization.service;
 import java.util.List;
 import java.util.Set;
 
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.authorization.model.PaoPermission;
 import com.cannontech.core.authorization.model.UserGroupPermissionList;
 import com.cannontech.core.authorization.support.AuthorizationResponse;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.database.data.lite.LiteYukonGroup;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 /**
@@ -33,7 +33,7 @@ public interface PaoPermissionService {
      *         groups the user is in
      */
     public UserGroupPermissionList getUserPermissionsForPao(LiteYukonUser user,
-            LiteYukonPAObject pao);
+            YukonPao pao);
 
     /**
      * Method to add a user pao permission
@@ -41,7 +41,7 @@ public interface PaoPermissionService {
      * @param pao - Pao for the permission
      * @param permission - Permission to add
      */
-    public void addPermission(LiteYukonUser user, LiteYukonPAObject pao, Permission permission, boolean allow);
+    public void addPermission(LiteYukonUser user, YukonPao pao, Permission permission, boolean allow);
 
     /**
      * Method to remove a user pao permission
@@ -49,7 +49,7 @@ public interface PaoPermissionService {
      * @param pao - Pao for the permission
      * @param permission - Permission to remove
      */
-    public void removePermission(LiteYukonUser user, LiteYukonPAObject pao, Permission permission);
+    public void removePermission(LiteYukonUser user, YukonPao pao, Permission permission);
 
     /**
      * Method to remove all permissions for a given user.
@@ -65,7 +65,7 @@ public interface PaoPermissionService {
      * @return AuthorizationResponse if the user OR any of the groups the user is in have the
      *         permission for the pao
      */
-    public AuthorizationResponse hasPermission(LiteYukonUser user, LiteYukonPAObject pao, Permission permission);
+    public AuthorizationResponse hasPermission(LiteYukonUser user, YukonPao pao, Permission permission);
 
     /**
      * Method to determine if a group has a permission for a pao
@@ -74,7 +74,7 @@ public interface PaoPermissionService {
      * @param permission - Permission in question
      * @return AuthorizationResponse for the permission for the pao
      */
-    public AuthorizationResponse hasPermission(LiteYukonGroup group, LiteYukonPAObject pao, Permission permission);
+    public AuthorizationResponse hasPermission(LiteYukonGroup group, YukonPao pao, Permission permission);
 
     /**
      * Method to determine if any group in the list has a permission for a pao
@@ -83,7 +83,7 @@ public interface PaoPermissionService {
      * @param permission - Permission in question
      * @return AuthorizationResponse for the permission for the pao
      */
-    public AuthorizationResponse hasPermission(List<LiteYukonGroup> groupList, LiteYukonPAObject pao,
+    public AuthorizationResponse hasPermission(List<LiteYukonGroup> groupList, YukonPao pao,
             Permission permission);
 
     /**
@@ -106,7 +106,7 @@ public interface PaoPermissionService {
      * @param pao - Pao to get permissions for
      * @return List of permissions
      */
-    public List<PaoPermission> getGroupPermissionsForPao(LiteYukonGroup group, LiteYukonPAObject pao);
+    public List<PaoPermission> getGroupPermissionsForPao(LiteYukonGroup group, YukonPao pao);
 
     /**
      * Method to add a group pao permission
@@ -114,7 +114,7 @@ public interface PaoPermissionService {
      * @param pao - Pao for the permission
      * @param permission - Permission to add
      */
-    public void addGroupPermission(LiteYukonGroup group, LiteYukonPAObject pao, Permission permission, boolean allow);
+    public void addGroupPermission(LiteYukonGroup group, YukonPao pao, Permission permission, boolean allow);
 
     /**
      * Method to remove a group pao permission
@@ -122,7 +122,7 @@ public interface PaoPermissionService {
      * @param pao - Pao for the permission
      * @param permission - Permission to remove
      */
-    public void removeGroupPermission(LiteYukonGroup group, LiteYukonPAObject pao,
+    public void removeGroupPermission(LiteYukonGroup group, YukonPao pao,
             Permission permission);
 
     /**

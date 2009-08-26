@@ -2,14 +2,17 @@ package com.cannontech.core.authorization.support.pao;
 
 import java.util.List;
 
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoClass;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.Checker;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 /**
  * Class used to check a pao's category/paoClass against a list of accepted
  * category/paoClass pairs
  */
-public class PaoCheckCategoryClass implements Checker<LiteYukonPAObject> {
+public class PaoCheckCategoryClass implements Checker<YukonPao> {
 
     List<PaoCategoryClass> paoCategoryClassList = null;
 
@@ -23,7 +26,7 @@ public class PaoCheckCategoryClass implements Checker<LiteYukonPAObject> {
      * @return True if the pao's category/class match any of the accepted
      *         category/class pairs
      */
-    public boolean check(LiteYukonPAObject pao) {
+    public boolean check(YukonPao pao) {
 
         for (PaoCategoryClass catClass : this.paoCategoryClassList) {
             if (catClass.matches(pao)) {
@@ -37,14 +40,14 @@ public class PaoCheckCategoryClass implements Checker<LiteYukonPAObject> {
      * Static inner class which represents a category/paoClass pair
      */
     public static class PaoCategoryClass {
-        private Integer category = null;
-        private Integer paoClass = null;
+        private PaoCategory category = null;
+        private PaoClass paoClass = null;
 
-        public void setCategory(Integer category) {
+        public void setCategory(PaoCategory category) {
             this.category = category;
         }
 
-        public void setPaoClass(Integer paoClass) {
+        public void setPaoClass(PaoClass paoClass) {
             this.paoClass = paoClass;
         }
 
@@ -54,10 +57,13 @@ public class PaoCheckCategoryClass implements Checker<LiteYukonPAObject> {
          * @return True if the pao's category and class are the same as the
          *         PaoCategoryClass
          */
-        public boolean matches(LiteYukonPAObject pao) {
-            return pao.getCategory() == this.category && pao.getPaoClass() == paoClass;
+        public boolean matches(YukonPao pao) {
+            PaoType paoType = pao.getPaoIdentifier().getPaoType();
+            return paoType != null
+                && paoType.getPaoCategory() == category
+                && paoType.getPaoClass() == paoClass;
         }
-        
+
         @Override
         public String toString() {
             return "(category=" + category + ", class=" + paoClass + ")";

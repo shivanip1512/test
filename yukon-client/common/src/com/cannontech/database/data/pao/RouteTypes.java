@@ -19,7 +19,7 @@ public interface RouteTypes extends TypeBase
 	public final static int ROUTE_RTC			= ROUTE_OFFSET + 8;
 	public final static int ROUTE_SNPP_TERMINAL = ROUTE_OFFSET + 9;
 	public final static int ROUTE_XML           = ROUTE_OFFSET + 10;
-    public final static int ROUTE_TNPP_TERNIMAL = ROUTE_OFFSET + 11;
+    public final static int ROUTE_TNPP_TERMINAL = ROUTE_OFFSET + 11;
 	
 	public static final String STRING_CCU = "CCU";
 	public static final String STRING_TCU = "TCU";

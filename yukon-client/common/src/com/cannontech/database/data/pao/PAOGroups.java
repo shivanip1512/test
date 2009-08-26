@@ -367,7 +367,7 @@ public final static String getPAOTypeString(int type)
 			return STRING_MACRO;
 		case ROUTE_TAP_PAGING:
 			return STRING_TAP_PAGING;
-		case ROUTE_TNPP_TERNIMAL:
+		case ROUTE_TNPP_TERMINAL:
 	        return STRING_TNPP_TERMINAL_ROUTE;
 		case ROUTE_WCTP_TERMINAL:
 			return STRING_WCTP_TERMINAL_ROUTE;
@@ -822,7 +822,7 @@ public final static int getRouteType(String typeString)
 		return ROUTE_TAP_PAGING;
 	}
 	else if( typeString.equalsIgnoreCase(STRING_TNPP_TERMINAL_ROUTE)) {
-        return ROUTE_TNPP_TERNIMAL;
+        return ROUTE_TNPP_TERMINAL;
     }
     else if( typeString.equalsIgnoreCase(STRING_WCTP_TERMINAL_ROUTE)) {
 		return ROUTE_WCTP_TERMINAL;

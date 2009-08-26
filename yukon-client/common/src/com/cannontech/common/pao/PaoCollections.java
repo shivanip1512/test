@@ -12,7 +12,7 @@ public class PaoCollections {
     public static ImmutableList<YukonDevice> asDeviceList(Iterable<PaoIdentifier> identifiers) {
         Builder<YukonDevice> builder = ImmutableList.builder();
         for (PaoIdentifier paoIdentifier : identifiers) {
-            Validate.isTrue(paoIdentifier.getPaoCategory() == PaoCategory.DEVICE, "all identifiers must refer to a DEVICE");
+            Validate.isTrue(paoIdentifier.getPaoType().getPaoCategory() == PaoCategory.DEVICE, "all identifiers must refer to a DEVICE");
             builder.add(new SimpleDevice(paoIdentifier));
         }
         return builder.build();
