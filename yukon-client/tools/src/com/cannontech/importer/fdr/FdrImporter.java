@@ -18,6 +18,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.importer.fdr.translation.ProgressOpcImportParserImpl;
 import com.cannontech.importer.fdr.translation.ProgressTextImportParseImpl;
+import com.cannontech.importer.fdr.translation.ProgressValmetImportParserImpl;
 import com.cannontech.importer.fdr.translation.TranslationBase;
 import com.cannontech.importer.fdr.translation.TranslationParse;
 import com.cannontech.importer.point.PointImportUtility;
@@ -263,6 +264,7 @@ public class FdrImporter {
             CTILogger.info(" Missing input, please input filename and the number of desired input type.");
             CTILogger.info("1 : Text Import - Progress");
             CTILogger.info("2 : OPC - Progress");
+            CTILogger.info("3 : Valmet - Progress");
             return;
         }else
             CTILogger.info( args[0] );
@@ -285,6 +287,10 @@ public class FdrImporter {
             }
             case 2: {
                 parser = new ProgressOpcImportParserImpl();
+                break;
+            }
+            case 3: {
+                parser = new ProgressValmetImportParserImpl();
                 break;
             }
             default: {
