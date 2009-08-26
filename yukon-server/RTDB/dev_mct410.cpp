@@ -1304,6 +1304,7 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
                 case 'c':  phaseVal = 3;  break;
                 default:  phaseVal = 0;  break;
             } 
+
             OutMessage->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
             OutMessage->Buffer.BSt.Message[1] = phaseVal  & 0xff;
             OutMessage->Buffer.BSt.Message[2] = parse.getiValue("phasedelta")  & 0xff;
@@ -4068,6 +4069,7 @@ INT CtiDeviceMCT410::decodeGetConfigPhaseDetect(INMESS *InMessage, CtiTime &Time
                 break;
             }
         }
+
         volt_timestamp =  DSt->Message[1] << 24 |
                           DSt->Message[2] << 16 |
                           DSt->Message[3] <<  8 |
