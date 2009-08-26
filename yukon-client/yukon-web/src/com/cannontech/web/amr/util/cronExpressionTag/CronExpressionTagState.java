@@ -1,7 +1,10 @@
 package com.cannontech.web.amr.util.cronExpressionTag;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 
 import com.cannontech.user.YukonUserContext;
@@ -28,13 +31,8 @@ public class CronExpressionTagState {
 	CronExprTagDailyOptionEnum cronExpressionDailyOption = CronExprTagDailyOptionEnum.EVERYDAY;
 	
 	// weekly
-	boolean cronExpWeeklyOptionSun = false;
-	boolean cronExpWeeklyOptionMon = false;
-	boolean cronExpWeeklyOptionTues = false;
-	boolean cronExpWeeklyOptionWed = false;
-	boolean cronExpWeeklyOptionThurs = false;
-	boolean cronExpWeeklyOptionFri = false;
-	boolean cronExpWeeklyOptionSat = false;
+	List<CronDay> allCronDays = Arrays.asList(CronDay.values());
+	List<CronDay> selectedCronDays = new ArrayList<CronDay>(7);
 	
 	// monthly
 	CronExprMonthlyOptionEnum cronExpressionMontlyOption = CronExprMonthlyOptionEnum.ON_DAY;
@@ -110,48 +108,17 @@ public class CronExpressionTagState {
 			CronExprTagDailyOptionEnum cronExpressionDailyOption) {
 		this.cronExpressionDailyOption = cronExpressionDailyOption;
 	}
-	public boolean isCronExpWeeklyOptionSun() {
-		return cronExpWeeklyOptionSun;
+	
+	public void addSelectedCronDay(CronDay cronDay) {
+	    selectedCronDays.add(cronDay);
 	}
-	public void setCronExpWeeklyOptionSun(boolean cronExpWeeklyOptionSun) {
-		this.cronExpWeeklyOptionSun = cronExpWeeklyOptionSun;
+	public List<CronDay> getSelectedCronDays() {
+	    return selectedCronDays;
 	}
-	public boolean isCronExpWeeklyOptionMon() {
-		return cronExpWeeklyOptionMon;
+	public List<CronDay> getAllCronDays() {
+	    return allCronDays;
 	}
-	public void setCronExpWeeklyOptionMon(boolean cronExpWeeklyOptionMon) {
-		this.cronExpWeeklyOptionMon = cronExpWeeklyOptionMon;
-	}
-	public boolean isCronExpWeeklyOptionTues() {
-		return cronExpWeeklyOptionTues;
-	}
-	public void setCronExpWeeklyOptionTues(boolean cronExpWeeklyOptionTues) {
-		this.cronExpWeeklyOptionTues = cronExpWeeklyOptionTues;
-	}
-	public boolean isCronExpWeeklyOptionWed() {
-		return cronExpWeeklyOptionWed;
-	}
-	public void setCronExpWeeklyOptionWed(boolean cronExpWeeklyOptionWed) {
-		this.cronExpWeeklyOptionWed = cronExpWeeklyOptionWed;
-	}
-	public boolean isCronExpWeeklyOptionThurs() {
-		return cronExpWeeklyOptionThurs;
-	}
-	public void setCronExpWeeklyOptionThurs(boolean cronExpWeeklyOptionThurs) {
-		this.cronExpWeeklyOptionThurs = cronExpWeeklyOptionThurs;
-	}
-	public boolean isCronExpWeeklyOptionFri() {
-		return cronExpWeeklyOptionFri;
-	}
-	public void setCronExpWeeklyOptionFri(boolean cronExpWeeklyOptionFri) {
-		this.cronExpWeeklyOptionFri = cronExpWeeklyOptionFri;
-	}
-	public boolean isCronExpWeeklyOptionSat() {
-		return cronExpWeeklyOptionSat;
-	}
-	public void setCronExpWeeklyOptionSat(boolean cronExpWeeklyOptionSat) {
-		this.cronExpWeeklyOptionSat = cronExpWeeklyOptionSat;
-	}
+
 	public CronExprMonthlyOptionEnum getCronExpressionMontlyOption() {
 		return cronExpressionMontlyOption;
 	}

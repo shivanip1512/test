@@ -10,10 +10,10 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.jobs.support.YukonTask;
+import com.cannontech.jobs.support.YukonTaskBase;
 import com.cannontech.user.YukonUserContext;
 
-public class ImportCustAccountsSchedulerTask implements YukonTask {
+public class ImportCustAccountsSchedulerTask extends YukonTaskBase {
 
     private Logger logger = YukonLogManager.getLogger(ImportCustAccountsSchedulerTask.class);
 
@@ -25,7 +25,8 @@ public class ImportCustAccountsSchedulerTask implements YukonTask {
     // Injected Dependencies
     private StarsDatabaseCache starsDbCacheInstance;
     
-    public void start(int jobId) {
+    @Override
+    public void start() {
             try {
                 startTask();
             } catch (NotFoundException e){
@@ -59,10 +60,6 @@ public class ImportCustAccountsSchedulerTask implements YukonTask {
         }
     }
 
-    public void stop(int jobId) throws UnsupportedOperationException {
-        // TODO Auto-generated method stub
-    }
-
     // Setters for injected parameters
     public Integer getEnergyCompany() {
         return energyCompanyId;
@@ -80,11 +77,6 @@ public class ImportCustAccountsSchedulerTask implements YukonTask {
         this.email = email;
     }
 
-    @Override
-    public void setUserContext(YukonUserContext userContext) {
-        this.userContext = userContext;
-    }
-    
     @Autowired
     public void setStarsDbCacheInstance(StarsDatabaseCache starsDbCacheInstance) {
         this.starsDbCacheInstance = starsDbCacheInstance;

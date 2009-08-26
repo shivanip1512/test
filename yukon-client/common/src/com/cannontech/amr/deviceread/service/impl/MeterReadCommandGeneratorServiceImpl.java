@@ -15,15 +15,19 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.commands.CommandRequestDevice;
+import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.CommandDefinition;
 import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LitePoint;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
@@ -36,9 +40,48 @@ public class MeterReadCommandGeneratorServiceImpl implements MeterReadCommandGen
 	private Logger log = YukonLogManager.getLogger(MeterReadCommandGeneratorServiceImpl.class);
 	
 	private boolean isUpdate = true;
-    private boolean isNoqueue = true;
 	
-	public  Multimap<PaoIdentifier, LitePoint> getPointsToRead(PaoIdentifier device, Set<? extends Attribute> attributes) {
+	
+	
+	public Multimap<YukonDevice, CommandRequestDevice> getCommandRequests(Iterable<? extends YukonDevice> devices, Set<? extends Attribute> attributes, CommandRequestExecutionType type) {
+	    
+	    ListMultimap<YukonDevice, CommandRequestDevice> list = ArrayListMultimap.create();
+	    
+	    for (YukonDevice device : devices) {
+	        
+	        Multimap<PaoIdentifier, LitePoint> pointsToRead = getPointsToRead(device.getPaoIdentifier(), attributes);
+	        
+	        try {
+	            
+	            Multimap<PaoIdentifier, CommandWrapper> requiredCommands = getRequiredCommands(pointsToRead);
+	            
+	            for (PaoIdentifier paoIdentifier : requiredCommands.keySet()) {
+	                list.putAll(device, getCommandRequests(paoIdentifier, requiredCommands.get(paoIdentifier), type));
+	            }
+	            
+	        } catch (UnreadableException e) {
+	            // device does not support an attribute, it will not be included in result Multimap
+	            continue;
+	        }
+	    }
+	    
+	    return list;
+	}
+	
+	public boolean isReadable(YukonDevice device, Set<? extends Attribute> attributes) {
+	    
+	    Multimap<PaoIdentifier, LitePoint> pointsToRead = getPointsToRead(device.getPaoIdentifier(), attributes);
+	    
+	    try {
+            getRequiredCommands(pointsToRead);
+        } catch (UnreadableException e) {
+            return false;
+        }
+        
+        return true;
+	}
+	
+	private  Multimap<PaoIdentifier, LitePoint> getPointsToRead(PaoIdentifier device, Set<? extends Attribute> attributes) {
         
 		// reduce number of commands
     	Multimap<PaoIdentifier, LitePoint> pointsToRead = HashMultimap.create();
@@ -66,7 +109,7 @@ public class MeterReadCommandGeneratorServiceImpl implements MeterReadCommandGen
         return pointsToRead;
     }
 	
-	public Multimap<PaoIdentifier, CommandWrapper> getRequiredCommands(Multimap<PaoIdentifier, LitePoint> pointsToRead) throws UnreadableException {
+	private Multimap<PaoIdentifier, CommandWrapper> getRequiredCommands(Multimap<PaoIdentifier, LitePoint> pointsToRead) throws UnreadableException {
 		
         Multimap<PaoIdentifier, CommandWrapper> requiredCommands = HashMultimap.create();
     	
@@ -81,7 +124,7 @@ public class MeterReadCommandGeneratorServiceImpl implements MeterReadCommandGen
         return requiredCommands;
     }
 	
-	public List<CommandRequestDevice> getCommandRequests(PaoIdentifier device, Iterable<CommandWrapper> commands) {
+	private List<CommandRequestDevice> getCommandRequests(PaoIdentifier device, Iterable<CommandWrapper> commands, CommandRequestExecutionType type) {
         List<CommandRequestDevice> commandRequests = new ArrayList<CommandRequestDevice>();
         for (CommandWrapper wrapper : commands) {
             List<String> commandStringList = wrapper.getCommandDefinition().getCommandStringList();
@@ -89,7 +132,7 @@ public class MeterReadCommandGeneratorServiceImpl implements MeterReadCommandGen
                 CommandRequestDevice request = new CommandRequestDevice();
                 request.setDevice(new SimpleDevice(device));
                 commandStr += (isUpdate ? " update " : "");
-                commandStr += (isNoqueue ? " noqueue " : "");
+                commandStr += (!type.isScheduled() ? " noqueue " : "");
 
                 request.setCommand(commandStr);
                 commandRequests.add(request);

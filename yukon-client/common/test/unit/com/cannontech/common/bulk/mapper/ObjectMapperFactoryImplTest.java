@@ -335,6 +335,10 @@ public class ObjectMapperFactoryImplTest extends TestCase {
             throw new UnsupportedOperationException("Method not implemented");
         }
 		
+		@Override
+		public PaoLoader<DisplayablePao> getDisplayableDeviceLoader() {
+		    throw new UnsupportedOperationException("Method not implemented");
+		}
     }
 
     /**

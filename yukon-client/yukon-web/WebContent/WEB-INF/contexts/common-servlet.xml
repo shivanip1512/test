@@ -18,6 +18,7 @@
             <props>
                 <prop key="/alert/*">alertController</prop>
                 <prop key="/deviceDefinition.xml">DeviceDefinitionViewerController</prop>
+                <prop key="/commandRequestExecutionResults/*">CommandRequestExecutionResultsController</prop>
             </props>
         </property>
     </bean>
@@ -41,6 +42,10 @@
     
     <bean id="viewNameTranslator" class="org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator">
         <property name="suffix" value=".jsp"/>
+    </bean>
+    
+    <!-- COMMAND REQUEST EXECUTION -->
+    <bean id="CommandRequestExecutionResultsController" class="com.cannontech.web.common.commandRequestExecution.CommandRequestExecutionResultsController">
     </bean>
 
 </beans>

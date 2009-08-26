@@ -16,11 +16,7 @@ public class TabbedContentSelectorContentTag extends YukonTagSupport {
 		
 		// tell container tag about ourself
         TabbedContentSelectorTag parent = getParent(TabbedContentSelectorTag.class);
-        parent.addTab(selectorName, id);
-        
-        if (initiallySelected) {
-        	parent.setSelectedTabName(selectorName);
-        }
+        parent.addTab(selectorName, id, initiallySelected);
         
         // tab content
 		getJspContext().getOut().println("<div id=\"" + id + "\" class=\"x-hide-display\">");

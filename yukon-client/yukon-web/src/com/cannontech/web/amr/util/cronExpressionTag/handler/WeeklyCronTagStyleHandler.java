@@ -11,19 +11,12 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.amr.util.cronExpressionTag.CronDay;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
 import com.cannontech.web.amr.util.cronExpressionTag.CronTagStyleType;
 
 public class WeeklyCronTagStyleHandler extends CronTagStyleHandlerBase {
 
-	public static final String[] CRONEXP_DAYS = {"CRONEXP_WEEKLY_OPTION_EVERY_X_WEEKS_ON_SUN",
-													"CRONEXP_WEEKLY_OPTION_EVERY_X_WEEKS_ON_MON",
-													"CRONEXP_WEEKLY_OPTION_EVERY_X_WEEKS_ON_TUES",
-													"CRONEXP_WEEKLY_OPTION_EVERY_X_WEEKS_ON_WED",
-													"CRONEXP_WEEKLY_OPTION_EVERY_X_WEEKS_ON_THURS",
-													"CRONEXP_WEEKLY_OPTION_EVERY_X_WEEKS_ON_FRI",
-													"CRONEXP_WEEKLY_OPTION_EVERY_X_WEEKS_ON_SAT"};
-	
 	// BUILD
 	@Override
 	public String build(String id, HttpServletRequest request) throws ServletRequestBindingException {
@@ -38,13 +31,12 @@ public class WeeklyCronTagStyleHandler extends CronTagStyleHandlerBase {
 		parts[4] = "*";
 		
 		List<String> selectedDays = new ArrayList<String>();
-		for (int i = 0; i < CRONEXP_DAYS.length; i++) {
-			
-			String dayName = CRONEXP_DAYS[i];
-			String dayStr = ServletRequestUtils.getStringParameter(request, id + "_" + dayName, null);
-			if (dayStr != null) {
-				selectedDays.add(String.valueOf(dayStr));
-			}
+		for (CronDay cronDay : CronDay.values()) {
+		    
+		    String dayStr = ServletRequestUtils.getStringParameter(request, id + "_" + cronDay.getRequestName(), null);
+		    if (dayStr != null) {
+                selectedDays.add(String.valueOf(dayStr));
+            }
 		}
 		
 		if (selectedDays.size() > 0) {
@@ -97,22 +89,12 @@ public class WeeklyCronTagStyleHandler extends CronTagStyleHandlerBase {
 		String dayOfWeek = parts[5];
 		String[] dayStrs = dayOfWeek.split(",");
 		for (String dayStr : dayStrs) {
-			int dayNum = Integer.valueOf(dayStr);
-			if (dayNum == 1) {
-				state.setCronExpWeeklyOptionSun(true);
-			} else if (dayNum == 2) {
-				state.setCronExpWeeklyOptionMon(true);
-			} else if (dayNum == 3) {
-				state.setCronExpWeeklyOptionTues(true);
-			} else if (dayNum == 4) {
-				state.setCronExpWeeklyOptionWed(true);
-			} else if (dayNum == 5) {
-				state.setCronExpWeeklyOptionThurs(true);
-			} else if (dayNum == 6) {
-				state.setCronExpWeeklyOptionFri(true);
-			} else if (dayNum == 7) {
-				state.setCronExpWeeklyOptionSat(true);
-			}
+		    int dayNum = Integer.valueOf(dayStr);
+		    for (CronDay cronDay : CronDay.values()) {
+		        if (cronDay.getNumber() == dayNum) {
+		            state.addSelectedCronDay(cronDay);
+		        }
+		    }
 		}
 		
 		return state;
@@ -127,40 +109,10 @@ public class WeeklyCronTagStyleHandler extends CronTagStyleHandlerBase {
 		List<String> daysAbbrs = new ArrayList<String>();
 		List<String> daysFulls = new ArrayList<String>();
 		
-		if (state.isCronExpWeeklyOptionSun()) {
-			days++;
-			daysAbbrs.add("Sun");
-			daysFulls.add("Sundays");
-		}
-		if (state.isCronExpWeeklyOptionMon()) {
-			days++;
-			daysAbbrs.add("Mon");
-			daysFulls.add("Mondays");
-		}
-		if (state.isCronExpWeeklyOptionTues()) {
-			days++;
-			daysAbbrs.add("Tues");
-			daysFulls.add("Tuesdays");
-		}
-		if (state.isCronExpWeeklyOptionWed()) {
-			days++;
-			daysAbbrs.add("Wed");
-			daysFulls.add("Wednesdays");
-		}
-		if (state.isCronExpWeeklyOptionThurs()) {
-			days++;
-			daysAbbrs.add("Thurs");
-			daysFulls.add("Thursdays");
-		}
-		if (state.isCronExpWeeklyOptionFri()) {
-			days++;
-			daysAbbrs.add("Fri");
-			daysFulls.add("Fridays");
-		}
-		if (state.isCronExpWeeklyOptionSat()) {
-			days++;
-			daysAbbrs.add("Sat");
-			daysFulls.add("Saturdays");
+		for (CronDay cronDay : state.getSelectedCronDays()) {
+		    days++;
+            daysAbbrs.add(cronDay.getAbbreviatedName());
+            daysFulls.add(cronDay.getFullName());
 		}
 		
 		if (days == 1) {

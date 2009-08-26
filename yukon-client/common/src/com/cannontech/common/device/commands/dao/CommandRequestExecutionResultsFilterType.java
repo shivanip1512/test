@@ -1,24 +1,29 @@
 package com.cannontech.common.device.commands.dao;
 
+import com.cannontech.common.util.SimpleSqlFragment;
+import com.cannontech.common.util.SqlFragmentSource;
+
 public enum CommandRequestExecutionResultsFilterType {
 
-	SUCCESS("Success", "ErrorCode = 0"),
-	FAIL("Fail", "ErrorCode > 0"),
-	ALL("All", null);
+	SUCCESS("Success", new SimpleSqlFragment("ErrorCode = 0")),
+	FAIL("Fail", new SimpleSqlFragment("ErrorCode > 0")),
+	ALL("All", new SimpleSqlFragment("1 = 1"));
 	
 	private String description;
-	private String sqlCondition;
+	private SqlFragmentSource sqlFragmentSource;
 	
-	CommandRequestExecutionResultsFilterType(String description, String sqlCondition) {
+	CommandRequestExecutionResultsFilterType(String description, SqlFragmentSource sqlFragmentSource) {
 		this.description = description;
-		this.sqlCondition = sqlCondition;
+		this.sqlFragmentSource = sqlFragmentSource;
 	}
 	
 	public String getDescription() {
 		return description;
 	}
 	
-	public String getSqlCondition() {
-		return sqlCondition;
+	public SqlFragmentSource getConditionSqlFragmentSource() {
+		return sqlFragmentSource;
 	}
+	
+	
 }

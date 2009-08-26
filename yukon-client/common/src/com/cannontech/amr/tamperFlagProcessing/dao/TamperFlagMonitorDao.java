@@ -15,5 +15,10 @@ public void saveOrUpdate(TamperFlagMonitor tamperFlagMonitor);
 	
 	public List<TamperFlagMonitor> getAll();
 	
-	public int delete(int tamperFlagMonitor);
+	/**
+	 * Returns true if monitor was deleted successfully, false otherwise.
+	 * @param tamperFlagMonitor
+	 * @return
+	 */
+	public boolean delete(int tamperFlagMonitor);
 }

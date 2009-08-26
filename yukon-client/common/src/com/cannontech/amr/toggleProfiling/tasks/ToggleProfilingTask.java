@@ -26,12 +26,13 @@ public class ToggleProfilingTask extends YukonTaskBase {
     private PaoDao paoDao = null;
     private DBPersistentDao dbPersistentDao = null;
 
-    public void start(int jobId) {
+    @Override
+    public void start() {
         startTask();
     }
     
     private void startTask(){
-        logger.info("Starting toggle profiling task scheduled by " + getUserContext().getYukonUser().getUsername() + ".");
+        logger.info("Starting toggle profiling task scheduled by " + getJobContext().getJob().getUserContext().getYukonUser().getUsername() + ".");
         
         LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
         YukonPAObject yukonPaobject = (YukonPAObject)dbPersistentDao.retrieveDBPersistent(device);
@@ -44,10 +45,6 @@ public class ToggleProfilingTask extends YukonTaskBase {
                 
         // persist change
         dbPersistentDao.performDBChange(yukonPaobject, DBChangeMsg.CHANGE_TYPE_UPDATE);
-    }
-
-    public void stop(int jobId) throws UnsupportedOperationException {
-        throw new UnsupportedOperationException();
     }
 
     // Setters for injected parameters

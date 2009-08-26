@@ -32,11 +32,8 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.device.commands.CollectingCommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestBase;
-import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandRequestExecutor;
-import com.cannontech.common.device.commands.CommandRequestRoute;
-import com.cannontech.common.device.commands.CommandRequestRouteAndDevice;
 import com.cannontech.common.device.commands.CommandRequestType;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
@@ -183,7 +180,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
                         }
                         
                         // insert CommandRequestExecutionResult record
-                    	makeCommandRequestExecutionResult(this.commandRequestExecution, command, status);
+                    	saveCommandRequestExecutionResult(this.commandRequestExecution, command, status);
                         
                         pendingUserMessageIds.remove(userMessageId);
                         
@@ -229,7 +226,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
             commandRequestExecutionDao.saveOrUpdate(commandRequestExecution);
         }
         
-        private void makeCommandRequestExecutionResult(CommandRequestExecution commandRequestExecution, T command, int status) {
+        private void saveCommandRequestExecutionResult(CommandRequestExecution commandRequestExecution, T command, int status) {
         	
         	CommandRequestExecutionResult commandRequestExecutionResult = new CommandRequestExecutionResult();
         	commandRequestExecutionResult.setCommandRequestExecutionId(commandRequestExecution.getId());
@@ -240,17 +237,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         		commandRequestExecutionResult.setErrorCode(status);
         	}
         	
-        	if (command instanceof CommandRequestRouteAndDevice) {
-        		CommandRequestRouteAndDevice commandRequestRouteAndDevice = (CommandRequestRouteAndDevice)command;
-        		commandRequestExecutionResult.setDeviceId(commandRequestRouteAndDevice.getDevice().getPaoIdentifier().getPaoId());
-        		commandRequestExecutionResult.setRouteId(commandRequestRouteAndDevice.getRouteId());
-        	} else if (command instanceof CommandRequestDevice) {
-        		CommandRequestDevice commandRequestDevice = (CommandRequestDevice)command;
-        		commandRequestExecutionResult.setDeviceId(commandRequestDevice.getDevice().getPaoIdentifier().getPaoId());
-        	} else if (command instanceof CommandRequestRoute) {
-        		CommandRequestRoute commandRequestRoute = (CommandRequestRoute)command;
-        		commandRequestExecutionResult.setDeviceId(commandRequestRoute.getRouteId());
-        	}
+        	applyIdsToCommandRequestExecutionResult(command, commandRequestExecutionResult);
             
             commandRequestExecutionResultDao.saveOrUpdate(commandRequestExecutionResult);
         }
@@ -487,6 +474,8 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
     protected abstract Request buildRequest(T commandRequest);
     
     protected abstract CommandRequestType getCommandRequestType();
+    
+    protected abstract void applyIdsToCommandRequestExecutionResult(T commandRequest, CommandRequestExecutionResult commandRequestExecutionResult);
 
     @Required
     public void setPorterConnection(BasicServerConnection porterConnection) {

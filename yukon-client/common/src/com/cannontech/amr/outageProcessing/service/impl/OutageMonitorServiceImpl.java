@@ -31,17 +31,14 @@ public class OutageMonitorServiceImpl implements OutageMonitorService {
         
         // delete outage group
         try {
-        	String outageGroupName = SystemGroupEnum.OUTAGE_PROCESSING.getFullPath() + outageMonitor.getOutageMonitorName();
-			StoredDeviceGroup outageGroup = deviceGroupEditorDao.getStoredGroup(outageGroupName, false);
+			StoredDeviceGroup outageGroup = getOutageGroup(outageMonitor.getOutageMonitorName());
 			deviceGroupEditorDao.removeGroup(outageGroup);
 		} catch (NotFoundException e) {
 			// may have been deleted? who cares
 		}
         
         // delete processor
-        boolean deleteOk = outageMonitorDao.delete(outageMonitorId) == 1;
-        
-        return deleteOk;
+        return outageMonitorDao.delete(outageMonitorId);
 	}
 	
 	@Autowired

@@ -1,4 +1,4 @@
-package com.cannontech.web.amr.scheduledGroupRequestExecution;
+package com.cannontech.web.common.scheduledGroupRequestExecution;
 
 import java.util.Date;
 
@@ -88,7 +88,7 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 		}
 		
 		public String getDeviceGroupName() {
-			return this.task.getGroupName();
+			return this.task.getDeviceGroup().getFullName();
 		}
 		
 		public int getCreCount() {

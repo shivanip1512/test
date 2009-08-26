@@ -3,24 +3,26 @@ package com.cannontech.amr.scheduledGroupRequestExecution.service.impl;
 import javax.annotation.Resource;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.scheduledGroupRequestExecution.service.ScheduledGroupRequestExecutionService;
+import com.cannontech.amr.scheduledGroupRequestExecution.tasks.ScheduledGroupRequestExecutionJobTaskContainer;
 import com.cannontech.amr.scheduledGroupRequestExecution.tasks.ScheduledGroupRequestExecutionTask;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.input.InputRoot;
-import com.cannontech.web.input.InputUtil;
 
 public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroupRequestExecutionService {
 
 	private JobManager jobManager;
     private YukonJobDefinition<ScheduledGroupRequestExecutionTask> scheduledGroupRequestExecutionJobDefinition;
+    private DeviceGroupService deviceGroupService;
     
     private Logger log = YukonLogManager.getLogger(ScheduledGroupRequestExecutionServiceImpl.class);
     
@@ -40,7 +42,7 @@ public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroup
 
 		ScheduledGroupRequestExecutionTask task = scheduledGroupRequestExecutionJobDefinition.createBean();
 		task.setName(name);
-    	task.setGroupName(groupName);
+    	task.setDeviceGroup(deviceGroupService.resolveGroupName(groupName));
     	task.setAttribute(attribute);
     	task.setCommand(command);
     	task.setCommandRequestExecutionType(type);
@@ -68,26 +70,27 @@ public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroup
 	
 		// get current job, generate task
 		ScheduledRepeatingJob existingJob = (ScheduledRepeatingJob)jobManager.getJob(existingJobId);
-		ScheduledGroupRequestExecutionTask existingTask = new ScheduledGroupRequestExecutionTask();
-		InputRoot inputRoot = scheduledGroupRequestExecutionJobDefinition.getInputs();
-        InputUtil.applyProperties(inputRoot, existingTask, existingJob.getJobProperties());
+		ScheduledGroupRequestExecutionTask existingTask = (ScheduledGroupRequestExecutionTask)jobManager.instantiateTask(existingJob);
+		    
 		
-        if (attribute != null) {
-        	if (existingTask.getAttribute() != null) {
-        		
-        	}
-        }
-        
+		ScheduledGroupRequestExecutionJobTaskContainer existing = new ScheduledGroupRequestExecutionJobTaskContainer(existingTask.getDeviceGroup().getFullName(), 
+		                                                                                                             existingTask.getName(),
+		                                                                                                             existingTask.getCommandRequestExecutionType(),
+		                                                                                                             existingJob.getCronString(),
+		                                                                                                             existingJob.getUserContext().getYukonUser().getUserID(),
+		                                                                                                             existingTask.getCommand(),
+		                                                                                                             existingTask.getAttribute());
+		
+		ScheduledGroupRequestExecutionJobTaskContainer replacement = new ScheduledGroupRequestExecutionJobTaskContainer(groupName, 
+		                                                                                                                name,
+		                                                                                                                type,
+		                                                                                                                cronExpression,
+		                                                                                                                userContext.getYukonUser().getUserID(),
+		                                                                                                                command,
+		                                                                                                                attribute);
+		
         // difference between old task/job and replacement?
-        if (!existingTask.getGroupName().equals(groupName)
-        	|| !existingTask.getName().equals(name)
-        	|| (attribute != null && existingTask.getAttribute() != null && !attribute.equals(existingTask.getAttribute())) // new attribute
-        	|| (command != null && existingTask.getCommand() != null && !command.equals(existingTask.getCommand())) // new command
-        	|| (attribute != null && existingTask.getCommand() != null) // switching from command to attribute
-        	|| (command != null &&existingTask.getAttribute() != null) // switching from attribute to command
-        	|| !existingTask.getCommandRequestExecutionType().equals(type)
-        	|| !existingJob.getCronString().equals(cronExpression)
-        	|| (existingJob.getUserContext().getYukonUser().getUserID() != userContext.getYukonUser().getUserID())) {
+        if (!existing.equals(replacement)) {
         	
         	jobManager.deleteJob(existingJob);
         	
@@ -129,4 +132,9 @@ public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroup
 			YukonJobDefinition<ScheduledGroupRequestExecutionTask> scheduledGroupRequestExecutionJobDefinition) {
 		this.scheduledGroupRequestExecutionJobDefinition = scheduledGroupRequestExecutionJobDefinition;
 	}
+	
+	@Autowired
+    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
+        this.deviceGroupService = deviceGroupService;
+    }
 }

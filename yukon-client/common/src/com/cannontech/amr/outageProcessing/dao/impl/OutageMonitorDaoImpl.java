@@ -2,12 +2,10 @@ package com.cannontech.amr.outageProcessing.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -81,17 +79,12 @@ public class OutageMonitorDaoImpl implements OutageMonitorDao, InitializingBean 
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<OutageMonitor> getAll() {
-        try {
-            List<OutageMonitor> list = simpleJdbcTemplate.query(selectAllSql, rowMapper, new Object[]{});
-            return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-        } 
+        return simpleJdbcTemplate.query(selectAllSql, rowMapper, new Object[]{});
     }
     
-    public int delete(int outageMonitorId) {
+    public boolean delete(int outageMonitorId) {
     	
-    	return simpleJdbcTemplate.update(deleteById, outageMonitorId);
+    	return simpleJdbcTemplate.update(deleteById, outageMonitorId) > 0;
     }
     
     private static final ParameterizedRowMapper<OutageMonitor> createRowMapper() {
@@ -102,7 +95,7 @@ public class OutageMonitorDaoImpl implements OutageMonitorDao, InitializingBean 
             	outageMonitor.setOutageMonitorId(rs.getInt("OutageMonitorId"));
             	outageMonitor.setOutageMonitorName(rs.getString("OutageMonitorName"));
             	outageMonitor.setGroupName(rs.getString("GroupName"));
-            	outageMonitor.setTimePeriod(rs.getInt("TimePeriod"));
+            	outageMonitor.setTimePeriodDays(rs.getInt("TimePeriod"));
             	outageMonitor.setNumberOfOutages(rs.getInt("NumberOfOutages"));
             	outageMonitor.setEvaluatorStatus(MonitorEvaluatorStatus.valueOf(rs.getString("EvaluatorStatus")));
                 return outageMonitor;
@@ -116,7 +109,7 @@ public class OutageMonitorDaoImpl implements OutageMonitorDao, InitializingBean 
             p.addValue("OutageMonitorId", outageMonitor.getOutageMonitorId());
             p.addValue("OutageMonitorName", outageMonitor.getOutageMonitorName());
             p.addValue("GroupName", outageMonitor.getGroupName());
-            p.addValue("TimePeriod", outageMonitor.getTimePeriod());
+            p.addValue("TimePeriod", outageMonitor.getTimePeriodDays());
             p.addValue("NumberOfOutages", outageMonitor.getNumberOfOutages());
             p.addValue("EvaluatorStatus", outageMonitor.getEvaluatorStatus().name());
             

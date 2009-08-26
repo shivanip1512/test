@@ -1,4 +1,4 @@
-package com.cannontech.web.amr.scheduledGroupRequestExecution;
+package com.cannontech.web.common.scheduledGroupRequestExecution;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -115,7 +115,7 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 				cronExpression = existingJob.getCronString();
 			}
 			if (deviceGroupName == null) {
-				deviceGroupName = existingTask.getGroupName();
+				deviceGroupName = existingTask.getDeviceGroup().getFullName();
 			}
 		}
 		

@@ -7,6 +7,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.CommandRequestRouteAndDevice;
 import com.cannontech.common.device.commands.CommandRequestRouteAndDeviceExecutor;
 import com.cannontech.common.device.commands.CommandRequestType;
+import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionResult;
 import com.cannontech.message.porter.message.Request;
 
 public class CommandRequestRouteAndDeviceExecutorImpl extends CommandRequestExecutorBase<CommandRequestRouteAndDevice> implements CommandRequestRouteAndDeviceExecutor {
@@ -37,5 +38,11 @@ public class CommandRequestRouteAndDeviceExecutorImpl extends CommandRequestExec
     @Override
     protected CommandRequestType getCommandRequestType() {
     	return CommandRequestType.DEVICE_ROUTE;
+    }
+    
+    @Override
+    public void applyIdsToCommandRequestExecutionResult(CommandRequestRouteAndDevice commandRequest, CommandRequestExecutionResult commandRequestExecutionResult) {
+        commandRequestExecutionResult.setDeviceId(commandRequest.getDevice().getPaoIdentifier().getPaoId());
+        commandRequestExecutionResult.setRouteId(commandRequest.getRouteId());
     }
 }

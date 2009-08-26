@@ -2,12 +2,10 @@ package com.cannontech.amr.tamperFlagProcessing.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -80,17 +78,12 @@ public class TamperFlagMonitorDaoImpl implements TamperFlagMonitorDao, Initializ
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<TamperFlagMonitor> getAll() {
-        try {
-            List<TamperFlagMonitor> list = simpleJdbcTemplate.query(selectAllSql, rowMapper, new Object[]{});
-            return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-        } 
+        return simpleJdbcTemplate.query(selectAllSql, rowMapper, new Object[]{});
     }
     
-    public int delete(int tamperFlagMonitorId) {
+    public boolean delete(int tamperFlagMonitorId) {
     	
-    	return simpleJdbcTemplate.update(deleteById, tamperFlagMonitorId);
+    	return simpleJdbcTemplate.update(deleteById, tamperFlagMonitorId) > 0;
     }
     
     private static final ParameterizedRowMapper<TamperFlagMonitor> createRowMapper() {

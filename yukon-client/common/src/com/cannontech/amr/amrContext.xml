@@ -264,10 +264,10 @@
                         </bean>
                         <bean
                             class="com.cannontech.web.input.InputBase">
-                            <property name="field" value="groupName" />
-                            <property name="displayName" value="Group Name" />
+                            <property name="field" value="deviceGroup" />
+                            <property name="displayName" value="Device Group" />
                             <property name="type">
-                                <bean class="com.cannontech.web.input.type.StringType" />
+                                <bean class="com.cannontech.web.input.type.DeviceGroupType" />
                             </property>
                         </bean>
                         <bean class="com.cannontech.web.input.InputBase">

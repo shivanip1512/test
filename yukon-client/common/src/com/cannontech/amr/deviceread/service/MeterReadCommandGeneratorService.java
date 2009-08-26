@@ -1,21 +1,24 @@
 package com.cannontech.amr.deviceread.service;
 
-import java.util.List;
 import java.util.Set;
 
-import com.cannontech.amr.deviceread.dao.impl.UnreadableException;
-import com.cannontech.amr.deviceread.service.impl.CommandWrapper;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.commands.CommandRequestDevice;
-import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.common.device.commands.CommandRequestExecutionType;
+import com.cannontech.common.pao.YukonDevice;
 import com.google.common.collect.Multimap;
 
 public interface MeterReadCommandGeneratorService {
 
-	public  Multimap<PaoIdentifier, LitePoint> getPointsToRead(PaoIdentifier device, Set<? extends Attribute> attributes);
-	
-	public Multimap<PaoIdentifier, CommandWrapper> getRequiredCommands(Multimap<PaoIdentifier, LitePoint> pointsToRead) throws UnreadableException;
-	
-	public List<CommandRequestDevice> getCommandRequests(PaoIdentifier device, Iterable<CommandWrapper> commands);
+    /**
+     * Get a Multimap of YukonDevice-to-CommandRequestDevice collection for a given set of Attributes.
+     * A device will not appear as a key in the result Multimap if does not support an Attribute.
+     * @param devices
+     * @param attributes
+     * @param type
+     * @return
+     */
+    public Multimap<YukonDevice, CommandRequestDevice> getCommandRequests(Iterable<? extends YukonDevice> devices, Set<? extends Attribute> attributes, CommandRequestExecutionType type);
+
+    public boolean isReadable(YukonDevice device, Set<? extends Attribute> attributes);
 }

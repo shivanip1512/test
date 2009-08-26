@@ -13,13 +13,12 @@ public class TabbedContentSelectorTag extends SimpleTagSupport {
 	private List<String> tabNames = new ArrayList<String>();
 	private List<String> tabIds = new ArrayList<String>();
 	
-	public void setSelectedTabName(String selectedTabName) {
-		this.selectedTabName = selectedTabName;
-	}
-	
-	public void addTab(String name, String id) {
+	public void addTab(String name, String id, boolean initiallySelected) {
 		this.tabNames.add(name);
 		this.tabIds.add(id);
+		if (initiallySelected) {
+		    this.selectedTabName = name;
+		}
 	}
 	
 	@Override
@@ -38,25 +37,29 @@ public class TabbedContentSelectorTag extends SimpleTagSupport {
         	throw new UnsupportedOperationException("TabbedContentSelectorTag should be used within a StandardPageTag");
         }
         
-		// selected tab
-        int selectedTabIndex = 0;
-        for (int idx = 0; idx < tabNames.size(); idx++) {
-        	if (tabNames.get(idx).equals(this.selectedTabName)) {
-        		selectedTabIndex = idx;
-        		break;
-        	}
-        }
-        
         // javascript, ext
 		getJspBody().invoke(null);
 		getJspContext().getOut().println("<script type=\"text/javascript\">");
 		getJspContext().getOut().println("	function doSetup_" + id + "() {");
-		getJspContext().getOut().println("		setupTabbedControl('tabbedControl_" + id + "', " + makeContentItemsArray() + ", " + selectedTabIndex + ");");
+		getJspContext().getOut().println("		setupTabbedControl('tabbedControl_" + id + "', " + makeContentItemsArray() + ", " + getSelectedTabIndex() + ");");
 		getJspContext().getOut().println("	}");
 		getJspContext().getOut().println("	Event.observe (window, 'load', doSetup_" + id + ");");
 		getJspContext().getOut().println("</script>");
 		
         getJspContext().getOut().println("<span id=\"tabbedControl_" + id + "\"></span>");
+	}
+	
+	private int getSelectedTabIndex() {
+	    
+	    int selectedTabIndex = 0;
+	    for (int idx = 0; idx < tabIds.size(); idx++) {
+            if (tabNames.get(idx).equals(this.selectedTabName)) {
+                selectedTabIndex = idx;
+                break;
+            }
+        }
+	    
+        return selectedTabIndex;
 	}
 	
 	

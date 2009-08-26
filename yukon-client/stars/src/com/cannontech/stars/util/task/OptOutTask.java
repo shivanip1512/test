@@ -14,7 +14,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
-import com.cannontech.jobs.support.YukonTask;
+import com.cannontech.jobs.support.YukonTaskBase;
 import com.cannontech.message.util.ConnectionException;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
@@ -32,7 +32,7 @@ import com.cannontech.user.YukonUserContext;
  * Task used to start scheduled opt outs and clean up any opt outs that have just
  * completed
  */
-public class OptOutTask implements YukonTask {
+public class OptOutTask extends YukonTaskBase {
 
     private Logger logger = YukonLogManager.getLogger(OptOutTask.class);
 	private YukonUserContext userContext;
@@ -44,12 +44,8 @@ public class OptOutTask implements YukonTask {
 	private StarsInventoryBaseDao starsInventoryBaseDao;
 	private ECMappingDao ecMappingDao;
 	
-    @Override
-    public void setUserContext(YukonUserContext userContext) {
-        this.userContext = userContext;
-    }
-    
-	public void start(int jobId) {
+	@Override
+	public void start() {
     	
         logger.debug("Starting opt out task.");
         
@@ -66,10 +62,6 @@ public class OptOutTask implements YukonTask {
         
     }
 
-    public void stop(int jobId) throws UnsupportedOperationException {
-        throw new UnsupportedOperationException("Cannot stop this task.");
-    }
-    
     public void startOptOuts(List<OptOutEvent> optOutsToStart, LiteYukonUser user) {
     	
     	for(OptOutEvent event : optOutsToStart) {

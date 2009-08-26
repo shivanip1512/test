@@ -63,16 +63,14 @@ public class CommandRequestExecutionResultDaoImpl implements CommandRequestExecu
 		    	
     	SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT * FROM CommandRequestExecResult");
-        sql.append("WHERE CommandRequestExecId = ?");
+        sql.append("WHERE CommandRequestExecId = ").appendArgument(commandRequestExecutionId);
         
-        String sqlCondition = reportFilterType.getSqlCondition();
-        if (sqlCondition != null) {
-        	sql.append("AND " + sqlCondition);
-        }
+        // filter
+        sql.append("AND " + reportFilterType.getConditionSqlFragmentSource().getSql());
         
         sql.append("ORDER BY CompleteTime");
         
-        List<CommandRequestExecutionResult> list = simpleJdbcTemplate.query(sql.getSql(), rowAndFieldMapper, commandRequestExecutionId);
+        List<CommandRequestExecutionResult> list = simpleJdbcTemplate.query(sql.getSql(), rowAndFieldMapper, sql.getArguments());
         return list;
 	}
     

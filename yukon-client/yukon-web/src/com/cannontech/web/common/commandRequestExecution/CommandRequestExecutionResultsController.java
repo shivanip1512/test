@@ -1,4 +1,4 @@
-package com.cannontech.web.amr.commandRequestExecution;
+package com.cannontech.web.common.commandRequestExecution;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -94,7 +94,7 @@ public class CommandRequestExecutionResultsController extends MultiActionControl
 		if (jobId > 0) {
 			cres = scheduledGroupRequestExecutionDao.getCommandRequestExecutionsByJobId(jobId, fromDate, toDate, false);
 		} else {
-			cres = commandRequestExecutionDao.getByRange(commandRequestExecutionId, fromDate, toDate, typeFilter, false);
+			cres = commandRequestExecutionDao.findByRange(commandRequestExecutionId, fromDate, toDate, typeFilter, false);
 		}
 		mav.addObject("cres", cres);
 		

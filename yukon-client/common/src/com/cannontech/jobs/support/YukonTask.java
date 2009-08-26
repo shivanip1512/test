@@ -1,9 +1,9 @@
 package com.cannontech.jobs.support;
 
-import com.cannontech.user.YukonUserContext;
+import com.cannontech.jobs.model.JobContext;
 
 public interface YukonTask {
-    public void start(int jobId);
-    public void stop(int jobId) throws UnsupportedOperationException;
-    public void setUserContext(YukonUserContext userContext);
+    public void start();
+    public void stop() throws UnsupportedOperationException;
+    public void setJobContext(JobContext jobContext);
 }

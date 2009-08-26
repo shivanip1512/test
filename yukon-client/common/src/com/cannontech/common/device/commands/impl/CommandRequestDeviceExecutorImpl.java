@@ -9,6 +9,7 @@ import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandRequestType;
 import com.cannontech.common.device.commands.CommandResultHolder;
+import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionResult;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -52,5 +53,10 @@ public class CommandRequestDeviceExecutorImpl extends
     @Override
     protected CommandRequestType getCommandRequestType() {
     	return CommandRequestType.DEVICE;
+    }
+    
+    @Override
+    public void applyIdsToCommandRequestExecutionResult(CommandRequestDevice commandRequest, CommandRequestExecutionResult commandRequestExecutionResult) {
+        commandRequestExecutionResult.setDeviceId(commandRequest.getDevice().getPaoIdentifier().getPaoId());
     }
 }

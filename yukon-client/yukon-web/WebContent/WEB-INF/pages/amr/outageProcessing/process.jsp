@@ -89,7 +89,7 @@
 		</tags:nameValue>
 		
 		<tags:nameValue name="${mainDetailTimePeriodText}">
-			${outageMonitor.timePeriod}
+			${outageMonitor.timePeriodDays}
 		</tags:nameValue>
 		
 		<tags:nameValueGap gapHeight="20px"/>

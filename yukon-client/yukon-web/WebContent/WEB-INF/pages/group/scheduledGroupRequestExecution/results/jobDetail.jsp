@@ -155,9 +155,9 @@
 			
 			<%-- all executions button --%>
 			<tags:nameValue name="${executionsText}">
-				<form name="viewAllExecutionsForm" action="/spring/amr/commandRequestExecutionResults/list" method="get">
+				<form name="viewAllExecutionsForm" action="/spring/common/commandRequestExecutionResults/list" method="get">
 				
-					<cti:url var="creListUrl" value="/spring/amr/commandRequestExecutionResults/list">
+					<cti:url var="creListUrl" value="/spring/common/commandRequestExecutionResults/list">
 						<cti:param name="jobId" value="${jobWrapper.job.id}"/>
 					</cti:url>
 				

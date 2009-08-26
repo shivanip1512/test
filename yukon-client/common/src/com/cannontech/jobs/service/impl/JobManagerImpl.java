@@ -29,6 +29,7 @@ import com.cannontech.jobs.dao.JobStatusDao;
 import com.cannontech.jobs.dao.ScheduledOneTimeJobDao;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
 import com.cannontech.jobs.dao.YukonJobDao;
+import com.cannontech.jobs.model.JobContext;
 import com.cannontech.jobs.model.JobState;
 import com.cannontech.jobs.model.JobStatus;
 import com.cannontech.jobs.model.ScheduledOneTimeJob;
@@ -373,7 +374,9 @@ public class JobManagerImpl implements JobManager {
     	status.setJobState(JobState.COMPLETED);
     	try {
     		YukonTask task = instantiateTask(status.getJob());
-    		task.setUserContext(status.getJob().getUserContext());
+    		JobContext jobContext = new JobContext(status.getJob());
+    		task.setJobContext(jobContext);
+    		
     		YukonTask existingTask = currentlyRunning.putIfAbsent(status.getJob(), task);
     		if (existingTask != null) {
     			// this should have been caught before the job was
@@ -381,7 +384,7 @@ public class JobManagerImpl implements JobManager {
     			throw new IllegalStateException("a task for " + status.getJob()
     					+ " is already running: " + existingTask);
     		}
-    		task.start(status.getJob().getId()); // this should block until task is complete
+    		task.start(); // this should block until task is complete
     	} catch (Exception e) {
     		log.error("YukonTask failed", e);
     		status.setJobState(JobState.FAILED);
@@ -420,7 +423,7 @@ public class JobManagerImpl implements JobManager {
             return false;
         }
         try {
-            task.stop(job.getId());
+            task.stop();
         } catch (UnsupportedOperationException e) {
             log.warn("tried to stop an unstoppable task, job was: " + job, e);
             return false;

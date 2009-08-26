@@ -1110,6 +1110,6 @@
     
     <bean id="paoDetailUrlHelper" class="com.cannontech.web.common.pao.PaoDetailUrlHelper"/>
     
-    <bean id="scheduledGroupRequestExecutionJobWrapperFactory" class="com.cannontech.web.amr.scheduledGroupRequestExecution.ScheduledGroupRequestExecutionJobWrapperFactory"/>
+    <bean id="scheduledGroupRequestExecutionJobWrapperFactory" class="com.cannontech.web.common.scheduledGroupRequestExecution.ScheduledGroupRequestExecutionJobWrapperFactory"/>
     
 </beans>

@@ -12,7 +12,7 @@ public interface CommandRequestExecutionDao {
 	
 	public CommandRequestExecution getById(int commandRequestExecutionId);
 	
-	public CommandRequestExecution getLatest(Date cutoff);
+	public CommandRequestExecution findLatest(Date cutoff);
 	
 	public int getRequestCountById(int commandRequestExecutionId);
 	
@@ -20,6 +20,6 @@ public interface CommandRequestExecutionDao {
 	
 	public Date getStopTime(int commandRequestExecutionId);
 	
-	public List<CommandRequestExecution> getByRange(int commandRequestExecutionId, Date startTime, Date stopTime, CommandRequestExecutionType type, boolean acsending);
+	public List<CommandRequestExecution> findByRange(int commandRequestExecutionId, Date startTime, Date stopTime, CommandRequestExecutionType type, boolean acsending);
 	
 }

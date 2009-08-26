@@ -12,11 +12,7 @@ public interface ScheduledGroupRequestExecutionDao {
 
 	public void insert(ScheduledGroupRequestExecutionPair pair);
 	
-	public CommandRequestExecution getLatestCommandRequestExecutionForJobId(int jobId, Date cutoff);
-	
-	public int getLatestRequestCountForJobId(int jobId);
-	public int getLatestSuccessCountForJobId(int jobId);
-	public int getLatestFailCountForJobId(int jobId);
+	public CommandRequestExecution findLatestCommandRequestExecutionForJobId(int jobId, Date cutoff);
 	
 	public List<ScheduledRepeatingJob> getJobs(int jobId, 
 												Date startTime, 

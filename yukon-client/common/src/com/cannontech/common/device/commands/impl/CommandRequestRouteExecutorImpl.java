@@ -13,6 +13,7 @@ import com.cannontech.common.device.commands.CommandRequestRouteExecutor;
 import com.cannontech.common.device.commands.CommandRequestType;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
+import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionResult;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.porter.message.Request;
 
@@ -64,5 +65,10 @@ public class CommandRequestRouteExecutorImpl extends
 	@Override
     protected CommandRequestType getCommandRequestType() {
     	return CommandRequestType.ROUTE;
+    }
+	
+	@Override
+    public void applyIdsToCommandRequestExecutionResult(CommandRequestRoute commandRequest, CommandRequestExecutionResult commandRequestExecutionResult) {
+        commandRequestExecutionResult.setRouteId(commandRequest.getRouteId());
     }
 }

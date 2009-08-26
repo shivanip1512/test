@@ -28,6 +28,13 @@ public class YukonJdbcTemplate extends SimpleJdbcTemplate implements
             throws DataAccessException {
         return query(sql.getSql(), rm, sql.getArguments());
     }
+    
+    public <T> List<T> queryForLimitedResults(SqlFragmentSource sql, ParameterizedRowMapper<T> rm, int maxResults)
+            throws DataAccessException {
+        MaxListResultSetExtractor<T> rse = new MaxListResultSetExtractor<T>(rm, maxResults);
+        getJdbcOperations().query(sql.getSql(), sql.getArguments(), rse);
+        return query(sql.getSql(), rm, sql.getArguments());
+    }
 
     @Override
     public <T> void query(SqlFragmentSource sql, ParameterizedRowMapper<T> rm, Collection<? super T> result)

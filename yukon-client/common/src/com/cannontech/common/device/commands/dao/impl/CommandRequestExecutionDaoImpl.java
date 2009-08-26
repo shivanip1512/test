@@ -1,6 +1,5 @@
 package com.cannontech.common.device.commands.dao.impl;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -15,24 +14,20 @@ import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.DateRowMapper;
-import com.cannontech.database.ListRowCallbackHandler;
-import com.cannontech.database.MaxRowCalbackHandlerRse;
 import com.cannontech.database.RowAndFieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 
 public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDao, InitializingBean {
 
 	private static final RowAndFieldMapper<CommandRequestExecution> rowAndFieldMapper;
     private SimpleJdbcTemplate simpleJdbcTemplate;
+    private YukonJdbcTemplate yukonJdbcTemplate;
     private NextValueHelper nextValueHelper;
     private SimpleTableAccessTemplate<CommandRequestExecution> template;
     
-    private static final String selectById;
-    
     static {
-        
-    	selectById = "SELECT CRE.* FROM CommandRequestExec CRE WHERE CommandRequestExecId = ?";
 		rowAndFieldMapper = new CommandRequestExecutionRowAndFieldMapper();
     }
     
@@ -44,64 +39,57 @@ public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDa
     // GET BY ID
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public CommandRequestExecution getById(final int commandRequestExecutionId) {
-    	CommandRequestExecution commandRequestExecution = simpleJdbcTemplate.queryForObject(selectById, rowAndFieldMapper, commandRequestExecutionId);
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT CRE.* FROM CommandRequestExec CRE WHERE CommandRequestExecId = ").appendArgument(commandRequestExecutionId);
+        
+    	CommandRequestExecution commandRequestExecution = simpleJdbcTemplate.queryForObject(sql.getSql(), rowAndFieldMapper, sql.getArguments());
         return commandRequestExecution;
     }
     
     // GET LATEST
-    public CommandRequestExecution getLatest(Date cutoff) {
+    public CommandRequestExecution findLatest(Date cutoff) {
     	
     	SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT CRE.* FROM CommandRequestExec CRE");
         
-        List<Object> args = new ArrayList<Object>();
-        
         if (cutoff != null) {
-        	sql.append("AND CRE.StartTime <= ?");
-        	args.add(cutoff);
+        	sql.append("AND CRE.StartTime <= ").appendArgument(cutoff);
         }
         
         sql.append("ORDER BY CRE.StartTime DESC");
         
-        List<CommandRequestExecution> cres = new ArrayList<CommandRequestExecution>();
-        ListRowCallbackHandler lrcHandler = new ListRowCallbackHandler(cres, rowAndFieldMapper);
-        simpleJdbcTemplate.getJdbcOperations().query(sql.getSql(), args.toArray(), new MaxRowCalbackHandlerRse(lrcHandler, 1));
+        List<CommandRequestExecution> cres = yukonJdbcTemplate.queryForLimitedResults(sql, new CommandRequestExecutionRowAndFieldMapper(), 1);
         
         if (cres.size() > 0) {
-        	return cres.get(0);
+            return cres.get(0);
         } else {
-        	return null;
+            return null;
         }
     }
 
     // BY RANGE
-    public List<CommandRequestExecution> getByRange(int commandRequestExecutionId, Date startTime, Date stopTime, CommandRequestExecutionType type, boolean ascending) {
+    public List<CommandRequestExecution> findByRange(int commandRequestExecutionId, Date beginTime, Date endTime, CommandRequestExecutionType type, boolean ascending) {
     	
     	SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT CRE.* FROM CommandRequestExec CRE");
         
-        List<Object> args = new ArrayList<Object>();
-        
         if (commandRequestExecutionId > 0) {
-    		sql.append("WHERE CommandRequestExecId = ?");
-    		args.add(commandRequestExecutionId);
+    		sql.append("WHERE CommandRequestExecId = ").appendArgument(commandRequestExecutionId);
         } else {
-        	sql.append("WHERE CommandRequestExecId > 0");
+        	sql.append("WHERE 1 = 1");
         }
         
-        if (startTime != null) {
-        	sql.append("AND CRE.StartTime >= ?");
-        	args.add(startTime);
+        if (beginTime != null) {
+        	sql.append("AND CRE.StartTime >= ").appendArgument(beginTime);
         }
         
-        if (stopTime != null) {
-        	sql.append("AND CRE.StartTime <= ?");
-        	args.add(stopTime);
+        if (endTime != null) {
+        	sql.append("AND CRE.StartTime <= ").appendArgument(endTime);
         }
         
         if (type != null) {
-        	sql.append("AND CRE.Type = ?");
-        	args.add(type.name());
+        	sql.append("AND CRE.Type = ").appendArgument(type.name());
         }
         
         if (ascending) {
@@ -110,7 +98,7 @@ public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDa
         	sql.append("ORDER BY CRE.StartTime DESC");
         }
         
-        return simpleJdbcTemplate.query(sql.getSql(), rowAndFieldMapper, args.toArray());
+        return simpleJdbcTemplate.query(sql.getSql(), rowAndFieldMapper, sql.getArguments());
     	
     }
     
@@ -159,5 +147,9 @@ public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDa
     public void setNextValueHelper(NextValueHelper nextValueHelper) {
 		this.nextValueHelper = nextValueHelper;
 	}
+    @Autowired
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
+    }
 	
 }

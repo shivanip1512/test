@@ -34,7 +34,7 @@
 
 		function forwardToCreDetail(row, id) {
 			$('cresTable').removeClassName('activeResultsTable');
-			window.location = "/spring/amr/commandRequestExecutionResults/detail?commandRequestExecutionId=" + id + "&jobId=" + ${jobId};
+			window.location = "/spring/common/commandRequestExecutionResults/detail?commandRequestExecutionId=" + id + "&jobId=" + ${jobId};
 		}
     
     </script>
@@ -46,10 +46,10 @@
 	<%-- FILTERS --%>
 	<tags:sectionContainer title="${filterSectionText}" id="filterSection">
 	
-		<form name="clearForm" id="clearForm" action="/spring/amr/commandRequestExecutionResults/list" method="get">
+		<form name="clearForm" id="clearForm" action="/spring/common/commandRequestExecutionResults/list" method="get">
 		</form>
 	
-		<form name="filterForm" id="filterForm" action="/spring/amr/commandRequestExecutionResults/list" method="get">
+		<form name="filterForm" id="filterForm" action="/spring/common/commandRequestExecutionResults/list" method="get">
 		
 			<c:if test="${not empty error}">
 				<div class="errorRed">${error}</div><br>
@@ -117,7 +117,7 @@
 					<td>${cre.commandRequestExecutionType.shortName}</td>
 					<td><cti:formatDate type="DATEHM" value="${cre.startTime}"/></td>
 					<td><cti:formatDate type="DATEHM" value="${cre.stopTime}" nullText="In Progress"/></td>
-					<td>${cre.userName}"</td>
+					<td>${cre.userName}</td>
 					
 				</tr>
 			

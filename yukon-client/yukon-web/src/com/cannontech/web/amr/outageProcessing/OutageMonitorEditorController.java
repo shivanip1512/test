@@ -81,7 +81,7 @@ public class OutageMonitorEditorController extends MultiActionController {
 	        		numberOfOutages = outageMonitor.getNumberOfOutages();
 	        	}
 	        	if (timePeriod <= 0) {
-	        		timePeriod = outageMonitor.getTimePeriod();
+	        		timePeriod = outageMonitor.getTimePeriodDays();
 	        	}
 	        }
 	        
@@ -237,7 +237,7 @@ public class OutageMonitorEditorController extends MultiActionController {
         	outageMonitor.setOutageMonitorName(name);
     		outageMonitor.setGroupName(deviceGroupName);
     		outageMonitor.setNumberOfOutages(numberOfOutages);
-    		outageMonitor.setTimePeriod(timePeriod);
+    		outageMonitor.setTimePeriodDays(timePeriod);
     		
     		log.debug("Saving outageMonitor: isNewMonitor=" + isNewMonitor + ", outageMonitor=" + outageMonitor.toString());
     		outageMonitorDao.saveOrUpdate(outageMonitor);

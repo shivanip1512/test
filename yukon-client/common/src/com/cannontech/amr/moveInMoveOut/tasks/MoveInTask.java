@@ -28,7 +28,8 @@ public class MoveInTask extends YukonTaskBase {
     private MoveInMoveOutService moveInMoveOutService = null;
     private MoveInMoveOutEmailService moveInMoveOutEmailService = null;
 
-    public void start(int jobId) {
+    @Override
+    public void start() {
         startTask();
     }
     
@@ -36,7 +37,7 @@ public class MoveInTask extends YukonTaskBase {
         logger.info("Starting move in task.");
         MoveInForm moveInFormObj = new MoveInForm();
         moveInFormObj.setEmailAddress(emailAddress);
-        moveInFormObj.setUserContext(getUserContext());
+        moveInFormObj.setUserContext(getJobContext().getJob().getUserContext());
         moveInFormObj.setMeterName(newMeterName);
         moveInFormObj.setMeterNumber(newMeterNumber);
         moveInFormObj.setMoveInDate(moveInDate);
@@ -45,11 +46,7 @@ public class MoveInTask extends YukonTaskBase {
         MoveInResult moveInResult = null;
 
         moveInResult = moveInMoveOutService.moveIn(moveInFormObj);
-        moveInMoveOutEmailService.createMoveInEmail(moveInResult, getUserContext());
-    }
-
-    public void stop(int jobId) throws UnsupportedOperationException {
-        throw new UnsupportedOperationException();
+        moveInMoveOutEmailService.createMoveInEmail(moveInResult, getJobContext().getJob().getUserContext());
     }
 
     // Setters for injected parameters

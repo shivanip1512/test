@@ -1,4 +1,4 @@
-package com.cannontech.web.amr.scheduledGroupRequestExecution;
+package com.cannontech.web.common.scheduledGroupRequestExecution;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.service.JobManager;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.amr.scheduledGroupRequestExecution.ScheduledGroupRequestExecutionJobWrapperFactory.ScheduledGroupRequestExecutionJobWrapper;
+import com.cannontech.web.common.scheduledGroupRequestExecution.ScheduledGroupRequestExecutionJobWrapperFactory.ScheduledGroupRequestExecutionJobWrapper;
 
 public class ScheduledGroupRequestExecutionResultsController extends MultiActionController {
 	
@@ -152,7 +152,7 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
         ScheduledGroupRequestExecutionJobWrapper jobWrapper = scheduledGroupRequestExecutionJobWrapperFactory.createJobWrapper(job, null, null, userContext);
         mav.addObject("jobWrapper", jobWrapper);
         
-        CommandRequestExecution lastCre = scheduledGroupRequestExecutionDao.getLatestCommandRequestExecutionForJobId(jobId, null);
+        CommandRequestExecution lastCre = scheduledGroupRequestExecutionDao.findLatestCommandRequestExecutionForJobId(jobId, null);
         mav.addObject("lastCre", lastCre);
         
         return mav;

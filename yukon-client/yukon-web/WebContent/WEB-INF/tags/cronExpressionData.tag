@@ -117,13 +117,20 @@
 <%-- WEEKLY --%>
 <div id="${id}_cronExpWeeklyDiv" style="padding-top:6px;display:none;">
 
-	<label><input type="checkbox" name="${id}_CRONEXP_WEEKLY_OPTION_EVERY_X_WEEKS_ON_SUN" value="1"   <c:if test="${state.cronExpWeeklyOptionSun}">checked</c:if>   > Sun</label>&nbsp;
-	<label><input type="checkbox" name="${id}_CRONEXP_WEEKLY_OPTION_EVERY_X_WEEKS_ON_MON" value="2"   <c:if test="${state.cronExpWeeklyOptionMon}">checked</c:if>   > Mon</label>&nbsp;
-	<label><input type="checkbox" name="${id}_CRONEXP_WEEKLY_OPTION_EVERY_X_WEEKS_ON_TUES" value="3"  <c:if test="${state.cronExpWeeklyOptionTues}">checked</c:if>  > Tues</label>&nbsp;
-	<label><input type="checkbox" name="${id}_CRONEXP_WEEKLY_OPTION_EVERY_X_WEEKS_ON_WED" value="4"   <c:if test="${state.cronExpWeeklyOptionWed}">checked</c:if>   > Wed</label>&nbsp;
-	<label><input type="checkbox" name="${id}_CRONEXP_WEEKLY_OPTION_EVERY_X_WEEKS_ON_THURS" value="5" <c:if test="${state.cronExpWeeklyOptionThurs}">checked</c:if> > Thurs</label>&nbsp;
-	<label><input type="checkbox" name="${id}_CRONEXP_WEEKLY_OPTION_EVERY_X_WEEKS_ON_FRI" value="6"   <c:if test="${state.cronExpWeeklyOptionFri}">checked</c:if>   > Fri</label>&nbsp;
-	<label><input type="checkbox" name="${id}_CRONEXP_WEEKLY_OPTION_EVERY_X_WEEKS_ON_SAT" value="7"   <c:if test="${state.cronExpWeeklyOptionSat}">checked</c:if>   > Sat</label>
+	<c:forEach var="cronDay" items="${state.allCronDays}">
+	
+		<c:set var="cronDayChecked" value=""/>
+		<c:set var="break" value="false"/>
+		<c:forEach var="selectedCronDay" items="${state.selectedCronDays}">
+			<c:if test="${!break && selectedCronDay == cronDay}">
+				<c:set var="cronDayChecked" value="checked"/>
+				<c:set var="break" value="true"/>
+			</c:if>
+		</c:forEach>
+	
+		<label><input type="checkbox" name="${id}_${cronDay.requestName}" value="${cronDay.number}" ${cronDayChecked}> ${cronDay.abbreviatedName}</label>&nbsp;
+	
+	</c:forEach>
 	
 </div>
 

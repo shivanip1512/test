@@ -16,7 +16,7 @@ public class LastCreIdForJobCommandExecutionUpdaterHandler implements CommandReq
 
 		int lastCreId = 0;
 		
-		CommandRequestExecution lastCre = scheduledGroupRequestExecutionDao.getLatestCommandRequestExecutionForJobId(id, null);
+		CommandRequestExecution lastCre = scheduledGroupRequestExecutionDao.findLatestCommandRequestExecutionForJobId(id, null);
 		if (lastCre != null) {
 			lastCreId = lastCre.getId();
 		}

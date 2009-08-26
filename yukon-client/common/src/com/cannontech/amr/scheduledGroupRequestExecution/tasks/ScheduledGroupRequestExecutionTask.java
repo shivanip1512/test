@@ -1,6 +1,7 @@
 package com.cannontech.amr.scheduledGroupRequestExecution.tasks;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -35,7 +36,7 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
 
     // Injected variables
 	private String name;
-    private String groupName;
+    private DeviceGroup deviceGroup;
     private Attribute attribute = null;
     private String command = null;
     private CommandRequestExecutionType commandRequestExecutionType;
@@ -47,37 +48,35 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
     private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionResultsDao;
 
-    public void start(int jobId) {
-        startTask(jobId);
+    @Override
+    public void start() {
+        startTask(getJobContext().getJob().getId());
     }
     
     private void startTask(int jobId){
     	
-    	LiteYukonUser user = getUserContext().getYukonUser();
+    	LiteYukonUser user = getJobContext().getJob().getUserContext().getYukonUser();
     	
     	log.info("Starting scheduled group command execution. user = " + user.getUsername() + ".");
         
         try {
         	
-	        DeviceGroup deviceGroup = deviceGroupService.resolveGroupName(getGroupName());
-	        DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(deviceGroup);
-	        
-	        List<CommandRequestDevice> commandRequests = new ArrayList<CommandRequestDevice>();
-	        for (SimpleDevice device : deviceCollection.getDeviceList()) {
-	        	
-	        	CommandRequestDevice cmdReq = new CommandRequestDevice();
-	            cmdReq.setCommand(getCommand());
-	            cmdReq.setDevice(device);
-	            
-	            commandRequests.add(cmdReq);
-	        }
-            
-	        
             CommandRequestExecutionIdentifier commandRequestExecutionIdentifier = null;
             if (getCommand() != null) {
             
             	CommandCompletionCallbackAdapter<CommandRequestDevice> dummyCallback = new CommandCompletionCallbackAdapter<CommandRequestDevice>() {
                 };
+                
+                Set<SimpleDevice> devices = deviceGroupService.getDevices(Collections.singletonList(getDeviceGroup()));
+                List<CommandRequestDevice> commandRequests = new ArrayList<CommandRequestDevice>();
+                for (SimpleDevice device : devices) {
+                    
+                    CommandRequestDevice cmdReq = new CommandRequestDevice();
+                    cmdReq.setCommand(getCommand());
+                    cmdReq.setDevice(device);
+                    
+                    commandRequests.add(cmdReq);
+                }
                 
             	commandRequestExecutionIdentifier = commandRequestDeviceExecutor.execute(commandRequests, dummyCallback, getCommandRequestExecutionType(), user);
             
@@ -86,12 +85,12 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
             	SimpleCallback<GroupMeterReadResult> dummyCallback = new SimpleCallback<GroupMeterReadResult>() {
             		@Override
             		public void handle(GroupMeterReadResult item) throws Exception {
-            			
             		}
                 };
                 
             	Set<Attribute> attributeSet = new HashSet<Attribute>();
     	        attributeSet.add(getAttribute());
+    	        DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(getDeviceGroup());
             	String resultKey = groupMeterReadService.readDeviceCollection(deviceCollection, attributeSet, getCommandRequestExecutionType(), dummyCallback, user);
             	GroupMeterReadResult groupMeterReadResult = groupMeterReadService.getResult(resultKey);
             	commandRequestExecutionIdentifier = groupMeterReadResult.getCommandRequestExecutionIdentifier();
@@ -108,13 +107,9 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
 	        scheduledGroupRequestExecutionResultsDao.insert(pair);
 	        
         } catch (NotFoundException e) {
-        	log.error("Could not run command due to missing device group. command = " + getCommand() + ", name=" + getName() + ", groupName = " + getGroupName() + ", user = " + user.getUsername() + ".", e);
+        	log.error("Could not run command due to missing device group. command = " + getCommand() + ", name=" + getName() + ", groupName = " + getDeviceGroup().getFullName() + ", user = " + user.getUsername() + ".", e);
         }
         
-    }
-
-    public void stop(int jobId) throws UnsupportedOperationException {
-        throw new UnsupportedOperationException();
     }
 
     // Setters for injected parameters
@@ -126,13 +121,13 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
 		this.name = name;
 	}
     
-    public String getGroupName() {
-		return groupName;
-	}
-
-	public void setGroupName(String groupName) {
-		this.groupName = groupName;
-	}
+    public DeviceGroup getDeviceGroup() {
+        return deviceGroup;
+    }
+    
+    public void setDeviceGroup(DeviceGroup deviceGroup) {
+        this.deviceGroup = deviceGroup;
+    }
 
 	public Attribute getAttribute() {
 		return attribute;

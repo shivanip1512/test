@@ -46,7 +46,7 @@
 
 </script>
 
-<form id="lastRunCommandRequestExecutionForm_${id}" action="/spring/amr/commandRequestExecutionResults/detail" method="get">
+<form id="lastRunCommandRequestExecutionForm_${id}" action="/spring/common/commandRequestExecutionResults/detail" method="get">
 	<input type="hidden" id="lastRunCommandRequestExecutionId_${id}" name="commandRequestExecutionId" value="">
 </form>
 

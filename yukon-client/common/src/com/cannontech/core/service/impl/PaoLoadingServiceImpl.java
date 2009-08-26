@@ -14,6 +14,7 @@ import com.cannontech.common.device.model.DeviceCollectionReportDevice;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.PaoLoadingService;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -35,6 +36,7 @@ import com.google.common.collect.ImmutableList.Builder;
 public class PaoLoadingServiceImpl implements PaoLoadingService, InitializingBean {
     private MeterDao meterDao;
     private DeviceDao deviceDao;
+    private PaoDao paoDao;
     
     private List<PaoLoader<DisplayablePao>> displayablePaoloaders;
     private List<PaoLoader<DeviceCollectionReportDevice>> deviceCollectionReportDeviceLoaders;
@@ -44,6 +46,7 @@ public class PaoLoadingServiceImpl implements PaoLoadingService, InitializingBea
         Builder<PaoLoader<DisplayablePao>> builder1 = ImmutableList.builder();
         builder1.add(meterDao.getDisplayableDeviceLoader());
         builder1.add(deviceDao.getDisplayableDeviceLoader());
+        builder1.add(paoDao.getDisplayableDeviceLoader());
         displayablePaoloaders = builder1.build();
 
         Builder<PaoLoader<DeviceCollectionReportDevice>> builder2 = ImmutableList.builder();
@@ -99,5 +102,10 @@ public class PaoLoadingServiceImpl implements PaoLoadingService, InitializingBea
     @Autowired
     public void setMeterDao(MeterDao meterDao) {
         this.meterDao = meterDao;
+    }
+    
+    @Autowired
+    public void setPaoDao(PaoDao paoDao) {
+        this.paoDao = paoDao;
     }
 }

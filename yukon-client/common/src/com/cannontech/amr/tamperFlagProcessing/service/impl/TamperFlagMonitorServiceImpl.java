@@ -32,17 +32,14 @@ public class TamperFlagMonitorServiceImpl implements TamperFlagMonitorService {
         
         // delete tamper flag group
         try {
-        	String tamperFlagGroupName = SystemGroupEnum.TAMPER_FLAG_PROCESSING.getFullPath() + tamperFlagMonitor.getTamperFlagMonitorName();
-			StoredDeviceGroup tamperFlagGroup = deviceGroupEditorDao.getStoredGroup(tamperFlagGroupName, false);
+			StoredDeviceGroup tamperFlagGroup = getTamperFlagGroup(tamperFlagMonitor.getTamperFlagMonitorName());
 			deviceGroupEditorDao.removeGroup(tamperFlagGroup);
 		} catch (NotFoundException e) {
 			// may have been deleted? who cares
 		}
         
         // delete monitor
-        boolean deleteOk = tamperFlagMonitorDao.delete(tamperFlagMonitorId) == 1;
-        
-        return deleteOk;
+        return tamperFlagMonitorDao.delete(tamperFlagMonitorId);
 	}
 	
 	@Autowired

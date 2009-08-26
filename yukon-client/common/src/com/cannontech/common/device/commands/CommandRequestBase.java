@@ -1,5 +1,6 @@
 package com.cannontech.common.device.commands;
 
+
 /**
  * Abstract base class for command requests
  */
@@ -22,5 +23,4 @@ public abstract class CommandRequestBase {
     public void setBackgroundPriority(boolean backgroundPriority) {
         this.backgroundPriority = backgroundPriority;
     }
-
 }

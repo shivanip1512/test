@@ -9,7 +9,7 @@ public class OutageMonitor {
 	private Integer outageMonitorId;
 	private String outageMonitorName;
 	private String groupName;
-	private int timePeriod;
+	private int timePeriodDays;
 	private int numberOfOutages;
 	private MonitorEvaluatorStatus evaluatorStatus;
 	
@@ -38,12 +38,12 @@ public class OutageMonitor {
 		this.groupName = groupName;
 	}
 
-	public int getTimePeriod() {
-		return timePeriod;
+	public int getTimePeriodDays() {
+		return timePeriodDays;
 	}
 
-	public void setTimePeriod(int timePeriod) {
-		this.timePeriod = timePeriod;
+	public void setTimePeriodDays(int timePeriodDays) {
+		this.timePeriodDays = timePeriodDays;
 	}
 
 	public int getNumberOfOutages() {
@@ -68,7 +68,7 @@ public class OutageMonitor {
         tsc.append("outageMonitorId", getOutageMonitorId());
         tsc.append("outageMonitorName", getOutageMonitorName());
         tsc.append("groupName", getGroupName());
-        tsc.append("timePeriod", getTimePeriod());
+        tsc.append("timePeriod", getTimePeriodDays());
         tsc.append("numberOfOutages", getNumberOfOutages());
         tsc.append("evaluatorStatus", getEvaluatorStatus());
         return tsc.toString();

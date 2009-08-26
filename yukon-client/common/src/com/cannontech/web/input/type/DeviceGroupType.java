@@ -3,6 +3,8 @@ package com.cannontech.web.input.type;
 import java.beans.PropertyEditor;
 import java.beans.PropertyEditorSupport;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 
@@ -20,10 +22,6 @@ public class DeviceGroupType extends DefaultValidatedType<DeviceGroup> {
 
     public void setRenderer(String renderer) {
         this.renderer = renderer;
-    }
-
-    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
-        this.deviceGroupService = deviceGroupService;
     }
 
     public Class<DeviceGroup> getTypeClass() {
@@ -48,4 +46,8 @@ public class DeviceGroupType extends DefaultValidatedType<DeviceGroup> {
         return editor;
     }
 
+    @Autowired
+    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
+        this.deviceGroupService = deviceGroupService;
+    }
 }

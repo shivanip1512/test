@@ -92,7 +92,7 @@
 	                
 	                <cti:msg var="creResultsText" key="yukon.common.device.groupMeterRead.resultDetail.creResults"/>
 	                
-	                <cti:url var="creResultsUrl" value="/spring/amr/commandRequestExecutionResults/detail">
+	                <cti:url var="creResultsUrl" value="/spring/common/commandRequestExecutionResults/detail">
 	                	<cti:param name="commandRequestExecutionId" value="${resultWrapper.result.commandRequestExecutionIdentifier.commandRequestExecutionId}"/>
 	                </cti:url>
 	                

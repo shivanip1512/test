@@ -2,13 +2,13 @@ package com.cannontech.amr.deviceread.service.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.amr.deviceread.dao.impl.UnreadableException;
 import com.cannontech.amr.deviceread.service.GroupMeterReadResult;
 import com.cannontech.amr.deviceread.service.GroupMeterReadService;
 import com.cannontech.amr.deviceread.service.MeterReadCommandGeneratorService;
@@ -30,9 +30,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.util.SimpleCallback;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 public class GroupMeterReadServiceImpl implements GroupMeterReadService {
@@ -52,42 +50,19 @@ public class GroupMeterReadServiceImpl implements GroupMeterReadService {
 																	final SimpleCallback<GroupMeterReadResult> callback, 
 																	LiteYukonUser user) {
     	
-		// map devices+attribute => list of command requests
-		List<PaoIdentifier> unsupportedDevices = new ArrayList<PaoIdentifier>();
-        List<List<CommandRequestDevice>> deviceRequestLists = new ArrayList<List<CommandRequestDevice>>();
+        Multimap<YukonDevice, CommandRequestDevice> commandRequests = meterReadCommandGeneratorService.getCommandRequests(deviceCollection.getDeviceList(), attributes, type);
         
-        for (YukonDevice device : deviceCollection.getDeviceList()) {
-        	
-        	Multimap<PaoIdentifier, LitePoint> pointsToRead = meterReadCommandGeneratorService.getPointsToRead(device.getPaoIdentifier(), attributes);
-            Multimap<PaoIdentifier, CommandWrapper> requiredCommands;
-            try {
-                requiredCommands = meterReadCommandGeneratorService.getRequiredCommands(pointsToRead);
-            } catch (UnreadableException e) {
-            	unsupportedDevices.add(device.getPaoIdentifier());
-            	log.debug("It isn't possible to read " + attributes + " for  " + device, e);
-            	continue;
-            }
-            
-            List<CommandRequestDevice> allCommands = Lists.newArrayList();
-            for (PaoIdentifier paoId : requiredCommands.keySet()) {
-                // get command requests to send
-                List<CommandRequestDevice> commands = meterReadCommandGeneratorService.getCommandRequests(paoId, requiredCommands.get(paoId));
-                allCommands.addAll(commands);
-            }
-            
-            if (allCommands.size() == 0) {
-            	unsupportedDevices.add(device.getPaoIdentifier());
-            }
-
-            deviceRequestLists.add(allCommands);
+        // unsupported
+        List<PaoIdentifier> unsupportedDevices = new ArrayList<PaoIdentifier>();
+        Set<YukonDevice> allDeviceSet = new HashSet<YukonDevice>(deviceCollection.getDeviceList());
+        Set<YukonDevice> supportedDeviceSet = commandRequests.keySet();
+        allDeviceSet.removeAll(supportedDeviceSet);
+        for (YukonDevice device : allDeviceSet) {
+            log.debug("It isn't possible to read " + attributes + " for  " + device);
+            unsupportedDevices.add(device.getPaoIdentifier());
         }
         
-        
-        // all requests
-        List<CommandRequestDevice> allRequests = new ArrayList<CommandRequestDevice>();
-    	for (List<CommandRequestDevice> deviceRequestList : deviceRequestLists) {
-    		allRequests.addAll(deviceRequestList);
-    	}
+        List<CommandRequestDevice> allRequests = new ArrayList<CommandRequestDevice>(commandRequests.values());
     	
         // result 
         final GroupMeterReadResult groupMeterReadResult = new GroupMeterReadResult();

@@ -30,7 +30,7 @@
         
         
         <%-- cre list --%>
-        <cti:url var="creListUrl" value="/spring/amr/commandRequestExecutionResults/list">
+        <cti:url var="creListUrl" value="/spring/common/commandRequestExecutionResults/list">
             <cti:param name="jobId">${jobId}</cti:param>
         </cti:url>
         <cti:crumbLink url="${creListUrl}" title="Command Request Executions" />
@@ -57,13 +57,13 @@
 			// failure stats report
 			if (resultsFilterType == 'FAIL_STATS') {
 
-				url = '/spring/amr/commandRequestExecutionResults/failureStatsReport';
+				url = '/spring/common/commandRequestExecutionResults/failureStatsReport';
 				params['commandRequestExecutionId'] = ${commandRequestExecutionId};
 
 			// detail report (success/fail/all)
 			} else {
 
-				url = '/spring/amr/commandRequestExecutionResults/detailsReport';
+				url = '/spring/common/commandRequestExecutionResults/detailsReport';
 				params['commandRequestExecutionId'] = ${commandRequestExecutionId};
 				params['resultsFilterType'] = resultsFilterType;
 				

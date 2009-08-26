@@ -11,17 +11,19 @@ import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultsFilterType;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionResult;
-import com.cannontech.core.dao.DeviceDao;
-import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.core.service.PaoLoadingService;
+import com.google.common.base.Function;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 
 public class CommandRequestExecutionResultsModel extends BareReportModelBase<CommandRequestExecutionResultsModel.ModelRow> {
     
     // dependencies
     private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
     private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
-    private DeviceDao deviceDao;
-    private PaoDao paoDao;
+    private PaoLoadingService paoLoadingService;
     
     // inputs
     int commandRequestExecutionId;
@@ -47,6 +49,33 @@ public class CommandRequestExecutionResultsModel extends BareReportModelBase<Com
         
     	List<CommandRequestExecutionResult> results = commandRequestExecutionResultDao.getResultsByExecutionId(this.commandRequestExecutionId, reportFilterType);
     	
+    	// build PaoIdentifiers list
+    	List<PaoIdentifier> paoIdentifiers = new ArrayList<PaoIdentifier>(results.size());
+    	for (CommandRequestExecutionResult result : results) {
+    	    
+    	    Integer deviceId = result.getDeviceId();
+    	    if (deviceId != null) {
+    	        paoIdentifiers.add(new PaoIdentifier(deviceId, null, null));
+    	    }
+    	    
+    	    Integer routeId = result.getRouteId();
+            if (routeId != null) {
+                paoIdentifiers.add(new PaoIdentifier(routeId, null, null));
+            }
+    	}
+    	
+    	// load DisplayablePaos
+    	List<DisplayablePao> displayableDevices = paoLoadingService.getDisplayableDevices(paoIdentifiers);
+    	
+    	// make map
+    	ImmutableMap<Integer, DisplayablePao> deviceLookup = Maps.uniqueIndex(displayableDevices, new Function<DisplayablePao, Integer>() {
+            @Override
+            public Integer apply(DisplayablePao displayablePao) {
+                return displayablePao.getPaoIdentifier().getPaoId();
+            }
+        });
+    	
+    	
     	for (CommandRequestExecutionResult result : results) {
     		
     		
@@ -56,24 +85,11 @@ public class CommandRequestExecutionResultsModel extends BareReportModelBase<Com
     		DeviceErrorDescription deviceErrorDescription = deviceErrorTranslatorDao.translateErrorCode(result.getErrorCode());
     		row.status = deviceErrorDescription.getDescription();
     		
-    		row.deviceName = null;
-    		Integer deviceId = result.getDeviceId();
-    		if (deviceId != null) {
-    			row.deviceName = deviceDao.getFormattedName(deviceId);
-    		}
+    		DisplayablePao device = deviceLookup.get(result.getDeviceId());
+    		row.deviceName = device != null ? device.getName() : null;
     		
-    		row.routeName = null;
-    		Integer routeId = result.getRouteId();
-    		if (routeId != null) {
-    			LiteYukonPAObject routePao = paoDao.getLiteYukonPAO(deviceId);
-    			row.routeName = routePao.getPaoName();
-    		}
-    		
-    		row.completeTime = null;
-    		Date completeTime = result.getCompleteTime();
-    		if (completeTime != null) {
-    			row.completeTime = completeTime;
-    		}
+    		DisplayablePao route = deviceLookup.get(result.getRouteId());
+    		row.routeName = route != null ? route.getName() : null;
     		
     		data.add(row);
     	}
@@ -126,13 +142,7 @@ public class CommandRequestExecutionResultsModel extends BareReportModelBase<Com
 	}
     
     @Autowired
-    public void setDeviceDao(DeviceDao deviceDao) {
-		this.deviceDao = deviceDao;
-	}
-    
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-		this.paoDao = paoDao;
-	}
-
+    public void setPaoLoadingService(PaoLoadingService paoLoadingService) {
+        this.paoLoadingService = paoLoadingService;
+    }
 }

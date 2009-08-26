@@ -15,5 +15,10 @@ public interface OutageMonitorDao {
 	
 	public List<OutageMonitor> getAll();
 	
-	public int delete(int outageMonitorId);
+	/**
+	 * Returns true if monitor was deleted successfully, false otherwise.
+	 * @param outageMonitorId
+	 * @return
+	 */
+	public boolean delete(int outageMonitorId);
 }

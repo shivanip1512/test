@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,12 +23,18 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
+import com.cannontech.common.device.model.DisplayableDevice;
+import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.SqlFragmentGenerator;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.YukonJdbcOperations;
 import com.cannontech.database.data.lite.LiteComparators;
@@ -41,6 +48,9 @@ import com.cannontech.database.db.device.DeviceRoutes;
 import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.base.Function;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 
 public final class PaoDaoImpl implements PaoDao {
     
@@ -422,6 +432,101 @@ public final class PaoDaoImpl implements PaoDao {
 
        return count;
    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    @Override
+    public PaoLoader<DisplayablePao> getDisplayableDeviceLoader() {
+        return new PaoLoader<DisplayablePao>() {
+            @Override
+            public <T extends YukonPao> Map<T, DisplayablePao> getForPaos(Iterable<? extends T> identifiers) {
+                Map<? extends T, String> namesForYukonDevices = getNamesForYukonDevices(identifiers);
+                Map<T, DisplayablePao> result = Maps.newHashMapWithExpectedSize(namesForYukonDevices.size());
+
+                for (Entry<? extends T, String> entry : namesForYukonDevices.entrySet()) {
+                    DisplayableDevice displayableMeter = new DisplayableDevice(entry.getKey().getPaoIdentifier(), entry.getValue());
+                    result.put(entry.getKey(), displayableMeter);
+                }
+
+                return result;
+            }
+        };
+    }
+
+    public <I extends YukonPao> Map<I, String> getNamesForYukonDevices(Iterable<I> identifiers) {
+        // build a lookup map based on the pao id (will also be used as a set of ids for the sql)
+        final ImmutableMap<Integer, I> deviceLookup = Maps.uniqueIndex(identifiers, new Function<I, Integer>() {
+            @Override
+            public Integer apply(I device) {
+                return device.getPaoIdentifier().getPaoId();
+            }
+        });
+        ChunkingSqlTemplate<Integer> template = new ChunkingSqlTemplate<Integer>(yukonJdbcOperations);
+
+        // build the sql generator, selects name and id for a set of ids
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT ypo.PAObjectID, ypo.PAOName FROM YukonPAObject ypo WHERE ypo.PAObjectID IN (").appendList(subList).append(")");
+                return sql;
+            }
+        };
+        
+        // build mapper, builds a throw away structure that contains the id and name
+        ParameterizedRowMapper<PaoIdAndName> rowMapper = new ParameterizedRowMapper<PaoIdAndName>() {
+            @Override
+            public PaoIdAndName mapRow(ResultSet rs, int rowNum)
+            throws SQLException {
+                PaoIdAndName result = new PaoIdAndName();
+                result.paoId = rs.getInt("PAObjectID");
+                result.name = rs.getString("PAOName");
+                return result;
+            }
+        };
+
+        // run the query with the generator, the set of ids passed in, and the mapper
+        List<PaoIdAndName> names = template.query(sqlGenerator, deviceLookup.keySet(), rowMapper);
+
+        // convert the resulting list into a lookup table
+        ImmutableMap<I, PaoIdAndName> intermediaryResult = Maps.uniqueIndex(names, new Function<PaoIdAndName, I>() {
+            public I apply(PaoIdAndName pao) {
+                return deviceLookup.get(pao.paoId);
+            }
+        });
+
+        // transform the lookup table into the identifier to string map that will be returned
+        Map<I,String> result = Maps.transformValues(intermediaryResult, new Function<PaoIdAndName, String>() {
+            public String apply(PaoIdAndName paoIdAndName) {
+                return paoIdAndName.name;
+            }
+        });
+
+        return result;
+    }
+
+    private static class PaoIdAndName {
+        int paoId;
+        String name;
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     @SuppressWarnings("unchecked")
     public List<LiteYukonPAObject> searchByName(final String name, final String paoClass) {

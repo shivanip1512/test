@@ -65,8 +65,8 @@
     <bean id="GroupMeterReadController" class="com.cannontech.web.group.GroupMeterReadController" />
 
 	<!-- SCHEDULED GROUP REQUEST EXECUTION -->
-    <bean id="ScheduledGroupRequestExecutionController" class="com.cannontech.web.amr.scheduledGroupRequestExecution.ScheduledGroupRequestExecutionController" />
+    <bean id="ScheduledGroupRequestExecutionController" class="com.cannontech.web.common.scheduledGroupRequestExecution.ScheduledGroupRequestExecutionController" />
         
-    <bean id="ScheduledGroupRequestExecutionResultsController" class="com.cannontech.web.amr.scheduledGroupRequestExecution.ScheduledGroupRequestExecutionResultsController" />
+    <bean id="ScheduledGroupRequestExecutionResultsController" class="com.cannontech.web.common.scheduledGroupRequestExecution.ScheduledGroupRequestExecutionResultsController" />
     
 </beans>
