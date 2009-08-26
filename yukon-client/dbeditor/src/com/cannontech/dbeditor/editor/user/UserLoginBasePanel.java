@@ -533,14 +533,10 @@ private void initialize() {
  */
 public boolean isInputValid() 
 {
-	if( getJCheckBoxEnableLogin().isSelected() )
+	if( StringUtils.isBlank(getJTextFieldUserID().getText()))
 	{
-
-		if( StringUtils.isBlank(getJTextFieldUserID().getText()))
-		{
-			setErrorString("The Userid text field must be filled in");
-			return false;
-		}
+		setErrorString("The Userid text field must be filled in");
+		return false;
 	}
 	
 	return true;
