@@ -714,6 +714,31 @@ INSERT INTO YukonRoleProperty VALUES(-20213,-202,'Outage Processing','true','Con
 INSERT INTO YukonRoleProperty VALUES(-20214,-202,'Tamper Flag Processing','true','Controls access to Tamper Flag Processing');
 /* End YUK-7762 */
 
+/* Start YUK-7718 */
+INSERT INTO Command VALUES(-171, 'putvalue ovuv analog 1 0', 'Disable OVUV', 'Twoway CBCs');
+INSERT INTO Command VALUES(-172, 'putvalue ovuv analog 1 1', 'Enable OVUV', 'Twoway CBCs');
+INSERT INTO Command VALUES(-173, 'putvalue analog ?''Enter point offset''?''Enter value''', 'Write Value', 'Twoway CBCs');
+
+UPDATE Command SET Category = 'Oneway CBCs' WHERE CommandId IN (-33, -32 );
+
+UPDATE DeviceTypeCommand SET CommandId = -171 WHERE DeviceCommandId = -484;
+UPDATE DeviceTypeCommand SET CommandId = -172 WHERE DeviceCommandId = -485;
+UPDATE DeviceTypeCommand SET CommandId = -171 WHERE DeviceCommandId = -488;
+UPDATE DeviceTypeCommand SET CommandId = -172 WHERE DeviceCommandId = -489;
+UPDATE DeviceTypeCommand SET CommandId = -171 WHERE DeviceCommandId = -492;
+UPDATE DeviceTypeCommand SET CommandId = -172 WHERE DeviceCommandId = -493;
+UPDATE DeviceTypeCommand SET CommandId = -171 WHERE DeviceCommandId = -496;
+UPDATE DeviceTypeCommand SET CommandId = -172 WHERE DeviceCommandId = -497;
+
+INSERT INTO DeviceTypeCommand VALUES (-802, -173, 'CBC 7020', 5, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-803, -173, 'CBC 7022', 5, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-804, -173, 'CBC 7023', 5, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-805, -173, 'CBC 7024', 5, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-807, -30, 'CBC DNP', 1, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-808, -31, 'CBC DNP', 2, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-809, -173, 'CBC DNP', 3, 'Y', -1);
+/* End YUK-7718 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
