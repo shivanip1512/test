@@ -3550,7 +3550,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
             case Emetcon::PutConfig_TOUDisable:                 resultString = getName() + " / TOU disable sent";       break;
 
             case Emetcon::PutConfig_Options:                    resultString = getName() + " / options sent";  
-            case Emetcon::PutConfig_PhaseDetectClear:             resultString = getName() + " / Phase Detect flag cleared";          break;
+            case Emetcon::PutConfig_PhaseDetectClear:             resultString = getName() + " / Phase Detect flag clear sent";          break;
             case Emetcon::PutConfig_PhaseDetect:                  resultString = getName() + " / Phase Detect test settings sent";    break;
 
             case Emetcon::PutConfig_Install:

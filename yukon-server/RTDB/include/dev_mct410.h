@@ -208,7 +208,7 @@ protected:
     enum Functions
     {
         FuncRead_PhaseDetect      = 0x0f,
-        FuncRead_PhaseDetectLen   = 13,
+        FuncRead_PhaseDetectLen   =   13,
 
         FuncRead_OutagePos        = 0x10,
         FuncRead_OutageLen        =   13,
@@ -272,10 +272,10 @@ protected:
         FuncWrite_IntervalsLen       =    4,
 
         FuncWrite_PhaseDetect        = 0x10,
-        FuncWrite_PhaseDetectLen     = 5,
+        FuncWrite_PhaseDetectLen     =    5,
 
         FuncWrite_PhaseDetectClear        = 0x00,
-        FuncWrite_PhaseDetectClearLen     = 2,
+        FuncWrite_PhaseDetectClearLen     =    2,
 
         FuncWrite_DailyReadInterestPos = 0x50,
         FuncWrite_DailyReadInterestLen =    4,

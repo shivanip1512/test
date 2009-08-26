@@ -2186,7 +2186,7 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
     static const boost::regex  re_holiday(CtiString("holiday ") + str_num + CtiString("( ") + str_date + CtiString(")+") );
     static const boost::regex  re_channel(CtiString("channel ") + str_num + CtiString(" (ied|2-wire|3-wire|none)( input ") + str_num + CtiString(")?( multiplier ") + str_floatnum + CtiString(")?") );
 
-    static const CtiString str_phase("[ =][a-cA-C]");
+    static const CtiString str_phase("[ =][a-c]");
     static const boost::regex    re_phase(str_phase);
 
     //  matches any of AKT, HT, PT, MT, CT, ET, the standard/daylight versions of each, and whole/fractional hour offsets
@@ -2480,7 +2480,7 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
                 {
                     if(!(val = temp2.match(re_signed_num)).empty())
                     {
-                        _cmd["phasedelta"] = CtiParseValue(atoi(val.c_str()) & 0xFF);
+                        _cmd["phasedelta"] = CtiParseValue(atoi(val.c_str()));
                     }
                 }
                 if(!(temp2 = CmdStr.match( (const boost::regex) (CtiString(" interval[ =]+") + str_num) )).empty())

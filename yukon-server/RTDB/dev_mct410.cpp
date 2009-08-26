@@ -1287,34 +1287,23 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
             function = Emetcon::PutConfig_PhaseDetectClear;
             found = getOperation(function, OutMessage->Buffer.BSt);
             OutMessage->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
-            OutMessage->Buffer.BSt.Message[0] = Command_PhaseDetectClear;
+            OutMessage->Buffer.BSt.Message[1] = Command_PhaseDetectClear;
             OutMessage->Sequence = function;
         }
         else if(parse.isKeyValid("phase") )
         {
-        
             function = Emetcon::PutConfig_PhaseDetect;
             found = getOperation(function, OutMessage->Buffer.BSt);
             string phase = parse.getsValue("phase");
-            CtiToUpper(phase);
             int phaseVal = 0;
 
-            if (phase == "A")
-            {   
-                phaseVal = 1;
-            }
-            else if (phase == "B")
+            switch( phase[0] )
             {
-                phaseVal = 2;
-            }
-            else if (phase == "C")
-            {
-                phaseVal = 3;
-            }
-            else
-            {
-                phaseVal = 0;
-            }
+                case 'a':  phaseVal = 1;  break;
+                case 'b':  phaseVal = 2;  break;
+                case 'c':  phaseVal = 3;  break;
+                default:  phaseVal = 0;  break;
+            } 
             OutMessage->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
             OutMessage->Buffer.BSt.Message[1] = phaseVal  & 0xff;
             OutMessage->Buffer.BSt.Message[2] = parse.getiValue("phasedelta")  & 0xff;
@@ -4042,8 +4031,6 @@ INT CtiDeviceMCT410::decodeGetConfigPhaseDetect(INMESS *InMessage, CtiTime &Time
     unsigned long volt_timestamp;
     short first_interval_voltage, last_interval_voltage;
 
-    CtiTime voltTimeStamp;
-
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
         // No error occured, we must do a real decode!
@@ -4091,8 +4078,8 @@ INT CtiDeviceMCT410::decodeGetConfigPhaseDetect(INMESS *InMessage, CtiTime &Time
                                 DSt->Message[8];
 
         resultStr  = getName() + " / Phase: " + phaseStr ;
-        resultStr += " ( " + CtiTime(volt_timestamp).asString() + " )";
-        resultStr  += " First Interval Voltage: " + CtiNumStr(first_interval_voltage);
+        resultStr += " ( " + CtiTime(volt_timestamp).asString() + " )\n";
+        resultStr  += "First Interval Voltage: " + CtiNumStr(first_interval_voltage);
         resultStr  += " / Last Interval Voltage: " + CtiNumStr(last_interval_voltage);
 
         if(ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr))
