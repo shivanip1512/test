@@ -60,23 +60,6 @@ public boolean connected()
 	else
 		return getConnection().isValid();
 }
-/**
- * Code to perform when this object is garbage collected.
- * 
- * Any exception thrown by a finalize method causes the finalization to
- * halt. But otherwise, it is ignored.
- */
-protected void finalize() throws Throwable 
-{
-	// Insert code to finalize the receiver here.
-	// This implementation simply forwards the message to super.  You may replace or supplement this.
-	super.finalize();
-
-	if(connected()) {
-		if( observer != null )
-			getConnection().deleteObserver( observer );
-	}
-}
 
 /**
  * This method was created in VisualAge.
