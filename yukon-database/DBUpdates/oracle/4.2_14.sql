@@ -12,3 +12,4 @@ ALTER TABLE CapControlSubstation MODIFY MapLocationId NOT NULL;
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
+INSERT INTO CTIDatabase VALUES('4.2', 'Matt K', '27-AUG-2009', 'Latest Update', 14);
