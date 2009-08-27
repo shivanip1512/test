@@ -8,8 +8,6 @@ import org.apache.log4j.Layout;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.spi.LoggingEvent;
 
-import com.cannontech.common.util.CtiUtilities;
-
 /**
  * Implements the logging for remote clients.
  * The creation of specific appenders for each
@@ -69,7 +67,7 @@ public class RemoteLoggerImpl implements RemoteLogger {
         String fileName = applicationName + "[" + clientId + "]";
         
         //get the file path based on yukonbase for this system
-        String directory = CtiUtilities.getYukonBase() + "/Server/Log/";
+        String directory = YukonFileAppender.getLogDirectory();
         
         //see if the appender for this clientId already exists
         if (appenderIPAddresses.containsKey(fileName)) {

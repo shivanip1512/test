@@ -1,15 +1,19 @@
 package com.cannontech.clientutils;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Layout;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.spi.LoggingEvent;
 
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigHelper;
 import com.cannontech.common.util.CtiUtilities;
 
 
@@ -76,10 +80,8 @@ public class YukonFileAppender extends AppenderSkeleton {
         //get the name of the application running this appender
         
         String nameOfApp = CtiUtilities.getApplicationName(); 
-        
-        //get the file path based on yukonbase for this system
-        String fileName = CtiUtilities.getYukonBase() + "/Server/Log/" + nameOfApp + ".log";
-        String directory = CtiUtilities.getYukonBase() + "/Server/Log/";
+        String directory = getLogDirectory();
+        String fileName = directory + nameOfApp + ".log";
         
         //create a DatedFileAppender to take over the actual appending, rollover, and timing issues
         dailyRollingFileAppender = new DatedFileAppender(directory, nameOfApp + "_", ".log");
@@ -92,6 +94,34 @@ public class YukonFileAppender extends AppenderSkeleton {
         
         //Inherited from AppenderSkeleton. Calls once options are set
         dailyRollingFileAppender.activateOptions();
+    }
+
+    
+    /**
+     * This method checks the master configuration file and uses the 'LOG_DIRECTORY' key
+     * to figure out correct log directory path.
+     *
+     * @return
+     */
+    public static String getLogDirectory() {
+        String directory = CtiUtilities.getYukonBase() + "/Server/Log/";
+        
+        // Gets the value from the cparm if it exists
+        ConfigurationSource configSource = MasterConfigHelper.getConfiguration();
+        String logDirectory = configSource.getString("LOG_DIRECTORY");
+
+        /* Checks to see if the path exists and also checks to see if the path
+         * is an absolute path or a relative path.  If the path is relative we add
+         * yukon base in front of the path.
+         */
+        if(!StringUtils.isBlank(logDirectory)){
+            File file = new File(logDirectory);
+            if(!file.isAbsolute()) {
+                file = new File(CtiUtilities.getYukonBase(),logDirectory);
+            }
+            directory = file.getPath();
+        }
+        return directory;
     }
 
     /**
