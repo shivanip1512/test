@@ -28,7 +28,7 @@
             </td>
             <td width="10">&nbsp;</td>
             <td width="50%" valign="top">
-                <cti:msg var="infoTitle" key="yukon.web.dr.program.detail.heading.actions"/>
+                <cti:msg var="boxTitle" key="yukon.web.dr.program.detail.heading.actions"/>
             	<tags:abstractContainer type="box" title="${boxTitle}">
             		<cti:msg key="yukon.web.dr.program.detail.actions.start"/><br>
             		<cti:msg key="yukon.web.dr.program.detail.actions.stop"/><br>
