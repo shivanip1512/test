@@ -7,6 +7,9 @@ import java.util.List;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
 public class TabbedContentSelectorTag extends SimpleTagSupport {
 
 	private String selectedTabName = "";
@@ -66,19 +69,16 @@ public class TabbedContentSelectorTag extends SimpleTagSupport {
 	// make inline array of hashes representing tab data
 	private String makeContentItemsArray() {
 		
-		StringBuffer s = new StringBuffer();
-		s.append("$A([");
-		
-		for (int idx = 0; idx < tabIds.size(); idx++) {
-			
-			s.append("$H({'title':'" + tabNames.get(idx) + "', 'contentEl':'" + tabIds.get(idx) + "'})");
-			if (idx < tabIds.size() - 1) {
-				s.append(", ");
-			}
-		}
-		
-		s.append("])");
-		return s.toString();
+	    JSONArray jsonArray = new JSONArray();
+	    for (int idx = 0; idx < tabIds.size(); idx++) {
+	        
+	        JSONObject tabObj = new JSONObject();
+	        tabObj.put("title", tabNames.get(idx));
+	        tabObj.put("contentEl",  tabIds.get(idx));
+	        jsonArray.put(tabObj);
+	    }
+
+	    return jsonArray.toString();
 	}
 	
 }

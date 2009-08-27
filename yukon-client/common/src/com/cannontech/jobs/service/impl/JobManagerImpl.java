@@ -253,7 +253,8 @@ public class JobManagerImpl implements JobManager {
             	
             	doSchedule(job, runnable, nextRuntime);
                 log.info("job " + job + " scheduled for " + nextRuntime);
-                
+            } else {
+                log.debug("job " + job + " has no next runtime, it will not be scheduled.");
             }
         } catch (Exception e) {
             log.error("unable to schedule job " + job, e);
