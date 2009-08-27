@@ -14,15 +14,23 @@
         <x:panelGrid id="substationBody" columns="2" styleClass="gridLayout" columnClasses="gridCell, gridCell">
             <h:column>
                 <x:htmlTag value="fieldset" styleClass="fieldSet">
-                    <x:htmlTag value="legend"><x:outputText value="Substation Info"/></x:htmlTag>
-    
-                    <x:outputLabel for="geoLocation" value="#{capControlForm.PAODescLabel}: " 
-                        title="Physical location of the substation." 
-                        rendered="#{!empty capControlForm.PAODescLabel}" />
-                    <x:inputText id="geoLocation" value="#{capControlForm.PAOBase.geoAreaName}" 
-                        required="true" maxlength="60" styleClass="char32Label" 
-                        rendered="#{!empty capControlForm.PAODescLabel}" />
+					<x:htmlTag value="legend"><x:outputText value="Substation Info"/></x:htmlTag>
+				    <x:panelGrid columns="2" styleClass="gridLayout" columnClasses="gridCell, gridCell">
+	                    <x:outputLabel for="geoLocation" value="#{capControlForm.PAODescLabel}: " 
+	                        title="Physical location of the substation." 
+	                        rendered="#{!empty capControlForm.PAODescLabel}" />
+	                    <x:inputText id="geoLocation" value="#{capControlForm.PAOBase.geoAreaName}" 
+	                        required="true" maxlength="60" styleClass="char32Label" 
+	                        rendered="#{!empty capControlForm.PAODescLabel}" />
+	
+						<x:outputLabel for="subMapLocID" value="Map Location ID: "
+							title="Mapping code/string used for third-party systems" />
+	
+						<x:inputText id="subMapLocID"
+							value="#{capControlForm.PAOBase.capControlSubstation.mapLocationID}"
+							required="true" maxlength="48" styleClass="char32Label" />
 
+					</x:panelGrid>
                 </x:htmlTag>
                 
                 <x:htmlTag value="br" />
