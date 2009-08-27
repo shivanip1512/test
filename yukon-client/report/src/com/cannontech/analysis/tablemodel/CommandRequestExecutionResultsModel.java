@@ -55,12 +55,12 @@ public class CommandRequestExecutionResultsModel extends BareReportModelBase<Com
     	    
     	    Integer deviceId = result.getDeviceId();
     	    if (deviceId != null) {
-    	        paoIdentifiers.add(new PaoIdentifier(deviceId, null, null));
+    	        paoIdentifiers.add(new PaoIdentifier(deviceId, null));
     	    }
     	    
     	    Integer routeId = result.getRouteId();
             if (routeId != null) {
-                paoIdentifiers.add(new PaoIdentifier(routeId, null, null));
+                paoIdentifiers.add(new PaoIdentifier(routeId, null));
             }
     	}
     	
