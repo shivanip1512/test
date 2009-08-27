@@ -10,10 +10,6 @@ public final class PaoIdentifier implements YukonPao {
         super();
         this.paoId = paoId;
         this.paoType = paoType;
-        if (paoType == null) {
-            System.out.println("null paoType");
-            new Throwable().printStackTrace();
-        }
     }
 
     public int getPaoId() {
