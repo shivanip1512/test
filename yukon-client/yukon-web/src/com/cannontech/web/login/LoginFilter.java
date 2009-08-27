@@ -67,7 +67,8 @@ public class LoginFilter implements Filter {
             "/**/*.jpg", 
             "/**/*.html",
             "/jws/*.jar",
-            "/remote/**"
+            "/remote/**",
+            "/**/*.ico"
         };
         
         excludedRedirectedPaths = new String[] {
