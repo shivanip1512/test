@@ -2156,12 +2156,14 @@ INT CtiProtocolExpresscom::extendedTierCommand(int level, int rate, int cmd, int
     if(timeout > 0)
     {
         flags |= 0x10;         // Temp setpoint included.
-        _message.push_back(timeout);
+        _message.push_back(HIBYTE(timeout));
+        _message.push_back(LOBYTE(timeout));
     }       
     if(delay > 0)
     {
         flags |= 0x08;         // Temp setpoint included.
-        _message.push_back(delay);
+        _message.push_back(HIBYTE(delay));
+        _message.push_back(LOBYTE(delay));
     }
 
     _message[flagpos] = flags;
