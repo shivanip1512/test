@@ -1,17 +1,82 @@
-/*
-    Test Expresscom address validation
-*/
 
-#define BOOST_TEST_MAIN "Test Expresscom Stuff"
 
-#include <boost/test/unit_test.hpp>
-#include "boostutil.h"
+#define BOOST_AUTO_TEST_MAIN "Test Expresscom Protocol"
 
-#define BOOST_AUTO_TEST_MAIN "Test Expresscom Address Validation"
-
-using boost::unit_test_framework::test_suite;
-
+#include "yukon.h"
 #include "expresscom.h"
+
+#include <boost/test/auto_unit_test.hpp>
+
+
+BOOST_AUTO_TEST_CASE(test_prot_xcom_extended_tier_timeout)
+{
+    CtiCommandParser        parse( "putconfig xcom extended tier 2 timeout 14400 serial 1234" );
+    CtiProtocolExpresscom   xcom;
+    CtiOutMessage           out;
+
+    BYTE expected_result[] = { 0, 0, 0, 0, 0,       // addressing not assigned: defaults to zero
+                               0x17,                // message type: extended tier
+                               0x10,                // flags: send a timeout value
+                               0x02,                // tier number
+                               0x38, 0x40 };        // timeout value: 14400 == 0x3840
+
+    BOOST_CHECK_EQUAL( xcom.parseRequest(parse, out), NORMAL );
+    BOOST_CHECK_EQUAL( xcom.entries(), 1 );
+    BOOST_CHECK_EQUAL( xcom.messageSize(1), sizeof (expected_result) / sizeof (expected_result[0]) );
+
+    for (int i = 0; i < xcom.messageSize(1); ++i)
+    {
+        BOOST_CHECK_EQUAL( xcom.getByte(i, 1), expected_result[i] );
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(test_prot_xcom_extended_tier_delay)
+{
+    CtiCommandParser        parse( "putconfig xcom extended tier 2 delay 3600 serial 1234" );
+    CtiProtocolExpresscom   xcom;
+    CtiOutMessage           out;
+
+    BYTE expected_result[] = { 0, 0, 0, 0, 0,       // addressing not assigned: defaults to zero
+                               0x17,                // message type: extended tier
+                               0x08,                // flags: send a delay value
+                               0x02,                // tier number
+                               0x0E, 0x10 };        // delay value: 3600 == 0x0E10
+
+    BOOST_CHECK_EQUAL( xcom.parseRequest(parse, out), NORMAL );
+    BOOST_CHECK_EQUAL( xcom.entries(), 1 );
+    BOOST_CHECK_EQUAL( xcom.messageSize(1), sizeof (expected_result) / sizeof (expected_result[0]) );
+
+    for (int i = 0; i < xcom.messageSize(1); ++i)
+    {
+        BOOST_CHECK_EQUAL( xcom.getByte(i, 1), expected_result[i] );
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(test_prot_xcom_extended_tier_timeout_and_delay)
+{
+    CtiCommandParser        parse( "putconfig xcom extended tier 2 timeout 14400 delay 3600 serial 1234" );
+    CtiProtocolExpresscom   xcom;
+    CtiOutMessage           out;
+
+    BYTE expected_result[] = { 0, 0, 0, 0, 0,       // addressing not assigned: defaults to zero
+                               0x17,                // message type: extended tier
+                               0x18,                // flags: send a timeout and a delay value
+                               0x02,                // tier number
+                               0x38, 0x40,          // timeout value: 14400 == 0x3840
+                               0x0E, 0x10 };        // delay value: 3600 == 0x0E10
+
+    BOOST_CHECK_EQUAL( xcom.parseRequest(parse, out), NORMAL );
+    BOOST_CHECK_EQUAL( xcom.entries(), 1 );
+    BOOST_CHECK_EQUAL( xcom.messageSize(1), sizeof (expected_result) / sizeof (expected_result[0]) );
+
+    for (int i = 0; i < xcom.messageSize(1); ++i)
+    {
+        BOOST_CHECK_EQUAL( xcom.getByte(i, 1), expected_result[i] );
+    }
+}
+
 
 /* 
     Testing: CtiProtocolExpresscom::addAddressing()
@@ -26,7 +91,7 @@ using boost::unit_test_framework::test_suite;
         ZIP is only 24 bits wide, but is held in a 32 bit quantity.  So values >= 0x01000000
             also return BADPARAM.
 */
-BOOST_AUTO_TEST_CASE(test_xcom_addAddressing_default)
+BOOST_AUTO_TEST_CASE(test_prot_xcom_addAddressing_default)
 {
     CtiProtocolExpresscom   xcom;
 
@@ -34,14 +99,16 @@ BOOST_AUTO_TEST_CASE(test_xcom_addAddressing_default)
     BOOST_CHECK_EQUAL( xcom.addAddressing() , NORMAL);
 }
 
-BOOST_AUTO_TEST_CASE(test_xcom_addAddressing_serial)
+
+BOOST_AUTO_TEST_CASE(test_prot_xcom_addAddressing_serial)
 {
     // test the serial# -- nothing to do in this case
 
     BOOST_CHECK_EQUAL(true , true);
 }
 
-BOOST_AUTO_TEST_CASE(test_xcom_addAddressing_spid)
+
+BOOST_AUTO_TEST_CASE(test_prot_xcom_addAddressing_spid)
 {
     CtiProtocolExpresscom   xcom;
 
@@ -52,7 +119,8 @@ BOOST_AUTO_TEST_CASE(test_xcom_addAddressing_spid)
     BOOST_CHECK_EQUAL( xcom.addAddressing(0, CtiProtocolExpresscom::SpidMax + 1) , BADPARAM);
 }
 
-BOOST_AUTO_TEST_CASE(test_xcom_addAddressing_geo)
+
+BOOST_AUTO_TEST_CASE(test_prot_xcom_addAddressing_geo)
 {
     CtiProtocolExpresscom   xcom;
 
@@ -63,7 +131,8 @@ BOOST_AUTO_TEST_CASE(test_xcom_addAddressing_geo)
     BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, CtiProtocolExpresscom::GeoMax + 1) , BADPARAM);
 }
 
-BOOST_AUTO_TEST_CASE(test_xcom_addAddressing_substation)
+
+BOOST_AUTO_TEST_CASE(test_prot_xcom_addAddressing_substation)
 {
     CtiProtocolExpresscom   xcom;
 
@@ -74,7 +143,8 @@ BOOST_AUTO_TEST_CASE(test_xcom_addAddressing_substation)
     BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, CtiProtocolExpresscom::SubstationMax + 1) , BADPARAM);
 }
 
-BOOST_AUTO_TEST_CASE(test_xcom_addAddressing_feeder)
+
+BOOST_AUTO_TEST_CASE(test_prot_xcom_addAddressing_feeder)
 {
     CtiProtocolExpresscom   xcom;
 
@@ -84,7 +154,8 @@ BOOST_AUTO_TEST_CASE(test_xcom_addAddressing_feeder)
     BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0, CtiProtocolExpresscom::FeederMax) , NORMAL);
 }
 
-BOOST_AUTO_TEST_CASE(test_xcom_addAddressing_zip)
+
+BOOST_AUTO_TEST_CASE(test_prot_xcom_addAddressing_zip)
 {
     CtiProtocolExpresscom   xcom;
 
@@ -97,7 +168,8 @@ BOOST_AUTO_TEST_CASE(test_xcom_addAddressing_zip)
     BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0, 0, CtiProtocolExpresscom::ZipMax + 10000000) , BADPARAM);
 }
 
-BOOST_AUTO_TEST_CASE(test_xcom_addAddressing_uda)
+
+BOOST_AUTO_TEST_CASE(test_prot_xcom_addAddressing_uda)
 {
     CtiProtocolExpresscom   xcom;
 
@@ -108,7 +180,8 @@ BOOST_AUTO_TEST_CASE(test_xcom_addAddressing_uda)
     BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0, 0, 0, CtiProtocolExpresscom::UserMax + 1) , BADPARAM);
 }
 
-BOOST_AUTO_TEST_CASE(test_xcom_addAddressing_program)
+
+BOOST_AUTO_TEST_CASE(test_prot_xcom_addAddressing_program)
 {
     CtiProtocolExpresscom   xcom;
 
@@ -119,7 +192,8 @@ BOOST_AUTO_TEST_CASE(test_xcom_addAddressing_program)
     BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0, 0, 0, 0, CtiProtocolExpresscom::ProgramMax + 1) , BADPARAM);
 }
 
-BOOST_AUTO_TEST_CASE(test_xcom_addAddressing_splinter)
+
+BOOST_AUTO_TEST_CASE(test_prot_xcom_addAddressing_splinter)
 {
     CtiProtocolExpresscom   xcom;
 
@@ -130,6 +204,7 @@ BOOST_AUTO_TEST_CASE(test_xcom_addAddressing_splinter)
     BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0, 0, 0, 0, 0, 0, 0, CtiProtocolExpresscom::SplinterMax + 1) , BADPARAM);
 }
 
+
 /*
     Testing: CtiProtocolExpresscom::parseAddressing()
  
@@ -137,7 +212,7 @@ BOOST_AUTO_TEST_CASE(test_xcom_addAddressing_splinter)
     aren't passed into the function in exact-width registers.  This enables testing with more values
     outside the valid ranges on the high end.
 */
-BOOST_AUTO_TEST_CASE(test_xcom_parseAddressing_serial)
+BOOST_AUTO_TEST_CASE(test_prot_xcom_parseAddressing_serial)
 {
     CtiProtocolExpresscom   xcom;
 
@@ -172,7 +247,8 @@ BOOST_AUTO_TEST_CASE(test_xcom_parseAddressing_serial)
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_xcom_parseAddressing_spid)
+
+BOOST_AUTO_TEST_CASE(test_prot_xcom_parseAddressing_spid)
 {
     CtiProtocolExpresscom   xcom;
 
@@ -217,7 +293,8 @@ BOOST_AUTO_TEST_CASE(test_xcom_parseAddressing_spid)
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_xcom_parseAddressing_geo)
+
+BOOST_AUTO_TEST_CASE(test_prot_xcom_parseAddressing_geo)
 {
     CtiProtocolExpresscom   xcom;
 
@@ -262,7 +339,8 @@ BOOST_AUTO_TEST_CASE(test_xcom_parseAddressing_geo)
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_xcom_parseAddressing_substation)
+
+BOOST_AUTO_TEST_CASE(test_prot_xcom_parseAddressing_substation)
 {
     CtiProtocolExpresscom   xcom;
 
@@ -307,7 +385,8 @@ BOOST_AUTO_TEST_CASE(test_xcom_parseAddressing_substation)
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_xcom_parseAddressing_feeder)
+
+BOOST_AUTO_TEST_CASE(test_prot_xcom_parseAddressing_feeder)
 {
     CtiProtocolExpresscom   xcom;
 
@@ -352,7 +431,8 @@ BOOST_AUTO_TEST_CASE(test_xcom_parseAddressing_feeder)
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_xcom_parseAddressing_zip)
+
+BOOST_AUTO_TEST_CASE(test_prot_xcom_parseAddressing_zip)
 {
     CtiProtocolExpresscom   xcom;
 
@@ -402,7 +482,8 @@ BOOST_AUTO_TEST_CASE(test_xcom_parseAddressing_zip)
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_xcom_parseAddressing_uda)
+
+BOOST_AUTO_TEST_CASE(test_prot_xcom_parseAddressing_uda)
 {
     CtiProtocolExpresscom   xcom;
 
@@ -447,7 +528,8 @@ BOOST_AUTO_TEST_CASE(test_xcom_parseAddressing_uda)
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_xcom_parseAddressing_program)
+
+BOOST_AUTO_TEST_CASE(test_prot_xcom_parseAddressing_program)
 {
     CtiProtocolExpresscom   xcom;
 
@@ -497,7 +579,8 @@ BOOST_AUTO_TEST_CASE(test_xcom_parseAddressing_program)
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_xcom_parseAddressing_splinter)
+
+BOOST_AUTO_TEST_CASE(test_prot_xcom_parseAddressing_splinter)
 {
     CtiProtocolExpresscom   xcom;
 
@@ -547,6 +630,7 @@ BOOST_AUTO_TEST_CASE(test_xcom_parseAddressing_splinter)
     }
 }
 
+
 /*
     Wrapper to expose the CtiProtocolExpresscom::parseTargetAddressing() function.
 */
@@ -560,14 +644,15 @@ public:
 };
 
 
-BOOST_AUTO_TEST_CASE(test_xcom_parseTargetAddressing_serial)
+BOOST_AUTO_TEST_CASE(test_prot_xcom_parseTargetAddressing_serial)
 {
     // test the serial# -- fixed and assigned in the factory.....
 
     BOOST_CHECK_EQUAL(true , true);
 }
 
-BOOST_AUTO_TEST_CASE(test_xcom_parseTargetAddressing_spid)
+
+BOOST_AUTO_TEST_CASE(test_prot_xcom_parseTargetAddressing_spid)
 {
     Test_CtiProtocolExpresscom   xcom;
 
@@ -617,7 +702,8 @@ BOOST_AUTO_TEST_CASE(test_xcom_parseTargetAddressing_spid)
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_xcom_parseTargetAddressing_geo)
+
+BOOST_AUTO_TEST_CASE(test_prot_xcom_parseTargetAddressing_geo)
 {
     Test_CtiProtocolExpresscom   xcom;
 
@@ -667,7 +753,8 @@ BOOST_AUTO_TEST_CASE(test_xcom_parseTargetAddressing_geo)
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_xcom_parseTargetAddressing_substation)
+
+BOOST_AUTO_TEST_CASE(test_prot_xcom_parseTargetAddressing_substation)
 {
     Test_CtiProtocolExpresscom   xcom;
 
@@ -717,7 +804,8 @@ BOOST_AUTO_TEST_CASE(test_xcom_parseTargetAddressing_substation)
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_xcom_parseTargetAddressing_feeder)
+
+BOOST_AUTO_TEST_CASE(test_prot_xcom_parseTargetAddressing_feeder)
 {
     Test_CtiProtocolExpresscom   xcom;
 
@@ -769,7 +857,8 @@ BOOST_AUTO_TEST_CASE(test_xcom_parseTargetAddressing_feeder)
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_xcom_parseTargetAddressing_zip)
+
+BOOST_AUTO_TEST_CASE(test_prot_xcom_parseTargetAddressing_zip)
 {
     Test_CtiProtocolExpresscom   xcom;
 
@@ -819,7 +908,8 @@ BOOST_AUTO_TEST_CASE(test_xcom_parseTargetAddressing_zip)
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_xcom_parseTargetAddressing_uda)
+
+BOOST_AUTO_TEST_CASE(test_prot_xcom_parseTargetAddressing_uda)
 {
     Test_CtiProtocolExpresscom   xcom;
 
@@ -869,7 +959,8 @@ BOOST_AUTO_TEST_CASE(test_xcom_parseTargetAddressing_uda)
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_xcom_parseTargetAddressing_program)
+
+BOOST_AUTO_TEST_CASE(test_prot_xcom_parseTargetAddressing_program)
 {
     Test_CtiProtocolExpresscom   xcom;
 
@@ -924,7 +1015,8 @@ BOOST_AUTO_TEST_CASE(test_xcom_parseTargetAddressing_program)
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_xcom_parseTargetAddressing_splinter)
+
+BOOST_AUTO_TEST_CASE(test_prot_xcom_parseTargetAddressing_splinter)
 {
     Test_CtiProtocolExpresscom   xcom;
 

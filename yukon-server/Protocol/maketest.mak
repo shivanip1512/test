@@ -36,8 +36,7 @@ INCLPATHS+= \
 TEST_OBJS=\
 test_prot_klondike.obj \
 test_prot_xml.obj \
-test_xcom_address_validation.obj \
-test_xcom_extended_tier.obj
+test_prot_expresscom.obj
 
 PROTLIBS=\
 $(COMPILEBASE)\lib\ctibase.lib \

@@ -2140,28 +2140,28 @@ INT CtiProtocolExpresscom::extendedTierCommand(int level, int rate, int cmd, int
 
     if(rate > 0)
     {
-        flags |= 0x80;         // Temp setpoint included.
+        flags |= 0x80;         // rate setpoint included.
         _message.push_back(rate);
     }
     if(cmd > 0)
     {
-        flags |= 0x40;         // Temp setpoint included.
+        flags |= 0x40;         // cmd setpoint included.
         _message.push_back(cmd);
     }
     if(display > 0)
     {
-        flags |= 0x20;         // Temp setpoint included.
+        flags |= 0x20;         // display setpoint included.
         _message.push_back(display);
     }
     if(timeout > 0)
     {
-        flags |= 0x10;         // Temp setpoint included.
+        flags |= 0x10;         // timeout setpoint included.
         _message.push_back(HIBYTE(timeout));
         _message.push_back(LOBYTE(timeout));
     }       
     if(delay > 0)
     {
-        flags |= 0x08;         // Temp setpoint included.
+        flags |= 0x08;         // delay setpoint included.
         _message.push_back(HIBYTE(delay));
         _message.push_back(LOBYTE(delay));
     }
