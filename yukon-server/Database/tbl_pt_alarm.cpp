@@ -43,6 +43,7 @@ CtiTablePointAlarming& CtiTablePointAlarming::operator=(const CtiTablePointAlarm
         setAutoAckStates( aRef.getAutoAckStates() );
         setExcludeNotifyStates( aRef.getExcludeNotifyStates() );
         setNotifyOnAcknowledge( aRef.getNotifyOnAcknowledge() );
+        setNotifyOnClear(aRef.getNotifyOnClear());
         setRecipientID( aRef.getRecipientID() );
         setNotificationGroupID( aRef.getNotificationGroupID() );
     }
