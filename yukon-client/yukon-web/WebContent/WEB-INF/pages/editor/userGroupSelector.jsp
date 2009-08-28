@@ -2,6 +2,8 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
+<cti:verifyRolesAndProperties value="ADMIN_LM_USER_ASSIGN"/>
+
 <cti:standardPage title="User Assignment for Load Management Visibility" module="userlm">
 <cti:standardMenu/>
 <cti:breadCrumbs>

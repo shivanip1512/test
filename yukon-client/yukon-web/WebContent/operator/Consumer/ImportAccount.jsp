@@ -1,4 +1,10 @@
 <%@ include file="include/StarsHeader.jsp" %>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+
+<cti:verifyRolesAndProperties value="
+	BULK_IMPORT_OPERATION,
+	BULK_UPDATE_OPERATION"/>
+
 <html>
 <head>
 <title>Energy Services Operations Center</title>
