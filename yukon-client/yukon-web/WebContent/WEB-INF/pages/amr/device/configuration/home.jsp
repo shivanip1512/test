@@ -27,7 +27,7 @@
 	<h2>Device Configuration</h2>
 	
 	<c:if test="${!empty param.message}">
-		${param.message}
+		${fn:escapeXml(param.message)}
 	</c:if>
 	
 	<c:if test="${editConfig}">
