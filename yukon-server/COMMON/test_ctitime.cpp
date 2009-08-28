@@ -1,13 +1,13 @@
 /*
  * file test_cmdparse.cpp
- *  
- * Author: Jian Liu 
- * Date: 08/05/2005 13:25:55 
- * 
+ *
+ * Author: Jian Liu
+ * Date: 08/05/2005 13:25:55
+ *
  *
  * test ctitime.cpp
- * 
- * 
+ *
+ *
  */
 #define BOOST_AUTO_TEST_MAIN "Test CtiTime"
 
@@ -60,14 +60,14 @@ BOOST_AUTO_TEST_CASE(test_ptime)
     rt5 = rt3 - 2*timeduration;
     cout << rt3.asString() << endl;
     cout << rt4.asString() << endl;
-    cout << rt5.asString() << endl << endl; 
+    cout << rt5.asString() << endl << endl;
 
     rt3 = RWTime(RWDate(3,4,2005), 2, 30, 0);
     rt4 = rt3 + timeduration;
     rt5 = rt3 - 2*timeduration;
     cout << rt3.asString() << endl;
     cout << rt4.asString() << endl;
-    cout << rt5.asString() << endl << endl; 
+    cout << rt5.asString() << endl << endl;
 
 
     rt3 = RWTime(RWDate(30,10,2005), 1, 30, 0);
@@ -75,8 +75,8 @@ BOOST_AUTO_TEST_CASE(test_ptime)
     rt5 = rt3 - 2*timeduration;
     cout << rt3.asString() << endl;
     cout << rt4.asString() << endl;
-    cout << rt5.asString() << endl << endl; 
-    
+    cout << rt5.asString() << endl << endl;
+
 }*/
 
 
@@ -141,11 +141,11 @@ BOOST_AUTO_TEST_CASE(test_ctitime_methods)
 
     BOOST_CHECK_EQUAL( rw1.hour(), d1.hour() );
     BOOST_CHECK_EQUAL( rw1.minute(), d1.minute() );
-    
+
     BOOST_CHECK_EQUAL( rw1.second(), d1.second() );
-    
+
     BOOST_CHECK_EQUAL( rw1.minuteGMT(), d1.minuteGMT() );
-    
+
     BOOST_CHECK_EQUAL( rw1.hourGMT(), d1.hourGMT() );
     BOOST_CHECK_EQUAL( timep, d1.seconds());
     BOOST_CHECK_EQUAL( false, d1.isDST() );
@@ -190,21 +190,21 @@ BOOST_AUTO_TEST_CASE(test_ctitime_specials)
     BOOST_CHECK_EQUAL( CtiTime(CtiTime::pos_infin).isValid(), false );
     BOOST_CHECK_EQUAL( CtiTime((unsigned long)0).isValid(), false );
     BOOST_CHECK_EQUAL( CtiTime(ct1).isValid(), false );
-    
+
 
     // check creating a CtiTime using a CtiDate
     CtiDate cd;
-    
+
     CtiTime ct3(cd);
     //std::cout << "here" << std::endl;
     BOOST_CHECK_EQUAL( cd.asString(), ct3.date().asString() );
 
-    
+
     // check creating a CtiTime from a special CtiDate
-    
+
     CtiDate cd1(CtiDate::not_a_date);
     CtiDate cd2(CtiDate::pos_infin);
-    
+
     CtiTime ct4(cd1);
     CtiTime ct6(cd2);
 
@@ -279,7 +279,7 @@ BOOST_AUTO_TEST_CASE(test_ctitime_DST)
     ctb = ct - timeduration;
     CtiTime cta;
     cta = ct + timeduration;
-    
+
     /*std::cout << std::endl;
     std::cout << "DST begin time:\t\t\t" << ct.asString() << std::endl;
     std::cout << "A not-exsit time (2:30am):\t" << CtiTime(ct.date(), 2, 30, 0).asString() << std::endl;
@@ -297,9 +297,9 @@ BOOST_AUTO_TEST_CASE(test_ctitime_DST)
     std::cout << "There are problems with DST in the current code. Add testing when these are gone." << std::endl;
 
     // check the ambiguous time points
-    
+
     timeduration = 60*60; // timeduration is one hour
-    ct = CtiTime::endDST(2005); 
+    ct = CtiTime::endDST(2005);
     ct = ct - timeduration; // first 1am
     ctt = ct - 30*60; // 0:30am
     ctt1 = ctt - 90*60; // 23:00pm
@@ -307,7 +307,7 @@ BOOST_AUTO_TEST_CASE(test_ctitime_DST)
     /*std::cout << std::endl << "DST end time - 1hr: \t\t" << ct.asString() << std::endl;
     std::cout << "DST end time - 1.5hr: \t\t" << ctt.asString() << std::endl;
     std::cout << "DST end time - 3hr: \t\t" << ctt1.asString() << std::endl;*/
-    
+
     BOOST_CHECK_EQUAL( ctt1.seconds() + 2*timeduration, ct.seconds() );
     //asdf
     ct = ctt; // 0:30am
@@ -328,6 +328,140 @@ BOOST_AUTO_TEST_CASE(test_ctitime_DST)
 
 
 }
+
+
+struct time_parts
+{
+    int year, month, day, hour, minute, second, expected_offset;
+};
+
+
+unsigned long mkGmtSeconds(const time_parts &tp)
+{
+    return CtiTime(CtiDate(tp.day, tp.month, tp.year), tp.hour, tp.minute, tp.second).seconds();
+}
+
+unsigned long mkLocalSeconds(const time_parts &tp)
+{
+    //  local seconds = GMT seconds + TZ offset
+    return mkGmtSeconds(tp) + tp.expected_offset;
+}
+
+BOOST_AUTO_TEST_CASE(test_ctitime_fromLocalSeconds)
+{
+    //  hard-coded assumptions for our local timezone (Central Time)
+    const int standard_offset = -6 * 3600;
+    const int daylight_offset = -5 * 3600;
+
+    //  =====  2009 test cases  =====
+    time_parts tc2009[11] =
+    {
+        { 2009,  1,  1,  0,  0,  0, standard_offset },  //  known ST date
+
+        { 2009,  3,  7,  0,  0,  0, standard_offset },  //  standard -> daylight-saving-time transition
+        { 2009,  3,  8,  1, 59, 59, standard_offset },  //
+        //  skip the nonexistent 2:00 hour
+        { 2009,  3,  8,  3,  0,  0, daylight_offset },  //
+        { 2009,  3,  9,  0,  0,  0, daylight_offset },  //
+
+        { 2009,  7,  1,  0,  0,  0, daylight_offset },  //  known DST date
+
+        { 2009, 10, 31,  0,  0,  0, daylight_offset },  //  daylight-saving-time -> standard transition
+        { 2009, 11,  1,  0, 59, 59, daylight_offset },  //
+        //  skip the ambiguous 1:00 hour
+        { 2009, 11,  1,  2,  0,  0, standard_offset },  //
+        { 2009, 11,  2,  0,  0,  0, standard_offset },  //
+
+        { 2009, 12, 31,  0,  0,  0, standard_offset }   //  known ST date
+    };
+
+    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 0]), CtiTime::fromLocalSeconds(mkLocalSeconds(tc2009[ 0])).seconds());
+    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 1]), CtiTime::fromLocalSeconds(mkLocalSeconds(tc2009[ 1])).seconds());
+    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 2]), CtiTime::fromLocalSeconds(mkLocalSeconds(tc2009[ 2])).seconds());
+    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 3]), CtiTime::fromLocalSeconds(mkLocalSeconds(tc2009[ 3])).seconds());
+    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 4]), CtiTime::fromLocalSeconds(mkLocalSeconds(tc2009[ 4])).seconds());
+    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 5]), CtiTime::fromLocalSeconds(mkLocalSeconds(tc2009[ 5])).seconds());
+    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 6]), CtiTime::fromLocalSeconds(mkLocalSeconds(tc2009[ 6])).seconds());
+    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 7]), CtiTime::fromLocalSeconds(mkLocalSeconds(tc2009[ 7])).seconds());
+    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 8]), CtiTime::fromLocalSeconds(mkLocalSeconds(tc2009[ 8])).seconds());
+    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 9]), CtiTime::fromLocalSeconds(mkLocalSeconds(tc2009[ 9])).seconds());
+    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[10]), CtiTime::fromLocalSeconds(mkLocalSeconds(tc2009[10])).seconds());
+}
+
+/*
+BOOST_AUTO_TEST_CASE(test_ctitime_asGMT)
+{
+    //  hard-coded assumptions for our local timezone (Central Time)
+    const int standard_offset = -6 * 3600;
+    const int daylight_offset = -5 * 3600;
+
+    //  =====  2009 test cases  =====
+    time_parts tc2009[11] =
+    {
+        { 2009,  1,  1,  0,  0,  0, standard_offset },  //  known ST date
+
+        { 2009,  3,  7,  0,  0,  0, standard_offset },  //  standard -> daylight-saving-time transition
+        { 2009,  3,  8,  1, 59, 59, standard_offset },  //
+        { 2009,  3,  8,  3,  0,  0, daylight_offset },  //
+        { 2009,  3,  9,  0,  0,  0, daylight_offset },  //
+
+        { 2009,  7,  1,  0,  0,  0, daylight_offset },  //  known DST date
+
+        { 2009, 10, 31,  0,  0,  0, daylight_offset },  //  daylight-saving-time -> standard transition
+        { 2009, 11,  1,  0, 59, 59, daylight_offset },  //
+        { 2009, 11,  1,  3,  0,  0, standard_offset },  //
+        { 2009, 11,  2,  0,  0,  0, standard_offset },  //
+
+        { 2009, 12, 31,  0,  0,  0, standard_offset }   //  known ST date
+    };
+
+    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 0]), mkGmtSeconds(tc2009[ 0]).asGMT().seconds() + tc2009[ 0].expected_offset);
+    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 1]), mkGmtSeconds(tc2009[ 1]).asGMT().seconds() + tc2009[ 1].expected_offset);
+    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 2]), mkGmtSeconds(tc2009[ 2]).asGMT().seconds() + tc2009[ 2].expected_offset);
+    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 3]), mkGmtSeconds(tc2009[ 3]).asGMT().seconds() + tc2009[ 3].expected_offset);
+    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 4]), mkGmtSeconds(tc2009[ 4]).asGMT().seconds() + tc2009[ 4].expected_offset);
+    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 5]), mkGmtSeconds(tc2009[ 5]).asGMT().seconds() + tc2009[ 5].expected_offset);
+    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 6]), mkGmtSeconds(tc2009[ 6]).asGMT().seconds() + tc2009[ 6].expected_offset);
+    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 7]), mkGmtSeconds(tc2009[ 7]).asGMT().seconds() + tc2009[ 7].expected_offset);
+    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 8]), mkGmtSeconds(tc2009[ 8]).asGMT().seconds() + tc2009[ 8].expected_offset);
+    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 9]), mkGmtSeconds(tc2009[ 9]).asGMT().seconds() + tc2009[ 9].expected_offset);
+    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[10]), mkGmtSeconds(tc2009[10]).asGMT().seconds() + tc2009[10].expected_offset);
+
+    //  Historical (pre-2007) dates are not supported yet.
+    //  =====  2006 test cases  =====
+    time_parts tc2006[11] =
+    {
+        { 2006,  1,  1,  0,  0,  0, standard_offset },  //  known ST date
+
+        { 2006,  4,  1,  0,  0,  0, standard_offset },  //  standard -> daylight-saving-time transition
+        { 2006,  4,  2,  1, 59, 59, standard_offset },  //
+        { 2006,  4,  2,  3,  0,  0, daylight_offset },  //
+        { 2006,  4,  3,  0,  0,  0, daylight_offset },  //
+
+        { 2006,  7,  1,  0,  0,  0, daylight_offset },  //  known DST date
+
+        { 2006, 10, 28,  0,  0,  0, daylight_offset },  //  daylight-saving-time -> standard transition
+        { 2006, 10, 29,  0, 59, 59, daylight_offset },  //
+        { 2006, 10, 29,  3,  0,  0, standard_offset },  //
+        { 2006, 10, 30,  0,  0,  0, standard_offset },  //
+
+        { 2006, 12, 31,  0,  0,  0, standard_offset }   //  known ST date
+    };
+
+    BOOST_CHECK_EQUAL(mkCtiTime(tc2006[ 0]).seconds(), mkCtiTime(tc2006[ 0]).asGMT().seconds() + tc2006[ 0].expected_offset);
+    BOOST_CHECK_EQUAL(mkCtiTime(tc2006[ 1]).seconds(), mkCtiTime(tc2006[ 1]).asGMT().seconds() + tc2006[ 1].expected_offset);
+    BOOST_CHECK_EQUAL(mkCtiTime(tc2006[ 2]).seconds(), mkCtiTime(tc2006[ 2]).asGMT().seconds() + tc2006[ 2].expected_offset);
+    BOOST_CHECK_EQUAL(mkCtiTime(tc2006[ 3]).seconds(), mkCtiTime(tc2006[ 3]).asGMT().seconds() + tc2006[ 3].expected_offset);
+    BOOST_CHECK_EQUAL(mkCtiTime(tc2006[ 4]).seconds(), mkCtiTime(tc2006[ 4]).asGMT().seconds() + tc2006[ 4].expected_offset);
+    BOOST_CHECK_EQUAL(mkCtiTime(tc2006[ 5]).seconds(), mkCtiTime(tc2006[ 5]).asGMT().seconds() + tc2006[ 5].expected_offset);
+    BOOST_CHECK_EQUAL(mkCtiTime(tc2006[ 6]).seconds(), mkCtiTime(tc2006[ 6]).asGMT().seconds() + tc2006[ 6].expected_offset);
+    BOOST_CHECK_EQUAL(mkCtiTime(tc2006[ 7]).seconds(), mkCtiTime(tc2006[ 7]).asGMT().seconds() + tc2006[ 7].expected_offset);
+    BOOST_CHECK_EQUAL(mkCtiTime(tc2006[ 8]).seconds(), mkCtiTime(tc2006[ 8]).asGMT().seconds() + tc2006[ 8].expected_offset);
+    BOOST_CHECK_EQUAL(mkCtiTime(tc2006[ 9]).seconds(), mkCtiTime(tc2006[ 9]).asGMT().seconds() + tc2006[ 9].expected_offset);
+    BOOST_CHECK_EQUAL(mkCtiTime(tc2006[10]).seconds(), mkCtiTime(tc2006[10]).asGMT().seconds() + tc2006[10].expected_offset);
+}
+*/
+
 /*
 BOOST_AUTO_TEST_CASE(test_locale)
 {
@@ -338,7 +472,7 @@ BOOST_AUTO_TEST_CASE(test_locale)
     CtiTime t1(d1, 12, 10, 5);
 
     std::locale global = std::locale::classic();
-    ss.imbue(global); 
+    ss.imbue(global);
     ss << t1.asString();
     std::cout << "using default locale: " << ss.str() << std::endl;
 }*/
@@ -352,7 +486,7 @@ BOOST_AUTO_TEST_CASE(test_locale)
 //    test->add( BOOST_TEST_CASE( test_ctitime_specials ));
 //    test->add( BOOST_TEST_CASE( test_locale ) );
 //    test->add( BOOST_TEST_CASE( test_ctitime_DST ) );
-//    return test; 
+//    return test;
 //}
 
 

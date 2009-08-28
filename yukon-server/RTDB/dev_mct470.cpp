@@ -4115,7 +4115,6 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
             else
             {
                 point_info time_info;
-                unsigned long peak_time;
                 string pointname;
                 int tags = 0;
 
@@ -4151,25 +4150,10 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                                       ReturnMsg, pi, pointname, CtiTime(), 1.0, tags);
                 }
 
-                //  this is CRAZY WIN32 SPECIFIC
-                _TIME_ZONE_INFORMATION tzinfo;
-                int timezone_offset = 0;
-
-                switch( GetTimeZoneInformation(&tzinfo) )
-                {
-                    //  Bias is in minutes
-                    case TIME_ZONE_ID_STANDARD:     timezone_offset = (tzinfo.Bias + tzinfo.StandardBias) * 60; break;
-                    case TIME_ZONE_ID_DAYLIGHT:     timezone_offset = (tzinfo.Bias + tzinfo.DaylightBias) * 60; break;
-
-                    case TIME_ZONE_ID_INVALID:
-                    case TIME_ZONE_ID_UNKNOWN:
-                    default:
-                        break;
-                }
-
                 pi        = getData(DSt->Message + 5, 3, ValueType_IED);
                 time_info = CtiDeviceMCT4xx::getData(DSt->Message + 8, 4, ValueType_Raw);
-                peak_time = (unsigned long)time_info.value + timezone_offset;
+
+                CtiTime peak_time = CtiTime::fromLocalSeconds(time_info.value);
 
                 pointname  = "kW rate ";
                 pointname += string(1, (char)('A' + rate));
@@ -4347,28 +4331,11 @@ INT CtiDeviceMCT470::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, lis
         {
             case Emetcon::GetConfig_IEDTime:
             {
-                //  this is CRAZY WIN32 SPECIFIC
-                _TIME_ZONE_INFORMATION tzinfo;
-                int timezone_offset = 0;
-
-                switch( GetTimeZoneInformation(&tzinfo) )
-                {
-                    //  Bias is in minutes
-                    case TIME_ZONE_ID_STANDARD:     timezone_offset = (tzinfo.Bias + tzinfo.StandardBias) * 60; break;
-                    case TIME_ZONE_ID_DAYLIGHT:     timezone_offset = (tzinfo.Bias + tzinfo.DaylightBias) * 60; break;
-
-                    case TIME_ZONE_ID_INVALID:
-                    case TIME_ZONE_ID_UNKNOWN:
-                    default:
-                        break;
-                }
-
                 point_info  pi_time  = CtiDeviceMCT4xx::getData(DSt->Message, 4, ValueType_Raw);
-                unsigned long ied_time = (unsigned long)pi_time.value + timezone_offset;
 
-                _iedTime = CtiTime(ied_time);
+                _iedTime = CtiTime::fromLocalSeconds(pi_time.value);
 
-                resultString += getName() + " / current time: " + printable_time(ied_time) + "\n";
+                resultString += getName() + " / current time: " + printable_time(_iedTime.seconds()) + "\n";
 
                 if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) )
                 {
@@ -4475,9 +4442,8 @@ INT CtiDeviceMCT470::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, lis
                 resultString += valueReport("demand reset count", pi);
 
                 pi_time  = CtiDeviceMCT4xx::getData(DSt->Message + 7, 4, ValueType_Raw);
-                ied_time = (unsigned long)pi_time.value + timezone_offset;
 
-                resultString += "\n" + getName() + " / time of last reset: " + printable_time(ied_time) + "\n";
+                resultString += "\n" + getName() + " / time of last reset: " + printable_time(CtiTime::fromLocalSeconds(pi_time.value).seconds()) + "\n";
 
                 pi = CtiDeviceMCT470::getData(DSt->Message + 11, 2, ValueType_IED);
 

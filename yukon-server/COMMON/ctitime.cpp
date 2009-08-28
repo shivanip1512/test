@@ -281,6 +281,22 @@ CtiTime CtiTime::asGMT() const
     return t;
 }
 
+CtiTime CtiTime::fromLocalSeconds(const unsigned long local_seconds)
+{
+    _TIME_ZONE_INFORMATION tzinfo;
+    GetTimeZoneInformation(&tzinfo);
+
+    //  attempt a rough estimate of GMT time from local time by using the standard time offset
+    ctitime_t gmt_seconds = local_seconds + (tzinfo.Bias + tzinfo.StandardBias) * SECONDS_PER_MINUTE;
+
+    //  need to determine if we were in DST or not
+    tm ctm = *localtime(&gmt_seconds);
+
+    int minutes_offset = tzinfo.Bias + (ctm.tm_isdst ? tzinfo.DaylightBias : tzinfo.StandardBias);
+
+    return CtiTime(local_seconds + minutes_offset * SECONDS_PER_MINUTE);
+}
+
 bool CtiTime::isValid() const
 {
     return _seconds > 0 && _seconds != std::numeric_limits<ctitime_t>::max();
@@ -402,14 +418,14 @@ void CtiTime::resetToNow()
 CtiTime CtiTime::beginDST(unsigned year)
 {
     boost::gregorian::date d = us_dst_rules::local_dst_start_day(year);
-    boost::posix_time::time_duration td = us_dst_rules::dst_offset(); 
-    return CtiTime(CtiDate(d.day(), d.month(), d.year()), td.hours() + 2, td.minutes(), td.seconds());  
+    boost::posix_time::time_duration td = us_dst_rules::dst_offset();
+    return CtiTime(CtiDate(d.day(), d.month(), d.year()), td.hours() + 2, td.minutes(), td.seconds());
 }
 CtiTime CtiTime::endDST(unsigned int year)
 {
     boost::gregorian::date d = us_dst_rules::local_dst_end_day(year);
-    boost::posix_time::time_duration td = us_dst_rules::dst_offset(); 
-    return CtiTime(CtiDate(d.day(), d.month(), d.year()), td.hours(), td.minutes(), td.seconds()) - SECONDS_PER_MINUTE*MINUTES_PER_HOUR; 
+    boost::posix_time::time_duration td = us_dst_rules::dst_offset();
+    return CtiTime(CtiDate(d.day(), d.month(), d.year()), td.hours(), td.minutes(), td.seconds()) - SECONDS_PER_MINUTE*MINUTES_PER_HOUR;
 }
 
 
@@ -446,21 +462,6 @@ bool operator != (const CtiTime& d1, const CtiTime& d2)
     return d1._seconds != d2._seconds;
 }
 
-
-/*
-CtiTime operator + (const CtiTime& t, const int s)
-{
-    CtiTime _t(t);
-    _t.addSeconds(s);
-    return _t;
-}
-
-CtiTime operator - (const CtiTime& t, const int s)
-{
-    CtiTime _t(t);
-    _t.addSeconds(-1*s);
-    return _t;
-} */
 CtiTime operator + (const CtiTime& t, const unsigned long s)
 {
     CtiTime _t(t);

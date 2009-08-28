@@ -1,7 +1,7 @@
 /*
  * class CtiTime
- *  
- * Author: Jian Liu 
+ *
+ * Author: Jian Liu
  * Date: 08/10/2005 15:37:00
  *
  *
@@ -60,6 +60,7 @@ public:
 
 
     CtiTime  asGMT() const;
+    static CtiTime fromLocalSeconds(const unsigned long local_seconds);
 
     int day() const;
     int second() const;
@@ -91,9 +92,6 @@ public:
     static long findTZ();
     static struct tm* gmtime_r(const time_t *tod);
     static struct tm* localtime_r(const time_t *tod);
-
-    //friend CtiTime IM_EX_CTIBASE operator + (const CtiTime& t, const int s);
-    //friend CtiTime IM_EX_CTIBASE operator - (const CtiTime& t, const int s);
 
     friend CtiTime IM_EX_CTIBASE operator + (const CtiTime& t, const unsigned long s);
     friend CtiTime IM_EX_CTIBASE operator - (const CtiTime& t, const unsigned long s);
