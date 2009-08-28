@@ -7,7 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.cannontech.common.device.model.DisplayableDevice;
+import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.dr.loadgroup.dao.LoadGroupDao;
 import com.cannontech.dr.program.dao.ProgramDao;
@@ -20,17 +20,17 @@ public class LoadGroupController {
 
     @RequestMapping("/loadGroup/list")
     public String list(ModelMap modelMap) {
-        List<DisplayableDevice> loadGroups = loadGroupDao.getLoadGroups();
+        List<DisplayablePao> loadGroups = loadGroupDao.getLoadGroups();
         modelMap.addAttribute("loadGroups", loadGroups);
         return "/dr/loadGroup/list.jsp";
     }
 
     @RequestMapping("/loadGroup/detail")
     public String detail(int loadGroupId, ModelMap modelMap) {
-        DisplayableDevice loadGroup = loadGroupDao.getLoadGroup(loadGroupId);
+        DisplayablePao loadGroup = loadGroupDao.getLoadGroup(loadGroupId);
         // TODO:  check permissions of control area
         modelMap.addAttribute("loadGroup", loadGroup);
-        List<DisplayableDevice> parentPrograms = programDao.getProgramsForLoadGroup(loadGroupId);
+        List<DisplayablePao> parentPrograms = programDao.getProgramsForLoadGroup(loadGroupId);
         modelMap.addAttribute("parentPrograms", parentPrograms);
         return "/dr/loadGroup/detail.jsp";
     }

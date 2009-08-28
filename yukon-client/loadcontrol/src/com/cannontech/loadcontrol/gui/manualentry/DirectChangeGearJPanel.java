@@ -1,6 +1,9 @@
 package com.cannontech.loadcontrol.gui.manualentry;
 
+import java.util.List;
+
 import javax.swing.JPanel;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.data.LMProgramDirect;
@@ -310,8 +313,8 @@ public class DirectChangeGearJPanel extends JPanel implements java.awt.event.Act
 	
 		return;
 	}
-    
-	public void setGearList(java.util.Vector gears) {
+
+	public void setGearList(List<LMProgramDirectGear> gears) {
 		getJComboBoxGear().removeAllItems();
 		        
 		if( gears != null )

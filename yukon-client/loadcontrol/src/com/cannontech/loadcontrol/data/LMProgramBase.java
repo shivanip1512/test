@@ -217,12 +217,8 @@ public java.lang.Integer getProgramStatus() {
 public java.lang.Integer getProgramStatusPointID() {
 	return programStatusPointID;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/16/2001 9:49:04 AM)
- * @return java.lang.String
- * @param state int
- */
+
+@Deprecated
 public static String getProgramStatusString(int status) 
 {
 	

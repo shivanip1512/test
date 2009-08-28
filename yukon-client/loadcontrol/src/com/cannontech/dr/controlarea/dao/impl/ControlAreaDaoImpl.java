@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.common.device.model.DisplayableDevice;
+import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.dr.controlarea.dao.ControlAreaDao;
@@ -26,35 +27,35 @@ public class ControlAreaDaoImpl implements ControlAreaDao {
         baseControlAreaQuery + " AND paObjectId IN (SELECT deviceId"
         + " FROM lmControlAreaProgram WHERE lmProgramDeviceId = ?)";
 
-    private final static ParameterizedRowMapper<DisplayableDevice> controlAreaRowMapper =
-        new ParameterizedRowMapper<DisplayableDevice>() {
+    private final static ParameterizedRowMapper<DisplayablePao> controlAreaRowMapper =
+        new ParameterizedRowMapper<DisplayablePao>() {
         @Override
-        public DisplayableDevice mapRow(ResultSet rs, int rowNum)
+        public DisplayablePao mapRow(ResultSet rs, int rowNum)
                 throws SQLException {
             PaoIdentifier paoId = new PaoIdentifier(rs.getInt("paObjectId"),
                                                     PaoType.LM_CONTROL_AREA);
-            DisplayableDevice retVal = new DisplayableDevice(paoId,
-                                                             rs.getString("paoName"));
+            DisplayablePao retVal = new DisplayableDevice(paoId,
+                                                          rs.getString("paoName"));
             return retVal;
         }};
 
 
     @Override
-    public List<DisplayableDevice> getControlAreas() {
-        List<DisplayableDevice> retVal = simpleJdbcTemplate.query(baseControlAreaQuery,
-                                                                  controlAreaRowMapper);
+    public List<DisplayablePao> getControlAreas() {
+        List<DisplayablePao> retVal = simpleJdbcTemplate.query(baseControlAreaQuery,
+                                                               controlAreaRowMapper);
         return retVal;
     }
 
     @Override
-    public DisplayableDevice getControlArea(int controlAreaId) {
+    public DisplayablePao getControlArea(int controlAreaId) {
         return simpleJdbcTemplate.queryForObject(singleControlAreaByIdQuery,
                                                  controlAreaRowMapper,
                                                  controlAreaId);
     }
 
     @Override
-    public DisplayableDevice getControlAreaForProgram(int programId) {
+    public DisplayablePao getControlAreaForProgram(int programId) {
         try {
             return simpleJdbcTemplate.queryForObject(singleControlAreaByProgramIdQuery,
                                                      controlAreaRowMapper,

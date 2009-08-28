@@ -2,10 +2,10 @@ package com.cannontech.dr.loadgroup.dao;
 
 import java.util.List;
 
-import com.cannontech.common.device.model.DisplayableDevice;
+import com.cannontech.common.pao.DisplayablePao;
 
 public interface LoadGroupDao {
-    public List<DisplayableDevice> getLoadGroupsForProgram(int programId);
-    public List<DisplayableDevice> getLoadGroups();
-    public DisplayableDevice getLoadGroup(int loadGroupId);
+    public List<DisplayablePao> getLoadGroupsForProgram(int programId);
+    public List<DisplayablePao> getLoadGroups();
+    public DisplayablePao getLoadGroup(int loadGroupId);
 }

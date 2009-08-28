@@ -3,22 +3,22 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:msg var="pageTitle" key="yukon.web.dr.controlArea.list.pageTitle"/>
+<cti:msg var="pageTitle" key="yukon.web.modules.dr.controlArea.list.pageTitle"/>
 <cti:standardPage module="dr" title="${pageTitle}">
     <cti:standardMenu menuSelection="details|controlareas"/>
 
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp">
-        	<cti:msg key="yukon.web.dr.controlArea.list.breadcrumb.operationsHome"/>
+        	<cti:msg key="yukon.web.modules.dr.controlArea.list.breadcrumb.operationsHome"/>
         </cti:crumbLink>
-        <cti:crumbLink><cti:msg key="yukon.web.dr.controlArea.list.breadcrumb.controlAreas"/></cti:crumbLink>
+        <cti:crumbLink><cti:msg key="yukon.web.modules.dr.controlArea.list.breadcrumb.controlAreas"/></cti:crumbLink>
     </cti:breadCrumbs>
 
-    <h2><cti:msg key="yukon.web.dr.controlArea.list.controlAreas"/></h2>
+    <h2><cti:msg key="yukon.web.modules.dr.controlArea.list.controlAreas"/></h2>
 
 	<table id="controlAreaList" class="compactMiniResultsTable">
 		<tr>
-			<th><cti:msg key="yukon.web.dr.controlArea.list.heading.name"/></th>
+			<th><cti:msg key="yukon.web.modules.dr.controlArea.list.heading.name"/></th>
 		</tr>
 		<c:forEach var="controlArea" items="${controlAreas}">
 			<tr class="<tags:alternateRow odd="" even="altRow"/>">

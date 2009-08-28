@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.common.device.model.DisplayableDevice;
+import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
@@ -25,35 +26,35 @@ public class ScenarioDaoImpl implements ScenarioDao {
         + " AND paObjectId IN (SELECT scenarioId FROM lmControlScenarioProgram"
         + " WHERE programId = ?)";
 
-    private final static ParameterizedRowMapper<DisplayableDevice> scenarioRowMapper =
-        new ParameterizedRowMapper<DisplayableDevice>() {
+    private final static ParameterizedRowMapper<DisplayablePao> scenarioRowMapper =
+        new ParameterizedRowMapper<DisplayablePao>() {
         @Override
-        public DisplayableDevice mapRow(ResultSet rs, int rowNum)
+        public DisplayablePao mapRow(ResultSet rs, int rowNum)
                 throws SQLException {
             PaoIdentifier paoId = new PaoIdentifier(rs.getInt("paObjectId"),
                                                     PaoType.LM_SCENARIO);
-            DisplayableDevice retVal = new DisplayableDevice(paoId,
-                                                             rs.getString("paoName"));
+            DisplayablePao retVal = new DisplayableDevice(paoId,
+                                                          rs.getString("paoName"));
             return retVal;
         }};
 
     @Override
-    public List<DisplayableDevice> getScenarios() {
-        List<DisplayableDevice> retVal = simpleJdbcTemplate.query(baseScenarioQuery,
+    public List<DisplayablePao> getScenarios() {
+        List<DisplayablePao> retVal = simpleJdbcTemplate.query(baseScenarioQuery,
                                                          scenarioRowMapper);
         return retVal;
     }
 
     @Override
-    public DisplayableDevice getScenario(int scenarioId) {
+    public DisplayablePao getScenario(int scenarioId) {
         return simpleJdbcTemplate.queryForObject(singleScenarioByIdQuery,
                                                  scenarioRowMapper,
                                                  scenarioId);
     }
 
     @Override
-    public List<DisplayableDevice> getScenariosForProgram(int programId) {
-        List<DisplayableDevice> retVal = simpleJdbcTemplate.query(scenariosByProgramIdQuery,
+    public List<DisplayablePao> getScenariosForProgram(int programId) {
+        List<DisplayablePao> retVal = simpleJdbcTemplate.query(scenariosByProgramIdQuery,
                                                                   scenarioRowMapper,
                                                                   programId);
         return retVal;

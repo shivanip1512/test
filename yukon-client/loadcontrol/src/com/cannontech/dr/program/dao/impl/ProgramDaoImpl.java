@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.common.device.model.DisplayableDevice;
+import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.dr.program.dao.ProgramDao;
@@ -18,9 +19,7 @@ public class ProgramDaoImpl implements ProgramDao {
 
     private final static String baseProgramQuery =
         "SELECT paObjectId, paoName FROM yukonPAObject"
-            + " WHERE category = 'LOADMANAGEMENT'"
-            + " AND paoClass = 'LOADMANAGEMENT'"
-            + " AND type = 'LM DIRECT PROGRAM'";
+            + " WHERE type = 'LM DIRECT PROGRAM'";
     private final static String programsForScenarioQuery =
         baseProgramQuery + " AND paObjectId IN (SELECT programId"
             + " FROM lmControlScenarioProgram WHERE scenarioId = ?)";
@@ -33,53 +32,53 @@ public class ProgramDaoImpl implements ProgramDao {
         baseProgramQuery + " AND paObjectId IN (SELECT deviceId"
             + " FROM lmProgramDirectGroup WHERE lmGroupDeviceId = ?)";
 
-    private final static ParameterizedRowMapper<DisplayableDevice> programRowMapper =
-        new ParameterizedRowMapper<DisplayableDevice>() {
+    private final static ParameterizedRowMapper<DisplayablePao> programRowMapper =
+        new ParameterizedRowMapper<DisplayablePao>() {
         @Override
-        public DisplayableDevice mapRow(ResultSet rs, int rowNum)
+        public DisplayablePao mapRow(ResultSet rs, int rowNum)
                 throws SQLException {
             PaoIdentifier paoId = new PaoIdentifier(rs.getInt("paObjectId"),
                                                     PaoType.LM_DIRECT_PROGRAM);
-            DisplayableDevice retVal = new DisplayableDevice(paoId,
-                                                             rs.getString("paoName"));
+            DisplayablePao retVal = new DisplayableDevice(paoId,
+                                                          rs.getString("paoName"));
             return retVal;
         }};
 
     @Override
-    public List<DisplayableDevice> getProgramsForScenario(int scenarioId) {
-        List<DisplayableDevice> retVal = simpleJdbcTemplate.query(programsForScenarioQuery,
-                                                                  programRowMapper,
-                                                                  scenarioId);
+    public List<DisplayablePao> getProgramsForScenario(int scenarioId) {
+        List<DisplayablePao> retVal = simpleJdbcTemplate.query(programsForScenarioQuery,
+                                                               programRowMapper,
+                                                               scenarioId);
         return retVal;
     }
 
     @Override
-    public List<DisplayableDevice> getProgramsForControlArea(int controlAreaId) {
-        List<DisplayableDevice> retVal = simpleJdbcTemplate.query(programsForControlAreaQuery,
-                                                                  programRowMapper,
-                                                                  controlAreaId);
+    public List<DisplayablePao> getProgramsForControlArea(int controlAreaId) {
+        List<DisplayablePao> retVal = simpleJdbcTemplate.query(programsForControlAreaQuery,
+                                                               programRowMapper,
+                                                               controlAreaId);
         return retVal;
     }
 
     @Override
-    public List<DisplayableDevice> getPrograms() {
-        List<DisplayableDevice> retVal = simpleJdbcTemplate.query(baseProgramQuery,
-                                                                  programRowMapper);
+    public List<DisplayablePao> getPrograms() {
+        List<DisplayablePao> retVal = simpleJdbcTemplate.query(baseProgramQuery,
+                                                               programRowMapper);
         return retVal;
     }
 
     @Override
-    public DisplayableDevice getProgram(int programId) {
+    public DisplayablePao getProgram(int programId) {
         return simpleJdbcTemplate.queryForObject(singleProgramByIdQuery,
                                                  programRowMapper,
                                                  programId);
     }
 
     @Override
-    public List<DisplayableDevice> getProgramsForLoadGroup(int loadGroupId) {
-        List<DisplayableDevice> retVal = simpleJdbcTemplate.query(programsForLoadGroupQuery,
-                                                                  programRowMapper,
-                                                                  loadGroupId);
+    public List<DisplayablePao> getProgramsForLoadGroup(int loadGroupId) {
+        List<DisplayablePao> retVal = simpleJdbcTemplate.query(programsForLoadGroupQuery,
+                                                               programRowMapper,
+                                                               loadGroupId);
         return retVal;
     }
 

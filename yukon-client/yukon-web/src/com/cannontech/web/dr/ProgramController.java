@@ -7,7 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.cannontech.common.device.model.DisplayableDevice;
+import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.dr.controlarea.dao.ControlAreaDao;
 import com.cannontech.dr.loadgroup.dao.LoadGroupDao;
@@ -24,21 +24,21 @@ public class ProgramController {
 
     @RequestMapping("/program/list")
     public String list(ModelMap modelMap) {
-        List<DisplayableDevice> programs = programDao.getPrograms();
+        List<DisplayablePao> programs = programDao.getPrograms();
         modelMap.addAttribute("programs", programs);
         return "/dr/program/list.jsp";
     }
 
     @RequestMapping("/program/detail")
     public String detail(int programId, ModelMap modelMap) {
-        DisplayableDevice program = programDao.getProgram(programId);
+        DisplayablePao program = programDao.getProgram(programId);
         // TODO:  check permissions of program
         modelMap.addAttribute("program", program);
-        List<DisplayableDevice> loadGroups = loadGroupDao.getLoadGroupsForProgram(programId);
+        List<DisplayablePao> loadGroups = loadGroupDao.getLoadGroupsForProgram(programId);
         modelMap.addAttribute("loadGroups", loadGroups);
-        DisplayableDevice parentControlArea = controlAreaDao.getControlAreaForProgram(programId);
+        DisplayablePao parentControlArea = controlAreaDao.getControlAreaForProgram(programId);
         modelMap.addAttribute("parentControlArea", parentControlArea);
-        List<DisplayableDevice> parentScenarios = scenarioDao.getScenariosForProgram(programId);
+        List<DisplayablePao> parentScenarios = scenarioDao.getScenariosForProgram(programId);
         modelMap.addAttribute("parentScenarios", parentScenarios);
         return "/dr/program/detail.jsp";
     }

@@ -575,6 +575,9 @@
                 <entry key="GROUP_METER_READ">
                     <ref local="groupMeterReadUpdateBackingService"/>
                 </entry>
+                <entry key="DR_PROGRAM">
+                    <ref local="drProgramBackingService"/>
+                </entry>
             </map>
         </property>
     </bean>
@@ -705,8 +708,9 @@
     <bean id="lastRunJobUpdaterHandler" class="com.cannontech.web.updater.job.handler.LastRunJobUpdaterHandler"/>
     <bean id="nextRunJobUpdaterHandler" class="com.cannontech.web.updater.job.handler.NextRunJobUpdaterHandler"/>
     <bean id="scheduleDescriptionJobUpdaterHandler" class="com.cannontech.web.updater.job.handler.ScheduleDescriptionJobUpdaterHandler"/>
-    
-    
+
+    <bean id="drProgramBackingService" class="com.cannontech.web.updater.dr.ProgramBackingService"/>
+
     <bean id="abstractFormattingService" class="com.cannontech.web.updater.capcontrol.AbstractFormattingService"
           abstract="true">
         <property name="filterCacheFactory" ref="filterCacheFactory"/>

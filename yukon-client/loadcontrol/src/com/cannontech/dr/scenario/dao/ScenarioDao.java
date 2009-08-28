@@ -2,10 +2,10 @@ package com.cannontech.dr.scenario.dao;
 
 import java.util.List;
 
-import com.cannontech.common.device.model.DisplayableDevice;
+import com.cannontech.common.pao.DisplayablePao;
 
 public interface ScenarioDao {
-    public List<DisplayableDevice> getScenarios();
-    public DisplayableDevice getScenario(int scenarioId);
-    public List<DisplayableDevice> getScenariosForProgram(int programId);
+    public List<DisplayablePao> getScenarios();
+    public DisplayablePao getScenario(int scenarioId);
+    public List<DisplayablePao> getScenariosForProgram(int programId);
 }

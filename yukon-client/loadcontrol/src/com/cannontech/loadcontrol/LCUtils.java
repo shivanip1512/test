@@ -259,69 +259,69 @@ public class LCUtils
 		return topStrBuf.toString() + "<BR>" + botStrBuf.toString();
 	}
 	
-	public static synchronized Object getProgramValueAt(LMProgramBase prg, int col, YukonUserContext userContext) 
+	public static synchronized Object getProgramValueAt(LMProgramBase program, int col, YukonUserContext userContext) 
 	{
         DateFormattingService dateFormattingService =
             (DateFormattingService) YukonSpringHook.getBean("dateFormattingService");
         switch( col )
 		{
 			case ProgramTableModel.PROGRAM_NAME:
-				return prg.getYukonName() +
-                        (prg.isRampingIn() ? " (RI)" : 
-                            (prg.isRampingOut() ? " (RO)" : ""));
+				return program.getYukonName() +
+                        (program.isRampingIn() ? " (RI)" : 
+                            (program.isRampingOut() ? " (RO)" : ""));
 
 			case ProgramTableModel.CURRENT_STATUS:
-				if( prg.getDisableFlag().booleanValue() )				
-					return "DISABLED: " + LMProgramBase.getProgramStatusString( prg.getProgramStatus().intValue() );
+				if( program.getDisableFlag().booleanValue() )				
+					return "DISABLED: " + LMProgramBase.getProgramStatusString( program.getProgramStatus().intValue() );
 				else
-					return LMProgramBase.getProgramStatusString( prg.getProgramStatus().intValue() );
+					return LMProgramBase.getProgramStatusString( program.getProgramStatus().intValue() );
 	
 			case ProgramTableModel.START_TIME:
-				if( prg.getDisableFlag().booleanValue() ) {
+				if( program.getDisableFlag().booleanValue() ) {
                     return CtiUtilities.STRING_DASH_LINE;
                 } else {
-					if( prg.getStartTime() == null
-						 || prg.getStartTime().before(CtiUtilities.get1990GregCalendar()) ) {
+					if( program.getStartTime() == null
+						 || program.getStartTime().before(CtiUtilities.get1990GregCalendar()) ) {
                         return CtiUtilities.STRING_DASH_LINE;
                     } else {
-                        String result = dateFormattingService.formatDate(prg.getStartTime().getTime(), DateFormatEnum.DATEHM, userContext);
+                        String result = dateFormattingService.formatDate(program.getStartTime().getTime(), DateFormatEnum.DATEHM, userContext);
                         return result;
                     }
 				}
 
 			case ProgramTableModel.CURRENT_GEAR:
 			{
-				if( prg instanceof IGearProgram ) 
+				if( program instanceof IGearProgram ) 
 				{
-					return getCurrentGear( (IGearProgram)prg );
+					return getCurrentGear( (IGearProgram)program );
 				}
 				else
 					return CtiUtilities.STRING_DASH_LINE;
 			}
 			
 			case ProgramTableModel.STOP_TIME:
-				if( prg.getDisableFlag().booleanValue() ) {
+				if( program.getDisableFlag().booleanValue() ) {
                     return CtiUtilities.STRING_DASH_LINE;
                 } else {
                 	//return dashes if stop time is null, <1990 or >= 2035 
-                	if( prg.getStopTime() == null 
-						|| prg.getStopTime().before(CtiUtilities.get1990GregCalendar())
-						|| prg.getStopTime().compareTo(CtiUtilities.get2035GregCalendar()) >= 0 ) {
+                	if( program.getStopTime() == null 
+						|| program.getStopTime().before(CtiUtilities.get1990GregCalendar())
+						|| program.getStopTime().compareTo(CtiUtilities.get2035GregCalendar()) >= 0 ) {
                         return CtiUtilities.STRING_DASH_LINE;
 					} else {
-                        String result = dateFormattingService.formatDate(prg.getStopTime().getTime(), DateFormatEnum.DATEHM, userContext);
+                        String result = dateFormattingService.formatDate(program.getStopTime().getTime(), DateFormatEnum.DATEHM, userContext);
                         return result;
                     }
 				}
 			
 			case ProgramTableModel.PRIORITY:
 				return 
-					( prg.getStartPriority().intValue() <= 0
+					( program.getStartPriority().intValue() <= 0
 					? new Integer(1)
-					: prg.getStartPriority() );
+					: program.getStartPriority() );
 
 			case ProgramTableModel.REDUCTION:
-                Double reductionTotal = prg.getReductionTotal();
+                Double reductionTotal = program.getReductionTotal();
                 return roundToOneDecPt(reductionTotal);
 				
 			default:

@@ -3,22 +3,22 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:msg var="pageTitle" key="yukon.web.dr.loadGroup.list.pageTitle"/>
+<cti:msg var="pageTitle" key="yukon.web.modules.dr.loadGroup.list.pageTitle"/>
 <cti:standardPage module="dr" title="${pageTitle}">
     <cti:standardMenu menuSelection="details|loadGroups"/>
 
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp">
-        	<cti:msg key="yukon.web.dr.loadGroup.list.breadcrumb.operationsHome"/>
+        	<cti:msg key="yukon.web.modules.dr.loadGroup.list.breadcrumb.operationsHome"/>
         </cti:crumbLink>
-        <cti:crumbLink><cti:msg key="yukon.web.dr.loadGroup.list.breadcrumb.loadGroups"/></cti:crumbLink>
+        <cti:crumbLink><cti:msg key="yukon.web.modules.dr.loadGroup.list.breadcrumb.loadGroups"/></cti:crumbLink>
     </cti:breadCrumbs>
 
-    <h2><cti:msg key="yukon.web.dr.loadGroup.list.loadGroups"/></h2>
+    <h2><cti:msg key="yukon.web.modules.dr.loadGroup.list.loadGroups"/></h2>
 
 	<table id="loadGroupList" class="compactMiniResultsTable">
 		<tr>
-			<th><cti:msg key="yukon.web.dr.loadGroup.list.heading.name"/></th>
+			<th><cti:msg key="yukon.web.modules.dr.loadGroup.list.heading.name"/></th>
 		</tr>
 		<c:forEach var="loadGroup" items="${loadGroups}">
 			<tr class="<tags:alternateRow odd="" even="altRow"/>">

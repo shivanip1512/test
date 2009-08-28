@@ -316,7 +316,7 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
             //special case when we create a start message dro direct program, with
             //target cycle gear
             if (program instanceof LMProgramDirect) {
-                Vector gears = ((LMProgramDirect)program).getDirectGearVector();
+                List<LMProgramDirectGear> gears = ((LMProgramDirect)program).getDirectGearVector();
                 for (Iterator iter = gears.iterator(); iter.hasNext();) {
                     LMProgramDirectGear g = (LMProgramDirectGear) iter.next();
                     if (g.getControlMethod().equalsIgnoreCase(IlmDefines.CONTROL_TARGET_CYCLE)) 
@@ -1616,7 +1616,7 @@ private void initialize() {
 	 * Creation date: (7/17/2001 9:24:14 AM)
 	 * @param gears java.util.Vector
 	 */
-	public void setGearList(java.util.Vector gears) 
+	public void setGearList(List<LMProgramDirectGear> gears) 
 	{
 		getJComboBoxGear().removeAllItems();
         getJComboBoxStopGear().removeAllItems();
