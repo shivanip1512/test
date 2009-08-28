@@ -1733,7 +1733,10 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
             if( msg->isA() == MSG_PCRETURN )
             {
                 CtiReturnMsg* ret_msg = (CtiReturnMsg*) msg;
-                bool preventBreak = (ret_msg->Status() == DEVICEINHIBITED) | (ret_msg->Status() == NoMethod) |
+                bool preventBreak = (ret_msg->Status() == DEVICEINHIBITED) ||
+                                    (ret_msg->Status() == NoMethod) ||
+                                    (ret_msg->Status() == ErrorInvalidSSPEC) ||
+                                    (ret_msg->Status() == ErrorVerifySSPEC) ||
                                     (ret_msg->Status() == IDNF); // IDNF means not in the database
                 DumpReturnMessage(*ret_msg);
                 HandleReturnMessage(ret_msg, good_map, bad_map, device_map, resultQueue);
