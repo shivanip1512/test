@@ -8,36 +8,36 @@
 
 
 <!--  Control Area Field Values -->
-<entry key="yukon.web.modules.dr.controlArea.value.state.active">Active</entry>
-<entry key="yukon.web.modules.dr.controlArea.value.state.partially_active">Partially Active</entry>
-<entry key="yukon.web.modules.dr.controlArea.value.state.inactive">Inactive</entry>
-<entry key="yukon.web.modules.dr.controlArea.value.state.manual_active">Manual Active</entry>
-<entry key="yukon.web.modules.dr.controlArea.value.state.control_attempt">Control Attempt</entry>
+<entry key="yukon.web.modules.dr.controlArea.value.STATE.ACTIVE">Active</entry>
+<entry key="yukon.web.modules.dr.controlArea.value.STATE.PARTIALLY_ACTIVE">Partially Active</entry>
+<entry key="yukon.web.modules.dr.controlArea.value.STATE.INACTIVE">Inactive</entry>
+<entry key="yukon.web.modules.dr.controlArea.value.STATE.MANUAL_ACTIVE">Manual Active</entry>
+<entry key="yukon.web.modules.dr.controlArea.value.STATE.CONTROL_ATTEMPT">Control Attempt</entry>
 
 <!--  Program Field Values -->
-<entry key="yukon.web.modules.dr.program.value.state.active">Active</entry>
-<entry key="yukon.web.modules.dr.program.value.state.partially_active">Partially Active</entry>
-<entry key="yukon.web.modules.dr.program.value.state.inactive">Inactive</entry>
-<entry key="yukon.web.modules.dr.program.value.state.manual_active">Manual Active</entry>
-<entry key="yukon.web.modules.dr.program.value.state.control_attempt">Control Attempt</entry>
-<entry key="yukon.web.modules.dr.program.value.state.notified">Notified</entry>
-<entry key="yukon.web.modules.dr.program.value.state.stopping">Stopping</entry>
-<entry key="yukon.web.modules.dr.program.value.state.non_control">Non Control</entry>
-<entry key="yukon.web.modules.dr.program.value.state.timed_active">Timed Active</entry>
-<entry key="yukon.web.modules.dr.program.value.start">{0,date,MM/dd/yyyy HH:mm zz}</entry>
-<entry key="yukon.web.modules.dr.program.value.stop">{0,date,MM/dd/yyyy HH:mm zz}</entry>
-<entry key="yukon.web.modules.dr.program.value.current_gear">{0}</entry>
-<entry key="yukon.web.modules.dr.program.value.priority">{0}</entry>
-<entry key="yukon.web.modules.dr.program.value.reduction">{0,number,#.#}</entry>
-<entry key="yukon.web.modules.dr.program.value.load_capacity">{0,number,#.#}</entry>
-<entry key="yukon.web.modules.dr.program.value.reduction"></entry>
+<entry key="yukon.web.modules.dr.program.value.STATE.ACTIVE">Active</entry>
+<entry key="yukon.web.modules.dr.program.value.STATE.PARTIALLY_ACTIVE">Partially Active</entry>
+<entry key="yukon.web.modules.dr.program.value.STATE.INACTIVE">Inactive</entry>
+<entry key="yukon.web.modules.dr.program.value.STATE.MANUAL_ACTIVE">Manual Active</entry>
+<entry key="yukon.web.modules.dr.program.value.STATE.CONTROL_ATTEMPT">Control Attempt</entry>
+<entry key="yukon.web.modules.dr.program.value.STATE.NOTIFIED">Notified</entry>
+<entry key="yukon.web.modules.dr.program.value.STATE.STOPPING">Stopping</entry>
+<entry key="yukon.web.modules.dr.program.value.STATE.NON_CONTROL">Non Control</entry>
+<entry key="yukon.web.modules.dr.program.value.STATE.TIMED_ACTIVE">Timed Active</entry>
+<entry key="yukon.web.modules.dr.program.value.START">{0,date,MM/dd/yyyy HH:mm zz}</entry>
+<entry key="yukon.web.modules.dr.program.value.STOP">{0,date,MM/dd/yyyy HH:mm zz}</entry>
+<entry key="yukon.web.modules.dr.program.value.CURRENT_GEAR">{0}</entry>
+<entry key="yukon.web.modules.dr.program.value.PRIORITY">{0}</entry>
+<entry key="yukon.web.modules.dr.program.value.REDUCTION">{0,number,#.#}</entry>
+<entry key="yukon.web.modules.dr.program.value.LOAD_CAPACITY">{0,number,#.#}</entry>
+<entry key="yukon.web.modules.dr.program.value.REDUCTION"></entry>
 
 
 <!--  Load Group Field Values -->
-<entry key="yukon.web.modules.dr.loadGroup.value.state.active">Active</entry>
-<entry key="yukon.web.modules.dr.loadGroup.value.state.inactive">Inactive</entry>
-<entry key="yukon.web.modules.dr.loadGroup.value.state.active_pending">Active Pending</entry>
-<entry key="yukon.web.modules.dr.loadGroup.value.state.inactive_pending">Inactive Pending</entry>
+<entry key="yukon.web.modules.dr.loadGroup.value.STATE.ACTIVE">Active</entry>
+<entry key="yukon.web.modules.dr.loadGroup.value.STATE.INACTIVE">Inactive</entry>
+<entry key="yukon.web.modules.dr.loadGroup.value.STATE.ACTIVE_PENDING">Active Pending</entry>
+<entry key="yukon.web.modules.dr.loadGroup.value.STATE.INACTIVE_PENDING">Inactive Pending</entry>
 
 
 <!-- Demand Response Home -->

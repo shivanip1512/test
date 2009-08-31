@@ -19,7 +19,7 @@
 	timeFormat.setTimeZone(tz);
 	
    LMProgramDirect program = null;
-   java.util.Vector gears = null; //will contain LMProgramDirectGear
+   java.util.List<LMProgramDirectGear> gears = null; //will contain LMProgramDirectGear
    java.util.Date now = new java.util.Date();
       
     //What program are we dealing with?

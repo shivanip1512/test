@@ -218,7 +218,9 @@ public java.lang.Integer getProgramStatusPointID() {
 	return programStatusPointID;
 }
 
-@Deprecated
+/**
+ * @deprecated Use internationalized strings in demandResponse.xml instead.
+s */
 public static String getProgramStatusString(int status) 
 {
 	

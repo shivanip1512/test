@@ -15,7 +15,7 @@ public enum ProgramDisplayField {
         public MessageSourceResolvable getValue(LMProgramBase program) {
             ProgramState state = ProgramState.valueOf(program.getProgramStatus());
             return new YukonMessageSourceResolvable(getBaseKey(name()) + "."
-                                             + state.name().toLowerCase());
+                                             + state.name());
         }
     },
     STATE_CLASSNAME {
@@ -23,7 +23,7 @@ public enum ProgramDisplayField {
         public MessageSourceResolvable getValue(LMProgramBase program) {
             ProgramState state = ProgramState.valueOf(program.getProgramStatus());
             return YukonMessageSourceResolvable.createDefault(getBaseKey(name()) + "."
-                                             + state.name().toLowerCase(), state.name().toLowerCase());
+                                             + state.name(), state.name());
         }
     },
     START {
@@ -95,7 +95,7 @@ public enum ProgramDisplayField {
     private final static MessageSourceResolvable blankFieldResolvable =
         new YukonMessageSourceResolvable("yukon.web.modules.dr.blankField");
     private static String getBaseKey(String name) {
-        return baseKey + "." + name.toLowerCase();
+        return baseKey + "." + name;
     }
     private static MessageSourceResolvable buildResolvable(String name, Object...args) {
         return new YukonMessageSourceResolvable(getBaseKey(name), args);

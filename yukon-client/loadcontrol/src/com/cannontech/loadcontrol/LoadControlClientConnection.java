@@ -6,6 +6,7 @@ package com.cannontech.loadcontrol;
  * the base class does all the work.
  */
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -415,7 +416,7 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
     // temporary method
     @Deprecated
     private <T> Map<Integer, T> unwrapDatedMap(Map<Integer, DatedObject<T>> datedMap) {
-        Map<Integer, T> retVal = new ConcurrentHashMap<Integer, T>(datedMap.size());
+        Map<Integer, T> retVal = new HashMap<Integer, T>(datedMap.size());
         for (Map.Entry<Integer, DatedObject<T>> entry : datedMap.entrySet()) {
             retVal.put(entry.getKey(), entry.getValue().getObject());
         }
