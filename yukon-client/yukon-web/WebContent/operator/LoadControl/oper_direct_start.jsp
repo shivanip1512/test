@@ -114,7 +114,7 @@
         {
             if( allPrograms[i].getYukonID().intValue() == programID )
             {
-                java.util.Vector gVec = ((LMProgramDirect)allPrograms[i]).getDirectGearVector();
+                java.util.List<LMProgramDirectGear> gVec = ((LMProgramDirect)allPrograms[i]).getDirectGearVector();
 
                 for( int j = 0; j < gVec.size(); j++ )
                 {
