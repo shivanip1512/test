@@ -27,8 +27,8 @@ public enum ProgramDisplayField {
         }
 
         @Override
-        public boolean isLocalized() {
-            return false;
+        public boolean isCssClass() {
+            return true;
         }
     },
     START {
@@ -107,7 +107,7 @@ public enum ProgramDisplayField {
     }
 
     public abstract MessageSourceResolvable getValue(LMProgramBase program);
-    public boolean isLocalized() {
-        return true;
+    public boolean isCssClass() {
+        return false;
     }
 }
