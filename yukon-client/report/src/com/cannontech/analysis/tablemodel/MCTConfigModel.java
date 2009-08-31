@@ -5,15 +5,18 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
-import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.SqlStatementBuilder;
 
 
 public class MCTConfigModel extends BareReportModelBase<MCTConfigModel.ModelRow> {
+    
+    private Logger log = YukonLogManager.getLogger(MCTConfigModel.class);
     
     // dependencies
     private JdbcOperations jdbcOps;
@@ -81,7 +84,7 @@ public class MCTConfigModel extends BareReportModelBase<MCTConfigModel.ModelRow>
             }
         });
             
-        CTILogger.info("Report Records Collected from Database: " + data.size());
+        log.info("Report Records Collected from Database: " + data.size());
     }
     
     public String buildSQLStatement() {
@@ -96,8 +99,8 @@ public class MCTConfigModel extends BareReportModelBase<MCTConfigModel.ModelRow>
         sql.append(", dci2.value as configProfileRate");
         sql.append("from YukonPAObject yp");
         sql.append("join dEVICELOADPROFILE dlp on yp.PAObjectID = dlp.DEVICEID and (yp.Type like 'MCT-430%' or yp.Type like 'MCT-470%')");
-        sql.append("left outer join DEVICECONFIGURATIONDEVICEMAP dcm on dcm.DeviceId = yp.paobjectid");
-        sql.append("left outer join DEVICECONFIGURATION dc on dc.DeviceConfigurationID = dcm.DeviceConfigurationId");
+        sql.append("left join DEVICECONFIGURATIONDEVICEMAP dcm on dcm.DeviceId = yp.paobjectid");
+        sql.append("left join DEVICECONFIGURATION dc on dc.DeviceConfigurationID = dcm.DeviceConfigurationId");
         sql.append("left join DEVICECONFIGURATIONITEM dci on dc.DeviceConfigurationID = dci.DeviceConfigurationID");
         sql.append("and dci.FieldName = 'Demand Interval'");
         sql.append("left outer join DEVICECONFIGURATIONITEM dci2 on dc.DeviceConfigurationID = dci2.DeviceConfigurationID");

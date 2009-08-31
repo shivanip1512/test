@@ -52,17 +52,10 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     
-    @Override
-    public String sendConfigs(DeviceCollection deviceCollection, String method, SimpleCallback<GroupCommandResult> callback, LiteYukonUser user) {
-        String commandString = "putconfig emetcon install all";
-        if (method.equalsIgnoreCase("force")) {
-            commandString += " force";
-        }
-        
+    private String sendConfigCommand(DeviceCollection deviceCollection, SimpleCallback<GroupCommandResult> callback, String command, CommandRequestExecutionType type, LiteYukonUser user) {
         List<SimpleDevice> unsupportedDevices = new ArrayList<SimpleDevice>();
         List<SimpleDevice> supportedDevices = new ArrayList<SimpleDevice>();
-        List<SimpleDevice> devices = new ArrayList<SimpleDevice>(deviceCollection.getDeviceList());
-        for(SimpleDevice device : devices){
+        for(SimpleDevice device : deviceCollection.getDeviceList()){
             if(!deviceDefinitionDao.isTagSupported(device.getDeviceType(), DeviceTag.DEVICE_CONFIGURATION_430)
                     && !deviceDefinitionDao.isTagSupported(device.getDeviceType(), DeviceTag.DEVICE_CONFIGURATION_470)) {
                 unsupportedDevices.add(device);
@@ -78,7 +71,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         DeviceCollection unsupportedCollection = deviceGroupCollectionHelper.buildDeviceCollection(unsupportedGroup);
         DeviceCollection supportedCollection = deviceGroupCollectionHelper.buildDeviceCollection(supportedGroup);
         
-        String key = groupCommandExecutor.execute(supportedCollection, commandString, CommandRequestExecutionType.DEVICE_CONFIG_SEND, callback, user);
+        String key = groupCommandExecutor.execute(supportedCollection, command, type, callback, user);
         GroupCommandResult result = groupCommandExecutor.getResult(key);
         result.setHandleUnsupported(true);
         result.setUnsupportedCollection(unsupportedCollection);
@@ -87,34 +80,20 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     }
     
     @Override
+    public String sendConfigs(DeviceCollection deviceCollection, String method, SimpleCallback<GroupCommandResult> callback, LiteYukonUser user) {
+        String commandString = "putconfig emetcon install all";
+        if (method.equalsIgnoreCase("force")) {
+            commandString += " force";
+        }
+        
+        return sendConfigCommand(deviceCollection, callback, commandString, CommandRequestExecutionType.DEVICE_CONFIG_SEND, user);
+    }
+    
+    @Override
     public String readConfigs(DeviceCollection deviceCollection, SimpleCallback<GroupCommandResult> callback, LiteYukonUser user) {
         String commandString = "getconfig install";
         
-        List<SimpleDevice> unsupportedDevices = new ArrayList<SimpleDevice>();
-        List<SimpleDevice> supportedDevices = new ArrayList<SimpleDevice>();
-        List<SimpleDevice> devices = new ArrayList<SimpleDevice>(deviceCollection.getDeviceList());
-        for(SimpleDevice device : devices){
-            if(!deviceDefinitionDao.isTagSupported(device.getDeviceType(), DeviceTag.DEVICE_CONFIGURATION_430)
-                    && !deviceDefinitionDao.isTagSupported(device.getDeviceType(), DeviceTag.DEVICE_CONFIGURATION_470)) {
-                unsupportedDevices.add(device);
-            }else{
-                supportedDevices.add(device);
-            }
-        }
-        
-        StoredDeviceGroup unsupportedGroup = temporaryDeviceGroupService.createTempGroup(null);
-        StoredDeviceGroup supportedGroup = temporaryDeviceGroupService.createTempGroup(null);
-        deviceGroupMemberEditorDao.addDevices(unsupportedGroup, unsupportedDevices);
-        deviceGroupMemberEditorDao.addDevices(supportedGroup, supportedDevices);
-        DeviceCollection unsupportedCollection = deviceGroupCollectionHelper.buildDeviceCollection(unsupportedGroup);
-        DeviceCollection supportedCollection = deviceGroupCollectionHelper.buildDeviceCollection(supportedGroup);
-
-        String key = groupCommandExecutor.execute(supportedCollection, commandString, CommandRequestExecutionType.DEVICE_CONFIG_READ, callback, user);
-        GroupCommandResult result = groupCommandExecutor.getResult(key);
-        result.setHandleUnsupported(true);
-        result.setUnsupportedCollection(unsupportedCollection);
-        
-        return key;
+        return sendConfigCommand(deviceCollection, callback, commandString, CommandRequestExecutionType.DEVICE_CONFIG_READ, user);
     }
     
     @Override
