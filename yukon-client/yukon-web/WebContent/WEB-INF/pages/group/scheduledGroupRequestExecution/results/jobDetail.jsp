@@ -91,8 +91,8 @@
 			</tags:nameValue>
 			
 			<%-- attribute/command --%>
-			<c:if test="${not empty jobWrapper.attribute}">
-				<tags:nameValue name="${attributeText}">${jobWrapper.attribute.description}</tags:nameValue>
+			<c:if test="${not empty jobWrapper.attributes}">
+				<tags:nameValue name="${attributeText}">${jobWrapper.attributeDescriptions}</tags:nameValue>
 			</c:if>
 			<c:if test="${not empty jobWrapper.command}">
 				<tags:nameValue name="${commandText}">${jobWrapper.command}</tags:nameValue>

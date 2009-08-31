@@ -2,7 +2,6 @@ package com.cannontech.amr.scheduledGroupRequestExecution.tasks;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -37,7 +36,7 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
     // Injected variables
 	private String name;
     private DeviceGroup deviceGroup;
-    private Attribute attribute = null;
+    private Set<Attribute> attributes = null;
     private String command = null;
     private CommandRequestExecutionType commandRequestExecutionType;
 
@@ -80,7 +79,7 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
                 
             	commandRequestExecutionIdentifier = commandRequestDeviceExecutor.execute(commandRequests, dummyCallback, getCommandRequestExecutionType(), user);
             
-            } else if (getAttribute() != null) {
+            } else if (getAttributes() != null) {
             	
             	SimpleCallback<GroupMeterReadResult> dummyCallback = new SimpleCallback<GroupMeterReadResult>() {
             		@Override
@@ -88,10 +87,8 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
             		}
                 };
                 
-            	Set<Attribute> attributeSet = new HashSet<Attribute>();
-    	        attributeSet.add(getAttribute());
     	        DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(getDeviceGroup());
-            	String resultKey = groupMeterReadService.readDeviceCollection(deviceCollection, attributeSet, getCommandRequestExecutionType(), dummyCallback, user);
+            	String resultKey = groupMeterReadService.readDeviceCollection(deviceCollection, getAttributes(), getCommandRequestExecutionType(), dummyCallback, user);
             	GroupMeterReadResult groupMeterReadResult = groupMeterReadService.getResult(resultKey);
             	commandRequestExecutionIdentifier = groupMeterReadResult.getCommandRequestExecutionIdentifier();
             
@@ -129,13 +126,12 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
         this.deviceGroup = deviceGroup;
     }
 
-	public Attribute getAttribute() {
-		return attribute;
-	}
-	
-	public void setAttribute(Attribute attribute) {
-		this.attribute = attribute;
-	}
+	public Set<Attribute> getAttributes() {
+        return attributes;
+    }
+	public void setAttributes(Set<Attribute> attributes) {
+        this.attributes = attributes;
+    }
 	
 	public String getCommand() {
 		return command;

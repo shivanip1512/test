@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletException;
@@ -26,6 +28,7 @@ import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
+import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.AttributeNameComparator;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
@@ -54,11 +57,11 @@ public class GroupMeterReadController extends MultiActionController {
 		
 		String errorMsg = ServletRequestUtils.getStringParameter(request, "errorMsg");
 		String groupName = ServletRequestUtils.getStringParameter(request, "groupName");
-		String attribute = ServletRequestUtils.getStringParameter(request, "attribute");
+		Set<Attribute> selectedAttributes = getAttributeSet(request);
 		
 		mav.addObject("errorMsg", errorMsg);
 		mav.addObject("groupName", groupName);
-		mav.addObject("attribute", attribute);
+		mav.addObject("selectedAttributes", selectedAttributes);
 		
 		List<BuiltInAttribute> allAttributes = Arrays.asList(BuiltInAttribute.values());
 		Collections.sort(allAttributes, new AttributeNameComparator());
@@ -76,10 +79,10 @@ public class GroupMeterReadController extends MultiActionController {
 		mav.addObject("deviceCollection", deviceCollection);
 		
 		String errorMsg = ServletRequestUtils.getStringParameter(request, "errorMsg");
-		String attribute = ServletRequestUtils.getStringParameter(request, "attribute");
+		Set<Attribute> selectedAttributes = getAttributeSet(request);
 		
 		mav.addObject("errorMsg", errorMsg);
-		mav.addObject("attribute", attribute);
+		mav.addObject("selectedAttributes", selectedAttributes);
 		
 		List<BuiltInAttribute> allAttributes = Arrays.asList(BuiltInAttribute.values());
 		Collections.sort(allAttributes, new AttributeNameComparator());
@@ -97,8 +100,8 @@ public class GroupMeterReadController extends MultiActionController {
 		// device group
 		String groupName = ServletRequestUtils.getStringParameter(request, "groupName");
 		if (StringUtils.isBlank(groupName)) {
-			errorMav.addObject("errorMsg", "No Device Group Selected");
-			return errorMav;
+		    addErrorStateToMav(errorMav, "No Device Group Selected", null, makeSelectedAttributeStrsParameter(getAttributeSet(request)));
+		    return errorMav;
 		}
 		
 		DeviceGroup deviceGroup = deviceGroupService.resolveGroupName(groupName);
@@ -110,9 +113,18 @@ public class GroupMeterReadController extends MultiActionController {
 	// READ COLLECTION
 	public ModelAndView readCollection(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		
+	    DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
+	    
 		String errorPage = "homeCollection";
+		ModelAndView errorMav = new ModelAndView("redirect:" + errorPage);
 		
-		DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
+		// attributes
+		Set<Attribute> selectedAttributes = getAttributeSet(request);
+        if (selectedAttributes.size() == 0) {
+            addErrorStateToMav(errorMav, "No Attribute Selected", null, makeSelectedAttributeStrsParameter(getAttributeSet(request)));
+            errorMav.addAllObjects(deviceCollection.getCollectionParameters());
+            return errorMav;
+        }
 		
 		return read(request, response, deviceCollection, errorPage, null);
 	}
@@ -125,13 +137,12 @@ public class GroupMeterReadController extends MultiActionController {
 		YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 		
 		// attribute
-		String attributeStr = ServletRequestUtils.getRequiredStringParameter(request, "attribute");
-		if (StringUtils.isBlank(attributeStr)) {
+		Set<Attribute> selectedAttributes = getAttributeSet(request);
+		if (selectedAttributes.size() == 0) {
 			
 			addErrorStateToMav(errorMav, "No Attribute Selected", groupName, null);
 			return errorMav;
 		}
-		BuiltInAttribute attribute = BuiltInAttribute.valueOf(attributeStr);
 		
 		
 		// alert callback
@@ -164,12 +175,12 @@ public class GroupMeterReadController extends MultiActionController {
         // read
         try {
         
-        	String resultKey = groupMeterReadService.readDeviceCollection(deviceCollection, Collections.singleton(attribute), CommandRequestExecutionType.GROUP_ATTRIBUTE_READ, alertCallback, userContext.getYukonUser());
+        	String resultKey = groupMeterReadService.readDeviceCollection(deviceCollection, selectedAttributes, CommandRequestExecutionType.GROUP_ATTRIBUTE_READ, alertCallback, userContext.getYukonUser());
         	mav.addObject("resultKey", resultKey);
 		
         } catch (Exception e) {
 
-        	addErrorStateToMav(errorMav, e.getMessage(), groupName, attributeStr);
+        	addErrorStateToMav(errorMav, e.getMessage(), groupName, makeSelectedAttributeStrsParameter(selectedAttributes));
 			return errorMav;
         }
 		
@@ -177,11 +188,11 @@ public class GroupMeterReadController extends MultiActionController {
 		return mav;
 	}
 	
-	private void addErrorStateToMav(ModelAndView mav, String errorMsg, String groupName, String attribute) {
+	private void addErrorStateToMav(ModelAndView mav, String errorMsg, String groupName, String selectedAttributeStrs) {
 		
 		mav.addObject("errorMsg", errorMsg);
 		mav.addObject("groupName", groupName);
-		mav.addObject("attribute", attribute);
+		mav.addObject("selectedAttributeStrs", selectedAttributeStrs);
 	}
 	
 	// RESULT LIST
@@ -223,6 +234,31 @@ public class GroupMeterReadController extends MultiActionController {
 		return mav;
 	}
 	
+	// HELPERS
+    private Set<Attribute> getAttributeSet(HttpServletRequest request) {
+        
+        String[] attributeParametersArray = ServletRequestUtils.getStringParameters(request, "attribute");
+        Set<Attribute> attributeSet = new HashSet<Attribute>();
+        
+        if (attributeParametersArray.length > 0) {
+            for (String attrStr : attributeParametersArray) {
+                attributeSet.add(BuiltInAttribute.valueOf(attrStr));
+            }
+        } else {
+            String selectedAttributeStrs = ServletRequestUtils.getStringParameter(request, "selectedAttributeStrs", null);
+            if (selectedAttributeStrs != null) {
+                String[] selectedAttributeStrsArray = StringUtils.split(selectedAttributeStrs, ",");
+                for (String attrStr : selectedAttributeStrsArray) {
+                    attributeSet.add(BuiltInAttribute.valueOf(attrStr));
+                }
+            }
+        }
+        return attributeSet;
+    }
+    
+    private String makeSelectedAttributeStrsParameter(Set<Attribute> attributeParameters) {
+        return StringUtils.join(attributeParameters, ",");
+    }
 	
 	@Autowired
 	public void setGroupMeterReadService(GroupMeterReadService groupMeterReadService) {

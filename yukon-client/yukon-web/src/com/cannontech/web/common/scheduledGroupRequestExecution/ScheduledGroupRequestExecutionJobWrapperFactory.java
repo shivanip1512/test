@@ -1,9 +1,13 @@
 package com.cannontech.web.common.scheduledGroupRequestExecution;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
@@ -79,8 +83,15 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 			return this.task.getCommand();
 		}
 		
-		public Attribute getAttribute() {
-			return this.task.getAttribute();
+		public Set<Attribute> getAttributes() {
+			return this.task.getAttributes();
+		}
+		public String getAttributeDescriptions() {
+		    List<String> attrDescriptions = new ArrayList<String>();
+		    for (Attribute attr : getAttributes()) {
+		        attrDescriptions.add(attr.getDescription());
+		    }
+		    return StringUtils.join(attrDescriptions, ", ");
 		}
 		
 		public String getName() {

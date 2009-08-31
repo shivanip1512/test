@@ -1,6 +1,10 @@
 package com.cannontech.web.updater.groupMeterRead;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.cannontech.amr.deviceread.service.GroupMeterReadResult;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.web.updater.ResultAccessor;
 
@@ -27,9 +31,11 @@ public enum GroupMeterReadResultFieldEnum {
     COMPLETED_ITEMS(new ResultAccessor<GroupMeterReadResult>() {
         public Object getValue(GroupMeterReadResult groupMeterReadResult) {
             
-            return (groupMeterReadResult.getResultHolder().getSuccessfulDevices().size() 
-            		+ groupMeterReadResult.getResultHolder().getFailedDevices().size()
-            		+ groupMeterReadResult.getUnsupportedCollection().getDeviceCount());
+            Set<SimpleDevice> completedDevices = new HashSet<SimpleDevice>();
+            completedDevices.addAll(groupMeterReadResult.getResultHolder().getSuccessfulDevices());
+            completedDevices.addAll(groupMeterReadResult.getResultHolder().getFailedDevices());
+            
+            return (completedDevices.size() + groupMeterReadResult.getUnsupportedCollection().getDeviceCount());
         }
     }),
     

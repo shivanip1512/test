@@ -23,6 +23,12 @@
 	</script>
 
 	<h2>${pageTitle}</h2>
+	
+	<c:if test="${not empty errorMsg}">
+   		<br>
+   		<div class="errorRed">${errorMsg}</div>
+   	</c:if>
+   	
    	<br>
    	
    	<tags:bulkActionContainer key="yukon.common.device.groupMeterRead.home" deviceCollection="${deviceCollection}">
@@ -31,13 +37,11 @@
    		
 	   		<cti:deviceCollection deviceCollection="${deviceCollection}" />
 	   		
-	   		<%-- SELECT ATTRIBUTE --%>
 	        <div class="largeBoldLabel">${selectAttributeLabel}:</div>
-	        <amr:attributeSelector attributes="${allAttributes}" fieldName="attribute" selectedAttribute="${attribute}" includeDummyOption="true"/>
+	        <amr:attributeSelector attributes="${allAttributes}" fieldName="attribute" selectedAttributes="${selectedAttributes}" multipleSize="5"/>
 			<br>
-			
+			<br>
 	   		<%-- READ BUTTON --%>
-	   		<br>
 			<tags:slowInput myFormId="groupMeterReadForm" labelBusy="${readButtonText}" label="${readButtonText}"/>
    	
    		</form>

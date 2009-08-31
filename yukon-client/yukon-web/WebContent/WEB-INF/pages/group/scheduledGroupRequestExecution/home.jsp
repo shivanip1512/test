@@ -84,7 +84,7 @@
         		 	
         		 		<cti:msg var="selectAttributeLabel" key="yukon.common.device.commander.attributeSelector.selectAttribute"/>
         		 		<tags:nameValue name="${selectAttributeLabel}" nameColumnWidth="160px">
-        		 			<amr:attributeSelector fieldName="attribute" attributes="${allAttributes}" selectedAttribute="${attribute}" includeDummyOption="true"/>
+        		 			<amr:attributeSelector fieldName="attribute" attributes="${allAttributes}" selectedAttributes="${selectedAttributes}" multipleSize="5"/>
         		 			<br><br>
         		 		</tags:nameValue>
         		 		

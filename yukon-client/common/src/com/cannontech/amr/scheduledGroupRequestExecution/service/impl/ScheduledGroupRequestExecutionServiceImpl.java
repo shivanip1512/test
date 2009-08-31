@@ -1,5 +1,7 @@
 package com.cannontech.amr.scheduledGroupRequestExecution.service.impl;
 
+import java.util.Set;
+
 import javax.annotation.Resource;
 
 import org.apache.log4j.Logger;
@@ -33,23 +35,23 @@ public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroup
 	}
 	
 	// SCHEDULE - ATTRIBUTE
-	public YukonJob schedule(String name, String groupName, Attribute attribute, CommandRequestExecutionType type, String cronExpression, YukonUserContext userContext) {
+	public YukonJob schedule(String name, String groupName, Set<Attribute> attributes, CommandRequestExecutionType type, String cronExpression, YukonUserContext userContext) {
 		
-		return schedule(name, groupName, null, attribute, type, cronExpression, userContext);
+		return schedule(name, groupName, null, attributes, type, cronExpression, userContext);
 	}
 	
-	private YukonJob schedule(String name, String groupName, String command, Attribute attribute, CommandRequestExecutionType type, String cronExpression, YukonUserContext userContext) {
+	private YukonJob schedule(String name, String groupName, String command, Set<Attribute> attributes, CommandRequestExecutionType type, String cronExpression, YukonUserContext userContext) {
 
 		ScheduledGroupRequestExecutionTask task = scheduledGroupRequestExecutionJobDefinition.createBean();
 		task.setName(name);
     	task.setDeviceGroup(deviceGroupService.resolveGroupName(groupName));
-    	task.setAttribute(attribute);
+    	task.setAttributes(attributes);
     	task.setCommand(command);
     	task.setCommandRequestExecutionType(type);
 
     	YukonJob job =  jobManager.scheduleJob(scheduledGroupRequestExecutionJobDefinition, task, cronExpression, userContext);
         
-    	log.info("Job scheduled. jobId=" + job.getId() + ", groupName=" + groupName + ", attribute=" + attribute + ", command=" + command + ", cronExpression=" + cronExpression + ", user=" + userContext.getYukonUser().getUsername() + ".");
+    	log.info("Job scheduled. jobId=" + job.getId() + ", groupName=" + groupName + ", attributes=" + attributes + ", command=" + command + ", cronExpression=" + cronExpression + ", user=" + userContext.getYukonUser().getUsername() + ".");
     	
         return job;
 	}
@@ -61,12 +63,12 @@ public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroup
 	}
 	
 	// SCHEDULE REPLACEMENT - ATTRIBUTE
-	public YukonJob scheduleReplacement(int existingJobId, String name, String groupName, Attribute attribute, CommandRequestExecutionType type, String cronExpression, YukonUserContext userContext) {
+	public YukonJob scheduleReplacement(int existingJobId, String name, String groupName, Set<Attribute> attributes, CommandRequestExecutionType type, String cronExpression, YukonUserContext userContext) {
 		
-		return scheduleReplacement(existingJobId, name, groupName, null, attribute, type, cronExpression, userContext);
+		return scheduleReplacement(existingJobId, name, groupName, null, attributes, type, cronExpression, userContext);
 	}
 	
-	private YukonJob scheduleReplacement(int existingJobId, String name, String groupName, String command, Attribute attribute, CommandRequestExecutionType type, String cronExpression, YukonUserContext userContext) {
+	private YukonJob scheduleReplacement(int existingJobId, String name, String groupName, String command, Set<Attribute> attributes, CommandRequestExecutionType type, String cronExpression, YukonUserContext userContext) {
 	
 		// get current job, generate task
 		ScheduledRepeatingJob existingJob = (ScheduledRepeatingJob)jobManager.getJob(existingJobId);
@@ -79,7 +81,7 @@ public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroup
 		                                                                                                             existingJob.getCronString(),
 		                                                                                                             existingJob.getUserContext().getYukonUser().getUserID(),
 		                                                                                                             existingTask.getCommand(),
-		                                                                                                             existingTask.getAttribute());
+		                                                                                                             existingTask.getAttributes());
 		
 		ScheduledGroupRequestExecutionJobTaskContainer replacement = new ScheduledGroupRequestExecutionJobTaskContainer(groupName, 
 		                                                                                                                name,
@@ -87,7 +89,7 @@ public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroup
 		                                                                                                                cronExpression,
 		                                                                                                                userContext.getYukonUser().getUserID(),
 		                                                                                                                command,
-		                                                                                                                attribute);
+		                                                                                                                attributes);
 		
         // difference between old task/job and replacement?
         if (!existing.equals(replacement)) {
@@ -95,9 +97,9 @@ public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroup
         	jobManager.deleteJob(existingJob);
         	
         	// schedule new job
-        	YukonJob replacementJob = schedule(name, groupName, command, attribute, type, cronExpression, userContext);
+        	YukonJob replacementJob = schedule(name, groupName, command, attributes, type, cronExpression, userContext);
         	
-        	log.info("Job replaced. old jobId=" + existingJob.getId() + " deleted, replacement jobId=" + replacementJob.getId() + ", name=" + name + ", groupName=" + groupName + ", attribute=" + attribute + ", command=" + command + ", cronExpression=" + cronExpression + ", user=" + userContext.getYukonUser().getUsername() + ".");
+        	log.info("Job replaced. old jobId=" + existingJob.getId() + " deleted, replacement jobId=" + replacementJob.getId() + ", name=" + name + ", groupName=" + groupName + ", attribute=" + attributes + ", command=" + command + ", cronExpression=" + cronExpression + ", user=" + userContext.getYukonUser().getUsername() + ".");
         	
     		return replacementJob;
     		

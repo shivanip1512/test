@@ -6,7 +6,7 @@
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
     <entry key="yukon.common.device.groupMeterRead.home.pageTitle">Group Attribute Read</entry>
-    <entry key="yukon.common.device.groupMeterRead.home.selectAttributeLabel">Select Attribute</entry>
+    <entry key="yukon.common.device.groupMeterRead.home.selectAttributeLabel">Select Attribute(s)</entry>
     <entry key="yukon.common.device.groupMeterRead.home.selectGroupLabel">Group:</entry>
     <entry key="yukon.common.device.groupMeterRead.home.recentResultsLinkLabel">Recent Results:</entry>
     <entry key="yukon.common.device.groupMeterRead.home.recentResultsLink">View</entry>
@@ -37,7 +37,7 @@
     <entry key="yukon.common.device.groupMeterRead.resultDetail.recentResultsTitle">Recent Group Attribute Read Results</entry>
     <entry key="yukon.common.device.groupMeterRead.resultDetail.noteLabel">Note:</entry>
     <entry key="yukon.common.device.groupMeterRead.resultDetail.noteText"><![CDATA[
-		Progress is updated every 10 seconds. Processing will continue if you wish to navigate away from this page at any time.<br>
+		Progress is updated periodically. Processing will continue if you wish to navigate away from this page at any time.<br>
         You may view the progress of all recent and ongoing reads from the main Group Attribute Read page.<br><br>
 	]]></entry>
     

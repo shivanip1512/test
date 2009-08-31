@@ -3,16 +3,22 @@
 
 <%@ attribute name="fieldName" required="true" type="java.lang.String"%>
 <%@ attribute name="attributes" required="true" type="java.util.List"%>
-<%@ attribute name="selectedAttribute" required="false" type="java.lang.String"%>
+<%@ attribute name="selectedAttributes" required="false" type="java.util.Set"%>
 <%@ attribute name="includeDummyOption" required="false" type="java.lang.Boolean"%>
+<%@ attribute name="multipleSize" required="false" type="java.lang.Integer"%>
 
 <c:if test="${empty includeDummyOption}">
 	<c:set var="includeDummyOption" value="false"/>
 </c:if>
 
+<c:if test="${not empty multipleSize}">
+	<c:set var="includeDummyOption" value="false"/>
+</c:if>
+
+
 <cti:uniqueIdentifier var="uniqueId" prefix="attributeSelector_"/>
 
-<select id="${uniqueId}" name="${fieldName}">
+<select id="${uniqueId}" name="${fieldName}" <c:if test="${not empty multipleSize}">multiple size="${multipleSize}"</c:if>>
 
 	<c:if test="${includeDummyOption}">
 		<cti:msg var="selectOneLabel" key="yukon.common.device.commander.selector.selectOne"/>
@@ -22,10 +28,14 @@
 	<c:forEach var="attr" items="${attributes}">
 	
 		<c:set var="selected" value=""/>
-		<c:if test="${attr == selectedAttribute}">
-			<c:set var="selected" value="selected"/>
-		</c:if>
-	
+		<c:set var="break" value="false"/>
+		<c:forEach var="selectedAttribute" items="${selectedAttributes}">
+			<c:if test="${!break && selectedAttribute == attr}">
+				<c:set var="selected" value="selected"/>
+				<c:set var="break" value="true"/>
+			</c:if>
+		</c:forEach>
+		
 		<option value="${attr}" ${selected}>${attr.description}</option>
 	</c:forEach>
 </select>

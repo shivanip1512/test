@@ -22,6 +22,7 @@
      <property name="enumeratedType" ref="inputIntegerType" />
  </bean>
  <bean id="inputAttributeType" class="com.cannontech.web.input.type.AttributeType" />
+ <bean id="inputAttributeSetType" class="com.cannontech.web.input.type.AttributeSetType" />
  <bean id="inputDeviceGroupType" class="com.cannontech.web.input.type.DeviceGroupType" />
  <bean id="commandRequestExecutionTypeType" class="com.cannontech.web.input.type.CommandRequestExecutionTypeType" />
  

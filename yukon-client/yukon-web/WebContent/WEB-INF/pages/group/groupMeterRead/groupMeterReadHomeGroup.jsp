@@ -39,7 +39,7 @@
 		
 			<%-- SELECT ATTRIBUTE --%>
 	        <div class="largeBoldLabel">${selectAttributeLabel}:</div>
-	        <amr:attributeSelector attributes="${allAttributes}" fieldName="attribute" selectedAttribute="${attribute}" includeDummyOption="true"/>
+	        <amr:attributeSelector attributes="${allAttributes}" fieldName="attribute" selectedAttributes="${selectedAttributes}" multipleSize="5"/>
 			<br>
 			
 			

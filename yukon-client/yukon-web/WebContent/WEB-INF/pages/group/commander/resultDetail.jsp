@@ -54,7 +54,7 @@
             <tr>
                 <td valign="top" class="smallBoldLabel">Note:</td>
                 <td style="font-size:11px;">
-                    Progress is updated every 10 seconds. Processing will continue if you wish to navigate away from this page at any time.<br>
+                    Progress is updated periodically. Processing will continue if you wish to navigate away from this page at any time.<br>
                     You may view the progress of all recent and ongoing processes from the main Commander page.<br><br>
                 </td>
             </tr>

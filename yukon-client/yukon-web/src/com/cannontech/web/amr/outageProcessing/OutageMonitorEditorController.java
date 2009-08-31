@@ -1,5 +1,7 @@
 package com.cannontech.web.amr.outageProcessing;
 
+import java.util.Collections;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -194,7 +196,7 @@ public class OutageMonitorEditorController extends MultiActionController {
         	// SCHEDULED BLINK COUNT REQUEST JOB
         	if (isNewMonitor && scheduleGroupCommand) {
             		
-            	scheduledGroupRequestExecutionService.schedule(scheduleName, deviceGroupName, BLINK_COUNT_ATTRIBUTE, CommandRequestExecutionType.SCHEDULED_GROUP_ATTRIBUTE_READ, expression, userContext);
+            	scheduledGroupRequestExecutionService.schedule(scheduleName, deviceGroupName, Collections.singleton(BLINK_COUNT_ATTRIBUTE), CommandRequestExecutionType.SCHEDULED_GROUP_ATTRIBUTE_READ, expression, userContext);
         	}
         	
         	// OUTAGE GROUP

@@ -138,8 +138,8 @@
 					<td class="${tdClass}">${jobWrapper.name}</td>
 					<td class="${tdClass}">${jobWrapper.commandRequestTypeShortName}</td>
 					<td class="${tdClass}">
-						<c:if test="${not empty jobWrapper.attribute}">
-							${jobWrapper.attribute.description} ${attributeWord}
+						<c:if test="${not empty jobWrapper.attributes}">
+							${jobWrapper.attributeDescriptions} ${attributeWord}<c:if test="${fn:length(jobWrapper.attributes) > 1}">s</c:if>
 						</c:if>
 						<c:if test="${not empty jobWrapper.command}">
 							${jobWrapper.command}
