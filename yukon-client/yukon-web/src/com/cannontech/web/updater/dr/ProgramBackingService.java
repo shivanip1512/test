@@ -30,7 +30,7 @@ public class ProgramBackingService implements UpdateBackingService {
 
         MessageSource messageSource = messageSourceResolver.getMessageSource(userContext);
         if (datedProgram == null) {
-            if (displayField == ProgramDisplayField.STATE_CLASSNAME) {
+            if (!displayField.isLocalized()) {
                 return "not_in_control_area";
             }
             return messageSource.getMessage("yukon.web.modules.dr.fieldNotInLoadManagement",

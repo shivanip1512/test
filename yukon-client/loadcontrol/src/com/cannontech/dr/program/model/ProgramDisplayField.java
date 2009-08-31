@@ -25,6 +25,11 @@ public enum ProgramDisplayField {
             return YukonMessageSourceResolvable.createDefault(getBaseKey(name()) + "."
                                              + state.name(), state.name());
         }
+
+        @Override
+        public boolean isLocalized() {
+            return false;
+        }
     },
     START {
         @Override
@@ -102,4 +107,7 @@ public enum ProgramDisplayField {
     }
 
     public abstract MessageSourceResolvable getValue(LMProgramBase program);
+    public boolean isLocalized() {
+        return true;
+    }
 }

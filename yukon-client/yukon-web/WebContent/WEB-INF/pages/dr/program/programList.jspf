@@ -16,22 +16,24 @@
     </tr>
     <c:forEach var="program" items="${programs}">
         <c:set var="programId" value="${program.paoIdentifier.paoId}"/>
-        <tr class="<tags:alternateRow odd="" even="altRow"/>">
-            <cti:classUpdater identifier="${programId}/STATE_CLASSNAME" type="DR_PROGRAM">
+        <c:url var="programURL" value="/spring/dr/program/detail">
+            <c:param name="programId" value="${programId}"/>
+        </c:url>
+        <tr id="programRow${programId}" class="<tags:alternateRow odd="" even="altRow"/>">
             <td>
-                <c:url var="programURL" value="/spring/dr/program/detail">
-                    <c:param name="programId" value="${programId}"/>
-                </c:url>
-                <a href="${programURL}">${program.name}</a>
-                </td>
-                <td><cti:dataUpdaterValue identifier="${programId}/STATE" type="DR_PROGRAM"/></td>
-                <td><cti:dataUpdaterValue identifier="${programId}/START" type="DR_PROGRAM"/></td>
-                <td><cti:dataUpdaterValue identifier="${programId}/STOP" type="DR_PROGRAM"/></td>
-                <td><cti:dataUpdaterValue identifier="${programId}/CURRENT_GEAR" type="DR_PROGRAM"/></td>
-                <td><cti:dataUpdaterValue identifier="${programId}/PRIORITY" type="DR_PROGRAM"/></td>
-                <td><cti:dataUpdaterValue identifier="${programId}/REDUCTION" type="DR_PROGRAM"/></td>
-                <td><cti:dataUpdaterValue identifier="${programId}/LOAD_CAPACITY" type="DR_PROGRAM"/></td>
-            </cti:classUpdater>
+                <%-- TODO:  in phase 3, use cti:dataUpdaterCallback to update
+                 the class of the row instead --%>
+                <cti:classUpdater identifier="${programId}/STATE_CLASSNAME" type="DR_PROGRAM">
+                    <a href="${programURL}">${program.name}</a>
+                </cti:classUpdater>
+            </td>
+            <td><cti:dataUpdaterValue identifier="${programId}/STATE" type="DR_PROGRAM"/></td>
+            <td><cti:dataUpdaterValue identifier="${programId}/START" type="DR_PROGRAM"/></td>
+            <td><cti:dataUpdaterValue identifier="${programId}/STOP" type="DR_PROGRAM"/></td>
+            <td><cti:dataUpdaterValue identifier="${programId}/CURRENT_GEAR" type="DR_PROGRAM"/></td>
+            <td><cti:dataUpdaterValue identifier="${programId}/PRIORITY" type="DR_PROGRAM"/></td>
+            <td><cti:dataUpdaterValue identifier="${programId}/REDUCTION" type="DR_PROGRAM"/></td>
+            <td><cti:dataUpdaterValue identifier="${programId}/LOAD_CAPACITY" type="DR_PROGRAM"/></td>
         </tr>
     </c:forEach>
 </table>
