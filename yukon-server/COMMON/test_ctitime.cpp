@@ -349,9 +349,12 @@ unsigned long mkLocalSeconds(const time_parts &tp)
 
 BOOST_AUTO_TEST_CASE(test_ctitime_fromLocalSeconds)
 {
-    //  hard-coded assumptions for our local timezone (Central Time)
-    const int standard_offset = -6 * 3600;
-    const int daylight_offset = -5 * 3600;
+    _TIME_ZONE_INFORMATION tzinfo;
+    GetTimeZoneInformation(&tzinfo);
+
+    //  Windows defines the bias as the difference from local time to GMT - that's backwards from what we want
+    const int standard_offset = -(tzinfo.Bias + tzinfo.StandardBias) * 60;
+    const int daylight_offset = -(tzinfo.Bias + tzinfo.DaylightBias) * 60;
 
     //  =====  2009 test cases  =====
     time_parts tc2009[11] =
