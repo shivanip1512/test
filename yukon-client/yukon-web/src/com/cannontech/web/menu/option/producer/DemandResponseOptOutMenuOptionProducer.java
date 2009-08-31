@@ -1,6 +1,7 @@
 package com.cannontech.web.menu.option.producer;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,6 @@ public class DemandResponseOptOutMenuOptionProducer extends DynamicMenuOptionPro
 
         // Generate legal menu options the demand response opt out menu.
 
-        List<MenuOption> optionList = new ArrayList<MenuOption>();
         boolean adminAllowed =
             rolePropertyDao.checkAnyProperties(userContext.getYukonUser(),
                                                YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_STATUS,
@@ -44,7 +44,7 @@ public class DemandResponseOptOutMenuOptionProducer extends DynamicMenuOptionPro
             rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_VIEW_OPT_OUT_EVENTS,
                                           userContext.getYukonUser());
         if (!adminAllowed && ! scheduledEventsAllowed) {
-            return optionList;
+            return Collections.emptyList();
         }
 
         SubMenuOption option = new SubMenuOption("optout", baseKey, false);
@@ -59,8 +59,8 @@ public class DemandResponseOptOutMenuOptionProducer extends DynamicMenuOptionPro
         }
         option.setSubOptions(subOptions);
 
+        List<MenuOption> optionList = new ArrayList<MenuOption>();
         optionList.add(option);
-
         return optionList;
     }
 

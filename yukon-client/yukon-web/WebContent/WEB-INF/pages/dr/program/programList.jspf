@@ -1,18 +1,19 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <table id="programList" class="compactMiniResultsTable">
     <tr>
-        <th><cti:msg key="yukon.web.modules.dr.program.list.heading.name"/></th>
-        <th><cti:msg key="yukon.web.modules.dr.program.list.heading.state"/></th>
-        <th><cti:msg key="yukon.web.modules.dr.program.list.heading.start"/></th>
-        <th><cti:msg key="yukon.web.modules.dr.program.list.heading.stop"/></th>
-        <th><cti:msg key="yukon.web.modules.dr.program.list.heading.currentGear"/></th>
-        <th><cti:msg key="yukon.web.modules.dr.program.list.heading.priority"/></th>
-        <th><cti:msg key="yukon.web.modules.dr.program.list.heading.reduction"/></th>
-        <th><cti:msg key="yukon.web.modules.dr.program.list.heading.loadCapacity"/></th>
+        <th><cti:msg key="yukon.web.modules.dr.programList.heading.name"/></th>
+        <th><cti:msg key="yukon.web.modules.dr.programList.heading.state"/></th>
+        <th><cti:msg key="yukon.web.modules.dr.programList.heading.start"/></th>
+        <th><cti:msg key="yukon.web.modules.dr.programList.heading.stop"/></th>
+        <th><cti:msg key="yukon.web.modules.dr.programList.heading.currentGear"/></th>
+        <th><cti:msg key="yukon.web.modules.dr.programList.heading.priority"/></th>
+        <th><cti:msg key="yukon.web.modules.dr.programList.heading.reduction"/></th>
+        <th><cti:msg key="yukon.web.modules.dr.programList.heading.loadCapacity"/></th>
     </tr>
     <c:forEach var="program" items="${programs}">
         <c:set var="programId" value="${program.paoIdentifier.paoId}"/>
@@ -21,10 +22,10 @@
         </c:url>
         <tr id="programRow${programId}" class="<tags:alternateRow odd="" even="altRow"/>">
             <td>
-                <%-- TODO:  in phase 3, use cti:dataUpdaterCallback to update
-                 the class of the row instead --%>
+                <%-- TODO:  in phase 3, update cti:classUpdater to be able to
+                 update the class of the row instead --%>
                 <cti:classUpdater identifier="${programId}/STATE_CLASSNAME" type="DR_PROGRAM">
-                    <a href="${programURL}">${program.name}</a>
+                    <a href="${programURL}"><spring:escapeBody htmlEscape="true">${program.name}</spring:escapeBody></a>
                 </cti:classUpdater>
             </td>
             <td><cti:dataUpdaterValue identifier="${programId}/STATE" type="DR_PROGRAM"/></td>

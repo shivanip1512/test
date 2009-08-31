@@ -47,141 +47,141 @@
 
 
 <!-- Scenario List -->
-<entry key="yukon.web.modules.dr.scenario.list.pageTitle">Scenarios</entry>
-<entry key="yukon.web.modules.dr.scenario.list.breadcrumb.operationsHome">Operations Home</entry>
-<entry key="yukon.web.modules.dr.scenario.list.breadcrumb.scenarios">Scenarios</entry>
-<entry key="yukon.web.modules.dr.scenario.list.scenarios">Scenarios</entry>
-<entry key="yukon.web.modules.dr.scenario.list.heading.name">Name</entry>
+<entry key="yukon.web.modules.dr.scenarioList.pageTitle">Scenarios</entry>
+<entry key="yukon.web.modules.dr.scenarioList.breadcrumb.operationsHome">Operations Home</entry>
+<entry key="yukon.web.modules.dr.scenarioList.breadcrumb.scenarios">Scenarios</entry>
+<entry key="yukon.web.modules.dr.scenarioList.scenarios">Scenarios</entry>
+<entry key="yukon.web.modules.dr.scenarioList.heading.name">Name</entry>
 
 
 <!-- Scenario Detail -->
-<entry key="yukon.web.modules.dr.scenario.detail.pageTitle">Scenario {0}</entry>
-<entry key="yukon.web.modules.dr.scenario.detail.breadcrumb.operationsHome">Operations Home</entry>
-<entry key="yukon.web.modules.dr.scenario.detail.breadcrumb.scenarios">Scenarios</entry>
-<entry key="yukon.web.modules.dr.scenario.detail.breadcrumb.scenario">Scenario {0}</entry>
-<entry key="yukon.web.modules.dr.scenario.detail.scenario">Scenario {0}</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.pageTitle">Scenario {0}</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.breadcrumb.operationsHome">Operations Home</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.breadcrumb.scenarios">Scenarios</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.breadcrumb.scenario">Scenario {0}</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.scenario">Scenario {0}</entry>
 
-<entry key="yukon.web.modules.dr.scenario.detail.heading.info">Info</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.heading.info">Info</entry>
 
-<entry key="yukon.web.modules.dr.scenario.detail.heading.actions">Actions</entry>
-<entry key="yukon.web.modules.dr.scenario.detail.actions.start">Start</entry>
-<entry key="yukon.web.modules.dr.scenario.detail.actions.stop">Stop</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.heading.actions">Actions</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.actions.start">Start</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.actions.stop">Stop</entry>
 
-<entry key="yukon.web.modules.dr.scenario.detail.heading.programs">Programs</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.heading.programs">Programs</entry>
 
 
 <!-- Control Area List -->
-<entry key="yukon.web.modules.dr.controlArea.list.pageTitle">Control Areas</entry>
-<entry key="yukon.web.modules.dr.controlArea.list.breadcrumb.operationsHome">Operations Home</entry>
-<entry key="yukon.web.modules.dr.controlArea.list.breadcrumb.controlAreas">ControlAreas</entry>
-<entry key="yukon.web.modules.dr.controlArea.list.controlAreas">ControlAreas</entry>
-<entry key="yukon.web.modules.dr.controlArea.list.heading.name">Name</entry>
+<entry key="yukon.web.modules.dr.controlAreaList.pageTitle">Control Areas</entry>
+<entry key="yukon.web.modules.dr.controlAreaList.breadcrumb.operationsHome">Operations Home</entry>
+<entry key="yukon.web.modules.dr.controlAreaList.breadcrumb.controlAreas">Control Areas</entry>
+<entry key="yukon.web.modules.dr.controlAreaList.controlAreas">Control Areas</entry>
+<entry key="yukon.web.modules.dr.controlAreaList.heading.name">Name</entry>
 
 
 <!-- Control Area Detail -->
-<entry key="yukon.web.modules.dr.controlArea.detail.pageTitle">ControlArea {0}</entry>
-<entry key="yukon.web.modules.dr.controlArea.detail.breadcrumb.operationsHome">Operations Home</entry>
-<entry key="yukon.web.modules.dr.controlArea.detail.breadcrumb.controlAreas">ControlAreas</entry>
-<entry key="yukon.web.modules.dr.controlArea.detail.breadcrumb.controlArea">ControlArea {0}</entry>
-<entry key="yukon.web.modules.dr.controlArea.detail.controlArea">ControlArea {0}</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.pageTitle">Control Area {0}</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.breadcrumb.operationsHome">Operations Home</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.breadcrumb.controlAreas">Control Areas</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.breadcrumb.controlArea">Control Area {0}</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.controlArea">Control Area {0}</entry>
 
-<entry key="yukon.web.modules.dr.controlArea.detail.heading.info">Info</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.heading.info">Info</entry>
 
-<entry key="yukon.web.modules.dr.controlArea.detail.heading.actions">Actions</entry>
-<entry key="yukon.web.modules.dr.controlArea.detail.actions.start">Start</entry>
-<entry key="yukon.web.modules.dr.controlArea.detail.actions.stop">Stop</entry>
-<entry key="yukon.web.modules.dr.controlArea.detail.actions.triggersChange">Triggers Change</entry>
-<entry key="yukon.web.modules.dr.controlArea.detail.actions.dailyTimeChange">Daily Time Change</entry>
-<entry key="yukon.web.modules.dr.controlArea.detail.actions.disable">Disable</entry>
-<entry key="yukon.web.modules.dr.controlArea.detail.actions.enable">Enable</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.heading.actions">Actions</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.start">Start</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.stop">Stop</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange">Triggers Change</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChange">Daily Time Change</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.disable">Disable</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.enable">Enable</entry>
 
-<entry key="yukon.web.modules.dr.controlArea.detail.heading.programs">Programs</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.heading.programs">Programs</entry>
 
 
 <!-- Program List -->
-<entry key="yukon.web.modules.dr.program.list.pageTitle">Programs</entry>
-<entry key="yukon.web.modules.dr.program.list.breadcrumb.operationsHome">Operations Home</entry>
-<entry key="yukon.web.modules.dr.program.list.breadcrumb.programs">Programs</entry>
-<entry key="yukon.web.modules.dr.program.list.programs">Programs</entry>
-<entry key="yukon.web.modules.dr.program.list.heading.name">Name</entry>
-<entry key="yukon.web.modules.dr.program.list.heading.state">State</entry>
-<entry key="yukon.web.modules.dr.program.list.heading.start">Start</entry>
-<entry key="yukon.web.modules.dr.program.list.heading.stop">Stop</entry>
-<entry key="yukon.web.modules.dr.program.list.heading.currentGear">Current Gear</entry>
-<entry key="yukon.web.modules.dr.program.list.heading.priority">Priority</entry>
-<entry key="yukon.web.modules.dr.program.list.heading.reduction">Reduction</entry>
-<entry key="yukon.web.modules.dr.program.list.heading.loadCapacity">Load Capacity</entry>
+<entry key="yukon.web.modules.dr.programList.pageTitle">Programs</entry>
+<entry key="yukon.web.modules.dr.programList.breadcrumb.operationsHome">Operations Home</entry>
+<entry key="yukon.web.modules.dr.programList.breadcrumb.programs">Programs</entry>
+<entry key="yukon.web.modules.dr.programList.programs">Programs</entry>
+<entry key="yukon.web.modules.dr.programList.heading.name">Name</entry>
+<entry key="yukon.web.modules.dr.programList.heading.state">State</entry>
+<entry key="yukon.web.modules.dr.programList.heading.start">Start</entry>
+<entry key="yukon.web.modules.dr.programList.heading.stop">Stop</entry>
+<entry key="yukon.web.modules.dr.programList.heading.currentGear">Current Gear</entry>
+<entry key="yukon.web.modules.dr.programList.heading.priority">Priority</entry>
+<entry key="yukon.web.modules.dr.programList.heading.reduction">Reduction</entry>
+<entry key="yukon.web.modules.dr.programList.heading.loadCapacity">Load Capacity</entry>
 
 
 <!-- Program Detail -->
-<entry key="yukon.web.modules.dr.program.detail.pageTitle">Program {0}</entry>
-<entry key="yukon.web.modules.dr.program.detail.breadcrumb.operationsHome">Operations Home</entry>
-<entry key="yukon.web.modules.dr.program.detail.breadcrumb.programs">Programs</entry>
-<entry key="yukon.web.modules.dr.program.detail.breadcrumb.program">Program {0}</entry>
-<entry key="yukon.web.modules.dr.program.detail.program">Program {0}</entry>
+<entry key="yukon.web.modules.dr.programDetail.pageTitle">Program {0}</entry>
+<entry key="yukon.web.modules.dr.programDetail.breadcrumb.operationsHome">Operations Home</entry>
+<entry key="yukon.web.modules.dr.programDetail.breadcrumb.programs">Programs</entry>
+<entry key="yukon.web.modules.dr.programDetail.breadcrumb.program">Program {0}</entry>
+<entry key="yukon.web.modules.dr.programDetail.program">Program {0}</entry>
 
-<entry key="yukon.web.modules.dr.program.detail.heading.info">Info</entry>
-<entry key="yukon.web.modules.dr.program.detail.info.state">State</entry>
-<entry key="yukon.web.modules.dr.program.detail.info.start">Start</entry>
-<entry key="yukon.web.modules.dr.program.detail.info.stop">Stop</entry>
-<entry key="yukon.web.modules.dr.program.detail.info.currentGear">Current Gear</entry>
-<entry key="yukon.web.modules.dr.program.detail.info.priority">Priority</entry>
-<entry key="yukon.web.modules.dr.program.detail.info.reduction">Reduction</entry>
-<entry key="yukon.web.modules.dr.program.detail.info.loadCapacity">Load Capacity</entry>
+<entry key="yukon.web.modules.dr.programDetail.heading.info">Info</entry>
+<entry key="yukon.web.modules.dr.programDetail.info.state">State</entry>
+<entry key="yukon.web.modules.dr.programDetail.info.start">Start</entry>
+<entry key="yukon.web.modules.dr.programDetail.info.stop">Stop</entry>
+<entry key="yukon.web.modules.dr.programDetail.info.currentGear">Current Gear</entry>
+<entry key="yukon.web.modules.dr.programDetail.info.priority">Priority</entry>
+<entry key="yukon.web.modules.dr.programDetail.info.reduction">Reduction</entry>
+<entry key="yukon.web.modules.dr.programDetail.info.loadCapacity">Load Capacity</entry>
 
-<entry key="yukon.web.modules.dr.program.detail.heading.actions">Actions</entry>
-<entry key="yukon.web.modules.dr.program.detail.actions.start">Start</entry>
-<entry key="yukon.web.modules.dr.program.detail.actions.stop">Stop</entry>
-<entry key="yukon.web.modules.dr.program.detail.actions.changeGears">Change Gears</entry>
-<entry key="yukon.web.modules.dr.program.detail.actions.enable">Enable</entry>
-<entry key="yukon.web.modules.dr.program.detail.actions.disable">Disable</entry>
+<entry key="yukon.web.modules.dr.programDetail.heading.actions">Actions</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.start">Start</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.stop">Stop</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.changeGears">Change Gears</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.enable">Enable</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.disable">Disable</entry>
 
-<entry key="yukon.web.modules.dr.program.detail.heading.loadGroups">Load Groups</entry>
-<entry key="yukon.web.modules.dr.program.detail.loadGroups.heading.name">Name</entry>
+<entry key="yukon.web.modules.dr.programDetail.heading.loadGroups">Load Groups</entry>
+<entry key="yukon.web.modules.dr.programDetail.loadGroups.heading.name">Name</entry>
 
-<entry key="yukon.web.modules.dr.program.detail.heading.parents">Parents</entry>
-<entry key="yukon.web.modules.dr.program.detail.parents.controlArea">
+<entry key="yukon.web.modules.dr.programDetail.heading.parents">Parents</entry>
+<entry key="yukon.web.modules.dr.programDetail.parents.controlArea">
     This program belongs to the following control area.
 </entry>
-<entry key="yukon.web.modules.dr.program.detail.parents.noControlArea">
+<entry key="yukon.web.modules.dr.programDetail.parents.noControlArea">
     This program has no parent control area.
 </entry>
-<entry key="yukon.web.modules.dr.program.detail.parents.scenarios">
+<entry key="yukon.web.modules.dr.programDetail.parents.scenarios">
     This program belongs to the following scenarios.
 </entry>
-<entry key="yukon.web.modules.dr.program.detail.parents.noScenarios">
+<entry key="yukon.web.modules.dr.programDetail.parents.noScenarios">
     This program has no parent scenarios.
 </entry>
 
 
 <!-- Load Group List -->
-<entry key="yukon.web.modules.dr.loadGroup.list.pageTitle">Load Groups</entry>
-<entry key="yukon.web.modules.dr.loadGroup.list.breadcrumb.operationsHome">Operations Home</entry>
-<entry key="yukon.web.modules.dr.loadGroup.list.breadcrumb.loadGroups">Load Groups</entry>
-<entry key="yukon.web.modules.dr.loadGroup.list.loadGroups">Load Groups</entry>
-<entry key="yukon.web.modules.dr.loadGroup.list.heading.name">Name</entry>
+<entry key="yukon.web.modules.dr.loadGroupList.pageTitle">Load Groups</entry>
+<entry key="yukon.web.modules.dr.loadGroupList.breadcrumb.operationsHome">Operations Home</entry>
+<entry key="yukon.web.modules.dr.loadGroupList.breadcrumb.loadGroups">Load Groups</entry>
+<entry key="yukon.web.modules.dr.loadGroupList.loadGroups">Load Groups</entry>
+<entry key="yukon.web.modules.dr.loadGroupList.heading.name">Name</entry>
 
 
 <!-- Load Group Detail -->
-<entry key="yukon.web.modules.dr.loadGroup.detail.pageTitle">Load Group {0}</entry>
-<entry key="yukon.web.modules.dr.loadGroup.detail.breadcrumb.operationsHome">Operations Home</entry>
-<entry key="yukon.web.modules.dr.loadGroup.detail.breadcrumb.loadGroups">Load Groups</entry>
-<entry key="yukon.web.modules.dr.loadGroup.detail.breadcrumb.loadGroup">Load Group {0}</entry>
-<entry key="yukon.web.modules.dr.loadGroup.detail.loadGroup">Load Group {0}</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.pageTitle">Load Group {0}</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.breadcrumb.operationsHome">Operations Home</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.breadcrumb.loadGroups">Load Groups</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.breadcrumb.loadGroup">Load Group {0}</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.loadGroup">Load Group {0}</entry>
 
-<entry key="yukon.web.modules.dr.loadGroup.detail.heading.info">Info</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.heading.info">Info</entry>
 
-<entry key="yukon.web.modules.dr.loadGroup.detail.heading.actions">Actions</entry>
-<entry key="yukon.web.modules.dr.loadGroup.detail.actions.sendShed">Send Shed</entry>
-<entry key="yukon.web.modules.dr.loadGroup.detail.actions.sendRestore">Send Restore</entry>
-<entry key="yukon.web.modules.dr.loadGroup.detail.actions.enable">Enable</entry>
-<entry key="yukon.web.modules.dr.loadGroup.detail.actions.disable">Disable</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.heading.actions">Actions</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.actions.sendShed">Send Shed</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestore">Send Restore</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.actions.enable">Enable</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.actions.disable">Disable</entry>
 
-<entry key="yukon.web.modules.dr.loadGroup.detail.heading.parents">Parents</entry>
-<entry key="yukon.web.modules.dr.loadGroup.detail.parents.programs">
+<entry key="yukon.web.modules.dr.loadGroupDetail.heading.parents">Parents</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.parents.programs">
     This load group belongs to the following programs.
 </entry>
-<entry key="yukon.web.modules.dr.loadGroup.detail.parents.noPrograms">
+<entry key="yukon.web.modules.dr.loadGroupDetail.parents.noPrograms">
     This load group has no parent programs.
 </entry>
 

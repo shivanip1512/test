@@ -1,56 +1,61 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:msg var="pageTitle" key="yukon.web.modules.dr.program.detail.pageTitle" argument="${program.name}"/>
-<cti:standardPage module="dr" title="${pageTitle}">
+<cti:msg var="pageTitle" key="yukon.web.modules.dr.programDetail.pageTitle" argument="${program.name}"/>
+<cti:standardPage module="dr" page="programDetail" title="${pageTitle}">
     <cti:standardMenu menuSelection="details|programs"/>
 
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp">
-        	<cti:msg key="yukon.web.modules.dr.program.detail.breadcrumb.operationsHome"/>
+        	<cti:msg key="yukon.web.modules.dr.programDetail.breadcrumb.operationsHome"/>
         </cti:crumbLink>
         <cti:crumbLink url="/spring/dr/program/list">
-        	<cti:msg key="yukon.web.modules.dr.program.detail.breadcrumb.programs"/>
+        	<cti:msg key="yukon.web.modules.dr.programDetail.breadcrumb.programs"/>
         </cti:crumbLink>
-        <cti:crumbLink><cti:msg key="yukon.web.modules.dr.program.detail.breadcrumb.program" argument="${program.name}"/></cti:crumbLink>
+        <cti:crumbLink>
+            <cti:msg key="yukon.web.modules.dr.programDetail.breadcrumb.program"
+                htmlEscape="true" argument="${program.name}"/>
+        </cti:crumbLink>
     </cti:breadCrumbs>
 
-    <h2><cti:msg key="yukon.web.modules.dr.program.detail.program" argument="${program.name}"/></h2>
+    <h2><cti:msg key="yukon.web.modules.dr.programDetail.program"
+        htmlEscape="true" argument="${program.name}"/></h2>
 
     <c:set var="programId" value="${program.paoIdentifier.paoId}"/>
     <table cellspacing="0" cellpadding="0" width="100%">
         <tr>
             <td width="50%" valign="top">
-                <cti:msg var="boxTitle" key="yukon.web.modules.dr.program.detail.heading.info"/>
+                <cti:msg var="boxTitle" key="yukon.web.modules.dr.programDetail.heading.info"/>
                 <tags:abstractContainer type="box" title="${boxTitle}">
                     <tags:nameValueContainer>
-                        <cti:msg var="fieldName" key="yukon.web.modules.dr.program.detail.info.state"/>
+                        <cti:msg var="fieldName" key="yukon.web.modules.dr.programDetail.info.state"/>
                         <tags:nameValue name="${fieldName}" nameColumnWidth="150px">
                             <cti:dataUpdaterValue identifier="${programId}/STATE" type="DR_PROGRAM"/>
                         </tags:nameValue>
-                        <cti:msg var="fieldName" key="yukon.web.modules.dr.program.detail.info.start"/>
+                        <cti:msg var="fieldName" key="yukon.web.modules.dr.programDetail.info.start"/>
                         <tags:nameValue name="${fieldName}">
                             <cti:dataUpdaterValue identifier="${programId}/START" type="DR_PROGRAM"/>
                         </tags:nameValue>
-                        <cti:msg var="fieldName" key="yukon.web.modules.dr.program.detail.info.stop"/>
+                        <cti:msg var="fieldName" key="yukon.web.modules.dr.programDetail.info.stop"/>
                         <tags:nameValue name="${fieldName}">
                             <cti:dataUpdaterValue identifier="${programId}/STOP" type="DR_PROGRAM"/>
                         </tags:nameValue>
-                        <cti:msg var="fieldName" key="yukon.web.modules.dr.program.detail.info.currentGear"/>
+                        <cti:msg var="fieldName" key="yukon.web.modules.dr.programDetail.info.currentGear"/>
                         <tags:nameValue name="${fieldName}">
                             <cti:dataUpdaterValue identifier="${programId}/CURRENT_GEAR" type="DR_PROGRAM"/>
                         </tags:nameValue>
-                        <cti:msg var="fieldName" key="yukon.web.modules.dr.program.detail.info.priority"/>
+                        <cti:msg var="fieldName" key="yukon.web.modules.dr.programDetail.info.priority"/>
                         <tags:nameValue name="${fieldName}">
                             <cti:dataUpdaterValue identifier="${programId}/PRIORITY" type="DR_PROGRAM"/>
                         </tags:nameValue>
-                        <cti:msg var="fieldName" key="yukon.web.modules.dr.program.detail.info.reduction"/>
+                        <cti:msg var="fieldName" key="yukon.web.modules.dr.programDetail.info.reduction"/>
                         <tags:nameValue name="${fieldName}">
                             <cti:dataUpdaterValue identifier="${programId}/REDUCTION" type="DR_PROGRAM"/>
                         </tags:nameValue>
-                        <cti:msg var="fieldName" key="yukon.web.modules.dr.program.detail.info.loadCapacity"/>
+                        <cti:msg var="fieldName" key="yukon.web.modules.dr.programDetail.info.loadCapacity"/>
                         <tags:nameValue name="${fieldName}">
                             <cti:dataUpdaterValue identifier="${programId}/LOAD_CAPACITY" type="DR_PROGRAM"/>
                         </tags:nameValue>
@@ -59,33 +64,33 @@
             </td>
             <td width="10">&nbsp;</td>
             <td width="50%" valign="top">
-                <cti:msg var="boxTitle" key="yukon.web.modules.dr.program.detail.heading.actions"/>
+                <cti:msg var="boxTitle" key="yukon.web.modules.dr.programDetail.heading.actions"/>
             	<tags:abstractContainer type="box" title="${boxTitle}">
-            		<cti:msg key="yukon.web.modules.dr.program.detail.actions.start"/><br>
-            		<cti:msg key="yukon.web.modules.dr.program.detail.actions.stop"/><br>
-                    <cti:msg key="yukon.web.modules.dr.program.detail.actions.changeGears"/><br>
-                    <cti:msg key="yukon.web.modules.dr.program.detail.actions.enable"/><br>
-                    <cti:msg key="yukon.web.modules.dr.program.detail.actions.disable"/><br>
+            		<cti:msg key="yukon.web.modules.dr.programDetail.actions.start"/><br>
+            		<cti:msg key="yukon.web.modules.dr.programDetail.actions.stop"/><br>
+                    <cti:msg key="yukon.web.modules.dr.programDetail.actions.changeGears"/><br>
+                    <cti:msg key="yukon.web.modules.dr.programDetail.actions.enable"/><br>
+                    <cti:msg key="yukon.web.modules.dr.programDetail.actions.disable"/><br>
     	        </tags:abstractContainer>
             </td>
         </tr>
     </table>
     <br>
 
-    <cti:msg var="boxTitle" key="yukon.web.modules.dr.program.detail.heading.loadGroups"/>
+    <cti:msg var="boxTitle" key="yukon.web.modules.dr.programDetail.heading.loadGroups"/>
     <tags:abstractContainer type="box" title="${boxTitle}">
 
 	<table id="loadGroupList" class="compactMiniResultsTable">
 		<tr>
-			<th><cti:msg key="yukon.web.modules.dr.program.detail.loadGroups.heading.name"/></th>
+			<th><cti:msg key="yukon.web.modules.dr.programDetail.loadGroups.heading.name"/></th>
 		</tr>
 		<c:forEach var="loadGroup" items="${loadGroups}">
+            <c:url var="loadGroupURL" value="/spring/dr/loadGroup/detail">
+                <c:param name="loadGroupId" value="${loadGroup.paoIdentifier.paoId}"/>
+            </c:url>
 			<tr class="<tags:alternateRow odd="" even="altRow"/>">
 				<td>
-				<c:url var="loadGroupURL" value="/spring/dr/loadGroup/detail">
-					<c:param name="loadGroupId" value="${loadGroup.paoIdentifier.paoId}"/>
-				</c:url>
-				<a href="${loadGroupURL}">${loadGroup.name}</a>
+				    <a href="${loadGroupURL}"><spring:escapeBody htmlEscape="true">${loadGroup.name}</spring:escapeBody></a>
 				</td>
 			</tr>
 		</c:forEach>
@@ -94,31 +99,31 @@
     </tags:abstractContainer>
     <br>
 
-    <cti:msg var="boxTitle" key="yukon.web.modules.dr.program.detail.heading.parents"/>
+    <cti:msg var="boxTitle" key="yukon.web.modules.dr.programDetail.heading.parents"/>
     <tags:abstractContainer type="box" title="${boxTitle}">
 
-        <p><cti:msg key="yukon.web.modules.dr.program.detail.parents.controlArea"/></p>
+        <p><cti:msg key="yukon.web.modules.dr.programDetail.parents.controlArea"/></p>
         <c:if test="${empty parentControlArea}">
-            <p><cti:msg key="yukon.web.modules.dr.program.detail.parents.noControlArea"/></p>
+            <p><cti:msg key="yukon.web.modules.dr.programDetail.parents.noControlArea"/></p>
         </c:if>
         <c:if test="${!empty parentControlArea}">
             <c:url var="controlAreaURL" value="/spring/dr/controlArea/detail">
                 <c:param name="controlAreaId" value="${parentControlArea.paoIdentifier.paoId}"/>
             </c:url>
-            <a href="${controlAreaURL}">${parentControlArea.name}</a><br>
+            <a href="${controlAreaURL}"><spring:escapeBody htmlEscape="true">${parentControlArea.name}</spring:escapeBody></a><br>
         </c:if>
         <br>
 
-        <p><cti:msg key="yukon.web.modules.dr.program.detail.parents.scenarios"/></p>
+        <p><cti:msg key="yukon.web.modules.dr.programDetail.parents.scenarios"/></p>
         <c:if test="${empty parentScenarios}">
-            <p><cti:msg key="yukon.web.modules.dr.program.detail.parents.noScenarios"/></p>
+            <p><cti:msg key="yukon.web.modules.dr.programDetail.parents.noScenarios"/></p>
         </c:if>
         <c:if test="${!empty parentScenarios}">
 	        <c:forEach var="parentScenario" items="${parentScenarios}">
                 <c:url var="scenarioURL" value="/spring/dr/scenario/detail">
                     <c:param name="scenarioId" value="${parentScenario.paoIdentifier.paoId}"/>
                 </c:url>
-                <a href="${scenarioURL}">${parentScenario.name}</a><br>
+                <a href="${scenarioURL}"><spring:escapeBody htmlEscape="true">${parentScenario.name}</spring:escapeBody></a><br>
 	        </c:forEach>
         </c:if>
 

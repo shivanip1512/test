@@ -3,8 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:msg var="pageTitle" key="yukon.web.modules.dr.home.pageTitle"/>
-<cti:standardPage module="dr" title="${pageTitle}">
+<cti:standardPage module="dr" page="home">
     <cti:standardMenu menuSelection="home"/>
 
     <cti:breadCrumbs>
