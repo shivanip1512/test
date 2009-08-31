@@ -23,6 +23,7 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupRenderer;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.DeviceGroupTreeFactory;
+import com.cannontech.common.device.groups.service.NonHiddenDeviceGroupPredicate;
 import com.cannontech.common.gui.tree.CustomRenderJTree;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.roles.yukon.BillingRole;
@@ -57,8 +58,8 @@ public class BillingFileFormatPanel extends javax.swing.JPanel implements java.a
 	private String inputFileText = "";
 	private com.cannontech.common.gui.util.DateComboBox ivjDateComboBox = null;
 	private javax.swing.JSeparator ivjSeparator = null;
-	private javax.swing.JComboBox ivjBillingGroupTypeComboBox = null;
-	private javax.swing.JLabel ivjBillingGroupTypeLabel = null;
+//	private javax.swing.JComboBox ivjBillingGroupTypeComboBox = null;
+//	private javax.swing.JLabel ivjBillingGroupTypeLabel = null;
 	private javax.swing.JCheckBox ivjRemoveMultiplierCheckBox = null;
 
 /**
@@ -709,7 +710,7 @@ private javax.swing.JTree getGroupList() {
             selectionModel.clearSelection();
             selectionModel.setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
 			ivjGroupTree.setSelectionModel(selectionModel);
-			TreeModel model = modelFactory.getModel();
+			TreeModel model = modelFactory.getModel(new NonHiddenDeviceGroupPredicate());
             ivjGroupTree.setModel(model);
 
 			//Select one/multiple billing groups.

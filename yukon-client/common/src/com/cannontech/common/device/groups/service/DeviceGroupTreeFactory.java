@@ -32,12 +32,10 @@ public class DeviceGroupTreeFactory {
 
     public final class LiteBaseModel extends DBTreeModel {
         private final boolean devices;
-        private final NullPredicate nullPredicate;
 
         public LiteBaseModel(TreeNode root, boolean devices, NullPredicate nullPredicate) {
             super(root);
             this.devices = devices;
-            this.nullPredicate = nullPredicate;
         }
 
         public boolean isLiteTypeSupported(int liteType) {
@@ -45,14 +43,21 @@ public class DeviceGroupTreeFactory {
         }
 
         public void update() {
-            DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode) getRootNode(devices, nullPredicate);
+            DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode) getRootNode(devices, new NonHiddenDeviceGroupPredicate());
+            
             // this is lame, but this is life... blame TreeViewPanel
             DefaultMutableTreeNode newRoot = new DefaultMutableTreeNode("Device Groups");
-            Enumeration enumeration = rootNode.children();
-            while (enumeration.hasMoreElements()) {
-                MutableTreeNode object = (MutableTreeNode) enumeration.nextElement();
-                newRoot.add(object);
+
+            /* For some reason the tree node grabs the entry from the list.
+             * This causes our list count to decrease by one extra every time 
+             * the getNextNode method gets called
+             */
+            int temp = rootNode.getChildCount();
+            for(int i = 0; i < temp; temp = rootNode.getChildCount()){
+                MutableTreeNode childTreeNode = (MutableTreeNode) rootNode.getChildAt(i);
+                newRoot.add(childTreeNode);
             }
+            
             setRoot(newRoot);
         }
 

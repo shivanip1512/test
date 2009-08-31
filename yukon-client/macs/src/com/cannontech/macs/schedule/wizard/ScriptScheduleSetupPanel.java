@@ -73,6 +73,7 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupRenderer;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.DeviceGroupTreeFactory;
+import com.cannontech.common.device.groups.service.NonHiddenDeviceGroupPredicate;
 import com.cannontech.common.gui.tree.CustomRenderJTree;
 import com.cannontech.common.gui.unchanging.LongRangeDocument;
 import com.cannontech.common.gui.util.DataInputPanel;
@@ -838,7 +839,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
                 billingGroupTree.setSelectionModel(selectionModel);
                 // it is okay to include dynamic groups here because the string is simply 
                 // passed to BillingFile and not interpreted by MACS
-                TreeModel model = modelFactory.getModel();
+                TreeModel model = modelFactory.getModel(new NonHiddenDeviceGroupPredicate());
                 billingGroupTree.setModel(model);
     
             } catch (Throwable ivjExc) {
