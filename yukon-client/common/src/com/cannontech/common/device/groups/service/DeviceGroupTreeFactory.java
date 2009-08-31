@@ -52,9 +52,8 @@ public class DeviceGroupTreeFactory {
              * This causes our list count to decrease by one extra every time 
              * the getNextNode method gets called
              */
-            int temp = rootNode.getChildCount();
-            for(int i = 0; i < temp; temp = rootNode.getChildCount()){
-                MutableTreeNode childTreeNode = (MutableTreeNode) rootNode.getChildAt(i);
+            while(0 < rootNode.getChildCount()){
+                MutableTreeNode childTreeNode = (MutableTreeNode) rootNode.getChildAt(0);
                 newRoot.add(childTreeNode);
             }
             
