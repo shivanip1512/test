@@ -58,8 +58,6 @@ public class BillingFileFormatPanel extends javax.swing.JPanel implements java.a
 	private String inputFileText = "";
 	private com.cannontech.common.gui.util.DateComboBox ivjDateComboBox = null;
 	private javax.swing.JSeparator ivjSeparator = null;
-//	private javax.swing.JComboBox ivjBillingGroupTypeComboBox = null;
-//	private javax.swing.JLabel ivjBillingGroupTypeLabel = null;
 	private javax.swing.JCheckBox ivjRemoveMultiplierCheckBox = null;
 
 /**
