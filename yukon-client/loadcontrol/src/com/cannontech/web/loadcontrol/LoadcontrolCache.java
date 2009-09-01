@@ -369,7 +369,7 @@ public Iterator<LMControlArea> getAllControlAreas( LiteYukonUser yukUser, boolea
  */
 public LMControlArea getControlArea( Integer areaID )
 {
-	return lcConn.getControlAreas().get( areaID );
+	return lcConn.getControlArea( areaID );
 }
 
 /**
@@ -378,7 +378,7 @@ public LMControlArea getControlArea( Integer areaID )
  */
 public LMProgramBase getProgram( Integer progID )
 {
-	return lcConn.getPrograms().get( progID );
+	return lcConn.getProgram( progID );
 }
 
 /**
@@ -387,7 +387,7 @@ public LMProgramBase getProgram( Integer progID )
  */
 public LMGroupBase getGroup( Integer grpID )
 {
-	return lcConn.getGroups().get( grpID );
+	return lcConn.getGroup( grpID );
 }
 
 /**

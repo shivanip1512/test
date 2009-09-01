@@ -575,6 +575,12 @@
                 <entry key="GROUP_METER_READ">
                     <ref local="groupMeterReadUpdateBackingService"/>
                 </entry>
+                <entry key="DR_CONTROLAREA">
+                    <ref local="drControlAreaBackingService"/>
+                </entry>
+                <entry key="DR_CONTROLAREA_TRIGGER">
+                    <ref local="drTriggerBackingService"/>
+                </entry>              
                 <entry key="DR_PROGRAM">
                     <ref local="drProgramBackingService"/>
                 </entry>
@@ -709,6 +715,8 @@
     <bean id="nextRunJobUpdaterHandler" class="com.cannontech.web.updater.job.handler.NextRunJobUpdaterHandler"/>
     <bean id="scheduleDescriptionJobUpdaterHandler" class="com.cannontech.web.updater.job.handler.ScheduleDescriptionJobUpdaterHandler"/>
 
+    <bean id="drControlAreaBackingService" class="com.cannontech.web.updater.dr.ControlAreaBackingService"/>
+    <bean id="drTriggerBackingService" class="com.cannontech.web.updater.dr.TriggerBackingService"/>    
     <bean id="drProgramBackingService" class="com.cannontech.web.updater.dr.ProgramBackingService"/>
 
     <bean id="abstractFormattingService" class="com.cannontech.web.updater.capcontrol.AbstractFormattingService"

@@ -161,6 +161,17 @@ public java.lang.Integer getCurrentDailyStartTime() {
 public java.lang.Integer getCurrentDailyStopTime() {
 	return currentDailyStopTime;
 }
+
+public java.lang.Integer getDailyStartTime() {
+    return (getCurrentDailyStartTime() >= 0) ? getCurrentDailyStartTime()
+            : getDefDailyStartTime();
+}
+
+public java.lang.Integer getDailyStopTime() {
+    return (getCurrentDailyStopTime() >= 0) ? getCurrentDailyStopTime()
+            : getDefDailyStopTime();
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (4/3/2001 10:56:59 AM)
@@ -256,6 +267,15 @@ public Vector<LMControlAreaTrigger> getTriggerVector()
 		triggerVector = new Vector<LMControlAreaTrigger>(2);
 
 	return triggerVector;
+}
+
+public LMControlAreaTrigger getTrigger(int triggerNumber) {
+    for (LMControlAreaTrigger trigger : getTriggerVector()) {
+        if (trigger.getTriggerNumber() == triggerNumber) {
+            return trigger;
+        }
+    }
+    return null;
 }
 /**
  * Insert the method's description here.

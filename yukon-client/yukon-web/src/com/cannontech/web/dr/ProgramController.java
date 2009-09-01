@@ -36,7 +36,7 @@ public class ProgramController {
         modelMap.addAttribute("program", program);
         List<DisplayablePao> loadGroups = loadGroupDao.getLoadGroupsForProgram(programId);
         modelMap.addAttribute("loadGroups", loadGroups);
-        DisplayablePao parentControlArea = controlAreaDao.getControlAreaForProgram(programId);
+        DisplayablePao parentControlArea = controlAreaDao.findControlAreaForProgram(programId);
         modelMap.addAttribute("parentControlArea", parentControlArea);
         List<DisplayablePao> parentScenarios = scenarioDao.getScenariosForProgram(programId);
         modelMap.addAttribute("parentScenarios", parentScenarios);

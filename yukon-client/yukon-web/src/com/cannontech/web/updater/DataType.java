@@ -17,6 +17,9 @@ public enum DataType {
     TAMPER_FLAG_PROCESSING,
     JOB,
     GROUP_METER_READ,
+    DR_CONTROLAREA,
+    DR_CONTROLAREA_TRIGGER,
     DR_PROGRAM,
+    DR_LOADGROUP
     ;
 }

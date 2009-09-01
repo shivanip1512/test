@@ -1662,13 +1662,13 @@ private synchronized void updateControlAreaTableModel(LMControlArea changedArea,
 
 private synchronized void handleChange( LCChangeEvent msg ) {
     if( msg.id == LCChangeEvent.INSERT ) {
-        LMControlArea newArea = getLoadControlClientConnection().getControlAreas().get(((LMControlArea)msg.arg).getYukonID());
+        LMControlArea newArea = getLoadControlClientConnection().getControlArea(((LMControlArea)msg.arg).getYukonID());
         getControlAreaTableModel().addControlAreaAt(newArea, getInsertionIndx(newArea, getControlAreaTableModel()));
     }
     else if( msg.id == LCChangeEvent.UPDATE ) {
         boolean found = false;
         if(msg.arg instanceof LMControlArea) {
-            LMControlArea newArea = getLoadControlClientConnection().getControlAreas().get(((LMControlArea)msg.arg).getYukonID());
+            LMControlArea newArea = getLoadControlClientConnection().getControlArea(((LMControlArea)msg.arg).getYukonID());
             for( int i = 0; i < getControlAreaTableModel().getRowCount(); i++ ) {
                 LMControlArea areaRow = getControlAreaTableModel().getRowAt(i);
                     

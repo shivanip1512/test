@@ -23,11 +23,71 @@
     <h2><cti:msg key="yukon.web.modules.dr.controlAreaDetail.controlArea"
         htmlEscape="true" argument="${controlArea.name}"/></h2>
 
+    <c:set var="controlAreaId" value="${controlArea.paoIdentifier.paoId}"/>
     <table cellspacing="0" cellpadding="0" width="100%">
         <tr>
             <td width="50%" valign="top">
                 <cti:msg var="boxTitle" key="yukon.web.modules.dr.controlAreaDetail.heading.info"/>
 	            <tags:abstractContainer type="box" title="${boxTitle}">
+                    <tags:nameValueContainer>
+                        <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaDetail.heading.state"/>
+                        <tags:nameValue name="${fieldName}" nameColumnWidth="150px">
+                            <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/STATE"/>
+                        </tags:nameValue>
+                        <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaDetail.heading.priority"/>
+                        <tags:nameValue name="${fieldName}">
+                            <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/PRIORITY"/>
+                        </tags:nameValue>
+                        <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaDetail.heading.startStop"/>
+                        <tags:nameValue name="${fieldName}">
+                            <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/START"/>
+                            -
+                            <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/STOP"/>
+                        </tags:nameValue>
+                        <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaDetail.heading.loadCapacity"/>
+                        <tags:nameValue name="${fieldName}">
+                            <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/LOAD_CAPACITY"/>
+                        </tags:nameValue>
+                        
+	                    <c:if test="${!empty controlArea.triggers}">
+	                        <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaDetail.heading.triggers"/>
+	                        <tags:nameValue name="${fieldName}">
+	                        </tags:nameValue>	                        
+	                        <table id="controlAreaList" class="compactMiniResultsTable">
+	                            <tr>
+	                                <th><cti:msg key="yukon.web.modules.dr.controlAreaDetail.heading.valueThreshold"/></th>
+	                                <th><cti:msg key="yukon.web.modules.dr.controlAreaDetail.heading.peakProjection"/></th>
+	                                <th><cti:msg key="yukon.web.modules.dr.controlAreaDetail.heading.atku"/></th>
+	                            </tr>
+	                            <c:forEach var="trigger" items="${controlArea.triggers}">
+	                                <c:set var="triggerNumber" value="${trigger.triggerNumber}"/>                               
+	                                <tr class="<tags:alternateRow odd="" even="altRow"/>">
+	                                    <td>
+	                                       <cti:dataUpdaterValue type="DR_CONTROLAREA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/VALUE"/>
+	                                       /
+	                                       <cti:dataUpdaterValue type="DR_CONTROLAREA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/THRESHOLD"/>
+	                                    </td>
+	                                    <td>
+	                                        <c:if test="${controlAreaTrigger.thresholdType}">
+	                                            <cti:dataUpdaterValue type="DR_CONTROLAREA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/PEAK"/>
+	                                            /
+	                                            <cti:dataUpdaterValue type="DR_CONTROLAREA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/PROJECTION"/>
+	                                        </c:if>
+	                                    </td>
+	                                    <td>
+	                                        <c:if test="${controlAreaTrigger.thresholdType}">
+	                                           <cti:dataUpdaterValue type="DR_CONTROLAREA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/ATKU"/>
+	                                        </c:if>
+	                                    </td>
+	                                </tr>
+	                            </c:forEach>
+	                        </table>
+	                    </c:if>
+                    </tags:nameValueContainer>
+                    <c:if test="${empty controlArea.triggers}">
+                        <br/>
+                        <cti:msg key="yukon.web.modules.dr.controlAreaDetail.heading.noTriggers"/>
+                    </c:if>
             	</tags:abstractContainer>
             </td>
             <td width="10">&nbsp;</td>

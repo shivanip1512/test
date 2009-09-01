@@ -118,6 +118,15 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
         return retVal;
     }
     
+    public LMControlArea getControlArea(int controlAreaId) {
+        LMControlArea controlArea = null;
+        DatedObject<LMControlArea> datedControlArea = controlAreas.get(controlAreaId);
+        if (datedControlArea != null) {
+            controlArea = datedControlArea.getObject();
+        }
+        return controlArea;
+    }
+    
     /**
      * Returns the control area that a program belongs to.
      * If the program does not belong to any control area, null is returned.
@@ -125,55 +134,27 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
      * @return
      */
     public LMControlArea findControlAreaForProgram(int programId) {
-    	
-    	LMControlArea[] allControlAreas = getAllLMControlAreas();
-    	for (LMControlArea controlArea : allControlAreas) {
-    		Vector<LMProgramBase> programs = controlArea.getLmProgramVector();
-    		for (LMProgramBase program : programs) {
-    			if (program.getYukonID().intValue() == programId) {
-    				return controlArea;
-    			}
-    		}
-    	}
-    	
-    	return null;
+        for (DatedObject<LMControlArea> controlArea : controlAreas.values()) {
+            Vector<LMProgramBase> programs = controlArea.getObject().getLmProgramVector();
+            for (LMProgramBase program : programs) {
+                if (program.getYukonID().intValue() == programId) {
+                    return controlArea.getObject();
+                }
+            }
+        }
+        
+        return null;
     }
     
     public int getControlAreaCount() {
     	return controlAreas.size();
     }
     
+    @Deprecated
     public Map<Integer, LMControlArea> getControlAreas() {
     	return unwrapDatedMap(controlAreas);
     }
     
-    /**
-	 * @deprecated - The returned map may be out of date because it cannot be
-	 *             properly updated when a LM program is deleted. See the note in
-	 *             the handleLMControlArea() method on this class.
-	 */
-    public Map<Integer, LMProgramBase> getPrograms() {
-        return unwrapDatedMap(programs);
-    }
-    
-    /**
-     * @deprecated - The returned map may be out of date because it cannot be
-     *             properly updated when a LM program or group is deleted. See the 
-     *             note in the handleLMControlArea() method on this class.
-     */
-    public Map<Integer, LMGroupBase> getGroups() {
-        return unwrapDatedMap(groups);
-    }
-    
-    /**
-     * @deprecated - The returned map may be out of date because it cannot be
-     *             properly updated when a trigger is deleted. See the note in
-	 *             the handleLMControlArea() method on this class.
-     */
-    public Map<Integer, LMControlAreaTrigger> getTriggers() {
-        return unwrapDatedMap(triggers);
-    }
-
     /**
      * @return an already connected clientConnection
      * @deprecated code should use Spring injection, or if absolutely necessary, YukonSpringHook directly
@@ -194,19 +175,16 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
     {
 	    LMProgramBase program = null;
 	    
-        for (DatedObject<LMControlArea> controlArea : controlAreas.values()) {
+        outer: for (DatedObject<LMControlArea> controlArea : controlAreas.values()) {
         	List<LMProgramBase> programs = controlArea.getObject().getLmProgramVector();
             for(LMProgramBase p : programs) {
                 if (p.getYukonID() == programId) {
                     program = p;
+                    break outer;
                 }
             }
         }
 		return program;
-    }
-
-    public DatedObject<LMProgramBase> getDatedProgram(int programId) {
-        return programs.get(programId);
     }
 
     public List<LMProgramBase> getProgramsForProgramIds(List<Integer> programIds) {
@@ -222,7 +200,27 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
         return programs;
     }
 
+    public LMGroupBase getGroup(int groupId) {
+        LMGroupBase group = null;
+        DatedObject<LMGroupBase> datedGroup = groups.get(groupId);
+        if (datedGroup != null) {
+            group = datedGroup.getObject();
+        }
+        return group;
+    }    
 
+    public DatedObject<LMControlArea> getDatedControlArea(int controlAreaId) {
+        return controlAreas.get(controlAreaId);
+    }
+    
+    public DatedObject<LMProgramBase> getDatedProgram(int programId) {
+        return programs.get(programId);
+    }
+    
+    public DatedObject<LMGroupBase> getDatedGroup(int groupId) {
+        return groups.get(groupId);
+    }
+    
     private void handleLMControlArea(LMControlArea controlArea) {
     	CTILogger.debug( " ---> Received a control area named " + controlArea.getYukonName() );
     
