@@ -68,7 +68,7 @@ public class LoginFilter implements Filter {
             "/**/*.html",
             "/jws/*.jar",
             "/remote/**",
-            "/**/*.ico"
+            "/favicon.ico"
         };
         
         excludedRedirectedPaths = new String[] {
@@ -101,7 +101,13 @@ public class LoginFilter implements Filter {
         if (loggedIn) {
             attachYukonUserContext(request, true);
             
-            verifyPathAccess(request);
+            try {
+                verifyPathAccess(request);
+            } catch(NotAuthorizedException naexception) {
+                log.error(naexception.getMessage());
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            }
             
             chain.doFilter(req, resp);
             return;
@@ -115,7 +121,13 @@ public class LoginFilter implements Filter {
             log.debug("Proceeding with request after successful handler login");
             attachYukonUserContext(request, true);
             
-            verifyPathAccess(request);
+            try {
+                verifyPathAccess(request);
+            } catch(NotAuthorizedException naexception) {
+                log.error(naexception.getMessage());
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            } 
             
             // FilterChain.doFilter() cannot be in a try/catch, it would break the ErrorHelperFilter
             chain.doFilter(req, resp);
