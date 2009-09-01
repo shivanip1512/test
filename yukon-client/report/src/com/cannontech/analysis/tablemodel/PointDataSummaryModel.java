@@ -118,7 +118,7 @@ public class PointDataSummaryModel extends ReportModelBase
 	public final static String DAILY_AVERAGE_STRING = "Average";
 	public final static String DAILY_LOW_TIME_STRING = "Low Time";
 	public final static String DAILY_LOW_STRING = "Low";
-	public final static String TOTAL_KWH_STRING = "Total kWh";	
+	public final static String TOTAL_KWH_STRING = "Total Usage";	
 	public final static String DAILY_MISSING_DATA_FLAG_STRING = "Quality";
 	
 	public final static String PEAKS_TITLE_STRING = "PEAKS";
@@ -475,6 +475,10 @@ public class PointDataSummaryModel extends ReportModelBase
                     intervals = (int) (totalTime / Integer.valueOf(voltageDemandRate).intValue());
                 else if( lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND && lpDemandRate != null)
                     intervals = (int) (totalTime / Integer.valueOf(lpDemandRate).intValue());
+                else if( lp.getPointOffset() == PointTypes.PT_OFFSET_PROFILE_CHANNEL2 && lpDemandRate != null)
+                    intervals = (int) (totalTime / Integer.valueOf(lpDemandRate).intValue());
+                else if( lp.getPointOffset() == PointTypes.PT_OFFSET_PROFILE_CHANNEL3 && lpDemandRate != null)
+                    intervals = (int) (totalTime / Integer.valueOf(lpDemandRate).intValue());
                 else if( lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT&& liDemandRate != null)
                     intervals = (int) (totalTime / Integer.valueOf(liDemandRate).intValue());
                 //				else if( pointOffset == PointTypes.PT_OFFSET_VOLTAGE_DEMAND && voltageDemandInterval != null)
@@ -557,7 +561,11 @@ public class PointDataSummaryModel extends ReportModelBase
 					            return lpMeterData.getVoltageDemandRate();
 					        else if (lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND)	//All other intervals are demandIntervals
 					            return lpMeterData.getDemandRate();
-							else if( lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
+					        else if (lp.getPointOffset() == PointTypes.PT_OFFSET_PROFILE_CHANNEL2)
+					            return lpMeterData.getDemandRate();
+					        else if (lp.getPointOffset() == PointTypes.PT_OFFSET_PROFILE_CHANNEL3)
+					            return lpMeterData.getDemandRate();
+					        else if( lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
 							    return lpMeterData.getLastIntervalDemand();
 	//				        else if (lp.getPointOffset() == PointTypes.PT_OFFSET_VOLTAGE_DEMAND)
 	//				            return lpMeterData.getLastIntervalVoltage();
@@ -647,6 +655,10 @@ public class PointDataSummaryModel extends ReportModelBase
 					        }
 					        else if (lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND)	//All other intervals are demandIntervals
 					            divisor = Integer.valueOf( lpMeterData.getDemandRate()).intValue();
+                            else if (lp.getPointOffset() == PointTypes.PT_OFFSET_PROFILE_CHANNEL2)
+                                divisor = Integer.valueOf( lpMeterData.getDemandRate()).intValue();
+                            else if (lp.getPointOffset() == PointTypes.PT_OFFSET_PROFILE_CHANNEL3)
+                                divisor = Integer.valueOf( lpMeterData.getDemandRate()).intValue();
 					        else if (lp.getPointOffset() == PointTypes.PT_OFFSET_KW_DEMAND)	//All other intervals are demandIntervals
 					            divisor = Integer.valueOf( lpMeterData.getLastIntervalDemand()).intValue();
 				    	}
@@ -666,6 +678,10 @@ public class PointDataSummaryModel extends ReportModelBase
 					            divisor = Integer.valueOf(lpMeterData.getVoltageDemandRate()).intValue();
 					        else if (lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND)	//All other intervals are demandIntervals
 					            divisor = Integer.valueOf( lpMeterData.getDemandRate()).intValue();
+					        else if (lp.getPointOffset() == PointTypes.PT_OFFSET_PROFILE_CHANNEL2)
+                                divisor = Integer.valueOf( lpMeterData.getDemandRate()).intValue();
+                            else if (lp.getPointOffset() == PointTypes.PT_OFFSET_PROFILE_CHANNEL3)
+                                divisor = Integer.valueOf( lpMeterData.getDemandRate()).intValue();
 					        else if (lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
 					            divisor = Integer.valueOf(lpMeterData.getLastIntervalDemand()).intValue();
 				    	}

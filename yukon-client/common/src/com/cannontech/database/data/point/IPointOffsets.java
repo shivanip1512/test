@@ -29,7 +29,10 @@ public interface IPointOffsets
    public static final int PT_OFFSET_KVAR_DEMAND			= 35;
 	
    public static final int PT_OFFSET_OUTAGE                 = 100;
-   public static final int PT_OFFSET_LPROFILE_KW_DEMAND   = 101;
+   public static final int PT_OFFSET_LPROFILE_KW_DEMAND     = 101;
+   public static final int PT_OFFSET_PROFILE_CHANNEL2       = 102; 
+   public static final int PT_OFFSET_PROFILE_CHANNEL3       = 103; 
+   
    public static final int PT_OFFSET_LPROFILE_VOLTAGE_DEMAND = 104;
 		
    public static final int PT_OFFSET_TRANS_STATUS			= 2000;
