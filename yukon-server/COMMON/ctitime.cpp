@@ -281,6 +281,27 @@ CtiTime CtiTime::asGMT() const
     return t;
 }
 
+/**
+ * Creates a new CtiTime by interpreting local_seconds as
+ * wall-clock time in the server's timezone.<br>
+ *
+ * This includes any DST adjustment.<br>
+ *
+ * local_seconds is defined as:<br>
+ *
+ * local_seconds = gmt_seconds + local_offset + dst_offset<br>
+ *
+ * Multiple gmt_seconds values can result in identical local_seconds values near the DST shift.
+ * <pre>
+ * 4AECDD90 (11/1/2009 01:00:00) = 4AED23E0 (11/1/2009 06:00) + (3600 * -6) + (3600)
+ * 4AECDD90 (11/1/2009 01:00:00) = 4AED31F0 (11/1/2009 07:00) + (3600 * -6) + (0)
+ * </pre>
+ *
+ * @param local_seconds
+ *               Seconds since 01/01/1970 00:00, wall-clock time
+ *
+ * @return CtiTime
+ */
 CtiTime CtiTime::fromLocalSeconds(const unsigned long local_seconds)
 {
     _TIME_ZONE_INFORMATION tzinfo;

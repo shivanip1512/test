@@ -352,30 +352,37 @@ BOOST_AUTO_TEST_CASE(test_ctitime_fromLocalSeconds)
     _TIME_ZONE_INFORMATION tzinfo;
     GetTimeZoneInformation(&tzinfo);
 
-    //  Windows defines the bias as the difference from local time to GMT - that's backwards from what we want
+    //  Windows defines the bias as the difference from local time to GMT;
+    //    since we want GMT to local, we negate the values
     const int standard_offset = -(tzinfo.Bias + tzinfo.StandardBias) * 60;
     const int daylight_offset = -(tzinfo.Bias + tzinfo.DaylightBias) * 60;
 
     //  =====  2009 test cases  =====
-    time_parts tc2009[11] =
+    time_parts tc2009[15] =
     {
-        { 2009,  1,  1,  0,  0,  0, standard_offset },  //  known ST date
+        { 2009,  1,  1,  0, 00, 00, standard_offset },  //  known ST date
 
-        { 2009,  3,  7,  0,  0,  0, standard_offset },  //  standard -> daylight-saving-time transition
+        { 2009,  3,  7,  0, 00, 00, standard_offset },  //  standard -> daylight-saving-time transition
         { 2009,  3,  8,  1, 59, 59, standard_offset },  //
-        //  skip the nonexistent 2:00 hour
-        { 2009,  3,  8,  3,  0,  0, daylight_offset },  //
-        { 2009,  3,  9,  0,  0,  0, daylight_offset },  //
 
-        { 2009,  7,  1,  0,  0,  0, daylight_offset },  //  known DST date
+        { 2009,  3,  8,  2, 00, 00, standard_offset },  //  nonexistent hour;  this test is here to pin the behavior
+        { 2009,  3,  8,  2, 59, 59, standard_offset },  //
 
-        { 2009, 10, 31,  0,  0,  0, daylight_offset },  //  daylight-saving-time -> standard transition
+        { 2009,  3,  8,  3, 00, 00, daylight_offset },  //
+        { 2009,  3,  9,  0, 00, 00, daylight_offset },  //
+
+        { 2009,  7,  1,  0, 00, 00, daylight_offset },  //  known DST date
+
+        { 2009, 10, 31,  0, 00, 00, daylight_offset },  //  daylight-saving-time -> standard transition
         { 2009, 11,  1,  0, 59, 59, daylight_offset },  //
-        //  skip the ambiguous 1:00 hour
-        { 2009, 11,  1,  2,  0,  0, standard_offset },  //
-        { 2009, 11,  2,  0,  0,  0, standard_offset },  //
 
-        { 2009, 12, 31,  0,  0,  0, standard_offset }   //  known ST date
+        { 2009, 11,  1,  1, 00, 00, standard_offset },  //  ambiguous hour;  this test is here to pin the behavior
+        { 2009, 11,  1,  1, 59, 59, standard_offset },  //
+
+        { 2009, 11,  1,  2, 00, 00, standard_offset },  //
+        { 2009, 11,  2,  0, 00, 00, standard_offset },  //
+
+        { 2009, 12, 31,  0, 00, 00, standard_offset }   //  known ST date
     };
 
     BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 0]), CtiTime::fromLocalSeconds(mkLocalSeconds(tc2009[ 0])).seconds());
@@ -389,6 +396,10 @@ BOOST_AUTO_TEST_CASE(test_ctitime_fromLocalSeconds)
     BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 8]), CtiTime::fromLocalSeconds(mkLocalSeconds(tc2009[ 8])).seconds());
     BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 9]), CtiTime::fromLocalSeconds(mkLocalSeconds(tc2009[ 9])).seconds());
     BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[10]), CtiTime::fromLocalSeconds(mkLocalSeconds(tc2009[10])).seconds());
+    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[11]), CtiTime::fromLocalSeconds(mkLocalSeconds(tc2009[11])).seconds());
+    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[12]), CtiTime::fromLocalSeconds(mkLocalSeconds(tc2009[12])).seconds());
+    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[13]), CtiTime::fromLocalSeconds(mkLocalSeconds(tc2009[13])).seconds());
+    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[14]), CtiTime::fromLocalSeconds(mkLocalSeconds(tc2009[14])).seconds());
 }
 
 /*
