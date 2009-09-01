@@ -17,29 +17,36 @@ import com.cannontech.database.db.device.DeviceRoutes;
  */
 public class LiteYukonPAObject extends LiteBase implements YukonPao
 {
-    private final static long serialVersionUID = 1L;
-
-    // a place holder for a LiteYukonPAObject used to show a dummy element
+	// a place holder for a LiteYukonPAObject used to show a dummy element
 	public static final LiteYukonPAObject LITEPAOBJECT_SYSTEM = new LiteYukonPAObject
 	(
-		new PaoIdentifier(0, null),
+		0,
 		"System Device",
+		PAOGroups.INVALID,
+		PAOGroups.INVALID,
+		PAOGroups.INVALID,
 		CtiUtilities.STRING_NONE,
         CtiUtilities.STRING_NONE
 	);
-
+	
 	// a place holder for a LiteYukonPAObject, mostly used in option lists
 	// that allow the user not to choose a LitYukonPAObject
 	public static final LiteYukonPAObject LITEPAOBJECT_NONE = new LiteYukonPAObject
 	(
-	        new PaoIdentifier(0, null),
+		0,
 		CtiUtilities.STRING_NONE,
+		PAOGroups.INVALID,
+		PAOGroups.INVALID,
+		PAOGroups.INVALID,
 		CtiUtilities.STRING_NONE,
         CtiUtilities.STRING_NONE
 	);
 
-	private PaoIdentifier paoIdentifier;
+	//private int yukonID = com.cannontech.database.data.pao.PAOGroups.INVALID;
+	private int category = PAOGroups.INVALID;
 	private String paoName = null;
+	private PaoType paoType = null;
+	private int paoClass = PAOGroups.INVALID;
 	private String paoDescription = null;
 	private String disableFlag = null;
 	//portID is only for devices that belong to a port
@@ -49,208 +56,301 @@ public class LiteYukonPAObject extends LiteBase implements YukonPao
 	private int routeID = PAOGroups.INVALID;
 	//address is only for devices that have a physical address (deviceCarrierStatistics)
 	private int address = PAOGroups.INVALID;
+	
+/**
+ * LiteDevice
+ */
+public LiteYukonPAObject( int paoID) 
+{
+	super();
 
-	@Deprecated
-    public LiteYukonPAObject(int paoId)
+	setLiteID( paoID );
+	setLiteType( LiteTypes.YUKON_PAOBJECT );
+}
+
+/**
+ * LiteDevice
+ */
+public LiteYukonPAObject( int paoID, String name_ )
+{
+	this( paoID );
+	setPaoName( name_ );
+}
+
+/**
+ * LiteDevice
+ */
+public LiteYukonPAObject( int paoID, String name, int paoCategory, int paoType, int pClass, String desc, String flag ) 
+{
+	this( paoID, name );
+
+	setCategory( paoCategory );
+	setType( paoType );
+	setPaoClass( pClass );
+	setPaoDescription( desc );
+    setDisableFlag( flag );
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (3/23/00 3:15:58 PM)
+ * @return int
+ * @param val java.lang.Object
+ */
+/*public boolean equals(Object val) 
+{
+	return ( val != null
+		  		&& val instanceof LiteYukonPAObject
+		  		&& super.equals(val) );
+//		  		&&
+//		  		( ((LiteYukonPAObject)val).getCategory() == getCategory()
+//			  	  && ((LiteYukonPAObject)val).getPaoClass() == getPaoClass()
+//			  	  && ((LiteYukonPAObject)val).getType() == getType() ) );
+}
+*/
+/**
+ * Insert the method's description here.
+ * Creation date: (9/28/2001 4:57:42 PM)
+ * @return int
+ */
+public int getCategory() {
+	return category;
+}
+
+/**
+ * Insert the method's description here.
+ * Creation date: (9/28/2001 4:57:42 PM)
+ * @return int
+ */
+public int getPaoClass() {
+	return paoClass;
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (9/12/2001 11:31:46 AM)
+ * @return java.lang.String
+ */
+public java.lang.String getPaoName() {
+	return paoName;
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (10/10/2001 10:22:08 AM)
+ * @return int
+ */
+public int getPortID() {
+	return portID;
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (9/28/2001 4:57:42 PM)
+ * @return int
+ */
+public int getType() {
+	return paoType.getDeviceTypeId();
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (9/27/2001 12:07:44 PM)
+ * @return int
+ */
+public int getYukonID() {
+	return getLiteID();
+}
+
+public String getDisableFlag() {
+    return disableFlag;
+}
+
+/**
+ * Insert the method's description here.
+ * Creation date: (9/28/2001 4:21:01 PM)
+ * @param dbalias java.lang.String
+ */
+public void retrieve(String dbalias)
+{
+	try
+	{
+		SqlStatement stat = new SqlStatement(
+				"select Category, PAOName, Type, PAOClass, Description, DisableFlag "
+					+ "from YukonPAObject where PAObjectID = "
+					+ getLiteID(), dbalias);
+
+		stat.execute();
+
+		if (stat.getRowCount() <= 0)
+			throw new IllegalStateException(
+				"Unable to find the PAObject with PAOid = " + getLiteID());
+
+		Object[] objs = stat.getRow(0);
+		String category = objs[0].toString();
+		setCategory(PAOGroups.getCategory(category));
+		setPaoName(objs[1].toString());
+		setType(PAOGroups.getPAOType(category, objs[2].toString()));
+		setPaoClass(PAOGroups.getPAOClass(category, objs[3].toString()));
+		setPaoDescription(objs[4].toString());
+        setDisableFlag(objs[5].toString());
+	}
+	catch (Exception e)
+	{
+		CTILogger.error(e.getMessage(), e);
+	}
+	
+    try
     {
-	    this(paoId, null);
-    }
+        DeviceDirectCommSettings d = new DeviceDirectCommSettings( new Integer(getLiteID()) );
+        Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, d);
 
-    @Deprecated
-    public LiteYukonPAObject(int paoId, String paoName)
+        d = (DeviceDirectCommSettings)t.execute();
+
+        if( d.getPortID() != null )
+            setPortID( d.getPortID().intValue() );
+    }
+    catch( TransactionException e )
     {
-        super();
-
-        paoIdentifier = new PaoIdentifier(paoId, null);
-        super.setLiteID(paoIdentifier.getPaoId());
-
-        setLiteType(LiteTypes.YUKON_PAOBJECT);
-        this.paoName = paoName;
+        CTILogger.error( e.getMessage(), e );
     }
-
-    public LiteYukonPAObject(PaoIdentifier paoIdentifier)
+    try
     {
-        super();
+        DeviceCarrierSettings d = new DeviceCarrierSettings( new Integer(getLiteID()) );
+        Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, d);
 
-        this.paoIdentifier = paoIdentifier;
-        super.setLiteID(paoIdentifier.getPaoId());
-        setLiteType(LiteTypes.YUKON_PAOBJECT);
+        d = (DeviceCarrierSettings)t.execute();
+
+        if( d.getAddress() != null )
+            setAddress( d.getAddress().intValue() );
     }
-
-    public LiteYukonPAObject(PaoIdentifier paoIdentifier, String paoName)
+    catch( TransactionException e )
     {
-        this(paoIdentifier);
-        this.paoName = paoName;
+        CTILogger.error( e.getMessage(), e );
     }
-
-    public LiteYukonPAObject(PaoIdentifier paoIdentifier, String name,
-            String paoDescription, String disableFlag)
+    try
     {
-        this(paoIdentifier, name);
-        this.paoDescription = paoDescription;
-        this.disableFlag = disableFlag;
-    }
+        DeviceRoutes d = new DeviceRoutes();
+        d.setDeviceID(new Integer(getLiteID()) );
+        Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, d);
 
-    public PaoIdentifier getPaoIdentifier() {
-        return paoIdentifier;
-    }
+        d = (DeviceRoutes)t.execute();
 
-    @Deprecated
-    public int getCategory() {
-    	return paoIdentifier.getPaoType().getPaoCategory().ordinal();
+        if( d.getRouteID() != null )
+            setRouteID( d.getRouteID().intValue() );
     }
-
-    @Deprecated
-    public int getPaoClass() {
-    	return paoIdentifier.getPaoType().getPaoClass().getPaoClassId();
-    }
-
-    public String getPaoName() {
-    	return paoName;
-    }
-
-    public int getPortID() {
-    	return portID;
-    }
-
-    @Deprecated
-    public int getType() {
-    	return paoIdentifier.getPaoType().getDeviceTypeId();
-    }
-
-    public int getYukonID() {
-    	return getLiteID();
-    }
-
-    public String getDisableFlag() {
-        return disableFlag;
-    }
-
-    public void retrieve(String dbalias)
+    catch( TransactionException e )
     {
-    	try
-    	{
-    		SqlStatement stat = new SqlStatement(
-    				"select Category, PAOName, Type, PAOClass, Description, DisableFlag "
-    					+ "from YukonPAObject where PAObjectID = "
-    					+ getLiteID(), dbalias);
-
-    		stat.execute();
-
-    		if (stat.getRowCount() <= 0)
-    			throw new IllegalStateException(
-    				"Unable to find the PAObject with PAOid = " + getLiteID());
-
-    		Object[] objs = stat.getRow(0);
-    		String category = objs[0].toString();
-    		PaoType paoType = PaoType.getForId(PAOGroups.getPAOType(category, objs[2].toString()));
-    		paoIdentifier = new PaoIdentifier(paoIdentifier.getPaoId(),
-    		                                  paoType);
-            paoName = objs[1].toString();
-    		paoDescription = objs[4].toString();
-            disableFlag = objs[5].toString();
-    	}
-    	catch (Exception e)
-    	{
-    		CTILogger.error(e.getMessage(), e);
-    	}
-
-        try
-        {
-            DeviceDirectCommSettings d = new DeviceDirectCommSettings( new Integer(getLiteID()) );
-            Transaction<DeviceDirectCommSettings> t = Transaction.createTransaction(Transaction.RETRIEVE, d);
-
-            d = (DeviceDirectCommSettings)t.execute();
-
-            if( d.getPortID() != null )
-                setPortID( d.getPortID().intValue() );
-        }
-        catch( TransactionException e )
-        {
-            CTILogger.error( e.getMessage(), e );
-        }
-        try
-        {
-            DeviceCarrierSettings d = new DeviceCarrierSettings( new Integer(getLiteID()) );
-            Transaction<DeviceCarrierSettings> t = Transaction.createTransaction(Transaction.RETRIEVE, d);
-
-            d = (DeviceCarrierSettings)t.execute();
-
-            if( d.getAddress() != null )
-                setAddress( d.getAddress().intValue() );
-        }
-        catch( TransactionException e )
-        {
-            CTILogger.error( e.getMessage(), e );
-        }
-        try
-        {
-            DeviceRoutes d = new DeviceRoutes();
-            d.setDeviceID(new Integer(getLiteID()) );
-            Transaction<DeviceRoutes> t = Transaction.createTransaction(Transaction.RETRIEVE, d);
-
-            d = (DeviceRoutes)t.execute();
-
-            if( d.getRouteID() != null )
-                setRouteID( d.getRouteID().intValue() );
-        }
-        catch( TransactionException e )
-        {
-            CTILogger.error( e.getMessage(), e );
-        }
+        CTILogger.error( e.getMessage(), e );
     }
+}	
 
-    public void setPaoName(String paoName) {
-    	this.paoName = paoName;
-    }
+/**
+ * Insert the method's description here.
+ * Creation date: (9/28/2001 4:57:42 PM)
+ * @param newCategory int
+ */
+public void setCategory(int newCategory) {
+	category = newCategory;
+}
 
-    public void setPortID(int newPortID) {
-    	portID = newPortID;
-    }
-
-    @Deprecated
-    @Override
-    public void setLiteID(int paoId)
-    {
-        super.setLiteID(paoId);
-        paoIdentifier = new PaoIdentifier(paoId,
-                                          paoIdentifier == null ? null : paoIdentifier.getPaoType());
-    }
-
-    public String toString()
-    {
-    	return paoName;
-    }
-
+/**
+ * Insert the method's description here.
+ * Creation date: (9/28/2001 4:57:42 PM)
+ * @param newPaoClass int
+ */
+public void setPaoClass(int newPaoClass) {
+	paoClass = newPaoClass;
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (9/12/2001 11:31:46 AM)
+ * @param newPaoName java.lang.String
+ */
+public void setPaoName(java.lang.String newPaoName) {
+	paoName = newPaoName;
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (10/10/2001 10:22:08 AM)
+ * @param newPortID int
+ */
+public void setPortID(int newPortID) {
+	portID = newPortID;
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (9/28/2001 4:57:42 PM)
+ * @param newType int
+ */
+public void setType(int newType) {
+    paoType = newType == PAOGroups.INVALID ? null : PaoType.getForId(newType);
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (9/27/2001 12:07:44 PM)
+ * @param newYukonID int
+ */
+public void setYukonID(int newYukonID) 
+{
+	setLiteID( newYukonID );
+}
+/**
+ * This method was created by Cannon Technologies Inc.
+ */
+public String toString() 
+{
+	return getPaoName();
+}
+	/**
+	 * Returns the paoDescription.
+	 * @return String
+	 */
 	public String getPaoDescription() {
 		return paoDescription;
 	}
 
+	/**
+	 * Sets the paoDescription.
+	 * @param paoDescription The paoDescription to set
+	 */
 	public void setPaoDescription(String paoDescription) {
 		this.paoDescription = paoDescription;
 	}
-
-    public void setDisableFlag(String disableFlag) {
-        this.disableFlag = disableFlag;
+    
+    public void setDisableFlag( String flag_ ) {
+        this.disableFlag = flag_;
     }
 
+	/**
+	 * @return
+	 */
 	public int getAddress()
 	{
 		return address;
 	}
 
+	/**
+	 * @return
+	 */
 	public int getRouteID()
 	{
 		return routeID;
 	}
 
-	public void setAddress(int address)
+	/**
+	 * @param string
+	 */
+	public void setAddress(int i)
 	{
-		this.address = address;
+		address = i;
 	}
 
-	public void setRouteID(int routeID)
+	/**
+	 * @param i
+	 */
+	public void setRouteID(int i)
 	{
-		this.routeID = routeID;
+		routeID = i;
 	}
+
+    @Override
+    public PaoIdentifier getPaoIdentifier() {
+        return new PaoIdentifier(getLiteID(), paoType);
+    }
 }

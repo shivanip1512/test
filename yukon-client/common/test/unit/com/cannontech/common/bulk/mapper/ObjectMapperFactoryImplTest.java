@@ -11,7 +11,6 @@ import junit.framework.TestCase;
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.YukonPao;
@@ -41,12 +40,18 @@ public class ObjectMapperFactoryImplTest extends TestCase {
 
         paoDaoAdapter = new PaoDaoAdapter() {
 
-            private LiteYukonPAObject lite1 = new LiteYukonPAObject(new PaoIdentifier(1, PaoType.MCT310),
+            private LiteYukonPAObject lite1 = new LiteYukonPAObject(1,
                                                                     null,
+                                                                    0,
+                                                                    PaoType.MCT310.getDeviceTypeId(),
+                                                                    0,
                                                                     null,
                                                                     null);
-            private LiteYukonPAObject lite2 = new LiteYukonPAObject(new PaoIdentifier(2, PaoType.MCT310),
+            private LiteYukonPAObject lite2 = new LiteYukonPAObject(2,
                                                                     null,
+                                                                    0,
+                                                                    PaoType.MCT310.getDeviceTypeId(),
+                                                                    0,
                                                                     null,
                                                                     null);
 
@@ -123,7 +128,7 @@ public class ObjectMapperFactoryImplTest extends TestCase {
             @Override
             public SimpleDevice getYukonDevice(LiteYukonPAObject yukonPAObject) {
                 return new SimpleDevice(yukonPAObject.getLiteID(),
-                                       yukonPAObject.getPaoIdentifier().getPaoType());
+                                       yukonPAObject.getType());
             }
 
             @Override
