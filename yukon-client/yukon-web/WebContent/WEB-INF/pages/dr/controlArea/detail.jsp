@@ -68,14 +68,14 @@
 	                                       <cti:dataUpdaterValue type="DR_CONTROLAREA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/THRESHOLD"/>
 	                                    </td>
 	                                    <td>
-	                                        <c:if test="${controlAreaTrigger.thresholdType}">
+	                                        <c:if test="${trigger.thresholdType}">
 	                                            <cti:dataUpdaterValue type="DR_CONTROLAREA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/PEAK"/>
 	                                            /
 	                                            <cti:dataUpdaterValue type="DR_CONTROLAREA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/PROJECTION"/>
 	                                        </c:if>
 	                                    </td>
 	                                    <td>
-	                                        <c:if test="${controlAreaTrigger.thresholdType}">
+	                                        <c:if test="${trigger.thresholdType}">
 	                                           <cti:dataUpdaterValue type="DR_CONTROLAREA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/ATKU"/>
 	                                        </c:if>
 	                                    </td>
