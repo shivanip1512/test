@@ -8,12 +8,12 @@
 <%@ attribute name="description" required="true" type="java.lang.String"%>
 
  <tr>
-    <td style="vertical-align: top;">
+    <td style="vertical-align: top;padding-right: 10px;padding-bottom: 10px;">
         <form method="get" action="${action}">
             <input type="hidden" name="${inputName}" value="${inputValue}" />
             <cti:deviceCollection deviceCollection="${deviceCollection}" />
             <input type="submit" value="${buttonValue}" style="width:140px;"/>
         </form>
     </td>
-    <td style="vertical-align: top;">${description}</td>
+    <td style="vertical-align: top;padding-right: 1px;padding-bottom: 10px;">${description}</td>
 </tr>

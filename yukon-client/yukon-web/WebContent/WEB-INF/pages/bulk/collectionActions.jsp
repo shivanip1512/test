@@ -71,7 +71,7 @@
                 <c:if test="${showGroupManagement}" >
                     <cti:dataGridCell>
                         <tags:sectionContainer title="Group Management">
-                            <table cellspacing="10">
+                            <table>
                                 <%-- ADD TO GROUP --%>
                                 <cti:checkProperty property="operator.DeviceActionsRole.DEVICE_GROUP_MODIFY">
                                     <tags:collectionActionTr inputValue="ADD" buttonValue="${addToGroupLabel}" inputName="addRemove" 
@@ -91,7 +91,7 @@
                 <c:if test="${showEditing}">
                     <cti:dataGridCell>
                         <tags:sectionContainer title="Editing">
-                            <table cellspacing="10">
+                            <table>
                                 <%-- MASS CHANGE --%>
                                 <cti:checkProperty property="operator.DeviceActionsRole.MASS_CHANGE">
                                     <tags:collectionActionTr buttonValue="${massChangeLabel}" description="${massChangeDescription}"
@@ -114,7 +114,7 @@
                 
                 <cti:dataGridCell>
                     <tags:sectionContainer title="Commands">
-                        <table cellspacing="10">
+                        <table>
                             <%-- GROUP COMMANDER --%>
                             <cti:checkProperty property="operator.DeviceActionsRole.GROUP_COMMANDER">
                                 <tags:collectionActionTr buttonValue="${sendCommandLabel}" description="${sendCommandDescription}"
@@ -136,7 +136,7 @@
                 
                 <cti:dataGridCell>
                     <tags:sectionContainer title="Config Actions">
-                        <table cellspacing="10">
+                        <table>
                             <%-- ASSIGN CONFIG --%>
                             <cti:checkRolesAndProperties value="ASSIGN_CONFIG">
                                 <tags:collectionActionTr buttonValue="${assignConfigLabel}" description="${assignConfigDescription}"
@@ -162,7 +162,7 @@
             </cti:checkRole>
             <cti:dataGridCell>
                 <tags:sectionContainer title="Reporting">
-                    <table cellspacing="10">
+                    <table>
                         <%-- DEVICE REPORT --%>
                         <tags:collectionActionTr buttonValue="${deviceCollectionReportLabel}" description="${deviceCollectionReportDescription}"
                             action="/spring/bulk/deviceCollectionReport" deviceCollection="${deviceCollection}"/>
@@ -173,7 +173,7 @@
             <c:if test="${showAddRemovePoints}">
                     <cti:dataGridCell>
                         <tags:sectionContainer title="Add/Remove/Update Points">
-                            <table cellspacing="10">
+                            <table>
                                 <%-- ADD POINTS --%>
                                 <tags:collectionActionTr buttonValue="${addPointsLabel}" description="${addPointsDescription}"
                                     action="/spring/bulk/addPoints/home" deviceCollection="${deviceCollection}"/>
