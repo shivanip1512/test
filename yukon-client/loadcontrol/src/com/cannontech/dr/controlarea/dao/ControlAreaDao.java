@@ -2,10 +2,10 @@ package com.cannontech.dr.controlarea.dao;
 
 import java.util.List;
 
-import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.dr.controlarea.model.ControlArea;
 
 public interface ControlAreaDao {
-    public List<DisplayablePao> getControlAreas();
-    public DisplayablePao getControlArea(int controlAreaId);
-    public DisplayablePao getControlAreaForProgram(int programId);
+    public List<ControlArea> getControlAreas();
+    public ControlArea getControlArea(int controlAreaId);
+    public ControlArea findControlAreaForProgram(int programId);
 }
