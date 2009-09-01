@@ -128,7 +128,7 @@ protected:
     string valueReport(const CtiPointSPtr p,    const point_info &pi, const CtiTime &t = YUKONEOT) const;
     string valueReport(const string &pointname, const point_info &pi, const CtiTime &t = YUKONEOT, bool undefined = true) const;
 
-    bool insertPointDataReport(CtiPointType_t type, int offset, CtiReturnMsg *rm, point_info pi, const string &default_pointname="", const CtiTime &timestamp=CtiTime(), double default_multiplier=1.0, int tags=0);
+    virtual bool insertPointDataReport(CtiPointType_t type, int offset, CtiReturnMsg *rm, point_info pi, const string &default_pointname="", const CtiTime &timestamp=CtiTime(), double default_multiplier=1.0, int tags=0);
 
 private:
 

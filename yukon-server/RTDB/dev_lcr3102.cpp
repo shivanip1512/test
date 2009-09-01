@@ -345,6 +345,7 @@ INT LCR3102::decodeGetValueHistoricalTime( INMESS *InMessage, CtiTime &TimeNow, 
         point_info pi;
 
         string results = getName() + " / Hourly " + identifier;
+        ReturnMsg->setResultString(results);
 
         for( int i = 0; i < numberOfTimesReturned; i++ )
         {
@@ -358,7 +359,6 @@ INT LCR3102::decodeGetValueHistoricalTime( INMESS *InMessage, CtiTime &TimeNow, 
             pointTime.addMinutes(-1*60); // subtract an hour for each value
         }
 
-        ReturnMsg->setResultString(results);
         decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
@@ -710,18 +710,32 @@ CtiDeviceSingle::point_info LCR3102::getSixBitValueFromBuffer(unsigned char buff
     retVal.quality    = InvalidQuality;
     retVal.value      = 0x3F;
 
-    int startByte = valuePosition * 6 / 8;
-    int bitsInStartByte  = 8 - (valuePosition * 6 % 8);
-    int bitsInSecondByte = 6 - bitsInStartByte;
+    const int bitsPerByte = 8;
+    const int bitsPerValue = 6;
+
+    int startByte = valuePosition * bitsPerValue / bitsPerByte;
+    int bitsInStartByte  = std::min<int>(bitsPerByte - (valuePosition * bitsPerValue % bitsPerByte), bitsPerValue);
+    int bitsInSecondByte = bitsPerValue - bitsInStartByte;
 
     if( (startByte + (bitsInSecondByte ? 1 : 0)) < bufferSize )
     {
-        unsigned char rawData = (buffer[startByte] << bitsInSecondByte);
+        unsigned char rawData;
+        if( bitsInStartByte == bitsPerValue )
+        {
+            rawData = (buffer[startByte] >> bitsPerByte - bitsPerValue - (valuePosition * bitsPerValue % bitsPerByte));
+        }
+        else
+        {
+            rawData = (buffer[startByte] << bitsInSecondByte);
+        }
+
         if( bitsInSecondByte > 0 )
         {
-            rawData |= (buffer[startByte+1] >> (8-bitsInSecondByte));
+            rawData |= (buffer[startByte+1] >> (bitsPerByte-bitsInSecondByte));
         }
-        retVal.value = rawData;
+
+        int bitMask = std::pow((float)2,bitsPerValue)-1;
+        retVal.value = rawData & bitMask;
     }
 
     // 0x3F is both the default value and the error code for 6 bit values.

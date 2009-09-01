@@ -20,8 +20,6 @@ private:
     static const    CommandSet  _commandStore;
     static          CommandSet  initCommandStore();
 
-    CtiDeviceSingle::point_info getSixBitValueFromBuffer(unsigned char buffer[], unsigned int valuePosition, unsigned int bufferSize);
-
 protected:
 
     enum Functions
@@ -54,6 +52,8 @@ protected:
     virtual INT executeGetValue( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     virtual INT executeScan    ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     virtual INT IntegrityScan  ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority );
+
+    CtiDeviceSingle::point_info getSixBitValueFromBuffer(unsigned char buffer[], unsigned int valuePosition, unsigned int bufferSize);
 
     int parseLoadValue(CtiCommandParser &parse);
     int parsePreviousValue(CtiCommandParser &parse);
