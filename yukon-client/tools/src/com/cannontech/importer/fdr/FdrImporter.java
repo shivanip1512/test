@@ -6,6 +6,7 @@ import java.util.List;
 
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.fdr.FdrTranslation;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.DeviceDao;
@@ -27,10 +28,13 @@ import com.cannontech.spring.YukonSpringHook;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import org.apache.log4j.Logger;
 import org.springframework.dao.DataAccessException;
 
 
 public class FdrImporter {
+    
+    private Logger log = YukonLogManager.getLogger(FdrImporter.class);
     
     private PointDao pointDao = YukonSpringHook.getBean("pointDao",PointDao.class);
     private String fileName;
@@ -88,7 +92,7 @@ public class FdrImporter {
                 parser.parse(base);
                 translationList.add(base);
             }catch(IOException e) {
-                CTILogger.error("Input skipped",e);
+                log.error("Input skipped",e);
             }
         }
     }
@@ -104,14 +108,14 @@ public class FdrImporter {
                 try{
                     device.update();
                 }catch(SQLException e) {
-                    CTILogger.error("Error updating " + device.getPAOName() + " in the database.");
+                    log.error("Error updating " + device.getPAOName() + " in the database.");
                 }
             }else {
                 //add
                 try{
                     device.add();
                 }catch(SQLException e) {
-                    CTILogger.error("Error adding " + device.getPAOName() + " to the database.");
+                    log.error("Error adding " + device.getPAOName() + " to the database.");
                 }
             }
         }
@@ -184,7 +188,7 @@ public class FdrImporter {
                     List<LitePoint> list = pointDao.getLitePointIdByDeviceId_PointType(deviceid,type);
                     
                     if( list.size() == 0) {
-                        CTILogger.error("Point not found in the database, translation cannot be added.");
+                        log.error("Point not found in the database, translation cannot be added.");
                     }else {
                         LitePoint p = null;
                         for( LitePoint point : list ) {
@@ -197,7 +201,7 @@ public class FdrImporter {
                             int id = p.getPointOffset();
                             base.getPointParametersMap().put("OFFSET", Integer.toString(id));
                         }else {
-                            CTILogger.error("Point not found in the database, translation cannot be added.");
+                            log.error("Point not found in the database, translation cannot be added.");
                         }
                     }
                 }
@@ -240,17 +244,17 @@ public class FdrImporter {
                     try{
                         fdrDao.add(fdr);
                     }catch(DataAccessException e) {
-                        CTILogger.error("Translation already in the database");
+                        log.error("Translation already in the database");
                     }
                 }else {
-                    CTILogger.warn("FdrTranslation not added to the database because of bad pointid:");
-                    CTILogger.warn(fdr.getTranslation());
+                    log.warn("FdrTranslation not added to the database because of bad pointid:");
+                    log.warn(fdr.getTranslation());
                 }
             }catch( NotFoundException e ) {
-                CTILogger.error("Point Name, " + base.getPointParameter("PointName") 
+                log.error("Point Name, " + base.getPointParameter("PointName") 
                                 + ", not found in database cannot add translation");
             }catch( NumberFormatException e) {
-                CTILogger.error("Point Name, " + base.getPointParameter("PointName") 
+                log.error("Point Name, " + base.getPointParameter("PointName") 
                                 + ", Offset is incorrect, cannot find point to add translation");
             }
         }
@@ -259,12 +263,15 @@ public class FdrImporter {
      * 
      */
     public static void main(String[] args) {
+        
+        Logger log = YukonLogManager.getLogger(FdrImporter.class);
+        
         Connection conn = PoolManager.getYukonConnection();
         if( args.length < 2){
-            CTILogger.info(" Missing input, please input filename and the number of desired input type.");
-            CTILogger.info("1 : Text Import - Progress");
-            CTILogger.info("2 : OPC - Progress");
-            CTILogger.info("3 : Valmet - Progress");
+            log.info(" Missing input, please input filename and the number of desired input type.");
+            log.info("1 : Text Import - Progress");
+            log.info("2 : OPC - Progress");
+            log.info("3 : Valmet - Progress");
             return;
         }else
             CTILogger.info( args[0] );
@@ -274,7 +281,7 @@ public class FdrImporter {
         try{
             importer.loadInputStringsFromFile();
         }catch(IOException e) {
-            CTILogger.error("Error Reading File. ",e);
+            log.error("Error Reading File. ",e);
         }
         
         int parserType = Integer.parseInt(args[1]);
@@ -294,7 +301,7 @@ public class FdrImporter {
                 break;
             }
             default: {
-                CTILogger.error("Not a valid input type! Exiting Application.");
+                log.error("Not a valid input type! Exiting Application.");
                 return;
             }
         }
@@ -306,7 +313,7 @@ public class FdrImporter {
         try{
             importer.addPoints();
         }catch(IOException e) {
-            CTILogger.error("Unable to add points, aborting.");
+            log.error("Unable to add points, aborting.");
             return;
         }
         
