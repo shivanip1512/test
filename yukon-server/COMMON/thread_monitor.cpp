@@ -121,7 +121,7 @@ void CtiThreadMonitor::run( void )
     {
         sleep( snooze );
 
-        if( getDebugLevel() & DEBUGLEVEL_THREAD_SPEW )
+        if( getDebugLevel() & DEBUGLEVEL_THREAD_MONITOR )
             messageOut( "ts", "Monitor Loop" );  //temp, remove in prod
 
         snooze = checkForExpriration();
@@ -309,7 +309,7 @@ void CtiThreadMonitor::processExpired( void )
 
                 }
 
-                if( getDebugLevel() & DEBUGLEVEL_THREAD_SPEW )
+                if( getDebugLevel() & DEBUGLEVEL_THREAD_MONITOR )
                     messageOut( "tsisv", "Removing Thread ID", regData->getId(), " ", regData->getName() );
             }
         }
@@ -337,7 +337,7 @@ void CtiThreadMonitor::processExtraCommands( void )
         {
             if( i->second->getBehaviour() == CtiThreadRegData::LogOut )
             {
-                if( getDebugLevel() & DEBUGLEVEL_THREAD_SPEW )
+                if( getDebugLevel() & DEBUGLEVEL_THREAD_MONITOR )
                     messageOut( "tsis", "Thread ID", i->first, "Logging Out" );
 
                 i = _threadData.getMap().erase( i );
@@ -410,7 +410,7 @@ void CtiThreadMonitor::tickle( CtiThreadRegData *in )
                 //as we won't be processing it anymore
                 if( !isRunning() )
                 {
-                    if( getDebugLevel() & DEBUGLEVEL_THREAD_SPEW )
+                    if( getDebugLevel() & DEBUGLEVEL_THREAD_MONITOR )
                         messageOut( "ts", "WARNING: Monitor Is NOT Running, Deleting Monitor Queue" );
 
                     _queue.clearAndDestroy();

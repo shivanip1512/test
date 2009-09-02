@@ -476,7 +476,7 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg          *pReq,
      */
     CtiProtocolExpresscom  xcom;
     xcom.parseAddressing(parse);                    // The parse holds all the addressing for the group.
-    status = xcom.parseRequest(parse, *OutMessage); // OutMessage->Buffer.TAPSt has been filled with xcom.entries() messages.
+    status = xcom.parseRequest(parse);
 
     /* the transmitter is an EMETCON device so load up the Preamble, B, and C words */
 

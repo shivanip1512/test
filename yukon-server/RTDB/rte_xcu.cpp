@@ -31,6 +31,8 @@
 #include "dev_pagingreceiver.h"
 #include "dev_lcu.h"
 #include "dev_wctp.h"
+#include "dev_grp_xml.h"
+#include "dev_xml.h"
 #include "msg_pcrequest.h"
 #include "msg_signal.h"
 #include "porter.h"
@@ -629,6 +631,7 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
 
     CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
 
+    //  the incoming device ID is the LM group that initiated this request, but we must save it from being overwritten
     int saveDevId = OutMessage->DeviceID;
     OutMessage->DeviceID = _transmitterDevice->getID();
     OutMessage->Port     = _transmitterDevice->getPortID();
@@ -640,7 +643,7 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
 
     CtiProtocolExpresscom  xcom;
     xcom.parseAddressing(parse);                    // The parse holds all the addressing for the group.
-    status = xcom.parseRequest(parse, *OutMessage);          // OutMessage->Buffer.TAPSt has been filled with xcom.entries() messages.
+    status = xcom.parseRequest(parse);
     xcom.setUseASCII(true);
 
     if( gConfigParms.isOpt("YUKON_USE_EXPRESSCOM_CRC", "true") )
@@ -656,13 +659,35 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
         {
         case TYPE_XML_XMIT:
             {
-                /* Drop this case in with the other's to load expresscom into OutMessage*/
+                //  pass the ActiveMQ queue name up to the XML group
+                string keyName = "ACTIVEMQ_" + _transmitterDevice->getName() + "_QUEUE";
 
-                //Added to preserve the LMGroupId
-                OutMessage->DeviceIDofLMGroup = saveDevId;
+                string queueName = gConfigParms.getValueAsString(keyName);
+
+                unsigned char *buf = OutMessage->Buffer.OutMessage;
+
+                if( queueName.size() < 100 )
+                {
+                    copy(queueName.begin(), queueName.end(), buf);
+                    buf += queueName.size();
+                }
+
+                *buf++ = 0;  //  null-terminate the queue name
+
+                *buf++ = xcom.getStartByte();
+
+                for(i = 0; i < xcom.messageSize(); i++)
+                {
+                    *buf++ = xcom.getByte(i);
+                }
+
+                *buf++ = xcom.getStopByte();
+
+                *buf++ = 0;  //  null-terminate the xcom bytes
 
                 outList.push_back( OutMessage );
                 OutMessage = 0; // It has been used, don't let it be deleted!
+
                 break;
             }
         case TYPE_SNPP:

@@ -15,9 +15,6 @@
 #define __DLLBASE_H__
 #pragma warning( disable : 4786)
 
-
-
-
 #if !defined (NOMINMAX)
 #define NOMINMAX
 #endif
@@ -37,8 +34,6 @@
 
 using std::string;
 using std::set;
-
-#define SCANNERSEM "SCANNER.SEM"
 
 // Used with "DB_DEBUGLEVEL"
 #define DEBUGLEVEL_LUDICROUS        0x00000001
@@ -61,13 +56,19 @@ using std::set;
 #define DEBUGLEVEL_PIL_MAINTHREAD   0x00400000
 #define DEBUGLEVEL_RIPPLE           0x01000000
 #define DEBUGLEVEL_ILEX_PROTOCOL    0x02000000
-#define DEBUGLEVEL_THREAD_SPEW      0x04000000   //yes Corey, I'll rename this when I think of something good
+#define DEBUGLEVEL_THREAD_MONITOR   0x04000000
 #define DEBUGLEVEL_SA3RDPARTY       0x08000000
 #define DEBUGLEVEL_SIXNET_DEVICE    0x10000000
 #define DEBUGLEVEL_SIXNET_PROTOCOL  0x20000000
 #define DEBUGLEVEL_WELCO_PROTOCOL   0x40000000
 #define DEBUGLEVEL_WCTP_PROTOCOL    0x80000000
 
+namespace Cti {
+
+class ActiveMQConnectionManager;
+IM_EX_CTIBASE extern ActiveMQConnectionManager gActiveMQConnection;
+
+}
 
 IM_EX_CTIBASE extern CTINEXUS          PorterNexus;
 IM_EX_CTIBASE extern RWMutexLock       coutMux;

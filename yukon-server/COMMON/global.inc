@@ -122,13 +122,15 @@ XERCESINC       = $(XERCESHOME)\include
 
 BOOST           = $(YUKONBASE)\yukon-3rdparty\boost
 
+ACTIVEMQ        = $(YUKONBASE)\yukon-3rdparty\ActiveMQ-CPP
+
 BOOST_ALL_DYN_LINK = 1
 
 !IFDEF DEBUG
 #echo using debug boost libs
 BOOSTLIBS = $(BOOST)\lib\libboost_date_time-vc90-mt-gd-1_37.lib \
             $(BOOST)\lib\libboost_thread-vc90-mt-gd-1_37.lib   \
-	    $(BOOST)\lib\libboost_regex-vc90-mt-gd-1_37.lib
+            $(BOOST)\lib\libboost_regex-vc90-mt-gd-1_37.lib
 BOOSTTHREAD = $(BOOST)\lib\boost_thread-vc90-mt-gd-1_37.lib
 BOOSTTESTLIBS = $(BOOST)\lib\\libboost_unit_test_framework-vc90-mt-gd-1_37.lib
 MICROSOFTDLL = d
@@ -137,7 +139,7 @@ MICROSOFTDLL = d
 #echo using non-debug boost libs
 BOOSTLIBS = $(BOOST)\lib\libboost_date_time-vc90-mt-1_37.lib \
             $(BOOST)\lib\libboost_thread-vc90-mt-1_37.lib   \
-	    $(BOOST)\lib\libboost_regex-vc90-mt-1_37.lib
+            $(BOOST)\lib\libboost_regex-vc90-mt-1_37.lib
 BOOSTTHREAD = $(BOOST)\lib\boost_thread-vc90-mt-1_37.lib
 BOOSTTESTLIBS = $(BOOST)\lib\\libboost_unit_test_framework-vc90-mt-1_37.lib
 #echo $(BOOSTLIBS)
@@ -159,22 +161,22 @@ D_BOOST_ENABLE_ASSERT_HANDLER = /DBOOST_ENABLE_ASSERT_HANDLER
 
 !IFDEF DEBUG
 #note on above:  apparently the "!" is not a NOT -- hence this part is the DEBUG SECTION
-#echo debug build used 
+#echo debug build used
 CFLAGS  = /nologo /Zc:wchar_t- /Zi /Od /EHa     /MDd /Zm200 /FD /D_DEBUG  $(D_VERSION) $(D_VERSION_DETAILS) $(D_BOOST_ENABLE_ASSERT_HANDLER)
 DLLFLAGS= /nologo /Zc:wchar_t- /Zi /Od /EHa /LD /MDd /Zm200 /FD /D_DEBUG  $(D_VERSION) $(D_VERSION_DETAILS) $(D_BOOST_ENABLE_ASSERT_HANDLER)
 #LINKFLAGS = /link
-#LINKFLAGS = /link /FORCE /NODEFAULTLIB:MSVCRT.lib 
-#LINKFLAGS = /link /VERBOSE:LIB 
+#LINKFLAGS = /link /FORCE /NODEFAULTLIB:MSVCRT.lib
+#LINKFLAGS = /link /VERBOSE:LIB
 XERCES_LIB = xerces-c_3D
 XERCES_DLL = xerces-c_3_0D
 !ELSE
 #This part is the non-debug section a/k/a release or retail build
-#echo non-debug build used 
+#echo non-debug build used
 CFLAGS  = /nologo /Zc:wchar_t- /Zi /O2 /Oy- /EHa     /MD /Zm200 /FD $(VERSION) $(VERSION_DETAILS) $(BOOST_ENABLE_ASSERT_HANDLER)
 DLLFLAGS= /nologo /Zc:wchar_t- /Zi /O2 /Oy- /EHa /LD /MD /Zm200 /FD $(VERSION) $(VERSION_DETAILS) $(BOOST_ENABLE_ASSERT_HANDLER)
-#LINKFLAGS = /link /NODEFAULTLIB:MSVCRTD.lib 
-#LINKFLAGS = /link /FORCE /NODEFAULTLIB:MSVCRTD.lib 
-#LINKFLAGS = /link /VERBOSE:LIB  
+#LINKFLAGS = /link /NODEFAULTLIB:MSVCRTD.lib
+#LINKFLAGS = /link /FORCE /NODEFAULTLIB:MSVCRTD.lib
+#LINKFLAGS = /link /VERBOSE:LIB
 XERCES_LIB = xerces-c_3
 XERCES_DLL = xerces-c_3_0
 !ENDIF

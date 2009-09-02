@@ -253,7 +253,7 @@ DLLEXPORT CtiDeviceBase *createDeviceType(int type)
 
         case TYPE_LMGROUP_EXPRESSCOM:   NewDevice = CTIDBG_new CtiDeviceGroupExpresscom;    break;
 
-        case TYPE_LMGROUP_XML:          NewDevice = CTIDBG_new CtiDeviceGroupXml;    break;
+        case TYPE_LMGROUP_XML:          NewDevice = CTIDBG_new Devices::XmlGroupDevice;     break;
 
         case TYPE_LMGROUP_ENERGYPRO:    NewDevice = CTIDBG_new CtiDeviceGroupEnergyPro;     break;
 
@@ -294,7 +294,7 @@ DLLEXPORT CtiDeviceBase *createDeviceType(int type)
         case TYPEMCTBCAST:              NewDevice = CTIDBG_new CtiDeviceMCTBroadcast;   break;
 
         case TYPE_RTC:                  NewDevice = CTIDBG_new CtiDeviceRTC;            break;
-        case TYPE_XML_XMIT:             NewDevice = CTIDBG_new CtiDeviceXml;            break;
+        case TYPE_XML_XMIT:             NewDevice = CTIDBG_new Cti::Devices::XmlDevice; break;
         case TYPE_RTM:                  NewDevice = CTIDBG_new CtiDeviceRTM;            break;
         case TYPE_FMU:                  NewDevice = CTIDBG_new CtiDeviceFMU;            break;
 

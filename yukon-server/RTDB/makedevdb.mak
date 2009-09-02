@@ -13,6 +13,7 @@ INCLPATHS+= \
 -I$(RW) \
 -I$(BOOST) \
 -I$(XERCESINC) \
+-I$(ACTIVEMQ) \
 
 
 .PATH.cpp = .
@@ -34,7 +35,8 @@ INCLPATHS+= \
 ;$(TCLINC) \
 ;$(XERCESINC) \
 ;$(BOOST) \
-;$(RW)
+;$(RW) \
+;$(ACTIVEMQ)
 
 
 YUKONDEVDLLOBJS=\

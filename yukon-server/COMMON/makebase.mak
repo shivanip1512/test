@@ -11,6 +11,7 @@ INCLPATHS+= \
 -I$(CPARMS)\include \
 -I$(BOOST) \
 -I$(RW) \
+-I$(ACTIVEMQ) \
 
 .PATH.cpp = .;$(R_COMMON)
 
@@ -20,16 +21,11 @@ INCLPATHS+= \
 ;$(CPARMS)\include \
 ;$(BOOST) \
 ;$(RW) \
-
-
-
-CMDOBJS=\
-cmdopts.obj \
-argval.obj \
-argkey.obj
+;$(ACTIVEMQ) \
 
 
 BASEOBJS=\
+amq_connection.obj \
 ctidate.obj \
 ctitime.obj \
 ctistring.obj \
@@ -82,19 +78,13 @@ thread_monitor.obj \
 xml_object.obj
 
 
-# portsup.obj \
-# queent.obj \
-# drpint.obj \
-# perform.obj \
-
-
 CTIPROGS=\
 ctibase.dll
 
 
-# mailtest.exe
-
 WINLIBS=kernel32.lib user32.lib advapi32.lib wsock32.lib
+
+ACTIVEMQLIB=$(ACTIVEMQ)\lib\activemq-cpp.lib
 
 
 COMMON_FULLBUILD = $[Filename,$(OBJ),CommonFullBuild,target]
@@ -114,19 +104,12 @@ $(COMMON_FULLBUILD):
 ctibase.dll:    $(COMMON_FULLBUILD) $(BASEOBJS) Makefile
                 @build -nologo -f $(_InputFile) id
                 @%cd $(OBJ)
-                $(CC) $(BASEOBJS) id_ctibase.obj $(WINLIBS) $(DLLFLAGS) $(RWLIBS) $(BOOSTLIBS) $(COMPILEBASE)\lib\cticparms.lib $(COMPILEBASE)\lib\clrdump.lib /Fe..\$@ $(LINKFLAGS)
+                $(CC) $(BASEOBJS) id_ctibase.obj $(WINLIBS) $(ACTIVEMQLIB) $(DLLFLAGS) $(RWLIBS) $(BOOSTLIBS) $(COMPILEBASE)\lib\cticparms.lib $(COMPILEBASE)\lib\clrdump.lib /Fe..\$@ $(LINKFLAGS)
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -copy ..\$@ $(YUKONOUTPUT)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
                 -if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
-
-mailtest.exe:   mailtest.cpp
-                cl.exe /W3 /GA  /GX /DNDEBUG $(INCLPATHS) -Fo$(OBJ)\ /c mailtest.cpp
-                link.exe kernel32.lib user32.lib bin\ctibase.lib /subsystem:console /machine:I386 /out:mailtest.exe $(OBJ)\mailtest.obj
-                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-                -copy $@ $(YUKONOUTPUT)
-
 
 copy:
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
@@ -184,6 +167,11 @@ id_ctibase.obj:    id_ctibase.cpp include\id_ctibase.h id_vinfo.h
 
 
 #UPDATE#
+amq_connection.obj:	yukon.h precompiled.h ctidbgmem.h utility.h \
+		ctitime.h dlldefs.h queues.h cticalls.h os2_2w32.h types.h \
+		numstr.h sorted_vector.h connectionfactory.h amq_connection.h \
+		thread.h mutex.h guard.h clrdump.h critical_section.h \
+		activemqcpp.h connection.h
 argkey.obj:	yukon.h precompiled.h ctidbgmem.h argkey.h
 argval.obj:	yukon.h precompiled.h ctidbgmem.h argval.h
 bfexec.obj:	yukon.h precompiled.h ctidbgmem.h bfexec.h
@@ -262,7 +250,8 @@ dllbase.obj:	yukon.h precompiled.h ctidbgmem.h dsm2.h mutex.h \
 		sorted_vector.h configkey.h configval.h dbaccess.h dllbase.h \
 		sema.h ctinexus.h logger.h thread.h CtiPCPtrQueue.h \
 		thread_monitor.h smartmap.h readers_writer_lock.h \
-		critical_section.h queue.h thread_register_data.h
+		critical_section.h queue.h thread_register_data.h \
+		amq_connection.h activemqcpp.h connection.h
 elog_cli.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
 		cticonnect.h netports.h elogger.h logger.h thread.h ctitime.h \
@@ -306,12 +295,11 @@ pending_stat_operation.obj:	yukon.h precompiled.h ctidbgmem.h logger.h \
 		ctitime.h CtiPCPtrQueue.h utility.h queues.h cticalls.h \
 		os2_2w32.h types.h sorted_vector.h pending_stat_operation.h \
 		dsm2.h cticonnect.h netports.h
-pexec.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
-		types.h cticalls.h ctinexus.h netports.h cticonnect.h \
-		queues.h dsm2.h mutex.h guard.h numstr.h clrdump.h dsm2err.h \
-		dllbase.h porter.h devicetypes.h master.h c_port_interface.h \
-		elogger.h logger.h thread.h ctitime.h CtiPCPtrQueue.h \
-		utility.h sorted_vector.h
+pexec.obj:	yukon.h precompiled.h ctidbgmem.h porter.h dsm2.h mutex.h \
+		dlldefs.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
+		dsm2err.h devicetypes.h queues.h cticalls.h os2_2w32.h \
+		types.h logger.h thread.h ctitime.h CtiPCPtrQueue.h utility.h \
+		sorted_vector.h ctinexus.h
 point_change.obj:	yukon.h precompiled.h ctidbgmem.h point_change.h \
 		dlldefs.h
 portsup.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
@@ -330,11 +318,10 @@ queues.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		types.h cticalls.h logger.h thread.h mutex.h guard.h numstr.h \
 		clrdump.h ctitime.h CtiPCPtrQueue.h utility.h queues.h \
 		sorted_vector.h dllbase.h dsm2.h cticonnect.h netports.h
-readers_writer_lock.obj:	yukon.h precompiled.h ctidbgmem.h logger.h \
-		dlldefs.h thread.h mutex.h guard.h numstr.h clrdump.h \
-		ctitime.h CtiPCPtrQueue.h utility.h queues.h cticalls.h \
-		os2_2w32.h types.h sorted_vector.h readers_writer_lock.h \
-		critical_section.h
+readers_writer_lock.obj:	yukon.h precompiled.h ctidbgmem.h \
+		readers_writer_lock.h dlldefs.h critical_section.h guard.h \
+		numstr.h clrdump.h utility.h ctitime.h queues.h cticalls.h \
+		os2_2w32.h types.h sorted_vector.h
 regression.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h rwutil.h \
 		ctitime.h dlldefs.h boost_time.h boostutil.h utility.h \
 		queues.h cticalls.h os2_2w32.h types.h numstr.h \
@@ -393,6 +380,9 @@ test_queue.obj:	queue.h cparms.h rwutil.h yukon.h precompiled.h \
 		utility.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
 		sorted_vector.h configkey.h configval.h logger.h thread.h \
 		mutex.h guard.h clrdump.h CtiPCPtrQueue.h
+test_readers_writer_lock.obj:	yukon.h precompiled.h ctidbgmem.h \
+		readers_writer_lock.h dlldefs.h critical_section.h guard.h \
+		numstr.h clrdump.h
 test_resolvers.obj:	yukon.h precompiled.h ctidbgmem.h dsm2.h mutex.h \
 		dlldefs.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
 		resolvers.h types.h pointtypes.h db_entry_defines.h \

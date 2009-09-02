@@ -821,9 +821,9 @@ void CtiDeviceManager::refreshList(id_range_t &paoids, const LONG deviceType)
                         rowFound |= loadDeviceType(paoid_subset, "FMU devices",            CtiDeviceFMU(),         "FMU");
                         rowFound |= loadDeviceType(paoid_subset, "RTC devices",            CtiDeviceRTC());
 
-                        //XML Transmitters
-                        rowFound |= loadDeviceType(paoid_subset, "XML devices",            CtiDeviceXml());
-                        rowFound |= loadDeviceType(paoid_subset, "XML groups",             CtiDeviceGroupXml());
+                        //  XML Transmitters
+                        rowFound |= loadDeviceType(paoid_subset, "XML devices",            Devices::XmlDevice(),   "Xml");
+                        rowFound |= loadDeviceType(paoid_subset, "XML groups",             Devices::XmlGroupDevice());
 
                         rowFound |= loadDeviceType(paoid_subset, "Emetcon groups",         CtiDeviceGroupEmetcon());
                         rowFound |= loadDeviceType(paoid_subset, "Versacom groups",        CtiDeviceGroupVersacom());
@@ -1362,7 +1362,7 @@ void CtiDeviceManager::refreshDeviceParameters(id_range_t &paoids, int type)
         RWDBConnection conn = getConnection();
         RWDBDatabase db = getDatabase();
 
-        CtiDeviceGroupXml xmlDevice;
+        Devices::XmlGroupDevice xmlDevice;
 
         RWDBSelector selector = db.selector();
         RWDBTable keyTable;

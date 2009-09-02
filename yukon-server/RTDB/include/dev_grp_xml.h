@@ -1,33 +1,43 @@
-#ifndef __DEV_GROUP_XML_H__
-#define __DEV_GROUP_XML_H__
+#pragma once
 
 #include "dev_grp_expresscom.h"
 
-class IM_EX_DEVDB CtiDeviceGroupXml : public CtiDeviceGroupExpresscom
+#include "amq_connection.h"
+
+namespace Cti {
+namespace Devices {
+
+class IM_EX_DEVDB XmlGroupDevice : public CtiDeviceGroupExpresscom, boost::noncopyable
 {
-    public:
+private:
 
-        typedef CtiDeviceGroupExpresscom Inherited;
-        typedef CtiDeviceGroupBase Inherited2;
+    typedef CtiDeviceGroupExpresscom Inherited;
 
-        CtiDeviceGroupXml();
-        ~CtiDeviceGroupXml();
-        CtiDeviceGroupXml& operator=(const CtiDeviceGroupXml& aRef);
+    void sendMessage(const string &queueName, const CtiCommandParser &parse, const string &rawAscii, const std::vector<std::pair<string,string> > &params);
 
-        std::vector<std::pair<string,string> > getParameters();
-        void setParameters( std::vector<std::pair<string,string> >& parameters );
+    //ActiveMQConnectionManager *_amq;
 
-        virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
+    std::vector<std::pair<string,string> > _parameters;
 
-        virtual void getParametersSelector(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
-        virtual void decodeParameters(RWDBReader &rdr);
+protected:
 
-        virtual void clearParameters();
-    private:
-        std::vector<std::pair<string,string> > _parameters;
+    bool validateBuffer(const unsigned char *buf, int max_pos);
+
+public:
+
+    XmlGroupDevice();
+    ~XmlGroupDevice();
+
+    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
+
+    virtual void getParametersSelector(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
+    virtual void decodeParameters(RWDBReader &rdr);
+
+    virtual void clearParameters();
+
+    virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
 };
 
-typedef shared_ptr<CtiDeviceGroupXml> CtiDeviceGroupXmlSPtr;
-
-#endif
+}
+}
 

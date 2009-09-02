@@ -349,7 +349,7 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
 
 
                                     xcom.addAddressing(0, gsSPID);
-                                    xcom.parseRequest(parse, OutMessage);
+                                    xcom.parseRequest(parse);
                                     xcom.setUseASCII(true);
                                     if( gConfigParms.isOpt("YUKON_USE_EXPRESSCOM_CRC", "true") )
                                     {
@@ -507,7 +507,7 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
 
 
                                     xcom.addAddressing(0, gsSPID);
-                                    xcom.parseRequest(parse, OutMessage);
+                                    xcom.parseRequest(parse);
                                     xcom.setUseASCII(true);
                                     if( gConfigParms.isOpt("YUKON_USE_EXPRESSCOM_CRC", "true") )
                                     {

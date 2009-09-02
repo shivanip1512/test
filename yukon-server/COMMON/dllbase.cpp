@@ -35,6 +35,7 @@
 #include "utility.h"
 
 #include "thread_monitor.h"
+#include "amq_connection.h"
 
 using namespace std;
 
@@ -46,6 +47,12 @@ extern void cleanupDB();
 IM_EX_CTIBASE CTINEXUS           PorterNexus;
 IM_EX_CTIBASE RWMutexLock        coutMux;
 IM_EX_CTIBASE CtiThreadMonitor   ThreadMonitor;
+
+namespace Cti {
+
+IM_EX_CTIBASE ActiveMQConnectionManager gActiveMQConnection(gConfigParms.getValueAsString("ACTIVEMQ_BROKER_URI"));
+
+}
 
 RWDBDatabase *sqlDatabase = NULL;
 

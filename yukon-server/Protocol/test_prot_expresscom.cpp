@@ -12,7 +12,6 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_extended_tier_timeout)
 {
     CtiCommandParser        parse( "putconfig xcom extended tier 2 timeout 14400 serial 1234" );
     CtiProtocolExpresscom   xcom;
-    CtiOutMessage           out;
 
     BYTE expected_result[] = { 0, 0, 0, 0, 0,       // addressing not assigned: defaults to zero
                                0x17,                // message type: extended tier
@@ -20,7 +19,7 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_extended_tier_timeout)
                                0x02,                // tier number
                                0x38, 0x40 };        // timeout value: 14400 == 0x3840
 
-    BOOST_CHECK_EQUAL( xcom.parseRequest(parse, out), NORMAL );
+    BOOST_CHECK_EQUAL( xcom.parseRequest(parse), NORMAL );
     BOOST_CHECK_EQUAL( xcom.entries(), 1 );
     BOOST_CHECK_EQUAL( xcom.messageSize(1), sizeof (expected_result) / sizeof (expected_result[0]) );
 
@@ -35,7 +34,6 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_extended_tier_delay)
 {
     CtiCommandParser        parse( "putconfig xcom extended tier 2 delay 3600 serial 1234" );
     CtiProtocolExpresscom   xcom;
-    CtiOutMessage           out;
 
     BYTE expected_result[] = { 0, 0, 0, 0, 0,       // addressing not assigned: defaults to zero
                                0x17,                // message type: extended tier
@@ -43,7 +41,7 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_extended_tier_delay)
                                0x02,                // tier number
                                0x0E, 0x10 };        // delay value: 3600 == 0x0E10
 
-    BOOST_CHECK_EQUAL( xcom.parseRequest(parse, out), NORMAL );
+    BOOST_CHECK_EQUAL( xcom.parseRequest(parse), NORMAL );
     BOOST_CHECK_EQUAL( xcom.entries(), 1 );
     BOOST_CHECK_EQUAL( xcom.messageSize(1), sizeof (expected_result) / sizeof (expected_result[0]) );
 
@@ -58,7 +56,6 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_extended_tier_timeout_and_delay)
 {
     CtiCommandParser        parse( "putconfig xcom extended tier 2 timeout 14400 delay 3600 serial 1234" );
     CtiProtocolExpresscom   xcom;
-    CtiOutMessage           out;
 
     BYTE expected_result[] = { 0, 0, 0, 0, 0,       // addressing not assigned: defaults to zero
                                0x17,                // message type: extended tier
@@ -67,7 +64,7 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_extended_tier_timeout_and_delay)
                                0x38, 0x40,          // timeout value: 14400 == 0x3840
                                0x0E, 0x10 };        // delay value: 3600 == 0x0E10
 
-    BOOST_CHECK_EQUAL( xcom.parseRequest(parse, out), NORMAL );
+    BOOST_CHECK_EQUAL( xcom.parseRequest(parse), NORMAL );
     BOOST_CHECK_EQUAL( xcom.entries(), 1 );
     BOOST_CHECK_EQUAL( xcom.messageSize(1), sizeof (expected_result) / sizeof (expected_result[0]) );
 
@@ -78,16 +75,16 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_extended_tier_timeout_and_delay)
 }
 
 
-/* 
+/*
     Testing: CtiProtocolExpresscom::addAddressing()
- 
+
     addAddressing() passes in the parameters in the exact size they are required to hold, so the
     only invalid address available is all bits set.
- 
+
     Exceptions to the above:
- 
+
         FEEDER is a 16 bit bitfield, hence ALL values are allowed: 0 to 0xFFFF
- 
+
         ZIP is only 24 bits wide, but is held in a 32 bit quantity.  So values >= 0x01000000
             also return BADPARAM.
 */
@@ -112,7 +109,7 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_addAddressing_spid)
 {
     CtiProtocolExpresscom   xcom;
 
-    // test the SPID 
+    // test the SPID
     BOOST_CHECK_EQUAL( xcom.addAddressing(0, CtiProtocolExpresscom::SpidMin) , NORMAL);
     BOOST_CHECK_EQUAL( xcom.addAddressing(0, 0x1234) , NORMAL);
     BOOST_CHECK_EQUAL( xcom.addAddressing(0, CtiProtocolExpresscom::SpidMax) , NORMAL);
@@ -207,7 +204,7 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_addAddressing_splinter)
 
 /*
     Testing: CtiProtocolExpresscom::parseAddressing()
- 
+
     Here the input comes in the form of a CtiCommandParser parse object.  The values specified
     aren't passed into the function in exact-width registers.  This enables testing with more values
     outside the valid ranges on the high end.
@@ -217,32 +214,32 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseAddressing_serial)
     CtiProtocolExpresscom   xcom;
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign serial 0" );    
+        CtiCommandParser    parse( "putconfig xcom assign serial 0" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign serial 1" );    
+        CtiCommandParser    parse( "putconfig xcom assign serial 1" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign serial 123456" );    
+        CtiCommandParser    parse( "putconfig xcom assign serial 123456" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign serial 4294967295" );    
+        CtiCommandParser    parse( "putconfig xcom assign serial 4294967295" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign serial 4294967296" );    
+        CtiCommandParser    parse( "putconfig xcom assign serial 4294967296" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign serial 5000000000" );    
+        CtiCommandParser    parse( "putconfig xcom assign serial 5000000000" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 }
@@ -253,42 +250,42 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseAddressing_spid)
     CtiProtocolExpresscom   xcom;
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign spid 0" );    
+        CtiCommandParser    parse( "putconfig xcom assign spid 0" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign spid 1" );    
+        CtiCommandParser    parse( "putconfig xcom assign spid 1" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign spid 12345" );    
+        CtiCommandParser    parse( "putconfig xcom assign spid 12345" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign spid 65534" );    
+        CtiCommandParser    parse( "putconfig xcom assign spid 65534" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign spid 65535" );    
+        CtiCommandParser    parse( "putconfig xcom assign spid 65535" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign spid 1234567" );    
+        CtiCommandParser    parse( "putconfig xcom assign spid 1234567" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign spid 2000000000" );    
+        CtiCommandParser    parse( "putconfig xcom assign spid 2000000000" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign spid 4000000000" );    
+        CtiCommandParser    parse( "putconfig xcom assign spid 4000000000" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 }
@@ -299,42 +296,42 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseAddressing_geo)
     CtiProtocolExpresscom   xcom;
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign geo 0" );    
+        CtiCommandParser    parse( "putconfig xcom assign geo 0" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign geo 1" );    
+        CtiCommandParser    parse( "putconfig xcom assign geo 1" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign geo 12345" );    
+        CtiCommandParser    parse( "putconfig xcom assign geo 12345" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign geo 65534" );    
+        CtiCommandParser    parse( "putconfig xcom assign geo 65534" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign geo 65535" );    
+        CtiCommandParser    parse( "putconfig xcom assign geo 65535" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign geo 1234567" );    
+        CtiCommandParser    parse( "putconfig xcom assign geo 1234567" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign geo 2000000000" );    
+        CtiCommandParser    parse( "putconfig xcom assign geo 2000000000" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign geo 4000000000" );    
+        CtiCommandParser    parse( "putconfig xcom assign geo 4000000000" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 }
@@ -345,42 +342,42 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseAddressing_substation)
     CtiProtocolExpresscom   xcom;
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign sub 0" );    
+        CtiCommandParser    parse( "putconfig xcom assign sub 0" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign sub 1" );    
+        CtiCommandParser    parse( "putconfig xcom assign sub 1" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign sub 12345" );    
+        CtiCommandParser    parse( "putconfig xcom assign sub 12345" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign sub 65534" );    
+        CtiCommandParser    parse( "putconfig xcom assign sub 65534" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign sub 65535" );    
+        CtiCommandParser    parse( "putconfig xcom assign sub 65535" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign sub 1234567" );    
+        CtiCommandParser    parse( "putconfig xcom assign sub 1234567" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign sub 2000000000" );    
+        CtiCommandParser    parse( "putconfig xcom assign sub 2000000000" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign sub 4000000000" );    
+        CtiCommandParser    parse( "putconfig xcom assign sub 4000000000" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 }
@@ -391,42 +388,42 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseAddressing_feeder)
     CtiProtocolExpresscom   xcom;
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign feeder 0" );    
+        CtiCommandParser    parse( "putconfig xcom assign feeder 0" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign feeder 1" );    
+        CtiCommandParser    parse( "putconfig xcom assign feeder 1" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign feeder 12345" );    
+        CtiCommandParser    parse( "putconfig xcom assign feeder 12345" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign feeder 65535" );    
+        CtiCommandParser    parse( "putconfig xcom assign feeder 65535" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign feeder 65536" );    
+        CtiCommandParser    parse( "putconfig xcom assign feeder 65536" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign feeder 1234567" );    
+        CtiCommandParser    parse( "putconfig xcom assign feeder 1234567" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign feeder 2000000000" );    
+        CtiCommandParser    parse( "putconfig xcom assign feeder 2000000000" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign feeder 4000000000" );    
+        CtiCommandParser    parse( "putconfig xcom assign feeder 4000000000" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 }
@@ -437,47 +434,47 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseAddressing_zip)
     CtiProtocolExpresscom   xcom;
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign zip 0" );    
+        CtiCommandParser    parse( "putconfig xcom assign zip 0" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign zip 1" );    
+        CtiCommandParser    parse( "putconfig xcom assign zip 1" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign zip 12345" );    
+        CtiCommandParser    parse( "putconfig xcom assign zip 12345" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign zip 1234567" );    
+        CtiCommandParser    parse( "putconfig xcom assign zip 1234567" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign zip 16777214" );    
+        CtiCommandParser    parse( "putconfig xcom assign zip 16777214" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign zip 16777215" );    
+        CtiCommandParser    parse( "putconfig xcom assign zip 16777215" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign zip 123456789" );    
+        CtiCommandParser    parse( "putconfig xcom assign zip 123456789" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign zip 2000000000" );    
+        CtiCommandParser    parse( "putconfig xcom assign zip 2000000000" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign zip 4000000000" );    
+        CtiCommandParser    parse( "putconfig xcom assign zip 4000000000" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 }
@@ -488,42 +485,42 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseAddressing_uda)
     CtiProtocolExpresscom   xcom;
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign uda 0" );    
+        CtiCommandParser    parse( "putconfig xcom assign uda 0" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign uda 1" );    
+        CtiCommandParser    parse( "putconfig xcom assign uda 1" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign uda 12345" );    
+        CtiCommandParser    parse( "putconfig xcom assign uda 12345" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign uda 65534" );    
+        CtiCommandParser    parse( "putconfig xcom assign uda 65534" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign uda 65535" );    
+        CtiCommandParser    parse( "putconfig xcom assign uda 65535" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign uda 1234567" );    
+        CtiCommandParser    parse( "putconfig xcom assign uda 1234567" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign uda 2000000000" );    
+        CtiCommandParser    parse( "putconfig xcom assign uda 2000000000" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign uda 4000000000" );    
+        CtiCommandParser    parse( "putconfig xcom assign uda 4000000000" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 }
@@ -534,47 +531,47 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseAddressing_program)
     CtiProtocolExpresscom   xcom;
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign program 0" );    
+        CtiCommandParser    parse( "putconfig xcom assign program 0" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign program 1" );    
+        CtiCommandParser    parse( "putconfig xcom assign program 1" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign program 34" );    
+        CtiCommandParser    parse( "putconfig xcom assign program 34" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign program 254" );    
+        CtiCommandParser    parse( "putconfig xcom assign program 254" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign program 255" );    
+        CtiCommandParser    parse( "putconfig xcom assign program 255" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign program 450" );    
+        CtiCommandParser    parse( "putconfig xcom assign program 450" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign program 1234567" );    
+        CtiCommandParser    parse( "putconfig xcom assign program 1234567" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign program 2000000000" );    
+        CtiCommandParser    parse( "putconfig xcom assign program 2000000000" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign program 4000000000" );    
+        CtiCommandParser    parse( "putconfig xcom assign program 4000000000" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 }
@@ -585,47 +582,47 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_parseAddressing_splinter)
     CtiProtocolExpresscom   xcom;
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign splinter 0" );    
+        CtiCommandParser    parse( "putconfig xcom assign splinter 0" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign splinter 1" );    
+        CtiCommandParser    parse( "putconfig xcom assign splinter 1" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign splinter 34" );    
+        CtiCommandParser    parse( "putconfig xcom assign splinter 34" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign splinter 254" );    
+        CtiCommandParser    parse( "putconfig xcom assign splinter 254" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , NORMAL);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign splinter 255" );    
+        CtiCommandParser    parse( "putconfig xcom assign splinter 255" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign splinter 450" );    
+        CtiCommandParser    parse( "putconfig xcom assign splinter 450" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign splinter 1234567" );    
+        CtiCommandParser    parse( "putconfig xcom assign splinter 1234567" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign splinter 2000000000" );    
+        CtiCommandParser    parse( "putconfig xcom assign splinter 2000000000" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 
     {
-        CtiCommandParser    parse( "putconfig xcom assign splinter 4000000000" );    
+        CtiCommandParser    parse( "putconfig xcom assign splinter 4000000000" );
         BOOST_CHECK_EQUAL( xcom.parseAddressing(parse) , BADPARAM);
     }
 }

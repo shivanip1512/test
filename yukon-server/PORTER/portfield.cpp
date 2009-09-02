@@ -80,7 +80,6 @@
 #include "dev_rtm.h"
 #include "dev_fmu.h"
 #include "dev_wctp.h"
-#include "dev_xml.h"
 #include "porter.h"
 #include "master.h"
 #include "portdecl.h"
@@ -101,7 +100,6 @@
 #include "dev_ied.h"
 #include "dev_schlum.h"
 #include "dev_remote.h"
-#include "dev_grp_xml.h"
 #include "device_queue_interface.h"
 #include "dev_kv2.h"
 #include "dev_mct.h"  //  for the test addresses
@@ -1401,19 +1399,6 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         status = Port->outMess(trx, Device, traceList);
                         break;
                     }
-                    case TYPE_XML_XMIT:
-                    {
-                        CtiDeviceXmlSPtr ds = boost::static_pointer_cast<CtiDeviceXml>(Device);
-                        int xmlGroupId = OutMessage->DeviceIDofLMGroup;
-                        CtiDeviceGroupXmlSPtr xmlGroupSptr = boost::static_pointer_cast<CtiDeviceGroupXml>(DeviceManager.getDeviceByID(xmlGroupId));
-
-                        if(xmlGroupSptr)
-                        {
-                            //Setting paramters this way because OutMessage cannot hold them. This would normally be done in the route.
-                            ds->setParameters(xmlGroupSptr->getParameters());
-                        }
-                        //Break is intentionally left off here. The next block needs to execute
-                    }
                     case TYPE_ION7330:
                     case TYPE_ION7700:
                     case TYPE_ION8300:
@@ -2332,7 +2317,6 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     case TYPE_MODBUS:
                     case TYPE_FMU:
                     case TYPE_CCU721:
-                    case TYPE_XML_XMIT:
                         break;
                     case TYPE_CCU700:
                     case TYPE_CCU710:

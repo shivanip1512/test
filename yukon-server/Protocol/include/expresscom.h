@@ -120,7 +120,7 @@ public:
     } CtiExpresscomMessageType_t;
 
     typedef enum
-    {   
+    {
         cfgProtocolMode                   = 0x0C,
         cfgEmetconGoldAddress             = 0x0D,
         cfgEmetconSilverAddress           = 0x0E,
@@ -150,7 +150,7 @@ protected:
     BYTE    _programAddress;                // 1-254 program load (like relay)
     BYTE    _splinterAddress;               // 1-254 subset of program.
     UINT    _uniqueAddress;                 // 1-4294967295 UID.
-    
+
     // Parameters which affect the construction of the messages.
 
     bool    _celsiusMode;                   // Default to false/no. (Implies Fahrenheit).
@@ -171,9 +171,9 @@ private:
     void addressMessage();
     void terminateMessage();
     void resolveAddressLevel();
-    INT assembleControl(CtiCommandParser &parse, CtiOutMessage &OutMessage);
-    INT assemblePutConfig(CtiCommandParser &parse, CtiOutMessage &OutMessage);
-    INT assemblePutStatus(CtiCommandParser &parse, CtiOutMessage &OutMessage);
+    INT assembleControl(CtiCommandParser &parse);
+    INT assemblePutConfig(CtiCommandParser &parse);
+    INT assemblePutStatus(CtiCommandParser &parse);
 
     INT parseSchedule(CtiCommandParser &parse);
     INT schedulePoint(std::vector< BYTE > &schedule);
@@ -237,18 +237,18 @@ private:
      *  USHORT T_f,             // minutes of postcontrol ramp time. Setpoint is transitioned linearly over this time period back to the uncontrolled setpoint.
      *  BYTE delta_S_f);
      *
-     */ 
+     */
     INT extendedTierCommand(int level, int rate, int cmd, int display, int timeout, int delay);
     INT backlightIlluminationMsg(BYTE numCycles, BYTE dutyCycle, BYTE cycPeriod);
     INT criticalPeakPricing(  BOOL includeHeatPoint, BYTE minHeat, BOOL includeCoolPoint, BYTE maxCool,
-                              BOOL useCelsius, USHORT controlTime, BOOL deltaFlag, BOOL wakeFlag, BYTE wake, 
+                              BOOL useCelsius, USHORT controlTime, BOOL deltaFlag, BOOL wakeFlag, BYTE wake,
                               BOOL leaveFlag, BYTE leave, BOOL returnFlag, BYTE ret, BOOL sleepFlag, BYTE sleep);
 
     INT thermostatSetpointControl(BYTE minTemp = 0, BYTE maxTemp = 0, USHORT T_r = 0, USHORT T_a = 0, USHORT T_b = 0, BYTE delta_S_b = 0, USHORT T_c = 0, USHORT T_d = 0, BYTE delta_S_d = 0, USHORT T_e = 0, USHORT T_f = 0, BYTE delta_S_f = 0, bool hold = false, bool bumpFlag = false, BYTE stage = 0x00);
     INT thermostatSetStateTwoSetpoint(UINT loadMask = 0x01, bool temporary = true, bool restore = false, int timeout_min = 0, int setcoolpoint = -1, int setheatpoint = -1, BYTE fanstate = 0x00, BYTE sysstate = 0x00, USHORT delay = 0);
     INT thermostatSetState(UINT loadmask = 0x01, bool temporary = true, bool restore = false, int timeout_min = -1, int setpoint = -1, BYTE fanstate = 0x00, BYTE sysstate = 0x00, USHORT delay = 0);
     INT updateUtilityUsage(CtiCommandParser &parse);
-    INT updateUtilityInformation( BYTE chan, BOOL displayCost, BOOL displayUsage, 
+    INT updateUtilityInformation( BYTE chan, BOOL displayCost, BOOL displayUsage,
                                   BOOL currencyInCents, string optionalString);
     INT compareRSSI();
     INT commandInitiator(BYTE commandId);
@@ -283,18 +283,18 @@ private:
     void calcCRC(std::vector< BYTE >::iterator data, unsigned char len);
     static unsigned short crctbl[256];
 
-    typedef union //criticalPeakPricingFlags  
+    typedef union //criticalPeakPricingFlags
     {
         struct
         {
-            
+
             unsigned char wakesp            : 1;
             unsigned char leavesp           : 1;
             unsigned char returnsp          : 1;
-            unsigned char sleepsp           : 1; 
+            unsigned char sleepsp           : 1;
             unsigned char usedelta          : 1;
-            unsigned char heatsetpoint      : 1; 
-            unsigned char usecelsius        : 1;          
+            unsigned char heatsetpoint      : 1;
+            unsigned char usecelsius        : 1;
             unsigned char setpointincluded  : 1;
         };
 
@@ -366,7 +366,7 @@ public:
     } CtiExpresscomCapControlSubActions;
 
 
-    INT parseRequest(CtiCommandParser &parse, CtiOutMessage &OutMessage);
+    INT parseRequest(CtiCommandParser &parse);
 
     BYTE getByte(int pos, int messageNum = 0);
     int messageSize(int messageNum = 0);

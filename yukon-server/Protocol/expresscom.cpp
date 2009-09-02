@@ -75,8 +75,8 @@ CtiProtocolExpresscom& CtiProtocolExpresscom::operator=(const CtiProtocolExpress
     return *this;
 }
 
-bool CtiProtocolExpresscom::validateAddress(const unsigned int address, 
-                                            const AddressRanges min, 
+bool CtiProtocolExpresscom::validateAddress(const unsigned int address,
+                                            const AddressRanges min,
                                             const AddressRanges max)
 {
     return (min <= address && address <= max);
@@ -717,7 +717,7 @@ INT CtiProtocolExpresscom::backlightIlluminationMsg(BYTE numCycles, BYTE dutyCyc
 }
 
 INT CtiProtocolExpresscom::criticalPeakPricing(  BOOL includeHeatPoint, BYTE minHeat, BOOL includeCoolPoint, BYTE maxCool,
-                                                 BOOL useCelsius, USHORT controlTime, BOOL deltaFlag, BOOL wakeFlag, BYTE wake, 
+                                                 BOOL useCelsius, USHORT controlTime, BOOL deltaFlag, BOOL wakeFlag, BYTE wake,
                                                  BOOL leaveFlag, BYTE leave, BOOL returnFlag, BYTE ret, BOOL sleepFlag, BYTE sleep)
 {
     CPPFlags_t flag;
@@ -730,12 +730,12 @@ INT CtiProtocolExpresscom::criticalPeakPricing(  BOOL includeHeatPoint, BYTE min
     flag.returnsp = returnFlag;
     flag.leavesp = leaveFlag;
     flag.wakesp = wakeFlag;
-                 
+
     _message.push_back( mtCriticalPeakPricing );
     _message.push_back(flag.raw);
     _message.push_back(HIBYTE(controlTime));
     _message.push_back(LOBYTE(controlTime));
-    
+
     if(includeHeatPoint)
     {
         _message.push_back(0xFF);
@@ -933,7 +933,7 @@ INT CtiProtocolExpresscom::dataMessageBlock(BYTE priority, BOOL hourFlag, BOOL d
     INT i = 0;
 
     msgBlock[0] = priority;
-    flags |= (hourFlag ? 0x01 : 0x00); 
+    flags |= (hourFlag ? 0x01 : 0x00);
     flags |= (deleteFlag ? 0x02 : 0x00);
     flags |= (clearFlag ? 0x04 : 0x00);
     msgBlock[1] = flags;
@@ -1033,7 +1033,7 @@ INT CtiProtocolExpresscom::capControl(BYTE action, BYTE subAction, BYTE data1, B
 }
 
 
-INT CtiProtocolExpresscom::parseRequest(CtiCommandParser &parse, CtiOutMessage &OutMessage)
+INT CtiProtocolExpresscom::parseRequest(CtiCommandParser &parse)
 {
     INT status = NORMAL;
 
@@ -1080,17 +1080,17 @@ INT CtiProtocolExpresscom::parseRequest(CtiCommandParser &parse, CtiOutMessage &
     {
     case ControlRequest:
         {
-            assembleControl( parse, OutMessage );
+            assembleControl(parse);
             break;
         }
     case PutConfigRequest:
         {
-            status = assemblePutConfig( parse, OutMessage );
+            status = assemblePutConfig(parse);
             break;
         }
     case PutStatusRequest:
         {
-            assemblePutStatus(parse, OutMessage);
+            assemblePutStatus(parse);
             break;
         }
     default:
@@ -1165,7 +1165,7 @@ BYTE CtiProtocolExpresscom::getStopByte() const
     return(_useProtocolCRC ? 'v' : 't');
 }
 
-INT CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse, CtiOutMessage &OutMessage)
+INT CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse)
 {
     INT  i;
     INT  status = NORMAL;
@@ -1281,7 +1281,7 @@ INT CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse, CtiOutMessag
     {
         status = capControl( ccControl, ccControlSwap );
     }
-    else if (parse.isKeyValid("xcbacklight")) 
+    else if (parse.isKeyValid("xcbacklight"))
     {
        backlightIlluminationMsg( parse.getiValue("xcbacklightcycle", 0),
                                  parse.getiValue("xcbacklightduty", 0),
@@ -1322,7 +1322,7 @@ INT CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse, CtiOutMessag
 }
 
 
-INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse, CtiOutMessage &OutMessage)
+INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse)
 {
     INT status = NORMAL;
 
@@ -1451,7 +1451,7 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse, CtiOutMess
 
     if(parse.isKeyValid("xcdata"))
     {
-        if (parse.isKeyValid("xcascii")) 
+        if (parse.isKeyValid("xcascii"))
         {
             dataMessageBlock(parse.getiValue("xcdatapriority", -1),
                              parse.isKeyValid("xchour"),
@@ -1461,7 +1461,7 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse, CtiOutMess
                              parse.getsValue("xcdata"));
         }
         else
-        {  
+        {
             status = data(parse.getsValue("xcdata"));
         }
     }
@@ -1503,14 +1503,14 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse, CtiOutMess
                                 delay);
         }
     }
-    else if (parse.isKeyValid("xcextier")) 
+    else if (parse.isKeyValid("xcextier"))
     {
         status = extendedTierCommand(parse.getiValue("xcextierlevel", -1),
                             parse.getiValue("xcextierrate", -1),
                             parse.getiValue("xcextiercmd", -1),
                             parse.getiValue("xcextierdisp", -1),
                             parse.getiValue("xctiertimeout", -1),
-                            parse.getiValue("xctierdelay", -1));                                                          
+                            parse.getiValue("xctierdelay", -1));
 
     }
     else if(parse.isKeyValid("xcutilusage"))
@@ -1520,30 +1520,30 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse, CtiOutMess
     else if(parse.isKeyValid("xcconfig"))
     {
         BYTE config =  (parse.getiValue("xcthermoconfig", 0) & 0xFF);
-        status = configuration( cfgThermostatConfig, 
+        status = configuration( cfgThermostatConfig,
                                 1,  //length of data
                                 (BYTE*)config );
     }
     else if (parse.isKeyValid("xcdisplay") )
     {
-        if (parse.isKeyValid("xcdisplaymessage")) 
+        if (parse.isKeyValid("xcdisplaymessage"))
         {
             BYTE data[17];
             data[0] = parse.getiValue("xcdisplaymessageid") & 0x0F;
             string displayStr = parse.getsValue("xcdisplaymessage");
             data[1] = (BYTE)&displayStr;
             int length = displayStr.size() + 1;
-            if (length > 17) 
+            if (length > 17)
                 length = 17;
 
-            status = configuration( cfgDisplayMessages, 
+            status = configuration( cfgDisplayMessages,
                                     length,  //length of data
                                     data );
         }
         else
         {
             BYTE config = (parse.getiValue("xclcddisplay", 0) & 0xFF);
-            status = configuration( cfgDisplayMessages, 
+            status = configuration( cfgDisplayMessages,
                                     1,  //length of data
                                     (BYTE*)config );
         }
@@ -1604,7 +1604,7 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse, CtiOutMess
     return status;
 }
 
-INT CtiProtocolExpresscom::assemblePutStatus(CtiCommandParser &parse, CtiOutMessage &OutMessage)
+INT CtiProtocolExpresscom::assemblePutStatus(CtiCommandParser &parse)
 {
     INT status = NORMAL;
 
@@ -1631,7 +1631,7 @@ INT CtiProtocolExpresscom::configurePriceTierCommand(BYTE priceTier)
     _message.push_back(mtThermostatPriceTier);
     if(priceTier > 4)
     {
-        priceTier = 0;        
+        priceTier = 0;
     }
     _message.push_back(priceTier);
 
@@ -1643,7 +1643,7 @@ INT CtiProtocolExpresscom::compareRSSI()
 {
     INT status = NoError;
     _message.push_back(mtCompareRSSI);
-    
+
     incrementMessageCount();
     return status;
 }
@@ -1653,7 +1653,7 @@ INT CtiProtocolExpresscom::commandInitiator(BYTE commandId)
     INT status = NoError;
      _message.push_back(mtCommandInitiator);
      _message.push_back(commandId);
-    
+
     incrementMessageCount();
     return status;
 }
@@ -1689,7 +1689,7 @@ INT CtiProtocolExpresscom::updateUtilityUsage(CtiCommandParser &parse )
 }
 
 
-INT CtiProtocolExpresscom::updateUtilityInformation( BYTE chan, BOOL displayCost, BOOL displayUsage, 
+INT CtiProtocolExpresscom::updateUtilityInformation( BYTE chan, BOOL displayCost, BOOL displayUsage,
                                                      BOOL currencyInCents, string optionalString)
 {
     INT status = NoError;
@@ -1706,7 +1706,7 @@ INT CtiProtocolExpresscom::updateUtilityInformation( BYTE chan, BOOL displayCost
 
     size_t configpos = _message.size();
 
-    if (displayCost > 0) 
+    if (displayCost > 0)
     {
         config |= 0x01;
     }
@@ -1803,7 +1803,7 @@ INT CtiProtocolExpresscom::schedulePoint(vector< BYTE > &schedule)
     {
         BYTE data[1024];
 
-		int i;  // now must be defined outside of forloop
+        int i;  // now must be defined outside of forloop
         for(i = 0; i < schedule.size() && i < 1024; i++)
         {
             data[i] = schedule[i];
@@ -2158,7 +2158,7 @@ INT CtiProtocolExpresscom::extendedTierCommand(int level, int rate, int cmd, int
         flags |= 0x10;         // timeout setpoint included.
         _message.push_back(HIBYTE(timeout));
         _message.push_back(LOBYTE(timeout));
-    }       
+    }
     if(delay > 0)
     {
         flags |= 0x08;         // delay setpoint included.
@@ -2176,7 +2176,7 @@ INT CtiProtocolExpresscom::configureColdLoad(CtiCommandParser &parse)
 {
     INT status = NoError;
     BYTE config[3];
-    USHORT time; 
+    USHORT time;
 
     if(parse.isKeyValid("xccoldload_r"))
     {
@@ -2185,7 +2185,7 @@ INT CtiProtocolExpresscom::configureColdLoad(CtiCommandParser &parse)
         config[0] = 0;
         config[1] = time>>8;
         config[2] = time;
-        status = configuration( cfgColdLoad, 
+        status = configuration( cfgColdLoad,
                                 3,  //length of data
                                 config );
     }
@@ -2202,7 +2202,7 @@ INT CtiProtocolExpresscom::configureColdLoad(CtiCommandParser &parse)
                 config[0] = i;
                 config[1] = time>>8;
                 config[2] = time;
-                status = configuration( cfgColdLoad, 
+                status = configuration( cfgColdLoad,
                                         3,  //length of data
                                         config );
             }
@@ -2243,7 +2243,7 @@ INT CtiProtocolExpresscom::configureLCRMode(CtiCommandParser &parse)
 
     if(config != 0)
     {
-        status = configuration( cfgProtocolMode, 
+        status = configuration( cfgProtocolMode,
                                 1,  //length of data
                                 &config );
     }
@@ -2261,7 +2261,7 @@ INT CtiProtocolExpresscom::configureEmetconGoldAddress(CtiCommandParser &parse)
 
     if(config < 4) //Gold address is configured as 0-3
     {
-        status = configuration( cfgEmetconGoldAddress, 
+        status = configuration( cfgEmetconGoldAddress,
                                 1,  //length of data
                                 &config );
     }
@@ -2278,7 +2278,7 @@ INT CtiProtocolExpresscom::configureEmetconSilverAddress(CtiCommandParser &parse
 
     if(config < 60) //Silver address is configured as 0-59
     {
-        status = configuration( cfgEmetconSilverAddress, 
+        status = configuration( cfgEmetconSilverAddress,
                                 1,  //length of data
                                 &config );
     }
