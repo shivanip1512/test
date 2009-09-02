@@ -42,8 +42,8 @@ import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
-import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagUtils;
 import com.cannontech.web.input.InputRoot;
 import com.cannontech.web.input.InputUtil;
 
@@ -55,6 +55,7 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 	private PaoCommandAuthorizationService paoCommandAuthorizationService;
 	private JobManager jobManager;
 	private YukonJobDefinition<ScheduledGroupRequestExecutionTask> scheduledGroupRequestExecutionJobDefinition;
+	private CronExpressionTagService cronExpressionTagService;
 	
 	private List<LiteCommand> meterCommands;
 	
@@ -143,7 +144,7 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 		mav.addObject("commands", commands);
 		
 		// cron
-		CronExpressionTagState cronExpressionTagState = CronExpressionTagUtils.parse(cronExpression, userContext);
+		CronExpressionTagState cronExpressionTagState = cronExpressionTagService.parse(cronExpression, userContext);
         mav.addObject("cronExpressionTagState", cronExpressionTagState);
         
 		return mav;
@@ -152,6 +153,8 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 	// SCHEDULE
 	public ModelAndView schedule(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		
+	    YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+	    
 		// request type
 		String requestTypeStr = ServletRequestUtils.getRequiredStringParameter(request, "requestType");
 		CommandRequestExecutionType requestType = CommandRequestExecutionType.valueOf(requestTypeStr);
@@ -160,7 +163,7 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 		String cronTagId = ServletRequestUtils.getRequiredStringParameter(request, "cronTagId");
 		String cronExpression = null;
 		try {
-			cronExpression = CronExpressionTagUtils.build(cronTagId, request);
+			cronExpression = cronExpressionTagService.build(cronTagId, request, userContext);
 		} catch (Exception e) {
 			
 			cronExpression = null;
@@ -377,4 +380,9 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 			YukonJobDefinition<ScheduledGroupRequestExecutionTask> scheduledGroupRequestExecutionJobDefinition) {
 		this.scheduledGroupRequestExecutionJobDefinition = scheduledGroupRequestExecutionJobDefinition;
 	}
+	
+	@Autowired
+	public void setCronExpressionTagService(CronExpressionTagService cronExpressionTagService) {
+        this.cronExpressionTagService = cronExpressionTagService;
+    }
 }

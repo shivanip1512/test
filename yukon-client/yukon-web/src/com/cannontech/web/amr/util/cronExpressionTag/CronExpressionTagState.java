@@ -1,13 +1,9 @@
 package com.cannontech.web.amr.util.cronExpressionTag;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
-
-import com.cannontech.user.YukonUserContext;
 
 public class CronExpressionTagState {
 	
@@ -39,18 +35,9 @@ public class CronExpressionTagState {
 	int cronExpressionMontlyOptionOnDayX = 1;
 	
 	// one time
-	String date = "";
+	Date date = new Date();
 	
-	public CronExpressionTagState(YukonUserContext userContext) {
-		
-		Date today = new Date();
-		SimpleDateFormat dateFormatter;
-		TimeZone systemTimeZone = userContext.getTimeZone();
-		
-		dateFormatter = new SimpleDateFormat("MM/dd/yyyy");
-		dateFormatter.setTimeZone(systemTimeZone);
-		date = dateFormatter.format(today);
-		
+	public CronExpressionTagState() {
 	}
 	
 	// setters/getters
@@ -133,11 +120,11 @@ public class CronExpressionTagState {
 			int cronExpressionMontlyOptionOnDayX) {
 		this.cronExpressionMontlyOptionOnDayX = cronExpressionMontlyOptionOnDayX;
 	}
-	public String getDate() {
-		return date;
-	}
-	public void setDate(String date) {
-		this.date = date;
-	}
+	public Date getDate() {
+        return date;
+    }
+	public void setDate(Date date) {
+        this.date = date;
+    }
 	
 }

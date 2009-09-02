@@ -18,13 +18,14 @@ import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.ScheduleException;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagUtils;
+import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 
 public class ScheduledGroupRequestExecutionJobWrapperFactory {
 
 	private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao;
 	private JobStatusDao jobStatusDao;
 	private JobManager jobManager;
+	private CronExpressionTagService cronExpressionTagService;
 	
 	public ScheduledGroupRequestExecutionJobWrapper createJobWrapper(ScheduledRepeatingJob job, Date startTime, Date stopTime, YukonUserContext userContext) {
 		return new ScheduledGroupRequestExecutionJobWrapper(job, startTime, stopTime, userContext, scheduledGroupRequestExecutionDao, jobStatusDao, jobManager);
@@ -107,7 +108,7 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 		}
 		
 		public String getScheduleDescription() {
-			return CronExpressionTagUtils.getDescription(this.job.getCronString(), this.userContext);
+			return cronExpressionTagService.getDescription(this.job.getCronString(), this.userContext);
 		}
 	}
 	
@@ -125,4 +126,9 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 	public void setJobManager(JobManager jobManager) {
 		this.jobManager = jobManager;
 	}
+	
+	@Autowired
+	public void setCronExpressionTagService(CronExpressionTagService cronExpressionTagService) {
+        this.cronExpressionTagService = cronExpressionTagService;
+    }
 }

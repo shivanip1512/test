@@ -6,12 +6,13 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagUtils;
+import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.updater.job.JobUpdaterTypeEnum;
 
 public class ScheduleDescriptionJobUpdaterHandler implements JobUpdaterHandler {
 
 	private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
+	private CronExpressionTagService cronExpressionTagService;
 	
 	@Override
 	public String handle(int jobId, YukonUserContext userContext) {
@@ -22,7 +23,7 @@ public class ScheduleDescriptionJobUpdaterHandler implements JobUpdaterHandler {
 			
 			ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(jobId);
 			String cronString = job.getCronString();
-			scheduleDescription = CronExpressionTagUtils.getDescription(cronString,userContext);
+			scheduleDescription = cronExpressionTagService.getDescription(cronString, userContext);
 			
 		} catch (IllegalArgumentException e) {
 			// N/A
@@ -42,4 +43,9 @@ public class ScheduleDescriptionJobUpdaterHandler implements JobUpdaterHandler {
 	public void setScheduledRepeatingJobDao(ScheduledRepeatingJobDao scheduledRepeatingJobDao) {
 		this.scheduledRepeatingJobDao = scheduledRepeatingJobDao;
 	}
+	
+	@Autowired
+	public void setCronExpressionTagService(CronExpressionTagService cronExpressionTagService) {
+        this.cronExpressionTagService = cronExpressionTagService;
+    }
 }

@@ -1,28 +1,23 @@
 package com.cannontech.web.amr.util.cronExpressionTag;
 
-import com.cannontech.web.amr.util.cronExpressionTag.handler.CronTagStyleHandler;
-import com.cannontech.web.amr.util.cronExpressionTag.handler.CustomCronTagStyleHandler;
-import com.cannontech.web.amr.util.cronExpressionTag.handler.DailyCronTagStyleHandler;
-import com.cannontech.web.amr.util.cronExpressionTag.handler.MonthlyCronTagStyleHandler;
-import com.cannontech.web.amr.util.cronExpressionTag.handler.OneTimeCronTagStyleHandler;
-import com.cannontech.web.amr.util.cronExpressionTag.handler.WeeklyCronTagStyleHandler;
 
 public enum CronTagStyleType {
 
-	DAILY(new DailyCronTagStyleHandler()),
-	WEEKLY(new WeeklyCronTagStyleHandler()),
-	MONTHLY(new MonthlyCronTagStyleHandler()),
-	ONETIME(new OneTimeCronTagStyleHandler()),
-	CUSTOM(new CustomCronTagStyleHandler()),
+	DAILY(1),
+	WEEKLY(2),
+	MONTHLY(3),
+	ONETIME(4),
+	CUSTOM(5),
 	;
 	
-	private CronTagStyleHandler handler;
+	// used to concretely indicate to the CronTagStyleHandlers how they should sort themselves.
+	private int order;
 	
-	CronTagStyleType(CronTagStyleHandler handler) {
-		this.handler = handler;
+	CronTagStyleType(int order) {
+	    this.order = order;
 	}
 	
-	public CronTagStyleHandler getHandler() {
-		return this.handler;
-	}
+	public int getOrder() {
+        return order;
+    }
 }

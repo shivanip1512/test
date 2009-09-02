@@ -15,9 +15,14 @@ public class DailyCronTagStyleHandler extends CronTagStyleHandlerBase {
 
 	public static final String CRONEXP_DAILY_OPTION = "CRONEXP_DAILY_OPTION";
 	
+	@Override
+	public CronTagStyleType getType() {
+	    return CronTagStyleType.DAILY;
+	}
+	
 	// BUILD
 	@Override
-	public String build(String id, HttpServletRequest request) throws ServletRequestBindingException {
+	public String build(String id, HttpServletRequest request, YukonUserContext userContext) throws ServletRequestBindingException {
 
 		String[] parts = new String[]{"*", "*", "*", "*", "*", "*"};
 		
@@ -66,7 +71,7 @@ public class DailyCronTagStyleHandler extends CronTagStyleHandlerBase {
 	@Override
 	public CronExpressionTagState parse(String[] parts, YukonUserContext userContext) {
 
-		CronExpressionTagState state = new CronExpressionTagState(userContext);
+		CronExpressionTagState state = new CronExpressionTagState();
 		parseTime(parts, state);
 		state.setCronTagStyleType(CronTagStyleType.DAILY);
 		

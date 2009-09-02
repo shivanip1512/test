@@ -17,9 +17,14 @@ import com.cannontech.web.amr.util.cronExpressionTag.CronTagStyleType;
 
 public class WeeklyCronTagStyleHandler extends CronTagStyleHandlerBase {
 
+    @Override
+    public CronTagStyleType getType() {
+        return CronTagStyleType.WEEKLY;
+    }
+    
 	// BUILD
 	@Override
-	public String build(String id, HttpServletRequest request) throws ServletRequestBindingException {
+	public String build(String id, HttpServletRequest request, YukonUserContext userContext) throws ServletRequestBindingException {
 
 		String[] parts = new String[]{"*", "*", "*", "*", "*", "*"};
 		
@@ -82,7 +87,7 @@ public class WeeklyCronTagStyleHandler extends CronTagStyleHandlerBase {
 	@Override
 	public CronExpressionTagState parse(String[] parts, YukonUserContext userContext) {
 
-		CronExpressionTagState state = new CronExpressionTagState(userContext);
+		CronExpressionTagState state = new CronExpressionTagState();
 		parseTime(parts, state);
 		state.setCronTagStyleType(CronTagStyleType.WEEKLY);
 		

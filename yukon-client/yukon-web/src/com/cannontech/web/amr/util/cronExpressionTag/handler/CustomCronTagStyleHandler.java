@@ -17,9 +17,14 @@ public class CustomCronTagStyleHandler extends CronTagStyleHandlerBase {
 
 	public static final String CRONEXP_CUSTOM_EXPRESSION = "CRONEXP_CUSTOM_EXPRESSION";
 	
+	@Override
+    public CronTagStyleType getType() {
+        return CronTagStyleType.CUSTOM;
+    }
+	
 	// BUILD
 	@Override
-	public String build(String id, HttpServletRequest request) throws ServletRequestBindingException {
+	public String build(String id, HttpServletRequest request, YukonUserContext userContext) throws ServletRequestBindingException {
 
 		String customExpression = ServletRequestUtils.getRequiredStringParameter(request, id + "_" + CRONEXP_CUSTOM_EXPRESSION);
 		
@@ -51,7 +56,7 @@ public class CustomCronTagStyleHandler extends CronTagStyleHandlerBase {
 	@Override
 	public CronExpressionTagState parse(String[] parts, YukonUserContext userContext) {
 
-		CronExpressionTagState state = new CronExpressionTagState(userContext);
+		CronExpressionTagState state = new CronExpressionTagState();
 		state.setCronTagStyleType(CronTagStyleType.CUSTOM);
 		
 		String cronExpression = StringUtils.join(parts, " ").trim();

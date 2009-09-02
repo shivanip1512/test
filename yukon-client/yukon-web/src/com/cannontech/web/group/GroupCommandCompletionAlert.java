@@ -3,20 +3,18 @@ package com.cannontech.web.group;
 import java.util.Date;
 
 import com.cannontech.common.alert.model.AlertType;
-import com.cannontech.common.alert.model.BaseAlert;
+import com.cannontech.common.alert.model.SimpleAlert;
 import com.cannontech.common.device.commands.GroupCommandResult;
 import com.cannontech.common.util.ResolvableTemplate;
 
-public class GroupCommandCompletionAlert extends BaseAlert {
+public class GroupCommandCompletionAlert extends SimpleAlert {
 
     public GroupCommandCompletionAlert(Date date, GroupCommandResult result) {
         
-        super(date, null);
-        
-        this.setMessage(makeMessage(date, result));
+        super(AlertType.GROUP_COMMAND_COMPLETION, date, makeMessage(date, result));
     }
     
-    private ResolvableTemplate makeMessage(Date date, GroupCommandResult result) {
+    private static ResolvableTemplate makeMessage(Date date, GroupCommandResult result) {
         
         ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.alerts.commandCompletion");
         int successCount = result.getResultHolder().getResultStrings().size();
@@ -29,10 +27,5 @@ public class GroupCommandCompletionAlert extends BaseAlert {
         resolvableTemplate.addData("resultKey", result.getKey());
         
         return resolvableTemplate;
-    }
-
-    @Override
-    public AlertType getType() {
-        return AlertType.GROUP_COMMAND_COMPLETION;
     }
 }

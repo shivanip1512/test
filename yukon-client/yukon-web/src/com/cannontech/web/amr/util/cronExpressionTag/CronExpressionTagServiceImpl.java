@@ -3,27 +3,33 @@ package com.cannontech.web.amr.util.cronExpressionTag;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.quartz.CronExpression;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 
-import com.cannontech.common.bulk.mapper.ObjectMappingException;
-import com.cannontech.common.util.MappingList;
-import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.util.cronExpressionTag.handler.CronTagStyleHandler;
+import com.google.common.base.Function;
+import com.google.common.collect.Maps;
 
-public class CronExpressionTagUtils {
+public class CronExpressionTagServiceImpl implements CronExpressionTagService, InitializingBean {
 	
+    private List<CronTagStyleHandler> handlers;
+    private Map<CronTagStyleType, CronTagStyleHandler> handlerMap;
+    
 	public static final String CRONEXP_FREQ = "CRONEXP_FREQ";
 	
 	// BUILD
-	public static String build(String id, HttpServletRequest request) throws ServletRequestBindingException, IllegalArgumentException {
+	public String build(String id, HttpServletRequest request, YukonUserContext userContext) throws ServletRequestBindingException, IllegalArgumentException, ParseException {
 		
 		String freqStr = ServletRequestUtils.getRequiredStringParameter(request, id + "_" + CRONEXP_FREQ);
 		
@@ -34,9 +40,9 @@ public class CronExpressionTagUtils {
 			throw new IllegalArgumentException(CRONEXP_FREQ + " of " + freqStr + " is not supported.");
 		}
 		
-		CronTagStyleHandler handler = type.getHandler();
+		CronTagStyleHandler handler = handlerMap.get(type);
 		
-		String expression =  handler.build(id, request);
+		String expression =  handler.build(id, request, userContext);
 		validateExpression(expression);
 		
 		return expression;
@@ -44,10 +50,10 @@ public class CronExpressionTagUtils {
 	
 	
 	// PARSE
-	public static CronExpressionTagState parse(String cronExpression, YukonUserContext userContext) throws IllegalArgumentException {
+	public CronExpressionTagState parse(String cronExpression, YukonUserContext userContext) throws IllegalArgumentException {
 		
 		// blank expression => default state
-		CronExpressionTagState state = new CronExpressionTagState(userContext);
+		CronExpressionTagState state = new CronExpressionTagState();
 		if (StringUtils.isBlank(cronExpression)) {
 			return state;
 		}
@@ -59,7 +65,6 @@ public class CronExpressionTagUtils {
 		String[] parts = getParts(cronExpression);
 			
         // try to handle
-		List<CronTagStyleHandler> handlers = getHandlers();
     	for (CronTagStyleHandler handler : handlers) {
 
     		if (!handler.canParse(parts)) {
@@ -76,16 +81,16 @@ public class CronExpressionTagUtils {
 		return state;
 	}
 	
-	public static String getDescription(String cronExpression, YukonUserContext userContext) throws IllegalArgumentException {
+	public String getDescription(String cronExpression, YukonUserContext userContext) throws IllegalArgumentException {
 		
 		CronExpressionTagState cronExpressionTagState = parse(cronExpression, userContext);
 		CronTagStyleType cronTagStyleType = cronExpressionTagState.getCronTagStyleType();
 		
-		CronTagStyleHandler cronTagStyleHandler = cronTagStyleType.getHandler();
+		CronTagStyleHandler cronTagStyleHandler = handlerMap.get(cronTagStyleType);
 		return cronTagStyleHandler.generateDescription(cronExpressionTagState);
 	}
 	
-	private static void validateExpression(String cronExpression) throws IllegalArgumentException {
+	private void validateExpression(String cronExpression) throws IllegalArgumentException {
 		
 		try {
 			new CronExpression(cronExpression);
@@ -94,7 +99,7 @@ public class CronExpressionTagUtils {
 		}
 	}
 	
-	private static String[] getParts(String cronExpression) throws IllegalArgumentException {
+	private String[] getParts(String cronExpression) throws IllegalArgumentException {
 		
 		// must have at lest parts 1-6 to be valid
 		String[] parts = StringUtils.split(cronExpression, " ");
@@ -113,14 +118,21 @@ public class CronExpressionTagUtils {
 		return parts;
 	}
 	
-	private static List<CronTagStyleHandler> getHandlers() {
-		
-		List<CronTagStyleHandler> handlers = new MappingList<CronTagStyleType, CronTagStyleHandler>(Arrays.asList(CronTagStyleType.values()), new ObjectMapper<CronTagStyleType, CronTagStyleHandler>() {
-			public CronTagStyleHandler map(CronTagStyleType from) throws ObjectMappingException {
-            	return from.getHandler();
+	@Override
+	public void afterPropertiesSet() throws Exception {
+
+	    Collections.sort(this.handlers);
+	    
+	    handlerMap = Maps.uniqueIndex(this.handlers, new Function<CronTagStyleHandler, CronTagStyleType>() {
+            @Override
+            public CronTagStyleType apply(CronTagStyleHandler handler) {
+                return handler.getType();
             }
-		});
-		
-		return handlers;
+        });
 	}
+	
+	@Autowired
+	public void setHandlers(List<CronTagStyleHandler> handlers) {
+        this.handlers = handlers;
+    }
 }

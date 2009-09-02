@@ -1124,4 +1124,13 @@
     
     <bean id="scheduledGroupRequestExecutionJobWrapperFactory" class="com.cannontech.web.common.scheduledGroupRequestExecution.ScheduledGroupRequestExecutionJobWrapperFactory"/>
     
+    <!-- Cron tag handlers -->
+    <bean id="cronExpressionTagService" class="com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagServiceImpl"/>
+    
+    <bean id="dailyCronTagStyleHandler" class="com.cannontech.web.amr.util.cronExpressionTag.handler.DailyCronTagStyleHandler"/>
+    <bean id="monthlyCronTagStyleHandler" class="com.cannontech.web.amr.util.cronExpressionTag.handler.MonthlyCronTagStyleHandler"/>
+    <bean id="oneTimeCronTagStyleHandler" class="com.cannontech.web.amr.util.cronExpressionTag.handler.OneTimeCronTagStyleHandler"/>
+    <bean id="weeklyCronTagStyleHandler" class="com.cannontech.web.amr.util.cronExpressionTag.handler.WeeklyCronTagStyleHandler"/>
+    <bean id="customCronTagStyleHandler" class="com.cannontech.web.amr.util.cronExpressionTag.handler.CustomCronTagStyleHandler"/>
+    
 </beans>

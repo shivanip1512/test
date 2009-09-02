@@ -155,7 +155,8 @@
 <%-- ONE-TIME --%>
 <div id="${id}_cronExpOneTimeDiv" style="padding-top:6px;display:none;">
 
-<tags:dateInputCalendar fieldName="${id}_CRONEXP_ONETIME_DATE" fieldValue="${state.date}"/>
+<cti:formatDate var="todayStr" type="DATE" value="${state.date}"/>
+<tags:dateInputCalendar fieldName="${id}_CRONEXP_ONETIME_DATE" fieldValue="${todayStr}"/>
 
 </div>
 

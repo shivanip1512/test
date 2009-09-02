@@ -1,5 +1,9 @@
 package com.cannontech.web.amr.util.cronExpressionTag.handler;
 
+import java.text.ParseException;
+import java.util.Calendar;
+import java.util.Date;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
@@ -15,9 +19,14 @@ public class OneTimeCronTagStyleHandler extends CronTagStyleHandlerBase {
 
 	public static final String CRONEXP_ONETIME_DATE = "CRONEXP_ONETIME_DATE";
 	
+	@Override
+    public CronTagStyleType getType() {
+        return CronTagStyleType.ONETIME;
+    }
+	
 	// BUILD
 	@Override
-	public String build(String id, HttpServletRequest request) throws ServletRequestBindingException {
+	public String build(String id, HttpServletRequest request, YukonUserContext userContext) throws ServletRequestBindingException, ParseException {
 
 		String[] parts = new String[]{"*", "*", "*", "*", "*", "*", "*"};
 		
@@ -26,10 +35,14 @@ public class OneTimeCronTagStyleHandler extends CronTagStyleHandlerBase {
 		
 		String dateStr = ServletRequestUtils.getRequiredStringParameter(request, id + "_" + CRONEXP_ONETIME_DATE);
 		
-		String[] dateParts = StringUtils.split(dateStr, "/");
-		int dayOfMonth = Integer.valueOf(dateParts[1]);
-		int month = Integer.valueOf(dateParts[0]);
-		int year = Integer.valueOf(dateParts[2]);
+		Date date = dateFormattingService.flexibleDateParser(dateStr, userContext);
+		Calendar cal = dateFormattingService.getCalendar(userContext);
+		cal.clear();
+		cal.setTime(date);
+		
+		int dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
+		int month = cal.get(Calendar.MONTH);
+		int year = cal.get(Calendar.YEAR);
 		
 		// one time
 		parts[3] = String.valueOf(dayOfMonth);
@@ -61,18 +74,19 @@ public class OneTimeCronTagStyleHandler extends CronTagStyleHandlerBase {
 	@Override
 	public CronExpressionTagState parse(String[] parts, YukonUserContext userContext) {
 
-		CronExpressionTagState state = new CronExpressionTagState(userContext);
+		CronExpressionTagState state = new CronExpressionTagState();
 		parseTime(parts, state);
 		state.setCronTagStyleType(CronTagStyleType.ONETIME);
 		
-		String dayOfMonth = parts[3];
-		String month = parts[4];
-		String year = parts[6];
-		
-		String[] dateParts = {month, dayOfMonth, year};
-		
-		if (NumberUtils.isDigits(dayOfMonth) && NumberUtils.isDigits(month) && NumberUtils.isDigits(year)) {
-			state.setDate(StringUtils.join(dateParts, "/"));
+		if (NumberUtils.isDigits(parts[3]) && NumberUtils.isDigits(parts[4]) && NumberUtils.isDigits(parts[6])) {
+		    
+		    Calendar cal = dateFormattingService.getCalendar(userContext);
+	        cal.clear();
+	        cal.set(Calendar.DAY_OF_MONTH, Integer.valueOf(parts[3]));
+	        cal.set(Calendar.MONTH, Integer.valueOf(parts[4]));
+	        cal.set(Calendar.YEAR, Integer.valueOf(parts[6]));
+	        
+			state.setDate(cal.getTime());
 		}
 		
 		return state;

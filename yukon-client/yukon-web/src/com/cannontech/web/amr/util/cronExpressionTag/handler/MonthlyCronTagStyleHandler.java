@@ -18,9 +18,14 @@ public class MonthlyCronTagStyleHandler extends CronTagStyleHandlerBase {
 	public static final String CRONEXP_MONTHLY_OPTION = "CRONEXP_MONTHLY_OPTION";
 	public static final String CRONEXP_MONTHLY_OPTION_ON_DAY_X = "CRONEXP_MONTHLY_OPTION_ON_DAY_X";
 	
+	@Override
+    public CronTagStyleType getType() {
+        return CronTagStyleType.MONTHLY;
+    }
+	
 	// BUILD
 	@Override
-	public String build(String id, HttpServletRequest request) throws ServletRequestBindingException {
+	public String build(String id, HttpServletRequest request, YukonUserContext userContext) throws ServletRequestBindingException {
 
 		String[] parts = new String[]{"*", "*", "*", "*", "*", "*"};
 		
@@ -72,7 +77,7 @@ public class MonthlyCronTagStyleHandler extends CronTagStyleHandlerBase {
 	@Override
 	public CronExpressionTagState parse(String[] parts, YukonUserContext userContext) {
 
-		CronExpressionTagState state = new CronExpressionTagState(userContext);
+		CronExpressionTagState state = new CronExpressionTagState();
 		parseTime(parts, state);
 		state.setCronTagStyleType(CronTagStyleType.MONTHLY);
 		

@@ -3,18 +3,30 @@ package com.cannontech.web.amr.util.cronExpressionTag.handler;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.math.NumberUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 
+import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExprTagAmPmOptionEnum;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
 
 
 public abstract class CronTagStyleHandlerBase implements CronTagStyleHandler {
+    
+    protected DateFormattingService dateFormattingService;
 	
 	public static final String CRONEXP_HOUR = "CRONEXP_HOUR";
 	public static final String CRONEXP_MINUTE = "CRONEXP_MINUTE";
 	public static final String CRONEXP_AMPM = "CRONEXP_AMPM";
+	
+	@Override
+    public int compareTo(CronTagStyleHandler o) {
+        
+        Integer thisTypeOrder = this.getType().getOrder();
+        Integer otherTypeOrder = o.getType().getOrder();
+        return thisTypeOrder.compareTo(otherTypeOrder);
+    }
 	
 	// PARSE TIME
 	protected void parseTime(String[] parts, CronExpressionTagState state) {
@@ -120,4 +132,9 @@ public abstract class CronTagStyleHandlerBase implements CronTagStyleHandler {
 		String timeDesc = state.getHour() + ":" + minStr + " " + state.getCronExpressionAmPm().name();
 		return timeDesc;
 	}
+	
+	@Autowired
+	public void setDateFormattingService(DateFormattingService dateFormattingService) {
+        this.dateFormattingService = dateFormattingService;
+    }
 }

@@ -31,8 +31,8 @@ import com.cannontech.core.dao.OutageMonitorNotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
-import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagUtils;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @CheckRoleProperty(YukonRoleProperty.OUTAGE_PROCESSING)
@@ -42,6 +42,7 @@ public class OutageMonitorEditorController extends MultiActionController {
 	private ScheduledGroupRequestExecutionService scheduledGroupRequestExecutionService;
 	private DeviceGroupEditorDao deviceGroupEditorDao;
 	private OutageMonitorService outageMonitorService;
+	private CronExpressionTagService cronExpressionTagService;
 	
 	private static final String CRON_TAG_ID = "outageMonitor";
 	private static final Attribute BLINK_COUNT_ATTRIBUTE = BuiltInAttribute.BLINK_COUNT;
@@ -108,7 +109,7 @@ public class OutageMonitorEditorController extends MultiActionController {
         
         // cron tag setup
         mav.addObject("cronExpressionTagId", CRON_TAG_ID);
-        CronExpressionTagState cronExpressionTagState = CronExpressionTagUtils.parse(expression, userContext);
+        CronExpressionTagState cronExpressionTagState = cronExpressionTagService.parse(expression, userContext);
         mav.addObject("cronExpressionTagState", cronExpressionTagState);
         
         return mav;
@@ -117,6 +118,7 @@ public class OutageMonitorEditorController extends MultiActionController {
 	public ModelAndView update(HttpServletRequest request, HttpServletResponse response) throws Exception, ServletException {
         
         ModelAndView mav = new ModelAndView("redirect:edit");
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         
         String editError = null;
         int outageMonitorId = ServletRequestUtils.getIntParameter(request, "outageMonitorId", 0);
@@ -147,7 +149,7 @@ public class OutageMonitorEditorController extends MultiActionController {
         // schedule errors
         if (isNewMonitor && scheduleGroupCommand) {
 	        try {
-	        	expression = CronExpressionTagUtils.build(CRON_TAG_ID, request);
+	        	expression = cronExpressionTagService.build(CRON_TAG_ID, request, userContext);
 	        } catch (Exception e) {
 	        	editError = "Invalid Schedule Time.";
 	        	expression = null;
@@ -190,8 +192,6 @@ public class OutageMonitorEditorController extends MultiActionController {
         	
         // ok. save or update
         } else {
-        	
-        	YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         	
         	// SCHEDULED BLINK COUNT REQUEST JOB
         	if (isNewMonitor && scheduleGroupCommand) {
@@ -325,4 +325,9 @@ public class OutageMonitorEditorController extends MultiActionController {
 	public void setOutageMonitorService(OutageMonitorService outageMonitorService) {
 		this.outageMonitorService = outageMonitorService;
 	}
+	
+	@Autowired
+	public void setCronExpressionTagService(CronExpressionTagService cronExpressionTagService) {
+        this.cronExpressionTagService = cronExpressionTagService;
+    }
 }
