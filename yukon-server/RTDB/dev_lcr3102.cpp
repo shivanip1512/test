@@ -734,7 +734,7 @@ CtiDeviceSingle::point_info LCR3102::getSixBitValueFromBuffer(unsigned char buff
             rawData |= (buffer[startByte+1] >> (bitsPerByte-bitsInSecondByte));
         }
 
-        int bitMask = std::pow((float)2,bitsPerValue)-1;
+        unsigned int bitMask = (1 << bitsPerValue) - 1;
         retVal.value = rawData & bitMask;
     }
 
