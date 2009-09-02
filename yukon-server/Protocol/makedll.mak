@@ -11,6 +11,7 @@ INCLPATHS+= \
 -I$(RTDB)\include \
 -I$(DEVICECONFIGURATION)\include \
 -I$(RW) \
+-I$(XERCESINC) \
 
 
 .PATH.cpp = .;$(R_PROT)
@@ -30,7 +31,9 @@ INCLPATHS+= \
 ;$(PROT)\include \
 ;$(DISPATCH)\include \
 ;$(MSG)\include \
-;$(RW)
+;$(RW) \
+;$(XERCESINC)
+
 
 
 IONOBJS=\
@@ -140,8 +143,8 @@ PROTLIBS=\
 $(COMPILEBASE)\lib\ctibase.lib \
 $(COMPILEBASE)\lib\cticparms.lib \
 $(COMPILEBASE)\lib\saprotocol.lib \
-$(COMPILEBASE)\lib\ctimsg.lib
-
+$(COMPILEBASE)\lib\ctimsg.lib \
+$(XERCESHOME)\lib\$(XERCES_LIB).lib
 
 CTIPROGS=\
 saprotocol.dll \
