@@ -36,6 +36,7 @@ public:
         return decodeGetValuePropCount(InMessage, TimeNow, vgList, retList, outList);
     }
 
+    // Currently untested. Some testing is done through getSixBitValueFromBuffer
     INT test_decodeGetValueHistoricalTime( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
     {
         return decodeGetValueHistoricalTime(InMessage, TimeNow, vgList, retList, outList);
@@ -47,8 +48,11 @@ private:
     point_results_map point_results;
 
 public:
+
+    // Note that this always overwrites
     virtual bool insertPointDataReport(CtiPointType_t type, int offset, CtiReturnMsg *rm, point_info pi, const string &default_pointname="", const CtiTime &timestamp=CtiTime(), double default_multiplier=1.0, int tags=0)
     {
+        point_results.erase(offset);
         point_results.insert(std::make_pair(offset, pi));
         return true;
     }
@@ -294,151 +298,6 @@ BOOST_AUTO_TEST_CASE(test_decode_get_propcount)
     BOOST_CHECK_EQUAL(pi.quality, NormalQuality);
     BOOST_CHECK_CLOSE(pi.value, (double)propcount, 0.0000001);
 
-}
-
-BOOST_AUTO_TEST_CASE(test_decode_get_historical_time)
-{
-   /* int function = InMessage->Return.ProtocolInfo.Emetcon.Function;
-    if( InMessage->Sequence == Emetcon::GetValue_Shedtime )
-    {
-        point_base = PointOffset_ShedtimeBase;
-        function  -= FuncRead_ShedtimePos; // function is now 0-11
-        identifier = "Shedtime";
-    }
-    else if( InMessage->Sequence == Emetcon::GetValue_Runtime )
-    {
-        point_base = PointOffset_RuntimeBase;
-        function  -= FuncRead_RuntimePos; // function is now 0-11
-        identifier = "Runtime";
-    }
-    /* 
-    Fields: 
-    Flags 
-    Start Hour's information
-    Start Hour + 1 Information.... 
-     
-    6 bit packed data. 6 bit is tested above. 
-
-    Flags:
-    000HR4R3R2R1
-    H is 0 if in first 30 minutes of hour, H is 1 if in the last 30 minutes of hour.
-    R.. is a bitfield that specifies what relay (CT attached)  the data is coming from. 
-    No more than 1 R may ever be set. 
- 
-    */
-
-    //PointOffset_LastIntervalBase = 1,   //      PointOffset = Base# + (load/relay# - 1)
-    //PointOffset_RuntimeBase      = 5,   //      ditto here
-    //PointOffset_ShedtimeBase     = 9,   //      and here
-    static const int PointOffset_runtime_relay_1   = 5;
-    static const int PointOffset_runtime_relay_2   = 6;
-    static const int PointOffset_runtime_relay_3   = 7;
-    static const int PointOffset_runtime_relay_4   = 8;
-    static const int PointOffset_shedtime_relay_1  = 9;
-    static const int PointOffset_shedtime_relay_2  = 10;
-    static const int PointOffset_shedtime_relay_3  = 11;
-    static const int PointOffset_shedtime_relay_4  = 12;
-
-    /*INMESS InMessage;
-    CtiTime now;
-    list< CtiMessage* > vgList;
-    list< CtiMessage* > retList;
-    list< OUTMESS* > outList;
-
-    test_LCR3102 test_device;
-
-    unsigned char flags = 0x33; // Relay 1, multiplier 1/1000 kw. Relay 2, multiplier 1 kw
-    unsigned short relay_1_watts = 11; // 11/1000 kw
-    unsigned short relay_2_watts = 11; // 11 kw
-
-    InMessage.Buffer.DSt.Address = 10;
-    InMessage.Buffer.DSt.Alarm   = 0;
-    InMessage.Buffer.DSt.DSTFlag = 0;
-    InMessage.Buffer.DSt.Power   = 0;
-    InMessage.Buffer.DSt.RepVar  = 0;
-    InMessage.Buffer.DSt.Time    = now.seconds();
-    InMessage.Buffer.DSt.TSync   = 0;
-
-    InMessage.Buffer.DSt.Message[0] = flags;
-    InMessage.Buffer.DSt.Message[1] = relay_1_watts >> 8;
-    InMessage.Buffer.DSt.Message[2] = relay_1_watts;
-    InMessage.Buffer.DSt.Message[3] = relay_2_watts >> 8;
-    InMessage.Buffer.DSt.Message[4] = relay_2_watts;
-
-    test_device.test_decodeGetValueIntervalLast(&InMessage, now, vgList, retList, outList);
-
-    test_LCR3102::point_info pi;
-
-    pi = test_device.test_getPointResults(9876448);
-    BOOST_CHECK_EQUAL(pi.quality, InvalidQuality);
-
-    pi = test_device.test_getPointResults(PointOffest_intervals_relay_1);
-    BOOST_CHECK_EQUAL(pi.quality, NormalQuality);
-    BOOST_CHECK_CLOSE(pi.value, (double)11*1/1000, 0.00000001);
-
-    pi = test_device.test_getPointResults(PointOffest_intervals_relay_2);
-    BOOST_CHECK_EQUAL(pi.quality, NormalQuality);
-    BOOST_CHECK_EQUAL(pi.value, 11);
-    
-    flags = 0x6C; // Relay 3, multiplier 1/100 Relay 4, multiplier 1/10
-    unsigned short relay_3_watts = 0x1234;
-    unsigned short relay_4_watts = 0x9873;
-
-    InMessage.Buffer.DSt.Message[0] = flags;
-    InMessage.Buffer.DSt.Message[1] = relay_3_watts >> 8;
-    InMessage.Buffer.DSt.Message[2] = relay_3_watts;
-    InMessage.Buffer.DSt.Message[3] = relay_4_watts >> 8;
-    InMessage.Buffer.DSt.Message[4] = relay_4_watts;
-
-    pi = test_device.test_getPointResults(PointOffest_intervals_relay_3);
-    BOOST_CHECK_EQUAL(pi.quality, InvalidQuality);
-
-    test_device.test_decodeGetValueIntervalLast(&InMessage, now, vgList, retList, outList);
-
-    pi = test_device.test_getPointResults(PointOffest_intervals_relay_3);
-    BOOST_CHECK_EQUAL(pi.quality, NormalQuality);
-    BOOST_CHECK_CLOSE(pi.value, (double)relay_3_watts*1/100, 0.00000001);
-
-    pi = test_device.test_getPointResults(PointOffest_intervals_relay_4);
-    BOOST_CHECK_EQUAL(pi.quality, NormalQuality);
-    BOOST_CHECK_CLOSE(pi.value, (double)relay_4_watts*1/10, 0.00000001);
-
-    // Instead of making test_LCR3102 more fancy to the point where it needs its own unit test
-    // I create a new test device so I dont have to clear out data, ect...
-
-    // Test with only 1 relay!
-    test_LCR3102 test_device_2;
-    flags = 0x61; // 1, multiplier 1/100
-    relay_1_watts = 0x124;
-
-    InMessage.Buffer.DSt.Message[0] = flags;
-    InMessage.Buffer.DSt.Message[1] = relay_1_watts >> 8;
-    InMessage.Buffer.DSt.Message[2] = relay_1_watts;
-    InMessage.Buffer.DSt.Message[3] = relay_4_watts >> 8;
-    InMessage.Buffer.DSt.Message[4] = relay_4_watts;
-
-    pi = test_device_2.test_getPointResults(PointOffest_intervals_relay_1);
-    BOOST_CHECK_EQUAL(pi.quality, InvalidQuality);
-    pi = test_device_2.test_getPointResults(PointOffest_intervals_relay_2);
-    BOOST_CHECK_EQUAL(pi.quality, InvalidQuality);
-    pi = test_device_2.test_getPointResults(PointOffest_intervals_relay_3);
-    BOOST_CHECK_EQUAL(pi.quality, InvalidQuality);
-    pi = test_device_2.test_getPointResults(PointOffest_intervals_relay_4);
-    BOOST_CHECK_EQUAL(pi.quality, InvalidQuality);
-
-    test_device_2.test_decodeGetValueIntervalLast(&InMessage, now, vgList, retList, outList);
-
-    pi = test_device_2.test_getPointResults(PointOffest_intervals_relay_2);
-    BOOST_CHECK_EQUAL(pi.quality, InvalidQuality);
-    pi = test_device_2.test_getPointResults(PointOffest_intervals_relay_3);
-    BOOST_CHECK_EQUAL(pi.quality, InvalidQuality);
-    pi = test_device_2.test_getPointResults(PointOffest_intervals_relay_4);
-    BOOST_CHECK_EQUAL(pi.quality, InvalidQuality);
-
-    pi = test_device_2.test_getPointResults(PointOffest_intervals_relay_1);
-    BOOST_CHECK_EQUAL(pi.quality, NormalQuality);
-    BOOST_CHECK_CLOSE(pi.value, (double)relay_1_watts*1/100, 0.00000001);
-    */
 }
 
 };
