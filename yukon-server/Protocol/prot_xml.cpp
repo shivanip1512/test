@@ -39,12 +39,11 @@ string XmlProtocol::createMessage(const CtiCommandParser &parse, const string &r
 
 string XmlProtocol::createMessage(const CtiCommandParser &parse, const string &rawAscii, const vector<pair<string, string> > &params)
 {
-    // Initilize Xerces.
+    // Initilize Xerces, must terminate once per initialize
     XMLPlatformUtils::Initialize();
 
     DOMImplementation * pDOMImplementation = NULL;
 
-    //leak?
     pDOMImplementation = DOMImplementationRegistry::getDOMImplementation(XMLString::transcode("core"));
 
     DOMDocument * pDOMDocument = NULL;
@@ -103,8 +102,8 @@ string XmlProtocol::createMessage(const CtiCommandParser &parse, const string &r
     {//Cycle
         int delay = parse.getiValue("delaytime_sec", 0) / 60;
 
-        //TODO: Determing Cycle type
-        bool tc = (parse.getiValue("xctruecycle", 0) ? true : false);
+        bool truecycle = (parse.getiValue("xctruecycle", 0) ? true : false);
+        bool targetcycle = (parse.getiValue("xctargetcycle", 0) ? true : false);
 
         int cycle = parse.getiValue("cycle", 30);
         int period = parse.getiValue("cycle_period", 30);
@@ -120,9 +119,23 @@ string XmlProtocol::createMessage(const CtiCommandParser &parse, const string &r
         startDelayNode->appendChild(startDelayText);
         controlNode->appendChild(startDelayNode);
 
+        //Cycle Type
         DOMElement * typeNode = pDOMDocument->createElement(L"type");
-        //TODO: Change to use cycletype
-        DOMText * typeText = pDOMDocument->createTextNode(L"truecycle");
+        DOMText * typeText = NULL;
+        //SmartCycle and MagnitudeCylce need to be added here when
+        //LoadManagement decides how to indicate those message types in the parse.
+        if (truecycle)
+        {
+            typeText = pDOMDocument->createTextNode(L"truecycle");
+        }
+        else if (targetcycle)
+        {
+            typeText = pDOMDocument->createTextNode(L"targetcycle");
+        }
+        else
+        {
+            typeText = pDOMDocument->createTextNode(L"standardcycle");
+        }
         typeNode->appendChild(typeText);
         controlNode->appendChild(typeNode);
 
@@ -188,15 +201,11 @@ string XmlProtocol::createMessage(const CtiCommandParser &parse, const string &r
     theOutput->setByteStream(pTarget);
 
     pSerializer->write(rootElement,theOutput);
-    //leak?
+
     const XMLByte* utf8str = pTarget->getRawBuffer();
     int size = pTarget->getLen();
 
-    //char* temp1 = //XMLString::transcode(str);
-
-    string ret((char*)utf8str,size);// = toNative(utf8str);
-
-    //std::cout << ret;
+    string ret((char*)utf8str,size);
 
     theOutput->release();
     pSerializer->release();
