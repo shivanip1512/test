@@ -7,6 +7,12 @@
 <entry key="yukon.web.modules.dr.blankField">----</entry>
 
 
+<entry key="yukon.web.modules.dr.paging.first">first</entry>
+<entry key="yukon.web.modules.dr.paging.previous">previous</entry>
+<entry key="yukon.web.modules.dr.paging.next">next</entry>
+<entry key="yukon.web.modules.dr.paging.last">last</entry>
+
+
 <!--  Control Area Field Values -->
 <entry key="yukon.web.modules.dr.controlArea.value.STATE.ACTIVE">Active</entry>
 <entry key="yukon.web.modules.dr.controlArea.value.STATE.PARTIALLY_ACTIVE">Partially Active</entry>
@@ -67,6 +73,12 @@
 <entry key="yukon.web.modules.dr.scenarioList.breadcrumb.operationsHome">Operations Home</entry>
 <entry key="yukon.web.modules.dr.scenarioList.breadcrumb.scenarios">Scenarios</entry>
 <entry key="yukon.web.modules.dr.scenarioList.scenarios">Scenarios</entry>
+<entry key="yukon.web.modules.dr.scenarioList.noResults">No scenarios matched.</entry>
+<entry key="yukon.web.modules.dr.scenarioList.filters">Edit Filters</entry>
+<entry key="yukon.web.modules.dr.scenarioList.filter.name">Name</entry>
+<entry key="yukon.web.modules.dr.scenarioList.filter.loadCapacityValue">Load Capacity Value</entry>
+<entry key="yukon.web.modules.dr.scenarioList.filter.submit">Filter</entry>
+<entry key="yukon.web.modules.dr.scenarioList.filter.clear">Show All</entry>
 <entry key="yukon.web.modules.dr.scenarioList.heading.name">Name</entry>
 
 
@@ -135,6 +147,22 @@
 <entry key="yukon.web.modules.dr.programList.breadcrumb.operationsHome">Operations Home</entry>
 <entry key="yukon.web.modules.dr.programList.breadcrumb.programs">Programs</entry>
 <entry key="yukon.web.modules.dr.programList.programs">Programs</entry>
+<entry key="yukon.web.modules.dr.programList.noResults">No programs matched.</entry>
+<entry key="yukon.web.modules.dr.programList.filters">Edit Filters</entry>
+<entry key="yukon.web.modules.dr.programList.filter.to">to</entry>
+<entry key="yukon.web.modules.dr.programList.filter.min">(min)</entry>
+<entry key="yukon.web.modules.dr.programList.filter.max">(max)</entry>
+<entry key="yukon.web.modules.dr.programList.filter.name">Name</entry>
+<entry key="yukon.web.modules.dr.programList.filter.state">State</entry>
+<entry key="yukon.web.modules.dr.programList.filter.state.all">All</entry>
+<entry key="yukon.web.modules.dr.programList.filter.state.active">Active</entry>
+<entry key="yukon.web.modules.dr.programList.filter.state.inactive">Inactive</entry>
+<entry key="yukon.web.modules.dr.programList.filter.start">Start</entry>
+<entry key="yukon.web.modules.dr.programList.filter.stop">Stop</entry>
+<entry key="yukon.web.modules.dr.programList.filter.priority">Priority</entry>
+<entry key="yukon.web.modules.dr.programList.filter.loadCapacity">Load Capacity</entry>
+<entry key="yukon.web.modules.dr.programList.filter.submit">Filter</entry>
+<entry key="yukon.web.modules.dr.programList.filter.clear">Show All</entry>
 <entry key="yukon.web.modules.dr.programList.heading.name">Name</entry>
 <entry key="yukon.web.modules.dr.programList.heading.state">State</entry>
 <entry key="yukon.web.modules.dr.programList.heading.start">Start</entry>

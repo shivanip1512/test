@@ -14,7 +14,9 @@
     </cti:breadCrumbs>
 
     <h2><cti:msg key="yukon.web.modules.dr.programList.programs"/></h2>
+    <br>
 
+    <c:set var="baseUrl" value="/spring/dr/program/list"/>
     <%@ include file="programList.jspf" %>
 
 </cti:standardPage>

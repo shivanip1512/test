@@ -23,6 +23,7 @@
 
     <h2><cti:msg key="yukon.web.modules.dr.programDetail.program"
         htmlEscape="true" argument="${program.name}"/></h2>
+    <br>
 
     <c:set var="programId" value="${program.paoIdentifier.paoId}"/>
     <table cellspacing="0" cellpadding="0" width="100%">

@@ -23,6 +23,7 @@
 
     <h2><cti:msg key="yukon.web.modules.dr.loadGroupDetail.loadGroup"
         htmlEscape="true" argument="${loadGroup.name}"/></h2>
+    <br>
 
     <c:set var="loadGroupId" value="${loadGroup.paoIdentifier.paoId}"/>
     <table cellspacing="0" cellpadding="0" width="100%">

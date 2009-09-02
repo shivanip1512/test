@@ -22,6 +22,7 @@
 
     <h2><cti:msg key="yukon.web.modules.dr.controlAreaDetail.controlArea"
         htmlEscape="true" argument="${controlArea.name}"/></h2>
+    <br>
 
     <c:set var="controlAreaId" value="${controlArea.paoIdentifier.paoId}"/>
     <table cellspacing="0" cellpadding="0" width="100%">
@@ -53,7 +54,7 @@
 	                        <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaDetail.info.triggers"/>
 	                        <tags:nameValue name="${fieldName}">
 	                        </tags:nameValue>	                        
-	                        <table id="controlAreaList" class="compactMiniResultsTable">
+	                        <table id="controlAreaList" class="resultsTable activeResultsTable">
 	                            <tr>
 	                                <th><cti:msg key="yukon.web.modules.dr.controlAreaDetail.info.valueThreshold"/></th>
 	                                <th><cti:msg key="yukon.web.modules.dr.controlAreaDetail.info.peakProjection"/></th>
@@ -108,6 +109,7 @@
 
     <cti:msg var="boxTitle" key="yukon.web.modules.dr.controlAreaDetail.heading.programs"/>
     <tags:abstractContainer type="box" title="${boxTitle}">
+        <c:set var="baseUrl" value="/spring/dr/controlArea/detail"/>
         <%@ include file="../program/programList.jspf" %>
     </tags:abstractContainer>
 

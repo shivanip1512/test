@@ -4,7 +4,7 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<table id="loadGroupList" class="compactMiniResultsTable">
+<table id="loadGroupList" class="resultsTable activeResultsTable">
     <tr>
         <th><cti:msg key="yukon.web.modules.dr.loadGroupList.heading.name"/></th>
         <th><cti:msg key="yukon.web.modules.dr.loadGroupList.heading.state"/></th>

@@ -15,6 +15,7 @@
     </cti:breadCrumbs>
 
     <h2><cti:msg key="yukon.web.modules.dr.loadGroupList.loadGroups"/></h2>
+    <br>
 
     <%@ include file="loadGroupList.jspf" %>
 

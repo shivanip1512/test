@@ -39,13 +39,6 @@ public class ScenarioDaoImpl implements ScenarioDao {
         }};
 
     @Override
-    public List<DisplayablePao> getScenarios() {
-        List<DisplayablePao> retVal = simpleJdbcTemplate.query(baseScenarioQuery,
-                                                         scenarioRowMapper);
-        return retVal;
-    }
-
-    @Override
     public DisplayablePao getScenario(int scenarioId) {
         return simpleJdbcTemplate.queryForObject(singleScenarioByIdQuery,
                                                  scenarioRowMapper,
@@ -53,7 +46,7 @@ public class ScenarioDaoImpl implements ScenarioDao {
     }
 
     @Override
-    public List<DisplayablePao> getScenariosForProgram(int programId) {
+    public List<DisplayablePao> findScenariosForProgram(int programId) {
         List<DisplayablePao> retVal = simpleJdbcTemplate.query(scenariosByProgramIdQuery,
                                                                   scenarioRowMapper,
                                                                   programId);

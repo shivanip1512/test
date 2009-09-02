@@ -15,8 +15,9 @@
     </cti:breadCrumbs>
 
     <h2><cti:msg key="yukon.web.modules.dr.controlAreaList.controlAreas"/></h2>
+    <br>
 
-	<table id="controlAreaList" class="compactMiniResultsTable">
+	<table id="controlAreaList" class="resultsTable activeResultsTable">
 		<tr>
 			<th><cti:msg key="yukon.web.modules.dr.controlAreaList.heading.name"/></th>
             <th><cti:msg key="yukon.web.modules.dr.controlAreaList.heading.state"/></th>

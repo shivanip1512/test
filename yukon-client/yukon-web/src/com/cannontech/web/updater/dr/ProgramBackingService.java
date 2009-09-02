@@ -7,14 +7,14 @@ import org.springframework.context.MessageSource;
 
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.dr.program.model.ProgramDisplayField;
+import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.UpdateBackingService;
 
 public class ProgramBackingService implements UpdateBackingService {
-    private LoadControlClientConnection loadControlClientConnection = null;
+    private ProgramService programService = null;
     private YukonUserContextMessageSourceResolver messageSourceResolver = null;
 
     @Override
@@ -26,7 +26,7 @@ public class ProgramBackingService implements UpdateBackingService {
             ProgramDisplayField.valueOf(idBits[1]);
 
         DatedObject<LMProgramBase> datedProgram =
-            loadControlClientConnection.getDatedProgram(programId);
+            programService.findDatedProgram(programId);
 
         MessageSource messageSource = messageSourceResolver.getMessageSource(userContext);
         if (datedProgram == null) {
@@ -54,9 +54,8 @@ public class ProgramBackingService implements UpdateBackingService {
     }
 
     @Autowired
-    public void setLoadControlClientConnection(
-            LoadControlClientConnection loadControlClientConnection) {
-        this.loadControlClientConnection = loadControlClientConnection;
+    public void setProgramService(ProgramService programService) {
+        this.programService = programService;
     }
 
     @Autowired

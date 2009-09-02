@@ -391,5 +391,6 @@
     <bean id="porterRequestCancelService" class="com.cannontech.core.service.impl.PorterRequestCancelServiceImpl">
         <property name="porterConnection" ref="porterConnection"/>
     </bean>
-    
+
+    <bean id="filterServiceBean" class="com.cannontech.common.bulk.filter.service.impl.FilterServiceImpl"/>
 </beans>

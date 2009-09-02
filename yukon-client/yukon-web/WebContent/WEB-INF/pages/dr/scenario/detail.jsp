@@ -22,6 +22,7 @@
 
     <h2><cti:msg key="yukon.web.modules.dr.scenarioDetail.scenario"
         htmlEscape="true" argument="${scenario.name}"/></h2>
+    <br>
 
     <table cellspacing="0" cellpadding="0" width="100%">
         <tr>
@@ -44,6 +45,7 @@
 
     <cti:msg var="boxTitle" key="yukon.web.modules.dr.scenarioDetail.heading.programs"/>
     <tags:abstractContainer type="box" title="${boxTitle}">
+        <c:set var="baseUrl" value="/spring/dr/scenario/detail"/>
         <%@ include file="../program/programList.jspf" %>
     </tags:abstractContainer>
 

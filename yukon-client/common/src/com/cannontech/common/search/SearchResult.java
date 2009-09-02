@@ -38,7 +38,7 @@ public class SearchResult<T> {
         previousStartIndex = Math.max(0, startIndex - count);
         this.count = count;
         this.lastStartIndex = (hitCount / count) * count;
-        this.numberOfPages = hitCount / count;
+        this.numberOfPages = ((hitCount - 1) / count) + 1;
     }
 
     public boolean isNextNeeded() {
