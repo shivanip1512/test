@@ -350,24 +350,6 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
     }
 
     @Override
-    public PaoLoader<DisplayablePao> getDisplayableDeviceLoader() {
-        return new PaoLoader<DisplayablePao>() {
-            @Override
-            public <T extends YukonPao> Map<T, DisplayablePao> getForPaos(Iterable<? extends T> identifiers) {
-                Map<? extends T, String> namesForYukonDevices = getNamesForYukonDevices(identifiers);
-                Map<T, DisplayablePao> result = Maps.newHashMapWithExpectedSize(namesForYukonDevices.size());
-
-                for (Entry<? extends T, String> entry : namesForYukonDevices.entrySet()) {
-                    DisplayableDevice displayableMeter = new DisplayableDevice(entry.getKey().getPaoIdentifier(), entry.getValue());
-                    result.put(entry.getKey(), displayableMeter);
-                }
-
-                return result;
-            }
-        };
-    }
-
-    @Override
     public PaoLoader<DeviceCollectionReportDevice> getDeviceCollectionReportDeviceLoader() {
         return new PaoLoader<DeviceCollectionReportDevice>() {
             @Override

@@ -375,8 +375,6 @@ public class JobManagerImpl implements JobManager {
     	status.setJobState(JobState.COMPLETED);
     	try {
     		YukonTask task = instantiateTask(status.getJob());
-    		JobContext jobContext = new JobContext(status.getJob());
-    		task.setJobContext(jobContext);
     		
     		YukonTask existingTask = currentlyRunning.putIfAbsent(status.getJob(), task);
     		if (existingTask != null) {
@@ -410,6 +408,9 @@ public class JobManagerImpl implements JobManager {
         	// Set the inputs if there are any
         	InputUtil.applyProperties(inputRoot, task, job.getJobProperties());
         }
+        
+        JobContext jobContext = new JobContext(job);
+        task.setJobContext(jobContext);
 
         return task;
     }

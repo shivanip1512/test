@@ -443,11 +443,11 @@ public final class PaoDaoImpl implements PaoDao {
     
     
     @Override
-    public PaoLoader<DisplayablePao> getDisplayableDeviceLoader() {
+    public PaoLoader<DisplayablePao> getDisplayablePaoLoader() {
         return new PaoLoader<DisplayablePao>() {
             @Override
             public <T extends YukonPao> Map<T, DisplayablePao> getForPaos(Iterable<? extends T> identifiers) {
-                Map<? extends T, String> namesForYukonDevices = getNamesForYukonDevices(identifiers);
+                Map<? extends T, String> namesForYukonDevices = getNamesForPaos(identifiers);
                 Map<T, DisplayablePao> result = Maps.newHashMapWithExpectedSize(namesForYukonDevices.size());
 
                 for (Entry<? extends T, String> entry : namesForYukonDevices.entrySet()) {
@@ -460,7 +460,7 @@ public final class PaoDaoImpl implements PaoDao {
         };
     }
 
-    public <I extends YukonPao> Map<I, String> getNamesForYukonDevices(Iterable<I> identifiers) {
+    public <I extends YukonPao> Map<I, String> getNamesForPaos(Iterable<I> identifiers) {
         // build a lookup map based on the pao id (will also be used as a set of ids for the sql)
         final ImmutableMap<Integer, I> deviceLookup = Maps.uniqueIndex(identifiers, new Function<I, Integer>() {
             @Override

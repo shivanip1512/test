@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.Resource;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -13,6 +15,7 @@ import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupReques
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoPendingFilter;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.model.ScheduledGroupRequestExecutionPair;
+import com.cannontech.amr.scheduledGroupRequestExecution.tasks.ScheduledGroupRequestExecutionTask;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.dao.impl.CommandRequestExecutionRowAndFieldMapper;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
@@ -24,6 +27,7 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
 import com.cannontech.jobs.dao.impl.JobDisabledStatus;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
+import com.cannontech.jobs.support.YukonJobDefinition;
 
 public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequestExecutionDao, InitializingBean {
 
@@ -33,6 +37,7 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
     private YukonJdbcTemplate yukonJdbcTemplate;
     private NextValueHelper nextValueHelper;
     private SimpleTableAccessTemplate<ScheduledGroupRequestExecutionPair> template;
+    private YukonJobDefinition<ScheduledGroupRequestExecutionTask> scheduledGroupRequestExecutionJobDefinition;
     
     // INSERT
     public void insert(ScheduledGroupRequestExecutionPair pair) {
@@ -81,12 +86,11 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
         	sql.append("INNER JOIN JOBPROPERTY JP ON (Job.JobId = JP.JobId)");
         }
         
+        sql.append("WHERE Job.BeanName = ").appendArgument(scheduledGroupRequestExecutionJobDefinition.getName());
         
         // single job
         if (jobId > 0) {
-    		sql.append("WHERE Job.JobId = ").appendArgument(jobId);
-        } else {
-        	sql.append("WHERE Job.JobId > 0");
+    		sql.append("AND Job.JobId = ").appendArgument(jobId);
         }
         
         // start stop / pending (start time will get ignored if PENDING_ONLY is set)
@@ -282,5 +286,10 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
 	@Autowired
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
         this.yukonJdbcTemplate = yukonJdbcTemplate;
+    }
+	@Resource(name="scheduledGroupRequestExecutionJobDefinition")
+    public void setScheduledGroupRequestExecutionjobDefinition(
+            YukonJobDefinition<ScheduledGroupRequestExecutionTask> scheduledGroupRequestExecutionJobDefinition) {
+        this.scheduledGroupRequestExecutionJobDefinition = scheduledGroupRequestExecutionJobDefinition;
     }
 }

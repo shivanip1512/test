@@ -45,8 +45,7 @@ public class PaoLoadingServiceImpl implements PaoLoadingService, InitializingBea
     public void afterPropertiesSet() throws Exception {
         Builder<PaoLoader<DisplayablePao>> builder1 = ImmutableList.builder();
         builder1.add(meterDao.getDisplayableDeviceLoader());
-        builder1.add(deviceDao.getDisplayableDeviceLoader());
-        builder1.add(paoDao.getDisplayableDeviceLoader());
+        builder1.add(paoDao.getDisplayablePaoLoader());
         displayablePaoloaders = builder1.build();
 
         Builder<PaoLoader<DeviceCollectionReportDevice>> builder2 = ImmutableList.builder();

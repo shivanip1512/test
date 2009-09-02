@@ -165,7 +165,5 @@ public interface DeviceDao {
     
     public SimpleDevice getYukonDeviceForDevice(DeviceBase oldDevice);
     
-    public PaoLoader<DisplayablePao> getDisplayableDeviceLoader();
-    
     public PaoLoader<DeviceCollectionReportDevice> getDeviceCollectionReportDeviceLoader();
 }

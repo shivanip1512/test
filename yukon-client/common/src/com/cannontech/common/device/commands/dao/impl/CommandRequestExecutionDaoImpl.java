@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +21,6 @@ import com.cannontech.database.incrementer.NextValueHelper;
 public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDao, InitializingBean {
 
 	private static final RowAndFieldMapper<CommandRequestExecution> rowAndFieldMapper;
-    private SimpleJdbcTemplate simpleJdbcTemplate;
     private YukonJdbcTemplate yukonJdbcTemplate;
     private NextValueHelper nextValueHelper;
     private SimpleTableAccessTemplate<CommandRequestExecution> template;
@@ -43,7 +41,7 @@ public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDa
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT CRE.* FROM CommandRequestExec CRE WHERE CommandRequestExecId = ").appendArgument(commandRequestExecutionId);
         
-    	CommandRequestExecution commandRequestExecution = simpleJdbcTemplate.queryForObject(sql.getSql(), rowAndFieldMapper, sql.getArguments());
+    	CommandRequestExecution commandRequestExecution = yukonJdbcTemplate.queryForObject(sql, rowAndFieldMapper);
         return commandRequestExecution;
     }
     
@@ -89,7 +87,7 @@ public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDa
         }
         
         if (type != null) {
-        	sql.append("AND CRE.Type = ").appendArgument(type.name());
+        	sql.append("AND CRE.CommandRequestExecType = ").appendArgument(type.name());
         }
         
         if (ascending) {
@@ -98,7 +96,7 @@ public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDa
         	sql.append("ORDER BY CRE.StartTime DESC");
         }
         
-        return simpleJdbcTemplate.query(sql.getSql(), rowAndFieldMapper, sql.getArguments());
+        return yukonJdbcTemplate.query(sql.getSql(), rowAndFieldMapper, sql.getArguments());
     	
     }
     
@@ -106,7 +104,7 @@ public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDa
     public int getRequestCountById(int commandRequestExecutionId) {
     	
     	String sql = "SELECT CRE.RequestCount FROM CommandRequestExec CRE WHERE CRE.CommandRequestExecId = ?";
-    	return simpleJdbcTemplate.queryForInt(sql, commandRequestExecutionId);
+    	return yukonJdbcTemplate.queryForInt(sql, commandRequestExecutionId);
     }
     
     // IS COMPLETE
@@ -129,20 +127,16 @@ public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDa
     private Date queryForStopTime(int commandRequestExecutionId) {
     	
     	String sql = "SELECT CRE.StopTime FROM CommandRequestExec CRE WHERE CRE.CommandRequestExecId = ?";
-    	return simpleJdbcTemplate.queryForObject(sql, new DateRowMapper(), commandRequestExecutionId);
+    	return yukonJdbcTemplate.queryForObject(sql, new DateRowMapper(), commandRequestExecutionId);
     }
     
     public void afterPropertiesSet() throws Exception {
-    	template = new SimpleTableAccessTemplate<CommandRequestExecution>(simpleJdbcTemplate, nextValueHelper);
+    	template = new SimpleTableAccessTemplate<CommandRequestExecution>(yukonJdbcTemplate, nextValueHelper);
     	template.withTableName("CommandRequestExec");
     	template.withPrimaryKeyField("CommandRequestExecId");
     	template.withFieldMapper(rowAndFieldMapper); 
     }
     
-    @Autowired
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-		this.simpleJdbcTemplate = simpleJdbcTemplate;
-	}
     @Autowired
     public void setNextValueHelper(NextValueHelper nextValueHelper) {
 		this.nextValueHelper = nextValueHelper;

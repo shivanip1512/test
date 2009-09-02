@@ -130,6 +130,6 @@ public interface PaoDao {
     
     public String getRouteNameForRouteId(int routeId);
     
-    public PaoLoader<DisplayablePao> getDisplayableDeviceLoader();
+    public PaoLoader<DisplayablePao> getDisplayablePaoLoader();
     
 }

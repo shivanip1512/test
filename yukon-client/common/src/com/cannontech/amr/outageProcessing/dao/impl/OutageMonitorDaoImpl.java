@@ -79,7 +79,7 @@ public class OutageMonitorDaoImpl implements OutageMonitorDao, InitializingBean 
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<OutageMonitor> getAll() {
-        return simpleJdbcTemplate.query(selectAllSql, rowMapper, new Object[]{});
+        return simpleJdbcTemplate.query(selectAllSql, rowMapper);
     }
     
     public boolean delete(int outageMonitorId) {

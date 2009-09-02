@@ -336,7 +336,7 @@ public class ObjectMapperFactoryImplTest extends TestCase {
         }
 		
 		@Override
-		public PaoLoader<DisplayablePao> getDisplayableDeviceLoader() {
+		public PaoLoader<DisplayablePao> getDisplayablePaoLoader() {
 		    throw new UnsupportedOperationException("Method not implemented");
 		}
     }
@@ -483,10 +483,6 @@ public class ObjectMapperFactoryImplTest extends TestCase {
         @Override
         public SimpleDevice getYukonDeviceForDevice(DeviceBase oldDevice) {
         	throw new UnsupportedOperationException("Method not implemented");
-        }
-        @Override
-        public PaoLoader<DisplayablePao> getDisplayableDeviceLoader() {
-            throw new UnsupportedOperationException("Method not implemented");
         }
         @Override
         public PaoLoader<DeviceCollectionReportDevice> getDeviceCollectionReportDeviceLoader() {

@@ -15,6 +15,8 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
+import com.cannontech.common.bulk.collection.DeviceCollection;
+import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
@@ -37,6 +39,7 @@ public class CommandRequestExecutionResultsController extends MultiActionControl
 	private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao;
 	private TemporaryDeviceGroupService temporaryDeviceGroupService;
 	private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+	private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
 	
 	// LIST
 	public ModelAndView list(HttpServletRequest request, HttpServletResponse response) throws ServletException {
@@ -178,8 +181,8 @@ public class CommandRequestExecutionResultsController extends MultiActionControl
 		StoredDeviceGroup tempGroup = temporaryDeviceGroupService.createTempGroup(null);
 		deviceGroupMemberEditorDao.addDevicesById(tempGroup, deviceIds.iterator());
 		
-		mav.addObject("collectionType", "group");
-		mav.addObject("group.name", tempGroup.getFullName());
+		DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(tempGroup);
+		mav.addAllObjects(deviceCollection.getCollectionParameters());
         
         return mav;
 	}
@@ -216,4 +219,9 @@ public class CommandRequestExecutionResultsController extends MultiActionControl
 	public void setDeviceGroupMemberEditorDao(DeviceGroupMemberEditorDao deviceGroupMemberEditorDao) {
 		this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
 	}
+	
+	@Autowired
+	public void setDeviceGroupCollectionHelper(DeviceGroupCollectionHelper deviceGroupCollectionHelper) {
+        this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
+    }
 }

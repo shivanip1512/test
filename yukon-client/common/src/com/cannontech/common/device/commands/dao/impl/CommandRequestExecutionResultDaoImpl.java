@@ -66,7 +66,7 @@ public class CommandRequestExecutionResultDaoImpl implements CommandRequestExecu
         sql.append("WHERE CommandRequestExecId = ").appendArgument(commandRequestExecutionId);
         
         // filter
-        sql.append("AND " + reportFilterType.getConditionSqlFragmentSource().getSql());
+        sql.append("AND", reportFilterType.getConditionSqlFragmentSource());
         
         sql.append("ORDER BY CompleteTime");
         
