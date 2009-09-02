@@ -22,6 +22,8 @@ INCLPATHS+= \
 ;$(BOOST) \
 ;$(RW) \
 ;$(ACTIVEMQ) \
+;$(ACTIVEMQ)\cms \
+;$(ACTIVEMQ)\activemq\library \
 
 
 BASEOBJS=\
