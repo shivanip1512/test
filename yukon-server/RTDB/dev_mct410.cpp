@@ -1303,18 +1303,19 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
             string phase = parse.getsValue("phase");
             int phaseVal = 0;
 
-            switch( phase[0] )
+            switch( parse.getiValue("phaseinterval") )
             {
-                case 'a':  phaseVal = 1;  break;
-                case 'b':  phaseVal = 2;  break;
-                case 'c':  phaseVal = 3;  break;
+                case 1:  phaseVal = 1;  break;
+                case 2:  phaseVal = 2;  break;
+                case 3:  phaseVal = 3;  break;
                 default:  phaseVal = 0;  break;
             } 
 
             OutMessage->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
             OutMessage->Buffer.BSt.Message[1] = phaseVal  & 0xff;
             OutMessage->Buffer.BSt.Message[2] = parse.getiValue("phasedelta")  & 0xff;
-            OutMessage->Buffer.BSt.Message[3] = parse.getiValue("phaseinterval")  & 0xff;
+            //demand interval in 15 secs increments (1=15secs, 2=30secs, 3=45secs, etc)
+            OutMessage->Buffer.BSt.Message[3] = (parse.getiValue("phaseinterval") / 15 )  & 0xff; 
             OutMessage->Buffer.BSt.Message[4] = parse.getiValue("phasenum")  & 0xff;
             OutMessage->Sequence = function;
         }
@@ -4068,7 +4069,7 @@ INT CtiDeviceMCT410::decodeGetConfigPhaseDetect(INMESS *InMessage, CtiTime &Time
     int phase = 0;
     string phaseStr;
     unsigned long volt_timestamp;
-    short first_interval_voltage, last_interval_voltage;
+    float first_interval_voltage, last_interval_voltage;
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
@@ -4112,15 +4113,15 @@ INT CtiDeviceMCT410::decodeGetConfigPhaseDetect(INMESS *InMessage, CtiTime &Time
                           DSt->Message[2] << 16 |
                           DSt->Message[3] <<  8 |
                           DSt->Message[4];
-        first_interval_voltage = DSt->Message[5] <<  8 |
-                                DSt->Message[6];
-        last_interval_voltage =  DSt->Message[7] <<  8 |
-                                DSt->Message[8];
+        first_interval_voltage = (DSt->Message[5] <<  8 |
+                                  DSt->Message[6] ) * 0.1;
+        last_interval_voltage =  (DSt->Message[7] <<  8 |
+                                  DSt->Message[8] ) * 0.1;
 
         resultStr  = getName() + " / Phase: " + phaseStr ;
         resultStr += " ( " + CtiTime(volt_timestamp).asString() + " )\n";
-        resultStr  += "First Interval Voltage: " + CtiNumStr(first_interval_voltage);
-        resultStr  += " / Last Interval Voltage: " + CtiNumStr(last_interval_voltage);
+        resultStr  += "First Interval Voltage: " + CtiNumStr(first_interval_voltage, 1);
+        resultStr  += " / Last Interval Voltage: " + CtiNumStr(last_interval_voltage, 1);
 
         if(ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr))
         {
