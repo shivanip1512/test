@@ -17,6 +17,11 @@ using std::stringstream;
 using boost::unit_test_framework::test_suite;
 
 using namespace Cti::Protocols;
+BOOST_AUTO_TEST_CASE(blah)
+{
+
+}
+
 /*
 BOOST_AUTO_TEST_CASE(test_prot_xml_recvComm)
 {
