@@ -26,6 +26,7 @@ import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.AttributeNameComparator;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
+import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
@@ -56,6 +57,7 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 	private JobManager jobManager;
 	private YukonJobDefinition<ScheduledGroupRequestExecutionTask> scheduledGroupRequestExecutionJobDefinition;
 	private CronExpressionTagService cronExpressionTagService;
+	private AttributeService attributeService;
 	
 	private List<LiteCommand> meterCommands;
 	
@@ -68,7 +70,7 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 		// pass-through
 		String errorMsg = ServletRequestUtils.getStringParameter(request, "errorMsg", null);
 		String requestType = ServletRequestUtils.getStringParameter(request, "requestType", null);
-		Set<Attribute> selectedAttributes = getAttributeSet(request);
+		Set<? extends Attribute> selectedAttributes = getAttributeSet(request);
 		String commandSelectValue = ServletRequestUtils.getStringParameter(request, "commandSelectValue", null);
 		String commandString = ServletRequestUtils.getStringParameter(request, "commandString", null);
 		String scheduleName = ServletRequestUtils.getStringParameter(request, "scheduleName", null);
@@ -319,14 +321,14 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
         
         if (attributeParametersArray.length > 0) {
             for (String attrStr : attributeParametersArray) {
-                attributeSet.add(BuiltInAttribute.valueOf(attrStr));
+                attributeSet.add(attributeService.resolveAttributeName(attrStr));
             }
         } else {
             String selectedAttributeStrs = ServletRequestUtils.getStringParameter(request, "selectedAttributeStrs", null);
             if (selectedAttributeStrs != null) {
                 String[] selectedAttributeStrsArray = StringUtils.split(selectedAttributeStrs, ",");
                 for (String attrStr : selectedAttributeStrsArray) {
-                    attributeSet.add(BuiltInAttribute.valueOf(attrStr));
+                    attributeSet.add(attributeService.resolveAttributeName(attrStr));
                 }
             }
         }
@@ -384,5 +386,10 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 	@Autowired
 	public void setCronExpressionTagService(CronExpressionTagService cronExpressionTagService) {
         this.cronExpressionTagService = cronExpressionTagService;
+    }
+	
+	@Autowired
+	public void setAttributeService(AttributeService attributeService) {
+        this.attributeService = attributeService;
     }
 }

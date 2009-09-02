@@ -36,7 +36,7 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
     // Injected variables
 	private String name;
     private DeviceGroup deviceGroup;
-    private Set<Attribute> attributes = null;
+    private Set<? extends Attribute> attributes = null;
     private String command = null;
     private CommandRequestExecutionType commandRequestExecutionType;
 
@@ -126,10 +126,10 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
         this.deviceGroup = deviceGroup;
     }
 
-	public Set<Attribute> getAttributes() {
+	public Set<? extends Attribute> getAttributes() {
         return attributes;
     }
-	public void setAttributes(Set<Attribute> attributes) {
+	public void setAttributes(Set<? extends Attribute> attributes) {
         this.attributes = attributes;
     }
 	

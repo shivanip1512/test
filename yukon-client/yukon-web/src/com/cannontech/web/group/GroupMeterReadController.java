@@ -31,6 +31,7 @@ import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.AttributeNameComparator;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
+import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
@@ -49,6 +50,7 @@ public class GroupMeterReadController extends MultiActionController {
 	private DeviceGroupService deviceGroupService;
 	private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
 	private DeviceCollectionFactory deviceCollectionFactory;
+	private AttributeService attributeService;
 	
 	// HOME (GROUP)
 	public ModelAndView homeGroup(HttpServletRequest request, HttpServletResponse response) throws ServletException {
@@ -242,14 +244,14 @@ public class GroupMeterReadController extends MultiActionController {
         
         if (attributeParametersArray.length > 0) {
             for (String attrStr : attributeParametersArray) {
-                attributeSet.add(BuiltInAttribute.valueOf(attrStr));
+                attributeSet.add(attributeService.resolveAttributeName(attrStr));
             }
         } else {
             String selectedAttributeStrs = ServletRequestUtils.getStringParameter(request, "selectedAttributeStrs", null);
             if (selectedAttributeStrs != null) {
                 String[] selectedAttributeStrsArray = StringUtils.split(selectedAttributeStrs, ",");
                 for (String attrStr : selectedAttributeStrsArray) {
-                    attributeSet.add(BuiltInAttribute.valueOf(attrStr));
+                    attributeSet.add(attributeService.resolveAttributeName(attrStr));
                 }
             }
         }
@@ -284,4 +286,9 @@ public class GroupMeterReadController extends MultiActionController {
 	public void setDeviceCollectionFactory(DeviceCollectionFactory deviceCollectionFactory) {
 		this.deviceCollectionFactory = deviceCollectionFactory;
 	}
+	
+	@Autowired
+	public void setAttributeService(AttributeService attributeService) {
+        this.attributeService = attributeService;
+    }
 }

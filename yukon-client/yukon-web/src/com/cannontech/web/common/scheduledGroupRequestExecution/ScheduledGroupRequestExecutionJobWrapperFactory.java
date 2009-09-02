@@ -84,7 +84,7 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 			return this.task.getCommand();
 		}
 		
-		public Set<Attribute> getAttributes() {
+		public Set<? extends Attribute> getAttributes() {
 			return this.task.getAttributes();
 		}
 		public String getAttributeDescriptions() {

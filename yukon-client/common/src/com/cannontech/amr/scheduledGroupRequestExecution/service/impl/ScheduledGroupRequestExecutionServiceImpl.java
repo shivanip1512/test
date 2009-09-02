@@ -34,12 +34,12 @@ public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroup
 	}
 	
 	// SCHEDULE - ATTRIBUTE
-	public YukonJob schedule(String name, String groupName, Set<Attribute> attributes, CommandRequestExecutionType type, String cronExpression, YukonUserContext userContext) {
+	public YukonJob schedule(String name, String groupName, Set<? extends Attribute> attributes, CommandRequestExecutionType type, String cronExpression, YukonUserContext userContext) {
 		
 		return schedule(name, groupName, null, attributes, type, cronExpression, userContext);
 	}
 	
-	private YukonJob schedule(String name, String groupName, String command, Set<Attribute> attributes, CommandRequestExecutionType type, String cronExpression, YukonUserContext userContext) {
+	private YukonJob schedule(String name, String groupName, String command, Set<? extends Attribute> attributes, CommandRequestExecutionType type, String cronExpression, YukonUserContext userContext) {
 
 		ScheduledGroupRequestExecutionTask task = scheduledGroupRequestExecutionJobDefinition.createBean();
 		task.setName(name);
@@ -62,12 +62,12 @@ public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroup
 	}
 	
 	// SCHEDULE REPLACEMENT - ATTRIBUTE
-	public YukonJob scheduleReplacement(int existingJobId, String name, String groupName, Set<Attribute> attributes, CommandRequestExecutionType type, String cronExpression, YukonUserContext userContext) {
+	public YukonJob scheduleReplacement(int existingJobId, String name, String groupName, Set<? extends Attribute> attributes, CommandRequestExecutionType type, String cronExpression, YukonUserContext userContext) {
 		
 		return scheduleReplacement(existingJobId, name, groupName, null, attributes, type, cronExpression, userContext);
 	}
 	
-	private YukonJob scheduleReplacement(int existingJobId, String name, String groupName, String command, Set<Attribute> attributes, CommandRequestExecutionType type, String cronExpression, YukonUserContext userContext) {
+	private YukonJob scheduleReplacement(int existingJobId, String name, String groupName, String command, Set<? extends Attribute> attributes, CommandRequestExecutionType type, String cronExpression, YukonUserContext userContext) {
 	
 		// get current job, generate task
 		ScheduledRepeatingJob existingJob = (ScheduledRepeatingJob)jobManager.getJob(existingJobId);
