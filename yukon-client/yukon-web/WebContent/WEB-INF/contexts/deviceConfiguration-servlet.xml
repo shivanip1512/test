@@ -24,12 +24,6 @@
 						<value>editConfig</value>
 						<value>removeConfig</value>
 						<value>cloneConfig</value>
-						<value>assignDevices</value>
-						<value>assignConfigToDevices</value>
-						<value>assignConfigByAddress</value>
-						<value>assignConfigByFileUpload</value>
-						<value>assignConfigByGroup</value>
-						<value>unassignConfigForDevice</value>
 					</list>
 				</property>
 			</bean>

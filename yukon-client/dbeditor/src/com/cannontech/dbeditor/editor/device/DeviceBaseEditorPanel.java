@@ -2,16 +2,18 @@ package com.cannontech.dbeditor.editor.device;
 
 import java.awt.GridBagConstraints;
 
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
+import com.cannontech.common.device.config.model.ConfigurationBase;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.gui.unchanging.LongRangeDocument;
 import com.cannontech.common.gui.util.AdvancedPropertiesDialog;
 import com.cannontech.common.gui.util.JTextFieldComboEditor;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.database.data.config.ConfigTwoWay;
 import com.cannontech.database.data.device.CCU721;
 import com.cannontech.database.data.device.CarrierBase;
 import com.cannontech.database.data.device.DNPBase;
@@ -21,12 +23,11 @@ import com.cannontech.database.data.device.GridAdvisorBase;
 import com.cannontech.database.data.device.IDLCBase;
 import com.cannontech.database.data.device.IEDBase;
 import com.cannontech.database.data.device.KV;
-import com.cannontech.database.data.device.MCT210;
-import com.cannontech.database.data.device.MCT213;
-import com.cannontech.database.data.device.MCT240;
-import com.cannontech.database.data.device.MCT248;
-import com.cannontech.database.data.device.MCT250;
 import com.cannontech.database.data.device.MCT400SeriesBase;
+import com.cannontech.database.data.device.MCT430A;
+import com.cannontech.database.data.device.MCT430A3;
+import com.cannontech.database.data.device.MCT430S4;
+import com.cannontech.database.data.device.MCT470;
 import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.device.PagingTapTerminal;
 import com.cannontech.database.data.device.RTCBase;
@@ -40,7 +41,6 @@ import com.cannontech.database.data.device.Series5Base;
 import com.cannontech.database.data.device.Sixnet;
 import com.cannontech.database.data.device.TwoWayLCR;
 import com.cannontech.database.data.device.WCTPTerminal;
-import com.cannontech.database.data.lite.LiteConfig;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.DeviceTypes;
@@ -52,6 +52,7 @@ import com.cannontech.database.db.device.DeviceIDLCRemote;
 import com.cannontech.dbeditor.DatabaseEditorOptionPane;
 import com.cannontech.device.range.DeviceAddressRange;
 import com.cannontech.device.range.RangeBase;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
 
@@ -88,7 +89,7 @@ public class DeviceBaseEditorPanel extends com.cannontech.common.gui.util.DataIn
 	private javax.swing.JLabel ivjJLabelCCUAmpUseType = null;
 	IvjEventHandler ivjEventHandler = new IvjEventHandler();
 	private javax.swing.JLabel ivjConfigLabel = null;
-	private javax.swing.JComboBox ivjConfigComboBox = null;
+	private javax.swing.JLabel assignedConfigLabel = null;
 	private javax.swing.JComboBox ivjTOUComboBox = null;
 	private javax.swing.JLabel ivjTOULabel = null;
 	private javax.swing.JLabel ivjSecurityCodeLabel = null;
@@ -113,8 +114,6 @@ class IvjEventHandler implements java.awt.event.ActionListener, javax.swing.even
 				connEtoC7(e);
 			if (e.getSource() == DeviceBaseEditorPanel.this.getJComboBoxAmpUseType()) 
 				connEtoC9(e);
-			if (e.getSource() == DeviceBaseEditorPanel.this.getConfigComboBox()) 
-				connEtoC10(e);
 			if (e.getSource() == DeviceBaseEditorPanel.this.getTOUComboBox()) 
 				connEtoC11(e);
 		};
@@ -261,24 +260,6 @@ public void configComboBox_ActionPerformed(java.awt.event.ActionEvent actionEven
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void connEtoC1(javax.swing.event.CaretEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.fireInputUpdate();
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
-/**
- * connEtoC10:  (ConfigComboBox.action.actionPerformed(java.awt.event.ActionEvent) --> DeviceBaseEditorPanel.configComboBox_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
- * @param arg1 java.awt.event.ActionEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC10(java.awt.event.ActionEvent arg1) {
 	try {
 		// user code begin {1}
 		// user code end
@@ -710,32 +691,6 @@ private javax.swing.JPanel getCommunicationPanel() {
 }
 
 /**
- * Return the ConfigComboBox property value.
- * @return javax.swing.JComboBox
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JComboBox getConfigComboBox() {
-	if (ivjConfigComboBox == null) {
-		try {
-			ivjConfigComboBox = new javax.swing.JComboBox();
-			ivjConfigComboBox.setName("ConfigComboBox");
-			ivjConfigComboBox.setMaximumSize(new java.awt.Dimension(162,20));
-			ivjConfigComboBox.setVisible(true);
-			ivjConfigComboBox.setPreferredSize(new java.awt.Dimension(162,20));
-			ivjConfigComboBox.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjConfigComboBox.setMinimumSize(new java.awt.Dimension(162,20));
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjConfigComboBox;
-}
-
-/**
  * Return the ConfigLabel property value.
  * @return javax.swing.JLabel
  */
@@ -761,6 +716,19 @@ private javax.swing.JLabel getConfigLabel() {
 		}
 	}
 	return ivjConfigLabel;
+}
+
+private JLabel getAssignedConfigLabel() {
+    if (assignedConfigLabel == null) {
+        assignedConfigLabel = new JLabel();
+        assignedConfigLabel.setFont(new java.awt.Font("dialog", 0, 14));
+        assignedConfigLabel.setText(CtiUtilities.STRING_NONE);
+        assignedConfigLabel.setPreferredSize(new java.awt.Dimension(172,19));
+        assignedConfigLabel.setMaximumSize(new java.awt.Dimension(172,19));
+        assignedConfigLabel.setMinimumSize(new java.awt.Dimension(172,19));
+        assignedConfigLabel.setFont(new java.awt.Font("Arial", 0, 14));
+    }
+    return assignedConfigLabel;
 }
 
 /**
@@ -1864,26 +1832,6 @@ public Object getValue(Object val)
 		}
 	}
 	
-	if( val instanceof MCTBase ) {
-		MCTBase mctBase = (MCTBase) val;
-		if(getConfigComboBox().getSelectedItem().equals(CtiUtilities.STRING_NONE)) {
-			mctBase.getConfigMapping().deleteAMapping(mctBase.getDevice().getDeviceID());
-			mctBase.setHasConfig(false);
-		} else {
-			int configId = ((LiteConfig)getConfigComboBox().getSelectedItem()).getConfigID();
-			mctBase.setConfigMapping(configId, mctBase.getDevice().getDeviceID());
-			mctBase.setHasConfig(true);
-		}
-		 
-		/*if(getTOUComboBox().getSelectedItem().equals(CtiUtilities.STRING_NONE)) {
-		   mctBase.getTOUDeviceMapping().deleteAMapping(mctBase.getDevice().getDeviceID());
-		   mctBase.setHasTOUSchedule(false);
-		} else {
-		   mctBase.setTOUDeviceMapping(new Integer(((com.cannontech.database.data.lite.LiteTOUSchedule)getTOUComboBox().getSelectedItem()).getScheduleID()), mctBase.getDevice().getDeviceID());
-		   mctBase.setHasTOUSchedule(true);
-		}*/
-	}
-
 	return val;
 }
 /**
@@ -1945,7 +1893,6 @@ private void initConnections() throws java.lang.Exception {
 	getSlaveAddressComboBox().addActionListener(ivjEventHandler);
 	getJButtonAdvanced().addActionListener(ivjEventHandler);
 	getJComboBoxAmpUseType().addActionListener(ivjEventHandler);
-	getConfigComboBox().addActionListener(ivjEventHandler);
 	getTOUComboBox().addActionListener(ivjEventHandler);
 	getPasswordTextField().addCaretListener(ivjEventHandler);
 	getSenderTextField().addCaretListener(ivjEventHandler);
@@ -2171,10 +2118,24 @@ private void setNonRemBaseValue( Object base )
    getPortComboBox().setVisible(false);
    getPasswordLabel().setVisible(false);
    getPasswordTextField().setVisible(false);
-    
    if( base instanceof MCTBase )
    {
 	   getJPanelMCTSettings().setVisible(true);
+	   if(base instanceof MCT430A || base instanceof MCT430A3 || base instanceof MCT430S4 || base instanceof MCT430S4 || base instanceof MCT470) {
+	       MCTBase mctBase = (MCTBase) base;
+	       int id = mctBase.getPAObjectID();
+	       int type = PAOGroups.getDeviceType(mctBase.getPAOType());
+	       SimpleDevice device = new SimpleDevice(id, type);
+	       DeviceConfigurationDao deviceConfigurationDao = YukonSpringHook.getBean("deviceConfigurationDao", DeviceConfigurationDao.class);
+	       ConfigurationBase config = deviceConfigurationDao.findConfigurationForDevice(device);
+	       if(config != null){
+	           getAssignedConfigLabel().setText(config.getName());
+	       } else {
+	           getAssignedConfigLabel().setText(CtiUtilities.STRING_NONE);
+	       }
+       } else {
+           getAssignedConfigLabel().setText("Not Supported");
+       }
 	   if(base instanceof MCT400SeriesBase)
 	   {
 	   		getTOUComboBox().setVisible(false);
@@ -2195,61 +2156,13 @@ private void setNonRemBaseValue( Object base )
 	if( getRouteComboBox().getModel().getSize() > 0 )
 		getRouteComboBox().removeAllItems();
 
-	int assignedConfigID = 0;
-	if( getConfigComboBox().getModel().getSize() > 0)
-		getConfigComboBox().removeAllItems();
-		
-	getConfigComboBox().addItem( CtiUtilities.STRING_NONE );
 	getTOUComboBox().addItem(CtiUtilities.STRING_NONE );
 	
 	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{
 		java.util.List routes = cache.getAllRoutes();
-		java.util.List configs = cache.getAllConfigs();
 		
-		Integer mctSeriesType = ConfigTwoWay.SERIES_300_TYPE;;
-		if(base instanceof MCTBase)
-		{					
-			for(int j = 0; j < configs.size(); j++)
-			{
-				//this is a tad disgusting
-				if(base instanceof MCT210 || base instanceof MCT213 ||
-					base instanceof MCT240 || base instanceof MCT248 ||
-					base instanceof MCT250)
-						mctSeriesType = ConfigTwoWay.SERIES_200_TYPE;
-						
-				if(base instanceof MCT400SeriesBase)
-						mctSeriesType = ConfigTwoWay.SERIES_400_TYPE;
-				
-				if(mctSeriesType.compareTo(((com.cannontech.database.data.lite.LiteConfig)configs.get(j)).getConfigType()) == 0)
-					getConfigComboBox().addItem( configs.get(j) );
-				
-				if(((MCTBase) base).hasMappedConfig())
-				{
-					assignedConfigID = ((MCTBase) base).getConfigID().intValue();
-					if( ((com.cannontech.database.data.lite.LiteConfig)configs.get(j)).getConfigID() == assignedConfigID )
-						getConfigComboBox().setSelectedItem((com.cannontech.database.data.lite.LiteConfig)configs.get(j));
-				}
-			}
-			if(! ((MCTBase) base).hasMappedConfig())
-			{
-				getConfigComboBox().setSelectedItem(CtiUtilities.STRING_NONE);
-			}
-			
-			if(base instanceof MCT400SeriesBase)
-			{
-				/*for(int x = 0; x < tous.size(); x++)
-				{
-					getTOUComboBox().addItem( tous.get(x) );
-					if(((MCTBase) base).hasTOUSchedule())
-					{
-						if(((MCTBase) base).getTOUScheduleID().intValue() == ((com.cannontech.database.data.lite.LiteTOUSchedule)tous.get(x)).getLiteID())
-							getTOUComboBox().setSelectedItem(tous.get(x));
-					}
-				}*/
-			}
-		}
 		if( base instanceof CarrierBase )
 		{
 			int routeType = 0;
@@ -2780,7 +2693,7 @@ public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1)
 			jPanelMCTSettings.add(getConfigLabel(), consGridBagConstraints50);
 			jPanelMCTSettings.add(getTOULabel(), consGridBagConstraints51);
 			jPanelMCTSettings.add(getTOUComboBox(), consGridBagConstraints52);
-			jPanelMCTSettings.add(getConfigComboBox(), consGridBagConstraints53);
+			jPanelMCTSettings.add(getAssignedConfigLabel(), consGridBagConstraints53);
 			jPanelMCTSettings.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "MCT Additional Settings", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", java.awt.Font.BOLD, 12), java.awt.Color.black));
 			jPanelMCTSettings.setName("JPanelMCTSettings");
 			jPanelMCTSettings.setPreferredSize(new java.awt.Dimension(394,81));

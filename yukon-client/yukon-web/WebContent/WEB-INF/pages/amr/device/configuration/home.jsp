@@ -62,7 +62,6 @@
 				<c:if test="${editConfig}">
 					<input type="submit" name="removeConfig" value="Delete" onclick="return deleteConfig()"/>
 					<input type="submit" name="cloneConfig" value="Clone"/>
-					<input type="submit" name="assignDevices" value="Assign to Devices"/>
 				</c:if>
 			
                 <br/><br/>
