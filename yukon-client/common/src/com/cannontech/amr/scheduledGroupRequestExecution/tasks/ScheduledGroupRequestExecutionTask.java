@@ -54,7 +54,7 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
     
     private void startTask(int jobId){
     	
-    	LiteYukonUser user = getJobContext().getJob().getUserContext().getYukonUser();
+    	LiteYukonUser user = getYukonUser();
     	
     	log.info("Starting scheduled group command execution. user = " + user.getUsername() + ".");
         

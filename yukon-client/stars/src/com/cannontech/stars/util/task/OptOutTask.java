@@ -26,7 +26,6 @@ import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.optout.model.ScheduledOptOutQuestion;
 import com.cannontech.stars.dr.optout.service.OptOutRequest;
 import com.cannontech.stars.dr.optout.service.OptOutService;
-import com.cannontech.user.YukonUserContext;
 
 /**
  * Task used to start scheduled opt outs and clean up any opt outs that have just
@@ -35,7 +34,6 @@ import com.cannontech.user.YukonUserContext;
 public class OptOutTask extends YukonTaskBase {
 
     private Logger logger = YukonLogManager.getLogger(OptOutTask.class);
-	private YukonUserContext userContext;
 	
 	private OptOutEventDao optOutEventDao;
 	private OptOutService optOutService;
@@ -49,7 +47,7 @@ public class OptOutTask extends YukonTaskBase {
     	
         logger.debug("Starting opt out task.");
         
-        LiteYukonUser user = this.userContext.getYukonUser();
+        LiteYukonUser user = getYukonUser();
 
         List<OptOutEvent> optOutsToStart = optOutEventDao.getScheduledOptOutsToBeStarted();
         this.startOptOuts(optOutsToStart, user);

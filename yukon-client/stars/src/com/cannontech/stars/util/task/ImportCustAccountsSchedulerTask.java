@@ -11,7 +11,6 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.jobs.support.YukonTaskBase;
-import com.cannontech.user.YukonUserContext;
 
 public class ImportCustAccountsSchedulerTask extends YukonTaskBase {
 
@@ -20,7 +19,6 @@ public class ImportCustAccountsSchedulerTask extends YukonTaskBase {
     // Injected variables
     private Integer energyCompanyId = null;
     private String email = null;
-    private YukonUserContext userContext = null;
 
     // Injected Dependencies
     private StarsDatabaseCache starsDbCacheInstance;
@@ -53,7 +51,7 @@ public class ImportCustAccountsSchedulerTask extends YukonTaskBase {
         if (automationImportFileList != null) {
             for (String fileName : automationImportFileList) {
                 File custFile = new File(importDirectory, fs + fileName);
-                int userId = userContext.getYukonUser().getLiteID();
+                int userId = getYukonUser().getLiteID();
                 ImportCustAccountsTask importCustAccountsTask = new ImportCustAccountsTask(liteStarsEnergyCompany, custFile, null, email, false, userId, true);
                 importCustAccountsTask.run();
             }

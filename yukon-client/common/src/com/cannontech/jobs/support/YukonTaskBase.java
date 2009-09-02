@@ -1,5 +1,6 @@
 package com.cannontech.jobs.support;
 
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.jobs.model.JobContext;
 
 public abstract class YukonTaskBase implements YukonTask {
@@ -8,6 +9,10 @@ public abstract class YukonTaskBase implements YukonTask {
     
     public JobContext getJobContext() {
         return jobContext;
+    }
+    
+    protected LiteYukonUser getYukonUser() {
+        return getJobContext().getJob().getUserContext().getYukonUser();
     }
     
     @Override
