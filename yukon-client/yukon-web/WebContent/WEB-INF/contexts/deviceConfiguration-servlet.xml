@@ -37,13 +37,6 @@
         
 		<property name="deviceConfigurationDao" ref="deviceConfigurationDao"/>
 		
-		<property name="bulkProcessor" ref="oneAtATimeProcessor" />
-        <property name="processorFactory" ref="processorFactory" />
-        <property name="paoDao" ref="paoDao" />
-        <property name="deviceGroupDao" ref="deviceGroupDao" />
-        <property name="deviceGroupService" ref="deviceGroupService"/>
-        <property name="paoIdToYukonDeviceMapper" ref="paoIdToYukonDeviceMapper"/>
-        
     </bean>
     
     <bean name="/470Config" class="com.cannontech.web.amr.device.configuration.DeviceConfigurationFormController" init-method="init">
