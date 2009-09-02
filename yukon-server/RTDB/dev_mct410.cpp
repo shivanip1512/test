@@ -466,7 +466,7 @@ CtiDeviceMCT410::CommandSet CtiDeviceMCT410::initCommandStore()
 
     cs.insert(CommandStore(Emetcon::GetConfig_PhaseDetect, Emetcon::IO_Function_Read,       FuncRead_PhaseDetect,           FuncRead_PhaseDetectLen));
     cs.insert(CommandStore(Emetcon::PutConfig_PhaseDetect, Emetcon::IO_Function_Write,      FuncWrite_PhaseDetect,          FuncWrite_PhaseDetectLen));
-    
+
     cs.insert(CommandStore(Emetcon::PutConfig_PhaseDetectClear,   Emetcon::IO_Function_Write,    FuncWrite_PhaseDetectClear,             FuncWrite_PhaseDetectClearLen));
 
 
@@ -1309,13 +1309,13 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
                 case 2:  phaseVal = 2;  break;
                 case 3:  phaseVal = 3;  break;
                 default:  phaseVal = 0;  break;
-            } 
+            }
 
             OutMessage->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
             OutMessage->Buffer.BSt.Message[1] = phaseVal  & 0xff;
             OutMessage->Buffer.BSt.Message[2] = parse.getiValue("phasedelta")  & 0xff;
             //demand interval in 15 secs increments (1=15secs, 2=30secs, 3=45secs, etc)
-            OutMessage->Buffer.BSt.Message[3] = (parse.getiValue("phaseinterval") / 15 )  & 0xff; 
+            OutMessage->Buffer.BSt.Message[3] = (parse.getiValue("phaseinterval") / 15 )  & 0xff;
             OutMessage->Buffer.BSt.Message[4] = parse.getiValue("phasenum")  & 0xff;
             OutMessage->Sequence = function;
         }
@@ -1621,13 +1621,15 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
                         sspec_om->MessageFlags |= MessageFlag_ExpectMore;
                         sspec_om->Retry         = 2;
 
-                        sspec_om->Request.Connection = 0;  //  make sure the response doesn't show in Commander
+                        //  Make sure the response doesn't show in Commander.
+                        //    Because this OM's response is discarded, it will not affect
+                        //    the message count/expect more behavior to the client.
+                        //  Otherwise, it would need to be added to the group message count.
+                        sspec_om->Request.Connection = 0;
 
                         strncpy(sspec_om->Request.CommandStr, "getconfig model", COMMAND_STR_SIZE );
 
                         outList.push_back(sspec_om.release());
-                        //  don't need to increment the request count - the message will be discarded
-                        //incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
                     }
                 }
 
@@ -4062,9 +4064,9 @@ INT CtiDeviceMCT410::decodeGetConfigPhaseDetect(INMESS *InMessage, CtiTime &Time
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     string resultStr;
-//Voltage Phase(byte0) 
-//Voltage Phase Timestamp(byte 1-4) 
-//First Interval Voltage (byte 5-6) 
+//Voltage Phase(byte0)
+//Voltage Phase Timestamp(byte 1-4)
+//First Interval Voltage (byte 5-6)
 //Last Interval Voltage (byte 7-8)
     int phase = 0;
     string phaseStr;
