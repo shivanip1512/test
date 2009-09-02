@@ -27,10 +27,6 @@ public abstract class ClientBase extends java.util.Observable implements ClientB
 	// just in case someone wants to observe the connection
 	private java.util.Observer observer = null;
 	
-	//Default host string
-	public static String HOST = "127.0.0.1";
-	public static int PORT = 1510;
-
 /**
  * ClientBase constructor comment.
  */
