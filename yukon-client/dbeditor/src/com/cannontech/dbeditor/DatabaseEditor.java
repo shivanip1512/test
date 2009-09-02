@@ -39,8 +39,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.device.configuration.model.Category;
-import com.cannontech.common.device.configuration.model.DeviceConfiguration;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.common.editor.PropertyPanelEvent;
@@ -80,7 +78,6 @@ import com.cannontech.database.model.DummyTreeNode;
 import com.cannontech.database.model.FrameAware;
 import com.cannontech.database.model.ModelFactory;
 import com.cannontech.dbeditor.defines.CommonDefines;
-import com.cannontech.dbeditor.editor.device.configuration.DeviceConfigurationWizardPanel;
 import com.cannontech.dbeditor.editor.regenerate.RegenerateDialog;
 import com.cannontech.dbeditor.editor.regenerate.RegenerateRoute;
 import com.cannontech.dbeditor.menu.CoreCreateMenu;
@@ -182,7 +179,6 @@ public class DatabaseEditor
 			new Integer(ModelFactory.RTU),
 			new Integer(ModelFactory.STATEGROUP),
 			new Integer(ModelFactory.TRANSMITTER),
-            new Integer(ModelFactory.DEVICE_CONFIGURATION)
 						
 		};
 	private static final Integer[] LM_MODELS =
@@ -221,7 +217,6 @@ public class DatabaseEditor
 			new Integer(ModelFactory.BASELINE),
 			new Integer(ModelFactory.CICUSTOMER),
 			new Integer(ModelFactory.CONTACT),
-            new Integer(ModelFactory.DEVICE_CONFIGURATION_CATEGORY),
 			new Integer(ModelFactory.HOLIDAY_SCHEDULE),
 			new Integer(ModelFactory.LOGINS),
 			new Integer(ModelFactory.LOGIN_GROUPS),
@@ -260,8 +255,6 @@ public class DatabaseEditor
 	private boolean activateBilling;
 	private static boolean isSuperuser = false;
 	private boolean accessOfLoginNotAllowed = false;
-    
-    private static boolean showDeviceConfiguration = false;
     
     private static DatabaseEditor editor = null;
     
@@ -579,10 +572,7 @@ private void displayAWizardPanel(JMenuItem item)
 	{
 		showWizardPanel(new com.cannontech.dbeditor.wizard.config.ConfigWizardPanel());
         
-	} else if (item == coreCreateMenu.deviceConfigurationMenuItem){
-	    showWizardPanel(new DeviceConfigurationWizardPanel());
-    }
-	
+	} 
 	else if (item == lmCreateMenu.lmGroupMenuItem)
 	{
 		showWizardPanel(new com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupWizardPanel());
@@ -962,10 +952,6 @@ private void executeCopyButton_ActionPerformed(ActionEvent event)
 		else if( toCopy instanceof com.cannontech.database.data.point.PointBase )
 		{
 			showCopyWizardPanel( new com.cannontech.dbeditor.wizard.copy.point.PointCopyWizardPanel((com.cannontech.database.data.point.PointBase)toCopy, currentDatabase ) );
-		}
-		else if( toCopy instanceof DeviceConfiguration )
-		{
-		    showCopyWizardPanel( new DeviceConfigurationWizardPanel((DeviceConfiguration) LiteFactory.convertLiteToDBPersAndRetrieve((LiteBase) node.getUserObject())) );
 		}
 		else
 			JOptionPane.showMessageDialog(
@@ -2333,12 +2319,6 @@ private void readConfigParameters()
 	if( !showSystem )
 		viewMenu.remove( viewMenu.systemRadioButtonMenuItem );
 		
-    // Remove the create device configuration menu item if this user cannot see
-    // device configuation
-        if (!DatabaseEditor.showDeviceConfiguration) {
-            coreCreateMenu.remove(coreCreateMenu.deviceConfigurationMenuItem);
-        }
-    
 }
 /**
  * This method was created in VisualAge.
@@ -2589,7 +2569,7 @@ public void selectionPerformed(WizardPanelEvent event)
 
             // Hack - Don't try to select new Categories or TOUSchedules 
             // created in the device config UI
-            selectInTree = !(newItem instanceof TOUSchedule || newItem instanceof Category)
+            selectInTree = !(newItem instanceof TOUSchedule)
                         || (newItem instanceof TOUSchedule && currentDatabase == DatabaseTypes.SYSTEM_DB);
             
 			//try to insert the object into the DB
@@ -2706,32 +2686,17 @@ public void setDatabase(int whichDatabase)
 		System.err.println("com.cannontech.dbeditor.DatabaseEditor:  Unable to switch to database " + whichDatabase );
 	}
 
-    // Check to see if device configuration items should be shown in the DBEditor
-    long enableDeviceConfig = Long.parseLong(ClientSession.getInstance().
-                                                 getRolePropertyValue(DBEditorRole.OPTIONAL_PRODUCT_DEV, "0"),
-                                             16);
-    DatabaseEditor.showDeviceConfiguration = (enableDeviceConfig & ClientRights.ENABLE_DEVICE_CONFIGURATION) > 0; 
-
-    int length = (DatabaseEditor.showDeviceConfiguration || models == LM_MODELS || models == LM_MODELS_WITH_SA)
+    int length = (models == LM_MODELS || models == LM_MODELS_WITH_SA || models == CORE_MODELS || models == SYSTEM_MODELS)
                 ? models.length : models.length - 1;
 
-    boolean deviceConfigFound = false;
 	DBTreeModel[] newModels = new DBTreeModel[length];
 	for( int i = 0; i < models.length; i++ )
 	{
-        // Don't add device configuration or device configuration category to the
-        // sort by if the user cannot see them
-        if (((models[i].intValue() == ModelFactory.DEVICE_CONFIGURATION) || (models[i].intValue() == ModelFactory.DEVICE_CONFIGURATION_CATEGORY)) 
-                && !DatabaseEditor.showDeviceConfiguration) {
-                deviceConfigFound = true;
-                continue;
-            }
-        
 		DBTreeModel treeModel = ModelFactory.create(models[i].intValue());
 		if (treeModel instanceof FrameAware) {
 		    ((FrameAware) treeModel).setParentFrame(frame);
 		}
-        newModels[(deviceConfigFound) ? i - 1 : i] = treeModel;
+        newModels[i] = treeModel;
 	}
     
 	getTreeViewPanel().setTreeModels(newModels);
@@ -3035,9 +3000,5 @@ public void windowOpened(WindowEvent event) {
 
     public static DatabaseEditor getInstance(){
         return editor;
-    }
-    
-    public static boolean showDeviceConfiguration(){
-        return DatabaseEditor.showDeviceConfiguration;
     }
 }

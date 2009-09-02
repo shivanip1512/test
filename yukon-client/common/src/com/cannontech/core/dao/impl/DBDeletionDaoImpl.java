@@ -1,9 +1,5 @@
 package com.cannontech.core.dao.impl;
 
-import com.cannontech.common.device.configuration.dao.CategoryDao;
-import com.cannontech.common.device.configuration.dao.DeviceConfigurationDao;
-import com.cannontech.common.device.configuration.model.Category;
-import com.cannontech.common.device.configuration.model.DeviceConfiguration;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DBDeleteResult;
 import com.cannontech.core.dao.DBDeletionDao;
@@ -285,30 +281,6 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 		return STATUS_ALLOW;
 	}
 
-    private static byte createDeleteStringForDeviceConfiguration(final DBDeleteResult dbRes) throws java.sql.SQLException
-	{
-	    if( DeviceConfigurationDao.isConfigInUse(dbRes.getItemID()) )
-	    {
-	        dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is in use by one or more devices.") );
-	        return DBDeletionDao.STATUS_DISALLOW;
-	    }
-	    
-	    //this object is deleteable
-	    return STATUS_ALLOW;
-	}
-    
-    private static byte createDeleteStringForDeviceConfigurationCategory(final DBDeleteResult dbRes) throws java.sql.SQLException
-    {
-        if( CategoryDao.isCategoryInUse(dbRes.getItemID()) )
-        {
-            dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is in use by one or more configurations.") );
-            return DBDeletionDao.STATUS_DISALLOW;
-        }
-        
-        //this object is deleteable
-        return STATUS_ALLOW;
-    }
-	
 	private static byte createDeleteStringForTag(final DBDeleteResult dbRes) throws java.sql.SQLException
 	{
 		dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "This tag and ALL references to it in the system will be removed.") );
@@ -579,20 +551,6 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 			delRes.setItemID( ((LMProgramConstraint) toDelete).getConstraintID().intValue() );
 			delRes.setDelType( DBDeletionDaoImpl.LMPROG_CONSTR_TYPE );
 		}		
-		else if (toDelete instanceof DeviceConfiguration)
-		{
-		    delRes.getConfirmMessage().append("Are you sure you want to permanently delete '" + nodeName + "'?");
-		    delRes.getUnableDelMsg().append("You cannot delete the Device Configuration '" + nodeName + "'");
-		    delRes.setItemID( ((DeviceConfiguration) toDelete).getId().intValue() );
-		    delRes.setDelType( DBDeletionDaoImpl.DEVICE_CONFIGURATION );
-		}		
-		else if (toDelete instanceof Category)
-		{
-		    delRes.getConfirmMessage().append("Are you sure you want to permanently delete '" + nodeName + "'?");
-		    delRes.getUnableDelMsg().append("You cannot delete the Device Configuration Category '" + nodeName + "'");
-		    delRes.setItemID( ((Category) toDelete).getId().intValue() );
-		    delRes.setDelType( DBDeletionDaoImpl.DEVICE_CONFIGURATION_CATEGORY );
-		}		
 		else
 		{
 			delRes.getConfirmMessage().append("You can not delete this object using the DatabaseEditor"); 
@@ -654,12 +612,6 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 			
 		else if(dbRes.getDelType() == HOLIDAY_SCHEDULE)	
 			return createDeleteStringForHolidaySchedule(dbRes);
-		
-		else if(dbRes.getDelType() == DEVICE_CONFIGURATION)	
-		    return createDeleteStringForDeviceConfiguration(dbRes);
-		
-		else if(dbRes.getDelType() == DEVICE_CONFIGURATION_CATEGORY)	
-		    return createDeleteStringForDeviceConfigurationCategory(dbRes);
 		
 		else if( dbRes.getDelType() == CUSTOMER_TYPE
 				 || dbRes.getDelType() == PAO_TYPE 

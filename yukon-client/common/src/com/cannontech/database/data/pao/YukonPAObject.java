@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-import com.cannontech.common.device.configuration.dao.DeviceConfigurationDao;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authorization.service.PaoPermissionService;
 import com.cannontech.core.dao.DaoFactory;
@@ -67,7 +66,6 @@ public void delete() throws java.sql.SQLException
 {
 	
 	deletePoints();
-    deleteDeviceConfigurationMapping();
 
 	//ADD TABLES THAT HAVE A REFERENCE TO THE YukonPAObject TABLE AND THAT
 	// NEED TO BE DELETED WHEN A YukonPAObject ROW IS DELETED (CASCADE DELETE)
@@ -95,13 +93,6 @@ public void delete() throws java.sql.SQLException
  */
 public void deletePartial() throws java.sql.SQLException 
 {
-}
-
-/**
- * Helper method to delete the device / configuration mapping if present
- */
-private void deleteDeviceConfigurationMapping(){
-    DeviceConfigurationDao.removeConfigAssignmentForDevice(getPAObjectID());
 }
 
 /**

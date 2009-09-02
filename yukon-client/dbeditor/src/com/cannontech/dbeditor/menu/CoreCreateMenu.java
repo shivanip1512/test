@@ -15,7 +15,6 @@ public class CoreCreateMenu extends javax.swing.JMenu {
 	public CommandableMenuItem stateGroupMenuItem;
 	public CommandableMenuItem billingGroupMenuItem;
 	public CommandableMenuItem config2WayMenuItem;
-	public CommandableMenuItem deviceConfigurationMenuItem;
 /**
  * CreateMenu constructor comment.
  */
@@ -58,10 +57,6 @@ private void initialize() {
 	config2WayMenuItem.setFont( font );
 	config2WayMenuItem.setMnemonic('m');
     
-    deviceConfigurationMenuItem =  new CommandableMenuItem("Device Configuration ...");
-    deviceConfigurationMenuItem.setFont(font);
-    deviceConfigurationMenuItem.setMnemonic('c');
-
 	setText("Create");
 	setFont( font );
 	setMnemonic('c');
@@ -70,7 +65,6 @@ private void initialize() {
 	add( billingGroupMenuItem );
 	add( portMenuItem );
 	add( deviceMenuItem );
-	add( deviceConfigurationMenuItem );
 	add( config2WayMenuItem );
 	add( pointMenuItem );
 	add( routeMenuItem );

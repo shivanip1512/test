@@ -2,8 +2,6 @@ package com.cannontech.database.data.lite;
 
 import java.util.GregorianCalendar;
 
-import com.cannontech.common.device.configuration.model.Category;
-import com.cannontech.common.device.configuration.model.DeviceConfiguration;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.command.DeviceTypeCommand;
@@ -244,15 +242,6 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 			((SettlementConfig)returnObject).setDescription(((LiteSettlementConfig)liteObject).getDescription());
 			((SettlementConfig)returnObject).setEntryID(new Integer(((LiteSettlementConfig)liteObject).getEntryID()));			
 			break;
-        case LiteTypes.DEVICE_CONFIGURATION:
-            returnObject = new DeviceConfiguration(liteObject.getLiteID());
-            ((DeviceConfiguration)returnObject).setName(((LiteDeviceConfiguration)liteObject).getName());
-            break;
-            
-        case LiteTypes.DEVICE_CONFIGURATION_CATEGORY:
-            returnObject = new Category(liteObject.getLiteID());
-            ((Category)returnObject).setName(((LiteDeviceConfigurationCategory)liteObject).getName());
-            break;
 		default:
 			returnObject = null;
 			break;
@@ -484,17 +473,7 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 			 ((SettlementConfig)val).getDescription(), 
 			 ((SettlementConfig)val).getEntryID().intValue(),
 			 ((SettlementConfig)val).getRefEntryID().intValue());
-	} else if (val instanceof DeviceConfiguration){
-        
-        returnLite = new LiteDeviceConfiguration(((DeviceConfiguration)val).getId(), 
-                                                 ((DeviceConfiguration)val).getName()); 
-        
-    } else if (val instanceof Category){
-        
-        returnLite = new LiteDeviceConfigurationCategory(((Category)val).getId(), 
-                                                 ((Category)val).getName()); 
-        
-    }
+	}
 
 	return returnLite;
 }

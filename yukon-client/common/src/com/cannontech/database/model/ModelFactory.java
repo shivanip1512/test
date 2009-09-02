@@ -87,9 +87,6 @@ public final class ModelFactory
 	public static final int RECEIVERS = 58;
     public static final int SYSTEM_DEVICE = 59;
 
-    public static final int DEVICE_CONFIGURATION = 60;
-    public static final int DEVICE_CONFIGURATION_CATEGORY = 61;
-	
 	//The above is an enumeration of indices into
 	//the following array
 	private static Class[] typeToClassMap =
@@ -154,8 +151,6 @@ public final class ModelFactory
 		null,
 		ReceiverTreeModel.class,
         SystemDeviceModel.class,
-/* 60*/ DeviceConfigurationTreeModel.class,         
-        DeviceConfigurationCategoryTreeModel.class         
 	};
 	
 //	The above is an enumeration of indices into
@@ -221,9 +216,7 @@ public final class ModelFactory
 		"CapBank Ordering",
 		"Billing Group",
 		"Receivers",
-        "System Points",
-        "Device Configuration",
-        "Device Configuration Category"
+        "System Points"
 	};	
 
 /**
