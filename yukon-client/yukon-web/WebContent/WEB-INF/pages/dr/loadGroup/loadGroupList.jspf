@@ -1,0 +1,43 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+
+<table id="loadGroupList" class="compactMiniResultsTable">
+    <tr>
+        <th><cti:msg key="yukon.web.modules.dr.loadGroupList.heading.name"/></th>
+        <th><cti:msg key="yukon.web.modules.dr.loadGroupList.heading.state"/></th>
+        <th><cti:msg key="yukon.web.modules.dr.loadGroupList.heading.lastAction"/></th>
+        <th><cti:msg key="yukon.web.modules.dr.loadGroupList.heading.controlStatistics"/></th>
+        <th><cti:msg key="yukon.web.modules.dr.loadGroupList.heading.reduction"/></th>
+        <th><cti:msg key="yukon.web.modules.dr.loadGroupList.heading.loadCapacity"/></th>
+    </tr>
+    <c:forEach var="loadGroup" items="${loadGroups}">
+        <c:set var="loadGroupId" value="${loadGroup.paoIdentifier.paoId}"/>
+        <c:url var="loadGroupURL" value="/spring/dr/loadGroup/detail">
+            <c:param name="loadGroupId" value="${loadGroupId}"/>
+        </c:url>
+        <tr id="loadGroupRow${loadGroupId}" class="<tags:alternateRow odd="" even="altRow"/>">
+            <td>
+                <%-- TODO:  in phase 3, update cti:classUpdater to be able to
+                 update the class of the row instead --%>
+                <cti:classUpdater type="DR_LOADGROUP" identifier="${loadGroupId}/STATE_CLASSNAME" >
+                    <a href="${loadGroupURL}"><spring:escapeBody htmlEscape="true">${loadGroup.name}</spring:escapeBody></a>
+                </cti:classUpdater>
+            </td>
+            <td><cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/STATE"/></td>
+            <td><cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/LAST_ACTION"/></td>
+            <td><cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/CONTROL_DAILY"/>
+                <cti:msg key="yukon.web.modules.dr.loadGroupDetail.info.separator"/>
+                <cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/CONTROL_MONTHLY"/>
+                <cti:msg key="yukon.web.modules.dr.loadGroupDetail.info.separator"/>
+                <cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/CONTROL_SEASONALLY"/>
+                <cti:msg key="yukon.web.modules.dr.loadGroupDetail.info.separator"/>
+                <cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/CONTROL_ANNUALLY"/>
+            </td>
+            <td><cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/REDUCTION"/></td>
+            <td><cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/LOAD_CAPACITY"/></td>
+        </tr>
+    </c:forEach>
+</table>

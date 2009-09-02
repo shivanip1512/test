@@ -584,6 +584,9 @@
                 <entry key="DR_PROGRAM">
                     <ref local="drProgramBackingService"/>
                 </entry>
+                <entry key="DR_LOADGROUP">
+                    <ref local="drLoadGroupBackingService"/>
+                </entry>                
             </map>
         </property>
     </bean>
@@ -718,6 +721,7 @@
     <bean id="drControlAreaBackingService" class="com.cannontech.web.updater.dr.ControlAreaBackingService"/>
     <bean id="drTriggerBackingService" class="com.cannontech.web.updater.dr.TriggerBackingService"/>    
     <bean id="drProgramBackingService" class="com.cannontech.web.updater.dr.ProgramBackingService"/>
+    <bean id="drLoadGroupBackingService" class="com.cannontech.web.updater.dr.LoadGroupBackingService"/>    
 
     <bean id="abstractFormattingService" class="com.cannontech.web.updater.capcontrol.AbstractFormattingService"
           abstract="true">

@@ -30,34 +30,34 @@
                 <cti:msg var="boxTitle" key="yukon.web.modules.dr.controlAreaDetail.heading.info"/>
 	            <tags:abstractContainer type="box" title="${boxTitle}">
                     <tags:nameValueContainer>
-                        <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaDetail.heading.state"/>
+                        <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaDetail.info.state"/>
                         <tags:nameValue name="${fieldName}" nameColumnWidth="150px">
                             <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/STATE"/>
                         </tags:nameValue>
-                        <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaDetail.heading.priority"/>
+                        <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaDetail.info.priority"/>
                         <tags:nameValue name="${fieldName}">
                             <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/PRIORITY"/>
                         </tags:nameValue>
-                        <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaDetail.heading.startStop"/>
+                        <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaDetail.info.startStop"/>
                         <tags:nameValue name="${fieldName}">
                             <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/START"/>
                             -
                             <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/STOP"/>
                         </tags:nameValue>
-                        <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaDetail.heading.loadCapacity"/>
+                        <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaDetail.info.loadCapacity"/>
                         <tags:nameValue name="${fieldName}">
                             <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/LOAD_CAPACITY"/>
                         </tags:nameValue>
                         
 	                    <c:if test="${!empty controlArea.triggers}">
-	                        <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaDetail.heading.triggers"/>
+	                        <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaDetail.info.triggers"/>
 	                        <tags:nameValue name="${fieldName}">
 	                        </tags:nameValue>	                        
 	                        <table id="controlAreaList" class="compactMiniResultsTable">
 	                            <tr>
-	                                <th><cti:msg key="yukon.web.modules.dr.controlAreaDetail.heading.valueThreshold"/></th>
-	                                <th><cti:msg key="yukon.web.modules.dr.controlAreaDetail.heading.peakProjection"/></th>
-	                                <th><cti:msg key="yukon.web.modules.dr.controlAreaDetail.heading.atku"/></th>
+	                                <th><cti:msg key="yukon.web.modules.dr.controlAreaDetail.info.valueThreshold"/></th>
+	                                <th><cti:msg key="yukon.web.modules.dr.controlAreaDetail.info.peakProjection"/></th>
+	                                <th><cti:msg key="yukon.web.modules.dr.controlAreaDetail.info.atku"/></th>
 	                            </tr>
 	                            <c:forEach var="trigger" items="${controlArea.triggers}">
 	                                <c:set var="triggerNumber" value="${trigger.triggerNumber}"/>                               
@@ -86,7 +86,7 @@
                     </tags:nameValueContainer>
                     <c:if test="${empty controlArea.triggers}">
                         <br/>
-                        <cti:msg key="yukon.web.modules.dr.controlAreaDetail.heading.noTriggers"/>
+                        <cti:msg key="yukon.web.modules.dr.controlAreaDetail.info.noTriggers"/>
                     </c:if>
             	</tags:abstractContainer>
             </td>

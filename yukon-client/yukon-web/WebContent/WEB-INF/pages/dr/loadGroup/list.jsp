@@ -16,20 +16,6 @@
 
     <h2><cti:msg key="yukon.web.modules.dr.loadGroupList.loadGroups"/></h2>
 
-	<table id="loadGroupList" class="compactMiniResultsTable">
-		<tr>
-			<th><cti:msg key="yukon.web.modules.dr.loadGroupList.heading.name"/></th>
-		</tr>
-		<c:forEach var="loadGroup" items="${loadGroups}">
-            <c:url var="loadGroupURL" value="/spring/dr/loadGroup/detail">
-                <c:param name="loadGroupId" value="${loadGroup.paoIdentifier.paoId}"/>
-            </c:url>
-			<tr class="<tags:alternateRow odd="" even="altRow"/>">
-				<td>
-                    <a href="${loadGroupURL}"><spring:escapeBody htmlEscape="true">${loadGroup.name}</spring:escapeBody></a>
-				</td>
-			</tr>
-		</c:forEach>
-	</table>
+    <%@ include file="loadGroupList.jspf" %>
 
 </cti:standardPage>

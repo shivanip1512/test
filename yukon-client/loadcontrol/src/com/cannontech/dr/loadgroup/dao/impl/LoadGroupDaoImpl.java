@@ -18,14 +18,16 @@ import com.cannontech.dr.loadgroup.dao.LoadGroupDao;
 public class LoadGroupDaoImpl implements LoadGroupDao {
     private SimpleJdbcTemplate simpleJdbcTemplate;
 
-    private final static String baseLoadGroupQuery =
-        "SELECT paObjectId, paoName, type FROM yukonPAObject"
-            + " WHERE category = 'DEVICE' AND paoClass = 'GROUP'";
-    private final static String loadGroupsByProgramIdQuery = baseLoadGroupQuery
-        + " AND paObjectId IN (SELECT lmGroupDeviceId FROM lmProgramDirectGroup"
-        + " WHERE deviceId = ?)";
-    private final static String singleLoadGroupByIdQuery = baseLoadGroupQuery
-        + " AND paObjectId = ?";
+    private final static String baseLoadGroupQuery = 
+        "SELECT paObjectId, paoName, type FROM yukonPAObject " 
+        + "WHERE category = 'DEVICE' AND paoClass = 'GROUP'";
+    private final static String loadGroupsByProgramIdQuery = 
+        "SELECT paObjectId, paoName, type FROM yukonPAObject " 
+        + "WHERE category = 'DEVICE' AND paoClass = 'GROUP' " 
+        + "AND paObjectId IN (SELECT lmGroupDeviceId FROM lmProgramDirectGroup WHERE deviceId = ?)";
+    private final static String singleLoadGroupByIdQuery = 
+        "SELECT paObjectId, paoName, type FROM yukonPAObject " 
+        + "WHERE category = 'DEVICE' AND paoClass = 'GROUP' AND paObjectId = ?";
 
     private final static ParameterizedRowMapper<DisplayablePao> loadGroupRowMapper =
         new ParameterizedRowMapper<DisplayablePao>() {
@@ -43,17 +45,17 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
         }};
 
     @Override
+    public List<DisplayablePao> getLoadGroups() {
+        List<DisplayablePao> retVal = simpleJdbcTemplate.query(baseLoadGroupQuery,
+                                                               loadGroupRowMapper);
+        return retVal;
+    }
+    
+    @Override
     public List<DisplayablePao> getLoadGroupsForProgram(int programId) {
         List<DisplayablePao> retVal = simpleJdbcTemplate.query(loadGroupsByProgramIdQuery,
                                                                loadGroupRowMapper,
                                                                programId);
-        return retVal;
-    }
-
-    @Override
-    public List<DisplayablePao> getLoadGroups() {
-        List<DisplayablePao> retVal = simpleJdbcTemplate.query(baseLoadGroupQuery,
-                                                               loadGroupRowMapper);
         return retVal;
     }
 

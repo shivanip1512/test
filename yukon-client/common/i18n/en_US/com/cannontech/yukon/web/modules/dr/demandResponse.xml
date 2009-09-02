@@ -48,7 +48,13 @@
 <entry key="yukon.web.modules.dr.loadGroup.value.STATE.INACTIVE">Inactive</entry>
 <entry key="yukon.web.modules.dr.loadGroup.value.STATE.ACTIVE_PENDING">Active Pending</entry>
 <entry key="yukon.web.modules.dr.loadGroup.value.STATE.INACTIVE_PENDING">Inactive Pending</entry>
-
+<entry key="yukon.web.modules.dr.loadGroup.value.LAST_ACTION">{0,date,MM/dd/yyyy HH:mm zz}</entry>
+<entry key="yukon.web.modules.dr.loadGroup.value.CONTROL_DAILY">{0}</entry>
+<entry key="yukon.web.modules.dr.loadGroup.value.CONTROL_MONTHLY">{0}</entry>
+<entry key="yukon.web.modules.dr.loadGroup.value.CONTROL_SEASONALLY">{0}</entry>
+<entry key="yukon.web.modules.dr.loadGroup.value.CONTROL_ANNUALLY">{0}</entry>
+<entry key="yukon.web.modules.dr.loadGroup.value.REDUCTION">{0,number,#.#}</entry>
+<entry key="yukon.web.modules.dr.loadGroup.value.LOAD_CAPACITY">{0,number,#.#}</entry>
 
 <!-- Demand Response Home -->
 <entry key="yukon.web.modules.dr.home.pageTitle">Demand Response</entry>
@@ -103,15 +109,15 @@
 <entry key="yukon.web.modules.dr.controlAreaDetail.controlArea">Control Area {0}</entry>
 
 <entry key="yukon.web.modules.dr.controlAreaDetail.heading.info">Info</entry>
-<entry key="yukon.web.modules.dr.controlAreaDetail.heading.state">State</entry>
-<entry key="yukon.web.modules.dr.controlAreaDetail.heading.valueThreshold">Value/Threshold</entry>
-<entry key="yukon.web.modules.dr.controlAreaDetail.heading.peakProjection">Peak/Projection</entry>
-<entry key="yukon.web.modules.dr.controlAreaDetail.heading.atku">ATKU</entry>
-<entry key="yukon.web.modules.dr.controlAreaDetail.heading.priority">Priority</entry>
-<entry key="yukon.web.modules.dr.controlAreaDetail.heading.startStop">Time Window</entry>
-<entry key="yukon.web.modules.dr.controlAreaDetail.heading.loadCapacity">Load Capacity</entry>
-<entry key="yukon.web.modules.dr.controlAreaDetail.heading.triggers">Triggers</entry>
-<entry key="yukon.web.modules.dr.controlAreaDetail.heading.noTriggers">No triggers found</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.info.state">State</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.info.valueThreshold">Value/Threshold</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.info.peakProjection">Peak/Projection</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.info.atku">ATKU</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.info.priority">Priority</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.info.startStop">Time Window</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.info.loadCapacity">Load Capacity</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.info.triggers">Triggers</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.info.noTriggers">No triggers found</entry>
 
 <entry key="yukon.web.modules.dr.controlAreaDetail.heading.actions">Actions</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.actions.start">Start</entry>
@@ -163,6 +169,7 @@
 <entry key="yukon.web.modules.dr.programDetail.actions.disable">Disable</entry>
 
 <entry key="yukon.web.modules.dr.programDetail.heading.loadGroups">Load Groups</entry>
+<entry key="yukon.web.modules.dr.programDetail.loadGroups.notFound">No load groups found</entry>
 <entry key="yukon.web.modules.dr.programDetail.loadGroups.heading.name">Name</entry>
 
 <entry key="yukon.web.modules.dr.programDetail.heading.parents">Parents</entry>
@@ -186,7 +193,11 @@
 <entry key="yukon.web.modules.dr.loadGroupList.breadcrumb.loadGroups">Load Groups</entry>
 <entry key="yukon.web.modules.dr.loadGroupList.loadGroups">Load Groups</entry>
 <entry key="yukon.web.modules.dr.loadGroupList.heading.name">Name</entry>
-
+<entry key="yukon.web.modules.dr.loadGroupList.heading.state">State</entry>
+<entry key="yukon.web.modules.dr.loadGroupList.heading.lastAction">Last Action</entry>
+<entry key="yukon.web.modules.dr.loadGroupList.heading.controlStatistics">Control Statistics</entry>
+<entry key="yukon.web.modules.dr.loadGroupList.heading.reduction">Reduction</entry>
+<entry key="yukon.web.modules.dr.loadGroupList.heading.loadCapacity">Load Capacity</entry>
 
 <!-- Load Group Detail -->
 <entry key="yukon.web.modules.dr.loadGroupDetail.pageTitle">Load Group {0}</entry>
@@ -196,6 +207,12 @@
 <entry key="yukon.web.modules.dr.loadGroupDetail.loadGroup">Load Group {0}</entry>
 
 <entry key="yukon.web.modules.dr.loadGroupDetail.heading.info">Info</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.info.state">State</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.info.lastAction">Last Action</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.info.controlStatistics">Control Statistics</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.info.reduction">Reduction</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.info.loadCapacity">Load Capacity</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.info.separator">-</entry>
 
 <entry key="yukon.web.modules.dr.loadGroupDetail.heading.actions">Actions</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.actions.sendShed">Send Shed</entry>

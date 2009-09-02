@@ -42,7 +42,7 @@
 
                 <td>
                     <c:if test="${empty controlArea.triggers}">
-                        <cti:msg key="yukon.web.modules.dr.controlAreaDetail.heading.noTriggers"/>              
+                        <cti:msg key="yukon.web.modules.dr.controlAreaDetail.info.noTriggers"/>              
                     </c:if>
                     <c:forEach var="trigger" items="${controlArea.triggers}">
                            <cti:dataUpdaterValue type="DR_CONTROLAREA_TRIGGER" identifier="${controlAreaId}/${trigger.triggerNumber}/VALUE"/>
