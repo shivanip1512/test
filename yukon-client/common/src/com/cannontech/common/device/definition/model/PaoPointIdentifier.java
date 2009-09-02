@@ -4,13 +4,13 @@ import com.cannontech.common.pao.PaoIdentifier;
 
 public class PaoPointIdentifier {
     private PaoIdentifier paoIdentifier;
-    private PointIdentifier devicePointIdentifier;
+    private PointIdentifier pointIdentifier;
     
     public PaoPointIdentifier(PaoIdentifier paoIdentifier,
-            PointIdentifier devicePointIdentifier) {
+            PointIdentifier pointIdentifier) {
         super();
 		this.paoIdentifier = paoIdentifier;
-        this.devicePointIdentifier = devicePointIdentifier;
+        this.pointIdentifier = pointIdentifier;
     }
     public void setPaoIdentifier(PaoIdentifier paoIdentifier) {
 		this.paoIdentifier = paoIdentifier;
@@ -18,11 +18,10 @@ public class PaoPointIdentifier {
     public PaoIdentifier getPaoIdentifier() {
 		return paoIdentifier;
 	}
-    public PointIdentifier getDevicePointIdentifier() {
-        return devicePointIdentifier;
+    public PointIdentifier getPointIdentifier() {
+        return pointIdentifier;
     }
-    public void setDevicePointIdentifier(PointIdentifier devicePointIdentifier) {
-        this.devicePointIdentifier = devicePointIdentifier;
+    public void setPointIdentifier(PointIdentifier pointIdentifier) {
+        this.pointIdentifier = pointIdentifier;
     }
-    
 }

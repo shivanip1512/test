@@ -110,7 +110,7 @@ public class PointServiceImpl implements PointService {
     
     @Override
     public LitePoint getPointForDevice(PaoPointIdentifier paoPointIdentifier) throws NotFoundException {
-        return getPointForDevice(paoPointIdentifier.getPaoIdentifier(), paoPointIdentifier.getDevicePointIdentifier());
+        return getPointForDevice(paoPointIdentifier.getPaoIdentifier(), paoPointIdentifier.getPointIdentifier());
     }
 
     public boolean pointExistsForDevice(YukonPao pao, PointIdentifier pointIdentifier) {
@@ -129,6 +129,6 @@ public class PointServiceImpl implements PointService {
     
     @Override
     public boolean pointExistsForDevice(PaoPointIdentifier devicePointIdentifier) {
-        return pointExistsForDevice(devicePointIdentifier.getPaoIdentifier(), devicePointIdentifier.getDevicePointIdentifier());
+        return pointExistsForDevice(devicePointIdentifier.getPaoIdentifier(), devicePointIdentifier.getPointIdentifier());
     }
 }

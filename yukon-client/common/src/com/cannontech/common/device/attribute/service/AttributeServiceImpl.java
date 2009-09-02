@@ -47,14 +47,23 @@ public class AttributeServiceImpl implements AttributeService {
         // if "extra device" functionality exists, look up attribute based on that
         
         // otherwise, fallback to the type-based device definition lookup
-        BuiltInAttribute builtInAttribute = (BuiltInAttribute) attribute;
-        AttributeDefinition attributeDefinition = deviceDefinitionDao.getAttributeLookup(device.getPaoIdentifier().getPaoType(), builtInAttribute);
-        PaoPointIdentifier devicePointIdentifier = attributeDefinition.getPointIdentifier(device);
-        
+    	PaoPointIdentifier devicePointIdentifier = getPaoPointIdentifierForAttribute(device, attribute);
+
         LitePoint litePoint = pointService.getPointForDevice(devicePointIdentifier);
         return litePoint;
     }
 
+    public PaoPointIdentifier getPaoPointIdentifierForAttribute(YukonDevice device, Attribute attribute) {
+
+        // if "extra device" functionality exists, look up attribute based on that
+        
+        // otherwise, fallback to the type-based device definition lookup
+        BuiltInAttribute builtInAttribute = (BuiltInAttribute) attribute;
+        AttributeDefinition attributeDefinition = deviceDefinitionDao.getAttributeLookup(device.getPaoIdentifier().getPaoType(), builtInAttribute);
+        PaoPointIdentifier devicePointIdentifier = attributeDefinition.getPointIdentifier(device);
+        return devicePointIdentifier;
+    }
+    
     public Set<Attribute> getAvailableAttributes(YukonDevice device) {
         Set<Attribute> result = Sets.newHashSet();
         

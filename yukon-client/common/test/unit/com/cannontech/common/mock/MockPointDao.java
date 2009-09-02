@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.cannontech.common.device.definition.model.PaoPointIdentifier;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.capcontrol.CapBank;
@@ -149,5 +150,11 @@ public class MockPointDao implements PointDao {
         // TODO Auto-generated method stub
         return null;
     }
+
+	@Override
+	public PaoPointIdentifier getPaoPointIdentifier(int pointId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

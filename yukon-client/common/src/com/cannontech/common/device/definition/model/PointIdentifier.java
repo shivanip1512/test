@@ -3,6 +3,8 @@ package com.cannontech.common.device.definition.model;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.springframework.core.style.ToStringCreator;
 
+import com.cannontech.database.data.point.PointTypes;
+
 public class PointIdentifier implements Comparable<PointIdentifier> {
     private int offset;
     private int type;
@@ -12,6 +14,11 @@ public class PointIdentifier implements Comparable<PointIdentifier> {
         this.type = type;
     }
 
+    public PointIdentifier(String type, int offset) {
+        this.offset = offset;
+        this.type = PointTypes.getType(type);
+    }
+    
     public int getOffset() {
         return offset;
     }

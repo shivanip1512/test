@@ -3,6 +3,7 @@ package com.cannontech.core.dao;
 import java.util.Date;
 import java.util.List;
 
+import com.cannontech.common.device.definition.model.PaoPointIdentifier;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointLimit;
@@ -153,4 +154,6 @@ public interface PointDao {
     public double getPointMultiplier(LitePoint litePoint) throws NotFoundException;
     
     public List<LitePoint> searchByName(String name, String paoClass);
+    
+    public PaoPointIdentifier getPaoPointIdentifier(int pointId);
 }

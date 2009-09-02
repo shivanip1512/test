@@ -15,9 +15,16 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.definition.model.PaoPointIdentifier;
+import com.cannontech.common.device.definition.model.PointIdentifier;
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.database.YukonJdbcOperations;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointLimit;
@@ -74,7 +81,7 @@ public final class PointDaoImpl implements PointDao {
     };
 
     private IDatabaseCache databaseCache;
-    private SimpleJdbcTemplate simpleJdbcTemplate;
+    private YukonJdbcOperations simpleJdbcTemplate;
     private JdbcOperations jdbcOps;
     private NextValueHelper nextValueHelper;
     
@@ -410,7 +417,7 @@ public final class PointDaoImpl implements PointDao {
         this.databaseCache = databaseCache;
     }
     
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
+    public void setSimpleJdbcTemplate(YukonJdbcOperations simpleJdbcTemplate) {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
         this.jdbcOps = this.simpleJdbcTemplate.getJdbcOperations();
     }
@@ -467,4 +474,27 @@ public final class PointDaoImpl implements PointDao {
         return lrph;
     }
 
+    @Override
+    public PaoPointIdentifier getPaoPointIdentifier(int pointId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select PointOffset, PointType, p.PAObjectId, pao.Type ");
+        sql.append("from Point p");
+        sql.append("join YukonPAObject pao on p.PAObjectId = pao.PAObjectId");
+        sql.append("where p.PointId = ").appendArgument(pointId);
+        
+        PaoPointIdentifier result = simpleJdbcTemplate.queryForObject(sql, new ParameterizedRowMapper<PaoPointIdentifier>() {
+            public PaoPointIdentifier mapRow(ResultSet rs, int rowNum) throws SQLException {
+                PaoType paoType = PaoType.valueOf(rs.getString("Type"));
+                int paoId = rs.getInt("PAObjectId");
+                PaoIdentifier paoIdentifier = new PaoIdentifier(paoId, paoType);
+                
+                String pointType = rs.getString("PointType");
+                int pointOffset = rs.getInt("PointOffset");
+                PointIdentifier pointIdentifier = new PointIdentifier(pointType, pointOffset);
+                PaoPointIdentifier result = new PaoPointIdentifier(paoIdentifier, pointIdentifier);
+                return result;
+            }
+        });
+        return result;
+    }
 }

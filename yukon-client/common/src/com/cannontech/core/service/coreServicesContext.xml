@@ -47,4 +47,6 @@
   
   <bean id="paoLoadingService" class="com.cannontech.core.service.impl.PaoLoadingServiceImpl"/>
   
+  <bean id="pointMonitorService" class="com.cannontech.core.monitors.PointMonitorService"/>
+  
 </beans>

@@ -1,5 +1,7 @@
 package com.cannontech.amr.outageProcessing.service.impl;
 
+import java.util.Calendar;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.outageProcessing.OutageMonitor;
@@ -10,11 +12,13 @@ import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.OutageMonitorNotFoundException;
+import com.cannontech.core.service.SystemDateFormattingService;
 
 public class OutageMonitorServiceImpl implements OutageMonitorService {
 
 	private OutageMonitorDao outageMonitorDao;
 	private DeviceGroupEditorDao deviceGroupEditorDao;
+	private SystemDateFormattingService systemDateFormattingService;
 	
 	public StoredDeviceGroup getOutageGroup(String name) {
 		
@@ -41,6 +45,12 @@ public class OutageMonitorServiceImpl implements OutageMonitorService {
         return outageMonitorDao.delete(outageMonitorId);
 	}
 	
+	public Calendar getLatestPreviousReadingDate(OutageMonitor outageMonitor) {
+		Calendar systemCalendar = systemDateFormattingService.getSystemCalendar();
+		systemCalendar.add(Calendar.DATE, -outageMonitor.getTimePeriodDays());
+		return systemCalendar;
+	}
+	
 	@Autowired
 	public void setOutageMonitorDao(OutageMonitorDao outageMonitorDao) {
 		this.outageMonitorDao = outageMonitorDao;
@@ -49,5 +59,11 @@ public class OutageMonitorServiceImpl implements OutageMonitorService {
 	@Autowired
 	public void setDeviceGroupEditorDao(DeviceGroupEditorDao deviceGroupEditorDao) {
 		this.deviceGroupEditorDao = deviceGroupEditorDao;
+	}
+	
+	@Autowired
+	public void setSystemDateFormattingService(
+			SystemDateFormattingService systemDateFormattingService) {
+		this.systemDateFormattingService = systemDateFormattingService;
 	}
 }

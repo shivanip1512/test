@@ -1355,6 +1355,29 @@
                 <name>Disconnect Status</name>
                 <stategroup value="410 Disconnect"/>
             </point>
+            <point type="Status" offset="9">
+            	<init>true</init>
+                <name>General Alarm</name>
+                <stategroup value="TrueFalse"/>
+            </point>
+            <point type="Status" offset="10">
+            	<init>true</init>
+                <name>Power Fail</name>
+                <stategroup value="TrueFalse"/>
+            </point>
+            <point type="Status" offset="17">
+            	<init>true</init>
+                <name>Tamper Flag Set</name>
+                <stategroup value="TrueFalse"/>
+            </point>
+			<point type="Status" offset="20">
+                <name>Zero Usage (24 Hours)</name>
+                <stategroup value="TrueFalse"/>
+            </point>
+      		<point type="Status" offset="47">
+               <name>Reverse Power</name>
+               <stategroup value="TrueFalse"/>
+           </point>
             <point type="Status" offset="2000">
                 <name>Comm Status</name>
                 <stategroup value="SystemState"/>
@@ -1362,14 +1385,14 @@
         </points>
         
 		<commands>
-        	<command id="READ_UAGE">
+        	<command id="READ_USAGE">
         		<name>Read Usage</name>
         		<cmd text="getvalue kWh"/>
         		<pointRef name="kWh"/>
         		<pointRef name="kWh (Channel 2)"/>
         		<pointRef name="kWh (Channel 3)"/>
         	</command>
-			<command id="READ_USEAGE_FROZEN" enabled="false">
+			<command id="READ_USAGE_FROZEN" enabled="false">
 				<name>Read Usage (Frozen)</name>
         		<cmd text="getvalue kWh frozen"/>
         		<pointRef name="kWh"/>
@@ -1534,6 +1557,16 @@
 				<name>Read rates for Demand, LP, Volt Demand, and Volt Profile</name>
         		<cmd text="getconfig intervals"/>
         	</command>
+        	<command id="READ_INTERNAL_STATUS">
+        		<name>Read General Info</name>
+        		<cmd text="getstatus internal"/>
+        		<pointRef name="General Alarm"/>
+        		<pointRef name="Power Fail"/>
+        		<pointRef name="Tamper Flag Set"/>
+        		<pointRef name="Zero Usage (24 Hours)"/>
+        		<pointRef name="Reverse Power"/>
+        	</command>
+
         </commands>
 		<attributes>
         	<attribute name="USAGE">

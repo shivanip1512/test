@@ -318,6 +318,10 @@
         scope="prototype">
     </bean>
     
+    <bean id="generalAlarmPointMonitorProcessor" class="com.cannontech.amr.monitors.impl.GeneralAlarmPointMonitorProcessorImpl"/>
+  
+	<bean id="outagePointMonitorProcessor" class="com.cannontech.amr.monitors.impl.OutagePointMonitorProcessorImpl"/>
+    
     <!-- Outage monitor Service -->
     <bean id="outageMonitorService" class="com.cannontech.amr.outageProcessing.service.impl.OutageMonitorServiceImpl"/>
     
