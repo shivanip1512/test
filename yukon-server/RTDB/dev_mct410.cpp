@@ -1302,12 +1302,11 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
             found = getOperation(function, OutMessage->Buffer.BSt);
             string phase = parse.getsValue("phase");
             int phaseVal = 0;
-
-            switch( parse.getiValue("phaseinterval") )
+            switch( phase[0] )
             {
-                case 1:  phaseVal = 1;  break;
-                case 2:  phaseVal = 2;  break;
-                case 3:  phaseVal = 3;  break;
+                case 'a':  phaseVal = 1;  break;
+                case 'b':  phaseVal = 2;  break;
+                case 'c':  phaseVal = 3;  break;
                 default:  phaseVal = 0;  break;
             }
 
