@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/26/2009 9:59:54 AM                         */
+/* Created on:     9/3/2009 11:10:02 AM                         */
 /*==============================================================*/
 
 
@@ -420,30 +420,6 @@ drop table CustomerLoginSerialGroup cascade constraints;
 drop table CustomerNotifGroupMap cascade constraints;
 
 drop table CustomerResidence cascade constraints;
-
-drop table DCCategory cascade constraints;
-
-drop table DCCategoryItem cascade constraints;
-
-drop table DCCategoryItemType cascade constraints;
-
-drop table DCCategoryType cascade constraints;
-
-drop table DCConfiguration cascade constraints;
-
-drop table DCConfigurationCategory cascade constraints;
-
-drop table DCConfigurationCategoryType cascade constraints;
-
-drop table DCConfigurationType cascade constraints;
-
-drop table DCDeviceConfiguration cascade constraints;
-
-drop table DCDeviceConfigurationType cascade constraints;
-
-drop table DCItemType cascade constraints;
-
-drop table DCItemValue cascade constraints;
 
 drop table DEVICE cascade constraints;
 
@@ -2660,131 +2636,6 @@ create table CustomerResidence  (
    MainFuelTypeID       NUMBER                          not null,
    Notes                VARCHAR2(300),
    constraint PK_CUSTOMERRESIDENCE primary key (AccountSiteID)
-);
-
-/*==============================================================*/
-/* Table: DCCategory                                            */
-/*==============================================================*/
-create table DCCategory  (
-   CategoryID           NUMBER                          not null,
-   CategoryTypeID       NUMBER                          not null,
-   Name                 VARCHAR2(40)                    not null,
-   constraint PK_DCCATEGORY primary key (CategoryID)
-);
-
-/*==============================================================*/
-/* Table: DCCategoryItem                                        */
-/*==============================================================*/
-create table DCCategoryItem  (
-   CategoryID           NUMBER                          not null,
-   ItemTypeID           NUMBER                          not null,
-   Value                VARCHAR2(40)                    not null,
-   constraint PK_DCCATEGORYITEM primary key (CategoryID, ItemTypeID)
-);
-
-/*==============================================================*/
-/* Table: DCCategoryItemType                                    */
-/*==============================================================*/
-create table DCCategoryItemType  (
-   CategoryTypeID       NUMBER                          not null,
-   ItemTypeID           NUMBER                          not null,
-   constraint PK_DCCATEGORYITEMTYPE primary key (CategoryTypeID, ItemTypeID)
-);
-
-/*==============================================================*/
-/* Table: DCCategoryType                                        */
-/*==============================================================*/
-create table DCCategoryType  (
-   CategoryTypeID       NUMBER                          not null,
-   Name                 VARCHAR2(40)                    not null,
-   DisplayName          VARCHAR2(40)                    not null,
-   CategoryGroup        VARCHAR2(40),
-   CategoryTypeLevel    VARCHAR2(40)                    not null,
-   Description          VARCHAR2(320),
-   constraint PK_DCCATEGORYTYPE primary key (CategoryTypeID)
-);
-
-/*==============================================================*/
-/* Table: DCConfiguration                                       */
-/*==============================================================*/
-create table DCConfiguration  (
-   ConfigID             NUMBER                          not null,
-   ConfigTypeID         NUMBER                          not null,
-   Name                 VARCHAR2(40)                    not null,
-   constraint PK_DCCONFIGURATION primary key (ConfigID)
-);
-
-/*==============================================================*/
-/* Table: DCConfigurationCategory                               */
-/*==============================================================*/
-create table DCConfigurationCategory  (
-   ConfigID             NUMBER                          not null,
-   CategoryID           NUMBER                          not null,
-   constraint PK_DCCONFIGURATIONCATEGORY primary key (ConfigID, CategoryID)
-);
-
-/*==============================================================*/
-/* Table: DCConfigurationCategoryType                           */
-/*==============================================================*/
-create table DCConfigurationCategoryType  (
-   ConfigTypeID         NUMBER                          not null,
-   CategoryTypeID       NUMBER                          not null,
-   constraint PK_DCCONFIGURATIONCATEGORYTYPE primary key (ConfigTypeID, CategoryTypeID)
-);
-
-/*==============================================================*/
-/* Table: DCConfigurationType                                   */
-/*==============================================================*/
-create table DCConfigurationType  (
-   ConfigTypeID         NUMBER                          not null,
-   Name                 VARCHAR2(40)                    not null,
-   DisplayName          VARCHAR2(40)                    not null,
-   Description          VARCHAR2(320),
-   constraint PK_DCCONFIGURATIONTYPE primary key (ConfigTypeID)
-);
-
-/*==============================================================*/
-/* Table: DCDeviceConfiguration                                 */
-/*==============================================================*/
-create table DCDeviceConfiguration  (
-   DeviceID             NUMBER                          not null,
-   ConfigID             NUMBER                          not null,
-   constraint PK_DCDEVICECONFIGURATION primary key (DeviceID, ConfigID)
-);
-
-/*==============================================================*/
-/* Table: DCDeviceConfigurationType                             */
-/*==============================================================*/
-create table DCDeviceConfigurationType  (
-   ConfigTypeID         NUMBER                          not null,
-   DeviceType           VARCHAR2(30)                    not null,
-   constraint PK_DCDEVICECONFIGURATIONTYPE primary key (ConfigTypeID, DeviceType)
-);
-
-/*==============================================================*/
-/* Table: DCItemType                                            */
-/*==============================================================*/
-create table DCItemType  (
-   ItemTypeID           NUMBER                          not null,
-   Name                 VARCHAR2(40)                    not null,
-   DisplayName          VARCHAR2(40)                    not null,
-   ValidationType       VARCHAR2(40),
-   Required             CHAR(1)                         not null,
-   MinValue             NUMBER                          not null,
-   MaxValue             NUMBER                          not null,
-   DefaultValue         VARCHAR2(40),
-   Description          VARCHAR2(320),
-   constraint PK_DCITEMTYPE primary key (ItemTypeID)
-);
-
-/*==============================================================*/
-/* Table: DCItemValue                                           */
-/*==============================================================*/
-create table DCItemValue  (
-   ItemTypeID           NUMBER                          not null,
-   Value                VARCHAR2(40)                    not null,
-   ValueOrder           NUMBER                          not null,
-   constraint PK_DCITEMVALUE primary key (ItemTypeID, ValueOrder)
 );
 
 /*==============================================================*/
@@ -10948,62 +10799,6 @@ alter table CustomerResidence
 alter table CustomerResidence
    add constraint FK_CstRes_YkLst9 foreign key (MainHeatingSystemID)
       references YukonListEntry (EntryID);
-
-alter table DCCategory
-   add constraint FK_DCCAT_DCCATTYPE foreign key (CategoryTypeID)
-      references DCCategoryType (CategoryTypeID);
-
-alter table DCCategoryItem
-   add constraint FK_DCCATITEM_DCCAT foreign key (CategoryID)
-      references DCCategory (CategoryID);
-
-alter table DCCategoryItem
-   add constraint FK_DCCATITEM_DCITEMTYPE foreign key (ItemTypeID)
-      references DCItemType (ItemTypeID);
-
-alter table DCCategoryItemType
-   add constraint FK_DCCATITEMTYPE_DCCATTYPE foreign key (CategoryTypeID)
-      references DCCategoryType (CategoryTypeID);
-
-alter table DCCategoryItemType
-   add constraint FK_DCITEMTY_DCCATITEMTY foreign key (ItemTypeID)
-      references DCItemType (ItemTypeID);
-
-alter table DCConfiguration
-   add constraint FK_DCCONFIG_DCCONFIGTYPE foreign key (ConfigTypeID)
-      references DCConfigurationType (ConfigTypeID);
-
-alter table DCConfigurationCategory
-   add constraint FK_DCCONFIGCAT_DCCAT foreign key (CategoryID)
-      references DCCategory (CategoryID);
-
-alter table DCConfigurationCategory
-   add constraint FK_DCCONFIGCAT_DCCONFIG foreign key (ConfigID)
-      references DCConfiguration (ConfigID);
-
-alter table DCConfigurationCategoryType
-   add constraint FK_DCCATTYPE_DCCFGCATTYPE foreign key (CategoryTypeID)
-      references DCCategoryType (CategoryTypeID);
-
-alter table DCConfigurationCategoryType
-   add constraint FK_DCCFGTYPE_DCCFGCATTYPE foreign key (ConfigTypeID)
-      references DCConfigurationType (ConfigTypeID);
-
-alter table DCDeviceConfiguration
-   add constraint FK_DCDEVCONFIG_DCCONFIG foreign key (ConfigID)
-      references DCConfiguration (ConfigID);
-
-alter table DCDeviceConfiguration
-   add constraint FK_DCDEVCONFIG_YKPAO foreign key (DeviceID)
-      references YukonPAObject (PAObjectID);
-
-alter table DCDeviceConfigurationType
-   add constraint FK_DCCFGTYPE_DCCFGDVCFGTYPE foreign key (ConfigTypeID)
-      references DCConfigurationType (ConfigTypeID);
-
-alter table DCItemValue
-   add constraint FK_DCIITEMVALUE_DCITEMTYPE foreign key (ItemTypeID)
-      references DCItemType (ItemTypeID);
 
 alter table DEVICE
    add constraint FK_Dev_YukPAO foreign key (DEVICEID)

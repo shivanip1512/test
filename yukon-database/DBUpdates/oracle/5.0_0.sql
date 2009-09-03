@@ -760,6 +760,21 @@ INSERT INTO DeviceTypeCommand VALUES (-808, -31, 'CBC DNP', 2, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-809, -173, 'CBC DNP', 3, 'Y', -1);
 /* End YUK-7718 */
 
+/* Start YUK-7810 */
+DROP TABLE DCCategoryitemType CASCADE CONSTRAINTS;
+DROP TABLE DCCategoryItem CASCADE CONSTRAINTS;
+DROP TABLE DCItemValue CASCADE CONSTRAINTS;
+DROP TABLE DCItemType CASCADE CONSTRAINTS;
+DROP TABLE DCConfigurationCategory CASCADE CONSTRAINTS;
+DROP TABLE DCCategory CASCADE CONSTRAINTS;
+DROP TABLE DCConfigurationCategoryType CASCADE CONSTRAINTS;
+DROP TABLE DCCategoryType CASCADE CONSTRAINTS;
+DROP TABLE DCDeviceConfiguration CASCADE CONSTRAINTS;
+DROP TABLE DCConfiguration CASCADE CONSTRAINTS;
+DROP TABLE DCDeviceConfigurationType CASCADE CONSTRAINTS;
+DROP TABLE DCConfigurationType CASCADE CONSTRAINTS;
+/* End YUK-7810 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

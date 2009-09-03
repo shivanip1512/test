@@ -739,6 +739,21 @@ INSERT INTO DeviceTypeCommand VALUES (-808, -31, 'CBC DNP', 2, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-809, -173, 'CBC DNP', 3, 'Y', -1);
 /* End YUK-7718 */
 
+/* Start YUK-7810 */
+DROP TABLE DCCategoryitemType;
+DROP TABLE DCCategoryItem;
+DROP TABLE DCItemValue;
+DROP TABLE DCItemType;
+DROP TABLE DCConfigurationCategory;
+DROP TABLE DCCategory;
+DROP TABLE DCConfigurationCategoryType;
+DROP TABLE DCCategoryType;
+DROP TABLE DCDeviceConfiguration;
+DROP TABLE DCConfiguration;
+DROP TABLE DCDeviceConfigurationType;
+DROP TABLE DCConfigurationType;
+/* End YUK-7810 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
