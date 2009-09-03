@@ -22,7 +22,8 @@
 #include <rw/thr/recursiv.h> 
 
 #include "observe.h"
-                
+#include "ctidate.h"
+
 class CtiLMProgramControlWindow : public RWCollectable
 {
 
@@ -38,8 +39,8 @@ RWDECLARE_COLLECTABLE( CtiLMProgramControlWindow )
 
     LONG getPAOId() const;
     LONG getWindowNumber() const;
-    CtiTime getAvailableStartTime() const;
-    CtiTime getAvailableStopTime() const;
+    CtiTime getAvailableStartTime(CtiDate &defaultDate = CtiDate::now()) const;
+    CtiTime getAvailableStopTime(CtiDate &defaultDate = CtiDate::now()) const;
 
     CtiLMProgramControlWindow& setPAOId(LONG paoid);
     CtiLMProgramControlWindow& setWindowNumber(LONG winnum);

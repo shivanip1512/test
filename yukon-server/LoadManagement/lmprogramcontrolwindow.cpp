@@ -78,13 +78,9 @@ LONG CtiLMProgramControlWindow::getWindowNumber() const
     Returns the available start time as the number of seconds from midnight
     for the program control window.
 ---------------------------------------------------------------------------*/
-CtiTime CtiLMProgramControlWindow::getAvailableStartTime() const
+CtiTime CtiLMProgramControlWindow::getAvailableStartTime(CtiDate &defaultDate) const
 {
-    int hours   =  _availablestarttime/3600;
-    int minutes = (_availablestarttime%3600)/60;
-    int seconds = (_availablestarttime%3600)%60;
-
-    return CtiTime(hours, minutes, seconds); // This produces a time of today that is DST correct.
+    return CtiTime(defaultDate) + _availablestarttime;; // This produces a time of today that is DST correct.
 }
 
 /*---------------------------------------------------------------------------
@@ -93,13 +89,9 @@ CtiTime CtiLMProgramControlWindow::getAvailableStartTime() const
     Returns the available stop time as the number of seconds from midnight
     for the program control window.
 ---------------------------------------------------------------------------*/
-CtiTime CtiLMProgramControlWindow::getAvailableStopTime() const
+CtiTime CtiLMProgramControlWindow::getAvailableStopTime(CtiDate &defaultDate) const
 {
-    int hours   =  _availablestoptime/3600;
-    int minutes = (_availablestoptime%3600)/60;
-    int seconds = (_availablestoptime%3600)%60;
-
-    return CtiTime(hours, minutes, seconds);
+    return CtiTime(defaultDate) + _availablestoptime;
 }
 
 /*---------------------------------------------------------------------------

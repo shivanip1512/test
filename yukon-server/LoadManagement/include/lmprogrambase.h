@@ -26,6 +26,7 @@
 #include "msg_multi.h"
 #include "lmgroupbase.h"
 #include "lmcontrolareatrigger.h"
+#include "ctidate.h"
 
 class CtiLMProgramControlWindow;
 class CtiLMControlArea;
@@ -133,7 +134,7 @@ public:
     virtual BOOL isReadyForTimedControl(LONG secondsFromBeginningOfDay);
     virtual BOOL handleTimedControl(ULONG secondsFrom1901, LONG secondsFromBeginningOfDay, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg);
     virtual BOOL isPastMinRestartTime(ULONG secondsFrom1901);
-    virtual CtiLMProgramControlWindow* getControlWindow(LONG secondsFromBeginningOfDay);
+    virtual CtiLMProgramControlWindow* getControlWindow(LONG secondsFromBeginningOfDay, CtiDate &defaultDate = CtiDate::now());
     virtual CtiLMProgramControlWindow* getNextControlWindow(LONG secondsFromBeginningOfDay);
 
     virtual void setDirty(BOOL b=TRUE);
