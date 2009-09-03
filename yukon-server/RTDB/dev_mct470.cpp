@@ -28,6 +28,7 @@
 #include "numstr.h"
 #include "ctistring.h"
 #include "config_data_mct.h"
+#include "da_lp_deviceconfig.h"
 #include <string>
 
 using Cti::Protocol::Emetcon;
@@ -35,7 +36,8 @@ using namespace Cti::Config;
 
 const CtiDeviceMCT470::CommandSet       CtiDeviceMCT470::_commandStore = CtiDeviceMCT470::initCommandStore();
 const CtiDeviceMCT470::read_key_store_t CtiDeviceMCT470::_readKeyStore = CtiDeviceMCT470::initReadKeyStore();
-
+const CtiDeviceMCT470::ConfigPartsList  CtiDeviceMCT470::_config_parts_430 = CtiDeviceMCT470::initConfigParts430();
+const CtiDeviceMCT470::ConfigPartsList  CtiDeviceMCT470::_config_parts_470 = CtiDeviceMCT470::initConfigParts470();
 
 const CtiDeviceMCT470::error_set CtiDeviceMCT470::_error_info_old_lp    = CtiDeviceMCT470::initErrorInfoOldLP();
 const CtiDeviceMCT470::error_set CtiDeviceMCT470::_error_info_lgs4      = CtiDeviceMCT470::initErrorInfoLGS4();
@@ -48,13 +50,11 @@ CtiDeviceMCT470::CtiDeviceMCT470( ) :
     _lastConfigRequest(0),
     _precannedTableCurrent(false)  //default to false on each startup, since we don't persist this boolean
 {
-    _config_parts = initConfigParts();
 }
 
 CtiDeviceMCT470::CtiDeviceMCT470( const CtiDeviceMCT470 &aRef )
 {
     *this = aRef;
-    _config_parts = initConfigParts();
 }
 
 CtiDeviceMCT470::~CtiDeviceMCT470( )
@@ -71,7 +71,7 @@ CtiDeviceMCT470 &CtiDeviceMCT470::operator=( const CtiDeviceMCT470 &aRef )
     return *this;
 }
 
-CtiDeviceMCT470::ConfigPartsList CtiDeviceMCT470::initConfigParts()
+CtiDeviceMCT470::ConfigPartsList CtiDeviceMCT470::initConfigParts430()
 {
     CtiDeviceMCT470::ConfigPartsList tempList;
 
@@ -83,19 +83,36 @@ CtiDeviceMCT470::ConfigPartsList CtiDeviceMCT470::initConfigParts()
     tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_precanned_table);
     tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_configbyte);
 
-    //These only get set if it is a 470 meter.
-    if( getType() == TYPEMCT470 )
-    {
-        tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_relays);
-        tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_tou);
-    }
+    return tempList;
+}
+
+CtiDeviceMCT470::ConfigPartsList CtiDeviceMCT470::initConfigParts470()
+{
+    CtiDeviceMCT470::ConfigPartsList tempList;
+
+    tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_timezone);
+    tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_time_adjust_tolerance);
+    tempList.push_back(CtiDeviceMCT4xx::PutConfidPart_spid);//Before Precanned Table
+    tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_demand_lp);
+    tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_lpchannel);
+    tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_precanned_table);
+    tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_configbyte);
+    tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_relays);
+    tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_tou);
 
     return tempList;
 }
 
 CtiDeviceMCT470::ConfigPartsList CtiDeviceMCT470::getPartsList()
 {
-    return _config_parts;
+    if (getType() == TYPEMCT470)
+    {
+        return _config_parts_470;
+    }
+    else
+    {
+        return _config_parts_430;
+    }
 }
 
 CtiDeviceMCT470::CommandSet CtiDeviceMCT470::initCommandStore( )
@@ -408,7 +425,7 @@ bool CtiDeviceMCT470::isLPDynamicInfoCurrent( void )
     retval &= hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration);
 
     //  note that we're verifying this against the interval that's in the database - more things will be used this way in the future
-    retval &= (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) == getLoadProfile().getLoadProfileDemandRate());
+    retval &= (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) == getLoadProfile()->getLoadProfileDemandRate());
 
     //  we don't use the second load profile rate yet
     //retval |= (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval2) == getLoadProfile().getVoltageProfileDemandRate());
@@ -537,7 +554,7 @@ ULONG CtiDeviceMCT470::calcNextLPScanTime( void )
         //  i'm purposely using the DB rate instead of the fancy getLoadProfileInterval() call here, so it can be ignorant
         //    of the dynamic LP config info - this could probably be improved to look at the minimum of the available
         //    LP intervals (interval 1, interval 2, electronic)
-        unsigned int overdue_rate = getLPRetryRate(getLoadProfile().getLoadProfileDemandRate());
+        unsigned int overdue_rate = getLPRetryRate(getLoadProfile()->getLoadProfileDemandRate());
 
         //  only try for the dynamic info at the retry rate, no faster
         next_time  = (Now.seconds() - LPBlockEvacuationTime) + overdue_rate;
@@ -570,7 +587,7 @@ ULONG CtiDeviceMCT470::calcNextLPScanTime( void )
                 CtiPointSPtr pPoint = getDevicePointOffsetTypeEqual((i+1) + PointOffset_LoadProfileOffset, DemandAccumulatorPointType);
 
                 //  if we're not collecting load profile, or there's no point defined, don't scan
-                if( !getLoadProfile().isChannelValid(i) || !pPoint )
+                if( !getLoadProfile()->isChannelValid(i) || !pPoint )
                 {
                     _lp_info[i].collection_point = YUKONEOT;
 
@@ -677,6 +694,25 @@ void CtiDeviceMCT470::sendIntervals( OUTMESS *&OutMessage, list< OUTMESS* > &out
     OutMessage = NULL;
 }
 
+boost::shared_ptr<DataAccessLoadProfile> CtiDeviceMCT470::getLoadProfile()
+{
+    boost::shared_ptr<DataAccessLoadProfile> lp;
+    Cti::Config::CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
+
+    if (deviceConfig)
+    {
+        DeviceConfigurationLoadProfileData* loadProfileData = new DeviceConfigurationLoadProfileData();
+        loadProfileData->setDeviceConfig(deviceConfig);
+
+        lp = boost::shared_ptr<DataAccessLoadProfile>(loadProfileData);
+    }
+    else
+    {
+        lp = Inherited::getLoadProfile();
+    }
+
+    return lp;
+}
 
 //  zero-based channel offset
 long CtiDeviceMCT470::getLoadProfileInterval( unsigned channel )
@@ -730,7 +766,7 @@ long CtiDeviceMCT470::getLoadProfileInterval( unsigned channel )
             dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" - load profile interval requested, but value not retrieved...  sending DB value **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        retval = getLoadProfile().getLoadProfileDemandRate();
+        retval = getLoadProfile()->getLoadProfileDemandRate();
     }
     else if( retval == 0 )
     {
@@ -739,7 +775,7 @@ long CtiDeviceMCT470::getLoadProfileInterval( unsigned channel )
             dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" - channel " << channel << " LP interval returned zero, returning DB interval **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        retval = getLoadProfile().getLoadProfileDemandRate();
+        retval = getLoadProfile()->getLoadProfileDemandRate();
     }
 
     return retval;
@@ -1010,7 +1046,7 @@ INT CtiDeviceMCT470::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
                      || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) == MCT430A_Sspec
                      || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) == MCT430S_Sspec )
             {
-                if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) != getLoadProfile().getLoadProfileDemandRate() )
+                if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) != getLoadProfile()->getLoadProfileDemandRate() )
                 {
                     OUTMESS *om = CTIDBG_new OUTMESS(*OutMessage);
 
@@ -1036,7 +1072,7 @@ INT CtiDeviceMCT470::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
             }
             else
             {
-                if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) != getLoadProfile().getLoadProfileDemandRate() )
+                if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) != getLoadProfile()->getLoadProfileDemandRate() )
                 {
                     if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) )
                     {
@@ -1065,7 +1101,7 @@ INT CtiDeviceMCT470::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
             interval_len = getLoadProfileInterval(i);
             block_len    = interval_len * 6;
 
-            if( getLoadProfile().isChannelValid(i) )
+            if( getLoadProfile()->isChannelValid(i) )
             {
                 if( _lp_info[i].collection_point <= (Now - block_len - LPBlockEvacuationTime) &&
                     _lp_info[i].current_schedule <= Now )
@@ -2696,24 +2732,22 @@ int CtiDeviceMCT470::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiC
     int nRet = NORMAL;
     long value;
     CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
-    bool is470 = getType() == TYPEMCT470;
 
     if (deviceConfig)
     {
-        int blah;
         unsigned ratio1, kRatio1, ratio2, kRatio2;
 
-        long channel1 = deviceConfig->getLongValueFromKey(MCTStrings::ChannelConfig1);
-        long channel2 = deviceConfig->getLongValueFromKey(MCTStrings::ChannelConfig2);
-        double multiplier2 = deviceConfig->getFloatValueFromKey(MCTStrings::ChannelMultiplier2);
-
-        //If this is a 470, Multiplier1 will be there.
         double multiplier1 = deviceConfig->getFloatValueFromKey(MCTStrings::ChannelMultiplier1);
+        long channel1 = deviceConfig->getLongValueFromKey(MCTStrings::ChannelConfig1);
+        long peakKwResolution1 = deviceConfig->getLongValueFromKey(MCTStrings::PeakKwResolution1);
+        long lastIntervalDemandResolution1 = deviceConfig->getLongValueFromKey(MCTStrings::LastIntervalDemandResolution1);
+        long lpResolution1 = deviceConfig->getLongValueFromKey(MCTStrings::LoadProfileResolution1);
 
-        //If this is a 430,  the three resolutions will be in the config instead
-        long peakKwResolution = deviceConfig->getLongValueFromKey(MCTStrings::PeakKwResolution);
-        long lastIntervalDemandResolution = deviceConfig->getLongValueFromKey(MCTStrings::LastIntervalDemandResolution);;
-        long lpResoluion = deviceConfig->getLongValueFromKey(MCTStrings::LoadProfileResolution);;
+        double multiplier2 = deviceConfig->getFloatValueFromKey(MCTStrings::ChannelMultiplier2);
+        long channel2 = deviceConfig->getLongValueFromKey(MCTStrings::ChannelConfig2);
+        long peakKwResolution2 = deviceConfig->getLongValueFromKey(MCTStrings::PeakKwResolution2);
+        long lastIntervalDemandResolution2 = deviceConfig->getLongValueFromKey(MCTStrings::LastIntervalDemandResolution2);
+        long lpResolution2 = deviceConfig->getLongValueFromKey(MCTStrings::LoadProfileResolution2);
 
         long spid = CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_AddressServiceProviderID);
 
@@ -2732,12 +2766,12 @@ int CtiDeviceMCT470::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiC
 
         if (   channel1 == std::numeric_limits<long>::min()
             || channel2 == std::numeric_limits<long>::min()
-            || (is470 && multiplier1 == std::numeric_limits<double>::min())
-            || multiplier2 == std::numeric_limits<double>::min()
-            || spid == std::numeric_limits<long>::min()
-            || (!is470 && peakKwResolution == std::numeric_limits<long>::min())
-            || (!is470 && lastIntervalDemandResolution == std::numeric_limits<long>::min())
-            || (!is470 && lpResoluion == std::numeric_limits<long>::min()))
+            || peakKwResolution1 == std::numeric_limits<long>::min()
+            || lastIntervalDemandResolution1 == std::numeric_limits<long>::min()
+            || lpResolution1 == std::numeric_limits<long>::min()
+            || peakKwResolution2 == std::numeric_limits<long>::min()
+            || lastIntervalDemandResolution2 == std::numeric_limits<long>::min()
+            || lpResolution2 == std::numeric_limits<long>::min())
         {
             if( getMCTDebugLevel(DebugLevel_Configs) )
             {
@@ -2746,63 +2780,49 @@ int CtiDeviceMCT470::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiC
             }
             nRet = NoConfigData;
         }
-        else if( (is470 && !computeMultiplierFactors(multiplier1, ratio1, kRatio1)) || !computeMultiplierFactors(multiplier2, ratio2, kRatio2) )
-        {
-            if( getMCTDebugLevel(DebugLevel_Configs) )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Configs - Cannot compute multiplier " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-            nRet = NoConfigData;
-        }
         else
         {
-            //If this is a 430, we are using 0x89 to hold a resolutionByte instead of the ratio
-            if (!is470)
+            if ((setupRatioBytesBasedOnMeterType(channel1,multiplier1,peakKwResolution1,lastIntervalDemandResolution1,lpResolution1,ratio1,kRatio1) == NORMAL) &&
+                (setupRatioBytesBasedOnMeterType(channel2,multiplier2,peakKwResolution2,lastIntervalDemandResolution2,lpResolution2,ratio2,kRatio2) == NORMAL))
             {
-                unsigned char resolutionByte = computeResolutionByte(lpResoluion,peakKwResolution,lastIntervalDemandResolution);
-
-                ratio1 = (unsigned)resolutionByte;
-                kRatio1 = 0;// 0 ok here?
-            }
-
-            if (parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig1)  != channel1
-                                           || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig2) != channel2
-                                           || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio1) != ratio1
-                                           || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio2)    != ratio2
-                                           || (is470 && CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio1) != kRatio1)
-                                           || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio2)        != kRatio2)
-            {
-                if( !parse.isKeyValid("verify") )
+                if (parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig1)  != channel1
+                                              || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig2) != channel2
+                                              || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio1) != ratio1
+                                              || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio2) != ratio2
+                                              || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio1) != kRatio1
+                                              || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio2) != kRatio2)
                 {
-                    OutMessage->Buffer.BSt.Function    = FuncWrite_SetupLPChannelsPos;
-                    OutMessage->Buffer.BSt.Length      = FuncWrite_SetupLPChannelsLen;
-                    OutMessage->Buffer.BSt.IO          = Emetcon::IO_Function_Write;
-                    OutMessage->Buffer.BSt.Message[0]  = spid;
-                    OutMessage->Buffer.BSt.Message[1]  = 1;
-                    OutMessage->Buffer.BSt.Message[2]  = (channel1);
-                    OutMessage->Buffer.BSt.Message[3]  = (ratio1>>8);
-                    OutMessage->Buffer.BSt.Message[4]  = (ratio1);
-                    OutMessage->Buffer.BSt.Message[5]  = (kRatio1>>8);
-                    OutMessage->Buffer.BSt.Message[6]  = (kRatio1);
-                    OutMessage->Buffer.BSt.Message[7]  = 2;
-                    OutMessage->Buffer.BSt.Message[8]  = (channel2);
-                    OutMessage->Buffer.BSt.Message[9]  = (ratio2>>8);
-                    OutMessage->Buffer.BSt.Message[10] = (ratio2);
-                    OutMessage->Buffer.BSt.Message[11] = (kRatio2>>8);
-                    OutMessage->Buffer.BSt.Message[12] = (kRatio2);
+                    if( !parse.isKeyValid("verify") )
+                    {
+                        OutMessage->Buffer.BSt.Function    = FuncWrite_SetupLPChannelsPos;
+                        OutMessage->Buffer.BSt.Length      = FuncWrite_SetupLPChannelsLen;
+                        OutMessage->Buffer.BSt.IO          = Emetcon::IO_Function_Write;
+                        OutMessage->Buffer.BSt.Message[0]  = spid;
+                        OutMessage->Buffer.BSt.Message[1]  = 1;
+                        OutMessage->Buffer.BSt.Message[2]  = (channel1);
+                        OutMessage->Buffer.BSt.Message[3]  = (ratio1>>8);
+                        OutMessage->Buffer.BSt.Message[4]  = (ratio1);
+                        OutMessage->Buffer.BSt.Message[5]  = (kRatio1>>8);
+                        OutMessage->Buffer.BSt.Message[6]  = (kRatio1);
+                        OutMessage->Buffer.BSt.Message[7]  = 2;
+                        OutMessage->Buffer.BSt.Message[8]  = (channel2);
+                        OutMessage->Buffer.BSt.Message[9]  = (ratio2>>8);
+                        OutMessage->Buffer.BSt.Message[10] = (ratio2);
+                        OutMessage->Buffer.BSt.Message[11] = (kRatio2>>8);
+                        OutMessage->Buffer.BSt.Message[12] = (kRatio2);
 
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
+                    }
+                    else
+                    {
+                        nRet = ConfigNotCurrent;
+                    }
                 }
-                else
+                else if( nRet == NORMAL )
                 {
-                    nRet = ConfigNotCurrent;
+                    nRet = ConfigCurrent;
                 }
-            }
-            else if( nRet == NORMAL )
-            {
-                nRet = ConfigCurrent;
             }
         }
 
@@ -2817,16 +2837,26 @@ int CtiDeviceMCT470::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiC
             OutMessage->Priority             += 1;//return to normal
         }
 
-        channel1 = deviceConfig->getLongValueFromKey(MCTStrings::ChannelConfig3);
-        channel2 = deviceConfig->getLongValueFromKey(MCTStrings::ChannelConfig4);
         multiplier1 = deviceConfig->getFloatValueFromKey(MCTStrings::ChannelMultiplier3);
-        multiplier2 = deviceConfig->getFloatValueFromKey(MCTStrings::ChannelMultiplier4);
+        channel1 = deviceConfig->getLongValueFromKey(MCTStrings::ChannelConfig3);
+        peakKwResolution1 = deviceConfig->getLongValueFromKey(MCTStrings::PeakKwResolution3);
+        lastIntervalDemandResolution1 = deviceConfig->getLongValueFromKey(MCTStrings::LastIntervalDemandResolution3);
+        lpResolution1 = deviceConfig->getLongValueFromKey(MCTStrings::LoadProfileResolution3);
 
-        if (channel1 == std::numeric_limits<long>::min()
+        multiplier2 = deviceConfig->getFloatValueFromKey(MCTStrings::ChannelMultiplier4);
+        channel2 = deviceConfig->getLongValueFromKey(MCTStrings::ChannelConfig4);
+        peakKwResolution2 = deviceConfig->getLongValueFromKey(MCTStrings::PeakKwResolution4);
+        lastIntervalDemandResolution2 = deviceConfig->getLongValueFromKey(MCTStrings::LastIntervalDemandResolution4);
+        lpResolution2 = deviceConfig->getLongValueFromKey(MCTStrings::LoadProfileResolution4);
+
+        if (   channel1 == std::numeric_limits<long>::min()
             || channel2 == std::numeric_limits<long>::min()
-            || multiplier1 == std::numeric_limits<double>::min()
-            || multiplier2 == std::numeric_limits<double>::min()
-            || spid == std::numeric_limits<long>::min() )
+            || peakKwResolution1 == std::numeric_limits<long>::min()
+            || lastIntervalDemandResolution1 == std::numeric_limits<long>::min()
+            || lpResolution1 == std::numeric_limits<long>::min()
+            || peakKwResolution2 == std::numeric_limits<long>::min()
+            || lastIntervalDemandResolution2 == std::numeric_limits<long>::min()
+            || lpResolution2 == std::numeric_limits<long>::min())
         {
             if( getMCTDebugLevel(DebugLevel_Configs) )
             {
@@ -2835,56 +2865,49 @@ int CtiDeviceMCT470::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiC
             }
             nRet = NoConfigData;
         }
-        else if( !computeMultiplierFactors(multiplier1, ratio1, kRatio1) || !computeMultiplierFactors(multiplier2, ratio2, kRatio2) )
-        {
-            if( getMCTDebugLevel(DebugLevel_Configs) )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Configs - Cannot compute multiplier " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-            nRet = NoConfigData;
-        }
         else
         {
-            if( parse.isKeyValid("force")
-                || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig3) != channel1
-                || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig4) != channel2
-                || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio3)    != ratio1
-                || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio4)    != ratio2
-                || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio3)        != kRatio1
-                || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio4)        != kRatio2 )
+            if ((setupRatioBytesBasedOnMeterType(channel1,multiplier1,peakKwResolution1,lastIntervalDemandResolution1,lpResolution1,ratio1,kRatio1) == NORMAL) &&
+                (setupRatioBytesBasedOnMeterType(channel2,multiplier2,peakKwResolution2,lastIntervalDemandResolution2,lpResolution2,ratio2,kRatio2) == NORMAL))
             {
-                if( !parse.isKeyValid("verify") )
+                if( parse.isKeyValid("force")
+                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig3) != channel1
+                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig4) != channel2
+                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio3)    != ratio1
+                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio4)    != ratio2
+                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio3)        != kRatio1
+                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio4)        != kRatio2 )
                 {
-                    OutMessage->Buffer.BSt.Function    = FuncWrite_SetupLPChannelsPos;
-                    OutMessage->Buffer.BSt.Length      = FuncWrite_SetupLPChannelsLen;
-                    OutMessage->Buffer.BSt.IO          = Emetcon::IO_Function_Write;
-                    OutMessage->Buffer.BSt.Message[0]  = spid;
-                    OutMessage->Buffer.BSt.Message[1]  = 3;
-                    OutMessage->Buffer.BSt.Message[2]  = (channel1);
-                    OutMessage->Buffer.BSt.Message[3]  = (ratio1>>8);
-                    OutMessage->Buffer.BSt.Message[4]  = (ratio1);
-                    OutMessage->Buffer.BSt.Message[5]  = (kRatio1>>8);
-                    OutMessage->Buffer.BSt.Message[6]  = (kRatio1);
-                    OutMessage->Buffer.BSt.Message[7]  = 4;
-                    OutMessage->Buffer.BSt.Message[8]  = (channel2);
-                    OutMessage->Buffer.BSt.Message[9]  = (ratio2>>8);
-                    OutMessage->Buffer.BSt.Message[10] = (ratio2);
-                    OutMessage->Buffer.BSt.Message[11] = (kRatio2>>8);
-                    OutMessage->Buffer.BSt.Message[12] = (kRatio2);
+                    if( !parse.isKeyValid("verify") )
+                    {
+                        OutMessage->Buffer.BSt.Function    = FuncWrite_SetupLPChannelsPos;
+                        OutMessage->Buffer.BSt.Length      = FuncWrite_SetupLPChannelsLen;
+                        OutMessage->Buffer.BSt.IO          = Emetcon::IO_Function_Write;
+                        OutMessage->Buffer.BSt.Message[0]  = spid;
+                        OutMessage->Buffer.BSt.Message[1]  = 3;
+                        OutMessage->Buffer.BSt.Message[2]  = (channel1);
+                        OutMessage->Buffer.BSt.Message[3]  = (ratio1>>8);
+                        OutMessage->Buffer.BSt.Message[4]  = (ratio1);
+                        OutMessage->Buffer.BSt.Message[5]  = (kRatio1>>8);
+                        OutMessage->Buffer.BSt.Message[6]  = (kRatio1);
+                        OutMessage->Buffer.BSt.Message[7]  = 4;
+                        OutMessage->Buffer.BSt.Message[8]  = (channel2);
+                        OutMessage->Buffer.BSt.Message[9]  = (ratio2>>8);
+                        OutMessage->Buffer.BSt.Message[10] = (ratio2);
+                        OutMessage->Buffer.BSt.Message[11] = (kRatio2>>8);
+                        OutMessage->Buffer.BSt.Message[12] = (kRatio2);
 
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                    }
+                    else
+                    {
+                        nRet = ConfigNotCurrent;
+                    }
                 }
-                else
+                else if( nRet == NORMAL )
                 {
-                    nRet = ConfigNotCurrent;
+                    nRet = ConfigCurrent;
                 }
-            }
-            else if( nRet == NORMAL )
-            {
-                nRet = ConfigCurrent;
             }
         }
 
@@ -2900,7 +2923,9 @@ int CtiDeviceMCT470::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiC
         }
     }
     else
+    {
         nRet = NoConfigData;
+    }
 
     return nRet;
 }
@@ -5443,4 +5468,46 @@ unsigned char CtiDeviceMCT470::computeResolutionByte(double lpResolution, double
     resolutionByte |= (lastIntrvlByte & 0x07) << 4;
 
     return resolutionByte;
+}
+
+int CtiDeviceMCT470::setupRatioBytesBasedOnMeterType(int channel, double multiplier, long peakKwResolution, long lastIntervalDemandResolution, long lpResolution, unsigned int &ratio, unsigned int &kRatio)
+{
+    int nRet = NORMAL;
+    int meterType = channel & 0x03;
+
+    switch (meterType)
+    {
+        case Electronic:
+        {
+            unsigned char resolutionByte = computeResolutionByte(lpResolution,peakKwResolution,lastIntervalDemandResolution);
+
+            ratio = 0;
+            kRatio = (unsigned)resolutionByte;// 0 ok here?
+
+            break;
+        }
+        case NotUsed:
+        {
+            ratio = 0;
+            kRatio = 0;
+            break;
+        }
+        case TwoWireKYZ:
+        case ThreeWireKYZ:
+        {
+            if (!computeMultiplierFactors(multiplier, ratio, kRatio))
+            {
+                if( getMCTDebugLevel(DebugLevel_Configs) )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " Configs - Cannot compute multiplier " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                nRet = NoConfigData;
+            }
+            break;
+        }
+    }
+
+    return nRet;
 }

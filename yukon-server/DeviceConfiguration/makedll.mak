@@ -41,6 +41,7 @@ $(COMPILEBASE)\lib\clrdump.lib
 DLLOBJS = \
 config_device.obj \
 config_strings.obj \
+da_lp_deviceconfig.obj \
 
 
 CTIPROGS=\

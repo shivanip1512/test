@@ -37,8 +37,9 @@
 #include "dbmemobject.h"
 #include "dbaccess.h"
 #include "resolvers.h"
+#include "da_load_profile.h"
 
-class IM_EX_CTIYUKONDB CtiTableDeviceLoadProfile : public CtiMemDBObject
+class IM_EX_CTIYUKONDB CtiTableDeviceLoadProfile : public CtiMemDBObject, public DataAccessLoadProfile
 {
 public:
 
@@ -69,11 +70,11 @@ public:
 
    CtiTableDeviceLoadProfile& operator=(const CtiTableDeviceLoadProfile& aRef);
 
-   INT  getLastIntervalDemandRate() const;
-   INT  getLoadProfileDemandRate()  const;
-   INT  getVoltageDemandInterval()  const;
-   INT  getVoltageProfileRate()     const;
-   bool isChannelValid(int channel) const;
+   virtual int  getLastIntervalDemandRate() const;
+   virtual int  getLoadProfileDemandRate()  const;
+   virtual int  getVoltageDemandInterval()  const;
+   virtual int  getVoltageProfileRate()     const;
+   virtual bool isChannelValid(int channel) const;
 
    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
 

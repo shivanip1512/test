@@ -85,6 +85,7 @@ string XmlProtocol::createMessage(const CtiCommandParser &parse, const string &r
 
     wchar_t wcharBuffer[128];
 
+    //This is causing an error when the command is not timed or cycle.
     DOMElement * controlNode;
 
     if (ctlReq == CMD_FLAG_CTL_SHED)

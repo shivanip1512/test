@@ -38,9 +38,6 @@ private:
     static const CommandSet _commandStore;
     static CommandSet initCommandStore();
 
-    static const ConfigPartsList _config_parts;
-    static ConfigPartsList initConfigParts();
-
     int executePutConfigSingle(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool readsOnly);
     int executePutConfigMultiple(ConfigPartsList & partsList, CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool readsOnly);
 
@@ -238,7 +235,7 @@ protected:
     virtual long getLoadProfileInterval(unsigned channel) = 0;
     virtual point_info getLoadProfileData(unsigned channel, unsigned char *buf, unsigned len) = 0;
 
-    virtual ConfigPartsList getPartsList();
+    virtual ConfigPartsList getPartsList() = 0;
 
     virtual INT executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList, bool readsOnly = false);
     virtual INT executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList);

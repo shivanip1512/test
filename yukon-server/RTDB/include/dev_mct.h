@@ -213,7 +213,7 @@ public:
 
     string getDescription( const CtiCommandParser &parse ) const;
 
-    virtual LONG getDemandInterval() const;
+    virtual LONG getDemandInterval();
 
     void resetMCTScansPending( void );
 

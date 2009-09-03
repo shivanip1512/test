@@ -486,11 +486,11 @@ long CtiDeviceMCT410::getLoadProfileInterval( unsigned channel )
 
     if( channel == Channel_Voltage )
     {
-        retval = getLoadProfile().getVoltageProfileRate();
+        retval = getLoadProfile()->getVoltageProfileRate();
     }
     else if( channel <= ChannelCount )
     {
-        retval = getLoadProfile().getLoadProfileDemandRate();
+        retval = getLoadProfile()->getLoadProfileDemandRate();
     }
     else
     {
@@ -554,7 +554,7 @@ ULONG CtiDeviceMCT410::calcNextLPScanTime( void )
             CtiPointSPtr pPoint = getDevicePointOffsetTypeEqual((i + 1) + PointOffset_LoadProfileOffset, DemandAccumulatorPointType);
 
             //  if we're not collecting load profile, or there's no point defined, don't scan
-            if( !getLoadProfile().isChannelValid(i) || !pPoint )
+            if( !getLoadProfile()->isChannelValid(i) || !pPoint )
             {
                 _lp_info[i].current_schedule = YUKONEOT;
 
@@ -691,7 +691,7 @@ INT CtiDeviceMCT410::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
             interval_len = getLoadProfileInterval(i);
             block_len    = interval_len * 6;
 
-            if( getLoadProfile().isChannelValid(i) )
+            if( getLoadProfile()->isChannelValid(i) )
             {
                 if( _lp_info[i].collection_point <= (Now - block_len - LPBlockEvacuationTime) &&
                     _lp_info[i].current_schedule <= Now )
@@ -3037,7 +3037,7 @@ INT CtiDeviceMCT410::decodeGetValueLoadProfilePeakReport(INMESS *InMessage, CtiT
                 }
                 case FuncRead_LLPPeakIntervalPos:
                 {
-                    int intervals_per_hour = 3600 / getLoadProfile().getLoadProfileDemandRate();
+                    int intervals_per_hour = 3600 / getLoadProfile()->getLoadProfileDemandRate();
 
                     result_string += "Peak interval: " + CtiTime(max_demand_timestamp).asString() + "\n";
                     result_string += "Usage:  " + CtiNumStr(max_usage, 1) + string(" kWH\n");

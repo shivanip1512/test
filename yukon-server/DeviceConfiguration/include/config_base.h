@@ -22,7 +22,6 @@ using boost::shared_ptr;
 
 #include "logger.h"
 #include "dllbase.h"
-//#include "config_resolvers.h"
 #include <string>
 
 class CtiConfigManager;

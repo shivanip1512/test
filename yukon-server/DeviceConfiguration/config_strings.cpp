@@ -92,9 +92,22 @@ const string MCTStrings::TimeZoneOffset = "time zone offset";
 const string MCTStrings::UnderVoltageThreshold = "under vthreshold";
 const string MCTStrings::OverVoltageThreshold = "over vthreshold";
 
-const string MCTStrings::PeakKwResolution = "peak kw resolution";
-const string MCTStrings::LastIntervalDemandResolution = "last intrvl demand resolution";
-const string MCTStrings::LoadProfileResolution = "load profile resolution";
+const string MCTStrings::PeakKwResolution1 = "channel 1 peak kw resolution";
+const string MCTStrings::LastIntervalDemandResolution1 = "channel 1 last interval demand resolution";
+const string MCTStrings::LoadProfileResolution1 = "channel 1 load profile resolution";
+
+const string MCTStrings::PeakKwResolution2 = "channel 2 peak kw resolution";
+const string MCTStrings::LastIntervalDemandResolution2 = "channel 2 last interval demand resolution";
+const string MCTStrings::LoadProfileResolution2 = "channel 2 load profile resolution";
+
+const string MCTStrings::PeakKwResolution3 = "channel 3 peak kw resolution";
+const string MCTStrings::LastIntervalDemandResolution3 = "channel 3 last interval demand resolution";
+const string MCTStrings::LoadProfileResolution3 = "channel 3 load profile resolution";
+
+const string MCTStrings::PeakKwResolution4 = "channel 3 peak kw resolution";
+const string MCTStrings::LastIntervalDemandResolution4 = "channel 3 last interval demand resolution";
+const string MCTStrings::LoadProfileResolution4 = "channel 3 load profile resolution";
+
 const string MCTStrings::DemandInterval = "demand interval";
 const string MCTStrings::LoadProfileInterval = "load profile interval 1";
 const string MCTStrings::VoltageLPInterval = "voltage lp interval";

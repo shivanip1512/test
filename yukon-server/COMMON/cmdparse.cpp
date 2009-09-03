@@ -1551,7 +1551,14 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
         if(CmdStr.contains(" install"))
         {
             _cmd["install"] = CtiParseValue("TRUE");
-            _cmd["installvalue"] = CtiParseValue("all");
+
+            if(!(token = CmdStr.match("install +[a-z0-9]* *[a-z0-9]*")).empty())
+            {
+                CtiTokenizer cmdtok(token);
+                cmdtok();  //  go past "install"
+
+                _cmd["installvalue"] = CtiParseValue(cmdtok());
+            }
         }
         if(CmdStr.contains(" options"))
         {

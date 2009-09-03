@@ -411,7 +411,7 @@ DLLEXPORT bool isAScannableDevice(CtiDeviceSPtr& pDevice, void* d)
         {
             for(int i = 0; i < CtiTableDeviceLoadProfile::MaxCollectedChannel; i++)
             {
-                if(((CtiDeviceCarrier *)pUnique)->getLoadProfile().isChannelValid(i))
+                if(((CtiDeviceCarrier *)pUnique)->getLoadProfile()->isChannelValid(i))
                 {
                     bRet = true;
                     break;

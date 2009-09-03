@@ -45,6 +45,7 @@
 #include "rtdb.h"
 #include "mgr_device_scannable.h"
 #include "mgr_point.h"
+#include "mgr_config.h"
 #include "dev_base.h"
 #include "dev_single.h"
 #include "dev_mct.h"  //  for DLC loadprofile scans
@@ -99,6 +100,7 @@ void    DumpRevision(void);
 INT     MakePorterRequests(list< OUTMESS* > &outList);
 
 Cti::ScannableDeviceManager ScannerDeviceManager(Application_Scanner);
+CtiConfigManager            ConfigManager;
 CtiPointManager             ScannerPointManager;
 
 static RWWinSockInfo  winsock;
@@ -1198,6 +1200,7 @@ void LoadScannableDevices(void *ptr)
             }
 
             ScannerDeviceManager.refresh(chgid, catstr, devstr);
+            ConfigManager.initialize(ScannerDeviceManager);
 
             stop = stop.now();
 
@@ -1248,6 +1251,11 @@ void LoadScannableDevices(void *ptr)
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " validateScanTimes took " << stop.seconds() - start.seconds() << endl;
         }
+    }
+
+    if(pChg != NULL && (pChg->getDatabase() == ChangeConfigDb))
+    {
+        ConfigManager.processDBUpdate(pChg->getId(), pChg->getCategory(), pChg->getObjectType(), pChg->getTypeOfChange());
     }
 
     if(pChg != NULL && pChg->getDatabase() == ChangePointDb)  // On a point specific message only!

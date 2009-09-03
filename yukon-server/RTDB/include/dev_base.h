@@ -161,7 +161,7 @@ public:
 
     virtual LONG getRouteID() const;
 
-    virtual LONG getDemandInterval() const;
+    virtual LONG getDemandInterval();
 
     virtual Cti::Protocol::Interface *getProtocol();
 
@@ -348,7 +348,7 @@ inline INT    CtiDeviceBase::getPostDelay() const               { return 0;}
 inline string CtiDeviceBase::getPassword() const                { return string();}
 inline string CtiDeviceBase::getPhoneNumber() const             { return string();}
 inline LONG   CtiDeviceBase::getRouteID() const                 { return -1;}
-inline LONG   CtiDeviceBase::getDemandInterval() const          { return LONG_MAX;}
+inline LONG   CtiDeviceBase::getDemandInterval()                { return LONG_MAX;}
 inline Cti::Protocol::Interface *CtiDeviceBase::getProtocol()   { return NULL;}
 inline void   CtiDeviceBase::invalidateScanRates()              { }
 inline void   CtiDeviceBase::deleteNonUpdatedScanRates()        { }

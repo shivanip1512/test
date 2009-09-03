@@ -257,7 +257,7 @@ void CtiDeviceMCT::extractDynamicPaoInfo(const INMESS &InMessage)
     }
 }
 
-LONG CtiDeviceMCT::getDemandInterval() const
+LONG CtiDeviceMCT::getDemandInterval()
 {
     LONG retval = DemandInterval_Default;
 
@@ -1113,7 +1113,7 @@ INT CtiDeviceMCT::ErrorDecode(INMESS *InMessage, CtiTime& Now, list< CtiMessage*
                         {
                             for( i = 0; i < CtiTableDeviceLoadProfile::MaxCollectedChannel; i++ )
                             {
-                                if( getLoadProfile().isChannelValid(i) )
+                                if( getLoadProfile()->isChannelValid(i) )
                                 {
                                     insertPointFail( InMessage, retMsg, ScanRateLoadProfile, (i + 1) + PointOffset_LoadProfileOffset, DemandAccumulatorPointType );
                                 }
@@ -2506,23 +2506,23 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
 
             if( getType() == TYPEMCT410 )
             {
-                OutMessage->Buffer.BSt.Message[0] = getLoadProfile().getLastIntervalDemandRate() / 60;
-                OutMessage->Buffer.BSt.Message[1] = getLoadProfile().getLoadProfileDemandRate()  / 60;
-                OutMessage->Buffer.BSt.Message[2] = getLoadProfile().getVoltageDemandInterval()  / 15;
-                OutMessage->Buffer.BSt.Message[3] = getLoadProfile().getVoltageProfileRate()     / 60;
+                OutMessage->Buffer.BSt.Message[0] = getLoadProfile()->getLastIntervalDemandRate() / 60;
+                OutMessage->Buffer.BSt.Message[1] = getLoadProfile()->getLoadProfileDemandRate()  / 60;
+                OutMessage->Buffer.BSt.Message[2] = getLoadProfile()->getVoltageDemandInterval()  / 15;
+                OutMessage->Buffer.BSt.Message[3] = getLoadProfile()->getVoltageProfileRate()     / 60;
             }
             else
             {
-                OutMessage->Buffer.BSt.Message[0] = getLoadProfile().getLastIntervalDemandRate() / 60;
-                OutMessage->Buffer.BSt.Message[1] = getLoadProfile().getLoadProfileDemandRate()  / 60;
-                OutMessage->Buffer.BSt.Message[2] = getLoadProfile().getLoadProfileDemandRate()  / 60;
+                OutMessage->Buffer.BSt.Message[0] = getLoadProfile()->getLastIntervalDemandRate() / 60;
+                OutMessage->Buffer.BSt.Message[1] = getLoadProfile()->getLoadProfileDemandRate()  / 60;
+                OutMessage->Buffer.BSt.Message[2] = getLoadProfile()->getLoadProfileDemandRate()  / 60;
             }
         }
         else if( temp == "lp" )
         {
             function = Emetcon::PutConfig_LoadProfileInterval;
             found = getOperation(function, OutMessage->Buffer.BSt);
-            switch( getLoadProfile().getLoadProfileDemandRate() / 60 )
+            switch( getLoadProfile()->getLoadProfileDemandRate() / 60 )
             {
                 case 5:
                     break;
@@ -3549,7 +3549,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
             case Emetcon::PutConfig_TOUEnable:                  resultString = getName() + " / TOU enable sent";        break;
             case Emetcon::PutConfig_TOUDisable:                 resultString = getName() + " / TOU disable sent";       break;
 
-            case Emetcon::PutConfig_Options:                    resultString = getName() + " / options sent";  
+            case Emetcon::PutConfig_Options:                    resultString = getName() + " / options sent";
             case Emetcon::PutConfig_PhaseDetectClear:             resultString = getName() + " / Phase Detect flag clear sent";          break;
             case Emetcon::PutConfig_PhaseDetect:                  resultString = getName() + " / Phase Detect test settings sent";    break;
 

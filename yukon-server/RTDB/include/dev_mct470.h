@@ -20,6 +20,8 @@
 
 
 #include "dev_mct4xx.h"
+#include "da_load_profile.h"
+
 #include <map>
 
 class IM_EX_DEVDB CtiDeviceMCT470 : public CtiDeviceMCT4xx
@@ -34,14 +36,23 @@ private:
     static const read_key_store_t _readKeyStore;
     static       read_key_store_t initReadKeyStore();
 
-    ConfigPartsList  _config_parts;
-    ConfigPartsList  initConfigParts();
-
+    static const ConfigPartsList  _config_parts_430;
+    static const ConfigPartsList  _config_parts_470;
+    static ConfigPartsList  initConfigParts430();
+    static ConfigPartsList  initConfigParts470();
 
     CtiTableDeviceMCTIEDPort _iedPort;
     CtiTime                  _iedTime;
 
     bool _precannedTableCurrent;
+
+    enum ChannelConfiguration
+    {
+        NotUsed,
+        Electronic,
+        TwoWireKYZ,
+        ThreeWireKYZ
+    };
 
     enum PointOffsets
     {
@@ -110,12 +121,15 @@ private:
     long       getLoadProfileInterval( unsigned channel );
     point_info getLoadProfileData    ( unsigned channel, unsigned char *buf, unsigned len );
 
+    virtual boost::shared_ptr<DataAccessLoadProfile> getLoadProfile();
+
     long _lastConfigRequest;
 
     void decodeDNPRealTimeRead(BYTE *buffer, int readNumber, string &resultString, CtiReturnMsg *ReturnMsg, INMESS *InMessage);
     void getBytesFromString(string &values, BYTE* buffer, int buffLen, int &numValues, int fillCount, int bytesPerValue);
     int sendDNPConfigMessages(int startMCTID,  list< OUTMESS * > &outList, OUTMESS *&OutMessage, string &dataA, string &dataB, CtiTableDynamicPaoInfo::PaoInfoKeys key, bool force, bool verifyOnly);
 
+    int setupRatioBytesBasedOnMeterType(int channel, double multiplier, long peakKwResolution, long lastIntervalDemandResolution, long lpResolution, unsigned int &ratio, unsigned int &kRatio);
     unsigned char computeResolutionByte(double lpResolution, double peakKwResolution, double lastIntervalDemandResolution);
     bool computeMultiplierFactors(double multiplier, unsigned &numerator, unsigned &denominator) const;
     string describeChannel(unsigned char channel_config) const;

@@ -25,6 +25,7 @@
 #include "tbl_metergrp.h"
 #include "tbl_loadprofile.h"
 #include "tbl_dv_mctiedport.h"
+#include "da_load_profile.h"
 
 
 class IM_EX_DEVDB CtiDeviceCarrier : public CtiDeviceDLCBase
@@ -35,7 +36,7 @@ private:
 
 protected:
 
-   CtiTableDeviceLoadProfile  LoadProfile;
+   boost::shared_ptr<CtiTableDeviceLoadProfile> loadProfile;
 
 public:
 
@@ -46,16 +47,13 @@ public:
 
    CtiDeviceCarrier &operator=(const CtiDeviceCarrier &aRef);
 
-   CtiTableDeviceLoadProfile  getLoadProfile() const;
-   CtiTableDeviceLoadProfile &getLoadProfile();
-
-   CtiDeviceCarrier &setLoadProfile( const CtiTableDeviceLoadProfile &aLoadProfile );
+   virtual boost::shared_ptr<DataAccessLoadProfile> getLoadProfile();
 
    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
 
    virtual void DecodeDatabaseReader(RWDBReader &rdr);
 
-   virtual LONG getLastIntervalDemandRate() const;
+   virtual LONG getLastIntervalDemandRate();
 
    virtual bool isMeter() const;
 };

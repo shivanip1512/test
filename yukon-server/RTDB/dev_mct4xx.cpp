@@ -54,7 +54,6 @@ const char *CtiDeviceMCT4xx::PutConfigPart_centron         = "centron";
 const char *CtiDeviceMCT4xx::PutConfigPart_dnp             = "dnp";
 
 const CtiDeviceMCT4xx::CommandSet      CtiDeviceMCT4xx::_commandStore = CtiDeviceMCT4xx::initCommandStore();
-const CtiDeviceMCT4xx::ConfigPartsList CtiDeviceMCT4xx::_config_parts = initConfigParts();
 
 const CtiDeviceMCT4xx::error_set       CtiDeviceMCT4xx::_mct_error_info = initErrorInfo();
 
@@ -124,22 +123,6 @@ CtiDeviceMCT4xx::error_set CtiDeviceMCT4xx::initErrorInfo( void )
     es.insert(error_info(0xffffffe0, "Overflow",                                     OverflowQuality));
 
     return es;
-}
-
-
-
-CtiDeviceMCT4xx::ConfigPartsList CtiDeviceMCT4xx::initConfigParts()
-{
-    ConfigPartsList tempList;
-
-    //This should be done in child classes
-
-    return tempList;
-}
-
-CtiDeviceMCT4xx::ConfigPartsList CtiDeviceMCT4xx::getPartsList()
-{
-    return _config_parts;
 }
 
 CtiDeviceMCT4xx::CommandSet CtiDeviceMCT4xx::initCommandStore()
@@ -1704,6 +1687,8 @@ int CtiDeviceMCT4xx::executePutConfigMultiple(ConfigPartsList       &partsList,
     }
 
     // Setting the expect more bits on all the return messages to true.
+    // This used to happen elsewhere in PORTER/PIL and no longer happens.
+    // If this is not done, the webservice will think the first message is the last message and ignore the rest.
     for (list< CtiMessage* >::iterator itr = retList.begin(); itr != retList.end(); itr++)
     {
         ((CtiReturnMsg*)*itr)->setExpectMore(1);

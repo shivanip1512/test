@@ -198,10 +198,10 @@ ULONG CtiDeviceMCT310::calcNextLPScanTime( void )
 
         _nextLPScanTime -= _nextLPScanTime % 300;
     }
-    else if( pPoint && getLoadProfile().isChannelValid(0) )
+    else if( pPoint && getLoadProfile()->isChannelValid(0) )
     {
         //  we read 6 intervals at a time
-        lpDemandRate = getLoadProfile().getLoadProfileDemandRate();
+        lpDemandRate = getLoadProfile()->getLoadProfileDemandRate();
         lpBlockSize  = lpDemandRate * 6;
 
         //  if we collect hour data, we only keep a day;  anything less, we keep 48 intervals
@@ -265,7 +265,7 @@ INT CtiDeviceMCT310::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
     string      lpDescriptorString;
     int            lpChannel;
 
-    lpDemandRate     = getLoadProfile().getLoadProfileDemandRate();
+    lpDemandRate     = getLoadProfile()->getLoadProfileDemandRate();
 
     if( !_lpIntervalSent )
     {
@@ -1051,7 +1051,7 @@ INT CtiDeviceMCT310::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, 
 
             retrieved_block_num--;
 
-            demand_rate = getLoadProfile().getLoadProfileDemandRate();
+            demand_rate = getLoadProfile()->getLoadProfileDemandRate();
             block_size  = demand_rate * 6;
 
             //  if we collect hour data, we only keep a day;  anything less, we keep 48 intervals

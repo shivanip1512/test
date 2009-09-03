@@ -20,6 +20,7 @@ class test_CtiDeviceMCT4xx : public CtiDeviceMCT4xx
     virtual INT decodeGetStatusFreeze( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList ) {BOOST_CHECK(0);  return 0;};
     //NOTE on above function:  This is a "BOGUS" function, that just is a place-holder, since it is declared pure-virtual in the base class.
 
+    virtual ConfigPartsList getPartsList(){return ConfigPartsList();};
 
 public:
     typedef CtiDeviceMCT4xx Inherited;

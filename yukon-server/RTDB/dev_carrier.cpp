@@ -20,7 +20,10 @@
 #include "dev_carrier.h"
 
 
-CtiDeviceCarrier::CtiDeviceCarrier() {}
+CtiDeviceCarrier::CtiDeviceCarrier()
+{
+    loadProfile.reset(new CtiTableDeviceLoadProfile());
+}
 
 CtiDeviceCarrier::CtiDeviceCarrier(const CtiDeviceCarrier &aRef)
 {
@@ -43,22 +46,10 @@ CtiDeviceCarrier &CtiDeviceCarrier::operator=(const CtiDeviceCarrier &aRef)
     return *this;
 }
 
-CtiTableDeviceLoadProfile CtiDeviceCarrier::getLoadProfile() const
-{
-    return LoadProfile;
-}
-
-CtiTableDeviceLoadProfile &CtiDeviceCarrier::getLoadProfile()
+boost::shared_ptr<DataAccessLoadProfile> CtiDeviceCarrier::getLoadProfile()
 {
     CtiLockGuard<CtiMutex> guard(_classMutex);
-    return LoadProfile;
-}
-
-CtiDeviceCarrier &CtiDeviceCarrier::setLoadProfile( const CtiTableDeviceLoadProfile &aLoadProfile )
-{
-    CtiLockGuard<CtiMutex> guard(_classMutex);
-    LoadProfile = aLoadProfile;
-    return *this;
+    return boost::dynamic_pointer_cast<DataAccessLoadProfile>(loadProfile);
 }
 
 void CtiDeviceCarrier::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
@@ -80,12 +71,12 @@ void CtiDeviceCarrier::DecodeDatabaseReader(RWDBReader &rdr)
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
-    LoadProfile.DecodeDatabaseReader(rdr);
+    loadProfile->DecodeDatabaseReader(rdr);
 }
 
-LONG CtiDeviceCarrier::getLastIntervalDemandRate() const
+LONG CtiDeviceCarrier::getLastIntervalDemandRate()
 {
-    return LoadProfile.getLastIntervalDemandRate();      // From CtiTableDeviceLoadProfile
+    return getLoadProfile()->getLastIntervalDemandRate();
 }
 
 inline bool CtiDeviceCarrier::isMeter() const
