@@ -18,27 +18,22 @@ namespace Cti {
 namespace Protocols {
 
 using namespace std;
-/*
+
 string XmlProtocol::createMessage(const CtiCommandParser &parse, const string &rawAscii, const vector<pair<string, string> > &params)
 {
-    stringstream ss;
-
-    ss << "<commandstring>" << parse.getCommandStr() << "</commandstring>\n";
-    ss << "<rawascii>" << rawAscii << "</rawascii>\n";
-
-    vector<pair<string, string> >::const_iterator itr = params.begin();
-
-    for( ; itr != params.end(); ++itr )
+    unsigned int ctlReq = CMD_FLAG_CTL_ALIASMASK & parse.getFlags();
+    ControlType controlType;
+    //make sure this is a supported type
+    if ((controlType = checkSupportedControlType(ctlReq)) == Unknown)
     {
-        ss << "<" << itr->first << ">" << itr->second << "</" << itr->first << ">\n";
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " XML Protocol error, Unsupported Control Type" << endl;
+        }
+        return "";
     }
 
-    return ss.str();
-}
-*/
 
-string XmlProtocol::createMessage(const CtiCommandParser &parse, const string &rawAscii, const vector<pair<string, string> > &params)
-{
     // Initilize Xerces, must terminate once per initialize
     XMLPlatformUtils::Initialize();
 
@@ -71,7 +66,6 @@ string XmlProtocol::createMessage(const CtiCommandParser &parse, const string &r
 
     rootElement->appendChild(groupParametersListNode);
 
-    unsigned int ctlReq = CMD_FLAG_CTL_ALIASMASK & parse.getFlags();
     int relaymask = parse.getiValue("relaymask", 0);
 
     DOMElement * commandNode = pDOMDocument->createElement(L"command");
@@ -86,9 +80,9 @@ string XmlProtocol::createMessage(const CtiCommandParser &parse, const string &r
     wchar_t wcharBuffer[128];
 
     //This is causing an error when the command is not timed or cycle.
-    DOMElement * controlNode;
+    DOMElement * controlNode = NULL;
 
-    if (ctlReq == CMD_FLAG_CTL_SHED)
+    if (controlType == Timed)
     {//Timed
         int shed_seconds = parse.getiValue("shed");
         controlNode = pDOMDocument->createElement(L"timedControl");
@@ -99,7 +93,7 @@ string XmlProtocol::createMessage(const CtiCommandParser &parse, const string &r
         timeNode->appendChild(timeText);
         controlNode->appendChild(timeNode);
     }
-    else if (ctlReq == CMD_FLAG_CTL_CYCLE && !parse.isKeyValid("xctcycle"))//xctcycle is thermostat
+    else if (controlType == Cycle && !parse.isKeyValid("xctcycle"))//xctcycle is thermostat
     {//Cycle
         int delay = parse.getiValue("delaytime_sec", 0) / 60;
 
@@ -159,10 +153,34 @@ string XmlProtocol::createMessage(const CtiCommandParser &parse, const string &r
         controlNode->appendChild(countNode);
 
         DOMElement * rampNode = pDOMDocument->createElement(L"ramp");
-
         DOMText * rampText = pDOMDocument->createTextNode((ramp)?L"true":L"false");
         rampNode->appendChild(rampText);
         controlNode->appendChild(rampNode);
+    }
+    else if (controlType == Restore || controlType == Terminate)
+    { //restore
+        int delayTime = parse.getiValue("delaytime_sec", 0) / 60;
+        int radomizeTime = parse.getiValue("xcrandstart", 0);
+        bool stopCycle = (controlType == Terminate);
+
+        controlNode = pDOMDocument->createElement(L"restoreControl");
+
+        DOMElement * delayTimeNode = pDOMDocument->createElement(L"delayTime");
+        _itow_s(delayTime, wcharBuffer, 128, 10);
+        DOMText * delayTimeText = pDOMDocument->createTextNode(wcharBuffer);
+        delayTimeNode->appendChild(delayTimeText);
+        controlNode->appendChild(delayTimeNode);
+
+        DOMElement * randomNode = pDOMDocument->createElement(L"randomizeTime");
+        _itow_s(radomizeTime, wcharBuffer, 128, 10);
+        DOMText * randomText = pDOMDocument->createTextNode(wcharBuffer);
+        randomNode->appendChild(randomText);
+        controlNode->appendChild(randomNode);
+
+        DOMElement * stopCycleNode = pDOMDocument->createElement(L"stopCycle");
+        DOMText * stopCycleText = pDOMDocument->createTextNode((stopCycle)?L"true":L"false");
+        stopCycleNode->appendChild(stopCycleText);
+        controlNode->appendChild(stopCycleNode);
     }
 
     DOMElement * relaysNode = pDOMDocument->createElement(L"relays");
@@ -214,6 +232,23 @@ string XmlProtocol::createMessage(const CtiCommandParser &parse, const string &r
     XMLPlatformUtils::Terminate();
 
     return ret;
+}
+
+ControlType XmlProtocol::checkSupportedControlType(unsigned int controlRequest)
+{
+    switch (controlRequest)
+    {
+        case CMD_FLAG_CTL_CYCLE:
+            return Cycle;
+        case CMD_FLAG_CTL_SHED:
+            return Timed;
+        case CMD_FLAG_CTL_RESTORE:
+            return Restore;
+        case CMD_FLAG_CTL_TERMINATE:
+            return Terminate;
+        default:
+            return Unknown;
+    }
 }
 
 }
