@@ -1,5 +1,7 @@
 package com.cannontech.billing.record;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Vector;
 
 /**
@@ -10,14 +12,14 @@ import java.util.Vector;
 public class MV_90Record implements BillingRecordBase 
 {
 	private String timeKW = null;			//HH:mm
-	private String dateKW = null;			//MM/dd/yyyy
+	private String dateKW = null;			//MM/dd/yy (Changed from MM/dd/yyyy per document and DSutton)
 
 	private String meterNumber = null;	//10
 	private boolean newMeterNumber = false;
 	private Vector<Double> readingKWVector = null;
 	private Double readingKW = null;	//8.1
 
-	private static java.text.SimpleDateFormat DATE_FORMAT = new java.text.SimpleDateFormat("MM/dd/yyyy");
+	private static java.text.SimpleDateFormat DATE_FORMAT = new java.text.SimpleDateFormat("MM/dd/yy");
 	private static java.text.SimpleDateFormat TIME_FORMAT = new java.text.SimpleDateFormat("kk:mm");
 	private static java.text.DecimalFormat KW_FORMAT_8v1 = new java.text.DecimalFormat("#######0.0");
 	
@@ -172,8 +174,10 @@ public class MV_90Record implements BillingRecordBase
 		
 		if( getTimeKW().equalsIgnoreCase("24:00"))
 		{
-			java.sql.Timestamp dummyTS = new java.sql.Timestamp(timeStamp.getTime() - 86400000);
-			d = new java.util.Date(dummyTS.getTime());
+		    Calendar dummyDate = new GregorianCalendar();
+		    dummyDate.setTimeInMillis(timeStamp.getTime());
+		    dummyDate.add(Calendar.DATE, -1);
+			d = dummyDate.getTime();
 		}
 		dateKW = DATE_FORMAT.format(d);
 	}
@@ -215,6 +219,16 @@ public class MV_90Record implements BillingRecordBase
 	public void setTimeKW(java.sql.Timestamp timestamp)
 	{
 		java.util.Date d = new java.util.Date(timestamp.getTime());
+		
+		//End of day adjustment for time.
+		//Need to change to 24 hour instead of 0 hour.  But ONLY for the 24:00 reading.  So change all non :00 times to have 00 hour again.
 		timeKW = TIME_FORMAT.format(d);
+		if (timeKW.startsWith("24")) {
+		    if (timeKW.endsWith("00")) {
+		        //do nothing
+		    } else {  //change back to 00
+		        timeKW = timeKW.replaceFirst("24:", "00:");
+		    }
+		}
 	}
 }
