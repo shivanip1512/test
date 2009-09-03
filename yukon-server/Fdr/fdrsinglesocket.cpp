@@ -390,7 +390,11 @@ bool CtiFDRSingleSocket::translateSinglePoint(CtiFDRPointSPtr & translationPoint
             dout << CtiTime() << " Point ID " << translationPoint->getPointID();
             dout << " translate: " << translationPoint->getDestinationList()[0].getTranslation() << endl;
         }
-        success = translateAndUpdatePoint (translationPoint, x);
+
+        if (translateAndUpdatePoint (translationPoint, x))
+        {
+            success = true;
+        }
     }
 
     return success;
