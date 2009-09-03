@@ -177,7 +177,13 @@ public class NISCIntervalReadings extends BillingFormatterBase {
                                              " ",
                                              true);
 
-        addToStringBufferWithPrecedingFiller(writeToFile, null, 10, " ", true); //kVar Reading - not supported because there is no respective date/time in this format
+        addToStringBufferWithPrecedingFiller(writeToFile,
+                                             format(device.getValue(Channel.ONE, ReadingType.KVAR, BillableField.totalConsumption),
+                                                    DECIMAL_FORMAT_7V2),
+                                             10,
+                                             " ",
+                                             true); //Does not have a timestamp associated with it...but that's a limitation of the format, not Yukon
+
         addToStringBufferWithPrecedingFiller(writeToFile, new Integer(0), 5, " ", true);  //AMR Read Code - use some default value of 0 (CHeinrich@NISC 20090626)
         addToStringBufferWithPrecedingFiller(writeToFile, null, 10, " ", false); //Blink Count - not supported because there is no respective date/time in this format
         writeToFile.append("\r\n");
