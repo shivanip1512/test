@@ -19,6 +19,7 @@ import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.authentication.service.AuthenticationService;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -44,6 +45,7 @@ public class UserLoginBasePanel extends com.cannontech.common.gui.util.DataInput
 	private javax.swing.JButton ivjJButtonChangePassword = null;
 	private javax.swing.JComboBox ivjJListAuthType = null;
 	private javax.swing.JLabel ivjJLabelAuthType = null;
+	private javax.swing.JLabel ivjJLabelErrorMessage = null;
     private AuthType initialAuthType = AuthType.PLAIN;
     private String newPasswordValue = null;
     private boolean passwordRequiresChanging = false;
@@ -255,6 +257,30 @@ private javax.swing.JLabel getJLabelUserName() {
 	return ivjJLabelUserName;
 }
 
+private javax.swing.JLabel getJLabelErrorMessage() {
+    if (ivjJLabelErrorMessage == null) {
+        try {
+            ivjJLabelErrorMessage = new javax.swing.JLabel();
+            ivjJLabelErrorMessage.setName("JLabelRange");
+            ivjJLabelErrorMessage.setOpaque(false);
+            ivjJLabelErrorMessage.setText("...RANGE TEXT...");
+            ivjJLabelErrorMessage.setVisible(true);
+            ivjJLabelErrorMessage.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+            ivjJLabelErrorMessage.setFont(new java.awt.Font("Arial", 1, 10));
+            ivjJLabelErrorMessage.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+            // user code begin {1}
+
+            ivjJLabelErrorMessage.setVisible( false );
+
+            // user code end
+        } catch (java.lang.Throwable ivjExc) {
+            // user code begin {2}
+            // user code end
+            handleException(ivjExc);
+        }
+    }
+    return ivjJLabelErrorMessage;
+}
 
 /**
  * Return the JPanelEC property value.
@@ -312,6 +338,13 @@ private javax.swing.JPanel getJPanelLoginPanel() {
 			ivjJPanelLoginPanel.setName("JPanelLoginPanel");
 			ivjJPanelLoginPanel.setBorder(ivjLocalBorder);
 			ivjJPanelLoginPanel.setLayout(new java.awt.GridBagLayout());
+			
+			java.awt.GridBagConstraints constraintsJLabelErrorMessage = new java.awt.GridBagConstraints();
+			constraintsJLabelErrorMessage.gridx = 2;
+			constraintsJLabelErrorMessage.gridy = 0;
+			constraintsJLabelErrorMessage.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJLabelErrorMessage.insets = new java.awt.Insets(0, 5, 0, 0);
+			getJPanelLoginPanel().add(getJLabelErrorMessage(), constraintsJLabelErrorMessage);
 
 			java.awt.GridBagConstraints constraintsJLabelUserName = new java.awt.GridBagConstraints();
 			constraintsJLabelUserName.gridx = 1; constraintsJLabelUserName.gridy = 1;
@@ -533,12 +566,27 @@ private void initialize() {
  */
 public boolean isInputValid() 
 {
-	if( StringUtils.isBlank(getJTextFieldUserID().getText()))
+    String userName = getJTextFieldUserID().getText();
+	if( StringUtils.isBlank( userName ))
 	{
 		setErrorString("The Userid text field must be filled in");
 		return false;
 	}
 	
+	LiteYukonUser liteYukonUser = DaoFactory.getYukonUserDao().getLiteYukonUser( userName );
+
+    //if one is found, then the user-typed username is not unique and an error should be displayed
+    if (liteYukonUser != null) {
+        setErrorString("Invalid username selection");
+        getJLabelErrorMessage().setText( "(" + getErrorString() + ")" );
+        getJLabelErrorMessage().setToolTipText( "(" + getErrorString() + ")" );
+        getJLabelErrorMessage().setVisible( true );
+        return false;
+    }
+	
+    getJLabelErrorMessage().setText( "" );
+    getJLabelErrorMessage().setToolTipText( "" );
+    getJLabelErrorMessage().setVisible( false );
 	return true;
 }
 
