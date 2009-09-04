@@ -262,7 +262,7 @@ private javax.swing.JPanel getJPanelError() {
     if (ivjJPanelError == null) {
         try {
             ivjJPanelError = new javax.swing.JPanel();
-            ivjJPanelError.setName("JPanel1");
+            ivjJPanelError.setName("JPanelError");
             ivjJPanelError.setPreferredSize(new java.awt.Dimension(342, 27));
             ivjJPanelError.setLayout(new java.awt.FlowLayout());
             ivjJPanelError.setMaximumSize(new java.awt.Dimension(342, 27));
