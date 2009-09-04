@@ -53,7 +53,7 @@ public class ScenarioController {
         modelMap.addAttribute("scenarios", searchResult.getResultList());
         modelMap.addAttribute("backingBean", backingBean);
 
-        return "/dr/scenario/list.jsp";
+        return "dr/scenario/list.jsp";
     }
 
     @RequestMapping("/scenario/detail")
@@ -73,7 +73,7 @@ public class ScenarioController {
         programControllerHelper.filterPrograms(modelMap, userContext, backingBean,
                                                result, status, detailFilter);
 
-        return "/dr/scenario/detail.jsp";
+        return "dr/scenario/detail.jsp";
     }
 
     @InitBinder

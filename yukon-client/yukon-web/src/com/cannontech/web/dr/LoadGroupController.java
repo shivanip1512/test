@@ -32,7 +32,7 @@ public class LoadGroupController {
         
         loadGroupControllerHelper.filterGroups(modelMap, userContext, backingBean,
                                                result, status, null);
-        return "/dr/loadGroup/list.jsp";
+        return "dr/loadGroup/list.jsp";
     }    
 
     @RequestMapping("/loadGroup/detail")
@@ -50,7 +50,7 @@ public class LoadGroupController {
                               programService.findProgramsForLoadGroup(userContext,
                                                                       loadGroupId));
 
-        return "/dr/loadGroup/detail.jsp";
+        return "dr/loadGroup/detail.jsp";
     }
 
     @InitBinder

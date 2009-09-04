@@ -110,7 +110,7 @@ public class ControlAreaController {
         modelMap.addAttribute("controlAreas", searchResult.getResultList());
         modelMap.addAttribute("backingBean", backingBean);
 
-        return "/dr/controlArea/list.jsp";
+        return "dr/controlArea/list.jsp";
     }
 
     @RequestMapping("/controlArea/detail")
@@ -130,7 +130,7 @@ public class ControlAreaController {
         programControllerHelper.filterPrograms(modelMap, userContext, backingBean,
                                                result, status, detailFilter);
 
-        return "/dr/controlArea/detail.jsp";
+        return "dr/controlArea/detail.jsp";
     }
 
     @InitBinder

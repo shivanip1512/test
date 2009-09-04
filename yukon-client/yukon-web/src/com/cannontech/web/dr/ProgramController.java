@@ -41,7 +41,7 @@ public class ProgramController {
         programControllerHelper.filterPrograms(modelMap, userContext, backingBean,
                                                result, status, null);
 
-        return "/dr/program/list.jsp";
+        return "dr/program/list.jsp";
     }
 
     @RequestMapping("/program/detail")
@@ -66,7 +66,7 @@ public class ProgramController {
         modelMap.addAttribute("parentControlArea", parentControlArea);
         List<DisplayablePao> parentScenarios = scenarioDao.findScenariosForProgram(programId);
         modelMap.addAttribute("parentScenarios", parentScenarios);
-        return "/dr/program/detail.jsp";
+        return "dr/program/detail.jsp";
     }
 
     @InitBinder
