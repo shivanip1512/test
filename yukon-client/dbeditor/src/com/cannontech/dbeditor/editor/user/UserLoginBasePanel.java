@@ -46,6 +46,7 @@ public class UserLoginBasePanel extends com.cannontech.common.gui.util.DataInput
 	private javax.swing.JComboBox ivjJListAuthType = null;
 	private javax.swing.JLabel ivjJLabelAuthType = null;
 	private javax.swing.JLabel ivjJLabelErrorMessage = null;
+	private javax.swing.JPanel ivjJPanelError = null;
     private AuthType initialAuthType = AuthType.PLAIN;
     private String newPasswordValue = null;
     private boolean passwordRequiresChanging = false;
@@ -257,6 +258,24 @@ private javax.swing.JLabel getJLabelUserName() {
 	return ivjJLabelUserName;
 }
 
+private javax.swing.JPanel getJPanelError() {
+    if (ivjJPanelError == null) {
+        try {
+            ivjJPanelError = new javax.swing.JPanel();
+            ivjJPanelError.setName("JPanel1");
+            ivjJPanelError.setPreferredSize(new java.awt.Dimension(342, 27));
+            ivjJPanelError.setLayout(new java.awt.FlowLayout());
+            ivjJPanelError.setMaximumSize(new java.awt.Dimension(342, 27));
+            ivjJPanelError.setMinimumSize(new java.awt.Dimension(342, 27));
+            getJPanelError().add(getJLabelErrorMessage(), getJLabelErrorMessage().getName());
+            
+        } catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
+        }
+    }
+    return ivjJPanelError;
+}
+
 private javax.swing.JLabel getJLabelErrorMessage() {
     if (ivjJLabelErrorMessage == null) {
         try {
@@ -268,14 +287,9 @@ private javax.swing.JLabel getJLabelErrorMessage() {
             ivjJLabelErrorMessage.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
             ivjJLabelErrorMessage.setFont(new java.awt.Font("Arial", 1, 10));
             ivjJLabelErrorMessage.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-            // user code begin {1}
-
             ivjJLabelErrorMessage.setVisible( false );
 
-            // user code end
         } catch (java.lang.Throwable ivjExc) {
-            // user code begin {2}
-            // user code end
             handleException(ivjExc);
         }
     }
@@ -338,13 +352,6 @@ private javax.swing.JPanel getJPanelLoginPanel() {
 			ivjJPanelLoginPanel.setName("JPanelLoginPanel");
 			ivjJPanelLoginPanel.setBorder(ivjLocalBorder);
 			ivjJPanelLoginPanel.setLayout(new java.awt.GridBagLayout());
-			
-			java.awt.GridBagConstraints constraintsJLabelErrorMessage = new java.awt.GridBagConstraints();
-			constraintsJLabelErrorMessage.gridx = 2;
-			constraintsJLabelErrorMessage.gridy = 0;
-			constraintsJLabelErrorMessage.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsJLabelErrorMessage.insets = new java.awt.Insets(0, 5, 0, 0);
-			getJPanelLoginPanel().add(getJLabelErrorMessage(), constraintsJLabelErrorMessage);
 
 			java.awt.GridBagConstraints constraintsJLabelUserName = new java.awt.GridBagConstraints();
 			constraintsJLabelUserName.gridx = 1; constraintsJLabelUserName.gridy = 1;
@@ -554,6 +561,17 @@ private void initialize() {
 		constraintsJPanelEC.ipady = -26;
 		constraintsJPanelEC.insets = new java.awt.Insets(4, 8, 4, 8);
 		add(getJPanelEC(), constraintsJPanelEC);
+		
+		java.awt.GridBagConstraints constraintsJPanelError = new java.awt.GridBagConstraints();
+		constraintsJPanelError.gridx = 0; constraintsJPanelLoginPanel.gridy = 3;
+		constraintsJPanelError.fill = java.awt.GridBagConstraints.BOTH;
+		constraintsJPanelError.weightx = 1.0;
+		constraintsJPanelError.weighty = 1.0;
+		constraintsJPanelError.ipadx = -20;
+		constraintsJPanelError.ipady = -36;
+		constraintsJPanelError.insets = new java.awt.Insets(6, 8, 6, 8);
+        add(getJPanelError(), constraintsJPanelError);
+		
 		initConnections();
 	} catch (Exception ivjExc) {
 		handleException(ivjExc);
@@ -577,7 +595,7 @@ public boolean isInputValid()
 
     //if one is found, then the user-typed username is not unique and an error should be displayed
     if (liteYukonUser != null) {
-        setErrorString("Invalid username selection");
+        setErrorString("Invalid username selection, please try a different username");
         getJLabelErrorMessage().setText( "(" + getErrorString() + ")" );
         getJLabelErrorMessage().setToolTipText( "(" + getErrorString() + ")" );
         getJLabelErrorMessage().setVisible( true );
