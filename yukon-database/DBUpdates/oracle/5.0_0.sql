@@ -786,6 +786,12 @@ INSERT INTO YukonRoleProperty VALUES (-21309,-213,'Send/Read Configs','false','C
 INSERT INTO YukonRoleProperty VALUES (-21310,-213,'Assign Configs','false','Controls access to Assign Config collection action.');
 /* End YUK-7702 */
 
+/* Start YUK-7629 */
+ALTER TABLE CapControlStrategy ADD EndDaySettings VARCHAR2(20);
+UPDATE CapControlStrategy SET EndDaySettings = '(none)';
+ALTER TABLE CapControlStrategy MODIFY EndDaySettings VARCHAR2(20) NOT NULL;
+/* End YUK-7629 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

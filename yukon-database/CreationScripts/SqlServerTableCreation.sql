@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     9/4/2009 3:38:13 PM                          */
+/* Created on:     9/4/2009 4:16:24 PM                          */
 /*==============================================================*/
 
 
@@ -4648,6 +4648,7 @@ create table CapControlStrategy (
    IntegrateFlag        char(1)              not null,
    IntegratePeriod      numeric              not null,
    LikeDayFallBack      char(1)              not null,
+   EndDaySettings       varchar(20)          not null,
    constraint PK_CAPCONTROLSTRAT primary key (StrategyID)
 )
 go
