@@ -54,6 +54,8 @@ public class UserLoginBasePanel extends com.cannontech.common.gui.util.DataInput
 	private javax.swing.JCheckBox ivjJCheckBoxEnableEC = null;
 	private javax.swing.JComboBox ivjJComboBoxEnergyCompany = null;
 	private javax.swing.JPanel ivjJPanelEC = null;
+	private boolean isNewLogin = false;
+	private String initialUsername;
 
     private ActionListener enableEcActionListener = new ActionListener() {
         public void actionPerformed(ActionEvent e) {
@@ -263,10 +265,10 @@ private javax.swing.JPanel getJPanelError() {
         try {
             ivjJPanelError = new javax.swing.JPanel();
             ivjJPanelError.setName("JPanelError");
-            ivjJPanelError.setPreferredSize(new java.awt.Dimension(342, 27));
+            ivjJPanelError.setPreferredSize(new java.awt.Dimension(342, 10));
             ivjJPanelError.setLayout(new java.awt.FlowLayout());
-            ivjJPanelError.setMaximumSize(new java.awt.Dimension(342, 27));
-            ivjJPanelError.setMinimumSize(new java.awt.Dimension(342, 27));
+            ivjJPanelError.setMaximumSize(new java.awt.Dimension(342, 10));
+            ivjJPanelError.setMinimumSize(new java.awt.Dimension(342, 10));
             getJPanelError().add(getJLabelErrorMessage(), getJLabelErrorMessage().getName());
             
         } catch (java.lang.Throwable ivjExc) {
@@ -592,22 +594,43 @@ public boolean isInputValid()
 	}
 	
 	LiteYukonUser liteYukonUser = DaoFactory.getYukonUserDao().getLiteYukonUser( userName );
-
-    //if one is found, then the user-typed username is not unique and an error should be displayed
-    if (liteYukonUser != null) {
-        setErrorString("Invalid username selection, please try a different username");
+	boolean error = false;
+	
+	if( isNewLogin == true )
+	{   
+	    //if we are creating a new login and trying to set the username to one that already exists
+        if( liteYukonUser != null ) {
+            error = true;
+        }
+	}
+	else
+	{
+	    //if we are trying to edit a username field and save its name to a different one that exists
+    	if ( !userName.equals( initialUsername ) && liteYukonUser != null ) {
+    	    error = true;
+    	}
+	}
+	
+	if ( error == true ) 
+	{
+	    setErrorString("Invalid username selection, please try a different username");
         getJLabelErrorMessage().setText( "(" + getErrorString() + ")" );
         getJLabelErrorMessage().setToolTipText( "(" + getErrorString() + ")" );
         getJLabelErrorMessage().setVisible( true );
         return false;
-    }
+	}
 	
+	initialUsername = getJTextFieldUserID().getText();
     getJLabelErrorMessage().setText( "" );
     getJLabelErrorMessage().setToolTipText( "" );
     getJLabelErrorMessage().setVisible( false );
 	return true;
 }
 
+public void setAsNewLogin()
+{
+    isNewLogin = true;
+}
 
 /**
  * Comment
@@ -705,6 +728,7 @@ public void setValue(Object o)
     }
 
 	getJTextFieldUserID().setText( login.getYukonUser().getUsername() );
+	initialUsername = getJTextFieldUserID().getText();
     initialAuthType = login.getYukonUser().getAuthType();
     getJListAuthType().setSelectedItem(initialAuthType);
     boolean authSupportsPasswordSet = authenticationService.supportsPasswordSet(initialAuthType);

@@ -34,7 +34,9 @@ public class YukonUserWizardPanel extends com.cannontech.common.wizard.WizardPan
 		
 		if( userLoginBasePanel == null )
 			userLoginBasePanel = new UserLoginBasePanel();
-			
+		
+		userLoginBasePanel.setAsNewLogin();
+		
 		return userLoginBasePanel;
 	}
 	/**
