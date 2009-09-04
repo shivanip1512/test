@@ -18,6 +18,7 @@
 
     <bean class="com.cannontech.web.dr.DatePropertyEditorFactory"/>
     <bean class="com.cannontech.web.dr.ProgramControllerHelper"/>
+    <bean class="com.cannontech.web.dr.LoadGroupControllerHelper"/>
 
     <context:component-scan base-package="com.cannontech.web.dr"/>
 </beans>

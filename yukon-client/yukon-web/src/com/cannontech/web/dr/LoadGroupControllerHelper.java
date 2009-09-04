@@ -1,0 +1,171 @@
+package com.cannontech.web.dr;
+
+import java.beans.PropertyEditor;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomNumberEditor;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.support.SessionStatus;
+
+import com.cannontech.common.bulk.filter.UiFilter;
+import com.cannontech.common.bulk.filter.service.FilterService;
+import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.util.Range;
+import com.cannontech.core.authorization.service.PaoAuthorizationService;
+import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
+import com.cannontech.dr.filter.AuthorizedFilter;
+import com.cannontech.dr.filter.NameFilter;
+import com.cannontech.dr.loadgroup.filter.LoadGroupLastActionFilter;
+import com.cannontech.dr.loadgroup.filter.LoadGroupLoadCapacityFilter;
+import com.cannontech.dr.loadgroup.filter.LoadGroupStateFilter;
+import com.cannontech.dr.loadgroup.model.LoadGroupDisplayField;
+import com.cannontech.dr.loadgroup.service.LoadGroupService;
+import com.cannontech.user.YukonUserContext;
+
+public class LoadGroupControllerHelper {
+    public static class LoadGroupListBackingBean extends ListBackingBean {
+        private String state;
+        private Range<Date> lastAction = new Range<Date>();
+        private Range<Double> loadCapacity = new Range<Double>();
+        
+        public String getState() {
+            return state;
+        }
+        public void setState(String state) {
+            this.state = state;
+        }
+        public Range<Date> getLastAction() {
+            return lastAction;
+        }
+        public void setLastAction(Range<Date> lastAction) {
+            this.lastAction = lastAction;
+        }
+        public Range<Double> getLoadCapacity() {
+            return loadCapacity;
+        }
+        public void setLoadCapacity(Range<Double> loadCapacity) {
+            this.loadCapacity = loadCapacity;
+        }
+    }
+    
+    private FilterService filterService;
+    private LoadGroupService loadGroupService = null;
+    private PaoAuthorizationService paoAuthorizationService;
+    private DatePropertyEditorFactory datePropertyEditorFactory;
+
+    public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
+        // Since Range uses generics, spring can't determine the type of the
+        // min and max values on its own.  In any case, for dates, we need
+        // to handle the start and end differently.
+        PropertyEditor dayStartDateEditor =
+            datePropertyEditorFactory.getPropertyEditor(DateOnlyMode.START_OF_DAY, userContext);
+        PropertyEditor dayEndDateEditor =
+            datePropertyEditorFactory.getPropertyEditor(DateOnlyMode.END_OF_DAY, userContext);
+
+        binder.registerCustomEditor(Object.class, "lastAction.min", dayStartDateEditor);
+        binder.registerCustomEditor(Object.class, "lastAction.max", dayEndDateEditor);
+        PropertyEditor numberEditor = new CustomNumberEditor(Double.class, true);
+        binder.registerCustomEditor(Object.class, "loadCapacity.min", numberEditor);
+        binder.registerCustomEditor(Object.class, "loadCapacity.max", numberEditor);
+    }
+
+    public Comparator<DisplayablePao> getDefaultSorter(YukonUserContext userContext) {
+        return LoadGroupDisplayField.NAME.getSorter(loadGroupService, userContext, false);
+    }
+    
+    public void filterGroups(ModelMap modelMap, YukonUserContext userContext,
+            @ModelAttribute("filter") LoadGroupControllerHelper.LoadGroupListBackingBean backingBean,
+            BindingResult result, SessionStatus status,
+            UiFilter<DisplayablePao> detailFilter) {
+        // TODO:  validation on backing bean
+        List<UiFilter<DisplayablePao>> filters = new ArrayList<UiFilter<DisplayablePao>>();
+        if (detailFilter != null) {
+            filters.add(detailFilter);
+        }
+
+        filters.add(new AuthorizedFilter(paoAuthorizationService,
+                                         userContext.getYukonUser()));
+        if (!StringUtils.isEmpty(backingBean.getName())) {
+            filters.add(new NameFilter(backingBean.getName()));
+        }
+        String stateFilter = backingBean.getState();
+        if (!StringUtils.isEmpty(stateFilter)) {
+            if (stateFilter.equals("active")) {
+                filters.add(new LoadGroupStateFilter(loadGroupService, true));
+            } else if (stateFilter.equals("inactive")) {
+                filters.add(new LoadGroupStateFilter(loadGroupService, false));
+            }
+        }
+        if (!backingBean.getLastAction().isUnbounded()) {
+            filters.add(new LoadGroupLastActionFilter(loadGroupService, backingBean.getLastAction()));
+        }
+        if (!backingBean.getLoadCapacity().isUnbounded()) {
+            filters.add(new LoadGroupLoadCapacityFilter(loadGroupService, backingBean.getLoadCapacity()));
+        }
+
+        LoadGroupDisplayField sortField = StringUtils.isEmpty(backingBean.getSort())
+            ? LoadGroupDisplayField.NAME : LoadGroupDisplayField.valueOf(backingBean.getSort());
+        Comparator<DisplayablePao> primarySorter =
+            sortField.getSorter(loadGroupService, userContext, backingBean.getDescending());
+        Comparator<DisplayablePao> secondarySorter = null;
+        if (sortField != LoadGroupDisplayField.NAME) {
+            secondarySorter = getDefaultSorter(userContext);
+        }
+
+        int startIndex = (backingBean.getPage() - 1) * backingBean.getItemsPerPage();
+        SearchResult<DisplayablePao> searchResult =
+            getFilteredGroups(filters, primarySorter, secondarySorter,
+                                startIndex, backingBean.getItemsPerPage());
+
+        modelMap.addAttribute("searchResult", searchResult);
+        modelMap.addAttribute("loadGroups", searchResult.getResultList());
+        modelMap.addAttribute("backingBean", backingBean);
+    }
+    
+    public List<DisplayablePao> getFilteredGroups(
+            YukonUserContext userContext, List<UiFilter<DisplayablePao>> filters) {
+        Comparator<DisplayablePao> sorter = getDefaultSorter(userContext);
+        SearchResult<DisplayablePao> searchResult =
+            filterService.filter(filters, sorter, null, 0, Integer.MAX_VALUE, loadGroupService.getRowMapper());
+        return searchResult.getResultList();
+    }
+    
+    private SearchResult<DisplayablePao> getFilteredGroups(
+            List<UiFilter<DisplayablePao>> filters, Comparator<DisplayablePao> primarySorter, 
+            Comparator<DisplayablePao> secondarySorter, int startIndex, int count) {
+        SearchResult<DisplayablePao> searchResult =
+            filterService.filter(filters, primarySorter, secondarySorter, startIndex, count, loadGroupService.getRowMapper());
+        return searchResult;
+    }
+    
+    @Autowired
+    public void setFilterService(FilterService filterService) {
+        this.filterService = filterService;
+    }
+
+    @Autowired
+    public void setLoadGroupService(LoadGroupService loadGroupService) {
+        this.loadGroupService = loadGroupService;
+    }
+
+    @Autowired
+    public void setPaoAuthorizationService(
+            PaoAuthorizationService paoAuthorizationService) {
+        this.paoAuthorizationService = paoAuthorizationService;
+    }
+
+    @Autowired
+    public void setDatePropertyEditorFactory(
+            DatePropertyEditorFactory datePropertyEditorFactory) {
+        this.datePropertyEditorFactory = datePropertyEditorFactory;
+    }
+}

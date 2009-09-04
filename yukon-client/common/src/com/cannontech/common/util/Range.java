@@ -70,6 +70,9 @@ public class Range<T extends Comparable<T>> {
             // completely unbounded, everything is included
             return true;
         }
+        if (value == null) {//no match
+            return false;
+        }
 
         if (min == null) {
             int compareValue = value.compareTo(max);

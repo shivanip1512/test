@@ -80,12 +80,8 @@
 
     <cti:msg var="boxTitle" key="yukon.web.modules.dr.programDetail.heading.loadGroups"/>
     <tags:abstractContainer type="box" title="${boxTitle}">
-	    <c:if test="${empty loadGroups}">
-	        <cti:msg key="yukon.web.modules.dr.programDetail.loadGroups.notFound"/>
-	    </c:if>
-        <c:if test="${!empty loadGroups}">
-            <%@ include file="../loadGroup/loadGroupList.jspf" %>
-        </c:if>
+        <c:set var="baseUrl" value="/spring/dr/program/detail"/>
+         <%@ include file="../loadGroup/loadGroupList.jspf" %>
     </tags:abstractContainer>
     <br>
 

@@ -296,4 +296,18 @@ public abstract class LMDirectGroupBase extends LMGroupBase implements ILMGroup
 	public void setInternalState(int s) {
 		internalState = s;
 	}
+	
+    /**
+     * Returns true when Load group is in an ACTIVE state
+     * @return
+     */
+    public boolean isActive() {
+        switch (groupControlState) {
+        case LMGroupBase.STATE_ACTIVE:
+        case LMGroupBase.STATE_ACTIVE_PENDING:
+            return true;
+        default:
+            return false;
+        }
+    }
 }

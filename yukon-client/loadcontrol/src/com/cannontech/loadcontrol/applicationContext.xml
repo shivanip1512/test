@@ -38,4 +38,5 @@
    <bean id="drLoadGroupDao" class="com.cannontech.dr.loadgroup.dao.impl.LoadGroupDaoImpl"/>
 
    <bean id="drProgramService" class="com.cannontech.dr.program.service.impl.ProgramServiceImpl"/>
+   <bean id="drLoadGroupService" class="com.cannontech.dr.loadgroup.service.impl.LoadGroupServiceImpl"/>
 </beans>

@@ -13,12 +13,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.support.SessionStatus;
 
+import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.dr.controlarea.dao.ControlAreaDao;
-import com.cannontech.dr.loadgroup.dao.LoadGroupDao;
+import com.cannontech.dr.loadgroup.filter.LoadGroupsForProgramFilter;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
 import com.cannontech.user.YukonUserContext;
@@ -28,9 +29,9 @@ public class ProgramController {
     private ControlAreaDao controlAreaDao = null;
     private ScenarioDao scenarioDao = null;
     private ProgramService programService = null;
-    private LoadGroupDao loadGroupDao = null;
     private PaoAuthorizationService paoAuthorizationService;
     private ProgramControllerHelper programControllerHelper;
+    private LoadGroupControllerHelper loadGroupControllerHelper;    
 
     @RequestMapping("/program/list")
     public String list(ModelMap modelMap, YukonUserContext userContext,
@@ -45,7 +46,9 @@ public class ProgramController {
 
     @RequestMapping("/program/detail")
     public String detail(int programId, ModelMap modelMap,
-            YukonUserContext userContext) {
+            YukonUserContext userContext,
+            @ModelAttribute("filter") LoadGroupControllerHelper.LoadGroupListBackingBean backingBean,
+            BindingResult result, SessionStatus status) {
         DisplayablePao program = programService.getProgram(programId);
         if (false && !paoAuthorizationService.isAuthorized(userContext.getYukonUser(),
                                                   Permission.LM_VISIBLE, program)) {
@@ -53,8 +56,11 @@ public class ProgramController {
                                               + " is not visible to user.");
         }
         modelMap.addAttribute("program", program);
-        List<DisplayablePao> loadGroups = loadGroupDao.getLoadGroupsForProgram(programId);
-        modelMap.addAttribute("loadGroups", loadGroups);
+        
+        UiFilter<DisplayablePao> detailFilter = new LoadGroupsForProgramFilter(programId);
+        loadGroupControllerHelper.filterGroups(modelMap, userContext, backingBean,
+                                               result, status, detailFilter);        
+        
         DisplayablePao parentControlArea = controlAreaDao.findControlAreaForProgram(programId);
         modelMap.addAttribute("parentControlArea", parentControlArea);
         List<DisplayablePao> parentScenarios = scenarioDao.findScenariosForProgram(programId);
@@ -67,6 +73,11 @@ public class ProgramController {
         programControllerHelper.initBinder(binder, userContext);
     }
 
+    @InitBinder
+    public void initLoadGroupBinder(WebDataBinder binder, YukonUserContext userContext) {
+        loadGroupControllerHelper.initBinder(binder, userContext);
+    }
+    
     @Autowired
     public void setControlAreaDao(ControlAreaDao controlAreaDao) {
         this.controlAreaDao = controlAreaDao;
@@ -83,11 +94,6 @@ public class ProgramController {
     }
 
     @Autowired
-    public void setLoadGroupDao(LoadGroupDao loadGroupDao) {
-        this.loadGroupDao = loadGroupDao;
-    }
-
-    @Autowired
     public void setPaoAuthorizationService(PaoAuthorizationService paoAuthorizationService) {
         this.paoAuthorizationService = paoAuthorizationService;
     }
@@ -97,4 +103,10 @@ public class ProgramController {
             ProgramControllerHelper programControllerHelper) {
         this.programControllerHelper = programControllerHelper;
     }
+    
+    @Autowired
+    public void setLoadGroupControllerHelper(
+            LoadGroupControllerHelper loadGroupControllerHelper) {
+        this.loadGroupControllerHelper = loadGroupControllerHelper;
+    }    
 }

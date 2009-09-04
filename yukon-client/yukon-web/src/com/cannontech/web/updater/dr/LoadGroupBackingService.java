@@ -6,16 +6,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 
 import com.cannontech.common.util.DatedObject;
-import com.cannontech.dr.controlarea.model.LoadGroupDisplayField;
+import com.cannontech.dr.loadgroup.model.LoadGroupDisplayField;
+import com.cannontech.dr.loadgroup.service.LoadGroupService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMDirectGroupBase;
 import com.cannontech.loadcontrol.data.LMGroupBase;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.UpdateBackingService;
 
 public class LoadGroupBackingService implements UpdateBackingService {
-    private LoadControlClientConnection loadControlClientConnection = null;
+    private LoadGroupService loadGroupService = null;
     private YukonUserContextMessageSourceResolver messageSourceResolver = null;
 
     @Override
@@ -25,7 +25,7 @@ public class LoadGroupBackingService implements UpdateBackingService {
         int loadGroupId = Integer.parseInt(idBits[0]);
         LoadGroupDisplayField displayField = LoadGroupDisplayField.valueOf(idBits[1]);
 
-        DatedObject<LMGroupBase> datedGroup = loadControlClientConnection.getDatedGroup(loadGroupId);
+        DatedObject<LMGroupBase> datedGroup = loadGroupService.findDatedGroup(loadGroupId);
 
         MessageSource messageSource = messageSourceResolver.getMessageSource(userContext);
         if (datedGroup == null || !(datedGroup.getObject() instanceof LMDirectGroupBase)) {
@@ -54,9 +54,8 @@ public class LoadGroupBackingService implements UpdateBackingService {
     }
 
     @Autowired
-    public void setLoadControlClientConnection(
-            LoadControlClientConnection loadControlClientConnection) {
-        this.loadControlClientConnection = loadControlClientConnection;
+    public void setLoadGroupService(LoadGroupService loadGroupService) {
+        this.loadGroupService = loadGroupService;
     }
 
     @Autowired
