@@ -63,15 +63,11 @@
                                     <c:set var="triggerNumber" value="${trigger.triggerNumber}"/>                               
                                     <tr class="<tags:alternateRow odd="" even="altRow"/>">
                                         <td>
-                                           <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/VALUE"/>
-                                           /
-                                           <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/THRESHOLD"/>
+                                           <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/VALUE_THRESHOLD"/>
                                         </td>
                                         <td>
                                             <c:if test="${trigger.thresholdType}">
-                                                <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/PEAK"/>
-                                                /
-                                                <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/PROJECTION"/>
+                                                <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/PEAK_PROJECTION"/>
                                             </c:if>
                                         </td>
                                         <td>
