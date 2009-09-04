@@ -42,13 +42,7 @@
                         </tags:nameValue>
                         <cti:msg var="fieldName" key="yukon.web.modules.dr.loadGroupDetail.info.controlStatistics"/>
                         <tags:nameValue name="${fieldName}">
-			                <cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/CONTROL_DAILY"/>
-			                <cti:msg key="yukon.web.modules.dr.loadGroupDetail.info.separator"/>
-			                <cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/CONTROL_MONTHLY"/>
-			                <cti:msg key="yukon.web.modules.dr.loadGroupDetail.info.separator"/>
-			                <cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/CONTROL_SEASONALLY"/>
-			                <cti:msg key="yukon.web.modules.dr.loadGroupDetail.info.separator"/>
-			                <cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/CONTROL_ANNUALLY"/>
+			                <cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/CONTROL_STATISTICS"/>
                         </tags:nameValue>
                         <cti:msg var="fieldName" key="yukon.web.modules.dr.loadGroupDetail.info.reduction"/>
                         <tags:nameValue name="${fieldName}">

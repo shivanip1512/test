@@ -114,11 +114,15 @@ public enum LoadGroupDisplayField {
                 }};
         }        
     },
-    CONTROL_DAILY {
+    CONTROL_STATISTICS {
         @Override
         public MessageSourceResolvable getValue(LMDirectGroupBase group) {
-            String value = CtiUtilities.decodeSecondsToTime(group.getCurrentHoursDaily()) ;
-            return buildResolvable(name(), value);
+            Object[] result = {
+                    CtiUtilities.decodeSecondsToTime(group.getCurrentHoursDaily()),
+                    CtiUtilities.decodeSecondsToTime(group.getCurrentHoursMonthly()),
+                    CtiUtilities.decodeSecondsToTime(group.getCurrentHoursSeasonal()),
+                    CtiUtilities.decodeSecondsToTime(group.getCurrentHoursAnnually()) };
+            return buildResolvable(name(), result);
         }
         
         @Override
@@ -146,105 +150,6 @@ public enum LoadGroupDisplayField {
                     return isDescending ? (0 - retVal) : retVal;
                 }};
         }
-    },
-    CONTROL_MONTHLY {
-        @Override
-        public MessageSourceResolvable getValue(LMDirectGroupBase group) {
-            String value = CtiUtilities.decodeSecondsToTime(group.getCurrentHoursMonthly()) ;
-            return buildResolvable(name(), value);
-        }
-        
-        @Override
-        public Comparator<DisplayablePao> getSorter(
-                ObjectMapper<DisplayablePao, LMDirectGroupBase> mapper,
-                YukonUserContext userContext, final boolean isDescending) {
-            return new MappingComparator(mapper) {
-
-                @Override
-                public int compare(DisplayablePao pao1, DisplayablePao pao2) {
-                    LMDirectGroupBase group1 = mapper.map(pao1);
-                    LMDirectGroupBase group2 = mapper.map(pao2);
-                    if (group1 == group2) {
-                        return 0;
-                    }
-                    if (group1 == null || group1.getCurrentHoursMonthly() == null) {
-                        return isDescending ? -1 : 1;
-                    }
-                    if (group2 == null || group2.getCurrentHoursMonthly() == null) {
-                        return isDescending ? 1 : -1;
-                    }
-                    Integer state1 = group1.getCurrentHoursMonthly();
-                    Integer state2 = group2.getCurrentHoursMonthly();
-                    int retVal = state1.compareTo(state2);
-                    return isDescending ? (0 - retVal) : retVal;
-                }};
-        }        
-    },
-    CONTROL_SEASONALLY {
-        @Override
-        public MessageSourceResolvable getValue(LMDirectGroupBase group) {
-            String value = CtiUtilities.decodeSecondsToTime(group.getCurrentHoursSeasonal()) ;
-            return buildResolvable(name(), value);
-        }
-        
-        @Override
-        public Comparator<DisplayablePao> getSorter(
-                ObjectMapper<DisplayablePao, LMDirectGroupBase> mapper,
-                YukonUserContext userContext, final boolean isDescending) {
-            return new MappingComparator(mapper) {
-
-                @Override
-                public int compare(DisplayablePao pao1, DisplayablePao pao2) {
-                    LMDirectGroupBase group1 = mapper.map(pao1);
-                    LMDirectGroupBase group2 = mapper.map(pao2);
-                    if (group1 == group2) {
-                        return 0;
-                    }
-                    if (group1 == null || group1.getCurrentHoursSeasonal() == null) {
-                        return isDescending ? -1 : 1;
-                    }
-                    if (group2 == null || group2.getCurrentHoursSeasonal() == null) {
-                        return isDescending ? 1 : -1;
-                    }
-                    Integer state1 = group1.getCurrentHoursSeasonal();
-                    Integer state2 = group2.getCurrentHoursSeasonal();
-                    int retVal = state1.compareTo(state2);
-                    return isDescending ? (0 - retVal) : retVal;
-                }};
-        }        
-    },
-    CONTROL_ANNUALLY {
-        @Override
-        public MessageSourceResolvable getValue(LMDirectGroupBase group) {
-            String value = CtiUtilities.decodeSecondsToTime(group.getCurrentHoursAnnually()) ;
-            return buildResolvable(name(), value);
-        }
-        
-        @Override
-        public Comparator<DisplayablePao> getSorter(
-                ObjectMapper<DisplayablePao, LMDirectGroupBase> mapper,
-                YukonUserContext userContext, final boolean isDescending) {
-            return new MappingComparator(mapper) {
-
-                @Override
-                public int compare(DisplayablePao pao1, DisplayablePao pao2) {
-                    LMDirectGroupBase group1 = mapper.map(pao1);
-                    LMDirectGroupBase group2 = mapper.map(pao2);
-                    if (group1 == group2) {
-                        return 0;
-                    }
-                    if (group1 == null || group1.getCurrentHoursAnnually() == null) {
-                        return isDescending ? -1 : 1;
-                    }
-                    if (group2 == null || group2.getCurrentHoursAnnually() == null) {
-                        return isDescending ? 1 : -1;
-                    }
-                    Integer state1 = group1.getCurrentHoursAnnually();
-                    Integer state2 = group2.getCurrentHoursAnnually();
-                    int retVal = state1.compareTo(state2);
-                    return isDescending ? (0 - retVal) : retVal;
-                }};
-        }        
     },
     REDUCTION {
         @Override

@@ -118,7 +118,7 @@ function clearFilter() {
         </th>
         <th>
             <dr:sortByLink key="yukon.web.modules.dr.loadGroupList.heading.controlStatistics"
-                baseUrl="${baseUrl}" fieldName="CONTROL_DAILY"/>        
+                baseUrl="${baseUrl}" fieldName="CONTROL_STATISTICS"/>        
         </th>
         <th>
             <dr:sortByLink key="yukon.web.modules.dr.loadGroupList.heading.reduction"
@@ -144,14 +144,7 @@ function clearFilter() {
             </td>
             <td><cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/STATE"/></td>
             <td><cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/LAST_ACTION"/></td>
-            <td><cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/CONTROL_DAILY"/>
-                <cti:msg key="yukon.web.modules.dr.loadGroupDetail.info.separator"/>
-                <cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/CONTROL_MONTHLY"/>
-                <cti:msg key="yukon.web.modules.dr.loadGroupDetail.info.separator"/>
-                <cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/CONTROL_SEASONALLY"/>
-                <cti:msg key="yukon.web.modules.dr.loadGroupDetail.info.separator"/>
-                <cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/CONTROL_ANNUALLY"/>
-            </td>
+            <td><cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/CONTROL_STATISTICS"/></td>
             <td><cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/REDUCTION"/></td>
             <td><cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/LOAD_CAPACITY"/></td>
         </tr>

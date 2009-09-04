@@ -42,7 +42,7 @@
                         <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaDetail.info.startStop"/>
                         <tags:nameValue name="${fieldName}">
                             <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/START"/>
-                            -
+                            <cti:msg key="yukon.web.modules.dr.controlAreaDetail.info.separator"/>
                             <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/STOP"/>
                         </tags:nameValue>
                         <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaDetail.info.loadCapacity"/>

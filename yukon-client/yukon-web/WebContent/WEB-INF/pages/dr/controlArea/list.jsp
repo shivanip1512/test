@@ -102,7 +102,7 @@
     </tags:abstractContainer><br>
 
     <c:if test="${searchResult.hitCount == 0}">
-        <cti:msg key="yukon.web.modules.dr.scenarioList.noResults"/>
+        <cti:msg key="yukon.web.modules.dr.controlAreaList.noResults"/>
     </c:if>
     <c:if test="${searchResult.hitCount > 0}">
         <dr:searchNavigation searchResult="${searchResult}" baseUrl="${baseUrl}"/>
@@ -177,7 +177,7 @@
                     </td>
                     <td>
                         <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/START"/>
-                        -
+                        <cti:msg key="yukon.web.modules.dr.controlAreaDetail.info.separator"/>
                         <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/STOP"/>
                     </td>
                     <td>
