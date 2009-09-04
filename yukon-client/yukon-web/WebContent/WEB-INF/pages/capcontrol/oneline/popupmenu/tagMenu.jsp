@@ -3,7 +3,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 
 <cti:url var="url" value="/spring/capcontrol/commandexecutor?action=executeCommandOneLineTag" />
-<cti:url var="commentsUrl" value="/capcontrol/standardPageWrapper.jsp?title=CapControl Comments&page=/capcontrol/capcontrolcomments.jsp"/>
+<cti:url var="commentsUrl" value="/capcontrol/standardPageWrapper.jsp?title=CapControl Comments&page=/spring/capcontrol/comments/paoComments"/>
 <c:set var="maxCommentLength" value="35"/>
 
 <script language="JavaScript" type="text/javascript" src="/JavaScript/cconelinepopup.js"></script>
@@ -71,7 +71,7 @@
                     </c:if>
                 </c:if>
                     
-                <a href="${commentsUrl}?paoID=${paoId}&returnURL=${returnUrl}" style="color: white; font-weight: bold;" >Comments</a>
+                <a href="${commentsUrl}?paoId=${paoId}&returnURL=${returnUrl}" style="color: white; font-weight: bold;" >Comments</a>
                     <br>
                     <div style="color: white;"><c:set var="count" value="1" />
                         <c:forEach var="comment" items="${comments}">

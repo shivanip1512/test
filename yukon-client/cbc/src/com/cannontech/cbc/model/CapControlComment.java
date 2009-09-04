@@ -3,6 +3,8 @@ package com.cannontech.cbc.model;
 import java.sql.Timestamp;
 
 import com.cannontech.cbc.dao.CommentAction;
+import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.cbc.CapControlCommand;
 
 public class CapControlComment {
@@ -14,10 +16,6 @@ public class CapControlComment {
     private boolean altered;
     private String action;
     
-    public CapControlComment() {
-        
-    }
-
     public int getId() {
         return id;
     }
@@ -37,6 +35,11 @@ public class CapControlComment {
     public int getUserId() {
         return userId;
     }
+    
+    public String getUserName(){
+        YukonUserDao yukonUserDao = YukonSpringHook.getBean("yukonUserDao", YukonUserDao.class);
+        return yukonUserDao.getLiteYukonUser(userId).getUsername();
+    }
 
     public void setUserId(int userId) {
         this.userId = userId;
@@ -45,7 +48,7 @@ public class CapControlComment {
     public Timestamp getTime() {
         return time;
     }
-
+    
     public void setTime(Timestamp time) {
         this.time = time;
     }

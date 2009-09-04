@@ -50,9 +50,6 @@
                 <entry key="/tier/cceditorpopup">
                     <ref bean="ccEditorController"/>
                 </entry>
-                <entry key="/comments">
-                    <ref bean="capControlCommentController"/>
-                </entry>
 			</map>
 		</property>
 		<property name="order" value="1"/>
@@ -109,12 +106,6 @@
         </property>
     </bean>
 	
-    <bean id="capControlCommentController" class="com.cannontech.web.capcontrol.CapControlCommentController">
-        <property name="methodNameResolver" ref="methodNameResolver"/>
-        <property name="commentDao" ref="capCommentDao"/>
-        <property name="authDao" ref="authDao"/>
-    </bean>
-
     <bean id="capControlCommandController"
         class="com.cannontech.web.capcontrol.CapControlCommandController">
         <property name="methodNameResolver" ref="methodNameResolver"/>
@@ -126,6 +117,7 @@
 
     <bean name="scheduleController" class="com.cannontech.web.capcontrol.ScheduleController"/>
 	<bean name="tierController" class="com.cannontech.web.capcontrol.TierController"/>
+	<bean id="capControlCommentController" class="com.cannontech.web.capcontrol.CapControlCommentController"/>
 	<bean name="capBankWebController" class="com.cannontech.web.capcontrol.CapBankWebController"/>
 	<bean name="capControlImportController" class="com.cannontech.web.capcontrol.CapControlImportController"/>
 	<bean name="resultsController" class="com.cannontech.web.capcontrol.ResultsController"/>

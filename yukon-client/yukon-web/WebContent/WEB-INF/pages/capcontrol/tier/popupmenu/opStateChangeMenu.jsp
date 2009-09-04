@@ -2,7 +2,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 
-<cti:url var="commentsUrl" value="/capcontrol/capcontrolcomments.jsp?paoID="/>
 <cti:url var="url" value="/spring/capcontrol/commandexecutor?action=executeCommandOneLineTag" />
 <c:set var="maxCommentLength" value="35"/>
 

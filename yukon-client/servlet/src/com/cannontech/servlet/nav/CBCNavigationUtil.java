@@ -12,7 +12,6 @@ public class CBCNavigationUtil {
 													"standardPageWrapper.jsp",
 													"bankMove.jsp",
 													"moved.jsp",
-													"capcontrolcomments.jsp",
 													"cbcPointTimestamps.jsp",
 													"cbcWizBase.jsf"
 													};

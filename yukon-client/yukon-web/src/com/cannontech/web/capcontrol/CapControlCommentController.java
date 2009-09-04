@@ -1,72 +1,80 @@
 package com.cannontech.web.capcontrol;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.web.bind.ServletRequestUtils;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.cbc.cache.CapControlCache;
+import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.cbc.dao.CapControlCommentDao;
 import com.cannontech.cbc.dao.CommentAction;
 import com.cannontech.cbc.model.CapControlComment;
-import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.roles.capcontrol.CBCSettingsRole;
-import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.yukon.cbc.StreamableCapObject;
 
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
-public class CapControlCommentController extends MultiActionController {
+@RequestMapping("/comments/*")
+@Controller
+public class CapControlCommentController {
     private static final String defaultCommentText = "(none)";
     private CapControlCommentDao commentDao;
-    private AuthDao authDao;
+    private RolePropertyDao rolePropertyDao;
+    private FilterCacheFactory filterCacheFactory;
     
-    public void add(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        final Integer paoId = ServletRequestUtils.getRequiredIntParameter(request, "paoId");
-        final String commentText = ServletRequestUtils.getStringParameter(request,  "comment", defaultCommentText);
-        final LiteYukonUser user = ServletUtil.getYukonUser(request);
-        
-        boolean isAuthorized = authDao.checkRoleProperty(user, CBCSettingsRole.ADD_COMMENTS);
+    @RequestMapping(method=RequestMethod.POST)
+    public String add(int paoId, String comment, LiteYukonUser user, ModelMap model) throws Exception {
+        boolean isAuthorized = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADD_COMMENTS, user);
         if (!isAuthorized) {
             throw new RuntimeException(user.getUsername() + " not authorized to add comments");
         }
         
-        final CapControlComment comment = new CapControlComment();
-        comment.setPaoId(paoId);
-        comment.setUserId(user.getUserID());
-        comment.setComment(commentText);
-        comment.setAltered(false);
+        final CapControlComment capControlcomment = new CapControlComment();
+        capControlcomment.setPaoId(paoId);
+        capControlcomment.setUserId(user.getUserID());
+        capControlcomment.setComment(StringUtils.isBlank(comment) ? defaultCommentText : comment);
+        capControlcomment.setAltered(false);
         
         Timestamp time = new Timestamp(System.currentTimeMillis());
-        comment.setTime(time);
-        comment.setAction(CommentAction.USER_COMMENT.toString());
-        commentDao.add(comment);
+        capControlcomment.setTime(time);
+        capControlcomment.setAction(CommentAction.USER_COMMENT.toString());
+        commentDao.add(capControlcomment);
+        
+        model.addAttribute("paoId", paoId);
+        return "redirect:commentList";
     }
     
-    public void update(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        final Integer commentId = ServletRequestUtils.getRequiredIntParameter(request, "commentId");
-        final String commentText = ServletRequestUtils.getRequiredStringParameter(request, "comment");
-        final LiteYukonUser user = ServletUtil.getYukonUser(request);
+    @RequestMapping(method=RequestMethod.POST)
+    public String update(int commentId, int paoId, String comment, LiteYukonUser user, ModelMap model) throws Exception {
         
-        boolean isAuthorized = authDao.checkRoleProperty(user, CBCSettingsRole.MODIFY_COMMENTS);
+        boolean isAuthorized = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.MODIFY_COMMENTS, user);
         if (!isAuthorized) {
             throw new RuntimeException(user.getUsername() + " not authorized to update comments");
         }
         
-        CapControlComment comment = commentDao.getById(commentId);
-        comment.setComment(commentText);
-        comment.setAltered(true);
-        commentDao.update(comment);
+        CapControlComment capControlComment = commentDao.getById(commentId);
+        capControlComment.setComment(comment);
+        capControlComment.setAltered(true);
+        commentDao.update(capControlComment);
+        
+        model.addAttribute("paoId", paoId);
+        return "redirect:commentList";
     }
     
-    public void remove(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        final Integer commentId = ServletRequestUtils.getRequiredIntParameter(request, "commentId");
-        final LiteYukonUser user = ServletUtil.getYukonUser(request);
-        
-        boolean isAuthorized = authDao.checkRoleProperty(user, CBCSettingsRole.MODIFY_COMMENTS);
+    @RequestMapping(method=RequestMethod.POST)
+    public String remove(int commentId, int paoId, LiteYukonUser user, ModelMap model) throws Exception {
+        boolean isAuthorized = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.MODIFY_COMMENTS, user);
         if (!isAuthorized) {
             throw new RuntimeException(user.getUsername() + " not authorized to remove comments");
         }
@@ -74,14 +82,57 @@ public class CapControlCommentController extends MultiActionController {
         CapControlComment comment = new CapControlComment();
         comment.setId(commentId);
         commentDao.remove(comment);
+        
+        model.addAttribute("paoId", paoId);
+        return "redirect:commentList";
     }
     
+    @RequestMapping
+    public String paoComments(HttpServletRequest request, HttpServletResponse response, int paoId, LiteYukonUser user, ModelMap model){
+        CapControlCache filterCapControlCache = filterCacheFactory.createUserAccessFilteredCache(user);
+
+        StreamableCapObject capObject = filterCapControlCache.getCapControlPAO(paoId);
+        if (capObject == null) {
+            throw new RuntimeException(user.getUsername() + " not authorized to view comments for paoId: " + paoId);
+        }
+        
+        String name = capObject.getCcName();
+        List<CapControlComment> comments = commentDao.getAllCommentsByPao(paoId);
+        
+        boolean modifyPermission = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.MODIFY_COMMENTS, user);
+        boolean addPermission = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADD_COMMENTS, user);
+        
+        model.addAttribute("name", name);
+        model.addAttribute("paoId", paoId);
+        model.addAttribute("comments", comments);
+        model.addAttribute("modifyPermission", modifyPermission);
+        model.addAttribute("addPermission", addPermission);
+        return "comments/commentsPage.jsp";
+    }
+    
+    @RequestMapping
+    public String commentList(int paoId, LiteYukonUser user, ModelMap model) {
+        List<CapControlComment> comments = commentDao.getAllCommentsByPao(paoId);
+        boolean modifyPermission = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.MODIFY_COMMENTS, user);
+        boolean addPermission = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADD_COMMENTS, user);
+        model.addAttribute("comments", comments);
+        model.addAttribute("modifyPermission", modifyPermission);
+        model.addAttribute("addPermission", addPermission);
+        return "comments/commentList.jsp";
+    }
+    
+    @Autowired
     public void setCommentDao(CapControlCommentDao commentDao) {
         this.commentDao = commentDao;
     }
     
-    public void setAuthDao(AuthDao authDao) {
-        this.authDao = authDao;
+    @Autowired
+    public void setFilterCacheFactory(FilterCacheFactory filterCacheFactory) {
+        this.filterCacheFactory = filterCacheFactory;
     }
-
+    
+    @Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao){
+        this.rolePropertyDao = rolePropertyDao;
+    }
 }

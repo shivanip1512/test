@@ -101,7 +101,7 @@
 		                       name="area_state"
 		                       class=""
 		                       href="javascript:void(0);" 
-							   onclick="getAreaMenu('${thisAreaId}', event);">
+							   <c:if test="${!isSpecialArea}">onclick="getAreaMenu('${thisAreaId}', event);" </c:if><c:if test="${isSpecialArea}">onclick="getSpecialAreaMenu('${thisAreaId}', event);" </c:if>>
 								<cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="STATE" />
 							</a>
 							
