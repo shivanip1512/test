@@ -85,11 +85,21 @@ DELETE FROM YukonUserRole WHERE UserRoleID IN (-350, -351, -352);
 ALTER TABLE LMHardwareControlGroup ADD ProgramId INTEGER;
 
 UPDATE LMHardwareControlGroup
+SET ProgramId = -9999
+WHERE LMGroupId IN (SELECT LoadGroupCounter.LMGroupDeviceID
+                    FROM (SELECT LMPDG.LMGroupDeviceId, COUNT(*) FoundInDifferentPrograms
+                          FROM LMProgramDirectGroup LMPDG, LMProgramWebPublishing LMPWP
+                          WHERE LMPDG.DeviceID = LMPWP.DeviceID
+                          GROUP BY LMPDG.LMGroupDeviceID) LoadGroupCounter
+                    WHERE FoundInDifferentPrograms > 1);
+
+UPDATE LMHardwareControlGroup
 SET ProgramId = (SELECT LMPWP.ProgramID
                  FROM LMProgramDirectGroup LMPDG, LMProgramWebPublishing LMPWP
                  WHERE LMPDG.DeviceID =LMPWP.DeviceID
-                 AND LMPDG.LMGroupDeviceID = LMHardwareControlGroup.LMGroupID);
-                 
+                 AND LMPDG.LMGroupDeviceID = LMHardwareControlGroup.LMGroupID)
+WHERE ProgramId IS NULL;
+
 UPDATE LMHardwareControlGroup
 SET ProgramId = 0
 WHERE ProgramId IS NULL;
