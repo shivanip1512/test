@@ -12,12 +12,10 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.definition.model.PaoPointIdentifier;
 import com.cannontech.common.device.definition.model.PointIdentifier;
-import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
@@ -97,6 +95,30 @@ public final class PointDaoImpl implements PointDao {
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("A point with id " + pointID + " cannot be found.");
         }
+    }
+    
+    @Override
+    public PaoPointIdentifier getPaoPointIdentifier(int pointId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select PointOffset, PointType, p.PAObjectId, pao.Type ");
+        sql.append("from Point p");
+        sql.append("join YukonPAObject pao on p.PAObjectId = pao.PAObjectId");
+        sql.append("where p.PointId = ").appendArgument(pointId);
+        
+        PaoPointIdentifier result = simpleJdbcTemplate.queryForObject(sql, new ParameterizedRowMapper<PaoPointIdentifier>() {
+            public PaoPointIdentifier mapRow(ResultSet rs, int rowNum) throws SQLException {
+                PaoType paoType = PaoType.getForDbString(rs.getString("Type"));
+                int paoId = rs.getInt("PAObjectId");
+                PaoIdentifier paoIdentifier = new PaoIdentifier(paoId, paoType);
+                
+                String pointType = rs.getString("PointType");
+                int pointOffset = rs.getInt("PointOffset");
+                PointIdentifier pointIdentifier = new PointIdentifier(pointType, pointOffset);
+                PaoPointIdentifier result = new PaoPointIdentifier(paoIdentifier, pointIdentifier);
+                return result;
+            }
+        });
+        return result;
     }
     
     @SuppressWarnings("unchecked")
@@ -474,27 +496,4 @@ public final class PointDaoImpl implements PointDao {
         return lrph;
     }
 
-    @Override
-    public PaoPointIdentifier getPaoPointIdentifier(int pointId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select PointOffset, PointType, p.PAObjectId, pao.Type ");
-        sql.append("from Point p");
-        sql.append("join YukonPAObject pao on p.PAObjectId = pao.PAObjectId");
-        sql.append("where p.PointId = ").appendArgument(pointId);
-        
-        PaoPointIdentifier result = simpleJdbcTemplate.queryForObject(sql, new ParameterizedRowMapper<PaoPointIdentifier>() {
-            public PaoPointIdentifier mapRow(ResultSet rs, int rowNum) throws SQLException {
-                PaoType paoType = PaoType.valueOf(rs.getString("Type"));
-                int paoId = rs.getInt("PAObjectId");
-                PaoIdentifier paoIdentifier = new PaoIdentifier(paoId, paoType);
-                
-                String pointType = rs.getString("PointType");
-                int pointOffset = rs.getInt("PointOffset");
-                PointIdentifier pointIdentifier = new PointIdentifier(pointType, pointOffset);
-                PaoPointIdentifier result = new PaoPointIdentifier(paoIdentifier, pointIdentifier);
-                return result;
-            }
-        });
-        return result;
-    }
 }

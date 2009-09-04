@@ -1,7 +1,9 @@
 package com.cannontech.amr.outageProcessing.service.impl;
 
-import java.util.Calendar;
+import java.util.Date;
 
+import org.joda.time.Duration;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.outageProcessing.OutageMonitor;
@@ -45,10 +47,10 @@ public class OutageMonitorServiceImpl implements OutageMonitorService {
         return outageMonitorDao.delete(outageMonitorId);
 	}
 	
-	public Calendar getLatestPreviousReadingDate(OutageMonitor outageMonitor) {
-		Calendar systemCalendar = systemDateFormattingService.getSystemCalendar();
-		systemCalendar.add(Calendar.DATE, -outageMonitor.getTimePeriodDays());
-		return systemCalendar;
+	public Date getLatestPreviousReadingDate(OutageMonitor outageMonitor) {
+	    Duration outagePeriod = Duration.standardDays(outageMonitor.getTimePeriodDays());
+	    Instant now = new Instant();
+		return now.minus(outagePeriod).toDate();
 	}
 	
 	@Autowired

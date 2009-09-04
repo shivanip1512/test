@@ -185,7 +185,7 @@ public class NotificationServer implements Runnable, NotificationServerMBean
 	    try {
 	        System.setProperty("cti.app.name", "Notification-Server");
 	        CTILogger.info("Starting notification server from main method");
-            YukonSpringHook.setDefaultContext(YukonSpringHook.SERVICES_BEAN_FACTORY_KEY);
+            YukonSpringHook.setDefaultContext(YukonSpringHook.NOTIFICATION_BEAN_FACTORY_KEY);
 	        NotificationServer ns = (NotificationServer)YukonSpringHook.getBean("notificationServer");
 
 	        MBeanUtil.tryRegisterMBean("type=notificationserver", ns);

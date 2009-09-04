@@ -28,4 +28,9 @@
     <property name="activityLoggerService" ref="activityLoggerService"/>
   </bean>
 
+  <bean id="generalAlarmPointMonitorProcessor" class="com.cannontech.amr.monitors.impl.GeneralAlarmPointMonitorProcessorFactory"/>
+  
+  <bean id="outagePointMonitorProcessor" class="com.cannontech.amr.monitors.impl.OutagePointMonitorProcessorFactory"/>
+    
+
 </beans>

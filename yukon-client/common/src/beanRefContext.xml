@@ -41,7 +41,7 @@
         </constructor-arg>
     </bean>
 
-    <bean id="com.cannontech.context.services"
+    <bean id="com.cannontech.context.notif"
         class="org.springframework.context.support.ClassPathXmlApplicationContext" lazy-init="true">
         <constructor-arg index="0">
             <list merge="true">

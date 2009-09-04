@@ -96,6 +96,13 @@
         class="com.cannontech.amr.tou.dao.impl.TouDaoImpl">
         <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
     </bean>
+    
+        <!-- Outage monitor Service -->
+    <bean id="outageMonitorService" class="com.cannontech.amr.outageProcessing.service.impl.OutageMonitorServiceImpl"/>
+    
+    <!-- Tamper flag monitor Service -->
+    <bean id="tamperFlagMonitorService" class="com.cannontech.amr.tamperFlagProcessing.service.impl.TamperFlagMonitorServiceImpl"/>
+  
 
 </beans>
 

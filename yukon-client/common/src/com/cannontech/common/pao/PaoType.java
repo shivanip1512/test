@@ -127,12 +127,13 @@ public enum PaoType {
     ROUTE_MACRO(RouteTypes.ROUTE_MACRO, "Macro", PaoCategory.ROUTE, PaoClass.ROUTE),
     ROUTE_VERSACOM(RouteTypes.ROUTE_VERSACOM, "Versacom", PaoCategory.ROUTE, PaoClass.ROUTE),
     ROUTE_TAP_PAGING(RouteTypes.ROUTE_TAP_PAGING, "Tap Paging", PaoCategory.ROUTE, PaoClass.ROUTE),
-    ROUTE_WCTP_TERMINAL(RouteTypes.ROUTE_WCTP_TERMINAL, "WCTP Terminal", PaoCategory.ROUTE, PaoClass.ROUTE),
+    // "!!!" is temporary, Julie to fix in a couple days
+	ROUTE_WCTP_TERMINAL(RouteTypes.ROUTE_WCTP_TERMINAL, "WCTP Terminal!!!", PaoCategory.ROUTE, PaoClass.ROUTE),
     ROUTE_SERIES_5_LMI(RouteTypes.ROUTE_SERIES_5_LMI, "Series 5 LMI", PaoCategory.ROUTE, PaoClass.ROUTE),
-    ROUTE_RTC(RouteTypes.ROUTE_RTC, "RTC", PaoCategory.ROUTE, PaoClass.ROUTE),
-    ROUTE_SNPP_TERMINAL(RouteTypes.ROUTE_SNPP_TERMINAL, "SNPP Terminal", PaoCategory.ROUTE, PaoClass.ROUTE),
-    ROUTE_XML(RouteTypes.ROUTE_XML, "XML", PaoCategory.ROUTE, PaoClass.ROUTE),
-    ROUTE_TNPP_TERMINAL(RouteTypes.ROUTE_TNPP_TERMINAL, "TNPP Terminal", PaoCategory.ROUTE, PaoClass.ROUTE),
+    ROUTE_RTC(RouteTypes.ROUTE_RTC, "RTC!!!", PaoCategory.ROUTE, PaoClass.ROUTE),
+    ROUTE_SNPP_TERMINAL(RouteTypes.ROUTE_SNPP_TERMINAL, "SNPP Terminal!!!", PaoCategory.ROUTE, PaoClass.ROUTE),
+    ROUTE_XML(RouteTypes.ROUTE_XML, "XML!!!", PaoCategory.ROUTE, PaoClass.ROUTE),
+    ROUTE_TNPP_TERMINAL(RouteTypes.ROUTE_TNPP_TERMINAL, "TNPP Terminal!!!", PaoCategory.ROUTE, PaoClass.ROUTE),
 
     LOCAL_DIRECT(PortTypes.LOCAL_DIRECT, "Local Direct", PaoCategory.PORT, PaoClass.PORT),
     LOCAL_SHARED(PortTypes.LOCAL_SHARED, "Local Serial Port", PaoCategory.PORT, PaoClass.PORT),
@@ -158,19 +159,43 @@ public enum PaoType {
     private final PaoCategory paoCategory;
     private final PaoClass paoClass;
 
-    private final static ImmutableMap<Integer, PaoType> lookup;
+    private final static ImmutableMap<Integer, PaoType> lookupById;
+    private final static ImmutableMap<String, PaoType> lookupByDbString;
     
     static {
-        Builder<Integer, PaoType> builder = ImmutableMap.builder();
+        Builder<Integer, PaoType> idBuilder = ImmutableMap.builder();
+        Builder<String, PaoType> dbBuilder = ImmutableMap.builder();
         for (PaoType deviceType : values()) {
-            builder.put(deviceType.deviceTypeId, deviceType);
+            idBuilder.put(deviceType.deviceTypeId, deviceType);
+            dbBuilder.put(deviceType.dbString.toLowerCase(), deviceType);
         }
-        lookup = builder.build();
+        lookupById = idBuilder.build();
+        lookupByDbString = dbBuilder.build();
     }
 
+    /**
+     * Looks up the PaoType based on its Java constant ID.
+     * 
+     * @param deviceTypeId
+     * @return
+     * @throws IllegalArgumentException - if no match
+     */
     public static PaoType getForId(int deviceTypeId) throws IllegalArgumentException {
-        PaoType deviceType = lookup.get(deviceTypeId);
+        PaoType deviceType = lookupById.get(deviceTypeId);
         Validate.notNull(deviceType, Integer.toString(deviceTypeId));
+        return deviceType;
+    }
+    
+    /**
+     * Looks up the the PaoType based on the string that is stored in the PAObject table.
+     * 
+     * @param dbString - type name to lookup, case insensitive
+     * @return
+     * @throws IllegalArgumentException - if no match
+     */
+    public static PaoType getForDbString(String dbString) throws IllegalArgumentException {
+        PaoType deviceType = lookupByDbString.get(dbString.toLowerCase());
+        Validate.notNull(deviceType, dbString);
         return deviceType;
     }
 

@@ -36,5 +36,7 @@
          <property name="pointDao" ref="pointDao"/>
          <property name="stateDao" ref="stateDao"/>
      </bean>
+     
+     <bean id="richPointDataService" class="com.cannontech.core.dynamic.impl.RichPointDataServiceImpl" />
   
 </beans>

@@ -9,14 +9,13 @@ import javax.management.MBeanParameterInfo;
 
 import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.integration.crs.YukonCRSIntegrator;
-import com.cannontech.jmx.CTIBaseDynMBean;
 
 /**krakon
  *
  * Wrapper for the CRS Integration Tasks (for Xcel PMSI Replacement Project) to allow plugability into a JMX server
  * 
  */
-public class DynamicCRSIntegrator extends CTIBaseDynMBean
+public class DynamicCRSIntegrator
 {
     private YukonCRSIntegrator integrator = null;
 
@@ -28,7 +27,6 @@ public class DynamicCRSIntegrator extends CTIBaseDynMBean
         super();
         
         integrator = new YukonCRSIntegrator();     
-        initialize();       
     }
 
     

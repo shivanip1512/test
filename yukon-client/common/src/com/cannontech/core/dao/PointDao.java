@@ -21,6 +21,8 @@ public interface PointDao {
      * @param pointID int
      */
     public LitePoint getLitePoint(int pointID);
+    
+    public PaoPointIdentifier getPaoPointIdentifier(int pointId);
 
     public List<LitePoint> getLitePoints(Integer[] pointIds);
     
@@ -154,6 +156,4 @@ public interface PointDao {
     public double getPointMultiplier(LitePoint litePoint) throws NotFoundException;
     
     public List<LitePoint> searchByName(String name, String paoClass);
-    
-    public PaoPointIdentifier getPaoPointIdentifier(int pointId);
 }

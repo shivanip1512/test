@@ -1,0 +1,49 @@
+<beans
+  xmlns="http://www.springframework.org/schema/beans"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:i="http://www.springframework.org/schema/integration"
+  xmlns:jms="http://www.springframework.org/schema/integration/jms"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+  http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd   
+  http://activemq.apache.org/camel/schema/spring http://camel.apache.org/schema/spring/camel-spring-1.5.0.xsd
+  http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+  http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+  http://www.springframework.org/schema/integration
+  http://www.springframework.org/schema/integration/spring-integration-1.0.xsd
+  http://www.springframework.org/schema/integration/jms
+  http://www.springframework.org/schema/integration/jms/spring-integration-jms-1.0.xsd">
+
+    <context:annotation-config />
+       
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+       
+    <!-- Enabling @AspectJ Support -->
+    <aop:aspectj-autoproxy/>
+      
+    <bean id="connectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+        <property name="brokerURL"
+            value="vm://localhost?create=false&amp;waitForStart=10000" />
+    </bean>
+    
+    <bean id="yukonRichPointUpdateDestination" class="org.apache.activemq.command.ActiveMQTopic">
+        <constructor-arg value="yukon.topic.RichPointUpdateObj"/>
+    </bean>
+    
+    <bean id="pointUpdateInjector" class="com.cannontech.services.points.RichPointUpdateInjector"/>
+          
+    <i:gateway id="richPointDataGateway" service-interface="com.cannontech.services.points.RichPointDataGateway" />
+    <i:channel id="yukonRichPointData"/>
+    <jms:outbound-channel-adapter id="jmsOut"  destination="yukonRichPointUpdateDestination" channel="yukonRichPointData"/>
+    
+    
+
+    <!-- Uncomment to create a command agent to respond to message based admin commands on the ActiveMQ.Agent topic -->
+    <!--
+    <commandAgent xmlns="http://activemq.apache.org/schema/core" brokerUrl="vm://localhost" username="${activemq.username}" password="${activemq.password}"/>
+    -->
+
+</beans>

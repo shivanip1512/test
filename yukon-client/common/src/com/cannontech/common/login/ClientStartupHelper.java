@@ -112,7 +112,7 @@ public class ClientStartupHelper {
 
     public void setAppName(String appName) {
         this.appName = appName;
-        System.setProperty("cti.app.name", appName);
+        CtiUtilities.setDefaultApplicationName(appName);
         CTILogger.info(appName + " starting...");
     }
 

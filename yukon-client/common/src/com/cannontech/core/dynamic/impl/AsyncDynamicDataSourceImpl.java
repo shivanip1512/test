@@ -9,6 +9,8 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.jmx.export.annotation.ManagedAttribute;
+import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.tags.TagUtils;
@@ -40,6 +42,7 @@ import com.google.common.collect.Sets;
 /**
  * Implementation of AsyncDynamicDataSource
  */
+@ManagedResource
 public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, MessageListener  {
     
     private DispatchProxy dispatchProxy;
@@ -47,6 +50,7 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     private IDatabaseCache databaseCache;
     private DynamicDataSource dynamicDataSource;
     
+    private volatile boolean allPointsRegistered = false;
     private SetMultimap<Integer, PointDataListener> pointIdPointDataListeners;
     private SetMultimap<Integer, SignalListener> pointIdSignalListeners;
 
@@ -60,6 +64,8 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     
     
     private List<SignalListener> alarmSignalListeners = new CopyOnWriteArrayList<SignalListener>();
+    
+    private List<PointDataListener> allPointListeners = new CopyOnWriteArrayList<PointDataListener>();
 
     private Set<DBChangeListener> dbChangeListeners = new CopyOnWriteArraySet<DBChangeListener>();
     
@@ -68,6 +74,13 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     @PostConstruct
     public void initialize() {
         this.dispatchConnection.addMessageListener(this);
+    }
+    
+    public void registerForAllPointData(PointDataListener l) {
+        allPointListeners.add(l);
+        // send registration command
+        dispatchProxy.registerForPoints();
+        allPointsRegistered = true;
     }
 
     public void registerForPointData(PointDataListener l, Set<Integer> pointIds) {
@@ -78,10 +91,12 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
             pointIdPointDataListeners.put(id, l);
         }
 
-        try{
-        	dispatchProxy.registerForPointIds(unregisteredPointIds);
-        } catch (DispatchNotConnectedException e) {
-        	CTILogger.info("Registration failed temporarily because Dispatch wasn't connected");
+        if (!allPointsRegistered) {
+            try{
+                dispatchProxy.registerForPointIds(unregisteredPointIds);
+            } catch (DispatchNotConnectedException e) {
+                CTILogger.info("Registration failed temporarily because Dispatch wasn't connected");
+            }
         }
     }
     
@@ -181,12 +196,13 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     }
     
     public void handlePointData(PointData pointData) {
-        Set<PointDataListener> listeners;
+        Set<PointDataListener> listeners = Sets.newHashSet(allPointListeners);
         // lock pointIdPointDataListeners (the object is the lock used internally)
         synchronized (pointIdPointDataListeners) {
-            listeners = pointIdPointDataListeners.get(pointData.getId());
-            listeners = ImmutableSet.copyOf(listeners);
+            Set<PointDataListener> pointIdListeners = pointIdPointDataListeners.get(pointData.getId());
+            listeners.addAll(pointIdListeners);
         }
+        
         // make sure we release the lock before calling the listeners
         for (PointDataListener listener : listeners) {
             listener.pointDataReceived(pointData);
@@ -244,13 +260,51 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
      * Useful for when the connection goes down then up again
      */
     private void reRegisterForEverything() {
-        Set<Integer> union = getAllRegisteredPoints();
+        if (allPointsRegistered) {
+            dispatchProxy.registerForPoints();
+        } else {
+            Set<Integer> union = getAllRegisteredPoints();
 
-        dispatchProxy.registerForPointIds(union);
+            dispatchProxy.registerForPointIds(union);
+        }
     }
 
     private Set<Integer> getAllRegisteredPoints() {
         return Sets.union(pointIdPointDataListeners.keySet(), pointIdSignalListeners.keySet());
+    }
+    
+    @ManagedAttribute
+    public boolean isAllPointsRegistered() {
+        return allPointsRegistered;
+    }
+    
+    @ManagedAttribute
+    public int getRegisteredPointCount() {
+        if (allPointsRegistered) {
+            return -1;
+        } else {
+            return getAllRegisteredPoints().size();
+        }
+    }
+    
+    @ManagedAttribute
+    public int getPointListenerCount() {
+        return pointIdPointDataListeners.values().size() + allPointListeners.size();
+    }
+    
+    @ManagedAttribute
+    public int getSignalListenerCount() {
+        return pointIdSignalListeners.values().size() + alarmSignalListeners.size();
+    }
+    
+    @ManagedAttribute
+    public int getDbChangeLiteListenerCount() {
+        return dbChangeLiteListeners.size();
+    }
+    
+    @ManagedAttribute
+    public int getDbChangeListenerCount() {
+        return dbChangeListeners.size();
     }
     
     public void setDispatchProxy(DispatchProxy dispatchProxy) {

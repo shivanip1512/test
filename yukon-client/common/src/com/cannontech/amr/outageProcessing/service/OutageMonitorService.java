@@ -1,6 +1,6 @@
 package com.cannontech.amr.outageProcessing.service;
 
-import java.util.Calendar;
+import java.util.Date;
 
 import com.cannontech.amr.outageProcessing.OutageMonitor;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
@@ -12,5 +12,5 @@ public interface OutageMonitorService {
 	
 	public boolean deleteOutageMonitor(int outageMonitorId) throws OutageMonitorNotFoundException;
 	
-	public Calendar getLatestPreviousReadingDate(OutageMonitor outageMonitor);
+	public Date getLatestPreviousReadingDate(OutageMonitor outageMonitor);
 }

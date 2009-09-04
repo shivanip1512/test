@@ -14,7 +14,6 @@ import javax.management.MBeanOperationInfo;
 import javax.management.MBeanParameterInfo;
 
 import com.cannontech.clientutils.commonutils.ModifiedDate;
-import com.cannontech.jmx.CTIBaseDynMBean;
 import com.cannontech.yimp.importer.BulkImporter;
 
 /**
@@ -23,7 +22,7 @@ import com.cannontech.yimp.importer.BulkImporter;
  * Wrapper for the BulkImporter to allow plugability into a JMX server
  * 
  */
-public class DynamicImp extends CTIBaseDynMBean
+public class DynamicImp
 {
 	private BulkImporter bulkImp = null;
 
@@ -35,7 +34,6 @@ public class DynamicImp extends CTIBaseDynMBean
 		super();
 		
 		bulkImp = new BulkImporter();		
-		initialize();		
 	}
 
 	

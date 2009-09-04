@@ -1,11 +1,13 @@
 package com.cannontech.common.device.definition.model;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.springframework.core.style.ToStringCreator;
 
 import com.cannontech.database.data.point.PointTypes;
 
-public class PointIdentifier implements Comparable<PointIdentifier> {
+public class PointIdentifier implements Comparable<PointIdentifier>, Serializable {
     private int offset;
     private int type;
     

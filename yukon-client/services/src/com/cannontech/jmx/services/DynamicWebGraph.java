@@ -9,7 +9,6 @@ import javax.management.MBeanParameterInfo;
 
 import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.graph.WebGraph;
-import com.cannontech.jmx.CTIBaseDynMBean;
 
 /**
  * @author rneuharth
@@ -17,7 +16,7 @@ import com.cannontech.jmx.CTIBaseDynMBean;
  * Wrapper for the WebGraph to allow plugability into a JMX server
  * 
  */
-public class DynamicWebGraph extends CTIBaseDynMBean
+public class DynamicWebGraph
 {
 	private WebGraph webGraph = null;
 
@@ -30,7 +29,6 @@ public class DynamicWebGraph extends CTIBaseDynMBean
 		super();
 		
 		webGraph = new WebGraph();		
-		initialize();		
 	}
 
 	

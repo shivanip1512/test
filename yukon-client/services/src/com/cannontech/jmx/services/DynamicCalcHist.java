@@ -9,7 +9,6 @@ import javax.management.MBeanParameterInfo;
 
 import com.cannontech.calchist.CalcHistorical;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
-import com.cannontech.jmx.CTIBaseDynMBean;
 
 /**
  * @author rneuharth
@@ -17,7 +16,7 @@ import com.cannontech.jmx.CTIBaseDynMBean;
  * Wrapper for the CalcHistorical to allow plugability into a JMX server
  * 
  */
-public class DynamicCalcHist extends CTIBaseDynMBean
+public class DynamicCalcHist 
 {
 	private CalcHistorical calcHist = null;
 
@@ -30,7 +29,6 @@ public class DynamicCalcHist extends CTIBaseDynMBean
 		super();
 		
 		calcHist = new CalcHistorical();		
-		initialize();		
 	}
 
 	

@@ -136,6 +136,13 @@ class DispatchProxy {
         dispatchConnection.write(pReg);
     }
     
+    public void registerForPoints() {
+        validateDispatchConnection();
+        PointRegistration pReg = new PointRegistration();
+        pReg.setRegFlags(PointRegistration.REG_ALL_PTS_MASK | PointRegistration.REG_NO_UPLOAD);
+        dispatchConnection.write(pReg);
+    }
+    
     /**
      * Return the raw multi from dispatch for a set of point ids
      * Also registers for point ids
@@ -283,4 +290,5 @@ class DispatchProxy {
     public void setDispatchConnection(IServerConnection dispatchConnection) {
         this.dispatchConnection = dispatchConnection;
     }
+
 }

@@ -3,8 +3,9 @@ package com.cannontech.amr.outageProcessing;
 import org.springframework.core.style.ToStringCreator;
 
 import com.cannontech.amr.MonitorEvaluatorStatus;
+import com.cannontech.amr.monitors.PointMonitor;
 
-public class OutageMonitor {
+public class OutageMonitor implements PointMonitor {
 
 	private Integer outageMonitorId;
 	private String outageMonitorName;

@@ -1,10 +1,11 @@
 package com.cannontech.amr.tamperFlagProcessing;
 
 import com.cannontech.amr.MonitorEvaluatorStatus;
+import com.cannontech.amr.monitors.PointMonitor;
 
 
 
-public class TamperFlagMonitor {
+public class TamperFlagMonitor implements PointMonitor {
 
 	private Integer tamperFlagMonitorId;
 	private String tamperFlagMonitorName;

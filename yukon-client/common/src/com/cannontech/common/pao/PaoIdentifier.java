@@ -1,7 +1,9 @@
 package com.cannontech.common.pao;
 
+import java.io.Serializable;
 
-public final class PaoIdentifier implements YukonPao {
+
+public final class PaoIdentifier implements YukonPao, Serializable {
 
     private int paoId;
     private PaoType paoType;

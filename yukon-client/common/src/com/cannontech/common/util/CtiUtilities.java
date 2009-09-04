@@ -879,6 +879,13 @@ public final static String getApplicationName()
     return appName;
 }
 
+public final static void setDefaultApplicationName(String defaultName) {
+    String existingName = System.getProperty("cti.app.name");
+    if(existingName == null) {
+        System.setProperty("cti.app.name", defaultName);
+    }
+}
+
 /**
  * This method will return the java.awt.Dialog associated with a component
  * If no parent dialog is found null will be returned

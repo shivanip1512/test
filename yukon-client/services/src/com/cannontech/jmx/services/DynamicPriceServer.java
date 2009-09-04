@@ -9,7 +9,6 @@ import javax.management.MBeanParameterInfo;
 
 import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.custom.pss2ws.PriceServer;
-import com.cannontech.jmx.CTIBaseDynMBean;
 
 /**
  * @author snelson
@@ -17,7 +16,7 @@ import com.cannontech.jmx.CTIBaseDynMBean;
  * Wrapper for the PriceServer to allow plugability into a JMX server
  * 
  */
-public class DynamicPriceServer extends CTIBaseDynMBean
+public class DynamicPriceServer
 {
 	private PriceServer priceServer = null;
 
@@ -30,7 +29,6 @@ public class DynamicPriceServer extends CTIBaseDynMBean
 		super();
 		
 		priceServer = new PriceServer();		
-		initialize();
 	}
 
 	

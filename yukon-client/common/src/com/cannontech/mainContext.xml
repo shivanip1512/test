@@ -94,6 +94,10 @@
        </constructor-arg>
     </bean>
     
+    <bean id="globalTaskExecutor" class="org.springframework.scheduling.concurrent.ConcurrentTaskExecutor">
+        <property name="concurrentExecutor" ref="globalScheduledExecutor"/>
+    </bean>
+    
     <bean id="longRunningExecutor" class="com.cannontech.common.util.ExecutorDelegate"
         destroy-method="shutdown">
         <constructor-arg>

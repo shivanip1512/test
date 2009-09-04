@@ -19,6 +19,7 @@ public class YukonSpringHook {
     private static Logger log = YukonLogManager.getLogger(YukonSpringHook.class);
     public static String WEB_BEAN_FACTORY_KEY = "com.cannontech.context.web";
     public static String COMMON_BEAN_FACTORY_KEY = "com.cannontech.context.common";
+    public static String NOTIFICATION_BEAN_FACTORY_KEY = "com.cannontech.context.notif";
     public static String SERVICES_BEAN_FACTORY_KEY = "com.cannontech.context.services";
     private static String defaultFactoryKey;
     private static String currentFactoryKey;

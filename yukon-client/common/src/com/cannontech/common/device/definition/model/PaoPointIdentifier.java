@@ -1,8 +1,10 @@
 package com.cannontech.common.device.definition.model;
 
+import java.io.Serializable;
+
 import com.cannontech.common.pao.PaoIdentifier;
 
-public class PaoPointIdentifier {
+public class PaoPointIdentifier implements Serializable {
     private PaoIdentifier paoIdentifier;
     private PointIdentifier pointIdentifier;
     
@@ -24,4 +26,8 @@ public class PaoPointIdentifier {
     public void setPointIdentifier(PointIdentifier pointIdentifier) {
         this.pointIdentifier = pointIdentifier;
     }
+    public PaoTypePointIdentifier getPaoTypePointIdentifier() {
+        return new PaoTypePointIdentifier(paoIdentifier.getPaoType(), pointIdentifier);
+    }
+    
 }
