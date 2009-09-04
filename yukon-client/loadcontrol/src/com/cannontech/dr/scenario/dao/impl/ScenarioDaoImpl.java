@@ -17,12 +17,13 @@ import com.cannontech.dr.scenario.dao.ScenarioDao;
 public class ScenarioDaoImpl implements ScenarioDao {
     private SimpleJdbcTemplate simpleJdbcTemplate;
 
-    private final static String baseScenarioQuery =
+    private final static String singleScenarioByIdQuery =
         "SELECT paObjectId, paoName FROM yukonPAObject"
-            + " WHERE type = 'LMSCENARIO'";
-    private final static String singleScenarioByIdQuery = baseScenarioQuery
+        + " WHERE type = 'LMSCENARIO'"
         + " AND paObjectId = ?";
-    private final static String scenariosByProgramIdQuery = baseScenarioQuery
+    private final static String scenariosByProgramIdQuery =
+        "SELECT paObjectId, paoName FROM yukonPAObject"
+        + " WHERE type = 'LMSCENARIO'"
         + " AND paObjectId IN (SELECT scenarioId FROM lmControlScenarioProgram"
         + " WHERE programId = ?)";
 
@@ -48,8 +49,8 @@ public class ScenarioDaoImpl implements ScenarioDao {
     @Override
     public List<DisplayablePao> findScenariosForProgram(int programId) {
         List<DisplayablePao> retVal = simpleJdbcTemplate.query(scenariosByProgramIdQuery,
-                                                                  scenarioRowMapper,
-                                                                  programId);
+                                                               scenarioRowMapper,
+                                                               programId);
         return retVal;
     }
 

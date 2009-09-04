@@ -8,52 +8,33 @@ import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
 
 public enum TriggerDisplayField {
 
-    VALUE {
+    VALUE_THRESHOLD {
         @Override
         public MessageSourceResolvable getValue(LMControlAreaTrigger trigger) {
-            String result = null;
-            if (trigger.getTriggerType()
-                       .equalsIgnoreCase(ControlAreaTrigger.TriggerType.STATUS.getDbString())) {
-                result = LoadManagementUtils.getTriggerStateValue(trigger);
+            ControlAreaTrigger.TriggerType triggerType =
+                ControlAreaTrigger.TriggerType.valueOf(trigger.getTriggerType().toUpperCase());
+            Object[] result = null;
+            if (triggerType == ControlAreaTrigger.TriggerType.STATUS) {
+                result = new Object[] {
+                        LoadManagementUtils.getTriggerStateValue(trigger),
+                        LoadManagementUtils.getTriggerStateThreshold(trigger) };
             } else {
-                result = NMBR_FORMATTER.format(trigger.getPointValue());
+                result = new Object[] { trigger.getPointValue(),
+                        trigger.getThreshold() };
             }
-            return buildResolvable(name(), result);
+            return buildResolvable(triggerType + "." + name(), result);
         }
     },
-    THRESHOLD {
-        @Override
-        public MessageSourceResolvable getValue(LMControlAreaTrigger trigger) {
-            String result = null;
-            if (trigger.getTriggerType()
-                       .equalsIgnoreCase(ControlAreaTrigger.TriggerType.STATUS.getDbString())) {
-                result = LoadManagementUtils.getTriggerStateThreshold(trigger);
-            } else {
-                result = NMBR_FORMATTER.format(trigger.getThreshold());
-            }
-            return buildResolvable(name(), result);
-        }
-    },
-    PEAK {
+    PEAK_PROJECTION {
         @Override
         public MessageSourceResolvable getValue(LMControlAreaTrigger trigger) {
             if (trigger.getTriggerType()
                        .equalsIgnoreCase(ControlAreaTrigger.TriggerType.THRESHOLD.getDbString())) {
-                return buildResolvable(name(), NMBR_FORMATTER.format(trigger.getPeakPointValue()));                
-            } else {
-                return blankFieldResolvable;
+                return buildResolvable(name(),
+                                       trigger.getPeakPointValue(),
+                                       trigger.getProjectedPointValue());
             }
-        }
-    },
-    PROJECTION {
-        @Override
-        public MessageSourceResolvable getValue(LMControlAreaTrigger trigger) {
-            if (trigger.getTriggerType()
-                       .equalsIgnoreCase(ControlAreaTrigger.TriggerType.THRESHOLD.getDbString())) {
-                return buildResolvable(name(), NMBR_FORMATTER.format(trigger.getProjectedPointValue()));
-            } else {
-                return blankFieldResolvable;
-            }
+            return blankFieldResolvable;
         }
     },
     ATKU {
@@ -61,23 +42,17 @@ public enum TriggerDisplayField {
         public MessageSourceResolvable getValue(LMControlAreaTrigger trigger) {
             if (trigger.getTriggerType()
                        .equalsIgnoreCase(ControlAreaTrigger.TriggerType.THRESHOLD.getDbString())) {
-                String result = trigger.getThresholdKickPercent().intValue() <= 0 ? "DISABLED KU"
+                String result = trigger.getThresholdKickPercent() <= 0 ? "DISABLED KU"
                         : trigger.getThresholdKickPercent().toString();
                 return buildResolvable(name(), result);
-            } else {
-                return blankFieldResolvable;
             }
+            return blankFieldResolvable;
         }
     };
-    private static final java.text.DecimalFormat NMBR_FORMATTER;
-    static
-    {
-        NMBR_FORMATTER = new java.text.DecimalFormat();
-        NMBR_FORMATTER.setMaximumFractionDigits( 3 );
-        NMBR_FORMATTER.setMinimumFractionDigits( 1 );
-    }
+
     private final static String baseKey = "yukon.web.modules.dr.controlAreaTrigger.value";
-    private final static MessageSourceResolvable blankFieldResolvable = new YukonMessageSourceResolvable("yukon.web.modules.dr.blankField");
+    private final static MessageSourceResolvable blankFieldResolvable =
+        new YukonMessageSourceResolvable("yukon.web.modules.dr.blankField");
 
     private static String getBaseKey(String name) {
         return baseKey + "." + name;

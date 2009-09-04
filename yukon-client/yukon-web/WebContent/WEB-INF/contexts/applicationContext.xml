@@ -578,7 +578,7 @@
                 <entry key="DR_CONTROLAREA">
                     <ref local="drControlAreaBackingService"/>
                 </entry>
-                <entry key="DR_CONTROLAREA_TRIGGER">
+                <entry key="DR_CA_TRIGGER">
                     <ref local="drTriggerBackingService"/>
                 </entry>              
                 <entry key="DR_PROGRAM">

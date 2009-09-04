@@ -8,7 +8,7 @@ import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.search.SearchResult;
 
 public interface FilterService {
-    public <T> SearchResult<T> filter(List<UiFilter<T>> filters,
+    public <T, U extends T> SearchResult<U> filter(List<UiFilter<T>> filters,
             Comparator<T> primarySorter, Comparator<T> secondarySorter,
-            int startIndex, int count, RowMapperWithBaseQuery<T> rowMapper);
+            int startIndex, int count, RowMapperWithBaseQuery<U> rowMapper);
 }

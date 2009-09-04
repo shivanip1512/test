@@ -1,5 +1,6 @@
 package com.cannontech.dr.controlarea.model;
 
+import java.util.Collections;
 import java.util.List;
 
 import com.cannontech.common.device.model.DisplayableDevice;
@@ -14,6 +15,8 @@ public class ControlArea extends DisplayableDevice {
     }
 
     public List<ControlAreaTrigger> getTriggers() {
+        if (triggers == null)
+            return Collections.emptyList();
         return triggers;
     }
 

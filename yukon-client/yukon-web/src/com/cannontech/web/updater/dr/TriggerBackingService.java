@@ -7,15 +7,15 @@ import org.springframework.context.MessageSource;
 
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.dr.controlarea.model.TriggerDisplayField;
+import com.cannontech.dr.controlarea.service.ControlAreaService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.UpdateBackingService;
 
 public class TriggerBackingService implements UpdateBackingService {
-    private LoadControlClientConnection loadControlClientConnection = null;
+    private ControlAreaService controlAreaService = null;
     private YukonUserContextMessageSourceResolver messageSourceResolver = null;
 
     @Override
@@ -27,7 +27,7 @@ public class TriggerBackingService implements UpdateBackingService {
         TriggerDisplayField displayField = TriggerDisplayField.valueOf(idBits[2]);
 
         DatedObject<LMControlArea> datedControlArea =
-            loadControlClientConnection.getDatedControlArea(controlAreaId);
+            controlAreaService.getDatedControlArea(controlAreaId);
 
         MessageSource messageSource = messageSourceResolver.getMessageSource(userContext);
         if (datedControlArea == null) {
@@ -57,9 +57,8 @@ public class TriggerBackingService implements UpdateBackingService {
     }
 
     @Autowired
-    public void setLoadControlClientConnection(
-            LoadControlClientConnection loadControlClientConnection) {
-        this.loadControlClientConnection = loadControlClientConnection;
+    public void setControlAreaService(ControlAreaService controlAreaService) {
+        this.controlAreaService = controlAreaService;
     }
 
     @Autowired

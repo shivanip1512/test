@@ -5,6 +5,7 @@ import java.sql.SQLException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.device.model.DisplayableDevice;
@@ -54,7 +55,7 @@ public class LoadGroupServiceImpl implements LoadGroupService {
     
     @Override
     public RowMapperWithBaseQuery<DisplayablePao> getRowMapper() {
-        return new RowMapperWithBaseQuery<DisplayablePao>() {
+        return new AbstractRowMapperWithBaseQuery<DisplayablePao>() {
 
             @Override
             public SqlFragmentSource getBaseQuery() {
@@ -62,11 +63,6 @@ public class LoadGroupServiceImpl implements LoadGroupService {
                 retVal.append("SELECT paObjectId, paoName, type FROM yukonPAObject " 
                               + "WHERE category = 'DEVICE' AND paoClass = 'GROUP'");
                 return retVal;
-            }
-
-            @Override
-            public boolean needsWhere() {
-                return false;
             }
 
             @Override

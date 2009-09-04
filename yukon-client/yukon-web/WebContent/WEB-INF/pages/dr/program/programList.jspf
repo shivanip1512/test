@@ -23,9 +23,6 @@
     <c:if test="${!empty param.descending}">
         <cti:param name="descending" value="${param.descending}"/>
     </c:if>
-    <c:if test="${!empty param.itemsPerPage}">
-        <cti:param name="itemsPerPage" value="${param.itemsPerPage}"/>
-    </c:if>
 </cti:url>
 
 <script type="text/javascript">
@@ -48,6 +45,9 @@ function clearFilter() {
         </c:if>
         <c:if test="${!empty param.descending}">
             <input type="hidden" name="descending" value="${param.descending}"/>
+        </c:if>
+        <c:if test="${!empty param.itemsPerPage}">
+            <input type="hidden" name="itemsPerPage" value="${param.itemsPerPage}"/>
         </c:if>
         <cti:msg var="minStr" key="yukon.web.modules.dr.programList.filter.min"/>
         <cti:msg var="maxStr" key="yukon.web.modules.dr.programList.filter.max"/>
@@ -101,12 +101,14 @@ function clearFilter() {
                     <form:input path="stop.max"/>
                 </td>
 
+                <!--
                 <cti:msg var="fieldName" key="yukon.web.modules.dr.programList.filter.loadCapacity"/>
                 <td>${fieldName}:</td>
                 <td>
                     <form:input path="loadCapacity.min"/>${minStr}
                     <form:input path="loadCapacity.max"/>${maxStr}
                 </td>
+                -->
             </tr>
         </table>
         

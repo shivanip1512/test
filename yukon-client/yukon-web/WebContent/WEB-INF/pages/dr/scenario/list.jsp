@@ -31,9 +31,6 @@
         <c:if test="${!empty param.descending}">
             <cti:param name="descending" value="${param.descending}"/>
         </c:if>
-        <c:if test="${!empty param.itemsPerPage}">
-            <cti:param name="itemsPerPage" value="${param.itemsPerPage}"/>
-        </c:if>
     </cti:url>
 
     <script type="text/javascript">
@@ -51,6 +48,9 @@
         <c:if test="${!empty param.descending}">
             <input type="hidden" name="descending" value="${param.descending}"/>
         </c:if>
+        <c:if test="${!empty param.itemsPerPage}">
+            <input type="hidden" name="itemsPerPage" value="${param.itemsPerPage}"/>
+        </c:if>
 
         <table cellspacing="10">
             <tr>
@@ -61,8 +61,8 @@
         </table>
         
         <br>
-        <input type="submit" value="<cti:msg key="yukon.web.modules.dr.programList.filter.submit"/>"/>
-        <input type="button" value="<cti:msg key="yukon.web.modules.dr.programList.filter.clear"/>"
+        <input type="submit" value="<cti:msg key="yukon.web.modules.dr.scenarioList.filter.submit"/>"/>
+        <input type="button" value="<cti:msg key="yukon.web.modules.dr.scenarioList.filter.clear"/>"
             onclick="javascript:clearFilter()"/>
     </form:form>
     </tags:abstractContainer><br>

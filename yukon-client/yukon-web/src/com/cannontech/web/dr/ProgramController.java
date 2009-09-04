@@ -18,7 +18,7 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
-import com.cannontech.dr.controlarea.dao.ControlAreaDao;
+import com.cannontech.dr.controlarea.service.ControlAreaService;
 import com.cannontech.dr.loadgroup.filter.LoadGroupsForProgramFilter;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
@@ -26,7 +26,7 @@ import com.cannontech.user.YukonUserContext;
 
 @Controller
 public class ProgramController {
-    private ControlAreaDao controlAreaDao = null;
+    private ControlAreaService controlAreaService = null;
     private ScenarioDao scenarioDao = null;
     private ProgramService programService = null;
     private PaoAuthorizationService paoAuthorizationService;
@@ -61,7 +61,8 @@ public class ProgramController {
         loadGroupControllerHelper.filterGroups(modelMap, userContext, backingBean,
                                                result, status, detailFilter);        
         
-        DisplayablePao parentControlArea = controlAreaDao.findControlAreaForProgram(programId);
+        DisplayablePao parentControlArea =
+            controlAreaService.findControlAreaForProgram(userContext, programId);
         modelMap.addAttribute("parentControlArea", parentControlArea);
         List<DisplayablePao> parentScenarios = scenarioDao.findScenariosForProgram(programId);
         modelMap.addAttribute("parentScenarios", parentScenarios);
@@ -79,8 +80,8 @@ public class ProgramController {
     }
     
     @Autowired
-    public void setControlAreaDao(ControlAreaDao controlAreaDao) {
-        this.controlAreaDao = controlAreaDao;
+    public void setControlAreaService(ControlAreaService controlAreaService) {
+        this.controlAreaService = controlAreaService;
     }
 
     @Autowired

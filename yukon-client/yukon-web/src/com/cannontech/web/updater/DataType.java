@@ -18,7 +18,7 @@ public enum DataType {
     JOB,
     GROUP_METER_READ,
     DR_CONTROLAREA,
-    DR_CONTROLAREA_TRIGGER,
+    DR_CA_TRIGGER,
     DR_PROGRAM,
     DR_LOADGROUP
     ;

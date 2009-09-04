@@ -22,12 +22,11 @@
 <entry key="yukon.web.modules.dr.controlArea.value.PRIORITY">{0}</entry>
 <entry key="yukon.web.modules.dr.controlArea.value.START">{0,date,MM/dd/yyyy HH:mm zz}</entry>
 <entry key="yukon.web.modules.dr.controlArea.value.STOP">{0,date,MM/dd/yyyy HH:mm zz}</entry>
-<entry key="yukon.web.modules.dr.controlArea.value.LOAD_CAPACITY">{0,number,#.#}</entry>
+<entry key="yukon.web.modules.dr.controlArea.value.LOAD_CAPACITY">{0,number,0.0}</entry>
 
-<entry key="yukon.web.modules.dr.controlAreaTrigger.value.VALUE">{0}</entry>
-<entry key="yukon.web.modules.dr.controlAreaTrigger.value.THRESHOLD">{0}</entry>
-<entry key="yukon.web.modules.dr.controlAreaTrigger.value.PEAK">{0}</entry>
-<entry key="yukon.web.modules.dr.controlAreaTrigger.value.PROJECTION">{0}</entry>
+<entry key="yukon.web.modules.dr.controlAreaTrigger.value.STATUS.VALUE_THRESHOLD">{0} / {1}</entry>
+<entry key="yukon.web.modules.dr.controlAreaTrigger.value.THRESHOLD.VALUE_THRESHOLD">{0,number,0.0} / {1,number,0.0}</entry>
+<entry key="yukon.web.modules.dr.controlAreaTrigger.value.PEAK_PROJECTION">{0,number,0.0} / {1,number,0.0}</entry>
 <entry key="yukon.web.modules.dr.controlAreaTrigger.value.ATKU">{0}</entry>
 
 <!--  Program Field Values -->
@@ -44,8 +43,8 @@
 <entry key="yukon.web.modules.dr.program.value.STOP">{0,date,MM/dd/yyyy HH:mm zz}</entry>
 <entry key="yukon.web.modules.dr.program.value.CURRENT_GEAR">{0}</entry>
 <entry key="yukon.web.modules.dr.program.value.PRIORITY">{0}</entry>
-<entry key="yukon.web.modules.dr.program.value.REDUCTION">{0,number,#.#}</entry>
-<entry key="yukon.web.modules.dr.program.value.LOAD_CAPACITY">{0,number,#.#}</entry>
+<entry key="yukon.web.modules.dr.program.value.REDUCTION">{0,number,0.0}</entry>
+<entry key="yukon.web.modules.dr.program.value.LOAD_CAPACITY">{0,number,0.0}</entry>
 <entry key="yukon.web.modules.dr.program.value.REDUCTION"></entry>
 
 
@@ -76,7 +75,7 @@
 <entry key="yukon.web.modules.dr.scenarioList.noResults">No scenarios matched.</entry>
 <entry key="yukon.web.modules.dr.scenarioList.filters">Edit Filters</entry>
 <entry key="yukon.web.modules.dr.scenarioList.filter.name">Name</entry>
-<entry key="yukon.web.modules.dr.scenarioList.filter.loadCapacityValue">Load Capacity Value</entry>
+<entry key="yukon.web.modules.dr.scenarioList.filter.loadCapacity">Load Capacity</entry>
 <entry key="yukon.web.modules.dr.scenarioList.filter.submit">Filter</entry>
 <entry key="yukon.web.modules.dr.scenarioList.filter.clear">Show All</entry>
 <entry key="yukon.web.modules.dr.scenarioList.heading.name">Name</entry>
@@ -103,13 +102,25 @@
 <entry key="yukon.web.modules.dr.controlAreaList.breadcrumb.operationsHome">Operations Home</entry>
 <entry key="yukon.web.modules.dr.controlAreaList.breadcrumb.controlAreas">Control Areas</entry>
 <entry key="yukon.web.modules.dr.controlAreaList.controlAreas">Control Areas</entry>
+<entry key="yukon.web.modules.dr.controlAreaList.noResults">No Control Areas matched.</entry>
+<entry key="yukon.web.modules.dr.controlAreaList.filters">Edit Filters</entry>
+<entry key="yukon.web.modules.dr.controlAreaList.filter.name">Name</entry>
+<entry key="yukon.web.modules.dr.controlAreaList.filter.state">State</entry>
+<entry key="yukon.web.modules.dr.controlAreaList.filter.state.all">All</entry>
+<entry key="yukon.web.modules.dr.controlAreaList.filter.state.active">Active</entry>
+<entry key="yukon.web.modules.dr.controlAreaList.filter.state.inactive">Inactive</entry>
+<entry key="yukon.web.modules.dr.controlAreaList.filter.priority">Priority</entry>
+<entry key="yukon.web.modules.dr.controlAreaList.filter.loadCapacity">Load Capacity</entry>
+<entry key="yukon.web.modules.dr.controlAreaList.filter.loadCapacity">Load Capacity</entry>
+<entry key="yukon.web.modules.dr.controlAreaList.filter.submit">Filter</entry>
+<entry key="yukon.web.modules.dr.controlAreaList.filter.clear">Show All</entry>
 <entry key="yukon.web.modules.dr.controlAreaList.heading.name">Name</entry>
 <entry key="yukon.web.modules.dr.controlAreaList.heading.state">State</entry>
 <entry key="yukon.web.modules.dr.controlAreaList.heading.valueThreshold">Value/Threshold</entry>
 <entry key="yukon.web.modules.dr.controlAreaList.heading.peakProjection">Peak/Projection</entry>
 <entry key="yukon.web.modules.dr.controlAreaList.heading.atku">ATKU</entry>
 <entry key="yukon.web.modules.dr.controlAreaList.heading.priority">Priority</entry>
-<entry key="yukon.web.modules.dr.controlAreaList.heading.startStop">Time Window</entry>
+<entry key="yukon.web.modules.dr.controlAreaList.heading.timeWindow">Time Window</entry>
 <entry key="yukon.web.modules.dr.controlAreaList.heading.loadCapacity">Load Capacity</entry>
 
 

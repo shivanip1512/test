@@ -23,11 +23,6 @@
 <table class="pagingArea" width="95%" style="font-size: .75em">
     <tr>
         <td align="left">Viewing ${searchResult.startIndex + 1}-${searchResult.endIndex} of ${searchResult.hitCount}</td>
-        <td align="center">
-            <c:forEach var="index" begin="1" end="3">
-                ${index}
-            </c:forEach>
-        </td>
         <td align="right">
 
             Results per page:

@@ -49,40 +49,40 @@
                         <tags:nameValue name="${fieldName}">
                             <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/LOAD_CAPACITY"/>
                         </tags:nameValue>
-                        
+
 	                    <c:if test="${!empty controlArea.triggers}">
 	                        <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaDetail.info.triggers"/>
 	                        <tags:nameValue name="${fieldName}">
-	                        </tags:nameValue>	                        
-	                        <table id="controlAreaList" class="resultsTable activeResultsTable">
-	                            <tr>
-	                                <th><cti:msg key="yukon.web.modules.dr.controlAreaDetail.info.valueThreshold"/></th>
-	                                <th><cti:msg key="yukon.web.modules.dr.controlAreaDetail.info.peakProjection"/></th>
-	                                <th><cti:msg key="yukon.web.modules.dr.controlAreaDetail.info.atku"/></th>
-	                            </tr>
-	                            <c:forEach var="trigger" items="${controlArea.triggers}">
-	                                <c:set var="triggerNumber" value="${trigger.triggerNumber}"/>                               
-	                                <tr class="<tags:alternateRow odd="" even="altRow"/>">
-	                                    <td>
-	                                       <cti:dataUpdaterValue type="DR_CONTROLAREA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/VALUE"/>
-	                                       /
-	                                       <cti:dataUpdaterValue type="DR_CONTROLAREA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/THRESHOLD"/>
-	                                    </td>
-	                                    <td>
-	                                        <c:if test="${trigger.thresholdType}">
-	                                            <cti:dataUpdaterValue type="DR_CONTROLAREA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/PEAK"/>
-	                                            /
-	                                            <cti:dataUpdaterValue type="DR_CONTROLAREA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/PROJECTION"/>
-	                                        </c:if>
-	                                    </td>
-	                                    <td>
-	                                        <c:if test="${trigger.thresholdType}">
-	                                           <cti:dataUpdaterValue type="DR_CONTROLAREA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/ATKU"/>
-	                                        </c:if>
-	                                    </td>
-	                                </tr>
-	                            </c:forEach>
-	                        </table>
+                            <table id="controlAreaList" class="resultsTable activeResultsTable">
+                                <tr>
+                                    <th><cti:msg key="yukon.web.modules.dr.controlAreaDetail.info.valueThreshold"/></th>
+                                    <th><cti:msg key="yukon.web.modules.dr.controlAreaDetail.info.peakProjection"/></th>
+                                    <th><cti:msg key="yukon.web.modules.dr.controlAreaDetail.info.atku"/></th>
+                                </tr>
+                                <c:forEach var="trigger" items="${controlArea.triggers}">
+                                    <c:set var="triggerNumber" value="${trigger.triggerNumber}"/>                               
+                                    <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                                        <td>
+                                           <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/VALUE"/>
+                                           /
+                                           <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/THRESHOLD"/>
+                                        </td>
+                                        <td>
+                                            <c:if test="${trigger.thresholdType}">
+                                                <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/PEAK"/>
+                                                /
+                                                <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/PROJECTION"/>
+                                            </c:if>
+                                        </td>
+                                        <td>
+                                            <c:if test="${trigger.thresholdType}">
+                                               <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/ATKU"/>
+                                            </c:if>
+                                        </td>
+                                    </tr>
+                                </c:forEach>
+                            </table>
+	                        </tags:nameValue>
 	                    </c:if>
                     </tags:nameValueContainer>
                     <c:if test="${empty controlArea.triggers}">

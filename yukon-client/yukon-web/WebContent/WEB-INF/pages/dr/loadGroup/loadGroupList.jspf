@@ -79,12 +79,14 @@ function clearFilter() {
                     <form:input path="lastAction.max"/>
                 </td>
 
+                <!--
                 <cti:msg var="fieldName" key="yukon.web.modules.dr.loadGroupList.filter.loadCapacity"/>
                 <td>${fieldName}:</td>
                 <td>
                     <form:input path="loadCapacity.min"/>${minStr}
                     <form:input path="loadCapacity.max"/>${maxStr}
                 </td>
+                -->
             </tr>
         </table>
         
