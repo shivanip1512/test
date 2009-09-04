@@ -7,14 +7,6 @@ UPDATE YukonRoleProperty
 SET KeyName='Opt Out Period', Description='The duration, in days, for the customer Opt Out period. (Use commas to separate multiple values: Ex. 1,3,4,5)'
 WHERE RolePropertyId IN (-20157, -40055);
 
-DELETE FROM YukonListEntry 
-WHERE ListId IN (SELECT ListId 
-                 FROM YukonSelectionList 
-                 WHERE ListName = 'OptOutPeriod'
-                 AND ListId IN (SELECT ItemId 
-                                FROM ECToGenericMapping 
-                                WHERE MappingCategory LIKE 'YukonSelectionList'));
-
 DELETE FROM ECToGenericMapping 
 WHERE ItemId IN (SELECT ListId 
                  FROM YukonSelectionList 
@@ -22,6 +14,11 @@ WHERE ItemId IN (SELECT ListId
                  AND ListId IN (SELECT ItemId 
                                 FROM ECToGenericMapping 
                                 WHERE MappingCategory LIKE 'YukonSelectionList')); 
+
+DELETE FROM YukonListEntry 
+WHERE ListId IN (SELECT ListId 
+                 FROM YukonSelectionList 
+                 WHERE ListName = 'OptOutPeriod');
 
 DELETE FROM YukonSelectionList 
 WHERE ListName = 'OptOutPeriod'; 
@@ -108,8 +105,7 @@ DELETE RawPointHistory WHERE PointId NOT IN (SELECT DISTINCT PointId FROM Point)
 ALTER TABLE DeviceConfigurationItem DROP CONSTRAINT FK_DEVICECO_REF_DEVICEC2; 
 
 ALTER TABLE DeviceConfigurationItem RENAME TO DeviceConfigurationItemTemp;
-ALTER TABLE DeviceConfigurationItemTemp DROP CONSTRAINT PK_DeviceConfigurationItem;
-COMMIT;
+ALTER TABLE DeviceConfigurationItemTemp DROP PRIMARY KEY DROP INDEX;
 
 CREATE TABLE DeviceConfigurationItem (
    DeviceConfigurationItemId NUMBER                          NOT NULL,
@@ -149,7 +145,7 @@ CREATE UNIQUE INDEX INDX_TampFlagMonName_UNQ ON TamperFlagMonitor (
 ALTER TABLE DeviceTNPPSettings DROP CONSTRAINT FK_DevTNPP_Dev; 
 
 ALTER TABLE DeviceTNPPSettings RENAME TO DeviceTNPPSettingsTemp;
-ALTER TABLE DeviceTNPPSettingsTemp DROP CONSTRAINT PK_DEVICETNPPSETTINGS CASCADE;
+ALTER TABLE DeviceTNPPSettingsTemp DROP PRIMARY KEY DROP INDEX;
 
 CREATE TABLE DeviceTNPPSettings  (
    DeviceID             NUMBER                          not null,
@@ -738,7 +734,7 @@ INSERT INTO YukonRoleProperty VALUES(-20214,-202,'Tamper Flag Processing','true'
 /* Start YUK-7718 */
 INSERT INTO Command VALUES(-171, 'putvalue ovuv analog 1 0', 'Disable OVUV', 'Twoway CBCs');
 INSERT INTO Command VALUES(-172, 'putvalue ovuv analog 1 1', 'Enable OVUV', 'Twoway CBCs');
-INSERT INTO Command VALUES(-173, 'putvalue analog ?''Enter point offset'' ?''Enter value'y'', 'Write Value', 'Twoway CBCs');
+INSERT INTO Command VALUES(-173, 'putvalue analog ?''Enter point offset'' ?''Enter value''', 'Write Value', 'Twoway CBCs');
 
 UPDATE Command SET Category = 'Oneway CBCs' WHERE CommandId IN (-33, -32 );
 

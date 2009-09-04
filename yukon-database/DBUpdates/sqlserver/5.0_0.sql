@@ -7,14 +7,6 @@ UPDATE YukonRoleProperty
 SET KeyName='Opt Out Period', Description='The duration, in days, for the customer Opt Out period. (Use commas to separate multiple values: Ex. 1,3,4,5)'
 WHERE RolePropertyId IN (-20157, -40055);
 
-DELETE FROM YukonListEntry 
-WHERE ListId IN (SELECT ListId 
-                 FROM YukonSelectionList 
-                 WHERE ListName = 'OptOutPeriod'
-                 AND ListId IN (SELECT ItemId 
-                                FROM ECToGenericMapping 
-                                WHERE MappingCategory LIKE 'YukonSelectionList'));
-
 DELETE FROM ECToGenericMapping 
 WHERE ItemId IN (SELECT ListId 
                  FROM YukonSelectionList 
@@ -22,6 +14,11 @@ WHERE ItemId IN (SELECT ListId
                  AND ListId IN (SELECT ItemId 
                                 FROM ECToGenericMapping 
                                 WHERE MappingCategory LIKE 'YukonSelectionList')); 
+
+DELETE FROM YukonListEntry 
+WHERE ListId IN (SELECT ListId 
+                 FROM YukonSelectionList 
+                 WHERE ListName = 'OptOutPeriod');
 
 DELETE FROM YukonSelectionList 
 WHERE ListName = 'OptOutPeriod'; 
