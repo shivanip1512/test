@@ -182,7 +182,7 @@ public enum YukonRoleProperty {
     RESIDENTIAL_THERMOSTAT_SCHEDULE_5_2(RESIDENTIAL_CUSTOMER, com.cannontech.roles.consumer.ResidentialCustomerRole.THERMOSTAT_SCHEDULE_5_2, booleanType()),
     
     LM_LOADCONTROL_LABEL(LM_DIRECT_LOADCONTROL, com.cannontech.roles.loadcontrol.DirectLoadcontrolRole.LOADCONTROL_LABEL, stringType()),
-    LM_INDIVIDUAL_SWITCH(LM_DIRECT_LOADCONTROL, com.cannontech.roles.loadcontrol.DirectLoadcontrolRole.INDIVIDUAL_SWITCH, stringType()),
+    LM_INDIVIDUAL_SWITCH(LM_DIRECT_LOADCONTROL, com.cannontech.roles.loadcontrol.DirectLoadcontrolRole.INDIVIDUAL_SWITCH, booleanType()),
     THREE_TIER_DIRECT(LM_DIRECT_LOADCONTROL, com.cannontech.roles.loadcontrol.DirectLoadcontrolRole.THREE_TIER_DIRECT, booleanType()),
     DIRECT_CONTROL(LM_DIRECT_LOADCONTROL, com.cannontech.roles.loadcontrol.DirectLoadcontrolRole.DIRECT_CONTROL, booleanType()),
     ALLOW_CHECK_CONSTRAINTS(LM_DIRECT_LOADCONTROL, com.cannontech.roles.loadcontrol.DirectLoadcontrolRole.ALLOW_CHECK_CONSTRAINTS, booleanType()),
@@ -242,7 +242,7 @@ public enum YukonRoleProperty {
     OPERATOR_ORDER_NUMBER_AUTO_GEN(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.ORDER_NUMBER_AUTO_GEN, stringType()),
     OPERATOR_CALL_NUMBER_AUTO_GEN(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.CALL_NUMBER_AUTO_GEN, stringType()),
     OPERATOR_OPT_OUT_PERIOD(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.OPT_OUT_PERIOD, stringType()),
-    OPERATOR_DISABLE_SWITCH_SENDING(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.DISABLE_SWITCH_SENDING, stringType()),
+    OPERATOR_DISABLE_SWITCH_SENDING(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.DISABLE_SWITCH_SENDING, booleanType()),
     OPERATOR_METER_SWITCH_ASSIGNMENT(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.METER_SWITCH_ASSIGNMENT, stringType()),
     OPERATOR_CREATE_LOGIN_FOR_ACCOUNT(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.CREATE_LOGIN_FOR_ACCOUNT, booleanType()),
     OPERATOR_ACCOUNT_NUMBER_LENGTH(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.ACCOUNT_NUMBER_LENGTH, stringType()),
