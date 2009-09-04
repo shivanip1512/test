@@ -781,6 +781,11 @@ DROP TABLE DCDeviceConfigurationType CASCADE CONSTRAINTS;
 DROP TABLE DCConfigurationType CASCADE CONSTRAINTS;
 /* End YUK-7810 */
 
+/* Start YUK-7702 */
+INSERT INTO YukonRoleProperty VALUES (-21309,-213,'Send/Read Configs','false','Controls access to Send Config and Read Config collection actions.');
+INSERT INTO YukonRoleProperty VALUES (-21310,-213,'Assign Configs','false','Controls access to Assign Config collection action.');
+/* End YUK-7702 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
