@@ -587,6 +587,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	    assignedStratMap = null;
 	    cbControllerEditor = null;
 	    cbcStrategies = null;
+	    cbcStrategiesMap = null;
 	    editingCBCStrategy = false;
         editingController = false;
         isDualSubBusEdited = false;
