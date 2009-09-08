@@ -147,9 +147,9 @@ public class DBUpdater extends MessageFrameAdaptor
 			if (updateDB.starsExistsOrWillExist()) {
 	
 				if( executeCommands() )
-					getIMessageFrame().finish( "DBUpdate Completed Successfully" );
+					getIMessageFrame().finish( "Database Update Completed Successfully" );
 				else
-					getIMessageFrame().addOutput( "DBUpdate was Unsuccessfully executed" );
+					getIMessageFrame().addOutput( "Database update was unsuccessfully executed" );
 			} else {
 				throw new StarsNotCreatedException("STARS tables not present in this database");
 			}
@@ -161,7 +161,7 @@ public class DBUpdater extends MessageFrameAdaptor
 			CTILogger.error(errorString, e );
 		
 		} catch( Exception e ) {
-			getIMessageFrame().addOutput( "DBUpdate was Unsuccessfully executed" );
+			getIMessageFrame().addOutput( "Database update was unsuccessfully executed" );
 			CTILogger.warn( "A problem occurred in the execution", e );
 		}
 
