@@ -414,20 +414,20 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         
 // this junk should probably stick around for a while during 4.3 development, makes it easy to compare dao output to earlier versions
 //      //TEST FILE
-//        BufferedWriter out = new BufferedWriter(new FileWriter("c:\\deviceDefinition_NEW-3.txt"));
+//        BufferedWriter out = new BufferedWriter(new FileWriter("c:\\deviceDefinition_NEW-6.txt"));
 //        
 //        List<DeviceDefinition> definitionList = new ArrayList<DeviceDefinition>(this.deviceTypeMap.values());
 //        Collections.sort(definitionList);
 //        for (DeviceDefinition definition : definitionList) {
 //        	
-//        	int deviceType = definition.getType();
+//        	PaoType deviceType = definition.getType();
 //        	Set<PointTemplate> pointTemplates = this.deviceAllPointTemplateMap.get(deviceType);
 //        	Set<PointTemplate> initPointTemplates = this.deviceInitPointTemplateMap.get(deviceType);
 //        	Set<CommandDefinition> commandDefinitions = this.deviceCommandMap.get(deviceType);
-//        	Map<Attribute, AttributeLookup> attributesMap = this.deviceAttributeAttrDefinitionMap.get(deviceType);
+//        	Map<Attribute, AttributeDefinition> attributesMap = this.deviceAttributeAttrDefinitionMap.get(deviceType);
 //        	
 //        	// definition
-//            out.write("definition:type" + "\t\t" + definition.getType() + "\n");
+//            out.write("definition:type" + "\t\t" + definition.getType().getDeviceTypeId() + "\n");
 //            out.write("definition:changeGroup" + "\t\t" + definition.getChangeGroup() + "\n");
 //            out.write("definition:displayGroup" + "\t\t" + definition.getDisplayGroup() + "\n");
 //            out.write("definition:displayName" + "\t\t" + definition.getDisplayName() + "\n");
@@ -459,10 +459,10 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
 //            	
 //            	out.write("commandDefinition:name" + "\t\t" + commandDefinition.getName() + "\n");
 //            	
-//            	Set<DevicePointIdentifier> affectedPointSet = commandDefinition.getAffectedPointList();
-//            	List<DevicePointIdentifier> affectedPointList = new ArrayList<DevicePointIdentifier>(affectedPointSet);
+//            	Set<PointIdentifier> affectedPointSet = commandDefinition.getAffectedPointList();
+//            	List<PointIdentifier> affectedPointList = new ArrayList<PointIdentifier>(affectedPointSet);
 //            	Collections.sort(affectedPointList);
-//            	for (DevicePointIdentifier affectedPoint : affectedPointList) {
+//            	for (PointIdentifier affectedPoint : affectedPointList) {
 //            		
 //            		out.write("commandDefinition:affectedPoint:type" + "\t\t" + affectedPoint.getType() + "\n");
 //            		out.write("commandDefinition:affectedPoint:offset" + "\t\t" + affectedPoint.getOffset() + "\n");
@@ -477,13 +477,13 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
 //            }
 //            
 //            // attributes
-//            List<AttributeLookup> attributeLookupList = new ArrayList<AttributeLookup>(attributesMap.values());
-//            Collections.sort(attributeLookupList);
-//            for (AttributeLookup attributeLookup : attributeLookupList) {
+//            List<AttributeDefinition> attributeLookupList = new ArrayList<AttributeDefinition>(attributesMap.values());
+//            //Collections.sort(attributeLookupList);
+//            for (AttributeDefinition attributeLookup : attributeLookupList) {
 //
 //        		out.write("attribute:key" + "\t\t" + attributeLookup.getAttribute().getKey() + "\n");
 //        		out.write("attribute:description" + "\t\t" + attributeLookup.getAttribute().getDescription() + "\n");
-//        		out.write("attribute:attributeLookup" + "\t\t" + attributeLookup.getPointRefName(null) + "\n");
+//        		out.write("attribute:attributeLookup" + "\t\t" + "---" + "\n");
 //        	}
 //            
 //            out.write("\n\n");

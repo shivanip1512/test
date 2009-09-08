@@ -2381,6 +2381,7 @@
         
         	<!-- DEMAND ACCUMULATOR overrides unitofmeasure -->
             <point type="DemandAccumulator" offset="1">
+            	<init>true</init>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
                 <decimalplaces value="3"/>
@@ -2601,6 +2602,13 @@
                 <decimalplaces value="3"/>
             </point>
             
+            <point type="DemandAccumulator" offset="1">
+            	<init>false</init>
+                <name>kW</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="3"/>
+            </point>
             <point type="DemandAccumulator" offset="2">
                 <name>Pulse Input #2 - Demand</name>
                 <multiplier value="1.0"/>
@@ -3302,6 +3310,7 @@
     	<displayGroup>Signal Transmitters</displayGroup>
     	<points>
             <point type="Status" offset="2000">
+            	<init>true</init>
                 <name>Comm Status</name>
                 <stategroup value="TwoStateStatus"/>
             </point>
