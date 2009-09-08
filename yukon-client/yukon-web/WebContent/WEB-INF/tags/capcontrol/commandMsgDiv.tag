@@ -1,4 +1,5 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 
 <style type="text/css">
     div#outerDiv {
@@ -14,8 +15,8 @@
 </style>
 <![endif]--> 
 
-<div id="outerDiv" style="display: none; width: 200px; bottom: 0%; left: 0%; background: white;">
-    <cti:titledContainer title="Command Message Status">
-        <div align="center" id="cmd_msg_div"></div>
-     </cti:titledContainer>
+<div id="outerDiv" style="display: none; width: 200px; bottom: 1%; left: 1%; background: white;">
+	<div style="border: 2px solid #444;">
+	    <div align="center" id="cmd_msg_div" style="padding: 5px;"></div>
+	</div>
 </div>
