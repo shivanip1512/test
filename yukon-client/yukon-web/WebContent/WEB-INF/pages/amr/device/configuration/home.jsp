@@ -61,7 +61,7 @@
 				<input type="submit" name="editConfig" value="${editConfig ? 'Edit' : 'View'}"/>
 				<c:if test="${editConfig}">
 					<input type="submit" name="removeConfig" value="Delete" onclick="return deleteConfig()"/>
-					<input type="submit" name="cloneConfig" value="Clone"/>
+					<input type="submit" name="cloneConfig" value="Copy"/>
 				</c:if>
 			
                 <br/><br/>
