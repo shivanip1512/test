@@ -792,6 +792,12 @@ UPDATE CapControlStrategy SET EndDaySettings = '(none)';
 ALTER TABLE CapControlStrategy MODIFY EndDaySettings VARCHAR2(20) NOT NULL;
 /* End YUK-7629 */
 
+/* Start YUK-7823 */
+ALTER TABLE YukonServices ADD AppName VARCHAR2(100);
+UPDATE YukonServices SET AppName = 'ServiceManager';
+ALTER TABLE YukonServices MODIFY AppName VARCHAR2(100) NOT NULL;
+/* End YUK-7823 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

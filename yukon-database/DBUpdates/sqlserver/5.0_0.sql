@@ -775,6 +775,16 @@ ALTER TABLE CapControlStrategy ALTER COLUMN EndDaySettings VARCHAR(20) NOT NULL;
 GO
 /* End YUK-7629 */
 
+/* Start YUK-7823 */
+ALTER TABLE YukonServices ADD AppName VARCHAR(100);
+GO
+UPDATE YukonServices SET AppName = 'ServiceManager';
+GO
+ALTER TABLE YukonServices ALTER COLUMN AppName VARCHAR(100) NOT NULL;
+GO
+/* End YUK-7823 */
+
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

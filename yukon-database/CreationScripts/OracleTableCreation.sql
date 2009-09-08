@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     9/4/2009 4:08:47 PM                          */
+/* Created on:     9/8/2009 4:40:30 PM                          */
 /*==============================================================*/
 
 
@@ -9560,14 +9560,15 @@ create table YukonServices  (
    ServiceClass         VARCHAR2(100)                   not null,
    ParamNames           VARCHAR2(300)                   not null,
    ParamValues          VARCHAR2(300)                   not null,
+   AppName              VARCHAR2(100)                   not null,
    constraint PK_YUKSER primary key (ServiceID)
 );
 
-insert into YukonServices values( -2, 'WebGraph', 'com.cannontech.jmx.services.DynamicWebGraph', '(none)', '(none)' );
-insert into YukonServices values( -3, 'Calc_Historical', 'com.cannontech.jmx.services.DynamicCalcHist', '(none)', '(none)' );
-insert into YukonServices values( -4, 'CBC_OneLine_Gen', 'com.cannontech.jmx.services.DynamicCBCOneLine', '(none)', '(none)');
-insert into YukonServices values( -5, 'MCT410_BulkImporter', 'com.cannontech.jmx.services.DynamicImp', '(none)', '(none)' );
-insert into YukonServices values( -6, 'Price_Server', 'com.cannontech.jmx.services.DynamicPriceServer', '(none)', '(none)' );
+insert into YukonServices values( -2, 'WebGraph', 'com.cannontech.jmx.services.DynamicWebGraph', '(none)', '(none)', 'ServiceManager');
+insert into YukonServices values( -3, 'Calc_Historical', 'com.cannontech.jmx.services.DynamicCalcHist', '(none)', '(none)', 'ServiceManager');
+insert into YukonServices values( -4, 'CBC_OneLine_Gen', 'com.cannontech.jmx.services.DynamicCBCOneLine', '(none)', '(none)', 'ServiceManager');
+insert into YukonServices values( -5, 'MCT410_BulkImporter', 'com.cannontech.jmx.services.DynamicImp', '(none)', '(none)', 'ServiceManager');
+insert into YukonServices values( -6, 'Price_Server', 'com.cannontech.jmx.services.DynamicPriceServer', '(none)', '(none)', 'ServiceManager');
 
 /*==============================================================*/
 /* Table: YukonUser                                             */
