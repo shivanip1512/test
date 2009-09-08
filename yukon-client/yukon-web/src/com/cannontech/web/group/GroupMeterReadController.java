@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -31,7 +30,6 @@ import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.AttributeNameComparator;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
-import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
@@ -42,6 +40,7 @@ import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.bulk.model.DeviceCollectionFactory;
+import com.cannontech.web.util.AttributeSelectorHelperService;
 
 public class GroupMeterReadController extends MultiActionController {
 
@@ -50,7 +49,7 @@ public class GroupMeterReadController extends MultiActionController {
 	private DeviceGroupService deviceGroupService;
 	private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
 	private DeviceCollectionFactory deviceCollectionFactory;
-	private AttributeService attributeService;
+	private AttributeSelectorHelperService attributeSelectorHelperService;
 	
 	// HOME (GROUP)
 	public ModelAndView homeGroup(HttpServletRequest request, HttpServletResponse response) throws ServletException {
@@ -59,7 +58,7 @@ public class GroupMeterReadController extends MultiActionController {
 		
 		String errorMsg = ServletRequestUtils.getStringParameter(request, "errorMsg");
 		String groupName = ServletRequestUtils.getStringParameter(request, "groupName");
-		Set<Attribute> selectedAttributes = getAttributeSet(request);
+		Set<Attribute> selectedAttributes = attributeSelectorHelperService.getAttributeSet(request, null, null);
 		
 		mav.addObject("errorMsg", errorMsg);
 		mav.addObject("groupName", groupName);
@@ -81,7 +80,7 @@ public class GroupMeterReadController extends MultiActionController {
 		mav.addObject("deviceCollection", deviceCollection);
 		
 		String errorMsg = ServletRequestUtils.getStringParameter(request, "errorMsg");
-		Set<Attribute> selectedAttributes = getAttributeSet(request);
+		Set<Attribute> selectedAttributes = attributeSelectorHelperService.getAttributeSet(request, null, null);
 		
 		mav.addObject("errorMsg", errorMsg);
 		mav.addObject("selectedAttributes", selectedAttributes);
@@ -102,7 +101,7 @@ public class GroupMeterReadController extends MultiActionController {
 		// device group
 		String groupName = ServletRequestUtils.getStringParameter(request, "groupName");
 		if (StringUtils.isBlank(groupName)) {
-		    addErrorStateToMav(errorMav, "No Device Group Selected", null, makeSelectedAttributeStrsParameter(getAttributeSet(request)));
+		    addErrorStateToMav(errorMav, "No Device Group Selected", null, makeSelectedAttributeStrsParameter(attributeSelectorHelperService.getAttributeSet(request, null, null)));
 		    return errorMav;
 		}
 		
@@ -121,9 +120,9 @@ public class GroupMeterReadController extends MultiActionController {
 		ModelAndView errorMav = new ModelAndView("redirect:" + errorPage);
 		
 		// attributes
-		Set<Attribute> selectedAttributes = getAttributeSet(request);
+		Set<Attribute> selectedAttributes = attributeSelectorHelperService.getAttributeSet(request, null, null);
         if (selectedAttributes.size() == 0) {
-            addErrorStateToMav(errorMav, "No Attribute Selected", null, makeSelectedAttributeStrsParameter(getAttributeSet(request)));
+            addErrorStateToMav(errorMav, "No Attribute Selected", null, makeSelectedAttributeStrsParameter(attributeSelectorHelperService.getAttributeSet(request, null, null)));
             errorMav.addAllObjects(deviceCollection.getCollectionParameters());
             return errorMav;
         }
@@ -139,7 +138,7 @@ public class GroupMeterReadController extends MultiActionController {
 		YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 		
 		// attribute
-		Set<Attribute> selectedAttributes = getAttributeSet(request);
+		Set<Attribute> selectedAttributes = attributeSelectorHelperService.getAttributeSet(request, null, null);
 		if (selectedAttributes.size() == 0) {
 			
 			addErrorStateToMav(errorMav, "No Attribute Selected", groupName, null);
@@ -236,28 +235,6 @@ public class GroupMeterReadController extends MultiActionController {
 		return mav;
 	}
 	
-	// HELPERS
-    private Set<Attribute> getAttributeSet(HttpServletRequest request) {
-        
-        String[] attributeParametersArray = ServletRequestUtils.getStringParameters(request, "attribute");
-        Set<Attribute> attributeSet = new HashSet<Attribute>();
-        
-        if (attributeParametersArray.length > 0) {
-            for (String attrStr : attributeParametersArray) {
-                attributeSet.add(attributeService.resolveAttributeName(attrStr));
-            }
-        } else {
-            String selectedAttributeStrs = ServletRequestUtils.getStringParameter(request, "selectedAttributeStrs", null);
-            if (selectedAttributeStrs != null) {
-                String[] selectedAttributeStrsArray = StringUtils.split(selectedAttributeStrs, ",");
-                for (String attrStr : selectedAttributeStrsArray) {
-                    attributeSet.add(attributeService.resolveAttributeName(attrStr));
-                }
-            }
-        }
-        return attributeSet;
-    }
-    
     private String makeSelectedAttributeStrsParameter(Set<Attribute> attributeParameters) {
         return StringUtils.join(attributeParameters, ",");
     }
@@ -288,7 +265,7 @@ public class GroupMeterReadController extends MultiActionController {
 	}
 	
 	@Autowired
-	public void setAttributeService(AttributeService attributeService) {
-        this.attributeService = attributeService;
+	public void setAttributeSelectorHelperService(AttributeSelectorHelperService attributeSelectorHelperService) {
+        this.attributeSelectorHelperService = attributeSelectorHelperService;
     }
 }

@@ -1137,4 +1137,6 @@
     <bean id="weeklyCronTagStyleHandler" class="com.cannontech.web.amr.util.cronExpressionTag.handler.WeeklyCronTagStyleHandler"/>
     <bean id="customCronTagStyleHandler" class="com.cannontech.web.amr.util.cronExpressionTag.handler.CustomCronTagStyleHandler"/>
     
+    <bean id="attributeSelectorHelperService" class="com.cannontech.web.util.AttributeSelectorHelperServiceImpl"/>
+    
 </beans>

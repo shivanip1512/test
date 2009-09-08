@@ -3,7 +3,6 @@ package com.cannontech.web.common.scheduledGroupRequestExecution;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -26,7 +25,6 @@ import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.AttributeNameComparator;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
-import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
@@ -47,6 +45,7 @@ import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
 import com.cannontech.web.input.InputRoot;
 import com.cannontech.web.input.InputUtil;
+import com.cannontech.web.util.AttributeSelectorHelperService;
 
 public class ScheduledGroupRequestExecutionController extends MultiActionController implements InitializingBean {
 
@@ -57,7 +56,7 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 	private JobManager jobManager;
 	private YukonJobDefinition<ScheduledGroupRequestExecutionTask> scheduledGroupRequestExecutionJobDefinition;
 	private CronExpressionTagService cronExpressionTagService;
-	private AttributeService attributeService;
+	private AttributeSelectorHelperService attributeSelectorHelperService;
 	
 	private List<LiteCommand> meterCommands;
 	
@@ -70,7 +69,7 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 		// pass-through
 		String errorMsg = ServletRequestUtils.getStringParameter(request, "errorMsg", null);
 		String requestType = ServletRequestUtils.getStringParameter(request, "requestType", null);
-		Set<? extends Attribute> selectedAttributes = getAttributeSet(request);
+		Set<? extends Attribute> selectedAttributes = attributeSelectorHelperService.getAttributeSet(request, null, null);
 		String commandSelectValue = ServletRequestUtils.getStringParameter(request, "commandSelectValue", null);
 		String commandString = ServletRequestUtils.getStringParameter(request, "commandString", null);
 		String scheduleName = ServletRequestUtils.getStringParameter(request, "scheduleName", null);
@@ -171,7 +170,7 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 			cronExpression = null;
 			String deviceGroupName = ServletRequestUtils.getStringParameter(request, "deviceGroupName");
 			String scheduleName = ServletRequestUtils.getStringParameter(request, "scheduleName");
-			Set<Attribute> selectedAttributes = getAttributeSet(request);
+			Set<Attribute> selectedAttributes = attributeSelectorHelperService.getAttributeSet(request, null, null);
 			String commandSelectValue = ServletRequestUtils.getStringParameter(request, "commandSelectValue");
 			String commandString = ServletRequestUtils.getStringParameter(request, "commandString");
 			return makeErrorMav("Invalid Schedule Time.", requestType, scheduleName, cronExpression, makeSelectedAttributeStrsParameter(selectedAttributes), commandSelectValue, commandString, deviceGroupName);
@@ -182,7 +181,7 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 		if (StringUtils.isBlank(scheduleName)) {
 			
 			String deviceGroupName = ServletRequestUtils.getStringParameter(request, "deviceGroupName");
-			Set<Attribute> selectedAttributes = getAttributeSet(request);
+			Set<Attribute> selectedAttributes = attributeSelectorHelperService.getAttributeSet(request, null, null);
 			String commandSelectValue = ServletRequestUtils.getStringParameter(request, "commandSelectValue");
 			String commandString = ServletRequestUtils.getStringParameter(request, "commandString");
 			return makeErrorMav("Schedule Must Have Name.", requestType, scheduleName, cronExpression, makeSelectedAttributeStrsParameter(selectedAttributes), commandSelectValue, commandString, deviceGroupName);
@@ -192,7 +191,7 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 		String deviceGroupName = ServletRequestUtils.getStringParameter(request, "deviceGroupName");
 		if (StringUtils.isBlank(deviceGroupName)) {
 			
-		    Set<Attribute> selectedAttributes = getAttributeSet(request);
+		    Set<Attribute> selectedAttributes = attributeSelectorHelperService.getAttributeSet(request, null, null);
 			String commandSelectValue = ServletRequestUtils.getStringParameter(request, "commandSelectValue");
 			String commandString = ServletRequestUtils.getStringParameter(request, "commandString");
 			return makeErrorMav("No Device Group Selected.", requestType, scheduleName, cronExpression, makeSelectedAttributeStrsParameter(selectedAttributes), commandSelectValue, commandString, null);
@@ -222,7 +221,7 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 		YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 		
 		// attribute
-		Set<Attribute> selectedAttributes = getAttributeSet(request);
+		Set<Attribute> selectedAttributes = attributeSelectorHelperService.getAttributeSet(request, null, null);
 		if (selectedAttributes.size() == 0) {
 			return makeErrorMav("No Attribute(s) Selected", CommandRequestExecutionType.SCHEDULED_GROUP_ATTRIBUTE_READ, scheduleName, cronExpression, null, null, null, deviceGroupName);
 		}
@@ -314,27 +313,6 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 	
 	
 	// HELPERS
-	private Set<Attribute> getAttributeSet(HttpServletRequest request) {
-        
-        String[] attributeParametersArray = ServletRequestUtils.getStringParameters(request, "attribute");
-        Set<Attribute> attributeSet = new HashSet<Attribute>();
-        
-        if (attributeParametersArray.length > 0) {
-            for (String attrStr : attributeParametersArray) {
-                attributeSet.add(attributeService.resolveAttributeName(attrStr));
-            }
-        } else {
-            String selectedAttributeStrs = ServletRequestUtils.getStringParameter(request, "selectedAttributeStrs", null);
-            if (selectedAttributeStrs != null) {
-                String[] selectedAttributeStrsArray = StringUtils.split(selectedAttributeStrs, ",");
-                for (String attrStr : selectedAttributeStrsArray) {
-                    attributeSet.add(attributeService.resolveAttributeName(attrStr));
-                }
-            }
-        }
-        return attributeSet;
-    }
-    
     private String makeSelectedAttributeStrsParameter(Set<Attribute> attributeParameters) {
         return StringUtils.join(attributeParameters, ",");
     }
@@ -389,7 +367,7 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
     }
 	
 	@Autowired
-	public void setAttributeService(AttributeService attributeService) {
-        this.attributeService = attributeService;
+	public void setAttributeSelectorHelperService(AttributeSelectorHelperService attributeSelectorHelperService) {
+        this.attributeSelectorHelperService = attributeSelectorHelperService;
     }
 }
