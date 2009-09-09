@@ -530,6 +530,12 @@ public void setAsUDP()
     getipAddressTextField().setEnabled(false);
 }
 
+public void setAsTCP()
+{
+    getipAddressTextField().setText("");
+    getipAddressTextField().setEnabled(true);
+}
+
 /**
  * 
  */

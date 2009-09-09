@@ -94,7 +94,11 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 		}
 		else
 		{
-            if( !getTerminalServerTypeQuestionPanel().isTCP() )
+            if( getTerminalServerTypeQuestionPanel().isTCP() )
+            {
+                getSimpleTerminalServerSettingsPanel().setAsTCP();
+            }
+            else
             {
                 getSimpleTerminalServerSettingsPanel().setAsUDP();
             }

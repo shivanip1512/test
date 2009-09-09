@@ -375,11 +375,13 @@ public void setFirstFocus()
 public void setAsTCP()
 {
     tcp = true;
+    udp = false;
 }
 
 public void setAsUDP()
 {
     udp = true;
+    tcp = false;
 }
 
 public boolean isTCP()
