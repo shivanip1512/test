@@ -3,22 +3,27 @@ package com.cannontech.analysis.tablemodel;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.amr.meter.dao.GroupMetersDao;
-import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.device.model.DeviceCollectionReportDevice;
+import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.user.YukonUserContext;
 
 public class GroupDevicesModel extends BareReportModelBase<GroupDevicesModel.ModelRow> implements ReportModelMetaInfo {
     
     // dependencies
     private DeviceGroupService deviceGroupService = null;
-    private GroupMetersDao groupMetersDao = null;
+    private DeviceGroupProviderDao deviceGroupProviderDao = null;
+    private PaoLoadingService paoLoadingService = null;
     
     // inputs
     private String groupName;
@@ -41,25 +46,27 @@ public class GroupDevicesModel extends BareReportModelBase<GroupDevicesModel.Mod
         
         DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
         
-        List<Meter> deviceList;
+        Set<SimpleDevice> devicesToLoad;
         if (includeSubGroups) {
-            deviceList = groupMetersDao.getMetersByGroup(group);
+            devicesToLoad = deviceGroupProviderDao.getDevices(group);
         } else {
-            deviceList = groupMetersDao.getChildMetersByGroup(group);
+            devicesToLoad = deviceGroupProviderDao.getChildDevices(group);
         }
         
-        for (Meter meter : deviceList) {
+        List<DeviceCollectionReportDevice> deviceCollectionReportDevices = paoLoadingService.getDeviceCollectionReportDevices(devicesToLoad);
+
+        for (DeviceCollectionReportDevice deviceReport : deviceCollectionReportDevices) {
             
             GroupDevicesModel.ModelRow row = new GroupDevicesModel.ModelRow();
-            row.deviceName = meter.getName();
-            row.meterNumber = meter.getMeterNumber();
-            row.deviceType = meter.getTypeStr();
-            row.address = meter.getAddress();
-            row.route = meter.getRoute();
+            row.deviceName = deviceReport.getName();
+            row.meterNumber = deviceReport.getMeterNumber();
+            row.deviceType = deviceReport.getType();
+            row.address = deviceReport.getAddress();
+            row.route = deviceReport.getRoute();
             data.add(row);
         }
         
-        CTILogger.info("Report Records Collected from Database: " + deviceList.size());
+        CTILogger.info("Report Records Collected from Database: " + devicesToLoad.size());
     }
     
     @Override
@@ -104,8 +111,14 @@ public class GroupDevicesModel extends BareReportModelBase<GroupDevicesModel.Mod
     }
 
     @Required
-    public void setGroupMetersDao(GroupMetersDao groupMetersDao) {
-        this.groupMetersDao = groupMetersDao;
+    public void setDeviceGroupProviderDao(
+            DeviceGroupProviderDao deviceGroupProviderDao) {
+        this.deviceGroupProviderDao = deviceGroupProviderDao;
+    }
+    
+    @Required
+    public void setPaoLoadingService(PaoLoadingService paoLoadingService) {
+        this.paoLoadingService = paoLoadingService;
     }
 
     public boolean isIncludeSubGroups() {
