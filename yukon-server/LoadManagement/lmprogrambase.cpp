@@ -26,6 +26,8 @@
 #include "mgr_season.h"
 #include "utility.h"
 
+extern CtiTime GetTimeFromOffsetAndDate(LONG offsetFromMidnight, CtiDate &startingDate);
+
 extern ULONG _LM_DEBUG;
 extern set<long> _CHANGED_PROGRAM_LIST;
 
@@ -1188,33 +1190,38 @@ void CtiLMProgramBase::restore(RWDBReader& rdr)
 CtiLMProgramControlWindow* CtiLMProgramBase::getControlWindow(LONG secondsFromBeginningOfDay, CtiDate &defaultDate)
 {
     //Control Windows can span midnight, in which case getAvailableStopTime will represent more than 24 hours worth of seconds
-    //So add 1 day and do another test as well
-    CtiTime currentTime = CtiTime(defaultDate) + secondsFromBeginningOfDay;
-    CtiTime tomorrow = currentTime;
-    tomorrow.addDays(1);
+
+    CtiTime currentTime = GetTimeFromOffsetAndDate(secondsFromBeginningOfDay, defaultDate);
+
+    CtiTime midnightToday = GetTimeFromOffsetAndDate(0, defaultDate);
+    CtiTime midnightTomorrow = GetTimeFromOffsetAndDate(86400, defaultDate);
 
     for( LONG i=0;i<_lmprogramcontrolwindows.size();i++ )
     {
         CtiLMProgramControlWindow* currentControlWindow = (CtiLMProgramControlWindow*)_lmprogramcontrolwindows[i];
 
-        CtiTime startTime = currentControlWindow->getAvailableStartTime(defaultDate);
-        CtiTime stopTime = currentControlWindow->getAvailableStopTime(defaultDate);
+        CtiTime controlWindowStartTime = currentControlWindow->getAvailableStartTime(defaultDate);
+        CtiTime controlWindowStopTime = currentControlWindow->getAvailableStopTime(defaultDate);
 
-        if(startTime <= stopTime)   // sanity check... should always be true
+        if(controlWindowStartTime <= controlWindowStopTime)     // sanity check... should always be true
         {
-            // The first part: startTime <= currentTime && currentTime <= stopTime
-            // checks these two conditions
-            //  1. startTime and stopTime are on the same day and currentTime falls between them
-            //  2. startTime is today, stopTime is tomorrow and currentTime is between startTime and midnight
-            // 
-            // The second part: startTime <= tomorrow && tomorrow <= stopTime
-            // checks this condition
-            //  1. startTime is today, stopTime is tomorrow and currentTime is between midnight and stopTime
-
-            if((startTime <= currentTime && currentTime <= stopTime) ||
-               (startTime <= tomorrow && tomorrow <= stopTime))
+            if(controlWindowStartTime.date() == controlWindowStopTime.date())   // window entirely on same date
             {
-                return currentControlWindow;
+                if(controlWindowStartTime <= currentTime && currentTime <= controlWindowStopTime)
+                {
+                    return currentControlWindow;
+                }
+            }
+            else    // window spans the midnight boundary between two days
+            {
+                CtiTime controlWindowStopTimeToday = controlWindowStopTime;
+                controlWindowStopTimeToday.addDays(-1);
+
+                if((midnightToday <= currentTime && currentTime <= controlWindowStopTimeToday) ||
+                   (controlWindowStartTime <= currentTime && currentTime <= midnightTomorrow))
+                {
+                    return currentControlWindow;
+                }
             }
         }
     }

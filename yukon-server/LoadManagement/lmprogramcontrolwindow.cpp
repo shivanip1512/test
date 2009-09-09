@@ -23,6 +23,8 @@
 
 extern ULONG _LM_DEBUG;
 
+extern CtiTime GetTimeFromOffsetAndDate(LONG offsetFromMidnight, CtiDate &startingDate);
+
 RWDEFINE_COLLECTABLE( CtiLMProgramControlWindow, CTILMPROGRAMCONTROLWINDOW_ID )
 
 /*---------------------------------------------------------------------------
@@ -80,7 +82,7 @@ LONG CtiLMProgramControlWindow::getWindowNumber() const
 ---------------------------------------------------------------------------*/
 CtiTime CtiLMProgramControlWindow::getAvailableStartTime(CtiDate &defaultDate) const
 {
-    return CtiTime(defaultDate) + _availablestarttime;; // This produces a time of today that is DST correct.
+    return GetTimeFromOffsetAndDate(_availablestarttime, defaultDate);
 }
 
 /*---------------------------------------------------------------------------
@@ -91,7 +93,7 @@ CtiTime CtiLMProgramControlWindow::getAvailableStartTime(CtiDate &defaultDate) c
 ---------------------------------------------------------------------------*/
 CtiTime CtiLMProgramControlWindow::getAvailableStopTime(CtiDate &defaultDate) const
 {
-    return CtiTime(defaultDate) + _availablestoptime;
+    return GetTimeFromOffsetAndDate(_availablestoptime, defaultDate);
 }
 
 /*---------------------------------------------------------------------------
