@@ -84,4 +84,13 @@ public interface DeviceConfigurationDao {
      * @return
      */
     public List<ConfigurationBase> getAllConfigurationsByType(ConfigurationType type);
+
+    /**
+     * Returns the value of the device config item for the given 
+     * config id and field name.
+     * @param configId
+     * @param fieldName
+     * @return
+     */
+    public String getValueForFieldName(int configId, String fieldName);
 }

@@ -1135,12 +1135,15 @@ public void setValue(Object val)
           CtiUtilities.setCheckBoxState(getChannel4CheckBox(), new Character(loadProfileCollection.charAt(3)));
 		
           if(config != null) {
+              String demandInterval = deviceConfigDao.getValueForFieldName(config.getId(), "Demand Interval");
+              String loadProfile = deviceConfigDao.getValueForFieldName(config.getId(), "Load Profile Interval 1");
+              String demandString = demandInterval.equalsIgnoreCase("60") ? "1 hour" : demandInterval + " minute";
+              String loadProfileString = loadProfile.equalsIgnoreCase("60") ? "1 hour" : loadProfile + " minute";
+              getLastIntervalDemandRateComboBox().setSelectedItem(demandString);
+              getLoadProfileDemandRateComboBox().setSelectedItem(loadProfileString);
               getLastIntervalDemandRateComboBox().setEnabled(false);
               getLoadProfileDemandRateComboBox().setEnabled(false);
-              getChannel1CheckBox().setEnabled(false);
-              getChannel2CheckBox().setEnabled(false);
-              getChannel3CheckBox().setEnabled(false);
-              getChannel4CheckBox().setEnabled(false);
+              
           }
 	  } else if( DeviceTypesFuncs.isLoadProfile4Channel(deviceType) ) {
 			CtiUtilities.setCheckBoxState(getChannel1CheckBox(), new Character(loadProfileCollection.charAt(0)));

@@ -91,7 +91,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     
     @Override
     public String readConfigs(DeviceCollection deviceCollection, SimpleCallback<GroupCommandResult> callback, LiteYukonUser user) {
-        String commandString = "getconfig install";
+        String commandString = "getconfig install all";
         
         return sendConfigCommand(deviceCollection, callback, commandString, CommandRequestExecutionType.DEVICE_CONFIG_READ, user);
     }
@@ -184,7 +184,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     
     @Override
     public CommandResultHolder readConfig(YukonDevice device, LiteYukonUser user) throws Exception {
-        String commandString = "getconfig install";
+        String commandString = "getconfig install all";
         CommandResultHolder resultHolder = commandRequestExecutor.execute(device, commandString, CommandRequestExecutionType.DEVICE_CONFIG_READ, user);
         return resultHolder;
     }

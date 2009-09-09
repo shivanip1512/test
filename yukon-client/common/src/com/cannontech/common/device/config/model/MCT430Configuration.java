@@ -18,7 +18,7 @@ public class MCT430Configuration extends ConfigurationBase {
     // Addressing
      private Integer bronzeAddress = null;
      private Integer leadAddress = null;
-     private Integer serviceProviderId = null;
+     private Integer serviceProviderId = 0;
      private Integer collectionAddress = null;
 
     // DST

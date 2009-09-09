@@ -25,6 +25,7 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.database.StringRowMapper;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -372,6 +373,12 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
 
             return config;
         }
+    }
+    
+    @Override
+    public String getValueForFieldName(int configId, String fieldName){
+        String sql = "select Value from DeviceConfigurationItem where DeviceConfigurationID = ? and FieldName = ?";
+        return simpleJdbcTemplate.queryForObject(sql, new StringRowMapper(), configId, fieldName);
     }
 
 }
