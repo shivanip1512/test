@@ -1737,7 +1737,7 @@ private void initialize() {
 		constraintsJComboBoxSendRateDigits.fill = java.awt.GridBagConstraints.HORIZONTAL;
 		constraintsJComboBoxSendRateDigits.weightx = 1.0;
 		constraintsJComboBoxSendRateDigits.ipadx = 5;
-		constraintsJComboBoxSendRateDigits.insets = new java.awt.Insets(3, 1, 2, 175);
+		constraintsJComboBoxSendRateDigits.insets = new java.awt.Insets(3, 1, 2, 250);
 		add(getJComboBoxSendRateDigits(), constraintsJComboBoxSendRateDigits);
 
 		java.awt.GridBagConstraints constraintsJComboBoxSendRateUnits = new java.awt.GridBagConstraints();
@@ -1855,7 +1855,7 @@ private void initialize() {
 		constraintsJComboBoxShedTimeDigits.fill = java.awt.GridBagConstraints.HORIZONTAL;
 		constraintsJComboBoxShedTimeDigits.weightx = 1.0;
 		constraintsJComboBoxShedTimeDigits.ipadx = 5;
-		constraintsJComboBoxShedTimeDigits.insets = new java.awt.Insets(3, 1, 2, 175);
+		constraintsJComboBoxShedTimeDigits.insets = new java.awt.Insets(3, 1, 2, 250);
 		add(getJComboBoxShedTimeDigits(), constraintsJComboBoxShedTimeDigits);
 
 		java.awt.GridBagConstraints constraintsJComboBoxShedTimeUnits = new java.awt.GridBagConstraints();
