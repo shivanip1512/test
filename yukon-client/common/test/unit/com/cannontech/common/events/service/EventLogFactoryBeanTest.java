@@ -13,6 +13,7 @@ import com.cannontech.common.events.dao.EventLogDao;
 import com.cannontech.common.events.dao.EventLogDao.ArgumentColumn;
 import com.cannontech.common.events.model.EventCategory;
 import com.cannontech.common.events.model.EventLog;
+import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.util.TransactionExecutor;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.google.common.collect.ImmutableList;
@@ -92,5 +93,42 @@ public class EventLogFactoryBeanTest {
         testEventLog.logIntegerDouble(55,88.23);
         EventLog eventLog = Iterables.getOnlyElement(insertedEventLogs);
         Assert.assertArrayEquals(new Object[] {null,null,55,88.23d}, eventLog.getArguments());
+    }
+    
+    @Test(expected=BadConfigurationException.class)
+    public void testBadInterfaceThrowsException() throws Exception {
+        Builder<ArgumentColumn> builder = ImmutableList.builder();
+        builder.add(new ArgumentColumn("String1", Types.VARCHAR));
+        builder.add(new ArgumentColumn("String2", Types.VARCHAR));
+        builder.add(new ArgumentColumn("Int3", Types.BIGINT));
+        builder.add(new ArgumentColumn("Int4", Types.BIGINT));
+        final List<ArgumentColumn> argumentColumns = builder.build();
+        
+        
+        EventLogFactoryBean eventLogFactoryBean = new EventLogFactoryBean();
+        eventLogFactoryBean.setServiceInterface(BadTestEventLogInterface.class);
+        eventLogFactoryBean.setBeanClassLoader(this.getClass().getClassLoader());
+        eventLogFactoryBean.setTransactionExecutor(new CurrentThreadExecutor());
+        eventLogFactoryBean.setEventLogDao(new EventLogDao() {
+            @Override
+            public List<ArgumentColumn> getArgumentColumns() {
+                return argumentColumns;
+            }
+            @Override
+            public void insert(EventLog eventLog) {
+            }
+            @Override
+            public List<EventLog> findAllByCategories(
+                    Iterable<EventCategory> eventCategory) {
+                return null;
+            }
+            @Override
+            public Set<EventCategory> getAllCategories() {
+                return null;
+            }
+        });
+        
+        eventLogFactoryBean.afterPropertiesSet();
+        eventLogFactoryBean.getObject();
     }
 }
