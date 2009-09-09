@@ -197,11 +197,21 @@
 				<td>Daily / Max Ops</td>
 			</tr>
 
-
-	<c:forEach var="viewableSubBus" items="${subBusList}">
+        <c:set var="subBusRowCount" value="0"/>
+        <c:forEach var="viewableSubBus" items="${subBusList}">
 			<c:set var="thisSubBusId" value="${viewableSubBus.subBus.ccId}"/>
             <input type="hidden" id="paoId_${viewableSubBus.subBus.ccId}" value="${thisSubBusId}"></input>
-			<tr class="<ct:alternateRow odd="altTableCell" even="tableCell"/>"  id="tr_sub_${thisSubBusId}" style="vertical-align: middle;">
+            <c:set var="subBusRowClass" value="tableCell"/>
+                <c:choose>
+                    <c:when test="${subBusRowCount % 2 == 0}">
+                        <c:set var="subBusRowClass" value="altTableCell"/>
+                    </c:when>
+                    <c:otherwise>
+                        <c:set var="subBusRowClass" value="tableCell"/>
+                    </c:otherwise>
+                </c:choose>
+                <c:set var="subBusRowCount" value="${subBusRowCount + 1}"/>
+			<tr class="${subBusRowClass}"  id="tr_sub_${thisSubBusId}" style="vertical-align: middle;">
 				
                 <td id="anc_${thisSubBusId}"><input type="checkbox" name="cti_chkbxSubBuses" value="${thisSubBusId}" style="vertical-align: middle;"/>
 					<input type="image" id="showSnap${thisSubBusId}" src="/capcontrol/images/nav-plus.gif" style="vertical-align: middle;"
@@ -379,11 +389,21 @@
          		<td>kW / Volts</td>
          		<td>Daily/Max Ops</td>
          	</tr>
+         	<c:set var="feederRowCount" value="0"/>
 			<c:forEach var="viewfeeder" items="${feederList}">
                 <c:set var="thisFeederId" value="${viewfeeder.feeder.ccId}"/>
                 <input type="hidden" id="paoId_${thisFeederId}" value="${thisFeederId}"></input>
-                
-				<tr class="<ct:alternateRow odd="altTableCell" even="tableCell"/>" style="vertical-align: middle;">
+                <c:set var="feederRowClass" value="tableCell"/>
+	            <c:choose>
+	                <c:when test="${feederRowCount % 2 == 0}">
+	                    <c:set var="feederRowClass" value="altTableCell"/>
+	                </c:when>
+	                <c:otherwise>
+	                    <c:set var="feederRowClass" value="tableCell"/>
+	                </c:otherwise>
+	            </c:choose>
+	            <c:set var="feederRowCount" value="${feederRowCount + 1}"/>
+				<tr class="${feederRowClass}" style="vertical-align: middle;">
 					<td>
 						<input type="checkbox" name="cti_chkbxFdrs" value="${thisFeederId}" style="vertical-align: middle;"/>
 						
@@ -497,14 +517,22 @@
                 <td>Parent Feeder</td>
                 <td>Daily/Max/Total Op</td>
 			</tr>              
-	
+        <c:set var="bankRowCount" value="0"/>
 		<c:forEach var="viewableCapBank" items="${capBankList}">
             <c:set var="thisCapBankId" value="${viewableCapBank.capBankDevice.ccId}"/>
             <input type="hidden" id="paoId_${thisCapBankId}" value="${thisCapBankId}"></input>            
-
+            <c:set var="bankRowClass" value="tableCell"/>
+            <c:choose>
+                <c:when test="${bankRowCount % 2 == 0}">
+                    <c:set var="bankRowClass" value="altTableCell"/>
+                </c:when>
+                <c:otherwise>
+                    <c:set var="bankRowClass" value="tableCell"/>
+                </c:otherwise>
+            </c:choose>
+            <c:set var="bankRowCount" value="${bankRowCount + 1}"/>
 			<tr id="tr_cap_${thisCapBankId}" onmouseover="highLightRow(this)" onmouseout="unHighLightRow(this)"  
-			    class="<ct:alternateRow odd="altTableCell" even="tableCell"/>" style="vertical-align: middle;">
-				
+			    class="${bankRowClass}" style="vertical-align: middle;">
                 <td>
                     <input type="checkbox" name="cti_chkbxBanks" value="${thisCapBankId}"/>
                 </td>

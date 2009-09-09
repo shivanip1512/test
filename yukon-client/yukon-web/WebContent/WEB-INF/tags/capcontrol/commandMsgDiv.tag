@@ -17,6 +17,6 @@
 
 <div id="outerDiv" style="display: none; width: 200px; bottom: 1%; left: 1%; background: white;">
 	<div style="border: 2px solid #444;">
-	    <div align="center" id="cmd_msg_div" style="padding: 5px;"></div>
+	    <b><div align="center" id="cmd_msg_div" style="padding: 5px;"></div></b>
 	</div>
 </div>

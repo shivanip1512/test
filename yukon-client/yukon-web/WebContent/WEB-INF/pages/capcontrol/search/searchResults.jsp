@@ -29,7 +29,7 @@
                 <th/>
             </tr>
             <c:forEach items="${rows}" var="row">
-                <tr height="18px" valign="middle" style="vertical-align : middle;"  class="<ct:alternateRow odd="altTableCell" even="tableCell"/>">
+                <tr height="18px" valign="middle" style="vertical-align : middle;"  class="<ct:alternateRow odd="tableCell" even="altTableCell"/>">
 	                <td nowrap="nowrap">${row.name}</td>
 	                <td nowrap="nowrap">${row.itemType}</td>
 	                <td nowrap="nowrap">${row.itemDescription}</td>

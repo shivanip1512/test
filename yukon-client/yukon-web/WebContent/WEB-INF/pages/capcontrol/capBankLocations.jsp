@@ -36,7 +36,7 @@
 		</thead>
 			<tbody id="tableBody">
 			<c:forEach var="bank" items="${capBankList}" varStatus="i">
-				<tr class="altRow" >
+				<tr class="<tags:alternateRow odd="tableCell" even="altTableCell"/>">
 					<td><c:out value="${bank.ccName}"/></td>
 					<td><c:out value="${addList[i.index].serialNumber}"/></td>
 					<td><c:out value="${bank.ccArea}"/></td>
