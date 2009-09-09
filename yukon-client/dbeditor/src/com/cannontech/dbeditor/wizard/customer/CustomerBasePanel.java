@@ -401,11 +401,17 @@ public Object getValue(Object o)
 	{
 		LiteContact cnt = (LiteContact)getJComboBoxPrimaryContact().getSelectedItem();
 		customer.getCustomer().setPrimaryContactID( new Integer(cnt.getContactID()) ); 
+	} else {
+	    LiteContact blankContact = new LiteContact(-1, 
+	                                               "",
+	                                               "",
+	                                               -9999);
+	    ContactDao contactDao = YukonSpringHook.getBean("contactDao", ContactDao.class);
+	    contactDao.saveContact(blankContact);
+	    
+	    // Set the contactId that has been updated through the saveContact method.
+	    customer.getCustomer().setPrimaryContactID(blankContact.getContactID());
 	}
-	else
-		customer.getCustomer().setPrimaryContactID( 
-				new Integer(CtiUtilities.NONE_ZERO_ID) );
-
 
 	//get the selected Time Zone if there is one
 	if( getJComboBoxTimeZone().getSelectedItem() != null

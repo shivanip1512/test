@@ -23,9 +23,9 @@ public class LiteContact extends LiteBase
 
     private boolean extended = false;
 
-	public static final LiteContact NONE_LITE_CONTACT =
-			new LiteContact( CtiUtilities.NONE_ZERO_ID, 
-					null, CtiUtilities.STRING_NONE );
+    public static final LiteContact NONE_LITE_CONTACT =
+            new LiteContact( CtiUtilities.NONE_ZERO_ID, 
+                    null, CtiUtilities.STRING_NONE );
 
 	//contains instances of com.cannontech.database.data.lite.LiteContactNotification
 	private Vector<LiteContactNotification> liteContactNotifications = null;
@@ -48,6 +48,16 @@ public class LiteContact extends LiteBase
 		setContLastName( lName_ );
 	}
 
+	/**
+     * LiteContact
+     */
+    public LiteContact( int contID_, String fName_, String lName_, int loginId ) {
+        this(contID_);
+        setContFirstName( fName_ );
+        setContLastName( lName_ );
+        setLoginID(loginId);
+    }
+    
 	/**
 	 * LiteContact
 	 */
