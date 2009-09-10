@@ -25,8 +25,7 @@
 #include "mgr_holiday.h"
 #include "mgr_season.h"
 #include "utility.h"
-
-extern CtiTime GetTimeFromOffsetAndDate(LONG offsetFromMidnight, CtiDate &startingDate);
+#include "lmutility.h"
 
 extern ULONG _LM_DEBUG;
 extern set<long> _CHANGED_PROGRAM_LIST;

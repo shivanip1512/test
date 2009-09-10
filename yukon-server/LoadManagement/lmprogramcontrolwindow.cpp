@@ -20,10 +20,9 @@
 #include "pointtypes.h"
 #include "logger.h"
 #include "loadmanager.h"
+#include "lmutility.h"
 
 extern ULONG _LM_DEBUG;
-
-extern CtiTime GetTimeFromOffsetAndDate(LONG offsetFromMidnight, CtiDate &startingDate);
 
 RWDEFINE_COLLECTABLE( CtiLMProgramControlWindow, CTILMPROGRAMCONTROLWINDOW_ID )
 

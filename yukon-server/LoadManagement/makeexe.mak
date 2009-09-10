@@ -83,7 +83,7 @@ lmprogramenergyexchange.obj \
 lmprogramthermostatgear.obj \
 lmservice.obj \
 loadmanager.obj \
-lmmiscutilities.obj \
+lmutility.obj \
 main.obj
 
 TARGS = loadmanagement.exe

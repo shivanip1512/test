@@ -3,8 +3,7 @@
 *-----------------------------------------------------------------------------*/
 
 #include "yukon.h"
-#include "ctitime.h"
-#include "ctidate.h"
+#include "lmutility.h"
 
 /*
 *   This is WALLCLOCK time - an offset of 14400 (+4 hours) is ALWAYS 4am.  This function

@@ -83,7 +83,7 @@ $(OBJ)\lmprogramdirectgear.obj \
 $(OBJ)\lmprogramenergyexchange.obj \
 $(OBJ)\lmprogramthermostatgear.obj \
 $(OBJ)\lmservice.obj \
-$(OBJ)\lmmiscutilities.obj \
+$(OBJ)\lmutility.obj \
 $(OBJ)\loadmanager.obj
 
 ALL: loadmanagement

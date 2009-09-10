@@ -8,11 +8,11 @@
 
 #include "lmprogramdirect.h"
 #include "lmprogramcontrolwindow.h"
+#include "lmutility.h"
 
 #define BOOST_AUTO_TEST_MAIN "Test LM Program"
 #include <boost/test/unit_test.hpp>
 
-extern CtiTime GetTimeFromOffsetAndDate(LONG offsetFromMidnight, CtiDate &startingDate);
 
 /*
 ***  TESTING: GetTimeFromOffsetAndDate()
