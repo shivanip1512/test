@@ -20,7 +20,7 @@ class IM_EX_PROT XmlProtocol : public boost::noncopyable
 {
 public:
 
-    XmlProtocol();
+    XmlProtocol(){};
 
     static std::string createMessage(const CtiCommandParser &parse, const string &rawAscii, const std::vector<std::pair<string,string> > &params);
 
