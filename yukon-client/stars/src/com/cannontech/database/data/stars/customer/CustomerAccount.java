@@ -10,6 +10,7 @@ import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.customer.Customer;
 import com.cannontech.database.data.stars.event.EventAccount;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
 
@@ -151,6 +152,7 @@ public class CustomerAccount extends DBPersistent {
     public void add() throws java.sql.SQLException {
     	if (energyCompanyID == null)
     		throw new java.sql.SQLException( "setEnergyCompanyID() must be called before this function" );
+    	NextValueHelper nextValueHelper = YukonSpringHook.getBean("nextValueHelper", NextValueHelper.class);
     	
         getBillingAddress().add();
         
@@ -159,14 +161,14 @@ public class CustomerAccount extends DBPersistent {
         
     	if (getCustomerAccount().getCustomerID().intValue() == 0) {
     		if (getCustomer() instanceof com.cannontech.database.data.customer.CICustomerBase)
-    			((com.cannontech.database.data.customer.CICustomerBase)getCustomer()).getAddress().setAddressID( new Integer(++addrID) );
+    			((com.cannontech.database.data.customer.CICustomerBase)getCustomer()).getAddress().setAddressID( nextValueHelper.getNextValue("Address") );
     		
     		getCustomer().add();
     		getCustomerAccount().setCustomerID( getCustomer().getCustomer().getCustomerID() );
     	}
 
 		if (getCustomerAccount().getAccountSiteID().intValue() == com.cannontech.database.db.stars.customer.AccountSite.NONE_INT) {
-			getAccountSite().getStreetAddress().setAddressID( new Integer(++addrID) );
+			getAccountSite().getStreetAddress().setAddressID( nextValueHelper.getNextValue("Address") );
         	getAccountSite().add();
         	getCustomerAccount().setAccountSiteID( getAccountSite().getAccountSite().getAccountSiteID() );
 		}

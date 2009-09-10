@@ -1,6 +1,8 @@
 package com.cannontech.database.db.customer;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * This type was created in VisualAge.
@@ -16,7 +18,8 @@ public class Address extends com.cannontech.database.db.DBPersistent
 	private String zipCode = CtiUtilities.STRING_NONE;
 	private String county = CtiUtilities.STRING_NONE;
 
-
+	private static NextValueHelper nextValueHelper = YukonSpringHook.getNextValueHelper();
+        
 	
 	public static final String SETTER_COLUMNS[] = 
 	{ 
@@ -39,8 +42,8 @@ public Address() {
  */
 public void add() throws java.sql.SQLException 
 {
-	if( getAddressID() == null )
-		setAddressID( getNextAddressID( getDbConnection() ) );
+    if( getAddressID() == null )
+        setAddressID( getNextAddressID() );
 
 	Object addValues[] =
 	{ 
@@ -97,46 +100,12 @@ public java.lang.String getLocationAddress2() {
  * Creation date: (12/14/99 10:31:33 AM)
  * @return java.lang.Integer
  */
-public static synchronized Integer getNextAddressID( java.sql.Connection conn )
-{
-	if( conn == null )
-		throw new IllegalStateException("Database connection should not be null.");
 
-	
-	java.sql.Statement stmt = null;
-	java.sql.ResultSet rset = null;
-	
-	try 
-	{		
-	    stmt = conn.createStatement();
-		 rset = stmt.executeQuery( 
-				"SELECT Max(AddressID)+1 FROM " + TABLE_NAME );	
-			
-		 //get the first returned result
-		 rset.next();
-	    return new Integer( rset.getInt(1) );
-	}
-	catch (java.sql.SQLException e) 
-	{
-	    e.printStackTrace();
-	}
-	finally 
-	{
-	    try 
-	    {
-	    	if ( rset != null) rset.close();
-			if ( stmt != null) stmt.close();
-	    }
-	    catch (java.sql.SQLException e2) 
-	    {
-			e2.printStackTrace();
-	    }
-	}
-	
-	//strange, should not get here
-	return new Integer(CtiUtilities.NONE_ZERO_ID);
+public static final Integer getNextAddressID() {
+        int nextValue = nextValueHelper.getNextValue(TABLE_NAME);
+        return nextValue;
+
 }
-
 /**
  * Insert the method's description here.
  * Creation date: (3/26/2001 1:44:46 PM)
