@@ -11,20 +11,26 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.field.BulkField;
 import com.cannontech.common.bulk.field.BulkFieldColumnHeader;
 import com.cannontech.common.bulk.field.BulkFieldService;
 import com.cannontech.common.bulk.field.impl.BulkYukonDeviceFieldFactory;
 import com.cannontech.common.bulk.field.processor.BulkFieldProcessor;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
+import com.cannontech.common.device.groups.IllegalGroupNameException;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
@@ -41,6 +47,9 @@ public class DeviceGroupUpdaterController {
 	private BulkFieldService bulkFieldService;
 	private DeviceGroupEditorDao deviceGroupEditorDao;
 	private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+	private TransactionOperations transactionTemplate;
+	
+	private Logger log = YukonLogManager.getLogger(DeviceGroupUpdaterController.class);
 
 	@RequestMapping
     public void upload(HttpServletRequest request, LiteYukonUser user, ModelMap model) throws ServletException {
@@ -84,16 +93,22 @@ public class DeviceGroupUpdaterController {
             	error = "File header should contain an Identifier column and at least one action column.";
             } else {
             
-            	int currentLineNumber = 1;
-	            String currentIdentifier = "";
-	            String currentColumnValue = "";
 	            BulkField<?, SimpleDevice> identifierBulkField = null;
+	            String header = "";
+	            String columnType = "";
 	            
             	try {
 		            
 		            // identifier bulk field
-		            BulkFieldColumnHeader identifierColunHeader = BulkFieldColumnHeader.valueOf(headerRow[0].trim());
-		            identifierBulkField = bulkYukonDeviceFieldFactory.getBulkField(identifierColunHeader.getFieldName());
+            	    String identifier = "";
+            	    BulkFieldColumnHeader identifierColunHeader;
+            	    try {
+                	    identifier = headerRow[0].trim();
+    		            identifierColunHeader = BulkFieldColumnHeader.valueOf(identifier);
+            	    } catch (IllegalArgumentException e) {
+            	        throw new InvalidIndentifierException(identifier);
+            	    }
+            	    identifierBulkField = bulkYukonDeviceFieldFactory.getBulkField(identifierColunHeader.getFieldName());
 		            
 		            // processors
 		            DeviceGroupProcessorFactory deviceGroupProcessorFactory = new DeviceGroupProcessorFactory();
@@ -101,54 +116,35 @@ public class DeviceGroupUpdaterController {
 		            List<BulkFieldProcessor<SimpleDevice, String>> processors = new ArrayList<BulkFieldProcessor<SimpleDevice, String>>();
 		            for (int columnIdx = 1; columnIdx < headerRow.length; columnIdx++) {
 		            	
-		            	String header = headerRow[columnIdx].trim();
-		            	
-		            	try {
-		            		String[] columnTypeParts = header.split(":");
-		            		String columnType = columnTypeParts[0];
-		            		String[] valueParts = columnTypeParts[1].split("=");
-		            		String dataName = valueParts[0];
-		            		String dataValue = valueParts[1];
+		            	header = headerRow[columnIdx].trim();
+	            		String[] columnTypeParts = header.split(":");
+	            		columnType = columnTypeParts[0];
+	            		String[] valueParts = columnTypeParts[1].split("=");
+	            		String dataName = valueParts[0];
+	            		String dataValue = valueParts[1];
 		            		
-		            		processors.add(deviceGroupProcessorFactory.getProcessor(columnType, dataName, dataValue, createGroups));
-		            		
-		            	} catch (IndexOutOfBoundsException e) {
-		            		throw new InvalidHeaderSyntax(header);
-		            	}
+	            		processors.add(deviceGroupProcessorFactory.getProcessor(columnType, dataName, dataValue, createGroups));
 		            }
 		            
 		            // process rows
-	            	String [] line = null;
-		            while((line = csvReader.readNext()) != null) {
-		            		
-		                currentIdentifier = StringUtils.trim(line[0]);
-		                SimpleDevice device = bulkFieldService.getYukonDeviceForIdentifier(identifierBulkField, currentIdentifier);
-		                
-		                int idx = 1;
-		                for (BulkFieldProcessor<SimpleDevice, String> processor : processors) {
-		                	
-		                	currentColumnValue = line[idx++].trim();
-	                		processor.updateField(device, currentColumnValue);
-		                }
-		                
-		                currentLineNumber++;
-		                deviceCount++;
-		            }
+		            ProcessingResultInfo processingResultInfo = runProcessing(csvReader, identifierBulkField, processors);
+		            error = processingResultInfo.getError();
+		            deviceCount = processingResultInfo.getDeviceCount();
 		            
-            	} catch (InvalidHeaderSyntax e) {
-            		error = "Error (line 1): Invalid header: " + e.getBadHeader() + ".";
-	            } catch (ObjectMappingException e) {
-	            	error = "Error (line " + currentLineNumber + "): No device with " + identifierBulkField.getInputSource().getDisplayName() + ": " + currentIdentifier + ".";
-	            } catch (IndexOutOfBoundsException e) {
-	            	error = "Error (line " + currentLineNumber + "): Incomplete row, each row must have a value for each header column.";
-	            } catch (IllegalArgumentException e) {
-	            	Set<BulkFieldColumnHeader> identifierFields = bulkFieldService.getUpdateIdentifierBulkFieldColumnHeaders();
-	            	error = "Error (line 1): Invalid header column. Identifier types: " + StringUtils.join(identifierFields, " ,") + ". Header types: " + StringUtils.join(DeviceGroupUpdaterColumn.values(), " ,");
-	            } catch (NotFoundException e) {
-	            	error = e.getMessage() + ". Please check the spelling, or if you would like groups to automatically be created if they do not exist, check the Create Groups option.";
-	            } finally {
-	        		csvReader.close();
-	        	}
+            	} catch (InvalidIndentifierException e) {
+            	    Set<BulkFieldColumnHeader> identifierFields = bulkFieldService.getUpdateIdentifierBulkFieldColumnHeaders();
+            	    error = "Error (line 1): Invalid identifier type: " + e.getIdentifier() + ". Valid identifier types are: " + StringUtils.join(identifierFields, " ,");
+                    log.error(error, e);
+            	} catch (IllegalArgumentException e) {
+                    error = "Error (line 1): Invalid header type: " + columnType + ". Valid header types: " + StringUtils.join(DeviceGroupUpdaterColumn.values(), " ,");
+                    log.error(error, e);
+            	} catch (IndexOutOfBoundsException e) {
+                    error = "Error (line 1): Invalid header syntax.";
+                    log.error(error, e);
+                } catch (NotFoundException e) {
+                    error = "Error (line 1): " + e.getMessage() + ". Please check the spelling, or if you would like groups to automatically be created if they do not exist, check the Create Groups option.";
+                    log.error(error, e);
+                } 
             }
         }
         
@@ -158,18 +154,93 @@ public class DeviceGroupUpdaterController {
         return "redirect:upload";
     }
 	
-	@SuppressWarnings("unchecked")
-	private class InvalidHeaderSyntax extends RuntimeException {
-		
-		private String badHeader;
-		
-		public InvalidHeaderSyntax(String badHeader) {
-			this.badHeader = badHeader;
-		}
-		
-		public String getBadHeader() {
-			return badHeader;
-		}
+    private class InvalidIndentifierException extends RuntimeException {
+        private String identifier;
+        public InvalidIndentifierException(String identifier) {
+            this.identifier = identifier;
+        }
+        public String getIdentifier() {
+            return identifier;
+        }
+    }
+
+	
+	
+	private ProcessingResultInfo runProcessing(final CSVReader csvReader, final BulkField<?, SimpleDevice> identifierBulkField, final List<BulkFieldProcessor<SimpleDevice, String>> processors) {
+	    
+	    ProcessingResultInfo processingResultInfo = (ProcessingResultInfo)transactionTemplate.execute(new TransactionCallback() {
+            public Object doInTransaction(TransactionStatus status) {
+                
+                String processError = null;
+                int currentLineNumber = 1;
+                String currentIdentifier = "";
+                String currentColumnValue = "";
+                int deviceCount = 0;
+                String [] line = null;
+                
+                try {
+                    
+                    while((line = csvReader.readNext()) != null) {
+                            
+                        currentIdentifier = StringUtils.trim(line[0]);
+                        SimpleDevice device = bulkFieldService.getYukonDeviceForIdentifier(identifierBulkField, currentIdentifier);
+                        
+                        int idx = 1;
+                        for (BulkFieldProcessor<SimpleDevice, String> processor : processors) {
+                            
+                            currentColumnValue = line[idx++].trim();
+                            processor.updateField(device, currentColumnValue);
+                        }
+                        
+                        currentLineNumber++;
+                        deviceCount++;
+                    }
+                    
+                } catch (IOException e) {
+                    processError = "Can't read file";
+                    log.error(processError, e);
+                } catch (ObjectMappingException e) {
+                    processError = "Error (line " + currentLineNumber + "): No device with " + identifierBulkField.getInputSource().getDisplayName() + ": " + currentIdentifier + ".";
+                    log.error(processError, e);
+                } catch (IndexOutOfBoundsException e) {
+                    processError = "Error (line " + currentLineNumber + "): Incomplete row, each row must have a value for each header column.";
+                    log.error(processError, e);
+                } catch (IllegalGroupNameException e) {
+                    processError = "Error (line " + currentLineNumber + "): " + e.getMessage();
+                    log.error(processError, e);
+                } catch (NotFoundException e) {
+                    processError = e.getMessage() + ". Please check the spelling, or if you would like groups to automatically be created if they do not exist, check the Create Groups option.";
+                    log.error(processError, e);
+                } finally {
+                    try {
+                        csvReader.close();
+                    } catch (IOException e){}
+                }
+                
+                status.setRollbackOnly();
+                return new ProcessingResultInfo(processError, deviceCount);
+            }
+        });
+	    
+	    return processingResultInfo;
+	}
+	
+	private class ProcessingResultInfo {
+	    
+	    private String error = null;
+	    private int deviceCount = 0;
+	    
+	    ProcessingResultInfo(String error, int deviceCount) {
+	        this.error = error;
+	        this.deviceCount = deviceCount;
+	    }
+	    
+	    public String getError() {
+            return error;
+        }
+	    public int getDeviceCount() {
+            return deviceCount;
+        }
 	}
 	
 	// PREFIX PROCESSOR
@@ -185,6 +256,11 @@ public class DeviceGroupUpdaterController {
 
 		@Override
 		public void updateField(SimpleDevice device, String subgroup) {
+		    
+		    if (StringUtils.isBlank(subgroup)) {
+		        log.debug("DeviceGroupPrefixProcessor - skipping blank subgroup, will not process device: " + device);
+		        return;
+		    }
 
 			// remove from all child groups
 			for (StoredDeviceGroup childGroup : deviceGroupEditorDao.getStaticGroups(this.group)) {
@@ -270,4 +346,8 @@ public class DeviceGroupUpdaterController {
 	public void setDeviceGroupMemberEditorDao(DeviceGroupMemberEditorDao deviceGroupMemberEditorDao) {
 		this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
 	}
+	@Autowired
+	public void setTransactionTemplate(TransactionOperations transactionTemplate) {
+        this.transactionTemplate = transactionTemplate;
+    }
 }

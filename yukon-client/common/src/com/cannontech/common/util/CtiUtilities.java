@@ -55,6 +55,7 @@ import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.util.FileCopyUtils;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.groups.IllegalGroupNameException;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.login.ClientSession;
@@ -1835,6 +1836,19 @@ public static double convertTemperature(double temperature, String fromUnit, Str
          
          return !StringUtils.containsNone(name, TextFieldDocument.INVALID_CHARS_DEVICEGROUPNAME);
      }
+     
+     public static boolean isValidGroupName(String groupName) {
+         
+         return !StringUtils.isBlank(groupName) && !isContainsInvalidDeviceGroupNameCharacters(groupName);
+     }
+     
+     public static void validateGroupName(String groupName) throws IllegalGroupNameException {
+         
+         if (!isValidGroupName(groupName)) {
+             throw new IllegalGroupNameException(groupName);
+         }
+     }
+     
     public static final void close(final Object... args) {
         for (int x = 0; x < args.length; x++) {
             Object o = args[x];

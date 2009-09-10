@@ -2,6 +2,7 @@ package com.cannontech.common.device.groups.editor.dao;
 
 import java.util.List;
 
+import com.cannontech.common.device.groups.IllegalGroupNameException;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -12,7 +13,7 @@ public interface DeviceGroupEditorDao {
 
     public List<StoredDeviceGroup> getChildGroups(StoredDeviceGroup group);
     
-    public StoredDeviceGroup getGroupByName(StoredDeviceGroup parent, String groupName);
+    public StoredDeviceGroup getGroupByName(StoredDeviceGroup parent, String groupName) throws NotFoundException, IllegalGroupNameException;
     
     /**
      * This method will return a Group by Name.  If the Group is not found for this parent and addGroup is true, 
@@ -22,7 +23,7 @@ public interface DeviceGroupEditorDao {
      * @param addGroup
      * @return
      */
-    public StoredDeviceGroup getGroupByName(StoredDeviceGroup parent, String groupName, boolean addGroup);
+    public StoredDeviceGroup getGroupByName(StoredDeviceGroup parent, String groupName, boolean addGroup) throws NotFoundException, IllegalGroupNameException;
     /**
      * This find all STATIC groups that are descendants of group.
      * @param group
@@ -38,7 +39,7 @@ public interface DeviceGroupEditorDao {
     public List<StoredDeviceGroup> getNonStaticGroups(StoredDeviceGroup group);
 
     public StoredDeviceGroup addGroup(StoredDeviceGroup group, DeviceGroupType type,
-            String groupName);
+            String groupName) throws IllegalGroupNameException;
 
     /**
      * Method to remove a stored device group and all of its children and

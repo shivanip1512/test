@@ -16,6 +16,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.device.groups.IllegalGroupNameException;
 import com.cannontech.common.device.groups.TemporaryDeviceGroupNotFoundException;
 import com.cannontech.common.device.groups.dao.DeviceGroupPermission;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
@@ -27,6 +28,7 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.util.YukonDeviceToIdMapper;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.MappingCollection;
 import com.cannontech.common.util.ReverseList;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -197,12 +199,19 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     }
     
     public StoredDeviceGroup getGroupByName(StoredDeviceGroup parent, 
-            String groupName) throws NotFoundException{
+            String groupName) throws NotFoundException, IllegalGroupNameException {
+        
+        CtiUtilities.validateGroupName(groupName);
+        
         return getGroupByName(parent, groupName, false);
     }
     
+    @Transactional(propagation=Propagation.REQUIRED)
     public StoredDeviceGroup getGroupByName(StoredDeviceGroup parent, 
-            String groupName, boolean addGroup) throws NotFoundException{
+            String groupName, boolean addGroup) throws NotFoundException, IllegalGroupNameException {
+        
+        CtiUtilities.validateGroupName(groupName);
+        
         String rawName = SqlUtils.convertStringToDbValue(groupName);
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -237,7 +246,10 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     }
     
     @Transactional(propagation=Propagation.REQUIRED, noRollbackFor={DuplicateException.class})
-    public StoredDeviceGroup addGroup(StoredDeviceGroup group, DeviceGroupType type, String groupName) {
+    public StoredDeviceGroup addGroup(StoredDeviceGroup group, DeviceGroupType type, String groupName) throws IllegalGroupNameException {
+        
+        CtiUtilities.validateGroupName(groupName);
+        
         int nextValue = nextValueHelper.getNextValue("DeviceGroup");
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("insert into DeviceGroup");
@@ -262,6 +274,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         return result;
     }
 
+    @Transactional(propagation=Propagation.REQUIRED)
     public void updateGroup(StoredDeviceGroup group) {
         Validate.isTrue(group.isEditable(), "Non-editable groups cannot be updated.");
         Validate.isTrue(group.getParent() != null, "The root group cannot be updated.");
@@ -408,6 +421,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     }
     
     @Override
+    @Transactional(propagation=Propagation.REQUIRED)
     public StoredDeviceGroup getStoredGroup(DeviceGroup group) throws NotFoundException {
         if (group instanceof StoredDeviceGroup) {
             // to be safe, we'll copy the group
@@ -419,6 +433,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     }
     
     @Override
+    @Transactional(propagation=Propagation.REQUIRED)
     public StoredDeviceGroup getStoredGroup(String fullName, boolean create) throws NotFoundException {
         Validate.isTrue(fullName.startsWith("/"), "Group name isn't valid, must start with '/': ", fullName);
         fullName = fullName.substring(1);
@@ -454,6 +469,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         }
     }
     
+    @Transactional(propagation=Propagation.REQUIRED)
     public StoredDeviceGroup getSystemGroup(SystemGroupEnum systemGroupEnum) throws NotFoundException {
         String groupName = systemGroupEnum.getFullPath();
         StoredDeviceGroup storedGroup = getStoredGroup(groupName, true);
