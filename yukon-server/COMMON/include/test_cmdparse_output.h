@@ -153,7 +153,7 @@ std::string parse_asString[TEST_SIZE] = {
 "command=6:flags=0::phase=a,-2147483648,0.000:phasedelta=(none),3,3.000:phasedetect=TRUE,-2147483648,0.000:phaseinterval=(none),30,30.000:phasenum=(none),4,4.000:type=emetcon,7,7.000",
 "command=5:flags=0::phasedetect=(none),1,1.000:phasedetectread=(none),1,1.000:type=versacom,0,0.000",
 "command=6:flags=0::serial=(none),1112345,1112345.000:type=expresscom,8,8.000:xca_geo=(none),2,2.000:xca_serial_target=(none),1112345,1112345.000:xcgenericaddress=(none),1,1.000",
-"command=6:flags=0::type=expresscom,8,8.000:xca_feeder=(none),4,4.000:xca_feeder_target=(none),4,4.000:xca_geo=(none),2,2.000:xca_geo_target=(none),2,2.000:xca_load=(none),3,3.000:xca_program=(none),7,7.000:xca_program_target=(none),7,7.000:xca_spid=(none),1,1.000:xca_spid_target=(none),1,1.000:xca_splinter=(none),8,8.000:xca_splinter_target=(none),8,8.000:xca_sub=(none),3,3.000:xca_sub_target=(none),3,3.000:xca_uda=(none),6,6.000:xca_uda_target=(none),6,6.000:xca_zip=(none),5,5.000:xca_zip_target=(none),5,5.000:xcgenericaddress=(none),1,1.000"
+"command=6:flags=0::type=expresscom,8,8.000:xca_feeder=(none),14,14.000:xca_feeder_target=(none),4,4.000:xca_geo=(none),12,12.000:xca_geo_target=(none),2,2.000:xca_load=(none),3,3.000:xca_program=(none),17,17.000:xca_program_target=(none),7,7.000:xca_spid=(none),10,10.000:xca_spid_target=(none),1,1.000:xca_splinter=(none),18,18.000:xca_splinter_target=(none),8,8.000:xca_sub=(none),13,13.000:xca_sub_target=(none),3,3.000:xca_uda=(none),16,16.000:xca_uda_target=(none),6,6.000:xca_zip=(none),15,15.000:xca_zip_target=(none),5,5.000:xcgenericaddress=(none),1,1.000"
 };
 
 #endif
