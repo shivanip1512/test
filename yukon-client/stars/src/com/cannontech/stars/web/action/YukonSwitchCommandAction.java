@@ -274,7 +274,8 @@ public class YukonSwitchCommandAction implements ActionBase {
         
 		Integer hwEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID() );
 		Integer termEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION).getEntryID() );
-
+        Integer unavailStatusEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL).getEntryID() );
+        
         LiteYukonUser user = energyCompany.getUser();
 
 		String cmd = null;
@@ -349,6 +350,13 @@ public class YukonSwitchCommandAction implements ActionBase {
 			
 			event = Transaction.createTransaction( Transaction.INSERT, event ).execute();
 			
+			// Yuk-7673 Update currentStateId 
+            com.cannontech.database.db.stars.hardware.InventoryBase invDB = new com.cannontech.database.db.stars.hardware.InventoryBase();
+            StarsLiteFactory.setInventoryBase(invDB, liteHw);
+            invDB.setCurrentStateID(unavailStatusEntryID);
+            invDB = Transaction.createTransaction(Transaction.UPDATE, invDB).execute();
+
+            liteHw.setCurrentStateID(invDB.getCurrentStateID());
 			liteHw.updateDeviceStatus();
 		}
 		catch (TransactionException e) {
@@ -421,7 +429,8 @@ public class YukonSwitchCommandAction implements ActionBase {
 		// Add "Activation Completed" to hardware events
 		Integer hwEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID() );
 		Integer actCompEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID() );
-		
+        Integer availStatusEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL).getEntryID() );
+        
 		try {
 			com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
 			com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
@@ -435,6 +444,13 @@ public class YukonSwitchCommandAction implements ActionBase {
 			
 			event = Transaction.createTransaction( Transaction.INSERT, event ).execute();
 			
+            // Yuk-7673 Update currentStateId 
+            com.cannontech.database.db.stars.hardware.InventoryBase invDB = new com.cannontech.database.db.stars.hardware.InventoryBase();
+            StarsLiteFactory.setInventoryBase(invDB, liteHw);
+            invDB.setCurrentStateID(availStatusEntryID);
+            invDB = Transaction.createTransaction(Transaction.UPDATE, invDB).execute();
+
+            liteHw.setCurrentStateID(invDB.getCurrentStateID());
 			liteHw.updateDeviceStatus();
 		}
 		catch (TransactionException e) {
@@ -453,6 +469,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 		Integer invID = new Integer( liteHw.getInventoryID() );
 		Integer hwEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID() );
 		Integer configEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_CONFIG).getEntryID() );
+		Integer availStatusEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL).getEntryID() );		
 		java.util.Date now = new java.util.Date();
         
         // Parameter options corresponds to the infoString field of the switch command queue.
@@ -541,7 +558,14 @@ public class YukonSwitchCommandAction implements ActionBase {
 			event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
 			
 			event = Transaction.createTransaction( Transaction.INSERT, event ).execute();
-			
+
+            // Yuk-7673 Update currentStateId 
+            com.cannontech.database.db.stars.hardware.InventoryBase invDB = new com.cannontech.database.db.stars.hardware.InventoryBase();
+            StarsLiteFactory.setInventoryBase(invDB, liteHw);
+            invDB.setCurrentStateID(availStatusEntryID);
+            invDB = Transaction.createTransaction(Transaction.UPDATE, invDB).execute();
+
+            liteHw.setCurrentStateID(invDB.getCurrentStateID());			
 			liteHw.updateDeviceStatus();
 		}
 		catch (TransactionException e) {

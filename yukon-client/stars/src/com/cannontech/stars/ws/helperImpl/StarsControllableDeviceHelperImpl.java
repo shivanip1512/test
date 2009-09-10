@@ -229,7 +229,7 @@ public class StarsControllableDeviceHelperImpl implements
                                                               energyCompany.getName());
             }
             // existing inventory, reset some fields
-            liteInv.setCurrentStateID(0);
+            // Yuk-7673 currentStateId should be retained 
             liteInv.setRemoveDate(0);
             liteInv.setInstallDate(new Date().getTime());
         }// Inventory doesn't exist, create a new one
