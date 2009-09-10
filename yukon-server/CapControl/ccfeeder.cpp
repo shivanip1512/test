@@ -3362,11 +3362,11 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                         store->getFeederParentInfo(this, spAreaId, areaId, stationId);
                         ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, getParentId(), getPAOId(), capControlPointOutsideOperatingLimits, getEventSequence(), -1, textInfo, "cap control", getCurrentVarLoadPointValue(), getCurrentVarLoadPointValue(), 0));
                     }
-                    else
-                    {
-                        setCorrectionNeededNoBankAvailFlag(FALSE);
+                }
+                else
+                {
+                    setCorrectionNeededNoBankAvailFlag(FALSE);
 
-                    }
                 }
             }
             else if( getKVARSolution() > 0 )
