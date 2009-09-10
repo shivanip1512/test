@@ -664,8 +664,10 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
 
                 string queueName = gConfigParms.getValueAsString(keyName);
 
+                //  the buffer is 300 bytes long...
                 unsigned char *buf = OutMessage->Buffer.OutMessage;
 
+                //  ... we use up to 100 bytes of the buffer to store the name...
                 if( queueName.size() < 100 )
                 {
                     copy(queueName.begin(), queueName.end(), buf);
@@ -674,6 +676,7 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
 
                 *buf++ = 0;  //  null-terminate the queue name
 
+                //  ... and we assume the Expresscom message is less than 197 bytes, which we implicitly know from the protocol
                 *buf++ = xcom.getStartByte();
 
                 for(i = 0; i < xcom.messageSize(); i++)
