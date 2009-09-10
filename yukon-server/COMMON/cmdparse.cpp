@@ -4899,7 +4899,9 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
         }
     }
 
-    if(!(token = CmdStr.match(re_target)).empty())
+    // The parser removes our "serial XYZ", so we have to go back to the original line.
+    CtiString originalCmdStr = _cmdString; 
+    if(!(token = originalCmdStr.match(re_target)).empty())
     {
         _cmd["xcgenericaddress"] = TRUE;
 
@@ -4959,7 +4961,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
             _cmd["xca_splinter_target"] = CtiParseValue( _num );
         }
 
-        token = CmdStr.match(re_assign);
+        token = originalCmdStr.match(re_assign);
 
         if(!(valStr = token.match(CtiString("spid *") + str_anynum)).empty())
         {

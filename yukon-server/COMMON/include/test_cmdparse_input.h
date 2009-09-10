@@ -155,6 +155,8 @@ std::string inputString[TEST_SIZE] = {
 "putconfig emetcon phasedetect clear",
 "putconfig emetcon phasedetect phase A delta=3 interval=30 num 4",
 "getconfig phasedetect read",
+"putconfig xcom target serial 1112345 assign geo 2",
+"putconfig xcom target spid 1 geo 2 sub 3 feeder 4 zip 5 uda 6 program 7 splinter 8 assign spid 1 geo 2 sub 3 feeder 4 zip 5 uda 6 program 7 splinter 8 relay 3",
 };
 
 
