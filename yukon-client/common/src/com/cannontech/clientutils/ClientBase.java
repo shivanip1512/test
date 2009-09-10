@@ -18,6 +18,7 @@ import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
+import com.cannontech.yukon.BasicServerConnection;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
 
@@ -165,7 +166,7 @@ public void messageReceived( MessageEvent e )
  * @param obj java.lang.Object
  */
 public void write(Message obj) {
-    IServerConnection conn = getConnection();
+    BasicServerConnection conn = getConnection();
 	if(conn.isValid()) { 
 		getConnection().write( obj);
     }

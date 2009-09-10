@@ -58,6 +58,7 @@ import com.cannontech.tdc.spawn.SpawnTDCMainFrameEvent;
 import com.cannontech.tdc.spawn.TDCMainFrameSpawnListener;
 import com.cannontech.tdc.utils.DateTimeUserQuery;
 import com.cannontech.tdc.utils.TDCDefines;
+import com.cannontech.yukon.conns.ConnPool;
 import com.klg.jclass.page.JCDocument;
 import com.klg.jclass.page.JCFlow;
 import com.klg.jclass.page.JCPageTable;
@@ -4475,7 +4476,7 @@ private void setTitleFromDisplay()
 
 	if( getTdcClient().connected() )
 	{
-		connected = "   [Connected to Dispatch@" + getTdcClient().getHost() + ":" + getTdcClient().getPort() + "]";
+		connected = "   [Connected to Dispatch@" + ConnPool.getInstance().getDefDispatchConn().getHost() + ":" + ConnPool.getInstance().getDefDispatchConn().getPort() + "]";
 	}
 	else
 	{
