@@ -54,7 +54,6 @@ public class UserLoginBasePanel extends com.cannontech.common.gui.util.DataInput
 	private javax.swing.JCheckBox ivjJCheckBoxEnableEC = null;
 	private javax.swing.JComboBox ivjJComboBoxEnergyCompany = null;
 	private javax.swing.JPanel ivjJPanelEC = null;
-	private boolean isNewLogin = false;
 	private String initialUsername;
 
     private ActionListener enableEcActionListener = new ActionListener() {
@@ -594,25 +593,9 @@ public boolean isInputValid()
 	}
 	
 	LiteYukonUser liteYukonUser = DaoFactory.getYukonUserDao().getLiteYukonUser( userName );
-	boolean error = false;
 	
-	if( isNewLogin == true )
-	{   
-	    //if we are creating a new login and trying to set the username to one that already exists
-        if( liteYukonUser != null ) {
-            error = true;
-        }
-	}
-	else
-	{
-	    //if we are trying to edit a username field and save its name to a different one that exists
-    	if ( !userName.equals( initialUsername ) && liteYukonUser != null ) {
-    	    error = true;
-    	}
-	}
-	
-	if ( error == true ) 
-	{
+    //if we are trying to enter a username to one that already exists
+	if ( !userName.equals( initialUsername ) && liteYukonUser != null ) {
 	    setErrorString("Invalid username selection, please try a different username");
         getJLabelErrorMessage().setText( "(" + getErrorString() + ")" );
         getJLabelErrorMessage().setToolTipText( "(" + getErrorString() + ")" );
@@ -625,11 +608,6 @@ public boolean isInputValid()
     getJLabelErrorMessage().setToolTipText( "" );
     getJLabelErrorMessage().setVisible( false );
 	return true;
-}
-
-public void setAsNewLogin()
-{
-    isNewLogin = true;
 }
 
 /**
