@@ -701,10 +701,7 @@ boost::shared_ptr<DataAccessLoadProfile> CtiDeviceMCT470::getLoadProfile()
 
     if (deviceConfig)
     {
-        DeviceConfigurationLoadProfileData* loadProfileData = new DeviceConfigurationLoadProfileData();
-        loadProfileData->setDeviceConfig(deviceConfig);
-
-        lp = boost::shared_ptr<DataAccessLoadProfile>(loadProfileData);
+        lp = getDeviceConfigLp(deviceConfig);
     }
     else
     {
@@ -712,6 +709,20 @@ boost::shared_ptr<DataAccessLoadProfile> CtiDeviceMCT470::getLoadProfile()
     }
 
     return lp;
+}
+
+boost::shared_ptr<DataAccessLoadProfile> CtiDeviceMCT470::getDeviceConfigLp(Cti::Config::CtiConfigDeviceSPtr deviceConfig)
+{
+    if (!deviceConfigLp)
+    {
+        DeviceConfigurationLoadProfileData* loadProfileData = new DeviceConfigurationLoadProfileData();
+        loadProfileData->setDeviceConfig(deviceConfig);
+        loadProfileData->setLpTable(Inherited::getLoadProfile());
+
+        deviceConfigLp = boost::shared_ptr<DataAccessLoadProfile>(loadProfileData);
+    }
+
+    return deviceConfigLp;
 }
 
 //  zero-based channel offset

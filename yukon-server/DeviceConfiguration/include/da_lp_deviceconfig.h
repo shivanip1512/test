@@ -14,6 +14,7 @@ class IM_EX_CONFIG DeviceConfigurationLoadProfileData : public DataAccessLoadPro
 {
     private:
         Cti::Config::CtiConfigDeviceSPtr deviceConfig;
+        boost::shared_ptr<DataAccessLoadProfile> lpTable;
 
     public:
         DeviceConfigurationLoadProfileData();
@@ -27,6 +28,9 @@ class IM_EX_CONFIG DeviceConfigurationLoadProfileData : public DataAccessLoadPro
 
         Cti::Config::CtiConfigDeviceSPtr getDeviceConfig();
         void setDeviceConfig(Cti::Config::CtiConfigDeviceSPtr deviceConfig);
+
+        boost::shared_ptr<DataAccessLoadProfile> getLpTable();
+        void setLpTable(boost::shared_ptr<DataAccessLoadProfile> table);
 };
 
 #endif

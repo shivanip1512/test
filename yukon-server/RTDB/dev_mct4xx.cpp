@@ -1098,32 +1098,7 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg         *pReq,
             || parse.getsValue("installvalue") == PutConfigPart_all )
         {
             ConfigPartsList tempList = getPartsList();
-
             sRet = executePutConfigMultiple(tempList, pReq, parse, OutMessage, vgList, retList, outList,readsOnly);
-
-            //Get Config Model
-            if (!verify)
-            {
-                CtiString tempString = "getconfig model";
-                CtiRequestMsg *tempReq = CTIDBG_new CtiRequestMsg(*pReq);
-
-                if (parse.isKeyValid("noqueue"))
-                {
-                    tempString += " noqueue";
-                }
-
-                tempReq->setCommandString(tempString);
-                tempReq->setConnectionHandle(pReq->getConnectionHandle());
-                CtiCommandParser parseGetConfig(tempReq->CommandString());
-                sRet = executeGetConfig(tempReq, parseGetConfig, OutMessage, vgList, retList, outList);
-                outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-                if(tempReq!=NULL)
-                {
-                    delete tempReq;
-                    tempReq = NULL;
-                }
-            }
         }
         else
         {
@@ -1641,57 +1616,81 @@ int CtiDeviceMCT4xx::executePutConfigMultiple(ConfigPartsList       &partsList,
 {
     int ret = NoMethod;
 
-    if(!partsList.empty())
+    if (getDeviceConfig())
     {
-        ret = NoError;
-        CtiRequestMsg *tempReq = CTIDBG_new CtiRequestMsg(*pReq);
-
-        // Load all the other stuff that is needed
-        OutMessage->DeviceID  = getID();
-        OutMessage->TargetID  = getID();
-        OutMessage->Port      = getPortID();
-        OutMessage->Remote    = getAddress();
-        OutMessage->Priority  = MAXPRIORITY-4;//standard seen in rest of devices.
-        OutMessage->TimeOut   = 2;
-        OutMessage->Retry     = 2;
-        OutMessage->Sequence = Cti::Protocol::Emetcon::PutConfig_Install;  //  this will be handled by the putconfig decode - basically, a no-op
-        OutMessage->Request.RouteID   = getRouteID();
-
-        for(CtiDeviceMCT4xx::ConfigPartsList::const_iterator tempItr = partsList.begin();tempItr != partsList.end();tempItr++)
+        if(!partsList.empty())
         {
-            if( tempReq != NULL && *tempItr != PutConfigPart_all)//_all == infinite loop == unhappy program == very unhappy jess
-            {
-                string tempString = "putconfig install ";
-                tempString += *tempItr;
-                if( parse.isKeyValid("force") )
-                {
-                    tempString += " force";
-                }
-                else if( parse.isKeyValid("verify") )
-                {
-                    tempString += " verify";
-                }
-                tempReq->setCommandString(tempString);
-                tempReq->setConnectionHandle(pReq->getConnectionHandle());
+            ret = NoError;
+            CtiRequestMsg *tempReq = CTIDBG_new CtiRequestMsg(*pReq);
 
-                CtiCommandParser parseSingle(tempReq->CommandString());
-                executePutConfigSingle(tempReq, parseSingle, OutMessage, vgList, retList, outList,readsOnly);
+            // Load all the other stuff that is needed
+            OutMessage->DeviceID  = getID();
+            OutMessage->TargetID  = getID();
+            OutMessage->Port      = getPortID();
+            OutMessage->Remote    = getAddress();
+            OutMessage->Priority  = MAXPRIORITY-4;//standard seen in rest of devices.
+            OutMessage->TimeOut   = 2;
+            OutMessage->Retry     = 2;
+            OutMessage->Sequence = Cti::Protocol::Emetcon::PutConfig_Install;  //  this will be handled by the putconfig decode - basically, a no-op
+            OutMessage->Request.RouteID   = getRouteID();
+
+            for(CtiDeviceMCT4xx::ConfigPartsList::const_iterator tempItr = partsList.begin();tempItr != partsList.end();tempItr++)
+            {
+                if( tempReq != NULL && *tempItr != PutConfigPart_all)//_all == infinite loop == unhappy program == very unhappy jess
+                {
+                    string tempString = "putconfig install ";
+                    tempString += *tempItr;
+                    if( parse.isKeyValid("force") )
+                    {
+                        tempString += " force";
+                    }
+                    else if( parse.isKeyValid("verify") )
+                    {
+                        tempString += " verify";
+                    }
+                    tempReq->setCommandString(tempString);
+                    tempReq->setConnectionHandle(pReq->getConnectionHandle());
+
+                    CtiCommandParser parseSingle(tempReq->CommandString());
+                    executePutConfigSingle(tempReq, parseSingle, OutMessage, vgList, retList, outList,readsOnly);
+                }
+            }
+
+            if(tempReq!=NULL)
+            {
+                delete tempReq;
+                tempReq = NULL;
             }
         }
 
-        if(tempReq!=NULL)
+        // Setting the expect more bits on all the return messages to true.
+        // This used to happen elsewhere in PORTER/PIL and no longer happens.
+        // If this is not done, the webservice will think the first message is the last message and ignore the rest.
+        for (list< CtiMessage* >::iterator itr = retList.begin(); itr != retList.end(); itr++)
         {
-            delete tempReq;
-            tempReq = NULL;
+            ((CtiReturnMsg*)*itr)->setExpectMore(1);
         }
     }
-
-    // Setting the expect more bits on all the return messages to true.
-    // This used to happen elsewhere in PORTER/PIL and no longer happens.
-    // If this is not done, the webservice will think the first message is the last message and ignore the rest.
-    for (list< CtiMessage* >::iterator itr = retList.begin(); itr != retList.end(); itr++)
+    else
     {
-        ((CtiReturnMsg*)*itr)->setExpectMore(1);
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Device " << getName() << " will not be configured since it is not assigned to a configuration. " << endl;
+        }
+
+        CtiReturnMsg * retMsg = CTIDBG_new CtiReturnMsg(getID( ),
+                                string(OutMessage->Request.CommandStr),
+                                "ERROR: Device not assigned to a config.",
+                                NoConfigData,
+                                OutMessage->Request.RouteID,
+                                OutMessage->Request.MacroOffset,
+                                OutMessage->Request.Attempt,
+                                OutMessage->Request.GrpMsgID,
+                                OutMessage->Request.UserID,
+                                OutMessage->Request.SOE,
+                                CtiMultiMsg_vec( ));
+
+        retList.push_back( retMsg );
     }
 
     return ret;
@@ -1847,16 +1846,15 @@ INT CtiDeviceMCT4xx::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< 
                 ReturnMsg->setUserMessageId(InMessage->Return.UserID);
                 ReturnMsg->setResultString( resultString );
 
-                if( InMessage->MessageFlags & MessageFlag_ExpectMore || getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection)!=0 )
+                //note that at the moment only putconfig install will ever have a group message count.
+                decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
+                if (InMessage->MessageFlags & MessageFlag_ExpectMore || getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection)!=0)
                 {
                     ReturnMsg->setExpectMore(true);
                 }
 
                 retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
                 ReturnMsg = NULL;
-
-                //note that at the moment only putconfig install will ever have a group message count.
-                decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
 
                 break;
             }
@@ -1999,7 +1997,7 @@ int CtiDeviceMCT4xx::executePutConfigTimezone(CtiRequestMsg *pReq, CtiCommandPar
             dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             nRet = NoConfigData;
         }
-        else if (readsOnly == false)
+        else
         {
             timezoneOffset = timezoneOffset * 4; //The timezone offset in the mct is in 15 minute increments.
             if(parse.isKeyValid("force")

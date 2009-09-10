@@ -46,6 +46,9 @@ private:
 
     bool _precannedTableCurrent;
 
+    boost::shared_ptr<DataAccessLoadProfile> deviceConfigLp;
+    boost::shared_ptr<DataAccessLoadProfile> getDeviceConfigLp(Cti::Config::CtiConfigDeviceSPtr deviceConfig);
+
     enum ChannelConfiguration
     {
         NotUsed,

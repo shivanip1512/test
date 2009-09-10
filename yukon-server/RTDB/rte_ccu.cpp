@@ -435,6 +435,7 @@ INT CtiRouteCCU::assembleDLCRequest(CtiCommandParser     &parse,
     if(retReturn)
     {
         retReturn->setResultString(resultString);
+        retReturn->setExpectMore(true);
 
         if(parse.isTwoWay())     retReturn->setExpectMore(xmore);
         if(parse.isDisconnect()) retReturn->setExpectMore(xmore);  //  we scan afterwards, so you'd best expect another message even though it's not technically two-way

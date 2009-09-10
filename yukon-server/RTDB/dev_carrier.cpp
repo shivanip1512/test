@@ -49,7 +49,7 @@ CtiDeviceCarrier &CtiDeviceCarrier::operator=(const CtiDeviceCarrier &aRef)
 boost::shared_ptr<DataAccessLoadProfile> CtiDeviceCarrier::getLoadProfile()
 {
     CtiLockGuard<CtiMutex> guard(_classMutex);
-    return boost::dynamic_pointer_cast<DataAccessLoadProfile>(loadProfile);
+    return boost::static_pointer_cast<DataAccessLoadProfile>(loadProfile);
 }
 
 void CtiDeviceCarrier::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
