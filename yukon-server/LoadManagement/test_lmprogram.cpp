@@ -137,6 +137,90 @@ BOOST_AUTO_TEST_CASE(test_get_wallclock_time_fall_2009_dst)
 }
 
 
+BOOST_AUTO_TEST_CASE(test_get_wallclock_time_spring_2009_dst_invalid_time)
+{
+    CtiDate date(8, 3, 2009);
+
+    CtiTime time = GetTimeFromOffsetAndDate(7199, date);    // 1:59:59am - OK
+
+    BOOST_CHECK_EQUAL( time.date().month(),       3 );
+    BOOST_CHECK_EQUAL( time.date().dayOfMonth(),  8 );
+    BOOST_CHECK_EQUAL( time.date().year(),     2009 );
+    BOOST_CHECK_EQUAL( time.hour(),               1 );
+    BOOST_CHECK_EQUAL( time.minute(),            59 );
+    BOOST_CHECK_EQUAL( time.second(),            59 );
+
+    time = GetTimeFromOffsetAndDate(7200, date);            // 2am - when is that???
+
+    BOOST_CHECK_EQUAL( time.date().month(),       3 );      // returns 1am
+    BOOST_CHECK_EQUAL( time.date().dayOfMonth(),  8 );
+    BOOST_CHECK_EQUAL( time.date().year(),     2009 );
+    BOOST_CHECK_EQUAL( time.hour(),               1 );
+    BOOST_CHECK_EQUAL( time.minute(),             0 );
+    BOOST_CHECK_EQUAL( time.second(),             0 );
+
+    time = GetTimeFromOffsetAndDate(9000, date);            // 2:30am
+
+    BOOST_CHECK_EQUAL( time.date().month(),       3 );      // returns 1:30am
+    BOOST_CHECK_EQUAL( time.date().dayOfMonth(),  8 );
+    BOOST_CHECK_EQUAL( time.date().year(),     2009 );
+    BOOST_CHECK_EQUAL( time.hour(),               1 );
+    BOOST_CHECK_EQUAL( time.minute(),            30 );
+    BOOST_CHECK_EQUAL( time.second(),             0 );
+
+    time = GetTimeFromOffsetAndDate(10800, date);           // 3am - OK
+
+    BOOST_CHECK_EQUAL( time.date().month(),       3 );
+    BOOST_CHECK_EQUAL( time.date().dayOfMonth(),  8 );
+    BOOST_CHECK_EQUAL( time.date().year(),     2009 );
+    BOOST_CHECK_EQUAL( time.hour(),               3 );
+    BOOST_CHECK_EQUAL( time.minute(),             0 );
+    BOOST_CHECK_EQUAL( time.second(),             0 );
+}
+
+
+BOOST_AUTO_TEST_CASE(test_get_wallclock_time_fall_2009_dst_invalid_time)
+{
+    CtiDate date(1, 11, 2009);
+
+    CtiTime time = GetTimeFromOffsetAndDate(7199, date);    // 1:59:59am - OK
+
+    BOOST_CHECK_EQUAL( time.date().month(),      11 );
+    BOOST_CHECK_EQUAL( time.date().dayOfMonth(),  1 );
+    BOOST_CHECK_EQUAL( time.date().year(),     2009 );
+    BOOST_CHECK_EQUAL( time.hour(),               1 );
+    BOOST_CHECK_EQUAL( time.minute(),            59 );
+    BOOST_CHECK_EQUAL( time.second(),            59 );
+
+    time = GetTimeFromOffsetAndDate(7200, date);            // 2am - OK
+
+    BOOST_CHECK_EQUAL( time.date().month(),      11 );
+    BOOST_CHECK_EQUAL( time.date().dayOfMonth(),  1 );
+    BOOST_CHECK_EQUAL( time.date().year(),     2009 );
+    BOOST_CHECK_EQUAL( time.hour(),               2 );
+    BOOST_CHECK_EQUAL( time.minute(),             0 );
+    BOOST_CHECK_EQUAL( time.second(),             0 );
+
+    time = GetTimeFromOffsetAndDate(9000, date);            // 2:30am - OK
+
+    BOOST_CHECK_EQUAL( time.date().month(),      11 );
+    BOOST_CHECK_EQUAL( time.date().dayOfMonth(),  1 );
+    BOOST_CHECK_EQUAL( time.date().year(),     2009 );
+    BOOST_CHECK_EQUAL( time.hour(),               2 );
+    BOOST_CHECK_EQUAL( time.minute(),            30 );
+    BOOST_CHECK_EQUAL( time.second(),             0 );
+
+    time = GetTimeFromOffsetAndDate(10800, date);           // 3am - OK
+
+    BOOST_CHECK_EQUAL( time.date().month(),      11 );
+    BOOST_CHECK_EQUAL( time.date().dayOfMonth(),  1 );
+    BOOST_CHECK_EQUAL( time.date().year(),     2009 );
+    BOOST_CHECK_EQUAL( time.hour(),               3 );
+    BOOST_CHECK_EQUAL( time.minute(),             0 );
+    BOOST_CHECK_EQUAL( time.second(),             0 );
+}
+
+
 /*
 *** TESTING: getControlWindow()
 */
