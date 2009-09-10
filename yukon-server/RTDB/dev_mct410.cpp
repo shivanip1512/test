@@ -1091,7 +1091,8 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
         {
             int test = parse.getiValue("centron_test_duration");
 
-            if(      test == 1 )  centron_config |= 0x04;
+            if(      test == 0 )  centron_config |= 0x00;
+            else if( test == 1 )  centron_config |= 0x04;
             else if( test == 7 )  centron_config |= 0x0c;
             else
             {

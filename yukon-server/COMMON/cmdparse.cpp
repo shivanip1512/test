@@ -2182,7 +2182,7 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
     static const boost::regex  re_ied_mask (CtiString(" alarmmask " )+ str_anynum + CtiString(" ") + str_anynum);
     static const boost::regex  re_group_address("group (enable|disable)");
     static const boost::regex  re_address("address ((uniq(ue)? [0-9]+)|(gold [0-9]+ silver [0-9]+)|(bronze [0-9]+)|(lead meter [0-9]+ load [0-9]+))");
-    static const boost::regex  re_centron_config("centron( ratio [0-9]+)?( display( [0-9]x[0-9]+)?( test [0-9]+s?)?( errors)?)?");
+    static const boost::regex  re_centron_config("centron( ratio [0-9]+)?( display( [0-9]x[0-9]+)( test [0-9]+s?)( errors (en|dis)able))");
     static const boost::regex  re_centron_reading("centron reading [0-9]+( [0-9]+)?");
 
     static const boost::regex  re_loadlimit(CtiString("load limit ") + str_floatnum + CtiString(" ") + str_num);
@@ -2433,10 +2433,11 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
                     }
                     if( !temp.compareTo("errors") )
                     {
-                        cmdtok();  //  move past "display"
-                        _cmd["centron_error_display"] = CtiParseValue(true);
-
-                        temp = cmdtok();
+                        temp = cmdtok();        // "enable" or "disable"
+                        if(temp[0] == 'e')
+                        {
+                            _cmd["centron_error_display"] = CtiParseValue(true);
+                        }
                     }
                 }
             }
