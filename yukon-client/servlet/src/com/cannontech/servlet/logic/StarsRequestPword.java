@@ -12,6 +12,7 @@ import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 
 /**
  * @author rneuharth
@@ -25,25 +26,25 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
  * NOTE: Can't put this class in common since it uses STARS
  */
 public class StarsRequestPword extends RequestPword {
-	private String accNum = null;		
-
-	/**
-	 * 
-	 */
-	public StarsRequestPword( String userName_, String email_, String fName_, String lName_, String accNum_ ) {
+	private String accNum = null;
+	private StarsCustAccountInformationDao starsCustAccountInformationDao;
+	
+	public StarsRequestPword( String userName, String email, String fName, String lName, String accNum, StarsCustAccountInformationDao starsCustAccountInformationDao ) {
 		super(
-			userName_,
-			email_,
-			fName_,
-			lName_ );	
+			userName,
+			email,
+			fName,
+			lName );	
 
-		accNum = accNum_;
+		this.accNum = accNum;
 
 		String[] tParams = new String[ allParams.length + 1 ];
-		tParams[tParams.length-1] = accNum_;
+		tParams[tParams.length-1] = accNum;
 
 		System.arraycopy( allParams, 0, tParams, 0, allParams.length );
-		allParams = tParams;	
+		allParams = tParams;
+		
+		this.starsCustAccountInformationDao = starsCustAccountInformationDao;
 	}
 	
 	public void doRequest() {
@@ -59,9 +60,18 @@ public class StarsRequestPword extends RequestPword {
 
 				for( int i = 0; i < engrComps.size(); i++ ) {
 					LiteStarsEnergyCompany lsec = (LiteStarsEnergyCompany)engrComps.get(i);
+
+					LiteStarsCustAccountInformation lCustInfo = null;
+					List<Object> accounts = lsec.searchAccountByAccountNumber(accNum, false, true);
 					
-					LiteStarsCustAccountInformation lCustInfo =
-							lsec.searchAccountByAccountNo( accNum );
+					search:
+					for(Object object : accounts) {
+					    if(object instanceof Integer) {
+					        Integer accountId = (Integer) object;
+					        lCustInfo = starsCustAccountInformationDao.getById(accountId, lsec.getEnergyCompanyID());
+					        break search;
+					    }
+					}
 					
 					if( lCustInfo != null ) {
 						allCustAccts.add( lCustInfo );

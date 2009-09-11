@@ -11,11 +11,13 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.roles.yukon.AuthenticationRole;
 import com.cannontech.servlet.logic.RequestPword;
 import com.cannontech.servlet.logic.StarsRequestPword;
+import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.util.ServletUtil;
 
 public class StarsPWordRequestController implements Controller {
     private static final String INVALID_URI = "/pwordreq.jsp?failedMsg=";
     private static final String SUCCESS_URI = "/pwordreq.jsp?success=true";
+    private StarsCustAccountInformationDao starsCustAccountInformationDao;
     
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
@@ -63,17 +65,20 @@ public class StarsPWordRequestController implements Controller {
     }
     
     private RequestPword createRequest( HttpServletRequest req_,
-            String userName_, String email_, String fName_, String lName_, String accNum_ )
+            String userName, String email, String fName, String lName, String accNum )
     {
         StarsRequestPword reqPword = new StarsRequestPword( 
-                userName_,
-                email_,
-                fName_,
-                lName_,
-                accNum_ );
-
+                userName,
+                email,
+                fName,
+                lName,
+                accNum,
+                starsCustAccountInformationDao);
 
         return reqPword;
     }
 
+    public void setStarsCustAccountInformationDao(StarsCustAccountInformationDao starsCustAccountInformationDao) {
+        this.starsCustAccountInformationDao = starsCustAccountInformationDao;
+    }
 }
