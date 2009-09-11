@@ -10,13 +10,13 @@ import com.cannontech.spring.YukonSpringHook;
 public class MCTConfigReport extends SimpleYukonReportBase {
     
     private static final ColumnLayoutData[] bodyColumns = new ColumnLayoutData[] {
-            new ColumnLayoutData("MCT Name", "mctName", 100),
-            new ColumnLayoutData("Type", "type", 100),
-            new ColumnLayoutData("Last Intrvl Demand Rate (min)", "demandRate", 100),
-            new ColumnLayoutData("Load Profile Demand Rate (min)", "profileRate", 100),
-            new ColumnLayoutData("Config Name", "configName", 100),
-            new ColumnLayoutData("Config Intrvl Demand Rate (min)", "configDemandRate", 100),
-            new ColumnLayoutData("Config Load Profile Demand Rate (min)", "configProfileRate", 100)
+            new ColumnLayoutData("Meter Name", "mctName", 175),
+            new ColumnLayoutData("Type", "type", 75),
+            new ColumnLayoutData("Demand\r\nInterval", "demandRate", 75),
+            new ColumnLayoutData("LP Demand\r\nRate (min)", "profileRate", 75),
+            new ColumnLayoutData("Config Name", "configName", 150),
+            new ColumnLayoutData("Config Demand\r\nInterval", "configDemandRate", 80),
+            new ColumnLayoutData("Config LP\r\nDemand Rate (min)", "configProfileRate", 90)
         };
 
     public MCTConfigReport(BareReportModel bareModel) {
