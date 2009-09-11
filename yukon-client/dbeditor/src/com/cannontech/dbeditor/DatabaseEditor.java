@@ -1127,6 +1127,7 @@ private void executeEditButton_ActionPerformed(ActionEvent event)
 	         
 	         // sets the size of EVERY editor frame!!!!!!!
 	         frame.setSize( EDITOR_FRAME_SIZE );
+             frame.setMaximum(false);   //don't maximize since we are setting the size of the frame already.
 	         frame.setLocation( getVisibleEditorFrames() * 10, getVisibleEditorFrames() * 20 );
 
 	         frame.setVisible(true);
@@ -2961,6 +2962,7 @@ public void windowActivated(WindowEvent event) {
  * @param event java.awt.event.WindowEvent
  */
 public void windowClosed(WindowEvent event) {
+    System.out.println("here");
 }
 /**
  * This method was created by Cannon Technologies Inc.
