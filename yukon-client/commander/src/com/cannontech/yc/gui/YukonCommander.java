@@ -1976,7 +1976,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 		else if( getModelType() == DeviceGroupTreeFactory.LiteBaseModel.class)
 		{
             DeviceGroup deviceGroup = (DeviceGroup) selectedItem;
-			getYC().setDeviceType(CommandCategory.STRING_CMD_COLLECTION_GROUP);
+			getYC().setDeviceType(CommandCategory.STRING_CMD_DEVICE_GROUP);
 			setTitle(displayTitle + " : " + deviceGroup.getFullName());
 		}
 		else

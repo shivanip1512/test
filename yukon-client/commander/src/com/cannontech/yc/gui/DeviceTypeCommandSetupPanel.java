@@ -366,6 +366,7 @@ private javax.swing.JList getCategoryList() {
 				model.addElement(CommandCategory.getAllCategories()[i]);
 			
 			//Add "String" type categories, ex. LCRSerial
+	        model.addElement(CommandCategory.STRING_CMD_DEVICE_GROUP);
 			model.addElement(CommandCategory.STRING_CMD_EXPRESSCOM_SERIAL);
 			model.addElement(CommandCategory.STRING_CMD_SERIALNUMBER);
 			model.addElement(CommandCategory.STRING_CMD_VERSACOM_SERIAL);

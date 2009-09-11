@@ -46,7 +46,7 @@ public class CommandCategory
 	public static final String STRING_CMD_VERSACOM_SERIAL = "VersacomSerial";
 	public static final String STRING_CMD_EXPRESSCOM_SERIAL = "ExpresscomSerial";
 	public static final String STRING_CMD_SERIALNUMBER = "LCRSerial";
-	public static final String STRING_CMD_COLLECTION_GROUP = "CollectionGroup";
+	public static final String STRING_CMD_DEVICE_GROUP = "Device Group";
 	//TODO there are no commands applicable to customers yet.
 	public static final String STRING_CMD_CICUSTOMER = "CICustomer";
 
