@@ -306,7 +306,7 @@ public class ReportBean
 				YukonListEntry entry = yukListEntries.get(i);
 				Vector<ReportTypes> settlementTypes = ReportTypes.getSettlementReportTypes(entry.getYukonDefID());
 				//Loop through all reportTypes per yukDefID and add them to intList.
-				availReportTypes.addAll(settlementTypes);
+				availReportTypes = settlementTypes;
 			}
 		}
 		else

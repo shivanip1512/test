@@ -171,20 +171,20 @@ public enum ReportTypes {
      */
     public static Vector<ReportTypes> getSettlementReportTypes(int yukonDefID)
     {
+        Vector<ReportTypes> reportTypes = new Vector<ReportTypes>();
         switch (yukonDefID)
         {
             case YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_HECO:
             {
-                Vector<ReportTypes> reportTypes = new Vector<ReportTypes>(4);
                 reportTypes.add(HECO_LMEVENT_SUMMARY);
                 reportTypes.add(HECO_MONTHLY_BILLING);
                 reportTypes.add(HECO_CUSTOMER_MONTHLY_BILLING);
                 reportTypes.add(HECO_DSMIS);
+                break;
             }
 //          case YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_XCEL_ISOC:   //TODO
-            default :
-                return new Vector<ReportTypes>();
         }
+        return reportTypes;
     }
     /**
      * Returns int[] of all reportTypes for groupID
