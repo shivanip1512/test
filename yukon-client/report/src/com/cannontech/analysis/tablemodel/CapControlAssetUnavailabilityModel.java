@@ -85,8 +85,8 @@ public class CapControlAssetUnavailabilityModel extends BareDatedReportModelBase
         sql.append("yp1.paoname substation, ");
         sql.append("yp2.paoname subbus, ");
         sql.append("yp3.paoname feeder, ");
-        sql.append("case when els.feederid = 0 ");
-        sql.append("then els.subcount ");
+        sql.append("case when els.subid = 0 ");
+        sql.append("then 0 ");
         sql.append("else ");
         sql.append("els.subcount ");
         sql.append("end subcount, ");
@@ -97,8 +97,8 @@ public class CapControlAssetUnavailabilityModel extends BareDatedReportModelBase
         sql.append("end feedcount ");
         sql.append("from yukonpaobject yp,yukonpaobject yp1,yukonpaobject yp2,yukonpaobject yp3, ");
         sql.append("ccsubareaassignment sa, ccsubstationsubbuslist ss, ccfeedersubassignment fs, ");
-        sql.append("(select count(*) subcount, subid, feederid from cceventlog ");
-        sql.append("where (text like '%Cannot Decrease Var%' or text like '%Cannot Increase Volt%') and datetime > ? and datetime < ? group by subid, feederid) els, ");
+        sql.append("(select count(*) subcount, subid from cceventlog ");
+        sql.append("where (text like '%Cannot Decrease Var%' or text like '%Cannot Increase Volt%') and datetime > ? and datetime < ? group by subid) els, ");
         sql.append("(select count(*) feedcount, feederid from cceventlog ");
         sql.append("where (text like '%Cannot Decrease Var%' or text like '%Cannot Increase Volt%') and datetime > ? and datetime < ? group by feederid) elf ");
         sql.append("where ");
@@ -109,7 +109,6 @@ public class CapControlAssetUnavailabilityModel extends BareDatedReportModelBase
         sql.append("and ss.substationbusid = fs.substationbusid ");
         sql.append("and yp3.paobjectid = fs.feederid ");
         sql.append("and els.subid = fs.substationbusid ");
-        sql.append("and (els.feederid = fs.feederid or els.feederid = 0) ");
         sql.append("and (elf.feederid = fs.feederid or elf.feederid = 0) ");
         
         String result = null;
