@@ -117,7 +117,6 @@
 	</c:forEach>
 
 </table>
-<br>
 </c:when>
 
 <c:otherwise>
@@ -125,7 +124,7 @@
 </c:otherwise>
 </c:choose>
 
-<div style="text-align: right">
+<div style="text-align:right;padding-top:5px;">
 	<tags:slowInput myFormId="createNewTamperFlagMonitorForm_${widgetParameters.widgetId}" labelBusy="${createNewText}" label="${createNewText}"/>
 </div>
 

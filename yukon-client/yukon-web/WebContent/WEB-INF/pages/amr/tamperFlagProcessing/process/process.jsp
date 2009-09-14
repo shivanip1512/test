@@ -6,6 +6,7 @@
 <%@ taglib prefix="ext" tagdir="/WEB-INF/tags/ext" %>
 
 <cti:msg var="pageTitle" key="yukon.web.modules.amr.tamperFlagProcessing.pageTitle" />
+<cti:msg var="mainDetailSectionHeaderText" key="yukon.web.modules.amr.tamperFlagProcessing.section.mainDetail.sectionHeader" />
 <cti:msg var="mainDetailNameText" key="yukon.web.modules.amr.tamperFlagProcessing.section.mainDetail.name" />
 <cti:msg var="mainDetailDeviceGroupText" key="yukon.web.modules.amr.tamperFlagProcessing.section.mainDetail.deviceGroup" />
 <cti:msg var="mainDetailTamperFlagGroupText" key="yukon.web.modules.amr.tamperFlagProcessing.section.mainDetail.tamperFlagGroup" />
@@ -69,6 +70,8 @@
 	</c:if>
 	
 	<%-- MAIN DETAILS --%>
+	<tags:sectionContainer title="${mainDetailSectionHeaderText}">
+	
 	<tags:nameValueContainer>
 
 		<tags:nameValue name="${mainDetailNameText}" nameColumnWidth="250px">
@@ -109,9 +112,20 @@
 			
 			<a href="${tamperFlagGroupUrl}">${tamperFlagGroupBase}${tamperFlagMonitor.tamperFlagMonitorName}</a>
 			
+			<%-- tamper flag group report --%>
+			<br><br>
+			<cti:url var="tamperFlagGroupReportUrl" value="/spring/amr/reports/groupDevicesReport">
+				<cti:param name="groupName" value="${tamperFlagGroupBase}${tamperFlagMonitor.tamperFlagMonitorName}"/>
+				<cti:param name="def" value="groupDevicesDefinition"/>
+			</cti:url>
+			<a href="${tamperFlagGroupReportUrl}">${tamperFlagGroupReportText}</a>
+			
+			
 		</tags:nameValue>
 		
 	</tags:nameValueContainer>
+	
+	</tags:sectionContainer>
 	<br>
 	<br>
 	
@@ -285,14 +299,6 @@
 	<%-- OPTIONS SECTION --%>
 	<tags:sectionContainer id="optionsSection" title="${optionsSectionTitleText}">
 	
-		<%-- tamper flag group report --%>
-		<cti:url var="tamperFlagGroupReportUrl" value="/spring/amr/reports/groupDevicesReport">
-			<cti:param name="groupName" value="${tamperFlagGroupBase}${tamperFlagMonitor.tamperFlagMonitorName}"/>
-			<cti:param name="def" value="groupDevicesDefinition"/>
-		</cti:url>
-		<a href="${tamperFlagGroupReportUrl}">${tamperFlagGroupReportText}</a>
-		<br>
-		
 		<%-- clear tamper flag group --%>
 		<cti:url var="clearTamperFlagGroupUrl" value="/spring/amr/tamperFlagProcessing/process/clearTamperFlagGroup">
 			<cti:param name="tamperFlagMonitorId" value="${tamperFlagMonitor.tamperFlagMonitorId}"/>

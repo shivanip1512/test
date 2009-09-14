@@ -21,7 +21,7 @@
     <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.tableHeader.monitoring">Monitoring</entry>
     <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.tableHeader.status">Status</entry>
     <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.tableHeader.delete">Delete</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.createNew">Create New Tamper Flag Monitor</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.createNew">Create</entry>
     <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.deleteConfirm">Are you sure you want to delete this Tamper Flag Monitor?</entry>
     <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.actionTitle.edit">Edit Tamper Flag Monitor</entry>
     <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.actionTitle.tamperFlagProcessing">Manage Processor Output</entry>
@@ -32,6 +32,8 @@
     <!-- ================================================================================================================================================= -->
     <entry key="yukon.web.modules.amr.tamperFlagEditor.pageTitle">Tamper Flag Monitoring</entry>
     <entry key="yukon.web.modules.amr.tamperFlagEditor.headerTitle">Tamper Flag Monitoring Setup</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagEditor.section.setup">Setup</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagEditor.section.editSetup">Edit Setup</entry>
     <entry key="yukon.web.modules.amr.tamperFlagEditor.label.name">Name</entry>
     <entry key="yukon.web.modules.amr.tamperFlagEditor.label.deviceGroup">Device Group</entry>
     <entry key="yukon.web.modules.amr.tamperFlagEditor.label.tamperFlagGroup">Tamper Flag Group</entry>
@@ -57,10 +59,10 @@
 	     Devices will not be checked for tamper flags and will no longer be added to the Tamper Flag Group.
 	     <br><br>
     ]]></entry>
-    <entry key="yukon.web.modules.amr.tamperFlagEditor.label.update">Update</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagEditor.label.update.busy">Updating</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagEditor.label.create">Create</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagEditor.label.create.busy">Creating</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagEditor.label.update">Save</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagEditor.label.update.busy">Saving</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagEditor.label.create">Save</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagEditor.label.create.busy">Saving</entry>
     <entry key="yukon.web.modules.amr.tamperFlagEditor.label.delete">Delete</entry>
     <entry key="yukon.web.modules.amr.tamperFlagEditor.label.delete.busy">Deleting</entry>
     <entry key="yukon.web.modules.amr.tamperFlagEditor.deleteConfirm">Are you sure you want to delete this Tamper Flag Monitor?</entry>
@@ -77,6 +79,7 @@
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
 	<entry key="yukon.web.modules.amr.tamperFlagProcessing.pageTitle">Tamper Flag Processing</entry>
+	<entry key="yukon.web.modules.amr.tamperFlagProcessing.section.mainDetail.sectionHeader">Info</entry>
 	<entry key="yukon.web.modules.amr.tamperFlagProcessing.section.mainDetail.name">Name</entry>
     <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.mainDetail.deviceGroup">Device Group</entry>
     <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.mainDetail.tamperFlagGroup">Tamper Flag Group</entry>
@@ -105,8 +108,8 @@
     
     <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.readFlags.recentReadFlagsResults">Recent Read Internal Flags Results:</entry>
     <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.readFlags.recentReadFlagsResults.tableHeader.dateTime">Read Date/Time</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.readFlags.recentReadFlagsResults.tableHeader.successCount">Success Count</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.readFlags.recentReadFlagsResults.tableHeader.failureCount">Failure Count</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.readFlags.recentReadFlagsResults.tableHeader.successCount">Success</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.readFlags.recentReadFlagsResults.tableHeader.failureCount">Fail</entry>
     <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.readFlags.recentReadFlagsResults.tableHeader.unsupportedCount">Not Supported</entry>
     <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.readFlags.recentReadFlagsResults.tableHeader.detail">Detail</entry>
     <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.readFlags.recentReadFlagsResults.tableHeader.status">Status</entry>

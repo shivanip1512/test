@@ -44,7 +44,7 @@
 <cti:msg var="scheduleReadPopupInfoText" key="yukon.web.modules.amr.outageMonitorConfig.popupInfo.scheduleRead"/>
 <cti:msg var="scheduleReadNoteLabelText" key="yukon.web.modules.amr.outageMonitorConfig.popupInfo.scheduleReadNoteLabelText"/>
 <cti:msg var="scheduleReadNoteBodyText" key="yukon.web.modules.amr.outageMonitorConfig.popupInfo.scheduleReadNoteBodyText"/>
-
+<cti:msg var="saveOkText" key="yukon.web.modules.amr.outageMonitorConfig.saveOk"/>
 
 <c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
 <c:url var="helpOver" value="/WebConfig/yukon/Icons/help_over.gif"/>
@@ -115,11 +115,13 @@
 
     <h2>${pageTitle}</h2>
     <br>
-    
-	<tags:boxContainer title="${headerTitle}" id="configContainer" hideEnabled="false">
 	
 		<c:if test="${not empty editError}">
 	    	<div class="errorRed">${editError}</div>
+	    </c:if>
+	    
+	    <c:if test="${saveOk}">
+	    	<div class="normalBoldLabel">${saveOkText}</div>
 	    </c:if>
     
     	<%-- MISC FORMS --%>
@@ -151,7 +153,6 @@
 				<c:set var="setupSectionTitle" value="${editSetupSectionText}"/>
 			</c:if>
 			
-			<br>
 			<tags:sectionContainer title="${setupSectionTitle}">
 			
 				<tags:nameValueContainer style="border-collapse:separate;border-spacing:5px;">
@@ -330,10 +331,4 @@
 			
 		</form>
 		
-	</tags:boxContainer>
-		
-	<br><br>
-	<cti:msg var="outagesWidgetPopupInfoText" key="yukon.web.modules.amr.outageMonitorsWidget.popupInfo"/>
-	<tags:widget bean="outageMonitorsWidget" helpText="${outagesWidgetPopupInfoText}"/>
-
 </cti:standardPage>

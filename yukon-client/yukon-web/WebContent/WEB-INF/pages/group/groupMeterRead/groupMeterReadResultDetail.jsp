@@ -97,10 +97,6 @@
 	                </cti:url>
 	                
 	                <cti:link href="${creResultsUrl}" key="yukon.common.device.groupMeterRead.resultDetail.creResults" class="small"/>
-	                <img onclick="window.location='${creResultsUrl}';" 
-								title="${creResultsText}" 
-								src="${script}" onmouseover="javascript:this.src='${scriptOver}'" 
-								onmouseout="javascript:this.src='${script}'">
 							
 				</c:if>
                 

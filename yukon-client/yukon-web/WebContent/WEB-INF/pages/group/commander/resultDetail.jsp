@@ -99,10 +99,6 @@
                 </cti:url>
                 
                 <cti:link href="${creResultsUrl}" key="yukon.common.device.commander.collectionActionOnDevicesLabel.creResults" class="small"/>
-                <img onclick="window.location='${creResultsUrl}';" 
-							title="${creResultsText}" 
-							src="${script}" onmouseover="javascript:this.src='${scriptOver}'" 
-							onmouseout="javascript:this.src='${script}'">
                 
             </div>
                                 
@@ -148,7 +144,7 @@
         <c:if test="${result.handleUnsupported}">
 	        <%-- UNSUPPORTED --%>
 	        <br>
-	        <div class="normalBoldLabel">Unsupported Devices: <span class="errorRed"><cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/UNSUPPORTED_COUNT"/></span></div>
+	        <div class="normalBoldLabel">Not Supported: <span class="errorRed"><cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/UNSUPPORTED_COUNT"/></span></div>
 	        
 	        <c:if test="${not empty result.unsupportedCollection.deviceList}">
 		        <div id="unsupportedActionsDiv" style="padding:10px;">

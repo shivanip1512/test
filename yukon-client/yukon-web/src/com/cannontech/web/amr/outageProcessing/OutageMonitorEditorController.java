@@ -247,6 +247,7 @@ public class OutageMonitorEditorController extends MultiActionController {
         	
     		// redirect to edit page with processor
     		mav.addObject("outageMonitorId", outageMonitorId);
+    		mav.addObject("saveOk", true);
         	mav.setViewName("redirect:edit");
         }
         

@@ -20,7 +20,7 @@
 <cti:msg var="resultsHideReportText" key="yukon.web.modules.amr.commandRequestExecution.results.detail.results.hideReport" />
 <cti:msg var="resultsFailStatsReportText" key="yukon.web.modules.amr.commandRequestExecution.results.detail.results.failStatsReport" />
     
-<cti:standardPage title="${pageTitle}" module="amr">
+<cti:standardPage title="${pageTitle}" module="blank">
 
     <cti:standardMenu menuSelection=""/>
     

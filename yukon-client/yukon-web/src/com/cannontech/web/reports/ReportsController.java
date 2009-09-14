@@ -58,12 +58,16 @@ public class ReportsController extends MultiActionController  {
         String menuSelection = ServletRequestUtils.getStringParameter(request, "menuSelection", "");
         boolean showLoadMask = ServletRequestUtils.getBooleanParameter(request, "showLoadMask", true);
         int refreshRate = ServletRequestUtils.getIntParameter(request, "refreshRate", 0);
+        int width = ServletRequestUtils.getIntParameter(request, "width", 0);
+        int height = ServletRequestUtils.getIntParameter(request, "height", 350);
         
         mav.addObject("module", module);
         mav.addObject("showMenu", showMenu);
         mav.addObject("menuSelection", menuSelection);
         mav.addObject("showLoadMask", showLoadMask);
         mav.addObject("refreshRate", refreshRate);
+        mav.addObject("width", width);
+        mav.addObject("height", height);
         
         
         // get report definition, model

@@ -108,7 +108,6 @@
 	</c:forEach>
 
 </table>
-<br>
 </c:when>
 
 <c:otherwise>
@@ -116,7 +115,7 @@
 </c:otherwise>
 </c:choose>
 
-<div style="text-align: right">
+<div style="text-align:right;padding-top:5px;">
 	<tags:slowInput myFormId="createNewSchduleForm_${widgetParameters.widgetId}" labelBusy="${createButtonText}" label="${createButtonText}"/>
 </div>
 

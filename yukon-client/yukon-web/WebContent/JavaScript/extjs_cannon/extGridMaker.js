@@ -20,6 +20,10 @@ ExtGridMaker.prototype = {
 	        loadMask.show();
         }
         
+        if (width <= 0) {
+        	width = 'auto';
+        }
+        
         var grid = new Ext.grid.GridPanel({
             store: store,
             columns: columns,

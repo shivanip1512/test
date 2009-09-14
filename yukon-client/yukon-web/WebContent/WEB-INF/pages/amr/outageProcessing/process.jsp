@@ -7,13 +7,16 @@
 
 <cti:msg var="pageTitle" key="yukon.web.modules.amr.outageProcessing.pageTitle" />
 <cti:msg var="reportingLinkText" key="yukon.web.modules.amr.outageProcessing.reportingLink" />
+<cti:msg var="mainDetailSectionHeaderText" key="yukon.web.modules.amr.outageProcessing.section.mainDetail.sectionHeader" />
 <cti:msg var="mainDetailNameText" key="yukon.web.modules.amr.outageProcessing.section.mainDetail.name" />
 <cti:msg var="mainDetailDeviceGroupText" key="yukon.web.modules.amr.outageProcessing.section.mainDetail.deviceGroup" />
 <cti:msg var="mainDetailOutagesGroupText" key="yukon.web.modules.amr.outageProcessing.section.mainDetail.outagesGroup" />
 <cti:msg var="mainDetailViolationsText" key="yukon.web.modules.amr.outageProcessing.section.mainDetail.violations" />
 <cti:msg var="mainDetailMonitoringText" key="yukon.web.modules.amr.outageProcessing.section.mainDetail.monitoring" />
 <cti:msg var="mainDetailNumberOfOutagesText" key="yukon.web.modules.amr.outageProcessing.section.mainDetail.numberOfOutages" />
+<cti:msg var="mainDetailNumberOfOutagesOutagesText" key="yukon.web.modules.amr.outageProcessing.section.mainDetail.numberOfOutages.outages" />
 <cti:msg var="mainDetailTimePeriodText" key="yukon.web.modules.amr.outageProcessing.section.mainDetail.timePeriod" />
+<cti:msg var="mainDetailTimePeriodDaysText" key="yukon.web.modules.amr.outageProcessing.section.mainDetail.timePeriod.days" />
 <cti:msg var="readOutageLogsSectionTitleText" key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.title" />
 <cti:msg var="readOutageLogsButtonText" key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.button" />
 <cti:msg var="readOutageLogsSectionNoteLabelText" key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.noteLabel" />
@@ -65,6 +68,8 @@
 	</c:if>
 	
 	<%-- MAIN DETAILS --%>
+	<tags:sectionContainer title="${mainDetailSectionHeaderText}">
+	
 	<tags:nameValueContainer>
 
 		<tags:nameValue name="${mainDetailNameText}" nameColumnWidth="250px">
@@ -85,11 +90,11 @@
 		<tags:nameValueGap gapHeight="20px"/>
 		
 		<tags:nameValue name="${mainDetailNumberOfOutagesText}">
-			${outageMonitor.numberOfOutages}
+			${outageMonitor.numberOfOutages} ${mainDetailNumberOfOutagesOutagesText}
 		</tags:nameValue>
 		
 		<tags:nameValue name="${mainDetailTimePeriodText}">
-			${outageMonitor.timePeriodDays}
+			${outageMonitor.timePeriodDays} ${mainDetailTimePeriodDaysText}
 		</tags:nameValue>
 		
 		<tags:nameValueGap gapHeight="20px"/>
@@ -112,19 +117,19 @@
 			</cti:url>
 			
 			<a href="${outageGroupUrl}">${outageGroupBase}${outageMonitor.outageMonitorName}</a>
-			<br>
-			<cti:formatDate var="startDate" type="DATE" value="${reportStartDate}"/>
-			<cti:link href="/analysis/Reports.jsp" key="yukon.web.modules.amr.outageProcessing.reportingLink">
-				<cti:param name="groupType" value="METERING"/>
-				<cti:param name="type" value="METER_OUTAGE_LOG"/>
-				<cti:param name="selectedReportFilter" value="GROUPS"/>
-				<cti:param name="selectedReportFilterValues" value="${outageGroupBase}${outageMonitor.outageMonitorName}"/>
-				<cti:param name="startDate" value="${startDate}"/>
-			</cti:link>
+			
+			<br><br>
+			<cti:url var="outagesGroupReportUrl" value="/spring/amr/reports/groupDevicesReport">
+				<cti:param name="groupName" value="${outageGroupBase}${outageMonitor.outageMonitorName}"/>
+				<cti:param name="def" value="groupDevicesDefinition"/>
+			</cti:url>
+			<a href="${outagesGroupReportUrl}">${outagesGroupReportText}</a>
 			
 		</tags:nameValue>
 		
 	</tags:nameValueContainer>
+	
+	</tags:sectionContainer>
 	<br>
 	<br>
 		
@@ -210,7 +215,7 @@
 				</table>
 			</c:if>
 		</form>
-	
+		
 	</tags:sectionContainer>
 	<br>
 	<br>
@@ -218,12 +223,15 @@
 	<%-- OPTIONS SECTION --%>
 	<tags:sectionContainer id="optionsSection" title="${optionsSectionTitleText}">
 	
-		<%-- outages group report --%>
-		<cti:url var="outagesGroupReportUrl" value="/spring/amr/reports/groupDevicesReport">
-			<cti:param name="groupName" value="${outageGroupBase}${outageMonitor.outageMonitorName}"/>
-			<cti:param name="def" value="groupDevicesDefinition"/>
-		</cti:url>
-		<a href="${outagesGroupReportUrl}">${outagesGroupReportText}</a>
+		<%-- outages log report --%>
+		<cti:formatDate var="startDate" type="DATE" value="${reportStartDate}"/>
+		<cti:link href="/analysis/Reports.jsp" key="yukon.web.modules.amr.outageProcessing.reportingLink">
+			<cti:param name="groupType" value="METERING"/>
+			<cti:param name="type" value="METER_OUTAGE_LOG"/>
+			<cti:param name="selectedReportFilter" value="GROUPS"/>
+			<cti:param name="selectedReportFilterValues" value="${outageMonitor.groupName}"/>
+			<cti:param name="startDate" value="${startDate}"/>
+		</cti:link>
 		<br>
 		
 		<%-- clear outages group --%>

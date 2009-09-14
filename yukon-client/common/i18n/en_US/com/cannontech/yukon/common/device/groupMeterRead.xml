@@ -23,9 +23,9 @@
     <entry key="yukon.common.device.groupMeterRead.results.pageTitle">Group Attribute Read Results</entry>
     <entry key="yukon.common.device.groupMeterRead.results.tableHeader.attributes">Attributes</entry>
     <entry key="yukon.common.device.groupMeterRead.results.tableHeader.devices">Devices</entry>
-    <entry key="yukon.common.device.groupMeterRead.results.tableHeader.successCount">Success Count</entry>
-    <entry key="yukon.common.device.groupMeterRead.results.tableHeader.failureCount">Failure Count</entry>
-    <entry key="yukon.common.device.groupMeterRead.results.tableHeader.unsupportedCount">Unsupported Count</entry>
+    <entry key="yukon.common.device.groupMeterRead.results.tableHeader.successCount">Success</entry>
+    <entry key="yukon.common.device.groupMeterRead.results.tableHeader.failureCount">Failure</entry>
+    <entry key="yukon.common.device.groupMeterRead.results.tableHeader.unsupportedCount">Not Supported</entry>
     <entry key="yukon.common.device.groupMeterRead.results.tableHeader.detail">Detail</entry>
     <entry key="yukon.common.device.groupMeterRead.results.tableHeader.status">Status</entry>
     
@@ -43,9 +43,9 @@
     
     <entry key="yukon.common.device.groupMeterRead.resultDetail.section.success">Successfully Executed:</entry>
     <entry key="yukon.common.device.groupMeterRead.resultDetail.section.success.view">View Results</entry>
-    <entry key="yukon.common.device.groupMeterRead.resultDetail.section.failed">Failed To Executed:</entry>
+    <entry key="yukon.common.device.groupMeterRead.resultDetail.section.failed">Failed To Execute:</entry>
     <entry key="yukon.common.device.groupMeterRead.resultDetail.section.failed.viewFailReasons">View Failure Reasons</entry>
-    <entry key="yukon.common.device.groupMeterRead.resultDetail.section.unsupported">Unsupported:</entry>
+    <entry key="yukon.common.device.groupMeterRead.resultDetail.section.unsupported">Not Supported:</entry>
     
     <entry key="yukon.common.device.groupMeterRead.resultDetail.allResults">Choose New Operation For All Devices</entry>
     <entry key="yukon.common.device.groupMeterRead.resultDetail.creResults">View Results Log</entry>

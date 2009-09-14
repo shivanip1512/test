@@ -7,7 +7,7 @@
 	<cti:standardMenu menuSelection="scheduler"/>
 	<cti:breadCrumbs>
 	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-	    &gt; Scheduler
+	    &gt; Scripts
 	</cti:breadCrumbs>
 
     <cti:includeScript link="/JavaScript/macsscheduledscripts.js" />

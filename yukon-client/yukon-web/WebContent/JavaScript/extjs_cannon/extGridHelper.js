@@ -41,7 +41,11 @@ ExtGridHelper.prototype = {
             
     	    var colHash = new Hash();
     	    colHash['header'] =  columnInfo[i]['columnName'];
-    	    colHash['width'] =  Math.floor((columnInfo[i]['columnWidthPercentage'] / 100) * gridWidth);
+    	    
+    	    if (gridWidth > 0) {
+    	    	colHash['width'] =  Math.floor((columnInfo[i]['columnWidthPercentage'] / 100) * gridWidth);
+    	    }
+    	    
     	    colHash['sortable'] =  sortable;
     	    colHash['dataIndex'] =  columnInfo[i]['columnId'];
             colHash['id'] =  colHash['dataIndex']

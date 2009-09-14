@@ -35,8 +35,8 @@
 <jsp:setProperty name="REPORT_BEAN" property="energyCompanyID" value="<%=(DaoFactory.getEnergyCompanyDao().getEnergyCompany(lYukonUser)== null?EnergyCompany.DEFAULT_ENERGY_COMPANY_ID:DaoFactory.getEnergyCompanyDao().getEnergyCompany(lYukonUser).getEnergyCompanyID())%>"/>
 
 <%-- Grab the search criteria --%>
-<jsp:setProperty name="REPORT_BEAN" property="type" param="type"/>
 <jsp:setProperty name="REPORT_BEAN" property="groupType" param="groupType"/>
+<jsp:setProperty name="REPORT_BEAN" property="type" param="type"/>
 <jsp:setProperty name="REPORT_BEAN" property="start" param="startDate"/>
 <jsp:setProperty name="REPORT_BEAN" property="stop" param="stopDate"/>
 <jsp:setProperty name="REPORT_BEAN" property="stop" param="stopDate"/>

@@ -83,7 +83,7 @@ public class CommandRequestExecutionResultsModel extends BareReportModelBase<Com
     		row.command = result.getCommand();
     		
     		DeviceErrorDescription deviceErrorDescription = deviceErrorTranslatorDao.translateErrorCode(result.getErrorCode());
-    		row.status = deviceErrorDescription.getDescription();
+    		row.status = deviceErrorDescription.getPorter();
     		
     		DisplayablePao device = deviceLookup.get(result.getDeviceId());
     		row.deviceName = device != null ? device.getName() : null;

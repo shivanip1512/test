@@ -6,6 +6,8 @@
 
 <cti:msg var="pageTitle" key="yukon.web.modules.amr.tamperFlagEditor.pageTitle" />
 <cti:msg var="headerTitle" key="yukon.web.modules.amr.tamperFlagEditor.headerTitle" />
+<cti:msg var="setupSectiontext" key="yukon.web.modules.amr.tamperFlagEditor.section.setup" />
+<cti:msg var="editSetupSectionText" key="yukon.web.modules.amr.tamperFlagEditor.section.editSetup" />
 <cti:msg var="nameText" key="yukon.web.modules.amr.tamperFlagEditor.label.name"/>
 <cti:msg var="deviceGroupText" key="yukon.web.modules.amr.tamperFlagEditor.label.deviceGroup"/>
 <cti:msg var="tamperFlagGroupText" key="yukon.web.modules.amr.tamperFlagEditor.label.tamperFlagGroup"/>
@@ -77,8 +79,6 @@
     <h2>${pageTitle}</h2>
     <br>
     
-	<tags:boxContainer title="${headerTitle}" id="editorContainer" hideEnabled="false">
-	
 		<c:if test="${not empty editError}">
 	    	<div class="errorRed">${editError}</div>
 	    </c:if>
@@ -106,6 +106,13 @@
 		<form id="updateForm" action="/spring/amr/tamperFlagProcessing/update" method="post">
 		
 			<input type="hidden" name="tamperFlagMonitorId" value="${tamperFlagMonitorId}">
+			
+			<c:set var="setupSectionTitle" value="${setupSectiontext}"/>
+			<c:if test="${tamperFlagMonitorId > 0}">
+				<c:set var="setupSectionTitle" value="${editSetupSectionText}"/>
+			</c:if>
+			
+			<tags:sectionContainer title="${setupSectionTitle}">
 			
 			<tags:nameValueContainer style="border-collapse:separate;border-spacing:5px;">
 			
@@ -196,6 +203,8 @@
 				</c:if>
 				
 			</tags:nameValueContainer>
+			
+			</tags:sectionContainer>
 				
 			<%-- create / update / delete --%>
 			<br>
@@ -211,10 +220,4 @@
 			
 		</form>
 		
-	</tags:boxContainer>
-		
-	<br><br>
-	<cti:msg var="tamperFlagMonitorsWidgetPopupInfoText" key="yukon.web.modules.amr.tamperFlagMonitorsWidget.popupInfo"/>
-	<tags:widget bean="tamperFlagMonitorsWidget" helpText="${tamperFlagMonitorsWidgetPopupInfoText}"/>
-
 </cti:standardPage>
