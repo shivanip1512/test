@@ -12,10 +12,10 @@ import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.support.SessionStatus;
 
 import com.cannontech.common.bulk.filter.UiFilter;
+import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.Range;
@@ -106,7 +106,7 @@ public class ProgramControllerHelper {
     }
 
     public void filterPrograms(ModelMap modelMap, YukonUserContext userContext,
-            @ModelAttribute("filter") ProgramControllerHelper.ProgramListBackingBean backingBean,
+            ProgramControllerHelper.ProgramListBackingBean backingBean,
             BindingResult result, SessionStatus status,
             UiFilter<DisplayablePao> detailFilter) {
         // TODO:  validation on backing bean
@@ -144,8 +144,9 @@ public class ProgramControllerHelper {
             sortField.getSorter(programService, userContext, backingBean.getDescending());
 
         int startIndex = (backingBean.getPage() - 1) * backingBean.getItemsPerPage();
+        UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
         SearchResult<DisplayablePao> searchResult =
-            programService.filterPrograms(userContext, filters, sorter,
+            programService.filterPrograms(userContext, filter, sorter,
                                 startIndex, backingBean.getItemsPerPage());
 
         modelMap.addAttribute("searchResult", searchResult);

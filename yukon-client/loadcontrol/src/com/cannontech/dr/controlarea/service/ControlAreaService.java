@@ -1,7 +1,6 @@
 package com.cannontech.dr.controlarea.service;
 
 import java.util.Comparator;
-import java.util.List;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.pao.DisplayablePao;
@@ -21,7 +20,7 @@ public interface ControlAreaService
 
     public SearchResult<ControlArea> filterControlAreas(
             YukonUserContext userContext,
-            List<UiFilter<DisplayablePao>> filters,
+            UiFilter<DisplayablePao> filter,
             Comparator<DisplayablePao> sorter, int startIndex, int count);
 
     public ControlArea getControlArea(int controlAreaId);

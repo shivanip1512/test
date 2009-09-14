@@ -17,6 +17,7 @@ import org.springframework.web.bind.support.SessionStatus;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.FilterService;
+import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.Range;
@@ -30,6 +31,7 @@ import com.cannontech.dr.loadgroup.filter.LoadGroupStateFilter;
 import com.cannontech.dr.loadgroup.model.LoadGroupDisplayField;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
 import com.cannontech.user.YukonUserContext;
+import com.google.common.collect.Ordering;
 
 public class LoadGroupControllerHelper {
     public static class LoadGroupListBackingBean extends ListBackingBean {
@@ -114,39 +116,23 @@ public class LoadGroupControllerHelper {
 
         LoadGroupDisplayField sortField = StringUtils.isEmpty(backingBean.getSort())
             ? LoadGroupDisplayField.NAME : LoadGroupDisplayField.valueOf(backingBean.getSort());
-        Comparator<DisplayablePao> primarySorter =
+        Comparator<DisplayablePao> sorter =
             sortField.getSorter(loadGroupService, userContext, backingBean.getDescending());
-        Comparator<DisplayablePao> secondarySorter = null;
         if (sortField != LoadGroupDisplayField.NAME) {
-            secondarySorter = getDefaultSorter(userContext);
+            sorter = Ordering.from(sorter).compound(getDefaultSorter(userContext));
         }
 
         int startIndex = (backingBean.getPage() - 1) * backingBean.getItemsPerPage();
+        UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
         SearchResult<DisplayablePao> searchResult =
-            getFilteredGroups(filters, primarySorter, secondarySorter,
-                                startIndex, backingBean.getItemsPerPage());
+            filterService.filter(filter, sorter, startIndex, backingBean.getItemsPerPage(),
+                                 loadGroupService.getRowMapper());
 
         modelMap.addAttribute("searchResult", searchResult);
         modelMap.addAttribute("loadGroups", searchResult.getResultList());
         modelMap.addAttribute("backingBean", backingBean);
     }
-    
-    public List<DisplayablePao> getFilteredGroups(
-            YukonUserContext userContext, List<UiFilter<DisplayablePao>> filters) {
-        Comparator<DisplayablePao> sorter = getDefaultSorter(userContext);
-        SearchResult<DisplayablePao> searchResult =
-            filterService.filter(filters, sorter, null, 0, Integer.MAX_VALUE, loadGroupService.getRowMapper());
-        return searchResult.getResultList();
-    }
-    
-    private SearchResult<DisplayablePao> getFilteredGroups(
-            List<UiFilter<DisplayablePao>> filters, Comparator<DisplayablePao> primarySorter, 
-            Comparator<DisplayablePao> secondarySorter, int startIndex, int count) {
-        SearchResult<DisplayablePao> searchResult =
-            filterService.filter(filters, primarySorter, secondarySorter, startIndex, count, loadGroupService.getRowMapper());
-        return searchResult;
-    }
-    
+
     @Autowired
     public void setFilterService(FilterService filterService) {
         this.filterService = filterService;

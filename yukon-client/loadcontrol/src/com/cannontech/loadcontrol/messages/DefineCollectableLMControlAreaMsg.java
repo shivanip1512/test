@@ -3,6 +3,9 @@ package com.cannontech.loadcontrol.messages;
 /**
  * This type was created in VisualAge.
  */
+import java.util.List;
+
+import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.message.util.VectorExtract;
 import com.cannontech.message.util.VectorInsert;
 import com.roguewave.tools.v2_0.Comparator;
@@ -76,7 +79,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	LMControlAreaMsg lmControlAreaMsg = (LMControlAreaMsg) obj;
 
 	vstr.insertUnsignedInt( lmControlAreaMsg.getMsgInfoBitMask().intValue() );
-	java.util.Vector areaVector = lmControlAreaMsg.getLMControlAreaVector();
+	List<LMControlArea> areaVector = lmControlAreaMsg.getLMControlAreaVector();
 	//vstr.saveObject( areaVector, com.roguewave.vsj.streamer.CollectableMappings.allCollectables );
     VectorInsert.insertVector(areaVector, vstr, polystr);
 }

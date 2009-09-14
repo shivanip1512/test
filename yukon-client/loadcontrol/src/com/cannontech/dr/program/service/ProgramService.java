@@ -21,7 +21,6 @@ public interface ProgramService
                                                          int loadGroupId);
 
     public SearchResult<DisplayablePao> filterPrograms(
-            YukonUserContext userContext,
-            List<UiFilter<DisplayablePao>> filters,
+            YukonUserContext userContext, UiFilter<DisplayablePao> filter,
             Comparator<DisplayablePao> sorter, int startIndex, int count);
 }

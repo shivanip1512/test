@@ -159,7 +159,7 @@ public synchronized LMCurtailCustomer[] getCurtailmentCustomers(long progID) {
 
 		// are these for sure all customers???
 		// only god or wally knows
-		Vector<?> customers = p.getLoadControlGroupVector();
+		List<LMGroupBase> customers = p.getLoadControlGroupVector();
 
 		if( customers != null )
 		{
@@ -422,7 +422,7 @@ public synchronized LMProgramCurtailment[] getEnergyCompanyCurtailmentPrograms(l
 		{
 			LMProgramCurtailment p = pIter.next();
 
-			Vector<?> customers = p.getLoadControlGroupVector();
+			List<LMGroupBase> customers = p.getLoadControlGroupVector();
 			if( customers != null )
 			{
 				Iterator<?> cIter = customers.iterator();

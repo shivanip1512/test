@@ -2,12 +2,7 @@ package com.cannontech.loadcontrol.data;
 
 import java.util.Vector;
 
-/**
- * Insert the type's description here.
- * Creation date: (8/17/00 3:06:09 PM)
- * @author: 
- */
-public class LMControlArea implements ILMData
+public class LMControlArea implements ILMData, Cloneable
 {
 	public static final int INVALID_INT = -1;
 	
@@ -41,18 +36,53 @@ public class LMControlArea implements ILMData
 	private Integer currentDailyStartTime = null;
 	private Integer currentDailyStopTime = null;
 	
-	//LMControlAreaTrigger Objects
 	private Vector<LMControlAreaTrigger> triggerVector = null;
 
-	//LMProgramBase Objects
-	private Vector<LMProgramBase> lmProgramVector = null;
+    //LMProgramBase Objects
+    private Vector<LMProgramBase> lmProgramVector = null;
 
-/**
- * Insert the method's description here.
- * Creation date: (3/20/00 11:20:32 AM)
- * @return boolean
- * @param val java.lang.Object
- */
+	public LMControlArea clone() {
+        LMControlArea clone = cloneKeepingPrograms();
+        if (lmProgramVector != null) {
+            clone.lmProgramVector = new Vector<LMProgramBase>();
+            for (LMProgramBase program : lmProgramVector) {
+                clone.lmProgramVector.add(program.clone());
+            }
+        }
+        return clone;
+	}
+
+	public LMControlArea cloneKeepingPrograms() {
+        LMControlArea clone;
+        try {
+            clone = (LMControlArea) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+        if (triggerVector != null) {
+            clone.triggerVector = new Vector<LMControlAreaTrigger>();
+            for (LMControlAreaTrigger trigger : triggerVector) {
+                clone.triggerVector.add(trigger.clone());
+            }
+        }
+        return clone;
+	}
+
+    public LMControlArea cloneUpdatingProgram(LMProgramBase newProgram) {
+        LMControlArea clone = cloneKeepingPrograms();
+        if (lmProgramVector != null) {
+            clone.lmProgramVector = new Vector<LMProgramBase>();
+            for (LMProgramBase program : lmProgramVector) {
+                if (program.getYukonID().equals(newProgram.getYukonID())) {
+                    clone.lmProgramVector.add(newProgram);
+                } else {
+                    clone.lmProgramVector.add(program);
+                }
+            }
+        }
+        return clone;
+    }
+
 public boolean equals(Object val) 
 {
 	if( val instanceof LMControlArea )
@@ -68,20 +98,10 @@ public int hashCode()
 	return getYukonID().intValue();
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:56:59 AM)
- * @return java.lang.Integer
- */
 public java.lang.Integer getControlAreaState() {
 	return controlAreaState;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/16/2001 10:50:18 AM)
- * @return java.lang.String
- * @param state int
- */
+
 public static java.awt.Color getControlAreaStateColor( LMControlArea areaValue )
 {
 	if( areaValue.getDisableFlag().booleanValue() )
@@ -96,12 +116,7 @@ public static java.awt.Color getControlAreaStateColor( LMControlArea areaValue )
 	else
 		return java.awt.Color.green.darker();
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/16/2001 10:50:18 AM)
- * @return java.lang.String
- * @param state int
- */
+
 public static String getControlAreaStateString(int state) 
 {
 	switch( state )
@@ -129,35 +144,19 @@ public static String getControlAreaStateString(int state)
 	}
 
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:56:59 AM)
- * @return java.lang.Integer
- */
+
 public java.lang.Integer getControlAreaStatusPointId() {
 	return controlAreaStatusPointId;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:56:59 AM)
- * @return java.lang.Integer
- */
+
 public java.lang.Integer getControlInterval() {
 	return controlInterval;
 }
-/**
- * Insert the method's description here.
- * Creation date: (5/15/2002 3:38:33 PM)
- * @return java.lang.Integer
- */
+
 public java.lang.Integer getCurrentDailyStartTime() {
 	return currentDailyStartTime;
 }
-/**
- * Insert the method's description here.
- * Creation date: (5/15/2002 3:38:33 PM)
- * @return java.lang.Integer
- */
+
 public java.lang.Integer getCurrentDailyStopTime() {
 	return currentDailyStopTime;
 }
@@ -172,51 +171,26 @@ public java.lang.Integer getDailyStopTime() {
             : getDefDailyStopTime();
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:56:59 AM)
- * @return java.lang.Integer
- */
 public java.lang.Integer getCurrentPriority() {
 	return currentPriority;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:56:59 AM)
- * @return java.lang.Integer
- */
+
 public java.lang.Integer getDefDailyStartTime() {
 	return defDailyStartTime;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:56:59 AM)
- * @return java.lang.Integer
- */
+
 public java.lang.Integer getDefDailyStopTime() {
 	return defDailyStopTime;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:56:59 AM)
- * @return java.lang.String
- */
+
 public java.lang.String getDefOperationalState() {
 	return defOperationalState;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:56:59 AM)
- * @return java.lang.Boolean
- */
+
 public java.lang.Boolean getDisableFlag() {
 	return disableFlag;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:56:59 AM)
- * @return java.util.Vector
- */
+
 public Vector<LMProgramBase> getLmProgramVector() 
 {
 	if( lmProgramVector == null )
@@ -224,43 +198,23 @@ public Vector<LMProgramBase> getLmProgramVector()
 
 	return lmProgramVector;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:56:59 AM)
- * @return java.lang.Integer
- */
+
 public java.lang.Integer getMinResponseTime() {
 	return minResponseTime;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:56:59 AM)
- * @return java.lang.Boolean
- */
+
 public java.lang.Boolean getNewPointDataReceivedFlag() {
 	return newPointDataReceivedFlag;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:56:59 AM)
- * @return java.util.GregorianCalendar
- */
+
 public java.util.GregorianCalendar getNextCheckTime() {
 	return nextCheckTime;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:56:59 AM)
- * @return java.lang.Boolean
- */
+
 public java.lang.Boolean getRequireAllTriggersActiveFlag() {
 	return requireAllTriggersActiveFlag;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:56:59 AM)
- * @return java.util.Vector
- */
+
 public Vector<LMControlAreaTrigger> getTriggerVector() 
 {
 	if( triggerVector == null )
@@ -277,290 +231,129 @@ public LMControlAreaTrigger getTrigger(int triggerNumber) {
     }
     return null;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:56:59 AM)
- * @return java.lang.Boolean
- */
+
 public java.lang.Boolean getUpdatedFlag() {
 	return updatedFlag;
 }
-/**
- * Insert the method's description here.
- * Creation date: (10/24/2001 10:35:17 AM)
- * @return java.lang.String
- */
+
 public java.lang.String getYukonCategory() {
 	return yukonCategory;
 }
-/**
- * Insert the method's description here.
- * Creation date: (10/24/2001 10:35:17 AM)
- * @return java.lang.String
- */
+
 public java.lang.String getYukonClass() {
 	return yukonClass;
 }
-/**
- * Insert the method's description here.
- * Creation date: (10/24/2001 10:35:17 AM)
- * @return java.lang.String
- */
+
 public java.lang.String getYukonDescription() {
 	return yukonDescription;
 }
-/**
- * Insert the method's description here.
- * Creation date: (10/24/2001 10:35:17 AM)
- * @return java.lang.Integer
- */
+
 public java.lang.Integer getYukonID() {
 	return yukonID;
 }
-/**
- * Insert the method's description here.
- * Creation date: (10/24/2001 10:35:17 AM)
- * @return java.lang.String
- */
+
 public java.lang.String getYukonName() {
 	return yukonName;
 }
-/**
- * Insert the method's description here.
- * Creation date: (10/24/2001 10:35:17 AM)
- * @return java.lang.Integer
- */
+
 public java.lang.Integer getYukonType() {
 	return yukonType;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:56:59 AM)
- * @param newControlAreaState java.lang.Integer
- */
+
 public void setControlAreaState(java.lang.Integer newControlAreaState) {
 	controlAreaState = newControlAreaState;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:56:59 AM)
- * @param newControlAreaStatusPointId java.lang.Integer
- */
+
 public void setControlAreaStatusPointId(java.lang.Integer newControlAreaStatusPointId) {
 	controlAreaStatusPointId = newControlAreaStatusPointId;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:56:59 AM)
- * @param newControlInterval java.lang.Integer
- */
+
 public void setControlInterval(java.lang.Integer newControlInterval) {
 	controlInterval = newControlInterval;
 }
-/**
- * Insert the method's description here.
- * Creation date: (5/15/2002 3:38:33 PM)
- * @param newCurrentDailyStartTime java.lang.Integer
- */
+
 public void setCurrentDailyStartTime(java.lang.Integer newCurrentDailyStartTime) {
 	currentDailyStartTime = newCurrentDailyStartTime;
 }
-/**
- * Insert the method's description here.
- * Creation date: (5/15/2002 3:38:33 PM)
- * @param newCurrentDailyStopTime java.lang.Integer
- */
+
 public void setCurrentDailyStopTime(java.lang.Integer newCurrentDailyStopTime) {
 	currentDailyStopTime = newCurrentDailyStopTime;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:56:59 AM)
- * @param newCurrentPriority java.lang.Integer
- */
+
 public void setCurrentPriority(java.lang.Integer newCurrentPriority) {
 	currentPriority = newCurrentPriority;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:56:59 AM)
- * @param newDefDailyStartTime java.lang.Integer
- */
+
 public void setDefDailyStartTime(java.lang.Integer newDefDailyStartTime) {
 	defDailyStartTime = newDefDailyStartTime;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:56:59 AM)
- * @param newDefDailyStopTime java.lang.Integer
- */
+
 public void setDefDailyStopTime(java.lang.Integer newDefDailyStopTime) {
 	defDailyStopTime = newDefDailyStopTime;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:56:59 AM)
- * @param newDefOperationalState java.lang.String
- */
+
 public void setDefOperationalState(java.lang.String newDefOperationalState) {
 	defOperationalState = newDefOperationalState;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:56:59 AM)
- * @param newDisableFlag java.lang.Boolean
- */
+
 public void setDisableFlag(java.lang.Boolean newDisableFlag) {
 	disableFlag = newDisableFlag;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:56:59 AM)
- * @param newLmProgramVector java.util.Vector
- */
+
 public void setLmProgramVector(Vector<LMProgramBase> newLmProgramVector) {
 	lmProgramVector = newLmProgramVector;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:56:59 AM)
- * @param newMinResponseTime java.lang.Integer
- */
+
 public void setMinResponseTime(java.lang.Integer newMinResponseTime) {
 	minResponseTime = newMinResponseTime;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:56:59 AM)
- * @param newNewPointDataReceivedFlag java.lang.Boolean
- */
+
 public void setNewPointDataReceivedFlag(java.lang.Boolean newNewPointDataReceivedFlag) {
 	newPointDataReceivedFlag = newNewPointDataReceivedFlag;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:56:59 AM)
- * @param newNextCheckTime java.util.GregorianCalendar
- */
+
 public void setNextCheckTime(java.util.GregorianCalendar newNextCheckTime) {
 	nextCheckTime = newNextCheckTime;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:56:59 AM)
- * @param newRequireAllTriggersActiveFlag java.lang.Boolean
- */
+
 public void setRequireAllTriggersActiveFlag(java.lang.Boolean newRequireAllTriggersActiveFlag) {
 	requireAllTriggersActiveFlag = newRequireAllTriggersActiveFlag;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:56:59 AM)
- * @param newTriggerVector java.util.Vector
- */
+
 public void setTriggerVector(Vector<LMControlAreaTrigger> newTriggerVector) {
 	triggerVector = newTriggerVector;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:56:59 AM)
- * @param newUpdatedFlag java.lang.Boolean
- */
+
 public void setUpdatedFlag(java.lang.Boolean newUpdatedFlag) {
 	updatedFlag = newUpdatedFlag;
 }
-/**
- * Insert the method's description here.
- * Creation date: (10/24/2001 10:35:17 AM)
- * @param newYukonCategory java.lang.String
- */
+
 public void setYukonCategory(java.lang.String newYukonCategory) {
 	yukonCategory = newYukonCategory;
 }
-/**
- * Insert the method's description here.
- * Creation date: (10/24/2001 10:35:17 AM)
- * @param newYukonClass java.lang.String
- */
+
 public void setYukonClass(java.lang.String newYukonClass) {
 	yukonClass = newYukonClass;
 }
-/**
- * Insert the method's description here.
- * Creation date: (10/24/2001 10:35:17 AM)
- * @param newYukonDescription java.lang.String
- */
+
 public void setYukonDescription(java.lang.String newYukonDescription) {
 	yukonDescription = newYukonDescription;
 }
-/**
- * Insert the method's description here.
- * Creation date: (10/24/2001 10:35:17 AM)
- * @param newYukonID java.lang.Integer
- */
+
 public void setYukonID(java.lang.Integer newYukonID) {
 	yukonID = newYukonID;
 }
-/**
- * Insert the method's description here.
- * Creation date: (10/24/2001 10:35:17 AM)
- * @param newYukonName java.lang.String
- */
+
 public void setYukonName(java.lang.String newYukonName) {
 	yukonName = newYukonName;
 }
-/**
- * Insert the method's description here.
- * Creation date: (10/24/2001 10:35:17 AM)
- * @param newYukonType java.lang.Integer
- */
+
 public void setYukonType(java.lang.Integer newYukonType) {
 	yukonType = newYukonType;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/6/2001 10:05:37 AM)
- * @return java.lang.String
- */
-public String toString()
+
+public String oldtoString()
 {
 	return getYukonName();
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/6/2001 2:18:26 PM)
- * @param newValues com.cannontech.loadcontrol.data.LMControlArea
- */
-/* SORT OF SIMILAR TO CLONE, BUT DOES NOT CREATE A NEW OBJECT */
-public synchronized void updateAllValues(LMControlArea newValues) 
-{
-	if( newValues == null )
-		return;
-	
-	synchronized( newValues )
-	{	
-		setControlAreaState( newValues.getControlAreaState() );
-		setControlAreaStatusPointId( newValues.getControlAreaStatusPointId() );
-		setControlInterval( newValues.getControlInterval() );
-		setCurrentPriority( newValues.getCurrentPriority() );
-		setDefDailyStartTime( newValues.getDefDailyStartTime() );
-		setDefDailyStopTime( newValues.getDefDailyStopTime() );
-		setDefOperationalState( newValues.getDefOperationalState() );
-		setDisableFlag( newValues.getDisableFlag() );
-		setLmProgramVector( newValues.getLmProgramVector() );
-		setMinResponseTime( newValues.getMinResponseTime() );
-		setNewPointDataReceivedFlag( newValues.getNewPointDataReceivedFlag() );
-		setNextCheckTime( newValues.getNextCheckTime() );
-		setRequireAllTriggersActiveFlag( newValues.getRequireAllTriggersActiveFlag() );
-		setTriggerVector( newValues.getTriggerVector() );
-		setUpdatedFlag( newValues.getUpdatedFlag() );
-		setYukonCategory( newValues.getYukonCategory() );
-		setYukonClass( newValues.getYukonClass() );
-		setYukonDescription( newValues.getYukonDescription() );
-		setYukonID( newValues.getYukonID() );
-		setYukonName( newValues.getYukonName() );
-		setYukonType( newValues.getYukonType() );
-	}
-
 }
 }

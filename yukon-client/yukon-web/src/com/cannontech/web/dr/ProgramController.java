@@ -9,7 +9,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.support.SessionStatus;
 
@@ -35,7 +34,7 @@ public class ProgramController {
 
     @RequestMapping("/program/list")
     public String list(ModelMap modelMap, YukonUserContext userContext,
-            @ModelAttribute("filter") ProgramControllerHelper.ProgramListBackingBean backingBean,
+            ProgramControllerHelper.ProgramListBackingBean backingBean,
             BindingResult result, SessionStatus status) {
 
         programControllerHelper.filterPrograms(modelMap, userContext, backingBean,
@@ -47,7 +46,7 @@ public class ProgramController {
     @RequestMapping("/program/detail")
     public String detail(int programId, ModelMap modelMap,
             YukonUserContext userContext,
-            @ModelAttribute("filter") LoadGroupControllerHelper.LoadGroupListBackingBean backingBean,
+            LoadGroupControllerHelper.LoadGroupListBackingBean backingBean,
             BindingResult result, SessionStatus status) {
         DisplayablePao program = programService.getProgram(programId);
         if (false && !paoAuthorizationService.isAuthorized(userContext.getYukonUser(),

@@ -7,7 +7,7 @@ package com.cannontech.loadcontrol.data;
  */
 import java.util.Date;
 
-public class LMControlAreaTrigger
+public class LMControlAreaTrigger implements Cloneable
 {
 	private Integer yukonID = null;
 	private Integer triggerNumber = null;
@@ -27,6 +27,13 @@ public class LMControlAreaTrigger
 	private Date lastPeakPointValueTimeStamp = null;
 	private Double projectedPointValue = null;
 
+	public LMControlAreaTrigger clone() {
+	    try {
+            return (LMControlAreaTrigger) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+	}
 
 /**
  * Creation date: (7/18/2001 10:24:18 AM)

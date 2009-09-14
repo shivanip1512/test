@@ -10,8 +10,7 @@ import com.cannontech.user.YukonUserContext;
 
 public interface ScenarioService {
     public SearchResult<DisplayablePao> filterScenarios(
-            YukonUserContext userContext,
-            List<UiFilter<DisplayablePao>> filters,
+            YukonUserContext userContext, UiFilter<DisplayablePao> filter,
             Comparator<DisplayablePao> sorter, int startIndex, int count);
 
     public DisplayablePao getScenario(int scenarioId);

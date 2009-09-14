@@ -43,6 +43,11 @@ public class TriggerBackingService implements UpdateBackingService {
         if (!datedControlArea.getDate().before(afterDate)) {
             LMControlAreaTrigger trigger = datedControlArea.getObject()
                                                            .getTrigger(triggerNumber);
+            if (trigger == null) {
+                // This can happen if a trigger is deleted.  In the future, we'll
+                // have to deal with this better.
+                return "";
+            }
             return messageSource.getMessage(displayField.getValue(trigger),
                                             userContext.getLocale());
         }

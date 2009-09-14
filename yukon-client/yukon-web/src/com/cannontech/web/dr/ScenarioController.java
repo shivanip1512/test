@@ -1,6 +1,7 @@
 package com.cannontech.web.dr;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -15,12 +16,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.support.SessionStatus;
 
 import com.cannontech.common.bulk.filter.UiFilter;
+import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.dr.filter.NameFilter;
+import com.cannontech.dr.model.DisplayablePaoComparator;
 import com.cannontech.dr.program.filter.ForScenarioFilter;
 import com.cannontech.dr.scenario.service.ScenarioService;
 import com.cannontech.user.YukonUserContext;
@@ -33,10 +36,9 @@ public class ScenarioController {
     private ProgramControllerHelper programControllerHelper;
 
     @RequestMapping("/scenario/list")
-    public String list(ModelMap modelMap,
-            YukonUserContext userContext,
-            @ModelAttribute("filter") ListBackingBean backingBean,
-            BindingResult result, SessionStatus status) {
+    public String list(ModelMap modelMap, YukonUserContext userContext,
+            ListBackingBean backingBean, BindingResult result,
+            SessionStatus status) {
         // TODO:  validation on backing bean
 
         List<UiFilter<DisplayablePao>> filters = new ArrayList<UiFilter<DisplayablePao>>();
@@ -44,9 +46,12 @@ public class ScenarioController {
             filters.add(new NameFilter(backingBean.getName()));
         }
 
+        Comparator<DisplayablePao> sorter =
+            new DisplayablePaoComparator(userContext, backingBean.getDescending());
+        UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
         int startIndex = (backingBean.getPage() - 1) * backingBean.getItemsPerPage();
         SearchResult<DisplayablePao> searchResult =
-            scenarioService.filterScenarios(userContext, filters, null, startIndex,
+            scenarioService.filterScenarios(userContext, filter, sorter, startIndex,
                                             backingBean.getItemsPerPage());
 
         modelMap.addAttribute("searchResult", searchResult);

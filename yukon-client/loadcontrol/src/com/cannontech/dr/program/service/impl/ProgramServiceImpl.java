@@ -2,7 +2,6 @@ package com.cannontech.dr.program.service.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -28,6 +27,7 @@ import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.user.YukonUserContext;
+import com.google.common.collect.Ordering;
 
 public class ProgramServiceImpl implements ProgramService {
     private ProgramDao programDao = null;
@@ -72,25 +72,27 @@ public class ProgramServiceImpl implements ProgramService {
     @Override
     public List<DisplayablePao> findProgramsForLoadGroup(
             YukonUserContext userContext, int loadGroupId) {
-        List<UiFilter<DisplayablePao>> filters = new ArrayList<UiFilter<DisplayablePao>>();
-        filters.add(new ForLoadGroupFilter(loadGroupId));
+        UiFilter<DisplayablePao> filter = new ForLoadGroupFilter(loadGroupId);
 
         SearchResult<DisplayablePao> searchResult =
-            filterPrograms(userContext, filters, null, 0, Integer.MAX_VALUE);
+            filterPrograms(userContext, filter, null, 0, Integer.MAX_VALUE);
 
         return searchResult.getResultList();
     }
 
     @Override
     public SearchResult<DisplayablePao> filterPrograms(
-            YukonUserContext userContext,
-            List<UiFilter<DisplayablePao>> filters,
+            YukonUserContext userContext, UiFilter<DisplayablePao> filter,
             Comparator<DisplayablePao> sorter, int startIndex, int count) {
 
+        Comparator<DisplayablePao> defaultSorter = ProgramDisplayField.NAME.getSorter(this, userContext, false);
+        if (sorter == null) {
+            sorter = defaultSorter;
+        } else {
+            sorter = Ordering.from(sorter).compound(defaultSorter);
+        }
         SearchResult<DisplayablePao> searchResult =
-            filterService.filter(filters, sorter,
-                                 ProgramDisplayField.NAME.getSorter(this, userContext, false),
-                                 startIndex, count, rowMapper);
+            filterService.filter(filter, sorter, startIndex, count, rowMapper);
         return searchResult;
     }
 

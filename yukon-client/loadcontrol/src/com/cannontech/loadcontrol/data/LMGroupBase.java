@@ -1,11 +1,13 @@
 package com.cannontech.loadcontrol.data;
 
+import java.util.Vector;
+
 /**
  * Insert the type's description here.
  * Creation date: (8/17/00 3:06:09 PM)
  * @author: 
  */
-public abstract class LMGroupBase implements ILMData
+public abstract class LMGroupBase implements ILMData, Cloneable
 {
 	//Posible states a group may be in
 	public static final int STATE_INACTIVE = 0;
@@ -34,7 +36,17 @@ public abstract class LMGroupBase implements ILMData
 	private Integer groupOrder = null;
 	private Integer dailyOps = null;
 
-	/**
+    public LMGroupBase clone() {
+        LMGroupBase clone;
+        try {
+            clone = (LMGroupBase) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+        return clone;
+    }
+
+    /**
 	 * @return Returns the dailyOps.
 	 */
 	public Integer getDailyOps() {

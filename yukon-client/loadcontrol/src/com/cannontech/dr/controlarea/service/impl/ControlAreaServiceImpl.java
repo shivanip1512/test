@@ -34,6 +34,7 @@ import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Ordering;
 
 public class ControlAreaServiceImpl implements ControlAreaService {
     private ControlAreaDao controlAreaDao;
@@ -136,19 +137,19 @@ public class ControlAreaServiceImpl implements ControlAreaService {
         }
 
         @Override
-        public List<PostProcessingFilter<ControlAreaTrigger>> getPostProcessingFilters() {
+        public Iterable<PostProcessingFilter<ControlAreaTrigger>> getPostProcessingFilters() {
             // this is only meant as a SQL filter
             return null;
         }
 
         @Override
-        public List<SqlFilter> getSqlFilters() {
-            List<SqlFilter> toBeWrapped = wrappedControlAreaFilter.getSqlFilters();
-            if (toBeWrapped == null) {
+        public Iterable<SqlFilter> getSqlFilters() {
+            Iterable<SqlFilter> toBeWrapped = wrappedControlAreaFilter.getSqlFilters();
+            if (toBeWrapped == null || !toBeWrapped.iterator().hasNext()) {
                 return null;
             }
 
-            List<SqlFilter> retVal = new ArrayList<SqlFilter>(toBeWrapped.size());
+            List<SqlFilter> retVal = new ArrayList<SqlFilter>();
             for (SqlFilter wrapped : toBeWrapped) {
                 retVal.add(new WrappedSqlFilter(wrapped));
             }
@@ -171,11 +172,10 @@ public class ControlAreaServiceImpl implements ControlAreaService {
 
     @Override
     public ControlArea findControlAreaForProgram(YukonUserContext userContext, int programId) {
-        List<UiFilter<DisplayablePao>> filters = Lists.newArrayList();
-        filters.add(new ForProgramFilter(programId));
+        UiFilter<DisplayablePao> filter = new ForProgramFilter(programId);
 
         SearchResult<ControlArea> searchResult =
-            filterControlAreas(userContext, filters, null, 0, Integer.MAX_VALUE);
+            filterControlAreas(userContext, filter, null, 0, Integer.MAX_VALUE);
 
         if (searchResult.getHitCount() > 0) {
             return searchResult.getResultList().get(0);
@@ -185,26 +185,27 @@ public class ControlAreaServiceImpl implements ControlAreaService {
 
     @Override
     public SearchResult<ControlArea> filterControlAreas(
-            YukonUserContext userContext,
-            List<UiFilter<DisplayablePao>> filters,
+            YukonUserContext userContext, UiFilter<DisplayablePao> filter,
             Comparator<DisplayablePao> sorter, int startIndex, int count) {
 
-        List<UiFilter<ControlAreaTrigger>> triggerFilters = null;
-        if (filters != null) {
-            triggerFilters = Lists.newArrayList();
-            for (UiFilter<DisplayablePao> filter : filters) {
-                triggerFilters.add(new TriggerFilter(filter));
-            }
+        UiFilter<ControlAreaTrigger> triggerFilter = null;
+        if (filter != null) {
+            triggerFilter = new TriggerFilter(filter);
         }
 
         TriggerRowMapper triggerRowMapper = new TriggerRowMapper();
-        filterService.filter(triggerFilters, null, null, startIndex, count,
+        filterService.filter(triggerFilter, null, startIndex, count,
                              triggerRowMapper);
 
+        Comparator<DisplayablePao> defaultSorter =
+            ControlAreaDisplayField.NAME.getSorter(this, userContext, false);
+        if (sorter == null) {
+            sorter = defaultSorter;
+        } else {
+            sorter = Ordering.from(sorter).compound(defaultSorter);
+        }
         SearchResult<ControlArea> searchResult =
-            filterService.filter(filters, sorter,
-                                 ControlAreaDisplayField.NAME.getSorter(this, userContext, false),
-                                 startIndex, count,
+            filterService.filter(filter, sorter, startIndex, count,
                                  new ControlAreaRowMapper(triggerRowMapper.triggersByControlAreaId));
 
         return searchResult;

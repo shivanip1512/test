@@ -1,11 +1,14 @@
 package com.cannontech.loadcontrol.data;
 
+import java.util.List;
+import java.util.Vector;
+
 /**
  * Insert the type's description here.
  * Creation date: (8/17/00 3:06:09 PM)
  * @author: 
  */
-public abstract class LMProgramBase implements ILMProgramMessageCreation, ILMData
+public abstract class LMProgramBase implements ILMProgramMessageCreation, ILMData, Cloneable
 {
 	//constants that must match values in lmprogrambase.h/lmprogrambase.cpp
 	//control types
@@ -34,30 +37,6 @@ public abstract class LMProgramBase implements ILMProgramMessageCreation, ILMDat
 	private Boolean disableFlag = null;
 	private Integer startPriority = null;
 	private Integer stopPriority = null;
-	/**
-	 * @return Returns the startPriority.
-	 */
-	public Integer getStartPriority() {
-		return startPriority;
-	}
-	/**
-	 * @param startPriority The startPriority to set.
-	 */
-	public void setStartPriority(Integer startPriority) {
-		this.startPriority = startPriority;
-	}
-	/**
-	 * @return Returns the stopPriority.
-	 */
-	public Integer getStopPriority() {
-		return stopPriority;
-	}
-	/**
-	 * @param stopPriority The stopPriority to set.
-	 */
-	public void setStopPriority(Integer stopPriority) {
-		this.stopPriority = stopPriority;
-	}
 	private String controlType = null;
 	private String availableWeekDays = null;
 	private Integer maxHoursDaily = null;
@@ -77,15 +56,63 @@ public abstract class LMProgramBase implements ILMProgramMessageCreation, ILMDat
 	private java.util.Vector controlWindowVector = null;
 
 	//contains objects of type ILMGroup
-	private java.util.Vector loadControlGroupVector = null;
+	private List<LMGroupBase> loadControlGroupVector = null;
 
-	//data not resotred when sent/received
+	//data not restored when sent/received
 	private java.util.GregorianCalendar stoppedControlling = null;
-/**
- * Creation date: (6/26/2001 1:52:39 PM)
- * @return boolean
- * @param o java.lang.Object
- */
+
+    public LMProgramBase clone() {
+        LMProgramBase clone = cloneKeepingLoadGroups();
+        if (loadControlGroupVector != null) {
+            clone.loadControlGroupVector = new Vector<LMGroupBase>();
+            for (LMGroupBase group : loadControlGroupVector) {
+                clone.loadControlGroupVector.add((LMGroupBase) group.clone());
+            }
+        }
+        return clone;
+    }
+
+    public LMProgramBase cloneKeepingLoadGroups() {
+        LMProgramBase clone;
+        try {
+            clone = (LMProgramBase) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+        return clone;
+    }
+
+    public LMProgramBase cloneUpdatingLoadGroup(LMGroupBase newGroup) {
+        LMProgramBase clone = cloneKeepingLoadGroups();
+        if (loadControlGroupVector != null) {
+            clone.loadControlGroupVector = new Vector<LMGroupBase>();
+            for (LMGroupBase loadGroup : loadControlGroupVector) {
+                if (loadGroup.getYukonID().equals(newGroup.getYukonID())) {
+                    clone.loadControlGroupVector.add(newGroup);
+                } else {
+                    clone.loadControlGroupVector.add(loadGroup);
+                }
+            }
+        }
+        return clone;
+    }
+
+    public Integer getStartPriority() {
+        return startPriority;
+    }
+
+    public void setStartPriority(Integer startPriority) {
+        this.startPriority = startPriority;
+    }
+
+    public Integer getStopPriority() {
+        return stopPriority;
+    }
+
+    public void setStopPriority(Integer stopPriority) {
+        this.stopPriority = stopPriority;
+    }
+
 public boolean equals(Object o) 
 {
 	return ( (o != null) &&
@@ -138,10 +165,10 @@ public java.util.GregorianCalendar getLastControlSent() {
  * Creation date: (4/10/2001 10:23:43 AM)
  * @return java.util.Vector
  */
-public java.util.Vector getLoadControlGroupVector() 
+public List<LMGroupBase> getLoadControlGroupVector() 
 {
 	if( loadControlGroupVector == null )
-		loadControlGroupVector = new java.util.Vector(10);
+		loadControlGroupVector = new Vector<LMGroupBase>(10);
 
 	return loadControlGroupVector;
 }
@@ -405,7 +432,7 @@ public void setLastControlSent(java.util.GregorianCalendar newLastControlSent) {
  * Creation date: (4/10/2001 10:23:43 AM)
  * @param newLoadControlGroupVector java.util.Vector
  */
-public void setLoadControlGroupVector(java.util.Vector newLoadControlGroupVector) {
+public void setLoadControlGroupVector(List<LMGroupBase> newLoadControlGroupVector) {
 	loadControlGroupVector = newLoadControlGroupVector;
 }
 /**

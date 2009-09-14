@@ -22,18 +22,15 @@ public class FilterServiceImpl implements FilterService {
     private SimpleJdbcTemplate simpleJdbcTemplate;
 
     @Override
-    public <T, U extends T> SearchResult<U> filter(List<UiFilter<T>> filters,
-            Comparator<T> primarySorter, Comparator<T> secondarySorter,
-            int startIndex, int count,
-            RowMapperWithBaseQuery<U> rowMapper) {
+    public <T> SearchResult<T> filter(UiFilter<? super T> filter,
+            Comparator<? super T> sorter, int startIndex, int count,
+            RowMapperWithBaseQuery<T> rowMapper) {
         SqlFragmentCollection whereClause = SqlFragmentCollection.newAndCollection();
-        if (filters != null) {
-            for (UiFilter<T> filter : filters) {
-                List<SqlFilter> sqlFilters = filter.getSqlFilters();
-                if (sqlFilters != null) {
-                    for (SqlFilter sqlFilter : sqlFilters) {
-                        whereClause.add(sqlFilter.getWhereClauseFragment());
-                    }
+        if (filter != null) {
+            Iterable<SqlFilter> sqlFilters = filter.getSqlFilters();
+            if (sqlFilters != null) {
+                for (SqlFilter sqlFilter : sqlFilters) {
+                    whereClause.add(sqlFilter.getWhereClauseFragment());
                 }
             }
         }
@@ -51,26 +48,23 @@ public class FilterServiceImpl implements FilterService {
         }
 
         
-        SearchResult<U> retVal = new SearchResult<U>();
+        SearchResult<T> retVal = new SearchResult<T>();
 
-        List<U> objectsFromDb = simpleJdbcTemplate.query(sql.getSql(),
+        List<T> objectsFromDb = simpleJdbcTemplate.query(sql.getSql(),
                                                          rowMapper,
                                                          sql.getArguments());
-        List<U> objectsThatPassedFilters = new ArrayList<U>();
-        if (filters == null || filters.size() == 0) {
+        List<T> objectsThatPassedFilters = new ArrayList<T>();
+        if (filter == null || filter.getPostProcessingFilters() == null
+                || !filter.getPostProcessingFilters().iterator().hasNext()) {
             objectsThatPassedFilters = objectsFromDb;
         } else {
-            for (U obj : objectsFromDb) {
+            for (T obj : objectsFromDb) {
                 boolean useIt = true;
-                out: for (UiFilter<T> filter : filters) {
-                    List<PostProcessingFilter<T>> postProcessingFilters = filter.getPostProcessingFilters();
-                    if (postProcessingFilters != null) {
-                        for (PostProcessingFilter<T> postProcessingFilter : postProcessingFilters) {
-                            if (!postProcessingFilter.matches(obj)) {
-                                useIt = false;
-                                break out;
-                            }
-                        }
+                for (PostProcessingFilter<? super T> postProcessingFilter
+                        : filter.getPostProcessingFilters()) {
+                    if (!postProcessingFilter.matches(obj)) {
+                        useIt = false;
+                        break;
                     }
                 }
                 if (useIt) {
@@ -79,17 +73,11 @@ public class FilterServiceImpl implements FilterService {
             }
         }
 
-        // We're making use of the fact that Collections.sort is stable. (Items
-        // that are equal as per the primarySorter are left as sorted by the
-        // secondarySorter which we applied first.)
-        if (secondarySorter != null) {
-            Collections.sort(objectsThatPassedFilters, secondarySorter);
-        }
-        if (primarySorter != null) {
-            Collections.sort(objectsThatPassedFilters, primarySorter);
+        if (sorter != null) {
+            Collections.sort(objectsThatPassedFilters, sorter);
         }
 
-        List<U> resultList = new ArrayList<U>();
+        List<T> resultList = new ArrayList<T>();
         for (int index = startIndex;
             index < objectsThatPassedFilters.size() && index - startIndex < count;
             index++) {

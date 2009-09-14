@@ -319,7 +319,7 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 				// Loop through all programs and load the status and mode values.
 				for (LMProgramBase programBase : lmProgramBases) {
 					// Loop through all groups within the program
-					Vector<LMGroupBase> loadGroups = programBase.getLoadControlGroupVector();
+					List<LMGroupBase> loadGroups = programBase.getLoadControlGroupVector();
 					for (LMGroupBase groupBase : loadGroups) {
 						List<MspLMGroupCommunications> mspLMGroupCommunications = mspLMGroupDao.getLMGroupCommunications(groupBase);
 						allStatus.add(mspLMGroupDao.getStatus(mspLMGroupCommunications));				

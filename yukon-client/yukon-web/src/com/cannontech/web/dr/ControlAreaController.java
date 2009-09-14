@@ -11,11 +11,11 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.support.SessionStatus;
 
 import com.cannontech.common.bulk.filter.UiFilter;
+import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.search.SearchResult;
@@ -76,8 +76,8 @@ public class ControlAreaController {
 
     @RequestMapping("/controlArea/list")
     public String list(ModelMap modelMap, YukonUserContext userContext,
-        @ModelAttribute("filter") ControlAreaListBackingBean backingBean,
-        BindingResult result, SessionStatus status) {
+            ControlAreaListBackingBean backingBean, BindingResult result,
+            SessionStatus status) {
 
         List<UiFilter<DisplayablePao>> filters = new ArrayList<UiFilter<DisplayablePao>>();
         if (!StringUtils.isEmpty(backingBean.getName())) {
@@ -100,9 +100,10 @@ public class ControlAreaController {
         Comparator<DisplayablePao> sorter =
             sortField.getSorter(controlAreaService, userContext,
                                 backingBean.getDescending());
+        UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
         int startIndex = (backingBean.getPage() - 1) * backingBean.getItemsPerPage();
         SearchResult<ControlArea> searchResult =
-            controlAreaService.filterControlAreas(userContext, filters, sorter,
+            controlAreaService.filterControlAreas(userContext, filter, sorter,
                                                   startIndex,
                                                   backingBean.getItemsPerPage());
 
@@ -116,7 +117,7 @@ public class ControlAreaController {
     @RequestMapping("/controlArea/detail")
     public String detail(int controlAreaId, ModelMap modelMap,
             YukonUserContext userContext,
-            @ModelAttribute("filter") ProgramControllerHelper.ProgramListBackingBean backingBean,
+            ProgramControllerHelper.ProgramListBackingBean backingBean,
             BindingResult result, SessionStatus status) {
         ControlArea controlArea = controlAreaService.getControlArea(controlAreaId);
         if (false && !paoAuthorizationService.isAuthorized(userContext.getYukonUser(),
