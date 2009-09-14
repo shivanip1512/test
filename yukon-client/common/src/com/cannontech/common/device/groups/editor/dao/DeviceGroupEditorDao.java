@@ -54,7 +54,7 @@ public interface DeviceGroupEditorDao {
      * Update the group's parent and name as set on the passed in object.
      * @param group
      */
-    public void updateGroup(StoredDeviceGroup group);
+    public void updateGroup(StoredDeviceGroup group) throws IllegalGroupNameException;
     
     /**
      * This is the preferred method for converting a DeviceGroup into a StoredDeviceGroup.

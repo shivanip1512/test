@@ -275,9 +275,11 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     }
 
     @Transactional(propagation=Propagation.REQUIRED)
-    public void updateGroup(StoredDeviceGroup group) {
+    public void updateGroup(StoredDeviceGroup group) throws IllegalGroupNameException {
         Validate.isTrue(group.isEditable(), "Non-editable groups cannot be updated.");
         Validate.isTrue(group.getParent() != null, "The root group cannot be updated.");
+        
+        CtiUtilities.validateGroupName(group.getName());
         
         StoredDeviceGroup parentGroup = getStoredGroup(group.getParent());
 
