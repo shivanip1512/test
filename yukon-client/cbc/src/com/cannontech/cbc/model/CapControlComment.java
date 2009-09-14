@@ -1,6 +1,6 @@
 package com.cannontech.cbc.model;
 
-import java.sql.Timestamp;
+import java.util.Date;
 
 import com.cannontech.cbc.dao.CommentAction;
 import com.cannontech.core.dao.YukonUserDao;
@@ -11,7 +11,7 @@ public class CapControlComment {
     private int id;
     private int paoId;
     private int userId;
-    private Timestamp time;
+    private Date date;
     private String comment;
     private boolean altered;
     private String action;
@@ -45,12 +45,12 @@ public class CapControlComment {
         this.userId = userId;
     }
 
-    public Timestamp getTime() {
-        return time;
+    public Date getDate() {
+        return date;
     }
     
-    public void setTime(Timestamp time) {
-        this.time = time;
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     public String getComment() {
@@ -148,7 +148,7 @@ public class CapControlComment {
         result = prime * result + ((comment == null) ? 0 : comment.hashCode());
         result = prime * result + id;
         result = prime * result + paoId;
-        result = prime * result + ((time == null) ? 0 : time.hashCode());
+        result = prime * result + ((date == null) ? 0 : date.hashCode());
         result = prime * result + userId;
         return result;
     }
@@ -178,10 +178,10 @@ public class CapControlComment {
             return false;
         if (paoId != other.paoId)
             return false;
-        if (time == null) {
-            if (other.time != null)
+        if (date == null) {
+            if (other.date != null)
                 return false;
-        } else if (!time.equals(other.time))
+        } else if (!date.equals(other.date))
             return false;
         if (userId != other.userId)
             return false;

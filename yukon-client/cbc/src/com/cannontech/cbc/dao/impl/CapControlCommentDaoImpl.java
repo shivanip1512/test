@@ -98,7 +98,7 @@ public class CapControlCommentDaoImpl implements CapControlCommentDao {
         int rowsAffected = simpleJdbcTemplate.update(insertSql, id,
                                                      comment.getPaoId(),
                                                      comment.getUserId(),
-                                                     comment.getTime(),
+                                                     comment.getDate(),
                                                      comment.getAction(),
                                                      comment.getComment(),
                                                      comment.isAltered());
@@ -117,7 +117,7 @@ public class CapControlCommentDaoImpl implements CapControlCommentDao {
     public boolean update( CapControlComment comment ){
         int rowsAffected = simpleJdbcTemplate.update(updateSql, comment.getPaoId(),
                                                      comment.getUserId(),
-                                                     comment.getTime(),
+                                                     comment.getDate(),
                                                      comment.getAction(),
                                                      comment.getComment(),
                                                      comment.isAltered(),
@@ -246,7 +246,7 @@ public class CapControlCommentDaoImpl implements CapControlCommentDao {
                 comment.setPaoId(rs.getInt("PaoId"));
                 comment.setUserId(rs.getInt("UserId"));
                 comment.setAction(rs.getString("Action"));
-                comment.setTime(rs.getTimestamp("commentTime"));
+                comment.setDate(rs.getTimestamp("commentTime"));
                 comment.setComment(rs.getString("capComment"));
                 String str = rs.getString("Altered");
                 if (str != null) {

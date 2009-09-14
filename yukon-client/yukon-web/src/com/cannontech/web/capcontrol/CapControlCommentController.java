@@ -1,6 +1,6 @@
 package com.cannontech.web.capcontrol;
 
-import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -35,10 +35,7 @@ public class CapControlCommentController {
     
     @RequestMapping(method=RequestMethod.POST)
     public String add(int paoId, String comment, LiteYukonUser user, ModelMap model) throws Exception {
-        boolean isAuthorized = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADD_COMMENTS, user);
-        if (!isAuthorized) {
-            throw new RuntimeException(user.getUsername() + " not authorized to add comments");
-        }
+        rolePropertyDao.verifyProperty(YukonRoleProperty.ADD_COMMENTS, user);
         
         final CapControlComment capControlcomment = new CapControlComment();
         capControlcomment.setPaoId(paoId);
@@ -46,8 +43,8 @@ public class CapControlCommentController {
         capControlcomment.setComment(StringUtils.isBlank(comment) ? defaultCommentText : comment);
         capControlcomment.setAltered(false);
         
-        Timestamp time = new Timestamp(System.currentTimeMillis());
-        capControlcomment.setTime(time);
+        Date date = new Date();
+        capControlcomment.setDate(date);
         capControlcomment.setAction(CommentAction.USER_COMMENT.toString());
         commentDao.add(capControlcomment);
         
@@ -57,11 +54,7 @@ public class CapControlCommentController {
     
     @RequestMapping(method=RequestMethod.POST)
     public String update(int commentId, int paoId, String comment, LiteYukonUser user, ModelMap model) throws Exception {
-        
-        boolean isAuthorized = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.MODIFY_COMMENTS, user);
-        if (!isAuthorized) {
-            throw new RuntimeException(user.getUsername() + " not authorized to update comments");
-        }
+        rolePropertyDao.verifyProperty(YukonRoleProperty.MODIFY_COMMENTS, user);
         
         CapControlComment capControlComment = commentDao.getById(commentId);
         capControlComment.setComment(comment);
@@ -74,10 +67,7 @@ public class CapControlCommentController {
     
     @RequestMapping(method=RequestMethod.POST)
     public String remove(int commentId, int paoId, LiteYukonUser user, ModelMap model) throws Exception {
-        boolean isAuthorized = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.MODIFY_COMMENTS, user);
-        if (!isAuthorized) {
-            throw new RuntimeException(user.getUsername() + " not authorized to remove comments");
-        }
+        rolePropertyDao.verifyProperty(YukonRoleProperty.MODIFY_COMMENTS, user);
         
         CapControlComment comment = new CapControlComment();
         comment.setId(commentId);

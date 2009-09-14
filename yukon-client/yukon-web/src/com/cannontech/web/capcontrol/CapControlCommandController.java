@@ -1,6 +1,6 @@
 package com.cannontech.web.capcontrol;
 
-import java.sql.Timestamp;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -216,8 +216,8 @@ public class CapControlCommandController extends MultiActionController {
         comment.setComment(reason);
         comment.setAltered(false);
         
-        Timestamp time = new Timestamp(System.currentTimeMillis());
-        comment.setTime(time);
+        Date date = new Date();
+        comment.setDate(date);
         
         CommentAction action = CapControlComment.getActionForCommandId(cmdId);
         comment.setAction(action.toString());

@@ -42,7 +42,7 @@
                 <td><spring:escapeBody htmlEscape="true">${comment.comment}</spring:escapeBody></td>
                 <td>${comment.userName}</td>
                 
-                <td><cti:formatDate value="${comment.time}" type="BOTH" /></td>
+                <td><cti:formatDate value="${comment.date}" type="BOTH" /></td>
                 <td>
                     <c:choose>
                         <c:when test="${comment.altered}">Yes</c:when>
