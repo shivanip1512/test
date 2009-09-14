@@ -199,8 +199,6 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         	// Add known issues to this list for 4.2
         	propertyExceptions.add(YukonRoleProperty.TEMPLATE_ROOT);	//YUK-6977, YUK-7073
         	propertyExceptions.add(YukonRoleProperty.METER_MCT_BASE_DESIGNATION);   //YUK-6978
-        	//propertyExceptions.add(YukonRoleProperty.OPERATOR_ACCOUNT_NUMBER_LENGTH);   //YUK-7263, YUK-7327
-        	//propertyExceptions.add(YukonRoleProperty.OPERATOR_ROTATION_DIGIT_LENGTH);	//YUK-7263, YUK-7411
         	
             String[] exceptionArray = exceptionList.split("\\s*,\\s*");
             for (String propertyStr : exceptionArray) {
