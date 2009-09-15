@@ -134,8 +134,8 @@ public interface DeviceTypes extends TypeBase
     public final static int FAULT_CI          = DEVICE_OFFSET + 102;
     public final static int NEUTRAL_MONITOR   = DEVICE_OFFSET + 103;
     public final static int CBC_DNP           = DEVICE_OFFSET + 104;
-    public final static int LM_GROUP_XML	  = DEVICE_OFFSET + 105;
-    public final static int XML_TRANSMITTER               = DEVICE_OFFSET + 106;
+    public final static int LM_GROUP_INTEGRATION  = DEVICE_OFFSET + 105;
+    public final static int INTEGRATION_TRANSMITTER  = DEVICE_OFFSET + 106;
     
     public final static int MCT430A3                  = DEVICE_OFFSET + 107;
     
@@ -220,7 +220,7 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_EMETCON_GROUP = {"EMETCON GROUP"};
 	public static final String[] STRING_VERSACOM_GROUP = {"VERSACOM GROUP"};
 	public static final String[] STRING_EXPRESSCOMM_GROUP = {"EXPRESSCOM GROUP"};
-	public static final String[] STRING_XML_GROUP = {"XML GROUP"};
+	public static final String[] STRING_INTEGRATION_GROUP = {"INTEGRATION GROUP"};
 	public static final String[] STRING_POINT_GROUP = {"POINT GROUP"};
 	public static final String[] STRING_RIPPLE_GROUP = {"RIPPLE GROUP"};
 	public static final String[] STRING_MACRO_GROUP = {"MACRO GROUP"};
@@ -252,7 +252,7 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_SADIGITAL_GROUP = {"SA-Digital Group"};
 	public static final String[] STRING_GOLAY_GROUP = {"Golay Group"};
 	public static final String[] STRING_SERIES_5_LMI = {"RTU-LMI", "RTU LMI"};
-	public static final String[] STRING_XML_TRANSMITTER = {"XML"};
+	public static final String[] STRING_INTEGRATION_TRANSMITTER = {"INTEGRATION"};
 	public static final String[] STRING_RTC = {"RTC"};
 	public static final String[] STRING_RTM = {"RTM"};
 	public static final String[] STRING_SENTINEL = {"SENTINEL"};

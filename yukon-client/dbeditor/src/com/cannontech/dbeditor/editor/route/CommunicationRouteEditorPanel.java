@@ -524,11 +524,11 @@ private void loadSignalTransmitterComboBox(String routeType) {
 					getSignalTransmitterComboBox().addItem( devices.get(i) );
 			}
 		}
-		else if(routeType.equalsIgnoreCase(RouteTypes.STRING_XML))
+		else if(routeType.equalsIgnoreCase(RouteTypes.STRING_INTEGRATION_ROUTE))
 		{
 			for(int i=0;i<devices.size();i++)
 			{
-				if( ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getType() == PAOGroups.XML_TRANSMITTER)
+				if( ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getType() == PAOGroups.INTEGRATION_TRANSMITTER)
 					getSignalTransmitterComboBox().addItem( devices.get(i) );
 			}
 		}

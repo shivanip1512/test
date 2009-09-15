@@ -22,25 +22,25 @@ public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPan
 
 	private static final String[] SWITCH_LIST = 
 	{
-			"LCR 5000       (EXPRESSCOM)",
-			"LCR 5000       (VERSACOM)",
-            "LCR 4700       (EXPRESSCOM)",
-            "LCR 4700       (Golay)",
-            "LCR 4500       (EXPRESSCOM)",
-            "LCR 4500       (Golay)",
-            "LCR 4000       (VERSACOM)",
-			"LCR 3100       (EXPRESSCOM)",
-            "LCR 3100       (VERSACOM)",
-			"LCR 3000       (VERSACOM)",
-			"LCR 3000       (EMETCON)",
-			"LCR 2000       (VERSACOM)",
-			"LCR 1000       (Ripple)",
-			"LMT 100 Series (EMETCON)",
-			"DCU-S1180      (Golay)",
-            "T-STAT         (EXPRESSCOM)",
+			"LCR 5000       	(EXPRESSCOM)",
+			"LCR 5000       	(VERSACOM)",
+            "LCR 4700       	(EXPRESSCOM)",
+            "LCR 4700       	(Golay)",
+            "LCR 4500       	(EXPRESSCOM)",
+            "LCR 4500       	(Golay)",
+            "LCR 4000       	(VERSACOM)",
+			"LCR 3100       	(EXPRESSCOM)",
+            "LCR 3100       	(VERSACOM)",
+			"LCR 3000       	(VERSACOM)",
+			"LCR 3000       	(EMETCON)",
+			"LCR 2000       	(VERSACOM)",
+			"LCR 1000       	(Ripple)",
+			"LMT 100 Series 	(EMETCON)",
+			"DCU-S1180      	(Golay)",
+            "T-STAT         	(EXPRESSCOM)",
 			"Point Group",
 			"MCT Group",
-			"XML Group      (EXPRESSCOM-XML)"
+			"Integration Group 	(EXPRESSCOM+)"
 	};
     
     // These are the values that correspond to each selection
@@ -65,36 +65,36 @@ public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPan
             com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EXPRESSCOMM,
             com.cannontech.database.data.pao.PAOGroups.LM_GROUP_POINT,
             com.cannontech.database.data.pao.PAOGroups.LM_GROUP_MCT,
-            com.cannontech.database.data.pao.PAOGroups.LM_GROUP_XML
+            com.cannontech.database.data.pao.PAOGroups.LM_GROUP_INTEGRATION
     };  
 	
 	//normally we cannot show SA protocol groups, since legal permission
 	//has only been granted for a few specific companies
 	private static final String[] SWITCH_LIST_SA = 
 	{
-			"LCR 5000       (EXPRESSCOM)",
-			"LCR 5000       (VERSACOM)",
-            "LCR 4700       (EXPRESSCOM)",
-            "LCR 4700       (Golay)",
-            "LCR 4500       (EXPRESSCOM)",
-            "LCR 4500       (Golay)",
-			"LCR 4000       (VERSACOM)",
-            "LCR 3100       (EXPRESSCOM)",
-            "LCR 3100       (VERSACOM)",
-            "LCR 3100       (EMETCON)",
-			"LCR 3000       (VERSACOM)",
-			"LCR 3000       (EMETCON)",
-			"LCR 2000       (VERSACOM)",
-			"LCR 1000       (Ripple)",
-			"LMT 100 Series (EMETCON)",
-			"DCU-S3000      (SA-305)",
-			"DCU-S2000      (SA-205)",
-			"DCU-S1170      (SA Digital)",
-			"DCU-S1180      (Golay)",
-            "T-STAT         (EXPRESSCOM)",
+			"LCR 5000       	(EXPRESSCOM)",
+			"LCR 5000       	(VERSACOM)",
+            "LCR 4700       	(EXPRESSCOM)",
+            "LCR 4700       	(Golay)",
+            "LCR 4500       	(EXPRESSCOM)",
+            "LCR 4500       	(Golay)",
+			"LCR 4000       	(VERSACOM)",
+            "LCR 3100       	(EXPRESSCOM)",
+            "LCR 3100       	(VERSACOM)",
+            "LCR 3100       	(EMETCON)",
+			"LCR 3000       	(VERSACOM)",
+			"LCR 3000       	(EMETCON)",
+			"LCR 2000       	(VERSACOM)",
+			"LCR 1000       	(Ripple)",
+			"LMT 100 Series 	(EMETCON)",
+			"DCU-S3000      	(SA-305)",
+			"DCU-S2000      	(SA-205)",
+			"DCU-S1170      	(SA Digital)",
+			"DCU-S1180      	(Golay)",
+            "T-STAT         	(EXPRESSCOM)",
 			"Point Group",
 			"MCT Group",
-			"XML Group      (EXPRESSCOM-XML)"
+			"Integration Group	(EXPRESSCOM+)"
 	};
 	
 
@@ -125,7 +125,7 @@ public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPan
             com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EXPRESSCOMM,
 			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_POINT,
 			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_MCT,
-			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_XML
+			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_INTEGRATION
 	};
 	
 /**

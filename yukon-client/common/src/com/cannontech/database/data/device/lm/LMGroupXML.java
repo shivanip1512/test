@@ -33,7 +33,7 @@ public class LMGroupXML extends LMGroupExpressCom {
 		super();
 		parameterList = new ArrayList<LmXmlParameter>();
 		
-		getYukonPAObject().setType( com.cannontech.database.data.pao.PAOGroups.STRING_XML_GROUP[0] );
+		getYukonPAObject().setType( com.cannontech.database.data.pao.PAOGroups.STRING_INTEGRATION_GROUP[0] );
 	}
 	
     public void add() throws java.sql.SQLException 

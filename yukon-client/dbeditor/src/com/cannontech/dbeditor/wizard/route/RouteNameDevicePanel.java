@@ -226,9 +226,9 @@ public Object getValue(Object val) {
 	{
 		val = RouteFactory.createRoute( RouteTypes.ROUTE_SERIES_5_LMI);
 	}
-	else if (type == PAOGroups.XML_TRANSMITTER)
+	else if (type == PAOGroups.INTEGRATION_TRANSMITTER)
 	{
-		val = RouteFactory.createRoute( RouteTypes.ROUTE_XML);
+		val = RouteFactory.createRoute( RouteTypes.ROUTE_INTEGRATION);
 	}
 	else //?
 		throw new Error("RouteType2::getValue() - Unknown transmitter type");

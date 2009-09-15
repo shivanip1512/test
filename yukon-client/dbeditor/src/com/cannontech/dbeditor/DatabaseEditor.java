@@ -2187,7 +2187,7 @@ public void popupMenuWillBecomeVisible(PopupMenuEvent event)
 	            if( (litYuk.getPaoClass() == com.cannontech.database.data.pao.PAOGroups.CLASS_CAPCONTROL 
 	            		&& !DeviceTypesFuncs.isCapBankController(litYuk.getType())) 
 	                || litYuk.getType() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_RIPPLE
-	                || litYuk.getType() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_XML 
+	                || litYuk.getType() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_INTEGRATION 
 	                || litYuk.getType() == com.cannontech.database.data.pao.PAOGroups.MACRO_GROUP
 	                || litYuk.getPaoClass() == com.cannontech.database.data.pao.DeviceClasses.LOADMANAGEMENT )
 	            {

@@ -26,7 +26,7 @@ public class LMGroupEditor extends com.cannontech.common.editor.PropertyPanel im
 		  PAOGroups.LM_GROUP_VERSACOM, PAOGroups.MACRO_GROUP, PAOGroups.LM_GROUP_MCT,
 		  PAOGroups.LM_GROUP_POINT, PAOGroups.LM_GROUP_EXPRESSCOMM, 
 		  PAOGroups.LM_GROUP_SA305, PAOGroups.LM_GROUP_SA205,
-		  PAOGroups.LM_GROUP_SADIGITAL, PAOGroups.LM_GROUP_GOLAY,PAOGroups.LM_GROUP_XML },
+		  PAOGroups.LM_GROUP_SADIGITAL, PAOGroups.LM_GROUP_GOLAY,PAOGroups.LM_GROUP_INTEGRATION },
 
 		//com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupEmetconPanel
 		{ PAOGroups.LM_GROUP_EMETCON },
@@ -44,7 +44,7 @@ public class LMGroupEditor extends com.cannontech.common.editor.PropertyPanel im
 		{ PAOGroups.MACRO_GROUP },
 
 		//com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupExpressComEditorPanel
-		{ PAOGroups.LM_GROUP_EXPRESSCOMM, PAOGroups.LM_GROUP_XML },
+		{ PAOGroups.LM_GROUP_EXPRESSCOMM, PAOGroups.LM_GROUP_INTEGRATION },
 
 		//com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupMCTEditorPanel
 		{ PAOGroups.LM_GROUP_MCT },
@@ -62,7 +62,7 @@ public class LMGroupEditor extends com.cannontech.common.editor.PropertyPanel im
 		{ PAOGroups.LM_GROUP_GOLAY },
 		
 		//com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupXMLEditorPanel
-		{ PAOGroups.LM_GROUP_XML }
+		{ PAOGroups.LM_GROUP_INTEGRATION }
 	};
 
 	
@@ -151,7 +151,7 @@ public Object[] createNewPanel(int panelIndex)
 			
 		case 12:
             objs[0] = new com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupXMLEditorPanel();
-            objs[1] = "XML Settings";
+            objs[1] = "Integration Settings";
             break;
 	}
 		

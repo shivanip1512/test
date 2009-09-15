@@ -3566,8 +3566,8 @@
     <device id="WCTP_TERMINAL" inherits="SIGNAL_TRANSMITTER_BASE">
         <displayName>WCTP TERMINAL</displayName>
     </device>
-    <device id="XML_TRANSMITTER" inherits="SIGNAL_TRANSMITTER_BASE">
-        <displayName>XML</displayName>
+    <device id="INTEGRATION_TRANSMITTER" inherits="SIGNAL_TRANSMITTER_BASE">
+        <displayName>INTEGRATION</displayName>
     </device>
     
     <!-- ELECTRONIC METERS -->

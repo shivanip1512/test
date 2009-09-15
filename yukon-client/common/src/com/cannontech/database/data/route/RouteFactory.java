@@ -66,9 +66,9 @@ public final static RouteBase createRoute(int routeType)
 			returnRoute = new RTCRoute();
 			returnRoute.setRouteType( RouteTypes.STRING_RTC_ROUTE );
 			break;
-		case RouteTypes.ROUTE_XML:
+		case RouteTypes.ROUTE_INTEGRATION:
 			returnRoute = new RouteBase();
-			returnRoute.setRouteType( RouteTypes.STRING_XML );
+			returnRoute.setRouteType( RouteTypes.STRING_INTEGRATION_ROUTE );
 
 	}
 
@@ -143,10 +143,10 @@ public final static RouteBase createRoute( String routeType)
 		returnRoute = new RTCRoute();
 		returnRoute.setRouteType( RouteTypes.STRING_RTC_ROUTE );
 	}
-	else if (routeType.equalsIgnoreCase(RouteTypes.STRING_XML))
+	else if (routeType.equalsIgnoreCase(RouteTypes.STRING_INTEGRATION_ROUTE))
 	{
 		returnRoute = new RouteBase();
-		returnRoute.setRouteType( RouteTypes.STRING_XML );
+		returnRoute.setRouteType( RouteTypes.STRING_INTEGRATION_ROUTE );
 	}
 	else
 		throw new IllegalStateException( "*** " + routeType + " is not a valid route type." );

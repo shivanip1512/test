@@ -333,7 +333,7 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
             temp.setFirstFocus();
 			return temp;
 		}
-		else if (DeviceTypes.XML_TRANSMITTER == devType)
+		else if (DeviceTypes.INTEGRATION_TRANSMITTER == devType)
 		{
 		    return getDeviceCommChannelPanel();
 		}

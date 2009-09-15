@@ -33,7 +33,7 @@ public final class PAOGroups implements RouteTypes, PortTypes, DeviceTypes, CapC
    	public static final int CLASS_CUSTOMER = CAT_CUSTOMER;
    	public static final int CLASS_CAPCONTROL = CAT_CAPCONTROL;
    	public static final int CLASS_LOADMANAGEMENT = CAT_LOADCONTROL;
-
+	
 /**
  * This method was created in VisualAge.
  * @return int
@@ -259,10 +259,10 @@ public final static int getDeviceType(String typeString)
 	  return LM_GROUP_EXPRESSCOMM;
    else if (isStringDevice(compareString, STRING_POINT_GROUP))
 	  return LM_GROUP_POINT;
-   else if (isStringDevice(compareString, STRING_XML_GROUP))
-       return LM_GROUP_XML;
-   else if (isStringDevice(compareString, STRING_XML_TRANSMITTER))
-       return XML_TRANSMITTER;
+   else if (isStringDevice(compareString, STRING_INTEGRATION_GROUP))
+       return LM_GROUP_INTEGRATION;
+   else if (isStringDevice(compareString, STRING_INTEGRATION_TRANSMITTER))
+       return INTEGRATION_TRANSMITTER;
    else if (isStringDevice(compareString, STRING_MACRO_GROUP))
 	  return MACRO_GROUP;
    else if (isStringDevice(compareString, STRING_RIPPLE_GROUP))
@@ -379,8 +379,8 @@ public final static String getPAOTypeString(int type)
 			return STRING_VERSACOM;
 		case ROUTE_RTC:
 			return STRING_RTC_ROUTE;
-		case ROUTE_XML:
-			return STRING_XML;
+		case ROUTE_INTEGRATION:
+			return STRING_INTEGRATION_ROUTE;
 
 		//capcontrol
 		case CAP_CONTROL_SUBSTATION:
@@ -541,8 +541,8 @@ public final static String getPAOTypeString(int type)
 		  	return STRING_WCTP_TERMINAL[0];
 		case SNPP_TERMINAL:
 			return STRING_SNPP_TERMINAL[0];
-		case XML_TRANSMITTER:
-		    return STRING_XML_TRANSMITTER[0];
+		case INTEGRATION_TRANSMITTER:
+		    return STRING_INTEGRATION_TRANSMITTER[0];
 			
 	  	case LM_GROUP_EMETCON:
 		  	return STRING_EMETCON_GROUP[0];
@@ -566,8 +566,8 @@ public final static String getPAOTypeString(int type)
 		  	return STRING_RIPPLE_GROUP[0];
 		case LM_GROUP_MCT:
 			return STRING_MCT_GROUP[0];
-	    case LM_GROUP_XML:
-	            return STRING_XML_GROUP[0];
+	    case LM_GROUP_INTEGRATION:
+	            return STRING_INTEGRATION_GROUP[0];
 	  	case MCTBROADCAST:
 		  	return STRING_MCT_BROADCAST[0];
 		  
@@ -842,8 +842,8 @@ public final static int getRouteType(String typeString)
 	else if( typeString.equalsIgnoreCase(STRING_RTC_ROUTE)) {
 		return ROUTE_RTC;
 	}
-	else if( typeString.equalsIgnoreCase(STRING_XML)){
-		return ROUTE_XML;
+	else if( typeString.equalsIgnoreCase(STRING_INTEGRATION_ROUTE)){
+		return ROUTE_INTEGRATION;
 	}
 	else
 		return INVALID;
