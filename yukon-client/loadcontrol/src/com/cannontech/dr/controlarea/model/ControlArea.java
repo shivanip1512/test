@@ -3,10 +3,10 @@ package com.cannontech.dr.controlarea.model;
 import java.util.Collections;
 import java.util.List;
 
-import com.cannontech.common.device.model.DisplayableDevice;
+import com.cannontech.common.pao.DisplayablePaoBase;
 import com.cannontech.common.pao.PaoIdentifier;
 
-public class ControlArea extends DisplayableDevice {
+public class ControlArea extends DisplayablePaoBase {
 
     private List<ControlAreaTrigger> triggers;
 

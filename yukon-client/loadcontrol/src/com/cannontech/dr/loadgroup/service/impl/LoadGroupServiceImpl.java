@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
-import com.cannontech.common.device.model.DisplayableDevice;
 import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.DisplayablePaoBase;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.DatedObject;
@@ -73,8 +73,8 @@ public class LoadGroupServiceImpl implements LoadGroupService {
                 PaoType paoType = PaoType.getForId(deviceTypeId);
                 PaoIdentifier paoId = new PaoIdentifier(rs.getInt("paObjectId"),
                                                         paoType);
-                DisplayablePao retVal = new DisplayableDevice(paoId,
-                                                              rs.getString("paoName"));
+                DisplayablePao retVal = new DisplayablePaoBase(paoId,
+                                                               rs.getString("paoName"));
                 return retVal;
             }
         };

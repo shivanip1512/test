@@ -12,8 +12,8 @@ import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.FilterService;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
-import com.cannontech.common.device.model.DisplayableDevice;
 import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.DisplayablePaoBase;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.SearchResult;
@@ -51,8 +51,8 @@ public class ProgramServiceImpl implements ProgramService {
                     throws SQLException {
                 PaoIdentifier paoId = new PaoIdentifier(rs.getInt("paObjectId"),
                                                         PaoType.LM_DIRECT_PROGRAM);
-                DisplayablePao retVal = new DisplayableDevice(paoId,
-                                                              rs.getString("paoName"));
+                DisplayablePao retVal = new DisplayablePaoBase(paoId,
+                                                               rs.getString("paoName"));
                 return retVal;
             }
         };

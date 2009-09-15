@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
-import com.cannontech.common.device.model.DisplayableDevice;
 import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.DisplayablePaoBase;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -39,8 +39,8 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
             PaoType paoType = PaoType.getForId(deviceTypeId);
             PaoIdentifier paoId = new PaoIdentifier(rs.getInt("paObjectId"),
                                                     paoType);
-            DisplayablePao retVal = new DisplayableDevice(paoId,
-                                                          rs.getString("paoName"));
+            DisplayablePao retVal = new DisplayablePaoBase(paoId,
+                                                           rs.getString("paoName"));
             return retVal;
         }};
 
