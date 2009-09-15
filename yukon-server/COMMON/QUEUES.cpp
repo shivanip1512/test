@@ -104,7 +104,7 @@ IM_EX_CTIBASE INT GetIndividualRequestStartPos(HCTIQUEUE QueueHandle, ULONG Requ
     return retVal;
 }
 
-/* Routine to return the starting position of a RequestID, returns 0 if not found */
+/* Routine to return the count and priority of requests for a RequestID, returns 0 if not found */
 IM_EX_CTIBASE INT GetRequestCountAndPriority(HCTIQUEUE QueueHandle, ULONG RequestID, ULONG &Count, ULONG &Priority)
 {
     int retVal = NORMAL;
@@ -171,9 +171,9 @@ IM_EX_CTIBASE INT AdjustPriority(HCTIQUEUE QueueHandle, ULONG RequestID, INT &Nu
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Possible deadlock " << __FILE__ << " (" << __LINE__ << ")  " << CurrentTID() << " for " << QueueHandle << endl;
             }
-    
+
             //autopsy(__FILE__, __LINE__);
-    
+
             if(++dlcnt > 10)
             {
                 DefibBlockSem(QueueHandle);
@@ -227,7 +227,7 @@ IM_EX_CTIBASE INT AdjustPriority(HCTIQUEUE QueueHandle, ULONG RequestID, INT &Nu
                 }
 
                 /* Walk up the priorities until we find one that has a last */
-				int i = newPriority; 
+                int i = newPriority;
                 for(i = newPriority; i < MAXPRIORITY; i++)
                 {
                     if(QueueHandle->Last[i] != NULL)
@@ -285,7 +285,7 @@ IM_EX_CTIBASE INT AdjustPriority(HCTIQUEUE QueueHandle, ULONG RequestID, INT &Nu
         return(ERROR_QUE_INVALID_HANDLE);
     }
 
-    // get the block semaphore 
+    // get the block semaphore
     int dlcnt = 0;
     while(CTIRequestMutexSem (QueueHandle->BlockSem, 30000))
     {
@@ -364,7 +364,7 @@ IM_EX_CTIBASE INT AdjustPriority(HCTIQUEUE QueueHandle, ULONG RequestID, INT &Nu
 IM_EX_CTIBASE bool VerifyRequestCount (HCTIQUEUE QueueHandle)
 {
     bool isCorrect = true;
-    
+
     if(!CTIRequestMutexSem (QueueHandle->BlockSem, 5000))
     {
         QUEUEENT *Entry = QueueHandle->First;
@@ -620,7 +620,7 @@ IM_EX_CTIBASE INT WriteQueue (HCTIQUEUE QueueHandle,
                 QueueHandle->Last[Priority] = Entry;
             }
         }
-        
+
     }
     else if(QueueHandle->Type & QUE_LIFO)
     {
@@ -821,7 +821,7 @@ INT ReadQueue (HCTIQUEUE QueueHandle, PREQUESTDATA RequestData, PULONG  DataSize
 {
     PQUEUEENT Entry;
     PQUEUEENT Previous = NULL;
-    ULONG i = 0; 
+    ULONG i = 0;
 
     if(QueueHandle == (HCTIQUEUE) NULL)
     {
@@ -1097,7 +1097,7 @@ IM_EX_CTIBASE INT SearchQueue (HCTIQUEUE     QueueHandle,
         return(ERROR_QUE_EMPTY);
     }
 
-    // get the exclusion semaphore 
+    // get the exclusion semaphore
 #if 1
     int dlcnt = 0;
     while(CTIRequestMutexSem (QueueHandle->BlockSem, 30000))
@@ -1177,7 +1177,7 @@ IM_EX_CTIBASE INT SearchQueue (HCTIQUEUE     QueueHandle,
  */
 IM_EX_CTIBASE INT CleanQueue( HCTIQUEUE QueueHandle,
                               void *findFuncPtr,
-                              bool (*myFindFunc)(void*, PQUEUEENT),
+                              bool (*myFindFunc)(void*, void*),
                               void (*myCleanFunc)(void*, void*),
                               void *cleanFuncPtr)
 {
@@ -1203,7 +1203,7 @@ IM_EX_CTIBASE INT CleanQueue( HCTIQUEUE QueueHandle,
                     Entry = Entry->Next;        // Hang on to the next guy, so we can continue;
                     try
                     {
-                        if( (*myFindFunc)(findFuncPtr, DeleteEntry) )
+                        if( (*myFindFunc)(findFuncPtr, DeleteEntry->Data) )
                         {
                             purgecnt++;
                             (*myCleanFunc)( cleanFuncPtr, DeleteEntry->Data);         // Call the cleanup function.  It better delete the data
@@ -1251,14 +1251,14 @@ void RemoveQueueEntry(HCTIQUEUE QueueHandle, PQUEUEENT Entry, PQUEUEENT Previous
     {
         if(QueueHandle->Last[Entry->Priority] == Entry)
         {
-            if(Previous != NULL && Previous->Priority == Entry->Priority) 
-            { 
-                QueueHandle->Last[Entry->Priority] = Previous; 
-            } 
+            if(Previous != NULL && Previous->Priority == Entry->Priority)
+            {
+                QueueHandle->Last[Entry->Priority] = Previous;
+            }
             else
-            { 
-                QueueHandle->Last[Entry->Priority] = NULL; 
-            } 
+            {
+                QueueHandle->Last[Entry->Priority] = NULL;
+            }
         }
         QueueHandle->NumElements[Entry->Priority]--;
     }

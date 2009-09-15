@@ -383,7 +383,7 @@ static void applyColdStart(const long unusedid, CtiPortSPtr ptPort, void *unused
 
 void applyDeviceQueuePurge(const long unusedid, CtiDeviceSPtr RemoteDevice, void *lprtid)
 {
-    extern bool findAllQueueEntries(void *unused, PQUEUEENT d);
+    extern bool findAllQueueEntries(void *unused, void *d);
     extern void cleanupOrphanOutMessages(void *unusedptr, void* d);
 
     LONG PortID = (LONG)lprtid;
@@ -397,39 +397,64 @@ void applyDeviceQueuePurge(const long unusedid, CtiDeviceSPtr RemoteDevice, void
             commFail(RemoteDevice);
         }
 
-        if(RemoteDevice->getType() == TYPE_CCU711)
+        switch( RemoteDevice->getType() )
         {
-            CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)RemoteDevice->getTrxInfo();
-
-            if(pInfo != NULL)
+            case TYPE_CCU711:
             {
-                QueryQueue(pInfo->QueueHandle, &QueEntCnt);
-                if(QueEntCnt)
+                CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)RemoteDevice->getTrxInfo();
+
+                if(pInfo != NULL)
                 {
+                    QueryQueue(pInfo->QueueHandle, &QueEntCnt);
+                    if(QueEntCnt)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << "    CCU:  " << RemoteDevice->getName() << "  PURGING " << QueEntCnt << " queue queue entries" << endl;
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << "    CCU:  " << RemoteDevice->getName() << "  PURGING " << QueEntCnt << " queue queue entries" << endl;
+                        }
+                        CleanQueue(pInfo->QueueHandle, NULL, findAllQueueEntries, cleanupOrphanOutMessages);
+                        // PurgeQueue(pInfo->QueueHandle);
                     }
-                    CleanQueue(pInfo->QueueHandle, NULL, findAllQueueEntries, cleanupOrphanOutMessages);
-                    // PurgeQueue(pInfo->QueueHandle);
+
+                    QueryQueue(pInfo->ActinQueueHandle, &QueEntCnt);
+                    if(QueEntCnt)
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << "    CCU:  " << RemoteDevice->getName() << "  PURGING " << QueEntCnt << " actin queue entries" << endl;
+                        }
+                        CleanQueue(pInfo->ActinQueueHandle, NULL, findAllQueueEntries, cleanupOrphanOutMessages);
+                        //PurgeQueue(pInfo->ActinQueueHandle);
+                    }
+
+                    //  make sure we clear out the pending bits - otherwise the device will refuse any new queued requests
+                    if(pInfo->getStatus(INLGRPQ))
+                    {
+                        pInfo->clearStatus(INLGRPQ);
+                    }
                 }
 
-                QueryQueue(pInfo->ActinQueueHandle, &QueEntCnt);
-                if(QueEntCnt)
+                break;
+            }
+            case TYPE_CCU721:
+            {
+                list<void *> entries;
+
+                RemoteDevice->getDeviceQueueHandler()->retrieveQueueEntries(findAllQueueEntries, NULL, entries);
+
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << "    CCU:  " << RemoteDevice->getName() << "  PURGING " << QueEntCnt << " actin queue entries" << endl;
-                    }
-                    CleanQueue(pInfo->ActinQueueHandle, NULL, findAllQueueEntries, cleanupOrphanOutMessages);
-                    //PurgeQueue(pInfo->ActinQueueHandle);
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << "    CCU:  " << RemoteDevice->getName() << "  PURGING " << entries.size() << " queue entries" << endl;
                 }
 
-                //  make sure we clear out the pending bits - otherwise the device will refuse any new queued requests
-                if(pInfo->getStatus(INLGRPQ))
+                list<void *>::iterator itr = entries.begin();
+
+                for( ; itr != entries.end(); ++itr )
                 {
-                    pInfo->clearStatus(INLGRPQ);
+                    cleanupOrphanOutMessages(NULL, *itr);
                 }
+
+                break;
             }
         }
     }
@@ -437,7 +462,7 @@ void applyDeviceQueuePurge(const long unusedid, CtiDeviceSPtr RemoteDevice, void
 
 void applyPortQueuePurge(const long unusedid, CtiPortSPtr ptPort, void *unusedPtr)
 {
-    extern bool findAllQueueEntries(void *unused, PQUEUEENT d);
+    extern bool findAllQueueEntries(void *unused, void *d);
     extern void cleanupOrphanOutMessages(void *unusedptr, void* d);
 
     LONG id = (LONG)unusedPtr;

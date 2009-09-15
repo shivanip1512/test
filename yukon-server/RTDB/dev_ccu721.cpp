@@ -32,7 +32,8 @@ namespace Cti       {
 namespace Device    {
 
 CCU721::CCU721() :
-    _initialized(false)
+    _initialized(false),
+    _queueInterface(_klondike)
 {
 }
 
@@ -211,6 +212,11 @@ bool CCU721::hasRemoteWork()  const {  return _klondike.hasRemoteWork();    }
 INT CCU721::queuedWorkCount() const {  return _klondike.queuedWorkCount();  }
 
 string CCU721::queueReport() const  {  return _klondike.queueReport();      }
+
+DeviceQueueInterface *CCU721::getDeviceQueueHandler()
+{
+    return &_queueInterface;
+}
 
 
 INT CCU721::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
@@ -454,52 +460,56 @@ int CCU721::sendCommResult(INMESS *InMessage)
                     queued_results.pop();
 
                     const OUTMESS *om = result.om;
-                    INMESS *im = CTIDBG_new INMESS;
 
-                    OutEchoToIN(om, im);
-
-                    im->Port      = om->Port;
-                    im->Remote    = om->Remote;
-
-                    im->EventCode = translateKlondikeError(result.error);
-                    im->Time      = result.timestamp;
-                    im->InLength  = result.message.size();
-
-                    copy(result.message.begin(), result.message.end(), im->Buffer.InMessage);
-
-                    if( !im->EventCode )
+                    if( om )
                     {
-                        im->EventCode = processInbound(om, im);
-                    }
+                        INMESS *im = CTIDBG_new INMESS;
 
-                    int socket_error;
-                    unsigned long bytes_written;
+                        OutEchoToIN(om, im);
 
-                    OUTMESS statistics_report;
+                        im->Port      = om->Port;
+                        im->Remote    = om->Remote;
 
-                    statistics_report.Port          = im->Port;
-                    statistics_report.DeviceID      = im->DeviceID;
-                    statistics_report.TargetID      = im->TargetID;
-                    statistics_report.EventCode     = im->EventCode & 0x3fff;
-                    statistics_report.MessageFlags  = im->MessageFlags;
+                        im->EventCode = translateKlondikeError(result.error);
+                        im->Time      = result.timestamp;
+                        im->InLength  = result.message.size();
 
-                    _statistics.push_back(statistics_report);
+                        copy(result.message.begin(), result.message.end(), im->Buffer.InMessage);
 
-                    if( (socket_error = im->ReturnNexus->CTINexusWrite(im, sizeof(INMESS), &bytes_written, 60L)) != NORMAL )
-                    {
+                        if( !im->EventCode )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Error writing to nexus. Cti::Device::CCU721::sendCommResult() on device \"" << getName() << "\".  "
-                                 << "Wrote " << bytes_written << "/" << sizeof(INMESS) << " bytes" << endl;
+                            im->EventCode = processInbound(om, im);
                         }
 
-                        if( CTINEXUS::CTINexusIsFatalSocketError(socket_error) )
-                        {
-                            status = socket_error;
-                        }
-                    }
+                        int socket_error;
+                        unsigned long bytes_written;
 
-                    delete om;
+                        OUTMESS statistics_report;
+
+                        statistics_report.Port          = im->Port;
+                        statistics_report.DeviceID      = im->DeviceID;
+                        statistics_report.TargetID      = im->TargetID;
+                        statistics_report.EventCode     = im->EventCode & 0x3fff;
+                        statistics_report.MessageFlags  = im->MessageFlags;
+
+                        _statistics.push_back(statistics_report);
+
+                        if( (socket_error = im->ReturnNexus->CTINexusWrite(im, sizeof(INMESS), &bytes_written, 60L)) != NORMAL )
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " Error writing to nexus. Cti::Device::CCU721::sendCommResult() on device \"" << getName() << "\".  "
+                                     << "Wrote " << bytes_written << "/" << sizeof(INMESS) << " bytes" << endl;
+                            }
+
+                            if( CTINEXUS::CTINexusIsFatalSocketError(socket_error) )
+                            {
+                                status = socket_error;
+                            }
+                        }
+
+                        delete om;
+                    }
                 }
 
                 break;

@@ -21,6 +21,7 @@
 
 #include "dev_remote.h"
 #include "tbl_dv_address.h"
+#include "dev_ccu721_queue_interface.h"
 #include "prot_klondike.h"
 
 namespace Cti       {
@@ -47,6 +48,8 @@ private:
     };
 
     static int translateKlondikeError(Protocol::Klondike::Errors error);
+
+    CCU721DeviceQueueInterface _queueInterface;
 
 protected:
 
@@ -100,6 +103,8 @@ public:
     INT  queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt);
 
     string queueReport() const;
+
+    virtual DeviceQueueInterface *getDeviceQueueHandler();
 
     virtual LONG getAddress() const;
 

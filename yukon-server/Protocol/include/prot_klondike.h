@@ -131,6 +131,18 @@ private:
         { };
 
         bool operator>(const queue_entry_t &rhs) const   {  return priority > rhs.priority;  };
+
+        struct request_id_equal
+        {
+            unsigned _request_id;
+
+            request_id_equal(unsigned request_id) : _request_id(request_id) {};
+
+            bool operator()(const Klondike::queue_entry_t &other)
+            {
+                return other.om && (other.om->Request.GrpMsgID == _request_id);
+            };
+        };
     };
 
     typedef fifo_multiset<queue_entry_t, std::greater<queue_entry_t> > local_work_t;
@@ -360,6 +372,9 @@ public:
     bool hasQueuedWork()  const;
     unsigned queuedWorkCount() const;
     bool addQueuedWork(const OUTMESS *om, const byte_buffer_t &payload, unsigned priority, unsigned char dlc_parms, unsigned char stages);
+
+    unsigned getQueueCount(ULONG requestID);
+    void retrieveQueueEntries(bool (*myFindFunc)(void*, void*), void *findParameter, std::list<void *> &entries);
 
     bool hasRemoteWork()  const;
     unsigned getRemoteWorkPriority() const;

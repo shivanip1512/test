@@ -16,30 +16,29 @@
 #define __DEVICE_QUEUE_INTERFACE_H__
 #pragma warning( disable : 4786)
 
-#include "yukon.h"
-#include "trx_711.h"
+#include "dlldefs.h"
+#include "queues.h"
 #include <list>
 
 namespace Cti {
 
 class IM_EX_DEVDB DeviceQueueInterface
 {
-private:
-    CtiTransmitter711Info *_p711Info;
-    static void copyMessagesToList(void *listPtr, void* data);
+protected:
+    DeviceQueueInterface() {};
+
+    static void copyMessagesToList(void *listPtr, void* data)
+    {
+        reinterpret_cast<std::list<void*> *>(listPtr)->push_back(data);
+    }
+
 public:
+    virtual ~DeviceQueueInterface() {};
 
-    DeviceQueueInterface(CtiTransmitter711Info *pInfo);
-    DeviceQueueInterface();
-    ~DeviceQueueInterface();
-
-    void getQueueRequestInfo(ULONG requestID, ULONG &count, ULONG &priority);
-    void cancelRequest(ULONG requestID, ULONG &count);
-    void set711Info(CtiTransmitter711Info *pInfo);
-    void retrieveQueueEntries( bool (*myFindFunc)(void*, PQUEUEENT) , void *findParameter, std::list<void*>& entries);
-
+    virtual void getQueueRequestInfo(ULONG requestID, ULONG &count, ULONG &priority) = 0;
+    virtual void retrieveQueueEntries( bool (*myFindFunc)(void*, void*) , void *findParameter, std::list<void*>& entries) = 0;
 };
 
 }//Cti Namespace
 
-#endif 
+#endif

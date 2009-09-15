@@ -93,8 +93,8 @@ USHORT QueSequence = 0x8000;
 
 static CHAR tempstr[100];
 
-bool findAllQueueEntries(void *unused, PQUEUEENT d);
-bool findReturnNexusMatch(void *nid, PQUEUEENT d);
+bool findAllQueueEntries(void *unused, void *d);
+bool findReturnNexusMatch(void *nid, void *d);
 void cleanupOrphanOutMessages(void *unusedptr, void* d);
 void cancelOutMessages(void *doSendError, void* om);
 int  ReturnQueuedResult(CtiDeviceSPtr Dev, CtiTransmitter711Info *pInfo, USHORT QueTabEnt);
@@ -1939,15 +1939,15 @@ INT DeQueue (INMESS *InMessage)
     return(status);
 }
 
-bool findReturnNexusMatch(void *nid, PQUEUEENT d)
+bool findReturnNexusMatch(void *nid, void *d)
 {
     CTINEXUS *rnid = (CTINEXUS *)nid;
-    OUTMESS *OutMessage = (OUTMESS *)(d->Data);
+    OUTMESS *OutMessage = (OUTMESS *)d;
 
     return(OutMessage->ReturnNexus == rnid);
 }
 
-bool findAllQueueEntries(void *unused, PQUEUEENT d)
+bool findAllQueueEntries(void *unused, void *d)
 {
     return true;
 }

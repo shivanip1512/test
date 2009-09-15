@@ -1028,6 +1028,41 @@ unsigned Klondike::queuedWorkCount() const
 }
 
 
+unsigned Klondike::getQueueCount(ULONG requestID)
+{
+    sync_guard_t guard(_sync);
+
+    return std::count_if(_waiting_requests.begin(),
+                         _waiting_requests.end(),
+                         queue_entry_t::request_id_equal(requestID));
+}
+
+
+void Klondike::retrieveQueueEntries(bool (*myFindFunc)(void*, void*), void *findParameter, std::list<void *> &entries)
+{
+    sync_guard_t guard(_sync);
+
+    local_work_t::const_iterator itr = _waiting_requests.begin();
+
+    while( itr != _waiting_requests.end() )
+    {
+        //  This conversion is necessary because of the bad old days.  :(
+        void *outmess = static_cast<void *>(const_cast<OUTMESS *>(itr->om));
+
+        if( outmess && myFindFunc(findParameter, outmess) )
+        {
+            entries.push_back(outmess);
+
+            itr = _waiting_requests.erase(itr);
+        }
+        else
+        {
+            ++itr;
+        }
+    }
+}
+
+
 bool Klondike::isLoadingDeviceQueue() const
 {
     sync_guard_t guard(_sync);

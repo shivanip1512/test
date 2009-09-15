@@ -735,10 +735,8 @@ prot_xml.obj:	yukon.h precompiled.h ctidbgmem.h logger.h dlldefs.h \
 		thread.h mutex.h guard.h numstr.h clrdump.h ctitime.h \
 		CtiPCPtrQueue.h utility.h queues.h cticalls.h os2_2w32.h \
 		types.h sorted_vector.h porter.h dsm2.h cticonnect.h \
-		netports.h dsm2err.h devicetypes.h prot_xml.h xfer.h \
-		xml_object.h boostutil.h prot_base.h msg_pdata.h pointdefs.h \
-		pointtypes.h message.h collectable.h rwutil.h boost_time.h \
-		cmdparse.h ctitokenizer.h parsevalue.h
+		netports.h dsm2err.h devicetypes.h prot_xml.h cmdparse.h \
+		ctitokenizer.h parsevalue.h
 prot_ymodem.obj:	yukon.h precompiled.h ctidbgmem.h guard.h numstr.h \
 		dlldefs.h clrdump.h logger.h thread.h mutex.h ctitime.h \
 		CtiPCPtrQueue.h utility.h queues.h cticalls.h os2_2w32.h \
@@ -885,6 +883,12 @@ std_ansi_tbl_base.obj:	yukon.h precompiled.h ctidbgmem.h logger.h \
 		ctitime.h CtiPCPtrQueue.h utility.h queues.h cticalls.h \
 		os2_2w32.h types.h sorted_vector.h std_ansi_tbl_base.h \
 		ctidate.h
+test_prot_expresscom.obj:	yukon.h precompiled.h ctidbgmem.h \
+		expresscom.h cmdparse.h ctitokenizer.h dlldefs.h parsevalue.h \
+		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
+		guard.h numstr.h clrdump.h cticonnect.h netports.h ctitime.h \
+		ctistring.h rwutil.h boost_time.h boostutil.h utility.h \
+		queues.h sorted_vector.h
 test_prot_klondike.obj:	boostutil.h utility.h ctitime.h dlldefs.h \
 		queues.h cticalls.h os2_2w32.h types.h numstr.h \
 		sorted_vector.h prot_klondike.h prot_wrap.h prot_base.h \
@@ -905,13 +909,10 @@ test_prot_klondike.obj:	boostutil.h utility.h ctitime.h dlldefs.h \
 		dev_single.h msg_pcreturn.h msg_multi.h tbl_dv_scandata.h \
 		tbl_dv_wnd.h connection.h exchange.h msg_ptreg.h msg_reg.h \
 		queue.h cparms.h configkey.h configval.h tbl_dialup.h \
-		tbl_direct.h tbl_dv_address.h
-test_prot_xml.obj:	yukon.h precompiled.h ctidbgmem.h prot_xml.h DSM2.h \
-		mutex.h dlldefs.h guard.h numstr.h clrdump.h cticonnect.h \
-		netports.h xfer.h xml_object.h boostutil.h utility.h \
-		ctitime.h queues.h cticalls.h os2_2w32.h types.h \
-		sorted_vector.h prot_base.h msg_pdata.h pointdefs.h \
-		pointtypes.h message.h collectable.h rwutil.h boost_time.h
+		tbl_direct.h tbl_dv_address.h dev_ccu721_queue_interface.h \
+		device_queue_interface.h
+test_prot_xml.obj:	yukon.h precompiled.h ctidbgmem.h prot_xml.h \
+		cmdparse.h ctitokenizer.h dlldefs.h parsevalue.h
 transdata_application.obj:	yukon.h precompiled.h ctidbgmem.h logger.h \
 		dlldefs.h thread.h mutex.h guard.h numstr.h clrdump.h \
 		ctitime.h CtiPCPtrQueue.h utility.h queues.h cticalls.h \

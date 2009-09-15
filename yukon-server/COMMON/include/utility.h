@@ -210,9 +210,9 @@ IM_EX_CTIBASE ULONG   MilliTime (PULONG);
 
 IM_EX_CTIBASE LONG    ResetBreakAlloc();
 
-IM_EX_CTIBASE bool findLPRequestEntries(void *om, PQUEUEENT d);
-IM_EX_CTIBASE bool findRequestIDMatch(void *rid, PQUEUEENT d);
-IM_EX_CTIBASE bool findExpiredOutMessage(void *rid, PQUEUEENT d);
+IM_EX_CTIBASE bool findLPRequestEntries(void *om, void *d);
+IM_EX_CTIBASE bool findRequestIDMatch(void *rid, void *d);
+IM_EX_CTIBASE bool findExpiredOutMessage(void *rid, void *d);
 IM_EX_CTIBASE void cleanupOutMessages(void *unusedptr, void* d);
 
 IM_EX_CTIBASE string explainTags(const unsigned tags);

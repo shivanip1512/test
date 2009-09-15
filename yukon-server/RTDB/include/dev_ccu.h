@@ -12,7 +12,7 @@
 #include "os2_2w32.h"
 #include "dsm2.h"
 #include "dev_idlc.h"
-#include "device_queue_interface.h"
+#include "dev_ccu_queue_interface.h"
 
 class IM_EX_DEVDB CtiDeviceCCU : public CtiDeviceIDLC
 {
@@ -40,7 +40,7 @@ private:
 
     unsigned long _algorithmCommandTime[AlgorithmCount];
 
-    Cti::DeviceQueueInterface _queueHandler;
+    Cti::CCU711DeviceQueueInterface _queueHandler;
 
 protected:
 

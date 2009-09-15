@@ -126,7 +126,7 @@ void do_xfer(Test_Klondike &tk, Test_Wrap &tw, CtiXfer &xfer, string outbound, s
 }
 
 
-BOOST_AUTO_TEST_CASE(test_prot_klondike)
+BOOST_AUTO_TEST_CASE(test_prot_klondike_timesync_and_queue_loading)
 {
     Test_Klondike  test_klondike;
     Test_Wrap test_wrap;
@@ -174,3 +174,119 @@ BOOST_AUTO_TEST_CASE(test_prot_klondike)
     cout << "Transaction " << ++transactions << endl;
 }
 
+
+bool findAllMessages(void *, void *)
+{
+    return true;
+}
+
+
+bool findRequestId(void *request_id, void *om)
+{
+    return om && (unsigned long)request_id == ((OUTMESS *)om)->Request.GrpMsgID;
+}
+
+
+BOOST_AUTO_TEST_CASE(test_prot_klondike_queue_handler_find_all)
+{
+    Test_Klondike test_klondike;
+
+    OUTMESS om;
+
+    om.Request.GrpMsgID = 112358;
+
+    //  verify the queues start out empty
+    BOOST_CHECK_EQUAL(test_klondike.getQueueCount(0), 0);
+    BOOST_CHECK_EQUAL(test_klondike.getQueueCount(112358), 0);
+
+    BOOST_CHECK(!test_klondike.hasWaitingWork());
+    BOOST_CHECK(!test_klondike.hasQueuedWork());
+    BOOST_CHECK(!test_klondike.hasRemoteWork());
+
+    //  add the outmessage, ignoring the unimportant pieces
+    test_klondike.addQueuedWork(&om, Klondike::byte_buffer_t(), 0, 0, 0);
+
+    //  verify it got in there with the correct requestid
+    BOOST_CHECK_EQUAL(test_klondike.getQueueCount(0), 0);
+    BOOST_CHECK_EQUAL(test_klondike.getQueueCount(112358), 1);
+
+    BOOST_CHECK(test_klondike.hasWaitingWork());
+    BOOST_CHECK(test_klondike.hasQueuedWork());
+    BOOST_CHECK(!test_klondike.hasRemoteWork());
+
+    std::list<void *> entries;
+
+    //  pull out all OMs
+    test_klondike.retrieveQueueEntries(findAllMessages, NULL, entries);
+
+    //  verify the OM is no longer in there
+    BOOST_CHECK_EQUAL(test_klondike.getQueueCount(0), 0);
+    BOOST_CHECK_EQUAL(test_klondike.getQueueCount(112358), 0);
+
+    BOOST_CHECK(!test_klondike.hasWaitingWork());
+    BOOST_CHECK(!test_klondike.hasQueuedWork());
+    BOOST_CHECK(!test_klondike.hasRemoteWork());
+
+    //  and that we got the right OM back
+    BOOST_CHECK_EQUAL(entries.size(), 1);
+    BOOST_CHECK_EQUAL(entries.front(), &om);
+}
+
+
+BOOST_AUTO_TEST_CASE(test_prot_klondike_queue_handler_find_requestid)
+{
+    Test_Klondike test_klondike;
+
+    OUTMESS om;
+
+    om.Request.GrpMsgID = 112358;
+
+    //  verify the queues start out empty
+    BOOST_CHECK_EQUAL(test_klondike.getQueueCount(0), 0);
+    BOOST_CHECK_EQUAL(test_klondike.getQueueCount(112358), 0);
+
+    BOOST_CHECK(!test_klondike.hasWaitingWork());
+    BOOST_CHECK(!test_klondike.hasQueuedWork());
+    BOOST_CHECK(!test_klondike.hasRemoteWork());
+
+    //  add the outmessage, ignoring the unimportant pieces
+    test_klondike.addQueuedWork(&om, Klondike::byte_buffer_t(), 0, 0, 0);
+
+    //  verify it got in there with the correct requestid
+    BOOST_CHECK_EQUAL(test_klondike.getQueueCount(0), 0);
+    BOOST_CHECK_EQUAL(test_klondike.getQueueCount(112358), 1);
+
+    BOOST_CHECK(test_klondike.hasWaitingWork());
+    BOOST_CHECK(test_klondike.hasQueuedWork());
+    BOOST_CHECK(!test_klondike.hasRemoteWork());
+
+    std::list<void *> entries;
+
+    //  try to grab a bogus requestID
+    test_klondike.retrieveQueueEntries(findRequestId, (void *)111111, entries);
+
+    //  verify our OM is still in there
+    BOOST_CHECK_EQUAL(test_klondike.getQueueCount(0), 0);
+    BOOST_CHECK_EQUAL(test_klondike.getQueueCount(112358), 1);
+
+    BOOST_CHECK(test_klondike.hasWaitingWork());
+    BOOST_CHECK(test_klondike.hasQueuedWork());
+    BOOST_CHECK(!test_klondike.hasRemoteWork());
+
+    BOOST_CHECK_EQUAL(entries.size(), 0);
+
+    //  grab the right requestID
+    test_klondike.retrieveQueueEntries(findRequestId, (void *)112358, entries);
+
+    //  verify the OM is no longer in there
+    BOOST_CHECK_EQUAL(test_klondike.getQueueCount(0), 0);
+    BOOST_CHECK_EQUAL(test_klondike.getQueueCount(112358), 0);
+
+    BOOST_CHECK(!test_klondike.hasWaitingWork());
+    BOOST_CHECK(!test_klondike.hasQueuedWork());
+    BOOST_CHECK(!test_klondike.hasRemoteWork());
+
+    //  and that we got the right OM back
+    BOOST_CHECK_EQUAL(entries.size(), 1);
+    BOOST_CHECK_EQUAL(entries.front(), &om);
+}

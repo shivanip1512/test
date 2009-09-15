@@ -51,7 +51,7 @@ typedef struct _QUEUEENT
    ULONG Element;
    union
    {
-      ULONG Request;
+      ULONG Request;  //  typically a copy of CtiOutMessage.Request.GrpMsgID; set by WriteQueue
       REQUESTDATA RequestData;
    };
    ULONG DataSize;
@@ -130,7 +130,7 @@ IM_EX_CTIBASE INT SearchQueue( HCTIQUEUE QueueHandle, void *ptr, BOOL (*myFunc)(
 
 IM_EX_CTIBASE INT CleanQueue( HCTIQUEUE QueueHandle,
                               void *findFuncPtr,
-                              bool (*myFindFunc)(void*, PQUEUEENT),
+                              bool (*myFindFunc)(void*, void*),
                               void (*myCleanFunc)(void*, void*),
                               void *cleanFuncPtr = NULL);
 
