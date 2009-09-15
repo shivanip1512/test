@@ -822,8 +822,8 @@ void CtiDeviceManager::refreshList(id_range_t &paoids, const LONG deviceType)
                         rowFound |= loadDeviceType(paoid_subset, "RTC devices",            CtiDeviceRTC());
 
                         //  XML Transmitters
-                        rowFound |= loadDeviceType(paoid_subset, "XML devices",            Devices::XmlDevice(),   "Xml");
-                        rowFound |= loadDeviceType(paoid_subset, "XML groups",             Devices::XmlGroupDevice());
+                        rowFound |= loadDeviceType(paoid_subset, "Integration devices",            Devices::XmlDevice(),   "Integration");
+                        rowFound |= loadDeviceType(paoid_subset, "Integration groups",             Devices::XmlGroupDevice());
 
                         rowFound |= loadDeviceType(paoid_subset, "Emetcon groups",         CtiDeviceGroupEmetcon());
                         rowFound |= loadDeviceType(paoid_subset, "Versacom groups",        CtiDeviceGroupVersacom());

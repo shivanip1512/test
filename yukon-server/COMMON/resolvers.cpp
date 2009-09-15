@@ -64,7 +64,7 @@ INT resolveRouteType( const string& _rwsTemp)
     {
         Ret = RouteTypeExpresscom;
     }
-    else if(rwsTemp == "xml")
+    else if(rwsTemp == "integration route")
     {
         Ret = RouteTypeXML;
     }
@@ -72,15 +72,15 @@ INT resolveRouteType( const string& _rwsTemp)
     {
         Ret = RouteTypeTap;
     }
-    else if(rwsTemp == "snpp terminal")
+    else if(rwsTemp == "snpp terminal route")
     {
         Ret = RouteTypeSNPP;
     }
-    else if(rwsTemp == "wctp terminal")
+    else if(rwsTemp == "wctp terminal route")
     {
         Ret = RouteTypeWCTP;
     }
-    else if(rwsTemp == "rtc")
+    else if(rwsTemp == "rtc route")
     {
         Ret = RouteTypeRTC;
     }
@@ -578,7 +578,7 @@ INT resolveDeviceType(const string& _rwsTemp)
     {
         nRet = TYPE_LMGROUP_EXPRESSCOM;
     }
-    else if(rwsTemp == "xml group")
+    else if(rwsTemp == "integration group")
     {
         nRet = TYPE_LMGROUP_XML;
     }
@@ -730,7 +730,7 @@ INT resolveDeviceType(const string& _rwsTemp)
     {
         nRet = TYPE_VIRTUAL_SYSTEM;
     }
-    else if(rwsTemp == "xml")
+    else if(rwsTemp == "integration")
     {
         nRet = TYPE_XML_XMIT;
     }

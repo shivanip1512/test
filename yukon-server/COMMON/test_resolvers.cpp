@@ -45,11 +45,12 @@ BOOST_AUTO_TEST_CASE(test_resolveRouteType)
     BOOST_CHECK_EQUAL(resolveRouteType("versacom"), RouteTypeVersacom);
     BOOST_CHECK_EQUAL(resolveRouteType("tap paging"),     RouteTypeTap);
     BOOST_CHECK_EQUAL(resolveRouteType("tappaging"),      RouteTypeTap);
-    BOOST_CHECK_EQUAL(resolveRouteType("snpp terminal"),  RouteTypeSNPP);
-    BOOST_CHECK_EQUAL(resolveRouteType("wctp terminal"),  RouteTypeWCTP);
-    BOOST_CHECK_EQUAL(resolveRouteType("rtc"),            RouteTypeRTC);
+    BOOST_CHECK_EQUAL(resolveRouteType("snpp terminal route"),  RouteTypeSNPP);
+    BOOST_CHECK_EQUAL(resolveRouteType("wctp terminal route"),  RouteTypeWCTP);
+    BOOST_CHECK_EQUAL(resolveRouteType("rtc route"),            RouteTypeRTC);
     BOOST_CHECK_EQUAL(resolveRouteType("series 5 lmi"),   RouteTypeSeriesVLMI);
     BOOST_CHECK_EQUAL(resolveRouteType("foreign porter"), RouteTypeForeignPorter);
+    BOOST_CHECK_EQUAL(resolveRouteType("integration route"), RouteTypeXML);
 }
 
 BOOST_AUTO_TEST_CASE(test_resolveAmpUseType)
@@ -459,7 +460,7 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
     tempName = "virtual system";
     devType = TYPE_VIRTUAL_SYSTEM;
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
-    tempName = "xml";
+    tempName = "integration";
     devType = TYPE_XML_XMIT;
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
     tempName = "lcr-3102";

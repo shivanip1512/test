@@ -162,7 +162,7 @@ string desolveDeviceType( INT aType )
         case TYPE_TCU5000:      Ret = "tcu-5000";       break;
         case TYPE_TCU5500:      Ret = "tcu-5500";       break;
                       
-        case TYPE_XML_XMIT:     Ret = "xml transmitter"; break;
+        case TYPE_XML_XMIT:     Ret = "integration transmitter"; break;
                   
         case TYPE_TDMARKV:      Ret = "transdata mark-v";   break;
                                 
@@ -219,7 +219,7 @@ string desolveDeviceType( INT aType )
         case TYPE_LMGROUP_RIPPLE:       Ret = "ripple group";       break;
         case TYPE_LMGROUP_VERSACOM:     Ret = "versacom group";     break;
         case TYPE_LMGROUP_EXPRESSCOM:   Ret = "expresscom group";   break;
-        case TYPE_LMGROUP_XML:          Ret = "xml group";   break;
+        case TYPE_LMGROUP_XML:          Ret = "integration group";   break;
         case TYPE_LMGROUP_ENERGYPRO:    Ret = "energypro group";    break;
         case TYPE_LMGROUP_MCT:          Ret = "mct group";          break;
         case TYPE_LMGROUP_GOLAY:        Ret = "golay group";        break;
@@ -371,10 +371,11 @@ string desolveRouteType( INT aType )
         case RouteTypeVersacom:     Ret = "versacom";   break;
         case RouteTypeExpresscom:   Ret = "expresscom"; break;
         case RouteTypeTap:          Ret = "tap paging"; break;
-        case RouteTypeWCTP:         Ret = "wctp paging";    break;
+        case RouteTypeXML:          Ret = "integration route"; break;
+        case RouteTypeWCTP:         Ret = "wctp terminal route";    break;
         //paging? 
-        case RouteTypeSNPP:         Ret = "snpp terminal";  break;
-        case RouteTypeRTC:          Ret = "rtc";    break;
+        case RouteTypeSNPP:         Ret = "snpp terminal route";  break;
+        case RouteTypeRTC:          Ret = "rtc route";    break;
         case RouteTypeSeriesVLMI:   Ret = "series 5 lmi";   break;
         default:
         {
