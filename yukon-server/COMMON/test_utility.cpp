@@ -148,8 +148,6 @@ BOOST_AUTO_TEST_CASE(test_in_place_trim)
 
 BOOST_AUTO_TEST_CASE(test_find_expired_om)
 {
-    QUEUEENT ent;
-    PQUEUEENT queEnt = &ent;
     OUTMESS outMessage;
     CtiTime futureTime, historicalTime, nowTime;
 
@@ -158,17 +156,16 @@ BOOST_AUTO_TEST_CASE(test_find_expired_om)
     futureTime.addSeconds(1);
     historicalTime.addSeconds(-1);
 
-    queEnt->Data = (void *)&outMessage;
     outMessage.ExpirationTime = 0;
-    BOOST_CHECK(!findExpiredOutMessage((void *)&nowTime, queEnt));
-    BOOST_CHECK(!findExpiredOutMessage((void *)&futureTime, queEnt));
-    BOOST_CHECK(!findExpiredOutMessage((void *)&historicalTime, queEnt));
+    BOOST_CHECK(!findExpiredOutMessage((void *)&nowTime, &outMessage));
+    BOOST_CHECK(!findExpiredOutMessage((void *)&futureTime, &outMessage));
+    BOOST_CHECK(!findExpiredOutMessage((void *)&historicalTime, &outMessage));
 
     outMessage.ExpirationTime = nowTime.seconds();
-    BOOST_CHECK(!findExpiredOutMessage((void *)&nowTime, queEnt));
+    BOOST_CHECK(!findExpiredOutMessage((void *)&nowTime, &outMessage));
     //Future Time is greater than expiration, we are expired!
-    BOOST_CHECK(findExpiredOutMessage((void *)&futureTime, queEnt));
-    BOOST_CHECK(!findExpiredOutMessage((void *)&historicalTime, queEnt));
+    BOOST_CHECK(findExpiredOutMessage((void *)&futureTime, &outMessage));
+    BOOST_CHECK(!findExpiredOutMessage((void *)&historicalTime, &outMessage));
 }
 
 BOOST_AUTO_TEST_CASE(test_csv_output_iterator)
