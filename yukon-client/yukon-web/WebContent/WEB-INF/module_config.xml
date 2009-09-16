@@ -345,7 +345,7 @@
       </option>
       <dynamicOptions bean="drOptOutMenuOption"/>
     </links>
-    <search action="/spring/threetier/search" method="post" fieldname="Quick Search"/>
+    <search action="/spring/dr/search" method="get" fieldname="name"/>
   </module>
 
   <module name="consumer">
