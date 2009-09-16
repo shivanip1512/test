@@ -9,6 +9,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
@@ -78,8 +79,15 @@ public class InsertDeviceController extends StarsInventoryActionController {
                         createHw = (StarsCreateLMHardware) StarsFactory.newStarsInv(StarsCreateLMHardware.class);
                         createHw.setDeviceID( deviceID );
                         if (InventoryUtils.isMCT( categoryID )) {
-                            createHw.setDeviceType( (DeviceType)StarsFactory.newStarsCustListEntry(
-                                                                                                   energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT), DeviceType.class) );
+                            YukonListEntry yukonListEntry = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT);
+                            if ( yukonListEntry.getListID() == CtiUtilities.NONE_ZERO_ID )
+                            {
+                                throw new UnsupportedOperationException( "MCT must be in Device Type list in order to assign MCTs to accounts.");
+                            } 
+                            else 
+                            {
+                                createHw.setDeviceType( (DeviceType)StarsFactory.newStarsCustListEntry( yukonListEntry , DeviceType.class) );
+                            }
                         }
                     }
                     else {
