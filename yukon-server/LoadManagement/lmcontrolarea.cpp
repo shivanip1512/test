@@ -35,6 +35,7 @@
 #include "ctitime.h"
 #include "rwutil.h"
 #include "utility.h"
+#include "lmutility.h"
 
 using std::transform;
 
@@ -176,18 +177,11 @@ LONG CtiLMControlArea::getMinResponseTime() const
 
     Returns the default daily start time
 ---------------------------------------------------------------------------*/
-CtiTime CtiLMControlArea::getDefDailyStartTime() const
+CtiTime CtiLMControlArea::getDefDailyStartTime(CtiDate &defaultDate) const
 {
-    unsigned int hours   =  _defdailystarttime/3600;
-    unsigned int minutes = (_defdailystarttime%3600)/60;
-    unsigned int seconds = (_defdailystarttime%3600)%60;
-
-    CtiTime retVal(hours, minutes, seconds);
-    if( _defdailystarttime == -1 )
-    {
-        retVal = CtiTime::neg_infin;
-    }
-    return retVal;
+    return (_defdailystarttime == -1) ?
+        CtiTime::neg_infin :
+        GetTimeFromOffsetAndDate(_defdailystarttime, defaultDate);
 }
 
 /*---------------------------------------------------------------------------
@@ -195,19 +189,11 @@ CtiTime CtiLMControlArea::getDefDailyStartTime() const
 
     Returns the default daily stop time
 ---------------------------------------------------------------------------*/
-CtiTime CtiLMControlArea::getDefDailyStopTime() const
+CtiTime CtiLMControlArea::getDefDailyStopTime(CtiDate &defaultDate) const
 {
-    unsigned int hours   =  _defdailystoptime/3600;
-    unsigned int minutes = (_defdailystoptime%3600)/60;
-    unsigned int seconds = (_defdailystoptime%3600)%60;
-
-    CtiTime retVal(hours, minutes, seconds);
-    if( _defdailystoptime == -1 )
-    {
-        retVal = CtiTime::neg_infin;
-    }
-
-    return retVal;
+    return (_defdailystoptime == -1) ?
+        CtiTime::neg_infin :
+        GetTimeFromOffsetAndDate(_defdailystoptime, defaultDate);
 }
 
 /*---------------------------------------------------------------------------
@@ -383,20 +369,11 @@ LONG CtiLMControlArea::getCurrentStopSecondsFromDayBegin() const
     Returns the current daily start time.
     NOTE: This adjusts automatically for DST!
 ---------------------------------------------------------------------------*/
-CtiTime CtiLMControlArea::getCurrentDailyStartTime() const
+CtiTime CtiLMControlArea::getCurrentDailyStartTime(CtiDate &defaultDate) const
 {
-    unsigned int hours   =  _currentdailystarttime/3600;
-    unsigned int minutes = (_currentdailystarttime%3600)/60;
-    unsigned int seconds = (_currentdailystarttime%3600)%60;
-
-    //This returns today at h:m:s no matter what
-    CtiTime retVal(hours, minutes, seconds);
-    if( _currentdailystarttime == -1 )
-    {
-        retVal = CtiTime::neg_infin;
-    }
-
-    return retVal;
+    return (_currentdailystarttime == -1) ?
+        CtiTime::neg_infin :
+        GetTimeFromOffsetAndDate(_currentdailystarttime, defaultDate);
 }
 
 /*---------------------------------------------------------------------------
@@ -405,19 +382,11 @@ CtiTime CtiLMControlArea::getCurrentDailyStartTime() const
     Returns the default daily stop time
     NOTE: This adjusts automatically for DST!
 ---------------------------------------------------------------------------*/
-CtiTime CtiLMControlArea::getCurrentDailyStopTime() const
+CtiTime CtiLMControlArea::getCurrentDailyStopTime(CtiDate &defaultDate) const
 {
-    unsigned int hours   =  _currentdailystoptime/3600;
-    unsigned int minutes = (_currentdailystoptime%3600)/60;
-    unsigned int seconds = (_currentdailystoptime%3600)%60;
-
-    CtiTime retVal(hours, minutes, seconds);
-    if( _currentdailystoptime == -1 )
-    {
-        retVal = CtiTime::neg_infin;
-    }
-
-    return retVal;
+    return (_currentdailystoptime == -1) ?
+        CtiTime::neg_infin :
+        GetTimeFromOffsetAndDate(_currentdailystoptime, defaultDate);
 }
 
 /*---------------------------------------------------------------------------

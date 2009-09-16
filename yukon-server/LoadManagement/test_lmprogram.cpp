@@ -9,6 +9,10 @@
 #include "lmprogramdirect.h"
 #include "lmprogramcontrolwindow.h"
 #include "lmutility.h"
+#include "lmconstraint.h"
+
+#include <string>
+#include <vector>
 
 #define BOOST_AUTO_TEST_MAIN "Test LM Program"
 #include <boost/test/unit_test.hpp>
@@ -356,5 +360,1102 @@ BOOST_AUTO_TEST_CASE(test_get_control_window_fall_2009_dst)
     BOOST_CHECK_EQUAL( lmProgram.getControlWindow(18000, dstDate), no_window);
     BOOST_CHECK_EQUAL( lmProgram.getControlWindow(18001, dstDate), no_window);
     BOOST_CHECK_EQUAL( lmProgram.getControlWindow(20000, dstDate), no_window);
+}
+
+
+BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_start_and_stop_before)
+{
+    CtiLMProgramDirect lmProgram;
+    CtiLMControlArea controlArea;
+
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+
+    // define control area window from 08:00 to 16:00
+    CtiTime controlAreaStartTime(8, 0, 0);  // 08:00 == 8 * 3600 == 28800
+    CtiTime controlAreaStopTime(16, 0, 0);  // 16:00 == 16 * 3600 == 57600
+    controlArea.setCurrentDailyStartTime(28800);
+    controlArea.setCurrentDailyStopTime(57600);
+
+    CtiTime startTime(4, 0, 0);     // 04:00
+    CtiTime stopTime(6, 0, 0);      // 06:00
+
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds()));
+    BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
+
+    std::string violation = constraints.getViolations()[0];
+
+    BOOST_CHECK_NE(std::string::npos, violation.find("start"));                 // start time violation
+    BOOST_CHECK_NE(std::string::npos, violation.find(startTime.asString()));    // start time printed in error message
+
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStartTime.asString()));     // control area start time in error message
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStopTime.asString()));      // control area stop time in error message
+}
+
+
+BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_start_before_stop_in)
+{
+    CtiLMProgramDirect lmProgram;
+    CtiLMControlArea controlArea;
+
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+
+    // define control area window from 08:00 to 16:00
+    CtiTime controlAreaStartTime(8, 0, 0);  // 08:00 == 8 * 3600 == 28800
+    CtiTime controlAreaStopTime(16, 0, 0);  // 16:00 == 16 * 3600 == 57600
+    controlArea.setCurrentDailyStartTime(28800);
+    controlArea.setCurrentDailyStopTime(57600);
+
+    CtiTime startTime(4, 0, 0);     // 04:00
+    CtiTime stopTime(10, 0, 0);     // 10:00
+
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds()));
+    BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
+
+    std::string violation = constraints.getViolations()[0];
+
+    BOOST_CHECK_NE(std::string::npos, violation.find("start"));                 // start time violation
+    BOOST_CHECK_NE(std::string::npos, violation.find(startTime.asString()));    // start time printed in error message
+
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStartTime.asString()));     // control area start time in error message
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStopTime.asString()));      // control area stop time in error message
+}
+
+
+BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_start_before_stop_after)
+{
+    CtiLMProgramDirect lmProgram;
+    CtiLMControlArea controlArea;
+
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+
+    // define control area window from 08:00 to 16:00
+    CtiTime controlAreaStartTime(8, 0, 0);  // 08:00 == 8 * 3600 == 28800
+    CtiTime controlAreaStopTime(16, 0, 0);  // 16:00 == 16 * 3600 == 57600
+    controlArea.setCurrentDailyStartTime(28800);
+    controlArea.setCurrentDailyStopTime(57600);
+
+    CtiTime startTime(4, 0, 0);     // 04:00
+    CtiTime stopTime(20, 0, 0);     // 20:00
+
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds()));
+    BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
+
+    std::string violation = constraints.getViolations()[0];
+
+    BOOST_CHECK_NE(std::string::npos, violation.find("start"));                 // start time violation
+    BOOST_CHECK_NE(std::string::npos, violation.find(startTime.asString()));    // start time printed in error message
+
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStartTime.asString()));     // control area start time in error message
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStopTime.asString()));      // control area stop time in error message
+}
+
+
+BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_start_and_stop_in)
+{
+    CtiLMProgramDirect lmProgram;
+    CtiLMControlArea controlArea;
+
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+
+    // define control area window from 08:00 to 16:00
+    CtiTime controlAreaStartTime(8, 0, 0);  // 08:00 == 8 * 3600 == 28800
+    CtiTime controlAreaStopTime(16, 0, 0);  // 16:00 == 16 * 3600 == 57600
+    controlArea.setCurrentDailyStartTime(28800);
+    controlArea.setCurrentDailyStopTime(57600);
+
+    CtiTime startTime(10, 0, 0);    // 10:00
+    CtiTime stopTime(12, 0, 0);     // 12:00
+
+    BOOST_CHECK_EQUAL(true, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds()));
+    BOOST_CHECK_EQUAL(   0, constraints.getViolations().size() );
+}
+
+
+BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_start_in_stop_after)
+{
+    CtiLMProgramDirect lmProgram;
+    CtiLMControlArea controlArea;
+
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+
+    // define control area window from 08:00 to 16:00
+    CtiTime controlAreaStartTime(8, 0, 0);  // 08:00 == 8 * 3600 == 28800
+    CtiTime controlAreaStopTime(16, 0, 0);  // 16:00 == 16 * 3600 == 57600
+    controlArea.setCurrentDailyStartTime(28800);
+    controlArea.setCurrentDailyStopTime(57600);
+
+    CtiTime startTime(10, 0, 0);    // 10:00
+    CtiTime stopTime(18, 0, 0);     // 18:00
+
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds()));
+    BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
+
+    std::string violation = constraints.getViolations()[0];
+
+    BOOST_CHECK_NE(std::string::npos, violation.find("stop"));                  // stop time violation
+    BOOST_CHECK_NE(std::string::npos, violation.find(stopTime.asString()));     // stop time printed in error message
+
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStartTime.asString()));     // control area start time in error message
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStopTime.asString()));      // control area stop time in error message
+}
+
+
+BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_start_and_stop_after)
+{
+    CtiLMProgramDirect lmProgram;
+    CtiLMControlArea controlArea;
+
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+
+    // define control area window from 08:00 to 16:00
+    CtiTime controlAreaStartTime(8, 0, 0);  // 08:00 == 8 * 3600 == 28800
+    CtiTime controlAreaStopTime(16, 0, 0);  // 16:00 == 16 * 3600 == 57600
+    controlArea.setCurrentDailyStartTime(28800);
+    controlArea.setCurrentDailyStopTime(57600);
+
+    CtiTime startTime(18, 0, 0);    // 18:00
+    CtiTime stopTime(20, 0, 0);     // 20:00
+
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds()));
+    BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
+
+    std::string violation = constraints.getViolations()[0];
+
+    BOOST_CHECK_NE(std::string::npos, violation.find("start"));                 // start time violation
+    BOOST_CHECK_NE(std::string::npos, violation.find(startTime.asString()));    // start time printed in error message
+
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStartTime.asString()));     // control area start time in error message
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStopTime.asString()));      // control area stop time in error message
+}
+
+
+BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_start_and_stop_before_tomorrow)
+{
+    CtiLMProgramDirect lmProgram;
+    CtiLMControlArea controlArea;
+
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+
+    // define control area window from 08:00 to 16:00
+    CtiTime controlAreaStartTime(8, 0, 0);  // 08:00 == 8 * 3600 == 28800
+    CtiTime controlAreaStopTime(16, 0, 0);  // 16:00 == 16 * 3600 == 57600
+    controlArea.setCurrentDailyStartTime(28800);
+    controlArea.setCurrentDailyStopTime(57600);
+
+    CtiTime startTime(4, 0, 0);     // 04:00
+    CtiTime stopTime(6, 0, 0);      // 06:00
+
+    // move window to tomorrow
+    startTime.addDays(1);
+    stopTime.addDays(1);
+
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds()));
+    BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
+
+    std::string violation = constraints.getViolations()[0];
+
+    BOOST_CHECK_NE(std::string::npos, violation.find("start"));                 // start time violation
+    BOOST_CHECK_NE(std::string::npos, violation.find(startTime.asString()));    // start time printed in error message
+
+    // since our window is tomorrow the constraint error message should report tomorrows control window
+    controlAreaStartTime.addDays(1);
+    controlAreaStopTime.addDays(1);
+
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStartTime.asString()));     // control area start time in error message
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStopTime.asString()));      // control area stop time in error message
+}
+
+
+BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_start_before_stop_in_tomorrow)
+{
+    CtiLMProgramDirect lmProgram;
+    CtiLMControlArea controlArea;
+
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+
+    // define control area window from 08:00 to 16:00
+    CtiTime controlAreaStartTime(8, 0, 0);  // 08:00 == 8 * 3600 == 28800
+    CtiTime controlAreaStopTime(16, 0, 0);  // 16:00 == 16 * 3600 == 57600
+    controlArea.setCurrentDailyStartTime(28800);
+    controlArea.setCurrentDailyStopTime(57600);
+
+    CtiTime startTime(4, 0, 0);     // 04:00
+    CtiTime stopTime(10, 0, 0);     // 10:00
+
+    // move window to tomorrow
+    startTime.addDays(1);
+    stopTime.addDays(1);
+
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds()));
+    BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
+
+    std::string violation = constraints.getViolations()[0];
+
+    BOOST_CHECK_NE(std::string::npos, violation.find("start"));                 // start time violation
+    BOOST_CHECK_NE(std::string::npos, violation.find(startTime.asString()));    // start time printed in error message
+
+    // since our window is tomorrow the constraint error message should report tomorrows control window
+    controlAreaStartTime.addDays(1);
+    controlAreaStopTime.addDays(1);
+
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStartTime.asString()));     // control area start time in error message
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStopTime.asString()));      // control area stop time in error message
+}
+
+
+BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_start_before_stop_after_tomorrow)
+{
+    CtiLMProgramDirect lmProgram;
+    CtiLMControlArea controlArea;
+
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+
+    // define control area window from 08:00 to 16:00
+    CtiTime controlAreaStartTime(8, 0, 0);  // 08:00 == 8 * 3600 == 28800
+    CtiTime controlAreaStopTime(16, 0, 0);  // 16:00 == 16 * 3600 == 57600
+    controlArea.setCurrentDailyStartTime(28800);
+    controlArea.setCurrentDailyStopTime(57600);
+
+    CtiTime startTime(4, 0, 0);     // 04:00
+    CtiTime stopTime(20, 0, 0);     // 20:00
+
+    // move window to tomorrow
+    startTime.addDays(1);
+    stopTime.addDays(1);
+
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds()));
+    BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
+
+    std::string violation = constraints.getViolations()[0];
+
+    BOOST_CHECK_NE(std::string::npos, violation.find("start"));                 // start time violation
+    BOOST_CHECK_NE(std::string::npos, violation.find(startTime.asString()));    // start time printed in error message
+
+    // since our window is tomorrow the constraint error message should report tomorrows control window
+    controlAreaStartTime.addDays(1);
+    controlAreaStopTime.addDays(1);
+
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStartTime.asString()));     // control area start time in error message
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStopTime.asString()));      // control area stop time in error message
+}
+
+
+BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_start_and_stop_in_tomorrow)
+{
+    CtiLMProgramDirect lmProgram;
+    CtiLMControlArea controlArea;
+
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+
+    // define control area window from 08:00 to 16:00
+    CtiTime controlAreaStartTime(8, 0, 0);  // 08:00 == 8 * 3600 == 28800
+    CtiTime controlAreaStopTime(16, 0, 0);  // 16:00 == 16 * 3600 == 57600
+    controlArea.setCurrentDailyStartTime(28800);
+    controlArea.setCurrentDailyStopTime(57600);
+
+    CtiTime startTime(10, 0, 0);    // 10:00
+    CtiTime stopTime(12, 0, 0);     // 12:00
+
+    // move window to tomorrow
+    startTime.addDays(1);
+    stopTime.addDays(1);
+
+    BOOST_CHECK_EQUAL(true, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds()));
+    BOOST_CHECK_EQUAL(   0, constraints.getViolations().size() );
+}
+
+
+BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_start_in_stop_after_tomorrow)
+{
+    CtiLMProgramDirect lmProgram;
+    CtiLMControlArea controlArea;
+
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+
+    // define control area window from 08:00 to 16:00
+    CtiTime controlAreaStartTime(8, 0, 0);  // 08:00 == 8 * 3600 == 28800
+    CtiTime controlAreaStopTime(16, 0, 0);  // 16:00 == 16 * 3600 == 57600
+    controlArea.setCurrentDailyStartTime(28800);
+    controlArea.setCurrentDailyStopTime(57600);
+
+    CtiTime startTime(10, 0, 0);    // 04:00
+    CtiTime stopTime(18, 0, 0);     // 20:00
+
+    // move window to tomorrow
+    startTime.addDays(1);
+    stopTime.addDays(1);
+
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds()));
+    BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
+
+    std::string violation = constraints.getViolations()[0];
+
+    BOOST_CHECK_NE(std::string::npos, violation.find("stop"));                  // stop time violation
+    BOOST_CHECK_NE(std::string::npos, violation.find(stopTime.asString()));     // stop time printed in error message
+
+    // since our window is tomorrow the constraint error message should report tomorrows control window
+    controlAreaStartTime.addDays(1);
+    controlAreaStopTime.addDays(1);
+
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStartTime.asString()));     // control area start time in error message
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStopTime.asString()));      // control area stop time in error message
+}
+
+
+BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_start_and_stop_after_tomorrow)
+{
+    CtiLMProgramDirect lmProgram;
+    CtiLMControlArea controlArea;
+
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+
+    // define control area window from 08:00 to 16:00
+    CtiTime controlAreaStartTime(8, 0, 0);  // 08:00 == 8 * 3600 == 28800
+    CtiTime controlAreaStopTime(16, 0, 0);  // 16:00 == 16 * 3600 == 57600
+    controlArea.setCurrentDailyStartTime(28800);
+    controlArea.setCurrentDailyStopTime(57600);
+
+    CtiTime startTime(18, 0, 0);    // 18:00
+    CtiTime stopTime(20, 0, 0);     // 20:00
+
+    // move window to tomorrow
+    startTime.addDays(1);
+    stopTime.addDays(1);
+
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds()));
+    BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
+
+    std::string violation = constraints.getViolations()[0];
+
+    BOOST_CHECK_NE(std::string::npos, violation.find("start"));                 // start time violation
+    BOOST_CHECK_NE(std::string::npos, violation.find(startTime.asString()));    // start time printed in error message
+
+    // since our window is tomorrow the constraint error message should report tomorrows control window
+    controlAreaStartTime.addDays(1);
+    controlAreaStopTime.addDays(1);
+
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStartTime.asString()));     // control area start time in error message
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStopTime.asString()));      // control area stop time in error message
+}
+
+
+// ASCII ART!!!
+//           today                                            tomorrow
+// timeline:  |------------------------------------------------|------------------------------------------------|
+// window:    xxxxxxxxxxxxx                            xxxxxxxxxxxxxxxxxxxx                             xxxxxxxxxxxxxxxxxxxx
+// section:   |      1     |             2            |     3  |     4     |            5              |    6   |    7
+
+BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_both_in_section_1)
+{
+    CtiLMProgramDirect lmProgram;
+    CtiLMControlArea controlArea;
+
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+
+    // define control area window from 20:00 to 06:00
+    CtiTime controlAreaStartTime(20, 0, 0);
+    CtiTime controlAreaStopTime(6, 0, 0);
+    controlArea.setCurrentDailyStartTime(72000);    // 20:00 == 20 * 3600 == 72000
+    controlArea.setCurrentDailyStopTime(108000);    // 06:00 ==  6 * 3600 == 21600 + 86400 == 108000 --  tomorrow morning
+
+    CtiTime startTime(0, 30, 0);    // 12:30am
+    CtiTime stopTime(5, 0, 0);      // 5:00am
+
+    BOOST_CHECK_EQUAL(true, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds()));
+    BOOST_CHECK_EQUAL(   0, constraints.getViolations().size() );
+}
+
+
+BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_start_section_1_stop_section_2)
+{
+    CtiLMProgramDirect lmProgram;
+    CtiLMControlArea controlArea;
+
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+
+    // define control area window from 20:00 to 06:00
+    CtiTime controlAreaStartTime(20, 0, 0);
+    CtiTime controlAreaStopTime(6, 0, 0);
+    controlAreaStopTime.addDays(1);     // move it to tomorrow morning
+
+    controlArea.setCurrentDailyStartTime(72000);    // 20:00 == 20 * 3600 == 72000
+    controlArea.setCurrentDailyStopTime(108000);    // 06:00 ==  6 * 3600 == 21600 + 86400 == 108000 --  tomorrow morning
+
+    CtiTime startTime(0, 30, 0);    // 12:30am
+    CtiTime stopTime(12, 0, 0);     // noon
+
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds()));
+    BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
+
+    std::string violation = constraints.getViolations()[0];
+
+    BOOST_CHECK_NE(std::string::npos, violation.find("stop"));                  // stop time violation
+    BOOST_CHECK_NE(std::string::npos, violation.find(stopTime.asString()));     // stop time printed in error message
+
+    // since our start time falls in yesterdays window, the constraint error message should report yesterdays control window
+    controlAreaStartTime.addDays(-1);
+    controlAreaStopTime.addDays(-1);
+
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStartTime.asString()));     // control area start time in error message
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStopTime.asString()));      // control area stop time in error message
+}
+
+
+BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_start_section_1_stop_section_3)
+{
+    CtiLMProgramDirect lmProgram;
+    CtiLMControlArea controlArea;
+
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+
+    // define control area window from 20:00 to 06:00
+    CtiTime controlAreaStartTime(20, 0, 0);
+    CtiTime controlAreaStopTime(6, 0, 0);
+    controlAreaStopTime.addDays(1);     // move it to tomorrow morning
+
+    controlArea.setCurrentDailyStartTime(72000);    // 20:00 == 20 * 3600 == 72000
+    controlArea.setCurrentDailyStopTime(108000);    // 06:00 ==  6 * 3600 == 21600 + 86400 == 108000 --  tomorrow morning
+
+    CtiTime startTime(0, 30, 0);    // 12:30am
+    CtiTime stopTime(22, 0, 0);     // 10:00pm
+
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds()));
+    BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
+
+    std::string violation = constraints.getViolations()[0];
+
+    BOOST_CHECK_NE(std::string::npos, violation.find("stop"));                  // stop time violation
+    BOOST_CHECK_NE(std::string::npos, violation.find(stopTime.asString()));     // stop time printed in error message
+
+    // since our start time falls in yesterdays window, the constraint error message should report yesterdays control window
+    controlAreaStartTime.addDays(-1);
+    controlAreaStopTime.addDays(-1);
+
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStartTime.asString()));     // control area start time in error message
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStopTime.asString()));      // control area stop time in error message
+}
+
+
+BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_start_section_1_stop_section_4)
+{
+    CtiLMProgramDirect lmProgram;
+    CtiLMControlArea controlArea;
+
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+
+    // define control area window from 20:00 to 06:00
+    CtiTime controlAreaStartTime(20, 0, 0);
+    CtiTime controlAreaStopTime(6, 0, 0);
+    controlAreaStopTime.addDays(1);     // move it to tomorrow morning
+
+    controlArea.setCurrentDailyStartTime(72000);    // 20:00 == 20 * 3600 == 72000
+    controlArea.setCurrentDailyStopTime(108000);    // 06:00 ==  6 * 3600 == 21600 + 86400 == 108000 --  tomorrow morning
+
+    CtiTime startTime(0, 30, 0);    // 12:30am
+    CtiTime stopTime(5, 0, 0);      // 5:00am
+    stopTime.addDays(1);            // 5:00am tomorrow
+
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds()));
+    BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
+
+    std::string violation = constraints.getViolations()[0];
+
+    BOOST_CHECK_NE(std::string::npos, violation.find("stop"));                  // stop time violation
+    BOOST_CHECK_NE(std::string::npos, violation.find(stopTime.asString()));     // stop time printed in error message
+
+    // since our start time falls in yesterdays window, the constraint error message should report yesterdays control window
+    controlAreaStartTime.addDays(-1);
+    controlAreaStopTime.addDays(-1);
+
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStartTime.asString()));     // control area start time in error message
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStopTime.asString()));      // control area stop time in error message
+}
+
+
+BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_start_section_1_stop_section_5)
+{
+    CtiLMProgramDirect lmProgram;
+    CtiLMControlArea controlArea;
+
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+
+    // define control area window from 20:00 to 06:00
+    CtiTime controlAreaStartTime(20, 0, 0);
+    CtiTime controlAreaStopTime(6, 0, 0);
+    controlAreaStopTime.addDays(1);     // move it to tomorrow morning
+
+    controlArea.setCurrentDailyStartTime(72000);    // 20:00 == 20 * 3600 == 72000
+    controlArea.setCurrentDailyStopTime(108000);    // 06:00 ==  6 * 3600 == 21600 + 86400 == 108000 --  tomorrow morning
+
+    CtiTime startTime(0, 30, 0);    // 12:30am
+    CtiTime stopTime(12, 0, 0);     // noon
+    stopTime.addDays(1);            // noon tomorrow
+
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds()));
+    BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
+
+    std::string violation = constraints.getViolations()[0];
+
+    BOOST_CHECK_NE(std::string::npos, violation.find("stop"));                  // stop time violation
+    BOOST_CHECK_NE(std::string::npos, violation.find(stopTime.asString()));     // stop time printed in error message
+
+    // since our start time falls in yesterdays window, the constraint error message should report yesterdays control window
+    controlAreaStartTime.addDays(-1);
+    controlAreaStopTime.addDays(-1);
+
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStartTime.asString()));     // control area start time in error message
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStopTime.asString()));      // control area stop time in error message
+}
+
+
+BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_start_section_1_stop_section_6)
+{
+    CtiLMProgramDirect lmProgram;
+    CtiLMControlArea controlArea;
+
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+
+    // define control area window from 20:00 to 06:00
+    CtiTime controlAreaStartTime(20, 0, 0);
+    CtiTime controlAreaStopTime(6, 0, 0);
+    controlAreaStopTime.addDays(1);     // move it to tomorrow morning
+
+    controlArea.setCurrentDailyStartTime(72000);    // 20:00 == 20 * 3600 == 72000
+    controlArea.setCurrentDailyStopTime(108000);    // 06:00 ==  6 * 3600 == 21600 + 86400 == 108000 --  tomorrow morning
+
+    CtiTime startTime(0, 30, 0);    // 12:30am
+    CtiTime stopTime(22, 0, 0);     // 10:00pm
+    stopTime.addDays(1);            // 10:00pm tomorrow
+
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds()));
+    BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
+
+    std::string violation = constraints.getViolations()[0];
+
+    BOOST_CHECK_NE(std::string::npos, violation.find("stop"));                  // stop time violation
+    BOOST_CHECK_NE(std::string::npos, violation.find(stopTime.asString()));     // stop time printed in error message
+
+    // since our start time falls in yesterdays window, the constraint error message should report yesterdays control window
+    controlAreaStartTime.addDays(-1);
+    controlAreaStopTime.addDays(-1);
+
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStartTime.asString()));     // control area start time in error message
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStopTime.asString()));      // control area stop time in error message
+}
+
+
+BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_start_section_2_stop_section_2)
+{
+    CtiLMProgramDirect lmProgram;
+    CtiLMControlArea controlArea;
+
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+
+    // define control area window from 20:00 to 06:00
+    CtiTime controlAreaStartTime(20, 0, 0);
+    CtiTime controlAreaStopTime(6, 0, 0);
+    controlAreaStopTime.addDays(1);     // move it to tomorrow morning
+
+    controlArea.setCurrentDailyStartTime(72000);    // 20:00 == 20 * 3600 == 72000
+    controlArea.setCurrentDailyStopTime(108000);    // 06:00 ==  6 * 3600 == 21600 + 86400 == 108000 --  tomorrow morning
+
+    CtiTime startTime(12, 0, 0);    // noon
+    CtiTime stopTime(14, 0, 0);     // 2:00pm
+
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds()));
+    BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
+
+    std::string violation = constraints.getViolations()[0];
+
+    BOOST_CHECK_NE(std::string::npos, violation.find("start"));                  // start time violation
+    BOOST_CHECK_NE(std::string::npos, violation.find(startTime.asString()));     // start time printed in error message
+
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStartTime.asString()));     // control area start time in error message
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStopTime.asString()));      // control area stop time in error message
+}
+
+
+BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_start_section_2_stop_section_3)
+{
+    CtiLMProgramDirect lmProgram;
+    CtiLMControlArea controlArea;
+
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+
+    // define control area window from 20:00 to 06:00
+    CtiTime controlAreaStartTime(20, 0, 0);
+    CtiTime controlAreaStopTime(6, 0, 0);
+    controlAreaStopTime.addDays(1);     // move it to tomorrow morning
+
+    controlArea.setCurrentDailyStartTime(72000);    // 20:00 == 20 * 3600 == 72000
+    controlArea.setCurrentDailyStopTime(108000);    // 06:00 ==  6 * 3600 == 21600 + 86400 == 108000 --  tomorrow morning
+
+    CtiTime startTime(12, 0, 0);    // noon
+    CtiTime stopTime(22, 0, 0);     // 10:00pm
+
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds()));
+    BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
+
+    std::string violation = constraints.getViolations()[0];
+
+    BOOST_CHECK_NE(std::string::npos, violation.find("start"));                  // start time violation
+    BOOST_CHECK_NE(std::string::npos, violation.find(startTime.asString()));     // start time printed in error message
+
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStartTime.asString()));     // control area start time in error message
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStopTime.asString()));      // control area stop time in error message
+}
+
+
+BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_start_section_2_stop_section_4)
+{
+    CtiLMProgramDirect lmProgram;
+    CtiLMControlArea controlArea;
+
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+
+    // define control area window from 20:00 to 06:00
+    CtiTime controlAreaStartTime(20, 0, 0);
+    CtiTime controlAreaStopTime(6, 0, 0);
+    controlAreaStopTime.addDays(1);     // move it to tomorrow morning
+
+    controlArea.setCurrentDailyStartTime(72000);    // 20:00 == 20 * 3600 == 72000
+    controlArea.setCurrentDailyStopTime(108000);    // 06:00 ==  6 * 3600 == 21600 + 86400 == 108000 --  tomorrow morning
+
+    CtiTime startTime(12, 0, 0);    // noon
+    CtiTime stopTime(5, 0, 0);      // 5:00am
+    stopTime.addDays(1);            // 5:00am tomorrow
+
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds()));
+    BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
+
+    std::string violation = constraints.getViolations()[0];
+
+    BOOST_CHECK_NE(std::string::npos, violation.find("start"));                  // start time violation
+    BOOST_CHECK_NE(std::string::npos, violation.find(startTime.asString()));     // start time printed in error message
+
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStartTime.asString()));     // control area start time in error message
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStopTime.asString()));      // control area stop time in error message
+}
+
+
+BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_start_section_2_stop_section_5)
+{
+    CtiLMProgramDirect lmProgram;
+    CtiLMControlArea controlArea;
+
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+
+    // define control area window from 20:00 to 06:00
+    CtiTime controlAreaStartTime(20, 0, 0);
+    CtiTime controlAreaStopTime(6, 0, 0);
+    controlAreaStopTime.addDays(1);     // move it to tomorrow morning
+
+    controlArea.setCurrentDailyStartTime(72000);    // 20:00 == 20 * 3600 == 72000
+    controlArea.setCurrentDailyStopTime(108000);    // 06:00 ==  6 * 3600 == 21600 + 86400 == 108000 --  tomorrow morning
+
+    CtiTime startTime(12, 0, 0);    // noon
+    CtiTime stopTime(12, 0, 0);     // noon
+    stopTime.addDays(1);            // noon tomorrow
+
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds()));
+    BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
+
+    std::string violation = constraints.getViolations()[0];
+
+    BOOST_CHECK_NE(std::string::npos, violation.find("start"));                  // start time violation
+    BOOST_CHECK_NE(std::string::npos, violation.find(startTime.asString()));     // start time printed in error message
+
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStartTime.asString()));     // control area start time in error message
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStopTime.asString()));      // control area stop time in error message
+}
+
+
+BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_start_section_2_stop_section_6)
+{
+    CtiLMProgramDirect lmProgram;
+    CtiLMControlArea controlArea;
+
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+
+    // define control area window from 20:00 to 06:00
+    CtiTime controlAreaStartTime(20, 0, 0);
+    CtiTime controlAreaStopTime(6, 0, 0);
+    controlAreaStopTime.addDays(1);     // move it to tomorrow morning
+
+    controlArea.setCurrentDailyStartTime(72000);    // 20:00 == 20 * 3600 == 72000
+    controlArea.setCurrentDailyStopTime(108000);    // 06:00 ==  6 * 3600 == 21600 + 86400 == 108000 --  tomorrow morning
+
+    CtiTime startTime(12, 0, 0);    // noon
+    CtiTime stopTime(22, 0, 0);     // 10:00pm
+    stopTime.addDays(1);            // 10:00pm tomorrow
+
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds()));
+    BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
+
+    std::string violation = constraints.getViolations()[0];
+
+    BOOST_CHECK_NE(std::string::npos, violation.find("start"));                  // start time violation
+    BOOST_CHECK_NE(std::string::npos, violation.find(startTime.asString()));     // start time printed in error message
+
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStartTime.asString()));     // control area start time in error message
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStopTime.asString()));      // control area stop time in error message
+}
+
+
+BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_start_section_3_stop_section_3)
+{
+    CtiLMProgramDirect lmProgram;
+    CtiLMControlArea controlArea;
+
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+
+    // define control area window from 20:00 to 06:00
+    CtiTime controlAreaStartTime(20, 0, 0);
+    CtiTime controlAreaStopTime(6, 0, 0);
+    controlAreaStopTime.addDays(1);     // move it to tomorrow morning
+
+    controlArea.setCurrentDailyStartTime(72000);    // 20:00 == 20 * 3600 == 72000
+    controlArea.setCurrentDailyStopTime(108000);    // 06:00 ==  6 * 3600 == 21600 + 86400 == 108000 --  tomorrow morning
+
+    CtiTime startTime(22, 0, 0);    // 10:00pm
+    CtiTime stopTime(23, 0, 0);     // 11:00pm
+
+    BOOST_CHECK_EQUAL(true, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds()));
+    BOOST_CHECK_EQUAL(   0, constraints.getViolations().size() );
+}
+
+
+BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_start_section_3_stop_section_4)
+{
+    CtiLMProgramDirect lmProgram;
+    CtiLMControlArea controlArea;
+
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+
+    // define control area window from 20:00 to 06:00
+    CtiTime controlAreaStartTime(20, 0, 0);
+    CtiTime controlAreaStopTime(6, 0, 0);
+    controlAreaStopTime.addDays(1);     // move it to tomorrow morning
+
+    controlArea.setCurrentDailyStartTime(72000);    // 20:00 == 20 * 3600 == 72000
+    controlArea.setCurrentDailyStopTime(108000);    // 06:00 ==  6 * 3600 == 21600 + 86400 == 108000 --  tomorrow morning
+
+    CtiTime startTime(22, 0, 0);    // 10:00pm
+    CtiTime stopTime(5, 0, 0);      // 5:00am
+    stopTime.addDays(1);            // 5:00am tomorrow
+
+    BOOST_CHECK_EQUAL(true, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds()));
+    BOOST_CHECK_EQUAL(   0, constraints.getViolations().size() );
+}
+
+
+BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_start_section_3_stop_section_5)
+{
+    CtiLMProgramDirect lmProgram;
+    CtiLMControlArea controlArea;
+
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+
+    // define control area window from 20:00 to 06:00
+    CtiTime controlAreaStartTime(20, 0, 0);
+    CtiTime controlAreaStopTime(6, 0, 0);
+    controlAreaStopTime.addDays(1);     // move it to tomorrow morning
+
+    controlArea.setCurrentDailyStartTime(72000);    // 20:00 == 20 * 3600 == 72000
+    controlArea.setCurrentDailyStopTime(108000);    // 06:00 ==  6 * 3600 == 21600 + 86400 == 108000 --  tomorrow morning
+
+    CtiTime startTime(22, 0, 0);    // 10:00pm
+    CtiTime stopTime(12, 0, 0);     // noon
+    stopTime.addDays(1);            // noon tomorrow
+
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds()));
+    BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
+
+    std::string violation = constraints.getViolations()[0];
+
+    BOOST_CHECK_NE(std::string::npos, violation.find("stop"));                  // stop time violation
+    BOOST_CHECK_NE(std::string::npos, violation.find(stopTime.asString()));     // stop time printed in error message
+
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStartTime.asString()));     // control area start time in error message
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStopTime.asString()));      // control area stop time in error message
+}
+
+
+BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_start_section_3_stop_section_6)
+{
+    CtiLMProgramDirect lmProgram;
+    CtiLMControlArea controlArea;
+
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+
+    // define control area window from 20:00 to 06:00
+    CtiTime controlAreaStartTime(20, 0, 0);
+    CtiTime controlAreaStopTime(6, 0, 0);
+    controlAreaStopTime.addDays(1);     // move it to tomorrow morning
+
+    controlArea.setCurrentDailyStartTime(72000);    // 20:00 == 20 * 3600 == 72000
+    controlArea.setCurrentDailyStopTime(108000);    // 06:00 ==  6 * 3600 == 21600 + 86400 == 108000 --  tomorrow morning
+
+    CtiTime startTime(22, 0, 0);    // 10:00pm
+    CtiTime stopTime(22, 0, 0);     // 10:00pm
+    stopTime.addDays(1);            // 10:00pm tomorrow
+
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds()));
+    BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
+
+    std::string violation = constraints.getViolations()[0];
+
+    BOOST_CHECK_NE(std::string::npos, violation.find("stop"));                  // stop time violation
+    BOOST_CHECK_NE(std::string::npos, violation.find(stopTime.asString()));     // stop time printed in error message
+
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStartTime.asString()));     // control area start time in error message
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStopTime.asString()));      // control area stop time in error message
+}
+
+
+BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_start_section_4_stop_section_4)
+{
+    CtiLMProgramDirect lmProgram;
+    CtiLMControlArea controlArea;
+
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+
+    // define control area window from 20:00 to 06:00
+    CtiTime controlAreaStartTime(20, 0, 0);
+    CtiTime controlAreaStopTime(6, 0, 0);
+    controlAreaStopTime.addDays(1);     // move it to tomorrow morning
+
+    controlArea.setCurrentDailyStartTime(72000);    // 20:00 == 20 * 3600 == 72000
+    controlArea.setCurrentDailyStopTime(108000);    // 06:00 ==  6 * 3600 == 21600 + 86400 == 108000 --  tomorrow morning
+
+    CtiTime startTime(4, 0, 0);     // 4:00am
+    startTime.addDays(1);           // 4:00am tomorrow
+    CtiTime stopTime(5, 0, 0);      // 5:00am
+    stopTime.addDays(1);            // 5:00am tomorrow
+
+    BOOST_CHECK_EQUAL(true, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds()));
+    BOOST_CHECK_EQUAL(   0, constraints.getViolations().size() );
+}
+
+
+BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_start_section_4_stop_section_5)
+{
+    CtiLMProgramDirect lmProgram;
+    CtiLMControlArea controlArea;
+
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+
+    // define control area window from 20:00 to 06:00
+    CtiTime controlAreaStartTime(20, 0, 0);
+    CtiTime controlAreaStopTime(6, 0, 0);
+    controlAreaStopTime.addDays(1);     // move it to tomorrow morning
+
+    controlArea.setCurrentDailyStartTime(72000);    // 20:00 == 20 * 3600 == 72000
+    controlArea.setCurrentDailyStopTime(108000);    // 06:00 ==  6 * 3600 == 21600 + 86400 == 108000 --  tomorrow morning
+
+    CtiTime startTime(4, 0, 0);     // 4:00am
+    startTime.addDays(1);           // 4:00am tomorrow
+    CtiTime stopTime(12, 0, 0);     // noon
+    stopTime.addDays(1);            // noon tomorrow
+
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds()));
+    BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
+
+    std::string violation = constraints.getViolations()[0];
+
+    BOOST_CHECK_NE(std::string::npos, violation.find("stop"));                  // stop time violation
+    BOOST_CHECK_NE(std::string::npos, violation.find(stopTime.asString()));     // stop time printed in error message
+
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStartTime.asString()));     // control area start time in error message
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStopTime.asString()));      // control area stop time in error message
+}
+
+
+BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_start_section_4_stop_section_6)
+{
+    CtiLMProgramDirect lmProgram;
+    CtiLMControlArea controlArea;
+
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+
+    // define control area window from 20:00 to 06:00
+    CtiTime controlAreaStartTime(20, 0, 0);
+    CtiTime controlAreaStopTime(6, 0, 0);
+    controlAreaStopTime.addDays(1);     // move it to tomorrow morning
+
+    controlArea.setCurrentDailyStartTime(72000);    // 20:00 == 20 * 3600 == 72000
+    controlArea.setCurrentDailyStopTime(108000);    // 06:00 ==  6 * 3600 == 21600 + 86400 == 108000 --  tomorrow morning
+
+    CtiTime startTime(4, 0, 0);     // 4:00am
+    startTime.addDays(1);           // 4:00am tomorrow
+    CtiTime stopTime(22, 0, 0);     // 10:00pm
+    stopTime.addDays(1);            // 10:00pm tomorrow
+ 
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds()));
+    BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
+
+    std::string violation = constraints.getViolations()[0];
+
+    BOOST_CHECK_NE(std::string::npos, violation.find("stop"));                  // stop time violation
+    BOOST_CHECK_NE(std::string::npos, violation.find(stopTime.asString()));     // stop time printed in error message
+
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStartTime.asString()));     // control area start time in error message
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStopTime.asString()));      // control area stop time in error message
+}
+
+
+BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_start_section_5_stop_section_5)
+{
+    CtiLMProgramDirect lmProgram;
+    CtiLMControlArea controlArea;
+
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+
+    // define control area window from 20:00 to 06:00
+    CtiTime controlAreaStartTime(20, 0, 0);
+    CtiTime controlAreaStopTime(6, 0, 0);
+    controlAreaStopTime.addDays(1);     // move it to tomorrow morning
+
+    controlArea.setCurrentDailyStartTime(72000);    // 20:00 == 20 * 3600 == 72000
+    controlArea.setCurrentDailyStopTime(108000);    // 06:00 ==  6 * 3600 == 21600 + 86400 == 108000 --  tomorrow morning
+
+    CtiTime startTime(12, 0, 0);    // noon
+    startTime.addDays(1);           // noon tomorrow
+    CtiTime stopTime(16, 0, 0);     // 4:00pm
+    stopTime.addDays(1);            // 4:00pm tomorrow
+
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds()));
+    BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
+
+    std::string violation = constraints.getViolations()[0];
+
+    BOOST_CHECK_NE(std::string::npos, violation.find("start"));                  // start time violation
+    BOOST_CHECK_NE(std::string::npos, violation.find(startTime.asString()));     // start time printed in error message
+
+    // since our start time has moved out beyond todays window, we compare to tomorrows, error message reflects that
+    controlAreaStartTime.addDays(1);
+    controlAreaStopTime.addDays(1);
+
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStartTime.asString()));     // control area start time in error message
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStopTime.asString()));      // control area stop time in error message
+}
+
+
+BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_start_section_5_stop_section_6)
+{
+    CtiLMProgramDirect lmProgram;
+    CtiLMControlArea controlArea;
+
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+
+    // define control area window from 20:00 to 06:00
+    CtiTime controlAreaStartTime(20, 0, 0);
+    CtiTime controlAreaStopTime(6, 0, 0);
+    controlAreaStopTime.addDays(1);     // move it to tomorrow morning
+
+    controlArea.setCurrentDailyStartTime(72000);    // 20:00 == 20 * 3600 == 72000
+    controlArea.setCurrentDailyStopTime(108000);    // 06:00 ==  6 * 3600 == 21600 + 86400 == 108000 --  tomorrow morning
+
+    CtiTime startTime(12, 0, 0);    // noon
+    startTime.addDays(1);           // noon tomorrow
+    CtiTime stopTime(22, 0, 0);     // 10:00pm
+    stopTime.addDays(1);            // 10:00pm tomorrow
+
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds()));
+    BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
+
+    std::string violation = constraints.getViolations()[0];
+
+    BOOST_CHECK_NE(std::string::npos, violation.find("start"));                  // start time violation
+    BOOST_CHECK_NE(std::string::npos, violation.find(startTime.asString()));     // start time printed in error message
+
+    // since our start time has moved out beyond todays window, we compare to tomorrows, error message reflects that
+    controlAreaStartTime.addDays(1);
+    controlAreaStopTime.addDays(1);
+
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStartTime.asString()));     // control area start time in error message
+    BOOST_CHECK_NE(std::string::npos, violation.find(controlAreaStopTime.asString()));      // control area stop time in error message
+}
+
+
+BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_start_section_6_stop_section_6)
+{
+    CtiLMProgramDirect lmProgram;
+    CtiLMControlArea controlArea;
+
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+
+    // define control area window from 20:00 to 06:00
+    CtiTime controlAreaStartTime(20, 0, 0);
+    CtiTime controlAreaStopTime(6, 0, 0);
+    controlAreaStopTime.addDays(1);     // move it to tomorrow morning
+
+    controlArea.setCurrentDailyStartTime(72000);    // 20:00 == 20 * 3600 == 72000
+    controlArea.setCurrentDailyStopTime(108000);    // 06:00 ==  6 * 3600 == 21600 + 86400 == 108000 --  tomorrow morning
+
+    CtiTime startTime(22, 0, 0);    // 10:00pm
+    startTime.addDays(1);           // 10:00pm tomorrow
+    CtiTime stopTime(23, 0, 0);     // 11:00pm
+    stopTime.addDays(1);            // 11:00pm tomorrow
+
+    BOOST_CHECK_EQUAL(true, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds()));
+    BOOST_CHECK_EQUAL(   0, constraints.getViolations().size() );
+}
+
+
+BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_start_section_6_stop_section_7)
+{
+    CtiLMProgramDirect lmProgram;
+    CtiLMControlArea controlArea;
+
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+
+    // define control area window from 20:00 to 06:00
+    CtiTime controlAreaStartTime(20, 0, 0);
+    CtiTime controlAreaStopTime(6, 0, 0);
+    controlAreaStopTime.addDays(1);     // move it to tomorrow morning
+
+    controlArea.setCurrentDailyStartTime(72000);    // 20:00 == 20 * 3600 == 72000
+    controlArea.setCurrentDailyStopTime(108000);    // 06:00 ==  6 * 3600 == 21600 + 86400 == 108000 --  tomorrow morning
+
+    CtiTime startTime(22, 0, 0);    // 10:00pm
+    startTime.addDays(1);           // 10:00pm tomorrow
+    CtiTime stopTime(5, 0, 0);      // 5:00am
+    stopTime.addDays(2);            // 5:00am 2 days from now
+
+    BOOST_CHECK_EQUAL(true, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds()));
+    BOOST_CHECK_EQUAL(   0, constraints.getViolations().size() );
+}
+
+
+BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_start_stop_reversed)
+{
+    CtiLMProgramDirect lmProgram;
+    CtiLMControlArea controlArea;
+
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+
+    // define control area window from 20:00 to 06:00
+    CtiTime controlAreaStartTime(20, 0, 0);
+    CtiTime controlAreaStopTime(6, 0, 0);
+    controlAreaStopTime.addDays(1);     // move it to tomorrow morning
+
+    controlArea.setCurrentDailyStartTime(72000);    // 20:00 == 20 * 3600 == 72000
+    controlArea.setCurrentDailyStopTime(108000);    // 06:00 ==  6 * 3600 == 21600 + 86400 == 108000 --  tomorrow morning
+
+    CtiTime startTime(0, 30, 0);    // 12:30am
+    CtiTime stopTime(12, 0, 0);     // noon
+
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, stopTime.seconds(), startTime.seconds()));
+    BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
+
+    std::string violation = constraints.getViolations()[0];
+
+    /*  Violation:                 ( stopTime        )                           ( startTime       )
+        The proposed start time of mm/dd/yyyy hh:mm:ss is after the stop time of mm/dd/yyyy hh:mm:ss
+    */
+
+    BOOST_CHECK_LT(violation.find("start"), violation.find("stop"));    // message contains 'start' and 'stop' in that order
+    BOOST_CHECK_LT(violation.find(stopTime.asString()), violation.find(startTime.asString()));  // stop time printed first
 }
 

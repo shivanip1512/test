@@ -492,8 +492,7 @@ bool CtiLMProgramConstraintChecker::checkControlWindows(ULONG proposed_start_fro
 
 bool CtiLMProgramConstraintChecker::checkControlAreaControlWindows(CtiLMControlArea &controlArea, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901)
 {
-    bool retVal = true;
-    CtiTime startTime(proposed_start_from_1901);
+    CtiTime startTime(proposed_start_from_1901);    // target window
     CtiTime stopTime(proposed_stop_from_1901);
 
     // The stop time could be in the infinate future, in that case
@@ -507,9 +506,10 @@ bool CtiLMProgramConstraintChecker::checkControlAreaControlWindows(CtiLMControlA
     if( controlArea.getCurrentDailyStartTime().is_special() || controlArea.getCurrentDailyStopTime().is_special() ||
         controlArea.getCurrentDailyStartTime() == controlArea.getCurrentDailyStopTime() )
     {
-        retVal = true;
+        return true;
     }
-    else if( proposed_start_from_1901 > proposed_stop_from_1901 )
+
+    if( proposed_start_from_1901 > proposed_stop_from_1901 )
     {
         string result = "The proposed start time of ";
         result += startTime.asString();
@@ -517,46 +517,97 @@ bool CtiLMProgramConstraintChecker::checkControlAreaControlWindows(CtiLMControlA
         result += stopTime.asString();
         _results.push_back(result);
 
-        retVal = false;
+        return false;
     }
-    else if( startTime < controlArea.getCurrentDailyStartTime() )
+
+    CtiTime controlAreaStartTime = controlArea.getCurrentDailyStartTime();
+    CtiTime controlAreaStopTime = controlArea.getCurrentDailyStopTime();
+
+    // If our control area window and target window start on different dates, then our target
+    // window is tomorrow.  Move the control area window forward to tomorrow.
+
+    if( controlAreaStartTime.date() != startTime.date() )
     {
-        string result = "The program cannot run outside of its prescribed control windows.  The proposed start time of ";
-        result += startTime.asString();
-        result += " is outside the CONTROL AREA control window that runs from ";
-        result += controlArea.getCurrentDailyStartTime().asString();
-        result += " to ";
-        result += controlArea.getCurrentDailyStopTime().asString();
-        _results.push_back(result);
-
-        retVal = false;
+        controlAreaStartTime.addDays(1);
+        controlAreaStopTime.addDays(1);
     }
-    else if( controlArea.getCurrentDailyStopTime() < controlArea.getCurrentDailyStartTime() && stopTime > (controlArea.getCurrentDailyStopTime().addDays(1)) )
+
+    if( controlAreaStartTime.date() == controlAreaStopTime.date() )     // control area window doesn't overlap midnight
     {
-        string result = "The program cannot run outside of its prescribed control windows.  The proposed stop time of ";
-        result += stopTime.asString();
-        result += " is outside the CONTROL AREA control window that runs from ";
-        result += controlArea.getCurrentDailyStartTime().asString();
-        result += " to ";
-        result += controlArea.getCurrentDailyStopTime().addDays(1).asString();
-        _results.push_back(result);
+        if( startTime < controlAreaStartTime || startTime > controlAreaStopTime )
+        {
+            string result = "The program cannot run outside of its prescribed control windows.  The proposed start time of ";
+            result += startTime.asString();
+            result += " is outside the CONTROL AREA control window that runs from ";
+            result += controlAreaStartTime.asString();
+            result += " to ";
+            result += controlAreaStopTime.asString();
+            _results.push_back(result);
 
-        retVal = false;
+            return false;
+        }
+
+        if( stopTime < controlAreaStartTime || stopTime > controlAreaStopTime )
+        {
+            string result = "The program cannot run outside of its prescribed control windows.  The proposed stop time of ";
+            result += stopTime.asString();
+            result += " is outside the CONTROL AREA control window that runs from ";
+            result += controlAreaStartTime.asString();
+            result += " to ";
+            result += controlAreaStopTime.asString();
+            _results.push_back(result);
+
+            return false;
+        }
     }
-    else if( controlArea.getCurrentDailyStopTime() > controlArea.getCurrentDailyStartTime() && stopTime > controlArea.getCurrentDailyStopTime() )
+    else    // control area window overlaps midnight
     {
-        string result = "The program cannot run outside of its prescribed control windows.  The proposed stop time of ";
-        result += stopTime.asString();
-        result += " is outside the CONTROL AREA control window that runs from ";
-        result += controlArea.getCurrentDailyStartTime().asString();
-        result += " to ";
-        result += controlArea.getCurrentDailyStopTime().asString();
-        _results.push_back(result);
+        CtiTime todayControlAreaStopTime = controlAreaStopTime;
+        todayControlAreaStopTime.addDays(-1);
+        CtiTime yesterdayControlAreaStartTime = controlAreaStartTime;
+        yesterdayControlAreaStartTime.addDays(-1);
 
-        retVal = false;
+        if( todayControlAreaStopTime < startTime && startTime < controlAreaStartTime )
+        {
+            string result = "The program cannot run outside of its prescribed control windows.  The proposed start time of ";
+            result += startTime.asString();
+            result += " is outside the CONTROL AREA control window that runs from ";
+            result += controlAreaStartTime.asString();
+            result += " to ";
+            result += controlAreaStopTime.asString();
+            _results.push_back(result);
+
+            return false;
+        }
+
+        if( startTime <= todayControlAreaStopTime && stopTime > todayControlAreaStopTime )
+        {
+            string result = "The program cannot run outside of its prescribed control windows.  The proposed stop time of ";
+            result += stopTime.asString();
+            result += " is outside the CONTROL AREA control window that runs from ";
+            result += yesterdayControlAreaStartTime.asString();
+            result += " to ";
+            result += todayControlAreaStopTime.asString();
+            _results.push_back(result);
+
+            return false;
+        }
+
+        if( startTime >= controlAreaStartTime && (stopTime < controlAreaStartTime || stopTime > controlAreaStopTime) )
+        {
+            string result = "The program cannot run outside of its prescribed control windows.  The proposed stop time of ";
+            result += stopTime.asString();
+            result += " is outside the CONTROL AREA control window that runs from ";
+            result += controlAreaStartTime.asString();
+            result += " to ";
+            result += controlAreaStopTime.asString();
+            _results.push_back(result);
+
+            return false;
+        }
     }
 
-    return retVal;
+    return true;
 }
 
 /*
