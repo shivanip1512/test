@@ -539,6 +539,9 @@ INT CtiDeviceMCT::ExecuteRequest( CtiRequestMsg              *pReq,
     }
     else
     {
+        long msgId = pReq->UserMessageId();
+        long connHandle = (long)pReq->getConnectionHandle();
+
         if(OutMessage != NULL)
         {
             tmpOutList.push_back( OutMessage );
@@ -546,7 +549,17 @@ INT CtiDeviceMCT::ExecuteRequest( CtiRequestMsg              *pReq,
         }
 
         executeOnDLCRoute(pReq, parse, tmpOutList, vgList, retList, outList, broadcast);
+
+        if (getGroupMessageCount(msgId, connHandle))
+        {
+            for (list< CtiMessage* >::iterator itr = retList.begin(); itr != retList.end(); itr++)
+            {
+                ((CtiReturnMsg*)*itr)->setExpectMore(true);
+            }
+        }
     }
+
+
 
     return nRet;
 }

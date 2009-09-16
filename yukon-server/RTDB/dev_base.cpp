@@ -1149,6 +1149,11 @@ Cti::Config::CtiConfigDeviceSPtr CtiDeviceBase::getDeviceConfig()
     return _deviceConfig;
 }
 
+void CtiDeviceBase::changeDeviceConfig(Cti::Config::CtiConfigDeviceSPtr config)
+{
+    setDeviceConfig(config);
+}
+
 Cti::DeviceQueueInterface* CtiDeviceBase::getDeviceQueueHandler()
 {
     return NULL;

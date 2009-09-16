@@ -1,20 +1,22 @@
 #pragma warning( disable : 4786)
+#pragma once
 
-#ifndef __DA_LP_DEVICECONFIG_H__
-#define __DA_LP_DEVICECONFIG_H__
 #include "yukon.h"
 
 #include <boost/shared_ptr.hpp>
-#include <exception>
 
 #include "da_load_profile.h"
 #include "config_device.h"
 
+namespace Cti {
+namespace Config {
+
 class IM_EX_CONFIG DeviceConfigurationLoadProfileData : public DataAccessLoadProfile
 {
     private:
-        Cti::Config::CtiConfigDeviceSPtr deviceConfig;
-        boost::shared_ptr<DataAccessLoadProfile> lpTable;
+        CtiConfigDeviceSPtr _deviceConfig;
+        boost::shared_ptr<DataAccessLoadProfile> _lpTable;
+        static const int SecondsPerMinute;
 
     public:
         DeviceConfigurationLoadProfileData();
@@ -26,12 +28,9 @@ class IM_EX_CONFIG DeviceConfigurationLoadProfileData : public DataAccessLoadPro
         virtual int  getVoltageProfileRate() const;
         virtual bool isChannelValid(int channel) const;
 
-        Cti::Config::CtiConfigDeviceSPtr getDeviceConfig();
-        void setDeviceConfig(Cti::Config::CtiConfigDeviceSPtr deviceConfig);
-
-        boost::shared_ptr<DataAccessLoadProfile> getLpTable();
+        void setDeviceConfig(CtiConfigDeviceSPtr deviceConfig);
         void setLpTable(boost::shared_ptr<DataAccessLoadProfile> table);
 };
 
-#endif
-
+}
+}

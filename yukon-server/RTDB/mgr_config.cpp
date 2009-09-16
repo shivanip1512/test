@@ -156,7 +156,7 @@ void CtiConfigManager::processDBUpdate(LONG identifier, string category, string 
                     CtiDeviceSPtr pDev = _devMgr->getDeviceByID(identifier);
                     if( pDev )
                     {
-                        pDev->setDeviceConfig(CtiConfigDeviceSPtr());//set to null
+                        pDev->changeDeviceConfig(CtiConfigDeviceSPtr());//set to null
                     }
                     break;
                 }
@@ -343,7 +343,7 @@ void CtiConfigManager::updateDeviceConfigs(long configID, long deviceID)
 
                 if( (tempSPtr = _deviceConfig.find(configID)) && pDev )
                 {
-                    pDev->setDeviceConfig(tempSPtr);
+                    pDev->changeDeviceConfig(tempSPtr);
                 }
             }
             else
@@ -352,7 +352,7 @@ void CtiConfigManager::updateDeviceConfigs(long configID, long deviceID)
                 CtiDeviceSPtr pDev = _devMgr->getDeviceByID(deviceID);
                 if( pDev )
                 {
-                    pDev->setDeviceConfig(CtiConfigDeviceSPtr());
+                    pDev->changeDeviceConfig(CtiConfigDeviceSPtr());
                 }
             }
 
@@ -372,7 +372,7 @@ void CtiConfigManager::updateDeviceConfigs(long configID, long deviceID)
 
                 if( (tempSPtr = _deviceConfig.find(configID)) && pDev )
                 {
-                    pDev->setDeviceConfig(tempSPtr);
+                    pDev->changeDeviceConfig(tempSPtr);
                 }
             }
         }

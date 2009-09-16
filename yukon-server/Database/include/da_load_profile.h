@@ -1,10 +1,7 @@
 #pragma warning( disable : 4786)
+#pragma once
 
-#ifndef __DataAccessLoadProfile_H__
-#define __DataAccessLoadProfile_H__
 #include "yukon.h"
-
-#include <boost/shared_ptr.hpp>
 
 class DataAccessLoadProfile
 {
@@ -15,8 +12,5 @@ class DataAccessLoadProfile
        virtual int  getVoltageDemandInterval() const =0;
        virtual int  getVoltageProfileRate() const =0;
        virtual bool isChannelValid(int channel) const =0;
-
-       //LONG getDeviceID() const;
 };
 
-#endif

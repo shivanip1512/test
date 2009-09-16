@@ -725,6 +725,13 @@ boost::shared_ptr<DataAccessLoadProfile> CtiDeviceMCT470::getDeviceConfigLp(Cti:
     return deviceConfigLp;
 }
 
+void CtiDeviceMCT470::changeDeviceConfig(Cti::Config::CtiConfigDeviceSPtr config)
+{
+    //clear it out to be reloaded on the next getter call.
+    deviceConfigLp = boost::shared_ptr<DataAccessLoadProfile>();
+    setDeviceConfig(config);
+}
+
 //  zero-based channel offset
 long CtiDeviceMCT470::getLoadProfileInterval( unsigned channel )
 {

@@ -318,7 +318,6 @@ INT CtiRouteCCU::assembleDLCRequest(CtiCommandParser     &parse,
                                     list< OUTMESS* >     &outList)
 {
     INT           status = NORMAL;
-    bool          xmore = true;
     string        resultString;
 
     CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), string(), status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
@@ -435,10 +434,11 @@ INT CtiRouteCCU::assembleDLCRequest(CtiCommandParser     &parse,
     if(retReturn)
     {
         retReturn->setResultString(resultString);
-        retReturn->setExpectMore(true);
 
-        if(parse.isTwoWay())     retReturn->setExpectMore(xmore);
-        if(parse.isDisconnect()) retReturn->setExpectMore(xmore);  //  we scan afterwards, so you'd best expect another message even though it's not technically two-way
+        if (parse.isTwoWay() || parse.isDisconnect())
+        {
+            retReturn->setExpectMore(true);
+        }
 
         retList.push_back(retReturn);
     }

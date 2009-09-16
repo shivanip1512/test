@@ -5,6 +5,8 @@
 
 using namespace Cti::Config;
 
+const int DeviceConfigurationLoadProfileData::SecondsPerMinute = 60;
+
 DeviceConfigurationLoadProfileData::DeviceConfigurationLoadProfileData()
 {
 
@@ -12,18 +14,16 @@ DeviceConfigurationLoadProfileData::DeviceConfigurationLoadProfileData()
 
 int DeviceConfigurationLoadProfileData::getLastIntervalDemandRate() const
 {
-    long demand = deviceConfig->getLongValueFromKey(MCTStrings::DemandInterval);
+    long demand = _deviceConfig->getLongValueFromKey(MCTStrings::DemandInterval);
 
     return demand;
-
 }
 
 int DeviceConfigurationLoadProfileData::getLoadProfileDemandRate() const
 {
-    long loadProfile1 = deviceConfig->getLongValueFromKey(MCTStrings::LoadProfileInterval);
+    long lpInterval_minutes = _deviceConfig->getLongValueFromKey(MCTStrings::LoadProfileInterval);
 
-    // * 60 because the configs store in minutes, they are expected to be in seconds
-    return loadProfile1*60;
+    return lpInterval_minutes * SecondsPerMinute;
 }
 
 int DeviceConfigurationLoadProfileData::getVoltageDemandInterval() const
@@ -48,25 +48,15 @@ int DeviceConfigurationLoadProfileData::getVoltageProfileRate() const
 
 bool DeviceConfigurationLoadProfileData::isChannelValid(int channel) const
 {
-    return lpTable->isChannelValid(channel);
+    return _lpTable->isChannelValid(channel);
 }
 
-Cti::Config::CtiConfigDeviceSPtr DeviceConfigurationLoadProfileData::getDeviceConfig()
+void DeviceConfigurationLoadProfileData::setDeviceConfig(CtiConfigDeviceSPtr deviceConfig)
 {
-    return deviceConfig;
-}
-
-void DeviceConfigurationLoadProfileData::setDeviceConfig(Cti::Config::CtiConfigDeviceSPtr deviceConfig)
-{
-    this->deviceConfig = deviceConfig;
-}
-
-boost::shared_ptr<DataAccessLoadProfile> DeviceConfigurationLoadProfileData::getLpTable()
-{
-    return lpTable;
+    _deviceConfig = deviceConfig;
 }
 
 void DeviceConfigurationLoadProfileData::setLpTable(boost::shared_ptr<DataAccessLoadProfile> lpTable)
 {
-    this->lpTable = lpTable;
+    _lpTable = lpTable;
 }

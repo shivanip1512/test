@@ -495,6 +495,7 @@ public:
     CtiDeviceMCT470 &operator=( const CtiDeviceMCT470 &aRef );
 
     virtual ULONG calcNextLPScanTime( void );
+    virtual void changeDeviceConfig(Cti::Config::CtiConfigDeviceSPtr config);
 
     virtual void DecodeDatabaseReader( RWDBReader &rdr );
 };

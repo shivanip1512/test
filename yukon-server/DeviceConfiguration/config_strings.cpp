@@ -104,9 +104,9 @@ const string MCTStrings::PeakKwResolution3 = "channel 3 peak kw resolution";
 const string MCTStrings::LastIntervalDemandResolution3 = "channel 3 last interval demand resolution";
 const string MCTStrings::LoadProfileResolution3 = "channel 3 load profile resolution";
 
-const string MCTStrings::PeakKwResolution4 = "channel 3 peak kw resolution";
-const string MCTStrings::LastIntervalDemandResolution4 = "channel 3 last interval demand resolution";
-const string MCTStrings::LoadProfileResolution4 = "channel 3 load profile resolution";
+const string MCTStrings::PeakKwResolution4 = "channel 4 peak kw resolution";
+const string MCTStrings::LastIntervalDemandResolution4 = "channel 4 last interval demand resolution";
+const string MCTStrings::LoadProfileResolution4 = "channel 4 load profile resolution";
 
 const string MCTStrings::DemandInterval = "demand interval";
 const string MCTStrings::LoadProfileInterval = "load profile interval 1";

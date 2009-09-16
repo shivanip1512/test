@@ -278,6 +278,7 @@ public:
 
     void setDeviceConfig(Cti::Config::CtiConfigDeviceSPtr config);
     Cti::Config::CtiConfigDeviceSPtr getDeviceConfig();//Configs are now thread safe!
+    virtual void changeDeviceConfig(Cti::Config::CtiConfigDeviceSPtr config);//Override this to be notified if the config changes for this device.
     virtual Cti::DeviceQueueInterface* getDeviceQueueHandler();
 
     virtual ULONG selectInitialMacroRouteOffset(LONG routeid) const;
