@@ -5,7 +5,6 @@ import java.util.List;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.data.device.DeviceBase;
@@ -166,4 +165,11 @@ public interface DeviceDao {
     public SimpleDevice getYukonDeviceForDevice(DeviceBase oldDevice);
     
     public PaoLoader<DeviceCollectionReportDevice> getDeviceCollectionReportDeviceLoader();
+
+    /**
+     * Returns a List<SimpleDevice> of devices that are on the specified route;
+     * @param routeId
+     * @return List<SimpleDevice>
+     */
+    public List<SimpleDevice> getDevicesForRouteId(int routeId);
 }

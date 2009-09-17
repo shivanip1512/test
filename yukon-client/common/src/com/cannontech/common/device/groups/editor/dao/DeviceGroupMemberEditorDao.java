@@ -81,6 +81,14 @@ public interface DeviceGroupMemberEditorDao {
      * @param devices
      */
     public void removeDevices(StoredDeviceGroup group, Collection<? extends YukonDevice> devices);
+    
+    /**
+     * Removes all child devices under group.
+     * This method will NOT remove sub groups or their contents.
+     * @param group
+     * @param devices
+     */
+    public void removeAllChildDevices(StoredDeviceGroup group);
 
     /**
      * Determines if device is a direct child of group.

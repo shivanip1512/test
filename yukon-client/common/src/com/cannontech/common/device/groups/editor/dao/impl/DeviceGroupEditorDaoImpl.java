@@ -337,6 +337,12 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         jdbcTemplate.update(sql.toString(), group.getId());
     }
 
+    @Override
+    public void removeAllChildDevices(StoredDeviceGroup group) {
+        String sql = "DELETE FROM DeviceGroupMember where DeviceGroupId = ?";
+        jdbcTemplate.update(sql, group.getId());
+    }
+
     /**
      * Deprecated via interface.
      */

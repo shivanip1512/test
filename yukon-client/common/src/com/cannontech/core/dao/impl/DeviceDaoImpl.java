@@ -2,6 +2,7 @@ package com.cannontech.core.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -9,6 +10,7 @@ import java.util.Map.Entry;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
@@ -18,9 +20,7 @@ import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
-import com.cannontech.common.device.model.DisplayableDevice;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.ChunkingSqlTemplate;
@@ -292,6 +292,21 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
         return devicesByAddress;
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<SimpleDevice> getDevicesForRouteId(int routeId){
+        String sql = "SELECT yp.PAObjectId, yp.Type FROM YukonPAObject yp "
+                        + "JOIN Device d ON yp.PAObjectId = d.DeviceId "
+                        + "JOIN DeviceRoutes dr ON d.DeviceId = dr.DeviceId "
+                        + "WHERE dr.RouteId = ?";
+        try{
+            List<SimpleDevice> devices = jdbcOps.query(sql, new Integer[] {routeId}, new YukonDeviceRowMapper(paoGroupsWrapper));
+            return devices;
+        } catch (IncorrectResultSizeDataAccessException e){
+            return Collections.emptyList();
+        }
+    }
+    
     public void changeRoute(YukonDevice device, int newRouteId) {
 
         // Updates the meter's meter number

@@ -488,6 +488,11 @@ public class ObjectMapperFactoryImplTest extends TestCase {
         public PaoLoader<DeviceCollectionReportDevice> getDeviceCollectionReportDeviceLoader() {
             throw new UnsupportedOperationException("Method not implemented");
         }
+
+        @Override
+        public List<SimpleDevice> getDevicesForRouteId(int routeId) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
     }
 
 }

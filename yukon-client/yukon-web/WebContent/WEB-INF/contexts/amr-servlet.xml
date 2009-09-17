@@ -26,6 +26,7 @@
                 <prop key="/reports/*">AMRReportsController</prop>
                 <prop key="/outageProcessing/monitorEditor/*">OutageMonitorEditorController</prop>
                 <prop key="/outageProcessing/process/*">OutageProcessingController</prop>
+                <prop key="/phaseDetect/*">PhaseDetectController</prop>
             </props>
         </property>
     </bean>
@@ -128,4 +129,7 @@
     
     <bean class="com.cannontech.web.amr.tamperFlagProcessing.TamperFlagProcessingController" />
     
+    <!-- PHASE DETECTION -->
+    <bean id="PhaseDetectController" class="com.cannontech.web.amr.phaseDetect.PhaseDetectController"/>
+
 </beans>

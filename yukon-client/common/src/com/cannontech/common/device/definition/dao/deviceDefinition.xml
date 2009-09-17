@@ -1382,6 +1382,10 @@
                 <name>Comm Status</name>
                 <stategroup value="SystemState"/>
             </point>
+            <point type="Status" offset="3000">
+			    <name>Phase</name>
+			    <stategroup value="PhaseStatus"/>
+			</point>
         </points>
         
 		<commands>

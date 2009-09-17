@@ -22,7 +22,7 @@ public enum GroupCommandResultFieldEnum {
     
     UNSUPPORTED_COUNT(new ResultAccessor<GroupCommandResult>() {
         public Object getValue(GroupCommandResult groupCommandResult) {
-            return groupCommandResult.getUnsupportedCollection().getDeviceList().size();
+            return groupCommandResult.getUnsupportedCollection().getDeviceCount();
         }
     }),
     

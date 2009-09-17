@@ -317,7 +317,8 @@
         class="com.cannontech.amr.scheduledGroupRequestExecution.dao.impl.ScheduledGroupRequestExecutionDaoImpl"  
         scope="prototype">
     </bean>
-    
-  
+	
+    <!-- Phase Detect Service -->
+    <bean id="phaseDetectService" class="com.cannontech.amr.phaseDetect.service.impl.PhaseDetectServiceImpl"/>
 </beans>
 

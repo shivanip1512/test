@@ -518,6 +518,10 @@
         <property name="identityPath" value="common/deviceIdentity.jsp" />
     </bean>
     
+    <bean id="systemActionsMenuWidget" class="com.cannontech.web.widget.SystemActionsMenuWidget">
+        <property name="title" value="Actions"/>
+    </bean>
+    
     <!-- Update Service -->
     <bean id="dataUpdaterService" class="com.cannontech.web.updater.DefaultDataUpdaterService"
         abstract="false" lazy-init="default" autowire="default"

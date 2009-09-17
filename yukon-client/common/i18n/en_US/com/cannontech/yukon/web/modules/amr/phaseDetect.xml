@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    
+    <entry key="yukon.web.modules.amr.phaseDetect.pageTitle">Phase Detect</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.step1.sectionTitle">Step 1: Select A Substation</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.step2.sectionTitle">Step 2: Clear Phase Data</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.step3.sectionTitle">Step 3: Test Parameters</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.step4.sectionTitle">Step 4: Phase Detect Test</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.step5.sectionTitle">Step 5: Phase Detect Results</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.step4.noteLabel">Instructions:</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.step4.progressLabel">Reading</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.step4.noteText">Lock out substation voltage regulators on the other two phases as well as all downline voltage regulators.  
+        For best results, step down one step on regulator right now and then up three steps after the timer expires that appears after 'Send Phase Detect Command' button is pressed.  After 
+        voltage regulators are locked out press 'Send Phase Detect Command' when ready.</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.step4.voltIntervalNote">until you should tell the lineman to adjust the voltage regulators.</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.step4.voltDetectNote">until you can tell the lineman to return the voltage regulators to normal.</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.step5.collectionActionLabel">Perform A Collection Action On These Meters</entry>
+    
+</properties>

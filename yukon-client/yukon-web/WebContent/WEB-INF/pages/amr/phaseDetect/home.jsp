@@ -1,0 +1,88 @@
+<%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
+<cti:msg key="yukon.web.modules.amr.phaseDetect.pageTitle" var="pageTitle"/>
+<cti:msg key="yukon.web.modules.amr.phaseDetect.step1.sectionTitle" var="sectionTitle"/>
+
+<cti:standardPage title="Phase Detection" module="amr">
+    <cti:includeCss link="/WebConfig/yukon/styles/YukonGeneralStyles.css"/>
+    <cti:standardMenu menuSelection="meters" />
+
+    <cti:url var="routesUrl" value="/spring/amr/phaseDetect/routes"/>
+
+    <cti:breadCrumbs>
+        <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
+        <cti:crumbLink url="/spring/meter/start" title="Metering" />
+        <cti:crumbLink title="${pageTitle}" />
+    </cti:breadCrumbs>
+    
+	
+	<script type="text/javascript">
+        function selectThisSub() {
+		    var selection = $F('substations');
+		    $("selectedSub").value = selection;
+		    var button = $('nextButton');
+		    if(selection == '-1'){
+		    	button.disable();
+		    }else{
+		    	button.enable();
+		    }
+		    var params = {'substationId': selection};
+            new Ajax.Updater('routesDiv', '${routesUrl}', {method: 'get', parameters: params});
+        }
+	</script>
+	
+	<%-- Phase Detect Title --%>
+    <h2 style="display: inline;">
+        ${pageTitle}
+    </h2>
+    <br>
+	<br>
+    <tags:sectionContainer title="${sectionTitle}">
+        <form action="/spring/amr/phaseDetect/saveSubstationAndReadMethod" method=post>
+            <input type="hidden" name="selectedSub" id="selectedSub" value="-1">
+		    <table style="padding-right: 20px;padding-bottom: 10px;">
+		        <tr valign="top">
+		            <td style="padding-top: 3px;">
+		               <tags:nameValueContainer>
+		                   <tags:nameValue name="Substations">
+		                       <select id="substations" onchange="selectThisSub();">
+		                           <option value="-1">(none)</option>
+			                       <c:forEach var="substation" items="${substations}">
+			                           <option value="${substation.id}">${substation.name}</option>
+			                       </c:forEach>
+			                   </select>
+		                   </tags:nameValue>
+		               </tags:nameValueContainer>
+		            </td>
+		        </tr>
+		        <tr>
+                    <td style="padding-top: 3px;">
+                        <div id="routesDiv" style="max-height: 300px;overflow: auto;padding:5px 18px 5px 5px;"></div>
+                    </td>
+		        </tr>
+		        <tr>
+                    <td style="padding-top: 3px;">
+                        <input type="radio" name="readPhasesWhen" value="after" 
+                            title="Do phase detection tests for all three phases before reading phase data from meters." 
+                            checked="checked"> 
+                            Read Meters After All Phase Detection Tests
+                    </td>
+                </tr>
+		        <tr>
+	                <td style="padding-top: 3px;">
+	                    <input type="radio" name="readPhasesWhen" value="between" 
+                            title="Read phase data from meters in between phase detection tests for each phase."> 
+                            Read Meters Between Phase Detection Tests
+	                </td>
+		        </tr>
+		        <tr>
+	                <td style="padding-top: 3px;">
+	                    <input id="nextButton" type="submit" value="Next" disabled="disabled">
+	                </td>
+		        </tr>
+		    </table>
+	    </form>
+    </tags:sectionContainer>
+</cti:standardPage>

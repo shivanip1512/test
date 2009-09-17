@@ -3,7 +3,9 @@ package com.cannontech.common.device.commands;
 
 public enum CommandRequestExecutionType {
 	
+    @Deprecated
 	DEVICE_COMMAND("Device Command", "A command sent to a device.", false),
+	@Deprecated
 	ROUTE_COMMAND("Route Command", "A command sent to a route.", false),
 	DEVICE_ATTRIBUTE_READ("Device Attribute Read", "An attribute read command sent to a device.", false),
 	GROUP_COMMAND("Group Command", "A command sent to a group of devices.", false),
@@ -19,6 +21,9 @@ public enum CommandRequestExecutionType {
 	DEVICE_CONFIG_VERIFY("Device Config Verify", "Verify command sent to a collection of devices for the purpose of Device Configuration.", false),
 	DEVICE_CONFIG_SEND("Device Config Send", "Send config settings to a collection of devices for the purpose of Device Configuration.", false),
 	DEVICE_CONFIG_READ("Device Config Read", "Send getconfig install command to a collection of devices for the purpose of Device Configuration.", false),
+	PHASE_DETECT_CLEAR("Phase Detection Clear Command", "Command sent to broadcast MCT to clear phase data from meters.", false),
+	PHASE_DETECT_COMMAND("Phase Detection Command", "Command sent to broadcast MCT to detect a phase change.", false),
+	PHASE_DETECT_READ("Phase Detection Read", "Command sent to broadcast MCT to read phase data.", false),
 	;
 	
 	private String shortName;

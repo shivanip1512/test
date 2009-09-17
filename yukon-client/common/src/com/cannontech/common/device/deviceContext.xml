@@ -235,4 +235,5 @@
         <property name="deviceGroupCollectionHelper" ref="deviceGroupCollectionHelper" />
     </bean>
     
+    <bean id="routeBroadcastService" class="com.cannontech.common.device.service.RouteBroadcastServiceImpl"/>
 </beans>

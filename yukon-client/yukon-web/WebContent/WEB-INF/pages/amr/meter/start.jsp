@@ -37,6 +37,8 @@
 				
 				<td class="widgetColumnCell" valign="top">
 					<ct:widget bean="meterSearchWidget" />
+					
+					<ct:widget bean="systemActionsMenuWidget" />
 				</td>
 			
 			</tr>

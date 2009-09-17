@@ -20,6 +20,7 @@ public enum DataType {
     DR_CONTROLAREA,
     DR_CA_TRIGGER,
     DR_PROGRAM,
-    DR_LOADGROUP
+    DR_LOADGROUP,
+    PHASE_DETECT_READ
     ;
 }
