@@ -1053,10 +1053,8 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
             OutMessage->Buffer.BSt.Message[3] = ( uadd      ) & 0x0000ff;
         }
     }
-    else if( parse.isKeyValid("centron_display") ||
-             parse.isKeyValid("centron_ratio")   ||
-             parse.isKeyValid("centron_test_duration") ||
-             parse.isKeyValid("centron_error_display") )
+    else if( parse.isKeyValid("centron_display") &&
+             parse.isKeyValid("centron_test_duration") )
     {
         unsigned char centron_config = 0x00;  //  default, see sspec for details
 
