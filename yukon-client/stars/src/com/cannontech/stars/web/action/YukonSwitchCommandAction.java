@@ -350,7 +350,6 @@ public class YukonSwitchCommandAction implements ActionBase {
 			
 			event = Transaction.createTransaction( Transaction.INSERT, event ).execute();
 			
-			// Yuk-7673 Update currentStateId 
             com.cannontech.database.db.stars.hardware.InventoryBase invDB = new com.cannontech.database.db.stars.hardware.InventoryBase();
             StarsLiteFactory.setInventoryBase(invDB, liteHw);
             invDB.setCurrentStateID(unavailStatusEntryID);
@@ -444,7 +443,6 @@ public class YukonSwitchCommandAction implements ActionBase {
 			
 			event = Transaction.createTransaction( Transaction.INSERT, event ).execute();
 			
-            // Yuk-7673 Update currentStateId 
             com.cannontech.database.db.stars.hardware.InventoryBase invDB = new com.cannontech.database.db.stars.hardware.InventoryBase();
             StarsLiteFactory.setInventoryBase(invDB, liteHw);
             invDB.setCurrentStateID(availStatusEntryID);
@@ -559,7 +557,6 @@ public class YukonSwitchCommandAction implements ActionBase {
 			
 			event = Transaction.createTransaction( Transaction.INSERT, event ).execute();
 
-            // Yuk-7673 Update currentStateId 
             com.cannontech.database.db.stars.hardware.InventoryBase invDB = new com.cannontech.database.db.stars.hardware.InventoryBase();
             StarsLiteFactory.setInventoryBase(invDB, liteHw);
             invDB.setCurrentStateID(availStatusEntryID);
