@@ -114,8 +114,7 @@ public class MV_90Format extends FileFormatBase
 	                            MV_90Record lastRecord = (MV_90Record)getRecordVector().get(recCount -1);
 
 	                            lastRecord.getReadingKWVector().add(new Double(reading));
-	                            lastRecord.setTimeKW(ts);
-	                            lastRecord.setDateKW(ts);
+	                            lastRecord.setDateTimeKW(ts);
 	                        }
 	                        else
 	                        {
@@ -144,8 +143,7 @@ public class MV_90Format extends FileFormatBase
 	                                readingVector.add(new Double(-99999D));
 
 	                                mv90Rec.setReadingKWVector(readingVector);
-	                                mv90Rec.setTimeKW(lpDemandRateTimeStamp);
-	                                mv90Rec.setDateKW(lpDemandRateTimeStamp);
+	                                mv90Rec.setDateTimeKW(lpDemandRateTimeStamp);
 	                                getRecordVector().addElement(mv90Rec);
 	                                recCount++;
 
@@ -157,8 +155,7 @@ public class MV_90Format extends FileFormatBase
 	                            readingVector.add(new Double(reading));
 	                            mv90Rec.setReadingKWVector(readingVector);
 
-	                            mv90Rec.setTimeKW(ts);
-	                            mv90Rec.setDateKW(ts);
+	                            mv90Rec.setDateTimeKW(ts);
 
 	                            lastMeterNumber = meterNumber;
 	                            getRecordVector().addElement(mv90Rec);

@@ -20,7 +20,7 @@ public class MV_90Record implements BillingRecordBase
 	private Double readingKW = null;	//8.1
 
 	private static java.text.SimpleDateFormat DATE_FORMAT = new java.text.SimpleDateFormat("MM/dd/yy");
-	private static java.text.SimpleDateFormat TIME_FORMAT = new java.text.SimpleDateFormat("kk:mm");
+	private static java.text.SimpleDateFormat TIME_FORMAT = new java.text.SimpleDateFormat("HH:mm");
 	private static java.text.DecimalFormat KW_FORMAT_8v1 = new java.text.DecimalFormat("#######0.0");
 	
 	private String lastMeterNumber = "";
@@ -39,27 +39,7 @@ public class MV_90Record implements BillingRecordBase
 		super();
 		setMeterNumber(newMeterNumber);
 	}
-	/**
-	 * MV_90Record constructor comment.
-	 */
-	public MV_90Record(String newMeterNumber, Vector<Double> readingVector, java.sql.Timestamp newTimestamp)
-	{
-		super();
-		setMeterNumber(newMeterNumber);
-		setReadingKWVector(readingVector);
-		setDateKW(newTimestamp);
-		setTimeKW(newTimestamp);
-	}
-	/**
-	 * MV_90Record constructor comment.
-	 */
-	public MV_90Record(String newMeterNumber, java.sql.Timestamp newTimestamp)
-	{
-		super();
-		setMeterNumber(newMeterNumber);
-		setDateKW(newTimestamp);
-		setTimeKW(newTimestamp);
-	}
+
 	/**
 	 * Converts data in a MV_90Format to a formatted StringBuffer for stream use.
 	 * Creation date: (5/24/00 10:58:48 AM)
@@ -168,8 +148,9 @@ public class MV_90Record implements BillingRecordBase
 	 * Creation date: (3/4/2002 4:02:16 PM)
 	 * @param newDate java.lang.String
 	 */
-	public void setDateKW(java.sql.Timestamp timeStamp)
+	public void setDateTimeKW(java.sql.Timestamp timeStamp)
 	{
+	    setTimeKW(timeStamp);
 		java.util.Date d = new java.util.Date(timeStamp.getTime());
 		
 		if( getTimeKW().equalsIgnoreCase("24:00"))
@@ -216,18 +197,16 @@ public class MV_90Record implements BillingRecordBase
 	 * Creation date: (3/4/2002 4:01:56 PM)
 	 * @param newTime java.lang.String
 	 */
-	public void setTimeKW(java.sql.Timestamp timestamp)
+	private void setTimeKW(java.sql.Timestamp timestamp)
 	{
 		java.util.Date d = new java.util.Date(timestamp.getTime());
 		
 		//End of day adjustment for time.
-		//Need to change to 24 hour instead of 0 hour.  But ONLY for the 24:00 reading.  So change all non :00 times to have 00 hour again.
+		//Need to change to 24 hour instead of 0 hour.  But ONLY for the 00:00 reading.  So change all non :00 times to have 24 hour.
 		timeKW = TIME_FORMAT.format(d);
-		if (timeKW.startsWith("24")) {
+		if (timeKW.startsWith("00")) {
 		    if (timeKW.endsWith("00")) {
-		        //do nothing
-		    } else {  //change back to 00
-		        timeKW = timeKW.replaceFirst("24:", "00:");
+		        timeKW = timeKW.replaceFirst("00:", "24:");
 		    }
 		}
 	}
