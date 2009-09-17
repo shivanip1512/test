@@ -377,6 +377,9 @@ test_logger.obj:	yukon.h precompiled.h ctidbgmem.h logger.h dlldefs.h \
 		CtiPCPtrQueue.h utility.h queues.h cticalls.h os2_2w32.h \
 		types.h sorted_vector.h
 test_numstr.obj:	yukon.h precompiled.h ctidbgmem.h numstr.h dlldefs.h
+test_old_queues.obj:	dsm2.h mutex.h dlldefs.h guard.h numstr.h \
+		clrdump.h cticonnect.h yukon.h precompiled.h ctidbgmem.h \
+		netports.h queues.h cticalls.h os2_2w32.h types.h
 test_queue.obj:	queue.h cparms.h rwutil.h yukon.h precompiled.h \
 		ctidbgmem.h ctitime.h dlldefs.h boost_time.h boostutil.h \
 		utility.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
