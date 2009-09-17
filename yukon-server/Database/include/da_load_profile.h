@@ -3,6 +3,8 @@
 
 #include "yukon.h"
 
+namespace Cti {
+
 class DataAccessLoadProfile
 {
     public:
@@ -14,3 +16,4 @@ class DataAccessLoadProfile
        virtual bool isChannelValid(int channel) const =0;
 };
 
+}

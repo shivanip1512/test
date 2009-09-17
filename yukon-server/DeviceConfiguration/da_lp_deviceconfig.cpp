@@ -3,7 +3,7 @@
 #include "da_lp_deviceconfig.h"
 #include "config_data_mct.h"
 
-using namespace Cti::Config;
+using namespace Cti;
 
 const int DeviceConfigurationLoadProfileData::SecondsPerMinute = 60;
 

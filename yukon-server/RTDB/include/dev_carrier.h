@@ -27,6 +27,7 @@
 #include "tbl_dv_mctiedport.h"
 #include "da_load_profile.h"
 
+using namespace Cti;
 
 class IM_EX_DEVDB CtiDeviceCarrier : public CtiDeviceDLCBase
 {

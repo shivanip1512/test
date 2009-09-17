@@ -39,7 +39,7 @@
 #include "resolvers.h"
 #include "da_load_profile.h"
 
-class IM_EX_CTIYUKONDB CtiTableDeviceLoadProfile : public CtiMemDBObject, public DataAccessLoadProfile
+class IM_EX_CTIYUKONDB CtiTableDeviceLoadProfile : public CtiMemDBObject, public Cti::DataAccessLoadProfile
 {
 public:
 

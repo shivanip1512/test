@@ -33,6 +33,7 @@
 
 using Cti::Protocol::Emetcon;
 using namespace Cti::Config;
+using namespace Cti;
 
 const CtiDeviceMCT470::CommandSet       CtiDeviceMCT470::_commandStore = CtiDeviceMCT470::initCommandStore();
 const CtiDeviceMCT470::read_key_store_t CtiDeviceMCT470::_readKeyStore = CtiDeviceMCT470::initReadKeyStore();

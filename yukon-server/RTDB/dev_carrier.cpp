@@ -15,10 +15,7 @@
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-
-
 #include "dev_carrier.h"
-
 
 CtiDeviceCarrier::CtiDeviceCarrier()
 {

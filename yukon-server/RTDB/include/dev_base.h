@@ -115,6 +115,8 @@ protected:
     set<CtiTableDynamicPaoInfo> _paoInfo;         //  This is a list of miscellaneous data that is dynamically generated
                                                   //    by Porter, Scanner, or whomever
 
+    void setDeviceConfig(Cti::Config::CtiConfigDeviceSPtr config);
+
 public:
 
     typedef vector< CtiTablePaoExclusion > exclusions;
@@ -276,7 +278,6 @@ public:
 
     CtiMutex& getMux()  { return _classMutex; }
 
-    void setDeviceConfig(Cti::Config::CtiConfigDeviceSPtr config);
     Cti::Config::CtiConfigDeviceSPtr getDeviceConfig();//Configs are now thread safe!
     virtual void changeDeviceConfig(Cti::Config::CtiConfigDeviceSPtr config);//Override this to be notified if the config changes for this device.
     virtual Cti::DeviceQueueInterface* getDeviceQueueHandler();

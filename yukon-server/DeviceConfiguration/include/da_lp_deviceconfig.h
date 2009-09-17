@@ -8,8 +8,9 @@
 #include "da_load_profile.h"
 #include "config_device.h"
 
+using namespace Cti::Config;
+
 namespace Cti {
-namespace Config {
 
 class IM_EX_CONFIG DeviceConfigurationLoadProfileData : public DataAccessLoadProfile
 {
@@ -32,5 +33,4 @@ class IM_EX_CONFIG DeviceConfigurationLoadProfileData : public DataAccessLoadPro
         void setLpTable(boost::shared_ptr<DataAccessLoadProfile> table);
 };
 
-}
 }
