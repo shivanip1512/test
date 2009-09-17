@@ -201,8 +201,8 @@ string XmlProtocol::createMessage(const CtiCommandParser &parse, const string &r
 
                 relayNode->appendChild(relayText);
                 relaysNode->appendChild(relayNode);
-                mask <<= 1;
             }
+            mask <<= 1;
         }
 
         controlNode->appendChild(relaysNode);

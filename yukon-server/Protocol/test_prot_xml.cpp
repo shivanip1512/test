@@ -10,100 +10,128 @@
 #include <sstream>
 
 #include "prot_xml.h"
+#include "cmdparse.h"
+#include <fstream>
 
-using std::string;
-using std::stringstream;
+using namespace std;
 
 using boost::unit_test_framework::test_suite;
 
 using namespace Cti::Protocols;
-BOOST_AUTO_TEST_CASE(blah)
-{
 
+BOOST_AUTO_TEST_CASE(test_Shed_Control)
+{
+    XmlProtocol xmlProtocol;
+
+    string expected = "<loadGroupAction xmlns=\"http://yukon.cannontech.com/api\"><groupParametersList><groupParameter name=\"Param1\">Value1</groupParameter><groupParameter name=\"Param2\">Value2</groupParameter></groupParametersList><command><raw commandeType=\"EXPRESSCOM\">abcdefg</raw><timedControl><time>300</time><relays><relay>1</relay><relay>3</relay></relays></timedControl></command></loadGroupAction>";
+    string result;
+
+    CtiCommandParser parse("control shed 5m");
+    parse.setValue("relaymask", 0x05);
+
+    string rawAscii = "abcdefg";
+
+    std::vector<std::pair<string,string> > params;
+
+    params.push_back(make_pair("Param1","Value1"));
+    params.push_back(make_pair("Param2","Value2"));
+
+    result = xmlProtocol.createMessage(parse,rawAscii,params);
+
+    BOOST_CHECK_EQUAL(expected,result);
 }
 
-/*
-BOOST_AUTO_TEST_CASE(test_prot_xml_recvComm)
+BOOST_AUTO_TEST_CASE(test_Restore_Control)
 {
-    int groupId = 42;
-    string commandString = "control shed 60m";
-    XmlObject::XmlObjectSPtr xml;
+    XmlProtocol xmlProtocol;
 
-    OUTMESS * OutMessage = new OUTMESS();
-    memcpy(OutMessage->Request.CommandStr,commandString.c_str(),commandString.size());
-    OutMessage->DeviceIDofLMGroup = groupId;
+    string expected = "<loadGroupAction xmlns=\"http://yukon.cannontech.com/api\"><groupParametersList><groupParameter name=\"Param1\">Value1</groupParameter><groupParameter name=\"Param2\">Value2</groupParameter></groupParametersList><command><raw commandeType=\"EXPRESSCOM\">abcdefg</raw><restoreControl><delayTime>0</delayTime><randomizeTime>0</randomizeTime><stopCycle>false</stopCycle><relays><relay>15</relay></relays></restoreControl></command></loadGroupAction>";
+    string result;
 
-    XmlProtocolSPtr xmlProtocol = XmlProtocolSPtr(new XmlProtocol());
+    CtiCommandParser parse("control restore");
+    parse.setValue("relaymask", 0x4000);
 
-    xmlProtocol->recvCommRequest(OutMessage);
+    string rawAscii = "abcdefg";
+    std::vector<std::pair<string,string> > params;
 
-    string result = xmlProtocol->getCommandString();
-    BOOST_CHECK_EQUAL(commandString,result);
+    params.push_back(make_pair("Param1","Value1"));
+    params.push_back(make_pair("Param2","Value2"));
 
-    int gid = xmlProtocol->getGroupId();
-    BOOST_CHECK_EQUAL(groupId,gid);
+    result = xmlProtocol.createMessage(parse,rawAscii, params);
 
-    delete OutMessage;
+    BOOST_CHECK_EQUAL(expected,result);
 }
 
-BOOST_AUTO_TEST_CASE(test_prot_xml_genereate_xmloutput)
+BOOST_AUTO_TEST_CASE(test_Standard_Cycle_Control)
 {
-    string commandString = "control shed 60m";
-    XmlObject::XmlObjectSPtr xml;
+    XmlProtocol xmlProtocol;
 
-    OUTMESS * OutMessage = new OUTMESS();
-    memcpy(OutMessage->Request.CommandStr,commandString.c_str(),commandString.size());
+    string expected = "<loadGroupAction xmlns=\"http://yukon.cannontech.com/api\"><groupParametersList/><command><raw commandeType=\"EXPRESSCOM\">abcdefg</raw><cycleControl><startDelay>0</startDelay><type>standardcycle</type><percent>5</percent><period>30</period><count>8</count><ramp>true</ramp><relays><relay>15</relay></relays></cycleControl></command></loadGroupAction>";
+    string result;
 
-    //from test cmd parse
-    //"command=8:flags=1024::sa_dlc_mode=(none),1,1.000:sa_f0bit=(none),0,0.000:sa_f1bit=(none),0,0.000:shed=(none),3600,3600.000:type=versacom,0,0.000"
-    string expected = "<XML_COMMAND command=\"8\" flags=\"1024\"><XML_DATA sa_dlc_mode=\"(none)\"><INT>1</INT><REAL>1.000</REAL></XML_DATA><XML_DATA sa_f0bit=\"(none)\"><INT>0</INT><REAL>0.000</REAL></XML_DATA><XML_DATA sa_f1bit=\"(none)\"><INT>0</INT><REAL>0.000</REAL></XML_DATA><XML_DATA shed=\"(none)\"><INT>3600</INT><REAL>3600.000</REAL></XML_DATA><XML_DATA type=\"versacom\"><INT>0</INT><REAL>0.000</REAL></XML_DATA></XML_COMMAND>";
-    XmlProtocolSPtr xmlProtocol = XmlProtocolSPtr(new XmlProtocol());
+    CtiCommandParser parse("control cycle 5m");
+    parse.setValue("relaymask", 0x4000);
 
-    xmlProtocol->setGenerateParameters(false);
+    string rawAscii = "abcdefg";
+    std::vector<std::pair<string,string> > params;
 
-    //Do protocal stuff to generate xml
-    xmlProtocol->recvCommRequest(OutMessage);
+    result = xmlProtocol.createMessage(parse,rawAscii, params);
 
-    CtiXfer xfer;//Blank this is not being tested in this test case.
-
-    int ok = xmlProtocol->generate(xfer);
-    BOOST_REQUIRE( ok == NoError);//NoError from yukon.h
-
-    //Get XML from protocol.
-    xml = xmlProtocol->getXmlObject();
-
-    stringstream ss(stringstream::out);
-    //Use String stream and compare to expected.
-    xml->outputXml(ss);
-
-    string output = ss.str();
-    BOOST_CHECK_EQUAL(expected,output);
+    BOOST_CHECK_EQUAL(expected,result);
 }
 
-BOOST_AUTO_TEST_CASE(test_prot_xml_generate_xfer)
+BOOST_AUTO_TEST_CASE(test_True_Cycle_Control)
 {
-    string commandString = "control shed 60m";
-    string expected = "<XML_COMMAND command=\"8\" flags=\"1024\"><XML_DATA sa_dlc_mode=\"(none)\"><INT>1</INT><REAL>1.000</REAL></XML_DATA><XML_DATA sa_f0bit=\"(none)\"><INT>0</INT><REAL>0.000</REAL></XML_DATA><XML_DATA sa_f1bit=\"(none)\"><INT>0</INT><REAL>0.000</REAL></XML_DATA><XML_DATA shed=\"(none)\"><INT>3600</INT><REAL>3600.000</REAL></XML_DATA><XML_DATA type=\"versacom\"><INT>0</INT><REAL>0.000</REAL></XML_DATA></XML_COMMAND>";
-    XmlObject::XmlObjectSPtr xml;
+    XmlProtocol xmlProtocol;
 
-    OUTMESS * OutMessage = new OUTMESS();
-    memcpy(OutMessage->Request.CommandStr,commandString.c_str(),commandString.size());
+    string expected = "<loadGroupAction xmlns=\"http://yukon.cannontech.com/api\"><groupParametersList/><command><raw commandeType=\"EXPRESSCOM\">abcdefg</raw><cycleControl><startDelay>0</startDelay><type>truecycle</type><percent>5</percent><period>30</period><count>8</count><ramp>true</ramp><relays><relay>15</relay></relays></cycleControl></command></loadGroupAction>";
+    string result;
 
-    XmlProtocolSPtr xmlProtocol = XmlProtocolSPtr(new XmlProtocol());
+    CtiCommandParser parse("control cycle 5m");
+    parse.setValue("relaymask", 0x4000);
+    parse.setValue("xctruecycle", 1);
 
-    xmlProtocol->setGenerateParameters(false);
+    string rawAscii = "abcdefg";
+    std::vector<std::pair<string,string> > params;
 
-    //Setup xmlProtocol with command
-    xmlProtocol->recvCommRequest(OutMessage);
+    result = xmlProtocol.createMessage(parse,rawAscii, params);
 
-    CtiXfer xfer;
-
-    int ok = xmlProtocol->generate(xfer);
-    BOOST_REQUIRE( ok == NoError);//NoError from yukon.h
-
-    string output((char*)xfer.getOutBuffer(),xfer.getOutCount());
-
-    //Test to see if xfer is setup correctly
-    BOOST_CHECK_EQUAL(expected,output);
+    BOOST_CHECK_EQUAL(expected,result);
 }
-*/
+
+BOOST_AUTO_TEST_CASE(test_Target_Cycle_Control)
+{
+    XmlProtocol xmlProtocol;
+
+    string expected = "<loadGroupAction xmlns=\"http://yukon.cannontech.com/api\"><groupParametersList/><command><raw commandeType=\"EXPRESSCOM\">abcdefg</raw><cycleControl><startDelay>0</startDelay><type>targetcycle</type><percent>5</percent><period>30</period><count>8</count><ramp>true</ramp><relays><relay>15</relay></relays></cycleControl></command></loadGroupAction>";
+    string result;
+
+    CtiCommandParser parse("control cycle 5m");
+    parse.setValue("relaymask", 0x4000);
+    parse.setValue("xctargetcycle", 1);
+
+    string rawAscii = "abcdefg";
+    std::vector<std::pair<string,string> > params;
+
+    result = xmlProtocol.createMessage(parse,rawAscii, params);
+
+    BOOST_CHECK_EQUAL(expected,result);
+}
+
+BOOST_AUTO_TEST_CASE(test_Unknown_Control)
+{
+    XmlProtocol xmlProtocol;
+
+    string expected = "";
+    string result;
+
+    CtiCommandParser parse("putconfig emetcon install all");
+
+    string rawAscii = "";
+    std::vector<std::pair<string,string> > params;
+
+    result = xmlProtocol.createMessage(parse,rawAscii, params);
+
+    BOOST_CHECK_EQUAL(expected,result);
+}
+
