@@ -2410,35 +2410,20 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
                 if( !temp.compareTo("ratio") )
                 {
                     _cmd["centron_ratio"] = CtiParseValue(atoi(cmdtok().c_str()));
-
-                    temp = cmdtok();
+                    cmdtok();           // move to "display"
                 }
 
-                if( !temp.compareTo("display") )
+                temp = cmdtok();        // move past "display" to get the display resolution configuration
+                _cmd["centron_display"] = CtiParseValue(temp);
+                
+                cmdtok();               // move to "test"
+                _cmd["centron_test_duration"] = CtiParseValue(atoi(cmdtok().c_str()));
+                
+                cmdtok();               // move to "errors"
+                temp = cmdtok();        // "enable" or "disable"
+                if(temp[0] == 'e')
                 {
-                    temp = cmdtok();
-
-                    //  is it the display resolution configuration?
-                    if( std::isdigit(temp[0]) )
-                    {
-                        _cmd["centron_display"] = CtiParseValue(temp);
-
-                        temp = cmdtok();
-                    }
-                    if( !temp.compareTo("test") )
-                    {
-                        _cmd["centron_test_duration"] = CtiParseValue(atoi(cmdtok().c_str()));
-
-                        temp = cmdtok();
-                    }
-                    if( !temp.compareTo("errors") )
-                    {
-                        temp = cmdtok();        // "enable" or "disable"
-                        if(temp[0] == 'e')
-                        {
-                            _cmd["centron_error_display"] = CtiParseValue(true);
-                        }
-                    }
+                    _cmd["centron_error_display"] = CtiParseValue(true);
                 }
             }
             if(!(token = CmdStr.match(re_centron_reading)).empty())

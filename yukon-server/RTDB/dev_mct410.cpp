@@ -1070,38 +1070,32 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
 
         OutMessage->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
 
-        if( parse.isKeyValid("centron_display") )
+        string display = parse.getsValue("centron_display");
+
+        if(      !display.compare("5x1")  )     centron_config |= 0x00;
+        else if( !display.compare("4x1")  )     centron_config |= 0x01;
+        else if( !display.compare("4x10") )     centron_config |= 0x02;
+        else
         {
-            string display = parse.getsValue("centron_display");
+            found = false;
+            nRet  = BADPARAM;
 
-            if(      !display.compare("5x1")  )     centron_config |= 0x00;
-            else if( !display.compare("4x1")  )     centron_config |= 0x01;
-            else if( !display.compare("4x10") )     centron_config |= 0x02;
-            else
-            {
-                found = false;
-                nRet  = BADPARAM;
-
-                returnErrorMessage(BADPARAM, OutMessage, retList,
-                                   "Invalid Centron display configuration \"" + display + "\"");
-            }
+            returnErrorMessage(BADPARAM, OutMessage, retList,
+                               "Invalid Centron display configuration \"" + display + "\"");
         }
 
-        if( parse.isKeyValid("centron_test_duration") )
+        int test = parse.getiValue("centron_test_duration");
+
+        if(      test == 0 )  centron_config |= 0x00;
+        else if( test == 1 )  centron_config |= 0x04;
+        else if( test == 7 )  centron_config |= 0x0c;
+        else
         {
-            int test = parse.getiValue("centron_test_duration");
+            found = false;
+            nRet  = BADPARAM;
 
-            if(      test == 0 )  centron_config |= 0x00;
-            else if( test == 1 )  centron_config |= 0x04;
-            else if( test == 7 )  centron_config |= 0x0c;
-            else
-            {
-                found = false;
-                nRet  = BADPARAM;
-
-                returnErrorMessage(BADPARAM, OutMessage, retList,
-                                   "Invalid Centron test duration \"" + CtiNumStr(test) + "\"");
-            }
+            returnErrorMessage(BADPARAM, OutMessage, retList,
+                               "Invalid Centron test duration \"" + CtiNumStr(test) + "\"");
         }
 
         if( parse.isKeyValid("centron_error_display") )
