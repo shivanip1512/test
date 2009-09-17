@@ -1,19 +1,23 @@
 package com.cannontech.dr.loadgroup.service;
 
-import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
+import java.util.Comparator;
+
+import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.common.util.ObjectMapper;
+import com.cannontech.dr.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.data.LMDirectGroupBase;
 import com.cannontech.loadcontrol.data.LMGroupBase;
+import com.cannontech.user.YukonUserContext;
 
 public interface LoadGroupService extends
-        ObjectMapper<DisplayablePao, LMDirectGroupBase> {
-    public ObjectMapper<DisplayablePao, LMDirectGroupBase> getMapper();
+    ObjectMapper<DisplayablePao, LMDirectGroupBase>, LoadGroupDao {
 
     public DatedObject<LMGroupBase> findDatedGroup(int loadGroupId);
 
-    public DisplayablePao getLoadGroup(int loadGroupId);
-    
-    public RowMapperWithBaseQuery<DisplayablePao> getRowMapper();
+    public SearchResult<DisplayablePao> filterGroups(
+            YukonUserContext userContext, UiFilter<DisplayablePao> filter,
+            Comparator<DisplayablePao> sorter, int startIndex, int count);
 }

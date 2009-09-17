@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.support.SessionStatus;
 
 import com.cannontech.common.bulk.filter.UiFilter;
-import com.cannontech.common.bulk.filter.service.FilterService;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.search.SearchResult;
@@ -31,7 +30,6 @@ import com.cannontech.dr.loadgroup.filter.LoadGroupStateFilter;
 import com.cannontech.dr.loadgroup.model.LoadGroupDisplayField;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
 import com.cannontech.user.YukonUserContext;
-import com.google.common.collect.Ordering;
 
 public class LoadGroupControllerHelper {
     public static class LoadGroupListBackingBean extends ListBackingBean {
@@ -59,7 +57,6 @@ public class LoadGroupControllerHelper {
         }
     }
     
-    private FilterService filterService;
     private LoadGroupService loadGroupService = null;
     private PaoAuthorizationService paoAuthorizationService;
     private DatePropertyEditorFactory datePropertyEditorFactory;
@@ -80,10 +77,6 @@ public class LoadGroupControllerHelper {
         binder.registerCustomEditor(Object.class, "loadCapacity.max", numberEditor);
     }
 
-    public Comparator<DisplayablePao> getDefaultSorter(YukonUserContext userContext) {
-        return LoadGroupDisplayField.NAME.getSorter(loadGroupService, userContext, false);
-    }
-    
     public void filterGroups(ModelMap modelMap, YukonUserContext userContext,
             @ModelAttribute("filter") LoadGroupControllerHelper.LoadGroupListBackingBean backingBean,
             BindingResult result, SessionStatus status,
@@ -118,24 +111,15 @@ public class LoadGroupControllerHelper {
             ? LoadGroupDisplayField.NAME : LoadGroupDisplayField.valueOf(backingBean.getSort());
         Comparator<DisplayablePao> sorter =
             sortField.getSorter(loadGroupService, userContext, backingBean.getDescending());
-        if (sortField != LoadGroupDisplayField.NAME) {
-            sorter = Ordering.from(sorter).compound(getDefaultSorter(userContext));
-        }
-
+        
         int startIndex = (backingBean.getPage() - 1) * backingBean.getItemsPerPage();
         UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
         SearchResult<DisplayablePao> searchResult =
-            filterService.filter(filter, sorter, startIndex, backingBean.getItemsPerPage(),
-                                 loadGroupService.getRowMapper());
+            loadGroupService.filterGroups(userContext, filter, sorter, startIndex, backingBean.getItemsPerPage());
 
         modelMap.addAttribute("searchResult", searchResult);
         modelMap.addAttribute("loadGroups", searchResult.getResultList());
         modelMap.addAttribute("backingBean", backingBean);
-    }
-
-    @Autowired
-    public void setFilterService(FilterService filterService) {
-        this.filterService = filterService;
     }
 
     @Autowired

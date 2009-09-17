@@ -54,7 +54,7 @@
 <entry key="yukon.web.modules.dr.loadGroup.value.STATE.ACTIVE_PENDING">Active Pending</entry>
 <entry key="yukon.web.modules.dr.loadGroup.value.STATE.INACTIVE_PENDING">Inactive Pending</entry>
 <entry key="yukon.web.modules.dr.loadGroup.value.LAST_ACTION">{0,date,MM/dd/yyyy HH:mm zz}</entry>
-<entry key="yukon.web.modules.dr.loadGroup.value.CONTROL_STATISTICS">{0}-{0}-{0}-{0}</entry>
+<entry key="yukon.web.modules.dr.loadGroup.value.CONTROL_STATISTICS">{0}-{1}-{2}-{3}</entry>
 <entry key="yukon.web.modules.dr.loadGroup.value.REDUCTION">{0,number,#.#}</entry>
 <entry key="yukon.web.modules.dr.loadGroup.value.LOAD_CAPACITY">{0,number,#.#}</entry>
 

@@ -2,7 +2,6 @@ package com.cannontech.dr.loadgroup.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
@@ -18,13 +17,6 @@ import com.cannontech.dr.loadgroup.dao.LoadGroupDao;
 public class LoadGroupDaoImpl implements LoadGroupDao {
     private SimpleJdbcTemplate simpleJdbcTemplate;
 
-    private final static String baseLoadGroupQuery = 
-        "SELECT paObjectId, paoName, type FROM yukonPAObject " 
-        + "WHERE category = 'DEVICE' AND paoClass = 'GROUP'";
-    private final static String loadGroupsByProgramIdQuery = 
-        "SELECT paObjectId, paoName, type FROM yukonPAObject " 
-        + "WHERE category = 'DEVICE' AND paoClass = 'GROUP' " 
-        + "AND paObjectId IN (SELECT lmGroupDeviceId FROM lmProgramDirectGroup WHERE deviceId = ?)";
     private final static String singleLoadGroupByIdQuery = 
         "SELECT paObjectId, paoName, type FROM yukonPAObject " 
         + "WHERE category = 'DEVICE' AND paoClass = 'GROUP' AND paObjectId = ?";
@@ -43,21 +35,6 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
                                                            rs.getString("paoName"));
             return retVal;
         }};
-
-    @Override
-    public List<DisplayablePao> getLoadGroups() {
-        List<DisplayablePao> retVal = simpleJdbcTemplate.query(baseLoadGroupQuery,
-                                                               loadGroupRowMapper);
-        return retVal;
-    }
-    
-    @Override
-    public List<DisplayablePao> getLoadGroupsForProgram(int programId) {
-        List<DisplayablePao> retVal = simpleJdbcTemplate.query(loadGroupsByProgramIdQuery,
-                                                               loadGroupRowMapper,
-                                                               programId);
-        return retVal;
-    }
 
     @Override
     public DisplayablePao getLoadGroup(int loadGroupId) {

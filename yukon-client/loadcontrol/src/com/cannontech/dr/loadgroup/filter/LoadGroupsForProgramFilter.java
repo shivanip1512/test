@@ -29,9 +29,8 @@ public class LoadGroupsForProgramFilter implements UiFilter<DisplayablePao> {
 
             @Override
             public SqlFragmentSource getWhereClauseFragment() {
-                SqlStatementBuilder retVal = new SqlStatementBuilder(
-                    "paObjectId IN (SELECT lmGroupDeviceId"
-                    + " FROM lmProgramDirectGroup WHERE deviceId =");
+                SqlStatementBuilder retVal = new SqlStatementBuilder("paObjectId IN (SELECT lmGroupDeviceId");
+                retVal.append("FROM lmProgramDirectGroup WHERE deviceId =");
                 retVal.appendArgument(programId);
                 retVal.append(")");
                 return retVal;
